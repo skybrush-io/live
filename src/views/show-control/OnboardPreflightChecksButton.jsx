@@ -56,7 +56,6 @@ OnboardPreflightChecksButton.propTypes = {
   onApprove: PropTypes.func,
   onRevoke: PropTypes.func,
   status: PropTypes.oneOf(Object.values(Status)),
-  t: PropTypes.func,
 };
 
 OnboardPreflightChecksButton.defaultProps = {};

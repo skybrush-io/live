@@ -22,7 +22,6 @@ const SafetyButton = (props) => (
 
 SafetyButton.propTypes = {
   onClick: PropTypes.func,
-  t: PropTypes.func,
 };
 
 export default connect(

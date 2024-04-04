@@ -77,7 +77,6 @@ TakeoffAreaButton.propTypes = {
   maxDistance: PropTypes.number,
   onClick: PropTypes.func,
   status: PropTypes.oneOf(Object.values(Status)),
-  t: PropTypes.func,
 };
 
 TakeoffAreaButton.defaultProps = {};

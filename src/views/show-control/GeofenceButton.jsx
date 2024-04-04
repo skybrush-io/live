@@ -62,7 +62,6 @@ const GeofenceButton = ({ onClick, status, ...rest }) => {
 GeofenceButton.propTypes = {
   onClick: PropTypes.func,
   status: PropTypes.oneOf(Object.values(Status)),
-  t: PropTypes.func,
 };
 
 GeofenceButton.defaultProps = {};

@@ -85,9 +85,8 @@ const EnvironmentButton = ({
 
 EnvironmentButton.propTypes = {
   onEditEnvironment: PropTypes.func,
-  secondaryText: PropTypes.string,
+  secondaryText: PropTypes.func,
   status: PropTypes.oneOf(Object.values(Status)),
-  t: PropTypes.func,
 };
 
 export default connect(

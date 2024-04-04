@@ -46,7 +46,6 @@ ShowUploadDialogButton.propTypes = {
   loading: PropTypes.bool,
   onClick: PropTypes.func,
   status: PropTypes.oneOf(Object.values(Status)),
-  t: PropTypes.func,
 };
 
 export default connect(

@@ -60,7 +60,6 @@ ManualPreflightChecksButton.propTypes = {
   onClick: PropTypes.func,
   onRevoke: PropTypes.func,
   status: PropTypes.oneOf(Object.values(Status)),
-  t: PropTypes.func,
 };
 
 ManualPreflightChecksButton.defaultProps = {};

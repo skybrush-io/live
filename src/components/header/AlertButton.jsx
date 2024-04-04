@@ -101,7 +101,6 @@ const AlertButton = ({ count, muted, ...rest }) => {
 AlertButton.propTypes = {
   count: PropTypes.number,
   muted: PropTypes.bool,
-  t: PropTypes.func,
 };
 
 export default connect(

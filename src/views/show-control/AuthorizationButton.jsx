@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { withTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import ListItem from '@material-ui/core/ListItem';
@@ -29,55 +29,49 @@ const AuthorizationButton = ({
   isAuthorized,
   numUAVsTakingOffAutomatically,
   status,
-  t,
   ...rest
-}) => (
-  <ListItem
-    button
-    /* disabled={!isAuthorized && status === Status.OFF} */
-    selected={isAuthorized}
-    {...rest}
-  >
-    <StatusLight
-      status={isAuthorized && status === Status.OFF ? Status.SKIPPED : status}
-    />
-    <ListItemText
-      disableTypography
-      primary={
-        <Typography variant='button'>
-          {isAuthorized
-            ? t('show.authorized', 'Show authorized to start')
-            : t('show.authorizeTheStart', 'Authorize start of show')}
-        </Typography>
-      }
-      secondary={
-        <Typography variant='body2' color='textSecondary'>
-          {isAuthorized
-            ? numUAVsTakingOffAutomatically <= 0
-              ? t(
-                  'show.revokeAuthorization',
-                  'Click here to revoke authorization'
-                )
-              : numUAVsTakingOffAutomatically === 1
-              ? t('show.takeOffOne', 'One drone will take off automatically')
-              : t('show.takeOffMore', {
-                  quantity: numUAVsTakingOffAutomatically,
-                })
-            : t(
-                'show.authorizationReq',
-                'Authorization required before takeoff'
-              )}
-        </Typography>
-      }
-    />
-  </ListItem>
-);
+}) => {
+  const { t } = useTranslation();
+
+  return (
+    <ListItem
+      button
+      /* disabled={!isAuthorized && status === Status.OFF} */
+      selected={isAuthorized}
+      {...rest}
+    >
+      <StatusLight
+        status={isAuthorized && status === Status.OFF ? Status.SKIPPED : status}
+      />
+      <ListItemText
+        disableTypography
+        primary={
+          <Typography variant='button'>
+            {isAuthorized ? t('show.authorized') : t('show.authorizeTheStart')}
+          </Typography>
+        }
+        secondary={
+          <Typography variant='body2' color='textSecondary'>
+            {isAuthorized
+              ? numUAVsTakingOffAutomatically <= 0
+                ? t('show.revokeAuthorization')
+                : numUAVsTakingOffAutomatically === 1
+                  ? t('show.takeOffOne')
+                  : t('show.takeOffMore', {
+                      quantity: numUAVsTakingOffAutomatically,
+                    })
+              : t('show.authorizationReq')}
+          </Typography>
+        }
+      />
+    </ListItem>
+  );
+};
 
 AuthorizationButton.propTypes = {
   isAuthorized: PropTypes.bool,
   numUAVsTakingOffAutomatically: PropTypes.number,
   status: PropTypes.oneOf(Object.values(Status)),
-  t: PropTypes.func,
 };
 
 export default connect(
@@ -99,4 +93,4 @@ export default connect(
       }
     },
   }
-)(withTranslation()(AuthorizationButton));
+)(AuthorizationButton);
