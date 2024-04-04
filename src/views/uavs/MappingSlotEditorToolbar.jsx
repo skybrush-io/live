@@ -39,7 +39,7 @@ const MappingSlotEditorToolbar = React.forwardRef(
               <Keyboard />
             </IconButton>
             <Box className={classes.box}>
-              <kbd>Enter</kbd> {t('savedLocationEditor.save')}
+              <kbd>Enter</kbd> {t('general.action.save')}
             </Box>
             <Divider orientation='vertical' className={classes.divider} />
             <Box className={classes.box}>

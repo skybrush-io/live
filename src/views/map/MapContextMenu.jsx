@@ -146,7 +146,7 @@ class MapContextMenu extends React.Component {
                     <ListItemIcon>
                       <FlightTakeoff />
                     </ListItemIcon>
-                    {t('mapContextMenu.takeOff')}
+                    {t('general.commands.takeoff')}
                   </MenuItem>,
                   <MenuItem
                     key='poshold'
@@ -156,19 +156,19 @@ class MapContextMenu extends React.Component {
                     <ListItemIcon>
                       <PositionHold />
                     </ListItemIcon>
-                    {t('mapContextMenu.positionHold')}
+                    {t('general.commands.positionHold')}
                   </MenuItem>,
                   <MenuItem key='home' dense onClick={this._returnSelectedUAVs}>
                     <ListItemIcon>
                       <Home />
                     </ListItemIcon>
-                    {t('mapContextMenu.returnToHome')}
+                    {t('general.commands.returnToHome')}
                   </MenuItem>,
                   <MenuItem key='land' dense onClick={this._landSelectedUAVs}>
                     <ListItemIcon>
                       <FlightLand />
                     </ListItemIcon>
-                    {t('mapContextMenu.land')}
+                    {t('general.commands.land')}
                   </MenuItem>,
                   <Divider key='div2' />,
                   <MenuItem
@@ -191,19 +191,19 @@ class MapContextMenu extends React.Component {
                     <ListItemIcon>
                       <Bolt />
                     </ListItemIcon>
-                    {t('mapContextMenu.powerOn')}
+                    {t('general.commands.powerOn')}
                   </MenuItem>,
                   <MenuItem key='sleep' dense onClick={this._sleepSelectedUAVs}>
                     <ListItemIcon>
                       <Moon />
                     </ListItemIcon>
-                    {t('mapContextMenu.sleep')}
+                    {t('general.commands.sleep')}
                   </MenuItem>,
                   <MenuItem key='reset' dense onClick={this._resetUAVs}>
                     <ListItemIcon>
                       <Refresh color='secondary' />
                     </ListItemIcon>
-                    {t('mapContextMenu.reboot')}
+                    {t('general.commands.reboot')}
                   </MenuItem>,
                   <MenuItem
                     key='shutdown'
@@ -213,7 +213,7 @@ class MapContextMenu extends React.Component {
                     <ListItemIcon>
                       <ActionPowerSettingsNew color='secondary' />
                     </ListItemIcon>
-                    {t('mapContextMenu.powerOff')}
+                    {t('general.commands.powerOff')}
                   </MenuItem>,
                   <Divider key='div4' />
                 );
@@ -365,7 +365,7 @@ class MapContextMenu extends React.Component {
                     <ListItemIcon>
                       <ActionDelete />
                     </ListItemIcon>
-                    {t('mapContextMenu.remove')}
+                    {t('general.action.remove')}
                   </MenuItem>
                 );
               }

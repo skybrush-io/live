@@ -14,9 +14,7 @@
     "drawPath": "Útvonal rajzolás",
     "drawPolygon": "Sokszög rajzolás",
     "drawRectangle": "Négyszög rajzolás",
-    "editFeature": "Objektumok szerkesztése",
-    "select": "Kijelölés",
-    "zoom": "Nagyítás"
+    "editFeature": "Objektumok szerkesztése"
   },
   "OnboardPreflightChecksDialog": {
     "noError": "Egyik drón sem jelzett hibát.",
@@ -45,16 +43,8 @@
     "details": "Részletek...",
     "disarmMotors": "Motorok leállítása",
     "flashLights": "Fény villogtatása",
-    "land": "Leszállás",
-    "positionHold": "Pozíció tartása",
-    "powerOff": "Kikapcsolás",
-    "powerOn": "Bekapcsolás",
-    "reboot": "Újraindítás",
     "removeItemsMarkedGone": "Eltűntként megjelölt elemek eltávolítása",
-    "removeSelectedItems": "Kiválasztott elemek eltávolítása",
-    "returnToHome": "Hazatérés",
-    "sleep": "Alvás",
-    "takeOff": "Felszállás"
+    "removeSelectedItems": "Kiválasztott elemek eltávolítása"
   },
   "UAVStatus": {
     "noConnected": "Jelenleg nincs kapcsolódott drón"
@@ -126,6 +116,44 @@
     "exit": "Kilépés a teljes képernyős módból",
     "on": "Teljes képernyős mód"
   },
+  "general": {
+    "action": {
+      "apply": "Alkalmaz",
+      "cancel": "Mégse",
+      "clear": "Törlés",
+      "close": "Bezár",
+      "delete": "Törlés",
+      "discard": "Elvetés",
+      "remove": "Eltávolítás",
+      "save": "Mentés",
+      "select": "Kijelölés",
+      "start": "Indítás"
+    },
+    "commands": {
+      "land": "Leszállás",
+      "positionHold": "Pozíció tartása",
+      "powerOff": "Kikapcsolás",
+      "powerOn": "Bekapcsolás",
+      "reboot": "Újraindítás",
+      "returnToHome": "Hazatérés",
+      "sleep": "Alvás",
+      "takeoff": "Felszállás"
+    },
+    "geography": {
+      "latitude": "Szélességi fok",
+      "longitude": "Hosszúsági fok"
+    },
+    "geometry": {
+      "rotation": "Elforgatás",
+      "zoom": "Nagyítás"
+    },
+    "status": {
+      "failed": "sikertelen",
+      "inProgress": "folyamatban",
+      "successful": "sikeres",
+      "waiting": "várakozik"
+    }
+  },
   "geofence": {
     "statusText": {
       "automatic": "Automatikus geofence van használatban",
@@ -156,7 +184,6 @@
   },
   "mapCachingPanel": {
     "clearChache": "Gyorsítótár törlése",
-    "close": "Bezár",
     "connectToServer": "Csatlakozás egy offline térkép támogatással rendelkező szerverhez",
     "serverNotSupport": "A szerver nem támogatja az offline térkép gyorsítótárazását",
     "serverSupport": "A szerver támogatja az offline térkép gyorsítótárazását",
@@ -167,19 +194,10 @@
     "details": "Részletek...",
     "flyHere": "Repülj ide",
     "flyHereAtAltitude": "Repülj ide ebben a magasságban…",
-    "land": "Leszállás",
-    "positionHold": "Pozíció tartása",
-    "powerOff": "Kikapcsolás",
-    "powerOn": "Bekapcsolás",
     "properties": "Tulajdonságok...",
-    "reboot": "Újraindítás",
-    "remove": "Eltávolítás",
-    "returnToHome": "Hazatérés",
     "setMapOriginHere": "Térkép origó beállítása ide",
     "setShowOriginHere": "Műsor origó beállítása ide",
-    "sleep": "Alvás",
     "subtractPolygon": "{{subtrahend}} kivonása {{minuend}}-ból/-ből",
-    "takeOff": "Felszállás",
     "unnamedPolygon": "névtelen sokszög",
     "useAsGeofence": "Alkalmazás geofence-ként"
   },
@@ -190,7 +208,6 @@
   },
   "mappingEditorToolbar": {
     "assignSpares": "Tartalékok hozzárendelése",
-    "clear": "Törlés",
     "clearMissing": "Hiányzó törlése",
     "clickToEdit": "Kattintson egy hely szerkesztéséhez.",
     "dragNodes": "Húzza az ikonokat a térképezés átrendezéséhez.",
@@ -240,9 +257,7 @@
   },
   "safetyDialog": {
     "geofenceTab": {
-      "apply": "Alkalmaz",
       "clear": "A jelenlegi geofence törlése",
-      "close": "Bezár",
       "errors": {
         "distance": "Hiba történt a távolság számítása közben",
         "height": "Hiba történt a magasság számítása közben"
@@ -267,18 +282,11 @@
     "edit": "Helyszín szerkesztése"
   },
   "savedLocationEditor": {
-    "cancel": "Mégse",
     "copyFromMapView": "Másolás térképnézetből",
     "createNew": "Új helyszín létrehozása",
-    "delete": "Törlés",
-    "discard": "Elvetés",
     "editSaved": "Mentett helyszín szerkesztése",
-    "latitude": "Szélességi fok",
-    "longitude": "Hosszúsági fok",
     "name": "Név",
     "notes": "Jegyzetek",
-    "rotation": "Elforgatás",
-    "save": "Mentés",
     "zoomLevel": "Nagyítás mértéke"
   },
   "serverConnectionStatus": {
@@ -430,7 +438,6 @@
     "sortBy": "Rendezés"
   },
   "startUploadButton": {
-    "start": "Indítás",
     "startSelected": "Indítás a kiválasztottakra"
   },
   "takeoffAreaSetupDialog": {
@@ -477,12 +484,8 @@
   },
   "uploadStatusLegend": {
     "clearUploadQueue": "Feltöltési sor törlése",
-    "failed": "sikertelen",
-    "inProgress": "folyamatban",
     "restartSuccessfulItems": "Sikeres elemek újraindítása",
-    "retryFailedItems": "Sikertelen elemek újrapróbálása",
-    "successful": "sikeres",
-    "waiting": "várakozik"
+    "retryFailedItems": "Sikertelen elemek újrapróbálása"
   },
   "view": {
     "beacon-list": "Jeladók",

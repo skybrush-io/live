@@ -10,9 +10,7 @@
     "drawPath": "Dibujar camino",
     "drawPolygon": "Dibujar polígono",
     "drawRectangle": "Dibujar rectángulo",
-    "editFeature": "Editar característica",
-    "select": "Seleccionar",
-    "zoom": "Enfocar"
+    "editFeature": "Editar característica"
   },
   "OnboardPreflightChecksDialog": {
     "noError": "Ninguno de los UAVs indicó un error.",
@@ -24,13 +22,15 @@
   "UAVOpButtonGrp": {
     "armMotors": "Armar motores",
     "disarmMotors": "Desarmar motores",
-    "land": "Aterrizar",
-    "powerOff": "Apagar",
-    "powerOn": "Encender",
-    "properties": "Propiedades",
-    "reboot": "Reiniciar",
-    "sleep": "Dormir",
-    "takeOff": "Despege"
+    "properties": "Propiedades"
+  },
+  "general": {
+    "action": {
+      "select": "Seleccionar"
+    },
+    "geometry": {
+      "zoom": "Enfocar"
+    }
   },
   "settings": {
     "tabs": {

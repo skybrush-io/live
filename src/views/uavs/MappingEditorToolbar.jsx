@@ -99,7 +99,7 @@ const MappingEditorToolbar = React.forwardRef(
               </MenuItem>
               <Divider />
               <MenuItem onClick={closeMappingMenu(clearMapping)}>
-                {t('mappingEditorToolbar.clear')}
+                {t('general.action.clear')}
               </MenuItem>
               <MenuItem
                 onClick={closeMappingMenu(removeMissingUAVsFromMapping)}

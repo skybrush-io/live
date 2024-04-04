@@ -10,9 +10,7 @@
     "drawPath": "Disegna percorso",
     "drawPolygon": "Disegna poligono",
     "drawRectangle": "Disegna rettangolo",
-    "editFeature": "Modifica funzione",
-    "select": "Seleziona",
-    "zoom": "Ingrandire"
+    "editFeature": "Modifica funzione"
   },
   "OnboardPreflightChecksDialog": {
     "noError": "Nessuno degli UAV ha segnalato un errore.",
@@ -29,17 +27,9 @@
     "armMotors": "Arma motori",
     "disarmMotors": "Disarma motori",
     "flashLights": "Lampeggia luci",
-    "land": "Atterrare",
-    "positionHold": "Mantieni posizione",
-    "powerOff": "Spegni",
-    "powerOn": "Accendi",
     "properties": "Proprietà",
-    "reboot": "Riavvia",
     "removeItemsMarkedGone": "Rimuovi gli elementi marcati come scomparsi",
-    "removeSelectedItems": "Rimuovi elementi selezionati",
-    "returnToHome": "Ritorna a casa",
-    "sleep": "Risparmio",
-    "takeOff": "Decollare"
+    "removeSelectedItems": "Rimuovi elementi selezionati"
   },
   "UAVStatus": {
     "noConnected": "Non ci sono UAVs collegati in questo momento"
@@ -70,6 +60,16 @@
     "exit": "Esci dalla modalità a schermo intero",
     "on": "Modalità schermo intero"
   },
+  "general": {
+    "action": {
+      "apply": "Applica",
+      "close": "Chiudi",
+      "select": "Seleziona"
+    },
+    "geometry": {
+      "zoom": "Ingrandire"
+    }
+  },
   "geofence": {
     "statusText": {
       "automatic": "Geofence automatico in uso",
@@ -96,9 +96,7 @@
   "preferences": "Preferenze",
   "safetyDialog": {
     "geofenceTab": {
-      "apply": "Applica",
       "clear": "Eliminare l'attuale geofence",
-      "close": "Chiudi",
       "fenceAction": "Azioni Geofence",
       "fenceActionHelperText": "Il supporto di queste opzioni dipende dai droni stessi; non tutte le opzioni sono supportate da tutti i droni.",
       "fenceActionLabel": "Funzioni primarie geofence",

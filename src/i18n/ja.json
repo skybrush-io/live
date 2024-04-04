@@ -10,9 +10,7 @@
     "drawPath": "線を描画",
     "drawPolygon": "ポリゴンを描画",
     "drawRectangle": "四角形を描画",
-    "editFeature": "編集機能",
-    "select": "選択",
-    "zoom": "拡大"
+    "editFeature": "編集機能"
   },
   "OnboardPreflightChecksDialog": {
     "noError": "エラーが発生しているUAVはありません。",
@@ -29,17 +27,9 @@
     "armMotors": "モーター始動",
     "disarmMotors": "モーター停止",
     "flashLights": "灯火",
-    "land": "着陸",
-    "positionHold": "ポジションホールド",
-    "powerOff": "電源オフ",
-    "powerOn": "電源オン",
     "properties": "プロパティ",
-    "reboot": "再起動",
     "removeItemsMarkedGone": "なくなったものを削除",
-    "removeSelectedItems": "選択中のものを削除",
-    "returnToHome": "RTH",
-    "sleep": "スリープ",
-    "takeOff": "テイクオフ"
+    "removeSelectedItems": "選択中のものを削除"
   },
   "UAVStatus": {
     "noConnected": "UAVと接続していません"
@@ -70,6 +60,16 @@
     "exit": "全画面モードを終了",
     "on": "全画面モード"
   },
+  "general": {
+    "action": {
+      "apply": "適用",
+      "close": "閉じる",
+      "select": "選択"
+    },
+    "geometry": {
+      "zoom": "拡大"
+    }
+  },
   "geofence": {
     "statusText": {
       "automatic": "自動ジオフェンス使用中",
@@ -96,9 +96,7 @@
   "preferences": "設定",
   "safetyDialog": {
     "geofenceTab": {
-      "apply": "適用",
       "clear": "現在のジオフェンスをクリア",
-      "close": "閉じる",
       "fenceAction": "ジオフェンスアクション",
       "fenceActionHelperText": "これらのオプションはドローンによっては利用できない場合があります。",
       "fenceActionLabel": "プライマリジオフェンスアクション",

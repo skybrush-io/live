@@ -60,7 +60,7 @@ const MapCachingPanel = ({
           {t('mapCachingPanel.clearChache')}
         </Button>
         <Box flex={1} />
-        <Button onClick={onClose}>{t('mapCachingPanel.close')}</Button>
+        <Button onClick={onClose}>{t('general.action.close')}</Button>
       </DialogActions>
     </>
   );

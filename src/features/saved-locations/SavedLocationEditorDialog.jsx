@@ -62,14 +62,14 @@ const SavedLocationEditorFormPresentation = React.forwardRef(
                     fullWidth
                     margin='dense'
                     name='center.lat'
-                    label={t('savedLocationEditor.latitude')}
+                    label={t('general.geography.latitude')}
                   />
                   <Box p={0.75} />
                   <LongitudeField
                     fullWidth
                     margin='dense'
                     name='center.lon'
-                    label={t('savedLocationEditor.longitude')}
+                    label={t('general.geography.longitude')}
                   />
                 </Box>
                 <Box display='flex' flexDirection='row'>
@@ -77,7 +77,7 @@ const SavedLocationEditorFormPresentation = React.forwardRef(
                     fullWidth
                     margin='dense'
                     name='rotation'
-                    label={t('savedLocationEditor.rotation')}
+                    label={t('general.geometry.rotation')}
                   />
                   <Box p={0.75} />
                   <TextField
@@ -186,14 +186,14 @@ const SavedLocationEditorDialogPresentation = ({
 
   actions.push(
     <Button key='save' color='primary' onClick={submit}>
-      {t('savedLocationEditor.save')}
+      {t('general.action.save')}
     </Button>
   );
 
   if (isNew) {
     actions.push(
       <Button key='discard' onClick={onDelete(editedLocationId)}>
-        {t('savedLocationEditor.discard')}
+        {t('general.action.discard')}
       </Button>
     );
   } else {
@@ -203,10 +203,10 @@ const SavedLocationEditorDialogPresentation = ({
         color='secondary'
         onClick={onDelete(editedLocationId)}
       >
-        {t('savedLocationEditor.delete')}
+        {t('general.action.delete')}
       </Button>,
       <Button key='cancel' onClick={onClose}>
-        {t('savedLocationEditor.cancel')}
+        {t('general.action.cancel')}
       </Button>
     );
   }

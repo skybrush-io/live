@@ -10,9 +10,7 @@
     "drawPath": "Pfad zeichnen",
     "drawPolygon": "Polygon zeichnen",
     "drawRectangle": "Rechteck zeichnen",
-    "editFeature": "Merkmal bearbeiten",
-    "select": "Auswählen",
-    "zoom": "Vergrößern"
+    "editFeature": "Merkmal bearbeiten"
   },
   "OnboardPreflightChecksDialog": {
     "noError": "Alle UAVs sind fehlerfrei.",
@@ -29,17 +27,9 @@
     "armMotors": "Starte Motoren",
     "disarmMotors": "Motoren abschalten",
     "flashLights": "Lichter aufleuchten",
-    "land": "Landen",
-    "positionHold": "Position halten",
-    "powerOff": "Ausschalten",
-    "powerOn": "Einschalten",
     "properties": "Eigenschaften",
-    "reboot": "Neustart",
     "removeItemsMarkedGone": "Entferne Objekte, die als verloren markiert sind",
-    "removeSelectedItems": "Ausgewählte Objekte entfernen",
-    "returnToHome": "Return to home",
-    "sleep": "Ruhezustand",
-    "takeOff": "Starten"
+    "removeSelectedItems": "Ausgewählte Objekte entfernen"
   },
   "UAVStatus": {
     "noConnected": "Es sind momentan keine UAVs verbunden"
@@ -70,6 +60,16 @@
     "exit": "Vollbildmodus beenden",
     "on": "Vollbildmodus"
   },
+  "general": {
+    "action": {
+      "apply": "Anwenden",
+      "close": "Schließen",
+      "select": "Auswählen"
+    },
+    "geometry": {
+      "zoom": "Vergrößern"
+    }
+  },
   "geofence": {
     "statusText": {
       "automatic": "Automatischer Geofence aktiv",
@@ -96,9 +96,7 @@
   "preferences": "Voreinstellungen",
   "safetyDialog": {
     "geofenceTab": {
-      "apply": "Anwenden",
       "clear": "Aktiven Geofence löschen",
-      "close": "Schließen",
       "fenceAction": "Geofence Aktion",
       "fenceActionHelperText": "Die Unterstützung dieser Optionen ist von den Drohnen abhängig; nicht alle Optionen werden von allen Drohnen unterstützt.",
       "fenceActionLabel": "Primäre Geofence Aktion",

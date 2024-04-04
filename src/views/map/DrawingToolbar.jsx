@@ -70,12 +70,12 @@ const drawingToolRegistry = {
   },
   select: {
     tool: Tool.SELECT,
-    label: tt('DrawingToolbar.select'),
+    label: tt('general.action.select'),
     icon: SelectAll,
   },
   zoom: {
     tool: Tool.ZOOM,
-    label: tt('DrawingToolbar.zoom'),
+    label: tt('general.geometry.zoom'),
     icon: ZoomIn,
   },
 };

@@ -6,10 +6,12 @@
   "fullScreen": {
     "on": "Modul ecran întreg"
   },
-  "safetyDialog": {
-    "geofenceTab": {
+  "general": {
+    "action": {
       "close": "Închide"
-    },
+    }
+  },
+  "safetyDialog": {
     "title": "Setări geofence"
   },
   "serverConnectionStatus": {

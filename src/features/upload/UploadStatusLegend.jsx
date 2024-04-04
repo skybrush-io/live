@@ -25,26 +25,26 @@ const UploadStatusLegend = ({
   <Box display='flex' justifyContent='space-around'>
     <UploadStatusLegendButton
       counter={waiting}
-      label={t('uploadStatusLegend.waiting')}
+      label={t('general.status.waiting')}
       status={Status.INFO}
       tooltip={t('uploadStatusLegend.clearUploadQueue')}
       onClick={onClearUploadQueue}
     />
     <UploadStatusLegendButton
       counter={inProgress}
-      label={t('uploadStatusLegend.inProgress')}
+      label={t('general.status.inProgress')}
       status={Status.WARNING}
     />
     <UploadStatusLegendButton
       counter={finished}
-      label={t('uploadStatusLegend.successful')}
+      label={t('general.status.successful')}
       tooltip={t('uploadStatusLegend.restartSuccessfulItems')}
       status={Status.SUCCESS}
       onClick={onRestartSuccessfulUploads}
     />
     <UploadStatusLegendButton
       counter={failed}
-      label={t('uploadStatusLegend.failed')}
+      label={t('general.status.failed')}
       status={Status.ERROR}
       tooltip={t('uploadStatusLegend.retryFailedItems')}
       onClick={onRetryFailedUploads}

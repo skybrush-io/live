@@ -244,9 +244,9 @@ const GeofenceSettingsTabPresentation = ({
         {t('safetyDialog.geofenceTab.clear')}
       </Button>
       <Button form='geofenceSettings' type='submit' color='primary'>
-        {t('safetyDialog.geofenceTab.apply')}
+        {t('general.action.apply')}
       </Button>
-      <Button onClick={onClose}>{t('safetyDialog.geofenceTab.close')}</Button>
+      <Button onClick={onClose}>{t('general.action.close')}</Button>
     </DialogActions>
   </>
 );

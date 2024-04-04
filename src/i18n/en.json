@@ -14,9 +14,7 @@
     "drawPath": "Draw path",
     "drawPolygon": "Draw polygon",
     "drawRectangle": "Draw rectangle",
-    "editFeature": "Edit feature",
-    "select": "Select",
-    "zoom": "Zoom"
+    "editFeature": "Edit feature"
   },
   "OnboardPreflightChecksDialog": {
     "noError": "None of the UAVs indicated an error.",
@@ -45,16 +43,8 @@
     "details": "Details...",
     "disarmMotors": "Disarm motors",
     "flashLights": "Flash lights",
-    "land": "Land",
-    "positionHold": "Position hold",
-    "powerOff": "Power off",
-    "powerOn": "Power on",
-    "reboot": "Reboot",
     "removeItemsMarkedGone": "Remove items marked as gone",
-    "removeSelectedItems": "Remove selected items",
-    "returnToHome": "Return to home",
-    "sleep": "Sleep",
-    "takeOff": "Takeoff"
+    "removeSelectedItems": "Remove selected items"
   },
   "UAVStatus": {
     "noConnected": "There are no connected UAVs at the moment"
@@ -126,6 +116,50 @@
     "exit": "Exit full screen mode",
     "on": "Full screen mode"
   },
+  "general": {
+    "action": {
+      "apply": "Apply",
+      "cancel": "Cancel",
+      "clear": "Clear",
+      "close": "Close",
+      "delete": "Delete",
+      "discard": "Discard",
+      "edit": "Edit",
+      "export": "Export",
+      "import": "Import",
+      "open": "Open",
+      "remove": "Remove",
+      "retry": "Retry",
+      "save": "Save",
+      "select": "Select",
+      "start": "Start",
+      "stop": "Stop"
+    },
+    "commands": {
+      "land": "Land",
+      "positionHold": "Position hold",
+      "powerOff": "Power off",
+      "powerOn": "Power on",
+      "reboot": "Reboot",
+      "returnToHome": "Return to home",
+      "sleep": "Sleep",
+      "takeoff": "Takeoff"
+    },
+    "geography": {
+      "latitude": "Latitude",
+      "longitude": "Longitude"
+    },
+    "geometry": {
+      "rotation": "Rotation",
+      "zoom": "Zoom"
+    },
+    "status": {
+      "failed": "failed",
+      "inProgress": "in progress",
+      "successful": "successful",
+      "waiting": "waiting"
+    }
+  },
   "geofence": {
     "statusText": {
       "automatic": "Automatic geofence in use",
@@ -156,7 +190,6 @@
   },
   "mapCachingPanel": {
     "clearChache": "Clear cache",
-    "close": "Close",
     "connectToServer": "Connect to a server with offline map support",
     "serverNotSupport": "Server does not support offline map caching",
     "serverSupport": "Server supports offline map caching",
@@ -167,19 +200,10 @@
     "details": "Details...",
     "flyHere": "Fly here",
     "flyHereAtAltitude": "Fly here at altitude…",
-    "land": "Land",
-    "positionHold": "Position hold",
-    "powerOff": "Power off",
-    "powerOn": "Power on",
     "properties": "Properties…",
-    "reboot": "Reboot",
-    "remove": "Remove",
-    "returnToHome": "Return to home",
     "setMapOriginHere": "Set map origin here",
     "setShowOriginHere": "Set show origin here",
-    "sleep": "Sleep",
     "subtractPolygon": "Subtract {{subtrahend}} from {{minuend}}",
-    "takeOff": "Takeoff",
     "unnamedPolygon": "unnamed polygon",
     "useAsGeofence": "Use as geofence"
   },
@@ -190,7 +214,6 @@
   },
   "mappingEditorToolbar": {
     "assignSpares": "Assign spares",
-    "clear": "Clear",
     "clearMissing": "Clear missing",
     "clickToEdit": "Click to edit a single slot.",
     "dragNodes": "Drag nodes to rearrange the mapping.",
@@ -240,9 +263,7 @@
   },
   "safetyDialog": {
     "geofenceTab": {
-      "apply": "Apply",
       "clear": "Clear current geofence",
-      "close": "Close",
       "errors": {
         "distance": "Could not calculate distance",
         "height": "Could not calculate height"
@@ -267,18 +288,11 @@
     "edit": "Edit location"
   },
   "savedLocationEditor": {
-    "cancel": "Cancel",
     "copyFromMapView": "Copy from map view",
     "createNew": "Create new location",
-    "delete": "Delete",
-    "discard": "Discard",
     "editSaved": "Edit saved location",
-    "latitude": "Latitude",
-    "longitude": "Longitude",
     "name": "Name",
     "notes": "Notes",
-    "rotation": "Rotation",
-    "save": "Save",
     "zoomLevel": "Zoom level"
   },
   "serverConnectionStatus": {
@@ -430,7 +444,6 @@
     "sortBy": "Sort by"
   },
   "startUploadButton": {
-    "start": "Start",
     "startSelected": "Start selected"
   },
   "takeoffAreaSetupDialog": {
@@ -477,12 +490,8 @@
   },
   "uploadStatusLegend": {
     "clearUploadQueue": "Clear upload queue",
-    "failed": "failed",
-    "inProgress": "in progress",
     "restartSuccessfulItems": "Restart successful items",
-    "retryFailedItems": "Retry failed items",
-    "successful": "successful",
-    "waiting": "waiting"
+    "retryFailedItems": "Retry failed items"
   },
   "view": {
     "beacon-list": "Beacons",

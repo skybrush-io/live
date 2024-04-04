@@ -10,9 +10,7 @@
     "drawPath": "绘制路径",
     "drawPolygon": "绘制多边形",
     "drawRectangle": "绘制长方形",
-    "editFeature": "编辑特征",
-    "select": "选择",
-    "zoom": "缩放"
+    "editFeature": "编辑特征"
   },
   "OnboardPreflightChecksDialog": {
     "noError": "没有任何无人机显示错误。",
@@ -29,17 +27,9 @@
     "armMotors": "解锁马达",
     "disarmMotors": "锁定马达",
     "flashLights": "闪烁灯光",
-    "land": "降落",
-    "positionHold": "定点",
-    "powerOff": "关机",
-    "powerOn": "开机",
     "properties": "属性",
-    "reboot": "重启",
     "removeItemsMarkedGone": "删除标记为“离线”的条目",
-    "removeSelectedItems": "删除选中的条目",
-    "returnToHome": "返航",
-    "sleep": "休眠",
-    "takeOff": "起飞"
+    "removeSelectedItems": "删除选中的条目"
   },
   "UAVStatus": {
     "noConnected": "当前没有已连接无人机"
@@ -70,6 +60,16 @@
     "exit": "退出全屏模式",
     "on": "全屏模式"
   },
+  "general": {
+    "action": {
+      "apply": "应用",
+      "close": "关闭",
+      "select": "选择"
+    },
+    "geometry": {
+      "zoom": "缩放"
+    }
+  },
   "geofence": {
     "statusText": {
       "automatic": "已使用自动地理围栏",
@@ -96,9 +96,7 @@
   "preferences": "偏好设置",
   "safetyDialog": {
     "geofenceTab": {
-      "apply": "应用",
       "clear": "清除当前地理围栏",
-      "close": "关闭",
       "fenceAction": "地理围栏行为",
       "fenceActionHelperText": "对这些选项的支持取决于无人机本身；并非所有无人机都支持所有选项。",
       "fenceActionLabel": "地理围栏第一行为",

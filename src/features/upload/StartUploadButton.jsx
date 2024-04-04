@@ -16,7 +16,7 @@ const StartUploadButton = ({ hasQueuedItems, ...rest }) => (
       <Button startIcon={<PlayArrow />} {...rest}>
         {hasQueuedItems
           ? t('startUploadButton.startSelected')
-          : t('startUploadButton.start')}
+          : t('general.action.start')}
       </Button>
     )}
   </Translation>
