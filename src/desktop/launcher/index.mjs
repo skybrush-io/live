@@ -15,9 +15,6 @@ import setupIpc from './ipc.mjs';
 import createAppMenu from './app-menu.mjs';
 import * as localServer from './local-server.mjs';
 
-const require = createRequire(import.meta.url);
-const packageJson = require('../../../package.json');
-
 const rootDir =
   typeof __dirname === 'undefined'
     ? path.dirname(fileURLToPath(import.meta.url))
@@ -62,7 +59,8 @@ function run(argv) {
   app.on('web-contents-created', (_event, webContents) => {
     // Set the user agent of the application so we don't get blocked on
     // the OpenStreetMap tile server
-    const { productName, version } = packageJson;
+    const productName = app.getName();
+    const version = app.getVersion();
     if (productName && version) {
       webContents.setUserAgent(`${productName} ${version}`);
     }
