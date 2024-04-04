@@ -1,6 +1,6 @@
 {
   "APIKeysTab": {
-    "description": "Egyes térképcsempe szolgáltatók API kulcs nélkül működnek; ebben az esetben egy alapértelmezett API kulcs van használatban. Ez az API kulcs minden felhasználóval meg van osztva. Nem vállalunk garanciát a térképcsempék elérhetőségére, ha az alapértelmezett megosztott API kulcs van használatban."
+    "description": "Egyes térképcsempe szolgáltatók API kulcs nélkül is működnek; ebben az esetben egy alapértelmezett API kulcs van használatban. Ez az API kulcs minden felhasználóval meg van osztva. Nem vállalunk garanciát a térképcsempék elérhetőségére, ha az alapértelmezett megosztott API kulcs van használatban."
   },
   "ConnectionStatusMiniList": {
     "noConnections": "Ez a szerver nem használ kapcsolatokat.",
@@ -202,7 +202,7 @@
     "useAsGeofence": "Alkalmazás geofence-ként"
   },
   "mappingButtonGroup": {
-    "editMapping": "Térképezés szerkesztése",
+    "editMapping": "Hozzárendelés szerkesztése",
     "hideEmptyMissionSlots": "Üres küldetéshelyek elrejtése",
     "showEmptyMissionSlots": "Üres küldetéshelyek megjelenítése"
   },
@@ -210,9 +210,9 @@
     "assignSpares": "Tartalékok hozzárendelése",
     "clearMissing": "Hiányzó törlése",
     "clickToEdit": "Kattintson egy hely szerkesztéséhez.",
-    "dragNodes": "Húzza az ikonokat a térképezés átrendezéséhez.",
-    "exportMapping": "Térképezés exportálása…",
-    "importMapping": "Térképezés importálása…"
+    "dragNodes": "Húzza az ikonokat a hozzárendelés átrendezéséhez.",
+    "exportMapping": "Hozzárendelés exportálása…",
+    "importMapping": "Hozzárendelés importálása…"
   },
   "mappingSlotEditorToolbar": {
     "reverseDirection": "Tartsa nyomva a <kbd>Shift</kbd>-et az irány megfordításához.",
@@ -234,7 +234,7 @@
     "connectedToSkybrushServer": "Csatlakozva a Skybrush szerverhez"
   },
   "outdoorEnvironmentEditor": {
-    "AHL": "Magasság a kiindulási szinthez képest (AHL)",
+    "AHL": "Kezdeti pozíció feletti magasság (AHL)",
     "AMSL": "Átlagos tengerszint feletti magasság (AMSL)",
     "AMSLReference": "AMSL referencia",
     "altitudeControl": "Magasság kontroll és RTK korrekciók",
@@ -252,8 +252,8 @@
   },
   "preferences": "Beállítások",
   "recalculateMappingButton": {
-    "findOptimalMapping": "Optimális térképezés keresése",
-    "recalculateMapping": "Térképezés újraszámolása"
+    "findOptimalMapping": "Optimális hozzárendelés keresése",
+    "recalculateMapping": "Hozzárendelés újraszámolása"
   },
   "safetyDialog": {
     "geofenceTab": {
@@ -414,12 +414,12 @@
     "ascending": "Növekvő",
     "descending": "Csökkenő",
     "label": {
-      "agl": "Tengerszint feletti magasság",
+      "agl": "Talaj feletti magasság",
       "ahl": "Magasság a kiindulási szinthez képest",
       "amsl": "Magasság (MSL)",
       "battery": "Akkumulátor",
       "default": "Alapértelmezett",
-      "flightMode": "Repülés mód",
+      "flightMode": "Repülési mód",
       "gpsFix": "GPS pontosság",
       "heading": "Irány",
       "status": "Státusz"
@@ -489,7 +489,7 @@
   },
   "view": {
     "beacon-list": "Jeladók",
-    "dock-list": "Dokkok",
+    "dock-list": "Dokkolók",
     "feature-list": "Objektumok",
     "field-notes": "Terepi jegyzetek",
     "layer-list": "Rétegek",
