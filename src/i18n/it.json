@@ -5,6 +5,7 @@
   },
   "DrawingToolbar": {
     "addMarker": "Aggiungi marcatore",
+    "addWaypoint": "Aggiungi un waypoint",
     "cutHole": "Taglia foro nel poligono",
     "drawCircle": "Disegna cerchio",
     "drawPath": "Disegna percorso",
@@ -17,14 +18,26 @@
     "passed": "Controlli pre-volo a bordo superati.",
     "signOffOn": "Accetta controlli prevolo a bordo"
   },
+  "RTKCorrectionSourceSelector": {
+    "RTKCorrections": "Correzioni RTK",
+    "error": "Errore durante il caricamento della fonte RTK dal server",
+    "noRTKData": "Nessuna fonte di dati RTK nel server",
+    "pleaseWait": "Prego attendi, caricando fonti RTK…"
+  },
   "RTKStatusMiniList": {
     "satelliteCount": "Numero dei satelliti",
     "surveyInProgress": "Survey in corso…",
     "surveyNo": "Nessuna survey in corso",
     "surveySuccesful": "Survey terminata"
   },
+  "UAVList": {
+    "allUAVs": "Tutti UAVs",
+    "assignedUAVs": "UAVs assegnati",
+    "spareUAVs": "UAVs di ricambio"
+  },
   "UAVOpButtonGrp": {
     "armMotors": "Arma motori",
+    "details": "Dettagli...",
     "disarmMotors": "Disarma motori",
     "flashLights": "Lampeggia luci",
     "properties": "Proprietà",
@@ -43,14 +56,47 @@
     "clickToChange": "Fare click per passare a {{altitudeType}}.",
     "showingCurrent": "Mostrando massima e minima {{altitudeType}}."
   },
+  "augmentMappingButton": {
+    "assignSparesToEmptySlots": "Assegna ricambi a slots vuoti"
+  },
   "authentication": "Autenticazione",
   "batteryStatusHeaderButton": "Mostra i livelli di carica medi e minimi.",
   "broadcastButton": {
     "disable": "Disabilita broadcast",
     "enable": "Abilita broadcast per {{time}} secondi"
   },
+  "coordinateAveragingDialogToolbar": {
+    "addNewDrone": "Aggiungi nuovo drone",
+    "copyCentroid": "Copia centroide",
+    "pauseMeasurement": "Sospendi misurazioni",
+    "removeSelected": "Rimuovi selezionati",
+    "resetMeasurement": "Riavvia misurazioni",
+    "resumeMeasurement": "Riprendi misurazioni",
+    "setCentroidAsMapOrigin": "Imposta centroide come origine della mappa"
+  },
+  "environmentEditorDialog": {
+    "environmentSettings": "Impostazioni d'ambiente",
+    "indoor": "Questo show è un show indoor.Potresti aver bisogno di specificare gli angoli della stanza all'interno della quale lo show viene effettuato (per motivi di visualizzazione).",
+    "outdoor": "Questo show è un show outdoor.Devi specificare almeno un'origine e l'orientamento del sistema di coordinate in modo tale che Skybrush possa traslare lo show in coordinate GPS."
+  },
   "fieldNotesPanel": {
     "exportNotesAsFile": "Esporta note come Markdown file"
+  },
+  "filtering": {
+    "filter": "Filtra",
+    "filterBy": "Filtra per",
+    "label": {
+      "all": "Tutti",
+      "errors": "Solo errori",
+      "noTelemetry": "Solo No telemetria",
+      "warningsAndErrors": "Avvisi ed errori"
+    },
+    "shortLabel": {
+      "all": "Tutti",
+      "errors": "Errori",
+      "noTelemetry": "No telem",
+      "warningsAndErrors": "Avv/Err"
+    }
   },
   "fitAllFeaturesButton": {
     "fitAllDrones": "Adatta tutti i droni",
@@ -63,11 +109,45 @@
   "general": {
     "action": {
       "apply": "Applica",
+      "cancel": "Cancella",
+      "clear": "Pulisci",
       "close": "Chiudi",
-      "select": "Seleziona"
+      "delete": "Elimina",
+      "discard": "Scarta",
+      "edit": "Modifica",
+      "export": "Esporta",
+      "import": "Importa",
+      "open": "Apri",
+      "remove": "Rimuovi",
+      "retry": "Riprova",
+      "save": "Salva",
+      "select": "Seleziona",
+      "start": "Inizio",
+      "stop": "Ferma"
+    },
+    "commands": {
+      "land": "Atterra",
+      "positionHold": "Mantieni posizione",
+      "powerOff": "Spegnimento",
+      "powerOn": "Accensione",
+      "reboot": "Riavvio",
+      "returnToHome": "Ritorno a casa",
+      "sleep": "Stand-by",
+      "takeoff": "Decollo"
+    },
+    "geography": {
+      "latitude": "Latitudine",
+      "longitude": "Longitudine"
     },
     "geometry": {
+      "rotation": "Rotazione",
       "zoom": "Ingrandire"
+    },
+    "status": {
+      "failed": "fallito",
+      "inProgress": "in corso",
+      "successful": "successo",
+      "waiting": "attendendo"
     }
   },
   "geofence": {
@@ -78,7 +158,15 @@
       "no": "Nessun geofence definito"
     }
   },
+  "header": {
+    "distanceSummary": "Massima e minima distanza dalla posizione di casa",
+    "velocitySummary": "Massima velocità orizzontale e verticale"
+  },
   "help": "Aiuto",
+  "indoorEnvironmentEditor": {
+    "coordinatesOfTheCorners": "Coordinate degli angoli della stanza",
+    "roomVisibleIn3D": "Stanza visibile nella visione 3D"
+  },
   "lightControl": {
     "fromGCS": "Controllo luci dalla GCS",
     "notConnected": "Non connesso al server",
@@ -86,6 +174,25 @@
   },
   "map": {
     "resetRotation": "Ripristina rotazione"
+  },
+  "mapCachingDialog": {
+    "offlineMaps": "Mappe offline"
+  },
+  "mapCachingPanel": {
+    "clearChache": "Pulisci cache",
+    "connectToServer": "Connettiti al server con supporto per le mappe offline",
+    "serverNotSupport": "Il Server non supporta il caching per le mappe offline",
+    "serverSupport": "il Server supporta il caching per le mappe offline",
+    "useCachedMapTiles": "Usa lo lo strato della mappa cached dal server"
+  },
+  "mapContextMenu": {
+    "clearGeofence": "Pulisci geofence",
+    "details": "Dettagli...",
+    "flyHere": "Vola qui",
+    "flyHereAtAltitude": "Vola qui all'altitudine…",
+    "properties": "Proprietà…",
+    "setMapOriginHere": "Imposta origine mappa qui",
+    "setShowOriginHere": "Imposta origine show qui"
   },
   "mappingToggleButton": {
     "sortByMissionID": "Ordina per IDs missione"
