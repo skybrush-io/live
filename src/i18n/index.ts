@@ -8,6 +8,7 @@ import { type NestedRecord } from '~/utils/types';
 import * as de from './de.json';
 import * as en from './en.json';
 import * as es from './es.json';
+import * as fr from './fr.json';
 import * as hu from './hu.json';
 import * as it from './it.json';
 import * as ja from './ja.json';
@@ -28,6 +29,7 @@ const availableLanguages: Language[] = [
   { label: 'Deutsch', code: 'de', translation: de },
   { label: 'English', code: 'en', translation: en },
   { label: 'Español', code: 'es', translation: es },
+  { label: 'Français', code: 'fr', translation: fr },
   { label: 'Italiano', code: 'it', translation: it },
   { label: 'Magyar', code: 'hu', translation: hu },
   { label: 'Nederlands', code: 'nl', translation: nl },

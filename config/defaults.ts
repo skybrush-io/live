@@ -61,7 +61,7 @@ const defaults: Config = {
 
   language: {
     default: 'en',
-    enabled: new Set(['de', 'en', 'hu', 'it', 'ja', 'zh-Hans']),
+    enabled: new Set(['de', 'en', 'fr', 'hu', 'it', 'ja', 'zh-Hans']),
     fallback: 'en',
   },
 
