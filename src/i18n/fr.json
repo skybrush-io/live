@@ -1,1 +1,33 @@
-{}
+{
+  "APIKeysTab": {
+    "description": "Certains fournisseurs de couche de carte fonctionnent sans clé API ; dans ce cas, une clé API par défaut est utilisée. Cette clé API est partagée par tous les utilisateurs. Nous ne garantissons pas la disponibilité des tuiles cartographiques si vous utilisez la clé API partagée par défaut."
+  },
+  "ConnectionStatusMiniList": {
+    "noConnections": "Ce serveur n'utilise aucune connexion.",
+    "useSecondaryChannel": "Utiliser le second canal"
+  },
+  "DrawingToolbar": {
+    "addMarker": "Ajouter un marqueur",
+    "addWaypoint": "Ajouter un Waypoint",
+    "cutHole": "Couper un trou dans le polygone",
+    "drawCircle": "Dessiner un cercle",
+    "drawPath": "Tracer un chemin",
+    "drawPolygon": "dessiner un polygone",
+    "drawRectangle": "dessiner un rectangle",
+    "editFeature": "éditer les options"
+  },
+  "OnboardPreflightChecksDialog": {
+    "noError": "Aucun UAV n'indique d'erreur.",
+    "passed": "Les Checklist de pré-vol sont passée."
+  },
+  "RTKCorrectionSourceSelector": {
+    "RTKCorrections": "Corrections RTK",
+    "noRTKData": "Pas de données RTK sur le serveur",
+    "pleaseWait": "Merci de patienter, chargement des sources RTK…"
+  },
+  "RTKStatusMiniList": {
+    "satelliteCount": "Nombre de satellite",
+    "surveyInProgress": "Rapport en cours…",
+    "surveyNo": "Pas de rapport en cours"
+  }
+}
