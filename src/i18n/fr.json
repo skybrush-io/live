@@ -27,7 +27,150 @@
   },
   "RTKStatusMiniList": {
     "satelliteCount": "Nombre de satellite",
-    "surveyInProgress": "Rapport en cours…",
-    "surveyNo": "Pas de rapport en cours"
+    "surveyInProgress": "Enquête en cours…",
+    "surveyNo": "Pas d'enquête en cours",
+    "surveySuccesful": "Enquête réussie"
+  },
+  "UAVList": {
+    "allUAVs": "Tous les UAV",
+    "spareUAVs": "UAV de réserve"
+  },
+  "UAVOpButtonGrp": {
+    "armMotors": "Armer les moteurs",
+    "details": "Détails...",
+    "disarmMotors": "Désarmer les moteurs",
+    "flashLights": "Faire clignoter les lumières",
+    "removeSelectedItems": "Retirer les éléments sélectionnés"
+  },
+  "UAVStatus": {
+    "noConnected": "Il n'y a pas d'UAV connectés pour le moment"
+  },
+  "alerts": {
+    "clickToMute": "Cliquer pour désactiver les alertes sonores.",
+    "muted": "Alertes sonores désactivées, cliquer ici pour les réactiver."
+  },
+  "broadcastButton": {
+    "disable": "Désactiver le broadcast",
+    "enable": "Activer le broadcast pour {{time}} secondes"
+  },
+  "coordinateAveragingDialogToolbar": {
+    "addNewDrone": "Ajouter un nouveau drone",
+    "removeSelected": "Enlever la sélection",
+    "resetMeasurement": "Réinitialise la mesure"
+  },
+  "filtering": {
+    "filter": "Filtre",
+    "filterBy": "Filtrer par",
+    "label": {
+      "all": "Tous",
+      "errors": "Seulement les erreurs",
+      "noTelemetry": "Sans télémétrie uniquement",
+      "warningsAndErrors": "Alarmes et erreurs"
+    },
+    "shortLabel": {
+      "all": "Tous",
+      "errors": "Erreurs",
+      "noTelemetry": "Pas de télémétrie",
+      "warningsAndErrors": "Alarmes/Erreurs"
+    }
+  },
+  "fullScreen": {
+    "exit": "Quitter le mode plein écran",
+    "on": "Plein écran"
+  },
+  "general": {
+    "action": {
+      "apply": "Appliquer",
+      "cancel": "Annuler",
+      "clear": "Vider",
+      "close": "Fermer",
+      "delete": "Effacer",
+      "discard": "Rejeter",
+      "edit": "Editer",
+      "export": "Exporter",
+      "import": "Importer",
+      "open": "Ouvrir",
+      "remove": "Enlever",
+      "retry": "Réessayer",
+      "save": "Sauver",
+      "select": "Sélectionner",
+      "start": "Démarrer",
+      "stop": "Stopper"
+    },
+    "commands": {
+      "land": "Terre",
+      "positionHold": "Maintenir position",
+      "powerOff": "Eteindre",
+      "powerOn": "Allumer",
+      "reboot": "redémarrer",
+      "returnToHome": "Retourner au point de départ",
+      "sleep": "dormir",
+      "takeoff": "Atterrir"
+    },
+    "geography": {
+      "latitude": "Latitude",
+      "longitude": "Longitude"
+    },
+    "geometry": {
+      "rotation": "tourner",
+      "zoom": "Zoom"
+    },
+    "status": {
+      "failed": "échec",
+      "inProgress": "En cours",
+      "successful": "réussi",
+      "waiting": "Attendre"
+    }
+  },
+  "help": "Aide",
+  "lightControl": {
+    "notConnected": "Pas de connexion au serveur"
+  },
+  "map": {
+    "resetRotation": "Réinitialiser la rotation"
+  },
+  "mapCachingDialog": {
+    "offlineMaps": "Carte hors ligne"
+  },
+  "mapCachingPanel": {
+    "clearChache": "Vider le cache"
+  },
+  "mapContextMenu": {
+    "clearGeofence": "Vider la Barrière géographique",
+    "details": "Détails...",
+    "flyHere": "Voler ici",
+    "properties": "Propriétés…",
+    "unnamedPolygon": "Polygone sans nom",
+    "useAsGeofence": "Utiliser la barrière géographique"
+  },
+  "mappingButtonGroup": {
+    "editMapping": "Editer la carte"
+  },
+  "notifications": {
+    "connectedToSkybrushServer": "Connexion au serveur Skybrush"
+  },
+  "outdoorEnvironmentEditor": {
+    "coordinateSystem": "Système de coordonnées"
+  },
+  "preferences": "Préférences",
+  "safetyDialog": {
+    "geofenceTab": {
+      "horizontal": "Horizontal",
+      "maxAltitude": "Altitude maximum",
+      "maxDistance": "Distance maximum",
+      "safetyMargins": "Marges de sécurités",
+      "vertical": "Vertical"
+    },
+    "title": "Paramètres des barrières de sécurités"
+  },
+  "savedLocationEditor": {
+    "name": "Nom",
+    "notes": "Notes",
+    "zoomLevel": "Niveau de zoom"
+  },
+  "serverConnectionStatus": {
+    "connected": "Connecté",
+    "connecting": "Connexion en cours…",
+    "disconnected": "Déconnecté du serveur"
   }
 }
