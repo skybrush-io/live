@@ -1,10 +1,14 @@
 {
+  "APIKeysTab": {
+    "description": "APIキーが必要のないマップタイルもありますが、今回はデフォルトのAPIキーが使用さrげマス。APIキーはすべてのユーザーと共有されます。デフォルトの共有APIキーを利用している場合マップタイルの可用性は保証しません。"
+  },
   "ConnectionStatusMiniList": {
     "noConnections": "このサーバーはコネクションを使用しません。",
     "useSecondaryChannel": "セカンダリチャネルを使用してください"
   },
   "DrawingToolbar": {
     "addMarker": "マーカーを追加",
+    "addWaypoint": "ウェイポイントの追加",
     "cutHole": "ポリゴンに穴をあける",
     "drawCircle": "円を描画",
     "drawPath": "線を描画",
@@ -17,14 +21,26 @@
     "passed": "機体のプレフライトチェックが正常にパスしました。",
     "signOffOn": "機体のプレフライトチェックを承認"
   },
+  "RTKCorrectionSourceSelector": {
+    "RTKCorrections": "RTKコネクション",
+    "error": "サーバーからRTKリソースを読み込み中のエラー",
+    "noRTKData": "サーバーにRTKリソースがありません",
+    "pleaseWait": "RTKリソースを読み込み中。しばらくお待ちください…"
+  },
   "RTKStatusMiniList": {
     "satelliteCount": "衛星数",
     "surveyInProgress": "調査中…",
     "surveyNo": "調査中のものはありません",
     "surveySuccesful": "調査成功"
   },
+  "UAVList": {
+    "allUAVs": "全UAV",
+    "assignedUAVs": "アサインされたUAV",
+    "spareUAVs": "予備のUAV"
+  },
   "UAVOpButtonGrp": {
     "armMotors": "モーター始動",
+    "details": "詳細...",
     "disarmMotors": "モーター停止",
     "flashLights": "灯火",
     "properties": "プロパティ",
@@ -43,14 +59,55 @@
     "clickToChange": "クリックして{{altitudeType}}を変更。",
     "showingCurrent": "最大最小{{altitudeType}}を表示。"
   },
+  "augmentMappingButton": {
+    "assignSparesToEmptySlots": "予備を空のスロットにアサイン"
+  },
   "authentication": "認証",
   "batteryStatusHeaderButton": "平均バッテリー量と最小バッテリー量を表示。",
+  "bearingCalculator": {
+    "addAtLeastTwoItems": "姿勢と距離を計算するためには最低二つのアイテムを追加して下さい",
+    "bearing": ", 姿勢: ",
+    "finalBearing": ", 最終的な姿勢: ",
+    "initialBearing": ", 初期姿勢: ",
+    "selectTwoItems": "姿勢と距離を計算するためには二つのアイテムを選択してください"
+  },
   "broadcastButton": {
     "disable": "ブロードキャストを無効化",
     "enable": "{{time}}秒間ブロードキャストを有効化"
   },
+  "coordinateAveragingDialogToolbar": {
+    "addNewDrone": "新たにドローンを追加",
+    "copyCentroid": "重心をコピー",
+    "pauseMeasurement": "ポーズ測定",
+    "removeSelected": "選択したものを削除",
+    "resetMeasurement": "測定をリセット",
+    "resumeMeasurement": "測定を再開",
+    "setCentroidAsMapOrigin": "重心をマップ原点にセット"
+  },
+  "environmentEditorDialog": {
+    "environmentSettings": "環境設定",
+    "indoor": "このショーは屋内で行われます。ショーを実施する部屋の四隅を指定することができます(視覚化のため)。",
+    "outdoor": "このショーは屋外で実施されます。SkybrushにショーをGPS座標系に反映させるために座標原点を指定する必要があります。"
+  },
   "fieldNotesPanel": {
     "exportNotesAsFile": "メモをマークダウン形式でエクスポート"
+  },
+  "filtering": {
+    "composite": "混合",
+    "filter": "フィルター",
+    "filterBy": "フィルター",
+    "label": {
+      "all": "すべて",
+      "errors": "エラーのみ",
+      "noTelemetry": "テレメトリーなしのみ",
+      "warningsAndErrors": "警告とエラー"
+    },
+    "shortLabel": {
+      "all": "すべて",
+      "errors": "エラー",
+      "noTelemetry": "テレメトリーなし",
+      "warningsAndErrors": "警告/エラー"
+    }
   },
   "fitAllFeaturesButton": {
     "fitAllDrones": "全ドローンに適合",
@@ -63,11 +120,45 @@
   "general": {
     "action": {
       "apply": "適用",
+      "cancel": "キャンセル",
+      "clear": "クリア",
       "close": "閉じる",
-      "select": "選択"
+      "delete": "削除",
+      "discard": "破棄",
+      "edit": "編集",
+      "export": "エクスポート",
+      "import": "インポート",
+      "open": "開く",
+      "remove": "除く",
+      "retry": "リトライ",
+      "save": "保存",
+      "select": "選択",
+      "start": "開始",
+      "stop": "停止"
+    },
+    "commands": {
+      "land": "着陸",
+      "positionHold": "位置維持",
+      "powerOff": "電源オフ",
+      "powerOn": "電源オン",
+      "reboot": "再起動",
+      "returnToHome": "ホームへ帰還",
+      "sleep": "スリープ",
+      "takeoff": "離陸"
+    },
+    "geography": {
+      "latitude": "緯度",
+      "longitude": "経度"
     },
     "geometry": {
+      "rotation": "回転",
       "zoom": "拡大"
+    },
+    "status": {
+      "failed": "失敗",
+      "inProgress": "進行中",
+      "successful": "成功",
+      "waiting": "待機中"
     }
   },
   "geofence": {
@@ -78,7 +169,15 @@
       "no": "ジオフェンス未定義"
     }
   },
+  "header": {
+    "distanceSummary": "ホーム地点からの最大最小距離",
+    "velocitySummary": "最大水平垂直速度"
+  },
   "help": "ヘルプ",
+  "indoorEnvironmentEditor": {
+    "coordinatesOfTheCorners": "部屋の隅の座標",
+    "roomVisibleIn3D": "3D viewで部屋を可視化"
+  },
   "lightControl": {
     "fromGCS": "GCSによるライトのコントロール",
     "notConnected": "サーバー未接続",
@@ -87,16 +186,89 @@
   "map": {
     "resetRotation": "回転をリセット"
   },
+  "mapCachingDialog": {
+    "offlineMaps": "オフラインマップ"
+  },
+  "mapCachingPanel": {
+    "clearChache": "キャッシュをクリア",
+    "connectToServer": "オフラインマップサポートでサーバーに接続",
+    "serverNotSupport": "サーバーはオフラインマップキャッシュをサポートしていません",
+    "serverSupport": "サーバーはオフラインマップキャッシュをサポートしています",
+    "useCachedMapTiles": "サーバーにキャッシュされたマップタイルを使用する"
+  },
+  "mapContextMenu": {
+    "clearGeofence": "ジオフェンスをクリア",
+    "details": "詳細...",
+    "flyHere": "ここを飛行",
+    "flyHereAtAltitude": "この高度で飛行…",
+    "properties": "プロパティ…",
+    "setMapOriginHere": "ここにマップ原点を設定",
+    "setShowOriginHere": "ここにショーの原点を設定",
+    "subtractPolygon": "{{subtrahend}} から {{minuend}}を差し引く",
+    "unnamedPolygon": "無名ポリゴン",
+    "useAsGeofence": "ジオフェンスとして使用"
+  },
+  "mappingButtonGroup": {
+    "editMapping": "マッピングを編集",
+    "hideEmptyMissionSlots": "空のミッションスロットを非表示",
+    "showEmptyMissionSlots": "空のミッションスロットを表示"
+  },
+  "mappingEditorToolbar": {
+    "assignSpares": "予備をアサイン",
+    "clearMissing": "行方不明をクリア",
+    "clickToEdit": "クリックしてシングルスロットを編集。",
+    "dragNodes": "マッピングを変形するにはノードをドラッグしてください。",
+    "exportMapping": "マッピングをエクスポート中…",
+    "importMapping": "マッピングをインポート中…"
+  },
+  "mappingSlotEditorToolbar": {
+    "reverseDirection": "向きを反転するには<kbd>を押しながらShift</kbd>を押してください。",
+    "selectNextEmptySlot": "次のからのスロットを選択してください"
+  },
   "mappingToggleButton": {
     "sortByMissionID": "mission IDでソート"
+  },
+  "mission": {
+    "planner": {
+      "schema": {
+        "error": "サーバーからミッションのパラメータースキーマを読み込み中にエラーが発生",
+        "loading": "ミッションパラメーターを取得中...",
+        "notFound": "接続したサーバーから選択されたミッションタイプのスキーマが提供されませんでした"
+      }
+    }
   },
   "notifications": {
     "connectedToSkybrushServer": "Skybrushサーバーに接続しました"
   },
+  "outdoorEnvironmentEditor": {
+    "AHL": "ホームレベル上の高度(AHL)",
+    "AMSL": "平均海水位上の高度(AMSL)",
+    "AMSLReference": "AMSL参照",
+    "altitudeControl": "高度制御とRTKコネクション",
+    "coordinateSystem": "座標系",
+    "copyMapOriginToShow": "マップ原点をショー原点へコピー",
+    "copyShowOriginToMap": "ショー原点をマップ原点へコピー",
+    "fitCoordinateSysToCurrentDrone": "現在のドローンの位置に座標系を合わせる",
+    "setToAverageAMSL": "アクティブなドローンの平均AMSLを設定",
+    "showCoordinateSystemAppliedToMap": "マップに適用された座標系を表示。",
+    "showCoordinateSystemUpdatedFromMap": "マップから更新された座標系を表示。",
+    "showIsControlledBasedOn": "ショーのコントロールは…",
+    "showOrientation": "方位を表示",
+    "showOrigin": "原点を表示",
+    "warningText": "ショーの原点と向きの自動計算では、すべてのドローンがショーの X 軸を向いている<underline>、または</underline>と仮定されます。絶対離陸ヘディングはサポートされていません。"
+  },
   "preferences": "設定",
+  "recalculateMappingButton": {
+    "findOptimalMapping": "最適マッピングを探す",
+    "recalculateMapping": "マッピングを再計算"
+  },
   "safetyDialog": {
     "geofenceTab": {
       "clear": "現在のジオフェンスをクリア",
+      "errors": {
+        "distance": "距離を算出できませんでした",
+        "height": "高さを算出できませんでした"
+      },
       "fenceAction": "ジオフェンスアクション",
       "fenceActionHelperText": "これらのオプションはドローンによっては利用できない場合があります。",
       "fenceActionLabel": "プライマリジオフェンスアクション",
@@ -111,6 +283,18 @@
       "vertical": "垂直"
     },
     "title": "ジオフェンスの設定"
+  },
+  "savedLocation": {
+    "addNew": "新たな意味を追加",
+    "edit": "位置を編集"
+  },
+  "savedLocationEditor": {
+    "copyFromMapView": "マップビューからコピー",
+    "createNew": "新しい位置を削除",
+    "editSaved": "保存した位置を編集",
+    "name": "名前",
+    "notes": "メモ",
+    "zoomLevel": "拡大レベル"
   },
   "serverConnectionStatus": {
     "clockSkew": "クロックスキュー",
@@ -230,6 +414,62 @@
     "uploadShowDataLoading": "アップロード中です。しばらくお待ちください…",
     "uploadShowDataStart": "クリックしてアップロードを開始"
   },
+  "sidebar": {
+    "missionType": "ミッションタイプ: ({{missionType}})"
+  },
+  "sorting": {
+    "ascending": "昇順",
+    "descending": "降順",
+    "label": {
+      "agl": "地上高度",
+      "ahl": "ホーム高度",
+      "amsl": "高度(MSL)",
+      "battery": "バッテリー",
+      "default": "デフォルト",
+      "flightMode": "フライトモード",
+      "gpsFix": "GPS固定",
+      "heading": "見出し",
+      "status": "ステータス"
+    },
+    "shortLabel": {
+      "agl": "AGL",
+      "ahl": "AHL",
+      "amsl": "AMSL",
+      "battery": "バッテリー",
+      "default": "デフォルト",
+      "flightMode": "モード",
+      "gpsFix": "GPS固定",
+      "heading": "見出し",
+      "status": "ステータス"
+    },
+    "sortBy": "ソート"
+  },
+  "startUploadButton": {
+    "startSelected": "選択したものを開始"
+  },
+  "takeoffAreaSetupDialog": {
+    "allDroneOnline": "ミッション中のドローンはすべてオンラインです。",
+    "allDronesAtTakeoffPositions": "全てのドローンは離陸地点に配置されています。",
+    "allDronesFacingCorrectDirection": "全てのドローンは正しい位置を向いています。",
+    "allSlotsFilled": "ミッション中のすべてのスロットは埋まっています。",
+    "approveTakeoffAreaArrangement": "離陸エリアの配置を承認",
+    "emptySlots": "空のスロット:",
+    "misaligned": "ずれているもの:",
+    "misplaced": "誤った配置:",
+    "missing": "行方不明:",
+    "noDrones": "このミッションにはドローンがありません。",
+    "placeVirtualDrones": "仮想ドローンを配置",
+    "takeoffAreaSetup": "離陸エリアを設定"
+  },
+  "takeoffHeadingSpecEditor": {
+    "UAVheadings": "離陸前のUAVの方向は…",
+    "compassDirection": "コンパス方位",
+    "headingOffset": "ヘディングオフセット",
+    "setToAvergaeHeading": "アクティブなドローンに対し平均方位を設定",
+    "specifiedByAbsoluteCompassDirection": "コンパスの絶対方位で指定",
+    "specifiedRelativeToShowOrientation": "ショーの相対方位で指定",
+    "unspecified": "未指定"
+  },
   "toolbox": {
     "averagingInProgress": "{{number}}進行中",
     "coordinateAveraging": "座標の平均化",
@@ -238,6 +478,21 @@
     "paramUpload": "パラメーターアップロード",
     "tooltip": "ツールボックス",
     "uploadInProgress": "アップロード中"
+  },
+  "uploadPanel": {
+    "cancelUpload": "アップロードをキャンセル",
+    "flashLightsWhereFailed": "アップロードが失敗したUAVのライトを点灯",
+    "retryFailedAttempts": "自動で再試行",
+    "uploadAttemptFailed": "アップロードに失敗しました。",
+    "uploadCancelled": "ユーザーによってアップロードがキャンセルされました。",
+    "uploadFinishedSuccessfully": "アップロードが正常に完了しました。",
+    "uploadInProgress": "アップロード中…",
+    "uploadNotFinishedYet": "アップロードはまだ完了していません。"
+  },
+  "uploadStatusLegend": {
+    "clearUploadQueue": "アップロードキューをクリア",
+    "restartSuccessfulItems": "成功したアイテムを再実行",
+    "retryFailedItems": "失敗したアイテムをリトライ"
   },
   "view": {
     "beacon-list": "ビーコン",
@@ -249,9 +504,11 @@
     "light-control": "ライトコントロール",
     "log-panel": "イベントログ",
     "map": "地図",
+    "mission-editor": "ミッションエディター",
     "saved-location-list": "ロケーション",
     "show-control": "コントロールの表示",
     "three-d-view": "3D View",
+    "uav-details": "UAV詳細",
     "uav-list": "UAV"
   },
   "weatherMiniList": {
