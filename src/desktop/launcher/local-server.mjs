@@ -140,7 +140,7 @@ const deriveServerPathAndArgumentsFromOptions = async (options) => {
 
   if (localServerPathDeferred) {
     localServerPathDeferred = pDefer();
-    await pTimeout(localServerPathDeferred.promise, timeout);
+    await pTimeout(localServerPathDeferred.promise, { milliseconds: timeout });
   }
 
   if (!localServerPath) {
@@ -353,7 +353,7 @@ export const terminate = async (options) => {
 
     // Wait for kill() to actually terminate the process
     proc.kill();
-    await pTimeout(exitDeferred.promise, timeout);
+    await pTimeout(exitDeferred.promise, { milliseconds: timeout });
 
     proc.removeAllListeners();
 

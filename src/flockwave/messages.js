@@ -236,7 +236,7 @@ class PendingResponse {
    * @param {string} messageId  the identifier of the Skybrush message
    *        to which this pending response belongs
    */
-  constructor(messageId, { timeout = 5, onTimeout } = {}) {
+  constructor(messageId, { timeout = 5, onTimeout = undefined } = {}) {
     this._messageId = messageId;
     this._deferred = pDefer();
 
@@ -1477,7 +1477,9 @@ export default class MessageHub {
     }
 
     if (timeout && timeout > 0) {
-      return pTimeout(this._waitUntilReadyDeferred.promise, timeout);
+      return pTimeout(this._waitUntilReadyDeferred.promise, {
+        milliseconds: timeout,
+      });
     }
 
     return this._waitUntilReadyDeferred.promise;
