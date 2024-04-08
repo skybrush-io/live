@@ -9,7 +9,7 @@ import path from 'path';
 import createStorageEngine from 'redux-persist-electron-storage';
 import streamToBlob from 'stream-to-blob';
 
-import * as localServer from './local-server.mjs';
+import * as localServerModule from './local-server.mjs';
 import {
   receiveActionsFromRenderer,
   receiveSubscriptionsFromRenderer,
@@ -149,7 +149,14 @@ contextBridge.exposeInMainWorld('bridge', {
     };
   },
 
-  localServer,
+  // We cannot expose Module objects directly so we do it function by function
+  localServer: {
+    ensureRunning: localServerModule.ensureRunning,
+    search: localServerModule.search,
+    selectPath: localServerModule.selectPath,
+    terminate: localServerModule.terminate,
+  },
+
   provideActions: receiveActionsFromRenderer,
   provideSubscriptions: receiveSubscriptionsFromRenderer,
   reverseDNSLookup,
