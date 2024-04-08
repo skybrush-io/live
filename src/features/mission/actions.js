@@ -60,7 +60,10 @@ import {
 } from '~/model/missions';
 import { readFileAsText } from '~/utils/files';
 import { readTextFromFile, writeTextToFile } from '~/utils/filesystem';
-import { toLonLatFromScaledJSON } from '~/utils/geography';
+import {
+  toLonLatFromScaledJSON,
+  toObjectFromScaledJSON,
+} from '~/utils/geography';
 import { calculateDistanceMatrix, euclideanDistance2D } from '~/utils/math';
 import { chooseUniqueId } from '~/utils/naming';
 
@@ -399,6 +402,16 @@ export const prepareMappingForSingleUAVMissionFromSelection =
   };
 
 /**
+ * Thunk that assigns UAVs to the mission slots based on position matching.
+ */
+export const prepareMappingForMultiUAVMissionFromStartPositions =
+  (startPositions) => (dispatch) => {
+    dispatch(setMappingLength(startPositions.length));
+    dispatch(updateHomePositions(startPositions.map(toObjectFromScaledJSON)));
+    dispatch(recalculateMapping());
+  };
+
+/**
  * Thunk that adds a new mission item of the given type to the end of the
  * current mission.
  */
@@ -640,8 +653,9 @@ export const invokeMissionPlanner =
 
     let name = null;
     let items = null;
+    let startPositions = null;
     try {
-      ({ name, items } = await messageHub.execute.planMission({
+      ({ name, items, startPositions } = await messageHub.execute.planMission({
         id: missionType,
         parameters,
       }));
@@ -664,7 +678,15 @@ export const invokeMissionPlanner =
       dispatch(setMissionType(MissionType.WAYPOINT));
       dispatch(setMissionName(name));
       dispatch(setMissionItemsFromArray(items.map(processReceivedMissionItem)));
-      dispatch(prepareMappingForSingleUAVMissionFromSelection());
+
+      if (startPositions) {
+        dispatch(
+          prepareMappingForMultiUAVMissionFromStartPositions(startPositions)
+        );
+      } else {
+        dispatch(prepareMappingForSingleUAVMissionFromSelection());
+      }
+
       dispatch(closeMissionPlannerDialog());
 
       if (
@@ -693,7 +715,7 @@ export const invokeMissionPlanner =
               action: exportMission(),
             },
           ],
-          permanent: true,
+          timeout: 10000,
           topic: 'export-suggestion',
         })
       );

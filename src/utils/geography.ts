@@ -37,6 +37,7 @@ import { type Feature, FeatureType } from '~/model/features';
 import {
   type Altitude,
   AltitudeReference,
+  type GPSPosition,
   type Heading,
   HeadingMode,
 } from '~/model/geography';
@@ -984,7 +985,8 @@ export function normalizePolygon([points, ...holes]: any): any {
   }
 }
 
-type ScaledJSONGPSCoordinate = [number, number];
+type OpenLayersGPSCoordinate = [lon: number, lat: number];
+type ScaledJSONGPSCoordinate = [lat: number, lon: number];
 
 /**
  * Converts a longitude-latitude pair to a representation that is safe to be
@@ -996,10 +998,9 @@ type ScaledJSONGPSCoordinate = [number, number];
  * @return the JSON representation, scaled up to 1e7 degrees. Note
  *         that it returns the <em>latitude</em> first
  */
-export function toScaledJSONFromObject(coords: {
-  lat: number;
-  lon: number;
-}): ScaledJSONGPSCoordinate {
+export function toScaledJSONFromObject(
+  coords: GPSPosition
+): ScaledJSONGPSCoordinate {
   return [Math.round(coords.lat * 1e7), Math.round(coords.lon * 1e7)];
 }
 
@@ -1015,9 +1016,23 @@ export function toScaledJSONFromObject(coords: {
  *         that it returns the <em>latitude</em> first
  */
 export function toScaledJSONFromLonLat(
-  coords: [number, number]
+  coords: OpenLayersGPSCoordinate
 ): ScaledJSONGPSCoordinate {
   return [Math.round(coords[1] * 1e7), Math.round(coords[0] * 1e7)];
+}
+
+/**
+ * Reverts a "JSON-safe" multiplier offset coordinate representation to a
+ * simple decimal longitude-latitude pair
+ *
+ * @param  coords  the JSON representation, scaled up to 1e7 degrees.
+ *         Note that it contains the <em>latitude</em> first
+ * @return the resulting longitude-latitude pair, represented as an object
+ */
+export function toObjectFromScaledJSON(
+  coords: ScaledJSONGPSCoordinate
+): GPSPosition {
+  return { lon: coords[1] / 1e7, lat: coords[0] / 1e7 };
 }
 
 /**
@@ -1032,7 +1047,7 @@ export function toScaledJSONFromLonLat(
  */
 export function toLonLatFromScaledJSON(
   coords: ScaledJSONGPSCoordinate
-): [number, number] {
+): OpenLayersGPSCoordinate {
   return [coords[1] / 1e7, coords[0] / 1e7];
 }
 
