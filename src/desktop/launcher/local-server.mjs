@@ -339,8 +339,8 @@ export const selectPath = async (defaultPath, browserWindow) => {
  * Terminate the local server instance that the main process is currently
  * managing.
  */
-export const terminate = async (options) => {
-  const { timeout } = { timeout: 5000, ...options };
+export const terminate = async (options = {}) => {
+  const { timeout = 5000 } = { ...options };
 
   if (localServerProcess) {
     const proc = localServerProcess;
