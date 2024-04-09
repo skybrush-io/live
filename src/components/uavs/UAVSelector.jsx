@@ -11,7 +11,10 @@ import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
 
 import { PopoverWithContainerFromContext as Popover } from '~/containerContext';
 
-import { getReverseMissionMapping } from '~/features/mission/selectors';
+import {
+  getMissionMapping,
+  getReverseMissionMapping,
+} from '~/features/mission/selectors';
 import {
   getUAVIdList,
   getUAVIdsSortedByErrorCode,
@@ -19,6 +22,7 @@ import {
 import { formatMissionId } from '~/utils/formatting';
 
 import DroneAvatar from './DroneAvatar';
+import DronePlaceholder from './DronePlaceholder';
 
 const SCROLLBAR_WIDTH = 10;
 
@@ -45,7 +49,7 @@ const useStyles = makeStyles(
       overflow: 'hidden auto',
     },
 
-    paper: {
+    paper: ({ openAbove }) => ({
       overflow: 'visible',
 
       '&::before': {
@@ -56,7 +60,7 @@ const useStyles = makeStyles(
         height: theme.spacing(2),
 
         position: 'absolute',
-        top: -theme.spacing(1),
+        [openAbove ? 'bottom' : 'top']: -theme.spacing(1),
         left: ({ anchorCenter }) =>
           `calc(50% - ${theme.spacing(1)}px + ${
             // Adjust arrow position when the `Popover` is pushed against the
@@ -82,7 +86,7 @@ const useStyles = makeStyles(
 
         backgroundColor: theme.palette.background.paper,
       },
-    },
+    }),
   }),
   {
     name: 'UAVSelector',
@@ -97,23 +101,38 @@ const UAVSelector = ({
   onSelect,
   open,
   sortedByError,
+  useMissionIds,
 }) => {
   const uavIds = useSelector(
     sortedByError ? getUAVIdsSortedByErrorCode : getUAVIdList,
     { equalityFn: shallowEqual }
   );
   const reverseMissionMapping = useSelector(getReverseMissionMapping);
+  const missionMapping = useSelector(getMissionMapping);
 
-  const anchorCenter = useMemo(() => {
-    if (!anchorEl) {
-      return 0;
-    }
+  const items = useMissionIds
+    ? missionMapping.map((uavId, index) => ({ uavId, missionId: index }))
+    : uavIds.map((uavId) => ({
+        uavId,
+        missionId: reverseMissionMapping[uavId],
+      }));
 
-    const { left, right } = anchorEl.getBoundingClientRect();
-    return (left + right) / 2;
-  }, [anchorEl]);
+  const { anchorCenter, openAbove } =
+    useMemo(() => {
+      if (!anchorEl) {
+        return;
+      }
 
-  const classes = useStyles({ anchorCenter });
+      const { bottom, left, right } = anchorEl.getBoundingClientRect();
+      return {
+        // Get the horizontal center of the anchor to adjust the arrow location
+        anchorCenter: (left + right) / 2,
+        // Show the popup updwards if there isn't enough space below the anchor
+        openAbove: window.innerHeight - bottom < 256, // Approximate `maxHeight`
+      };
+    }, [anchorEl]) ?? {};
+
+  const classes = useStyles({ anchorCenter, openAbove });
 
   const [filter, setFilter] = useState('');
 
@@ -124,18 +143,17 @@ const UAVSelector = ({
     }
   }, [open]);
 
-  const filtered = uavIds.filter(
-    (uavId) =>
-      uavId.startsWith(filter) ||
-      (uavId in reverseMissionMapping &&
-        formatMissionId(reverseMissionMapping[uavId]).startsWith(filter))
+  const filtered = items.filter(
+    ({ uavId, missionId }) =>
+      uavId?.startsWith(filter) ||
+      (missionId !== undefined && formatMissionId(missionId).startsWith(filter))
   );
 
   const handleKeyDown = (event) => {
     switch (event.key) {
       case 'Enter': {
         if (filtered.length > 0) {
-          onSelect(filtered[0]);
+          onSelect(filtered[0][useMissionIds ? 'missionId' : 'uavId']);
           onClose();
           event.stopPropagation();
           event.preventDefault();
@@ -150,6 +168,7 @@ const UAVSelector = ({
         break;
       }
 
+      // TODO: Generalize this, it could be `s` for "show" and `m` for "mission"
       case 's': {
         if (filter.startsWith('s')) {
           setFilter(filter.slice(1));
@@ -175,8 +194,14 @@ const UAVSelector = ({
     <Popover
       open={open}
       anchorEl={anchorEl}
-      anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      transformOrigin={{ vertical: 'top', horizontal: 'center' }}
+      anchorOrigin={{
+        vertical: openAbove ? 'top' : 'bottom',
+        horizontal: 'center',
+      }}
+      transformOrigin={{
+        vertical: openAbove ? 'bottom' : 'top',
+        horizontal: 'center',
+      }}
       PaperProps={{
         className: classes.paper,
         onKeyDown: filterable ? handleKeyDown : undefined,
@@ -186,24 +211,42 @@ const UAVSelector = ({
     >
       <div className={classes.content} tabIndex={0}>
         {filtered.length > 0 ? (
-          filtered.map((uavId) => (
+          filtered.map(({ uavId, missionId }) => (
             // Enclose the Avatar in a `div`, as it renders a fragment
-            <div key={uavId}>
-              <DroneAvatar
-                variant='minimal'
-                id={uavId}
-                AvatarProps={{
+            <div key={`${uavId}:${missionId}`}>
+              {(() => {
+                const avatarProps = {
                   style: { cursor: 'pointer' },
                   onClick() {
-                    onSelect(uavId);
+                    onSelect(useMissionIds ? missionId : uavId);
                     onClose();
                   },
-                }}
-              />
+                };
+
+                return uavId ? (
+                  <DroneAvatar
+                    label={
+                      useMissionIds ? formatMissionId(missionId) : undefined
+                    }
+                    variant='minimal'
+                    id={uavId}
+                    AvatarProps={avatarProps}
+                  />
+                ) : (
+                  <DronePlaceholder
+                    label={formatMissionId(missionId)}
+                    AvatarProps={avatarProps}
+                  />
+                );
+              })()}
             </div>
           ))
+        ) : filter ? (
+          <BackgroundHint text={`No matching results for: "${filter}"`} />
         ) : (
-          <BackgroundHint text={`No matching UAVs for: "${filter}"`} />
+          <BackgroundHint
+            text={`No available ${useMissionIds ? 'mission ids' : 'UAVs'}.`}
+          />
         )}
       </div>
     </Popover>
@@ -218,6 +261,7 @@ UAVSelector.propTypes = {
   onSelect: PropTypes.func,
   open: PropTypes.bool,
   sortedByError: PropTypes.bool,
+  useMissionIds: PropTypes.bool,
 };
 
 /**
@@ -261,5 +305,4 @@ export const UAVSelectorWrapper = ({ children, ...rest }) => {
 
 UAVSelectorWrapper.propTypes = {
   children: PropTypes.func,
-  sortedByError: PropTypes.bool,
 };

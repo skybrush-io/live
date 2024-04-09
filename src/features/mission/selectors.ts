@@ -92,6 +92,15 @@ export const getMissionItemIds: AppSelector<Identifier[]> = (state) =>
   state.mission.items.order;
 
 /**
+ * Returns the list of item IDs in the current mission along with their indices.
+ */
+export const getMissionItemIdsWithIndices: AppSelector<
+  Array<{ id: MissionItem['id']; index: number }>
+> = createSelector(getMissionItemIds, (missionItemIds) =>
+  missionItemIds.map((id, index) => ({ id, index }))
+);
+
+/**
  * Selector that calculates and caches the list of selected mission item IDs from
  * the state object.
  */
@@ -147,6 +156,21 @@ export const getMissionItemsOfTypeWithIndices: AppSelector<
   >,
   (itemsWithIndices, missionItemType) =>
     itemsWithIndices.filter(({ item: { type } }) => type === missionItemType)
+);
+
+/**
+ * Returns an object that maps mission ids to their respective mission item's
+ * participant lists.
+ */
+export const getParticipantsForMissionItemIds: AppSelector<
+  Record<MissionItem['id'], MissionIndex[] | undefined>
+> = createSelector(getMissionItemsById, (itemsById) =>
+  Object.fromEntries(
+    Object.entries(itemsById).map(([id, { participants }]) => [
+      id,
+      participants,
+    ])
+  )
 );
 
 /**
@@ -472,6 +496,13 @@ export const canMoveSelectedMissionItemsDown: AppSelector<boolean> =
 export const shouldMissionEditorPanelFollowScroll: AppSelector<boolean> = (
   state
 ) => state.mission.editorPanel.followScroll;
+
+/**
+ * Returns the selected mission slot's id in the mission editor panel.
+ */
+export const getSelectedMissionIdInMissionEditorPanel: AppSelector<
+  MissionIndex | undefined
+> = (state) => state.mission.editorPanel.selectedMissionId;
 
 // prettier-ignore
 type StringLiteral<T> = T extends string ? string extends T ? never : T : never;
