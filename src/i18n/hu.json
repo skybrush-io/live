@@ -46,6 +46,9 @@
     "removeItemsMarkedGone": "Eltűntként megjelölt elemek eltávolítása",
     "removeSelectedItems": "Kiválasztott elemek eltávolítása"
   },
+  "UAVSelector": {
+    "noMatchingUAVs": "Nincsenek megfelelő drónok a következőhöz: \"{{filter}}\""
+  },
   "UAVStatus": {
     "noConnected": "Jelenleg nincs kapcsolódott drón"
   },
@@ -190,6 +193,7 @@
     "useCachedMapTiles": "Szerveren gyorsítótárazott térképcsempék használata"
   },
   "mapContextMenu": {
+    "clearExclusionZone": "Kizárási zóna törlése",
     "clearGeofence": "Geofence törlése",
     "details": "Részletek...",
     "flyHere": "Repülj ide",
@@ -199,6 +203,7 @@
     "setShowOriginHere": "Műsor origó beállítása ide",
     "subtractPolygon": "{{subtrahend}} kivonása {{minuend}}-ból/-ből",
     "unnamedPolygon": "névtelen sokszög",
+    "useAsExclusionZone": "Alkalmazás kizárási zónaként",
     "useAsGeofence": "Alkalmazás geofence-ként"
   },
   "mappingButtonGroup": {
@@ -220,6 +225,15 @@
   },
   "mappingToggleButton": {
     "sortByMissionID": "Rendezés küldetés ID alapján"
+  },
+  "measurementList": {
+    "addDrone": "Adjon hozzá egy drónt a méréshez az eszköztár + gombjával",
+    "copyToClipboard": "Másolás a vágólapra",
+    "duration": "Időtartam:",
+    "noSamplesYet": "Még nincs minta",
+    "samples": "minta",
+    "stdDevInXY": "szórás XY-ban",
+    "waitingForSamples": "Várakozás a mintákra…"
   },
   "mission": {
     "planner": {

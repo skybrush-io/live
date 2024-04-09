@@ -46,6 +46,9 @@
     "removeItemsMarkedGone": "Remove items marked as gone",
     "removeSelectedItems": "Remove selected items"
   },
+  "UAVSelector": {
+    "noMatchingUAVs": "No matching UAVs for: \"{{filter}}\""
+  },
   "UAVStatus": {
     "noConnected": "There are no connected UAVs at the moment"
   },
@@ -196,6 +199,7 @@
     "useCachedMapTiles": "Use cached map tiles from server"
   },
   "mapContextMenu": {
+    "clearExclusionZone": "Clear exclusion zone",
     "clearGeofence": "Clear geofence",
     "details": "Details...",
     "flyHere": "Fly here",
@@ -205,6 +209,7 @@
     "setShowOriginHere": "Set show origin here",
     "subtractPolygon": "Subtract {{subtrahend}} from {{minuend}}",
     "unnamedPolygon": "unnamed polygon",
+    "useAsExclusionZone": "Use as exclusion zone",
     "useAsGeofence": "Use as geofence"
   },
   "mappingButtonGroup": {
@@ -226,6 +231,15 @@
   },
   "mappingToggleButton": {
     "sortByMissionID": "Sort by mission IDs"
+  },
+  "measurementList": {
+    "addDrone": "Add a drone to measure with the + button in the toolbar",
+    "copyToClipboard": "Copy to clipboard",
+    "duration": "Duration:",
+    "noSamplesYet": "No samples yet",
+    "samples": "samples",
+    "stdDevInXY": "std.dev. in XY",
+    "waitingForSamples": "Waiting for samples…"
   },
   "mission": {
     "planner": {

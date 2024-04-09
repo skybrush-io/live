@@ -314,8 +314,8 @@ class MapContextMenu extends React.Component {
                       <Block color={isExclusionZone ? 'disabled' : 'action'} />
                     </ListItemIcon>
                     {isExclusionZone
-                      ? 'Clear exclusion zone'
-                      : 'Use as exclusion zone'}
+                      ? t('mapContextMenu.clearExclusionZone')
+                      : t('mapContextMenu.useAsExclusionZone')}
                   </MenuItem>
                 );
               }
