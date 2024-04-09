@@ -39,6 +39,3 @@ export const isMissionSlotId = hasPrefix('mission$');
 export const MAP_ORIGIN_ID = 'map';
 export const MISSION_ORIGIN_ID = 'mission';
 export const CONVEX_HULL_AREA_ID = 'convexHull';
-// TODO: Should there be separate constant ids for the
-//       completed, remaining and auxiliary parts?
-export const MISSION_ITEM_LINE_STRING_ID = 'missionItemLineString';
