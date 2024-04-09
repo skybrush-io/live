@@ -62,6 +62,14 @@ export const getMissionName = (state) => state.mission.name;
 export const getMissionItemIds = (state) => state.mission.items.order;
 
 /**
+ * Returns the list of item IDs in the current mission along with their indices.
+ */
+export const getMissionItemIdsWithIndices = createSelector(
+  getMissionItemIds,
+  (missionItemIds) => missionItemIds.map((id, index) => ({ id, index }))
+);
+
+/**
  * Selector that calculates and caches the list of selected mission item IDs from
  * the state object.
  */
@@ -106,6 +114,21 @@ export const getMissionItemsOfTypeWithIndices = createSelector(
   (_state, missionItemType) => missionItemType,
   (itemsWithIndices, missionItemType) =>
     itemsWithIndices.filter(({ item: { type } }) => type === missionItemType)
+);
+
+/**
+ * Returns an object that maps mission ids to their respective mission item's
+ * participant lists.
+ */
+export const getParticipantsForMissionItemIds = createSelector(
+  getMissionItemsById,
+  (itemsById) =>
+    Object.fromEntries(
+      Object.entries(itemsById).map(([id, { participants }]) => [
+        id,
+        participants,
+      ])
+    )
 );
 
 /**
@@ -426,6 +449,12 @@ export const canMoveSelectedMissionItemsDown =
  */
 export const shouldMissionEditorPanelFollowScroll = (state) =>
   state.mission.editorPanel.followScroll;
+
+/**
+ * Returns the selected mission slot's id in the mission editor panel.
+ */
+export const getSelectedMissionIdInMissionEditorPanel = (state) =>
+  state.mission.editorPanel.selectedMissionId;
 
 const getMissionItemsWithExtraFieldInOrder = (field, getter) =>
   createSelector(getMissionItemsInOrder, (items) =>

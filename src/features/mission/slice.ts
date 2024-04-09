@@ -121,6 +121,7 @@ export type MissionSliceState = ReadonlyDeep<{
   /** State of the mission editor panel */
   editorPanel: {
     followScroll: boolean;
+    selectedMissionId?: number;
   };
 
   /** State of the mission planner dialog */
@@ -172,6 +173,7 @@ const initialState: MissionSliceState = {
   },
   editorPanel: {
     followScroll: false,
+    selectedMissionId: undefined,
   },
   plannerDialog: {
     applyGeofence: false,
@@ -395,6 +397,16 @@ const { actions, reducer } = createSlice({
      */
     setEditorPanelFollowScroll(state, action: PayloadAction<boolean>) {
       state.editorPanel.followScroll = Boolean(action.payload);
+    },
+
+    /**
+     * Sets the selected mission slot's id in the mission editor panel.
+     */
+    setEditorPanelSelectedMissionId(
+      state,
+      action: PayloadAction<number | undefined>
+    ) {
+      state.editorPanel.selectedMissionId = action.payload;
     },
 
     /**
@@ -685,6 +697,7 @@ export const {
   replaceMapping,
   setCommandsAreBroadcast,
   setEditorPanelFollowScroll,
+  setEditorPanelSelectedMissionId,
   setGeofenceAction,
   setGeofencePolygonId,
   setLastClearedMissionData,
