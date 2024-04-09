@@ -9,7 +9,9 @@ import { setSelectedMissionItemIds } from '~/features/mission/actions';
 import {
   getCurrentMissionItemIndex,
   getCurrentMissionItemRatio,
-  getMissionItemIds,
+  getMissionItemIdsWithIndices,
+  getParticipantsForMissionItemIds,
+  getSelectedMissionIdInMissionEditorPanel,
   getSelectedMissionItemIds,
   shouldMissionEditorPanelFollowScroll,
 } from '~/features/mission/selectors';
@@ -17,7 +19,7 @@ import { setEditorPanelFollowScroll } from '~/features/mission/slice';
 
 import MissionOverviewListItem from './MissionOverviewListItem';
 
-const renderMissionListItem = (index, itemId, context) => (
+const renderMissionListItem = (_index, { id, index }, context) => (
   <MissionOverviewListItem
     done={index < context.currentItemIndex}
     // prettier-ignore
@@ -29,9 +31,9 @@ const renderMissionListItem = (index, itemId, context) => (
       // The item is to be done
       0
     }
-    id={itemId}
+    id={id}
     index={index + 1}
-    selected={context.selection.includes(itemId)}
+    selected={context.selection.includes(id)}
     onSelectItem={context.onSelectItem}
   />
 );
@@ -40,14 +42,16 @@ const MissionOverviewList = ({
   currentItemIndex,
   currentItemRatio,
   followScroll,
-  itemIds,
+  itemIdsWithIndices,
   onSelectItem,
-  selectedIds,
+  participantsForItemIds,
+  selectedItemIds,
+  selectedMissionId,
 }) => {
   const context = {
     currentItemIndex,
     currentItemRatio,
-    selection: Array.isArray(selectedIds) ? selectedIds : [],
+    selection: Array.isArray(selectedItemIds) ? selectedItemIds : [],
     onSelectItem,
   };
 
@@ -74,10 +78,17 @@ const MissionOverviewList = ({
     }
   }, [followScroll, scrollToCurrent]);
 
+  const filteredItemIds = itemIdsWithIndices.filter(
+    ({ id }) =>
+      selectedMissionId === undefined ||
+      participantsForItemIds[id] === undefined ||
+      participantsForItemIds[id].includes(selectedMissionId)
+  );
+
   return (
     <Virtuoso
       ref={virtuoso}
-      data={itemIds}
+      data={filteredItemIds}
       context={context}
       itemContent={renderMissionListItem}
     />
@@ -88,9 +99,11 @@ MissionOverviewList.propTypes = {
   currentItemIndex: PropTypes.number,
   currentItemRatio: PropTypes.number,
   followScroll: PropTypes.bool,
-  itemIds: PropTypes.arrayOf(PropTypes.string),
+  itemIdsWithIndices: PropTypes.arrayOf(PropTypes.object),
   onSelectItem: PropTypes.func,
-  selectedIds: PropTypes.arrayOf(PropTypes.string),
+  participantsForItemIds: PropTypes.object,
+  selectedItemIds: PropTypes.arrayOf(PropTypes.string),
+  selectedMissionId: PropTypes.number,
 };
 
 export default connect(
@@ -99,8 +112,10 @@ export default connect(
     currentItemIndex: getCurrentMissionItemIndex(state),
     currentItemRatio: getCurrentMissionItemRatio(state),
     followScroll: shouldMissionEditorPanelFollowScroll(state),
-    itemIds: getMissionItemIds(state),
-    selectedIds: getSelectedMissionItemIds(state),
+    itemIdsWithIndices: getMissionItemIdsWithIndices(state),
+    participantsForItemIds: getParticipantsForMissionItemIds(state),
+    selectedItemIds: getSelectedMissionItemIds(state),
+    selectedMissionId: getSelectedMissionIdInMissionEditorPanel(state),
   }),
   // mapDispatchToProps
   {
