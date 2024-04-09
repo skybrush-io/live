@@ -28,6 +28,7 @@ import {
   getMissionItemsOfTypeWithIndices,
   getMissionItemsWithAreasInOrder,
   getMissionItemsWithCoordinatesInOrder,
+  getMissionMapping,
   getSelectedMissionIndicesForTrajectoryDisplay,
 } from '~/features/mission/selectors';
 import {
@@ -44,7 +45,6 @@ import {
   homePositionIdToGlobalId,
   landingPositionIdToGlobalId,
   MAP_ORIGIN_ID,
-  MISSION_ITEM_LINE_STRING_ID,
   MISSION_ORIGIN_ID,
   missionItemIdToGlobalId,
   originIdToGlobalId,
@@ -429,22 +429,18 @@ const auxiliaryMissionItemLineStringStyle = (feature) => [
  */
 const CONVEX_HULL_GLOBAL_ID = areaIdToGlobalId(CONVEX_HULL_AREA_ID);
 const MAP_ORIGIN_GLOBAL_ID = originIdToGlobalId(MAP_ORIGIN_ID);
-const MISSION_ITEM_LINE_STRING_GLOBAL_ID = plannedTrajectoryIdToGlobalId(
-  MISSION_ITEM_LINE_STRING_ID
-);
 const MISSION_ORIGIN_GLOBAL_ID = originIdToGlobalId(MISSION_ORIGIN_ID);
+
+const featureKeyForRoleAndMissionIndex = (role, index) => `${role}.${index}`;
 
 const landingPositionPoints = (landingPositions) =>
   Array.isArray(landingPositions)
     ? landingPositions
-        .map((landingPosition, index) => {
-          const featureKey = `land.${index}`;
-
+        .map((landingPosition, missionIndex) => {
           if (!landingPosition) {
             return null;
           }
 
-          const globalIdOfFeature = landingPositionIdToGlobalId(index);
           const center = mapViewCoordinateFromLonLat([
             landingPosition.lon,
             landingPosition.lat,
@@ -452,8 +448,8 @@ const landingPositionPoints = (landingPositions) =>
 
           return (
             <Feature
-              key={featureKey}
-              id={globalIdOfFeature}
+              key={featureKeyForRoleAndMissionIndex('land', missionIndex)}
+              id={landingPositionIdToGlobalId(missionIndex)}
               style={landingPositionStyle}
             >
               <geom.Point coordinates={center} />
@@ -466,14 +462,11 @@ const landingPositionPoints = (landingPositions) =>
 const homePositionPoints = (homePositions) =>
   Array.isArray(homePositions)
     ? homePositions
-        .map((homePosition, index) => {
-          const featureKey = `home.${index}`;
-
+        .map((homePosition, missionIndex) => {
           if (!homePosition) {
             return null;
           }
 
-          const globalIdOfFeature = homePositionIdToGlobalId(index);
           const center = mapViewCoordinateFromLonLat([
             homePosition.lon,
             homePosition.lat,
@@ -481,8 +474,8 @@ const homePositionPoints = (homePositions) =>
 
           return (
             <Feature
-              key={featureKey}
-              id={globalIdOfFeature}
+              key={featureKeyForRoleAndMissionIndex('home', missionIndex)}
+              id={homePositionIdToGlobalId(missionIndex)}
               style={takeoffPositionStyle}
             >
               <geom.Point coordinates={center} />
@@ -598,68 +591,78 @@ const missionWaypointMarkers = (
 const missionTrajectoryLine = (
   currentItemIndex,
   currentItemRatio,
-  missionItemsWithCoordinates
+  allMissionItemsWithCoordinates,
+  missionMapping
 ) => {
-  if (missionItemsWithCoordinates) {
-    // This should be done like below but lodash doesn't have `span`
-    // `const [done, todo] = span(missionItemsWithCoordinates, isDone)`,
-    const isDone = (mi) => mi.index < currentItemIndex;
-    const doneMissionItems = takeWhile(missionItemsWithCoordinates, isDone);
-    const todoMissionItems = dropWhile(missionItemsWithCoordinates, isDone);
-
-    // If there are at least two items with coordinates, connect them with a
-    // polyline.
-    if (doneMissionItems.length + todoMissionItems.length > 1) {
-      const doneMissionItemsInMapCoordinates = doneMissionItems.map(
-        ({ coordinate }) =>
-          mapViewCoordinateFromLonLat([coordinate.lon, coordinate.lat])
-      );
-      const todoMissionItemsInMapCoordinates = todoMissionItems.map(
-        ({ coordinate }) =>
-          mapViewCoordinateFromLonLat([coordinate.lon, coordinate.lat])
+  if (allMissionItemsWithCoordinates) {
+    return missionMapping.flatMap((_, missionIndex) => {
+      const missionItemsWithCoordinates = allMissionItemsWithCoordinates.filter(
+        ({ item: { participants } }) =>
+          participants === undefined || participants.includes(missionIndex)
       );
 
-      // There are already some completed items, but there are still more left
-      // to be done, so a split point needs to be inserted.
-      if (doneMissionItems.length > 0 && todoMissionItems.length > 0) {
-        const ratio =
-          (todoMissionItems[0].index === currentItemIndex
-            ? // If the ratio information belongs to the next mission item with
-              // coordinates
-              currentItemRatio
-            : // If the ratio information belongs to a mission item without
-              // coordinates
-              0) ?? 0;
+      // This should be done like below but lodash doesn't have `span`
+      // `const [done, todo] = span(missionItemsWithCoordinates, isDone)`,
+      const isDone = (mi) => mi.index < currentItemIndex;
+      const doneMissionItems = takeWhile(missionItemsWithCoordinates, isDone);
+      const todoMissionItems = dropWhile(missionItemsWithCoordinates, isDone);
 
-        const lastDone = doneMissionItemsInMapCoordinates.at(-1);
-        const firstTodo = todoMissionItemsInMapCoordinates.at(0);
+      // If there are at least two items with coordinates, connect them with a
+      // polyline.
+      if (doneMissionItems.length + todoMissionItems.length > 1) {
+        const doneMissionItemsInMapCoordinates = doneMissionItems.map(
+          ({ coordinate }) =>
+            mapViewCoordinateFromLonLat([coordinate.lon, coordinate.lat])
+        );
+        const todoMissionItemsInMapCoordinates = todoMissionItems.map(
+          ({ coordinate }) =>
+            mapViewCoordinateFromLonLat([coordinate.lon, coordinate.lat])
+        );
 
-        const splitPoint = [
-          lastDone[0] * (1 - ratio) + firstTodo[0] * ratio,
-          lastDone[1] * (1 - ratio) + firstTodo[1] * ratio,
+        // There are already some completed items, but there are still more
+        // left to be done, so a split point needs to be inserted.
+        if (doneMissionItems.length > 0 && todoMissionItems.length > 0) {
+          const ratio =
+            (todoMissionItems[0].index === currentItemIndex
+              ? // If the ratio information belongs to the next mission item
+                // with coordinates
+                currentItemRatio
+              : // If the ratio information belongs to a mission item without
+                // coordinates
+                0) ?? 0;
+
+          const lastDone = doneMissionItemsInMapCoordinates.at(-1);
+          const firstTodo = todoMissionItemsInMapCoordinates.at(0);
+
+          const splitPoint = [
+            lastDone[0] * (1 - ratio) + firstTodo[0] * ratio,
+            lastDone[1] * (1 - ratio) + firstTodo[1] * ratio,
+          ];
+
+          doneMissionItemsInMapCoordinates.push(splitPoint);
+          todoMissionItemsInMapCoordinates.unshift(splitPoint);
+        }
+
+        return [
+          <Feature
+            key={featureKeyForRoleAndMissionIndex('done', missionIndex)}
+            id={plannedTrajectoryIdToGlobalId(`${missionIndex}$done`)}
+            style={doneMissionItemLineStringStyle}
+          >
+            <geom.LineString coordinates={doneMissionItemsInMapCoordinates} />
+          </Feature>,
+          <Feature
+            key={featureKeyForRoleAndMissionIndex('todo', missionIndex)}
+            id={plannedTrajectoryIdToGlobalId(`${missionIndex}$todo`)}
+            style={todoMissionItemLineStringStyle}
+          >
+            <geom.LineString coordinates={todoMissionItemsInMapCoordinates} />
+          </Feature>,
         ];
-
-        doneMissionItemsInMapCoordinates.push(splitPoint);
-        todoMissionItemsInMapCoordinates.unshift(splitPoint);
+      } else {
+        return [];
       }
-
-      return [
-        <Feature
-          key='doneMissionItemLineString'
-          id={`${MISSION_ITEM_LINE_STRING_GLOBAL_ID}Done`}
-          style={doneMissionItemLineStringStyle}
-        >
-          <geom.LineString coordinates={doneMissionItemsInMapCoordinates} />
-        </Feature>,
-        <Feature
-          key='todoMissionItemLineString'
-          id={`${MISSION_ITEM_LINE_STRING_GLOBAL_ID}Todo`}
-          style={todoMissionItemLineStringStyle}
-        >
-          <geom.LineString coordinates={todoMissionItemsInMapCoordinates} />
-        </Feature>,
-      ];
-    }
+    });
   } else {
     return [];
   }
@@ -667,59 +670,93 @@ const missionTrajectoryLine = (
 
 const auxiliaryMissionLines = (
   homePositions,
-  missionItemsWithCoordinates,
+  allMissionItemsWithCoordinates,
+  missionMapping,
   returnToHomeItems
 ) => {
-  if (homePositions?.[0] && missionItemsWithCoordinates?.length > 0) {
-    const findSurroundingWaypoints = (current) => ({
-      before: missionItemsWithCoordinates.findLast((mi) => mi.index < current),
-      after: missionItemsWithCoordinates.find((mi) => mi.index > current),
+  if (allMissionItemsWithCoordinates) {
+    return missionMapping.flatMap((_, missionIndex) => {
+      const missionItemsWithCoordinates = allMissionItemsWithCoordinates.filter(
+        ({ item: { participants } }) =>
+          participants === undefined || participants.includes(missionIndex)
+      );
+
+      if (
+        homePositions?.[missionIndex] &&
+        missionItemsWithCoordinates?.length > 0
+      ) {
+        const findSurroundingWaypoints = (index) => ({
+          before: missionItemsWithCoordinates.findLast(
+            (mi) => mi.index < index
+          ),
+          after: missionItemsWithCoordinates.find((mi) => mi.index > index),
+        });
+
+        const makeFeature = (key, id, from, to) => (
+          <Feature
+            key={key}
+            id={id}
+            style={auxiliaryMissionItemLineStringStyle}
+          >
+            <geom.LineString
+              coordinates={[
+                mapViewCoordinateFromLonLat([from.lon, from.lat]),
+                mapViewCoordinateFromLonLat([to.lon, to.lat]),
+              ]}
+            />
+          </Feature>
+        );
+
+        const makeFeatures = ({ id, index }) => {
+          const { before, after } = findSurroundingWaypoints(index);
+          return [
+            ...(before
+              ? [
+                  makeFeature(
+                    featureKeyForRoleAndMissionIndex(
+                      `${id}.before`,
+                      missionIndex
+                    ),
+                    plannedTrajectoryIdToGlobalId(
+                      `${id}$before$${missionIndex}`
+                    ),
+                    before.coordinate,
+                    homePositions[missionIndex]
+                  ),
+                ]
+              : []),
+            ...(after
+              ? [
+                  makeFeature(
+                    featureKeyForRoleAndMissionIndex(
+                      `${id}.after`,
+                      missionIndex
+                    ),
+                    plannedTrajectoryIdToGlobalId(
+                      `${id}$after$${missionIndex}`
+                    ),
+                    homePositions[missionIndex],
+                    after.coordinate
+                  ),
+                ]
+              : []),
+          ];
+        };
+
+        return [
+          // Extend the array with an extra item at the beginning in order to also
+          // show a line connecting the home point to the first waypoint, as there
+          // is no "Return to home" mission item at the beginning of missions.
+          { id: 'start', index: -1 },
+          ...returnToHomeItems.map(({ index, item: { id } }) => ({
+            id,
+            index,
+          })),
+        ].flatMap(makeFeatures);
+      } else {
+        return [];
+      }
     });
-
-    const makeFeature = (id, key, from, to) => (
-      <Feature key={key} id={id} style={auxiliaryMissionItemLineStringStyle}>
-        <geom.LineString
-          coordinates={[
-            mapViewCoordinateFromLonLat([from.lon, from.lat]),
-            mapViewCoordinateFromLonLat([to.lon, to.lat]),
-          ]}
-        />
-      </Feature>
-    );
-
-    const makeFeatures = ({ id, index }) => {
-      const { before, after } = findSurroundingWaypoints(index);
-      return [
-        ...(before
-          ? [
-              makeFeature(
-                `auxiliaryMissionLineString_${id}_before`,
-                `${MISSION_ITEM_LINE_STRING_GLOBAL_ID}Aux_${id}_before`,
-                before.coordinate,
-                homePositions[0]
-              ),
-            ]
-          : []),
-        ...(after
-          ? [
-              makeFeature(
-                `auxiliaryMissionLineString_${id}_after`,
-                `${MISSION_ITEM_LINE_STRING_GLOBAL_ID}Aux_${id}_after`,
-                homePositions[0],
-                after.coordinate
-              ),
-            ]
-          : []),
-      ];
-    };
-
-    return [
-      // Extend the array with an extra item at the beginning in order to also
-      // show a line connecting the home point to the first waypoint, as there
-      // is no "Return to home" mission item at the beginning of missions.
-      { id: 'start', index: -1 },
-      ...returnToHomeItems.map(({ index, item: { id } }) => ({ id, index })),
-    ].flatMap(makeFeatures);
   } else {
     return [];
   }
@@ -811,6 +848,7 @@ const MissionInfoVectorSource = ({
   mapOrigin,
   missionItemsWithAreas,
   missionItemsWithCoordinates,
+  missionMapping,
   missionOrientation,
   missionOrigin,
   missionIndicesForTrajectories,
@@ -835,11 +873,13 @@ const MissionInfoVectorSource = ({
       missionTrajectoryLine(
         currentItemIndex,
         currentItemRatio,
-        missionItemsWithCoordinates
+        missionItemsWithCoordinates,
+        missionMapping
       ),
       auxiliaryMissionLines(
         homePositions,
         missionItemsWithCoordinates,
+        missionMapping,
         returnToHomeItems
       ),
       missionOriginMarker(missionOrientation, missionOrigin),
@@ -862,6 +902,9 @@ MissionInfoVectorSource.propTypes = {
   mapOrigin: PropTypes.arrayOf(PropTypes.number),
   missionItemsWithAreas: PropTypes.arrayOf(PropTypes.object),
   missionItemsWithCoordinates: PropTypes.arrayOf(PropTypes.object),
+  missionMapping: PropTypes.arrayOf(
+    PropTypes.oneOfType([PropTypes.string, PropTypes.oneOf([null])])
+  ),
   missionOrientation: CustomPropTypes.angle,
   missionOrigin: PropTypes.arrayOf(PropTypes.number),
   missionIndicesForTrajectories: PropTypes.arrayOf(PropTypes.number),
@@ -914,10 +957,11 @@ export const MissionInfoLayer = connect(
     missionItemsWithCoordinates: layer?.parameters?.showMissionItems
       ? getMissionItemsWithCoordinatesInOrder(state)
       : undefined,
+    missionMapping: getMissionMapping(state),
+    missionOrientation: getOutdoorShowOrientation(state),
     missionOrigin: layer?.parameters?.showMissionOrigin
       ? getOutdoorShowOrigin(state)
       : undefined,
-    missionOrientation: getOutdoorShowOrientation(state),
     /* prettier-ignore */
     missionIndicesForTrajectories:
       layer?.parameters?.showTrajectoriesOfSelection
