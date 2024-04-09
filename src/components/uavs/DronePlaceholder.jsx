@@ -12,7 +12,6 @@ const useStyles = makeStyles(
   (theme) => ({
     root: {
       position: 'relative',
-      marginBottom: theme.spacing(0.5),
     },
 
     avatar: {
@@ -63,7 +62,7 @@ const useStyles = makeStyles(
  * don't want to display a drone avatar but want to show a placeholder
  * instead that is of the same size as the avatar.
  */
-const DronePlaceholder = ({ editing, label, status }) => {
+const DronePlaceholder = ({ AvatarProps, editing, label, status }) => {
   const classes = useStyles();
   return (
     <div className={classes.root}>
@@ -72,6 +71,7 @@ const DronePlaceholder = ({ editing, label, status }) => {
           classes.avatar,
           classes[`avatar-${editing ? 'editing' : status}`]
         )}
+        {...AvatarProps}
       >
         {label}
       </Avatar>

@@ -5,6 +5,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 import Avatar from '@material-ui/core/Avatar';
+import Badge from '@material-ui/core/Badge';
 import Box from '@material-ui/core/Box';
 import IconButton from '@material-ui/core/IconButton';
 import ListItem from '@material-ui/core/ListItem';
@@ -34,6 +35,7 @@ import {
   schemaForMissionItemType,
   titleForMissionItemType,
 } from '~/model/missions';
+import { formatMissionId } from '~/utils/formatting';
 import {
   safelyFormatAltitudeWithReference,
   safelyFormatHeadingWithMode,
@@ -244,7 +246,15 @@ const MissionOverviewListItem = ({
       >
         {avatar && (
           <ListItemAvatar>
-            <Avatar className={isValid ? null : classes.error}>{avatar}</Avatar>
+            <Badge
+              badgeContent={item.participants?.map(formatMissionId).join(', ')}
+              color='primary'
+              overlap='circular'
+            >
+              <Avatar className={isValid ? null : classes.error}>
+                {avatar}
+              </Avatar>
+            </Badge>
           </ListItemAvatar>
         )}
         <ListItemText primary={primaryText} secondary={secondaryText} />
@@ -267,6 +277,7 @@ MissionOverviewListItem.propTypes = {
   item: PropTypes.shape({
     type: PropTypes.string,
     parameters: PropTypes.object,
+    participants: PropTypes.arrayOf(PropTypes.number),
   }),
   missionGeofenceStatus: PropTypes.oneOf(Object.values(Status)),
   ratio: PropTypes.number,

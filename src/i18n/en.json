@@ -50,7 +50,7 @@
     "removeSelectedItems": "Remove selected items"
   },
   "UAVSelector": {
-    "noMatchingUAVs": "No matching UAVs for: \"{{filter}}\""
+    "noMatchingUAVs": "No matches found for: \"{{filter}}\""
   },
   "UAVStatus": {
     "noConnected": "There are no connected UAVs at the moment"

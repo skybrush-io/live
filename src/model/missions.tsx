@@ -119,6 +119,7 @@ export type MissionItemLike = {
   id: string;
   type: MissionItemType;
   parameters: Record<string, unknown>;
+  participants?: MissionIndex[];
 };
 
 export const isMissionItemLike = (item: unknown): item is MissionItemLike =>
