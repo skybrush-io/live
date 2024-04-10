@@ -43,7 +43,6 @@ import {
   getUAVIdList,
   getUnmappedUAVIds,
 } from '~/features/uavs/selectors';
-import { openUploadDialogForJob } from '~/features/upload/slice';
 import { ServerPlanError } from '~/flockwave/operations';
 import messageHub from '~/message-hub';
 import { FeatureType } from '~/model/features';
@@ -67,7 +66,6 @@ import {
 import { calculateDistanceMatrix, euclideanDistance2D } from '~/utils/math';
 import { chooseUniqueId } from '~/utils/naming';
 
-import { JOB_TYPE } from './constants';
 import {
   contextVolatilities,
   ContextVolatility,
@@ -114,7 +112,6 @@ import {
   updateMissionItemParameters,
   _setMissionItemsFromValidatedArray,
 } from './slice';
-import { getMissionItemUploadJobPayload } from './upload';
 
 /**
  * Thunk that fills the empty slots in the current mapping from the spare drones
@@ -549,18 +546,6 @@ export const setMissionItemsFromArray = (items) => (dispatch) => {
   }
 
   dispatch(_setMissionItemsFromValidatedArray(validItems));
-};
-
-/**
- * Thunk that uploads the current list of mission items to the selected UAV.
- */
-export const uploadMissionItemsToSelectedUAV = () => (dispatch, getState) => {
-  const state = getState();
-  const selectedUAVId = getSingleSelectedUAVId(state);
-  if (selectedUAVId !== undefined) {
-    const payload = getMissionItemUploadJobPayload(state);
-    dispatch(openUploadDialogForJob({ job: { type: JOB_TYPE, payload } }));
-  }
 };
 
 /**

@@ -1,4 +1,5 @@
 import { produce } from 'immer';
+import isNil from 'lodash-es/isNil';
 import { CANCEL } from 'redux-saga';
 
 import { GeofenceAction } from '~/features/safety/model';
@@ -23,7 +24,36 @@ import {
   getGPSBasedHomePositionsInMission,
   getMissionItemsInOrder,
   getMissionName,
+  getReverseMissionMapping,
 } from './selectors';
+
+/**
+ * Selector that constructs the mission description to be uploaded to a
+ * drone with the given ID.
+ */
+export function createMissionConfigurationForUav(state, uavId) {
+  const reverseMapping = getReverseMissionMapping(state);
+  const missionIndex = reverseMapping?.[uavId];
+
+  if (isNil(missionIndex)) {
+    throw new Error(`UAV ${uavId} is not in the current mission`);
+  }
+
+  const payload = getMissionItemUploadJobPayload(state);
+
+  return {
+    ...payload,
+    items: payload.items.filter(
+      (item) =>
+        item.participants === undefined ||
+        item.participants.includes(missionIndex)
+    ),
+    // TODO: Think about this.
+    startPositions: payload.startPositions.filter(
+      (_position, index) => index === missionIndex
+    ),
+  };
+}
 
 /**
  * Handles a mission item upload session to a single drone. Returns a promise that
@@ -31,20 +61,14 @@ import {
  * with a cancellation callback for Redux-saga.
  *
  * @param uavId    the ID of the UAV to upload the mission items to
- * @param payload  the mission items
+ * @param data     the mission items, as selected from the state store
  */
-async function runSingleMissionItemUpload({ uavId, payload }) {
-  const { items } = payload ?? {};
-
-  if (!Array.isArray(items) || items.length === 0) {
-    return;
-  }
-
+async function runSingleMissionItemUpload({ uavId, data }) {
   // No need for a timeout here; it utilizes the message hub, which has its
   // own timeout for failed command executions (although it is quite long)
   const cancelToken = messageHub.createCancelToken();
   const promise = messageHub.execute.uploadMission(
-    { uavId, data: payload, format: 'skybrush-live/mission-items' },
+    { uavId, data, format: 'skybrush-live/mission-items' },
     { cancelToken }
   );
   promise[CANCEL] = () => cancelToken.cancel({ allowFailure: true });
@@ -63,7 +87,7 @@ async function runSingleMissionItemUpload({ uavId, payload }) {
  * @return a new mission item when it is modified, or the item itself if it
  *         does not need to be modified
  */
-export function transformMissionItemBeforeUpload(item, state) {
+function transformMissionItemBeforeUpload(item, state) {
   switch (item.type) {
     case MissionItemType.UPDATE_FLIGHT_AREA:
       return produce(item, (draft) => {
@@ -98,6 +122,7 @@ export const getMissionItemUploadJobPayload = (state) => ({
   items: getMissionItemsInOrder(state).map((item) =>
     transformMissionItemBeforeUpload(item, state)
   ),
+  // TODO: Think about this.
   startPositions: getGPSBasedHomePositionsInMission(state).map(
     (hp) => hp && toScaledJSONFromObject(hp)
   ),
@@ -145,7 +170,8 @@ const getGeofenceSpecificationForWaypointMission = (state) => {
 
 const spec = {
   executor: runSingleMissionItemUpload,
-  scope: JobScope.SINGLE,
+  selector: createMissionConfigurationForUav,
+  scope: JobScope.MISSION,
   title: 'Upload mission items',
   type: JOB_TYPE,
 };
