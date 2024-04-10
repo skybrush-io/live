@@ -18,20 +18,23 @@ import Import from '~/icons/Upload';
 
 import FileButton from '~/components/FileButton';
 import {
-  TooltipWithContainerFromContext as Tooltip,
   PopoverWithContainerFromContext as Popover,
+  TooltipWithContainerFromContext as Tooltip,
 } from '~/containerContext';
 import {
   clearMission,
   exportMission,
   importMission,
   invokeMissionPlanner,
-  uploadMissionItemsToSelectedUAV,
 } from '~/features/mission/actions';
-import { isMissionPartiallyCompleted } from '~/features/mission/selectors';
+import { MISSION_ITEM_UPLOAD_JOB } from '~/features/mission/constants';
+import {
+  hasNonemptyMappingSlot,
+  isMissionPartiallyCompleted,
+} from '~/features/mission/selectors';
 import { showMissionPlannerDialog } from '~/features/mission/slice';
-import { getSingleSelectedUAVId } from '~/features/uavs/selectors';
 import { isConnected as isConnectedToServer } from '~/features/servers/selectors';
+import { openUploadDialogForJob } from '~/features/upload/slice';
 import usePopover from '~/hooks/usePopover';
 
 const useStyles = makeStyles(
@@ -165,8 +168,7 @@ export default connect(
   (state) => ({
     canPlan: isConnectedToServer(state),
     canResume: isMissionPartiallyCompleted(state),
-    canUpload:
-      isConnectedToServer(state) && getSingleSelectedUAVId(state) !== undefined,
+    canUpload: isConnectedToServer(state) && hasNonemptyMappingSlot(state),
   }),
   // mapDispatchToProps
   {
@@ -175,6 +177,9 @@ export default connect(
     onImportMission: importMission,
     onInvokePlanner: invokeMissionPlanner,
     onShowMissionPlannerDialog: showMissionPlannerDialog,
-    onUploadMissionItems: uploadMissionItemsToSelectedUAV,
+    onUploadMissionItems: () =>
+      openUploadDialogForJob({
+        job: MISSION_ITEM_UPLOAD_JOB,
+      }),
   }
 )(MissionOverviewPanelHeader);
