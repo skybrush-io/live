@@ -95,6 +95,8 @@ export type MissionItem = {
   id: string;
   type: MissionItemType;
   parameters: Record<string, any>;
+  // Items with `undefined` participant lists belong to all mission indices
+  participants?: number[];
 };
 
 const altitudeSchema = {
