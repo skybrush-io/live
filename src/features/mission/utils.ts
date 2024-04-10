@@ -3,6 +3,7 @@ import isNil from 'lodash-es/isNil';
 import { type Nullable } from '~/utils/types';
 
 import { type MissionSliceState } from './slice';
+import { MissionItem } from '~/model/missions';
 
 /**
  * Helper function that takes an array and returns an array that is a shallow
@@ -88,3 +89,8 @@ export function getNewEditIndex(
 
   return newIndex;
 }
+
+export const doesMissionIndexParticipateInMissionItem =
+  (missionIndex: number) =>
+  ({ participants }: MissionItem): boolean =>
+    participants === undefined || participants.includes(missionIndex);

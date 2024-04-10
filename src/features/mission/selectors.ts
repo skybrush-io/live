@@ -55,6 +55,8 @@ import { type Nullable } from '~/utils/types';
 
 import { type MissionSliceState } from './slice';
 
+import { doesMissionIndexParticipateInMissionItem } from './utils';
+
 /**
  * Key selector function for cached selectors that cache things by mission
  * index.
@@ -603,12 +605,12 @@ export const getConvexHullOfMissionInWorldCoordinates: AppSelector<
   getGPSBasedHomePositionsInMission,
   getMissionItemsWithCoordinatesInOrder,
   getMissionItemsWithAreasInOrder,
-  (homePositions, missionItemsWithCoorinates, missionItemsWithAreas) =>
+  (homePositions, missionItemsWithCoordinates, missionItemsWithAreas) =>
     convexHull2D([
       ...rejectNullish(homePositions).map(
         ({ lon, lat }): Coordinate2D => [lon, lat]
       ),
-      ...missionItemsWithCoorinates.map(
+      ...missionItemsWithCoordinates.map(
         ({ coordinate: { lon, lat } }): Coordinate2D => [lon, lat]
       ),
       ...missionItemsWithAreas.flatMap(({ area: { points } }) => points),
@@ -655,8 +657,8 @@ export const isWaypointMissionConvexHullInsideGeofence: AppSelector<
 );
 
 /**
- * Returns the maximum distance of any waypoint or flight area vertex in the
- * mission from the first home position in the UAV mapping.
+ * Returns the maximum distance of any point or area in the mission from the
+ * home positions of its participants.
  */
 export const getMaximumHorizontalDistanceFromHomePositionInWaypointMission: AppSelector<
   number | undefined
@@ -664,23 +666,38 @@ export const getMaximumHorizontalDistanceFromHomePositionInWaypointMission: AppS
   getGPSBasedHomePositionsInMission,
   getMissionItemsWithCoordinatesInOrder,
   getMissionItemsWithAreasInOrder,
-  ([homePosition], missionItemsWithCoorinates, missionItemsWithAreas) => {
-    if (!homePosition) {
-      return;
-    }
+  (homePositions, allMissionItemsWithCoordinates, allMissionItemsWithAreas) =>
+    max(
+      homePositions.map((homePosition, missionIndex) => {
+        const missionItemsWithCoordinates =
+          allMissionItemsWithCoordinates.filter(({ item }) =>
+            doesMissionIndexParticipateInMissionItem(missionIndex)(item)
+          );
+        const missionItemsWithAreas = allMissionItemsWithAreas.filter(
+          ({ item }) =>
+            doesMissionIndexParticipateInMissionItem(missionIndex)(item)
+        );
 
-    const homePoint = TurfHelpers.point([homePosition.lon, homePosition.lat]);
-    return max(
-      [
-        ...missionItemsWithCoorinates.map<[number, number]>(
-          ({ coordinate: { lon, lat } }) => [lon, lat]
-        ),
-        ...missionItemsWithAreas.flatMap(({ area: { points } }) => points),
-      ].map((point) =>
-        turfDistanceInMeters(homePoint, TurfHelpers.point(point))
-      )
-    );
-  }
+        if (!homePosition) {
+          return;
+        }
+
+        const homePoint = TurfHelpers.point([
+          homePosition.lon,
+          homePosition.lat,
+        ]);
+        return max(
+          [
+            ...missionItemsWithCoordinates.map<[number, number]>(
+              ({ coordinate: { lon, lat } }) => [lon, lat]
+            ),
+            ...missionItemsWithAreas.flatMap(({ area: { points } }) => points),
+          ].map((point) =>
+            turfDistanceInMeters(homePoint, TurfHelpers.point(point))
+          )
+        );
+      })
+    )
 );
 
 /**

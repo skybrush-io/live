@@ -31,6 +31,7 @@ import {
   getMissionMapping,
   getSelectedMissionIndicesForTrajectoryDisplay,
 } from '~/features/mission/selectors';
+import { doesMissionIndexParticipateInMissionItem } from '~/features/mission/utils';
 import {
   getConvexHullOfShowInWorldCoordinates,
   getOutdoorShowOrientation,
@@ -597,8 +598,8 @@ const missionTrajectoryLine = (
   if (allMissionItemsWithCoordinates) {
     return missionMapping.flatMap((_, missionIndex) => {
       const missionItemsWithCoordinates = allMissionItemsWithCoordinates.filter(
-        ({ item: { participants } }) =>
-          participants === undefined || participants.includes(missionIndex)
+        ({ item }) =>
+          doesMissionIndexParticipateInMissionItem(missionIndex)(item)
       );
 
       // This should be done like below but lodash doesn't have `span`
@@ -677,8 +678,8 @@ const auxiliaryMissionLines = (
   if (allMissionItemsWithCoordinates) {
     return missionMapping.flatMap((_, missionIndex) => {
       const missionItemsWithCoordinates = allMissionItemsWithCoordinates.filter(
-        ({ item: { participants } }) =>
-          participants === undefined || participants.includes(missionIndex)
+        ({ item }) =>
+          doesMissionIndexParticipateInMissionItem(missionIndex)(item)
       );
 
       if (

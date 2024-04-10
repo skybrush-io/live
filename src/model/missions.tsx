@@ -119,6 +119,7 @@ export type MissionItemLike = {
   id: string;
   type: MissionItemType;
   parameters: Record<string, unknown>;
+  // Items with `undefined` participant lists belong to all mission indices
   participants?: MissionIndex[];
 };
 
