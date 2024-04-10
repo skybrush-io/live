@@ -1,5 +1,6 @@
 import isNil from 'lodash-es/isNil';
 
+import { type MissionItem } from '~/model/missions';
 import { type Nullable } from '~/utils/types';
 
 import { type MissionSliceState } from './slice';
@@ -88,3 +89,8 @@ export function getNewEditIndex(
 
   return newIndex;
 }
+
+export const doesMissionIndexParticipateInMissionItem =
+  (missionIndex: number) =>
+  ({ participants }: MissionItem): boolean =>
+    participants === undefined || participants.includes(missionIndex);

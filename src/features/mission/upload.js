@@ -26,6 +26,7 @@ import {
   getMissionName,
   getReverseMissionMapping,
 } from './selectors';
+import { doesMissionIndexParticipateInMissionItem } from './utils';
 
 /**
  * Selector that constructs the mission description to be uploaded to a
@@ -44,9 +45,7 @@ export function createMissionConfigurationForUav(state, uavId) {
   return {
     ...payload,
     items: payload.items.filter(
-      (item) =>
-        item.participants === undefined ||
-        item.participants.includes(missionIndex)
+      doesMissionIndexParticipateInMissionItem(missionIndex)
     ),
     // TODO: Think about this.
     startPositions: payload.startPositions.filter(
