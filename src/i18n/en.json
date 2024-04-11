@@ -270,6 +270,20 @@
     "showOrigin": "Show origin",
     "warningText": "Automatic show origin and orientation calculation assumes that all drones point towards the X axis of the show <underline>or</underline> that you specified their offset relative the X axis with the setting above. Absolute takeoff headings are not supported."
   },
+  "parameterListSidebar": {
+    "import": "Import…",
+    "nextStep": "Next step",
+    "removeAllItems": "Remove all items from manifest"
+  },
+  "parameterUploadMainPanel": {
+    "parameterNamesValues": "Parameter names and values",
+    "parameterUploadHint": "Press <kbd>⇧</kbd> + <kbd>Enter</kbd> to add the parameter to the manifest. Click on a parameter in the sidebar to remove it from the manifest.",
+    "rebootAfterUpload": "Reboot after upload",
+    "specifyEntries": "Specify entries as name=value, one parameter per row."
+  },
+  "parameterUploadSetupDialog": {
+    "uploadParameters": "Upload parameters"
+  },
   "preferences": "Preferences",
   "recalculateMappingButton": {
     "findOptimalMapping": "Find optimal mapping",

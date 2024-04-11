@@ -264,6 +264,20 @@
     "showOrigin": "Műsor origója",
     "warningText": "Az automatikus műsor origó és irány számítás feltételezi, hogy az összes drón a műsor X tengelye felé mutat <underline>vagy</underline>, hogy a fenti beállítással meghatározta az eltolásukat az X tengelyhez képest. Az abszolút felszállási irányok nem támogatottak."
   },
+  "parameterListSidebar": {
+    "import": "Importálás…",
+    "nextStep": "Tovább",
+    "removeAllItems": "Minden elem eltávolítása a jegyzékből"
+  },
+  "parameterUploadMainPanel": {
+    "parameterNamesValues": "Paraméter nevek és értékek",
+    "parameterUploadHint": "A paraméter jegyzékhez adásához nyomja meg a <kbd>⇧</kbd> + <kbd>Enter</kbd>-t. A jegyzékből való eltávolításához kattintson a paraméterre az oldalsávon.",
+    "rebootAfterUpload": "Feltöltés után indítsa újra",
+    "specifyEntries": "Adja meg a bejegyzéseket név=érték formában, soronként egy paramétert."
+  },
+  "parameterUploadSetupDialog": {
+    "uploadParameters": "Paraméterek feltöltése"
+  },
   "preferences": "Beállítások",
   "recalculateMappingButton": {
     "findOptimalMapping": "Optimális térképezés keresése",
