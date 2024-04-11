@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
+import { Trans, useTranslation } from 'react-i18next';
 import { connect, useDispatch, useSelector } from 'react-redux';
 
 import Box from '@material-ui/core/Box';
@@ -17,6 +18,7 @@ import { setRebootAfterUpload, updateParametersInManifest } from './slice';
 const ParametersTextFieldPresentation = ({ onChange, optimizeUIForTouch }) => {
   const [parameterString, setParameterString] = useState('');
   const [error, setError] = useState(null);
+  const { t } = useTranslation();
 
   const handleChange = (event) => {
     setParameterString(event.target.value);
@@ -65,12 +67,10 @@ const ParametersTextFieldPresentation = ({ onChange, optimizeUIForTouch }) => {
       multiline
       autoFocus={!optimizeUIForTouch}
       error={Boolean(error)}
-      label='Parameter names and values'
+      label={t('parameterUploadMainPanel.parameterNamesValues')}
       variant='filled'
       minRows={7}
-      helperText={
-        error || 'Specify entries as name=value, one parameter per row.'
-      }
+      helperText={error || t('parameterUploadMainPanel.specifyEntries')}
       value={parameterString}
       onBlur={validate}
       onChange={handleChange}
@@ -94,6 +94,7 @@ const ParametersTextField = connect(
 const ParameterUploadMainPanel = () => {
   const shouldReboot = useSelector(shouldRebootAfterParameterUpload);
   const dispatch = useDispatch();
+  const { t } = useTranslation();
 
   const handleManifestChange = ({ value, valid, commit }) => {
     if (valid && commit && value.length > 0) {
@@ -110,9 +111,10 @@ const ParameterUploadMainPanel = () => {
       <ParametersTextField onChange={handleManifestChange} />
       <Box pt={1}>
         <Typography variant='body1'>
-          Press <kbd>⇧</kbd> + <kbd>Enter</kbd> to add the parameter to the
-          manifest. Click on a parameter in the sidebar to remove it from the
-          manifest.
+          <Trans
+            i18nKey='parameterUploadMainPanel.parameterUploadHint'
+            components={{ kbd: <kbd /> }}
+          />
         </Typography>
       </Box>
       <Box pt={1}>
@@ -125,7 +127,7 @@ const ParameterUploadMainPanel = () => {
               onChange={handleRebootStateChange}
             />
           }
-          label='Reboot after upload'
+          label={t('parameterUploadMainPanel.rebootAfterUpload')}
         />
       </Box>
     </Box>
