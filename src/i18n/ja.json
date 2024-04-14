@@ -48,12 +48,12 @@
     "removeSelectedItems": "選択中のものを削除"
   },
   "UAVStatus": {
-    "noConnected": "UAVと接続していません"
+    "noConnected": "UAVが接続されていません"
   },
   "alerts": {
     "acknowledgeAlerts": "アラートを確認する",
-    "clickToMute": "音声アラートをミュートする場合はクリックしてください。",
-    "muted": "音声アラートはミュートされています。ミュートを解除する場合はクリックしてください。"
+    "clickToMute": "音声アラートをミュート",
+    "muted": "音声アラートのミュートを解除"
   },
   "altitudeSummaryButton": {
     "clickToChange": "クリックして{{altitudeType}}を変更。",
@@ -301,7 +301,7 @@
     "clocksSync": "クロック同期",
     "connected": "接続完了",
     "connecting": "接続中です…",
-    "disconnected": "サーバーと切断",
+    "disconnected": "サーバーに接続されていません",
     "disconnecting": "切断中です…",
     "roundTripTime": "ラウンドトリップタイム",
     "unknownState": "状態不明",
@@ -321,7 +321,7 @@
       "optimizeForSingleUAV": "単一UAVの操作のためにインターフェースを最適化",
       "optimizeUIForTouch": "タッチディスプレイ端末用に画面を最適化",
       "showMouseCoordinates": "マウス座標を表示",
-      "showScaleLine": "目盛り線を表示"
+      "showScaleLine": "縮尺を表示"
     },
     "tabs": {
       "apiKeys": "APIキー",
@@ -394,7 +394,7 @@
     "placementAccuracy": "配置精度≤ {{distance}}",
     "reload": "ドローンショーを再読み込み",
     "revokeAuthorization": "クリックして許可を取り消す",
-    "selectFile": "ドローンショーファイルを選択またはドロップしてください",
+    "selectFile": "SKYCファイルを選択またはドロップしてください",
     "setupEnvironment": "環境を設定",
     "setupGeofence": "ジオフェンスの設定",
     "setupTakeoffArea": "離陸エリアの設定",
@@ -497,7 +497,7 @@
   "view": {
     "beacon-list": "ビーコン",
     "dock-list": "ドック",
-    "feature-list": "機能",
+    "feature-list": "地物",
     "field-notes": "フィールドノート",
     "layer-list": "レイヤー",
     "lcd-clock-panel": "時計",
@@ -518,7 +518,7 @@
     "noWeatherInfo": "この日の天気情報はありません",
     "refreshing": "リフレッシュ中…",
     "sunrise": "日の出",
-    "sunset": "日没",
+    "sunset": "日の入り",
     "timezone": "タイムゾーン",
     "utcOffset": "UTCオフセット"
   }
