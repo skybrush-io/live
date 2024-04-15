@@ -37,7 +37,7 @@
   },
   "UAVOpButtonGrp": {
     "armMotors": "Arma motori",
-    "details": "Dettagli...",
+    "details": "Dettagli…",
     "disarmMotors": "Disarma motori",
     "flashLights": "Lampeggia luci",
     "properties": "Proprietà",
@@ -183,11 +183,11 @@
     "connectToServer": "Connettiti al server con supporto per le mappe offline",
     "serverNotSupport": "Il Server non supporta il caching per le mappe offline",
     "serverSupport": "il Server supporta il caching per le mappe offline",
-    "useCachedMapTiles": "Usa lo lo strato della mappa cached dal server"
+    "useCachedMapTiles": "Usa lo strato della mappa cached dal server"
   },
   "mapContextMenu": {
     "clearGeofence": "Pulisci geofence",
-    "details": "Dettagli...",
+    "details": "Dettagli…",
     "flyHere": "Vola qui",
     "flyHereAtAltitude": "Vola qui all'altitudine…",
     "properties": "Proprietà…",
