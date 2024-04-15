@@ -1,7 +1,7 @@
 {
   "ConnectionStatusMiniList": {
     "noConnections": "Dieser Server verwendet keine Verbindungen.",
-    "useSecondaryChannel": "Verwenden Sie einen sekundären Kanal."
+    "useSecondaryChannel": "Verwenden Sie einen sekundären Kanal"
   },
   "DrawingToolbar": {
     "addMarker": "Markierung hinzufügen",
