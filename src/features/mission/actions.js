@@ -26,7 +26,10 @@ import {
 } from '~/features/map-features/slice';
 import { showPromptDialog } from '~/features/prompt/actions';
 import { getGeofenceSettings } from '~/features/safety/selectors';
-import { addGeofencePolygonBasedOnShowTrajectories } from '~/features/show/actions';
+import {
+  addGeofencePolygonBasedOnShowTrajectories,
+  clearLoadedShow,
+} from '~/features/show/actions';
 import {
   getFirstPointsOfTrajectories,
   getOutdoorShowCoordinateSystem,
@@ -532,6 +535,30 @@ export const prepareMappingForMultiUAVMissionFromStartPositions =
     dispatch(recalculateMapping());
   };
 
+export const changeMissionType = (newMissionType) => (dispatch, getState) => {
+  const oldMissionType = getMissionType(getState());
+
+  if (oldMissionType === newMissionType) {
+    return;
+  }
+
+  switch (oldMissionType) {
+    case MissionType.SHOW: {
+      dispatch(clearLoadedShow());
+      break;
+    }
+
+    case MissionType.WAYPOINT: {
+      dispatch(clearMission());
+      break;
+    }
+
+    // No default
+  }
+
+  dispatch(setMissionType(newMissionType));
+};
+
 /**
  * Thunk that adds a new mission item of the given type to the end of the
  * current mission.
@@ -784,7 +811,7 @@ export const invokeMissionPlanner =
     }
 
     if (Array.isArray(items)) {
-      dispatch(setMissionType(MissionType.WAYPOINT));
+      dispatch(changeMissionType(MissionType.WAYPOINT));
       dispatch(setMissionName(name));
       dispatch(setMissionItemsFromArray(items.map(processReceivedMissionItem)));
 
@@ -947,7 +974,7 @@ export const restoreMission =
     progress: { id: currentMissionItemId, ratio: currentMissionItemRatio },
   }) =>
   (dispatch, _getState) => {
-    dispatch(setMissionType(MissionType.WAYPOINT));
+    dispatch(changeMissionType(MissionType.WAYPOINT));
     dispatch(setMissionName(name));
     dispatch(setMissionItemsFromArray(items));
     dispatch(setMappingLength(homePositions.length));
