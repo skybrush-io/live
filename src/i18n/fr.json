@@ -40,7 +40,7 @@
   },
   "UAVOpButtonGrp": {
     "armMotors": "Armer les moteurs",
-    "details": "Détails...",
+    "details": "Détails…",
     "disarmMotors": "Désarmer les moteurs",
     "flashLights": "Faire clignoter les lumières",
     "removeItemsMarkedGone": "Supprimer les éléments marqués comme disparus",
@@ -197,7 +197,7 @@
   },
   "mapContextMenu": {
     "clearGeofence": "Vider la Barrière géographique",
-    "details": "Détails...",
+    "details": "Détails…",
     "flyHere": "Voler ici",
     "flyHereAtAltitude": "Voler ici à l'altitude…",
     "properties": "Propriétés…",
@@ -231,7 +231,7 @@
     "planner": {
       "schema": {
         "error": "Erreur lors du chargement des paramètres de la mission à partir du serveur",
-        "loading": "Recherche les paramètres de mission...",
+        "loading": "Recherche les paramètres de mission…",
         "notFound": "Le serveur connecté ne fournit pas de schéma pour le type de mission sélectionné"
       }
     }
