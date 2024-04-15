@@ -8,7 +8,7 @@
   },
   "DrawingToolbar": {
     "addMarker": "Jelölő hozzáadása",
-    "addWaypoint": "",
+    "addWaypoint": "Útvonalpont hozzáadása",
     "cutHole": "Lyuk vágás sokszögbe",
     "drawCircle": "Kör rajzolás",
     "drawPath": "Útvonal rajzolás",
@@ -40,7 +40,7 @@
   },
   "UAVOpButtonGrp": {
     "armMotors": "Motorok indítása",
-    "details": "Részletek...",
+    "details": "Részletek…",
     "disarmMotors": "Motorok leállítása",
     "flashLights": "Fény villogtatása",
     "removeItemsMarkedGone": "Eltűntként megjelölt elemek eltávolítása",
@@ -120,14 +120,20 @@
     "action": {
       "apply": "Alkalmaz",
       "cancel": "Mégse",
-      "clear": "Törlés",
+      "clear": "Tisztítás",
       "close": "Bezár",
       "delete": "Törlés",
       "discard": "Elvetés",
+      "edit": "Szerkesztés",
+      "export": "Exportálás",
+      "import": "Importálás",
+      "open": "Megnyitás",
       "remove": "Eltávolítás",
+      "retry": "Újrapróbálás",
       "save": "Mentés",
       "select": "Kijelölés",
-      "start": "Indítás"
+      "start": "Indítás",
+      "stop": "Megállítás"
     },
     "commands": {
       "land": "Leszállás",
@@ -163,8 +169,8 @@
     }
   },
   "header": {
-    "distanceSummary": "",
-    "velocitySummary": ""
+    "distanceSummary": "Felszállási pozíciótól mért legkisebb és legnagyobb távolság",
+    "velocitySummary": "Legnagyobb vízszintes és függőleges sebesség"
   },
   "help": "Segítség",
   "indoorEnvironmentEditor": {
@@ -191,10 +197,10 @@
   },
   "mapContextMenu": {
     "clearGeofence": "Geofence törlése",
-    "details": "Részletek...",
+    "details": "Részletek…",
     "flyHere": "Repülj ide",
     "flyHereAtAltitude": "Repülj ide ebben a magasságban…",
-    "properties": "Tulajdonságok...",
+    "properties": "Tulajdonságok…",
     "setMapOriginHere": "Térkép origó beállítása ide",
     "setShowOriginHere": "Műsor origó beállítása ide",
     "subtractPolygon": "{{subtrahend}} kivonása {{minuend}}-ból/-ből",
@@ -224,9 +230,9 @@
   "mission": {
     "planner": {
       "schema": {
-        "error": "",
-        "loading": "",
-        "notFound": ""
+        "error": "Hiba a művelet paraméter sémájának szerverről történő betöltésekor",
+        "loading": "Műveleti paraméterek lekérdezése…",
+        "notFound": "A csatlakoztatott szerver nem biztosít sémát a kiválasztott művelet típushoz"
       }
     }
   },
@@ -296,7 +302,7 @@
     "connecting": "Kapcsolódás…",
     "disconnected": "Leválasztva a szerverről",
     "disconnecting": "Leválasztás…",
-    "roundTripTime": "Köridő",
+    "roundTripTime": "Válaszadási idő",
     "unknownState": "Ismeretlen állapot",
     "version": "Szerver verzió"
   },
@@ -431,7 +437,7 @@
       "battery": "Akku",
       "default": "Alap",
       "flightMode": "Mód",
-      "gpsFix": "GPS pont.",
+      "gpsFix": "GPS fix",
       "heading": "Irány",
       "status": "Státusz"
     },
