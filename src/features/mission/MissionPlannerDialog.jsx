@@ -13,7 +13,7 @@ import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
 import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
 import { isConnected as isConnectedToServer } from '~/features/servers/selectors';
 
-import { clearMission, invokeMissionPlanner } from './actions';
+import { invokeMissionPlanner } from './actions';
 import {
   getGeofencePolygon,
   getMissionPlannerDialogSelectedType,
@@ -40,7 +40,6 @@ const MissionPlannerDialog = ({
   isConnectedToServer,
   isGeofenceOwnedByUser,
   onApplyGeofenceChanged,
-  onClearMission,
   onClose,
   onInvokePlanner,
   onSaveContextParameters,
@@ -101,7 +100,6 @@ const MissionPlannerDialog = ({
 
   const invokePlanner = () => {
     if (onInvokePlanner && canInvokePlanner && isConnectedToServer) {
-      onClearMission();
       onInvokePlanner();
     }
   };
@@ -166,7 +164,6 @@ MissionPlannerDialog.propTypes = {
   isGeofenceOwnedByUser: PropTypes.bool,
   open: PropTypes.bool,
   onApplyGeofenceChanged: PropTypes.func,
-  onClearMission: PropTypes.func,
   onClose: PropTypes.func,
   onInvokePlanner: PropTypes.func,
   onSaveContextParameters: PropTypes.func,
@@ -191,7 +188,6 @@ export default connect(
   {
     onApplyGeofenceChanged: (event) =>
       setMissionPlannerDialogApplyGeofence(event.target.checked),
-    onClearMission: clearMission,
     onClose: closeMissionPlannerDialog,
     onInvokePlanner: invokeMissionPlanner,
     onSaveContextParameters: setMissionPlannerDialogContextParameters,

@@ -11,7 +11,10 @@ import { loadCompiledShow as processFile } from '@skybrush/show-format';
 
 import { removeFeaturesByIds } from '~/features/map-features/slice';
 import { getFeaturesInOrder } from '~/features/map-features/selectors';
-import { addGeofencePolygon } from '~/features/mission/actions';
+import {
+  addGeofencePolygon,
+  changeMissionType,
+} from '~/features/mission/actions';
 import {
   updateHomePositions,
   updateLandingPositions,
@@ -101,7 +104,7 @@ export const setupMissionFromShow = () => (dispatch, getState) => {
   const landingPositions = getLastPointsOfTrajectoriesInWorldCoordinates(state);
   const takeoffHeading = getCommonTakeoffHeading(state);
 
-  dispatch(setMissionType(MissionType.SHOW));
+  dispatch(changeMissionType(MissionType.SHOW));
   dispatch(updateHomePositions(homePositions));
   dispatch(updateLandingPositions(landingPositions));
   dispatch(updateTakeoffHeadings(takeoffHeading));
