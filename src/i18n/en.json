@@ -40,7 +40,7 @@
   },
   "UAVOpButtonGrp": {
     "armMotors": "Arm motors",
-    "details": "Details...",
+    "details": "Details…",
     "disarmMotors": "Disarm motors",
     "flashLights": "Flash lights",
     "removeItemsMarkedGone": "Remove items marked as gone",
@@ -197,7 +197,7 @@
   },
   "mapContextMenu": {
     "clearGeofence": "Clear geofence",
-    "details": "Details...",
+    "details": "Details…",
     "flyHere": "Fly here",
     "flyHereAtAltitude": "Fly here at altitude…",
     "properties": "Properties…",
@@ -231,7 +231,7 @@
     "planner": {
       "schema": {
         "error": "Error while loading mission parameter schema from server",
-        "loading": "Retrieving mission parameters...",
+        "loading": "Retrieving mission parameters…",
         "notFound": "The connected server doesn't provide a schema for the selected mission type"
       }
     }
