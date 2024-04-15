@@ -65,6 +65,7 @@ const MissionPlannerMainPanel = ({
     messageHub,
     missionPlannerInfoCache,
     onMissionTypeChange,
+    onMissionTypeCleared,
     selectedType,
     selectedTypeInfo,
   ]);
