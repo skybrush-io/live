@@ -11,7 +11,10 @@ import { loadShowSpecificationAndZip as processFile } from '@skybrush/show-forma
 
 import { getFeaturesInOrder } from '~/features/map-features/selectors';
 import { removeFeaturesByIds } from '~/features/map-features/slice';
-import { setMappingLength } from '~/features/mission/actions';
+import {
+  changeMissionType,
+  setMappingLength,
+} from '~/features/mission/actions';
 import {
   setCommandsAreBroadcast,
   setMissionType,
@@ -129,7 +132,7 @@ export const setupMissionFromShow = () => (dispatch, getState) => {
   const landingPositions = getLastPointsOfTrajectoriesInWorldCoordinates(state);
   const takeoffHeading = getCommonTakeoffHeading(state);
 
-  dispatch(setMissionType(MissionType.SHOW));
+  dispatch(changeMissionType(MissionType.SHOW));
   dispatch(updateHomePositions(homePositions));
   dispatch(updateLandingPositions(landingPositions));
   dispatch(updateTakeoffHeadings(takeoffHeading));
