@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
+import Box from '@material-ui/core/Box';
+
 import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
 import ResizableBox from '@skybrush/mui-components/lib/ResizableBox';
 
@@ -71,7 +73,9 @@ const UAVDetailsDialog = ({
         boxProps={{ maxWidth: '100%' }}
         onResizeStop={onResizeStop}
       >
-        <UAVDetailsDialogBody />
+        <Box height='100%' overflow='auto'>
+          <UAVDetailsDialogBody />
+        </Box>
       </ResizableBox>
     </DraggableDialog>
   );
