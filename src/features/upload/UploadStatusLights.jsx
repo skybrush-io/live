@@ -2,6 +2,7 @@ import identity from 'lodash-es/identity';
 import isNil from 'lodash-es/isNil';
 import PropTypes from 'prop-types';
 import React, { useMemo } from 'react';
+import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import Box from '@material-ui/core/Box';
@@ -84,6 +85,7 @@ const UploadStatusLights = ({
   itemFormatter = identity,
   rowHeaderFormatter = defaultRowHeaderFormatter,
   onHeaderClick,
+  t,
 }) => {
   const classes = useStyles();
   const rows = useMemo(
@@ -99,7 +101,7 @@ const UploadStatusLights = ({
   if (rows.length === 0) {
     return (
       <Box className={classes.empty}>
-        <BackgroundHint text='There are no available UAVs to upload to.' />
+        <BackgroundHint text={t('uploadStatusLights.noAvailableUAVs')} />
       </Box>
     );
   }
@@ -115,9 +117,7 @@ const UploadStatusLights = ({
           />
           {items.map((itemId, index) =>
             isNil(itemId) ? (
-              <UploadStatusPill key={`__cell${index}`}>
-                {'—'}
-              </UploadStatusPill>
+              <UploadStatusPill key={`__cell${index}`}>{'—'}</UploadStatusPill>
             ) : (
               <UploadStatusPill key={itemId} uavId={itemId}>
                 {labels[index]}
@@ -137,6 +137,7 @@ UploadStatusLights.propTypes = {
   ids: PropTypes.arrayOf(PropTypes.string),
   onHeaderClick: PropTypes.func,
   rowHeaderFormatter: PropTypes.func,
+  t: PropTypes.func,
 };
 
 export default connect(
@@ -154,4 +155,4 @@ export default connect(
   {
     onHeaderClick: toggleUavsInWaitingQueue,
   }
-)(UploadStatusLights);
+)(withTranslation()(UploadStatusLights));

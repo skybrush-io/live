@@ -290,6 +290,7 @@
     "recalculateMapping": "Recalculate mapping"
   },
   "safetyDialog": {
+    "geofence": "Geofence",
     "geofenceTab": {
       "clear": "Clear current geofence",
       "errors": {
@@ -309,7 +310,19 @@
       "vertexCountReduction": "Vertex count reduction",
       "vertical": "Vertical"
     },
+    "settings": "Settings",
     "title": "Safety"
+  },
+  "safetySettingsTab": {
+    "criticalBatteryVoltage": "Critical battery voltage",
+    "criticalBatteryVoltageDescript": "Critically low battery voltage in [V] under which a critical battery failsafe action is triggered.",
+    "emptyValues": "Empty values result in the respective safety values not being overridden.",
+    "lowBatteryVoltage": "Low battery voltage",
+    "lowBatteryVoltageDescript": "Low battery voltage in [V] under which a low battery failsafe action is triggered.",
+    "returnToHomeAltitude": "Return to home altitude",
+    "returnToHomeAltitudeDescript": "Altitude in [mAHL] at which return to home operations are performed.",
+    "returnToHomeSpeed": "Return to home speed",
+    "returnToHomeSpeedDescript": "Horizontal speed in [m/s] at which return to home operations are performed."
   },
   "savedLocation": {
     "addNew": "Add new location",
@@ -520,6 +533,9 @@
     "clearUploadQueue": "Clear upload queue",
     "restartSuccessfulItems": "Restart successful items",
     "retryFailedItems": "Retry failed items"
+  },
+  "uploadStatusLights": {
+    "noAvailableUAVs": "There are no available UAVs to upload to."
   },
   "view": {
     "beacon-list": "Beacons",
