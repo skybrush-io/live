@@ -284,6 +284,7 @@
     "recalculateMapping": "Térképezés újraszámolása"
   },
   "safetyDialog": {
+    "geofence": "Geofence",
     "geofenceTab": {
       "clear": "A jelenlegi geofence törlése",
       "errors": {
@@ -303,7 +304,19 @@
       "vertexCountReduction": "Csúcsszám csökkentése",
       "vertical": "Függőleges"
     },
+    "settings": "Beállítások",
     "title": "Biztonság"
+  },
+  "safetySettingsTab": {
+    "criticalBatteryVoltage": "Kritikus akkumulátorfeszültség",
+    "criticalBatteryVoltageDescript": "Kritikusan alacsony akkumulátorfeszültség [V]-ban, ami alatt a kritikus akkumulátorszint biztonsági művelet aktiválódik.",
+    "emptyValues": "Az üres értékek azt eredményezik, hogy az érintett biztonsági értékek nem kerülnek felülírásra.",
+    "lowBatteryVoltage": "Alacsony akkumulátorfeszültség",
+    "lowBatteryVoltageDescript": "Alacsony akkumulátorfeszültség [V]-ban, ami alatt az alacsony töltöttség biztonsági művelet aktiválódik.",
+    "returnToHomeAltitude": "Visszatérés a kiindulási magasságra",
+    "returnToHomeAltitudeDescript": "Magasság [mAHL]-ben, amelyen a visszatérési műveletek végrehajtásra kerülnek.",
+    "returnToHomeSpeed": "Hazatérési sebesség",
+    "returnToHomeSpeedDescript": "Vízszintes sebesség [m/s]-ban, amellyel a visszatérési műveletek végrehajtásra kerülnek."
   },
   "savedLocation": {
     "addNew": "Új helyszín hozzáadása",
@@ -514,6 +527,9 @@
     "clearUploadQueue": "Feltöltési sor törlése",
     "restartSuccessfulItems": "Sikeres elemek újraindítása",
     "retryFailedItems": "Sikertelen elemek újrapróbálása"
+  },
+  "uploadStatusLights": {
+    "noAvailableUAVs": "Nincs elérhető drón a feltöltéshez."
   },
   "view": {
     "beacon-list": "Jeladók",
