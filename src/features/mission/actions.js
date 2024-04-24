@@ -533,22 +533,33 @@ export const setSelectedMissionItemIds = (ids) =>
 export const updateMissionItemFromFeature =
   (itemId, feature) => (dispatch, getState) => {
     const item = getMissionItemById(getState(), itemId);
-    dispatch(
-      updateMissionItemParameters(
-        item.id,
-        produce(item.parameters, (draft) => {
-          switch (item.type) {
-            case MissionItemType.GO_TO:
-              [draft.lon, draft.lat] = feature.points[0];
-              break;
+    if (item) {
+      dispatch(
+        updateMissionItemParameters(
+          item.id,
+          produce(item.parameters, (draft) => {
+            switch (item.type) {
+              case MissionItemType.GO_TO:
+                [draft.lon, draft.lat] = feature.points[0];
+                break;
 
-            case MissionItemType.UPDATE_FLIGHT_AREA:
-              draft.flightArea.polygons[0].points = feature.points;
-              break;
-          }
-        })
-      )
-    );
+              case MissionItemType.UPDATE_FLIGHT_AREA:
+                draft.flightArea.polygons[0].points = feature.points;
+                break;
+
+              default:
+                console.warn(
+                  `Cannot perform feature based update for mission item with type: '${item.type}'`
+                );
+            }
+          })
+        )
+      );
+    } else {
+      console.warn(
+        `Cannot perform feature based update for mission item with id: '${itemId}'`
+      );
+    }
   };
 
 /**
