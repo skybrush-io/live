@@ -127,10 +127,10 @@ import {
   setMissionPlannerDialogSelectedType,
   setMissionPlannerDialogUserParameters,
   setMissionType,
-  updateCurrentMissionItemId,
-  updateCurrentMissionItemRatio,
   updateHomePositions,
   updateMissionItemParameters,
+  updateProgressData,
+  updateProgressDatumForMissionIndex,
   _setMissionItemsFromValidatedArray,
 } from './slice';
 
@@ -982,7 +982,8 @@ export const restoreMission =
     name,
     items,
     homePositions,
-    progress: { id: currentMissionItemId, ratio: currentMissionItemRatio },
+    progress,
+    progressData,
   }) =>
   (dispatch, _getState) => {
     dispatch(changeMissionType(MissionType.WAYPOINT));
@@ -990,8 +991,21 @@ export const restoreMission =
     dispatch(setMissionItemsFromArray(items));
     dispatch(setMappingLength(homePositions.length));
     dispatch(updateHomePositions(homePositions));
-    dispatch(updateCurrentMissionItemId(currentMissionItemId));
-    dispatch(updateCurrentMissionItemRatio(currentMissionItemRatio));
+
+    // NOTE: If a mission was exported in an older Live version, where progress
+    //       was only handled in a single-UAV manner, import it at index 0
+    if (progress) {
+      dispatch(
+        updateProgressDatumForMissionIndex(0, {
+          currentItemId: progress.id,
+          currentItemRatio: progress.ratio,
+        })
+      );
+    }
+
+    if (progressData) {
+      dispatch(updateProgressData(progressData));
+    }
 
     // Only restore from parameters if there has been a successful mission
     // planner invocation before the data was stored.

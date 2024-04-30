@@ -1,5 +1,6 @@
 import isNil from 'lodash-es/isNil';
 import max from 'lodash-es/max';
+import mean from 'lodash-es/mean';
 import min from 'lodash-es/min';
 import range from 'lodash-es/range';
 import reject from 'lodash-es/reject';
@@ -71,6 +72,12 @@ export const getMissionItemIdsWithIndices = createSelector(
   (missionItemIds) => missionItemIds.map((id, index) => ({ id, index }))
 );
 
+export const getMissionItemIndexOfMissionItemId = createSelector(
+  getMissionItemIds,
+  (_state, missionItemId) => missionItemId,
+  (ids, id) => ids.indexOf(id)
+);
+
 /**
  * Selector that calculates and caches the list of selected mission item IDs from
  * the state object.
@@ -98,6 +105,15 @@ export const getMissionItemsInOrder = createSelector(
   selectOrdered
 );
 
+export const getMissionItemsInOrderForMissionIndex = createSelector(
+  getMissionItemsInOrder,
+  selectMissionIndex,
+  (items, missionIndex) =>
+    items.filter((item) =>
+      doesMissionIndexParticipateInMissionItem(missionIndex, item)
+    )
+);
+
 /**
  * Returns the items in the current waypoint-based mission annotated with their
  * order based indices.
@@ -116,21 +132,6 @@ export const getMissionItemsOfTypeWithIndices = createSelector(
   (_state, missionItemType) => missionItemType,
   (itemsWithIndices, missionItemType) =>
     itemsWithIndices.filter(({ item: { type } }) => type === missionItemType)
-);
-
-/**
- * Returns an object that maps mission ids to their respective mission item's
- * participant lists.
- */
-export const getParticipantsForMissionItemIds = createSelector(
-  getMissionItemsById,
-  (itemsById) =>
-    Object.fromEntries(
-      Object.entries(itemsById).map(([id, { participants }]) => [
-        id,
-        participants,
-      ])
-    )
 );
 
 /**
@@ -162,6 +163,21 @@ export const getTakeoffHeadingsInMission = (state) =>
  * @param  {Object}  state  the state of the application
  */
 export const getMissionMapping = (state) => state.mission.mapping;
+
+export const getParticipantsOfMissionItemId = createSelector(
+  getMissionItemById,
+  getMissionMapping,
+  (item, mapping) =>
+    item?.participants ?? mapping.map((_uavId, missionIndex) => missionIndex)
+);
+
+export const getParticipantsForMissionItemIds = (state) =>
+  Object.fromEntries(
+    getMissionItemIds(state).map((id) => [
+      id,
+      getParticipantsOfMissionItemId(state, id),
+    ])
+  );
 
 /**
  * Returns the contents of a file that would encode the current mission mapping
@@ -212,14 +228,11 @@ export const getIndexOfMappingSlotBeingEdited = (state) =>
 export const getReverseMissionMapping = createSelector(
   getMissionMapping,
   (mapping) =>
-    // eslint-disable-next-line unicorn/no-array-reduce
-    mapping.reduce((acc, uavId, index) => {
-      if (!isNil(uavId)) {
-        acc[uavId] = index;
-      }
-
-      return acc;
-    }, {})
+    Object.fromEntries(
+      mapping.flatMap((uavId, missionIndex) =>
+        isNil(uavId) ? [] : [[uavId, missionIndex]]
+      )
+    )
 );
 
 /**
@@ -458,6 +471,14 @@ export const shouldMissionEditorPanelFollowScroll = (state) =>
 export const getSelectedMissionIdInMissionEditorPanel = (state) =>
   state.mission.editorPanel.selectedMissionId;
 
+export const getMissionItemIdsForMissionIndex = createSelector(
+  getMissionItemIds,
+  getParticipantsForMissionItemIds,
+  selectMissionIndex,
+  (itemIds, participantsForItemIds, missionIndex) =>
+    itemIds.filter((id) => participantsForItemIds[id].includes(missionIndex))
+);
+
 const getMissionItemsWithExtraFieldInOrder = (field, getter) =>
   createSelector(getMissionItemsInOrder, (items) =>
     items
@@ -695,10 +716,12 @@ export const getLastClearedMissionData = (state) =>
  *
  * @returns {Array}
  */
-export const getMissionItemsInOrderAsSegments = createSelector(
+export const getMissionItemsInOrderAsSegmentsForMissionIndex = createSelector(
   getGPSBasedHomePositionsInMission,
-  getMissionItemsInOrder,
-  ([homePosition], items) => {
+  getMissionItemsInOrderForMissionIndex,
+  selectMissionIndex,
+  (homePositions, items, missionIndex) => {
+    const homePosition = homePositions[missionIndex];
     const home = homePosition && {
       XY: TurfHelpers.point([homePosition.lon, homePosition.lat]),
       Z: {
@@ -842,8 +865,8 @@ export const getMissionItemsInOrderAsSegments = createSelector(
  * @property {number} distance - the length of the planned trajectory in meters
  * @property {number} duration - the expected duration of the mission in seconds
  */
-export const getMissionEstimates = createSelector(
-  getMissionItemsInOrderAsSegments,
+export const getMissionEstimatesForMissionIndex = createSelector(
+  getMissionItemsInOrderAsSegmentsForMissionIndex,
   (segments) => {
     return (
       segments
@@ -860,35 +883,90 @@ export const getMissionEstimates = createSelector(
   }
 );
 
+export const getMissionProgressData = (state) => state.mission.progressData;
+
 /**
  * Selector that returns the id of the mission item that's currently being
- * executed.
+ * executed by the UAV assigned to the given mission index.
  */
-export const getCurrentMissionItemId = (state) =>
-  state.mission.progress.currentItemId;
+export const getCurrentMissionItemIdForMissionIndex = createSelector(
+  getMissionProgressData,
+  selectMissionIndex,
+  // TODO: Remove `= 0`
+  (progressData, missionIndex = 0) => progressData[missionIndex]?.currentItemId
+);
+
+export const getCurrentMissionItemIdForEveryMissionIndex = (state) =>
+  getMissionMapping(state).map((_uavId, missionIndex) =>
+    getCurrentMissionItemIdForMissionIndex(state, missionIndex)
+  );
 
 /**
  * Selector that returns the index of the mission item that's currently being
- * executed.
+ * executed by the UAV assigned to the given mission index.
  */
-export const getCurrentMissionItemIndex = createSelector(
+export const getCurrentMissionItemIndexForMissionIndex = createSelector(
   getMissionItemIds,
-  getCurrentMissionItemId,
+  getCurrentMissionItemIdForMissionIndex,
   (ids, currentId) => ids.indexOf(currentId)
 );
 
-/**
- * Selector that returns the progress ratio of the mission item that's
- * currently being executed.
- */
-export const getCurrentMissionItemRatio = (state) =>
-  state.mission.progress.currentItemRatio;
+export const getCurrentMissionItemIndexForEveryMissionIndex = (state) =>
+  getMissionMapping(state).map((_uavId, missionIndex) =>
+    getCurrentMissionItemIndexForMissionIndex(state, missionIndex)
+  );
 
 /**
- * Selector that returns whether mission progress information has been received.
+ * Selector that returns the progress ratio of the mission item that's
+ * currently being executed by the UAV assigned to the given mission index.
  */
-export const isProgressInformationAvailable = (state) =>
-  state.mission.progress.currentItemId !== undefined;
+export const getCurrentMissionItemRatioForMissionIndex = createSelector(
+  getMissionProgressData,
+  selectMissionIndex,
+  // TODO: Remove `= 0`
+  (progressData, missionIndex = 0) =>
+    progressData[missionIndex]?.currentItemRatio
+);
+
+export const getCurrentMissionItemRatioForEveryMissionIndex = (state) =>
+  getMissionMapping(state).map((_uavId, missionIndex) =>
+    getCurrentMissionItemRatioForMissionIndex(state, missionIndex)
+  );
+
+/**
+ * Selector that returns whether mission progress information has been received
+ * from the UAV assigned to the given mission index.
+ */
+export const isProgressInformationAvailableForMissionIndex = createSelector(
+  getMissionProgressData,
+  selectMissionIndex,
+  (progressData, missionIndex) => progressData[missionIndex] !== null
+);
+
+export const getCompletionRatiosForMissionItemById = (state, itemId) => {
+  const participants = getParticipantsOfMissionItemId(state, itemId);
+  const itemIndex = getMissionItemIndexOfMissionItemId(state, itemId);
+
+  const ratios = participants
+    .map((missionIndex) => ({
+      index: getCurrentMissionItemIndexForMissionIndex(state, missionIndex),
+      ratio: getCurrentMissionItemRatioForMissionIndex(state, missionIndex),
+    }))
+    .map(
+      ({ index, ratio }) =>
+        // prettier-ignore
+        index < itemIndex ? 0 : // Todo
+        itemIndex < index ? 1 : // Done
+        ratio // In progress
+    );
+
+  return {
+    min: min(ratios),
+    avg: mean(ratios),
+    max: max(ratios),
+  };
+};
+
 
 /**
  * Selector that returns the starting ratio of a partial mission.
@@ -921,9 +999,9 @@ export const getEndRatioOfPartialMission = createSelector(
  * @returns {number} the ratio of the done and total lengths of the net mission
  */
 export const getNetMissionCompletionRatio = createSelector(
-  getMissionItemsInOrderAsSegments,
-  getCurrentMissionItemId,
-  getCurrentMissionItemRatio,
+  getMissionItemsInOrderAsSegmentsForMissionIndex,
+  getCurrentMissionItemIdForMissionIndex,
+  getCurrentMissionItemRatioForMissionIndex,
   (segments, currentId, currentRatio) => {
     // eslint-disable-next-line unicorn/no-array-reduce
     const { doneDistance, totalDistance } = segments.reduce(
@@ -1006,23 +1084,18 @@ export const getMissionDataForStorage = createSelector(
   getMissionName,
   getMissionItemsInOrder,
   getGPSBasedHomePositionsInMission,
-  getCurrentMissionItemId,
-  getCurrentMissionItemRatio,
+  getMissionProgressData,
   (
     lastSuccessfulPlannerInvocationParameters,
     name,
     items,
     homePositions,
-    currentMissionItemId,
-    currentMissionItemRatio
+    progressData
   ) => ({
     lastSuccessfulPlannerInvocationParameters,
     name,
     items,
     homePositions,
-    progress: {
-      id: currentMissionItemId,
-      ratio: currentMissionItemRatio,
-    },
+    progressData,
   })
 );
