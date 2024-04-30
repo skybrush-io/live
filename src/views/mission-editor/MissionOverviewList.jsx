@@ -7,8 +7,9 @@ import { createSelectionHandlerThunk } from '~/components/helpers/lists';
 
 import { setSelectedMissionItemIds } from '~/features/mission/actions';
 import {
-  getCurrentMissionItemIndex,
-  getCurrentMissionItemRatio,
+  getCurrentMissionItemIdForMissionIndex,
+  getCurrentMissionItemIndexForMissionIndex,
+  getCurrentMissionItemRatioForMissionIndex,
   getMissionItemIdsWithIndices,
   getParticipantsForMissionItemIds,
   getSelectedMissionIdInMissionEditorPanel,
@@ -21,24 +22,22 @@ import MissionOverviewListItem from './MissionOverviewListItem';
 
 const renderMissionListItem = (_index, { id, index }, context) => (
   <MissionOverviewListItem
-    done={index < context.currentItemIndex}
-    // prettier-ignore
     ratio={
-      // The item is done
-      index < context.currentItemIndex ? 1 :
-      // The item is in progress
-      index === context.currentItemIndex ? context.currentItemRatio :
-      // The item is to be done
-      0
+      // prettier-ignore
+      context.currentItemIndex < index ? 0 : // Todo
+      index < context.currentItemIndex ? 1 : // Done
+      context.currentItemRatio // In progress
     }
     id={id}
-    index={index + 1}
+    index={index}
     selected={context.selection.includes(id)}
+    selectedMissionId={context.selectedMissionId}
     onSelectItem={context.onSelectItem}
   />
 );
 
 const MissionOverviewList = ({
+  currentItemId,
   currentItemIndex,
   currentItemRatio,
   followScroll,
@@ -49,11 +48,18 @@ const MissionOverviewList = ({
   selectedMissionId,
 }) => {
   const context = {
+    selectedMissionId,
     currentItemIndex,
     currentItemRatio,
     selection: Array.isArray(selectedItemIds) ? selectedItemIds : [],
     onSelectItem,
   };
+
+  const filteredItemIdsWithIndices = itemIdsWithIndices.filter(
+    ({ id }) =>
+      selectedMissionId === undefined ||
+      participantsForItemIds[id].includes(selectedMissionId)
+  );
 
   const virtuoso = useRef(null);
 
@@ -63,32 +69,27 @@ const MissionOverviewList = ({
       // and the item with the given index is available!
       // (This is required for correct behavior when e.g., restoring backups.)
       setTimeout(() => {
-        virtuoso.current.scrollToIndex({
-          index: currentItemIndex,
+        virtuoso?.current?.scrollToIndex({
+          index: filteredItemIdsWithIndices.findIndex(
+            ({ id }) => id === currentItemId
+          ),
           align: 'center',
           behavior: 'smooth',
         });
       }, 0),
-    [currentItemIndex, virtuoso]
+    [currentItemId, filteredItemIdsWithIndices, virtuoso]
   );
 
   useEffect(() => {
-    if (followScroll) {
+    if (selectedMissionId !== undefined && followScroll) {
       scrollToCurrent();
     }
-  }, [followScroll, scrollToCurrent]);
-
-  const filteredItemIds = itemIdsWithIndices.filter(
-    ({ id }) =>
-      selectedMissionId === undefined ||
-      participantsForItemIds[id] === undefined ||
-      participantsForItemIds[id].includes(selectedMissionId)
-  );
+  }, [followScroll, scrollToCurrent, selectedMissionId]);
 
   return (
     <Virtuoso
       ref={virtuoso}
-      data={filteredItemIds}
+      data={filteredItemIdsWithIndices}
       context={context}
       itemContent={renderMissionListItem}
     />
@@ -96,6 +97,7 @@ const MissionOverviewList = ({
 };
 
 MissionOverviewList.propTypes = {
+  currentItemId: PropTypes.string,
   currentItemIndex: PropTypes.number,
   currentItemRatio: PropTypes.number,
   followScroll: PropTypes.bool,
@@ -109,8 +111,18 @@ MissionOverviewList.propTypes = {
 export default connect(
   // mapStateToProps
   (state) => ({
-    currentItemIndex: getCurrentMissionItemIndex(state),
-    currentItemRatio: getCurrentMissionItemRatio(state),
+    currentItemId: getCurrentMissionItemIdForMissionIndex(
+      state,
+      getSelectedMissionIdInMissionEditorPanel(state)
+    ),
+    currentItemIndex: getCurrentMissionItemIndexForMissionIndex(
+      state,
+      getSelectedMissionIdInMissionEditorPanel(state)
+    ),
+    currentItemRatio: getCurrentMissionItemRatioForMissionIndex(
+      state,
+      getSelectedMissionIdInMissionEditorPanel(state)
+    ),
     followScroll: shouldMissionEditorPanelFollowScroll(state),
     itemIdsWithIndices: getMissionItemIdsWithIndices(state),
     participantsForItemIds: getParticipantsForMissionItemIds(state),
