@@ -34,6 +34,11 @@ import {
   type MissionMappingEditorContinuation,
 } from './utils';
 
+type ProgressDatum = {
+  currentItemId: string;
+  currentItemRatio?: number;
+};
+
 /**
  * Type definition for the mission slice of the state object.
  *
@@ -145,11 +150,13 @@ export type MissionSliceState = {
     valuesFromContext: Record<string, unknown>;
   };
 
-  /** The progress of the mission as reported by the UAV */
-  progress: {
-    currentItemId?: string;
-    currentItemRatio?: number;
-  };
+  /**
+   * Stores the progress of the mission as reported by the participating UAVs.
+   * The array is indexed by mission-specific identifiers.
+   *
+   * @see The `NOTE` at `MissionSliceState`
+   */
+  progressData: Array<Nullable<ProgressDatum>>;
 
   /** Backup of the last cleared mission */
   lastClearedMissionData?: Record<string, unknown>;
@@ -188,10 +195,7 @@ const initialState: MissionSliceState = {
     selectedType: undefined,
   },
   lastSuccessfulPlannerInvocationParameters: undefined,
-  progress: {
-    currentItemId: undefined,
-    currentItemRatio: undefined,
-  },
+  progressData: [],
   lastClearedMissionData: undefined,
 };
 
@@ -457,6 +461,7 @@ const { actions, reducer } = createSlice({
         state.homePositions.splice(desiredLength);
         state.landingPositions.splice(desiredLength);
         state.takeoffHeadings.splice(desiredLength);
+        state.progressData.splice(desiredLength);
       } else if (desiredLength > currentLength) {
         const padding = Array.from(
           { length: desiredLength - currentLength },
@@ -467,6 +472,7 @@ const { actions, reducer } = createSlice({
         state.homePositions.push(...padding);
         state.landingPositions.push(...padding);
         state.takeoffHeadings.push(...padding);
+        state.progressData.push(...padding);
       }
     },
 
@@ -482,10 +488,9 @@ const { actions, reducer } = createSlice({
         order: items.map((i) => i.id),
         byId: Object.fromEntries(items.map((i) => [i.id, i])),
       };
-      state.progress = {
-        currentItemId: undefined,
-        currentItemRatio: undefined,
-      };
+      // TODO: Selectively remove progress information when only some
+      //       specific mission indices are resumed / replanned
+      state.progressData.fill(null);
     },
 
     /**
@@ -590,24 +595,6 @@ const { actions, reducer } = createSlice({
     },
 
     /**
-     * Updates the ID of the mission item that's currently being executed.
-     */
-    updateCurrentMissionItemId(state, action: PayloadAction<string>) {
-      state.progress.currentItemId = action.payload;
-
-      // Reset the progress to clear remaining data from the previous item.
-      state.progress.currentItemRatio = undefined;
-    },
-
-    /**
-     * Updates the progress ratio of the mission item that's currently being
-     * executed.
-     */
-    updateCurrentMissionItemRatio(state, action: PayloadAction<number>) {
-      state.progress.currentItemRatio = action.payload;
-    },
-
-    /**
      * Updates the home positions of all the drones in the mission.
      */
     updateHomePositions(
@@ -653,6 +640,39 @@ const { actions, reducer } = createSlice({
         if (item) {
           item.parameters = { ...item.parameters, ...parameters };
         }
+      },
+    },
+
+    /**
+     * Updates the progress information of all mission indices.
+     */
+    updateProgressData(
+      state,
+      action: PayloadAction<Array<Nullable<ProgressDatum>>>
+    ) {
+      state.progressData = copyAndEnsureLengthEquals(
+        state.mapping.length,
+        action.payload
+      );
+    },
+
+    /**
+     * Updates the progress information of a single mission index.
+     */
+    updateProgressDatumForMissionIndex: {
+      prepare: (
+        missionIndex: number,
+        progressDatum: Nullable<ProgressDatum>
+      ) => ({ payload: { missionIndex, progressDatum } }),
+      reducer: (
+        state,
+        action: PayloadAction<{
+          missionIndex: number;
+          progressDatum: Nullable<ProgressDatum>;
+        }>
+      ) => {
+        const { missionIndex, progressDatum } = action.payload;
+        state.progressData[missionIndex] = progressDatum;
       },
     },
 
@@ -719,11 +739,11 @@ export const {
   startMappingEditorSession,
   startMappingEditorSessionAtSlot,
   togglePreferredChannel,
-  updateCurrentMissionItemId,
-  updateCurrentMissionItemRatio,
   updateHomePositions,
   updateLandingPositions,
   updateMissionItemParameters,
+  updateProgressData,
+  updateProgressDatumForMissionIndex,
   updateTakeoffHeadings,
   _setMissionItemsFromValidatedArray,
 } = actions;

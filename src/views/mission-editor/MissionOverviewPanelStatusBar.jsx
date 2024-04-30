@@ -21,7 +21,7 @@ import { UAVSelectorWrapper } from '~/components/uavs/UAVSelector';
 import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
 import {
   getGPSBasedHomePositionsInMission,
-  getMissionEstimates,
+  getMissionEstimatesForMissionIndex,
   getSelectedMissionIdInMissionEditorPanel,
   shouldMissionEditorPanelFollowScroll,
 } from '~/features/mission/selectors';
@@ -93,7 +93,19 @@ const MissionOverviewPanelStatusBar = ({
   return (
     <Paper square className={classes.root}>
       <Toolbar disableGutters variant='dense' style={{ minHeight: 28, gap: 8 }}>
-        {estimatedDistance > 0 ? (
+        {selectedMissionId === undefined ? (
+          <Chip
+            icon={<Info style={{ color: Colors.info }} />}
+            label={
+              <span style={{ whiteSpace: 'normal' }}>
+                Estimates are only available when filtering is active
+              </span>
+            }
+            size='small'
+            style={{ height: 'auto' }}
+            variant='outlined'
+          />
+        ) : estimatedDistance > 0 ? (
           <>
             {warnings.length > 0 && (
               <Tooltip content={makeWarningList(warnings)} placement='top'>
@@ -170,16 +182,26 @@ const MissionOverviewPanelStatusBar = ({
             />
           )}
         </UAVSelectorWrapper>
-        <Tooltip content='Follow the active mission item'>
-          <ToggleButton
-            size='small'
-            style={{ margin: -3 }}
-            value='followScroll'
-            selected={followScroll}
-            onChange={toggleFollowScroll}
-          >
-            <FollowScroll />
-          </ToggleButton>
+        <Tooltip
+          content={
+            selectedMissionId === undefined
+              ? 'Automatic scrolling is only available when filtering is active'
+              : 'Follow the active mission item'
+          }
+        >
+          {/* https://v4.mui.com/components/tooltips/#disabled-elements */}
+          <span>
+            <ToggleButton
+              size='small'
+              style={{ margin: -3 }}
+              disabled={selectedMissionId === undefined}
+              value='followScroll'
+              selected={selectedMissionId !== undefined && followScroll}
+              onChange={toggleFollowScroll}
+            >
+              <FollowScroll />
+            </ToggleButton>
+          </span>
         </Tooltip>
       </Toolbar>
     </Paper>
@@ -204,7 +226,10 @@ export default connect(
   (state) => ({
     followScroll: shouldMissionEditorPanelFollowScroll(state),
     homePositions: getGPSBasedHomePositionsInMission(state),
-    missionEstimates: getMissionEstimates(state),
+    missionEstimates: getMissionEstimatesForMissionIndex(
+      state,
+      getSelectedMissionIdInMissionEditorPanel(state)
+    ),
     selectedMissionId: getSelectedMissionIdInMissionEditorPanel(state),
   }),
   // mapDispatchToProps

@@ -1,28 +1,46 @@
+import throttle from 'lodash-es/throttle';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
-import { getMissionMapping } from '~/features/mission/selectors';
-import {
-  updateCurrentMissionItemId,
-  updateCurrentMissionItemRatio,
-} from '~/features/mission/slice';
+import { getUAVIdList } from '~/features/uavs/selectors';
 import useDeviceTreeSubscription from '~/hooks/useDeviceTreeSubscription';
-import { getUAVIdList } from '../uavs/selectors';
+
+import { getReverseMissionMapping } from './selectors';
+import { updateProgressDatumForMissionIndex } from './slice';
 
 /**
  * Component that subscribes to waypoint status updates of a single UAV and
  * stores the received information into the state.
  */
-const UAVWaypointStatusObserver = ({ uavId, onUpdate }) => {
-  useDeviceTreeSubscription(`/${uavId}/waypoint/status`, onUpdate);
+const UAVWaypointStatusObserverPresentation = ({ storeProgress, uavId }) => {
+  useDeviceTreeSubscription(`/${uavId}/waypoint/status`, storeProgress);
   return null;
 };
 
-UAVWaypointStatusObserver.propTypes = {
+UAVWaypointStatusObserverPresentation.propTypes = {
+  storeProgress: PropTypes.func,
   uavId: PropTypes.string,
-  onUpdate: PropTypes.func,
 };
+
+const UAVWaypointStatusObserver = connect(
+  // mapStateToProps
+  null,
+  // mapDispatchToProps
+  (dispatch, ownProps) => ({
+    // TODO: Investigate this more thoroughly, throttling here is just a hotfix
+    storeProgress: throttle((progress) => {
+      if (progress) {
+        dispatch(
+          updateProgressDatumForMissionIndex(ownProps.missionIndex, {
+            currentItemId: progress.id,
+            currentItemRatio: progress.ratio,
+          })
+        );
+      }
+    }, 1000),
+  })
+)(UAVWaypointStatusObserverPresentation);
 
 /**
  * Component that conditionally subscribes to updates about the mission progress
@@ -30,15 +48,19 @@ UAVWaypointStatusObserver.propTypes = {
  */
 const MissionProgressObserver = ({
   availableUAVIds,
-  firstMissionUAVId,
+  reverseMapping,
   storeProgress,
 }) =>
-  availableUAVIds.includes(firstMissionUAVId) ? (
-    <UAVWaypointStatusObserver
-      uavId={firstMissionUAVId}
-      onUpdate={storeProgress}
-    />
-  ) : null;
+  Object.entries(reverseMapping)
+    .filter(([uavId, _missionIndex]) => availableUAVIds.includes(uavId))
+    .map(([uavId, missionIndex]) => (
+      <UAVWaypointStatusObserver
+        key={uavId}
+        missionIndex={missionIndex}
+        uavId={uavId}
+        onUpdate={storeProgress}
+      />
+    ));
 
 MissionProgressObserver.propTypes = {
   availableUAVIds: PropTypes.arrayOf(PropTypes.string),
@@ -50,18 +72,6 @@ export default connect(
   // mapStateToProps
   (state) => ({
     availableUAVIds: getUAVIdList(state),
-    firstMissionUAVId: getMissionMapping(state)[0],
-  }),
-  // mapDispatchToProps
-  {
-    storeProgress: (progress) => (dispatch) => {
-      if (!progress) {
-        return;
-      }
-
-      const { id, ratio } = progress;
-      dispatch(updateCurrentMissionItemId(id));
-      dispatch(updateCurrentMissionItemRatio(ratio));
-    },
-  }
+    reverseMapping: getReverseMissionMapping(state),
+  })
 )(MissionProgressObserver);

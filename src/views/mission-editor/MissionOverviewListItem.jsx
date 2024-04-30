@@ -1,3 +1,4 @@
+import * as createColor from 'color';
 import isEmpty from 'lodash-es/isEmpty';
 import isNumber from 'lodash-es/isNumber';
 import PropTypes from 'prop-types';
@@ -12,7 +13,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, withTheme } from '@material-ui/core/styles';
 import Settings from '@material-ui/icons/Settings';
 
 import { Status } from '@skybrush/app-theme-material-ui';
@@ -20,6 +21,7 @@ import { Status } from '@skybrush/app-theme-material-ui';
 import Colors from '~/components/colors';
 import { editMissionItemParameters } from '~/features/mission/actions';
 import {
+  getCompletionRatiosForMissionItemById,
   getGeofencePolygon,
   getMissionItemById,
   hasActiveGeofencePolygon,
@@ -93,6 +95,20 @@ const formatMarkerStatusText = (marker, ratio) => {
   return markerText + ratioText;
 };
 
+const ItemProgress = withTheme(({ color, ratio, theme }) => (
+  <div
+    style={{
+      position: 'absolute',
+      height: '100%',
+      transition: '0.25s',
+      backgroundColor: createColor(theme.palette.background.paper)
+        .mix(createColor(color), 0.25)
+        .string(),
+      width: `${ratio * 100}%`,
+    }}
+  />
+));
+
 const MissionOverviewListItem = ({
   editMissionItemParameters,
   id,
@@ -100,10 +116,12 @@ const MissionOverviewListItem = ({
   item,
   missionGeofenceStatus,
   ratio,
+  ratios,
   selected,
   onSelectItem,
   openGeofenceSettingsTab,
   openSafetySettingsTab,
+  selectedMissionId,
 }) => {
   const classes = useStyles();
 
@@ -115,7 +133,7 @@ const MissionOverviewListItem = ({
 
   switch (item.type) {
     case MissionItemType.GO_TO:
-      avatar = index;
+      avatar = String(index + 1);
       secondaryText = isValid
         ? formatCoordinate([item.parameters?.lon, item.parameters?.lat])
         : 'Invalid mission item';
@@ -225,25 +243,19 @@ const MissionOverviewListItem = ({
 
   return (
     <Box position='relative'>
-      <div
-        style={{
-          position: 'absolute',
-          height: '100%',
-
-          backgroundColor: ratio === 1 ? Colors.success : Colors.info,
-          opacity: 0.25,
-
-          transition: '0.25s',
-          width: `${(ratio ?? 0) * 100}%`,
-        }}
-      />
-      <ListItem
-        button
-        dense
-        selected={selected}
-        onClick={onClick}
-        ContainerComponent='div'
-      >
+      {selectedMissionId === undefined ? (
+        <>
+          <ItemProgress color={Colors.missionItem} ratio={ratios.max} />
+          <ItemProgress color={Colors.currentMissionItem} ratio={ratios.avg} />
+          <ItemProgress color={Colors.doneMissionItem} ratio={ratios.min} />
+        </>
+      ) : (
+        <ItemProgress
+          color={ratio === 1 ? Colors.doneMissionItem : Colors.missionItem}
+          ratio={ratio}
+        />
+      )}
+      <ListItem button dense selected={selected} onClick={onClick}>
         {avatar && (
           <ListItemAvatar>
             <Badge
@@ -280,13 +292,21 @@ MissionOverviewListItem.propTypes = {
     participants: PropTypes.arrayOf(PropTypes.number),
   }),
   missionGeofenceStatus: PropTypes.oneOf(Object.values(Status)),
-  ratio: PropTypes.number,
+  ratios: PropTypes.shape({
+    avg: PropTypes.number,
+    max: PropTypes.number,
+    min: PropTypes.number,
+  }),
   selected: PropTypes.bool,
   onSelectItem: PropTypes.func,
   openGeofenceSettingsTab: PropTypes.func,
   openSafetySettingsTab: PropTypes.func,
 };
 
+// TODO: This should really be cleaned up by making sure that Virtuoso only
+//       renders items that are actually present in the store, or at least by
+//       introducing a wrapper component to check whether a given mission item
+//       exists before trying to render it
 export default connect(
   // mapStateToProps
   (state, ownProps) => ({
@@ -302,6 +322,10 @@ export default connect(
           : Status.WARNING
         : Status.ERROR
       : Status.OFF,
+    // HACK: The only thing preventing this from crashing on no longer existing
+    //       mission items is the fallback in case of missing participant
+    //       information to belonging to all mission indices
+    ratios: getCompletionRatiosForMissionItemById(state, ownProps.id),
   }),
   // mapDispatchToProps
   {
