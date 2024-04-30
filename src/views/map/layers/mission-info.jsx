@@ -21,8 +21,9 @@ import FormGroup from '@material-ui/core/FormGroup';
 import Colors from '~/components/colors';
 import { setLayerParametersById } from '~/features/map/layers';
 import {
-  getCurrentMissionItemIndex,
-  getCurrentMissionItemRatio,
+  getCompletionRatiosForMissionItemById,
+  getCurrentMissionItemIndexForEveryMissionIndex,
+  getCurrentMissionItemRatioForEveryMissionIndex,
   getGPSBasedHomePositionsInMission,
   getGPSBasedLandingPositionsInMission,
   getMissionItemsOfTypeWithIndices,
@@ -335,13 +336,12 @@ const createMissionItemBaseStyle = memoize(
       image: new Icon({
         src: mapMarker,
         anchor: [0.5, 0.95],
-        color: selected
-          ? Colors.selectedMissionItem
-          : done
-          ? Colors.doneMissionItem
-          : current
-          ? Colors.currentMissionItem
-          : Colors.missionItem,
+        // prettier-ignore
+        color:
+          selected ? Colors.selectedMissionItem :
+          done     ? Colors.doneMissionItem     :
+          current  ? Colors.currentMissionItem  :
+                     Colors.missionItem,
         rotateWithView: false,
         snapToPixel: false,
       }),
@@ -564,21 +564,53 @@ function* missionAreaBoundaries(
   }
 }
 
-function* missionWaypointMarkers(
-  currentItemIndex,
-  currentItemRatio,
-  missionItemsWithCoordinates,
-  selection
-) {
+const WaypointMarkerPresentation = ({
+  center,
+  globalId,
+  index,
+  ratios,
+  selected,
+  ...rest
+}) => (
+  <Feature
+    id={globalId}
+    properties={{ index }}
+    style={createMissionItemBaseStyle(
+      ratios.max > 0 && ratios.min < 1,
+      ratios.min === 1,
+      selected
+    )}
+    {...rest}
+  >
+    <geom.Point coordinates={center} />
+  </Feature>
+);
+
+WaypointMarkerPresentation.propTypes = {
+  center: PropTypes.arrayOf(PropTypes.number),
+  globalId: PropTypes.string,
+  index: PropTypes.number,
+  ratios: PropTypes.shape({
+    avg: PropTypes.number,
+    max: PropTypes.number,
+    min: PropTypes.number,
+  }),
+  selected: PropTypes.bool,
+};
+
+const WaypointMarker = connect(
+  // mapStateToProps
+  (state, ownProps) => ({
+    ratios: getCompletionRatiosForMissionItemById(state, ownProps.id),
+  })
+)(WaypointMarkerPresentation);
+
+function* missionWaypointMarkers(missionItemsWithCoordinates, selection) {
   if (!missionItemsWithCoordinates) {
     return;
   }
 
   for (const { index, id, coordinate } of missionItemsWithCoordinates) {
-    const current = index === currentItemIndex;
-    const done =
-      index < currentItemIndex ||
-      (index === currentItemIndex && currentItemRatio === 1);
     const globalIdOfMissionItem = missionItemIdToGlobalId(id);
     const selected = selection.includes(globalIdOfMissionItem);
     const center = mapViewCoordinateFromLonLat([
@@ -587,21 +619,21 @@ function* missionWaypointMarkers(
     ]);
 
     yield (
-      <Feature
+      <WaypointMarker
         key={globalIdOfMissionItem}
-        id={globalIdOfMissionItem}
-        properties={{ index }}
-        style={createMissionItemBaseStyle(current, done, selected)}
-      >
-        <geom.Point coordinates={center} />
-      </Feature>
+        center={center}
+        globalId={globalIdOfMissionItem}
+        id={id}
+        index={index}
+        selected={selected}
+      />
     );
   }
 }
 
 function* missionTrajectoryLine(
-  currentItemIndex,
-  currentItemRatio,
+  currentItemIndices,
+  currentItemRatios,
   allMissionItemsWithCoordinates,
   missionMapping
 ) {
@@ -613,6 +645,8 @@ function* missionTrajectoryLine(
     const missionItemsWithCoordinates = allMissionItemsWithCoordinates.filter(
       ({ item }) => doesMissionIndexParticipateInMissionItem(missionIndex)(item)
     );
+    const currentItemIndex = currentItemIndices[missionIndex];
+    const currentItemRatio = currentItemRatios[missionIndex];
 
     if (missionItemsWithCoordinates.length === 0) {
       continue;
@@ -821,8 +855,8 @@ function* selectionTrajectoryFeatures(
 const MissionInfoVectorSource = ({
   convexHull,
   coordinateSystemType,
-  currentItemIndex,
-  currentItemRatio,
+  currentItemIndices,
+  currentItemRatios,
   homePositions,
   landingPositions,
   mapOrigin,
@@ -858,15 +892,10 @@ const MissionInfoVectorSource = ({
           selection,
           selectedTool
         ),
-        ...missionWaypointMarkers(
-          currentItemIndex,
-          currentItemRatio,
-          missionItemsWithCoordinates,
-          selection
-        ),
+        ...missionWaypointMarkers(missionItemsWithCoordinates, selection),
         ...missionTrajectoryLine(
-          currentItemIndex,
-          currentItemRatio,
+          currentItemIndices,
+          currentItemRatios,
           missionItemsWithCoordinates,
           missionMapping
         ),
@@ -890,8 +919,8 @@ const MissionInfoVectorSource = ({
 MissionInfoVectorSource.propTypes = {
   convexHull: PropTypes.arrayOf(CustomPropTypes.coordinate),
   coordinateSystemType: PropTypes.oneOf(['neu', 'nwu']),
-  currentItemIndex: PropTypes.number,
-  currentItemRatio: PropTypes.number,
+  currentItemIndices: PropTypes.arrayOf(PropTypes.number),
+  currentItemRatios: PropTypes.arrayOf(PropTypes.number),
   homePositions: PropTypes.arrayOf(CustomPropTypes.coordinate),
   landingPositions: PropTypes.arrayOf(CustomPropTypes.coordinate),
   mapOrigin: PropTypes.arrayOf(PropTypes.number),
@@ -937,8 +966,8 @@ export const MissionInfoLayer = connect(
       ? getConvexHullOfShowInWorldCoordinates(state)
       : undefined,
     coordinateSystemType: state.map.origin.type,
-    currentItemIndex: getCurrentMissionItemIndex(state),
-    currentItemRatio: getCurrentMissionItemRatio(state),
+    currentItemIndices: getCurrentMissionItemIndexForEveryMissionIndex(state),
+    currentItemRatios: getCurrentMissionItemRatioForEveryMissionIndex(state),
     homePositions: layer?.parameters?.showHomePositions
       ? getGPSBasedHomePositionsInMission(state)
       : undefined,
