@@ -13,7 +13,7 @@ const commonLayouts: Record<PerspectiveName, PerspectiveObject> = {
           type: 'stack',
           contents: [
             { type: 'panel', component: 'map', id: 'map' },
-            { type: 'panel', component: 'uav-list', id: 'uavs' },
+            { type: 'panel', component: 'uav-list', id: 'uavList' },
             { type: 'panel', component: 'three-d-view', id: 'threeDView' },
           ],
         },

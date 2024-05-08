@@ -196,7 +196,7 @@ declare module 'config' {
      *       type: 'columns',
      *       contents: [
      *         { type: 'panel', component: 'map', id: 'map', width: 75 },
-     *         { type: 'panel', component: 'uav-list', id: 'uavs' },
+     *         { type: 'panel', component: 'uav-list', id: 'uavList' },
      *       ],
      *     },
      *   },
