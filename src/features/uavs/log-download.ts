@@ -9,11 +9,7 @@ import {
 } from '@reduxjs/toolkit';
 
 import type UAV from '~/model/uav';
-import {
-  type AppDispatch,
-  type AppSelector,
-  type RootState,
-} from '~/store/reducers';
+import { type AppDispatch, type AppSelector } from '~/store/reducers';
 
 // Poor man's content-addressable store for keeping the downloaded logs
 // NOTE: This is a very one-off solution, no effort has been made to generalize
@@ -146,7 +142,7 @@ export const storeDownloadedLog =
 
 export const getLogDownloadState =
   (uavId: UAV['id'], logId: LogId): AppSelector<LogDownloadState | undefined> =>
-  (state: RootState) =>
+  (state) =>
     state.logDownload[uavId]?.[logId];
 
 export const retrieveDownloadedLog = (

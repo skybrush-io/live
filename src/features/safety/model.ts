@@ -1,3 +1,5 @@
+import { type Coordinate2D } from '~/utils/math';
+
 /**
  * Enum describing the possible geofence actions.
  */
@@ -39,6 +41,23 @@ export function isValidGeofenceAction(action: GeofenceAction): boolean {
   return VALID_GEOFENCE_ACTIONS.includes(action);
 }
 
+export type GeofencePolygon = {
+  isInclusion: boolean;
+  points: Coordinate2D[];
+};
+
+/**
+ * Object type describing the possible geofence configuration parameters.
+ */
+export type GeofenceConfiguration = {
+  enabled?: boolean;
+  minAltitude?: number;
+  maxDistance?: number;
+  polygons?: GeofencePolygon[];
+  rallyPoints?: Coordinate2D[];
+  action?: GeofenceAction;
+};
+
 /**
  * Enum describing the possible battery threshold types.
  */
@@ -65,3 +84,13 @@ export const unitForBatteryThresholdType: Record<BatteryThresholdType, string> =
     [BatteryThresholdType.VOLTAGE]: 'V',
     [BatteryThresholdType.PERCENTAGE]: '%',
   };
+
+/**
+ * Object type describing the possible safety configuration parameters.
+ */
+export type SafetyConfiguration = {
+  lowBatteryThreshold?: BatteryThreshold;
+  criticalBatteryVoltage?: number;
+  returnToHomeAltitude?: number;
+  returnToHomeSpeed?: number;
+};

@@ -1,4 +1,4 @@
-import { type LabelStyle } from '~/model/features';
+import { type Feature, type LabelStyle } from '~/model/features';
 import { type Identifier } from '~/utils/collections';
 
 export enum FeatureEditorDialogTab {
@@ -33,3 +33,5 @@ export type FeatureProperties = {
   showPoints?: boolean;
   visible: boolean;
 };
+
+export type FeatureWithProperties = Feature & FeatureProperties;

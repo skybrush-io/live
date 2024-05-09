@@ -300,6 +300,13 @@
               ]
             },
             {
+              "selector": "import",
+              "format": [
+                "camelCase",
+                "PascalCase"
+              ]
+            },
+            {
               "selector": "objectLiteralProperty",
               "format": [
                 "camelCase",

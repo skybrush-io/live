@@ -7,6 +7,7 @@ import sortedIndex from 'lodash-es/sortedIndex';
 import sortedIndexBy from 'lodash-es/sortedIndexBy';
 import { orderBy } from 'natural-orderby';
 
+import { rejectNullish } from './arrays';
 import { chooseUniqueIdFromName } from './naming';
 import { EMPTY_ARRAY, EMPTY_OBJECT } from './redux';
 
@@ -471,12 +472,11 @@ export const selectLast = <T extends ItemLike>({
 export const selectOrdered = <T extends ItemLike>({
   byId,
   order,
-}: Collection<T>): readonly T[] =>
-  order === undefined
-    ? Object.values(byId)
-    : order.length === 0
-    ? EMPTY_ARRAY
-    : order.map((id) => byId[id]).filter((t?: T): t is T => !isNil(t));
+}: Collection<T>): T[] =>
+  // prettier-ignore
+  order === undefined ? Object.values(byId) :
+  order.length === 0 ? EMPTY_ARRAY :
+  rejectNullish(order.map((id) => byId[id]));
 
 /**
  * Helper function that takes an array of item IDs and an ordered collection,

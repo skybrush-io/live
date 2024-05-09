@@ -1,14 +1,15 @@
 {
   "compilerOptions": {
+    "baseUrl": "src",
     "jsx": "react",
-    "module": "es6",
+    "module": "esnext",
     "moduleResolution": "node",
     "noPropertyAccessFromIndexSignature": true,
     "noUncheckedIndexedAccess": true,
-    "paths": { "~/*": ["./src/*"] },
+    "paths": { "~/*": ["*"] },
     "resolveJsonModule": true,
     "strict": true,
-    "target": "es6",
+    "target": "esnext",
     "typeRoots": ["./types", "./node_modules/@types"]
   }
 }

@@ -257,15 +257,9 @@ export function closePolygon(poly: Coordinate2D[]): void {
  */
 export const convexHull = (coordinates: Coordinate2D[]): Coordinate2D[] => {
   const indices = monotoneConvexHull2D(coordinates);
-  return indices.map((index) => {
-    // NOTE: Bang justified by `monotoneConvexHull2D` selecting a subset
-    const c = coordinates[index]!;
-    // TODO: Should be unnecessary if the input only contains 2D coordinates
-    return c.length > 2 ? (c.slice(0, 2) as Coordinate2D) : c;
-  });
-
-  // Alternative solution without relying on the non-null assertion operator:
-  // return coordinates.filter((_c, i) => indices.includes(i));
+  return coordinates
+    .filter((_c, i) => indices.includes(i))
+    .map((c) => (c.length > 2 ? [c[0], c[1]] : c));
 };
 
 /**

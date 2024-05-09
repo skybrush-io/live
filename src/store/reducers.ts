@@ -133,5 +133,9 @@ export default reducer;
 // respectively, when `~/store/index` gets annotated, according to:
 // https://redux.js.org/usage/usage-with-typescript#define-root-state-and-dispatch-types
 export type RootState = ReturnType<typeof reducer>;
-export type AppDispatch = Dispatch<AnyAction>;
-export type AppSelector<T> = (state: RootState) => T;
+export type AppDispatch = Dispatch;
+// eslint-disable-next-line @typescript-eslint/ban-types
+export type AppSelector<T, ExtraArgs extends unknown[] = []> = (
+  state: RootState,
+  ...args: ExtraArgs
+) => T;

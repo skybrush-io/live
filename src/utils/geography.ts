@@ -1032,8 +1032,8 @@ export function toLonLatFromScaledJSON(
  * @return the distance between the two points in meters
  */
 export function turfDistanceInMeters(
-  first: Coordinate2D,
-  second: Coordinate2D
+  first: TurfHelpers.Coord,
+  second: TurfHelpers.Coord
 ): number {
   return turfDistance(first, second) * 1000;
 }
