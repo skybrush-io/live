@@ -484,6 +484,31 @@
     },
     "sortBy": "Sort by"
   },
+  "startTimeDialog": {
+    "SMPTETimecode": "SMPTE timecode",
+    "errors": {
+      "invalidDate": "Invalid date",
+      "invalidTime": "Invalid time",
+      "pastDate": "Date cannot be in the past",
+      "pastTime": "Time cannot be in the past"
+    },
+    "localTime": "Local time",
+    "reference": "Reference",
+    "resetForm": "Reset form",
+    "setNewStartTime": "Set new start time",
+    "setTheStartTime": "Set the start time of the show below",
+    "startDate": "Start date",
+    "startShowAuto": "Start show automatically",
+    "startShowWithRC": "Start show with remote controller only (safer)",
+    "startSignal": "Start signal",
+    "startTime": "Start time",
+    "startTimeHms": "Start time (hours:minutes:seconds)",
+    "suggestions": "Suggestions:"
+  },
+  "startTimeDisplay": {
+    "noStartTimeIsSet": "No start time is set at the moment.",
+    "startTimeIsSetTo": "Start time is set to <strong>{{formattedStartTime}}</strong>"
+  },
   "startUploadButton": {
     "startSelected": "Start selected"
   },
