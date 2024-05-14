@@ -478,6 +478,31 @@
     },
     "sortBy": "Rendezés"
   },
+  "startTimeDialog": {
+    "SMPTETimecode": "SMPTE időkód",
+    "errors": {
+      "invalidDate": "Érvénytelen dátum",
+      "invalidTime": "Érvénytelen idő",
+      "pastDate": "Nem lehet múltbéli a dátum",
+      "pastTime": "Nem lehet múltbéli az idő"
+    },
+    "localTime": "Helyi idő",
+    "reference": "Referencia",
+    "resetForm": "Űrlap visszaállítása",
+    "setNewStartTime": "Új kezdési időpont beállítása",
+    "setTheStartTime": "Állítsa be az előadás kezdési időpontját alább",
+    "startDate": "Kezdési dátum",
+    "startShowAuto": "A műsor indítsa automatikusan",
+    "startShowWithRC": "A műsor indítása kizárólag távirányítóval (biztonságosabb)",
+    "startSignal": "Kezdési jel",
+    "startTime": "Kezdési idő",
+    "startTimeHms": "Kezdési idő (óra:perc:másodperc)",
+    "suggestions": "Javaslatok:"
+  },
+  "startTimeDisplay": {
+    "noStartTimeIsSet": "Jelenleg nincs indítási időpont beállítva.",
+    "startTimeIsSetTo": "A kezdés beállítva erre az időpontra: <strong>{{formattedStartTime}}</strong>"
+  },
   "startUploadButton": {
     "startSelected": "Indítás a kiválasztottakra"
   },

@@ -30,9 +30,7 @@ const ShowUploadDialogButton = ({ loading, status, ...rest }) => {
       <StatusLight status={status} />
       <ListItemTextWithProgress
         primary={
-          loading
-            ? t('show.uploadShowDataLoading', 'Please wait, uploading…')
-            : t('show.uploadShowData', 'Upload show data')
+          loading ? t('show.uploadShowDataLoading') : t('show.uploadShowData')
         }
         secondary={
           loading ? <UploadProgressBar /> : t('show.uploadShowDataStart')
