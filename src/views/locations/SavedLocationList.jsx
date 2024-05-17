@@ -11,6 +11,7 @@ import IconButton from '@material-ui/core/IconButton';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
+import Add from '@material-ui/icons/Add';
 import Edit from '@material-ui/icons/Edit';
 
 import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
@@ -76,6 +77,11 @@ const createNewItemEntry = (props) => (
     {(t) => (
       <ListItem key='__addNew__' button onClick={props.onNewItem}>
         <ListItemText primary={t('savedLocation.addNew')} />
+        <ListItemSecondaryAction>
+          <IconButton edge='end' onClick={props.onNewItem}>
+            <Add />
+          </IconButton>
+        </ListItemSecondaryAction>
       </ListItem>
     )}
   </Translation>

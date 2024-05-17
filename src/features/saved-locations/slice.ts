@@ -5,6 +5,8 @@
  * other location that the user has saved earlier.
  */
 
+import config from 'config';
+
 import {
   type AnyAction,
   createSlice,
@@ -15,6 +17,7 @@ import { type ReadonlyDeep } from 'type-fest';
 import {
   addItemToFront,
   type Collection,
+  createCollectionFromArray,
   createNewItemInFrontOf,
   deleteItemById,
   replaceItemOrAddToFront,
@@ -24,36 +27,9 @@ import { type SavedLocation } from './types';
 
 type SavedLocationsSliceState = ReadonlyDeep<Collection<SavedLocation>>;
 
-const initialState: SavedLocationsSliceState = {
-  // byId is a map from saved location ID to the location itself
-  byId: {
-    fahegy: {
-      id: 'fahegy',
-      name: 'Farkashegy Airfield',
-      center: {
-        lon: 18.915125,
-        lat: 47.486305,
-      },
-      rotation: 59,
-      zoom: 17,
-      notes: '',
-    },
-    elte: {
-      id: 'elte',
-      name: 'ELTE Garden',
-      center: {
-        lon: 19.061951,
-        lat: 47.47334,
-      },
-      rotation: 0,
-      zoom: 17,
-      notes: '',
-    },
-  },
-
-  // Order defines the preferred ordering of locations on the UI
-  order: ['fahegy', 'elte'],
-};
+const initialState: SavedLocationsSliceState = createCollectionFromArray(
+  config.map.locations
+);
 
 const { actions, reducer } = createSlice({
   name: 'savedLocations',

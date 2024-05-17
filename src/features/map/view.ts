@@ -11,11 +11,15 @@
  * is mounted for the first time, it is initialized from the state of the store.
  */
 
+import config from 'config';
+
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import { type ReadonlyDeep } from 'type-fest';
 
 import { normalizeAngle } from '~/utils/geography';
 import { type Coordinate2D } from '~/utils/math';
+
+import { type View } from './types';
 
 /**
  * The state of the origin (home position) and the global flat Earth coordinate
@@ -24,17 +28,9 @@ import { type Coordinate2D } from '~/utils/math';
  * The flat Earth coordinate system is at the given position and its zero
  * degree heading points towards the heading given in the `angle` property.
  */
-type MapViewSliceState = ReadonlyDeep<{
-  position: Coordinate2D;
-  angle: string;
-  zoom: number;
-}>;
+type MapViewSliceState = ReadonlyDeep<View>;
 
-const initialState: MapViewSliceState = {
-  position: [18.915125, 47.486305], // Sensible default: Farkashegy Airfield
-  angle: '0',
-  zoom: 17,
-};
+const initialState: MapViewSliceState = config.map.view;
 
 const { actions, reducer } = createSlice({
   name: 'map/view',

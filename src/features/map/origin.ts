@@ -2,7 +2,10 @@
  * @file Reducer function for handling the position of the origin on the map.
  */
 
+import config from 'config';
+
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import defaults from 'lodash-es/defaults';
 import { type ReadonlyDeep } from 'type-fest';
 
 import { type Origin, OriginType } from './types';
@@ -16,11 +19,11 @@ import { type Origin, OriginType } from './types';
  */
 type MapOriginSliceState = ReadonlyDeep<Origin>;
 
-const initialState: MapOriginSliceState = {
-  position: [18.915125, 47.486305], // Sensible default: Farkashegy Airfield
-  angle: '59',
+const initialState: MapOriginSliceState = defaults(config.map.origin, {
+  position: config.map.view.position,
+  angle: config.map.view.angle,
   type: OriginType.NWU,
-};
+});
 
 /**
  * The reducer function that handles actions related to the tool selection.

@@ -2,6 +2,8 @@
  * @file Slice for handling the layer configuration of the map.
  */
 
+import config from 'config';
+
 import camelCase from 'lodash-es/camelCase';
 import map from 'lodash-es/map';
 
@@ -16,26 +18,23 @@ import {
   LayerType,
 } from '~/model/layers';
 import { type Source } from '~/model/sources';
-import { type Collection, deleteItemById } from '~/utils/collections';
+import {
+  type Collection,
+  createCollectionFromArray,
+  deleteItemById,
+} from '~/utils/collections';
 import { chooseUniqueId, chooseUniqueName } from '~/utils/naming';
 
 type MapLayersSliceState = ReadonlyDeep<Collection<Layer>>;
 
 /**
- * The default layer configuration of the map.
+ * The initial layer configuration of the map.
  */
-const initialState: MapLayersSliceState = {
-  byId: {
-    base: createNewLayer('base', LayerType.BASE, 'Base map'),
-    graticule: createNewLayer('graticule', LayerType.GRATICULE, 'Graticule'),
-    beacons: createNewLayer('beacons', LayerType.BEACONS, 'Beacons'),
-    features: createNewLayer('features', LayerType.FEATURES, 'Features'),
-    home: createNewLayer('home', LayerType.MISSION_INFO, 'Mission info'),
-    uavs: createNewLayer('uavs', LayerType.UAVS, 'UAVs'),
-  },
-  // .order contains the order of the layers, from bottom to top
-  order: ['base', 'graticule', 'beacons', 'features', 'home', 'uavs'],
-};
+const initialState: MapLayersSliceState = createCollectionFromArray(
+  config.map.layers.map(({ id, type, label, parameters }) =>
+    createNewLayer(id, type, label, parameters)
+  )
+);
 
 /**
  * The reducer that handles actions related to map layers.

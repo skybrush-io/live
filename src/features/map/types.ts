@@ -10,3 +10,9 @@ export enum OriginType {
   NEU = 'neu',
   NWU = 'nwu',
 }
+
+export type View = {
+  position: Coordinate2D;
+  angle: string;
+  zoom: number;
+};
