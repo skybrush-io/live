@@ -180,6 +180,22 @@
     "coordinatesOfTheCorners": "Coordinates of the corners of the room",
     "roomVisibleIn3D": "Room visible in 3D view"
   },
+  "largeControlButtonGroup": {
+    "RTH": "RTH",
+    "RTHAll": "RTH all",
+    "arm": "Arm",
+    "armAll": "Arm all",
+    "broadcast": "Broadcast",
+    "disarm": "Disarm",
+    "disarmAll": "Disarm all",
+    "hold": "Hold",
+    "holdAll": "Hold all",
+    "land": "Land",
+    "landAll": "Land all",
+    "selectionOnly": "Selection only",
+    "shutdown": "Shutdown",
+    "shutdownAll": "Shutdown all"
+  },
   "lightControl": {
     "fromGCS": "Lights controlled from GCS",
     "notConnected": "Not connected to server",

@@ -174,6 +174,22 @@
     "coordinatesOfTheCorners": "A szoba sarkainak koordinátái",
     "roomVisibleIn3D": "A szoba látható 3D nézetben"
   },
+  "largeControlButtonGroup": {
+    "RTH": "Hazatérés",
+    "RTHAll": "Haza mind",
+    "arm": "Indítás",
+    "armAll": "Összes indítása",
+    "broadcast": "Broadcast",
+    "disarm": "Leállítás",
+    "disarmAll": "Összes leállítása",
+    "hold": "Pozíció tartás",
+    "holdAll": "Mind tartsa a pozíciót",
+    "land": "Leszállás",
+    "landAll": "Mind szálljon le",
+    "selectionOnly": "Csak a kijelöltek",
+    "shutdown": "Kikapcsolás",
+    "shutdownAll": "Összes kikapcsolása"
+  },
   "lightControl": {
     "fromGCS": "A fények GCS-sel vezéreltek",
     "notConnected": "Nem csatlakozik a szerverhez",
