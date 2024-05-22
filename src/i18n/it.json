@@ -200,6 +200,9 @@
   "notifications": {
     "connectedToSkybrushServer": "Connesso a Skybrush server"
   },
+  "outdoorEnvironmentEditor": {
+    "coordinateSystem": "Sistema di coordinate"
+  },
   "preferences": "Preferenze",
   "safetyDialog": {
     "geofenceTab": {
@@ -336,6 +339,14 @@
     "uploadShowData": "Carica dati show",
     "uploadShowDataLoading": "Prego aspetta, caricando…",
     "uploadShowDataStart": "Clicca qui per iniziare il processo di upload"
+  },
+  "sorting": {
+    "label": {
+      "battery": "Batteria"
+    },
+    "shortLabel": {
+      "battery": "Batteria"
+    }
   },
   "toolbox": {
     "averagingInProgress": "{{number}} in progressione",
