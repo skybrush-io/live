@@ -197,9 +197,16 @@
     "shutdownAll": "Shutdown all"
   },
   "lightControl": {
+    "connectToAServer": "Connect to a server to control lights",
     "fromGCS": "Lights controlled from GCS",
     "notConnected": "Not connected to server",
-    "notFromGCS": "Lights not controlled from GCS"
+    "notFromGCS": "Lights not controlled from GCS",
+    "restoreDefault": "Click to restore default light program",
+    "takeControl": "Click to take control"
+  },
+  "lightControlGrid": {
+    "allOff": "All off",
+    "allOn": "All on"
   },
   "map": {
     "resetRotation": "Reset rotation"
