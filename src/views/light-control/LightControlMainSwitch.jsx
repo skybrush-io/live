@@ -33,9 +33,9 @@ const LightControlMainSwitch = ({ active, connected, onToggle, t }) => (
       secondary={
         connected
           ? active
-            ? 'Click to restore default light program'
-            : 'Click to take control'
-          : 'Connect to a server to control lights'
+            ? t('lightControl.restoreDefault')
+            : t('lightControl.takeControl')
+          : t('lightControl.connectToAServer')
       }
     />
   </ListItem>

@@ -191,9 +191,16 @@
     "shutdownAll": "Összes kikapcsolása"
   },
   "lightControl": {
+    "connectToAServer": "Csatlakozzon egy szerverhez a fények irányításához",
     "fromGCS": "A fények GCS-sel vezéreltek",
     "notConnected": "Nem csatlakozik a szerverhez",
-    "notFromGCS": "A fények nem GCS-sel vezéreltek"
+    "notFromGCS": "A fények nem GCS-sel vezéreltek",
+    "restoreDefault": "Kattintson az alapértelmezett fényprogram visszaállításához",
+    "takeControl": "Kattintson az irányítás átvételéhez"
+  },
+  "lightControlGrid": {
+    "allOff": "Mind ki",
+    "allOn": "Mind be"
   },
   "map": {
     "resetRotation": "Forgatás visszaállítása"
