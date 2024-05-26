@@ -10,13 +10,17 @@ import {
 import { JobScope } from '~/features/upload/jobs';
 import messageHub from '~/message-hub';
 import { MissionItemType } from '~/model/missions';
-import { toScaledJSONFromLonLat } from '~/utils/geography';
+import {
+  toScaledJSONFromLonLat,
+  toScaledJSONFromObject,
+} from '~/utils/geography';
 
 import { JOB_TYPE } from './constants';
 import {
   getExclusionZonePolygons,
   getGeofenceActionWithValidation,
   getGeofencePolygonInWorldCoordinates,
+  getGPSBasedHomePositionsInMission,
   getMissionItemsInOrder,
   getMissionName,
 } from './selectors';
@@ -93,6 +97,9 @@ export const getMissionItemUploadJobPayload = (state) => ({
   name: getMissionName(state),
   items: getMissionItemsInOrder(state).map((item) =>
     transformMissionItemBeforeUpload(item, state)
+  ),
+  startPositions: getGPSBasedHomePositionsInMission(state).map(
+    (hp) => hp && toScaledJSONFromObject(hp)
   ),
 });
 
