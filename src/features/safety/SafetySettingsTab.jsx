@@ -31,7 +31,6 @@ const toNullOrNumber = (value) => (isEmpty(value) ? null : Number(value));
 
 const validator = createValidator({
   criticalBatteryVoltage: optional(positive),
-  lowBatteryPercentage: optional(positive), // TODO: add upper threshold at 100
   lowBatteryVoltage: optional(positive),
   returnToHomeAltitude: optional(positive),
   returnToHomeSpeed: optional(positive),
@@ -44,13 +43,6 @@ const fields = [
     unit: 'V',
     description:
       'Critically low battery voltage in [V] under which a critical battery failsafe action is triggered.',
-  },
-  {
-    id: 'lowBatteryPercentage',
-    label: 'Low battery percentage',
-    unit: 'V',
-    description:
-      'Low battery percentage in [%] under which a low battery failsafe action is triggered.',
   },
   {
     id: 'lowBatteryVoltage',
@@ -158,7 +150,6 @@ export default connect(
       dispatch(
         updateSafetySettings({
           criticalBatteryVoltage: toNullOrNumber(data.criticalBatteryVoltage),
-          lowBatteryPercentage: toNullOrNumber(data.lowBatteryPercentage),
           lowBatteryVoltage: toNullOrNumber(data.lowBatteryVoltage),
           returnToHomeAltitude: toNullOrNumber(data.returnToHomeAltitude),
           returnToHomeSpeed: toNullOrNumber(data.returnToHomeSpeed),

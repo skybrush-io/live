@@ -24,7 +24,6 @@ export type SafetySliceState = ReadonlyDeep<{
   };
   settings: {
     criticalBatteryVoltage: Nullable<number>;
-    lowBatteryPercentage: Nullable<number>;
     lowBatteryVoltage: Nullable<number>;
     returnToHomeAltitude: Nullable<number>;
     returnToHomeSpeed: Nullable<number>;
@@ -44,7 +43,6 @@ const initialState: SafetySliceState = {
   },
   settings: {
     criticalBatteryVoltage: null,
-    lowBatteryPercentage: null,
     lowBatteryVoltage: null,
     returnToHomeAltitude: null,
     returnToHomeSpeed: null,
