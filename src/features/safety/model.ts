@@ -38,3 +38,30 @@ export function describeGeofenceAction(action: GeofenceAction): string {
 export function isValidGeofenceAction(action: GeofenceAction): boolean {
   return VALID_GEOFENCE_ACTIONS.includes(action);
 }
+
+/**
+ * Enum describing the possible battery threshold types.
+ */
+export enum BatteryThresholdType {
+  OFF = 'off',
+  VOLTAGE = 'voltage',
+  PERCENTAGE = 'percentage',
+}
+
+/**
+ * Union type describing the possible battery threshold values.
+ */
+export type BatteryThreshold =
+  | { type: BatteryThresholdType.OFF }
+  | { type: BatteryThresholdType.VOLTAGE; value: number }
+  | { type: BatteryThresholdType.PERCENTAGE; value: number };
+
+/**
+ * Mapping between battery threshold types and their respective unit symbols.
+ */
+export const unitForBatteryThresholdType: Record<BatteryThresholdType, string> =
+  {
+    [BatteryThresholdType.OFF]: '',
+    [BatteryThresholdType.VOLTAGE]: 'V',
+    [BatteryThresholdType.PERCENTAGE]: '%',
+  };
