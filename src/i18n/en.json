@@ -273,6 +273,22 @@
       }
     }
   },
+  "navigationButtonGroup":{
+    "fly": "Fly",
+    "resetZoom": "Reset zoom",
+    "rotateCamera": "Rotate camera towards drones",
+    "walk": "Walk"
+  },
+  "navigationInstructions": {
+    "altitude": "Altitude",
+    "arrows": "Arrows",
+    "flyFrwrdBckwrd": "Fly forward / backward",
+    "lookAround": "Look around",
+    "moveSideways": "Move sideways",
+    "noInstruction": "No instructions for this navigation mode",
+    "run": "Run",
+    "walkAround": "Walk around"
+  },
   "notifications": {
     "connectedToSkybrushServer": "Connected to Skybrush server"
   },

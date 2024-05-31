@@ -267,6 +267,22 @@
       }
     }
   },
+  "navigationButtonGroup":{
+    "fly": "Repülés",
+    "resetZoom": "Nagyítás visszaállítása",
+    "rotateCamera": "A kamera drónok irányába forduljon",
+    "walk": "Séta"
+  },
+  "navigationInstructions": {
+    "altitude": "Magasság",
+    "arrows": "Nyilak",
+    "flyFrwrdBckwrd": "Repülés előre / hátra",
+    "lookAround": "Körbenézés",
+    "moveSideways": "Oldalmozgás",
+    "noInstruction": "Ehhez a navigációs módhoz nincs útmutató",
+    "run": "Futás",
+    "walkAround": "Körbe sétálni"
+  },
   "notifications": {
     "connectedToSkybrushServer": "Csatlakozva a Skybrush szerverhez"
   },

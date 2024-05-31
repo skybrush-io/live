@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { TransitionGroup } from 'react-transition-group';
+import { Translation, withTranslation } from 'react-i18next';
 
 import Box from '@material-ui/core/Box';
 import IconButton from '@material-ui/core/IconButton';
@@ -19,41 +20,53 @@ const noWrap = {
 
 const instructionsByMode = {
   walk: (
-    <div style={noWrap}>
-      <div style={divStyle}>
-        <kbd>Arrows</kbd>
-        <span> Walk around </span>
-        <kbd>E</kbd>
-        <kbd>C</kbd>
-        <span> Altitude </span>
-        <kbd>Shift</kbd>
-        <span> Run </span>
-      </div>
-      <IconButton disabled>
-        <Mouse />
-      </IconButton>
-      <div style={{ ...divStyle, marginLeft: -8 }}>Look around</div>
-    </div>
+    <Translation>
+      {(t) => (
+        <div style={noWrap}>
+          <div style={divStyle}>
+            <kbd>{t('navigationInstructions.arrows')}</kbd>
+            <span> {t('navigationInstructions.walkAround')} </span>
+            <kbd>E</kbd>
+            <kbd>C</kbd>
+            <span> {t('navigationInstructions.altitude')} </span>
+            <kbd>Shift</kbd>
+            <span> {t('navigationInstructions.run')} </span>
+          </div>
+          <IconButton disabled>
+            <Mouse />
+          </IconButton>
+          <div style={{ ...divStyle, marginLeft: -8 }}>
+            {t('navigationInstructions.lookAround')}
+          </div>
+        </div>
+      )}
+    </Translation>
   ),
 
   fly: (
-    <div style={noWrap}>
-      <div style={divStyle}>
-        <kbd>↑</kbd>
-        <kbd>↓</kbd>
-        <span> Fly forward / backward </span>
-        <kbd>←</kbd>
-        <kbd>→</kbd>
-        <span> Move sideways </span>
-        <kbd>E</kbd>
-        <kbd>C</kbd>
-        <span> Altitude </span>
-      </div>
-      <IconButton disabled>
-        <Mouse />
-      </IconButton>
-      <div style={{ ...divStyle, marginLeft: -8 }}>Look around</div>
-    </div>
+    <Translation>
+      {(t) => (
+        <div style={noWrap}>
+          <div style={divStyle}>
+            <kbd>↑</kbd>
+            <kbd>↓</kbd>
+            <span> {t('navigationInstructions.flyFrwrdBckwrd')} </span>
+            <kbd>←</kbd>
+            <kbd>→</kbd>
+            <span> {t('navigationInstructions.moveSideways')} </span>
+            <kbd>E</kbd>
+            <kbd>C</kbd>
+            <span> {t('navigationInstructions.altitude')} </span>
+          </div>
+          <IconButton disabled>
+            <Mouse />
+          </IconButton>
+          <div style={{ ...divStyle, marginLeft: -8 }}>
+            {t('navigationInstructions.lookAround')}
+          </div>
+        </div>
+      )}
+    </Translation>
   ),
 };
 
@@ -61,7 +74,7 @@ const instructionsByMode = {
  * Component that shows some short textual instructions about the hotkeys of the
  * current navigation mode.
  */
-const NavigationInstructions = ({ mode }) => (
+const NavigationInstructions = withTranslation()(({ mode, t }) => (
   <Box mx={1} flex={1} alignSelf='stretch' position='relative'>
     <TransitionGroup>
       <FadeAndSlide key={mode}>
@@ -75,15 +88,16 @@ const NavigationInstructions = ({ mode }) => (
           justifyContent='center'
         >
           {instructionsByMode[mode] ||
-            'No instructions for this navigation mode'}
+            t('navigationInstructions.noInstruction')}
         </Box>
       </FadeAndSlide>
     </TransitionGroup>
   </Box>
-);
+));
 
 NavigationInstructions.propTypes = {
   mode: PropTypes.oneOf(['walk', 'fly']),
+  t: PropTypes.func,
 };
 
 export default NavigationInstructions;
