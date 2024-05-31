@@ -122,7 +122,6 @@ const GeofenceSettingsFormPresentation = ({ initialValues, onSubmit, t }) => (
         <FormHeader>{t('safetyDialog.geofenceTab.safetyMargins')}</FormHeader>
         <Box display='flex' flexDirection='row'>
           <TextField
-            fullWidth={false}
             name='horizontalMargin'
             label={t('safetyDialog.geofenceTab.horizontal')}
             type='number'
@@ -133,7 +132,6 @@ const GeofenceSettingsFormPresentation = ({ initialValues, onSubmit, t }) => (
           />
           <Box p={1} />
           <TextField
-            fullWidth={false}
             name='verticalMargin'
             label={t('safetyDialog.geofenceTab.vertical')}
             type='number'
@@ -147,7 +145,6 @@ const GeofenceSettingsFormPresentation = ({ initialValues, onSubmit, t }) => (
         <Box display='flex' flexDirection='row'>
           <TextField
             disabled
-            fullWidth={false}
             name='distanceLimit'
             label={t('safetyDialog.geofenceTab.maxDistance')}
             error={maxDistance === 0 && maxGeofence === 0}
@@ -164,7 +161,6 @@ const GeofenceSettingsFormPresentation = ({ initialValues, onSubmit, t }) => (
           <Box p={1} />
           <TextField
             disabled
-            fullWidth={false}
             name='heightLimit'
             label={t('safetyDialog.geofenceTab.maxAltitude')}
             error={maxHeight === 0}
@@ -220,7 +216,22 @@ const GeofenceSettingsForm = connect(
       maxHeight: getMaximumHeightForCurrentMissionType(state),
       action: getGeofenceAction(state),
     },
-  })
+  }),
+  // mapDispatchToProps
+  {
+    onSubmit: (data) => (dispatch) => {
+      dispatch(
+        updateGeofenceSettings({
+          horizontalMargin: Number(data.horizontalMargin),
+          verticalMargin: Number(data.verticalMargin),
+          simplify: data.simplify,
+          maxVertexCount: Number(data.maxVertexCount),
+        })
+      );
+      dispatch(setGeofenceAction(data.action));
+      dispatch(updateGeofencePolygon());
+    },
+  }
 )(withTranslation()(GeofenceSettingsFormPresentation));
 
 /**
@@ -231,13 +242,12 @@ const GeofenceSettingsTabPresentation = ({
   hasFence,
   onClose,
   onClearGeofence,
-  onSubmit,
   t,
 }) => (
   <>
     <DialogContent>
       {/* <FormHeader>Automatic geofence</FormHeader> */}
-      <GeofenceSettingsForm onSubmit={onSubmit} />
+      <GeofenceSettingsForm />
     </DialogContent>
     <DialogActions>
       <Button color='secondary' disabled={!hasFence} onClick={onClearGeofence}>
@@ -255,7 +265,6 @@ GeofenceSettingsTabPresentation.propTypes = {
   hasFence: PropTypes.bool,
   onClearGeofence: PropTypes.func,
   onClose: PropTypes.func,
-  onSubmit: PropTypes.func,
   t: PropTypes.func,
 };
 
@@ -276,18 +285,6 @@ const GeofenceSettingsTab = connect(
         dispatch(clearGeofencePolygonId());
         dispatch(removeFeaturesByIds([geofencePolygonId]));
       }
-    },
-    onSubmit: (data) => (dispatch) => {
-      dispatch(
-        updateGeofenceSettings({
-          horizontalMargin: Number(data.horizontalMargin),
-          verticalMargin: Number(data.verticalMargin),
-          simplify: data.simplify,
-          maxVertexCount: Number(data.maxVertexCount),
-        })
-      );
-      dispatch(setGeofenceAction(data.action));
-      dispatch(updateGeofencePolygon());
     },
   }
 )(withTranslation()(GeofenceSettingsTabPresentation));

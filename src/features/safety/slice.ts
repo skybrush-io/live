@@ -7,15 +7,16 @@ import { type PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { type ReadonlyDeep } from 'type-fest';
 
 import { noPayload } from '~/utils/redux';
-import { type Nullable } from '~/utils/types';
 
 import { SafetyDialogTab } from './constants';
+import { type BatteryThreshold } from './model';
 
 export type SafetySliceState = ReadonlyDeep<{
   dialog: {
     open: boolean;
     selectedTab: SafetyDialogTab;
   };
+  // TODO: Move geofence action here from the `mission` slice.
   geofence: {
     horizontalMargin: number;
     verticalMargin: number;
@@ -23,10 +24,10 @@ export type SafetySliceState = ReadonlyDeep<{
     maxVertexCount: number;
   };
   settings: {
-    criticalBatteryVoltage: Nullable<number>;
-    lowBatteryVoltage: Nullable<number>;
-    returnToHomeAltitude: Nullable<number>;
-    returnToHomeSpeed: Nullable<number>;
+    criticalBatteryVoltage?: number;
+    lowBatteryThreshold?: BatteryThreshold;
+    returnToHomeAltitude?: number;
+    returnToHomeSpeed?: number;
   };
 }>;
 
@@ -42,10 +43,10 @@ const initialState: SafetySliceState = {
     maxVertexCount: 10,
   },
   settings: {
-    criticalBatteryVoltage: null,
-    lowBatteryVoltage: null,
-    returnToHomeAltitude: null,
-    returnToHomeSpeed: null,
+    criticalBatteryVoltage: undefined,
+    lowBatteryThreshold: undefined,
+    returnToHomeAltitude: undefined,
+    returnToHomeSpeed: undefined,
   },
 };
 
