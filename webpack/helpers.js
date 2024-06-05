@@ -22,7 +22,7 @@ const htmlMetaTags = {
 const useAppConfiguration = (name = 'default') => ({
   resolve: {
     alias: {
-      'config-overrides': path.resolve(projectRoot, 'config', name === 'default' ? 'none' : name),
+      'config-overrides': path.resolve(projectRoot, 'config', name),
     },
   },
 });

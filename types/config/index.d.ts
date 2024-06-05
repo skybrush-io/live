@@ -80,6 +80,14 @@ declare module 'config' {
     };
 
     /**
+     * Unique per-variant settings to be used for distributable builds.
+     */
+    electronBuilder?: {
+      appId?: string;
+      productName?: string;
+    };
+
+    /**
      * Whether the application's state should be reset on each run instead of
      * recalling the last stored session.
      */

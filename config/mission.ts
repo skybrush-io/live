@@ -5,15 +5,20 @@
 
 import { type ConfigOverrides } from 'config-overrides';
 
-import defaults from './defaults';
+import baseline from './baseline';
 
 const overrides: ConfigOverrides = {
+  electronBuilder: {
+    appId: 'com.collmot.skybrush.live-mission',
+    productName: 'Skybrush Live Mission',
+  },
+
   features: {
     missionEditor: true,
   },
 
   map: {
-    drawingTools: [...defaults.map.drawingTools, ['add-waypoint']],
+    drawingTools: [...baseline.map.drawingTools, ['add-waypoint']],
   },
 
   perspectives: [
