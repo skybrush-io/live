@@ -225,16 +225,16 @@ export const recalculateMapping = () => (dispatch) => {
  * mission slots (i.e. placeholders for drones in missions that are not assigned
  * yet).
  *
- * @param {Array.<string>} indices  the indices of the selected mission slots.
- *        Any mission slot whose index is not in this set will be deselected,
+ * @param {Array.<string>} slotIds  the ids of the selected mission slots.
+ *        Any mission slot whose id is not in this set will be deselected,
  *        and so will be anything that is not a mission slot.
  * @return {Object} an appropriately constructed action
  */
-export const setSelectedMissionSlots = (indices) =>
+export const setSelectedMissionSlotIds = (slotIds) =>
   setSelection(
-    (Array.isArray(indices) ? indices : [])
-      .filter((index) => !isNil(index))
-      .map((index) => missionSlotIdToGlobalId(index))
+    (Array.isArray(slotIds) ? slotIds : [])
+      .filter((slotId) => !isNil(slotId))
+      .map((slotId) => missionSlotIdToGlobalId(slotId))
   );
 
 /**

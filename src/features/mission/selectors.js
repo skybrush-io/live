@@ -210,26 +210,21 @@ export const getUAVIdForMappingSlotBeingEdited = createSelector(
  * Selector that calculates and caches the list of selected mission indices from
  * the state object.
  */
-export const getSelectedMissionIndices = selectionForSubset(
+export const getSelectedMissionSlotIds = selectionForSubset(
   globalIdToMissionSlotId
 );
-
-/**
- * Selector that calculates the number of selected mission indices.
- */
-export const getNumberOfSelectedMissionIndices = (state) => {
-  const selection = getSelectedMissionIndices(state);
-  return Array.isArray(selection) ? selection.length : 0;
-};
 
 /**
  * Selector that returns at most five selected mission indices for sake of
  * displaying their trajectories.
  */
-export const getSelectedMissionIndicesForTrajectoryDisplay = (state) =>
-  getNumberOfSelectedMissionIndices(state) <= 5
-    ? getSelectedMissionIndices(state)
-    : EMPTY_ARRAY;
+export const getSelectedMissionIndicesForTrajectoryDisplay = createSelector(
+  getSelectedMissionSlotIds,
+  (selectedMissionSlotIds) =>
+    selectedMissionSlotIds.length <= 5
+      ? selectedMissionSlotIds.map(Number)
+      : EMPTY_ARRAY
+);
 
 /**
  * Returns a list of all the UAV IDs that participate in the mission, without

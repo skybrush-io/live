@@ -40,14 +40,14 @@ import {
   createKeyboardNavigationHandlers,
   Direction,
 } from '~/features/hotkeys/navigation';
-import { setSelectedMissionSlots } from '~/features/mission/actions';
+import { setSelectedMissionSlotIds } from '~/features/mission/actions';
 import {
   adjustMissionMapping,
   startMappingEditorSessionAtSlot,
 } from '~/features/mission/slice';
 import {
   getIndexOfMappingSlotBeingEdited,
-  getSelectedMissionIndices,
+  getSelectedMissionSlotIds,
   isMappingEditable,
 } from '~/features/mission/selectors';
 import {
@@ -134,25 +134,26 @@ const createGridItems = (
     onSelectedMissionSlot,
     onSelectedUAV,
     onStartEditing,
-    selectedMissionIndices,
+    selectedMissionSlotIds,
     selectedUAVIds,
     showMissionIds,
   }
 ) =>
   items.map((item) => {
     const [uavId, missionIndex, proposedLabel] = item;
+    const missionSlotId = String(missionIndex);
     const editingThisItem =
       mappingSlotBeingEdited !== undefined &&
       missionIndex === mappingSlotBeingEdited;
     const selected =
       selectedUAVIds.includes(uavId) ||
-      selectedMissionIndices.includes(`${missionIndex}`);
+      selectedMissionSlotIds.includes(missionSlotId);
     const listItemProps = {
       /* prettier-ignore */
       onClick:
-        isInEditMode ? (_event) => onStartEditing(missionIndex) :
-        uavId        ? (event) => onSelectedUAV(event, uavId) :
-        missionIndex ? (event) => onSelectedMissionSlot(event, missionIndex) :
+        isInEditMode  ? (_event) => onStartEditing(missionIndex) :
+        uavId         ? (event) => onSelectedUAV(event, uavId) :
+        missionSlotId ? (event) => onSelectedMissionSlot(event, missionSlotId) :
         undefined,
       onDrop: onDropped ? onDropped(missionIndex) : undefined,
       editing: editingThisItem,
@@ -229,7 +230,7 @@ const createListItems = (
     onSelectedMissionSlot,
     onStartEditing,
     selectedUAVIds,
-    selectedMissionIndices,
+    selectedMissionSlotIds,
     showMissionIds,
   }
 ) =>
@@ -239,17 +240,18 @@ const createListItems = (
     }
 
     const [uavId, missionIndex, proposedLabel] = item;
+    const missionSlotId = String(missionIndex);
     const editingThisItem =
       isInEditMode && missionIndex === mappingSlotBeingEdited;
     const selected =
       selectedUAVIds.includes(uavId) ||
-      selectedMissionIndices.includes(`${missionIndex}`);
+      selectedMissionSlotIds.includes(missionSlotId);
     const listItemProps = {
       /* prettier-ignore */
       onClick:
-        isInEditMode ? (_event) => onStartEditing(missionIndex) :
-        uavId        ? (event) => onSelectedUAV(event, uavId) :
-        missionIndex ? (event) => onSelectedMissionSlot(event, missionIndex) :
+        isInEditMode  ? (_event) => onStartEditing(missionIndex) :
+        uavId         ? (event) => onSelectedUAV(event, uavId) :
+        missionSlotId ? (event) => onSelectedMissionSlot(event, missionSlotId) :
         undefined,
       onDrop: onDropped ? onDropped(missionIndex) : undefined,
       editing: editingThisItem,
@@ -330,7 +332,7 @@ const UAVListPresentation = ({
   onSelectMissionSlot,
   onSelectSection,
   selectedUAVIds,
-  selectedMissionIndices,
+  selectedMissionSlotIds,
   selectionInfo,
   showMissionIds,
   t,
@@ -364,7 +366,7 @@ const UAVListPresentation = ({
     onSelectedMissionSlot: onSelectMissionSlot,
     onStartEditing: onEditMappingSlot,
     selectedUAVIds,
-    selectedMissionIndices,
+    selectedMissionSlotIds,
     showMissionIds,
   };
 
@@ -456,7 +458,7 @@ UAVListPresentation.propTypes = {
   onSelectMissionSlot: PropTypes.func,
   onSelectSection: PropTypes.func,
   selectedUAVIds: PropTypes.array,
-  selectedMissionIndices: PropTypes.array,
+  selectedMissionSlotIds: PropTypes.array,
   selectionInfo: PropTypes.exact({
     mainUAVIds: PropTypes.exact({
       checked: PropTypes.bool,
@@ -493,7 +495,7 @@ const UAVList = connect(
     mappingSlotBeingEdited: getIndexOfMappingSlotBeingEdited(state),
     layout: getUAVListLayout(state),
     selectedUAVIds: getSelectedUAVIds(state),
-    selectedMissionIndices: getSelectedMissionIndices(state),
+    selectedMissionSlotIds: getSelectedMissionSlotIds(state),
     selectionInfo: getSelectionInfo(state),
     showMissionIds: isShowingMissionIds(state),
     uavIds: getDisplayedIdListBySections(state),
@@ -579,8 +581,8 @@ const UAVList = connect(
             setSelection: setSelectedUAVIds,
           }),
           onSelectMissionSlot: createSelectionHandlerThunk({
-            getSelection: getSelectedMissionIndices,
-            setSelection: setSelectedMissionSlots,
+            getSelection: getSelectedMissionSlotIds,
+            setSelection: setSelectedMissionSlotIds,
           }),
           onSelectSection: (event) => (dispatch, getState) => {
             const { value } = event.target;

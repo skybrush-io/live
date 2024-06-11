@@ -768,7 +768,7 @@ const convexHullPolygon = (convexHull, selection) => {
 };
 
 const selectionTrajectoryFeatures = (
-  missionSlotIdsForTrajectories,
+  missionIndicesForTrajectories,
   uavIdsForTrajectories
 ) => {
   const trajectoryFeatures = [];
@@ -785,10 +785,10 @@ const selectionTrajectoryFeatures = (
   }
 
   if (
-    Array.isArray(missionSlotIdsForTrajectories) &&
-    missionSlotIdsForTrajectories.length > 0
+    Array.isArray(missionIndicesForTrajectories) &&
+    missionIndicesForTrajectories.length > 0
   ) {
-    for (const missionIndex of missionSlotIdsForTrajectories) {
+    for (const missionIndex of missionIndicesForTrajectories) {
       trajectoryFeatures.push(
         <MissionSlotTrajectoryFeature
           key={`trajectory.s${missionIndex}`}
@@ -813,7 +813,7 @@ const MissionInfoVectorSource = ({
   missionItemsWithCoordinates,
   missionOrientation,
   missionOrigin,
-  missionSlotIdsForTrajectories,
+  missionIndicesForTrajectories,
   orientation,
   returnToHomeItems,
   selectedTool,
@@ -845,7 +845,7 @@ const MissionInfoVectorSource = ({
       missionOriginMarker(missionOrientation, missionOrigin),
       convexHullPolygon(convexHull, selection),
       selectionTrajectoryFeatures(
-        missionSlotIdsForTrajectories,
+        missionIndicesForTrajectories,
         uavIdsForTrajectories
       )
     )}
@@ -864,7 +864,7 @@ MissionInfoVectorSource.propTypes = {
   missionItemsWithCoordinates: PropTypes.arrayOf(PropTypes.object),
   missionOrientation: CustomPropTypes.angle,
   missionOrigin: PropTypes.arrayOf(PropTypes.number),
-  missionSlotIdsForTrajectories: PropTypes.arrayOf(PropTypes.string),
+  missionIndicesForTrajectories: PropTypes.arrayOf(PropTypes.string),
   orientation: CustomPropTypes.angle,
   returnToHomeItems: PropTypes.arrayOf(PropTypes.object),
   selection: PropTypes.arrayOf(PropTypes.string),
@@ -918,7 +918,7 @@ export const MissionInfoLayer = connect(
       : undefined,
     missionOrientation: getOutdoorShowOrientation(state),
     /* prettier-ignore */
-    missionSlotIdsForTrajectories:
+    missionIndicesForTrajectories:
       layer?.parameters?.showTrajectoriesOfSelection
         ? getSelectedMissionIndicesForTrajectoryDisplay(state)
         : undefined,
