@@ -10,6 +10,7 @@ import { Switches, TextField } from 'mui-rff';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Form } from 'react-final-form';
+import { Translation, withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import Button from '@material-ui/core/Button';
@@ -73,12 +74,14 @@ const addressForServerItem = ({ hostName, port }) => `${hostName}:${port}`;
 
 const protocolForServerItem = (item) =>
   isItemSecure(item)
-    ? 'Secure connection'
+    ? 'serverSettingsDialog.secureConnection'
     : isItemLocal(item)
-    ? 'Local connection'
-    : 'Unsecured connection';
+      ? 'serverSettingsDialog.localConnection'
+      : 'serverSettingsDialog.unsecuredConnection';
 const securityWarningForServerItem = (item) =>
-  isItemSecure(item) || isItemLocal(item) ? '' : ' (unsecured)';
+  isItemSecure(item) || isItemLocal(item)
+    ? ''
+    : 'serverSettingsDialog.unsecured';
 
 const primaryTextForServerItem = (item) =>
   item.label || addressForServerItem(item);
@@ -90,21 +93,29 @@ const secondaryTextForServerItem = (item) =>
 
 const manualSetupAllowed = !config?.server?.preventManualSetup;
 
-const ConnectionInProgressIndicator = ({ hostName, ...rest }) => (
-  <SmallProgressIndicator
-    label={hostName ? `Connecting to ${hostName}...` : 'Connecting...'}
-    {...rest}
-  />
+const ConnectionInProgressIndicator = withTranslation()(
+  ({ hostName, t, ...rest }) => (
+    <SmallProgressIndicator
+      label={
+        hostName
+          ? t('serverSettingsDialog.connectingTo', { hostName })
+          : t('serverSettingsDialog.connecting')
+      }
+      {...rest}
+    />
+  )
 );
 
 ConnectionInProgressIndicator.propTypes = {
   hostName: PropTypes.string,
+  t: PropTypes.func,
 };
 
 const DetectedServersListPresentation = ({
   isScanning,
   items,
   onItemSelected,
+  t,
 }) => (
   <List disablePadding style={{ height: 160, overflow: 'auto' }}>
     {isScanning && (!items || items.length === 0) ? (
@@ -113,8 +124,8 @@ const DetectedServersListPresentation = ({
           <CircularProgress color='secondary' size={24} />
         </ListItemIcon>
         <ListItemText
-          primary='Please wait…'
-          secondary='Scanning network for servers…'
+          primary={t('serverSettingsDialog.pleaseWait')}
+          secondary={t('serverSettingsDialog.scanningNetwork')}
         />
       </ListItem>
     ) : null}
@@ -123,7 +134,7 @@ const DetectedServersListPresentation = ({
         <ListItemIcon>{iconForServerItem(item)}</ListItemIcon>
         <ListItemText
           primary={primaryTextForServerItem(item)}
-          secondary={secondaryTextForServerItem(item)}
+          secondary={t(secondaryTextForServerItem(item))}
         />
       </ListItem>
     ))}
@@ -132,7 +143,7 @@ const DetectedServersListPresentation = ({
         <ListItemIcon>
           <EditIcon />
         </ListItemIcon>
-        <ListItemText primary='Enter manually' />
+        <ListItemText primary={t('serverSettingsDialog.enterManually')} />
       </ListItem>
     )}
   </List>
@@ -142,6 +153,7 @@ DetectedServersListPresentation.propTypes = {
   isScanning: PropTypes.bool,
   items: PropTypes.array,
   onItemSelected: PropTypes.func,
+  t: PropTypes.func,
 };
 
 /**
@@ -154,7 +166,7 @@ const DetectedServersList = connect(
     isScanning: state.servers.isScanning,
     items: getDetectedServersInOrder(state),
   })
-)(DetectedServersListPresentation);
+)(withTranslation()(DetectedServersListPresentation));
 
 const validator = createValidator({
   hostName: required,
@@ -165,6 +177,7 @@ const ServerSettingsFormPresentation = ({
   initialValues,
   onKeyPress,
   onSubmit,
+  t,
 }) => (
   <Form initialValues={initialValues} validate={validator} onSubmit={onSubmit}>
     {({ handleSubmit }) => (
@@ -172,25 +185,28 @@ const ServerSettingsFormPresentation = ({
         <TextField
           fullWidth
           name='hostName'
-          label='Hostname'
+          label={t('serverSettingsDialog.hostname')}
           variant='filled'
           margin='normal'
         />
         <TextField
           fullWidth
           name='port'
-          label='Port'
+          label={t('serverSettingsDialog.port')}
           variant='filled'
           margin='normal'
         />
-        <Switches name='isSecure' data={{ label: 'Use secure connection' }} />
+        <Switches
+          name='isSecure'
+          data={{ label: t('serverSettingsDialog.useSecureConnection') }}
+        />
         {isTCPConnectionSupported ? (
           <Switches
             name='isWebSocket'
             data={{
-              label: 'Use WebSocket protocol instead of TCP',
+              label: t('serverSettingsDialog.useWebSocketProtocol'),
             }}
-            helperText='For backwards compatibility only.'
+            helperText={t('serverSettingsDialog.helperText')}
           />
         ) : null}
       </form>
@@ -202,6 +218,7 @@ ServerSettingsFormPresentation.propTypes = {
   initialValues: PropTypes.object,
   onKeyPress: PropTypes.func,
   onSubmit: PropTypes.func,
+  t: PropTypes.func,
 };
 
 /**
@@ -216,7 +233,7 @@ const ServerSettingsForm = connect(
       isWebSocket: getServerProtocolWithDefaultWS(state) === Protocol.WS,
     },
   })
-)(ServerSettingsFormPresentation);
+)(withTranslation()(ServerSettingsFormPresentation));
 
 /**
  * Presentation component for the dialog that shows the form that the user
@@ -296,18 +313,26 @@ class ServerSettingsDialogPresentation extends React.Component {
           if (!isServerDetectionSupported) {
             content.push(
               <DialogContent key='contents'>
-                <Typography variant='body2' color='textSecondary'>
-                  Auto-discovery is not available in this version.
-                </Typography>
+                <Translation>
+                  {(t) => (
+                    <Typography variant='body2' color='textSecondary'>
+                      {t('serverSettingsDialog.autodiscoveryIsNotAvailable')}
+                    </Typography>
+                  )}
+                </Translation>
               </DialogContent>
             );
           }
         } else {
           content.push(
             <DialogContent key='contents'>
-              <Typography variant='body2' color='textSecondary'>
-                Connecting to other servers is not supported in this version.
-              </Typography>
+              <Translation>
+                {(t) => (
+                  <Typography variant='body2' color='textSecondary'>
+                    {t('serverSettingsDialog.connectingToOtherServers')}
+                  </Typography>
+                )}
+              </Translation>
             </DialogContent>
           );
         }
@@ -325,9 +350,17 @@ class ServerSettingsDialogPresentation extends React.Component {
             </DialogContent>
           );
           actions.push(
-            <Button key='connect' color='primary' onClick={forceFormSubmission}>
-              Connect
-            </Button>
+            <Translation>
+              {(t) => (
+                <Button
+                  key='connect'
+                  color='primary'
+                  onClick={forceFormSubmission}
+                >
+                  {t('serverSettingsDialog.connect')}
+                </Button>
+              )}
+            </Translation>
           );
         }
 
@@ -339,37 +372,54 @@ class ServerSettingsDialogPresentation extends React.Component {
 
     if (manualSetupAllowed) {
       actions.push(
-        <Button
-          key='disconnect'
-          disabled={!active}
-          onClick={active ? onDisconnect : undefined}
-        >
-          Disconnect
-        </Button>
+        <Translation>
+          {(t) => (
+            <Button
+              key='disconnect'
+              disabled={!active}
+              onClick={active ? onDisconnect : undefined}
+            >
+              {t('serverSettingsDialog.disconnect')}
+            </Button>
+          )}
+        </Translation>
       );
     }
 
     actions.push(
-      <Button key='close' onClick={onClose}>
-        Close
-      </Button>
+      <Translation>
+        {(t) => (
+          <Button key='close' onClick={onClose}>
+            {t('general.action.close')}
+          </Button>
+        )}
+      </Translation>
     );
 
     return (
-      <Dialog fullWidth open={open} maxWidth='xs' onClose={onClose}>
-        <DialogTabs value={selectedTab} onChange={onTabSelected}>
-          <Tab
-            value='auto'
-            label={
-              !manualSetupAllowed ? 'Preconfigured server' : 'Autodetected'
-            }
-          />
-          {manualSetupAllowed && <Tab value='manual' label='Manual' />}
-        </DialogTabs>
-        <ServerDetectionManager />
-        {content}
-        <DialogActions>{actions}</DialogActions>
-      </Dialog>
+      <Translation>
+        {(t) => (
+          <Dialog fullWidth open={open} maxWidth='xs' onClose={onClose}>
+            <DialogTabs value={selectedTab} onChange={onTabSelected}>
+              <Tab
+                value='auto'
+                label={
+                  !manualSetupAllowed
+                    ? t('serverSettingsDialog.preconfiguredServer')
+                    : t('serverSettingsDialog.autodetected')
+                }
+              />
+              {manualSetupAllowed && (
+                <Tab value='manual' label={t('serverSettingsDialog.manual')} />
+              )}
+            </DialogTabs>
+
+            <ServerDetectionManager />
+            {content}
+            <DialogActions>{actions}</DialogActions>
+          </Dialog>
+        )}
+      </Translation>
     );
   }
 }

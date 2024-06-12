@@ -27,6 +27,9 @@
     "noRTKData": "Nincsenek RTK adatforrások a szerveren",
     "pleaseWait": "Kérem várjon, RTK források betöltése…"
   },
+  "RTKMessage": {
+    "noRTKMessagesYet": "Még nem érkezett RTK üzenet"
+  },
   "RTKStatusMiniList": {
     "satelliteCount": "Műholdak száma",
     "surveyInProgress": "A felmérés folyamatban…",
@@ -60,6 +63,11 @@
   "altitudeSummaryButton": {
     "clickToChange": "Kattintson a módosításhoz {{altitudeType}}-re.",
     "showingCurrent": "Maximum és minimum {{altitudeType}} kijelzése."
+  },
+  "antennaPositionIndicator": {
+    "antennaPositionNotKnown": "Ismeretlen antenna pozíció",
+    "clickToToggle": "Kattintson a lon/lat és az ECEF formátum közötti váltáshoz",
+    "copyToClipboard": "Másolás a vágólapra"
   },
   "augmentMappingButton": {
     "assignSparesToEmptySlots": "Tartalékok hozzárendelése az üres helyekhez"
@@ -128,6 +136,7 @@
       "delete": "Törlés",
       "discard": "Elvetés",
       "remove": "Eltávolítás",
+      "reset": "Alaphelyzet",
       "save": "Mentés",
       "select": "Kijelölés",
       "start": "Indítás"
@@ -164,6 +173,14 @@
       "manual": "Kézi geofence van használatban",
       "no": "Még nincs geofence beállítva"
     }
+  },
+  "geofenceAction": {
+    "keepCurrent": "A jelenlegi művelet folytatása",
+    "report": "Csak jelentés",
+    "shutDown": "Kikapcsolás",
+    "smartLand": "Leszállás ütközés elkerüléssel",
+    "smartReturn": "Hazatérés ütközés elkerüléssel",
+    "stop": "Megáll és lebeg"
   },
   "header": {
     "distanceSummary": "",
@@ -267,7 +284,7 @@
       }
     }
   },
-  "navigationButtonGroup":{
+  "navigationButtonGroup": {
     "fly": "Repülés",
     "resetZoom": "Nagyítás visszaállítása",
     "rotateCamera": "A kamera drónok irányába forduljon",
@@ -318,6 +335,12 @@
     "uploadParameters": "Paraméterek feltöltése"
   },
   "preferences": "Beállítások",
+  "preflightTab": {
+    "enterCheckItems": "Írja be a preferált manuális ellenőrzőlista elemeket, soronként egyet.",
+    "headingsHint": "A kettősponttal (:) végződő sorok címsorokká válnak.",
+    "manualPreflightCheckItems": "Manuális ellenőrzőlista elemek",
+    "preflightCheckItems": "Ellenőrzőlista elemek"
+  },
   "recalculateMappingButton": {
     "findOptimalMapping": "Optimális térképezés keresése",
     "recalculateMapping": "Térképezés újraszámolása"
@@ -379,6 +402,29 @@
     "roundTripTime": "Köridő",
     "unknownState": "Ismeretlen állapot",
     "version": "Szerver verzió"
+  },
+  "serverSettingsDialog": {
+    "autodetected": "Autodetektált",
+    "autodiscoveryIsNotAvailable": "Az automatikus felfedezés nem elérhető ebben a verzióban.",
+    "connect": "Csatlakozás",
+    "connecting": "Csatlakozás…",
+    "connectingTo": "Csatlakozás {{hostName}}-hoz…",
+    "connectingToOtherServers": "Ez a verzió nem támogatja a más szerverekhez való csatlakozást.",
+    "disconnect": "Leválasztás",
+    "enterManually": "Manuális megadás",
+    "helperText": "Csak visszafelé kompatibilitásra.",
+    "hostname": "Hosztnév",
+    "localConnection": "Helyi kapcsolat",
+    "manual": "Manuális",
+    "pleaseWait": "Kérem várjon…",
+    "port": "Port",
+    "preconfiguredServer": "Előre konfigurált szerver",
+    "scanningNetwork": "Hálózat szkennelése szerverek után…",
+    "secureConnection": "Biztonságos kapcsolat",
+    "unsecured": "\u0020(nem biztonságos)",
+    "unsecuredConnection": "Nem biztonságos kapcsolat",
+    "useSecureConnection": "Biztonságos kapcsolat használata",
+    "useWebSocketProtocol": "WebSocket protokoll használata TCP helyett"
   },
   "settings": {
     "display": {
@@ -544,6 +590,9 @@
   },
   "startUploadButton": {
     "startSelected": "Indítás a kiválasztottakra"
+  },
+  "surveyStatusIndicator": {
+    "noSurveyInformation": "Nincsenek felmérési adatok"
   },
   "takeoffAreaSetupDialog": {
     "allDroneOnline": "Minden misszióban résztvevő drón online állapotban.",

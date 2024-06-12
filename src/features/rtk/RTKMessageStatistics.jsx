@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { Translation } from 'react-i18next';
 import { connect } from 'react-redux';
 import TimeAgo from 'react-timeago';
 
@@ -43,7 +44,9 @@ RTKMessageStatisticsListEntry.propTypes = {
 const RTKMessageStatistics = listOf(RTKMessageStatisticsListEntry, {
   dataProvider: 'items',
   backgroundHint: (
-    <BackgroundHint text='No RTK messages have been received yet' />
+    <Translation>
+      {(t) => <BackgroundHint text={t('RTKMessage.noRTKMessagesYet')} />}
+    </Translation>
   ),
 });
 
