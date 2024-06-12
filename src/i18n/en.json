@@ -27,6 +27,9 @@
     "noRTKData": "No RTK data sources on server",
     "pleaseWait": "Please wait, loading RTK sources…"
   },
+  "RTKMessage": {
+    "noRTKMessagesYet": "No RTK messages have been received yet"
+  },
   "RTKStatusMiniList": {
     "satelliteCount": "Satellite count",
     "surveyInProgress": "Survey in progress…",
@@ -60,6 +63,11 @@
   "altitudeSummaryButton": {
     "clickToChange": "Click to change to {{altitudeType}}.",
     "showingCurrent": "Showing maximum and minimum {{altitudeType}}."
+  },
+  "antennaPositionIndicator": {
+    "antennaPositionNotKnown": "Antenna position not known",
+    "clickToToggle": "Click to toggle between lon/lat and ECEF format",
+    "copyToClipboard": "Copy to clipboard"
   },
   "augmentMappingButton": {
     "assignSparesToEmptySlots": "Assign spares to empty slots"
@@ -132,6 +140,7 @@
       "import": "Import",
       "open": "Open",
       "remove": "Remove",
+      "reset": "Reset",
       "retry": "Retry",
       "save": "Save",
       "select": "Select",
@@ -170,6 +179,14 @@
       "manual": "Manual geofence in use",
       "no": "No geofence defined yet"
     }
+  },
+  "geofenceAction": {
+    "keepCurrent": "Keep current action",
+    "report": "Report only",
+    "shutDown": "Shut down",
+    "smartLand": "Land with collision avoidance",
+    "smartReturn": "Return to home with collision avoidance",
+    "stop": "Stop and hover"
   },
   "header": {
     "distanceSummary": "Maximum and minimum distance from home position",
@@ -273,7 +290,7 @@
       }
     }
   },
-  "navigationButtonGroup":{
+  "navigationButtonGroup": {
     "fly": "Fly",
     "resetZoom": "Reset zoom",
     "rotateCamera": "Rotate camera towards drones",
@@ -324,6 +341,12 @@
     "uploadParameters": "Upload parameters"
   },
   "preferences": "Preferences",
+  "preflightTab": {
+    "enterCheckItems": "Enter your preferred manual preflight check items, one per line.",
+    "headingsHint": "Lines ending with a colon (:) become headings.",
+    "manualPreflightCheckItems": "Manual preflight check items",
+    "preflightCheckItems": "Preflight check items"
+  },
   "recalculateMappingButton": {
     "findOptimalMapping": "Find optimal mapping",
     "recalculateMapping": "Recalculate mapping"
@@ -385,6 +408,29 @@
     "roundTripTime": "Round-trip time",
     "unknownState": "Unknown state",
     "version": "Server version"
+  },
+  "serverSettingsDialog": {
+    "autodetected": "Autodetected",
+    "autodiscoveryIsNotAvailable": "Auto-discovery is not available in this version.",
+    "connect": "Connect",
+    "connecting": "Connecting…",
+    "connectingTo": "Connecting to {{hostName}}…",
+    "connectingToOtherServers": "Connecting to other servers is not supported in this version.",
+    "disconnect": "Disconnect",
+    "enterManually": "Enter manually",
+    "helperText": "For backwards compatibility only.",
+    "hostname": "Hostname",
+    "localConnection": "Local connection",
+    "manual": "Manual",
+    "pleaseWait": "Please wait…",
+    "port": "Port",
+    "preconfiguredServer": "Preconfigured server",
+    "scanningNetwork": "Scanning network for servers…",
+    "secureConnection": "Secure connection",
+    "unsecured": "\u0020(unsecured)",
+    "unsecuredConnection": "Unsecured connection",
+    "useSecureConnection": "Use secure connection",
+    "useWebSocketProtocol": "Use WebSocket protocol instead of TCP"
   },
   "settings": {
     "display": {
@@ -550,6 +596,9 @@
   },
   "startUploadButton": {
     "startSelected": "Start selected"
+  },
+  "surveyStatusIndicator": {
+    "noSurveyInformation": "No survey information"
   },
   "takeoffAreaSetupDialog": {
     "allDroneOnline": "All drones in the mission are online.",

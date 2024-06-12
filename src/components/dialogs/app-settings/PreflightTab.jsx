@@ -1,6 +1,7 @@
 import { TextField } from 'mui-rff';
 import PropTypes from 'prop-types';
 import React from 'react';
+import { withTranslation } from 'react-i18next';
 import { Form } from 'react-final-form';
 import { connect } from 'react-redux';
 
@@ -11,26 +12,24 @@ import FormSubmissionButtonRow from '~/components/forms/FormSubmissionButtonRow'
 import { updateManualPreflightCheckItemsFromString } from '~/features/preflight/actions';
 import { getFormattedHeadersAndItems } from '~/features/preflight/selectors';
 
-const PreflightTabPresentation = ({ items, onSubmit }) => (
+const PreflightTabPresentation = ({ items, onSubmit, t }) => (
   <Form initialValues={{ items }} onSubmit={onSubmit}>
     {({ dirty, form, handleSubmit }) => (
       <Box pt={1} pb={2}>
-        <Typography>
-          Enter your preferred manual preflight check items, one per line.
-        </Typography>
+        <Typography>{t('preflightTab.enterCheckItems')}</Typography>
         <Box py={1}>
           <TextField
             fullWidth
             multiline
             name='items'
-            label='Manual preflight check items'
+            label={t('preflightTab.manualPreflightCheckItems')}
             minRows={10}
             variant='filled'
-            helperText='Lines ending with a colon (:) become headings.'
+            helperText={t('preflightTab.headingsHint')}
           />
         </Box>
         <FormSubmissionButtonRow
-          label='Preflight check items'
+          label={t('preflightTab.preflightCheckItems')}
           dirty={dirty}
           form={form}
           onSubmit={handleSubmit}
@@ -43,6 +42,7 @@ const PreflightTabPresentation = ({ items, onSubmit }) => (
 PreflightTabPresentation.propTypes = {
   items: PropTypes.string,
   onSubmit: PropTypes.func,
+  t: PropTypes.func,
 };
 
 export default connect(
@@ -56,4 +56,4 @@ export default connect(
       return updateManualPreflightCheckItemsFromString(items);
     },
   }
-)(PreflightTabPresentation);
+)(withTranslation()(PreflightTabPresentation));

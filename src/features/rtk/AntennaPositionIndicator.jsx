@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import IconButton from '@material-ui/core/IconButton';
@@ -19,12 +20,13 @@ const AntennaPositionIndicator = ({
   onCopyAntennaPositionToClipboard,
   onClick,
   position,
+  t,
 }) => {
   const hasAntennaPosition = Boolean(position);
 
   return (
     <>
-      <Tooltip content='Click to toggle between lon/lat and ECEF format'>
+      <Tooltip content={t('antennaPositionIndicator.clickToToggle')}>
         <Typography
           variant='body2'
           component='div'
@@ -32,11 +34,11 @@ const AntennaPositionIndicator = ({
           style={{ cursor: 'pointer', textAlign: 'right' }}
           onClick={onClick}
         >
-          {position || 'Antenna position not known'}
+          {position || t('antennaPositionIndicator.antennaPositionNotKnown')}
         </Typography>
       </Tooltip>
       {onCopyAntennaPositionToClipboard && (
-        <Tooltip content='Copy to clipboard'>
+        <Tooltip content={t('antennaPositionIndicator.copyToClipboard')}>
           <IconButton
             disabled={!hasAntennaPosition}
             onClick={onCopyAntennaPositionToClipboard}
@@ -54,9 +56,10 @@ AntennaPositionIndicator.propTypes = {
   position: PropTypes.string,
   onClick: PropTypes.func,
   onCopyAntennaPositionToClipboard: PropTypes.func,
+  t: PropTypes.func,
 };
 
 export default connect(getAntennaInfoSummary, {
   onClick: toggleAntennaPositionFormat,
   onCopyAntennaPositionToClipboard: copyAntennaPositionToClipboard,
-})(AntennaPositionIndicator);
+})(withTranslation()(AntennaPositionIndicator));
