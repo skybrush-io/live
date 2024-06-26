@@ -6,6 +6,7 @@ import { connect } from 'react-redux';
 
 import IconButton from '@material-ui/core/IconButton';
 import LinearProgress from '@material-ui/core/LinearProgress';
+import ListItem from '@material-ui/core/ListItem';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import Clear from '@material-ui/icons/Clear';
 import CloudDownload from '@material-ui/icons/CloudDownload';
@@ -14,9 +15,8 @@ import Refresh from '@material-ui/icons/Refresh';
 import StatusLight from '@skybrush/mui-components/lib/StatusLight';
 import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
 
-import FileListItem from './FileListItem';
-
 import Colors from '~/components/colors';
+import FileButton from '~/components/FileButton';
 import ListItemTextWithProgress from '~/components/ListItemTextWithProgress';
 import { Status } from '~/components/semantics';
 import {
@@ -24,29 +24,29 @@ import {
   loadShowFromFile,
   reloadCurrentShowFile,
 } from '~/features/show/actions';
-import { openLoadShowFromCloudDialog } from '~/features/show/slice';
 import {
   getShowDescription,
   getShowLoadingProgressPercentage,
   getShowTitle,
-  hasShowChangedExternallySinceLoaded,
   hasLoadedShowFile,
+  hasShowChangedExternallySinceLoaded,
   isLoadingShowFile,
 } from '~/features/show/selectors';
+import { openLoadShowFromCloudDialog } from '~/features/show/slice';
 import { getSetupStageStatuses } from '~/features/show/stages';
-import { truncate } from '~/utils/formatting';
 import { hasFeature } from '~/utils/configuration';
+import { truncate } from '~/utils/formatting';
 
 /**
  * Helper function to test whether a dropped file is a real file and not a
  * directory.
  */
-const isFile = (item) => item && item.size > 0;
+const isFile = (item) => item?.size > 0;
 
 /**
  * List of file extensions that we treat as show files.
  */
-const EXTENSIONS = ['skyc'];
+const EXTENSIONS = ['.skyc'];
 
 /**
  * React component for the button that allows the user to open a show file.
@@ -65,11 +65,12 @@ const LoadShowFromFileButton = ({
   t,
   title,
 }) => (
-  <FileListItem
-    id='show-file-upload'
-    inputId='show-file-upload-input'
+  <FileButton
     accepts={isFile}
-    extensions={EXTENSIONS}
+    component={ListItem}
+    componentProps={{ button: true }}
+    filter={EXTENSIONS}
+    id='show-file-upload'
     onSelected={onShowFileSelected}
   >
     <StatusLight status={status} />
@@ -85,7 +86,7 @@ const LoadShowFromFileButton = ({
         loading ? (
           <LinearProgress
             value={progress}
-            variant={!isNil(progress) ? 'determinate' : 'indeterminate'}
+            variant={isNil(progress) ? 'indeterminate' : 'determinate'}
           />
         ) : changedSinceLoaded ? (
           <span style={{ color: Colors.warning }}>
@@ -119,7 +120,7 @@ const LoadShowFromFileButton = ({
         </Tooltip>
       ) : null}
     </ListItemSecondaryAction>
-  </FileListItem>
+  </FileButton>
 );
 
 LoadShowFromFileButton.propTypes = {
