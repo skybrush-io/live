@@ -107,6 +107,17 @@ export type UnitDescriptor = {
 };
 
 /**
+ * Data amount unit array suitable to be used with `formatNumberAndUnit`
+ * in order to format byte based file sizes nicely.
+ */
+export const DATA_UNITS: UnitDescriptor[] = [
+  { multiplier: 1e9, unit: 'GB' },
+  { multiplier: 1e6, unit: 'MB' },
+  { multiplier: 1e3, unit: 'KB' },
+  { multiplier: 1, unit: 'B' },
+];
+
+/**
  * Distance unit array suitable to be used with `formatNumberAndUnit`
  * in order to format meter based distances nicely
  */
@@ -182,6 +193,13 @@ export const formatNumberAndUnit = (
     );
   }
 };
+
+/**
+ * Helper function that formats a data amount expressed in bytes in a nice
+ * human-readable manner.
+ */
+export const formatData = (number: number, digits = 2): string =>
+  formatNumberAndUnit(number, DATA_UNITS, digits);
 
 /**
  * Helper function that formats a distance expressed in meters in a nice

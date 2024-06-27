@@ -27,6 +27,7 @@ export function convertRGB565ToCSSNotation(value) {
 }
 
 const MESSAGES_WITH_RECEIPTS = {
+  'FW-UPLOAD': true,
   'LOG-DATA': true,
   'LOG-INF': true,
   'OBJ-CMD': true,
