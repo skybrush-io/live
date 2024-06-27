@@ -444,7 +444,8 @@
     "sortBy": "Sort by"
   },
   "startUploadButton": {
-    "startSelected": "Start selected"
+    "startSelected": "Start selected",
+    "tooltip": "Select individual targets by clicking their ids to prepare a partial upload!"
   },
   "takeoffAreaSetupDialog": {
     "allDroneOnline": "All drones in the mission are online.",
@@ -472,6 +473,7 @@
   "toolbox": {
     "averagingInProgress": "{{number}} in progress",
     "coordinateAveraging": "Coordinate averaging",
+    "firmwareUpdate": "Firmware update",
     "licenseInfo": "License info",
     "offlineMaps": "Offline maps",
     "paramUpload": "Parameter upload",

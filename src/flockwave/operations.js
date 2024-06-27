@@ -3,7 +3,10 @@
  * promises.
  */
 
-import { createParameterSettingRequest } from './builders';
+import {
+  createFirmwareUploadRequest,
+  createParameterSettingRequest,
+} from './builders';
 import { extractResponseForId } from './parsing';
 import { validateExtensionName, validateObjectId } from './validation';
 
@@ -179,6 +182,21 @@ export async function uploadDroneShow(hub, { uavId, data }, options) {
 }
 
 /**
+ * Ask the server to update the firmware of a given component.
+ */
+export async function uploadFirmware(hub, { objectId, target, blob }) {
+  const command = createFirmwareUploadRequest(objectId, target, blob);
+  try {
+    await hub.startAsyncOperationForSingleId(objectId, command);
+  } catch (error) {
+    const errorString = errorToString(error);
+    throw new Error(
+      `Failed to upload ${target} update to object ${objectId}: ${errorString}`
+    );
+  }
+}
+
+/**
  * Asks the server to upload a mission in some mission format to a given UAV.
  */
 export async function uploadMission(hub, { uavId, data, format }, options) {
@@ -263,6 +281,7 @@ export class OperationExecutor {
     setShowLightConfiguration,
     startRTKSurvey,
     uploadDroneShow,
+    uploadFirmware,
     uploadMission,
   };
 
