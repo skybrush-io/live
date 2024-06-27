@@ -83,6 +83,22 @@ export function createCommandRequest(uavIds, command, args, kwds) {
 }
 
 /**
+ * Creates a FW-UPLOAD (firmware upload request) message
+ *
+ * @param  {Object[]} objectIds IDs of objects that should be updated
+ * @param  {string}   target    firmware update target ID to send the update to
+ * @param  {Object}   blob      the actual contents to be uploaded
+ * @return {Object}             the message
+ */
+export function createFirmwareUploadRequest(objectIds, target, blob) {
+  const result = createMessageWithType('FW-UPLOAD');
+  result.ids = arrify(objectIds);
+  result.target = String(target);
+  result.blob = blob;
+  return result;
+}
+
+/**
  * Creates a PRM-SET (parameter setting request) message
  *
  * @param  {Object[]}  uavIds  IDs of the UAVs to send the request to

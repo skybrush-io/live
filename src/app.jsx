@@ -19,6 +19,7 @@ import ShowFileWatcher from './views/show-control/ShowFileWatcher';
 
 import DetachedPanelManager from './features/detachable-panels/DetachedPanelManager';
 import DockDetailsDialog from './features/docks/DockDetailsDialog';
+import FirmwareUpdateSetupDialog from './features/firmware-update/FirmwareUpdateSetupDialog';
 import AppHotkeys from './features/hotkeys/AppHotkeys';
 import HotkeyDialog from './features/hotkeys/HotkeyDialog';
 import PendingUAVIdOverlay from './features/hotkeys/PendingUAVIdOverlay';
@@ -176,6 +177,7 @@ const App = ({ onFirstRender }) => (
 
       <CoordinateAveragingDialog />
       <DockDetailsDialog />
+      <FirmwareUpdateSetupDialog />
       <HotkeyDialog />
       <LicenseInfoDialog />
       <MapCachingDialog />

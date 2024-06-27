@@ -603,7 +603,8 @@
     "startTimeIsSetTo": "Start time is set to <strong>{{formattedStartTime}}</strong>"
   },
   "startUploadButton": {
-    "startSelected": "Start selected"
+    "startSelected": "Start selected",
+    "tooltip": "Select individual targets by clicking their ids to prepare a partial upload!"
   },
   "surveyStatusIndicator": {
     "noSurveyInformation": "No survey information"
@@ -634,6 +635,7 @@
   "toolbox": {
     "averagingInProgress": "{{number}} in progress",
     "coordinateAveraging": "Coordinate averaging",
+    "firmwareUpdate": "Firmware update",
     "licenseInfo": "License info",
     "offlineMaps": "Offline maps",
     "paramUpload": "Parameter upload",

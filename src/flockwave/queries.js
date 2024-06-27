@@ -62,15 +62,29 @@ export async function getConfigurationOfExtension(hub, name) {
 }
 
 /**
- * Returns the current license object from the server.
+ * Returns the list of registered firmware update targets from the server.
  */
-export async function getLicenseInformation(hub) {
-  const response = await hub.sendMessage({ type: 'LCN-INF' });
-  return response.body &&
-    response.body.type === 'LCN-INF' &&
-    typeof response.body.license === 'object'
-    ? response.body.license
-    : undefined;
+export async function getFirmwareUpdateTargets(hub, options = {}) {
+  const { supportedBy } = options;
+
+  const listResponse = await hub.sendMessage({
+    type: 'FW-TARGET-LIST',
+    supportedBy,
+  });
+
+  if (listResponse?.body?.type === 'FW-TARGET-LIST') {
+    const firmwareUpdateTargetIds = listResponse.body.ids ?? [];
+    if (firmwareUpdateTargetIds.length > 0) {
+      const infResponse = await hub.sendMessage({
+        type: 'FW-TARGET-INF',
+        ids: firmwareUpdateTargetIds,
+      });
+      const firmwareUpdateTargetsById = infResponse?.body?.result ?? {};
+      return sortBy(firmwareUpdateTargetsById, ['name', 'id']);
+    }
+  } else {
+    return [];
+  }
 }
 
 /**
@@ -129,6 +143,18 @@ export async function getFlightLogList(hub, uavId) {
   }
 
   return response;
+}
+
+/**
+ * Returns the current license object from the server.
+ */
+export async function getLicenseInformation(hub) {
+  const response = await hub.sendMessage({ type: 'LCN-INF' });
+  return response.body &&
+    response.body.type === 'LCN-INF' &&
+    typeof response.body.license === 'object'
+    ? response.body.license
+    : undefined;
 }
 
 /**
@@ -357,6 +383,7 @@ export class QueryHandler {
   _queries = {
     getBasicBeaconProperties,
     getConfigurationOfExtension,
+    getFirmwareUpdateTargets,
     getFlightLog,
     getFlightLogList,
     getLicenseInformation,
