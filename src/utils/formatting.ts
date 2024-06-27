@@ -110,6 +110,17 @@ export type UnitDescriptor = {
  * Distance unit array suitable to be used with `formatNumberAndUnit`
  * in order to format meter based distances nicely
  */
+export const DATA_UNITS: UnitDescriptor[] = [
+  { multiplier: 1e9, unit: 'GB' },
+  { multiplier: 1e6, unit: 'MB' },
+  { multiplier: 1e3, unit: 'KB' },
+  { multiplier: 1, unit: 'B' },
+];
+
+/**
+ * Distance unit array suitable to be used with `formatNumberAndUnit`
+ * in order to format meter based distances nicely
+ */
 export const DISTANCE_UNITS: UnitDescriptor[] = [
   { multiplier: 1000, unit: 'km' },
   { multiplier: 1, unit: 'm' },
@@ -182,6 +193,13 @@ export const formatNumberAndUnit = (
     );
   }
 };
+
+/**
+ * Helper function that formats a data amount expressed in bytes in a nice
+ * human-readable manner.
+ */
+export const formatData = (number: number, digits = 2): string =>
+  formatNumberAndUnit(number, DATA_UNITS, digits);
 
 /**
  * Helper function that formats a distance expressed in meters in a nice

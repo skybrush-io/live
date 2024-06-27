@@ -1534,7 +1534,7 @@ export default class MessageHub {
               response,
               idWithReceipt,
               {
-                onProgress: (...args) => onProgress(idWithReceipt, ...args),
+                onProgress: (...args) => onProgress?.(idWithReceipt, ...args),
                 noThrow: true,
               }
             );

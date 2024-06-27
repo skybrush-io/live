@@ -32,6 +32,7 @@ import datasetsReducer from '~/features/datasets/slice';
 import detachablePanelsReducer from '~/features/detachable-panels/slice';
 import docksReducer from '~/features/docks/slice';
 import fieldNotesReducer from '~/features/field-notes/slice';
+import firmwareUpdateReducer from '~/features/firmware-update/slice';
 import hotkeysReducer from '~/features/hotkeys/slice';
 import lcdClockReducer from '~/features/lcd-clock/slice';
 import localServerReducer from '~/features/local-server/slice';
@@ -96,6 +97,7 @@ const reducer = combineReducers({
   docks: docksReducer,
   features: featuresReducer,
   fieldNotes: fieldNotesReducer,
+  firmwareUpdate: firmwareUpdateReducer,
   hotkeys: hotkeysReducer,
   lcdClock: lcdClockReducer,
   licenseInfo: licenseInfoReducer,
