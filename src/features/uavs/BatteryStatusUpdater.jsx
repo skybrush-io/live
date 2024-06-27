@@ -5,7 +5,11 @@ import PropTypes from 'prop-types';
 import { useStore } from 'react-redux';
 import { useInterval } from 'react-use';
 
-import { getBatterySettings } from '~/features/settings/selectors';
+import {
+  getBatterySettings,
+  getPreferredBatteryDisplayStyle,
+} from '~/features/settings/selectors';
+import { BatteryDisplayStyle } from '~/model/settings';
 
 import { getActiveUAVIds, getUAVById } from './selectors';
 
@@ -18,18 +22,29 @@ const BatteryStatusUpdater = ({ onSetStatus }) => {
     }
 
     const state = store.getState();
+    const settings = getBatterySettings(state);
+    const preferredBatteryDisplayStyle = getPreferredBatteryDisplayStyle(state);
+
     const voltages = [];
     const percentages = [];
 
     for (const uavId of getActiveUAVIds(state)) {
-      const uav = getUAVById(state, uavId);
-      const battery = uav?.battery;
+      const battery = getUAVById(state, uavId)?.battery;
+
       if (battery) {
         if (!isNil(battery.voltage)) {
           voltages.push(battery.voltage);
         }
+
         if (!isNil(battery.percentage)) {
           percentages.push(battery.percentage);
+        } else if (
+          !isNil(battery.voltage) &&
+          preferredBatteryDisplayStyle === BatteryDisplayStyle.FORCED_PERCENTAGE
+        ) {
+          percentages.push(
+            settings.estimatePercentageFromVoltage(battery.voltage)
+          );
         }
       }
     }
@@ -38,43 +53,19 @@ const BatteryStatusUpdater = ({ onSetStatus }) => {
     // the UAVs provide a percentage estimate and some of them provide a voltage
     // estimate.
 
-    if (voltages.length > 0) {
-      const settings = getBatterySettings(state);
-      const meanVoltage = mean(voltages);
-      const minVoltage = min(voltages);
-      onSetStatus({
-        avg: {
-          voltage: meanVoltage,
-          percentage: settings.estimatePercentageFromVoltage(meanVoltage),
-        },
-        min: {
-          voltage: minVoltage,
-          percentage: settings.estimatePercentageFromVoltage(minVoltage),
-        },
-      });
-    } else if (percentages.length > 0) {
-      const meanPercentage = mean(percentages);
-      const minPercentage = min(percentages);
-      onSetStatus({
-        avg: {
-          voltage: null,
-          percentage: meanPercentage,
-        },
-        min: {
-          voltage: null,
-          percentage: minPercentage,
-        },
-      });
-    } else {
-      onSetStatus(
-        {
-          avg: null,
-        },
-        {
-          min: null,
-        }
-      );
-    }
+    const getMeanAndMinOrNulls = (values) =>
+      values.length > 0 ? [mean(values), min(values)] : [null, null];
+
+    const [meanVoltage, minVoltage] = getMeanAndMinOrNulls(voltages);
+    const [meanPercentage, minPercentage] = getMeanAndMinOrNulls(percentages);
+
+    const getVoltageAndPercentageOrNull = (voltage, percentage) =>
+      voltage !== null || percentage !== null ? { voltage, percentage } : null;
+
+    onSetStatus({
+      avg: getVoltageAndPercentageOrNull(meanVoltage, meanPercentage),
+      min: getVoltageAndPercentageOrNull(minVoltage, minPercentage),
+    });
   }, 1000);
 
   return null;
