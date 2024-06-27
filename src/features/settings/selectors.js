@@ -89,6 +89,12 @@ export const getLightingConditionsForThreeDView = (state) => {
 };
 
 /**
+ * Returns the currently selected preferred battery display style.
+ */
+export const getPreferredBatteryDisplayStyle = (state) =>
+  state.settings.uavs.preferredBatteryDisplayStyle;
+
+/**
  * Returns the name of the scenery preset for the 3D view.
  */
 export const getSceneryForThreeDView = (state) => {
