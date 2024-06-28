@@ -22,7 +22,7 @@ const initialState: MapCachingSliceState = {
 };
 
 const { actions, reducer } = createSlice({
-  name: 'mapCaching',
+  name: 'map-caching',
   initialState,
   reducers: {
     closeMapCachingDialog: noPayload<MapCachingSliceState>((state) => {

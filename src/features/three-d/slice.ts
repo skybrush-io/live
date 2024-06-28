@@ -41,7 +41,7 @@ const initialState: ThreeDSliceState = {
 };
 
 const { actions, reducer } = createSlice({
-  name: 'threeD',
+  name: 'three-d',
   initialState,
   reducers: {
     notifySceneRemoval(state) {
