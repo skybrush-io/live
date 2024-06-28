@@ -21,7 +21,7 @@ const initialState: LicenseInfoSliceState = {
 };
 
 const { actions, reducer } = createSlice({
-  name: 'licenseInfo',
+  name: 'license-info',
   initialState,
   reducers: {
     closeLicenseInfoDialog: noPayload<LicenseInfoSliceState>((state) => {

@@ -27,7 +27,7 @@ const initialState: LocalServerSliceState = {
 };
 
 const { actions, reducer } = createSlice({
-  name: 'localServer',
+  name: 'local-server',
   initialState,
   reducers: {
     notifyLocalServerExecutableSearchStarted(state) {

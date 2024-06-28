@@ -64,7 +64,7 @@ type LogDownloadSliceState = ReadonlyDeep<
 const initialState: LogDownloadSliceState = {};
 
 const { actions, reducer } = createSlice({
-  name: 'logDownload',
+  name: 'log-download',
   initialState,
 
   // TODO: Reduce the repetitiveness of these!

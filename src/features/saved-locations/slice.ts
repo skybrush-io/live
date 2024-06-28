@@ -32,7 +32,7 @@ const initialState: SavedLocationsSliceState = createCollectionFromArray(
 );
 
 const { actions, reducer } = createSlice({
-  name: 'savedLocations',
+  name: 'saved-locations',
   initialState,
   reducers: {
     addSavedLocation(state, action: PayloadAction<SavedLocation>) {

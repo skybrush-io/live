@@ -29,7 +29,7 @@ const initialState: UAVControlSliceState = {
 };
 
 const { actions, reducer } = createSlice({
-  name: 'uavControl',
+  name: 'uav-control',
   initialState,
   reducers: {
     closeFlyToTargetDialog: noPayload<UAVControlSliceState>((state) => {
