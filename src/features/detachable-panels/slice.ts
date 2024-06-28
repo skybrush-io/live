@@ -14,7 +14,7 @@ const initialState: DetachedPanelsSliceState = {
 };
 
 const { actions, reducer } = createSlice({
-  name: 'detachablePanels',
+  name: 'detachable-panels',
   initialState,
   reducers: {
     attachPanel(state, { payload: name }: PayloadAction<string>) {
