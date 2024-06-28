@@ -17,7 +17,7 @@ const initialState: LightControlSliceState = {
 
 // TODO: Remove unnecessary type checks and conversions!
 const { actions, reducer } = createSlice({
-  name: 'lightControl',
+  name: 'light-control',
   initialState,
   reducers: {
     // Internal action; do not use directly unless you know what you are
