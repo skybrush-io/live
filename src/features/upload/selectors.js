@@ -1,6 +1,7 @@
 /* eslint unicorn/no-array-callback-reference: 0 */
 
 import isNil from 'lodash-es/isNil';
+import mean from 'lodash-es/mean';
 import { createSelector } from '@reduxjs/toolkit';
 
 import { Status } from '~/components/semantics';
@@ -196,6 +197,15 @@ export const getUploadStatusCodeMapping = createSelector(
   }
 );
 
+export const getAverageProgressOfItemsInProgress = createSelector(
+  (state) => state.upload.queues.itemsInProgress,
+  (state) => state.upload.progresses,
+  (itemsInProgress, progresses) =>
+    itemsInProgress.length > 0
+      ? mean(itemsInProgress.map((id) => progresses[id] ?? 0))
+      : 0
+);
+
 /**
  * Returns a summary of the progress of the upload process in the form of
  * two numbers. The first is a percentage of items for which the upload has
@@ -205,11 +215,12 @@ export const getUploadStatusCodeMapping = createSelector(
  */
 export const getUploadProgress = createSelector(
   getUploadStatusCodeCounters,
-  ({ failed, finished, inProgress, waiting }) => {
+  getAverageProgressOfItemsInProgress,
+  ({ failed, finished, inProgress, waiting }, averageProgress) => {
     const total = failed + finished + inProgress + waiting;
     if (total > 0) {
       return [
-        Math.round((100 * finished) / total),
+        Math.round((100 * (finished + inProgress * averageProgress)) / total),
         Math.round((100 * (finished + inProgress)) / total),
       ];
     } else {
