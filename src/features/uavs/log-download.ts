@@ -7,7 +7,6 @@ import {
   createSlice,
   type PayloadAction,
 } from '@reduxjs/toolkit';
-import { type ReadonlyDeep } from 'type-fest';
 
 import type UAV from '~/model/uav';
 import {
@@ -57,8 +56,9 @@ type LogDownloadState =
     };
 
 type LogId = string;
-type LogDownloadSliceState = ReadonlyDeep<
-  Record<UAV['id'], Record<LogId, LogDownloadState | undefined> | undefined>
+type LogDownloadSliceState = Record<
+  UAV['id'],
+  Record<LogId, LogDownloadState | undefined> | undefined
 >;
 
 const initialState: LogDownloadSliceState = {};

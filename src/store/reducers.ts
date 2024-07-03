@@ -3,7 +3,6 @@ import {
   type Dispatch,
   combineReducers,
 } from '@reduxjs/toolkit';
-import { type ReadonlyDeep } from 'type-fest';
 
 /**
  * Reducer functions for handling the part of the state object that stores the
@@ -135,4 +134,4 @@ export default reducer;
 // https://redux.js.org/usage/usage-with-typescript#define-root-state-and-dispatch-types
 export type RootState = ReturnType<typeof reducer>;
 export type AppDispatch = Dispatch<AnyAction>;
-export type AppSelector<T> = (state: RootState) => ReadonlyDeep<T>;
+export type AppSelector<T> = (state: RootState) => T;

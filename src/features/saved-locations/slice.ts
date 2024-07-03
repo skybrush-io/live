@@ -12,7 +12,6 @@ import {
   createSlice,
   type PayloadAction,
 } from '@reduxjs/toolkit';
-import { type ReadonlyDeep } from 'type-fest';
 
 import {
   addItemToFront,
@@ -25,7 +24,7 @@ import {
 
 import { type SavedLocation } from './types';
 
-type SavedLocationsSliceState = ReadonlyDeep<Collection<SavedLocation>>;
+type SavedLocationsSliceState = Collection<SavedLocation>;
 
 const initialState: SavedLocationsSliceState = createCollectionFromArray(
   config.map.locations

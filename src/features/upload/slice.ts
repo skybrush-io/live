@@ -4,7 +4,6 @@
  */
 
 import { type Action, createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import { type ReadonlyDeep } from 'type-fest';
 
 import { SHOW_UPLOAD_JOB } from '~/features/show/constants';
 import { _clearLoadedShow } from '~/features/show/slice';
@@ -20,7 +19,7 @@ import {
   moveItemsBetweenQueues,
 } from './utils';
 
-export type UploadSliceState = ReadonlyDeep<{
+export type UploadSliceState = {
   currentJob: {
     /**
      * Type of current job being executed by the uploader. Value is kept after
@@ -84,7 +83,7 @@ export type UploadSliceState = ReadonlyDeep<{
     /** Whether the lights of the drones with failed uploads should be flashed */
     flashFailed: boolean;
   };
-}>;
+};
 
 const initialState: UploadSliceState = {
   currentJob: {

@@ -4,7 +4,6 @@
  */
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import { type ReadonlyDeep } from 'type-fest';
 
 import { notifyObjectsDeletedOnServer } from '~/features/objects/actions';
 import {
@@ -17,7 +16,7 @@ import {
 import { type DockState } from './types';
 import { updateStateOfDock } from './utils';
 
-export type DocksSliceState = ReadonlyDeep<Collection<DockState>>;
+export type DocksSliceState = Collection<DockState>;
 
 const initialState: DocksSliceState = EMPTY_COLLECTION;
 

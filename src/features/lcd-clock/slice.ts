@@ -3,7 +3,6 @@
  */
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import { type ReadonlyDeep } from 'type-fest';
 
 import {
   addItemToBack,
@@ -14,7 +13,7 @@ import { chooseUniqueId } from '~/utils/naming';
 
 import { type LCDClock } from './types';
 
-type LCDClockSliceState = ReadonlyDeep<Collection<LCDClock>>;
+type LCDClockSliceState = Collection<LCDClock>;
 
 const initialState: LCDClockSliceState = {
   byId: {

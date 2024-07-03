@@ -6,7 +6,6 @@
 import config from 'config';
 
 import { createSlice, type Draft, type PayloadAction } from '@reduxjs/toolkit';
-import { type ReadonlyDeep } from 'type-fest';
 
 import {
   DEFAULT_BATTERY_CELL_COUNT,
@@ -26,7 +25,7 @@ import { noPayload } from '~/utils/redux';
 
 import { type SettingsState, Theme, UAVListLayout } from './types';
 
-type SettingsSliceState = ReadonlyDeep<SettingsState>;
+type SettingsSliceState = SettingsState;
 
 const initialState: SettingsSliceState = {
   display: {

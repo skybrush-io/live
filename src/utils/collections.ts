@@ -6,7 +6,6 @@ import pull from 'lodash-es/pull';
 import sortedIndex from 'lodash-es/sortedIndex';
 import sortedIndexBy from 'lodash-es/sortedIndexBy';
 import { orderBy } from 'natural-orderby';
-import { type ReadonlyDeep } from 'type-fest';
 
 import { chooseUniqueIdFromName } from './naming';
 import { EMPTY_ARRAY, EMPTY_OBJECT } from './redux';
@@ -18,7 +17,7 @@ export type Collection<T extends ItemLike> = {
   order: Identifier[];
 };
 
-export const EMPTY_COLLECTION: ReadonlyDeep<Collection<never>> = Object.freeze({
+export const EMPTY_COLLECTION: Collection<never> = Object.freeze({
   byId: EMPTY_OBJECT,
   order: EMPTY_ARRAY,
 });

@@ -8,7 +8,6 @@
 
 import isNil from 'lodash-es/isNil';
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import { type ReadonlyDeep } from 'type-fest';
 
 import { removeFeaturesByIds } from '~/features/map-features/slice';
 import { type FeatureProperties } from '~/features/map-features/types';
@@ -39,7 +38,7 @@ import {
  *       would get serialized to `null`, and while the two values should rarely
  *       be distinguished, this still seems like the safer approach.
  */
-export type MissionSliceState = ReadonlyDeep<{
+export type MissionSliceState = {
   /**
    * Type of the mission; ``show`` for drone shows. Empty string means that
    * there is no mission yet.
@@ -149,7 +148,7 @@ export type MissionSliceState = ReadonlyDeep<{
 
   /** Backup of the last cleared mission */
   lastClearedMissionData: Nullable<Record<string, any>>;
-}>;
+};
 
 const initialState: MissionSliceState = {
   type: MissionType.UNKNOWN,

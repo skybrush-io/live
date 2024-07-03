@@ -4,7 +4,6 @@
  */
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import { type ReadonlyDeep } from 'type-fest';
 
 import { type Feature } from '~/model/features';
 import {
@@ -22,9 +21,7 @@ const toggleOptionalBoolean = (state: OptionalBoolean): OptionalBoolean =>
     (optionalBooleanStates.indexOf(state) + 1) % optionalBooleanStates.length
   ];
 
-type MapFeaturesSliceState = ReadonlyDeep<
-  Collection<Feature & FeatureProperties>
->;
+type MapFeaturesSliceState = Collection<Feature & FeatureProperties>;
 
 const initialState: MapFeaturesSliceState = {
   byId: {

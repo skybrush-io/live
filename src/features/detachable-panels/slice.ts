@@ -4,11 +4,10 @@
  */
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import { type ReadonlyDeep } from 'type-fest';
 
-type DetachedPanelsSliceState = ReadonlyDeep<{
+type DetachedPanelsSliceState = {
   detachedPanels: string[];
-}>;
+};
 
 const initialState: DetachedPanelsSliceState = {
   detachedPanels: [],

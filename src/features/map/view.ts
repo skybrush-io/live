@@ -14,7 +14,6 @@
 import config from 'config';
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import { type ReadonlyDeep } from 'type-fest';
 
 import { normalizeAngle } from '~/utils/geography';
 import { type Coordinate2D } from '~/utils/math';
@@ -28,7 +27,7 @@ import { type View } from './types';
  * The flat Earth coordinate system is at the given position and its zero
  * degree heading points towards the heading given in the `angle` property.
  */
-type MapViewSliceState = ReadonlyDeep<View>;
+type MapViewSliceState = View;
 
 const initialState: MapViewSliceState = config.map.view;
 

@@ -6,7 +6,6 @@
  */
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import { type ReadonlyDeep } from 'type-fest';
 
 import { setSelection } from '~/features/map/selection';
 import { globalIdToUavId, isUavId } from '~/model/identifiers';
@@ -22,15 +21,13 @@ import {
 
 import { UAVDetailsPanelTab, type StoredUAV } from './types';
 
-type UAVsSliceState = ReadonlyDeep<
-  Collection<StoredUAV> & {
-    panel: {
-      followMapSelection: boolean;
-      selectedTab: UAVDetailsPanelTab;
-      selectedUAVId?: StoredUAV['id'];
-    };
-  }
->;
+type UAVsSliceState = Collection<StoredUAV> & {
+  panel: {
+    followMapSelection: boolean;
+    selectedTab: UAVDetailsPanelTab;
+    selectedUAVId?: StoredUAV['id'];
+  };
+};
 
 /**
  * The order of the collecitons defines the preferred ordering of

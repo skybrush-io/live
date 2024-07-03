@@ -3,8 +3,7 @@
  * beacons from the server.
  */
 
-import { createSlice, type Draft, type PayloadAction } from '@reduxjs/toolkit';
-import { type ReadonlyDeep } from 'type-fest';
+import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
 import { notifyObjectsDeletedOnServer } from '~/features/objects/actions';
 import {
@@ -17,7 +16,7 @@ import {
 import { type Beacon } from './types';
 import { updateStateOfBeacon } from './utils';
 
-export type BeaconsSliceState = ReadonlyDeep<Collection<Beacon>>;
+export type BeaconsSliceState = Collection<Beacon>;
 
 const initialState: BeaconsSliceState = EMPTY_COLLECTION;
 

@@ -4,14 +4,13 @@
  */
 
 import { type PayloadAction, createSlice } from '@reduxjs/toolkit';
-import { type ReadonlyDeep } from 'type-fest';
 
 import { noPayload } from '~/utils/redux';
 
 import { SafetyDialogTab } from './constants';
 import { type BatteryThreshold } from './model';
 
-export type SafetySliceState = ReadonlyDeep<{
+export type SafetySliceState = {
   dialog: {
     open: boolean;
     selectedTab: SafetyDialogTab;
@@ -29,7 +28,7 @@ export type SafetySliceState = ReadonlyDeep<{
     returnToHomeAltitude?: number;
     returnToHomeSpeed?: number;
   };
-}>;
+};
 
 const initialState: SafetySliceState = {
   dialog: {

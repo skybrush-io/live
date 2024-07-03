@@ -4,7 +4,6 @@
  */
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import { type ReadonlyDeep } from 'type-fest';
 
 import { setSelection } from '~/features/map/selection';
 import { globalIdToUavId, isUavId } from '~/model/identifiers';
@@ -15,13 +14,13 @@ import { noPayload } from '~/utils/redux';
 import { UAV_DETAILS_DIALOG_MIN_WIDTH } from './constants';
 import { type StoredUAV, UAVDetailsDialogTab } from './types';
 
-type UAVDetailsSliceState = ReadonlyDeep<{
+type UAVDetailsSliceState = {
   open: boolean;
   selectedUAVId?: StoredUAV['id'];
   selectedTab: UAVDetailsDialogTab;
   position: Coordinate2DObject;
   width: number;
-}>;
+};
 
 const initialState: UAVDetailsSliceState = {
   open: false,

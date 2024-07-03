@@ -4,16 +4,15 @@
  */
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import { type ReadonlyDeep } from 'type-fest';
 
 import { noPayload } from '~/utils/redux';
 
-type MapCachingSliceState = ReadonlyDeep<{
+type MapCachingSliceState = {
   dialog: {
     open: boolean;
   };
   enabled: boolean;
-}>;
+};
 
 const initialState: MapCachingSliceState = {
   dialog: {

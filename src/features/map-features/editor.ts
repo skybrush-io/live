@@ -4,15 +4,14 @@
  */
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import { type ReadonlyDeep } from 'type-fest';
 
 import { FeatureEditorDialogTab, type FeatureProperties } from './types';
 
-type FeatureEditorSliceState = ReadonlyDeep<{
+type FeatureEditorSliceState = {
   dialogVisible: boolean;
   featureId?: FeatureProperties['id'];
   selectedTab: FeatureEditorDialogTab;
-}>;
+};
 
 /**
  * The default settings for the part of the state object being defined here.

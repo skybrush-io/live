@@ -10,9 +10,8 @@
 
 import { type WeatherInfo } from 'flockwave-spec';
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import { type ReadonlyDeep } from 'type-fest';
 
-type WeatherSliceState = ReadonlyDeep<{
+type WeatherSliceState = {
   /** Whether we are currently loading a new weather object */
   loading: boolean;
 
@@ -27,7 +26,7 @@ type WeatherSliceState = ReadonlyDeep<{
 
   /** Timestamp of the last _successful_ loading attempt */
   lastUpdatedAt?: number;
-}>;
+};
 
 const initialState: WeatherSliceState = {
   loading: false,

@@ -5,16 +5,13 @@
  */
 
 import { type PayloadAction, createSlice } from '@reduxjs/toolkit';
-import { type ReadonlyDeep } from 'type-fest';
 
 import { PromptDialogType, type PromptOptions } from './types';
 
-export type PromptSliceState = ReadonlyDeep<
-  {
-    open: boolean;
-    type: PromptDialogType;
-  } & PromptOptions
->;
+export type PromptSliceState = {
+  open: boolean;
+  type: PromptDialogType;
+} & PromptOptions;
 
 const initialState: PromptSliceState = {
   open: false,

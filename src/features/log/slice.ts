@@ -4,16 +4,15 @@
 
 import isNil from 'lodash-es/isNil';
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import { type ReadonlyDeep } from 'type-fest';
 
 import { type LogItem } from './types';
 
-type LogSliceState = ReadonlyDeep<{
+type LogSliceState = {
   highestUnseenMessageLevel: number;
   items: LogItem[];
   nextId: number;
   panelVisible: boolean;
-}>;
+};
 
 const initialState: LogSliceState = {
   highestUnseenMessageLevel: -1,

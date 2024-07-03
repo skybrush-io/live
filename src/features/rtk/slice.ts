@@ -5,13 +5,12 @@
 
 import isNil from 'lodash-es/isNil';
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import { type ReadonlyDeep } from 'type-fest';
 
 import { noPayload } from '~/utils/redux';
 
 import { RTKAntennaPositionFormat, type RTKStatistics } from './types';
 
-type RTKSliceState = ReadonlyDeep<{
+type RTKSliceState = {
   stats: RTKStatistics;
 
   dialog: {
@@ -19,7 +18,7 @@ type RTKSliceState = ReadonlyDeep<{
     antennaPositionFormat: RTKAntennaPositionFormat;
     surveySettingsEditorVisible: boolean;
   };
-}>;
+};
 
 const initialState: RTKSliceState = {
   stats: {

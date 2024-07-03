@@ -4,7 +4,6 @@
  */
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import { type ReadonlyDeep } from 'type-fest';
 
 import { MessageType, type Severity } from '~/model/enums';
 import type UAV from '~/model/uav';
@@ -12,7 +11,7 @@ import type UAV from '~/model/uav';
 import { type Message } from './types';
 import { addMessage } from './utils';
 
-export type MessagesSliceState = ReadonlyDeep<{
+export type MessagesSliceState = {
   /**
    * Stores the messages received and sent and any additional entries to
    * show in chat histories
@@ -27,7 +26,7 @@ export type MessagesSliceState = ReadonlyDeep<{
 
   /** Stores the next message ID that will be used */
   nextMessageId: number;
-}>;
+};
 
 const initialState: MessagesSliceState = {
   byId: {},

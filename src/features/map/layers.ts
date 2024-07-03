@@ -8,7 +8,6 @@ import camelCase from 'lodash-es/camelCase';
 import map from 'lodash-es/map';
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import { type ReadonlyDeep } from 'type-fest';
 
 import {
   createNewLayer,
@@ -25,7 +24,7 @@ import {
 } from '~/utils/collections';
 import { chooseUniqueId, chooseUniqueName } from '~/utils/naming';
 
-type MapLayersSliceState = ReadonlyDeep<Collection<Layer>>;
+type MapLayersSliceState = Collection<Layer>;
 
 /**
  * The initial layer configuration of the map.
