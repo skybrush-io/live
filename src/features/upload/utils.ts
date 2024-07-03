@@ -34,6 +34,7 @@ export function clearQueues(state: Draft<UploadSliceState>): void {
   state.queues.itemsQueued = [];
   state.queues.itemsWaitingToStart = [];
   state.errors = {};
+  state.progresses = {};
   state.dialog.showLastUploadResult = false;
 }
 

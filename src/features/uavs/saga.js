@@ -317,8 +317,7 @@ function* uavAgingSaga(flock) {
 }
 
 /**
- * Compound saga related to the management of the connection to the upstream
- * Skybrush server.
+ * Compound saga related to the management of UAVs.
  *
  * @param {Flock} flock  the UAV flock whose members should be synchronized with
  *        the Redux store

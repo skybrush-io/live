@@ -12,12 +12,19 @@ import { JOB_TYPE } from './constants';
  * @param objectId the ID of the object to upload the firmware to
  * @param payload  the target and blob to upload
  */
-function* runSingleFirmwareUpdate({
-  uavId: objectId, // TODO: Generalize upload saga from `uavId` to `objectId`
-  payload,
-}) {
+function* runSingleFirmwareUpdate(
+  {
+    uavId: objectId, // TODO: Generalize upload saga from `uavId` to `objectId`
+    payload,
+  },
+  options
+) {
   const { target, blob } = payload ?? {};
-  yield call(messageHub.execute.uploadFirmware, { objectId, target, blob });
+  yield call(
+    messageHub.execute.uploadFirmware,
+    { objectId, target, blob },
+    options
+  );
 }
 
 const spec = {

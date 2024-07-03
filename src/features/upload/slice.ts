@@ -64,6 +64,7 @@ export type UploadSliceState = {
   // is updated in features/upload/utils.js
 
   errors: Record<UAV['id'], unknown>;
+  progresses: Record<UAV['id'], number>;
 
   dialog: {
     open: boolean;
@@ -104,6 +105,7 @@ const initialState: UploadSliceState = {
     failedItems: [],
   },
   errors: {},
+  progresses: {},
   dialog: {
     open: false,
     showLastUploadResult: false,
@@ -277,6 +279,24 @@ const { actions, reducer } = createSlice({
       }),
     },
 
+    _setProgressInfoForUAV: {
+      reducer(
+        state,
+        action: PayloadAction<{ uavId: UAV['id']; progress: number }>
+      ) {
+        const { uavId, progress } = action.payload;
+        if (0 <= progress && progress <= 1) {
+          state.progresses[uavId] = progress;
+        } else {
+          delete state.progresses[uavId];
+        }
+      },
+
+      prepare: (uavId: UAV['id'], progress: number) => ({
+        payload: { uavId, progress },
+      }),
+    },
+
     openUploadDialogKeepingCurrentJob(
       state,
       action: PayloadAction<{ backAction?: Action }>
@@ -363,6 +383,7 @@ export const {
   _notifyUploadOnUavStarted,
   _notifyUploadOnUavSucceeded,
   _setErrorMessageForUAV,
+  _setProgressInfoForUAV,
   openUploadDialogForJob,
   openUploadDialogKeepingCurrentJob,
   setupNextUploadJob,
