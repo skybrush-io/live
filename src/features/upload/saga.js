@@ -1,6 +1,7 @@
 import isNil from 'lodash-es/isNil';
 import { buffers, channel } from 'redux-saga';
 import {
+  all,
   call,
   cancelled,
   delay,
@@ -36,7 +37,22 @@ import {
   _notifyUploadStarted,
   _setErrorMessageForUAV,
   startUpload,
+  _setProgressInfoForUAV,
 } from './slice';
+
+/* === PROGRESS === */
+
+const uploadProgressChannel = channel(buffers.fixed(1));
+
+function* uploadProgressHandlerSaga() {
+  while (true) {
+    const { uavId, progress } = yield take(uploadProgressChannel);
+    yield put(_setProgressInfoForUAV(uavId, progress.percentage / 100));
+  }
+}
+
+const uploadProgressCallback = (uavId, { progress }) =>
+  uploadProgressChannel.put({ uavId, progress });
 
 /**
  * Special symbol used to make a worker task quit.
@@ -64,7 +80,11 @@ function* runUploadWorker(chan, failed) {
     try {
       yield put(_notifyUploadOnUavStarted(uavId));
       const data = selector ? yield select(selector, uavId) : undefined;
-      yield call(executor, { uavId, payload, data });
+      yield call(
+        executor,
+        { uavId, payload, data },
+        { onProgress: uploadProgressCallback }
+      );
       outcome = 'success';
     } catch (error) {
       outcome = 'failure';
@@ -227,10 +247,13 @@ function* uploaderSagaWithCancellation() {
   }
 }
 
-/**
- * Compound saga related to the management of the background processes related
- * to drone shows; e.g., the uploading of a show to the drones.
- */
-export default createActionListenerSaga({
+const startUploadActionListenerSaga = createActionListenerSaga({
   [startUpload]: uploaderSagaWithCancellation,
 });
+
+/**
+ * Compound saga related to the management of upload procedures.
+ */
+export default function* uploadManagementSaga() {
+  yield all([startUploadActionListenerSaga(), uploadProgressHandlerSaga()]);
+}
