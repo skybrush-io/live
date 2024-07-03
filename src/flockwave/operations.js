@@ -184,10 +184,10 @@ export async function uploadDroneShow(hub, { uavId, data }, options) {
 /**
  * Ask the server to update the firmware of a given component.
  */
-export async function uploadFirmware(hub, { objectId, target, blob }) {
+export async function uploadFirmware(hub, { objectId, target, blob }, options) {
   const command = createFirmwareUploadRequest(objectId, target, blob);
   try {
-    await hub.startAsyncOperationForSingleId(objectId, command);
+    await hub.startAsyncOperationForSingleId(objectId, command, options);
   } catch (error) {
     const errorString = errorToString(error);
     throw new Error(
