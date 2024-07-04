@@ -14,22 +14,17 @@ import UpdateSafetyIcon from '@material-ui/icons/Security';
 import LandIcon from '@material-ui/icons/FlightLand';
 import HomeIcon from '@material-ui/icons/Home';
 
+import { type Coordinate2D } from '~/utils/math';
+
 import {
   type Altitude,
   AltitudeReference,
+  type GPSPosition,
   type Heading,
   HeadingMode,
-} from '~/utils/geography';
-import { type Coordinate2D } from '~/utils/math';
-
-import { type GPSPosition } from './position';
-
-export {
-  type Altitude,
-  AltitudeReference,
-  type Heading,
-  HeadingMode,
-} from '~/utils/geography';
+  isAltitude,
+  isHeading,
+} from './geography';
 
 /**
  * Enum representing valid marker type strings.
@@ -279,50 +274,6 @@ export const schemaForMissionItemType: Record<
 };
 
 /**
- * Returns whether the given parameter representing an altitude in a generic
- * mission item is valid.
- */
-function isAltitudeParameterValid(alt: any): alt is Altitude {
-  if (typeof alt !== 'object') {
-    return false;
-  }
-
-  const { value, reference } = alt;
-  if (
-    typeof value !== 'number' ||
-    !Number.isFinite(value) ||
-    typeof reference !== 'string' ||
-    !Object.values(AltitudeReference).includes(reference as AltitudeReference)
-  ) {
-    return false;
-  }
-
-  return true;
-}
-
-/**
- * Returns whether the given parameter representing a heading change in a
- * mission item is valid.
- */
-function isHeadingParameterValid(heading: any): heading is Heading {
-  if (typeof heading !== 'object') {
-    return false;
-  }
-
-  const { value, mode } = heading;
-  if (
-    typeof value !== 'number' ||
-    !Number.isFinite(value) ||
-    typeof mode !== 'string' ||
-    !Object.values(HeadingMode).includes(mode as HeadingMode)
-  ) {
-    return false;
-  }
-
-  return true;
-}
-
-/**
  * Returns whether the given mission item is valid.
  */
 // eslint-disable-next-line complexity
@@ -353,7 +304,7 @@ export function isMissionItemValid(item: any): item is MissionItem {
           typeof lat !== 'number' ||
           !Number.isFinite(lon) ||
           !Number.isFinite(lat) ||
-          (alt !== undefined && !isAltitudeParameterValid(alt))
+          (alt !== undefined && !isAltitude(alt))
         ) {
           return false;
         }
@@ -365,7 +316,7 @@ export function isMissionItemValid(item: any): item is MissionItem {
       /* "Change altitude" items need an altitude */
       {
         const { alt } = parameters;
-        if (!isAltitudeParameterValid(alt)) {
+        if (!isAltitude(alt)) {
           return false;
         }
       }
@@ -387,7 +338,7 @@ export function isMissionItemValid(item: any): item is MissionItem {
       /* "Change heading" items need a heading */
       {
         const { heading } = parameters;
-        if (!isHeadingParameterValid(heading)) {
+        if (!isHeading(heading)) {
           return false;
         }
       }

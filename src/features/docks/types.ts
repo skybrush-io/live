@@ -1,4 +1,4 @@
-import { type GPSPosition } from '~/model/position';
+import { type GPSPosition } from '~/model/geography';
 import { type Identifier } from '~/utils/collections';
 
 export enum DockDetailsDialogTab {

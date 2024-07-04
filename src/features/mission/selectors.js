@@ -12,6 +12,7 @@ import {
   getFeaturesInOrder,
 } from '~/features/map-features/selectors';
 import { GeofenceAction, isValidGeofenceAction } from '~/features/safety/model';
+import { AltitudeReference, isGPSPosition } from '~/model/geography';
 import {
   globalIdToMissionItemId,
   globalIdToMissionSlotId,
@@ -23,11 +24,9 @@ import {
   MissionItemType,
   MissionType,
 } from '~/model/missions';
-import { isValidPosition } from '~/model/position';
 import { selectionForSubset } from '~/selectors/selection';
 import { selectOrdered } from '~/utils/collections';
 import {
-  AltitudeReference,
   mapViewCoordinateFromLonLat,
   turfDistanceInMeters,
 } from '~/utils/geography';
@@ -546,7 +545,7 @@ export const getMaximumDistanceBetweenHomePositionsAndGeofence = createSelector(
 
     const homePoints = homePositions
       // TODO: `!isNil(hp)` check should be enough when migrating to TypeScript
-      .filter((hp) => isValidPosition(hp))
+      .filter((hp) => isGPSPosition(hp))
       .map(({ lon, lat }) => TurfHelpers.point([lon, lat]));
     const geofencePoints = geofencePolygon.map(TurfHelpers.point);
     const distances = homePoints.flatMap((hp) =>

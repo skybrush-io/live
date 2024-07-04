@@ -13,7 +13,7 @@ import { removeFeaturesByIds } from '~/features/map-features/slice';
 import { type FeatureProperties } from '~/features/map-features/types';
 import { GeofenceAction } from '~/features/safety/model';
 import { type MissionItem, MissionType } from '~/model/missions';
-import { type GPSPosition } from '~/model/position';
+import { type GPSPosition } from '~/model/geography';
 import type UAV from '~/model/uav';
 import {
   type Collection,
