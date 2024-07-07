@@ -6,6 +6,7 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import { type ReadonlyDeep } from 'type-fest';
 
+import { type AppSelector } from '~/store/reducers';
 import { noPayload } from '~/utils/redux';
 
 import { DockDetailsDialogTab, type DockState } from './types';
@@ -50,16 +51,12 @@ export const {
   setSelectedTabInDockDetailsDialog,
 } = actions;
 
-type RootStateWithDockDetailsDialog = {
-  dialogs: { dockDetails: DockDetailsSliceState };
-};
+export const getSelectedDockIdInDockDetailsDialog: AppSelector<
+  string | undefined
+> = (state) => state.dialogs.dockDetails.selectedDockId;
 
-export const getSelectedDockIdInDockDetailsDialog = (
-  state: RootStateWithDockDetailsDialog
-): string | undefined => state.dialogs.dockDetails.selectedDockId;
-
-export const getSelectedTabInDockDetailsDialog = (
-  state: RootStateWithDockDetailsDialog
-): DockDetailsDialogTab => state.dialogs.dockDetails.selectedTab;
+export const getSelectedTabInDockDetailsDialog: AppSelector<
+  DockDetailsDialogTab
+> = (state) => state.dialogs.dockDetails.selectedTab;
 
 export default reducer;
