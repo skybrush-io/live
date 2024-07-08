@@ -774,7 +774,6 @@ export const getMissionItemsInOrderAsSegments: AppSelector<Segment[]> =
         },
       };
       try {
-        // eslint-disable-next-line unicorn/no-array-reduce
         return items.reduce<Accumulator>(
           (state, item) =>
             produce(state, (draft) => {
@@ -916,7 +915,6 @@ export const getMissionEstimates: AppSelector<{
   distance: number;
   duration: number;
 }> = createSelector(getMissionItemsInOrderAsSegments, (segments) =>
-  // eslint-disable-next-line unicorn/no-array-reduce
   segments.reduce(
     ({ distance, duration }, s) => ({
       distance: distance + (s.distance ?? 0),
@@ -1003,7 +1001,6 @@ export const getNetMissionCompletionRatio: AppSelector<number> = createSelector(
   getCurrentMissionItemId,
   getCurrentMissionItemRatio,
   (segments, currentId, currentRatio) => {
-    // eslint-disable-next-line unicorn/no-array-reduce
     const { doneDistance, totalDistance } = segments.reduce(
       (state, { item: { id, type, parameters }, distance = 0 }) => {
         const { _isDone, _isNet, doneDistance, totalDistance } = state;

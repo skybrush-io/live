@@ -261,6 +261,7 @@
       "react/require-default-props": 0,
       "unicorn/filename-case": 0,
       "unicorn/no-array-callback-reference": 0,
+      "unicorn/no-array-reduce": 0,
       "unicorn/no-fn-reference-in-iterator": 0,
       "unicorn/numeric-separators-style": 0,
       "unicorn/prefer-module": 0,

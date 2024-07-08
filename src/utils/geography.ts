@@ -949,7 +949,6 @@ export function normalizePolygon([points, ...holes]: any): any {
   // Start with the boundary ring and subtract every hole from it with Turf
   // TODO: This can be simplified when Turf 7.0.0 gets released, as
   //       difference will support multiple subtrahend features
-  // eslint-disable-next-line unicorn/no-array-reduce
   const { geometry } = holes.reduce(
     (poly: any, hole: any) => turfDifference(poly, TurfHelpers.polygon([hole])),
     TurfHelpers.polygon([points])

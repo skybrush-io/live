@@ -388,7 +388,6 @@ export const getMisplacedUAVIds = createSelector(
   getDistancesFromHome,
   getDesiredPlacementAccuracyInMeters,
   (distances, threshold) =>
-    // eslint-disable-next-line unicorn/no-array-reduce
     Object.entries(distances).reduce((acc, [uavId, distance]) => {
       if (distance > threshold) {
         acc.push(uavId);
@@ -497,7 +496,6 @@ export const getMisalignedUAVIds = createSelector(
   getDeviationsFromTakeoffHeadings,
   getDesiredTakeoffHeadingAccuracy,
   (deviations, threshold) =>
-    // eslint-disable-next-line unicorn/no-array-reduce
     Object.entries(deviations).reduce((acc, [uavId, deviation]) => {
       if (!isNil(deviation) && Math.abs(deviation) > threshold) {
         acc.push(uavId);
