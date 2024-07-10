@@ -11,12 +11,16 @@ import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
 
 import { getMissionMapping } from '~/features/mission/selectors';
 import { getUAVIdList } from '~/features/uavs/selectors';
-import { isSelectedJobInUploadDialogScopedToMission } from '~/features/upload/selectors';
 import { formatMissionIdRange } from '~/utils/formatting';
 
 import { toggleUavsInWaitingQueue } from './actions';
+import { JobScope } from './jobs';
 import UploadStatusPill from './UploadStatusPill';
 import UploadStatusRowHeader from './UploadStatusRowHeader';
+import {
+  getObjectIdsCompatibleWithSelectedJobInUploadDialog,
+  getScopeOfSelectedJobInUploadDialog,
+} from './selectors';
 
 const NUMBER_OF_ITEMS_PER_ROW = 10;
 
@@ -48,7 +52,7 @@ const defaultRowHeaderFormatter = (_start, _end, items) => {
   } else if (items.length === 1) {
     return items[0];
   } else {
-    return `${String(items[0])}-${String(items[items.length - 1])}`;
+    return `${String(items[0])}-${String(items.at(-1))}`;
   }
 };
 
@@ -115,9 +119,7 @@ const UploadStatusLights = ({
           />
           {items.map((itemId, index) =>
             isNil(itemId) ? (
-              <UploadStatusPill key={`__cell${index}`}>
-                {'—'}
-              </UploadStatusPill>
+              <UploadStatusPill key={`__cell${index}`}>—</UploadStatusPill>
             ) : (
               <UploadStatusPill key={itemId} uavId={itemId}>
                 {labels[index]}
@@ -142,9 +144,18 @@ UploadStatusLights.propTypes = {
 export default connect(
   // mapStateToProps
   (state) => {
-    const scopedToMission = isSelectedJobInUploadDialogScopedToMission(state);
+    const scope = getScopeOfSelectedJobInUploadDialog(state);
+    const scopedToCompatible = scope === JobScope.COMPATIBLE;
+    const scopedToMission = scope === JobScope.MISSION;
+
+    // prettier-ignore
+    const idListSelector =
+      scopedToCompatible ? getObjectIdsCompatibleWithSelectedJobInUploadDialog :
+      scopedToMission ? getMissionMapping :
+      getUAVIdList;
+
     return {
-      ids: scopedToMission ? getMissionMapping(state) : getUAVIdList(state),
+      ids: idListSelector(state),
       rowHeaderFormatter: scopedToMission
         ? formatMissionIdRange
         : defaultRowHeaderFormatter,
