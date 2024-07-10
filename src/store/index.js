@@ -57,6 +57,7 @@ const persistConfig = {
     'datasets',
     'detachablePanels',
     'docks',
+    'firmwareUpdate',
     'localServer',
     'log',
     'logDownload',

@@ -1,3 +1,4 @@
+import { isNil } from 'lodash-es';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
@@ -6,10 +7,14 @@ import Box from '@material-ui/core/Box';
 
 import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
 
+import { JOB_TYPE as FIRMWARE_UPDATE_JOB_TYPE } from '~/features/firmware-update/constants';
+import FirmwareUpdateSupportFetcher from '~/features/firmware-update/FirmwareUpdateSupportFetcher';
+
 import {
   closeUploadDialogAndStepBack,
   startUploadJobFromUploadDialog,
 } from './actions';
+import AnotherJobTypeRunningHint from './AnotherJobTypeRunningHint';
 import { getDialogTitleForJobType } from './jobs';
 import {
   getRunningUploadJobType,
@@ -17,9 +22,7 @@ import {
   getUploadDialogState,
 } from './selectors';
 import { closeUploadDialog } from './slice';
-import AnotherJobTypeRunningHint from './AnotherJobTypeRunningHint';
 import UploadPanel from './UploadPanel';
-import { isNil } from 'lodash-es';
 
 const UploadDialog = ({
   canGoBack,
@@ -41,6 +44,9 @@ const UploadDialog = ({
       title={getDialogTitleForJobType(selectedJobType)}
       onClose={onClose}
     >
+      {selectedJobType === FIRMWARE_UPDATE_JOB_TYPE && (
+        <FirmwareUpdateSupportFetcher />
+      )}
       {isRunningJobTypeMatching ? (
         <UploadPanel
           jobType={selectedJobType}
