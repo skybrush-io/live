@@ -1,5 +1,6 @@
 import { call } from 'redux-saga/effects';
 
+import { JobScope } from '~/features/upload/jobs';
 import messageHub from '~/message-hub';
 
 import { JOB_TYPE } from './constants';
@@ -29,6 +30,7 @@ function* runSingleFirmwareUpdate(
 
 const spec = {
   executor: runSingleFirmwareUpdate,
+  scope: JobScope.COMPATIBLE,
   title: 'Update firmware',
   type: JOB_TYPE,
 };

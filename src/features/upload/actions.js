@@ -9,6 +9,7 @@ import { getScopeForJobType, JobScope } from './jobs';
 
 import {
   areItemsInUploadBacklog,
+  getObjectIdsCompatibleWithSelectedJobInUploadDialog,
   getFailedUploadItems,
   getItemsInUploadBacklog,
   getSelectedJobInUploadDialog,
@@ -136,16 +137,20 @@ export function startUploadJobFromUploadDialog() {
     let selector;
 
     switch (scope) {
+      case JobScope.ALL:
+        selector = getUAVIdList;
+        break;
+
+      case JobScope.COMPATIBLE:
+        selector = getObjectIdsCompatibleWithSelectedJobInUploadDialog;
+        break;
+
       case JobScope.MISSION:
         selector = getUAVIdsParticipatingInMissionSortedByMissionIndex;
         break;
 
       case JobScope.SINGLE:
         selector = getSingleSelectedUAVIdAsArray;
-        break;
-
-      case JobScope.ALL:
-        selector = getUAVIdList;
         break;
 
       default:

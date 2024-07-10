@@ -5,7 +5,10 @@ import mean from 'lodash-es/mean';
 import { createSelector } from '@reduxjs/toolkit';
 
 import { Status } from '~/components/semantics';
-import { getScopeForJobType, JobScope } from './jobs';
+import { JOB_TYPE as FIRMWARE_UPDATE_JOB_TYPE } from '~/features/firmware-update/constants';
+import { getSupportingObjectIdsForTargetId } from '~/features/firmware-update/selectors';
+
+import { getScopeForJobType } from './jobs';
 
 /**
  * Returns the current upload job. The returned object is guaranteed to have
@@ -113,13 +116,24 @@ export const getSelectedJobInUploadDialog = (state) =>
   getUploadDialogState(state)?.selectedJob ?? {};
 
 /**
- * Returns whether the currently _selected_ upload job in the upload dialog
- * is scoped to the UAVs in the current mission.
+ * Returns the scope of the currently _selected_ job in the upload dialog.
  */
-export const isSelectedJobInUploadDialogScopedToMission = createSelector(
+export const getScopeOfSelectedJobInUploadDialog = createSelector(
   getSelectedJobInUploadDialog,
-  ({ type }) => getScopeForJobType(type) === JobScope.MISSION
+  ({ type }) => getScopeForJobType(type)
 );
+
+export const getObjectIdsCompatibleWithSelectedJobInUploadDialog = (state) => {
+  const job = getSelectedJobInUploadDialog(state);
+
+  switch (job.type) {
+    case FIRMWARE_UPDATE_JOB_TYPE:
+      return getSupportingObjectIdsForTargetId(state, job.payload.target) ?? [];
+
+    default:
+      return [];
+  }
+};
 
 /**
  * Returns an object mapping UAV IDs to the corresponding error messages that
