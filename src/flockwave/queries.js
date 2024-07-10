@@ -62,6 +62,24 @@ export async function getConfigurationOfExtension(hub, name) {
 }
 
 /**
+ * Returns the list of firmware updatable objects from the server.
+ */
+export async function getFirmwareUpdateObjects(hub, options = {}) {
+  const { supports } = options;
+
+  const listResponse = await hub.sendMessage({
+    type: 'FW-OBJECT-LIST',
+    supports,
+  });
+
+  if (listResponse?.body?.type === 'FW-OBJECT-LIST') {
+    return listResponse.body.ids ?? [];
+  } else {
+    return [];
+  }
+}
+
+/**
  * Returns the list of registered firmware update targets from the server.
  */
 export async function getFirmwareUpdateTargets(hub, options = {}) {
@@ -383,6 +401,7 @@ export class QueryHandler {
   _queries = {
     getBasicBeaconProperties,
     getConfigurationOfExtension,
+    getFirmwareUpdateObjects,
     getFirmwareUpdateTargets,
     getFlightLog,
     getFlightLogList,

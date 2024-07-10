@@ -1,5 +1,6 @@
 export const JobScope = {
   ALL: 'all',
+  COMPATIBLE: 'compatible',
   MISSION: 'mission',
   SINGLE: 'single',
 };
@@ -12,11 +13,12 @@ export const JobScope = {
  * - `type`: the type of the job, i.e. a unique string identifier
  * - `title`: the title of the job, used in dialog boxes
  * - `scope`: the scope of the job, i.e. the set of UAVs that the job can
- *   operate on. Must be one of `mission` (UAVs that are in the current mission
- *   mapping), `all` (all UAVs, irrespectively of whether they are mapped in
- *   the current mission or not) or `single` (single selected UAV in the UAs
- *   list). The default is `all`. Use the `JobScope` enum when referring to
- *   these strings from code.
+ *   operate on. Must be one of `all` (all UAVs, irrespectively of whether they
+ *   are mapped in the current mission or not), `compatible` (subset of UAVs
+ *   that support a given upload type, e.g. firmware update target), `mission`
+ *   (UAVs that are in the current mission mapping) or `single` (single
+ *   selected UAV in the UAVs list). The default is `all`. Use the `JobScope`
+ *   enum when referring to these strings from code.
  * - `selector`: a Redux selector that is called before executing the job for a
  *   single UAV. The selector is called with the Redux state and the ID of the
  *   UAV that the job is targeting, and it can return an arbitrary object that
