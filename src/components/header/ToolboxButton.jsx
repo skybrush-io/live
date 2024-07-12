@@ -4,10 +4,17 @@ import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import Divider from '@material-ui/core/Divider';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
+
+import Build from '@material-ui/icons/Build';
 import BusinessCenter from '@material-ui/icons/BusinessCenter';
+import Functions from '@material-ui/icons/Functions';
+import MapCloudOff from '~/icons/MapCloudOff';
+import Tune from '@material-ui/icons/Tune';
+import VpnKey from '@material-ui/icons/VpnKey';
 
 import GenericHeaderButton from '@skybrush/mui-components/lib/GenericHeaderButton';
 import SidebarBadge from '@skybrush/mui-components/lib/SidebarBadge';
@@ -71,6 +78,9 @@ const ToolboxButtonPresentation = ({
         onClose={handleClose}
       >
         <MenuItem onClick={createClickListener(showAveragingDialog)}>
+          <ListItemIcon>
+            <Functions />
+          </ListItemIcon>
           <ListItemText
             primary={t('toolbox.coordinateAveraging')}
             secondary={
@@ -83,6 +93,9 @@ const ToolboxButtonPresentation = ({
           />
         </MenuItem>
         <MenuItem onClick={createClickListener(showFirmwareUpdateDialog)}>
+          <ListItemIcon>
+            <Build />
+          </ListItemIcon>
           <ListItemText
             primary={t('toolbox.firmwareUpdate')}
             secondary={
@@ -92,9 +105,15 @@ const ToolboxButtonPresentation = ({
           />
         </MenuItem>
         <MenuItem onClick={createClickListener(showMapCachingDialog)}>
+          <ListItemIcon>
+            <MapCloudOff />
+          </ListItemIcon>
           <ListItemText primary={t('toolbox.offlineMaps')} />
         </MenuItem>
         <MenuItem onClick={createClickListener(showParameterUploadDialog)}>
+          <ListItemIcon>
+            <Tune />
+          </ListItemIcon>
           <ListItemText
             primary={t('toolbox.paramUpload')}
             secondary={
@@ -108,6 +127,9 @@ const ToolboxButtonPresentation = ({
           disabled={!isConnected}
           onClick={createClickListener(showLicenseInfoDialog)}
         >
+          <ListItemIcon>
+            <VpnKey />
+          </ListItemIcon>
           <ListItemText primary={t('toolbox.licenseInfo')} />
         </MenuItem>
         {/*

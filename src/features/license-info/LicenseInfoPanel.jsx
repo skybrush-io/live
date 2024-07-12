@@ -3,22 +3,22 @@ import React from 'react';
 import { useAsyncRetry } from 'react-use';
 
 import Button from '@material-ui/core/Button';
+import Divider from '@material-ui/core/Divider';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
+import Gift from '@material-ui/icons/CardGiftcard';
 import Error from '@material-ui/icons/Error';
 import Event from '@material-ui/icons/Event';
 import Lock from '@material-ui/icons/Lock';
 import Person from '@material-ui/icons/Person';
-import Security from '@material-ui/icons/Security';
-import Gift from '@material-ui/icons/CardGiftcard';
+import VpnKey from '@material-ui/icons/VpnKey';
 
 import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
 import LargeProgressIndicator from '@skybrush/mui-components/lib/LargeProgressIndicator';
 
 import useMessageHub from '~/hooks/useMessageHub';
-import { Divider } from '@material-ui/core';
 
 const LicenseInfoPanelPresentation = ({
   expiryDate,
@@ -69,7 +69,7 @@ const LicenseInfoPanelPresentation = ({
     <List dense disablePadding>
       <ListItem disableGutters>
         <ListItemIcon>
-          <Security />
+          <VpnKey />
         </ListItemIcon>
         <ListItemText
           primary='License ID'
