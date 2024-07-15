@@ -1,4 +1,3 @@
-/* eslint-disable import/no-duplicates */
 /**
  * @file Geography-related utility functions and variables.
  */
@@ -10,8 +9,7 @@ import minBy from 'lodash-es/minBy';
 import unary from 'lodash-es/unary';
 import * as Coordinate from 'ol/coordinate';
 import * as Extent from 'ol/extent';
-import type OLFeature from 'ol/Feature';
-import type { FeatureLike } from 'ol/Feature';
+import { type default as OLFeature, type FeatureLike } from 'ol/Feature';
 import {
   type Geometry,
   LineString,
@@ -190,8 +188,11 @@ export const createRotatedBoxGeometryFunction =
  *          no such feature on any of the visible layers
  */
 export const findFeatureById = curry(
-  (map: Map, featureId: string): OLFeature | RenderFeature[] | undefined => {
-    return findFeaturesById(map, [featureId])[0];
+  (
+    map: Map,
+    featureId: string
+  ): OLFeature | RenderFeature | RenderFeature[] | undefined => {
+    return findFeaturesByIds(map, [featureId])[0];
   }
 );
 
@@ -208,9 +209,14 @@ const isVectorLayer = (layer: unknown): layer is VectorLayer<FeatureLike> =>
  *          given feature IDs; the array might contain undefined
  *          entries for features that are not found on the map
  */
-export const findFeaturesById = curry(
-  (map: Map, featureIds: string[]): Array<OLFeature | RenderFeature[]> => {
-    const features: Array<OLFeature | RenderFeature[]> = Array.from({
+export const findFeaturesByIds = curry(
+  (
+    map: Map,
+    featureIds: string[]
+  ): Array<OLFeature | RenderFeature | RenderFeature[] | undefined> => {
+    const features: Array<
+      OLFeature | RenderFeature | RenderFeature[] | undefined
+    > = Array.from({
       length: featureIds.length,
     });
 

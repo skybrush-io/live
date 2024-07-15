@@ -68,7 +68,7 @@ import { getVisibleLayersInOrder } from '~/selectors/ordered';
 import { getSelection } from '~/selectors/selection';
 import { hasFeature } from '~/utils/configuration';
 import {
-  findFeaturesById,
+  findFeaturesByIds,
   lonLatFromMapViewCoordinate,
   mapViewCoordinateFromLonLat,
 } from '~/utils/geography';
@@ -605,7 +605,7 @@ class MapViewPresentation extends React.Component {
    */
   _getSelectedTransformableFeatures = (map) => {
     return filter(
-      findFeaturesById(map, this.props.selection),
+      findFeaturesByIds(map, this.props.selection),
       isFeatureTransformable
     );
   };

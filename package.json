@@ -107,7 +107,7 @@
     "node-ssdp-lite": "^0.2.0",
     "node-watch": "^0.7.4",
     "numbro": "^2.5.0",
-    "ol": "^9.1.0",
+    "ol": "^9.2.4",
     "ol-ext": "^4.0.24",
     "ol-mapbox-style": "^12.3.5",
     "os-browserify": "^0.3.0",

@@ -5,20 +5,22 @@
 import { bindActionCreators, configureStore, isPlain } from '@reduxjs/toolkit';
 
 import config from 'config';
+import { produce } from 'immer';
 import isPromise from 'is-promise';
 import localForage from 'localforage';
 import isError from 'lodash-es/isError';
 import isFunction from 'lodash-es/isFunction';
 import createDeferred from 'p-defer';
 import createDebounce from 'redux-debounce';
-import { createPromise } from 'redux-promise-middleware';
-import createSagaMiddleware from 'redux-saga';
-import { persistStore, persistReducer } from 'redux-persist';
+import { persistReducer, persistStore } from 'redux-persist';
 import {
   createBlacklistFilter,
   createFilter,
 } from 'redux-persist-transform-filter';
+import { createPromise } from 'redux-promise-middleware';
+import createSagaMiddleware from 'redux-saga';
 
+import { setLayerParametersById } from '~/features/map/layers';
 import { updateAveragingByIds } from '~/features/measurement/slice';
 import { shouldPreventSleepMode } from '~/features/power-saving/selectors';
 import { updateRTKStatistics } from '~/features/rtk/slice';
@@ -194,19 +196,36 @@ const store = configureStore({
             updateUAVs.type,
           ],
 
-          // make sure that the show object that we load is not cached / tracked by
-          // the Redux devtools
-          actionSanitizer: (action) =>
-            action.type === loadingPromiseFulfilled.type && action.payload
-              ? { ...action, payload: '<<JSON_DATA>>' }
-              : action,
-          stateSanitizer: (state) =>
-            state.show && state.show.data
-              ? {
-                  ...state,
-                  show: { ...state.show, data: '<<JSON_DATA>>' },
+          // Make sure the show objects and image layer
+          // data are not tracked by the Redux devtools
+          actionSanitizer: produce((action) => {
+            switch (action.type) {
+              case loadingPromiseFulfilled.type:
+                action.payload = '<<JSON_DATA>>';
+
+                break;
+
+              case setLayerParametersById.type:
+                if (action.payload.parameters.image?.data) {
+                  action.payload.parameters.image.data = '<<BASE64_DATA_URL>>';
                 }
-              : state,
+
+                break;
+
+              // no default
+            }
+          }),
+          stateSanitizer: produce((state) => {
+            if (state.show?.data) {
+              state.show.data = '<<JSON_DATA>>';
+            }
+
+            for (const layer of Object.values(state.map.layers.byId)) {
+              if (layer.parameters.image?.data) {
+                layer.parameters.image.data = '<<BASE64_DATA_URL>>';
+              }
+            }
+          }),
         },
 });
 
