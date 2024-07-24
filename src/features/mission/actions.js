@@ -912,9 +912,9 @@ export const restoreMissingFeatures =
     }
 
     // Restore the missing polygon features
-    const polygonParmeters =
+    const polygonParameters =
       mapping[ParameterUIContext.SELECTED_POLYGON_FEATURE] ?? [];
-    for (const polygonParameter of polygonParmeters) {
+    for (const polygonParameter of polygonParameters) {
       dispatch(
         addFeatureIfMissing(
           {
