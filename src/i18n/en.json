@@ -379,8 +379,15 @@
     "criticalBatteryVoltage": "Critical battery voltage",
     "criticalBatteryVoltageDescript": "Critically low battery voltage in [V] under which a critical battery failsafe action is triggered.",
     "emptyValues": "Empty values result in the respective safety values not being overridden.",
-    "lowBatteryVoltage": "Low battery voltage",
-    "lowBatteryVoltageDescript": "Low battery voltage in [V] under which a low battery failsafe action is triggered.",
+    "lowBatteryThreshold": {
+      "descript": "Low battery threshold type and value under which a low battery failsafe action is triggered.",
+      "disabled": "Disabled",
+      "noOverride": "No override",
+      "percentageBased": "Percentage based",
+      "type": "Low battery threshold type",
+      "value": "Threshold value",
+      "voltageBased": "Voltage based"
+    },
     "returnToHomeAltitude": "Return to home altitude",
     "returnToHomeAltitudeDescript": "Altitude in [mAHL] at which return to home operations are performed.",
     "returnToHomeSpeed": "Return to home speed",
