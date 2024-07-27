@@ -76,28 +76,32 @@ const SafetySettingsFormPresentation = ({ initialValues, onSubmit, t }) => (
           <Box>
             <NumericFieldWithUnit
               name='criticalBatteryVoltage'
-              label='safetySettingsTab.criticalBatteryVoltage'
+              label={t('safetySettingsTab.criticalBatteryVoltage')}
               unit='V'
             />
             <FormHelperText>
-            {t('safetySettingsTab.criticalBatteryVoltageDescript')}
+              {t('safetySettingsTab.criticalBatteryVoltageDescript')}
             </FormHelperText>
           </Box>
           <Box>
             <Box display='flex'>
               {/* TODO: Use `Select` from `~/components/forms/fields.jsx` */}
               <Select
-                label='Low battery threshold type'
                 name='lowBatteryThreshold.type'
+                label={t('safetySettingsTab.lowBatteryThreshold.type')}
                 variant='filled'
               >
-                <MenuItem>No override</MenuItem>
-                <MenuItem value={BatteryThresholdType.OFF}>Disabled</MenuItem>
+                <MenuItem>
+                  {t('safetySettingsTab.lowBatteryThreshold.noOverride')}
+                </MenuItem>
+                <MenuItem value={BatteryThresholdType.OFF}>
+                  {t('safetySettingsTab.lowBatteryThreshold.disabled')}
+                </MenuItem>
                 <MenuItem value={BatteryThresholdType.VOLTAGE}>
-                  Voltage based
+                  {t('safetySettingsTab.lowBatteryThreshold.voltageBased')}
                 </MenuItem>
                 <MenuItem value={BatteryThresholdType.PERCENTAGE}>
-                  Percentage based
+                  {t('safetySettingsTab.lowBatteryThreshold.percentageBased')}
                 </MenuItem>
               </Select>
               {[
@@ -108,7 +112,7 @@ const SafetySettingsFormPresentation = ({ initialValues, onSubmit, t }) => (
                   <Box p={1} />
                   <NumericFieldWithUnit
                     name='lowBatteryThreshold.value'
-                    label='Threshold value'
+                    label={t('safetySettingsTab.lowBatteryThreshold.value')}
                     unit={
                       unitForBatteryThresholdType[
                         values.lowBatteryThreshold?.type
@@ -120,28 +124,27 @@ const SafetySettingsFormPresentation = ({ initialValues, onSubmit, t }) => (
               )}
             </Box>
             <FormHelperText>
-              Low battery threshold type and value under which a low battery
-              failsafe action is triggered.
+              {t('safetySettingsTab.lowBatteryThreshold.descript')}
             </FormHelperText>
           </Box>
           <Box>
             <NumericFieldWithUnit
               name='returnToHomeAltitude'
-              label='safetySettingsTab.returnToHomeAltitude'
+              label={t('safetySettingsTab.returnToHomeAltitude')}
               unit='m'
             />
             <FormHelperText>
-            {t('safetySettingsTab.returnToHomeAltitudeDescript')}
+              {t('safetySettingsTab.returnToHomeAltitudeDescript')}
             </FormHelperText>
           </Box>
           <Box>
             <NumericFieldWithUnit
               name='returnToHomeSpeed'
-              label='safetySettingsTab.returnToHomeSpeed'
+              label={t('safetySettingsTab.returnToHomeSpeed')}
               unit='m/s'
             />
             <FormHelperText>
-            {t('safetySettingsTab.returnToHomeSpeedDescript')}
+              {t('safetySettingsTab.returnToHomeSpeedDescript')}
             </FormHelperText>
           </Box>
         </Box>
