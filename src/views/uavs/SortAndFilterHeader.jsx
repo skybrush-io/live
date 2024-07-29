@@ -185,6 +185,21 @@ const COMMON_HEADER_TEXT_PARTS = Object.freeze([
     },
   },
   {
+    label: 'Light',
+    style: {
+      textAlign: 'center',
+      width: 44,
+    },
+  },
+  {
+    label: 'RSSI',
+    sortKey: UAVSortKey.RSSI,
+    style: {
+      textAlign: 'right',
+      width: 44,
+    },
+  },
+  {
     label: 'GPS',
     sortKey: UAVSortKey.GPS_FIX,
     style: {
