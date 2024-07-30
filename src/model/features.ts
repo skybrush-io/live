@@ -3,7 +3,7 @@
  * that we use on the map.
  */
 
-import LocationOn from '@material-ui/icons/LocationOn';
+import FiberManualRecord from '@material-ui/icons/FiberManualRecord';
 import ShowChart from '@material-ui/icons/ShowChart';
 import PanoramaFishEye from '@material-ui/icons/PanoramaFishEye';
 import StarBorder from '@material-ui/icons/StarBorder';
@@ -74,7 +74,7 @@ const propertiesForFeatureTypes: Record<FeatureType, FeatureTypeProperties> = {
   },
   [FeatureType.POINTS]: {
     name: 'Marker',
-    icon: LocationOn,
+    icon: FiberManualRecord,
     canBeMeasured: false,
     hasInterior: false,
     hasPoints: false,
