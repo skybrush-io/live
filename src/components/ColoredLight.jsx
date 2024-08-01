@@ -14,6 +14,7 @@ const useStyles = makeStyles(
       height: '1em',
       minWidth:
         '1em' /* needed for narrow cases; setting width alone is not enough */,
+      marginLeft: theme.spacing(3),
       marginRight: theme.spacing(2),
       position: 'relative',
       width: '1em',

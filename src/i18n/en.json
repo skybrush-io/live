@@ -428,6 +428,7 @@
       "flightMode": "Flight mode",
       "gpsFix": "GPS fix",
       "heading": "Heading",
+      "rssi": "RSSI",
       "status": "Status"
     },
     "shortLabel": {
@@ -439,6 +440,7 @@
       "flightMode": "Mode",
       "gpsFix": "GPS fix",
       "heading": "Heading",
+      "rssi": "RSSI",
       "status": "Status"
     },
     "sortBy": "Sort by"

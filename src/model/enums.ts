@@ -391,6 +391,25 @@ export function getSemanticsForGPSFixType(fixType: GPSFixType): Status {
   return props.status;
 }
 
+/**
+ * Returns the semantic status code of the given RSSI value.
+ */
+export function getSemanticsForRSSI(rssi?: number): Status {
+  if(!rssi) {
+    return Status.WARNING;
+  }
+  
+  if(rssi > 75) {
+    return Status.SUCCESS;
+  }else if(rssi >50) {
+    return Status.WARNING;
+  }else if(rssi > 25) {
+    return Status.ERROR;
+  }else {
+    return Status.CRITICAL;
+  }
+}
+
 /* ************************************************************************* */
 
 /**

@@ -56,7 +56,7 @@ export default class UAV {
   localVelocity?: VelocityXYZ;
   mode?: string;
   velocity?: VelocityNED;
-
+  rssi: number[];
   /**
    * Constructor.
    *
@@ -92,6 +92,7 @@ export default class UAV {
     this.localVelocity = undefined;
     this.mode = undefined;
     this.velocity = undefined;
+    this.rssi = [];
   }
 
   /**
@@ -225,6 +226,7 @@ export default class UAV {
       debug,
       velocity,
       velocityXYZ,
+      rssi,
     } = status;
 
     let errorList: ErrorCode[];
@@ -244,6 +246,10 @@ export default class UAV {
         agl: isNil(position[4]) ? undefined : position[4] / 1e3,
       };
       updated = true;
+    }
+
+    if(rssi) {
+      this.rssi = rssi;
     }
 
     if (positionXYZ && Array.isArray(positionXYZ) && positionXYZ.length >= 3) {
@@ -355,6 +361,7 @@ export default class UAV {
       id: this._id,
       age: this.age,
       battery: { ...this.battery },
+      rssi: this.rssi,
       debugString: this.debugString,
       errors: [...this._errors],
       gpsFix: { ...this.gpsFix },
