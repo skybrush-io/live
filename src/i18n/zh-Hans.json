@@ -1,10 +1,14 @@
 {
+  "APIKeysTab": {
+    "description": "有些地图切片提供商在没有 API 密钥的情况下也能工作；在这种情况下，会使用一个默认的 API 密钥。这个 API 密钥是所有用户共享的。如果你使用默认的共享 API 密钥，我们无法保证地图切片的可用性。"
+  },
   "ConnectionStatusMiniList": {
     "noConnections": "该服务器没有使用任何连接。",
     "useSecondaryChannel": "使用第二通道"
   },
   "DrawingToolbar": {
     "addMarker": "添加标记",
+    "addWaypoint": "添加航点",
     "cutHole": "将孔切成多边形",
     "drawCircle": "绘制圆形",
     "drawPath": "绘制路径",
@@ -17,14 +21,26 @@
     "passed": "飞机上的飞行前检查已通过。",
     "signOffOn": "签署机上飞行前检查"
   },
+  "RTKCorrectionSourceSelector": {
+    "RTKCorrections": "RTK校正",
+    "error": "从服务器加载RTK源时出错",
+    "noRTKData": "服务器上没有RTK数据源",
+    "pleaseWait": "请稍候，正在加载RTK源…"
+  },
   "RTKStatusMiniList": {
     "satelliteCount": "卫星数量",
     "surveyInProgress": "搜寻进行中…",
     "surveyNo": "搜寻未在进行中",
     "surveySuccesful": "搜寻成功"
   },
+  "UAVList": {
+    "allUAVs": "所有无人机",
+    "assignedUAVs": "已分配的无人机",
+    "spareUAVs": "备用无人机"
+  },
   "UAVOpButtonGrp": {
     "armMotors": "解锁马达",
+    "details": "详细信息…",
     "disarmMotors": "锁定马达",
     "flashLights": "闪烁灯光",
     "properties": "属性",
@@ -43,14 +59,55 @@
     "clickToChange": "单击更改为{{altitudeType}}。",
     "showingCurrent": "显示最大值和最小值 {{altitudeType}}。"
   },
+  "augmentMappingButton": {
+    "assignSparesToEmptySlots": "将备用无人机分配到空闲舞步上"
+  },
   "authentication": "身份验证",
   "batteryStatusHeaderButton": "显示平均和最低电量水平。",
+  "bearingCalculator": {
+    "addAtLeastTwoItems": "添加至少两个项目以计算它们之间的方位角和距离",
+    "bearing": "方位角 ",
+    "finalBearing": "最终方位角 ",
+    "initialBearing": "初始方位角 ",
+    "selectTwoItems": "选择两个项目以计算它们之间的方位角和距离"
+  },
   "broadcastButton": {
     "disable": "禁用广播",
     "enable": "启用广播{{time}}秒"
   },
+  "coordinateAveragingDialogToolbar": {
+    "addNewDrone": "添加新无人机",
+    "copyCentroid": "复制中心点",
+    "pauseMeasurement": "暂停测量",
+    "removeSelected": "移除所选项",
+    "resetMeasurement": "重置测量",
+    "resumeMeasurement": "恢复测量",
+    "setCentroidAsMapOrigin": "将中心点设为地图原点"
+  },
+  "environmentEditorDialog": {
+    "environmentSettings": "环境设置",
+    "indoor": "这场展示是室内展示。你可以指定展示所在房间的角落（用于可视化目的）。",
+    "outdoor": "这场展示是户外展示。你需要至少指定坐标系统的原点和方向，以便 Skybrush 可以将展示映射到 GPS 坐标中。"
+  },
   "fieldNotesPanel": {
     "exportNotesAsFile": "将笔记导出为 Markdown 文件"
+  },
+  "filtering": {
+    "composite": "复合",
+    "filter": "过滤器",
+    "filterBy": "按...过滤",
+    "label": {
+      "all": "所有",
+      "errors": "仅显示错误的",
+      "noTelemetry": "仅显示无遥测数据的",
+      "warningsAndErrors": "警告和错误"
+    },
+    "shortLabel": {
+      "all": "全部",
+      "errors": "错误",
+      "noTelemetry": "无遥测数据",
+      "warningsAndErrors": "警告/错误"
+    }
   },
   "fitAllFeaturesButton": {
     "fitAllDrones": "匹配所有无人机",
@@ -63,11 +120,45 @@
   "general": {
     "action": {
       "apply": "应用",
+      "cancel": "取消",
+      "clear": "清除",
       "close": "关闭",
-      "select": "选择"
+      "delete": "删除",
+      "discard": "丢弃",
+      "edit": "编辑",
+      "export": "导出",
+      "import": "导入",
+      "open": "打开",
+      "remove": "移除",
+      "retry": "重试",
+      "save": "保存",
+      "select": "选择",
+      "start": "开始",
+      "stop": "停止"
+    },
+    "commands": {
+      "land": "降落",
+      "positionHold": "位置保持",
+      "powerOff": "关机",
+      "powerOn": "开机",
+      "reboot": "重启",
+      "returnToHome": "返航",
+      "sleep": "休眠",
+      "takeoff": "起飞"
+    },
+    "geography": {
+      "latitude": "纬度",
+      "longitude": "经度"
     },
     "geometry": {
+      "rotation": "旋转",
       "zoom": "缩放"
+    },
+    "status": {
+      "failed": "失败",
+      "inProgress": "进行中",
+      "successful": "成功",
+      "waiting": "等待中"
     }
   },
   "geofence": {
@@ -78,7 +169,15 @@
       "no": "地理围栏未定义"
     }
   },
+  "header": {
+    "distanceSummary": "距初始位置的最大和最小距离",
+    "velocitySummary": "最大水平和垂直速度"
+  },
   "help": "帮助",
+  "indoorEnvironmentEditor": {
+    "coordinatesOfTheCorners": "房间角落的坐标",
+    "roomVisibleIn3D": "房间在3D视图中可见"
+  },
   "lightControl": {
     "fromGCS": "灯光由地面站控制",
     "notConnected": "未连接到服务器",
@@ -87,16 +186,89 @@
   "map": {
     "resetRotation": "重置旋转"
   },
+  "mapCachingDialog": {
+    "offlineMaps": "离线地图"
+  },
+  "mapCachingPanel": {
+    "clearChache": "清除缓存",
+    "connectToServer": "连接到支持离线地图的服务器",
+    "serverNotSupport": "服务器不支持离线地图缓存",
+    "serverSupport": "服务器支持离线地图缓存",
+    "useCachedMapTiles": "使用服务器的缓存地图切片"
+  },
+  "mapContextMenu": {
+    "clearGeofence": "清除地理围栏",
+    "details": "详细信息…",
+    "flyHere": "飞往这里",
+    "flyHereAtAltitude": "飞往这里的高度…",
+    "properties": "属性…",
+    "setMapOriginHere": "在此设置地图原点",
+    "setShowOriginHere": "在此设置展示原点",
+    "subtractPolygon": "从 {{minuend}} 中减去 {{subtrahend}}",
+    "unnamedPolygon": "未命名的多边形",
+    "useAsGeofence": "用作地理围栏"
+  },
+  "mappingButtonGroup": {
+    "editMapping": "编辑映射",
+    "hideEmptyMissionSlots": "隐藏空任务槽",
+    "showEmptyMissionSlots": "显示空的任务槽位"
+  },
+  "mappingEditorToolbar": {
+    "assignSpares": "分配备用无人机",
+    "clearMissing": "清除缺失项",
+    "clickToEdit": "点击以编辑单个槽位。",
+    "dragNodes": "拖动节点以重新排列映射。",
+    "exportMapping": "导出映射…",
+    "importMapping": "导入映射…"
+  },
+  "mappingSlotEditorToolbar": {
+    "reverseDirection": "按住 <kbd>Shift</kbd> 键以反转方向。",
+    "selectNextEmptySlot": "选择下一个空槽位"
+  },
   "mappingToggleButton": {
     "sortByMissionID": "按任务IDs排序"
+  },
+  "mission": {
+    "planner": {
+      "schema": {
+        "error": "从服务器加载任务参数模式时出错",
+        "loading": "正在获取任务参数…",
+        "notFound": "连接的服务器没有提供所选任务类型的模式"
+      }
+    }
   },
   "notifications": {
     "connectedToSkybrushServer": "已连接到Skybrush服务器"
   },
+  "outdoorEnvironmentEditor": {
+    "AHL": "相对于初始位置的高度（AHL）",
+    "AMSL": "相对于平均海平面的高度（AMSL）",
+    "AMSLReference": "海拔高度参考",
+    "altitudeControl": "高度控制和RTK校正",
+    "coordinateSystem": "坐标系统",
+    "copyMapOriginToShow": "将地图原点复制到展示原点",
+    "copyShowOriginToMap": "将展示原点复制到地图原点",
+    "fitCoordinateSysToCurrentDrone": "将坐标系统调整到当前无人机的位置",
+    "setToAverageAMSL": "设置为活跃无人机的平均海拔高度",
+    "showCoordinateSystemAppliedToMap": "显示应用于地图的坐标系统。",
+    "showCoordinateSystemUpdatedFromMap": "显示从地图更新的坐标系统。",
+    "showIsControlledBasedOn": "表演的控制基于…",
+    "showOrientation": "表演方向",
+    "showOrigin": "表演原点",
+    "warningText": "自动展示原点和方向计算假设所有无人机都指向展示的 X 轴 <underline>或者</underline> 你已经通过上述设置指定了它们相对于 X 轴的偏移。绝对起飞航向不受支持。"
+  },
   "preferences": "偏好设置",
+  "recalculateMappingButton": {
+    "findOptimalMapping": "寻找最佳映射",
+    "recalculateMapping": "重新计算映射"
+  },
   "safetyDialog": {
     "geofenceTab": {
       "clear": "清除当前地理围栏",
+      "errors": {
+        "distance": "无法计算距离",
+        "height": "无法计算高度"
+      },
       "fenceAction": "地理围栏行为",
       "fenceActionHelperText": "对这些选项的支持取决于无人机本身；并非所有无人机都支持所有选项。",
       "fenceActionLabel": "地理围栏第一行为",
@@ -111,6 +283,18 @@
       "vertical": "垂直方向"
     },
     "title": "地理围栏设置"
+  },
+  "savedLocation": {
+    "addNew": "添加新的中心点",
+    "edit": "编辑中心点"
+  },
+  "savedLocationEditor": {
+    "copyFromMapView": "从地图视图复制",
+    "createNew": "创建新的中心点",
+    "editSaved": "编辑已保存的中心点",
+    "name": "名称",
+    "notes": "备注",
+    "zoomLevel": "缩放级别"
   },
   "serverConnectionStatus": {
     "clockSkew": "时钟偏差",
@@ -230,6 +414,62 @@
     "uploadShowDataLoading": "正在上传，请稍后…",
     "uploadShowDataStart": "点击此处开始上传"
   },
+  "sidebar": {
+    "missionType": "任务类型：（{{missionType}}）"
+  },
+  "sorting": {
+    "ascending": "上升",
+    "descending": "下降",
+    "label": {
+      "agl": "地面高度",
+      "ahl": "相对于初始位置的高度",
+      "amsl": "海拔高度（MSL）",
+      "battery": "电池",
+      "default": "默认",
+      "flightMode": "飞行模式",
+      "gpsFix": "GPS 定位",
+      "heading": "航向",
+      "status": "状态"
+    },
+    "shortLabel": {
+      "agl": "地面以上（Above Ground Level）",
+      "ahl": "初始位置以上的高度（Altitude Above Home Level）",
+      "amsl": "平均海平面以上的高度（Above Mean Sea Level）",
+      "battery": "电池",
+      "default": "默认",
+      "flightMode": "模式",
+      "gpsFix": "GPS 定位",
+      "heading": "航向",
+      "status": "状态"
+    },
+    "sortBy": "按...排序"
+  },
+  "startUploadButton": {
+    "startSelected": "启动所选项"
+  },
+  "takeoffAreaSetupDialog": {
+    "allDroneOnline": "任务中的所有无人机都在线。",
+    "allDronesAtTakeoffPositions": "所有无人机都已放置在其起飞位置。",
+    "allDronesFacingCorrectDirection": "所有无人机都面向正确的方向。",
+    "allSlotsFilled": "任务中的所有槽位都已填满。",
+    "approveTakeoffAreaArrangement": "批准起飞区域布置",
+    "emptySlots": "空槽位：",
+    "misaligned": "未对齐：",
+    "misplaced": "放错位置：",
+    "missing": "缺失：",
+    "noDrones": "任务中没有无人机。",
+    "placeVirtualDrones": "放置虚拟无人机",
+    "takeoffAreaSetup": "起飞区域设置"
+  },
+  "takeoffHeadingSpecEditor": {
+    "UAVheadings": "无人机起飞前的航向是…",
+    "compassDirection": "指南针方向",
+    "headingOffset": "航向偏移",
+    "setToAvergaeHeading": "设置为活跃无人机的平均航向",
+    "specifiedByAbsoluteCompassDirection": "由绝对指南针方向指定",
+    "specifiedRelativeToShowOrientation": "相对于展示方向指定",
+    "unspecified": "未指定"
+  },
   "toolbox": {
     "averagingInProgress": "{{number}} 进行中",
     "coordinateAveraging": "坐标平均",
@@ -238,6 +478,21 @@
     "paramUpload": "参数上传",
     "tooltip": "工具箱",
     "uploadInProgress": "上传进行中"
+  },
+  "uploadPanel": {
+    "cancelUpload": "取消上传",
+    "flashLightsWhereFailed": "上传失败的无人机闪灯",
+    "retryFailedAttempts": "自动重试失败的尝试",
+    "uploadAttemptFailed": "上传尝试失败。",
+    "uploadCancelled": "上传已被用户取消。",
+    "uploadFinishedSuccessfully": "上传成功完成。",
+    "uploadInProgress": "上传中…",
+    "uploadNotFinishedYet": "上传尚未完成。"
+  },
+  "uploadStatusLegend": {
+    "clearUploadQueue": "清除上传队列",
+    "restartSuccessfulItems": "重新启动成功的项目",
+    "retryFailedItems": "重试失败的项目"
   },
   "view": {
     "beacon-list": "信标",
@@ -249,9 +504,11 @@
     "light-control": "灯光控制",
     "log-panel": "事件日志",
     "map": "地图",
+    "mission-editor": "任务编辑器",
     "saved-location-list": "地点",
     "show-control": "表演控制",
     "three-d-view": "3D 视图",
+    "uav-details": "无人机详情",
     "uav-list": "无人机"
   },
   "weatherMiniList": {
