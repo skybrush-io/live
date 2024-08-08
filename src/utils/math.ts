@@ -154,12 +154,12 @@ export function getCentroid(points: number[][], dim = 2): number[] {
 
   for (const point of points) {
     for (let i = 0; i < dim; i++) {
-      result[i] += point[i] || 0;
+      result[i] = (result[i] ?? 0) + (point[i] ?? 0);
     }
   }
 
   for (let i = 0; i < dim; i++) {
-    result[i] /= n;
+    result[i] = (result[i] ?? 0) / n;
   }
 
   return result;
