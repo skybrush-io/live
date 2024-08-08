@@ -5,6 +5,7 @@
 import { Select, TextField } from 'mui-rff';
 import PropTypes from 'prop-types';
 import React from 'react';
+import { withTranslation } from 'react-i18next';
 import { Form } from 'react-final-form';
 import { connect } from 'react-redux';
 
@@ -64,41 +65,43 @@ const validator = (values) => ({
   returnToHomeSpeed: optional(positive)(values.returnToHomeSpeed),
 });
 
-const SafetySettingsFormPresentation = ({ initialValues, onSubmit }) => (
+const SafetySettingsFormPresentation = ({ initialValues, onSubmit, t }) => (
   <Form initialValues={initialValues} validate={validator} onSubmit={onSubmit}>
     {({ handleSubmit, values }) => (
       <form id='safetySettings' onSubmit={handleSubmit}>
         <Box style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
           <DialogContentText>
-            Empty values result in the respective safety values not being
-            overridden.
+            {t('safetySettingsTab.emptyValues')}
           </DialogContentText>
           <Box>
             <NumericFieldWithUnit
               name='criticalBatteryVoltage'
-              label='Critical battery voltage'
+              label={t('safetySettingsTab.criticalBatteryVoltage')}
               unit='V'
             />
             <FormHelperText>
-              Critically low battery voltage in [V] under which a critical
-              battery failsafe action is triggered.
+              {t('safetySettingsTab.criticalBatteryVoltageDescript')}
             </FormHelperText>
           </Box>
           <Box>
             <Box display='flex'>
               {/* TODO: Use `Select` from `~/components/forms/fields.jsx` */}
               <Select
-                label='Low battery threshold type'
                 name='lowBatteryThreshold.type'
+                label={t('safetySettingsTab.lowBatteryThreshold.type')}
                 variant='filled'
               >
-                <MenuItem>No override</MenuItem>
-                <MenuItem value={BatteryThresholdType.OFF}>Disabled</MenuItem>
+                <MenuItem>
+                  {t('safetySettingsTab.lowBatteryThreshold.noOverride')}
+                </MenuItem>
+                <MenuItem value={BatteryThresholdType.OFF}>
+                  {t('safetySettingsTab.lowBatteryThreshold.disabled')}
+                </MenuItem>
                 <MenuItem value={BatteryThresholdType.VOLTAGE}>
-                  Voltage based
+                  {t('safetySettingsTab.lowBatteryThreshold.voltageBased')}
                 </MenuItem>
                 <MenuItem value={BatteryThresholdType.PERCENTAGE}>
-                  Percentage based
+                  {t('safetySettingsTab.lowBatteryThreshold.percentageBased')}
                 </MenuItem>
               </Select>
               {[
@@ -109,7 +112,7 @@ const SafetySettingsFormPresentation = ({ initialValues, onSubmit }) => (
                   <Box p={1} />
                   <NumericFieldWithUnit
                     name='lowBatteryThreshold.value'
-                    label='Threshold value'
+                    label={t('safetySettingsTab.lowBatteryThreshold.value')}
                     unit={
                       unitForBatteryThresholdType[
                         values.lowBatteryThreshold?.type
@@ -121,30 +124,27 @@ const SafetySettingsFormPresentation = ({ initialValues, onSubmit }) => (
               )}
             </Box>
             <FormHelperText>
-              Low battery threshold type and value under which a low battery
-              failsafe action is triggered.
+              {t('safetySettingsTab.lowBatteryThreshold.descript')}
             </FormHelperText>
           </Box>
           <Box>
             <NumericFieldWithUnit
               name='returnToHomeAltitude'
-              label='Return to home altitude'
+              label={t('safetySettingsTab.returnToHomeAltitude')}
               unit='m'
             />
             <FormHelperText>
-              Altitude in [mAHL] at which return to home operations are
-              performed.
+              {t('safetySettingsTab.returnToHomeAltitudeDescript')}
             </FormHelperText>
           </Box>
           <Box>
             <NumericFieldWithUnit
               name='returnToHomeSpeed'
-              label='Return to home speed'
+              label={t('safetySettingsTab.returnToHomeSpeed')}
               unit='m/s'
             />
             <FormHelperText>
-              Horizontal speed in [m/s] at which return to home operations are
-              performed.
+              {t('safetySettingsTab.returnToHomeSpeedDescript')}
             </FormHelperText>
           </Box>
         </Box>
@@ -156,6 +156,7 @@ const SafetySettingsFormPresentation = ({ initialValues, onSubmit }) => (
 SafetySettingsFormPresentation.propTypes = {
   initialValues: PropTypes.object,
   onSubmit: PropTypes.func,
+  t: PropTypes.func,
 };
 
 const SafetySettingsForm = connect(
@@ -185,29 +186,30 @@ const SafetySettingsForm = connect(
         })
       );
     },
-  }
-)(SafetySettingsFormPresentation);
+  })
+(withTranslation()(SafetySettingsFormPresentation));
 
 /**
  * Container of the tab that shows the form that the user can use to
  * edit the safety settings.
  */
-const SafetySettingsTab = ({ onClose }) => (
+const SafetySettingsTab = withTranslation()(({ onClose, t }) => (
   <>
     <DialogContent>
       <SafetySettingsForm />
     </DialogContent>
     <DialogActions>
       <Button form='safetySettings' type='submit' color='primary'>
-        Save
+        {t('general.action.save')}
       </Button>
-      <Button onClick={onClose}>Close</Button>
+      <Button onClick={onClose}>{t('general.action.close')}</Button>
     </DialogActions>
   </>
-);
+));
 
 SafetySettingsTab.propTypes = {
   onClose: PropTypes.func,
+  t: PropTypes.func,
 };
 
 export default SafetySettingsTab;

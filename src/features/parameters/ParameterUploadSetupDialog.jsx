@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
+import { withTranslation } from 'react-i18next';
 
 import Button from '@material-ui/core/Button';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -33,7 +34,7 @@ const useStyles = makeStyles(
  * Presentation component for the dialog that allows the user to assemble a
  * list of parameters to upload to the drones.
  */
-const ParameterUploadSetupDialog = ({ onClose, open }) => {
+const ParameterUploadSetupDialog = ({ onClose, open, t }) => {
   const classes = useStyles();
 
   return (
@@ -43,14 +44,14 @@ const ParameterUploadSetupDialog = ({ onClose, open }) => {
       open={open}
       maxWidth='md'
       sidebarComponents={<ParameterListSidebar />}
-      title='Upload parameters'
+      title={t('parameterUploadSetupDialog.uploadParameters')}
       onClose={onClose}
     >
       <DialogContent>
         <ParameterUploadMainPanel />
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Close</Button>
+        <Button onClick={onClose}>{t('general.action.close')}</Button>
       </DialogActions>
     </DraggableDialog>
   );
@@ -59,6 +60,7 @@ const ParameterUploadSetupDialog = ({ onClose, open }) => {
 ParameterUploadSetupDialog.propTypes = {
   open: PropTypes.bool,
   onClose: PropTypes.func,
+  t: PropTypes.func,
 };
 
 export default connect(
@@ -71,4 +73,4 @@ export default connect(
   {
     onClose: closeParameterUploadSetupDialog,
   }
-)(ParameterUploadSetupDialog);
+)(withTranslation()(ParameterUploadSetupDialog));

@@ -30,7 +30,7 @@ const tabs = [
         {
           id: SafetyDialogTab.GEOFENCE,
           icon: <Fence />,
-          name: 'Geofence',
+          name: 'safetyDialog.geofence',
           component: GeofenceSettingsTab,
         },
       ]
@@ -38,7 +38,7 @@ const tabs = [
   {
     id: SafetyDialogTab.SETTINGS,
     icon: <Security />,
-    name: 'Settings',
+    name: 'safetyDialog.settings',
     component: SafetySettingsTab,
   },
 ];
@@ -76,7 +76,7 @@ const SafetyDialog = ({ onClose, onTabSelected, open, selectedTab, t }) => {
               icon={icon}
               // Only available from MUI v5
               // iconPosition='start'
-              label={name}
+              label={t(name)}
               value={id}
             />
           ))}

@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { Trans, withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import Box from '@material-ui/core/Box';
@@ -13,7 +14,7 @@ import {
 } from '~/features/show/selectors';
 import { setStartTime, synchronizeShowSettings } from '~/features/show/slice';
 
-const StartTimeDisplay = ({ formattedStartTime, onClearStartTime }) => (
+const StartTimeDisplay = ({ formattedStartTime, onClearStartTime, t }) => (
   <Alert
     severity={formattedStartTime ? 'info' : 'warning'}
     variant='filled'
@@ -24,18 +25,19 @@ const StartTimeDisplay = ({ formattedStartTime, onClearStartTime }) => (
           startIcon={<Clear />}
           onClick={formattedStartTime ? onClearStartTime : null}
         >
-          Clear
+          {t('general.action.clear')}
         </Button>
       ) : null
     }
   >
     <Box>
       {formattedStartTime ? (
-        <>
-          Start time is set to <strong>{formattedStartTime}</strong>
-        </>
+        <Trans
+          i18nKey='startTimeDisplay.startTimeIsSetTo'
+          components={{ strong: <strong />, formattedStartTime }}
+        />
       ) : (
-        'No start time is set at the moment.'
+        t('startTimeDisplay.noStartTimeIsSet')
       )}
     </Box>
   </Alert>
@@ -44,6 +46,7 @@ const StartTimeDisplay = ({ formattedStartTime, onClearStartTime }) => (
 StartTimeDisplay.propTypes = {
   formattedStartTime: PropTypes.string,
   onClearStartTime: PropTypes.func,
+  t: PropTypes.func,
 };
 
 export default connect(
@@ -59,4 +62,4 @@ export default connect(
       dispatch(synchronizeShowSettings('toServer'));
     },
   }
-)(StartTimeDisplay);
+)(withTranslation()(StartTimeDisplay));

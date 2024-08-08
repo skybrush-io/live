@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { bindActionCreators } from '@reduxjs/toolkit';
 
@@ -57,6 +58,7 @@ const useStyles = makeStyles(
 const LargeControlButtonGroup = ({
   broadcast,
   onChangeBroadcastMode,
+  t,
   uavActions,
 }) => {
   const classes = useStyles();
@@ -70,7 +72,7 @@ const LargeControlButtonGroup = ({
             variant='body2'
             color={!broadcast ? 'textPrimary' : 'textSecondary'}
           >
-            Selection only
+            {t('largeControlButtonGroup.selectionOnly')}
           </Typography>
         </Box>
         <Switch checked={broadcast} onChange={onChangeBroadcastMode} />
@@ -79,7 +81,7 @@ const LargeControlButtonGroup = ({
             variant='body2'
             color={broadcast ? 'textPrimary' : 'textSecondary'}
           >
-            Broadcast
+            {t('largeControlButtonGroup.broadcast')}
           </Typography>
         </Box>
       </Box>
@@ -90,7 +92,9 @@ const LargeControlButtonGroup = ({
           icon={<PlayArrow fontSize='inherit' />}
           onClick={uavActions.turnMotorsOn}
         >
-          {broadcast ? 'Arm all' : 'Arm'}
+          {broadcast
+            ? t('largeControlButtonGroup.armAll')
+            : t('largeControlButtonGroup.arm')}
         </ColoredButton>
         <ColoredButton
           className={classes.button}
@@ -98,7 +102,9 @@ const LargeControlButtonGroup = ({
           icon={<Clear fontSize='inherit' />}
           onClick={uavActions.turnMotorsOff}
         >
-          {broadcast ? 'Disarm all' : 'Disarm'}
+          {broadcast
+            ? t('largeControlButtonGroup.disarmAll')
+            : t('largeControlButtonGroup.disarm')}
         </ColoredButton>
       </Box>
       <Box display='flex' flexDirection='row' flex={1}>
@@ -108,7 +114,9 @@ const LargeControlButtonGroup = ({
           icon={<PositionHold fontSize='inherit' />}
           onClick={uavActions.holdPosition}
         >
-          {broadcast ? 'Hold all' : 'Hold'}
+          {broadcast
+            ? t('largeControlButtonGroup.holdAll')
+            : t('largeControlButtonGroup.hold')}
         </ColoredButton>
         <ColoredButton
           className={classes.button}
@@ -116,7 +124,9 @@ const LargeControlButtonGroup = ({
           icon={<Home fontSize='inherit' />}
           onClick={uavActions.returnToHome}
         >
-          {broadcast ? 'RTH all' : 'RTH'}
+          {broadcast
+            ? t('largeControlButtonGroup.RTHAll')
+            : t('largeControlButtonGroup.RTH')}
         </ColoredButton>
       </Box>
       <Box display='flex' flexDirection='row' flex={1} mb={0.5}>
@@ -126,7 +136,9 @@ const LargeControlButtonGroup = ({
           icon={<FlightLand fontSize='inherit' />}
           onClick={uavActions.land}
         >
-          {broadcast ? 'Land all' : 'Land'}
+          {broadcast
+            ? t('largeControlButtonGroup.landAll')
+            : t('largeControlButtonGroup.land')}
         </ColoredButton>
         <ColoredButton
           className={classes.button}
@@ -134,7 +146,9 @@ const LargeControlButtonGroup = ({
           icon={<PowerSettingsNew fontSize='inherit' />}
           onClick={uavActions.shutdown}
         >
-          {broadcast ? 'Shutdown all' : 'Shutdown'}
+          {broadcast
+            ? t('largeControlButtonGroup.shutdownAll')
+            : t('largeControlButtonGroup.shutdown')}
         </ColoredButton>
       </Box>
     </>
@@ -144,6 +158,7 @@ const LargeControlButtonGroup = ({
 LargeControlButtonGroup.propTypes = {
   broadcast: PropTypes.bool,
   onChangeBroadcastMode: PropTypes.func,
+  t: PropTypes.func,
   uavActions: PropTypes.objectOf(PropTypes.func),
 };
 
@@ -186,4 +201,4 @@ export default connect(
       dispatch
     ),
   })
-)(LargeControlButtonGroup);
+)(withTranslation()(LargeControlButtonGroup));

@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { withTranslation } from 'react-i18next';
 import { HexColorInput, HexColorPicker } from 'react-colorful';
 import { connect } from 'react-redux';
 
@@ -89,14 +90,14 @@ const useStyles = makeStyles(
  * Panel that shows the widgets that are needed to control the LED lights on
  * the drone swarm from the GCS before or during a drone show.
  */
-const LightControlGrid = ({ color, onSetColor, onSetColorAndActivate }) => {
+const LightControlGrid = ({ color, onSetColor, onSetColorAndActivate, t }) => {
   const classes = useStyles();
   return (
     <Box className={classes.root}>
       <Box className={classes.grid}>
         <LightButton
           color='#000000'
-          label='All off'
+          label={t('lightControlGrid.allOff')}
           style={{ gridColumn: '1 / span 2' }}
           onClick={onSetColorAndActivate}
         />
@@ -112,7 +113,7 @@ const LightControlGrid = ({ color, onSetColor, onSetColorAndActivate }) => {
         />
         <LightButton
           color='#ffffff'
-          label='All on'
+          label={t('lightControlGrid.allOn')}
           style={{ gridColumn: '5 / span 3' }}
           onClick={onSetColorAndActivate}
         />
@@ -142,6 +143,7 @@ LightControlGrid.propTypes = {
   color: PropTypes.string,
   onSetColor: PropTypes.func,
   onSetColorAndActivate: PropTypes.func,
+  t: PropTypes.func,
 };
 
 export default connect(
@@ -154,4 +156,4 @@ export default connect(
     onSetColor: setColorAndUpdateServerIfActive,
     onSetColorAndActivate: setColorAndActivate,
   }
-)(LightControlGrid);
+)(withTranslation()(LightControlGrid));

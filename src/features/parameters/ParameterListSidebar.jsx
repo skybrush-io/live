@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
+import { withTranslation } from 'react-i18next';
 import { animated, useTransition } from '@react-spring/web';
 
 import Box from '@material-ui/core/Box';
@@ -70,6 +71,7 @@ const ParameterListSidebar = ({
   onRemoveItem,
   onRemoveAllItems,
   onStart,
+  t,
 }) => {
   const classes = useStyles();
 
@@ -89,7 +91,7 @@ const ParameterListSidebar = ({
     <Box className={classes.root}>
       <Box className={classes.header}>
         <Box className={classes.title}>Manifest</Box>
-        <Tooltip content='Remove all items from manifest'>
+        <Tooltip content={t('parameterListSidebar.removeAllItems')}>
           <IconButton
             disabled={!manifest || manifest.length === 0}
             onClick={onRemoveAllItems}
@@ -120,14 +122,14 @@ const ParameterListSidebar = ({
       </MiniList>
       <Box className={classes.footer}>
         <FileButton startIcon={<FolderOpen />} onSelected={onImportItems}>
-          Import...
+          {t('parameterListSidebar.import')}
         </FileButton>
         <Button
           disabled={!canUpload}
           endIcon={<NavigateNext />}
           onClick={onStart}
         >
-          Next step
+          {t('parameterListSidebar.nextStep')}
         </Button>
       </Box>
     </Box>
@@ -146,6 +148,7 @@ ParameterListSidebar.propTypes = {
   onRemoveAllItems: PropTypes.func,
   onRemoveItem: PropTypes.func,
   onStart: PropTypes.func,
+  t: PropTypes.func,
 };
 
 export default connect(
@@ -161,4 +164,4 @@ export default connect(
     onRemoveItem: removeParameterFromManifest,
     onStart: proceedToUpload,
   }
-)(ParameterListSidebar);
+)(withTranslation()(ParameterListSidebar));

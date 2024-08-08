@@ -17,14 +17,14 @@ export enum GeofenceAction {
 const VALID_GEOFENCE_ACTIONS = Object.values(GeofenceAction);
 
 const geofenceActionDescriptions: Record<GeofenceAction, string> = {
-  [GeofenceAction.KEEP_CURRENT]: 'Keep current action',
-  [GeofenceAction.REPORT]: 'Report only',
-  [GeofenceAction.LAND]: 'Land',
-  [GeofenceAction.RETURN]: 'Return to home',
-  [GeofenceAction.SMART_LAND]: 'Land with collision avoidance',
-  [GeofenceAction.SMART_RETURN]: 'Return to home with collision avoidance',
-  [GeofenceAction.STOP]: 'Stop and hover',
-  [GeofenceAction.SHUT_DOWN]: 'Shut down',
+  [GeofenceAction.KEEP_CURRENT]: 'geofenceAction.keepCurrent',
+  [GeofenceAction.REPORT]: 'geofenceAction.report',
+  [GeofenceAction.LAND]: 'general.commands.land',
+  [GeofenceAction.RETURN]: 'general.commands.returnToHome',
+  [GeofenceAction.SMART_LAND]: 'geofenceAction.smartLand',
+  [GeofenceAction.SMART_RETURN]: 'geofenceAction.smartReturn',
+  [GeofenceAction.STOP]: 'geofenceAction.stop',
+  [GeofenceAction.SHUT_DOWN]: 'geofenceAction.shutDown',
 };
 
 /**
