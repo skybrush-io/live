@@ -276,7 +276,7 @@
   "measurementList": {
     "addDrone": "Add a drone to measure with the + button in the toolbar",
     "copyToClipboard": "Copy to clipboard",
-    "duration": "Duration:",
+    "duration": "Duration",
     "noSamplesYet": "No samples yet",
     "samples": "samples",
     "stdDevInXY": "std.dev. in XY",
@@ -300,6 +300,7 @@
   "navigationInstructions": {
     "altitude": "Altitude",
     "arrows": "Arrows",
+    "flyForwardBackward": "Fly forward / backward",
     "flyFrwrdBckwrd": "Fly forward / backward",
     "lookAround": "Look around",
     "moveSideways": "Move sideways",
@@ -377,22 +378,22 @@
     "title": "Safety"
   },
   "safetySettingsTab": {
-    "criticalBatteryVoltage": "Critical battery voltage",
-    "criticalBatteryVoltageDescript": "Critically low battery voltage in [V] under which a critical battery failsafe action is triggered.",
+    "criticalBatteryVoltageHelperText": "Critically low battery voltage in [V] under which a critical battery failsafe action is triggered.",
+    "criticalBatteryVoltageLabel": "Critical battery voltage",
     "emptyValues": "Empty values result in the respective safety values not being overridden.",
-    "lowBatteryThreshold": {
-      "descript": "Low battery threshold type and value under which a low battery failsafe action is triggered.",
+    "lowBatteryThresholdHelperText": "Low battery threshold type and value under which a low battery failsafe action is triggered.",
+    "lowBatteryThresholdType": {
       "disabled": "Disabled",
       "noOverride": "No override",
       "percentageBased": "Percentage based",
-      "type": "Low battery threshold type",
-      "value": "Threshold value",
       "voltageBased": "Voltage based"
     },
-    "returnToHomeAltitude": "Return to home altitude",
-    "returnToHomeAltitudeDescript": "Altitude in [mAHL] at which return to home operations are performed.",
-    "returnToHomeSpeed": "Return to home speed",
-    "returnToHomeSpeedDescript": "Horizontal speed in [m/s] at which return to home operations are performed."
+    "lowBatteryThresholdTypeLabel": "Low battery threshold type",
+    "lowBatteryThresholdValueLabel": "Threshold value",
+    "returnToHomeAltitudeHelperText": "Altitude in [mAHL] at which return to home operations are performed.",
+    "returnToHomeAltitudeLabel": "Return to home altitude",
+    "returnToHomeSpeedHelperText": "Horizontal speed in [m/s] at which return to home operations are performed.",
+    "returnToHomeSpeedLabel": "Return to home speed"
   },
   "savedLocation": {
     "addNew": "Add new location",
@@ -423,10 +424,8 @@
     "connect": "Connect",
     "connecting": "Connecting…",
     "connectingTo": "Connecting to {{hostName}}…",
-    "connectingToOtherServers": "Connecting to other servers is not supported in this version.",
     "disconnect": "Disconnect",
     "enterManually": "Enter manually",
-    "helperText": "For backwards compatibility only.",
     "hostname": "Hostname",
     "localConnection": "Local connection",
     "manual": "Manual",
@@ -435,10 +434,12 @@
     "preconfiguredServer": "Preconfigured server",
     "scanningNetwork": "Scanning network for servers…",
     "secureConnection": "Secure connection",
+    "serverSelectionRestricted": "Connecting to other servers is not supported in this version.",
     "unsecured": "(unsecured)",
     "unsecuredConnection": "Unsecured connection",
     "useSecureConnection": "Use secure connection",
-    "useWebSocketProtocol": "Use WebSocket protocol instead of TCP"
+    "useWebSocketHelperText": "For backwards compatibility only.",
+    "useWebSocketLabel": "Use WebSocket protocol instead of TCP"
   },
   "settings": {
     "display": {

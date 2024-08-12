@@ -269,7 +269,7 @@
   "measurementList": {
     "addDrone": "Adjon hozzá egy drónt a méréshez az eszköztár + gombjával",
     "copyToClipboard": "Másolás a vágólapra",
-    "duration": "Időtartam:",
+    "duration": "Időtartam",
     "noSamplesYet": "Még nincs minta",
     "samples": "minta",
     "stdDevInXY": "szórás XY-ban",
@@ -293,6 +293,7 @@
   "navigationInstructions": {
     "altitude": "Magasság",
     "arrows": "Nyilak",
+    "flyForwardBackward": "Repülés előre / hátra",
     "flyFrwrdBckwrd": "Repülés előre / hátra",
     "lookAround": "Körbenézés",
     "moveSideways": "Oldalmozgás",
@@ -370,22 +371,22 @@
     "title": "Biztonság"
   },
   "safetySettingsTab": {
-    "criticalBatteryVoltage": "Kritikus akkumulátorfeszültség",
-    "criticalBatteryVoltageDescript": "Kritikusan alacsony akkumulátorfeszültség [V]-ban, ami alatt a kritikus akkumulátorszint biztonsági művelet aktiválódik.",
+    "criticalBatteryVoltageHelperText": "Kritikusan alacsony akkumulátorfeszültség [V]-ban, ami alatt a kritikus akkumulátorszint biztonsági művelet aktiválódik.",
+    "criticalBatteryVoltageLabel": "Kritikus akkumulátorfeszültség",
     "emptyValues": "Az üres értékek azt eredményezik, hogy az érintett biztonsági értékek nem kerülnek felülírásra.",
-    "lowBatteryThreshold": {
-      "descript": "Alacsony akkumulátorszint határérték típusa és értéke, ami alatt az alacsony töltöttség biztonsági művelet aktiválódik.",
+    "lowBatteryThresholdHelperText": "Alacsony akkumulátorszint határérték típusa és értéke, ami alatt az alacsony töltöttség biztonsági művelet aktiválódik.",
+    "lowBatteryThresholdType": {
       "disabled": "Tiltva",
       "noOverride": "Nincs felülírás",
       "percentageBased": "Százalék alapú",
-      "type": "Alacsony akkumulátorszint határérték típusa",
-      "value": "Küszöbérték",
       "voltageBased": "Feszültség alapú"
     },
-    "returnToHomeAltitude": "Visszatérés a kiindulási magasságra",
-    "returnToHomeAltitudeDescript": "Magasság [mAHL]-ben, amelyen a visszatérési műveletek végrehajtásra kerülnek.",
-    "returnToHomeSpeed": "Hazatérési sebesség",
-    "returnToHomeSpeedDescript": "Vízszintes sebesség [m/s]-ban, amellyel a visszatérési műveletek végrehajtásra kerülnek."
+    "lowBatteryThresholdTypeLabel": "Alacsony akkumulátorszint határérték típusa",
+    "lowBatteryThresholdValueLabel": "Küszöbérték",
+    "returnToHomeAltitudeHelperText": "Magasság [mAHL]-ben, amelyen a visszatérési műveletek végrehajtásra kerülnek.",
+    "returnToHomeAltitudeLabel": "Visszatérés a kiindulási magasságra",
+    "returnToHomeSpeedHelperText": "Vízszintes sebesség [m/s]-ban, amellyel a visszatérési műveletek végrehajtásra kerülnek.",
+    "returnToHomeSpeedLabel": "Hazatérési sebesség"
   },
   "savedLocation": {
     "addNew": "Új helyszín hozzáadása",
@@ -416,10 +417,8 @@
     "connect": "Csatlakozás",
     "connecting": "Csatlakozás…",
     "connectingTo": "Csatlakozás {{hostName}}-hoz…",
-    "connectingToOtherServers": "Ez a verzió nem támogatja a más szerverekhez való csatlakozást.",
     "disconnect": "Leválasztás",
     "enterManually": "Manuális megadás",
-    "helperText": "Csak visszafelé kompatibilitásra.",
     "hostname": "Hosztnév",
     "localConnection": "Helyi kapcsolat",
     "manual": "Manuális",
@@ -428,10 +427,12 @@
     "preconfiguredServer": "Előre konfigurált szerver",
     "scanningNetwork": "Hálózat szkennelése szerverek után…",
     "secureConnection": "Biztonságos kapcsolat",
+    "serverSelectionRestricted": "Ez a verzió nem támogatja a más szerverekhez való csatlakozást.",
     "unsecured": "(nem biztonságos)",
     "unsecuredConnection": "Nem biztonságos kapcsolat",
     "useSecureConnection": "Biztonságos kapcsolat használata",
-    "useWebSocketProtocol": "WebSocket protokoll használata TCP helyett"
+    "useWebSocketHelperText": "Csak visszafelé kompatibilitásra.",
+    "useWebSocketLabel": "WebSocket protokoll használata TCP helyett"
   },
   "settings": {
     "display": {
