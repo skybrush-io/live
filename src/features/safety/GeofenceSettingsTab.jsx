@@ -110,7 +110,7 @@ const GeofenceSettingsFormPresentation = ({ initialValues, onSubmit, t }) => (
           >
             {SUPPORTED_GEOFENCE_ACTIONS.map((action) => (
               <MenuItem key={action} value={action}>
-                {t(describeGeofenceAction(action))}
+                {describeGeofenceAction(action)?.(t)}
               </MenuItem>
             ))}
           </Select>

@@ -74,7 +74,7 @@ const instructionsByMode = {
  * Component that shows some short textual instructions about the hotkeys of the
  * current navigation mode.
  */
-const NavigationInstructions = withTranslation()(({ mode, t }) => (
+const NavigationInstructionsPresentation = ({ mode, t }) => (
   <Box mx={1} flex={1} alignSelf='stretch' position='relative'>
     <TransitionGroup>
       <FadeAndSlide key={mode}>
@@ -93,11 +93,11 @@ const NavigationInstructions = withTranslation()(({ mode, t }) => (
       </FadeAndSlide>
     </TransitionGroup>
   </Box>
-));
+);
 
-NavigationInstructions.propTypes = {
+NavigationInstructionsPresentation.propTypes = {
   mode: PropTypes.oneOf(['walk', 'fly']),
   t: PropTypes.func,
 };
 
-export default NavigationInstructions;
+export default withTranslation()(NavigationInstructionsPresentation);

@@ -193,7 +193,7 @@ const SafetySettingsForm = connect(
  * Container of the tab that shows the form that the user can use to
  * edit the safety settings.
  */
-const SafetySettingsTab = withTranslation()(({ onClose, t }) => (
+const SafetySettingsTabPresentation = ({ onClose, t }) => (
   <>
     <DialogContent>
       <SafetySettingsForm />
@@ -205,11 +205,11 @@ const SafetySettingsTab = withTranslation()(({ onClose, t }) => (
       <Button onClick={onClose}>{t('general.action.close')}</Button>
     </DialogActions>
   </>
-));
+);
 
-SafetySettingsTab.propTypes = {
+SafetySettingsTabPresentation.propTypes = {
   onClose: PropTypes.func,
   t: PropTypes.func,
 };
 
-export default SafetySettingsTab;
+export default withTranslation()(SafetySettingsTabPresentation);

@@ -4,7 +4,7 @@ import isNil from 'lodash-es/isNil';
 import { getDistance as haversineDistance } from 'ol/sphere';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Translation, withTranslation } from 'react-i18next';
+import { Translation, useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import IconButton from '@material-ui/core/IconButton';
@@ -116,14 +116,15 @@ const useStyles = makeStyles(
   { name: 'MeasurementListItem' }
 );
 
-const MeasurementListItem = withTranslation()(({
+const MeasurementListItem = ({
   coordinateFormatter,
   measurement,
   onCopy,
-  t,
   ...rest
 }) => {
   const classes = useStyles();
+  const { t } = useTranslation();
+
   const {
     extraSamplingTime,
     id,
@@ -204,7 +205,7 @@ const MeasurementListItem = withTranslation()(({
       )}
     </ListItem>
   );
-});
+};
 
 MeasurementListItem.propTypes = {
   coordinateFormatter: PropTypes.func,
@@ -214,7 +215,6 @@ MeasurementListItem.propTypes = {
     sampling: PropTypes.bool,
   }).isRequired,
   onCopy: PropTypes.func,
-  t: PropTypes.func,
 };
 
 const MeasurementList = multiSelectableListOf(

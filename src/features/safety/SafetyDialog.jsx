@@ -15,6 +15,7 @@ import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
 import DialogTabs from '@skybrush/mui-components/lib/DialogTabs';
 import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
 
+import { tt } from '~/i18n';
 import Fence from '~/icons/PlacesFence';
 import { hasFeature } from '~/utils/configuration';
 
@@ -30,7 +31,7 @@ const tabs = [
         {
           id: SafetyDialogTab.GEOFENCE,
           icon: <Fence />,
-          name: 'safetyDialog.geofence',
+          name: tt('safetyDialog.geofence'),
           component: GeofenceSettingsTab,
         },
       ]
@@ -38,7 +39,7 @@ const tabs = [
   {
     id: SafetyDialogTab.SETTINGS,
     icon: <Security />,
-    name: 'safetyDialog.settings',
+    name: tt('safetyDialog.settings'),
     component: SafetySettingsTab,
   },
 ];
@@ -76,7 +77,7 @@ const SafetyDialog = ({ onClose, onTabSelected, open, selectedTab, t }) => {
               icon={icon}
               // Only available from MUI v5
               // iconPosition='start'
-              label={t(name)}
+              label={name(t)}
               value={id}
             />
           ))}

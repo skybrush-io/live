@@ -428,7 +428,7 @@
     "preconfiguredServer": "Előre konfigurált szerver",
     "scanningNetwork": "Hálózat szkennelése szerverek után…",
     "secureConnection": "Biztonságos kapcsolat",
-    "unsecured": "\u0020(nem biztonságos)",
+    "unsecured": "(nem biztonságos)",
     "unsecuredConnection": "Nem biztonságos kapcsolat",
     "useSecureConnection": "Biztonságos kapcsolat használata",
     "useWebSocketProtocol": "WebSocket protokoll használata TCP helyett"

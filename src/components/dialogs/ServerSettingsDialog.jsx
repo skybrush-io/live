@@ -10,7 +10,7 @@ import { Switches, TextField } from 'mui-rff';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Form } from 'react-final-form';
-import { Translation, withTranslation } from 'react-i18next';
+import { Translation, useTranslation, withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import Button from '@material-ui/core/Button';
@@ -52,6 +52,7 @@ import {
 } from '~/features/servers/selectors';
 import { isTCPConnectionSupported } from '~/features/servers/server-settings-dialog';
 import { Protocol } from '~/features/servers/types';
+import { tt } from '~/i18n';
 import {
   createValidator,
   between,
@@ -74,27 +75,21 @@ const addressForServerItem = ({ hostName, port }) => `${hostName}:${port}`;
 
 const protocolForServerItem = (item) =>
   isItemSecure(item)
-    ? 'serverSettingsDialog.secureConnection'
+    ? tt('serverSettingsDialog.secureConnection')
     : isItemLocal(item)
-      ? 'serverSettingsDialog.localConnection'
-      : 'serverSettingsDialog.unsecuredConnection';
+      ? tt('serverSettingsDialog.localConnection')
+      : tt('serverSettingsDialog.unsecuredConnection');
+
 const securityWarningForServerItem = (item) =>
-  isItemSecure(item) || isItemLocal(item)
-    ? ''
-    : 'serverSettingsDialog.unsecured';
-
-const primaryTextForServerItem = (item) =>
-  item.label || addressForServerItem(item);
-
-const secondaryTextForServerItem = (item) =>
-  item.label
-    ? `${addressForServerItem(item)}${securityWarningForServerItem(item)}`
-    : protocolForServerItem(item);
+  !(isItemSecure(item) || isItemLocal(item)) &&
+  tt('serverSettingsDialog.unsecured');
 
 const manualSetupAllowed = !config?.server?.preventManualSetup;
 
-const ConnectionInProgressIndicator = withTranslation()(
-  ({ hostName, t, ...rest }) => (
+const ConnectionInProgressIndicator = ({ hostName, ...rest }) => {
+  const { t } = useTranslation();
+
+  return (
     <SmallProgressIndicator
       label={
         hostName
@@ -103,12 +98,11 @@ const ConnectionInProgressIndicator = withTranslation()(
       }
       {...rest}
     />
-  )
-);
+  );
+};
 
 ConnectionInProgressIndicator.propTypes = {
   hostName: PropTypes.string,
-  t: PropTypes.func,
 };
 
 const DetectedServersListPresentation = ({
@@ -133,8 +127,20 @@ const DetectedServersListPresentation = ({
       <ListItem key={item.id} button onClick={partial(onItemSelected, item)}>
         <ListItemIcon>{iconForServerItem(item)}</ListItemIcon>
         <ListItemText
-          primary={primaryTextForServerItem(item)}
-          secondary={t(secondaryTextForServerItem(item))}
+          {...(item.label
+            ? {
+                primary: item.label,
+                secondary: [
+                  addressForServerItem(item),
+                  securityWarningForServerItem(item)(t),
+                ]
+                  .filter(Boolean)
+                  .join(' '),
+              }
+            : {
+                primary: addressForServerItem(item),
+                secondary: protocolForServerItem(item)(t),
+              })}
         />
       </ListItem>
     ))}

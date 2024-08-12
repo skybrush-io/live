@@ -1,3 +1,4 @@
+import { type PreparedI18nKey, tt } from '~/i18n';
 import { type Coordinate2D } from '~/utils/math';
 
 /**
@@ -16,23 +17,25 @@ export enum GeofenceAction {
 
 const VALID_GEOFENCE_ACTIONS = Object.values(GeofenceAction);
 
-const geofenceActionDescriptions: Record<GeofenceAction, string> = {
-  [GeofenceAction.KEEP_CURRENT]: 'geofenceAction.keepCurrent',
-  [GeofenceAction.REPORT]: 'geofenceAction.report',
-  [GeofenceAction.LAND]: 'general.commands.land',
-  [GeofenceAction.RETURN]: 'general.commands.returnToHome',
-  [GeofenceAction.SMART_LAND]: 'geofenceAction.smartLand',
-  [GeofenceAction.SMART_RETURN]: 'geofenceAction.smartReturn',
-  [GeofenceAction.STOP]: 'geofenceAction.stop',
-  [GeofenceAction.SHUT_DOWN]: 'geofenceAction.shutDown',
+const geofenceActionDescriptions: Record<GeofenceAction, PreparedI18nKey> = {
+  [GeofenceAction.KEEP_CURRENT]: tt('geofenceAction.keepCurrent'),
+  [GeofenceAction.REPORT]: tt('geofenceAction.report'),
+  [GeofenceAction.LAND]: tt('general.commands.land'),
+  [GeofenceAction.RETURN]: tt('general.commands.returnToHome'),
+  [GeofenceAction.SMART_LAND]: tt('geofenceAction.smartLand'),
+  [GeofenceAction.SMART_RETURN]: tt('geofenceAction.smartReturn'),
+  [GeofenceAction.STOP]: tt('geofenceAction.stop'),
+  [GeofenceAction.SHUT_DOWN]: tt('geofenceAction.shutDown'),
 };
 
 /**
  * Returns a human-readable description of the given geofence action.
  */
-export function describeGeofenceAction(action: GeofenceAction): string {
-  return geofenceActionDescriptions[action] || `unknown action: ${action}`;
-}
+export const describeGeofenceAction = (
+  action: GeofenceAction
+): PreparedI18nKey =>
+  geofenceActionDescriptions[action] ??
+  tt('geofenceAction.unknown', { action });
 
 /**
  * Returns whether the given input represents a valid geofence action.

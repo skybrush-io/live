@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { withTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
 import Box from '@material-ui/core/Box';
 import Fade from '@material-ui/core/Fade';
@@ -30,8 +30,16 @@ function formatAccuracy(message, value) {
   }
 }
 
-const SurveyStatusIndicator = withTranslation()(
-  ({ accuracy, active, supported, valid, t, ...rest }) => (
+const SurveyStatusIndicator = ({
+  accuracy,
+  active,
+  supported,
+  valid,
+  ...rest
+}) => {
+  const { t } = useTranslation();
+
+  return (
     <Fade in={supported || true}>
       <Box
         alignItems='center'
@@ -57,14 +65,13 @@ const SurveyStatusIndicator = withTranslation()(
         </LabeledStatusLight>
       </Box>
     </Fade>
-  )
-);
+  );
+};
 
 SurveyStatusIndicator.propTypes = {
   accuracy: PropTypes.number,
   active: PropTypes.bool,
   supported: PropTypes.bool,
-  t: PropTypes.func,
   valid: PropTypes.bool,
 };
 

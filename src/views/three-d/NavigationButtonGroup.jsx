@@ -16,45 +16,49 @@ import ToggleButton from '~/components/ToggleButton';
  * Button group that allows the user to select the navigation mode currently
  * used in the 3D view.
  */
-const NavigationButtonGroup = withTranslation()(
-  ({ mode, onChange, onResetZoom, onRotateCameraTowardsDrones, t }) => (
-    <>
-      <ToggleButtonGroup size='small'>
-        <ToggleButton
-          selected={mode === 'walk'}
-          value='walk'
-          onClick={() => onChange('walk')}
-        >
-          {t('navigationButtonGroup.walk')}
-        </ToggleButton>
-        <ToggleButton
-          selected={mode === 'fly'}
-          value='fly'
-          onClick={() => onChange('fly')}
-        >
-          {t('navigationButtonGroup.fly')}
-        </ToggleButton>
-      </ToggleButtonGroup>
-      <ToolbarDivider orientation='vertical' />
-      <Tooltip content={t('navigationButtonGroup.resetZoom')}>
-        <IconButton disableRipple disabled={!onResetZoom} onClick={onResetZoom}>
-          <ZoomOut />
-        </IconButton>
-      </Tooltip>
-      <Tooltip content={t('navigationButtonGroup.rotateCamera')}>
-        <IconButton
-          disableRipple
-          disabled={!onRotateCameraTowardsDrones}
-          onClick={onRotateCameraTowardsDrones}
-        >
-          <CenterFocusStrong />
-        </IconButton>
-      </Tooltip>
-    </>
-  )
+const NavigationButtonGroupPresentation = ({
+  mode,
+  onChange,
+  onResetZoom,
+  onRotateCameraTowardsDrones,
+  t,
+}) => (
+  <>
+    <ToggleButtonGroup size='small'>
+      <ToggleButton
+        selected={mode === 'walk'}
+        value='walk'
+        onClick={() => onChange('walk')}
+      >
+        {t('navigationButtonGroup.walk')}
+      </ToggleButton>
+      <ToggleButton
+        selected={mode === 'fly'}
+        value='fly'
+        onClick={() => onChange('fly')}
+      >
+        {t('navigationButtonGroup.fly')}
+      </ToggleButton>
+    </ToggleButtonGroup>
+    <ToolbarDivider orientation='vertical' />
+    <Tooltip content={t('navigationButtonGroup.resetZoom')}>
+      <IconButton disableRipple disabled={!onResetZoom} onClick={onResetZoom}>
+        <ZoomOut />
+      </IconButton>
+    </Tooltip>
+    <Tooltip content={t('navigationButtonGroup.rotateCamera')}>
+      <IconButton
+        disableRipple
+        disabled={!onRotateCameraTowardsDrones}
+        onClick={onRotateCameraTowardsDrones}
+      >
+        <CenterFocusStrong />
+      </IconButton>
+    </Tooltip>
+  </>
 );
 
-NavigationButtonGroup.propTypes = {
+NavigationButtonGroupPresentation.propTypes = {
   mode: PropTypes.oneOf(['walk', 'fly']),
   onChange: PropTypes.func,
   onResetZoom: PropTypes.func,
@@ -62,4 +66,4 @@ NavigationButtonGroup.propTypes = {
   t: PropTypes.func,
 };
 
-export default NavigationButtonGroup;
+export default withTranslation()(NavigationButtonGroupPresentation);
