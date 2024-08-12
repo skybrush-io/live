@@ -186,7 +186,8 @@
     "shutDown": "Shut down",
     "smartLand": "Land with collision avoidance",
     "smartReturn": "Return to home with collision avoidance",
-    "stop": "Stop and hover"
+    "stop": "Stop and hover",
+    "unknown": "Unknown action: {{action}}"
   },
   "header": {
     "distanceSummary": "Maximum and minimum distance from home position",
@@ -434,7 +435,7 @@
     "preconfiguredServer": "Preconfigured server",
     "scanningNetwork": "Scanning network for servers…",
     "secureConnection": "Secure connection",
-    "unsecured": "\u0020(unsecured)",
+    "unsecured": "(unsecured)",
     "unsecuredConnection": "Unsecured connection",
     "useSecureConnection": "Use secure connection",
     "useWebSocketProtocol": "Use WebSocket protocol instead of TCP"

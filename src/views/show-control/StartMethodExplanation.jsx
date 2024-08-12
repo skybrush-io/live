@@ -18,10 +18,11 @@ import {
   getShowStartMethod,
   hasScheduledStartTime,
 } from '~/features/show/selectors';
+import { tt } from '~/i18n';
 
 const primaryTextForStartMethod = {
-  [StartMethod.RC]: 'show.startMethod.RC',
-  [StartMethod.AUTO]: 'show.startMethod.AUTO',
+  [StartMethod.RC]: tt('show.startMethod.RC'),
+  [StartMethod.AUTO]: tt('show.startMethod.AUTO'),
 };
 
 const iconForStartMethod = {
@@ -41,7 +42,7 @@ const StartMethodExplanation = ({ hasScheduledStartTime, startMethod, t }) => (
       </ListItemIcon>
       <ListItemText
         primary={
-          t(primaryTextForStartMethod[startMethod]) ||
+          primaryTextForStartMethod[startMethod]?.(t) ||
           t('show.unknownStartMode')
         }
         secondary={
