@@ -177,7 +177,7 @@ const MeasurementListItem = ({
           {numSamples} {t('measurementList.samples')}
         </div>
         <div className={clsx(classes.dim, classes.ahlColumn)}>
-          {t('measurementList.duration')}{' '}
+          {`${t('measurementList.duration')}: `}
           {formatDurationOfSampling(startedAt, lastSampleAt, extraSamplingTime)}
         </div>
       </div>

@@ -210,9 +210,9 @@ const ServerSettingsFormPresentation = ({
           <Switches
             name='isWebSocket'
             data={{
-              label: t('serverSettingsDialog.useWebSocketProtocol'),
+              label: t('serverSettingsDialog.useWebSocketLabel'),
             }}
-            helperText={t('serverSettingsDialog.helperText')}
+            helperText={t('serverSettingsDialog.useWebSocketHelperText')}
           />
         ) : null}
       </form>
@@ -335,7 +335,7 @@ class ServerSettingsDialogPresentation extends React.Component {
               <Translation>
                 {(t) => (
                   <Typography variant='body2' color='textSecondary'>
-                    {t('serverSettingsDialog.connectingToOtherServers')}
+                    {t('serverSettingsDialog.serverSelectionRestricted')}
                   </Typography>
                 )}
               </Translation>

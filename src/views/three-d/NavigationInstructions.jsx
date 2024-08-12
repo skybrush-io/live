@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { TransitionGroup } from 'react-transition-group';
 import { Translation, withTranslation } from 'react-i18next';
+import { TransitionGroup } from 'react-transition-group';
 
 import Box from '@material-ui/core/Box';
 import IconButton from '@material-ui/core/IconButton';
@@ -50,7 +50,7 @@ const instructionsByMode = {
           <div style={divStyle}>
             <kbd>↑</kbd>
             <kbd>↓</kbd>
-            <span> {t('navigationInstructions.flyFrwrdBckwrd')} </span>
+            <span> {t('navigationInstructions.flyForwardBackward')} </span>
             <kbd>←</kbd>
             <kbd>→</kbd>
             <span> {t('navigationInstructions.moveSideways')} </span>

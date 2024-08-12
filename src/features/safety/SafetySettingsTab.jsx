@@ -76,11 +76,11 @@ const SafetySettingsFormPresentation = ({ initialValues, onSubmit, t }) => (
           <Box>
             <NumericFieldWithUnit
               name='criticalBatteryVoltage'
-              label={t('safetySettingsTab.criticalBatteryVoltage')}
+              label={t('safetySettingsTab.criticalBatteryVoltageLabel')}
               unit='V'
             />
             <FormHelperText>
-              {t('safetySettingsTab.criticalBatteryVoltageDescript')}
+              {t('safetySettingsTab.criticalBatteryVoltageHelperText')}
             </FormHelperText>
           </Box>
           <Box>
@@ -88,20 +88,22 @@ const SafetySettingsFormPresentation = ({ initialValues, onSubmit, t }) => (
               {/* TODO: Use `Select` from `~/components/forms/fields.jsx` */}
               <Select
                 name='lowBatteryThreshold.type'
-                label={t('safetySettingsTab.lowBatteryThreshold.type')}
+                label={t('safetySettingsTab.lowBatteryThresholdTypeLabel')}
                 variant='filled'
               >
                 <MenuItem>
-                  {t('safetySettingsTab.lowBatteryThreshold.noOverride')}
+                  {t('safetySettingsTab.lowBatteryThresholdType.noOverride')}
                 </MenuItem>
                 <MenuItem value={BatteryThresholdType.OFF}>
-                  {t('safetySettingsTab.lowBatteryThreshold.disabled')}
+                  {t('safetySettingsTab.lowBatteryThresholdType.disabled')}
                 </MenuItem>
                 <MenuItem value={BatteryThresholdType.VOLTAGE}>
-                  {t('safetySettingsTab.lowBatteryThreshold.voltageBased')}
+                  {t('safetySettingsTab.lowBatteryThresholdType.voltageBased')}
                 </MenuItem>
                 <MenuItem value={BatteryThresholdType.PERCENTAGE}>
-                  {t('safetySettingsTab.lowBatteryThreshold.percentageBased')}
+                  {t(
+                    'safetySettingsTab.lowBatteryThresholdType.percentageBased'
+                  )}
                 </MenuItem>
               </Select>
               {[
@@ -112,7 +114,7 @@ const SafetySettingsFormPresentation = ({ initialValues, onSubmit, t }) => (
                   <Box p={1} />
                   <NumericFieldWithUnit
                     name='lowBatteryThreshold.value'
-                    label={t('safetySettingsTab.lowBatteryThreshold.value')}
+                    label={t('safetySettingsTab.lowBatteryThresholdValueLabel')}
                     unit={
                       unitForBatteryThresholdType[
                         values.lowBatteryThreshold?.type
@@ -124,27 +126,27 @@ const SafetySettingsFormPresentation = ({ initialValues, onSubmit, t }) => (
               )}
             </Box>
             <FormHelperText>
-              {t('safetySettingsTab.lowBatteryThreshold.descript')}
+              {t('safetySettingsTab.lowBatteryThresholdHelperText')}
             </FormHelperText>
           </Box>
           <Box>
             <NumericFieldWithUnit
               name='returnToHomeAltitude'
-              label={t('safetySettingsTab.returnToHomeAltitude')}
+              label={t('safetySettingsTab.returnToHomeAltitudeLabel')}
               unit='m'
             />
             <FormHelperText>
-              {t('safetySettingsTab.returnToHomeAltitudeDescript')}
+              {t('safetySettingsTab.returnToHomeAltitudeHelperText')}
             </FormHelperText>
           </Box>
           <Box>
             <NumericFieldWithUnit
               name='returnToHomeSpeed'
-              label={t('safetySettingsTab.returnToHomeSpeed')}
+              label={t('safetySettingsTab.returnToHomeSpeedLabel')}
               unit='m/s'
             />
             <FormHelperText>
-              {t('safetySettingsTab.returnToHomeSpeedDescript')}
+              {t('safetySettingsTab.returnToHomeSpeedHelperText')}
             </FormHelperText>
           </Box>
         </Box>
@@ -186,8 +188,8 @@ const SafetySettingsForm = connect(
         })
       );
     },
-  })
-(withTranslation()(SafetySettingsFormPresentation));
+  }
+)(withTranslation()(SafetySettingsFormPresentation));
 
 /**
  * Container of the tab that shows the form that the user can use to
