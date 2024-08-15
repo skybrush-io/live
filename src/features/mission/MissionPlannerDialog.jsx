@@ -100,6 +100,7 @@ const MissionPlannerDialog = ({
 
   const invokePlanner = () => {
     if (onInvokePlanner && canInvokePlanner && isConnectedToServer) {
+      // onClearMission(); // TODO: sort this out, might be necessary to discard ratio before planning new mission!
       onInvokePlanner();
     }
   };
