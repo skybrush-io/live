@@ -34,7 +34,7 @@ export const isMissionItemId = hasPrefix('missionItem$');
 export const isOriginId = hasPrefix('origin$');
 export const isPlannedTrajectoryId = hasPrefix('planned$');
 export const isUavId = hasPrefix('uav$');
-export const isMissionIndex = hasPrefix('mission$');
+export const isMissionSlotId = hasPrefix('mission$');
 
 export const MAP_ORIGIN_ID = 'map';
 export const MISSION_ORIGIN_ID = 'mission';

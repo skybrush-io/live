@@ -4,7 +4,6 @@
  */
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import { type ReadonlyDeep } from 'type-fest';
 
 import {
   clearOrderedCollection,
@@ -15,11 +14,11 @@ import {
 
 import { type PreflightCheckGroup, type PreflightCheckItem } from './types';
 
-type PreflightSliceState = ReadonlyDeep<{
+type PreflightSliceState = {
   groups: Collection<PreflightCheckGroup>;
   items: Collection<PreflightCheckItem>;
   checked: Identifier[];
-}>;
+};
 
 const defaultGroups: PreflightCheckGroup[] = [
   {

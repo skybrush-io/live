@@ -6,6 +6,11 @@
 import { type ConfigOverrides } from 'config-overrides';
 
 const overrides: ConfigOverrides = {
+  electronBuilder: {
+    appId: 'com.collmot.skybrush.live-light',
+    productName: 'Skybrush Live Light',
+  },
+
   // State is ephemeral; we do not load it back from the disk when the app starts
   ephemeral: true,
 

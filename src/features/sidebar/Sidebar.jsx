@@ -100,13 +100,13 @@ const Sidebar = ({
         )}
         <hr />
         <Module
-          id='uav-details'
+          id='uavDetails'
           icon={<Flight />}
           label={t('view.uav-details')}
           component='uav-details'
         />
         <Module
-          id='uav-list'
+          id='uavList'
           icon={<ConnectingAirports />}
           label={t('view.uav-list')}
           component='uav-list'

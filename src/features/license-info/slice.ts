@@ -4,15 +4,14 @@
  */
 
 import { createSlice } from '@reduxjs/toolkit';
-import { type ReadonlyDeep } from 'type-fest';
 
 import { noPayload } from '~/utils/redux';
 
-type LicenseInfoSliceState = ReadonlyDeep<{
+type LicenseInfoSliceState = {
   dialog: {
     open: boolean;
   };
-}>;
+};
 
 const initialState: LicenseInfoSliceState = {
   dialog: {

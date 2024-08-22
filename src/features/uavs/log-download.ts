@@ -7,14 +7,9 @@ import {
   createSlice,
   type PayloadAction,
 } from '@reduxjs/toolkit';
-import { type ReadonlyDeep } from 'type-fest';
 
 import type UAV from '~/model/uav';
-import {
-  type AppDispatch,
-  type AppSelector,
-  type RootState,
-} from '~/store/reducers';
+import { type AppDispatch, type AppSelector } from '~/store/reducers';
 
 // Poor man's content-addressable store for keeping the downloaded logs
 // NOTE: This is a very one-off solution, no effort has been made to generalize
@@ -57,8 +52,9 @@ type LogDownloadState =
     };
 
 type LogId = string;
-type LogDownloadSliceState = ReadonlyDeep<
-  Record<UAV['id'], Record<LogId, LogDownloadState | undefined> | undefined>
+type LogDownloadSliceState = Record<
+  UAV['id'],
+  Record<LogId, LogDownloadState | undefined> | undefined
 >;
 
 const initialState: LogDownloadSliceState = {};
@@ -146,7 +142,7 @@ export const storeDownloadedLog =
 
 export const getLogDownloadState =
   (uavId: UAV['id'], logId: LogId): AppSelector<LogDownloadState | undefined> =>
-  (state: RootState) =>
+  (state) =>
     state.logDownload[uavId]?.[logId];
 
 export const retrieveDownloadedLog = (

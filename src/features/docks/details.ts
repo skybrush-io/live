@@ -4,17 +4,17 @@
  */
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import { type ReadonlyDeep } from 'type-fest';
 
+import { type AppSelector } from '~/store/reducers';
 import { noPayload } from '~/utils/redux';
 
 import { DockDetailsDialogTab, type DockState } from './types';
 
-type DockDetailsSliceState = ReadonlyDeep<{
+type DockDetailsSliceState = {
   open: boolean;
   selectedDockId?: DockState['id'];
   selectedTab: DockDetailsDialogTab;
-}>;
+};
 
 const initialState: DockDetailsSliceState = {
   open: false,
@@ -50,16 +50,12 @@ export const {
   setSelectedTabInDockDetailsDialog,
 } = actions;
 
-type RootStateWithDockDetailsDialog = {
-  dialogs: { dockDetails: DockDetailsSliceState };
-};
+export const getSelectedDockIdInDockDetailsDialog: AppSelector<
+  string | undefined
+> = (state) => state.dialogs.dockDetails.selectedDockId;
 
-export const getSelectedDockIdInDockDetailsDialog = (
-  state: RootStateWithDockDetailsDialog
-): string | undefined => state.dialogs.dockDetails.selectedDockId;
-
-export const getSelectedTabInDockDetailsDialog = (
-  state: RootStateWithDockDetailsDialog
-): DockDetailsDialogTab => state.dialogs.dockDetails.selectedTab;
+export const getSelectedTabInDockDetailsDialog: AppSelector<
+  DockDetailsDialogTab
+> = (state) => state.dialogs.dockDetails.selectedTab;
 
 export default reducer;

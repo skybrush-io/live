@@ -8,13 +8,16 @@
 
 import isNil from 'lodash-es/isNil';
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import { type ReadonlyDeep } from 'type-fest';
 
 import { removeFeaturesByIds } from '~/features/map-features/slice';
 import { type FeatureProperties } from '~/features/map-features/types';
 import { GeofenceAction } from '~/features/safety/model';
-import { type MissionItem, MissionType } from '~/model/missions';
-import { type GPSPosition } from '~/model/position';
+import { type GPSPosition } from '~/model/geography';
+import {
+  type MissionIndex,
+  type MissionItem,
+  MissionType,
+} from '~/model/missions';
 import type UAV from '~/model/uav';
 import {
   type Collection,
@@ -39,7 +42,7 @@ import {
  *       would get serialized to `null`, and while the two values should rarely
  *       be distinguished, this still seems like the safer approach.
  */
-export type MissionSliceState = ReadonlyDeep<{
+export type MissionSliceState = {
   /**
    * Type of the mission; ``show`` for drone shows. Empty string means that
    * there is no mission yet.
@@ -91,7 +94,7 @@ export type MissionSliceState = ReadonlyDeep<{
      * Stores the index of the slot in the mapping that is being edited;
      * -1 if no slot is being edited
      */
-    indexBeingEdited: number;
+    indexBeingEdited: MissionIndex;
   };
 
   /**
@@ -113,7 +116,7 @@ export type MissionSliceState = ReadonlyDeep<{
   geofenceAction: GeofenceAction;
 
   /** The name of the mission, if given */
-  name: Nullable<string>;
+  name?: string;
 
   /** Collection of items in the current mission if it is a waypoint-based mission */
   items: Collection<MissionItem>;
@@ -128,18 +131,18 @@ export type MissionSliceState = ReadonlyDeep<{
     applyGeofence: boolean;
     open: boolean;
     parameters: {
-      fromUser: Record<string, any>;
-      fromContext: Record<string, any>;
+      fromUser: Record<string, unknown>;
+      fromContext: Record<string, unknown>;
     };
-    selectedType: Nullable<string>;
+    selectedType?: string;
   };
 
   /** Parameters used in the last successful invocation of the mission planner */
-  lastSuccessfulPlannerInvocationParameters: Nullable<{
+  lastSuccessfulPlannerInvocationParameters?: {
     type: string;
-    parametersFromUser: Record<string, any>;
-    valuesFromContext: Record<string, any>;
-  }>;
+    parametersFromUser: Record<string, unknown>;
+    valuesFromContext: Record<string, unknown>;
+  };
 
   /** The progress of the mission as reported by the UAV */
   progress: {
@@ -148,8 +151,8 @@ export type MissionSliceState = ReadonlyDeep<{
   };
 
   /** Backup of the last cleared mission */
-  lastClearedMissionData: Nullable<Record<string, any>>;
-}>;
+  lastClearedMissionData?: Record<string, unknown>;
+};
 
 const initialState: MissionSliceState = {
   type: MissionType.UNKNOWN,
@@ -165,7 +168,7 @@ const initialState: MissionSliceState = {
   commandsAreBroadcast: false,
   geofencePolygonId: undefined,
   geofenceAction: GeofenceAction.RETURN,
-  name: null,
+  name: undefined,
   items: {
     byId: {},
     order: [],
@@ -180,14 +183,14 @@ const initialState: MissionSliceState = {
       fromUser: {},
       fromContext: {},
     },
-    selectedType: null,
+    selectedType: undefined,
   },
-  lastSuccessfulPlannerInvocationParameters: null,
+  lastSuccessfulPlannerInvocationParameters: undefined,
   progress: {
     currentItemId: undefined,
     currentItemRatio: undefined,
   },
-  lastClearedMissionData: null,
+  lastClearedMissionData: undefined,
 };
 
 const { actions, reducer } = createSlice({
@@ -215,15 +218,15 @@ const { actions, reducer } = createSlice({
 
       // Update the state
       if (typeof index === 'number') {
-        addItemAt(state.items, item, index);
+        addItemAt<MissionItem>(state.items, item, index);
       } else {
-        addItemToBack(state.items, item);
+        addItemToBack<MissionItem>(state.items, item);
       }
     },
 
     adjustMissionMapping(
       state,
-      action: PayloadAction<{ uavId: UAV['id']; to: number }>
+      action: PayloadAction<{ uavId: UAV['id']; to: MissionIndex }>
     ) {
       const { uavId, to } = action.payload;
       const from = state.mapping.indexOf(uavId);
@@ -264,7 +267,7 @@ const { actions, reducer } = createSlice({
     /**
      * Clears a single slot in the mission mapping.
      */
-    clearMappingSlot(state, action: PayloadAction<number>) {
+    clearMappingSlot(state, action: PayloadAction<MissionIndex>) {
       const index = action.payload;
       if (index >= 0 && index < state.mapping.length) {
         state.mapping[index] = null;
@@ -484,8 +487,8 @@ const { actions, reducer } = createSlice({
           : MissionType.UNKNOWN;
     },
 
-    setMissionName(state, action: PayloadAction<Nullable<string>>) {
-      state.name = typeof action.payload === 'string' ? action.payload : null;
+    setMissionName(state, action: PayloadAction<string | undefined>) {
+      state.name = action.payload;
     },
 
     setMissionPlannerDialogApplyGeofence(
@@ -497,21 +500,21 @@ const { actions, reducer } = createSlice({
 
     setMissionPlannerDialogSelectedType(
       state,
-      action: PayloadAction<Nullable<string>>
+      action: PayloadAction<string | undefined>
     ) {
       state.plannerDialog.selectedType = action.payload;
     },
 
     setMissionPlannerDialogContextParameters(
       state,
-      action: PayloadAction<Record<string, any>>
+      action: PayloadAction<Record<string, unknown>>
     ) {
       state.plannerDialog.parameters.fromContext = action.payload;
     },
 
     setMissionPlannerDialogUserParameters(
       state,
-      action: PayloadAction<Record<string, any>>
+      action: PayloadAction<Record<string, unknown>>
     ) {
       state.plannerDialog.parameters.fromUser = action.payload;
     },
@@ -543,7 +546,10 @@ const { actions, reducer } = createSlice({
      * Starts the current editing session of the mapping, and marks the
      * given slot in the mapping as the one being edited.
      */
-    startMappingEditorSessionAtSlot(state, action: PayloadAction<number>) {
+    startMappingEditorSessionAtSlot(
+      state,
+      action: PayloadAction<MissionIndex>
+    ) {
       const tentativeIndex =
         typeof action.payload === 'number' ? action.payload : -1;
       const index =
@@ -643,7 +649,7 @@ const { actions, reducer } = createSlice({
      */
     updateTakeoffHeadings(
       state,
-      { payload }: PayloadAction<number[] | number>
+      { payload }: PayloadAction<Array<Nullable<number>> | Nullable<number>>
     ) {
       if (Array.isArray(payload)) {
         state.takeoffHeadings = copyAndEnsureLengthEquals(

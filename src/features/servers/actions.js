@@ -1,6 +1,6 @@
 import { Base64 } from 'js-base64';
 import isNil from 'lodash-es/isNil';
-import pTimeout from 'p-timeout';
+import { TimeoutError } from 'p-timeout';
 
 import { errorToString, wrapInErrorHandler } from '~/error-handling';
 import {
@@ -66,7 +66,7 @@ export const authenticateToServer = createAsyncAction(
     } catch (error) {
       let reason;
 
-      if (error instanceof pTimeout.TimeoutError) {
+      if (error instanceof TimeoutError) {
         reason = 'Authentication timeout; try again later';
       } else {
         reason = errorToString(error);

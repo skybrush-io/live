@@ -18,10 +18,11 @@ import {
   getShowStartMethod,
   hasScheduledStartTime,
 } from '~/features/show/selectors';
+import { tt } from '~/i18n';
 
 const primaryTextForStartMethod = {
-  [StartMethod.RC]: 'Use the switch on your RC to start',
-  [StartMethod.AUTO]: 'Show will start automatically',
+  [StartMethod.RC]: tt('show.startMethod.RC'),
+  [StartMethod.AUTO]: tt('show.startMethod.AUTO'),
 };
 
 const iconForStartMethod = {
@@ -41,8 +42,8 @@ const StartMethodExplanation = ({ hasScheduledStartTime, startMethod, t }) => (
       </ListItemIcon>
       <ListItemText
         primary={
-          primaryTextForStartMethod[startMethod] ||
-          t('show.unknownStartMode', 'This show uses an unknown start mode')
+          primaryTextForStartMethod[startMethod]?.(t) ||
+          t('show.unknownStartMode')
         }
         secondary={
           hasScheduledStartTime ? (
@@ -51,7 +52,7 @@ const StartMethodExplanation = ({ hasScheduledStartTime, startMethod, t }) => (
               <ClockDisplayLabel clockId='show' />
             </>
           ) : (
-            t('show.startTimeNotSet', 'Start time not set yet')
+            t('show.startTimeNotSet')
           )
         }
       />

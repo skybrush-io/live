@@ -4,7 +4,6 @@
 
 import * as React from 'react';
 import { connect } from 'react-redux';
-import type { ReadonlyDeep } from 'type-fest';
 
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
@@ -25,16 +24,17 @@ type FormValues = {
   value: string;
 };
 
-type PromptDialogFormProps = ReadonlyDeep<
-  Pick<PromptOptions, 'cancelButtonLabel' | 'message' | 'submitButtonLabel'> & {
-    initialValues: FormValues;
-    onCancel: () => void;
-    onSubmit: (event: { formData?: Record<string, any> }) => void;
-    optimizeUIForTouch?: boolean;
-    schema: Record<string, any>;
-    type: PromptDialogType;
-  }
->;
+type PromptDialogFormProps = Pick<
+  PromptOptions,
+  'cancelButtonLabel' | 'message' | 'submitButtonLabel'
+> & {
+  initialValues: FormValues;
+  onCancel: () => void;
+  onSubmit: (event: { formData?: Record<string, any> }) => void;
+  optimizeUIForTouch?: boolean;
+  schema: Record<string, any>;
+  type: PromptDialogType;
+};
 
 const PromptDialogForm: React.FunctionComponent<PromptDialogFormProps> = ({
   cancelButtonLabel,

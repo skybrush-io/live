@@ -45,6 +45,10 @@ declare module 'config' {
   import { type Perspective } from 'perspective';
   import { type ReactourProps } from 'reactour';
 
+  import { type Origin, type View } from '~/features/map/types';
+  import { type SavedLocation } from '~/features/saved-locations/types';
+  import { type LayerType } from '~/model/layers';
+
   // NOTE: We do need to allow `null` here in order to enable the
   //       "unsetting" of default values in configuration overrides.
   // eslint-disable-next-line @typescript-eslint/ban-types
@@ -73,6 +77,14 @@ declare module 'config' {
        * Title text to be shown on the splash screen during loading.
        */
       splashTitle: string;
+    };
+
+    /**
+     * Unique per-variant settings to be used for distributable builds.
+     */
+    electronBuilder?: {
+      appId?: string;
+      productName?: string;
     };
 
     /**
@@ -149,6 +161,32 @@ declare module 'config' {
          */
         onCreate: (feature: any) => void;
       };
+
+      /**
+       * List of layers to be configured on the map by default.
+       */
+      layers: Array<{
+        id: string;
+        type: LayerType;
+        label: string;
+        parameters?: Record<string, unknown>;
+      }>;
+
+      /**
+       * Preset entries of the saved location list.
+       */
+      locations: SavedLocation[];
+
+      /**
+       * Initial placement of the map origin. If not given, the center and
+       * angle of the map view are used as fallback values.
+       */
+      origin?: Partial<Origin>;
+
+      /**
+       * The default position, rotation and zoom level of the map view.
+       */
+      view: View;
     };
 
     optimizeForSingleUAV: {
@@ -196,7 +234,7 @@ declare module 'config' {
      *       type: 'columns',
      *       contents: [
      *         { type: 'panel', component: 'map', id: 'map', width: 75 },
-     *         { type: 'panel', component: 'uav-list', id: 'uavs' },
+     *         { type: 'panel', component: 'uav-list', id: 'uavList' },
      *       ],
      *     },
      *   },

@@ -63,11 +63,17 @@ export const noPayload = <State>(
 /**
  * Frozen empty array that can be returned from selectors to prevent
  * recomputations in some cases.
+ *
+ * HACK: Using `seal` instead of `freeze` to avoid `Readonly` on the type.
+ *       (Combined with preventing modification of the length
+ *       it essentially has the same effect on an empty array.)
  */
-export const EMPTY_ARRAY: Readonly<never[]> = Object.freeze([]);
+export const EMPTY_ARRAY: never[] = Object.seal(
+  Object.defineProperty([], 'length', { writable: false })
+);
 
 /**
  * Frozen empty object that can be returned from selectors to prevent
  * recomputations in some cases.
  */
-export const EMPTY_OBJECT: Readonly<Record<never, never>> = Object.freeze({});
+export const EMPTY_OBJECT: Record<never, never> = Object.freeze({});

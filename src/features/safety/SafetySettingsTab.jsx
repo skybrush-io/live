@@ -2,10 +2,10 @@
  * @file Tab that shows the safety settings and allows the user to edit them.
  */
 
-import mapValues from 'lodash-es/mapValues';
-import { TextField } from 'mui-rff';
+import { Select, TextField } from 'mui-rff';
 import PropTypes from 'prop-types';
 import React from 'react';
+import { withTranslation } from 'react-i18next';
 import { Form } from 'react-final-form';
 import { connect } from 'react-redux';
 
@@ -16,86 +16,140 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import InputAdornment from '@material-ui/core/InputAdornment';
+import MenuItem from '@material-ui/core/MenuItem';
 
 import {
-  createValidator,
-  isEmpty,
+  between,
+  join,
   optional,
   positive,
+  required,
 } from '~/utils/validation';
 
+import { BatteryThresholdType, unitForBatteryThresholdType } from './model';
 import { getSafetySettings } from './selectors';
 import { updateSafetySettings } from './slice';
 
-const toNullOrNumber = (value) => (isEmpty(value) ? null : Number(value));
+const toNumberIfDefined = (value) => value && Number(value);
 
-const validator = createValidator({
-  criticalBatteryVoltage: optional(positive),
-  lowBatteryVoltage: optional(positive),
-  returnToHomeAltitude: optional(positive),
-  returnToHomeSpeed: optional(positive),
+// TODO: Move this to `~/components/forms/fields.jsx`
+const NumericFieldWithUnit = ({ unit, ...rest }) => (
+  <TextField
+    // Not `number`, because that would make distinguishing whether
+    // a field is empty or contains invalid input impossible
+    type='text'
+    InputProps={{
+      endAdornment: <InputAdornment position='end'>{unit}</InputAdornment>,
+      inputProps: {
+        inputMode: 'numeric',
+      },
+    }}
+    variant='filled'
+    {...rest}
+  />
+);
+
+NumericFieldWithUnit.propTypes = {
+  unit: PropTypes.string,
+};
+
+const validator = (values) => ({
+  criticalBatteryVoltage: optional(positive)(values.criticalBatteryVoltage),
+  lowBatteryThreshold: {
+    value: {
+      [BatteryThresholdType.VOLTAGE]: positive,
+      [BatteryThresholdType.PERCENTAGE]: join([required, between(1, 100)]),
+    }[values.lowBatteryThreshold?.type]?.(values.lowBatteryThreshold?.value),
+  },
+  returnToHomeAltitude: optional(positive)(values.returnToHomeAltitude),
+  returnToHomeSpeed: optional(positive)(values.returnToHomeSpeed),
 });
 
-const fields = [
-  {
-    id: 'criticalBatteryVoltage',
-    label: 'Critical battery voltage',
-    unit: 'V',
-    description:
-      'Critically low battery voltage in [V] under which a critical battery failsafe action is triggered.',
-  },
-  {
-    id: 'lowBatteryVoltage',
-    label: 'Low battery voltage',
-    unit: 'V',
-    description:
-      'Low battery voltage in [V] under which a low battery failsafe action is triggered.',
-  },
-  {
-    id: 'returnToHomeAltitude',
-    label: 'Return to home altitude',
-    unit: 'm',
-    description:
-      'Altitude in [mAHL] at which return to home operations are performed.',
-  },
-  {
-    id: 'returnToHomeSpeed',
-    label: 'Return to home speed',
-    unit: 'm/s',
-    description:
-      'Horizontal speed in [m/s] at which return to home operations are performed.',
-  },
-];
-
-const SafetySettingsFormPresentation = ({ initialValues, onSubmit }) => (
+const SafetySettingsFormPresentation = ({ initialValues, onSubmit, t }) => (
   <Form initialValues={initialValues} validate={validator} onSubmit={onSubmit}>
-    {({ handleSubmit }) => (
+    {({ handleSubmit, values }) => (
       <form id='safetySettings' onSubmit={handleSubmit}>
-        <DialogContentText id='alert-dialog-description'>
-          Empty values result in the respective safety values not being
-          overridden.
-        </DialogContentText>
-        {fields.map(({ id, label, unit, description }) => (
-          <Box key={id} mt={1}>
-            <TextField
-              name={id}
-              label={label}
-              // Not `number`, because that would make distinguishing whether
-              // a field is empty or contains invalid input impossible
-              type='text'
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position='end'>{unit}</InputAdornment>
-                ),
-                inputProps: {
-                  inputMode: 'numeric',
-                },
-              }}
-              variant='filled'
+        <Box style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <DialogContentText>
+            {t('safetySettingsTab.emptyValues')}
+          </DialogContentText>
+          <Box>
+            <NumericFieldWithUnit
+              name='criticalBatteryVoltage'
+              label={t('safetySettingsTab.criticalBatteryVoltageLabel')}
+              unit='V'
             />
-            <FormHelperText>{description}</FormHelperText>
+            <FormHelperText>
+              {t('safetySettingsTab.criticalBatteryVoltageHelperText')}
+            </FormHelperText>
           </Box>
-        ))}
+          <Box>
+            <Box display='flex'>
+              {/* TODO: Use `Select` from `~/components/forms/fields.jsx` */}
+              <Select
+                name='lowBatteryThreshold.type'
+                label={t('safetySettingsTab.lowBatteryThresholdTypeLabel')}
+                variant='filled'
+              >
+                <MenuItem>
+                  {t('safetySettingsTab.lowBatteryThresholdType.noOverride')}
+                </MenuItem>
+                <MenuItem value={BatteryThresholdType.OFF}>
+                  {t('safetySettingsTab.lowBatteryThresholdType.disabled')}
+                </MenuItem>
+                <MenuItem value={BatteryThresholdType.VOLTAGE}>
+                  {t('safetySettingsTab.lowBatteryThresholdType.voltageBased')}
+                </MenuItem>
+                <MenuItem value={BatteryThresholdType.PERCENTAGE}>
+                  {t(
+                    'safetySettingsTab.lowBatteryThresholdType.percentageBased'
+                  )}
+                </MenuItem>
+              </Select>
+              {[
+                BatteryThresholdType.VOLTAGE,
+                BatteryThresholdType.PERCENTAGE,
+              ].includes(values.lowBatteryThreshold?.type) && (
+                <>
+                  <Box p={1} />
+                  <NumericFieldWithUnit
+                    name='lowBatteryThreshold.value'
+                    label={t('safetySettingsTab.lowBatteryThresholdValueLabel')}
+                    unit={
+                      unitForBatteryThresholdType[
+                        values.lowBatteryThreshold?.type
+                      ]
+                    }
+                    style={{ flexShrink: 1.25 }}
+                  />
+                </>
+              )}
+            </Box>
+            <FormHelperText>
+              {t('safetySettingsTab.lowBatteryThresholdHelperText')}
+            </FormHelperText>
+          </Box>
+          <Box>
+            <NumericFieldWithUnit
+              name='returnToHomeAltitude'
+              label={t('safetySettingsTab.returnToHomeAltitudeLabel')}
+              unit='m'
+            />
+            <FormHelperText>
+              {t('safetySettingsTab.returnToHomeAltitudeHelperText')}
+            </FormHelperText>
+          </Box>
+          <Box>
+            <NumericFieldWithUnit
+              name='returnToHomeSpeed'
+              label={t('safetySettingsTab.returnToHomeSpeedLabel')}
+              unit='m/s'
+            />
+            <FormHelperText>
+              {t('safetySettingsTab.returnToHomeSpeedHelperText')}
+            </FormHelperText>
+          </Box>
+        </Box>
       </form>
     )}
   </Form>
@@ -104,57 +158,60 @@ const SafetySettingsFormPresentation = ({ initialValues, onSubmit }) => (
 SafetySettingsFormPresentation.propTypes = {
   initialValues: PropTypes.object,
   onSubmit: PropTypes.func,
+  t: PropTypes.func,
 };
 
 const SafetySettingsForm = connect(
   // mapStateToProps
   (state) => ({
-    initialValues: {
-      ...mapValues(getSafetySettings(state), (v) => (v ? String(v) : '')),
+    initialValues: getSafetySettings(state),
+  }),
+  // mapDispatchToProps
+  {
+    onSubmit: (values) => (dispatch) => {
+      dispatch(
+        updateSafetySettings({
+          criticalBatteryVoltage: toNumberIfDefined(
+            values.criticalBatteryVoltage
+          ),
+          lowBatteryThreshold: values.lowBatteryThreshold?.type && {
+            type: values.lowBatteryThreshold.type,
+            ...([
+              BatteryThresholdType.VOLTAGE,
+              BatteryThresholdType.PERCENTAGE,
+            ].includes(values.lowBatteryThreshold.type) && {
+              value: Number(values.lowBatteryThreshold.value),
+            }),
+          },
+          returnToHomeAltitude: toNumberIfDefined(values.returnToHomeAltitude),
+          returnToHomeSpeed: toNumberIfDefined(values.returnToHomeSpeed),
+        })
+      );
     },
-  })
-)(SafetySettingsFormPresentation);
+  }
+)(withTranslation()(SafetySettingsFormPresentation));
 
 /**
  * Container of the tab that shows the form that the user can use to
  * edit the safety settings.
  */
-const SafetySettingsTab = ({ onClose, onSubmit }) => (
+const SafetySettingsTabPresentation = ({ onClose, t }) => (
   <>
     <DialogContent>
-      <SafetySettingsForm onSubmit={onSubmit} />
+      <SafetySettingsForm />
     </DialogContent>
     <DialogActions>
       <Button form='safetySettings' type='submit' color='primary'>
-        Save
+        {t('general.action.save')}
       </Button>
-      <Button onClick={onClose}>Close</Button>
+      <Button onClick={onClose}>{t('general.action.close')}</Button>
     </DialogActions>
   </>
 );
 
-SafetySettingsTab.propTypes = {
+SafetySettingsTabPresentation.propTypes = {
   onClose: PropTypes.func,
-  onSubmit: PropTypes.func,
+  t: PropTypes.func,
 };
 
-export default connect(
-  // mapStateToProps
-  null,
-  // mapDispatchToProps
-  {
-    onSubmit: (data) => (dispatch) => {
-      // `mapValues` doesn't work, because `react-final-form` drops empty values
-      // dispatch(updateSafetySettings(mapValues(data, toNullOrNumber)));
-
-      dispatch(
-        updateSafetySettings({
-          criticalBatteryVoltage: toNullOrNumber(data.criticalBatteryVoltage),
-          lowBatteryVoltage: toNullOrNumber(data.lowBatteryVoltage),
-          returnToHomeAltitude: toNullOrNumber(data.returnToHomeAltitude),
-          returnToHomeSpeed: toNullOrNumber(data.returnToHomeSpeed),
-        })
-      );
-    },
-  }
-)(SafetySettingsTab);
+export default withTranslation()(SafetySettingsTabPresentation);

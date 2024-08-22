@@ -5,12 +5,11 @@
 
 import { type Response_AUTHRESP_SingleStep } from 'flockwave-spec';
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import { type ReadonlyDeep } from 'type-fest';
 
-type AuthenticationDialogSliceState = ReadonlyDeep<{
+type AuthenticationDialogSliceState = {
   lastError?: string;
   open: boolean;
-}>;
+};
 
 /**
  * The default state for the authentication dialog.

@@ -24,6 +24,20 @@ const overrides: ConfigOverrides = {
     loadShowFromCloud: true,
   },
 
+  // Set the origin and the view to Farkashegy Airfield to match the guided tour
+  map: {
+    origin: {
+      position: [18.915125, 47.486305],
+      angle: '59',
+    },
+
+    view: {
+      position: [18.915125, 47.486305],
+      angle: '0',
+      zoom: 17,
+    },
+  },
+
   // Defaults are suitable for the web app demo deployment. Connects back to the
   // same hostname and port by default, and does not allow overriding the
   // hostname and port from the dialog.

@@ -332,18 +332,20 @@ class TCPSocketConnection extends React.Component {
     // Wrap socket in an extra object to conform with `@collmot/react-socket`
     bindSocketToHub({ socket: this.#socket });
 
-    const heartbeat = () => {
-      pTimeout(messageHub.sendMessage('SYS-PING'), pingTimeout)
-        .then(() => {
-          if (this.#socket) {
-            this.#socket.notifyPing();
-          }
-        })
-        .catch(() => {
-          if (this.#socket) {
-            this.#socket.notifyPing(/* success = */ false);
-          }
+    const heartbeat = async () => {
+      let success = true;
+
+      try {
+        await pTimeout(messageHub.sendMessage('SYS-PING'), {
+          milliseconds: pingTimeout,
         });
+      } catch {
+        success = false;
+      }
+
+      if (this.#socket) {
+        this.#socket.notifyPing(success);
+      }
     };
 
     heartbeat();

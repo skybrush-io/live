@@ -27,6 +27,9 @@
     "noRTKData": "No RTK data sources on server",
     "pleaseWait": "Please wait, loading RTK sources…"
   },
+  "RTKMessage": {
+    "noRTKMessagesYet": "No RTK messages have been received yet"
+  },
   "RTKStatusMiniList": {
     "satelliteCount": "Satellite count",
     "surveyInProgress": "Survey in progress…",
@@ -46,6 +49,9 @@
     "removeItemsMarkedGone": "Remove items marked as gone",
     "removeSelectedItems": "Remove selected items"
   },
+  "UAVSelector": {
+    "noMatchingUAVs": "No matching UAVs for: \"{{filter}}\""
+  },
   "UAVStatus": {
     "noConnected": "There are no connected UAVs at the moment"
   },
@@ -57,6 +63,11 @@
   "altitudeSummaryButton": {
     "clickToChange": "Click to change to {{altitudeType}}.",
     "showingCurrent": "Showing maximum and minimum {{altitudeType}}."
+  },
+  "antennaPositionIndicator": {
+    "antennaPositionNotKnown": "Antenna position not known",
+    "clickToToggle": "Click to toggle between lon/lat and ECEF format",
+    "copyToClipboard": "Copy to clipboard"
   },
   "augmentMappingButton": {
     "assignSparesToEmptySlots": "Assign spares to empty slots"
@@ -129,6 +140,7 @@
       "import": "Import",
       "open": "Open",
       "remove": "Remove",
+      "reset": "Reset",
       "retry": "Retry",
       "save": "Save",
       "select": "Select",
@@ -168,6 +180,15 @@
       "no": "No geofence defined yet"
     }
   },
+  "geofenceAction": {
+    "keepCurrent": "Keep current action",
+    "report": "Report only",
+    "shutDown": "Shut down",
+    "smartLand": "Land with collision avoidance",
+    "smartReturn": "Return to home with collision avoidance",
+    "stop": "Stop and hover",
+    "unknown": "Unknown action: {{action}}"
+  },
   "header": {
     "distanceSummary": "Maximum and minimum distance from home position",
     "velocitySummary": "Maximum horizontal and vertical velocity"
@@ -177,10 +198,33 @@
     "coordinatesOfTheCorners": "Coordinates of the corners of the room",
     "roomVisibleIn3D": "Room visible in 3D view"
   },
+  "largeControlButtonGroup": {
+    "RTH": "RTH",
+    "RTHAll": "RTH all",
+    "arm": "Arm",
+    "armAll": "Arm all",
+    "broadcast": "Broadcast",
+    "disarm": "Disarm",
+    "disarmAll": "Disarm all",
+    "hold": "Hold",
+    "holdAll": "Hold all",
+    "land": "Land",
+    "landAll": "Land all",
+    "selectionOnly": "Selection only",
+    "shutdown": "Shutdown",
+    "shutdownAll": "Shutdown all"
+  },
   "lightControl": {
+    "connectToAServer": "Connect to a server to control lights",
     "fromGCS": "Lights controlled from GCS",
     "notConnected": "Not connected to server",
-    "notFromGCS": "Lights not controlled from GCS"
+    "notFromGCS": "Lights not controlled from GCS",
+    "restoreDefault": "Click to restore default light program",
+    "takeControl": "Click to take control"
+  },
+  "lightControlGrid": {
+    "allOff": "All off",
+    "allOn": "All on"
   },
   "map": {
     "resetRotation": "Reset rotation"
@@ -196,6 +240,7 @@
     "useCachedMapTiles": "Use cached map tiles from server"
   },
   "mapContextMenu": {
+    "clearExclusionZone": "Clear exclusion zone",
     "clearGeofence": "Clear geofence",
     "details": "Details…",
     "flyHere": "Fly here",
@@ -205,6 +250,7 @@
     "setShowOriginHere": "Set show origin here",
     "subtractPolygon": "Subtract {{subtrahend}} from {{minuend}}",
     "unnamedPolygon": "unnamed polygon",
+    "useAsExclusionZone": "Use as exclusion zone",
     "useAsGeofence": "Use as geofence"
   },
   "mappingButtonGroup": {
@@ -227,6 +273,15 @@
   "mappingToggleButton": {
     "sortByMissionID": "Sort by mission IDs"
   },
+  "measurementList": {
+    "addDrone": "Add a drone to measure with the + button in the toolbar",
+    "copyToClipboard": "Copy to clipboard",
+    "duration": "Duration",
+    "noSamplesYet": "No samples yet",
+    "samples": "samples",
+    "stdDevInXY": "std.dev. in XY",
+    "waitingForSamples": "Waiting for samples…"
+  },
   "mission": {
     "planner": {
       "schema": {
@@ -235,6 +290,23 @@
         "notFound": "The connected server doesn't provide a schema for the selected mission type"
       }
     }
+  },
+  "navigationButtonGroup": {
+    "fly": "Fly",
+    "resetZoom": "Reset zoom",
+    "rotateCamera": "Rotate camera towards drones",
+    "walk": "Walk"
+  },
+  "navigationInstructions": {
+    "altitude": "Altitude",
+    "arrows": "Arrows",
+    "flyForwardBackward": "Fly forward / backward",
+    "flyFrwrdBckwrd": "Fly forward / backward",
+    "lookAround": "Look around",
+    "moveSideways": "Move sideways",
+    "noInstruction": "No instructions for this navigation mode",
+    "run": "Run",
+    "walkAround": "Walk around"
   },
   "notifications": {
     "connectedToSkybrushServer": "Connected to Skybrush server"
@@ -256,12 +328,33 @@
     "showOrigin": "Show origin",
     "warningText": "Automatic show origin and orientation calculation assumes that all drones point towards the X axis of the show <underline>or</underline> that you specified their offset relative the X axis with the setting above. Absolute takeoff headings are not supported."
   },
+  "parameterListSidebar": {
+    "import": "Import…",
+    "nextStep": "Next step",
+    "removeAllItems": "Remove all items from manifest"
+  },
+  "parameterUploadMainPanel": {
+    "parameterNamesValues": "Parameter names and values",
+    "parameterUploadHint": "Press <kbd>⇧</kbd> + <kbd>Enter</kbd> to add the parameter to the manifest. Click on a parameter in the sidebar to remove it from the manifest.",
+    "rebootAfterUpload": "Reboot after upload",
+    "specifyEntries": "Specify entries as name=value, one parameter per row."
+  },
+  "parameterUploadSetupDialog": {
+    "uploadParameters": "Upload parameters"
+  },
   "preferences": "Preferences",
+  "preflightTab": {
+    "enterCheckItems": "Enter your preferred manual preflight check items, one per line.",
+    "headingsHint": "Lines ending with a colon (:) become headings.",
+    "manualPreflightCheckItems": "Manual preflight check items",
+    "preflightCheckItems": "Preflight check items"
+  },
   "recalculateMappingButton": {
     "findOptimalMapping": "Find optimal mapping",
     "recalculateMapping": "Recalculate mapping"
   },
   "safetyDialog": {
+    "geofence": "Geofence",
     "geofenceTab": {
       "clear": "Clear current geofence",
       "errors": {
@@ -281,7 +374,26 @@
       "vertexCountReduction": "Vertex count reduction",
       "vertical": "Vertical"
     },
+    "settings": "Settings",
     "title": "Safety"
+  },
+  "safetySettingsTab": {
+    "criticalBatteryVoltageHelperText": "Critically low battery voltage in [V] under which a critical battery failsafe action is triggered.",
+    "criticalBatteryVoltageLabel": "Critical battery voltage",
+    "emptyValues": "Empty values result in the respective safety values not being overridden.",
+    "lowBatteryThresholdHelperText": "Low battery threshold type and value under which a low battery failsafe action is triggered.",
+    "lowBatteryThresholdType": {
+      "disabled": "Disabled",
+      "noOverride": "No override",
+      "percentageBased": "Percentage based",
+      "voltageBased": "Voltage based"
+    },
+    "lowBatteryThresholdTypeLabel": "Low battery threshold type",
+    "lowBatteryThresholdValueLabel": "Threshold value",
+    "returnToHomeAltitudeHelperText": "Altitude in [mAHL] at which return to home operations are performed.",
+    "returnToHomeAltitudeLabel": "Return to home altitude",
+    "returnToHomeSpeedHelperText": "Horizontal speed in [m/s] at which return to home operations are performed.",
+    "returnToHomeSpeedLabel": "Return to home speed"
   },
   "savedLocation": {
     "addNew": "Add new location",
@@ -305,6 +417,29 @@
     "roundTripTime": "Round-trip time",
     "unknownState": "Unknown state",
     "version": "Server version"
+  },
+  "serverSettingsDialog": {
+    "autodetected": "Autodetected",
+    "autodiscoveryIsNotAvailable": "Auto-discovery is not available in this version.",
+    "connect": "Connect",
+    "connecting": "Connecting…",
+    "connectingTo": "Connecting to {{hostName}}…",
+    "disconnect": "Disconnect",
+    "enterManually": "Enter manually",
+    "hostname": "Hostname",
+    "localConnection": "Local connection",
+    "manual": "Manual",
+    "pleaseWait": "Please wait…",
+    "port": "Port",
+    "preconfiguredServer": "Preconfigured server",
+    "scanningNetwork": "Scanning network for servers…",
+    "secureConnection": "Secure connection",
+    "serverSelectionRestricted": "Connecting to other servers is not supported in this version.",
+    "unsecured": "(unsecured)",
+    "unsecuredConnection": "Unsecured connection",
+    "useSecureConnection": "Use secure connection",
+    "useWebSocketHelperText": "For backwards compatibility only.",
+    "useWebSocketLabel": "Use WebSocket protocol instead of TCP"
   },
   "settings": {
     "display": {
@@ -443,8 +578,36 @@
     },
     "sortBy": "Sort by"
   },
+  "startTimeDialog": {
+    "SMPTETimecode": "SMPTE timecode",
+    "errors": {
+      "invalidDate": "Invalid date",
+      "invalidTime": "Invalid time",
+      "pastDate": "Date cannot be in the past",
+      "pastTime": "Time cannot be in the past"
+    },
+    "localTime": "Local time",
+    "reference": "Reference",
+    "resetForm": "Reset form",
+    "setNewStartTime": "Set new start time",
+    "setTheStartTime": "Set the start time of the show below",
+    "startDate": "Start date",
+    "startShowAuto": "Start show automatically",
+    "startShowWithRC": "Start show with remote controller only (safer)",
+    "startSignal": "Start signal",
+    "startTime": "Start time",
+    "startTimeHms": "Start time (hours:minutes:seconds)",
+    "suggestions": "Suggestions:"
+  },
+  "startTimeDisplay": {
+    "noStartTimeIsSet": "No start time is set at the moment.",
+    "startTimeIsSetTo": "Start time is set to <strong>{{formattedStartTime}}</strong>"
+  },
   "startUploadButton": {
     "startSelected": "Start selected"
+  },
+  "surveyStatusIndicator": {
+    "noSurveyInformation": "No survey information"
   },
   "takeoffAreaSetupDialog": {
     "allDroneOnline": "All drones in the mission are online.",
@@ -492,6 +655,9 @@
     "clearUploadQueue": "Clear upload queue",
     "restartSuccessfulItems": "Restart successful items",
     "retryFailedItems": "Retry failed items"
+  },
+  "uploadStatusLights": {
+    "noAvailableUAVs": "There are no available UAVs to upload to."
   },
   "view": {
     "beacon-list": "Beacons",

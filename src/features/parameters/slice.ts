@@ -3,7 +3,6 @@
  */
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import { type ReadonlyDeep } from 'type-fest';
 
 import {
   addItemToFront,
@@ -16,13 +15,13 @@ import { noPayload } from '~/utils/redux';
 
 import { type Parameter } from './types';
 
-type ParametersSliceState = ReadonlyDeep<{
+type ParametersSliceState = {
   manifest: Collection<Parameter>;
   rebootAfterUpload: boolean;
   dialog: {
     open: boolean;
   };
-}>;
+};
 
 const initialState: ParametersSliceState = {
   manifest: EMPTY_COLLECTION,

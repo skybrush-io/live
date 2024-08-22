@@ -13,7 +13,7 @@ import { type ErrorCode } from '~/flockwave/errors';
 import { type Coordinate3D } from '~/utils/math';
 
 import { GPSFixType } from './enums';
-import { type GPSFix, type GPSPosition } from './position';
+import { type GPSFix, type GPSPosition } from './geography';
 import { type VelocityNED, type VelocityXYZ } from './velocity';
 
 /**

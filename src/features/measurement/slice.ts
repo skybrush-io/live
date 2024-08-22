@@ -5,7 +5,6 @@
 
 import intersection from 'lodash-es/intersection';
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import { type ReadonlyDeep } from 'type-fest';
 
 import {
   addItemSortedUnlessExists,
@@ -17,7 +16,7 @@ import { noPayload } from '~/utils/redux';
 
 import { type AveragingResult } from './types';
 
-type MeasurementSliceState = ReadonlyDeep<{
+type MeasurementSliceState = {
   /**
    * Object containing the state of all the coordinate averaging measurements
    * being performed
@@ -28,7 +27,7 @@ type MeasurementSliceState = ReadonlyDeep<{
     open: boolean;
     selectedUAVIds: Array<AveragingResult['id']>;
   };
-}>;
+};
 
 const initialState: MeasurementSliceState = {
   averagingResults: EMPTY_COLLECTION,

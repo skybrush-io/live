@@ -4,23 +4,23 @@
  */
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import { type ReadonlyDeep } from 'type-fest';
 
 import { setSelection } from '~/features/map/selection';
 import { globalIdToUavId, isUavId } from '~/model/identifiers';
+import { type AppSelector } from '~/store/reducers';
 import { type Coordinate2DObject } from '~/utils/math';
 import { noPayload } from '~/utils/redux';
 
 import { UAV_DETAILS_DIALOG_MIN_WIDTH } from './constants';
 import { type StoredUAV, UAVDetailsDialogTab } from './types';
 
-type UAVDetailsSliceState = ReadonlyDeep<{
+type UAVDetailsSliceState = {
   open: boolean;
   selectedUAVId?: StoredUAV['id'];
   selectedTab: UAVDetailsDialogTab;
   position: Coordinate2DObject;
   width: number;
-}>;
+};
 
 const initialState: UAVDetailsSliceState = {
   open: false,
@@ -88,28 +88,22 @@ export const {
   setUAVDetailsDialogWidth,
 } = actions;
 
-type RootStateWithUAVDetailsDialog = {
-  dialogs: { uavDetails: UAVDetailsSliceState };
-};
+export const isUAVDetailsDialogOpen: AppSelector<boolean> = (state) =>
+  state.dialogs.uavDetails.open;
 
-export const isUAVDetailsDialogOpen = (
-  state: RootStateWithUAVDetailsDialog
-): boolean => state.dialogs.uavDetails.open;
+export const getSelectedUAVIdInUAVDetailsDialog: AppSelector<
+  string | undefined
+> = (state) => state.dialogs.uavDetails.selectedUAVId;
 
-export const getSelectedUAVIdInUAVDetailsDialog = (
-  state: RootStateWithUAVDetailsDialog
-): string | undefined => state.dialogs.uavDetails.selectedUAVId;
+export const getSelectedTabInUAVDetailsDialog: AppSelector<
+  UAVDetailsDialogTab
+> = (state) => state.dialogs.uavDetails.selectedTab;
 
-export const getSelectedTabInUAVDetailsDialog = (
-  state: RootStateWithUAVDetailsDialog
-): UAVDetailsDialogTab => state.dialogs.uavDetails.selectedTab;
+export const getUAVDetailsDialogPosition: AppSelector<Coordinate2DObject> = (
+  state
+) => state.dialogs.uavDetails.position;
 
-export const getUAVDetailsDialogPosition = (
-  state: RootStateWithUAVDetailsDialog
-): Coordinate2DObject => state.dialogs.uavDetails.position;
-
-export const getUAVDetailsDialogWidth = (
-  state: RootStateWithUAVDetailsDialog
-): number => state.dialogs.uavDetails.width;
+export const getUAVDetailsDialogWidth: AppSelector<number> = (state) =>
+  state.dialogs.uavDetails.width;
 
 export default reducer;

@@ -5,7 +5,6 @@
 
 import xor from 'lodash-es/xor';
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import { type ReadonlyDeep } from 'type-fest';
 
 import { removeFeaturesByIds } from '~/features/map-features/slice';
 import { removeMissionItemsByIds } from '~/features/mission/slice';
@@ -17,7 +16,7 @@ import { type Identifier } from '~/utils/collections';
 
 import { findAllUAVFeatures, updateSelection } from './utils';
 
-type MapSelectionSliceState = ReadonlyDeep<Identifier[]>;
+type MapSelectionSliceState = Identifier[];
 
 const initialState: MapSelectionSliceState = [];
 

@@ -4,6 +4,7 @@
 
 import PropTypes from 'prop-types';
 import React, { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { shallowEqual, useSelector } from 'react-redux';
 
 import { makeStyles } from '@material-ui/core/styles';
@@ -98,6 +99,7 @@ const UAVSelector = ({
   open,
   sortedByError,
 }) => {
+  const { t } = useTranslation();
   const uavIds = useSelector(
     sortedByError ? getUAVIdsSortedByErrorCode : getUAVIdList,
     { equalityFn: shallowEqual }
@@ -203,7 +205,7 @@ const UAVSelector = ({
             </div>
           ))
         ) : (
-          <BackgroundHint text={`No matching UAVs for: "${filter}"`} />
+          <BackgroundHint text={t('UAVSelector.noMatchingUAVs', { filter })} />
         )}
       </div>
     </Popover>

@@ -114,6 +114,9 @@ export enum FlightMode {
   UNKNOWN = 'unknown',
 }
 
+export const isFlightMode = (mode: unknown): mode is FlightMode =>
+  Object.values(FlightMode).includes(mode as FlightMode);
+
 /**
  * Object mapping flight mode constants to their properties (human readable
  * descriptions, abbreviations etc).

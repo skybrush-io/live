@@ -257,28 +257,25 @@ const propertiesForLayerTypes: Record<
  * Creates a new layer with the given unique identifier, name and type.
  *
  * @param id - The unique identifier of the layer
- * @param layerType - The type of the layer; must be one of the constants from
- *                    the {@link LayerType} enum or a nullish value; the latter
- *                    is replaced with <code>LayerType.UNTYPED</code>.
- * @param name - The name of the layer
+ * @param type - The type of the layer; must be one of the constants from
+ *               the {@link LayerType} enum or undefined; the latter
+ *               is replaced with <code>LayerType.UNTYPED</code>.
+ * @param label - The label of the layer
  * @param parameters - The parameters of the layer
  * @returns A new layer object
  */
-export function createNewLayer(
+export const createNewLayer = (
   id: string,
-  layerType: LayerType | undefined,
-  name: string,
+  type: LayerType = LayerType.UNTYPED,
+  label: string,
   parameters?: Record<string, unknown>
-): Layer {
-  const effectiveLayerType = layerType ?? LayerType.UNTYPED;
-  return {
-    id,
-    type: effectiveLayerType,
-    label: name,
-    visible: effectiveLayerType !== LayerType.UNTYPED,
-    parameters: parameters ?? defaultParametersForLayerType(effectiveLayerType),
-  };
-}
+): Layer => ({
+  id,
+  type,
+  label,
+  visible: type !== LayerType.UNTYPED,
+  parameters: parameters ?? defaultParametersForLayerType(type),
+});
 
 /**
  * Returns whether the given layer can be added to the map more than once.

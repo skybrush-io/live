@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import Box from '@material-ui/core/Box';
 import Fade from '@material-ui/core/Fade';
@@ -35,33 +36,37 @@ const SurveyStatusIndicator = ({
   supported,
   valid,
   ...rest
-}) => (
-  <Fade in={supported || true}>
-    <Box
-      alignItems='center'
-      flex={1}
-      display='flex'
-      flexDirection='row'
-      {...rest}
-    >
-      <LabeledStatusLight
-        size='small'
-        status={
-          valid ? 'success' : active ? 'next' : supported ? 'error' : 'off'
-        }
-        color='textSecondary'
+}) => {
+  const { t } = useTranslation();
+
+  return (
+    <Fade in={supported || true}>
+      <Box
+        alignItems='center'
+        flex={1}
+        display='flex'
+        flexDirection='row'
+        {...rest}
       >
-        {active
-          ? formatAccuracy('Surveying', accuracy)
-          : valid
-          ? formatAccuracy('', accuracy)
-          : supported
-          ? 'Survey not started yet'
-          : 'No survey information'}
-      </LabeledStatusLight>
-    </Box>
-  </Fade>
-);
+        <LabeledStatusLight
+          size='small'
+          status={
+            valid ? 'success' : active ? 'next' : supported ? 'error' : 'off'
+          }
+          color='textSecondary'
+        >
+          {active
+            ? formatAccuracy('Surveying', accuracy)
+            : valid
+              ? formatAccuracy('', accuracy)
+              : supported
+                ? 'Survey not started yet'
+                : t('surveyStatusIndicator.noSurveyInformation')}
+        </LabeledStatusLight>
+      </Box>
+    </Fade>
+  );
+};
 
 SurveyStatusIndicator.propTypes = {
   accuracy: PropTypes.number,

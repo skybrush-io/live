@@ -6,7 +6,7 @@ import mergeWith from 'lodash-es/mergeWith.js';
 import { type Config } from 'config';
 import overrides from 'config-overrides';
 
-import defaults from './defaults';
+import baseline from './baseline';
 
 // Completely replace arrays in the configuration instead of merging them.
 const customizer = <T>(
@@ -18,5 +18,5 @@ const customizer = <T>(
   }
 };
 
-const merged: Config = mergeWith(defaults, overrides, customizer);
+const merged: Config = mergeWith(baseline, overrides, customizer);
 export default merged;

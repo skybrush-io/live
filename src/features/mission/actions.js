@@ -225,16 +225,16 @@ export const recalculateMapping = () => (dispatch) => {
  * mission slots (i.e. placeholders for drones in missions that are not assigned
  * yet).
  *
- * @param {Array.<string>} indices  the indices of the selected mission slots.
- *        Any mission slot whose index is not in this set will be deselected,
+ * @param {Array.<string>} slotIds  the ids of the selected mission slots.
+ *        Any mission slot whose id is not in this set will be deselected,
  *        and so will be anything that is not a mission slot.
  * @return {Object} an appropriately constructed action
  */
-export const setSelectedMissionSlots = (indices) =>
+export const setSelectedMissionSlotIds = (slotIds) =>
   setSelection(
-    (Array.isArray(indices) ? indices : [])
-      .filter((index) => !isNil(index))
-      .map((index) => missionSlotIdToGlobalId(index))
+    (Array.isArray(slotIds) ? slotIds : [])
+      .filter((slotId) => !isNil(slotId))
+      .map((slotId) => missionSlotIdToGlobalId(slotId))
   );
 
 /**
@@ -869,15 +869,15 @@ export const restoreMissingFeatures =
     const state = getState();
 
     // Restore the missing linestring features
-    const linestrings =
+    const linestringParameters =
       mapping[ParameterUIContext.SELECTED_LINE_STRING_FEATURE] ?? [];
-    for (const linestring of linestrings) {
+    for (const linestringParameter of linestringParameters) {
       dispatch(
         addFeatureIfMissing(
           {
             type: FeatureType.LINE_STRING,
-            points: values[linestring].map(toLonLatFromScaledJSON),
-            label: linestring,
+            points: values[linestringParameter].map(toLonLatFromScaledJSON),
+            label: linestringParameter,
             owner: 'user',
           },
           ['type', 'points']
@@ -887,22 +887,23 @@ export const restoreMissingFeatures =
 
     // Restore the missing marker features, and optionally place markers for UAV
     // and generic coordinates as well, if UAVs are not available
-    const markers = mapping[ParameterUIContext.SELECTED_MARKER_FEATURE] ?? [];
+    const markerParameters = [
+      ...(mapping[ParameterUIContext.SELECTED_MARKER_FEATURE] ?? []),
+      ...(getUAVIdList(state).length === 0
+        ? [
+            ...(mapping[ParameterUIContext.SELECTED_UAV_COORDINATE] ?? []),
+            ...(mapping[ParameterUIContext.SELECTED_COORDINATE] ?? []),
+          ]
+        : []),
+    ];
 
-    if (getUAVIdList(state).length === 0) {
-      markers.push(
-        ...(mapping[ParameterUIContext.SELECTED_UAV_COORDINATE] ?? []),
-        ...(mapping[ParameterUIContext.SELECTED_COORDINATE] ?? [])
-      );
-    }
-
-    for (const marker of markers) {
+    for (const markerParameter of markerParameters) {
       dispatch(
         addFeatureIfMissing(
           {
             type: FeatureType.POINTS,
-            points: [toLonLatFromScaledJSON(values[marker])],
-            label: marker,
+            points: [toLonLatFromScaledJSON(values[markerParameter])],
+            label: markerParameter,
             owner: 'user',
           },
           ['type', 'points']
@@ -911,22 +912,46 @@ export const restoreMissingFeatures =
     }
 
     // Restore the missing polygon features
-    const polygons = mapping[ParameterUIContext.SELECTED_POLYGON_FEATURE] ?? [];
-    for (const polygon of polygons) {
+    const polygonParameters =
+      mapping[ParameterUIContext.SELECTED_POLYGON_FEATURE] ?? [];
+    for (const polygonParameter of polygonParameters) {
       dispatch(
         addFeatureIfMissing(
           {
             type: FeatureType.POLYGON,
-            points: values[polygon].points.map(toLonLatFromScaledJSON),
-            holes: values[polygon].holes.map((hole) =>
+            points: values[polygonParameter].points.map(toLonLatFromScaledJSON),
+            holes: values[polygonParameter].holes.map((hole) =>
               hole.map(toLonLatFromScaledJSON)
             ),
-            label: polygon,
+            label: polygonParameter,
             owner: 'user',
           },
           ['type', 'points', 'holes']
         )
       );
+    }
+
+    // Restore the missing exclusion zone features
+    const exclusionZoneParameters =
+      mapping[ParameterUIContext.EXCLUSION_ZONE_POLYGONS] ?? [];
+    for (const exclusionZoneParameter of exclusionZoneParameters) {
+      for (const exclusionZonePolygon of values[exclusionZoneParameter]) {
+        dispatch(
+          addFeatureIfMissing(
+            {
+              type: FeatureType.POLYGON,
+              points: exclusionZonePolygon.points.map(toLonLatFromScaledJSON),
+              holes: exclusionZonePolygon.holes?.map((hole) =>
+                hole.map(toLonLatFromScaledJSON)
+              ),
+              label: exclusionZoneParameter,
+              owner: 'user',
+              attributes: { isExclusionZone: true },
+            },
+            ['type', 'points', 'holes']
+          )
+        );
+      }
     }
   };
 

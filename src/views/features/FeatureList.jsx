@@ -32,7 +32,7 @@ import {
 } from '~/features/map/selection';
 import { showFeatureEditorDialog } from '~/features/map-features/actions';
 import {
-  getFeaturesByIds,
+  getFeaturesById,
   getFeaturesInOrder,
   getSelectedFeatureIds,
 } from '~/features/map-features/selectors';
@@ -239,7 +239,7 @@ export default connect(
   (state) => ({
     dense: true,
     features: getFeaturesInOrder(state),
-    featuresByIds: getFeaturesByIds(state),
+    featuresByIds: getFeaturesById(state),
     selectedFeatureIds: getSelectedFeatureIds(state),
   }),
   // mapDispatchToProps

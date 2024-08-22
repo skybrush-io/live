@@ -1,5 +1,5 @@
 import { type ErrorCode } from '~/flockwave/errors';
-import { type GPSFix, type GPSPosition } from '~/model/position';
+import { type GPSFix, type GPSPosition } from '~/model/geography';
 import { type UAVAge, type UAVBattery } from '~/model/uav';
 import { type VelocityNED, type VelocityXYZ } from '~/model/velocity';
 import { type Identifier } from '~/utils/collections';

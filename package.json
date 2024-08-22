@@ -1,6 +1,5 @@
 {
   "name": "@skybrush/live",
-  "productName": "Skybrush Live",
   "version": "2.8.1",
   "description": "Web frontend for a Skybrush server",
   "main": "launcher.bundle.js",
@@ -31,6 +30,7 @@
     "@collmot/react-socket": "^2.0.0",
     "@date-io/core": "^1.3.13",
     "@date-io/date-fns": "^1.3.13",
+    "@fontsource/fira-sans": "^5.0.19",
     "@fvilers/disable-react-devtools": "^1.3.0",
     "@loadable/component": "^5.16.3",
     "@material-ui/core": "^4.12.4",
@@ -46,7 +46,7 @@
     "@skybrush/aframe-components": "^1.9.5",
     "@skybrush/app-theme-material-ui": "^1.3.4",
     "@skybrush/electron-app-framework": "^2.5.0",
-    "@skybrush/mui-components": "^1.15.0",
+    "@skybrush/mui-components": "^1.15.1",
     "@skybrush/show-format": "^2.2.0",
     "@tippyjs/react": "^4.2.6",
     "@turf/boolean-contains": "^6.5.0",
@@ -164,7 +164,6 @@
     "styled-components": "^6.1.8",
     "suncalc": "^1.9.0",
     "svd-js": "^1.1.1",
-    "typeface-fira-sans": "^1.1.13",
     "url": "^0.11.3",
     "use-resize-observer": "^9.1.0",
     "util": "^0.12.5",
@@ -262,6 +261,7 @@
       "react/require-default-props": 0,
       "unicorn/filename-case": 0,
       "unicorn/no-array-callback-reference": 0,
+      "unicorn/no-array-reduce": 0,
       "unicorn/no-fn-reference-in-iterator": 0,
       "unicorn/numeric-separators-style": 0,
       "unicorn/prefer-module": 0,
@@ -298,6 +298,13 @@
               "selector": "enumMember",
               "format": [
                 "UPPER_CASE"
+              ]
+            },
+            {
+              "selector": "import",
+              "format": [
+                "camelCase",
+                "PascalCase"
               ]
             },
             {

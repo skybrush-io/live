@@ -4,14 +4,13 @@
  */
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import { type ReadonlyDeep } from 'type-fest';
 
 import { noPayload } from '~/utils/redux';
 
-type ErrorHandlingSliceState = ReadonlyDeep<{
+type ErrorHandlingSliceState = {
   message?: string;
   open: boolean;
-}>;
+};
 
 /**
  * Default content of the part of the state object that corresponds to the

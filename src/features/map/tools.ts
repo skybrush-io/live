@@ -3,13 +3,13 @@
  */
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import { type ReadonlyDeep } from 'type-fest';
 
 import { Tool } from '~/views/map/tools';
+import { type AppSelector } from '~/store/reducers';
 
-type MapToolsSliceState = ReadonlyDeep<{
+type MapToolsSliceState = {
   selectedTool: Tool;
-}>;
+};
 
 /**
  * The default selected tool.
@@ -33,9 +33,7 @@ const { reducer, actions } = createSlice({
 
 export const { setSelectedTool } = actions;
 
-// TODO: Change to `state: RootState` when the Redux store type is available
-export const getSelectedTool = (state: {
-  map: { tools: MapToolsSliceState };
-}): Tool => state.map.tools.selectedTool;
+export const getSelectedTool: AppSelector<Tool> = (state) =>
+  state.map.tools.selectedTool;
 
 export default reducer;

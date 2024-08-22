@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { withTranslation } from 'react-i18next';
 
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
@@ -11,7 +12,13 @@ import LabeledStatusLight from '@skybrush/mui-components/lib/LabeledStatusLight'
  * forms that informs the user whether the form contents should be saved, and
  * also provides Save and Reset buttons.
  */
-const FormSubmissionButtonRow = ({ dirty, form, label, onSubmit }) => (
+const FormSubmissionButtonRowPresentation = ({
+  dirty,
+  form,
+  label,
+  onSubmit,
+  t,
+}) => (
   <Box display='flex' flexDirection='row'>
     <LabeledStatusLight status={dirty ? 'warning' : 'success'}>
       {dirty
@@ -21,23 +28,24 @@ const FormSubmissionButtonRow = ({ dirty, form, label, onSubmit }) => (
     {form && (
       <>
         <Button disabled={!dirty} onClick={() => form.reset()}>
-          Reset
+          {t('general.action.reset')}
         </Button>
         <Button color='primary' disabled={!dirty} onClick={onSubmit}>
-          Save
+          {t('general.action.save')}
         </Button>
       </>
     )}
   </Box>
 );
 
-FormSubmissionButtonRow.propTypes = {
+FormSubmissionButtonRowPresentation.propTypes = {
   dirty: PropTypes.bool.isRequired,
   form: PropTypes.shape({
     reset: PropTypes.func,
   }),
   label: PropTypes.string,
   onSubmit: PropTypes.func,
+  t: PropTypes.func,
 };
 
-export default FormSubmissionButtonRow;
+export default withTranslation()(FormSubmissionButtonRowPresentation);

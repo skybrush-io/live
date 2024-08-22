@@ -2,8 +2,10 @@
  * @file Reducer function for handling the position of the origin on the map.
  */
 
+import config from 'config';
+
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import { type ReadonlyDeep } from 'type-fest';
+import defaults from 'lodash-es/defaults';
 
 import { type Origin, OriginType } from './types';
 
@@ -14,13 +16,13 @@ import { type Origin, OriginType } from './types';
  * The flat Earth coordinate system is at the given position and its zero
  * degree heading points towards the heading given in the `angle` property.
  */
-type MapOriginSliceState = ReadonlyDeep<Origin>;
+type MapOriginSliceState = Origin;
 
-const initialState: MapOriginSliceState = {
-  position: [18.915125, 47.486305], // Sensible default: Farkashegy Airfield
-  angle: '59',
+const initialState: MapOriginSliceState = defaults(config.map.origin, {
+  position: config.map.view.position,
+  angle: config.map.view.angle,
   type: OriginType.NWU,
-};
+});
 
 /**
  * The reducer function that handles actions related to the tool selection.

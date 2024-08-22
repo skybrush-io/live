@@ -4,24 +4,7 @@
 
   "artifactName": "${productName} ${version}.${ext}",
 
-  "files": [
-    {
-      "filter": ["assets/**/*", "!node_modules"]
-    },
-    {
-      "from": "build",
-      "filter": [
-        "*.bundle.js",
-        "index.html",
-        "*.mp3",
-        "*.png",
-        "*.svg",
-        "*.ttf",
-        "*.woff",
-        "*.woff2"
-      ]
-    }
-  ],
+  "files": ["!**/*", "package.json", { "from": "build" }],
 
   "linux": {
     "category": "Utility",

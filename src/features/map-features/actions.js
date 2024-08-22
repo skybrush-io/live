@@ -41,6 +41,8 @@ export const addFeature = (feature) => addFeatureWithName(feature, null);
 /**
  * Action that checks if a feature with matching comparison properties can be
  * found on the map, and adds a new one in case it is missing.
+ *
+ * PERF: Make this comparison hash based if it ever becomes a bottleneck
  */
 export const addFeatureIfMissing =
   (feature, comparisonProperties) => (dispatch, getState) => {

@@ -32,6 +32,12 @@ import turfDistance from '@turf/distance';
 import * as TurfHelpers from '@turf/helpers';
 
 import { type Feature, FeatureType } from '~/model/features';
+import {
+  type Altitude,
+  AltitudeReference,
+  type Heading,
+  HeadingMode,
+} from '~/model/geography';
 
 import {
   formatArea,
@@ -71,41 +77,6 @@ import { isRunningOnMac } from './platform';
 // running under Electron on macOS, so we use the @ sign there as a replacement.
 // Windows and Linux seem to be okay with the angle sign;
 const ANGLE_SIGN = isRunningOnMac ? '@' : '∠';
-
-/**
- * Enum containing the possible altitude reference types that we support.
- */
-export enum AltitudeReference {
-  HOME = 'home',
-  MSL = 'msl',
-  GROUND = 'ground',
-}
-
-/**
- * Type specification for an altitude object containing a numeric offset from an
- * altitude reference.
- */
-export type Altitude = {
-  value: number;
-  reference: AltitudeReference;
-};
-
-/**
- * Enum containing the possible heading mode types that we support.
- */
-export enum HeadingMode {
-  ABSOLUTE = 'absolute',
-  WAYPOINT = 'waypoint',
-}
-
-/**
- * Type specification for a heading object containing a numeric value and a
- * heading mode.
- */
-export type Heading = {
-  value: number;
-  mode: HeadingMode;
-};
 
 /**
  * Returns the (initial) bearing when going from one point to another on a
@@ -978,7 +949,6 @@ export function normalizePolygon([points, ...holes]: any): any {
   // Start with the boundary ring and subtract every hole from it with Turf
   // TODO: This can be simplified when Turf 7.0.0 gets released, as
   //       difference will support multiple subtrahend features
-  // eslint-disable-next-line unicorn/no-array-reduce
   const { geometry } = holes.reduce(
     (poly: any, hole: any) => turfDifference(poly, TurfHelpers.polygon([hole])),
     TurfHelpers.polygon([points])
@@ -1061,8 +1031,8 @@ export function toLonLatFromScaledJSON(
  * @return the distance between the two points in meters
  */
 export function turfDistanceInMeters(
-  first: Coordinate2D,
-  second: Coordinate2D
+  first: TurfHelpers.Coord,
+  second: TurfHelpers.Coord
 ): number {
   return turfDistance(first, second) * 1000;
 }

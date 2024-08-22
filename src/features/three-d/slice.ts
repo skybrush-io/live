@@ -4,11 +4,10 @@
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import { type Vector3Tuple } from 'three';
-import { type ReadonlyDeep } from 'type-fest';
 
 import { type EulerTuple, NavigationMode } from './types';
 
-type ThreeDSliceState = ReadonlyDeep<{
+type ThreeDSliceState = {
   camera: {
     position?: Vector3Tuple;
     rotation?: EulerTuple;
@@ -23,7 +22,7 @@ type ThreeDSliceState = ReadonlyDeep<{
   tooltip?: string;
 
   sceneId: number;
-}>;
+};
 
 const initialState: ThreeDSliceState = {
   camera: {

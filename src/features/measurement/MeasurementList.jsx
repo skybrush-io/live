@@ -4,6 +4,7 @@ import isNil from 'lodash-es/isNil';
 import { getDistance as haversineDistance } from 'ol/sphere';
 import PropTypes from 'prop-types';
 import React from 'react';
+import { Translation, useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import IconButton from '@material-ui/core/IconButton';
@@ -122,6 +123,8 @@ const MeasurementListItem = ({
   ...rest
 }) => {
   const classes = useStyles();
+  const { t } = useTranslation();
+
   const {
     extraSamplingTime,
     id,
@@ -139,10 +142,10 @@ const MeasurementListItem = ({
   let secondaryText;
 
   if (numSamples <= 0) {
-    primaryText = 'Waiting for samples…';
+    primaryText = t('measurementList.waitingForSamples');
     secondaryText = (
       <div className={clsx(classes.dim, classes.secondaryContainer)}>
-        No samples yet
+        {t('measurementList.noSamplesYet')}
       </div>
     );
   } else {
@@ -168,13 +171,13 @@ const MeasurementListItem = ({
       <div className={classes.secondaryContainer}>
         <div className={classes.latLonCoordinatesColumn}>
           {formatStdDevInXYPlane(mean, sqDiff, numSamples)}{' '}
-          <span className={classes.dim}>std.dev. in XY</span>
+          <span className={classes.dim}>{t('measurementList.stdDevInXY')}</span>
         </div>
         <div className={clsx(classes.dim, classes.amslColumn)}>
-          {numSamples} samples
+          {numSamples} {t('measurementList.samples')}
         </div>
         <div className={clsx(classes.dim, classes.ahlColumn)}>
-          Duration:{' '}
+          {`${t('measurementList.duration')}: `}
           {formatDurationOfSampling(startedAt, lastSampleAt, extraSamplingTime)}
         </div>
       </div>
@@ -193,7 +196,7 @@ const MeasurementListItem = ({
       />
       {numSamples > 0 && (
         <ListItemSecondaryAction>
-          <Tooltip content='Copy to clipboard'>
+          <Tooltip content={t('measurementList.copyToClipboard')}>
             <IconButton edge='end' aria-label='copy' onClick={() => onCopy(id)}>
               <ContentCopy />
             </IconButton>
@@ -228,10 +231,14 @@ const MeasurementList = multiSelectableListOf(
   {
     dataProvider: 'measurements',
     backgroundHint: (
-      <BackgroundHint
-        style={{ padding: 16 }}
-        text='Add a drone to measure with the + button in the toolbar'
-      />
+      <Translation>
+        {(t) => (
+          <BackgroundHint
+            style={{ padding: 16 }}
+            text={t('measurementList.addDrone')}
+          />
+        )}
+      </Translation>
     ),
   }
 );
