@@ -50,7 +50,7 @@
     "removeSelectedItems": "Kiválasztott elemek eltávolítása"
   },
   "UAVSelector": {
-    "noMatchingUAVs": "Nincsenek megfelelő drónok a következőhöz: \"{{filter}}\""
+    "noMatchingUAVs": "Nincsenek találatok erre: \"{{filter}}\""
   },
   "UAVStatus": {
     "noConnected": "Jelenleg nincs kapcsolódott drón"
@@ -184,8 +184,8 @@
     "keepCurrent": "A jelenlegi művelet folytatása",
     "report": "Csak jelentés",
     "shutDown": "Kikapcsolás",
-    "smartLand": "Leszállás ütközés elkerüléssel",
-    "smartReturn": "Hazatérés ütközés elkerüléssel",
+    "smartLand": "Leszállás ütközéselkerüléssel",
+    "smartReturn": "Hazatérés ütközéselkerüléssel",
     "stop": "Megáll és lebeg"
   },
   "header": {
@@ -305,7 +305,7 @@
     "moveSideways": "Oldalmozgás",
     "noInstruction": "Ehhez a navigációs módhoz nincs útmutató",
     "run": "Futás",
-    "walkAround": "Körbe sétálni"
+    "walkAround": "Sétálás"
   },
   "notifications": {
     "connectedToSkybrushServer": "Csatlakozva a Skybrush szerverhez"
@@ -334,8 +334,8 @@
   },
   "parameterUploadMainPanel": {
     "parameterNamesValues": "Paraméter nevek és értékek",
-    "parameterUploadHint": "A paraméter jegyzékhez adásához nyomja meg a <kbd>⇧</kbd> + <kbd>Enter</kbd>-t. A jegyzékből való eltávolításához kattintson a paraméterre az oldalsávon.",
-    "rebootAfterUpload": "Feltöltés után indítsa újra",
+    "parameterUploadHint": "Paraméter hozzáadásához használja a <kbd>⇧</kbd> + <kbd>Enter</kbd> billentyűkombinációt. A jegyzékből való eltávolításhoz kattintson a paraméterre az oldalsávon.",
+    "rebootAfterUpload": "Újraindítás feltöltés után",
     "specifyEntries": "Adja meg a bejegyzéseket név=érték formában, soronként egy paramétert."
   },
   "parameterUploadSetupDialog": {
@@ -387,10 +387,10 @@
       "percentageBased": "Százalék alapú",
       "voltageBased": "Feszültség alapú"
     },
-    "lowBatteryThresholdTypeLabel": "Alacsony akkumulátorszint határérték típusa",
+    "lowBatteryThresholdTypeLabel": "Alacsony akku küszöb típusa",
     "lowBatteryThresholdValueLabel": "Küszöbérték",
     "returnToHomeAltitudeHelperText": "Magasság [mAHL]-ben, amelyen a visszatérési műveletek végrehajtásra kerülnek.",
-    "returnToHomeAltitudeLabel": "Visszatérés a kiindulási magasságra",
+    "returnToHomeAltitudeLabel": "Hazatérési magasság",
     "returnToHomeSpeedHelperText": "Vízszintes sebesség [m/s]-ban, amellyel a visszatérési műveletek végrehajtásra kerülnek.",
     "returnToHomeSpeedLabel": "Hazatérési sebesség"
   },
@@ -418,7 +418,7 @@
     "version": "Szerver verzió"
   },
   "serverSettingsDialog": {
-    "autodetected": "Autodetektált",
+    "autodetected": "Automatikusan észlelt",
     "autodiscoveryIsNotAvailable": "Az automatikus felfedezés nem elérhető ebben a verzióban.",
     "connect": "Csatlakozás",
     "connecting": "Csatlakozás…",
@@ -431,7 +431,7 @@
     "pleaseWait": "Kérem várjon…",
     "port": "Port",
     "preconfiguredServer": "Előre konfigurált szerver",
-    "scanningNetwork": "Hálózat szkennelése szerverek után…",
+    "scanningNetwork": "Szerverek keresése a hálózaton…",
     "secureConnection": "Biztonságos kapcsolat",
     "serverSelectionRestricted": "Ez a verzió nem támogatja a más szerverekhez való csatlakozást.",
     "unsecured": "(nem biztonságos)",
@@ -589,9 +589,9 @@
     "reference": "Referencia",
     "resetForm": "Űrlap visszaállítása",
     "setNewStartTime": "Új kezdési időpont beállítása",
-    "setTheStartTime": "Állítsa be az előadás kezdési időpontját alább",
+    "setTheStartTime": "Állítsa be a műsor kezdési időpontját alább",
     "startDate": "Kezdési dátum",
-    "startShowAuto": "A műsor indítsa automatikusan",
+    "startShowAuto": "A műsor indítása automatikusan",
     "startShowWithRC": "A műsor indítása kizárólag távirányítóval (biztonságosabb)",
     "startSignal": "Kezdési jel",
     "startTime": "Kezdési idő",
