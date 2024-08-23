@@ -27,6 +27,9 @@
     "noRTKData": "服务器上没有RTK数据源",
     "pleaseWait": "请稍候，正在加载RTK源…"
   },
+  "RTKMessage": {
+    "noRTKMessagesYet": "尚未收到任何 RTK 信息"
+  },
   "RTKStatusMiniList": {
     "satelliteCount": "卫星数量",
     "surveyInProgress": "搜寻进行中…",
@@ -47,6 +50,9 @@
     "removeItemsMarkedGone": "删除标记为“离线”的条目",
     "removeSelectedItems": "删除选中的条目"
   },
+  "UAVSelector": {
+    "noMatchingUAVs": "“没有匹配的无人机: \"{{filter}}\""
+  },
   "UAVStatus": {
     "noConnected": "当前没有已连接无人机"
   },
@@ -58,6 +64,11 @@
   "altitudeSummaryButton": {
     "clickToChange": "单击更改为{{altitudeType}}。",
     "showingCurrent": "显示最大值和最小值 {{altitudeType}}。"
+  },
+  "antennaPositionIndicator": {
+    "antennaPositionNotKnown": "天线位置未知",
+    "clickToToggle": "点击切换经纬度与 ECEF 格式",
+    "copyToClipboard": "复制到剪贴板"
   },
   "augmentMappingButton": {
     "assignSparesToEmptySlots": "将备用无人机分配到空闲舞步上"
@@ -130,6 +141,7 @@
       "import": "导入",
       "open": "打开",
       "remove": "移除",
+      "reset": "重置",
       "retry": "重试",
       "save": "保存",
       "select": "选择",
@@ -169,6 +181,15 @@
       "no": "地理围栏未定义"
     }
   },
+  "geofenceAction": {
+    "keepCurrent": "保留当前操作",
+    "report": "仅报告",
+    "shutDown": "关机",
+    "smartLand": "带避障降落",
+    "smartReturn": "带避障返航",
+    "stop": "停止并悬停",
+    "unknown": "未知操作: {{action}}"
+  },
   "header": {
     "distanceSummary": "距初始位置的最大和最小距离",
     "velocitySummary": "最大水平和垂直速度"
@@ -178,10 +199,33 @@
     "coordinatesOfTheCorners": "房间角落的坐标",
     "roomVisibleIn3D": "房间在3D视图中可见"
   },
+  "largeControlButtonGroup": {
+    "RTH": "返航",
+    "RTHAll": "全体返航",
+    "arm": "解锁",
+    "armAll": "全体解锁",
+    "broadcast": "广播",
+    "disarm": "上锁",
+    "disarmAll": "全体上锁",
+    "hold": "保持",
+    "holdAll": "全体保持",
+    "land": "降落",
+    "landAll": "全体降落",
+    "selectionOnly": "仅选择",
+    "shutdown": "关机",
+    "shutdownAll": "全体关机"
+  },
   "lightControl": {
+    "connectToAServer": "连接到服务器以控制灯光",
     "fromGCS": "灯光由地面站控制",
     "notConnected": "未连接到服务器",
-    "notFromGCS": "灯光不受地面站控制"
+    "notFromGCS": "灯光不受地面站控制",
+    "restoreDefault": "点击恢复默认灯光程序",
+    "takeControl": "点击接管控制权"
+  },
+  "lightControlGrid": {
+    "allOff": "全部关闭",
+    "allOn": "全部开启"
   },
   "map": {
     "resetRotation": "重置旋转"
@@ -197,6 +241,7 @@
     "useCachedMapTiles": "使用服务器的缓存地图切片"
   },
   "mapContextMenu": {
+    "clearExclusionZone": "清除禁区",
     "clearGeofence": "清除地理围栏",
     "details": "详细信息…",
     "flyHere": "飞往这里",
@@ -206,6 +251,7 @@
     "setShowOriginHere": "在此设置展示原点",
     "subtractPolygon": "从 {{minuend}} 中减去 {{subtrahend}}",
     "unnamedPolygon": "未命名的多边形",
+    "useAsExclusionZone": "用作禁区",
     "useAsGeofence": "用作地理围栏"
   },
   "mappingButtonGroup": {
@@ -228,6 +274,15 @@
   "mappingToggleButton": {
     "sortByMissionID": "按任务IDs排序"
   },
+  "measurementList": {
+    "addDrone": "在工具栏中使用 + 按钮添加一个测量无人机",
+    "copyToClipboard": "复制到剪贴板",
+    "duration": "持续时间",
+    "noSamplesYet": "尚无样本",
+    "samples": "样本",
+    "stdDevInXY": "XY 中的标准差",
+    "waitingForSamples": "等待样本…"
+  },
   "mission": {
     "planner": {
       "schema": {
@@ -236,6 +291,22 @@
         "notFound": "连接的服务器没有提供所选任务类型的模式"
       }
     }
+  },
+  "navigationButtonGroup": {
+    "fly": "飞行",
+    "resetZoom": "重置缩放",
+    "rotateCamera": "旋转相机朝向无人机",
+    "walk": "步行"
+  },
+  "navigationInstructions": {
+    "altitude": "高度",
+    "arrows": "箭头",
+    "flyForwardBackward": "向前/向后飞行",
+    "lookAround": "环顾四周",
+    "moveSideways": "横向移动",
+    "noInstruction": "此导航模式没有指令",
+    "run": "运行",
+    "walkAround": "四处走动"
   },
   "notifications": {
     "connectedToSkybrushServer": "已连接到Skybrush服务器"
@@ -257,12 +328,33 @@
     "showOrigin": "表演原点",
     "warningText": "自动展示原点和方向计算假设所有无人机都指向展示的 X 轴 <underline>或者</underline> 你已经通过上述设置指定了它们相对于 X 轴的偏移。绝对起飞航向不受支持。"
   },
+  "parameterListSidebar": {
+    "import": "导入…",
+    "nextStep": "下一步",
+    "removeAllItems": "从清单中移除所有项"
+  },
+  "parameterUploadMainPanel": {
+    "parameterNamesValues": "参数名称和数值",
+    "parameterUploadHint": "按 <kbd>⇧</kbd> + <kbd>Enter</kbd> 将参数添加到清单中，点击侧边栏中的参数将其从清单中移除。",
+    "rebootAfterUpload": "上传后重启",
+    "specifyEntries": "将条目指定为 name=value，每行一个参数。"
+  },
+  "parameterUploadSetupDialog": {
+    "uploadParameters": "上传参数"
+  },
   "preferences": "偏好设置",
+  "preflightTab": {
+    "enterCheckItems": "输入你首选的手动起飞前检查项目，每行一个。",
+    "headingsHint": "以冒号 (:) 结尾的行将成为标题。",
+    "manualPreflightCheckItems": "手动起飞前检查项目",
+    "preflightCheckItems": "起飞前检查项"
+  },
   "recalculateMappingButton": {
     "findOptimalMapping": "寻找最佳映射",
     "recalculateMapping": "重新计算映射"
   },
   "safetyDialog": {
+    "geofence": "地理围栏",
     "geofenceTab": {
       "clear": "清除当前地理围栏",
       "errors": {
@@ -282,7 +374,26 @@
       "vertexCountReduction": "定点数量简化",
       "vertical": "垂直方向"
     },
+    "settings": "设置",
     "title": "地理围栏设置"
+  },
+  "safetySettingsTab": {
+    "criticalBatteryVoltageHelperText": "电池电压低于 [V] 时触发紧急电池故障保护措施。",
+    "criticalBatteryVoltageLabel": "紧急电池电压",
+    "emptyValues": "空值将导致相应的安全值不被覆盖。",
+    "lowBatteryThresholdHelperText": "低电池阈值类型和数值，当电池电量低于此值时触发低电池故障保护措施。",
+    "lowBatteryThresholdType": {
+      "disabled": "禁用",
+      "noOverride": "不覆盖",
+      "percentageBased": "基于百分比",
+      "voltageBased": "基于电压"
+    },
+    "lowBatteryThresholdTypeLabel": "低电池阈值类型",
+    "lowBatteryThresholdValueLabel": "阈值数值",
+    "returnToHomeAltitudeHelperText": "进行返航操作的 [mAHL] 高度。",
+    "returnToHomeAltitudeLabel": "返航高度",
+    "returnToHomeSpeedHelperText": "进行返航操作的水平速度 [m/s]。",
+    "returnToHomeSpeedLabel": "返航速度"
   },
   "savedLocation": {
     "addNew": "添加新的中心点",
@@ -306,6 +417,29 @@
     "roundTripTime": "往返时间",
     "unknownState": "未知状态",
     "version": "服务器版本"
+  },
+  "serverSettingsDialog": {
+    "autodetected": "自动检测",
+    "autodiscoveryIsNotAvailable": "此版本不支持自动发现。",
+    "connect": "连接",
+    "connecting": "正在连接…",
+    "connectingTo": "正在连接到 {{hostName}}…",
+    "disconnect": "断开连接",
+    "enterManually": "手动输入",
+    "hostname": "主机名",
+    "localConnection": "本地连接",
+    "manual": "手动",
+    "pleaseWait": "请稍候…",
+    "port": "端口",
+    "preconfiguredServer": "预配置的服务器",
+    "scanningNetwork": "正在扫描网络中的服务器…",
+    "secureConnection": "安全连接",
+    "serverSelectionRestricted": "此版本不支持连接到其他服务器。",
+    "unsecured": "（不安全）",
+    "unsecuredConnection": "不安全的连接",
+    "useSecureConnection": "使用安全连接",
+    "useWebSocketHelperText": "仅用于向后兼容。",
+    "useWebSocketLabel": "使用 WebSocket 协议而不是 TCP"
   },
   "settings": {
     "display": {
@@ -444,8 +578,36 @@
     },
     "sortBy": "按...排序"
   },
+  "startTimeDialog": {
+    "SMPTETimecode": "SMPTE 时间码",
+    "errors": {
+      "invalidDate": "无效日期",
+      "invalidTime": "无效时间",
+      "pastDate": "日期不能为过去的时间",
+      "pastTime": "时间不能为过去的时间"
+    },
+    "localTime": "本地时间",
+    "reference": "参考",
+    "resetForm": "重置表单",
+    "setNewStartTime": "设置新的开始时间",
+    "setTheStartTime": "设置下面节目的开始时间",
+    "startDate": "开始日期",
+    "startShowAuto": "自动开始节目",
+    "startShowWithRC": "仅通过遥控器开始节目（更安全）",
+    "startSignal": "启动信号",
+    "startTime": "开始时间",
+    "startTimeHms": "开始时间（小时:分钟:秒钟）",
+    "suggestions": "建议："
+  },
+  "startTimeDisplay": {
+    "noStartTimeIsSet": "目前未设置开始时间。",
+    "startTimeIsSetTo": "开始时间设置为 <strong>{{formattedStartTime}}</strong>"
+  },
   "startUploadButton": {
     "startSelected": "启动所选项"
+  },
+  "surveyStatusIndicator": {
+    "noSurveyInformation": "没有调查信息"
   },
   "takeoffAreaSetupDialog": {
     "allDroneOnline": "任务中的所有无人机都在线。",
@@ -493,6 +655,9 @@
     "clearUploadQueue": "清除上传队列",
     "restartSuccessfulItems": "重新启动成功的项目",
     "retryFailedItems": "重试失败的项目"
+  },
+  "uploadStatusLights": {
+    "noAvailableUAVs": "没有可用的无人机进行上传。"
   },
   "view": {
     "beacon-list": "信标",
