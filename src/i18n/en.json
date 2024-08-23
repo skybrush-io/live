@@ -301,7 +301,6 @@
     "altitude": "Altitude",
     "arrows": "Arrows",
     "flyForwardBackward": "Fly forward / backward",
-    "flyFrwrdBckwrd": "Fly forward / backward",
     "lookAround": "Look around",
     "moveSideways": "Move sideways",
     "noInstruction": "No instructions for this navigation mode",
