@@ -27,6 +27,9 @@
     "noRTKData": "サーバーにRTKリソースがありません",
     "pleaseWait": "RTKリソースを読み込み中。しばらくお待ちください…"
   },
+  "RTKMessage": {
+    "noRTKMessagesYet": "受信済みのRTKメッセージはありません"
+  },
   "RTKStatusMiniList": {
     "satelliteCount": "衛星数",
     "surveyInProgress": "調査中…",
@@ -47,6 +50,9 @@
     "removeItemsMarkedGone": "なくなったものを削除",
     "removeSelectedItems": "選択中のものを削除"
   },
+  "UAVSelector": {
+    "noMatchingUAVs": "\"{{filter}}\"に該当するUAVは存在しません"
+  },
   "UAVStatus": {
     "noConnected": "UAVが接続されていません"
   },
@@ -58,6 +64,11 @@
   "altitudeSummaryButton": {
     "clickToChange": "クリックして{{altitudeType}}を変更。",
     "showingCurrent": "最大最小{{altitudeType}}を表示。"
+  },
+  "antennaPositionIndicator": {
+    "antennaPositionNotKnown": "アンテナ位置が不明です",
+    "clickToToggle": "緯度/経度⇔ECEF形式の切り替え",
+    "copyToClipboard": "クリップボードにコピー"
   },
   "augmentMappingButton": {
     "assignSparesToEmptySlots": "予備を空のスロットにアサイン"
@@ -130,6 +141,7 @@
       "import": "インポート",
       "open": "開く",
       "remove": "除く",
+      "reset": "リセット",
       "retry": "リトライ",
       "save": "保存",
       "select": "選択",
@@ -169,6 +181,15 @@
       "no": "ジオフェンス未定義"
     }
   },
+  "geofenceAction": {
+    "keepCurrent": "現在のアクションを維持",
+    "report": "通報のみ",
+    "shutDown": "シャットダウン",
+    "smartLand": "衝突回避ありの着陸",
+    "smartReturn": "衝突回避ありのRTH",
+    "stop": "停止してホバリング",
+    "unknown": "不明なアクション: {{action}}"
+  },
   "header": {
     "distanceSummary": "ホーム地点からの最大最小距離",
     "velocitySummary": "最大水平垂直速度"
@@ -178,10 +199,33 @@
     "coordinatesOfTheCorners": "部屋の隅の座標",
     "roomVisibleIn3D": "3D viewで部屋を可視化"
   },
+  "largeControlButtonGroup": {
+    "RTH": "RTH",
+    "RTHAll": "RTH all",
+    "arm": "始動",
+    "armAll": "全機始動",
+    "broadcast": "ブロードキャスト",
+    "disarm": "停止",
+    "disarmAll": "全機停止",
+    "hold": "ホールド",
+    "holdAll": "全機ホールド",
+    "land": "着陸",
+    "landAll": "全機着陸",
+    "selectionOnly": "選択中のみ",
+    "shutdown": "シャットダウン",
+    "shutdownAll": "全機シャットダウン"
+  },
   "lightControl": {
+    "connectToAServer": "サーバーに接続してライトを制御",
     "fromGCS": "GCSによるライトのコントロール",
     "notConnected": "サーバー未接続",
-    "notFromGCS": "GCSによってライトがコントロールされていません"
+    "notFromGCS": "GCSによってライトがコントロールされていません",
+    "restoreDefault": "デフォルトのライトプログラムをリストア",
+    "takeControl": "制御する"
+  },
+  "lightControlGrid": {
+    "allOff": "全てオフ",
+    "allOn": "全てオン"
   },
   "map": {
     "resetRotation": "回転をリセット"
@@ -197,6 +241,7 @@
     "useCachedMapTiles": "サーバーにキャッシュされたマップタイルを使用する"
   },
   "mapContextMenu": {
+    "clearExclusionZone": "除外ゾーンをクリア",
     "clearGeofence": "ジオフェンスをクリア",
     "details": "詳細…",
     "flyHere": "ここを飛行",
@@ -206,6 +251,7 @@
     "setShowOriginHere": "ここにショーの原点を設定",
     "subtractPolygon": "{{subtrahend}} から {{minuend}}を差し引く",
     "unnamedPolygon": "無名ポリゴン",
+    "useAsExclusionZone": "除外ゾーンを使用",
     "useAsGeofence": "ジオフェンスとして使用"
   },
   "mappingButtonGroup": {
@@ -228,6 +274,15 @@
   "mappingToggleButton": {
     "sortByMissionID": "mission IDでソート"
   },
+  "measurementList": {
+    "addDrone": "ツールバーの＋ボタンで測定するドローンを追加する",
+    "copyToClipboard": "クリップボードにコピー",
+    "duration": "期間",
+    "noSamplesYet": "サンプル未取得",
+    "samples": "サンプル",
+    "stdDevInXY": "XYにおける標準偏差",
+    "waitingForSamples": "サンプル取得中…"
+  },
   "mission": {
     "planner": {
       "schema": {
@@ -236,6 +291,22 @@
         "notFound": "接続したサーバーから選択されたミッションタイプのスキーマが提供されませんでした"
       }
     }
+  },
+  "navigationButtonGroup": {
+    "fly": "上昇",
+    "resetZoom": "ズームを解除",
+    "rotateCamera": "ドローンに対してカメラを向ける",
+    "walk": "移動"
+  },
+  "navigationInstructions": {
+    "altitude": "高度",
+    "arrows": "矢印",
+    "flyForwardBackward": "前進/後進",
+    "lookAround": "見て回る",
+    "moveSideways": "横に動く",
+    "noInstruction": "このナビゲーションモードに関する説明はありません",
+    "run": "早く移動",
+    "walkAround": "歩き回る"
   },
   "notifications": {
     "connectedToSkybrushServer": "Skybrushサーバーに接続しました"
@@ -257,7 +328,26 @@
     "showOrigin": "原点を表示",
     "warningText": "ショーの原点と向きの自動計算では、すべてのドローンがショーの X 軸を向いている<underline>、または</underline>と仮定されます。絶対離陸ヘディングはサポートされていません。"
   },
+  "parameterListSidebar": {
+    "import": "インポート…",
+    "nextStep": "次へ",
+    "removeAllItems": "マニフェストのアイテムをすべて除外"
+  },
+  "parameterUploadMainPanel": {
+    "parameterNamesValues": "パラメータ名と値",
+    "parameterUploadHint": "<kbd>⇧</kbd> + <kbd>Enter</kbd> でパラメーターをマニフェストに追加。 サイドバーのパラメーターをクリックしてマニフェストから削除。",
+    "rebootAfterUpload": "アップロード後に再起動",
+    "specifyEntries": "name=value形式で1行ごとにエントリーを指定"
+  },
+  "parameterUploadSetupDialog": {
+    "uploadParameters": "パラメーターをアップロード"
+  },
   "preferences": "設定",
+  "preflightTab": {
+    "enterCheckItems": "希望のマニュアル・プリフライト・チェック項目を1行に1つずつ入力してください。",
+    "headingsHint": "コロン(：)で終わる行は見出しになります",
+    "manualPreflightCheckItems": "マニュアル・プリフライト・チェック項目"
+  },
   "recalculateMappingButton": {
     "findOptimalMapping": "最適マッピングを探す",
     "recalculateMapping": "マッピングを再計算"
