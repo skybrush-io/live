@@ -211,8 +211,8 @@
     "land": "Land",
     "landAll": "Land all",
     "selectionOnly": "Selection only",
-    "shutdown": "Shutdown",
-    "shutdownAll": "Shutdown all"
+    "shutdown": "Shut down",
+    "shutdownAll": "Shut down all"
   },
   "lightControl": {
     "connectToAServer": "Connect to a server to control lights",
