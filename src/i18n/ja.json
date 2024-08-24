@@ -1,6 +1,6 @@
 {
   "APIKeysTab": {
-    "description": "APIキーが必要のないマップタイルもありますが、今回はデフォルトのAPIキーが使用さrげマス。APIキーはすべてのユーザーと共有されます。デフォルトの共有APIキーを利用している場合マップタイルの可用性は保証しません。"
+    "description": "APIキーが必要のないマップタイルもありますが、今回はデフォルトのAPIキーが使用されます。APIキーはすべてのユーザーと共有されます。デフォルトの共有APIキーを利用している場合のマップタイルの可用性は保証されません。"
   },
   "ConnectionStatusMiniList": {
     "noConnections": "このサーバーはコネクションを使用しません。",
@@ -346,13 +346,15 @@
   "preflightTab": {
     "enterCheckItems": "希望のマニュアル・プリフライト・チェック項目を1行に1つずつ入力してください。",
     "headingsHint": "コロン(：)で終わる行は見出しになります",
-    "manualPreflightCheckItems": "マニュアル・プリフライト・チェック項目"
+    "manualPreflightCheckItems": "マニュアル・プリフライト・チェック項目",
+    "preflightCheckItems": "飛行前チェック項目"
   },
   "recalculateMappingButton": {
     "findOptimalMapping": "最適マッピングを探す",
     "recalculateMapping": "マッピングを再計算"
   },
   "safetyDialog": {
+    "geofence": "ジオフェンス",
     "geofenceTab": {
       "clear": "現在のジオフェンスをクリア",
       "errors": {
@@ -372,7 +374,26 @@
       "vertexCountReduction": "頂点数削減",
       "vertical": "垂直"
     },
+    "settings": "設定",
     "title": "ジオフェンスの設定"
+  },
+  "safetySettingsTab": {
+    "criticalBatteryVoltageHelperText": "バッテリー電圧が[V]単位で低下した場合、バッテリーのフェイルセーフ機能が作動します。",
+    "criticalBatteryVoltageLabel": "クリティカルバッテリー電圧",
+    "emptyValues": "空の値は、それぞれの安全値をオーバーライドしません",
+    "lowBatteryThresholdHelperText": "低バッテリーフェイルセーフアクションがトリガーされる低バッテリーしきい値のタイプと値。",
+    "lowBatteryThresholdType": {
+      "disabled": "無効",
+      "noOverride": "上書きなし",
+      "percentageBased": "パーセンテージ表記",
+      "voltageBased": "電圧表記"
+    },
+    "lowBatteryThresholdTypeLabel": "低バッテリーしきい値タイプ",
+    "lowBatteryThresholdValueLabel": "閾値",
+    "returnToHomeAltitudeHelperText": "RTH時の高度 [mAHL]",
+    "returnToHomeAltitudeLabel": "RTH高度",
+    "returnToHomeSpeedHelperText": "RTH時の水平速度[m/s]",
+    "returnToHomeSpeedLabel": "RTH速度"
   },
   "savedLocation": {
     "addNew": "新たな意味を追加",
@@ -396,6 +417,29 @@
     "roundTripTime": "ラウンドトリップタイム",
     "unknownState": "状態不明",
     "version": "サーバーのバージョン"
+  },
+  "serverSettingsDialog": {
+    "autodetected": "自動検出",
+    "autodiscoveryIsNotAvailable": "ご利用のバージョンでは自動検出はご利用できません",
+    "connect": "接続",
+    "connecting": "接続中…",
+    "connectingTo": "{{hostName}}に接続中…",
+    "disconnect": "切断",
+    "enterManually": "手動入力",
+    "hostname": "ホスト名",
+    "localConnection": "ローカル接続",
+    "manual": "手動",
+    "pleaseWait": "お待ちください…",
+    "port": "ポート",
+    "preconfiguredServer": "設定済みサーバー",
+    "scanningNetwork": "サーバーを検索中…",
+    "secureConnection": "保護された接続",
+    "serverSelectionRestricted": "ご利用のバージョンでは、他のサーバーへの接続はサポートされていません",
+    "unsecured": "(保護されていません)",
+    "unsecuredConnection": "保護されていない接続",
+    "useSecureConnection": "保護された接続を利用する",
+    "useWebSocketHelperText": "後方互換のみ",
+    "useWebSocketLabel": "WebSocketを使用"
   },
   "settings": {
     "display": {
@@ -534,8 +578,36 @@
     },
     "sortBy": "ソート"
   },
+  "startTimeDialog": {
+    "SMPTETimecode": "SMPTEタイムコード",
+    "errors": {
+      "invalidDate": "不正なデータ",
+      "invalidTime": "不正な時刻",
+      "pastDate": "過去の日付を設定することはできません",
+      "pastTime": "過去の時刻を設定することはできません"
+    },
+    "localTime": "ローカルタイム",
+    "reference": "リファレンス",
+    "resetForm": "フォームをリセット",
+    "setNewStartTime": "新しい開始時刻を設定",
+    "setTheStartTime": "以下にショーの開始時刻を新しく設定する",
+    "startDate": "開始日付",
+    "startShowAuto": "自動でショーを開始する",
+    "startShowWithRC": "リモートコントローラーでのみショーを開始する(より安全)",
+    "startSignal": "開始シグナル",
+    "startTime": "開始時刻",
+    "startTimeHms": "開始時刻(時間:分:秒)",
+    "suggestions": "サジェスト:"
+  },
+  "startTimeDisplay": {
+    "noStartTimeIsSet": "開始時刻が設定されていません",
+    "startTimeIsSetTo": "開始時刻を <strong>{{formattedStartTime}}</strong>に設定しました"
+  },
   "startUploadButton": {
     "startSelected": "選択したものを開始"
+  },
+  "surveyStatusIndicator": {
+    "noSurveyInformation": "調査情報はありません"
   },
   "takeoffAreaSetupDialog": {
     "allDroneOnline": "ミッション中のドローンはすべてオンラインです。",
@@ -583,6 +655,9 @@
     "clearUploadQueue": "アップロードキューをクリア",
     "restartSuccessfulItems": "成功したアイテムを再実行",
     "retryFailedItems": "失敗したアイテムをリトライ"
+  },
+  "uploadStatusLights": {
+    "noAvailableUAVs": "アップロード可能なUAVは存在しません"
   },
   "view": {
     "beacon-list": "ビーコン",
