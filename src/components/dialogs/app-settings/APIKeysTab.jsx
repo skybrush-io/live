@@ -1,3 +1,4 @@
+import config from 'config';
 import { TextField } from 'mui-rff';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -11,10 +12,16 @@ import Typography from '@material-ui/core/Typography';
 import FormSubmissionButtonRow from '~/components/forms/FormSubmissionButtonRow';
 import { updateAppSettings } from '~/features/settings/slice';
 
+const enabledTileProviders = config?.map?.tileProviders ?? {};
+
 const providers = [
+  enabledTileProviders.bingMaps ? { label: 'Bing Maps', key: 'BING' } : false,
+  enabledTileProviders.googleMaps
+    ? { label: 'Google Maps', key: 'GOOGLE' }
+    : false,
   { label: 'Mapbox', key: 'MAPBOX' },
   { label: 'Maptiler', key: 'MAPTILER' },
-];
+].filter(Boolean);
 
 const APIKeysTabPresentation = ({ apiKeys, onSubmit, t }) => (
   <Form initialValues={apiKeys} onSubmit={onSubmit}>

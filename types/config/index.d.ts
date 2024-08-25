@@ -184,6 +184,16 @@ declare module 'config' {
       origin?: Partial<Origin>;
 
       /**
+       * Allowed optional tile providers that we do not want to support in
+       * all builds, or that we are not allowed to expose in public builds due
+       * to licensing restrictions.
+       */
+      tileProviders: {
+        bingMaps: boolean;
+        googleMaps: boolean;
+      };
+
+      /**
        * The default position, rotation and zoom level of the map view.
        */
       view: View;

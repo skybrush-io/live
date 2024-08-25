@@ -119,6 +119,11 @@ const baseline: Config = {
       angle: '348',
     },
 
+    tileProviders: {
+      bingMaps: false,
+      googleMaps: false,
+    },
+
     view: {
       position: [19, 47.5],
       angle: '0',

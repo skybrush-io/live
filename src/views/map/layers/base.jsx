@@ -224,20 +224,25 @@ const LayerSourcePresentation = ({ apiKeys, tileLoadFunction, type }) => {
       );
 
     case Source.GOOGLE.DEFAULT:
+    case Source.GOOGLE.ROADS:
+    case Source.GOOGLE.SATELLITE: {
+      const mapType =
+        type === Source.GOOGLE.SATELLITE
+          ? 'satellite'
+          : type === Source.GOOGLE.DEFAULT
+            ? 'terrain'
+            : 'roadmap';
       return (
-        <source.XYZ
+        <source.Google
+          highDpi
+          apiKey={apiKeys.GOOGLE}
           tileLoadFunction={tileLoadFunction}
-          url='https://mt1.google.com/vt/lyrs=r&x={x}&y={y}&z={z}'
+          mapType={mapType}
+          layerTypes={['layerRoadmap']}
+          scale='scaleFactor2x'
         />
       );
-
-    case Source.GOOGLE.SATELLITE:
-      return (
-        <source.XYZ
-          tileLoadFunction={tileLoadFunction}
-          url='https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}'
-        />
-      );
+    }
 
     case Source.BING.AERIAL_WITH_LABELS:
       return (
