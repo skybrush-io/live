@@ -356,13 +356,9 @@ class ServerSettingsDialogPresentation extends React.Component {
             </DialogContent>
           );
           actions.push(
-            <Translation>
+            <Translation key='connect'>
               {(t) => (
-                <Button
-                  key='connect'
-                  color='primary'
-                  onClick={forceFormSubmission}
-                >
+                <Button color='primary' onClick={forceFormSubmission}>
                   {t('serverSettingsDialog.connect')}
                 </Button>
               )}
@@ -378,10 +374,9 @@ class ServerSettingsDialogPresentation extends React.Component {
 
     if (manualSetupAllowed) {
       actions.push(
-        <Translation>
+        <Translation key='disconnect'>
           {(t) => (
             <Button
-              key='disconnect'
               disabled={!active}
               onClick={active ? onDisconnect : undefined}
             >
@@ -393,12 +388,8 @@ class ServerSettingsDialogPresentation extends React.Component {
     }
 
     actions.push(
-      <Translation>
-        {(t) => (
-          <Button key='close' onClick={onClose}>
-            {t('general.action.close')}
-          </Button>
-        )}
+      <Translation key='close'>
+        {(t) => <Button onClick={onClose}>{t('general.action.close')}</Button>}
       </Translation>
     );
 
