@@ -346,7 +346,7 @@ export const makeDecimalCoordinateFormatter = ({
  * @returns The constructed function
  */
 export const makePolarCoordinateFormatter =
-  ({ digits, unit }: { digits?: number; unit?: string }) =>
+  ({ digits, unit }: { digits?: number; unit?: string | UnitDescriptor[] }) =>
   (coordinate: Coordinate2D): string => {
     if (coordinate) {
       return (
@@ -461,14 +461,23 @@ export const formatAltitudeWithReference = (altitude: Altitude): string => {
   const { reference, value } = altitude;
   const formattedValue = formatDistance(value);
 
-  if (reference === AltitudeReference.MSL) {
-    return formattedValue + ' AMSL';
-  } else if (reference === AltitudeReference.HOME) {
-    return formattedValue + ' above home';
-  } else if (reference === AltitudeReference.GROUND) {
-    return formattedValue + ' above ground';
-  } else {
-    return `${formattedValue} above unknown reference: ${String(reference)}`;
+  switch (reference) {
+    case AltitudeReference.MSL: {
+      return formattedValue + ' AMSL';
+    }
+
+    case AltitudeReference.HOME: {
+      return formattedValue + ' above home';
+    }
+
+    case AltitudeReference.GROUND: {
+      return formattedValue + ' above ground';
+    }
+
+    // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
+    default: {
+      return `${formattedValue} above unknown reference: ${String(reference)}`;
+    }
   }
 };
 
@@ -705,7 +714,7 @@ export class FlatEarthCoordinateSystem {
     ellipsoid = WGS84,
   }: {
     origin: Coordinate2D;
-    orientation?: number;
+    orientation?: number | string;
     type?: string;
     ellipsoid?: EllipsoidModel;
   }) {

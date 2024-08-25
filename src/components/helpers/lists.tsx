@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable @typescript-eslint/ban-types */
 /**
  * @file List-related component helper functions and higher order components.
  */
@@ -11,14 +13,69 @@ import xor from 'lodash-es/xor';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { type PropsWithoutRef, type RefAttributes } from 'react';
 import { isElement } from 'react-is';
 
 import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
 
 import { eventHasPlatformModifierKey } from '~/utils/platform';
+import type { AppDispatch, RootState } from '~/store/reducers';
+import type { AnyAction } from '@reduxjs/toolkit';
 
-const createBackgroundHint = (backgroundHint, ref) => {
+type ItemWithId = { id: string };
+type ItemRenderer<T extends ItemWithId, P> = (
+  item: T,
+  props: P,
+  selected?: boolean
+) => React.ReactElement;
+type ListFactory<P> = (
+  props: P,
+  children: React.ReactElement[],
+  ref: React.ForwardedRef<unknown>
+) => JSX.Element;
+
+type ValidatedListOfOptions<T, P> = {
+  backgroundHint?: string | React.ReactElement;
+  dataProvider: (props: P) => T[];
+  displayName?: string;
+  listFactory: ListFactory<P>;
+  postprocess: (items: React.ReactElement[], props: P) => React.ReactElement[];
+};
+
+type ListOfOptions<T, P> = Omit<
+  Partial<ValidatedListOfOptions<T, P>>,
+  'dataProvider' | 'listFactory'
+> & {
+  listFactory?: undefined | ListFactory<P> | React.ComponentType<P>;
+  dataProvider?: string | ((props: P) => T[]);
+};
+type SelectableListProps<T> = {
+  onChange?: (event: React.UIEvent, item: T) => void;
+  value: string;
+};
+
+type MultiSelectableListProps = {
+  onActivate?: (item: string) => void;
+  onChange?: (items: string[]) => void;
+  value: string[];
+};
+
+type SelectionHandlerFunctions<T = string> = {
+  activateItem?: (item: T) => void;
+  getSelection: () => T[];
+  setSelection?: (value: T[]) => void;
+};
+
+type SelectionHandlerReduxFunctions<T = string> = {
+  activateItem?: (item: T) => AnyAction;
+  getSelection: (state: RootState) => T[];
+  setSelection?: (value: T[]) => AnyAction;
+};
+
+const createBackgroundHint = (
+  backgroundHint: string | React.ReactElement | undefined,
+  ref: React.ForwardedRef<unknown>
+): JSX.Element | null => {
   if (isElement(backgroundHint)) {
     return <div>{backgroundHint}</div>;
   }
@@ -61,7 +118,12 @@ const createBackgroundHint = (backgroundHint, ref) => {
  *         populated with the children
  * @return {React.Component}  the constructed React component
  */
-export function listOf(itemRenderer, options = {}) {
+export function listOf<T extends ItemWithId, P>(
+  itemRenderer: ItemRenderer<T, P>,
+  options: ListOfOptions<T, P> = {}
+): React.ForwardRefExoticComponent<
+  PropsWithoutRef<P> & RefAttributes<unknown>
+> {
   const {
     backgroundHint,
     dataProvider,
@@ -72,7 +134,7 @@ export function listOf(itemRenderer, options = {}) {
   itemRenderer = validateItemRenderer(itemRenderer);
 
   // A separate variable is needed here to make ESLint happy
-  const ListView = React.forwardRef((props, ref) => {
+  const ListView = React.forwardRef((props: P, ref) => {
     const items = dataProvider(props);
     const children = postprocess(
       items.map((item) => itemRenderer(item, props)),
@@ -107,39 +169,44 @@ export function listOf(itemRenderer, options = {}) {
  * and that _toggles_ the item in the current selection when it receives an
  * event _with_ the Ctrl (Cmd) key being pressed.
  */
-export function createSelectionHandlerFactory({
+export function createSelectionHandlerFactory<T = string>({
   activateItem,
   getSelection,
   setSelection,
-}) {
+}: SelectionHandlerFunctions<T>) {
   if (!setSelection && !activateItem) {
-    return () => undefined;
+    return (): undefined => undefined;
   }
 
-  return (id) => (event) => {
-    const selection = getSelection ? getSelection() : [];
+  return (id: T) =>
+    (event: React.UIEvent): void => {
+      const selection = getSelection ? getSelection() : [];
 
-    if (eventHasPlatformModifierKey(event.nativeEvent || event)) {
-      // Toggling the item
-      return setSelection(xor(selection, [id]));
-    }
-
-    // Cater for the common case when we are re-selecting an item; no need to
-    // dispatch an action again, but we need to fire activateItem if we have
-    // one
-    if (selection && selection.length === 1 && selection[0] === id) {
-      if (activateItem) {
-        // Item was already selected, let's activate it
-        return activateItem(id);
-      } else {
-        // Item was already selected, no need to dispatch an action
-        return;
+      if (
+        eventHasPlatformModifierKey(event.nativeEvent || event) && // Toggling the item
+        setSelection
+      ) {
+        setSelection(xor(selection, [id]));
       }
-    }
 
-    // Select the item
-    return setSelection([id]);
-  };
+      // Cater for the common case when we are re-selecting an item; no need to
+      // dispatch an action again, but we need to fire activateItem if we have
+      // one
+      if (selection && selection.length === 1 && selection[0] === id) {
+        if (activateItem) {
+          // Item was already selected, let's activate it
+          activateItem(id);
+        } else {
+          // Item was already selected, no need to dispatch an action
+          return;
+        }
+      }
+
+      // Select the item
+      if (setSelection) {
+        setSelection([id]);
+      }
+    };
 }
 
 /**
@@ -153,48 +220,54 @@ export function createSelectionHandlerFactory({
  * selection when the items are clicked with the Ctrl (Cmd) key being pressed.
  * It also handles optional item activation with double-clicks.
  */
-export function createSelectionHandlerThunk({
+export function createSelectionHandlerThunk<T = string>({
   activateItem,
   getSelection,
   setSelection,
-}) {
+}: SelectionHandlerReduxFunctions<T>) {
   if (!setSelection && !activateItem) {
     return null;
   }
 
-  return (event, id) => (dispatch, getState) => {
-    const state = getState();
-    const selection = getSelection ? getSelection(state) : [];
-    let action;
+  return (event: React.UIEvent, id: T) =>
+    (dispatch: AppDispatch, getState: () => RootState) => {
+      const state = getState();
+      const selection = getSelection ? getSelection(state) : [];
+      let action;
 
-    if (eventHasPlatformModifierKey(event.nativeEvent || event)) {
-      // Toggling the item
-      action = setSelection(xor(selection, [id]));
-    } else {
-      const alreadySelected =
-        selection && selection.length === 1 && selection[0] === id;
+      if (
+        eventHasPlatformModifierKey(event.nativeEvent || event) &&
+        setSelection
+      ) {
+        // Toggling the item
+        action = setSelection(xor(selection, [id]));
+      } else {
+        const alreadySelected =
+          selection && selection.length === 1 && selection[0] === id;
 
-      if (activateItem && alreadySelected) {
-        // Item was already selected, let's activate it if it is a double-click,
-        // otherwise do nothing. We use the "detail" property of the
-        // event to decide; this works if we are attached to the onClick handler.
-        action = event.detail > 1 ? activateItem(id) : null;
-        if (event.detail > 1) {
-          // Double-clicking may have triggered a text selection on the UI. We
-          // are too late to prevent it because it happens on mouseDown, so let's
-          // just clear it.
-          window.getSelection().removeAllRanges();
+        if (activateItem && alreadySelected) {
+          // Item was already selected, let's activate it if it is a double-click,
+          // otherwise do nothing. We use the "detail" property of the
+          // event to decide; this works if we are attached to the onClick handler.
+          action = event.detail > 1 ? activateItem(id) : null;
+          if (event.detail > 1) {
+            // Double-clicking may have triggered a text selection on the UI. We
+            // are too late to prevent it because it happens on mouseDown, so let's
+            // just clear it.
+            window.getSelection()?.removeAllRanges();
+          }
+        } else if (
+          setSelection &&
+          !alreadySelected // Select the item if it was not selected already
+        ) {
+          action = setSelection([id]);
         }
-      } else if (setSelection && !alreadySelected) {
-        // Select the item if it was not selected already
-        action = setSelection([id]);
       }
-    }
 
-    if (action) {
-      dispatch(action);
-    }
-  };
+      if (action) {
+        dispatch(action);
+      }
+    };
 }
 
 /**
@@ -241,7 +314,15 @@ export function createSelectionHandlerThunk({
  *         component and returns the root React component of the list
  * @return {React.Component}  the constructed React component
  */
-export function selectableListOf(itemRenderer, options = {}) {
+export function selectableListOf<
+  T extends ItemWithId,
+  P extends SelectableListProps<T>,
+>(
+  itemRenderer: ItemRenderer<T, P>,
+  options: Partial<ValidatedListOfOptions<T, P>> = {}
+): React.ForwardRefExoticComponent<
+  PropsWithoutRef<P> & React.RefAttributes<unknown>
+> {
   const {
     backgroundHint,
     dataProvider,
@@ -252,7 +333,7 @@ export function selectableListOf(itemRenderer, options = {}) {
   itemRenderer = validateItemRenderer(itemRenderer);
 
   // A separate variable is needed here to make ESLint happy
-  const SelectableListView = React.forwardRef((props, ref) => {
+  const SelectableListView = React.forwardRef((props: P, ref) => {
     const items = dataProvider(props);
     const children = postprocess(
       items.map((item) =>
@@ -262,7 +343,9 @@ export function selectableListOf(itemRenderer, options = {}) {
             ...props,
             onChange: undefined,
             onItemSelected: props.onChange
-              ? (event) => props.onChange(event, item)
+              ? (event: React.UIEvent) => {
+                  props.onChange!(event, item);
+                }
               : undefined,
           },
           item.id === props.value
@@ -277,10 +360,11 @@ export function selectableListOf(itemRenderer, options = {}) {
     return createBackgroundHint(backgroundHint, ref);
   });
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   SelectableListView.propTypes = {
     onChange: PropTypes.func,
-    value: PropTypes.any,
-  };
+    value: PropTypes.string,
+  } as any;
 
   if (displayName) {
     SelectableListView.displayName = displayName;
@@ -342,7 +426,15 @@ export function selectableListOf(itemRenderer, options = {}) {
  *         component and returns the root React component of the list
  * @return {React.Component}  the constructed React component
  */
-export function multiSelectableListOf(itemRenderer, options = {}) {
+export function multiSelectableListOf<
+  T extends ItemWithId,
+  P extends MultiSelectableListProps,
+>(
+  itemRenderer: ItemRenderer<T, P>,
+  options: Partial<ValidatedListOfOptions<T, P>> = {}
+): React.ForwardRefExoticComponent<
+  PropsWithoutRef<P> & React.RefAttributes<unknown>
+> {
   const {
     backgroundHint,
     dataProvider,
@@ -353,7 +445,7 @@ export function multiSelectableListOf(itemRenderer, options = {}) {
   itemRenderer = validateItemRenderer(itemRenderer);
 
   // A separate variable is needed here to make ESLint happy
-  const MultiSelectableListView = React.forwardRef((props, ref) => {
+  const MultiSelectableListView = React.forwardRef((props: P, ref) => {
     const items = dataProvider(props);
     const onItemSelected = createSelectionHandlerFactory({
       activateItem: props.onActivate,
@@ -381,11 +473,12 @@ export function multiSelectableListOf(itemRenderer, options = {}) {
     return createBackgroundHint(backgroundHint, ref);
   });
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   MultiSelectableListView.propTypes = {
     onActivate: PropTypes.func,
     onChange: PropTypes.func,
-    value: PropTypes.arrayOf(PropTypes.any).isRequired,
-  };
+    value: PropTypes.arrayOf(PropTypes.string).isRequired,
+  } as any;
 
   if (displayName) {
     MultiSelectableListView.displayName = displayName;
@@ -402,7 +495,9 @@ export function multiSelectableListOf(itemRenderer, options = {}) {
  * @param  {Object} options  the options passed to the list generation helper
  * @return {Object} the transformed options
  */
-const validateOptions = (options) => ({
+const validateOptions = <T, P>(
+  options: ListOfOptions<T, P>
+): ValidatedListOfOptions<T, P> => ({
   postprocess: identity,
   ...options,
   dataProvider: validateDataProvider(options.dataProvider),
@@ -417,8 +512,8 @@ const validateOptions = (options) => ({
  * @return {boolean}  whether the given array or immutable list contains
  *         at least one item
  */
-function hasSomeItems(array) {
-  return array && (array.length > 0 || array.size > 0);
+function hasSomeItems(array: any): array is unknown[] {
+  return Array.isArray(array) && array.length > 0;
 }
 
 /**
@@ -431,11 +526,16 @@ function hasSomeItems(array) {
  *         items to show in the generated component
  * @return {function} the input argument converted into a function
  */
-function validateDataProvider(dataProvider) {
+function validateDataProvider<T, P>(
+  dataProvider: ListOfOptions<T, P>['dataProvider']
+): (props: P) => T[] {
   return isFunction(dataProvider)
     ? dataProvider
-    : (value) => get(value, dataProvider);
+    : (value: P) => get(value, dataProvider as any) as T[];
 }
+
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 
 /**
  * Helper function that validates the incoming itemRenderer argument of the
@@ -450,22 +550,24 @@ function validateDataProvider(dataProvider) {
  *         incoming React component converted into a suitable item renderer
  *         function
  */
-function validateItemRenderer(itemRenderer) {
+function validateItemRenderer<T extends ItemWithId, P>(
+  itemRenderer: ItemRenderer<T, P> | React.ComponentType<P>
+): ItemRenderer<T, P> {
   if (Object.prototype.isPrototypeOf.call(React.Component, itemRenderer)) {
     /* eslint-disable react/prop-types */
     const clickHandler = itemRenderer === ListItem ? 'onTouchTap' : 'onClick';
-    return (item, props, selected) => {
-      return React.createElement(itemRenderer, {
+    return (item: T, props: P, selected = false) => {
+      return React.createElement(itemRenderer as any, {
         ...item,
         key: item.id,
-        [clickHandler]: props.onItemSelected,
+        [clickHandler]: (props as any).onItemSelected,
         selected,
       });
     };
     /* eslint-enable react/prop-types */
+  } else {
+    return itemRenderer as ItemRenderer<T, P>;
   }
-
-  return itemRenderer;
 }
 
 /**
@@ -474,32 +576,40 @@ function validateItemRenderer(itemRenderer) {
  * argument is a React component, it returns a function that returns this
  * component; otherwise it returns the incoming argument intact.
  *
- * @param  {function|React.Component|undefined} listFactory  the list
- *         factory function or component
- * @return {function} the incoming list factory function, intact, or a
+ * @param  listFactory  the list factory function or component
+ * @return the incoming list factory function, intact, or a
  *         function that returns the incoming React component, or undefined
  *         if the incoming argument was undefined
  */
-function validateListFactory(listFactory) {
+function validateListFactory<P>(
+  listFactory: undefined | React.ComponentType<P> | ListFactory<P>
+): ListFactory<P> {
   if (listFactory === undefined) {
-    /* eslint-disable react/prop-types */
-    return (props, children, ref) => {
+    return (
+      props: P,
+      children: React.ReactElement[],
+      ref: React.ForwardedRef<unknown>
+    ) => {
+      const anyProps = props as any;
       return React.createElement(
         List,
         {
-          dense: props.dense || props.mini,
-          disablePadding: props.disablePadding || props.mini,
-          ref,
+          dense: anyProps.dense || anyProps.mini,
+          disablePadding: anyProps.disablePadding || anyProps.mini,
+          ref: ref as any,
         },
         children
       );
     };
-    /* eslint-enable react/prop-types */
   }
 
   if (Object.prototype.isPrototypeOf.call(React.Component, listFactory)) {
-    return partial(React.createElement, listFactory);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    return partial(React.createElement, listFactory as any) as any;
   }
 
-  return listFactory;
+  return listFactory as ListFactory<P>;
 }
+
+/* eslint-enable @typescript-eslint/no-unsafe-assignment */
+/* eslint-enable @typescript-eslint/no-unsafe-argument */

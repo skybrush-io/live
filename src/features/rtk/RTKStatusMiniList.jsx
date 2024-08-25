@@ -10,7 +10,7 @@ import MiniListItem from '@skybrush/mui-components/lib/MiniListItem';
 import GPSFixStatusMiniList from '~/components/uavs/GPSFixStatusMiniList';
 
 import { getSatelliteIds, getSurveyStatus } from './selectors';
-import { formatSurveyAccuracy, RTKPropTypes } from './utils';
+import { formatSurveyAccuracy } from './utils';
 
 const listStyle = {
   minWidth: 150,
@@ -71,8 +71,8 @@ const RTKStatusMiniList = ({ satelliteIds, surveyStatus, t }) => {
             surveyStatus.valid
               ? t('RTKStatusMiniList.surveySuccesful')
               : surveyStatus.active
-              ? t('RTKStatusMiniList.surveyInProgress')
-              : t('RTKStatusMiniList.surveyNo')
+                ? t('RTKStatusMiniList.surveyInProgress')
+                : t('RTKStatusMiniList.surveyNo')
           }
           secondaryText={
             typeof surveyStatus.accuracy === 'number'
@@ -83,8 +83,8 @@ const RTKStatusMiniList = ({ satelliteIds, surveyStatus, t }) => {
             surveyStatus.valid
               ? 'success'
               : surveyStatus.active
-              ? 'connecting'
-              : 'disconnected'
+                ? 'connecting'
+                : 'disconnected'
           }
         />
       )}
@@ -112,7 +112,12 @@ const RTKStatusMiniList = ({ satelliteIds, surveyStatus, t }) => {
 
 RTKStatusMiniList.propTypes = {
   satelliteIds: PropTypes.arrayOf(PropTypes.string),
-  surveyStatus: RTKPropTypes.survey,
+  surveyStatus: PropTypes.shape({
+    accuracy: PropTypes.number,
+    active: PropTypes.bool,
+    supported: PropTypes.bool,
+    valid: PropTypes.bool,
+  }),
   t: PropTypes.func,
 };
 

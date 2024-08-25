@@ -3,19 +3,21 @@ import sortBy from 'lodash-es/sortBy';
 import { createSelector } from '@reduxjs/toolkit';
 
 import { getPreferredCoordinateFormatter } from '~/selectors/formatting';
+import type { RootState } from '~/store/reducers';
+import { RTKAntennaPositionFormat } from './types';
 
 /**
  * Returns whether the antenna position should be shown in ECEF coordinates.
  */
-export const isShowingAntennaPositionInECEF = (state) =>
-  state.rtk.dialog.antennaPositionFormat === 'ecef';
+export const isShowingAntennaPositionInECEF = (state: RootState): boolean =>
+  state.rtk.dialog.antennaPositionFormat === RTKAntennaPositionFormat.ECEF;
 
 /**
  * Returns the formatted antenna position, or undefined if we do not know the
  * antenna position yet.
  */
 export const getFormattedAntennaPosition = createSelector(
-  (state) => state.rtk.stats.antenna,
+  (state: RootState) => state.rtk.stats.antenna,
   getPreferredCoordinateFormatter,
   isShowingAntennaPositionInECEF,
   (antennaInfo, formatter, isECEF) => {
@@ -38,7 +40,7 @@ export const getFormattedAntennaPosition = createSelector(
  * format they should appear on the UI.
  */
 export const getAntennaInfoSummary = createSelector(
-  (state) => state.rtk.stats.antenna,
+  (state: RootState) => state.rtk.stats.antenna,
   getFormattedAntennaPosition,
   (antennaInfo, formattedPosition) => {
     if (!antennaInfo) {
@@ -47,6 +49,7 @@ export const getAntennaInfoSummary = createSelector(
 
     const result = {
       position: formattedPosition,
+      description: '',
     };
 
     // AMSL is not included because it is not in the same reference coordinate
@@ -57,13 +60,13 @@ export const getAntennaInfoSummary = createSelector(
     }
     */
 
-    const serialNumber = String(antennaInfo.serialNumber || '');
+    const serialNumber = String(antennaInfo.serialNumber ?? '');
     if (serialNumber && serialNumber.length > 0) {
       result.description = `${
-        antennaInfo.descriptor || ''
+        antennaInfo.descriptor ?? ''
       } / SN: ${serialNumber}`;
     } else {
-      result.description = String(antennaInfo.descriptor || '');
+      result.description = String(antennaInfo.descriptor ?? '');
     }
 
     return result;
@@ -75,7 +78,7 @@ export const getAntennaInfoSummary = createSelector(
  * on the UI.
  */
 export const getDisplayedListOfMessages = createSelector(
-  (state) => state.rtk.stats.messages,
+  (state: RootState) => state.rtk.stats.messages,
   (messages) =>
     sortBy(
       Object.entries(messages || {}).map(([messageId, message]) => ({
@@ -91,7 +94,7 @@ export const getDisplayedListOfMessages = createSelector(
  * should appear on the UI.
  */
 export const getDisplayedSatelliteCNRValues = createSelector(
-  (state) => state.rtk.stats.satellites,
+  (state: RootState) => state.rtk.stats.satellites,
   (satelliteInfos) =>
     sortBy(
       Object.entries(satelliteInfos || {}).map(
@@ -116,7 +119,8 @@ export const getSatelliteIds = createSelector(
  * Returns the number of satellites for which we currently have a CNR
  * (carrier-to-noise ratio) information.
  */
-export const getNumberOfSatellites = (state) => getSatelliteIds(state).length;
+export const getNumberOfSatellites = (state: RootState): number =>
+  getSatelliteIds(state).length;
 
 /**
  * Returns the number of satellites for which the carrier-to-noise ratio is
@@ -141,8 +145,8 @@ export const getNumberOfGoodSatellites = createSelector(
  * Returns an object summarizing the status of the survey procedure.
  */
 export const getSurveyStatus = createSelector(
-  (state) => state.rtk.stats.survey,
-  ({ accuracy, flags } = {}) => ({
+  (state: RootState) => state.rtk.stats.survey,
+  ({ accuracy, flags = 0 }) => ({
     accuracy,
     supported: Boolean(flags & 1),
     active: Boolean(flags & 2),
@@ -153,5 +157,5 @@ export const getSurveyStatus = createSelector(
 /**
  * Returns whether the survey settings panel should be visible.
  */
-export const shouldShowSurveySettings = (state) =>
+export const shouldShowSurveySettings = (state: RootState): boolean =>
   state.rtk.dialog.surveySettingsEditorVisible;

@@ -3,8 +3,11 @@
  */
 
 import { createSelector } from '@reduxjs/toolkit';
+import { OriginType } from '~/features/map/types';
+import type { RootState } from '~/store/reducers';
 
 import { FlatEarthCoordinateSystem } from '~/utils/geography';
+import type { Coordinate2D } from '~/utils/math';
 
 /**
  * Selector that returns a conversion object that can be used to transform
@@ -12,7 +15,7 @@ import { FlatEarthCoordinateSystem } from '~/utils/geography';
  * current parameters set in the state object.
  */
 export const getFlatEarthCoordinateTransformer = createSelector(
-  (state) => state.map.origin,
+  (state: RootState) => state.map.origin,
   (origin) =>
     origin.position
       ? new FlatEarthCoordinateSystem({
@@ -26,7 +29,8 @@ export const getFlatEarthCoordinateTransformer = createSelector(
 /**
  * Selector that returns the center position of the map view in lon-lat format.
  */
-export const getMapViewCenterPosition = (state) => state.map.view.position;
+export const getMapViewCenterPosition = (state: RootState): Coordinate2D =>
+  state.map.view.position;
 
 /**
  * Selector that returns the rotation angle of the map view, cast into a
@@ -37,7 +41,7 @@ export const getMapViewCenterPosition = (state) => state.map.view.position;
  * a float instead.
  */
 export const getMapViewRotationAngle = createSelector(
-  (state) => state.map.view.angle,
+  (state: RootState) => state.map.view.angle,
   Number.parseFloat
 );
 
@@ -50,7 +54,7 @@ export const getMapViewRotationAngle = createSelector(
  * a float instead.
  */
 export const getMapOriginRotationAngle = createSelector(
-  (state) => state.map.origin.angle,
+  (state: RootState) => state.map.origin.angle,
   Number.parseFloat
 );
 
@@ -58,11 +62,11 @@ export const getMapOriginRotationAngle = createSelector(
  * Selector that returns whether the current coordinate system is left-handed
  * or right-handed.
  */
-export const isMapCoordinateSystemLeftHanded = (state) =>
-  state.map.origin.type === 'neu';
+export const isMapCoordinateSystemLeftHanded = (state: RootState): boolean =>
+  state.map.origin.type === OriginType.NEU;
 
 /**
  * Selector that returns whether the map coordinate system is specified.
  */
-export const isMapCoordinateSystemSpecified = (state) =>
+export const isMapCoordinateSystemSpecified = (state: RootState): boolean =>
   Array.isArray(state.map.origin.position);

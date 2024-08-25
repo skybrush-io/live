@@ -18,7 +18,7 @@ import {
   getSurveyStatus,
 } from './selectors';
 import { showRTKSetupDialog } from './slice';
-import { formatSurveyAccuracy, RTKPropTypes } from './utils';
+import { formatSurveyAccuracy } from './utils';
 
 const BADGE_OFFSET = [24, 8];
 
@@ -49,8 +49,8 @@ const RTKStatusHeaderButton = ({
       badgeStatus = surveyStatus.valid
         ? Status.SUCCESS
         : surveyStatus.active
-        ? Status.NEXT
-        : Status.ERROR;
+          ? Status.NEXT
+          : Status.ERROR;
     } else {
       // If the RTK device does not support surveying, simply show success if
       // we have info about at least one satellite
@@ -100,7 +100,12 @@ RTKStatusHeaderButton.propTypes = {
   numGoodSatellites: PropTypes.number,
   numSatellites: PropTypes.number,
   showRTKSetupDialog: PropTypes.func,
-  surveyStatus: RTKPropTypes.survey,
+  surveyStatus: PropTypes.shape({
+    accuracy: PropTypes.number,
+    active: PropTypes.bool,
+    supported: PropTypes.bool,
+    valid: PropTypes.bool,
+  }),
 };
 
 export default connect(

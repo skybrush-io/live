@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import React from 'react';
 import { Translation } from 'react-i18next';
 import { connect } from 'react-redux';
@@ -13,14 +12,21 @@ import { shortTimeAgoFormatter } from '~/utils/formatting';
 
 import { getDisplayedListOfMessages } from './selectors';
 import { describeMessageType } from './utils';
+import type { RootState } from '~/store/reducers';
 
 /* ************************************************************************ */
+
+type RTKMessageStatisticsListEntryProps = {
+  readonly bitsPerSecond: number;
+  readonly id: string;
+  readonly lastUpdatedAt: number;
+};
 
 const RTKMessageStatisticsListEntry = ({
   bitsPerSecond,
   id,
   lastUpdatedAt,
-}) => (
+}: RTKMessageStatisticsListEntryProps): JSX.Element => (
   <Box key={id} display='flex'>
     <Box width={80} color='text.secondary'>
       {id}
@@ -35,12 +41,6 @@ const RTKMessageStatisticsListEntry = ({
   </Box>
 );
 
-RTKMessageStatisticsListEntry.propTypes = {
-  bitsPerSecond: PropTypes.number,
-  id: PropTypes.string,
-  lastUpdatedAt: PropTypes.number,
-};
-
 const RTKMessageStatistics = listOf(RTKMessageStatisticsListEntry, {
   dataProvider: 'items',
   backgroundHint: (
@@ -52,7 +52,7 @@ const RTKMessageStatistics = listOf(RTKMessageStatisticsListEntry, {
 
 export default connect(
   // mapStateToProps
-  (state) => ({
+  (state: RootState) => ({
     dense: true,
     disablePadding: true,
     items: getDisplayedListOfMessages(state),

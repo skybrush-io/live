@@ -1,6 +1,6 @@
-import PropTypes from 'prop-types';
+/* eslint-disable @typescript-eslint/naming-convention */
 
-const descriptions = {
+const descriptions: Record<string, string> = {
   'rtcm2/1': 'Differential GPS Corrections',
   'rtcm2/2': 'Delta Differential GPS Corrections',
   'rtcm2/3': 'GNSS Reference Station Parameters',
@@ -97,32 +97,26 @@ const descriptions = {
   'rtcm3/1230': 'GLONASS L1 and L2 code-phase biases',
 };
 
-export function describeMessageType(type) {
+export function describeMessageType(type: string): string {
   return (
-    descriptions[type] ||
-    (type && type.startsWith('rtcm2/')
+    descriptions[type] ??
+    (type?.startsWith('rtcm2/')
       ? `RTCMv2 message, type ${type.slice(6)}`
-      : type && type.startsWith('rtcm3/')
-      ? `RTCMv3 message, type ${type.slice(6)}`
-      : `Unknown message, type ${type}`)
+      : type?.startsWith('rtcm3/')
+        ? `RTCMv3 message, type ${type.slice(6)}`
+        : `Unknown message, type ${type}`)
   );
 }
 
-export function formatSurveyAccuracy(value, { max = 20, short = false } = {}) {
+export function formatSurveyAccuracy(
+  value: number,
+  { max = 20, short = false } = {}
+): string {
   return value > max
     ? `> ${max}m`
     : value >= 1
-    ? value.toFixed(2) + 'm'
-    : value >= 0.1
-    ? (value * 100).toFixed(short ? 0 : 1) + 'cm'
-    : (value * 100).toFixed(1) + 'cm';
+      ? value.toFixed(2) + 'm'
+      : value >= 0.1
+        ? (value * 100).toFixed(short ? 0 : 1) + 'cm'
+        : (value * 100).toFixed(1) + 'cm';
 }
-
-export const RTKPropTypes = {
-  survey: PropTypes.shape({
-    accuracy: PropTypes.number,
-    active: PropTypes.bool,
-    supported: PropTypes.bool,
-    valid: PropTypes.bool,
-  }),
-};
