@@ -33,8 +33,8 @@ export type RTKStatistics = {
 
   /**
    * RTCM messages recently processed by the server and their bandwidth
-   * requirement. Keys are RTCM message identifiers; each associated value is
-   * the corresponding bandwidth usage and the timestamp.
+   * requirements (inbound and outbound). Keys are RTCM message identifiers;
+   * each associated value is the corresponding bandwidth usage and the timestamp.
    */
   messages: Record<
     string,
@@ -46,10 +46,16 @@ export type RTKStatistics = {
       lastUpdatedAt: number;
 
       /**
-       * Number of bytes per second that this RTCM
-       * message used from the total bandwidth
+       * Number of bytes per second that we used to receive RTCM messages of
+       * this type.
        */
-      bitsPerSecond: number;
+      bitsPerSecondReceived: number;
+
+      /**
+       * Number of bytes per second that we used to forward RTCM messages of
+       * this type. undefined if the server did not provide it.
+       */
+      bitsPerSecondTransferred: number | undefined;
     }
   >;
 

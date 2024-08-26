@@ -299,6 +299,7 @@ export async function getRTKStatus(hub) {
     return {
       antenna: response.body.antenna,
       messages: response.body.messages,
+      messagesTx: response.body.messages_tx,
       cnr: response.body.cnr,
       survey: response.body.survey,
     };

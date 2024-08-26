@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added a new panel for monitoring and controlling one specific drone and its
   devices.
 
+- The RTK corrections dialog now shows which of the RTK messages are being
+  forwarded to the drones, assuming that the server sends this information.
+
 ### Fixed
 
 - Fixed an issue with degenerate geofences consisting of one or two points only.
