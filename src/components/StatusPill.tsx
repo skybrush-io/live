@@ -1,11 +1,11 @@
 import clsx from 'clsx';
-import PropTypes from 'prop-types';
 import React from 'react';
 
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, type Theme } from '@material-ui/core/styles';
 import { colorForStatus, Status } from '@skybrush/app-theme-material-ui';
 
-const createStyleForStatus = (status, theme) => {
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+const createStyleForStatus = (status: Status, theme: Theme) => {
   const backgroundColor = colorForStatus(status);
   return {
     backgroundColor,
@@ -13,7 +13,8 @@ const createStyleForStatus = (status, theme) => {
   };
 };
 
-const createStyleForHollowStatus = (status) => {
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+const createStyleForHollowStatus = (status: Status) => {
   const color = colorForStatus(status);
   return { color };
 };
@@ -23,11 +24,12 @@ const FLASH_STYLE = {
   animationDirection: 'alternate',
 };
 
+/* eslint-disable @typescript-eslint/naming-convention */
 const useStyles = makeStyles(
-  (theme) => ({
+  (theme: Theme) => ({
     root: {
       borderRadius: theme.spacing(1),
-      color: theme.palette.getContrastText.primary,
+      color: theme.palette.primary.contrastText,
       fontSize: 'small',
       overflow: 'hidden',
       padding: `0 ${theme.spacing(0.5)}`,
@@ -70,6 +72,8 @@ const useStyles = makeStyles(
       fontWeight: 'bold',
     },
 
+    'status-missing': {},
+
     'status-hollow-off': {
       color: theme.palette.text.secondary,
     },
@@ -101,6 +105,8 @@ const useStyles = makeStyles(
       fontWeight: 'bold',
     },
 
+    'status-hollow-missing': {},
+
     '@keyframes flash': {
       '0%, 49%': {
         opacity: 0.5,
@@ -112,6 +118,15 @@ const useStyles = makeStyles(
   }),
   { name: 'StatusPill' }
 );
+/* eslint-enable @typescript-eslint/naming-convention */
+
+type StatusPillProps = Readonly<{
+  children?: React.ReactNode;
+  className?: string;
+  inline?: boolean;
+  hollow?: boolean;
+  status?: Status;
+}>;
 
 /**
  * Summary pill that can be placed below the drone avatar to show a single
@@ -122,9 +137,9 @@ const StatusPill = ({
   className,
   inline,
   hollow,
-  status,
+  status = Status.INFO,
   ...rest
-}) => {
+}: StatusPillProps): JSX.Element => {
   const classes = useStyles();
   return (
     <div
@@ -141,18 +156,6 @@ const StatusPill = ({
       {children}
     </div>
   );
-};
-
-StatusPill.propTypes = {
-  children: PropTypes.node,
-  className: PropTypes.string,
-  hollow: PropTypes.bool,
-  inline: PropTypes.bool,
-  status: PropTypes.oneOf(Object.values(Status)),
-};
-
-StatusPill.defaultProps = {
-  status: Status.INFO,
 };
 
 export default StatusPill;
