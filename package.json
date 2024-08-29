@@ -30,7 +30,7 @@
     "@collmot/react-socket": "^2.0.0",
     "@date-io/core": "^1.3.13",
     "@date-io/date-fns": "^1.3.13",
-    "@fontsource/fira-sans": "^5.0.19",
+    "@fontsource/fira-sans": "^5.0.21",
     "@fvilers/disable-react-devtools": "^1.3.0",
     "@loadable/component": "^5.16.3",
     "@material-ui/core": "^4.12.4",
