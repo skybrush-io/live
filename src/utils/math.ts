@@ -255,12 +255,10 @@ export function closePolygon(poly: Coordinate2D[]): void {
 /**
  * Returns the 2D convex hull of a set of coordinates.
  */
-export const convexHull = (coordinates: Coordinate2D[]): Coordinate2D[] => {
-  const indices = monotoneConvexHull2D(coordinates);
-  return coordinates
-    .filter((_c, i) => indices.includes(i))
-    .map((c) => (c.length > 2 ? [c[0], c[1]] : c));
-};
+export const convexHull = (coordinates: Coordinate2D[]): Coordinate2D[] =>
+  monotoneConvexHull2D(coordinates)
+    .map((index) => coordinates[index])
+    .flatMap((c) => (c ? [c.length > 2 ? [c[0], c[1]] : c] : []));
 
 /**
  * Creates an appropriate Turf.js geometry from the given list of coordinates.
