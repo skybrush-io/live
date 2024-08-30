@@ -1,4 +1,5 @@
-import '@fontsource/fira-sans';
+import '@fontsource/fira-sans/400.css';
+import '@fontsource/fira-sans/500.css';
 
 import { disableReactDevTools } from '@fvilers/disable-react-devtools';
 import React from 'react';
