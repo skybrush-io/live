@@ -30,6 +30,7 @@ import {
   getMissionItemsWithAreasInOrder,
   getMissionItemsWithCoordinatesInOrder,
   getMissionMapping,
+  getSelectedMissionIdInMissionEditorPanel,
   getSelectedMissionIndicesForTrajectoryDisplay,
 } from '~/features/mission/selectors';
 import { doesMissionIndexParticipateInMissionItem } from '~/features/mission/utils';
@@ -434,13 +435,23 @@ const MISSION_ORIGIN_GLOBAL_ID = originIdToGlobalId(MISSION_ORIGIN_ID);
 
 const featureKeyForRoleAndMissionIndex = (role, index) => `${role}.${index}`;
 
-function* landingPositionPoints(landingPositions) {
+function* landingPositionPoints(
+  landingPositions,
+  selectedMissionIdInMissionEditorPanel
+) {
   if (!landingPositions) {
     return;
   }
 
   for (const [missionIndex, landingPosition] of landingPositions.entries()) {
     if (!landingPosition) {
+      continue;
+    }
+
+    if (
+      selectedMissionIdInMissionEditorPanel !== undefined &&
+      selectedMissionIdInMissionEditorPanel !== missionIndex
+    ) {
       continue;
     }
 
@@ -461,13 +472,23 @@ function* landingPositionPoints(landingPositions) {
   }
 }
 
-function* homePositionPoints(homePositions) {
+function* homePositionPoints(
+  homePositions,
+  selectedMissionIdInMissionEditorPanel
+) {
   if (!homePositions) {
     return;
   }
 
   for (const [missionIndex, homePosition] of homePositions.entries()) {
     if (!homePosition) {
+      continue;
+    }
+
+    if (
+      selectedMissionIdInMissionEditorPanel !== undefined &&
+      selectedMissionIdInMissionEditorPanel !== missionIndex
+    ) {
       continue;
     }
 
@@ -605,12 +626,25 @@ const WaypointMarker = connect(
   })
 )(WaypointMarkerPresentation);
 
-function* missionWaypointMarkers(missionItemsWithCoordinates, selection) {
+function* missionWaypointMarkers(
+  missionItemsWithCoordinates,
+  selection,
+  selectedMissionIdInMissionEditorPanel
+) {
   if (!missionItemsWithCoordinates) {
     return;
   }
 
-  for (const { index, id, coordinate } of missionItemsWithCoordinates) {
+  for (const { coordinate, id, index, item } of missionItemsWithCoordinates) {
+    if (
+      selectedMissionIdInMissionEditorPanel !== undefined &&
+      !doesMissionIndexParticipateInMissionItem(
+        selectedMissionIdInMissionEditorPanel
+      )(item)
+    ) {
+      continue;
+    }
+
     const globalIdOfMissionItem = missionItemIdToGlobalId(id);
     const selected = selection.includes(globalIdOfMissionItem);
     const center = mapViewCoordinateFromLonLat([
@@ -635,13 +669,21 @@ function* missionTrajectoryLine(
   currentItemIndices,
   currentItemRatios,
   allMissionItemsWithCoordinates,
-  missionMapping
+  missionMapping,
+  selectedMissionIdInMissionEditorPanel
 ) {
   if (!allMissionItemsWithCoordinates) {
     return;
   }
 
   for (const missionIndex of missionMapping.keys()) {
+    if (
+      selectedMissionIdInMissionEditorPanel !== undefined &&
+      selectedMissionIdInMissionEditorPanel !== missionIndex
+    ) {
+      continue;
+    }
+
     const missionItemsWithCoordinates = allMissionItemsWithCoordinates.filter(
       ({ item }) => doesMissionIndexParticipateInMissionItem(missionIndex)(item)
     );
@@ -714,13 +756,21 @@ function* auxiliaryMissionLines(
   homePositions,
   allMissionItemsWithCoordinates,
   missionMapping,
-  returnToHomeItems
+  returnToHomeItems,
+  selectedMissionIdInMissionEditorPanel
 ) {
   if (!homePositions || !allMissionItemsWithCoordinates) {
     return;
   }
 
   for (const missionIndex of missionMapping.keys()) {
+    if (
+      selectedMissionIdInMissionEditorPanel !== undefined &&
+      selectedMissionIdInMissionEditorPanel !== missionIndex
+    ) {
+      continue;
+    }
+
     const missionItemsWithCoordinates = allMissionItemsWithCoordinates.filter(
       ({ item }) => doesMissionIndexParticipateInMissionItem(missionIndex)(item)
     );
@@ -868,6 +918,7 @@ const MissionInfoVectorSource = ({
   missionIndicesForTrajectories,
   orientation,
   returnToHomeItems,
+  selectedMissionIdInMissionEditorPanel,
   selectedTool,
   selection,
   uavIdsForTrajectories,
@@ -879,8 +930,14 @@ const MissionInfoVectorSource = ({
       //       any official documentation about that behavior, so I decided to
       //       pass the generated features instead of the generator objects.
       [
-        ...landingPositionPoints(landingPositions),
-        ...homePositionPoints(homePositions),
+        ...landingPositionPoints(
+          landingPositions,
+          selectedMissionIdInMissionEditorPanel
+        ),
+        ...homePositionPoints(
+          homePositions,
+          selectedMissionIdInMissionEditorPanel
+        ),
         ...mapOriginMarker(
           coordinateSystemType,
           mapOrigin,
@@ -892,18 +949,24 @@ const MissionInfoVectorSource = ({
           selection,
           selectedTool
         ),
-        ...missionWaypointMarkers(missionItemsWithCoordinates, selection),
+        ...missionWaypointMarkers(
+          missionItemsWithCoordinates,
+          selection,
+          selectedMissionIdInMissionEditorPanel
+        ),
         ...missionTrajectoryLine(
           currentItemIndices,
           currentItemRatios,
           missionItemsWithCoordinates,
-          missionMapping
+          missionMapping,
+          selectedMissionIdInMissionEditorPanel
         ),
         ...auxiliaryMissionLines(
           homePositions,
           missionItemsWithCoordinates,
           missionMapping,
-          returnToHomeItems
+          returnToHomeItems,
+          selectedMissionIdInMissionEditorPanel
         ),
         ...missionOriginMarker(missionOrientation, missionOrigin),
         ...convexHullPolygon(convexHull, selection),
@@ -934,6 +997,7 @@ MissionInfoVectorSource.propTypes = {
   missionIndicesForTrajectories: PropTypes.arrayOf(PropTypes.number),
   orientation: CustomPropTypes.angle,
   returnToHomeItems: PropTypes.arrayOf(PropTypes.object),
+  selectedMissionIdInMissionEditorPanel: PropTypes.string,
   selectedTool: PropTypes.string,
   selection: PropTypes.arrayOf(PropTypes.string),
   uavIdsForTrajectories: PropTypes.arrayOf(PropTypes.string),
@@ -996,6 +1060,8 @@ export const MissionInfoLayer = connect(
       state,
       MissionItemType.RETURN_TO_HOME
     ),
+    selectedMissionIdInMissionEditorPanel:
+      getSelectedMissionIdInMissionEditorPanel(state),
     selection: getSelection(state),
     uavIdsForTrajectories: layer?.parameters?.showTrajectoriesOfSelection
       ? getSelectedUAVIdsForTrajectoryDisplay(state)
