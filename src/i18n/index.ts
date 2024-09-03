@@ -13,6 +13,7 @@ import * as hu from './hu.json';
 import * as it from './it.json';
 import * as ja from './ja.json';
 import * as nl from './nl.json';
+import * as pl from './pl.json';
 import * as ro from './ro.json';
 import * as zhHans from './zh-Hans.json';
 
@@ -33,6 +34,7 @@ const availableLanguages: Language[] = [
   { label: 'Italiano', code: 'it', translation: it },
   { label: 'Magyar', code: 'hu', translation: hu },
   { label: 'Nederlands', code: 'nl', translation: nl },
+  { label: 'Polski', code: 'pl', translation: pl },
   { label: 'Română', code: 'ro', translation: ro },
   { label: '日本語', code: 'ja', translation: ja },
   { label: '中文', code: 'zh-Hans', translation: zhHans },
