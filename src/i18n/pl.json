@@ -1,4 +1,98 @@
 {
+  "APIKeysTab": {
+    "description": "Niektórzy dostawcy map dostarczają je bez potrzeby posiadania klucza API. W takim wypadku używany jest domyślny klucz API, który jest współdzielony z wszystkimi użytkownikami. W związku z tym, nie gwarantujemy dostępności map w przypadku używania domyślnego, współdzielonego z wszystkimi użytkownikami klucza API."
+  },
+  "ConnectionStatusMiniList": {
+    "noConnections": "Ten serwer nie używa żadnych połączeń.",
+    "useSecondaryChannel": "Użyj drugiego (nie głównego) kanału"
+  },
+  "DrawingToolbar": {
+    "addMarker": "Dodaj znacznik",
+    "addWaypoint": "Dodaj punkt trasy",
+    "cutHole": "Wytnij otwór",
+    "drawCircle": "Rysuj okrąg",
+    "drawPath": "Rysuj ścieżkę",
+    "drawPolygon": "Rysuj linię poligonową",
+    "drawRectangle": "Rysuj prostokąt",
+    "editFeature": "Edytuj cechy"
+  },
+  "OnboardPreflightChecksDialog": {
+    "noError": "Żaden z UAV's nie zgłosił błędu.",
+    "passed": "Kontrola przed lotem - zaliczona."
+  },
+  "RTKCorrectionSourceSelector": {
+    "RTKCorrections": "Korekty RTK",
+    "error": "Błąd podczas ładowania źródeł danych RTK z serwera",
+    "noRTKData": "Brak źródeł danych RTK na serwerze",
+    "pleaseWait": "Proszę czekać, ładowanie źródeł danych RTK …"
+  },
+  "RTKMessage": {
+    "noRTKMessagesYet": "Nie otrzymano jeszcze żadnych komunikatów RTK"
+  },
+  "RTKStatusMiniList": {
+    "satelliteCount": "Liczba satelitów",
+    "surveyInProgress": "Poszukiwanie w toku …",
+    "surveyNo": "Brak poszukiwania",
+    "surveySuccesful": "Poszukiwanie zakończone"
+  },
+  "UAVList": {
+    "allUAVs": "Wszystkie UAV's",
+    "assignedUAVs": "Przyłączone UAV's",
+    "spareUAVs": "Zapasowe UAV's"
+  },
+  "UAVOpButtonGrp": {
+    "armMotors": "Włącz silniki",
+    "details": "Szczegóły …",
+    "disarmMotors": "Wyłącz silniki",
+    "flashLights": "Zapal światła",
+    "removeItemsMarkedGone": "Usuń elementy oznaczone jako brakujące",
+    "removeSelectedItems": "Usuń wybrane elementy"
+  },
+  "UAVSelector": {
+    "noMatchingUAVs": "Brak pasujących UAV's dla: \"{{filter}}\""
+  },
+  "UAVStatus": {
+    "noConnected": "W tej chwili nie ma podłączonych UAV's"
+  },
+  "alerts": {
+    "acknowledgeAlerts": "Kliknij, aby potwierdzić alerty",
+    "clickToMute": "Kliknij, aby wyciszyć alerty dźwiękowe.",
+    "muted": "Alerty dźwiękowe są wyciszone. Kliknij, aby wyłączyć wyciszenie."
+  },
+  "altitudeSummaryButton": {
+    "clickToChange": "Kliknij, aby zmienić na {{altitudeType}}.",
+    "showingCurrent": "Wyświetl wartość maksymalną i minimalną {{altitudeType}}."
+  },
+  "antennaPositionIndicator": {
+    "antennaPositionNotKnown": "Pozycja anteny nie jest znana",
+    "clickToToggle": "Kliknij, aby przełączać się między formatem dł./szer. geogr. (lon/lat) i ECEF",
+    "copyToClipboard": "Kopiuj do schowka"
+  },
+  "authentication": "Uwierzytelnienie",
+  "batteryStatusHeaderButton": "Pokazuje średni i minimalny poziom naładowania.",
+  "bearingCalculator": {
+    "addAtLeastTwoItems": "Dodaj co najmniej dwa elementy, aby obliczyć kierunek i odległość między nimi",
+    "bearing": ", kierunek: ",
+    "finalBearing": ", ostateczny kierunek: ",
+    "initialBearing": ", kierunek początkowy: ",
+    "selectTwoItems": "Wybierz dokładnie dwa elementy, aby obliczyć kierunek i odległość między nimi"
+  },
+  "broadcastButton": {
+    "disable": "Wyłącz broadcast",
+    "enable": "Włącz broadcast na {{time}} sekund"
+  },
+  "coordinateAveragingDialogToolbar": {
+    "addNewDrone": "Dodaj nowego drona",
+    "copyCentroid": "Kopiuj — środek ciężkości",
+    "pauseMeasurement": "Wstrzymaj pomiar",
+    "removeSelected": "Usuń wybrane",
+    "resetMeasurement": "Zresetuj pomiar",
+    "resumeMeasurement": "Wznów pomiar",
+    "setCentroidAsMapOrigin": "Ustaw środek ciężkości jako początek mapy"
+  },
+  "environmentEditorDialog": {
+    "environmentSettings": "Ustawienia środowiska"
+  },
   "settings": {
     "display": {
       "language": "Język"
