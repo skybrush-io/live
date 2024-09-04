@@ -19,6 +19,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fixed an issue with degenerate geofences consisting of one or two points only.
 
+- Fixed a bug in handling `UAV-SLEEP` messages targeting multiple drones.
+
 ## [2.8.0] - 2023-10-30
 
 ### Added

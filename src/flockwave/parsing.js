@@ -42,6 +42,7 @@ const MESSAGES_WITH_RECEIPTS = {
   'UAV-RST': true,
   'UAV-RTH': true,
   'UAV-SIGNAL': true,
+  'UAV-SLEEP': true,
   'UAV-TAKEOFF': true,
   'UAV-TEST': true,
   'UAV-WAKEUP': true,
