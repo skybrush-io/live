@@ -32,7 +32,6 @@ import {
 } from '~/features/map/selection';
 import { showFeatureEditorDialog } from '~/features/map-features/actions';
 import {
-  getFeaturesById,
   getFeaturesInOrder,
   getSelectedFeatureIds,
 } from '~/features/map-features/selectors';
@@ -86,7 +85,7 @@ const useStyles = makeStyles(
  * @param  {Object} props  the properties of the component
  * @return {Object} the React presentation component
  */
-const FeatureListEntry = (props) => {
+const FeatureListEntryPresentation = (props) => {
   const {
     feature,
     onEditFeature,
@@ -135,12 +134,7 @@ const FeatureListEntry = (props) => {
     <>
       {actions.map(({ action, icon, key, label }) => (
         <Tooltip key={key} content={label}>
-          <IconButton
-            className={classes.button}
-            edge='end'
-            data-id={id}
-            onClick={action}
-          >
+          <IconButton className={classes.button} edge='end' onClick={action}>
             {icon}
           </IconButton>
         </Tooltip>
@@ -161,7 +155,7 @@ const FeatureListEntry = (props) => {
         onClose={closeMenu}
       >
         {actions.map(({ action, icon, key, label }) => (
-          <MenuItem key={key} data-id={id} onClick={closeMenu(action)}>
+          <MenuItem key={key} onClick={closeMenu(action)}>
             <ListItemIcon>{icon}</ListItemIcon>
             <ListItemText primary={label} />
           </MenuItem>
@@ -176,7 +170,6 @@ const FeatureListEntry = (props) => {
       ContainerProps={{ className: classes.container }}
       className={classes.item}
       selected={selected}
-      data-id={id}
       onClick={onSelectFeature}
     >
       <ListItemIcon
@@ -197,7 +190,7 @@ const FeatureListEntry = (props) => {
   );
 };
 
-FeatureListEntry.propTypes = {
+FeatureListEntryPresentation.propTypes = {
   onEditFeature: PropTypes.func,
   onFocusFeature: PropTypes.func,
   onRemoveFeature: PropTypes.func,
@@ -209,38 +202,46 @@ FeatureListEntry.propTypes = {
   suggestedColor: PropTypes.string,
 };
 
+const FeatureListEntry = connect(
+  // mapStateToProps
+  (state, { feature }) => ({
+    selected: getSelectedFeatureIds(state).includes(feature.id),
+    shouldFill: shouldFillFeature(state, feature.id),
+    suggestedColor: suggestedColorForFeature(state, feature.id),
+    suggestedLabel: suggestedLabelForFeature(state, feature.id),
+  }),
+  // mapDispatchToProps
+  (dispatch, { feature }) => ({
+    onEditFeature() {
+      dispatch(showFeatureEditorDialog(feature.id));
+    },
+    onFocusFeature() {
+      fitCoordinatesIntoMapView(feature.points);
+    },
+    onRemoveFeature() {
+      dispatch(removeFeaturesByIds([feature.id]));
+    },
+    onSelectFeature(event) {
+      // prettier-ignore
+      const action
+        = event.shiftKey ? addToSelection
+        : event.altKey ? removeFromSelection
+        : event.ctrlKey || event.metaKey ? toggleInSelection
+        : setSelection;
+
+      dispatch(action([featureIdToGlobalId(feature.id)]));
+    },
+    onToggleFeatureVisibility() {
+      updateFeatureVisibility({ id: feature.id, visible: !feature.visible });
+    },
+  })
+)(FeatureListEntryPresentation);
+
 /**
  * Presentation component for the entire feature list.
  */
 export const FeatureListPresentation = listOf(
-  (
-    feature,
-    {
-      onEditFeature,
-      onFocusFeature,
-      onRemoveFeature,
-      onSelectFeature,
-      onToggleFeatureVisibility,
-      selectedFeatureIds,
-      shouldFillFeatureById,
-      suggestedColorForFeatureById,
-    }
-  ) => {
-    return (
-      <FeatureListEntry
-        key={feature.id}
-        feature={feature}
-        selected={selectedFeatureIds.includes(feature.id)}
-        shouldFill={shouldFillFeatureById(feature.id)}
-        suggestedColor={suggestedColorForFeatureById(feature.id)}
-        onEditFeature={onEditFeature}
-        onFocusFeature={onFocusFeature}
-        onRemoveFeature={onRemoveFeature}
-        onSelectFeature={onSelectFeature}
-        onToggleFeatureVisibility={onToggleFeatureVisibility}
-      />
-    );
-  },
+  (feature) => <FeatureListEntry key={feature.id} feature={feature} />,
   {
     backgroundHint: 'No features',
     dataProvider: 'features',
@@ -251,68 +252,6 @@ export const FeatureListPresentation = listOf(
 export default connect(
   // mapStateToProps
   (state) => ({
-    shouldFillFeatureById: (featureId) => shouldFillFeature(state, featureId),
-    suggestedColorForFeatureById: (featureId) =>
-      suggestedColorForFeature(state, featureId),
-    dense: true,
     features: getFeaturesInOrder(state),
-    featuresByIds: getFeaturesById(state),
-    selectedFeatureIds: getSelectedFeatureIds(state),
-  }),
-  // mapDispatchToProps
-  (dispatch) => ({
-    onEditFeature(event) {
-      const featureId = event.currentTarget.dataset.id;
-      if (featureId) {
-        dispatch(showFeatureEditorDialog(featureId));
-      }
-    },
-    onRemoveFeature(event) {
-      const featureId = event.currentTarget.dataset.id;
-      if (featureId) {
-        dispatch(removeFeaturesByIds([featureId]));
-      }
-    },
-    onSelectFeature(event) {
-      const featureId = event.currentTarget.dataset.id;
-      // prettier-ignore
-      const action
-        = event.shiftKey ? addToSelection
-        : event.altKey ? removeFromSelection
-        : event.ctrlKey || event.metaKey ? toggleInSelection
-        : setSelection;
-
-      if (featureId) {
-        dispatch(action([featureIdToGlobalId(featureId)]));
-      }
-    },
-    onSetFeatureVisibility(event, visible) {
-      const featureId = event.currentTarget.dataset.id;
-      if (featureId) {
-        dispatch(updateFeatureVisibility({ id: featureId, visible }));
-      }
-    },
-  }),
-  // mergeProps
-  (
-    { featuresByIds, ...stateProps },
-    { onSetFeatureVisibility, ...dispatchProps },
-    ownProps
-  ) => ({
-    ...ownProps,
-    ...stateProps,
-    ...dispatchProps,
-    onFocusFeature(event) {
-      const featureId = event.currentTarget.dataset.id;
-      if (featureId) {
-        fitCoordinatesIntoMapView(featuresByIds[featureId].points);
-      }
-    },
-    onToggleFeatureVisibility(event) {
-      const featureId = event.currentTarget.dataset.id;
-      if (featureId) {
-        onSetFeatureVisibility(event, !featuresByIds[featureId].visible);
-      }
-    },
   })
 )(FeatureListPresentation);

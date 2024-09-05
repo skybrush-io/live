@@ -10,7 +10,7 @@ import FeaturePanelToolbar from './FeaturePanelToolbar';
 const FeaturePanel = () => (
   <Box display='flex' flexDirection='column' height='100%'>
     <Box height='100%' style={{ overflowY: 'auto' }}>
-      <FeatureList />
+      <FeatureList dense />
     </Box>
     <FeaturePanelToolbar />
   </Box>
