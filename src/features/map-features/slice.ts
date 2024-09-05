@@ -189,7 +189,7 @@ const { actions, reducer } = createSlice({
       if (feature === undefined) {
         console.warn(`Cannot rename non-existent feature ${id}`);
       } else {
-        feature.label = name;
+        feature.label = name === '' ? undefined : name;
       }
     },
 

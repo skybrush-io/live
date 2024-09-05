@@ -38,6 +38,7 @@ import {
 import {
   shouldFillFeature,
   suggestedColorForFeature,
+  suggestedLabelForFeature,
 } from '~/features/map-features/selectors-style-suggestions';
 import {
   removeFeaturesByIds,
@@ -96,8 +97,9 @@ const FeatureListEntryPresentation = (props) => {
     selected,
     shouldFill,
     suggestedColor,
+    suggestedLabel,
   } = props;
-  const { id, label, type, visible } = feature;
+  const { label, type, visible } = feature;
 
   const IconOfFeatureType = getIconOfFeatureType(type, shouldFill);
 
@@ -180,7 +182,7 @@ const FeatureListEntryPresentation = (props) => {
       {label ? (
         <ListItemText style={{ overflowWrap: 'break-word' }} primary={label} />
       ) : (
-        <ListItemText secondary={getNameOfFeatureType(type)} />
+        <ListItemText secondary={suggestedLabel} />
       )}
       <ListItemSecondaryAction>
         {actionButtons}
@@ -200,6 +202,7 @@ FeatureListEntryPresentation.propTypes = {
   selected: PropTypes.bool,
   shouldFill: PropTypes.bool,
   suggestedColor: PropTypes.string,
+  suggestedLabel: PropTypes.string,
 };
 
 const FeatureListEntry = connect(

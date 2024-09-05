@@ -396,14 +396,8 @@ export const addGeofencePolygon =
     }
 
     const geofencePolygon = {
-      label: 'Geofence',
-      labelStyle: LabelStyle.HIDDEN,
       type: FeatureType.POLYGON,
       owner,
-      /* don't use a label; the geofence usually overlaps with the convex hull of
-       * the show so it is confusing if the "Geofence" label appears in the middle
-       * of the convex hull */
-      color: Colors.geofence,
       points: simplifiedPoints.map(toLonLat),
     };
     const geofencePolygonId = getProposedIdForNewFeature(
