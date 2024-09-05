@@ -91,7 +91,110 @@
     "setCentroidAsMapOrigin": "Ustaw środek ciężkości jako początek mapy"
   },
   "environmentEditorDialog": {
-    "environmentSettings": "Ustawienia środowiska"
+    "environmentSettings": "Ustawienia środowiska",
+    "indoor": "Ten pokaz jest pokazem wewnątrz pomieszczenia. Możesz określić narożniki pomieszczenia, w którym odbywa się pokaz (w celach wizualizacyjnych).",
+    "outdoor": "Ten pokaz jest pokazem plenerowym. Musisz określić przynajmniej początek i orientację układu współrzędnych, aby Skybrush mógł zmapować pokaz w odniesieniu do współrzędnych GPS."
+  },
+  "fieldNotesPanel": {
+    "exportNotesAsFile": "Eksportuj notatki w formacie pliku Markdown"
+  },
+  "filtering": {
+    "filter": "Filtruj",
+    "filterBy": "Filtruj według",
+    "label": {
+      "all": "Wszystkie",
+      "errors": "Tylko błędy",
+      "noTelemetry": "Tylko bez telemetrii",
+      "warningsAndErrors": "Ostrzeżenia i błędy"
+    },
+    "shortLabel": {
+      "all": "Wszystkie",
+      "errors": "Błędy",
+      "noTelemetry": "Bez telemetrii",
+      "warningsAndErrors": "Ostrz/Bł"
+    }
+  },
+  "fitAllFeaturesButton": {
+    "fitAllDrones": "Dostosuj do wszystkich dronów",
+    "fitAllFeatures": "Dostosuj do wszystkich cech"
+  },
+  "fullScreen": {
+    "exit": "Wyjdź z trybu pełnoekranowego",
+    "on": "Tryb pełnoekranowy"
+  },
+  "general": {
+    "action": {
+      "apply": "Zastosuj",
+      "cancel": "Anuluj",
+      "clear": "Wyczyść",
+      "close": "Zamknij",
+      "delete": "Skasuj",
+      "discard": "Odrzuć",
+      "edit": "Edytuj",
+      "export": "Eksport",
+      "import": "Import",
+      "open": "Otwórz",
+      "remove": "Usuń",
+      "reset": "Reset",
+      "retry": "Spróbuj ponownie",
+      "save": "Zapisz",
+      "select": "Wybierz",
+      "start": "Start",
+      "stop": "Stop"
+    },
+    "commands": {
+      "land": "Lądowanie",
+      "positionHold": "Trzymaj pozycję",
+      "powerOff": "Wyłączanie zasilania",
+      "powerOn": "Włączanie zasilania",
+      "reboot": "Ponowne uruchomienie",
+      "returnToHome": "Powrót na startowisko",
+      "sleep": "Uśpij",
+      "takeoff": "Startuj"
+    },
+    "geography": {
+      "latitude": "Szerokość geograficzna",
+      "longitude": "Długość geograficzna"
+    },
+    "geometry": {
+      "rotation": "Obrót",
+      "zoom": "Powiększ"
+    },
+    "status": {
+      "failed": "nieudany",
+      "inProgress": "w toku",
+      "successful": "sukces",
+      "waiting": "oczekiwanie"
+    }
+  },
+  "geofence": {
+    "statusText": {
+      "automatic": "Automatyczny geofence w użyciu",
+      "error": "Pokaż obszar znajdujący się poza geofence",
+      "manual": "Ręczny geofence w użyciu",
+      "no": "Nie zdefiniowano jeszcze żadnego geofence'u"
+    }
+  },
+  "geofenceAction": {
+    "keepCurrent": "Kontynuuj bieżącą operację",
+    "report": "Tylko raport",
+    "shutDown": "Zamknięcie",
+    "smartLand": "Lądowanie z unikaniem kolizji",
+    "smartReturn": "Powrót na startowisko z unikaniem kolizji",
+    "stop": "Zatrzymaj się i zawiśnij",
+    "unknown": "Nierozpoznana akcja: {{action}}"
+  },
+  "header": {
+    "distanceSummary": "Maksymalna i minimalna odległość od pozycji początkowej (startowej)",
+    "velocitySummary": "Maksymalna prędkość: pozioma i pionowa"
+  },
+  "help": "Pomoc",
+  "indoorEnvironmentEditor": {
+    "coordinatesOfTheCorners": "Współrzędne narożników pomieszczenia",
+    "roomVisibleIn3D": "Pomieszczenie widoczne w widoku 3D"
+  },
+  "largeControlButtonGroup": {
+    "RTH": "RTH (powrót na startowisko)"
   },
   "settings": {
     "display": {
