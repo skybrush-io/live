@@ -37,6 +37,10 @@ import {
   getSelectedFeatureIds,
 } from '~/features/map-features/selectors';
 import {
+  shouldFillFeature,
+  suggestedColorForFeature,
+} from '~/features/map-features/selectors-style-suggestions';
+import {
   removeFeaturesByIds,
   updateFeatureVisibility,
 } from '~/features/map-features/slice';
@@ -91,10 +95,12 @@ const FeatureListEntry = (props) => {
     onSelectFeature,
     onToggleFeatureVisibility,
     selected,
+    shouldFill,
+    suggestedColor,
   } = props;
-  const { id, color, label, type, visible } = feature;
+  const { id, label, type, visible } = feature;
 
-  const IconOfFeatureType = getIconOfFeatureType(type);
+  const IconOfFeatureType = getIconOfFeatureType(type, shouldFill);
 
   const actions = [
     {
@@ -173,7 +179,9 @@ const FeatureListEntry = (props) => {
       data-id={id}
       onClick={onSelectFeature}
     >
-      <ListItemIcon style={{ color, minWidth: 0, marginRight: '16px' }}>
+      <ListItemIcon
+        style={{ color: suggestedColor, minWidth: 0, marginRight: '16px' }}
+      >
         <IconOfFeatureType />
       </ListItemIcon>
       {label ? (
@@ -197,6 +205,8 @@ FeatureListEntry.propTypes = {
   onToggleFeatureVisibility: PropTypes.func,
   feature: PropTypes.object.isRequired,
   selected: PropTypes.bool,
+  shouldFill: PropTypes.bool,
+  suggestedColor: PropTypes.string,
 };
 
 /**
@@ -212,6 +222,8 @@ export const FeatureListPresentation = listOf(
       onSelectFeature,
       onToggleFeatureVisibility,
       selectedFeatureIds,
+      shouldFillFeatureById,
+      suggestedColorForFeatureById,
     }
   ) => {
     return (
@@ -219,6 +231,8 @@ export const FeatureListPresentation = listOf(
         key={feature.id}
         feature={feature}
         selected={selectedFeatureIds.includes(feature.id)}
+        shouldFill={shouldFillFeatureById(feature.id)}
+        suggestedColor={suggestedColorForFeatureById(feature.id)}
         onEditFeature={onEditFeature}
         onFocusFeature={onFocusFeature}
         onRemoveFeature={onRemoveFeature}
@@ -237,6 +251,9 @@ export const FeatureListPresentation = listOf(
 export default connect(
   // mapStateToProps
   (state) => ({
+    shouldFillFeatureById: (featureId) => shouldFillFeature(state, featureId),
+    suggestedColorForFeatureById: (featureId) =>
+      suggestedColorForFeature(state, featureId),
     dense: true,
     features: getFeaturesInOrder(state),
     featuresByIds: getFeaturesById(state),

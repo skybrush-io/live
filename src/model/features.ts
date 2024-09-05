@@ -6,7 +6,9 @@
 import FiberManualRecord from '@material-ui/icons/FiberManualRecord';
 import ShowChart from '@material-ui/icons/ShowChart';
 import PanoramaFishEye from '@material-ui/icons/PanoramaFishEye';
+import PanoramaFishEyeTwoTone from '@material-ui/icons/PanoramaFishEyeTwoTone';
 import StarBorder from '@material-ui/icons/StarBorder';
+import StarTwoTone from '@material-ui/icons/StarTwoTone';
 
 import { type Coordinate2D } from '~/utils/math';
 
@@ -52,6 +54,7 @@ export enum LabelStyle {
 type FeatureTypeProperties = {
   name: string;
   icon: React.ComponentType;
+  iconFilled?: React.ComponentType;
   canBeMeasured: boolean;
   hasInterior: boolean;
   hasPoints: boolean;
@@ -61,6 +64,7 @@ const propertiesForFeatureTypes: Record<FeatureType, FeatureTypeProperties> = {
   [FeatureType.CIRCLE]: {
     name: 'Circle',
     icon: PanoramaFishEye,
+    iconFilled: PanoramaFishEyeTwoTone,
     canBeMeasured: false, // TODO: The area of the circle should be measurable
     hasInterior: true,
     hasPoints: false,
@@ -82,6 +86,7 @@ const propertiesForFeatureTypes: Record<FeatureType, FeatureTypeProperties> = {
   [FeatureType.POLYGON]: {
     name: 'Polygon',
     icon: StarBorder,
+    iconFilled: StarTwoTone,
     canBeMeasured: true,
     hasInterior: true,
     hasPoints: true,
@@ -104,14 +109,13 @@ export function getNameOfFeatureType(featureType: FeatureType): string {
  * @param featureType - The feature type
  * @returns An icon representing the feature type on the UI
  */
-export function getIconOfFeatureType(
-  featureType: FeatureType
-): React.ComponentType {
-  return (
-    propertiesForFeatureTypes[featureType]?.icon ??
-    propertiesForFeatureTypes[FeatureType.POINTS].icon
-  );
-}
+export const getIconOfFeatureType = (
+  featureType: FeatureType,
+  shouldFill: boolean
+): React.ComponentType =>
+  ((shouldFill && propertiesForFeatureTypes[featureType]?.iconFilled) ||
+    propertiesForFeatureTypes[featureType]?.icon) ??
+  propertiesForFeatureTypes[FeatureType.POINTS].icon;
 
 /**
  * Returns whether the feature has a measurable area or length.

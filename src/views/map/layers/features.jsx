@@ -135,9 +135,8 @@ const styleForFeature = (
     shouldFill,
   }
 ) => {
-  const { color, filled, label, labelStyle, measure, showPoints, type } =
-    feature;
-  const parsedColor = createColor(color ?? suggestedColor);
+  const { label, labelStyle, measure, showPoints, type } = feature;
+  const parsedColor = createColor(suggestedColor);
   const styles = [];
   const radius = 6;
 
@@ -167,7 +166,7 @@ const styleForFeature = (
         })
       );
 
-      if (showPoints ?? shouldShowPoints) {
+      if (shouldShowPoints) {
         // Show the vertices of the line string as well
         styles.push(
           styleForPointsOfLineString(isSelected, parsedColor.rgb().array())
@@ -197,7 +196,7 @@ const styleForFeature = (
     // Fallthrough
 
     default:
-      if ((filled ?? shouldFill) && !feature?.attributes?.isExclusionZone) {
+      if (shouldFill && !feature?.attributes?.isExclusionZone) {
         styles.push(
           new Style({
             fill: fill(
