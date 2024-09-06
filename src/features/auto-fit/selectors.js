@@ -1,3 +1,4 @@
+import isNil from 'lodash-es/isNil';
 import { TakeoffHeadingMode } from '~/features/show/constants';
 import {
   getFirstPointsOfTrajectories,
@@ -56,7 +57,7 @@ export function getShowCoordinateSystemFittingProblemFromState(state) {
   const undefinedIndices = [];
   let n = uavGPSCoordinates.length;
   for (let i = 0; i < n; i++) {
-    if (uavGPSCoordinates[i] === undefined || uavHeadings[i] === undefined) {
+    if (isNil(uavGPSCoordinates[i]) || isNil(uavHeadings[i])) {
       undefinedIndices.push(i);
     }
   }
