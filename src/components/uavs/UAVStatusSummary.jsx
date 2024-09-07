@@ -7,6 +7,7 @@ import { createSelector } from '@reduxjs/toolkit';
 
 import Box from '@material-ui/core/Box';
 import { makeStyles } from '@material-ui/core/styles';
+import Sum from '@material-ui/icons/Functions';
 
 import LazyTooltip from '@skybrush/mui-components/lib/LazyTooltip';
 import StatusLight from '@skybrush/mui-components/lib/StatusLight';
@@ -36,7 +37,7 @@ const getStatusSummaryInner = createSelector(
   getUAVIdToStateMapping,
   getUAVIdList,
   (byId, order) => {
-    const result = [0, 0, 0, 0];
+    const result = [0, 0, 0, 0, 0];
 
     for (const uavId of order) {
       const uav = byId[uavId];
@@ -45,7 +46,7 @@ const getStatusSummaryInner = createSelector(
         switch (level) {
           case Status.CRITICAL:
           case Status.ERROR:
-            result[3] += 1;
+            result[4] += 1;
             break;
 
           case Status.GONE:
@@ -53,18 +54,20 @@ const getStatusSummaryInner = createSelector(
             break;
 
           case Status.SUCCESS:
-            result[0] += 1;
-            break;
-
-          case Status.INFO:
             result[1] += 1;
             break;
 
-          default:
+          case Status.INFO:
             result[2] += 1;
+            break;
+
+          default:
+            result[3] += 1;
         }
       }
     }
+
+    result[0] = result[1] + result[2] + result[3] + result[4];
 
     return result;
   }
@@ -106,7 +109,13 @@ const useStyles = makeStyles(
   }
 );
 
-const statusOrder = [Status.SUCCESS, Status.INFO, Status.WARNING, Status.ERROR];
+const statusOrder = [
+  null,
+  Status.SUCCESS,
+  Status.INFO,
+  Status.WARNING,
+  Status.ERROR,
+];
 
 const UAVStatusSummary = ({ counts, ...rest }) => {
   const classes = useStyles();
@@ -117,10 +126,14 @@ const UAVStatusSummary = ({ counts, ...rest }) => {
         <div className={classes.inner}>
           {statusOrder.map((statusCode, index) => (
             <React.Fragment key={statusCode}>
-              <StatusLight
-                inline
-                status={counts[index] > 0 ? statusCode : Status.OFF}
-              />
+              {statusCode ? (
+                <StatusLight
+                  inline
+                  status={counts[index] > 0 ? statusCode : Status.OFF}
+                />
+              ) : (
+                <Sum />
+              )}
               <div
                 className={clsx(
                   classes.counter,
