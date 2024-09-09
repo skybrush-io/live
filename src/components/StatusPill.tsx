@@ -45,6 +45,9 @@ const useStyles = makeStyles(
 
     'status-off': {
       backgroundColor: theme.palette.action.selected,
+      // Specify color manually -- getContrastText() is misled by the small
+      // alpha component of backgroundColor
+      color: theme.palette.text.primary,
     },
 
     'status-info': createStyleForStatus(Status.INFO, theme),
