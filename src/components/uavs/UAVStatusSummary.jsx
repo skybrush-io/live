@@ -46,7 +46,7 @@ const getStatusSummaryInner = createSelector(
         switch (level) {
           case Status.CRITICAL:
           case Status.ERROR:
-            result[4] += 1;
+            result[3] += 1;
             break;
 
           case Status.GONE:
@@ -54,20 +54,20 @@ const getStatusSummaryInner = createSelector(
             break;
 
           case Status.SUCCESS:
-            result[1] += 1;
+            result[0] += 1;
             break;
 
           case Status.INFO:
-            result[2] += 1;
+            result[1] += 1;
             break;
 
           default:
-            result[3] += 1;
+            result[2] += 1;
         }
       }
     }
 
-    result[0] = result[1] + result[2] + result[3] + result[4];
+    result[4] = result[0] + result[1] + result[2] + result[3];
 
     return result;
   }
@@ -110,11 +110,11 @@ const useStyles = makeStyles(
 );
 
 const statusOrder = [
-  null,
   Status.SUCCESS,
   Status.INFO,
   Status.WARNING,
   Status.ERROR,
+  null,
 ];
 
 const UAVStatusSummary = ({ counts, ...rest }) => {
