@@ -194,7 +194,55 @@
     "roomVisibleIn3D": "Pomieszczenie widoczne w widoku 3D"
   },
   "largeControlButtonGroup": {
-    "RTH": "RTH (powrót na startowisko)"
+    "RTH": "RTH (powrót na startowisko)",
+    "RTHAll": "RTH - Wszystkie",
+    "arm": "Włącz",
+    "armAll": "Włącz wszystkie",
+    "broadcast": "Broadcast",
+    "disarm": "Wyłącz",
+    "disarmAll": "Wyłącz wszystkie",
+    "hold": "Utrzymaj pozycję",
+    "holdAll": "Utrzymaj pozycję - wszystkie",
+    "land": "Lądowanie",
+    "landAll": "Lądowanie - wszystkie",
+    "selectionOnly": "Tylko wybrane",
+    "shutdown": "Zamknięcie",
+    "shutdownAll": "Zamknięcie - wszystkie"
+  },
+  "lightControl": {
+    "connectToAServer": "Połącz się z serwerem, aby sterować oświetleniem",
+    "fromGCS": "Oświetlenie sterowane z GCS",
+    "notConnected": "Nie połączono z serwerem",
+    "notFromGCS": "Oświetlenie nie jest sterowane z GCS",
+    "restoreDefault": "Kliknij, aby przywrócić domyślny program oświetlenia",
+    "takeControl": "Kliknij, aby przejąć kontrolę"
+  },
+  "lightControlGrid": {
+    "allOff": "Wszystko wyłączone",
+    "allOn": "Wszystko włączone"
+  },
+  "map": {
+    "resetRotation": "Zresetuj obrót"
+  },
+  "mapCachingDialog": {
+    "offlineMaps": "Mapy offline"
+  },
+  "mapCachingPanel": {
+    "clearChache": "Wyczyść pamięć podręczną",
+    "connectToServer": "Połącz się z serwerem obsługującym mapy offline",
+    "serverNotSupport": "Serwer nie obsługuje buforowania map offline",
+    "serverSupport": "Serwer obsługuje buforowanie map offline",
+    "useCachedMapTiles": "Użyj zbuforowanych części mapy z serwera"
+  },
+  "mapContextMenu": {
+    "clearExclusionZone": "Usuń strefę wykluczenia",
+    "clearGeofence": "Wyczyść geofence",
+    "details": "Szczegóły …",
+    "flyHere": "Leć tutaj",
+    "flyHereAtAltitude": "Leć tutaj na wysokości …",
+    "properties": "Właściwości …",
+    "setMapOriginHere": "Ustaw tutaj początek mapy",
+    "setShowOriginHere": "Ustaw tutaj początek pokazu"
   },
   "settings": {
     "display": {
