@@ -242,7 +242,16 @@
     "flyHereAtAltitude": "Leć tutaj na wysokości …",
     "properties": "Właściwości …",
     "setMapOriginHere": "Ustaw tutaj początek mapy",
-    "setShowOriginHere": "Ustaw tutaj początek pokazu"
+    "setShowOriginHere": "Ustaw tutaj początek pokazu",
+    "subtractPolygon": "Odejmij {{subtrahend}} od {{minuend}}",
+    "unnamedPolygon": "nienazwany wielokąt",
+    "useAsExclusionZone": "Użyj jako strefy wykluczenia",
+    "useAsGeofence": "Użyj jako geofence"
+  },
+  "mappingButtonGroup": {
+    "editMapping": "Edytuj mapowanie",
+    "hideEmptyMissionSlots": "Ukryj puste sloty misji",
+    "showEmptyMissionSlots": "Pokaż puste sloty misji"
   },
   "settings": {
     "display": {
