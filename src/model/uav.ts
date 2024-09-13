@@ -7,6 +7,8 @@ import { type UAVStatusInfo } from 'flockwave-spec';
 import { Base64 } from 'js-base64';
 import isEqual from 'lodash-es/isEqual';
 import isNil from 'lodash-es/isNil';
+import memoizeOne from 'memoize-one';
+import { shallowEqual } from 'react-redux';
 
 import { type StoredUAV } from '~/features/uavs/types';
 import { type ErrorCode } from '~/flockwave/errors';
@@ -58,6 +60,10 @@ export default class UAV {
   velocity?: VelocityNED;
   rssi: number[];
 
+  // TODO: This should be unnecessary if we can ensure that no mutation happens
+  //       to the output later on, thus the object spread can be avoided.
+  _positionMemoizer: (position: GPSPosition) => GPSPosition;
+
   /**
    * Constructor.
    *
@@ -94,6 +100,10 @@ export default class UAV {
     this.mode = undefined;
     this.velocity = undefined;
     this.rssi = [];
+
+    this._positionMemoizer = memoizeOne<typeof this._positionMemoizer>(
+      (position) => ({ ...position })
+    );
   }
 
   /**
@@ -206,6 +216,26 @@ export default class UAV {
   }
 
   /**
+   * Returns the position object if it is available, `undefined` otherwise.
+   */
+  get position(): GPSPosition | undefined {
+    /* Null Island is treated as "no position info" */
+    return this._position?.lat && this._position?.lon
+      ? this._positionMemoizer(this._position)
+      : undefined;
+  }
+
+  /**
+   * Replaces the position object of the UAV if the new value is actually
+   * different from the current one.
+   */
+  set position(value) {
+    if (!shallowEqual(this._position, value)) {
+      this._position = value;
+    }
+  }
+
+  /**
    * Handles the status information related to a single UAV from an UAV-INF
    * message.
    *
@@ -239,7 +269,7 @@ export default class UAV {
     }
 
     if (position) {
-      this._position = {
+      this.position = {
         lat: position[0] / 1e7,
         lon: position[1] / 1e7,
         amsl: isNil(position[2]) ? undefined : position[2] / 1e3,
@@ -350,11 +380,6 @@ export default class UAV {
    * used in a Redux store.
    */
   toJSON(): StoredUAV {
-    /* Null Island is treated as "no position info" */
-    const position =
-      this._position?.lat && this._position?.lon
-        ? { ...this._position }
-        : undefined;
     const localPosition = this.hasLocalPosition
       ? structuredClone(this.localPosition)
       : undefined;
@@ -372,7 +397,7 @@ export default class UAV {
       localPosition,
       localVelocity: structuredClone(this.localVelocity),
       mode: this.mode,
-      position,
+      position: this.position,
       velocity: structuredClone(this.velocity),
       rssi: structuredClone(this.rssi),
     };
