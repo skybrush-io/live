@@ -62,8 +62,8 @@
     "muted": "音声アラートのミュートを解除"
   },
   "altitudeSummaryButton": {
-    "clickToChange": "クリックして{{altitudeType}}を変更。",
-    "showingCurrent": "最大最小{{altitudeType}}を表示。"
+    "clickToChange": "クリックして{{altitudeType}}に変更。",
+    "showingCurrent": "最大/最小{{altitudeType}}を表示。"
   },
   "antennaPositionIndicator": {
     "antennaPositionNotKnown": "アンテナ位置が不明です",
@@ -74,7 +74,7 @@
     "assignSparesToEmptySlots": "予備を空のスロットにアサイン"
   },
   "authentication": "認証",
-  "batteryStatusHeaderButton": "平均バッテリー量と最小バッテリー量を表示。",
+  "batteryStatusHeaderButton": "平均バッテリー量/最小バッテリー量",
   "bearingCalculator": {
     "addAtLeastTwoItems": "姿勢と距離を計算するためには最低二つのアイテムを追加して下さい",
     "bearing": ", 姿勢: ",
