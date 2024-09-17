@@ -253,6 +253,90 @@
     "hideEmptyMissionSlots": "Ukryj puste sloty misji",
     "showEmptyMissionSlots": "Pokaż puste sloty misji"
   },
+  "mappingEditorToolbar": {
+    "assignSpares": "Przypisz urządzenia zapasowe",
+    "clearMissing": "Wyczyść brakujące",
+    "clickToEdit": "Kliknij, aby edytować pojedynczy slot.",
+    "dragNodes": "Przeciągnij węzły, aby przearanżować mapowanie.",
+    "exportMapping": "Eksportuj mapowanie …",
+    "importMapping": "Importuj mapowanie …"
+  },
+  "mappingSlotEditorToolbar": {
+    "reverseDirection": "Przytrzymaj <kbd>Shift</kbd>, aby odwrócić kierunek.",
+    "selectNextEmptySlot": "Wybierz następny pusty slot"
+  },
+  "mappingToggleButton": {
+    "sortByMissionID": "Sortuj według ID misji"
+  },
+  "measurementList": {
+    "addDrone": "Dodaj drona do pomiaru za pomocą przycisku + na pasku narzędzi",
+    "copyToClipboard": "Kopiuj do schowka",
+    "duration": "Czas trwania",
+    "noSamplesYet": "Brak próbek",
+    "samples": "próbki",
+    "stdDevInXY": "odchylenie standardowe w płaszczyźnie XY",
+    "waitingForSamples": "Czekam na próbki …"
+  },
+  "mission": {
+    "planner": {
+      "schema": {
+        "error": "Błąd podczas ładowania z serwera schematu parametrów misji",
+        "loading": "Pobieranie parametrów misji …",
+        "notFound": "Serwer, z którym się połączyłeś nie udostępnia schematu dla wybranego typu misji"
+      }
+    }
+  },
+  "navigationButtonGroup": {
+    "fly": "Lot",
+    "resetZoom": "Zresetuj powiększenie",
+    "rotateCamera": "Skieruj kamerę w stronę dronów",
+    "walk": "Chodzić"
+  },
+  "navigationInstructions": {
+    "altitude": "Wysokość",
+    "arrows": "Strzałki",
+    "flyForwardBackward": "Leć do przodu / do tyłu",
+    "lookAround": "Rozejrzyj się",
+    "moveSideways": "Poruszaj się bokiem",
+    "noInstruction": "Brak instrukcji dla tego trybu nawigacji",
+    "run": "Uruchom",
+    "walkAround": "Porusz się dookoła"
+  },
+  "notifications": {
+    "connectedToSkybrushServer": "Połączono z serwerem Skybrush"
+  },
+  "outdoorEnvironmentEditor": {
+    "AHL": "Wysokość nad poziomem startowiska (AHL)",
+    "AMSL": "Wysokość nad poziomem morza (AMSL)",
+    "AMSLReference": "Odniesienie AMSL",
+    "altitudeControl": "Kontrola wysokości i poprawki RTK",
+    "coordinateSystem": "Układ współrzędnych",
+    "copyMapOriginToShow": "Skopiuj początek mapy jako początek pokazu dronów",
+    "copyShowOriginToMap": "Skopiuj początek pokazu jako początek mapy",
+    "fitCoordinateSysToCurrentDrone": "Dopasuj układ współrzędnych do aktualnych pozycji drona",
+    "setToAverageAMSL": "Ustaw średnią AMSL aktywnych dronów",
+    "showCoordinateSystemAppliedToMap": "Pokaż układ współrzędnych zastosowany do mapy.",
+    "showCoordinateSystemUpdatedFromMap": "Pokaż układ współrzędnych zaktualizowany na podstawie mapy.",
+    "showIsControlledBasedOn": "Pokaz jest kontrolowany na podstawie …",
+    "showOrientation": "Orientacja pokazu",
+    "showOrigin": "Pochodzenie pokazu",
+    "warningText": "Automatyczne obliczanie początku i orientacji pokazu zakłada, że wszystkie drony są skierowane w stronę osi X pokazu <underline>lub</underline>, że określono ich przesunięcie względem osi X za pomocą powyższego ustawienia. Bezwzględne kursy startu nie są obsługiwane."
+  },
+  "parameterListSidebar": {
+    "import": "Import …",
+    "nextStep": "Następny krok",
+    "removeAllItems": "Usuń wszystkie pozycje z listy"
+  },
+  "parameterUploadMainPanel": {
+    "parameterNamesValues": "Nazwy i wartości parametrów",
+    "parameterUploadHint": "Naciśnij <kbd>⇧</kbd> + <kbd>Enter</kbd>, aby dodać parametr do listy. Kliknij parametr na pasku bocznym, aby usunąć go z listy.",
+    "rebootAfterUpload": "Uruchom ponownie po przesłaniu",
+    "specifyEntries": "Określ wpisy w formacie nazwa=wartość, jeden parametr na wiersz."
+  },
+  "parameterUploadSetupDialog": {
+    "uploadParameters": "Prześlij parametry"
+  },
+  "preferences": "Preferencje",
   "settings": {
     "display": {
       "language": "Język"
