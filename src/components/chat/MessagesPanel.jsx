@@ -367,14 +367,17 @@ export default connect(
             },
           }
         );
-        const formattedMessage = formatCommandResponseAsHTML(result);
-        dispatch(
-          addInboundMessage({
-            message: formattedMessage,
-            uavId,
-            refs: messageId,
-          })
-        );
+
+        if (!isNil(result)) {
+          const formattedMessage = formatCommandResponseAsHTML(result);
+          dispatch(
+            addInboundMessage({
+              message: formattedMessage,
+              uavId,
+              refs: messageId,
+            })
+          );
+        }
       } catch (error) {
         const errorMessage = error.userMessage || error.message;
         dispatch(
