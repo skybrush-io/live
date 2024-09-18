@@ -337,9 +337,121 @@
     "uploadParameters": "Prześlij parametry"
   },
   "preferences": "Preferencje",
+  "preflightTab": {
+    "enterCheckItems": "Wprowadź preferowane elementy ręcznej przedstartowej listy kontrolnej, po jednym w każdym wierszu.",
+    "headingsHint": "Wiersze kończące się dwukropkiem (:) stają się nagłówkami.",
+    "manualPreflightCheckItems": "Elementy ręcznej przedstartowej listy kontrolnej",
+    "preflightCheckItems": "Elementy przedstartowej listy kontrolnej"
+  },
+  "recalculateMappingButton": {
+    "findOptimalMapping": "Znajdź optymalne mapowanie",
+    "recalculateMapping": "Przelicz mapowanie"
+  },
+  "safetyDialog": {
+    "geofence": "Geofence",
+    "geofenceTab": {
+      "clear": "Wyczyść bieżące geofence",
+      "errors": {
+        "distance": "Nie można obliczyć odległości",
+        "height": "Nie można obliczyć wysokości"
+      },
+      "fenceAction": "Geofence - działa",
+      "fenceActionHelperText": "Obsługa tych opcji zależy od zastosowanych dronów. Nie wszystkie drony obsługują wszystkie opcje.",
+      "fenceActionLabel": "Działanie podstawowe geofence",
+      "horizontal": "Poziomy",
+      "maxAltitude": "Maksymalna wysokość",
+      "maxDistance": "Maksymalna odległość",
+      "maxVertexCount": "Maksymalna liczba wierzchołków",
+      "proposedLimits": "Proponowane limity dla bieżącej misji",
+      "safetyMargins": "Marginesy bezpieczeństwa",
+      "simplifyPolygon": "Uprość wielokąt",
+      "vertexCountReduction": "Redukcja liczby wierzchołków",
+      "vertical": "Pionowy"
+    },
+    "settings": "Ustawienia",
+    "title": "Bezpieczeństwo"
+  },
+  "safetySettingsTab": {
+    "criticalBatteryVoltageHelperText": "Krytycznie niskie napięcie akumulatora w [V], poniżej którego następuje uruchomienie procedury zabezpieczającej akumulator.",
+    "criticalBatteryVoltageLabel": "Krytyczne napięcie akumulatora",
+    "emptyValues": "Puste wartości powodują, że odpowiadające jej bezpieczne wartości, których to dotyczy, nie zostaną nadpisane.",
+    "lowBatteryThresholdHelperText": "Typ i wartość progu niskiego poziomu naładowania baterii, poniżej którego uruchamia się procedura zabezpieczająca przed rozładowaniem baterii.",
+    "lowBatteryThresholdType": {
+      "disabled": "Wyłączony",
+      "noOverride": "Nie nadpisane",
+      "percentageBased": "Procentowo",
+      "voltageBased": "Woltarzowo"
+    },
+    "lowBatteryThresholdTypeLabel": "Typ progu niskiego poziomu naładowania baterii",
+    "lowBatteryThresholdValueLabel": "Wartość progowa",
+    "returnToHomeAltitudeHelperText": "Wysokość w [mAHL], na której wykonywane są operacje powrotu na startowisko.",
+    "returnToHomeAltitudeLabel": "Wysokość powrotna",
+    "returnToHomeSpeedHelperText": "Prędkość pozioma w [m/s], z jaką wykonywane są operacje powrotu na startowisko.",
+    "returnToHomeSpeedLabel": "Prędkość powrotna"
+  },
+  "savedLocation": {
+    "addNew": "Dodaj nową lokalizację",
+    "edit": "Edytuj lokalizację"
+  },
+  "savedLocationEditor": {
+    "copyFromMapView": "Skopiuj z widoku mapy",
+    "createNew": "Utwórz nową lokalizację",
+    "editSaved": "Edytuj zapisaną lokalizację",
+    "name": "Nazwa",
+    "notes": "Notatki",
+    "zoomLevel": "Poziom powiększenia"
+  },
+  "serverConnectionStatus": {
+    "clockSkew": "Synchronizacja zegara",
+    "clocksSync": "Zegary zsynchronizowane",
+    "connected": "Połączony",
+    "connecting": "Łączenie w toku …",
+    "disconnected": "Rozłączono z serwerem",
+    "disconnecting": "Trwa rozłączanie …",
+    "roundTripTime": "Czas podróży w obie strony",
+    "unknownState": "Nieznany stan",
+    "version": "Wersja serwera"
+  },
+  "serverSettingsDialog": {
+    "autodetected": "Wykryto automatycznie",
+    "autodiscoveryIsNotAvailable": "Funkcja automatycznego wykrywania nie jest dostępna w tej wersji.",
+    "connect": "Połącz",
+    "connecting": "Łączenie …",
+    "connectingTo": "Łączenie z {{hostName}} …",
+    "disconnect": "Rozłącz",
+    "enterManually": "Wprowadź ręcznie",
+    "hostname": "Nazwa hosta",
+    "localConnection": "Połączenie lokalne",
+    "pleaseWait": "Proszę czekać …",
+    "port": "Port",
+    "preconfiguredServer": "Serwer wstępnie skonfigurowany",
+    "scanningNetwork": "Skanowanie sieci w poszukiwaniu serwerów …",
+    "secureConnection": "Bezpieczne połączenie",
+    "serverSelectionRestricted": "Łączenie się z innymi serwerami nie jest obsługiwane w tej wersji.",
+    "unsecured": "(niezabezpieczone)",
+    "unsecuredConnection": "Połączenie niezabezpieczone",
+    "useSecureConnection": "Użyj bezpiecznego połączenia",
+    "useWebSocketHelperText": "Tylko dla kompatybilności wstecznej.",
+    "useWebSocketLabel": "Użyj protokołu WebSocket zamiast TCP"
+  },
   "settings": {
     "display": {
-      "language": "Język"
+      "coordinateFormat": "Format współrzędnych",
+      "enableExperimentalFeatures": "Włącz funkcje eksperymentalne (zaawansowane)",
+      "flatEarthCoordinateSystem": "Układ współrzędnych płaskiej ziemi",
+      "hideInactiveSegmentsOnDarkLCD": "Popraw kontrast na zegarach LCD w trybie ciemnym",
+      "language": "Język",
+      "mapOrigin": "Pochodzenie mapy",
+      "mapWidgets": "Widżety mapy",
+      "miscellaneous": "Różne",
+      "operationModes": "Tryby pracy",
+      "optimizeForSingleUAV": "Zoptymalizuj interfejs do obsługi pojedynczego UAV",
+      "optimizeUIForTouch": "Zoptymalizuj interfejs dla urządzeń z ekranem dotykowym",
+      "showMouseCoordinates": "Pokaż współrzędne myszki",
+      "showScaleLine": "Pokaż skalę"
+    },
+    "tabs": {
+      "apiKeys": "Klucze API"
     }
   }
 }
