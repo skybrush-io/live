@@ -372,7 +372,7 @@ export const isMissionItemValid = (item: unknown): item is MissionItem => {
     case MissionItemType.CHANGE_FLIGHT_MODE: {
       const { mode }: { mode?: unknown } = item.parameters;
 
-      return isFlightMode(mode);
+      return true;
     }
 
     case MissionItemType.CHANGE_HEADING: {
