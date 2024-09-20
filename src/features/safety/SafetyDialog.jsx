@@ -8,7 +8,6 @@ import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import DialogContent from '@material-ui/core/DialogContent';
-import Security from '@material-ui/icons/Security';
 import Tab from '@material-ui/core/Tab';
 
 import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
@@ -16,7 +15,6 @@ import DialogTabs from '@skybrush/mui-components/lib/DialogTabs';
 import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
 
 import { tt } from '~/i18n';
-import Fence from '~/icons/PlacesFence';
 import { hasFeature } from '~/utils/configuration';
 
 import { SafetyDialogTab } from './constants';
@@ -30,7 +28,6 @@ const tabs = [
     ? [
         {
           id: SafetyDialogTab.GEOFENCE,
-          icon: <Fence />,
           name: tt('safetyDialog.geofence'),
           component: GeofenceSettingsTab,
         },
@@ -38,7 +35,6 @@ const tabs = [
     : []),
   {
     id: SafetyDialogTab.SETTINGS,
-    icon: <Security />,
     name: tt('safetyDialog.settings'),
     component: SafetySettingsTab,
   },
@@ -71,15 +67,8 @@ const SafetyDialog = ({ onClose, onTabSelected, open, selectedTab, t }) => {
           value={selectedTab}
           onChange={onTabSelected}
         >
-          {tabs.map(({ id, icon, name }) => (
-            <Tab
-              key={id}
-              icon={icon}
-              // Only available from MUI v5
-              // iconPosition='start'
-              label={name(t)}
-              value={id}
-            />
+          {tabs.map(({ id, name }) => (
+            <Tab key={id} label={name(t)} value={id} />
           ))}
         </DialogTabs>
       )}

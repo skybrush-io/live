@@ -69,7 +69,14 @@ const SafetySettingsFormPresentation = ({ initialValues, onSubmit, t }) => (
   <Form initialValues={initialValues} validate={validator} onSubmit={onSubmit}>
     {({ handleSubmit, values }) => (
       <form id='safetySettings' onSubmit={handleSubmit}>
-        <Box style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        <Box
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '8px',
+            paddingTop: 12,
+          }}
+        >
           <DialogContentText>
             {t('safetySettingsTab.emptyValues')}
           </DialogContentText>

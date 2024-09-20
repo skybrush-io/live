@@ -379,7 +379,7 @@
   "safetySettingsTab": {
     "criticalBatteryVoltageHelperText": "Critically low battery voltage in [V] under which a critical battery failsafe action is triggered.",
     "criticalBatteryVoltageLabel": "Critical battery voltage",
-    "emptyValues": "Empty values result in the respective safety values not being overridden.",
+    "emptyValues": "Leaving a field empty will keep the existing settings on the UAV after the upload.",
     "lowBatteryThresholdHelperText": "Low battery threshold type and value under which a low battery failsafe action is triggered.",
     "lowBatteryThresholdType": {
       "disabled": "Disabled",
