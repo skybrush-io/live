@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-export default () => {
+export const useDropdown = () => {
   const [anchorElement, setAnchorElement] = useState(null);
 
   const openMenu = (event) => setAnchorElement(event.currentTarget);
@@ -23,3 +23,5 @@ export default () => {
 
   return [anchorElement, openMenu, closeMenu];
 };
+
+export default useDropdown;

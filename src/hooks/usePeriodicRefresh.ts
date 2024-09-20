@@ -1,6 +1,6 @@
 import { useInterval, useUpdate } from 'react-use';
 
-function usePeriodicRefresh(ms) {
+function usePeriodicRefresh(ms: number): void {
   const update = useUpdate();
   useInterval(update, ms);
 }
