@@ -451,7 +451,108 @@
       "showScaleLine": "Pokaż skalę"
     },
     "tabs": {
-      "apiKeys": "Klucze API"
+      "apiKeys": "Klucze API",
+      "display": "Wyświetlacz",
+      "preflight": "Lista kontrolna przed lotem",
+      "server": "Serwer",
+      "threeDView": "Widok 3D",
+      "uavs": "UAV's"
+    },
+    "threeDView": {
+      "1x1": "10x10 metrów",
+      "2x2": "20x20 metrów",
+      "auto": "Automatyczny",
+      "dark": "Ciemny",
+      "environment": "Środowisko",
+      "grid": "Siatka",
+      "indoor": "Wnętrzowy",
+      "light": "Światło",
+      "lighting": "Oświetlenie",
+      "none": "Brak siatki",
+      "outdoor": "Plenerowy",
+      "rendering": "Renderowanie",
+      "scenery": "Sceneria",
+      "showAxes": "Pokaż osie układu współrzędnych",
+      "showHomePositions": "Pokaż pozycje startowiska",
+      "showLandingPositions": "Pokaż pozycje lądowiska",
+      "showStatistics": "Pokaż statystyki renderowania (zaawansowane)",
+      "showTrajectoriesOfSelection": "Pokaż trajektorie wybranych UAV's"
+    },
+    "uavs": {
+      "batteryDisplayStyle": "Styl wyświetlania baterii",
+      "cellCount": "Liczba komórek",
+      "criticalTreshold": "Próg krytyczny",
+      "defaultBatterySettings": "Domyślne ustawienia baterii",
+      "desiredHeadingAccuracy": "Oczekiwana dokładność kursu",
+      "desiredPlacementAccuracy": "Oczekiwana dokładność pozycjonowania",
+      "forget": "Po takim czasie zapomnij o niewidocznych dronach",
+      "fullCharge": "Pełne naładowanie",
+      "gone": "Oznacz drony jako nieistniejące po",
+      "lowTreshold": "Niski próg",
+      "missionSetup": "Konfiguracja misji",
+      "missionSetupDescription": "Stosuje się przed misjami z udziałem wielu dronów w celu sprawdzenia, czy każdy dron znajduje się w wyznaczonej pozycji startowej i jest zwrócony we właściwym kierunku.",
+      "warn": "Ostrzeżenie przed dronami, których nie widać od co najmniej"
+    }
+  },
+  "show": {
+    "authorizationReq": "Wymagana autoryzacja przed startem",
+    "authorizeTheStart": "Autoryzuj rozpoczęcie pokazu",
+    "authorized": "Pokaż autoryzację do startu",
+    "chooseStartTime": "Wybierz czas startu",
+    "chooseStartTimeNotSet": "Jeszcze nie ustawione",
+    "clear": "Wyczyść załadowany pokaz",
+    "clock": "Pokaż zegar:",
+    "dronePlacementApproved": "Zatwierdzono rozmieszczenie dronów",
+    "dronePlacementCheck": "Sprawdzanie umiejscowienia drona …",
+    "dronePlacementError": "Błąd w umiejscowieniu drona",
+    "dronePlacementPartial": "Zatwierdzono częściowe rozmieszczenie dronów",
+    "fromCloud": "Załaduj pokaz z chmury",
+    "indoor": "Wnętrze",
+    "loading": "Proszę czekać, trwa ładowanie pliku pokazu…",
+    "manualPreflightChecks": "Ręczna kontrola przed lotem",
+    "noFileLoaded": "Brak załadowanego pliku pokazu",
+    "onboardPreflightChecks": "Pokładowa lista kontrolna przed lotem",
+    "outdoor": {
+      "invalidAltitudeReference": "Plener, nieprawidłowe odniesienie wysokości",
+      "relativeToAMSL": "Plener, w stosunku do {{altitude}}m AMSL",
+      "relativeToHome": "Plener, w stosunku do startowiska",
+      "unknownAltitudeReference": "Plener, nieznana wysokość odniesienia"
+    },
+    "placementAccuracy": "Dokładność umiejscowienia ≤ {{distance}}",
+    "reload": "Przeładuj pokaz",
+    "revokeAuthorization": "Kliknij tutaj, aby cofnąć autoryzację",
+    "selectFile": "Wybierz lub upuść plik pokazu",
+    "setupEnvironment": "Konfiguracja środowiska",
+    "setupGeofence": "Konfiguracja geofence",
+    "setupTakeoffArea": "Przygotuj miejsce startu",
+    "startMethod": {
+      "AUTO": "Pokaz rozpocznie się automatycznie",
+      "RC": "Użyj przełącznika na swoim RC, aby rozpocząć"
+    },
+    "startTimeNotSet": "Czas startu nie został jeszcze ustawiony",
+    "startsAt": "Starty zaczynają się o {{time}}",
+    "takeOffMore": "{{quantity}} dron -y/dronów będzie startować automatycznie",
+    "takeOffNoPosition": "Nie ustalono jeszcze pozycji co najmniej jednego drona",
+    "takeOffOne": "Jeden dron wystartuje automatycznie",
+    "takeOffPlace": "Jeden dron wystartuje automatycznie",
+    "unknown": "Nieznany",
+    "unknownStartMode": "Ten pokaz używa nieznanego trybu startowego",
+    "uploadShowData": "Prześlij plik danych pokazu",
+    "uploadShowDataLoading": "Proszę czekać, trwa przesyłanie …",
+    "uploadShowDataStart": "Kliknij tutaj, aby rozpocząć proces przesyłania"
+  },
+  "sidebar": {
+    "missionType": "Typ misji: ({{missionType}})"
+  },
+  "sorting": {
+    "ascending": "Rosnąco",
+    "descending": "Malejąco",
+    "label": {
+      "agl": "Wysokość nad ziemią",
+      "ahl": "Wysokość nad startowiskiem",
+      "amsl": "Wysokość (MSL)",
+      "battery": "Bateria",
+      "default": "Domyślny"
     }
   }
 }
