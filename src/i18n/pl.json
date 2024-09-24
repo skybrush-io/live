@@ -552,7 +552,83 @@
       "ahl": "Wysokość nad startowiskiem",
       "amsl": "Wysokość (MSL)",
       "battery": "Bateria",
-      "default": "Domyślny"
-    }
+      "default": "Domyślny",
+      "gpsFix": "Dokładność GPS",
+      "heading": "Kurs",
+      "status": "Status"
+    },
+    "shortLabel": {
+      "agl": "AGL (Above Ground Level)",
+      "ahl": "AHL (Altitude Above Home Level)",
+      "amsl": "AMSL (Above Mean Sea Level)",
+      "battery": "Bateria",
+      "default": "Domyślny",
+      "flightMode": "Tryb",
+      "gpsFix": "Dokładność GPS",
+      "heading": "Kurs",
+      "status": "Status"
+    },
+    "sortBy": "Sortuj według"
+  },
+  "startTimeDialog": {
+    "SMPTETimecode": "Kod czasowy SMPTE",
+    "errors": {
+      "invalidDate": "Nieprawidłowa data",
+      "invalidTime": "Nieprawidłowy czas",
+      "pastDate": "Data nie może być datą z przeszłości",
+      "pastTime": "Czas nie może być czasem z przeszłości"
+    },
+    "localTime": "Czas lokalny",
+    "reference": "Referencja",
+    "resetForm": "Zresetuj formularz",
+    "setNewStartTime": "Ustaw nową godzinę startu",
+    "setTheStartTime": "Ustaw godzinę rozpoczęcia pokazu",
+    "startDate": "Data rozpoczęcia",
+    "startShowAuto": "Rozpocznij pokaz automatycznie",
+    "startShowWithRC": "Rozpocznij pokaz tylko za pomocą pilota (bezpieczniej)",
+    "startSignal": "Sygnał startu",
+    "startTime": "Czas rozpoczęcia",
+    "startTimeHms": "Czas rozpoczęcia (godzina: minuta: sekunda)",
+    "suggestions": "Sugestie:"
+  },
+  "startTimeDisplay": {
+    "noStartTimeIsSet": "W tej chwili nie ustalono godziny rozpoczęcia.",
+    "startTimeIsSetTo": "Czas rozpoczęcia ustawiono na <strong>{{formattedStartTime}}</strong>"
+  },
+  "startUploadButton": {
+    "startSelected": "Rozpocznij wybrane"
+  },
+  "surveyStatusIndicator": {
+    "noSurveyInformation": "Brak danych z ankiety"
+  },
+  "takeoffAreaSetupDialog": {
+    "allDroneOnline": "Wszystkie drony biorące udział w misji są online.",
+    "allDronesAtTakeoffPositions": "Wszystkie drony zostały umieszczone na pozycjach startowych.",
+    "allDronesFacingCorrectDirection": "Wszystkie drony są zwrócone we właściwym kierunku.",
+    "allSlotsFilled": "Wszystkie miejsca w misji są zajęte.",
+    "approveTakeoffAreaArrangement": "Zatwierdź ustalenia dotyczące miejsca startu",
+    "emptySlots": "Puste sloty:",
+    "misaligned": "Nieprawidłowo wyrównane:",
+    "misplaced": "Niewłaściwie umieszczone:",
+    "missing": "Brakujące:",
+    "noDrones": "W misji nie ma dronów.",
+    "placeVirtualDrones": "Umieść wirtualne drony",
+    "takeoffAreaSetup": "Przygotowanie miejsca startu"
+  },
+  "takeoffHeadingSpecEditor": {
+    "UAVheadings": "Wskazówki dla UAV's przed startem …",
+    "compassDirection": "Kierunek kompasu",
+    "headingOffset": "Zmień kierunek",
+    "setToAvergaeHeading": "Ustaw średni kurs dla aktywnych dronów",
+    "specifiedByAbsoluteCompassDirection": "Określony przez bezwzględny kierunek kompasu",
+    "specifiedRelativeToShowOrientation": "Określony w stosunku do orientacji pokazu",
+    "unspecified": "Nieokreślony"
+  },
+  "toolbox": {
+    "averagingInProgress": "{{number}} w toku",
+    "coordinateAveraging": "Uśrednianie współrzędnych",
+    "licenseInfo": "Informacje o licencji",
+    "offlineMaps": "Mapy offline",
+    "paramUpload": "Prześlij parametry"
   }
 }
