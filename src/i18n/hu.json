@@ -389,7 +389,7 @@
     },
     "lowBatteryThresholdTypeLabel": "Alacsony akku küszöb típusa",
     "lowBatteryThresholdValueLabel": "Küszöbérték",
-    "returnToHomeAltitudeHelperText": "Magasság [mAHL]-ben, amelyen a visszatérési műveletek végrehajtásra kerülnek.",
+    "returnToHomeAltitudeHelperText": "Minimum magasság [mAHL]-ben, a hazatérési műveletek e fölött hajtódnak végre.",
     "returnToHomeAltitudeLabel": "Hazatérési magasság",
     "returnToHomeSpeedHelperText": "Vízszintes sebesség [m/s]-ban, amellyel a visszatérési műveletek végrehajtásra kerülnek.",
     "returnToHomeSpeedLabel": "Hazatérési sebesség"
