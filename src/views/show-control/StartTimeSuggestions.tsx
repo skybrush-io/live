@@ -4,7 +4,6 @@ import getMinutes from 'date-fns/getMinutes';
 import getSeconds from 'date-fns/getSeconds';
 import startOfMinute from 'date-fns/startOfMinute';
 import startOfSecond from 'date-fns/startOfSecond';
-import PropTypes from 'prop-types';
 import React from 'react';
 
 import Button from '@material-ui/core/Button';
@@ -73,8 +72,8 @@ const defaultCreateStartTimeSuggestions = createStartTimeSuggestionsFn({
 });
 
 export type StartTimeSuggestionsProps = {
-  readonly onChange: (value: number) => void;
-  readonly startTimes:
+  readonly onChange: (value: Date) => void;
+  readonly startTimes?:
     | StartTimeSuggestion[]
     | ((now: number) => StartTimeSuggestion[]);
 };
@@ -103,8 +102,8 @@ const StartTimeSuggestions = ({
           onClick={() => {
             onChange(
               relative
-                ? startOfSecond(add(Date.now(), { seconds: time })).valueOf()
-                : time.valueOf()
+                ? startOfSecond(add(Date.now(), { seconds: time }))
+                : time
             );
           }}
         >

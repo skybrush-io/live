@@ -48,6 +48,7 @@ import {
   getOutdoorShowToWorldCoordinateSystemTransformationObject,
   getOutdoorShowOrientation,
   getCommonTakeoffHeading,
+  getShowClockReference,
 } from './selectors';
 import {
   approveTakeoffAreaAt,
@@ -64,6 +65,8 @@ import {
   signOffOnOnboardPreflightChecksAt,
   _setOutdoorShowAltitudeReference,
   _clearLoadedShow,
+  setStartTime,
+  synchronizeShowSettings,
 } from './slice';
 
 /**
@@ -87,6 +90,15 @@ export const clearLastUploadResult = () =>
 export const clearLoadedShow = () => (dispatch) => {
   dispatch(_clearLoadedShow());
   dispatch(setMissionType(MissionType.UNKNOWN));
+};
+
+/**
+ * Think that clears the start time of the show, keeping its start method.
+ */
+export const clearStartTime = () => (dispatch, getState) => {
+  const clock = getShowClockReference(getState());
+  dispatch(setStartTime({ clock, time: undefined }));
+  dispatch(synchronizeShowSettings('toServer'));
 };
 
 /**

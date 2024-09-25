@@ -26,11 +26,6 @@ const clockIdToProps: Record<
     affectedByClockSkew: true,
   },
 
-  [CommonClockId.LOCAL]: {
-    label: 'Client clock',
-    abbreviation: 'Time',
-  },
-
   [CommonClockId.MISSION]: {
     label: 'Mission clock',
     abbreviation: 'MSN',

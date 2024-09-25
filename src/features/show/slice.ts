@@ -465,7 +465,7 @@ const { actions, reducer } = createSlice({
     setStartTime(
       state,
       action: PayloadAction<
-        | { clock: Clock['id']; time: number }
+        | { clock: Clock['id']; time: number | undefined }
         | { clock: undefined; time: Date | number }
       >
     ) {
@@ -512,7 +512,12 @@ const { actions, reducer } = createSlice({
       state.preflight.onboardChecksSignedOffAt = action.payload;
     },
 
-    synchronizeShowSettings() {
+    synchronizeShowSettings(
+      _state,
+      _action: PayloadAction<
+        'fromServer' | 'toServer' | 'fromClient' | 'toClient'
+      >
+    ) {
       // Nothing to do, this action simply triggers a saga that will do the
       // hard work.
     },

@@ -9,10 +9,9 @@ import {
   startOfDay,
 } from 'date-fns';
 import { KeyboardDatePicker, KeyboardTimePicker, Select } from 'mui-rff';
-import PropTypes from 'prop-types';
 import React, { useMemo } from 'react';
-import { Form } from 'react-final-form';
-import { withTranslation } from 'react-i18next';
+import { Form, type FormProps } from 'react-final-form';
+import { useTranslation, withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import DateFnsUtils from '@date-io/date-fns';
@@ -24,7 +23,6 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import FormGroup from '@material-ui/core/FormGroup';
 import MenuItem from '@material-ui/core/MenuItem';
-import Typography from '@material-ui/core/Typography';
 import AccessTime from '@material-ui/icons/AccessTime';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 
@@ -43,32 +41,80 @@ import { formatDurationHMS } from '~/utils/formatting';
 import { parseDurationHMS } from '~/utils/parsing';
 
 import StartTimeDisplay from './StartTimeDisplay';
-import StartTimeSuggestions from './StartTimeSuggestions';
+import StartTimeSuggestionsBox from './StartTimeSuggestionsBox';
+import type { TFunction } from 'i18next';
+import type { FormApi } from 'final-form';
+import type { RootState } from '~/store/reducers';
 
-function createDateTimeFromParts(date, time) {
+enum LocalClockId {
+  ABSOLUTE = '__local__',
+  RELATIVE = '__local_relative__',
+}
+
+/* Not all clock IDs are allowed for the start time; here we explicitly
+ * describe which ones are allowed. */
+type AllowedClockIdsForStartTime = LocalClockId.ABSOLUTE | CommonClockId.MTC;
+
+/** Type guard for AllowedClockIdsForStartTime */
+const validateClockIdForStartTimeForm = (
+  clock: any
+): clock is AllowedClockIdsForStartTime => {
+  return clock === LocalClockId.ABSOLUTE || clock === CommonClockId.MTC;
+};
+
+type StartTimeFormValues = {
+  clock: AllowedClockIdsForStartTime;
+  method: StartMethod;
+  timeOnClock: string;
+  utcDate: Date;
+  utcTime: Date;
+};
+
+type FormErrors = { [P in keyof StartTimeFormValues]?: ReturnType<TFunction> };
+
+function createDateTimeFromParts(date: Date, time: Date): Date {
   const result = startOfDay(date);
   result.setHours(time.getHours(), time.getMinutes(), time.getSeconds());
   return result;
 }
 
-const makeFormValidator = (t) => (values) => {
-  const errors = {};
+const makeFormValidator =
+  (t: TFunction) =>
+  (values: StartTimeFormValues): FormErrors => {
+    const errors: FormErrors = {};
 
-  if (!isValid(values.utcDate)) {
-    errors.utcDate = t('startTimeDialog.errors.invalidDate');
-  } else if (isPast(endOfDay(values.utcDate))) {
-    errors.utcDate = t('startTimeDialog.errors.pastDate');
-  } else if (!isValid(values.utcTime)) {
-    errors.utcTime = t('startTimeDialog.errors.invalidTime');
-  } else {
-    const dateTime = createDateTimeFromParts(values.utcDate, values.utcTime);
-    if (isPast(dateTime)) {
-      errors.utcTime = t('startTimeDialog.errors.pastTime');
+    if (!isValid(values.utcDate)) {
+      errors.utcDate = t('startTimeDialog.errors.invalidDate');
+    } else if (isPast(endOfDay(values.utcDate))) {
+      errors.utcDate = t('startTimeDialog.errors.pastDate');
+    } else if (isValid(values.utcTime)) {
+      const dateTime = createDateTimeFromParts(values.utcDate, values.utcTime);
+      if (isPast(dateTime)) {
+        errors.utcTime = t('startTimeDialog.errors.pastTime');
+      }
+    } else {
+      errors.utcTime = t('startTimeDialog.errors.invalidTime');
     }
-  }
 
-  return errors;
+    return errors;
+  };
+
+const setStartTimeFromDateObject = (
+  form: FormApi<StartTimeFormValues>,
+  date: Date
+): void => {
+  form.batch(() => {
+    form.change('clock', LocalClockId.ABSOLUTE);
+    form.change('utcDate', date);
+    form.change('utcTime', date);
+  });
 };
+
+type StartTimeFormPresentationProps = Readonly<{
+  alwaysAllowSubmission: boolean;
+  onClose: () => void;
+}> &
+  Pick<FormProps<StartTimeFormValues>, 'onSubmit' | 'initialValues'>;
 
 /**
  * Form in the start time management dialog that keeps track of the changes
@@ -79,8 +125,8 @@ const StartTimeFormPresentation = ({
   initialValues,
   onClose,
   onSubmit,
-  t,
-}) => {
+}: StartTimeFormPresentationProps): JSX.Element => {
+  const { t } = useTranslation();
   const validateForm = useMemo(() => makeFormValidator(t), [t]);
 
   return (
@@ -110,7 +156,7 @@ const StartTimeFormPresentation = ({
                     variant: 'filled',
                   }}
                 >
-                  <MenuItem value={CommonClockId.LOCAL}>
+                  <MenuItem value={LocalClockId.ABSOLUTE}>
                     {t('startTimeDialog.localTime')}
                   </MenuItem>
                   <MenuItem value={CommonClockId.MTC}>
@@ -119,7 +165,7 @@ const StartTimeFormPresentation = ({
                 </Select>
               </Box>
 
-              {values.clock === CommonClockId.LOCAL ? (
+              {values.clock === LocalClockId.ABSOLUTE ? (
                 <>
                   {/* we use separate pickers for the date and the time; this is
                    * because in most cases the date should default to the current
@@ -163,30 +209,13 @@ const StartTimeFormPresentation = ({
               )}
             </FormGroup>
 
-            {values.clock === CommonClockId.LOCAL && (
-              <Box
-                mt={1}
-                flexDirection='row'
-                display='flex'
-                alignItems='center'
-              >
-                <Box mr={2}>
-                  <Typography variant='body2' color='textSecondary'>
-                    {t('startTimeDialog.suggestions')}
-                  </Typography>
-                </Box>
-
-                <StartTimeSuggestions
-                  onChange={(timestamp) => {
-                    form.batch(() => {
-                      const date = new Date(timestamp);
-                      form.change('clock', CommonClockId.LOCAL);
-                      form.change('utcDate', date);
-                      form.change('utcTime', date);
-                    });
-                  }}
-                />
-              </Box>
+            {values.clock === LocalClockId.ABSOLUTE && (
+              <StartTimeSuggestionsBox
+                label={t('startTimeDialog.suggestions')}
+                onChange={(date) => {
+                  setStartTimeFromDateObject(form, date);
+                }}
+              />
             )}
 
             <Select
@@ -208,7 +237,12 @@ const StartTimeFormPresentation = ({
             </Select>
           </DialogContent>
           <DialogActions>
-            <Button disabled={!dirty} onClick={() => form.reset()}>
+            <Button
+              disabled={!dirty}
+              onClick={() => {
+                form.reset();
+              }}
+            >
               {t('startTimeDialog.resetForm')}
             </Button>
             {onClose && (
@@ -228,41 +262,40 @@ const StartTimeFormPresentation = ({
   );
 };
 
-StartTimeFormPresentation.propTypes = {
-  alwaysAllowSubmission: PropTypes.bool,
-  initialValues: PropTypes.shape({
-    clock: PropTypes.string,
-    method: PropTypes.oneOf(Object.values(StartMethod)),
-    timeOnClock: PropTypes.string,
-  }),
-  onClose: PropTypes.func,
-  onSubmit: PropTypes.func,
-  t: PropTypes.func,
-};
-
 const StartTimeForm = withTranslation()(StartTimeFormPresentation);
+
+type StartTimeDialogProps = Readonly<{
+  clock?: string;
+  method?: StartMethod;
+  onClose: () => void;
+  onUpdateSettings: (values: StartTimeFormValues) => void;
+  open?: boolean;
+  timeOnClock?: number;
+  utcTime?: number;
+}>;
 
 /**
  * Presentation component for the dialog that allows the user to set up the
- * start time and the start metod of the drone show.
+ * start time and the start method of the drone show.
  */
 const StartTimeDialog = ({
   clock,
-  method,
-  open,
+  method = StartMethod.RC,
+  open = false,
   onClose,
   onUpdateSettings,
   timeOnClock,
   utcTime,
-}) => {
+}: StartTimeDialogProps): JSX.Element => {
   const hasUtcStartTime = typeof utcTime === 'number';
   const hasStartTimeOnClock = typeof timeOnClock === 'number';
   const startDateTimeInUtc = hasUtcStartTime
     ? fromUnixTime(utcTime)
     : setSeconds(addMinutes(new Date(), 30), 0);
   const initialStartTimeOnClock = hasStartTimeOnClock ? timeOnClock : 0;
-  const initialClock =
-    typeof clock === 'string' && clock.length > 0 ? clock : CommonClockId.LOCAL;
+  const initialClock = validateClockIdForStartTimeForm(clock)
+    ? clock
+    : LocalClockId.ABSOLUTE;
 
   return (
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -286,54 +319,40 @@ const StartTimeDialog = ({
   );
 };
 
-StartTimeDialog.propTypes = {
-  clock: PropTypes.string,
-  method: PropTypes.oneOf(Object.values(StartMethod)),
-  onClose: PropTypes.func,
-  onUpdateSettings: PropTypes.func,
-  open: PropTypes.bool,
-  timeOnClock: PropTypes.number,
-  utcTime: PropTypes.number,
-};
-
-StartTimeDialog.defaultProps = {
-  method: StartMethod.RC,
-  open: false,
-};
-
 export default connect(
   // mapStateToProps
-  (state) => ({
+  (state: RootState) => ({
     ...state.show.startTimeDialog,
     ...state.show.start,
   }),
 
   // mapDispatchToProps
   (dispatch) => ({
-    onClose() {
+    onClose(): void {
       dispatch(closeStartTimeDialog());
     },
 
-    onUpdateSettings({ clock, method, timeOnClock, utcDate, utcTime }) {
-      const useLocalTime =
-        clock === CommonClockId.LOCAL ||
-        clock === '' ||
-        typeof clock !== 'string';
-
+    onUpdateSettings({
+      clock,
+      method,
+      timeOnClock,
+      utcDate,
+      utcTime,
+    }: StartTimeFormValues): void {
       dispatch(setStartMethod(method));
 
-      if (useLocalTime) {
+      if (clock === LocalClockId.ABSOLUTE) {
         dispatch(
           setStartTime({
             time: getUnixTime(createDateTimeFromParts(utcDate, utcTime)),
-            clock: null,
+            clock: undefined,
           })
         );
       } else {
         const parsedTime = parseDurationHMS(timeOnClock);
         dispatch(
           setStartTime({
-            time: Number.isNaN(parsedTime) ? null : parsedTime,
+            time: Number.isNaN(parsedTime) ? undefined : parsedTime,
             clock,
           })
         );

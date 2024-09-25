@@ -1,6 +1,7 @@
 import {
-  type AnyAction,
+  type Action,
   type Dispatch,
+  type ThunkAction,
   combineReducers,
 } from '@reduxjs/toolkit';
 
@@ -141,3 +142,9 @@ export type AppSelector<T, ExtraArgs extends unknown[] = []> = (
   state: RootState,
   ...args: ExtraArgs
 ) => T;
+export type AppThunk<ReturnType = void> = ThunkAction<
+  ReturnType,
+  RootState,
+  unknown,
+  Action<unknown>
+>;
