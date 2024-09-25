@@ -389,7 +389,7 @@
     },
     "lowBatteryThresholdTypeLabel": "Low battery threshold type",
     "lowBatteryThresholdValueLabel": "Threshold value",
-    "returnToHomeAltitudeHelperText": "Altitude in [mAHL] at which return to home operations are performed.",
+    "returnToHomeAltitudeHelperText": "Minimum altitude in [mAHL] above which return to home operations are performed.",
     "returnToHomeAltitudeLabel": "Return to home altitude",
     "returnToHomeSpeedHelperText": "Horizontal speed in [m/s] at which return to home operations are performed.",
     "returnToHomeSpeedLabel": "Return to home speed"
