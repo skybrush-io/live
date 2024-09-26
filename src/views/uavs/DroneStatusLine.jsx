@@ -26,9 +26,10 @@ import {
   abbreviateFlightMode,
   abbreviateGPSFixType,
   getSemanticsForGPSFixType,
+  getSemanticsForRSSI,
 } from '~/model/enums';
 import { getPreferredCoordinateFormatter } from '~/selectors/formatting';
-import { formatCoordinateArray } from '~/utils/formatting';
+import { formatCoordinateArray, formatRSSI } from '~/utils/formatting';
 
 /**
  * Converts the absolute value of a heading deviation, in degrees, to the
@@ -79,6 +80,10 @@ const useStyles = makeStyles(
     modePill: {
       width: 48,
     },
+    rssiPill: {
+      marginLeft: theme.spacing(2),
+      width: 40,
+    },
     gpsPill: {
       width: 40,
     },
@@ -113,6 +118,7 @@ const DroneStatusLine = ({
   missing,
   mode,
   position,
+  rssi,
   secondaryLabel,
   text,
   textSemantics,
@@ -147,6 +153,14 @@ const DroneStatusLine = ({
             {...batteryStatus}
           />
           <ColoredLight inline color={color} />
+          <StatusPill
+            inline
+            hollow
+            className={clsx(classes.pill, classes.rssiPill)}
+            status={getSemanticsForRSSI(rssi?.[0])}
+          >
+            {formatRSSI(rssi?.[0])}
+          </StatusPill>
           <StatusPill
             inline
             hollow
@@ -217,6 +231,7 @@ DroneStatusLine.propTypes = {
     ahl: PropTypes.number,
     agl: PropTypes.number,
   }),
+  rssi: PropTypes.arrayOf(PropTypes.number),
   secondaryLabel: PropTypes.string,
   text: PropTypes.string,
   textSemantics: PropTypes.oneOf([
@@ -259,6 +274,7 @@ export default connect(
         missing: !uav,
         mode: uav ? uav.mode : undefined,
         position: uav ? uav.position : undefined,
+        rssi: uav ? uav.rssi : undefined,
         ...statusSummarySelector(state, ownProps.id),
       };
     };

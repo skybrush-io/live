@@ -333,3 +333,19 @@ export function truncate(
 
   return value;
 }
+
+/**
+ * Formats a single RSSI value
+ *
+ * @param rssi - The RSSI number value
+ * @returns The formatted string of the RSSI value as a percentage
+ */
+export function formatRSSI(
+  rssi?: number
+): string {
+  if (!rssi) {
+    return '-';
+  }
+
+  return rssi + '%';
+}

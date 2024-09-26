@@ -22,6 +22,7 @@ export enum UAVSortKey {
   ALTITUDE_HOME = 'ahl',
   ALTITUDE_GROUND = 'agl',
   HEADING = 'heading',
+  RSSI = 'rssi',
 }
 
 /**
@@ -37,6 +38,7 @@ export const UAVSortKeys = [
   UAVSortKey.ALTITUDE_HOME,
   UAVSortKey.ALTITUDE_GROUND,
   UAVSortKey.HEADING,
+  UAVSortKey.RSSI,
 ];
 
 /**
@@ -53,6 +55,7 @@ export const labelsForUAVSortKey: Record<UAVSortKey, PreparedI18nKey> = {
   [UAVSortKey.ALTITUDE_HOME]: tt('sorting.label.ahl'),
   [UAVSortKey.ALTITUDE_GROUND]: tt('sorting.label.agl'),
   [UAVSortKey.HEADING]: tt('sorting.label.heading'),
+  [UAVSortKey.RSSI]: tt('sorting.label.rssi'),
 };
 
 /**
@@ -69,6 +72,7 @@ export const shortLabelsForUAVSortKey: Record<UAVSortKey, PreparedI18nKey> = {
   [UAVSortKey.ALTITUDE_HOME]: tt('sorting.shortLabel.ahl'),
   [UAVSortKey.ALTITUDE_GROUND]: tt('sorting.shortLabel.agl'),
   [UAVSortKey.HEADING]: tt('sorting.shortLabel.heading'),
+  [UAVSortKey.RSSI]: tt('sorting.shortLabel.rssi'),
 };
 
 /**
@@ -150,6 +154,12 @@ export const getKeyFunctionForUAVSortKey = memoize(
 
       case UAVSortKey.HEADING:
         return (uav) => uav?.heading ?? 720;
+
+      case UAVSortKey.RSSI:
+        return (uav) => {
+          const result = uav?.rssi?.[0];
+          return isNil(result) ? 0 : result;
+        };
 
       case UAVSortKey.DEFAULT:
         return undefined;
