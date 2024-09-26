@@ -38,7 +38,7 @@ const StartTimeDisplay = (): JSX.Element => {
           <Trans
             i18nKey='startTimeDisplay.startTimeIsSetTo'
             components={{ strong: <strong /> }}
-            formattedStartTime={formattedStartTime}
+            values={{ formattedStartTime }}
           />
         ) : (
           t('startTimeDisplay.noStartTimeIsSet')

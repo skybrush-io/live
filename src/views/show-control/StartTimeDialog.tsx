@@ -1,5 +1,5 @@
 import {
-  addMinutes,
+  add,
   endOfDay,
   fromUnixTime,
   getUnixTime,
@@ -7,6 +7,7 @@ import {
   isValid,
   setSeconds,
   startOfDay,
+  startOfSecond,
 } from 'date-fns';
 import { KeyboardDatePicker, KeyboardTimePicker, Select } from 'mui-rff';
 import React, { useMemo } from 'react';
@@ -45,6 +46,7 @@ import StartTimeSuggestionsBox from './StartTimeSuggestionsBox';
 import type { TFunction } from 'i18next';
 import type { FormApi } from 'final-form';
 import type { RootState } from '~/store/reducers';
+import type { StartTimeSuggestion } from './StartTimeSuggestions';
 
 enum LocalClockId {
   ABSOLUTE = '__local__',
@@ -53,13 +55,20 @@ enum LocalClockId {
 
 /* Not all clock IDs are allowed for the start time; here we explicitly
  * describe which ones are allowed. */
-type AllowedClockIdsForStartTime = LocalClockId.ABSOLUTE | CommonClockId.MTC;
+type AllowedClockIdsForStartTime =
+  | LocalClockId.ABSOLUTE
+  | LocalClockId.RELATIVE
+  | CommonClockId.MTC;
 
 /** Type guard for AllowedClockIdsForStartTime */
 const validateClockIdForStartTimeForm = (
   clock: any
 ): clock is AllowedClockIdsForStartTime => {
-  return clock === LocalClockId.ABSOLUTE || clock === CommonClockId.MTC;
+  return (
+    clock === LocalClockId.ABSOLUTE ||
+    clock === LocalClockId.RELATIVE ||
+    clock === CommonClockId.MTC
+  );
 };
 
 type StartTimeFormValues = {
@@ -99,15 +108,22 @@ const makeFormValidator =
     return errors;
   };
 
-const setStartTimeFromDateObject = (
+const setStartTimeFromSuggestion = (
   form: FormApi<StartTimeFormValues>,
-  date: Date
+  suggestion: StartTimeSuggestion
 ): void => {
-  form.batch(() => {
-    form.change('clock', LocalClockId.ABSOLUTE);
-    form.change('utcDate', date);
-    form.change('utcTime', date);
-  });
+  const { time, relative } = suggestion;
+
+  if (relative) {
+    form.change('clock', LocalClockId.RELATIVE);
+    form.change('timeOnClock', formatDurationHMS(time, { padHours: true }));
+  } else {
+    form.batch(() => {
+      form.change('clock', LocalClockId.ABSOLUTE);
+      form.change('utcDate', time);
+      form.change('utcTime', time);
+    });
+  }
 };
 
 type StartTimeFormPresentationProps = Readonly<{
@@ -159,6 +175,9 @@ const StartTimeFormPresentation = ({
                   <MenuItem value={LocalClockId.ABSOLUTE}>
                     {t('startTimeDialog.localTime')}
                   </MenuItem>
+                  <MenuItem value={LocalClockId.RELATIVE}>
+                    {t('startTimeDialog.localTimeRelative')}
+                  </MenuItem>
                   <MenuItem value={CommonClockId.MTC}>
                     {t('startTimeDialog.SMPTETimecode')}
                   </MenuItem>
@@ -209,11 +228,12 @@ const StartTimeFormPresentation = ({
               )}
             </FormGroup>
 
-            {values.clock === LocalClockId.ABSOLUTE && (
+            {(values.clock === LocalClockId.ABSOLUTE ||
+              values.clock === LocalClockId.RELATIVE) && (
               <StartTimeSuggestionsBox
                 label={t('startTimeDialog.suggestions')}
-                onChange={(date) => {
-                  setStartTimeFromDateObject(form, date);
+                onChange={(suggestion) => {
+                  setStartTimeFromSuggestion(form, suggestion);
                 }}
               />
             )}
@@ -291,7 +311,7 @@ const StartTimeDialog = ({
   const hasStartTimeOnClock = typeof timeOnClock === 'number';
   const startDateTimeInUtc = hasUtcStartTime
     ? fromUnixTime(utcTime)
-    : setSeconds(addMinutes(new Date(), 30), 0);
+    : setSeconds(add(new Date(), { minutes: 30 }), 0);
   const initialStartTimeOnClock = hasStartTimeOnClock ? timeOnClock : 0;
   const initialClock = validateClockIdForStartTimeForm(clock)
     ? clock
@@ -342,13 +362,28 @@ export default connect(
       dispatch(setStartMethod(method));
 
       if (clock === LocalClockId.ABSOLUTE) {
+        /* Absolute start time formed from utcDate and utcTime */
         dispatch(
           setStartTime({
             time: getUnixTime(createDateTimeFromParts(utcDate, utcTime)),
             clock: undefined,
           })
         );
+      } else if (clock === LocalClockId.RELATIVE) {
+        /* Relative start time formed by adding timeOnClock to the current time */
+        const parsedTime = parseDurationHMS(timeOnClock);
+        dispatch(
+          setStartTime({
+            time: Number.isNaN(parsedTime)
+              ? undefined
+              : getUnixTime(
+                  startOfSecond(add(Date.now(), { seconds: parsedTime }))
+                ),
+            clock: undefined,
+          })
+        );
       } else {
+        /* Server clock based start time formed by parsing timeOnClock */
         const parsedTime = parseDurationHMS(timeOnClock);
         dispatch(
           setStartTime({

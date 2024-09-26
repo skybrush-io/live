@@ -17,6 +17,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The RTK corrections dialog now shows which of the RTK messages are being
   forwarded to the drones, assuming that the server sends this information.
 
+### Changed
+
+- When setting the start time based on a time offset from the current time,
+  the offset is now taken into account when the "Set start time" button is
+  pressed. For instance, selecting "+30s" in the suggestions box will now
+  start the show 30 seconds after the time when the "Set start time" button
+  was pressed, not 30 seconds after the time when the "+30s" button was
+  pressed.
+
 ### Fixed
 
 - Fixed an issue with degenerate geofences consisting of one or two points only.

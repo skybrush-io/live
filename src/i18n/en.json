@@ -586,6 +586,7 @@
       "pastTime": "Time cannot be in the past"
     },
     "localTime": "Local time",
+    "localTimeRelative": "Fixed delay",
     "reference": "Reference",
     "resetForm": "Reset form",
     "setNewStartTime": "Set new start time",

@@ -3,7 +3,6 @@ import format from 'date-fns/format';
 import getMinutes from 'date-fns/getMinutes';
 import getSeconds from 'date-fns/getSeconds';
 import startOfMinute from 'date-fns/startOfMinute';
-import startOfSecond from 'date-fns/startOfSecond';
 import React from 'react';
 
 import Button from '@material-ui/core/Button';
@@ -72,7 +71,7 @@ const defaultCreateStartTimeSuggestions = createStartTimeSuggestionsFn({
 });
 
 export type StartTimeSuggestionsProps = {
-  readonly onChange: (value: Date) => void;
+  readonly onChange: (suggestion: StartTimeSuggestion) => void;
   readonly startTimes?:
     | StartTimeSuggestion[]
     | ((now: number) => StartTimeSuggestion[]);
@@ -95,23 +94,19 @@ const StartTimeSuggestions = ({
 
   return (
     <ButtonGroup variant='text' {...rest}>
-      {items.map(({ time, relative }, index) => (
+      {items.map((suggestion, index) => (
         /* eslint-disable react/no-array-index-key */
         <BorderlessButton
           key={`button${index}`}
           onClick={() => {
-            onChange(
-              relative
-                ? startOfSecond(add(Date.now(), { seconds: time }))
-                : time
-            );
+            onChange(suggestion);
           }}
         >
-          {relative
-            ? `${time > 0 ? '+' : ''}${time}s`
-            : getSeconds(time) === 0
-              ? format(time, 'HH:mm')
-              : format(time, 'HH:mm:ss')}
+          {suggestion.relative
+            ? `${suggestion.time > 0 ? '+' : ''}${suggestion.time}s`
+            : getSeconds(suggestion.time) === 0
+              ? format(suggestion.time, 'HH:mm')
+              : format(suggestion.time, 'HH:mm:ss')}
         </BorderlessButton>
         /* eslint-enable react/no-array-index-key */
       ))}

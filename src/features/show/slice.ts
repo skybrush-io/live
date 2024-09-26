@@ -466,7 +466,7 @@ const { actions, reducer } = createSlice({
       state,
       action: PayloadAction<
         | { clock: Clock['id']; time: number | undefined }
-        | { clock: undefined; time: Date | number }
+        | { clock: undefined; time: Date | number | undefined }
       >
     ) {
       const { payload } = action;
