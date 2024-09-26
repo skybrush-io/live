@@ -20,7 +20,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Show start can now be authorized automatically when setting the start time.
 
 - The UAV list and the UAV details dialog now show the RSSI (signal strength) of
-  each drone if the server provides this information.
+  each drone if the server provides this information. Thanks to @mwls-sean for
+  implementing the first version of this feature!
 
 ### Changed
 
