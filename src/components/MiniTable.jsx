@@ -32,7 +32,7 @@ const useStyles = makeStyles(
   }
 );
 
-const naText = <span className='muted'>—</span>;
+export const naText = <span className='muted'>—</span>;
 
 const MiniTable = ({ items }) => {
   const classes = useStyles();

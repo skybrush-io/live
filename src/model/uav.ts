@@ -57,6 +57,7 @@ export default class UAV {
   mode?: string;
   velocity?: VelocityNED;
   rssi: number[];
+
   /**
    * Constructor.
    *
@@ -248,10 +249,6 @@ export default class UAV {
       updated = true;
     }
 
-    if(rssi) {
-      this.rssi = rssi;
-    }
-
     if (positionXYZ && Array.isArray(positionXYZ) && positionXYZ.length >= 3) {
       this.localPosition = [
         positionXYZ[0] / 1e3,
@@ -339,6 +336,11 @@ export default class UAV {
       }
     }
 
+    if (Array.isArray(rssi)) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      this.rssi = rssi;
+    }
+
     return updated;
   };
   /* eslint-enable complexity */
@@ -361,7 +363,6 @@ export default class UAV {
       id: this._id,
       age: this.age,
       battery: { ...this.battery },
-      rssi: this.rssi,
       debugString: this.debugString,
       errors: [...this._errors],
       gpsFix: { ...this.gpsFix },
@@ -373,6 +374,7 @@ export default class UAV {
       mode: this.mode,
       position,
       velocity: structuredClone(this.velocity),
+      rssi: structuredClone(this.rssi),
     };
   }
 }

@@ -5,19 +5,21 @@ import TimeAgo from 'react-timeago';
 
 import StatusText from '@skybrush/mui-components/lib/StatusText';
 
-import MiniTable from '~/components/MiniTable';
+import MiniTable, { naText } from '~/components/MiniTable';
 import {
   abbreviateGPSFixType,
   getFlightModeLabel,
   getSemanticsForFlightMode,
   getSemanticsForGPSFixType,
+  getSemanticsForRSSI,
 } from '~/model/enums';
-import { formatNumberSafely, shortTimeAgoFormatter } from '~/utils/formatting';
+import {
+  formatNumberSafely,
+  formatRSSI,
+  shortTimeAgoFormatter,
+} from '~/utils/formatting';
 
 import { getUAVById } from './selectors';
-
-// TODO: Use the internal `naText` of `MiniTable` instead
-const naText = <span className='muted'>—</span>;
 
 const StatusSummaryMiniTable = ({
   gpsFix,
@@ -26,6 +28,7 @@ const StatusSummaryMiniTable = ({
   localPosition,
   mode,
   position,
+  rssi,
 }) => {
   const { lat, lon, amsl, ahl, agl } = position || {};
   const hasLocalPosition = localPosition && Array.isArray(localPosition);
@@ -102,14 +105,37 @@ const StatusSummaryMiniTable = ({
     );
   }
 
-  rows.push(['Heading', formatNumberSafely(heading, 1, '°', naText)], 'sep3', [
-    'Last seen',
-    lastUpdated ? (
-      <TimeAgo formatter={shortTimeAgoFormatter} date={lastUpdated} />
-    ) : (
-      naText
-    ),
-  ]);
+  const rssiLabels = [];
+
+  if (rssi && Array.isArray(rssi) && rssi.length > 0) {
+    for (const rssiValue of rssi) {
+      rssiLabels.push(
+        <StatusText status={getSemanticsForRSSI(rssiValue)}>
+          {formatRSSI(rssiValue)}
+        </StatusText>,
+        '/'
+      );
+    }
+
+    rssiLabels.pop();
+  } else {
+    rssiLabels.push(naText);
+  }
+
+  rows.push(
+    ['Heading', formatNumberSafely(heading, 1, '°', naText)],
+    'sep3',
+    ['RSSI', rssiLabels],
+    'sep4',
+    [
+      'Last seen',
+      lastUpdated ? (
+        <TimeAgo formatter={shortTimeAgoFormatter} date={lastUpdated} />
+      ) : (
+        naText
+      ),
+    ]
+  );
 
   return <MiniTable items={rows} />;
 };
@@ -132,6 +158,7 @@ StatusSummaryMiniTable.propTypes = {
     ahl: PropTypes.number,
     agl: PropTypes.number,
   }),
+  rssi: PropTypes.arrayOf(PropTypes.number),
 };
 
 export default connect(

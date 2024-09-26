@@ -156,10 +156,10 @@ export const getKeyFunctionForUAVSortKey = memoize(
         return (uav) => uav?.heading ?? 720;
 
       case UAVSortKey.RSSI:
-        return (uav) => {
-          const result = uav?.rssi?.[0];
-          return isNil(result) ? 0 : result;
-        };
+        // Sort on the RSSI of the first channel only. We can make this more
+        // sophisticated if needed; 99% of the case the first channel should be
+        // enough. We make use of the fact that -1 means unknown RSSI.
+        return (uav) => uav?.rssi?.[0] ?? -1;
 
       case UAVSortKey.DEFAULT:
         return undefined;

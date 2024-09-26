@@ -335,17 +335,15 @@ export function truncate(
 }
 
 /**
- * Formats a single RSSI value
+ * Formats a single RSSI percentage as a stirng.
  *
- * @param rssi - The RSSI number value
- * @returns The formatted string of the RSSI value as a percentage
+ * Note that negative RSSI values in Skybrush mean "unknown" so we treat them
+ * as such.
  */
-export function formatRSSI(
-  rssi?: number
-): string {
-  if (!rssi) {
-    return '-';
+export function formatRSSI(rssi?: number): string {
+  if (!rssi || rssi < 0 || !Number.isFinite(rssi)) {
+    return '—';
+  } else {
+    return rssi.toFixed(0) + '%';
   }
-
-  return rssi + '%';
 }

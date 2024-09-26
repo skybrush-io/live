@@ -562,7 +562,7 @@
       "flightMode": "Flight mode",
       "gpsFix": "GPS fix",
       "heading": "Heading",
-      "rssi": "RSSI",
+      "rssi": "Signal strength (RSSI)",
       "status": "Status"
     },
     "shortLabel": {

@@ -80,20 +80,20 @@ const useStyles = makeStyles(
     modePill: {
       width: 48,
     },
-    rssiPill: {
-      marginLeft: theme.spacing(2),
+    gpsPill: {
       width: 40,
     },
-    gpsPill: {
+    rssiPill: {
+      marginLeft: theme.spacing(1),
       width: 40,
     },
     batteryIndicator: {
       display: 'inline-block',
       fontFamily: theme.typography.fontFamily,
       textAlign: 'left',
-      padding: theme.spacing(0, 0.75),
+      padding: theme.spacing(0, 0.5),
       margin: theme.spacing(0, 0.5),
-      width: 48,
+      width: 56,
     },
   }),
   { name: 'DroneStatusLine' }
@@ -155,7 +155,6 @@ const DroneStatusLine = ({
           <ColoredLight inline color={color} />
           <StatusPill
             inline
-            hollow
             className={clsx(classes.pill, classes.rssiPill)}
             status={getSemanticsForRSSI(rssi?.[0])}
           >
