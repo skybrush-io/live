@@ -136,32 +136,20 @@ export const getKeyFunctionForUAVSortKey = memoize(
 
       case UAVSortKey.ALTITUDE_MSL:
         // Sort UAVs based on altitude above mean sea level
-        return (uav) => {
-          const result = uav?.position?.amsl;
-          return isNil(result) ? -10000 : result;
-        };
+        return (uav) => uav?.position?.amsl ?? -10000;
 
       case UAVSortKey.ALTITUDE_HOME:
         // Sort UAVs based on altitude above home
         // TODO(ntamas): fall back to Z coordinate if no AHL is given
-        return (uav) => {
-          const result = uav?.position?.ahl;
-          return isNil(result) ? -10000 : result;
-        };
+        return (uav) => uav?.position?.ahl ?? -10000;
 
       case UAVSortKey.ALTITUDE_GROUND:
         // Sort UAVs based on altitude above ground
         // TODO(ntamas): fall back to Z coordinate if no AGL is given
-        return (uav) => {
-          const result = uav?.position?.agl;
-          return isNil(result) ? -10000 : result;
-        };
+        return (uav) => uav?.position?.agl ?? -10000;
 
       case UAVSortKey.HEADING:
-        return (uav) => {
-          const result = uav?.heading;
-          return isNil(result) ? 720 : result;
-        };
+        return (uav) => uav?.heading ?? 720;
 
       case UAVSortKey.DEFAULT:
         return undefined;
