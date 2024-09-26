@@ -122,6 +122,7 @@ type ShowSliceState = {
 
   startTimeDialog: {
     open: boolean;
+    authorizeWhenSettingStartTime?: boolean;
   };
 
   takeoffAreaSetupDialog: {
@@ -267,9 +268,20 @@ const { actions, reducer } = createSlice({
       state.onboardPreflightChecksDialog.open = false;
     }),
 
-    closeStartTimeDialog: noPayload<ShowSliceState>((state) => {
+    closeStartTimeDialog(
+      state,
+      action: PayloadAction<
+        { authorizeWhenSettingStartTime: boolean } | undefined
+      >
+    ) {
       state.startTimeDialog.open = false;
-    }),
+
+      if (action.payload) {
+        state.startTimeDialog.authorizeWhenSettingStartTime = Boolean(
+          action.payload.authorizeWhenSettingStartTime
+        );
+      }
+    },
 
     closeTakeoffAreaSetupDialog: noPayload<ShowSliceState>((state) => {
       state.takeoffAreaSetupDialog.open = false;

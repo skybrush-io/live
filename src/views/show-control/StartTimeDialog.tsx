@@ -9,7 +9,14 @@ import {
   startOfDay,
   startOfSecond,
 } from 'date-fns';
-import { KeyboardDatePicker, KeyboardTimePicker, Select } from 'mui-rff';
+import type { FormApi } from 'final-form';
+import type { TFunction } from 'i18next';
+import {
+  Checkboxes,
+  KeyboardDatePicker,
+  KeyboardTimePicker,
+  Select,
+} from 'mui-rff';
 import React, { useMemo } from 'react';
 import { Form, type FormProps } from 'react-final-form';
 import { useTranslation, withTranslation } from 'react-i18next';
@@ -31,6 +38,7 @@ import Header from '@skybrush/mui-components/lib/FormHeader';
 
 import { HMSDurationField } from '~/components/forms/fields';
 import { CommonClockId } from '~/features/clocks/types';
+import { authorizeIfAndOnlyIfHasStartTime } from '~/features/show/actions';
 import { StartMethod } from '~/features/show/enums';
 import {
   closeStartTimeDialog,
@@ -38,15 +46,13 @@ import {
   setStartTime,
   synchronizeShowSettings,
 } from '~/features/show/slice';
+import type { RootState } from '~/store/reducers';
 import { formatDurationHMS } from '~/utils/formatting';
 import { parseDurationHMS } from '~/utils/parsing';
 
 import StartTimeDisplay from './StartTimeDisplay';
-import StartTimeSuggestionsBox from './StartTimeSuggestionsBox';
-import type { TFunction } from 'i18next';
-import type { FormApi } from 'final-form';
-import type { RootState } from '~/store/reducers';
 import type { StartTimeSuggestion } from './StartTimeSuggestions';
+import StartTimeSuggestionsBox from './StartTimeSuggestionsBox';
 
 enum LocalClockId {
   ABSOLUTE = '__local__',
@@ -72,6 +78,7 @@ const validateClockIdForStartTimeForm = (
 };
 
 type StartTimeFormValues = {
+  authorizeWhenSettingStartTime: boolean;
   clock: AllowedClockIdsForStartTime;
   method: StartMethod;
   timeOnClock: string;
@@ -238,6 +245,10 @@ const StartTimeFormPresentation = ({
               />
             )}
 
+            <Box mt={2}>
+              <Header>{t('startTimeDialog.additionalSettings')}</Header>
+            </Box>
+
             <Select
               labelId='start-signal-label'
               name='method'
@@ -255,6 +266,14 @@ const StartTimeFormPresentation = ({
                 {t('startTimeDialog.startShowAuto')}
               </MenuItem>
             </Select>
+
+            <Checkboxes
+              name='authorizeWhenSettingStartTime'
+              data={{
+                label: t('startTimeDialog.authorizeWhenSettingStartTime'),
+                value: true,
+              }}
+            />
           </DialogContent>
           <DialogActions>
             <Button
@@ -285,6 +304,7 @@ const StartTimeFormPresentation = ({
 const StartTimeForm = withTranslation()(StartTimeFormPresentation);
 
 type StartTimeDialogProps = Readonly<{
+  authorizeWhenSettingStartTime?: boolean;
   clock?: string;
   method?: StartMethod;
   onClose: () => void;
@@ -299,6 +319,7 @@ type StartTimeDialogProps = Readonly<{
  * start time and the start method of the drone show.
  */
 const StartTimeDialog = ({
+  authorizeWhenSettingStartTime = false,
   clock,
   method = StartMethod.RC,
   open = false,
@@ -323,6 +344,7 @@ const StartTimeDialog = ({
         <StartTimeForm
           alwaysAllowSubmission={!hasUtcStartTime}
           initialValues={{
+            authorizeWhenSettingStartTime,
             method,
             clock: initialClock,
             timeOnClock: formatDurationHMS(initialStartTimeOnClock, {
@@ -353,6 +375,7 @@ export default connect(
     },
 
     onUpdateSettings({
+      authorizeWhenSettingStartTime,
       clock,
       method,
       timeOnClock,
@@ -394,7 +417,12 @@ export default connect(
       }
 
       dispatch(synchronizeShowSettings('toServer'));
-      dispatch(closeStartTimeDialog());
+
+      if (authorizeWhenSettingStartTime) {
+        dispatch(authorizeIfAndOnlyIfHasStartTime() as any);
+      }
+
+      dispatch(closeStartTimeDialog({ authorizeWhenSettingStartTime }));
     },
   })
 )(StartTimeDialog);

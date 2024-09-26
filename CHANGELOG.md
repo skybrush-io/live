@@ -17,6 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The RTK corrections dialog now shows which of the RTK messages are being
   forwarded to the drones, assuming that the server sends this information.
 
+- Show start can now be authorized automatically when setting the start time.
+
 ### Changed
 
 - When setting the start time based on a time offset from the current time,

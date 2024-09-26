@@ -49,6 +49,7 @@ import {
   getOutdoorShowOrientation,
   getCommonTakeoffHeading,
   getShowClockReference,
+  hasScheduledStartTime,
 } from './selectors';
 import {
   approveTakeoffAreaAt,
@@ -67,6 +68,7 @@ import {
   _clearLoadedShow,
   setStartTime,
   synchronizeShowSettings,
+  setShowAuthorization,
 } from './slice';
 
 /**
@@ -74,6 +76,15 @@ import {
  */
 export const approveTakeoffArea = () => (dispatch) => {
   dispatch(approveTakeoffAreaAt(Date.now()));
+};
+
+/**
+ * Thunk that authorizes the start of the show if it has a scheduled start time
+ * and deauthorizes it if it does not have a scheduled start time.
+ */
+export const authorizeIfAndOnlyIfHasStartTime = () => (dispatch, getState) => {
+  const shouldAuthorize = hasScheduledStartTime(getState());
+  dispatch(setShowAuthorization(shouldAuthorize));
 };
 
 /**
