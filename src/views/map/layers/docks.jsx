@@ -64,8 +64,8 @@ DockFeature.propTypes = {
   value: PropTypes.shape({
     id: PropTypes.string,
     position: PropTypes.shape({
-      lat: PropTypes.number.required,
-      lon: PropTypes.number.required,
+      lat: PropTypes.number.isRequired,
+      lon: PropTypes.number.isRequired,
     }),
   }),
 };
