@@ -3,6 +3,8 @@
  * platform-specific stuff.
  */
 
+import { eventHasCtrlKey, eventHasMetaKey } from './events';
+
 /**
  * Constant that evaluates to true if we are running on a Mac, false
  * otherwise.
@@ -17,11 +19,6 @@ export const isRunningOnWindows =
   navigator.platform.includes('Win32') ||
   navigator.platform.includes('Windows');
 
-type EventWithModifierKeys = {
-  readonly metaKey?: boolean;
-  readonly ctrlKey?: boolean;
-} & Event;
-
 /**
  * Returns whether the given browser event has the platform-specific
  * hotkey modifier pressed.
@@ -31,8 +28,8 @@ type EventWithModifierKeys = {
  *          was pressed during the event, false otherwise
  */
 export const eventHasPlatformModifierKey = isRunningOnMac
-  ? (event: EventWithModifierKeys): boolean => Boolean(event.metaKey)
-  : (event: EventWithModifierKeys): boolean => Boolean(event.ctrlKey);
+  ? eventHasMetaKey
+  : eventHasCtrlKey;
 
 /**
  * Constant that evaluates to the name of the platform-specific hotkey

@@ -60,6 +60,7 @@ const useStyles = makeStyles(
       fontVariantNumeric: 'lining-nums tabular-nums',
       marginTop: [-2, '!important'],
       marginBottom: [-4, '!important'],
+      userSelect: 'none',
       whiteSpace: 'pre',
     },
     gone: {

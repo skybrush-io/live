@@ -30,6 +30,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Make the "Flash lights" button latchable by holding Shift while activating it.
 
+- Implement range selection in list views. Click on one item and then hold
+  Shift while clicking on another one to select everything between them.
+
 ### Changed
 
 - When setting the start time based on a time offset from the current time,

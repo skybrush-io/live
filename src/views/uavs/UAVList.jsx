@@ -151,9 +151,9 @@ const createGridItems = (
     const listItemProps = {
       /* prettier-ignore */
       onClick:
-        isInEditMode  ? (_event) => onStartEditing(missionIndex) :
-        uavId         ? (event) => onSelectedUAV(event, uavId) :
-        missionSlotId ? (event) => onSelectedMissionSlot(event, missionSlotId) :
+        isInEditMode  ? onStartEditing.bind(null, missionIndex) :
+        uavId         ? onSelectedUAV.bind(null, uavId) :
+        missionSlotId ? onSelectedMissionSlot.bind(null, missionSlotId) :
         undefined,
       onDrop: onDropped ? onDropped(missionIndex) : undefined,
       editing: editingThisItem,
@@ -249,9 +249,9 @@ const createListItems = (
     const listItemProps = {
       /* prettier-ignore */
       onClick:
-        isInEditMode  ? (_event) => onStartEditing(missionIndex) :
-        uavId         ? (event) => onSelectedUAV(event, uavId) :
-        missionSlotId ? (event) => onSelectedMissionSlot(event, missionSlotId) :
+        isInEditMode  ? onStartEditing.bind(null, missionIndex) :
+        uavId         ? onSelectedUAV.bind(null, uavId) :
+        missionSlotId ? onSelectedMissionSlot.bind(null, missionSlotId) :
         undefined,
       onDrop: onDropped ? onDropped(missionIndex) : undefined,
       editing: editingThisItem,
@@ -579,10 +579,21 @@ const UAVList = connect(
             activateItem: openUAVDetailsDialog,
             getSelection: getSelectedUAVIds,
             setSelection: setSelectedUAVIds,
+            getListItems: (state) =>
+              getDisplayedIdListBySections(state)[
+                isShowingMissionIds(state) ? 'spareUAVIds' : 'mainUAVIds'
+              ].map(([u, _m]) => u),
           }),
+          // FIXME: Currently selecting a range between an empty and an assigned
+          //        mission slot doesn't work, as assigned slots actually select
+          //        the UAV id instead of the mission slot ID.
           onSelectMissionSlot: createSelectionHandlerThunk({
             getSelection: getSelectedMissionSlotIds,
             setSelection: setSelectedMissionSlotIds,
+            getListItems: (state) =>
+              getDisplayedIdListBySections(state).mainUAVIds.map(([_u, m]) =>
+                String(m)
+              ),
           }),
           onSelectSection: (event) => (dispatch, getState) => {
             const { value } = event.target;

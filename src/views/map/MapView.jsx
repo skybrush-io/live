@@ -30,6 +30,7 @@ import {
   addToSelection,
   removeFromSelection,
   setSelection,
+  toggleInSelection,
 } from '~/features/map/selection';
 import { getSelectedTool } from '~/features/map/tools';
 import { updateMapViewSettings } from '~/features/map/view';
@@ -733,10 +734,6 @@ class MapViewPresentation extends React.Component {
         this._onFeatureActivated(feature);
         break;
 
-      case 'toggle':
-        mode = this.props.selection.includes(id) ? 'remove' : 'add';
-        break;
-
       case 'clear':
         mode = 'set';
         feature = undefined;
@@ -762,6 +759,7 @@ class MapViewPresentation extends React.Component {
       add: addToSelection,
       remove: removeFromSelection,
       set: setSelection,
+      toggle: toggleInSelection,
     };
     const action = actionMapping[mode] || setSelection;
     const ids = features ? features.map((feature) => feature.getId()) : [];

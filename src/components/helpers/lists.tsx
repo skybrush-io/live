@@ -10,17 +10,20 @@ import includes from 'lodash-es/includes';
 import isFunction from 'lodash-es/isFunction';
 import partial from 'lodash-es/partial';
 import xor from 'lodash-es/xor';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
 import PropTypes from 'prop-types';
 import React, { type PropsWithoutRef, type RefAttributes } from 'react';
 import { isElement } from 'react-is';
 
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+
+import type { AnyAction } from '@reduxjs/toolkit';
+
 import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
 
-import { eventHasPlatformModifierKey } from '~/utils/platform';
 import type { AppDispatch, RootState } from '~/store/reducers';
-import type { AnyAction } from '@reduxjs/toolkit';
+import { eventHasShiftKey } from '~/utils/events';
+import { eventHasPlatformModifierKey } from '~/utils/platform';
 
 type ItemWithId = { id: string };
 type ItemRenderer<T extends ItemWithId, P> = (
@@ -70,6 +73,7 @@ type SelectionHandlerReduxFunctions<T = string> = {
   activateItem?: (item: T) => AnyAction;
   getSelection: (state: RootState) => T[];
   setSelection?: (value: T[]) => AnyAction;
+  getListItems?: (state: RootState) => T[];
 };
 
 const createBackgroundHint = (
@@ -224,12 +228,13 @@ export function createSelectionHandlerThunk<T = string>({
   activateItem,
   getSelection,
   setSelection,
+  getListItems,
 }: SelectionHandlerReduxFunctions<T>) {
   if (!setSelection && !activateItem) {
     return null;
   }
 
-  return (event: React.UIEvent, id: T) =>
+  return (id: T, event: React.UIEvent) =>
     (dispatch: AppDispatch, getState: () => RootState) => {
       const state = getState();
       const selection = getSelection ? getSelection(state) : [];
@@ -241,6 +246,24 @@ export function createSelectionHandlerThunk<T = string>({
       ) {
         // Toggling the item
         action = setSelection(xor(selection, [id]));
+      } else if (
+        eventHasShiftKey(event.nativeEvent || event) &&
+        getListItems &&
+        setSelection
+      ) {
+        const listItems = getListItems(state);
+        if (selection.length === 1) {
+          // NOTE: Bang justified by `selection.length === 1`
+          const singleSelectedId = selection[0]!;
+          const singleSelectedIndex = listItems.indexOf(singleSelectedId);
+          const newSelectedIndex = listItems.indexOf(id);
+          action = setSelection(
+            listItems.slice(
+              Math.min(singleSelectedIndex, newSelectedIndex),
+              Math.max(singleSelectedIndex, newSelectedIndex) + 1
+            )
+          );
+        }
       } else {
         const alreadySelected =
           selection && selection.length === 1 && selection[0] === id;

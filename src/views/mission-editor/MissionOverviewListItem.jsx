@@ -106,7 +106,7 @@ const MissionOverviewListItem = ({
   const classes = useStyles();
 
   let avatar = iconForMissionItemType[item.type];
-  let onClick = (event) => onSelectItem(event, id);
+  let onClick = onSelectItem.bind(null, id);
   let primaryText = titleForMissionItemType[item.type];
   let secondaryText;
   const isValid = isMissionItemValid(item);

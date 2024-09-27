@@ -2,11 +2,15 @@
  * @file Component that shows the list of features created by the user.
  */
 
+import PropTypes from 'prop-types';
+import React, { useCallback } from 'react';
+import { connect } from 'react-redux';
+
 import IconButton from '@material-ui/core/IconButton';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import ListItemText from '@material-ui/core/ListItemText';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { makeStyles } from '@material-ui/core/styles';
@@ -18,20 +22,20 @@ import MoreVert from '@material-ui/icons/MoreVert';
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 
-import PropTypes from 'prop-types';
-import React from 'react';
-import { connect } from 'react-redux';
+import { bindActionCreators } from '@reduxjs/toolkit';
 
-import { listOf } from '~/components/helpers/lists';
+import {
+  createSelectionHandlerThunk,
+  listOf,
+} from '~/components/helpers/lists';
 import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
 import {
-  addToSelection,
-  removeFromSelection,
-  setSelection,
-  toggleInSelection,
-} from '~/features/map/selection';
-import { showFeatureEditorDialog } from '~/features/map-features/actions';
+  setSelectedFeatureIds,
+  showFeatureEditorDialog,
+  toggleFeatureVisibility,
+} from '~/features/map-features/actions';
 import {
+  getFeatureIds,
   getFeaturesInOrder,
   getSelectedFeatureIds,
 } from '~/features/map-features/selectors';
@@ -40,13 +44,9 @@ import {
   suggestedColorForFeature,
   suggestedLabelForFeature,
 } from '~/features/map-features/selectors-style-suggestions';
-import {
-  removeFeaturesByIds,
-  updateFeatureVisibility,
-} from '~/features/map-features/slice';
+import { removeFeaturesByIds } from '~/features/map-features/slice';
 import useDropdown from '~/hooks/useDropdown';
-import { getNameOfFeatureType, getIconOfFeatureType } from '~/model/features';
-import { featureIdToGlobalId } from '~/model/identifiers';
+import { FeatureType, getIconOfFeatureType } from '~/model/features';
 import { fitCoordinatesIntoMapView } from '~/signals';
 
 const ICON_SIZE = 24;
@@ -89,41 +89,53 @@ const useStyles = makeStyles(
 const FeatureListEntryPresentation = (props) => {
   const {
     feature,
-    onEditFeature,
-    onFocusFeature,
-    onRemoveFeature,
-    onSelectFeature,
-    onToggleFeatureVisibility,
+    onEdit,
+    onRemove,
+    onSelect,
+    onToggleVisibility,
     selected,
     shouldFill,
     suggestedColor,
     suggestedLabel,
   } = props;
-  const { label, type, visible } = feature;
+  const onFocus = useCallback(() => {
+    switch (feature.type) {
+      case FeatureType.CIRCLE:
+        // TODO: Properly handle circles instead of zooming to the
+        //       center and one arbitrary point on the circumference
+        fitCoordinatesIntoMapView(feature.points);
+        break;
 
+      default:
+        fitCoordinatesIntoMapView(feature.points);
+        break;
+    }
+  }, [feature.points, feature.type]);
+
+  const { label, type, visible } = feature;
   const IconOfFeatureType = getIconOfFeatureType(type, shouldFill);
 
   const actions = [
     {
-      action: onFocusFeature,
+      action: onFocus,
       icon: <FilterCenterFocus />,
       key: 'focus',
       label: 'Focus feature',
     },
     {
-      action: onToggleFeatureVisibility,
+      action: onToggleVisibility,
       icon: visible ? <Visibility /> : <VisibilityOff color='disabled' />,
       key: 'visibility',
       label: 'Toggle visibility',
     },
     {
-      action: onEditFeature,
+      action: onEdit,
       icon: <Edit />,
       key: 'edit',
       label: 'Feature properties',
     },
     {
-      action: onRemoveFeature,
+      action: onRemove,
       icon: <Delete />,
       key: 'delete',
       label: 'Remove',
@@ -172,7 +184,7 @@ const FeatureListEntryPresentation = (props) => {
       ContainerProps={{ className: classes.container }}
       className={classes.item}
       selected={selected}
-      onClick={onSelectFeature}
+      onClick={onSelect}
     >
       <ListItemIcon
         style={{ color: suggestedColor, minWidth: 0, marginRight: '16px' }}
@@ -193,11 +205,10 @@ const FeatureListEntryPresentation = (props) => {
 };
 
 FeatureListEntryPresentation.propTypes = {
-  onEditFeature: PropTypes.func,
-  onFocusFeature: PropTypes.func,
-  onRemoveFeature: PropTypes.func,
-  onSelectFeature: PropTypes.func,
-  onToggleFeatureVisibility: PropTypes.func,
+  onEdit: PropTypes.func,
+  onRemove: PropTypes.func,
+  onSelect: PropTypes.func,
+  onToggleVisibility: PropTypes.func,
   feature: PropTypes.object.isRequired,
   selected: PropTypes.bool,
   shouldFill: PropTypes.bool,
@@ -214,30 +225,26 @@ const FeatureListEntry = connect(
     suggestedLabel: suggestedLabelForFeature(state, feature.id),
   }),
   // mapDispatchToProps
-  (dispatch, { feature }) => ({
-    onEditFeature() {
-      dispatch(showFeatureEditorDialog(feature.id));
-    },
-    onFocusFeature() {
-      fitCoordinatesIntoMapView(feature.points);
-    },
-    onRemoveFeature() {
-      dispatch(removeFeaturesByIds([feature.id]));
-    },
-    onSelectFeature(event) {
-      // prettier-ignore
-      const action
-        = event.shiftKey ? addToSelection
-        : event.altKey ? removeFromSelection
-        : event.ctrlKey || event.metaKey ? toggleInSelection
-        : setSelection;
+  (dispatch, { feature }) => {
+    const selectionHandlerThunk = createSelectionHandlerThunk({
+      activateItem: showFeatureEditorDialog,
+      getSelection: getSelectedFeatureIds,
+      setSelection: setSelectedFeatureIds,
+      getListItems: getFeatureIds,
+    });
 
-      dispatch(action([featureIdToGlobalId(feature.id)]));
-    },
-    onToggleFeatureVisibility() {
-      updateFeatureVisibility({ id: feature.id, visible: !feature.visible });
-    },
-  })
+    return () => ({
+      ...bindActionCreators(
+        {
+          onEdit: showFeatureEditorDialog.bind(null, feature.id),
+          onSelect: selectionHandlerThunk.bind(null, feature.id),
+          onRemove: removeFeaturesByIds.bind(null, [feature.id]),
+          onToggleVisibility: toggleFeatureVisibility.bind(null, feature.id),
+        },
+        dispatch
+      ),
+    });
+  }
 )(FeatureListEntryPresentation);
 
 /**
