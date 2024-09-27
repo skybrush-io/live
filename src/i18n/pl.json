@@ -629,6 +629,54 @@
     "coordinateAveraging": "Uśrednianie współrzędnych",
     "licenseInfo": "Informacje o licencji",
     "offlineMaps": "Mapy offline",
-    "paramUpload": "Prześlij parametry"
+    "paramUpload": "Prześlij parametry",
+    "tooltip": "Skrzynka z narzędziami",
+    "uploadInProgress": "Przesyłanie w toku"
+  },
+  "uploadPanel": {
+    "cancelUpload": "Anuluj przesyłanie",
+    "flashLightsWhereFailed": "Błyśnij światłami UAV's gdy przesyłanie się nie powiodło",
+    "retryFailedAttempts": "Ponów nieudane próby automatycznie",
+    "uploadAttemptFailed": "Próba przesłania nie powiodła się.",
+    "uploadCancelled": "Przesyłanie zostało anulowane przez użytkownika.",
+    "uploadFinishedSuccessfully": "Przesyłanie zakończone pomyślnie.",
+    "uploadInProgress": "Przesyłanie w toku …",
+    "uploadNotFinishedYet": "Przesyłanie nie zostało jeszcze zakończone."
+  },
+  "uploadStatusLegend": {
+    "clearUploadQueue": "Wyczyść kolejkę przesyłania",
+    "restartSuccessfulItems": "Uruchom ponownie pomyślne elementy",
+    "retryFailedItems": "Ponów nieudane elementy"
+  },
+  "uploadStatusLights": {
+    "noAvailableUAVs": "Brak dostępnych UAV's, do których można przesłać dane."
+  },
+  "view": {
+    "beacon-list": "Latarnie",
+    "dock-list": "Doki",
+    "feature-list": "Cechy",
+    "field-notes": "Notatki",
+    "layer-list": "Warstwy",
+    "lcd-clock-panel": "Zegary",
+    "light-control": "Sterowanie oświetleniem",
+    "log-panel": "Rejestr zdarzeń",
+    "map": "Mapa",
+    "mission-editor": "Edytor misji",
+    "saved-location-list": "Lokalizacje",
+    "show-control": "Kontrola pokazu",
+    "three-d-view": "Widok 3D",
+    "uav-details": "Szczegóły UAV",
+    "uav-list": "UAV's"
+  },
+  "weatherMiniList": {
+    "compassDeclination": "Deklinacja kompasu",
+    "kpIndex": "Indeks Kp",
+    "lastUpdate": "Ostatnia aktualizacja",
+    "noWeatherInfo": "Brak informacji o pogodzie na ten dzień",
+    "refreshing": "Odświeżanie …",
+    "sunrise": "Wschód słońca",
+    "sunset": "Zachód słońca",
+    "timezone": "Strefa czasowa",
+    "utcOffset": "Przesunięcie UTC"
   }
 }
