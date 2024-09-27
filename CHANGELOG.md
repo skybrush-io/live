@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Added the total number of UAVw in the UAV status summary header widget.
+- Added the total number of UAVs in the UAV status summary header widget.
 
 - Added a new panel for monitoring and controlling one specific drone and its
   devices.
@@ -22,6 +22,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The UAV list and the UAV details dialog now show the RSSI (signal strength) of
   each drone if the server provides this information. Thanks to @mwls-sean for
   implementing the first version of this feature!
+
+- Make the "Flash lights" button latchable by holding Shift while activating it.
 
 ### Changed
 
