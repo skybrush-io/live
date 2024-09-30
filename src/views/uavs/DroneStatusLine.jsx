@@ -156,9 +156,9 @@ const DroneStatusLine = ({
           <StatusPill
             inline
             className={clsx(classes.pill, classes.rssiPill)}
-            status={getSemanticsForRSSI(rssi?.[0])}
+            status={getSemanticsForRSSI(rssi)}
           >
-            {formatRSSI(rssi?.[0])}
+            {formatRSSI(rssi)}
           </StatusPill>
           <StatusPill
             inline
@@ -230,7 +230,7 @@ DroneStatusLine.propTypes = {
     ahl: PropTypes.number,
     agl: PropTypes.number,
   }),
-  rssi: PropTypes.arrayOf(PropTypes.number),
+  rssi: PropTypes.number,
   secondaryLabel: PropTypes.string,
   text: PropTypes.string,
   textSemantics: PropTypes.oneOf([
@@ -273,7 +273,7 @@ export default connect(
         missing: !uav,
         mode: uav ? uav.mode : undefined,
         position: uav ? uav.position : undefined,
-        rssi: uav ? uav.rssi : undefined,
+        rssi: uav ? uav.rssi?.[0] : undefined,
         ...statusSummarySelector(state, ownProps.id),
       };
     };
