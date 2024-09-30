@@ -3,7 +3,7 @@
  * an UAV.
  */
 
-import { type UAVStatusInfo } from 'flockwave-spec';
+import { type RSSI, type UAVStatusInfo } from '@skybrush/flockwave-spec';
 import { Base64 } from 'js-base64';
 import isEqual from 'lodash-es/isEqual';
 import isNil from 'lodash-es/isNil';
@@ -56,7 +56,7 @@ export default class UAV {
   localVelocity?: VelocityXYZ;
   mode?: string;
   velocity?: VelocityNED;
-  rssi: number[];
+  rssi: RSSI;
 
   /**
    * Constructor.
@@ -337,7 +337,6 @@ export default class UAV {
     }
 
     if (Array.isArray(rssi)) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       this.rssi = rssi;
     }
 

@@ -7,7 +7,7 @@ import {
   type License,
   type Response_AUTHINF,
   type Response_AUTHWHOAMI,
-} from 'flockwave-spec';
+} from '@skybrush/flockwave-spec';
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
 import { ConnectionState } from '~/model/enums';
