@@ -21,7 +21,6 @@ import {
 } from '~/features/safety/model';
 import { type Coordinate2D } from '~/utils/math';
 
-import { isFlightMode } from './enums';
 import {
   type Altitude,
   AltitudeReference,
@@ -372,7 +371,7 @@ export const isMissionItemValid = (item: unknown): item is MissionItem => {
     case MissionItemType.CHANGE_FLIGHT_MODE: {
       const { mode }: { mode?: unknown } = item.parameters;
 
-      return true;
+      return typeof mode === 'string';
     }
 
     case MissionItemType.CHANGE_HEADING: {
