@@ -223,10 +223,12 @@ const createGridItems = (
 const createListItems = (
   items,
   {
+    ids,
     isInEditMode,
     mappingSlotBeingEdited,
     onDropped,
     onSelectedUAV,
+    onSelectedUAVs,
     onSelectedMissionSlot,
     onStartEditing,
     selectedUAVIds,
@@ -250,7 +252,25 @@ const createListItems = (
       /* prettier-ignore */
       onClick:
         isInEditMode  ? (_event) => onStartEditing(missionIndex) :
-        uavId         ? (event) => onSelectedUAV(event, uavId) :
+        uavId         ? (event) => {
+          if (event.shiftKey) {
+            event.preventDefault();
+            if (selectedUAVIds.length === 1) {
+              const selId = selectedUAVIds[0];
+              const uIds = ids.map(([u, _m]) => u);
+              const selIndex = uIds.indexOf(selId);
+              const uavIndex = uIds.indexOf(uavId);
+              onSelectedUAVs(
+                uIds.slice(
+                  Math.min(selIndex, uavIndex),
+                  Math.max(selIndex, uavIndex) + 1
+                )
+              );
+            }
+          } else {
+            onSelectedUAV(event, uavId);
+          }
+        } :
         missionSlotId ? (event) => onSelectedMissionSlot(event, missionSlotId) :
         undefined,
       onDrop: onDropped ? onDropped(missionIndex) : undefined,
@@ -303,7 +323,7 @@ const UAVListSection = ({
     <>
       <UAVListSubheader {...rest} />
       <Box className={layout === 'grid' ? classes.grid : classes.list}>
-        {itemFactory(ids, itemFactoryOptions)}
+        {itemFactory(ids, { ...itemFactoryOptions, ids })}
       </Box>
     </>
   );
@@ -329,6 +349,7 @@ const UAVListPresentation = ({
   onEditMappingSlot,
   onMappingAdjusted,
   onSelectUAV,
+  onSelectUAVs,
   onSelectMissionSlot,
   onSelectSection,
   selectedUAVIds,
@@ -363,6 +384,7 @@ const UAVListPresentation = ({
     mappingSlotBeingEdited,
     onDropped: editingMapping && onDropped,
     onSelectedUAV: onSelectUAV,
+    onSelectedUAVs: onSelectUAVs,
     onSelectedMissionSlot: onSelectMissionSlot,
     onStartEditing: onEditMappingSlot,
     selectedUAVIds,
@@ -580,6 +602,7 @@ const UAVList = connect(
             getSelection: getSelectedUAVIds,
             setSelection: setSelectedUAVIds,
           }),
+          onSelectUAVs: setSelectedUAVIds,
           onSelectMissionSlot: createSelectionHandlerThunk({
             getSelection: getSelectedMissionSlotIds,
             setSelection: setSelectedMissionSlotIds,

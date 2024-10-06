@@ -1,8 +1,9 @@
 import isEmpty from 'lodash-es/isEmpty';
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useState } from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
+import { useInterval } from 'react-use';
 import { bindActionCreators } from '@reduxjs/toolkit';
 
 import Button from '@material-ui/core/Button';
@@ -35,6 +36,7 @@ import { openUAVDetailsDialog } from '~/features/uavs/details';
 import { createUAVOperationThunks } from '~/utils/messaging';
 import { getPreferredCommunicationChannelIndex } from '~/features/mission/selectors';
 import { getUAVIdList } from '~/features/uavs/selectors';
+import { showNotification } from '~/features/snackbar/actions';
 
 /**
  * Main toolbar for controlling the UAVs.
@@ -48,6 +50,7 @@ const UAVOperationsButtonGroup = ({
   requestRemovalOfUAVsByIds,
   requestRemovalOfUAVsMarkedAsGone,
   selectedUAVIds,
+  showNotification,
   size,
   startSeparator,
   t,
@@ -89,16 +92,29 @@ const UAVOperationsButtonGroup = ({
     dispatch
   );
 
+  const [keepFlashing, setKeepFlashing] = useState(false);
+
+  useInterval(flashLight, keepFlashing ? 2000 : null);
+
   const fontSize = size === 'small' ? 'small' : 'medium';
   const iconSize = size;
 
   const flashLightsButton =
     size === 'small' ? (
       <Button
-        startIcon={<WbSunny />}
+        startIcon={<WbSunny color={keepFlashing ? 'primary' : undefined} />}
         disabled={isSelectionEmpty}
         size={iconSize}
-        onClick={flashLight}
+        onClick={(e) => {
+          if (e.shiftKey) {
+            showNotification(
+              'Toggled continous flashing. (Hold shift while pressing to toggle.)'
+            );
+            setKeepFlashing((v) => !v);
+          } else {
+            flashLight();
+          }
+        }}
       >
         {t('UAVOpButtonGrp.flashLights')}
       </Button>
@@ -107,9 +123,21 @@ const UAVOperationsButtonGroup = ({
         <IconButton
           disabled={isSelectionEmpty}
           size={iconSize}
-          onClick={flashLight}
+          onClick={(e) => {
+            if (e.shiftKey) {
+              showNotification(
+                'Toggled continous flashing. (Hold shift while pressing to toggle.)'
+              );
+              setKeepFlashing((v) => !v);
+            } else {
+              flashLight();
+            }
+          }}
         >
-          <WbSunny fontSize={fontSize} />
+          <WbSunny
+            fontSize={fontSize}
+            color={keepFlashing ? 'primary' : undefined}
+          />
         </IconButton>
       </Tooltip>
     );
@@ -285,6 +313,7 @@ UAVOperationsButtonGroup.propTypes = {
   requestRemovalOfUAVsMarkedAsGone: PropTypes.func,
   selectedUAVIds: PropTypes.arrayOf(PropTypes.string),
   hideSeparators: PropTypes.bool,
+  showNotification: PropTypes.func,
   size: PropTypes.oneOf(['small', 'medium']),
   startSeparator: PropTypes.bool,
   t: PropTypes.func,
@@ -300,6 +329,7 @@ export default connect(
         openUAVDetailsDialog,
         requestRemovalOfUAVsMarkedAsGone,
         requestRemovalOfUAVsByIds,
+        showNotification,
       },
       dispatch
     ),

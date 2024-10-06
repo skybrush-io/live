@@ -41,6 +41,7 @@ import { convertRGB565ToCSSNotation } from '~/flockwave/parsing';
 import { globalIdToUavId } from '~/model/identifiers';
 import { UAVAge } from '~/model/uav';
 import { selectionForSubset } from '~/selectors/selection';
+import { selectOrdered } from '~/utils/collections';
 import { euclideanDistance2D, getMeanAngle } from '~/utils/math';
 import { EMPTY_ARRAY } from '~/utils/redux';
 import { createDeepResultSelector } from '~/utils/selectors';
@@ -67,6 +68,15 @@ export const getUAVIdToStateMapping = (state) => state.uavs.byId;
  * Returns the UAV with the given ID, given the current state.
  */
 export const getUAVById = (state, uavId) => state.uavs.byId[uavId];
+
+/**
+ * Selector that calculates and caches the list of all the UAVs in the
+ * state object.
+ */
+export const getUAVsInOrder = createSelector(
+  (state) => state.uavs,
+  selectOrdered
+);
 
 /**
  * Returns the current position of the UAV with the given ID, given the current
