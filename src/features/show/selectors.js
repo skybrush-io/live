@@ -21,6 +21,7 @@ import {
 import { formatDuration, formatDurationHMS } from '~/utils/formatting';
 import { FlatEarthCoordinateSystem } from '~/utils/geography';
 import {
+  calculateMinimumDistanceBetweenPairs,
   convexHull,
   createGeometryFromPoints,
   getCentroid,
@@ -782,3 +783,69 @@ export function proposeMappingFileName(state) {
     return `mapping_${date}.txt`;
   }
 }
+
+/**
+ * Returns the minimum distance between any two points at the beginning of the
+ * trajectories. This can be used to ensure that takeoff positions are not too
+ * close to each other.
+ */
+export const getMinimumDistanceBetweenTakeoffPositions = createSelector(
+  getFirstPointsOfTrajectories,
+  (points) => calculateMinimumDistanceBetweenPairs(points, points)
+);
+
+/**
+ * Returns the minimum distance between any two points at the end of the
+ * trajectories. This can be used to ensure that landing positions are not too
+ * close to each other.
+ */
+export const getMinimumDistanceBetweenLandingPositions = createSelector(
+  getLastPointsOfTrajectories,
+  (points) => calculateMinimumDistanceBetweenPairs(points, points)
+);
+
+/**
+ * Returns whether the takeoff positions are far enough to be considered safe.
+ */
+export const areTakeoffPositionsFarEnough = createSelector(
+  getMinimumDistanceBetweenTakeoffPositions,
+  isShowIndoor,
+  (minDist, isIndoor) => minDist >= (isIndoor ? 0.2 : 0.4)
+);
+
+/**
+ * Returns whether the landing positions are far enough to be considered safe.
+ */
+export const areLandingPositionsFarEnough = createSelector(
+  getMinimumDistanceBetweenLandingPositions,
+  isShowIndoor,
+  (minDist, isIndoor) => minDist >= (isIndoor ? 0.2 : 0.4)
+);
+
+/**
+ * Returns a string that encodes whether the show is currently loaded and has
+ * passed some basic validation checks.
+ */
+export const getShowValidationResult = (state) => {
+  if (didLastLoadingAttemptFail(state)) {
+    return 'loadingFailed';
+  }
+
+  if (isLoadingShowFile(state)) {
+    return 'loading';
+  }
+
+  if (!hasLoadedShowFile(state)) {
+    return 'notLoaded';
+  }
+
+  if (areTakeoffPositionsFarEnough(state)) {
+    return 'takeoffPositionsTooClose';
+  }
+
+  if (areLandingPositionsFarEnough(state)) {
+    return 'landingPositionsTooClose';
+  }
+
+  return 'ok';
+};

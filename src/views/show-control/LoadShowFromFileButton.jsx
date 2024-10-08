@@ -1,3 +1,4 @@
+/* eslint-disable unicorn/no-negated-condition */
 import isNil from 'lodash-es/isNil';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -28,6 +29,7 @@ import {
   getShowDescription,
   getShowLoadingProgressPercentage,
   getShowTitle,
+  getShowValidationResult,
   hasLoadedShowFile,
   hasShowChangedExternallySinceLoaded,
   isLoadingShowFile,
@@ -48,6 +50,34 @@ const isFile = (item) => item?.size > 0;
  */
 const EXTENSIONS = ['.skyc'];
 
+const isValidationResultAcceptable = (result) =>
+  result === 'ok' || result === 'loading' || result === 'notLoaded';
+
+/**
+ * Returns a human-readable explanation of why the show validation failed.
+ */
+const getDescriptionForValidationResult = (validationResult, _t) => {
+  switch (validationResult) {
+    case 'ok':
+    case 'loading':
+    case 'notLoaded':
+      /* these do not need a description */
+      return '';
+
+    case 'loadingFailed':
+      return 'Failed to load show';
+
+    case 'takeoffPositionsTooClose':
+      return 'Takeoff positions are too close';
+
+    case 'landingPositionsTooClose':
+      return 'Landing positions are too close';
+
+    default:
+      return 'Show validation failed';
+  }
+};
+
 /**
  * React component for the button that allows the user to open a show file.
  */
@@ -64,6 +94,7 @@ const LoadShowFromFileButton = ({
   status,
   t,
   title,
+  validationResult,
 }) => (
   <FileButton
     accepts={isFile}
@@ -79,8 +110,8 @@ const LoadShowFromFileButton = ({
         loading
           ? t('show.loading', 'Please wait, loading show file…')
           : hasLoadedShowFile
-          ? truncate(title, 60)
-          : t('show.noFileLoaded')
+            ? truncate(title, 60)
+            : t('show.noFileLoaded')
       }
       secondary={
         loading ? (
@@ -91,6 +122,10 @@ const LoadShowFromFileButton = ({
         ) : changedSinceLoaded ? (
           <span style={{ color: Colors.warning }}>
             Show changed since it was loaded
+          </span>
+        ) : !isValidationResultAcceptable(validationResult) ? (
+          <span style={{ color: Colors.warning }}>
+            {getDescriptionForValidationResult(validationResult, t)}
           </span>
         ) : hasLoadedShowFile ? (
           description
@@ -148,6 +183,7 @@ export default connect(
     progress: getShowLoadingProgressPercentage(state),
     status: getSetupStageStatuses(state).selectShowFile,
     title: getShowTitle(state),
+    validationResult: getShowValidationResult(state),
   }),
   // mapDispatchToProps
   {

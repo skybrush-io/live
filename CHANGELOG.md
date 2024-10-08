@@ -23,6 +23,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   each drone if the server provides this information. Thanks to @mwls-sean for
   implementing the first version of this feature!
 
+- When loading a show, we now validate the minimum distance between takeoff
+  positions and the minimum distance between landing positions. An error will
+  be shown if any pair of takeoff positions or any pair of landing positions are
+  too close to each other.
+
 ### Changed
 
 - When setting the start time based on a time offset from the current time,

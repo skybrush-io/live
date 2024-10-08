@@ -12,6 +12,7 @@ import {
   areStartConditionsSyncedWithServer,
   didLastLoadingAttemptFail,
   didStartConditionSyncFail,
+  getShowValidationResult,
   hasLoadedShowFile,
   hasScheduledStartTime,
   hasShowChangedExternallySinceLoaded,
@@ -50,16 +51,27 @@ import { getLastUploadResultByJobType } from '~/features/upload/selectors';
  */
 const stages = {
   selectShowFile: {
-    evaluate: (state) =>
-      hasShowChangedExternallySinceLoaded(state)
-        ? Status.SKIPPED
-        : didLastLoadingAttemptFail(state)
-        ? Status.ERROR
-        : hasLoadedShowFile(state)
+    evaluate(state) {
+      if (hasShowChangedExternallySinceLoaded(state)) {
+        return Status.SKIPPED;
+      }
+
+      const result = getShowValidationResult(state);
+      if (result !== 'ok' && result !== 'loading' && result !== 'notLoaded') {
+        return Status.ERROR;
+      }
+
+      const haveErrors = didLastLoadingAttemptFail(state);
+      if (haveErrors) {
+        return Status.ERROR;
+      }
+
+      return hasLoadedShowFile(state)
         ? Status.SUCCESS
         : isLoadingShowFile(state)
-        ? Status.WAITING
-        : Status.OFF,
+          ? Status.WAITING
+          : Status.OFF;
+    },
   },
 
   setupEnvironment: {
@@ -95,10 +107,10 @@ const stages = {
       return result === 'error'
         ? Status.ERROR
         : result === 'cancelled'
-        ? Status.SKIPPED
-        : result === 'success'
-        ? Status.SUCCESS
-        : Status.OFF;
+          ? Status.SKIPPED
+          : result === 'success'
+            ? Status.SUCCESS
+            : Status.OFF;
     },
     requires: ['selectShowFile', 'setupEnvironment', hasNonemptyMappingSlot],
   },
@@ -129,12 +141,12 @@ const stages = {
       didStartConditionSyncFail(state)
         ? Status.ERROR
         : areStartConditionsSyncedWithServer(state)
-        ? hasScheduledStartTime(state)
-          ? Status.SUCCESS
-          : Status.OFF
-        : isConnectedToServer(state)
-        ? Status.WAITING
-        : Status.OFF,
+          ? hasScheduledStartTime(state)
+            ? Status.SUCCESS
+            : Status.OFF
+          : isConnectedToServer(state)
+            ? Status.WAITING
+            : Status.OFF,
     requires: ['selectShowFile'],
     suggests: ['waitForOnboardPreflightChecks', 'performManualPreflightChecks'],
   },
@@ -144,10 +156,10 @@ const stages = {
       isShowAuthorizedToStart(state)
         ? Status.SUCCESS
         : didStartConditionSyncFail(state)
-        ? Status.ERROR
-        : isShowAuthorizedToStartLocally(state)
-        ? Status.WAITING
-        : Status.OFF,
+          ? Status.ERROR
+          : isShowAuthorizedToStartLocally(state)
+            ? Status.WAITING
+            : Status.OFF,
     requires: ['waitForOnboardPreflightChecks', 'performManualPreflightChecks'],
   },
 };

@@ -1,10 +1,21 @@
 import type { RootState } from '~/store/reducers';
 
+type ShowValidationResult =
+  | 'loadingFailed'
+  | 'notLoaded'
+  | 'loading'
+  | 'takeoffPositionsTooClose'
+  | 'landingPositionsTooClose'
+  | 'ok';
+
 export const areManualPreflightChecksSignedOff: (state: RootState) => boolean;
 export const areOnboardPreflightChecksSignedOff: (state: RootState) => boolean;
 export const areStartConditionsSyncedWithServer: (state: RootState) => boolean;
 export const didLastLoadingAttemptFail: (state: RootState) => boolean;
 export const didStartConditionSyncFail: (state: RootState) => boolean;
+export const getShowValidationResult: (
+  state: RootState
+) => ShowValidationResult;
 export const hasLoadedShowFile: (state: RootState) => boolean;
 export const hasScheduledStartTime: (state: RootState) => boolean;
 export const hasShowChangedExternallySinceLoaded: (state: RootState) => boolean;

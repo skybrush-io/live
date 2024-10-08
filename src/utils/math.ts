@@ -180,28 +180,65 @@ export function getMeanAngle(angles: number[]): number {
   return result < 0 ? result + 360 : result;
 }
 
+type DistanceCalculationOptions<T> = {
+  distanceFunction?: (a: Coordinate2D, b: Coordinate2D) => number;
+  getter?: ((item: T) => Coordinate2D) | PropertyPath;
+};
+
 /**
  * Create a distance matrix between two arrays.
  */
 export function calculateDistanceMatrix<T>(
   sources: T[],
-  targets: T[],
+  targets: T[] | undefined = undefined,
   {
     distanceFunction = euclideanDistance2D,
     getter = identity,
-  }: {
-    distanceFunction?: (a: Coordinate2D, b: Coordinate2D) => number;
-    getter?: ((item: T) => Coordinate2D) | PropertyPath;
-  } = {}
+  }: DistanceCalculationOptions<T> = {}
 ): number[][] {
   const getterFunction: (item: T) => Coordinate2D =
     typeof getter === 'function' ? getter : property(getter);
 
   const sourcePositions = sources.map(getterFunction);
-  const targetPositions = targets.map(getterFunction);
+  const targetPositions = (targets ?? sources).map(getterFunction);
 
   return sourcePositions.map((source) =>
     targetPositions.map((target) => distanceFunction(source, target))
+  );
+}
+
+/**
+ * Calculates the minimum distance between all pairs formed from the given
+ * spurce and target points.
+ */
+export function calculateMinimumDistanceBetweenPairs<T>(
+  sources: T[],
+  targets: T[] | undefined = undefined,
+  {
+    distanceFunction = euclideanDistance2D,
+    getter = identity,
+  }: DistanceCalculationOptions<T> = {}
+): number {
+  const getterFunction: (item: T) => Coordinate2D =
+    typeof getter === 'function' ? getter : property(getter);
+
+  const sourcePositions = sources.map(getterFunction);
+  const targetPositions = (targets ?? sources).map(getterFunction);
+
+  if (sourcePositions.length === 0 || targetPositions.length === 0) {
+    return Number.POSITIVE_INFINITY;
+  }
+
+  // This is definitely not the most efficient algorithm as it is O(n*m) but
+  // since we are not going to do this multiple times it's probably okay.
+  // Improve this when the time comes.
+
+  return Math.min(
+    ...sourcePositions.map((source) =>
+      Math.min(
+        ...targetPositions.map((target) => distanceFunction(source, target))
+      )
+    )
   );
 }
 
