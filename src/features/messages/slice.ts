@@ -92,6 +92,41 @@ const { actions, reducer } = createSlice({
       (action as Record<string, unknown>)['messageId'] = messageId;
     },
 
+    batchAddInboundMessages(
+      state,
+      action: PayloadAction<
+        Array<{
+          message: string;
+          refs?: number;
+          severity?: Severity;
+          uavId: string;
+        }>
+      >
+    ) {
+      const messageIds = [];
+
+      for (const { message, refs, severity, uavId } of action.payload) {
+        messageIds.push(
+          addMessage(
+            state,
+            {
+              type: MessageType.INBOUND,
+              author: uavId,
+              date: Date.now(),
+              raw: true,
+              recipient: 'Operator',
+              severity,
+              body: message,
+            },
+            uavId,
+            refs
+          )
+        );
+      }
+
+      (action as Record<string, unknown>)['messageIds'] = messageIds;
+    },
+
     addOutboundMessage(
       state,
       action: PayloadAction<{ message: string; uavId?: string }>
@@ -169,6 +204,7 @@ export const {
   addInboundMessage,
   addOutboundMessage,
   addErrorMessage,
+  batchAddInboundMessages,
   clearMessagesOfUAVById,
   updateProgressByMessageId,
 } = actions;

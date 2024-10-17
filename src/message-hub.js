@@ -20,7 +20,7 @@ import {
 } from './model/connections';
 import { handleObjectDeletionMessage } from './model/objects';
 
-import { addInboundMessage } from './features/messages/slice';
+import { batchAddInboundMessages } from './features/messages/slice';
 import { showError, showNotification } from './features/snackbar/actions';
 import { semanticsFromSeverity } from './features/snackbar/utils';
 
@@ -59,6 +59,8 @@ messageHub.registerNotificationHandlers({
   'SYS-MSG': (message) => {
     if (message.body && Array.isArray(message.body.items)) {
       batch(() => {
+        const fromUAV = [];
+
         for (const item of message.body.items) {
           if (isEmpty(item.sender)) {
             // This message came directly from the server so we show it as a
@@ -72,15 +74,15 @@ messageHub.registerNotificationHandlers({
           } else {
             // This message probably came from a UAV so let's add it to the
             // list of messages received from the UAV
-            dispatch(
-              addInboundMessage({
-                message: item.message,
-                uavId: item.sender,
-                severity: item.severity,
-              })
-            );
+            fromUAV.push({
+              message: item.message,
+              uavId: item.sender,
+              severity: item.severity,
+            });
           }
         }
+
+        dispatch(batchAddInboundMessages(fromUAV));
       });
     }
   },
