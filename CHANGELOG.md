@@ -46,6 +46,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed a bug in the automatic coordinate system fitting algorithm when some
   UAVs did not have a GPS fix yet.
 
+### Miscellaneous
+
+- Performance optimizations.
+
 ## [2.8.0] - 2023-10-30
 
 ### Added
