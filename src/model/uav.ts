@@ -64,6 +64,10 @@ export default class UAV {
   //       to the output later on, thus the object spread can be avoided.
   _positionMemoizer: (position: GPSPosition) => GPSPosition;
 
+  // TODO: This should be unnecessary if we can ensure that no mutation happens
+  //       to the output later on, thus the object spread can be avoided.
+  _positionMemoizer: (position: GPSPosition) => GPSPosition;
+
   /**
    * Constructor.
    *

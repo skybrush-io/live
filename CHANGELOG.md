@@ -28,6 +28,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   be shown if any pair of takeoff positions or any pair of landing positions are
   too close to each other.
 
+- Make the "Flash lights" button latchable by holding Shift while activating it.
+
 ### Changed
 
 - When setting the start time based on a time offset from the current time,
