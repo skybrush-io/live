@@ -21,7 +21,7 @@
       "i18next-extract",
       {
         "discardOldKeys": false,
-        "locales": ["en", "hu"],
+        "locales": ["en"],
         "tFunctionNames": ["tt"],
         "outputPath": "src/i18n/{{locale}}.json"
       }
