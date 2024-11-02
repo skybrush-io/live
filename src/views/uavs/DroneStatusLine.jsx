@@ -169,13 +169,6 @@ const DroneStatusLine = ({
           >
             {abbreviateGPSFixType(gpsFixType)}
           </StatusPill>
-          {localPosition ? (
-            padEnd(localCoordinateFormatter(localPosition), 25)
-          ) : position ? (
-            padEnd(coordinateFormatter([position.lon, position.lat]), 25)
-          ) : (
-            <span className={classes.muted}>{padEnd('no position', 25)}</span>
-          )}
           {!isNil(amsl) ? (
             padStart(position.amsl.toFixed(1), 6) + 'm'
           ) : (
@@ -194,6 +187,13 @@ const DroneStatusLine = ({
           <StatusText status={headingDeviationToStatus(headingDeviation)}>
             {padStart(!isNil(heading) ? Math.round(heading) + '°' : '', 5)}
           </StatusText>
+          {localPosition ? (
+            padEnd(localCoordinateFormatter(localPosition), 25)
+          ) : position ? (
+            padEnd(coordinateFormatter([position.lon, position.lat]), 25)
+          ) : (
+            <span className={classes.muted}>{padEnd('no position', 25)}</span>
+          )}
           <span className={classes.debugString}>
             {debugString ? ' ' + debugString : ''}
           </span>

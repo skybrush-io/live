@@ -201,13 +201,6 @@ const COMMON_HEADER_TEXT_PARTS = Object.freeze([
     },
   },
   {
-    label: 'Position',
-    style: {
-      textAlign: 'left',
-      width: 198,
-    },
-  },
-  {
     label: 'AMSL',
     sortKey: UAVSortKey.ALTITUDE_MSL,
     style: {
@@ -237,6 +230,13 @@ const COMMON_HEADER_TEXT_PARTS = Object.freeze([
     style: {
       textAlign: 'center',
       width: 40,
+    },
+  },
+  {
+    label: 'Position',
+    style: {
+      textAlign: 'left',
+      width: 198,
     },
   },
   {
