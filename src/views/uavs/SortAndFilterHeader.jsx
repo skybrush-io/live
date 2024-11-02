@@ -233,6 +233,13 @@ const COMMON_HEADER_TEXT_PARTS = Object.freeze([
     },
   },
   {
+    label: 'Seen',
+    style:{
+      textAlign: 'left',
+      width: 40,
+    }
+  },
+  {
     label: 'Position',
     style: {
       textAlign: 'left',

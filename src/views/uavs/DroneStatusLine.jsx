@@ -29,7 +29,9 @@ import {
   getSemanticsForRSSI,
 } from '~/model/enums';
 import { getPreferredCoordinateFormatter } from '~/selectors/formatting';
-import { formatCoordinateArray, formatRSSI } from '~/utils/formatting';
+import { formatCoordinateArray, formatRSSI, shortTimeAgoFormatter } from '~/utils/formatting';
+
+import TimeAgo from 'react-timeago';
 
 /**
  * Converts the absolute value of a heading deviation, in degrees, to the
@@ -123,6 +125,7 @@ const DroneStatusLine = ({
   secondaryLabel,
   text,
   textSemantics,
+  lastUpdated,
 }) => {
   const classes = useStyles();
   const { amsl, ahl, agl } = position || {};
@@ -187,6 +190,7 @@ const DroneStatusLine = ({
           <StatusText status={headingDeviationToStatus(headingDeviation)}>
             {padStart(!isNil(heading) ? Math.round(heading) + '°' : '', 5)}
           </StatusText>
+          <TimeAgo formatter={(...args) => padStart(padEnd(shortTimeAgoFormatter(...args), 5), 6)} date={lastUpdated} />
           {localPosition ? (
             padEnd(localCoordinateFormatter(localPosition), 25)
           ) : position ? (
@@ -275,6 +279,7 @@ export default connect(
         mode: uav ? uav.mode : undefined,
         position: uav ? uav.position : undefined,
         rssi: uav ? uav.rssi?.[0] : undefined,
+        lastUpdated: uav ? uav.lastUpdated : undefined,
         ...statusSummarySelector(state, ownProps.id),
       };
     };
