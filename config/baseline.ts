@@ -55,6 +55,7 @@ const baseline: Config = {
       'app-settings-button',
       'alert-button',
       'help-button',
+      'check-clock-sync',
       'full-screen-button',
       'session-expiry-box',
     ],

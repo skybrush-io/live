@@ -2,6 +2,7 @@
   "APIKeysTab": {
     "description": "Some map tile providers work without an API key; in this case, a default API key is used. This API key is shared between all users. We make no guarantees about the availability of map tiles if you use the default shared API key."
   },
+  "CheckClockSync": "Check delay of GCS Clock based on WorldTime API",
   "ConnectionStatusMiniList": {
     "noConnections": "This server uses no connections.",
     "useSecondaryChannel": "Use secondary channel"
@@ -85,6 +86,7 @@
     "disable": "Disable broadcast",
     "enable": "Enable broadcast for {{time}} seconds"
   },
+  "ciao": "",
   "coordinateAveragingDialogToolbar": {
     "addNewDrone": "Add new drone",
     "copyCentroid": "Copy centroid",
