@@ -189,7 +189,7 @@ const UAVLogList = listOf(
   ),
   {
     dataProvider: 'items',
-    backgroundHint: <BackgroundHint text='No logs found' />,
+    backgroundHint: 'No logs found',
   }
 );
 

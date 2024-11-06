@@ -7,7 +7,7 @@ import UAVDetailsPanelHeader from './UAVDetailsPanelHeader';
 
 /**
  * Panel that shows the widgets that are needed to monitor and control one
- * specific drone and it's devices.
+ * specific drone and its devices.
  */
 const UAVDetailsPanel = () => (
   <Box display='flex' flexDirection='column' height='100%'>
