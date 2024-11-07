@@ -116,7 +116,7 @@ const baseline: Config = {
 
     origin: {
       position: [19.0622, 47.4733],
-      angle: '348',
+      angle: '0',
     },
 
     tileProviders: {
