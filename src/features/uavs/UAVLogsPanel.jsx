@@ -92,7 +92,7 @@ const UAVLogListItem = ({ id, kind, size, timestamp, uavId }) => {
       .catch(({ message }) => {
         dispatch(
           showNotification({
-            message: `Couldn't donwload log ${id} of UAV ${uavId}: ${message}`,
+            message: `Couldn't download log ${id} of UAV ${uavId}: ${message}`,
             semantics: MessageSemantics.ERROR,
             buttons: [{ label: 'Retry', action: download }],
             timeout: 20000,
@@ -139,11 +139,11 @@ const UAVLogListItem = ({ id, kind, size, timestamp, uavId }) => {
       </Typography>
     );
 
-  const disabled = downloadState?.status === LogDownloadStatus.LOADING;
-  const onClick = log ? save : download;
+  const isLoading = downloadState?.status === LogDownloadStatus.LOADING;
+  const onClick = isLoading ? undefined : log ? save : download;
 
   return (
-    <ListItem button disabled={disabled} onClick={onClick}>
+    <ListItem button onClick={onClick}>
       <StatusLight
         status={
           {
@@ -163,7 +163,7 @@ const UAVLogListItem = ({ id, kind, size, timestamp, uavId }) => {
         secondary={secondaryComponent}
       />
       <ListItemSecondaryAction>
-        <IconButton edge='end' disabled={disabled} onClick={onClick}>
+        <IconButton edge='end' disabled={isLoading} onClick={onClick}>
           {downloadState?.status === LogDownloadStatus.SUCCESS ? (
             <Save />
           ) : (
