@@ -18,8 +18,8 @@ import Import from '~/icons/Upload';
 
 import FileButton from '~/components/FileButton';
 import {
-  TooltipWithContainerFromContext as Tooltip,
   PopoverWithContainerFromContext as Popover,
+  TooltipWithContainerFromContext as Tooltip,
 } from '~/containerContext';
 import {
   clearMission,
@@ -30,8 +30,9 @@ import {
 } from '~/features/mission/actions';
 import { isMissionPartiallyCompleted } from '~/features/mission/selectors';
 import { showMissionPlannerDialog } from '~/features/mission/slice';
-import { getSingleSelectedUAVId } from '~/features/uavs/selectors';
 import { isConnected as isConnectedToServer } from '~/features/servers/selectors';
+import { getSingleSelectedUAVId, getUAVById } from '~/features/uavs/selectors';
+import UAVErrorCode from '~/flockwave/UAVErrorCode';
 import usePopover from '~/hooks/usePopover';
 
 const useStyles = makeStyles(
@@ -165,8 +166,12 @@ export default connect(
   (state) => ({
     canPlan: isConnectedToServer(state),
     canResume: isMissionPartiallyCompleted(state),
-    canUpload:
-      isConnectedToServer(state) && getSingleSelectedUAVId(state) !== undefined,
+    canUpload: (({ singleSelectedUAVId }) =>
+      isConnectedToServer(state) &&
+      singleSelectedUAVId !== undefined &&
+      getUAVById(state, singleSelectedUAVId)?.errors?.includes(
+        UAVErrorCode.ON_GROUND
+      ))({ singleSelectedUAVId: getSingleSelectedUAVId(state) }),
   }),
   // mapDispatchToProps
   {
