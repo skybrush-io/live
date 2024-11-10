@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 
 import Box from '@material-ui/core/Box';
@@ -59,6 +59,12 @@ const RTKSetupDialogBottomPanel = ({
   surveyStatus,
 }) => {
   const classes = useStyles();
+
+  useEffect(() => {
+    if (surveySettingsVisible && !surveyStatus?.supported) {
+      onToggleSurveySettings();
+    }
+  }, [onToggleSurveySettings, surveySettingsVisible, surveyStatus?.supported]);
 
   return (
     <Box
