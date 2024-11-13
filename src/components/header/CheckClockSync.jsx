@@ -21,55 +21,21 @@ async function CheckClock(){
   const DdThreShold=1; //Days ThreShold
 
 
- //Get Actual Timezone
- try{
-
-    const timezone=Intl.DateTimeFormat().resolvedOptions().timeZone;
-    const TimeZone_Array = timezone.split("/");
-        
-    var continent = TimeZone_Array[0];
-    var city = TimeZone_Array[1];
-
-  }
-  catch{
-        store.dispatch(showNotification( { message: 'TimeAPI: Not able to retrieve local timezone.',semantics: MessageSemantics.WARNING}));
-        return
-  }
-
   try{
 
 
-    store.dispatch(showNotification( "TimeAPI: Getting Time from API based on "+continent+"/"+city));
 
-    const response = await fetch('https://timeapi.io/api/time/current/zone?timeZone='+continent+'%2F'+city,{ signal: AbortSignal.timeout(5000) });
+    const response = await fetch('https://timeapi.io/api/time/current/zone?timeZone=UTC',{ signal: AbortSignal.timeout(5000) });
     const data = await response.json();
-    const api_date_time_complete=JSON.stringify(data.dateTime)
-    const regex = /(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})\.(\d+)/;
-    const match = api_date_time_complete.match(regex); 
+    const date_time=new Date(data.dateTime+"Z").getTime();
 
-    if (match) {
-      const year = match[1];
-      const month = match[2];
-      const day = match[3];
-      const hour = match[4];
-      const minute = match[5];
-      const second = match[6];
-      const millisecond = match[7].substring(0, 3); //Take only 3 digit after point
-      const final_match= year+"-"+month+"-"+day+"T"+hour+":"+minute+":"+second+"."+millisecond
-      var api_data_object=new Date(final_match);
+   
 
-    } else {
-      store.dispatch(showNotification( { message: 'TimeAPI: Time format not valid',semantics: MessageSemantics.WARNING}));
-      return
-    }     
-
-
-
-    var currentDate = new Date(); // Get Actual Date Object
-      
+    var currentDate = new Date().getTime(); // Get Actual Date Object
+    
     
     //Calculate difference beetween local date and api date 
-    const differenceInMilliseconds = Math.round(Math.abs(api_data_object - currentDate));
+    const differenceInMilliseconds = Math.round(Math.abs(date_time - currentDate));
     const differenceInSeconds = Math.round(Math.abs(differenceInMilliseconds / 1000));
     const differenceInMinutes = Math.round(Math.abs(differenceInSeconds / 60));
     const differenceInHours = Math.round(Math.abs(differenceInMinutes / 60));
@@ -113,10 +79,10 @@ async function CheckClock(){
     }
     return
 
-  }catch{
-        store.dispatch(showNotification( { message: 'TimeAPI: No internet Connection , not able to retrieve data',semantics: MessageSemantics.WARNING}));
-        return
-    }
+   }catch{
+       store.dispatch(showNotification( { message: 'TimeAPI: No internet Connection , not able to retrieve data',semantics: MessageSemantics.WARNING}));
+         return
+     }
 };
 
 const CheckClockSyncButton  = () => (
