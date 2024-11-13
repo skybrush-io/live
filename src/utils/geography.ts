@@ -1,3 +1,4 @@
+/* eslint-disable import/no-duplicates */
 /**
  * @file Geography-related utility functions and variables.
  */
@@ -10,6 +11,7 @@ import unary from 'lodash-es/unary';
 import * as Coordinate from 'ol/coordinate';
 import * as Extent from 'ol/extent';
 import type OLFeature from 'ol/Feature';
+import type { FeatureLike } from 'ol/Feature';
 import {
   type Geometry,
   LineString,
@@ -193,7 +195,7 @@ export const findFeatureById = curry(
   }
 );
 
-const isVectorLayer = (layer: unknown): layer is VectorLayer<VectorSource> =>
+const isVectorLayer = (layer: unknown): layer is VectorLayer<FeatureLike> =>
   layer instanceof VectorLayer && layer.getSource() instanceof VectorSource;
 
 /**
@@ -227,7 +229,8 @@ export const findFeaturesById = curry(
         if (!features[i]) {
           const feature = source.getFeatureById(featureId);
           if (feature) {
-            features[i] = feature;
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            features[i] = feature as any;
           }
         }
       }
@@ -958,8 +961,11 @@ export function normalizePolygon([points, ...holes]: any): any {
   // Start with the boundary ring and subtract every hole from it with Turf
   // TODO: This can be simplified when Turf 7.0.0 gets released, as
   //       difference will support multiple subtrahend features
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
   const { geometry } = holes.reduce(
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     (poly: any, hole: any) => turfDifference(poly, TurfHelpers.polygon([hole])),
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     TurfHelpers.polygon([points])
   );
 

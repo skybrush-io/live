@@ -8,7 +8,7 @@ import { createSelector } from '@reduxjs/toolkit';
 import { MiniSignal } from 'mini-signals';
 import watch from 'redux-watch';
 
-import AFrame from '../aframe';
+import AFrame from '@skybrush/aframe-components';
 
 import { createSelectionHandlerThunk } from '~/components/helpers/lists';
 import { setSelectedUAVIds } from '~/features/uavs/actions';
@@ -47,6 +47,21 @@ const getUpdatePositionFromGPSCoordinatesFunction = createSelector(
     }
   }
 );
+
+/**
+ * Convenience function to create the props of a glowing material to use
+ * with drones.
+ *
+ * Does not work yet; need to investigate why.
+ */
+function createGlowingMaterialProps() {
+  return {
+    color: new THREE.Color('#0088ff'),
+    falloff: 1.5,
+    internalRadius: 5,
+    sharpness: 0,
+  };
+}
 
 AFrame.registerSystem('drone-flock', {
   init() {
@@ -96,13 +111,9 @@ AFrame.registerSystem('drone-flock', {
     element.setAttribute('position', '0 0 0');
 
     const glowElement = document.createElement('a-entity');
-    glowElement.setAttribute('sprite', {
-      blending: 'additive',
-      color: new THREE.Color('#ff8800'),
-      scale: `${this._glowScale} ${this._glowScale} 1`,
-      src: '#glow-texture',
-      transparent: true,
-    });
+    glowElement.setAttribute('geometry', this._droneGeometry);
+    glowElement.setAttribute('glow-material', createGlowingMaterialProps());
+    glowElement.setAttribute('scale', '3 3 3');
 
     element.append(glowElement);
 

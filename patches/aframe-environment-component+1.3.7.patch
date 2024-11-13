@@ -1,0 +1,28 @@
+diff --git a/node_modules/aframe-environment-component/index.js b/node_modules/aframe-environment-component/index.js
+index 33781bf..778f3ce 100644
+--- a/node_modules/aframe-environment-component/index.js
++++ b/node_modules/aframe-environment-component/index.js
+@@ -258,7 +258,6 @@ AFRAME.registerComponent('environment', {
+       Object.assign(this.environmentData, this.data);
+       Object.assign(this.environmentData, this.presets[this.data.preset]);
+       Object.assign(this.environmentData, this.el.components.environment.attrValue);
+-      console.log(this.environmentData);
+     }
+ 
+     var skyType = this.environmentData.skyType;
+@@ -453,7 +452,6 @@ AFRAME.registerComponent('environment', {
+       str += ', ';
+     }
+     str += '}';
+-    console.log(str);
+   },
+ 
+   // dumps current component settings to console.
+@@ -497,7 +495,6 @@ AFRAME.registerComponent('environment', {
+         }
+       }
+     }
+-    console.log('%c' + params.join('; '), 'color: #f48;font-weight:bold');
+   },
+ 
+   // Custom Math.random() with seed. Given this.environmentData.seed and x, it always returns the same "random" number

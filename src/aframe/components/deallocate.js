@@ -5,7 +5,7 @@
  * Source: https://github.com/ngokevin/aframe-react/issues/110
  */
 
-import AFrame from '../aframe';
+import AFrame from '@skybrush/aframe-components';
 
 import { notifySceneRemoval } from '~/features/three-d/slice';
 import store from '~/store';
