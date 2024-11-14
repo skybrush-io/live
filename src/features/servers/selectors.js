@@ -86,9 +86,32 @@ export const getServerHostnameAndPort = createSelector(
  */
 export const getServerUrl = createSelector(
   (state) => state.dialogs.serverSettings,
-  ({ hostName, port, isSecure }) => {
-    const protocol = isSecure ? 'https:' : 'http:';
-    return hostName ? `${protocol}//${hostName}:${port}` : undefined;
+  getServerProtocolWithDefaultWS,
+  ({ hostName, port, isSecure }, protocol) => {
+    const schema = protocol === 'ws' ? (isSecure ? 'https' : 'http') : protocol;
+    return hostName ? `${schema}://${hostName}:${port}` : undefined;
+  }
+);
+
+/**
+ * Selector that attempts to return the URL where the HTTP service of the
+ * server is reachable.
+ *
+ * Returns undefined if it is not known which port the server is listening for
+ * HTTP requests.
+ */
+export const getServerHttpUrl = createSelector(
+  (state) => state.dialogs.serverSettings,
+  (state) => state.servers.current.ports,
+  getServerProtocolWithDefaultWS,
+  ({ hostName, isSecure, port }, ports, protocol) => {
+    const schema = isSecure ? 'https' : 'http';
+    const httpPort = typeof ports.http === 'number' ? ports.http : 0;
+    return hostName && httpPort > 0
+      ? `${schema}://${hostName}:${httpPort}`
+      : protocol === 'ws'
+        ? `http://${hostName}:${port}` /* educated guess */
+        : `http://${hostName}:${port - 1}`; /* educated guess */
   }
 );
 
@@ -121,6 +144,14 @@ const getCurrentServerFeatures = (state) => state.servers.current.features;
  *     connected Skybrush server
  */
 const getCurrentServerLicense = (state) => state.servers.current.license;
+
+/**
+ * Selector that returns the mapping of services to ports on the server. May
+ * be an empty object if the server is too old and cannot provide the mapping
+ * on its own.
+ */
+export const getCurrentServerPortMapping = (state) =>
+  state.servers.current.ports;
 
 /**
  * Returns the version number of the currently connected Skybrush server.

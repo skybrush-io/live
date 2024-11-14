@@ -12,7 +12,10 @@ import RadioGroup from '@material-ui/core/RadioGroup';
 
 import { selectMapSource } from '~/features/map/layers';
 import { isMapCachingEnabled } from '~/features/map-caching/selectors';
-import { getServerUrl, supportsMapCaching } from '~/features/servers/selectors';
+import {
+  getServerHttpUrl,
+  supportsMapCaching,
+} from '~/features/servers/selectors';
 import { getAPIKeys } from '~/features/settings/selectors';
 import {
   Source,
@@ -295,10 +298,10 @@ function getCachedTileLoader(serverUrl) {
 const getMapTileLoaderFunction = createSelector(
   isMapCachingEnabled,
   supportsMapCaching,
-  getServerUrl,
-  (cachingEnabled, cachingSupported, serverUrl) =>
+  getServerHttpUrl,
+  (cachingEnabled, cachingSupported, serverHttpUrl) =>
     cachingEnabled && cachingSupported
-      ? getCachedTileLoader(serverUrl)
+      ? getCachedTileLoader(serverHttpUrl)
       : loadTile
 );
 
