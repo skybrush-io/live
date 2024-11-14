@@ -38,10 +38,12 @@ import {
   clearTimeSyncStatistics,
   clearServerFeatures,
   clearServerLicense,
+  clearServerPortMapping,
   openTimeSyncWarningDialog,
   setCurrentServerConnectionState,
   setServerLicense,
   setServerVersion,
+  setServerPortMapping,
 } from '~/features/servers/slice';
 import { Protocol } from '~/features/servers/types';
 import {
@@ -293,7 +295,6 @@ class WebSocketConnection extends React.Component {
 class TCPSocketConnection extends React.Component {
   static propTypes = connectionPropTypes;
   static defaultProps = defaultConnectionProps;
-
   #heartbeatIntervalId = undefined;
   #socket;
 
@@ -570,6 +571,16 @@ async function executeTasksAfterConnection(dispatch, getState) {
       dispatch(addServerFeatures(features));
     }
 
+    // Retrieve the mapping of services to ports on the server -- used by the
+    // offline maps feature when it needs to connect back to the server via
+    // HTTP even if the primary connection protocol is different
+    try {
+      const portMapping = await messageHub.query.getServerPortMapping();
+      dispatch(setServerPortMapping(portMapping ?? {}));
+    } catch {
+      /* Not supported, server is too old */
+    }
+
     // Set the license received in the response from the server.
     dispatch(setServerLicense(await messageHub.query.getLicenseInformation()));
 
@@ -644,6 +655,7 @@ async function executeTasksAfterDisconnection(dispatch) {
   dispatch(clearDockList());
   dispatch(clearServerFeatures());
   dispatch(clearServerLicense());
+  dispatch(clearServerPortMapping());
   dispatch(clearStartTimeAndMethod());
   dispatch(clearTimeSyncStatistics());
   dispatch(clearWeatherData());

@@ -322,6 +322,18 @@ export async function getSelectedRTKPresetId(hub) {
 }
 
 /**
+ * Returns the current mapping of services to ports on the server.
+ */
+export async function getServerPortMapping(hub) {
+  const response = await hub.sendMessage({ type: 'SYS-PORTS' });
+  return response.body &&
+    response.body.type === 'SYS-PORTS' &&
+    typeof response.body.ports === 'object'
+    ? response.body.ports
+    : undefined;
+}
+
+/**
  * Returns the configuration of the current drone show managed by the server.
  */
 export async function getShowConfiguration(hub) {
@@ -414,6 +426,7 @@ export class QueryHandler {
     getRTKStatus,
     getRTKSurveySettings,
     getSelectedRTKPresetId,
+    getServerPortMapping,
     getShowConfiguration,
     getWeatherInformation,
     isExtensionLoaded,
