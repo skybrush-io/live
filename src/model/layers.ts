@@ -19,6 +19,7 @@ import Map from '@material-ui/icons/Map';
 import MyLocation from '@material-ui/icons/MyLocation';
 import Timeline from '@material-ui/icons/Timeline';
 import TrackChanges from '@material-ui/icons/TrackChanges';
+import Wifi from '@material-ui/icons/Wifi';
 
 import type BaseLayer from 'ol/layer/Base';
 import type OLLayer from 'ol/layer/Layer';
@@ -49,6 +50,8 @@ export enum LayerType {
   UAV_TRACE = 'uavTrace',
   UNAVAILABLE = 'unavailable',
   UNTYPED = 'untyped',
+
+  RSSI = 'rssi',
 }
 
 export type Layer = {
@@ -76,6 +79,7 @@ export const LayerTypes = [
   LayerType.OWN_LOCATION,
   LayerType.GEOJSON,
   LayerType.HEATMAP,
+  LayerType.RSSI,
 ] as const;
 
 export const ProLayerTypes = [LayerType.IMAGE] as const;
@@ -250,6 +254,10 @@ const propertiesForLayerTypes: Record<
   [LayerType.UNTYPED]: {
     label: 'Untyped layer',
     icon: HelpOutline,
+  },
+  [LayerType.RSSI]: {
+    label: 'RSSI',
+    icon: Wifi,
   },
 } as const;
 

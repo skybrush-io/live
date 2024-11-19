@@ -16,6 +16,7 @@ import { TileServerLayerSettings, TileServerLayer } from './tileserver';
 import { UAVsLayerSettings, UAVsLayer } from './uavs';
 import { UAVTraceLayerSettings, UAVTraceLayer } from './uavtrace';
 import { UntypedLayerSettings, UntypedLayer } from './untyped';
+import { RSSILayer } from './rssi';
 
 import { LayerType } from '~/model/layers';
 
@@ -76,6 +77,7 @@ export const Layers = {
   [LayerType.UAVS]: UAVsLayer,
   [LayerType.UAV_TRACE]: UAVTraceLayer,
   [LayerType.UNTYPED]: UntypedLayer,
+  [LayerType.RSSI]: RSSILayer,
 };
 
 export const stateObjectToLayer = (layer, props) => {
