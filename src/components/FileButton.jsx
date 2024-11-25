@@ -98,8 +98,8 @@ FileButton.propTypes = {
   onSelectionFailed: PropTypes.func,
 };
 
-export default (props) => (
+export default React.forwardRef((props, ref) => (
   <DndProvider backend={HTML5Backend}>
-    <FileButton {...props} />
+    <FileButton ref={ref} {...props} />
   </DndProvider>
-);
+));
