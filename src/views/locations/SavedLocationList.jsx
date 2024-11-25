@@ -73,18 +73,16 @@ LocationListEntry.propTypes = {
  * @return {React.Node}  the rendered list item
  */
 const createNewItemEntry = (props) => (
-  <Translation>
-    {(t) => (
-      <ListItem key='__addNew__' button onClick={props.onNewItem}>
-        <ListItemText primary={t('savedLocation.addNew')} />
-        <ListItemSecondaryAction>
-          <IconButton edge='end' onClick={props.onNewItem}>
-            <Add />
-          </IconButton>
-        </ListItemSecondaryAction>
-      </ListItem>
-    )}
-  </Translation>
+  <ListItem key='__addNew__' button onClick={props.onNewItem}>
+    <Translation>
+      {(t) => <ListItemText primary={t('savedLocation.addNew')} />}
+    </Translation>
+    <ListItemSecondaryAction>
+      <IconButton edge='end' onClick={props.onNewItem}>
+        <Add />
+      </IconButton>
+    </ListItemSecondaryAction>
+  </ListItem>
 );
 
 /**
