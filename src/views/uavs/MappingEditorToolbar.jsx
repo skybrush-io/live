@@ -41,7 +41,6 @@ const MappingEditorToolbar = React.forwardRef(
       clearMapping,
       exportMapping,
       finishMappingEditorSession,
-      importAllowed,
       importMapping,
       removeMissingUAVsFromMapping,
       ...rest
@@ -89,11 +88,9 @@ const MappingEditorToolbar = React.forwardRef(
                 {t('mappingEditorToolbar.assignSpares')}
               </MenuItem>
               <Divider />
-              {importAllowed && (
-                <MenuItem onClick={closeMappingMenu(importMapping)}>
-                  {t('mappingEditorToolbar.importMapping')}
-                </MenuItem>
-              )}
+              <MenuItem onClick={closeMappingMenu(importMapping)}>
+                {t('mappingEditorToolbar.importMapping')}
+              </MenuItem>
               <MenuItem onClick={closeMappingMenu(exportMapping)}>
                 {t('mappingEditorToolbar.exportMapping')}
               </MenuItem>
@@ -121,7 +118,6 @@ MappingEditorToolbar.propTypes = {
   exportMapping: PropTypes.func,
   finishMappingEditorSession: PropTypes.func,
   importMapping: PropTypes.func,
-  importAllowed: PropTypes.bool,
   removeMissingUAVsFromMapping: PropTypes.func,
   selectedUAVIds: PropTypes.array,
 };
@@ -130,7 +126,6 @@ export default connect(
   // mapStateToProps
   (state) => ({
     canAugmentMapping: canAugmentMappingAutomaticallyFromSpareDrones(state),
-    importAllowed: Boolean(window.bridge && window.bridge.readBufferFromFile),
   }),
   // mapDispatchToProps
   {

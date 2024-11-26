@@ -1,5 +1,7 @@
 import { saveAs } from 'file-saver';
 
+import { getFileFromUser, readFileAsArrayBuffer } from './files';
+
 /**
  * Allows the user to pick a file, then reads the contents of the file as a blob.
  *
@@ -9,23 +11,24 @@ import { saveAs } from 'file-saver';
  *        file dialog when running in Electron, except <code>maxSize</code>,
  *        which is treated as an upper limit on the size of the file being
  *        picked (defaults to 1M)
+ *        NOTE: When running in the browser, these options are currently ignored
+ *
  * @returns {Promise} a promise that resolves to the contents of the file as a
  *          blob
  */
-export async function readBlobFromFile({ maxSize, ...dialogOptions } = {}) {
-  const { readBufferFromFile } = window?.bridge || {};
-  if (readBufferFromFile) {
-    const buffer = await readBufferFromFile({ maxSize, dialogOptions });
-    return new Blob([buffer], { type: 'application/octet-stream' });
-  } else {
-    throw new Error('Not supported in the browser');
-  }
-}
+export const readBlobFromFile = async ({ maxSize, ...dialogOptions } = {}) =>
+  new Blob(
+    [
+      (await window?.bridge?.readBufferFromFile({ maxSize, dialogOptions })) ??
+        // TODO: Pass the relevant subset of options, e.g. filters -> accept,
+        //       multiSelections -> multiple, openDirectory -> webkitdirectory
+        (await readFileAsArrayBuffer(await getFileFromUser())),
+    ],
+    { type: 'application/octet-stream' }
+  );
 
 /**
  * Allows the user to pick a file, then reads the contents of the file as text.
- *
- * Not supported in the browser at the moment.
  *
  * @returns {Promise} a promise that resolves to the contents of the file as a
  *          string
