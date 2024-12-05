@@ -33,7 +33,7 @@ export const MissionSlotTrajectoryFeature = ({
 MissionSlotTrajectoryFeature.propTypes = {
   source: PropTypes.any,
   trajectory: PropTypes.arrayOf(CustomPropTypes.coordinate),
-  missionIndex: PropTypes.string,
+  missionIndex: PropTypes.number,
 };
 
 export default connect(

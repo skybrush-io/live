@@ -864,9 +864,10 @@ MissionInfoVectorSource.propTypes = {
   missionItemsWithCoordinates: PropTypes.arrayOf(PropTypes.object),
   missionOrientation: CustomPropTypes.angle,
   missionOrigin: PropTypes.arrayOf(PropTypes.number),
-  missionIndicesForTrajectories: PropTypes.arrayOf(PropTypes.string),
+  missionIndicesForTrajectories: PropTypes.arrayOf(PropTypes.number),
   orientation: CustomPropTypes.angle,
   returnToHomeItems: PropTypes.arrayOf(PropTypes.object),
+  selectedTool: PropTypes.string,
   selection: PropTypes.arrayOf(PropTypes.string),
   uavIdsForTrajectories: PropTypes.arrayOf(PropTypes.string),
 };
