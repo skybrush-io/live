@@ -18,6 +18,7 @@ import {
   updateTakeoffHeadings,
   setMappingLength,
   setMissionType,
+  setCommandsAreBroadcast,
 } from '~/features/mission/slice';
 import { showNotification } from '~/features/snackbar/actions';
 import { MessageSemantics } from '~/features/snackbar/types';
@@ -85,6 +86,9 @@ export const approveTakeoffArea = () => (dispatch) => {
 export const authorizeIfAndOnlyIfHasStartTime = () => (dispatch, getState) => {
   const shouldAuthorize = hasScheduledStartTime(getState());
   dispatch(setShowAuthorization(shouldAuthorize));
+  if (shouldAuthorize) {
+    dispatch(setCommandsAreBroadcast(true));
+  }
 };
 
 /**

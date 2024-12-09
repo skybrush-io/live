@@ -89,7 +89,7 @@ export default connect(
       dispatch(setShowAuthorization(newAuthorizationState));
       dispatch(synchronizeShowSettings('toServer'));
       if (newAuthorizationState) {
-        dispatch(setCommandsAreBroadcast(state));
+        dispatch(setCommandsAreBroadcast(true));
       }
     },
   }

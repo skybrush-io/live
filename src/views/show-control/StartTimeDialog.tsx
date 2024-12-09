@@ -416,11 +416,11 @@ export default connect(
         );
       }
 
-      dispatch(synchronizeShowSettings('toServer'));
-
       if (authorizeWhenSettingStartTime) {
         dispatch(authorizeIfAndOnlyIfHasStartTime() as any);
       }
+
+      dispatch(synchronizeShowSettings('toServer'));
 
       dispatch(closeStartTimeDialog({ authorizeWhenSettingStartTime }));
     },
