@@ -43,7 +43,6 @@ const validator = createValidator({
  * regardless of its type.
  */
 const BasicLayerSettingsFormPresentation = ({
-  initialValues,
   layer,
   onSubmit,
   onToggleLayerVisibility,
@@ -51,7 +50,7 @@ const BasicLayerSettingsFormPresentation = ({
 }) => (
   <Form
     validateOnBlur
-    initialValues={initialValues}
+    initialValues={{ label: layer.label }}
     validate={validate}
     onSubmit={onSubmit}
   >
@@ -84,10 +83,10 @@ const BasicLayerSettingsFormPresentation = ({
 
 BasicLayerSettingsFormPresentation.propTypes = {
   layer: PropTypes.shape({
+    label: PropTypes.string,
     visible: PropTypes.bool,
     type: PropTypes.string,
   }),
-  initialValues: PropTypes.object,
   validate: PropTypes.func,
   onSubmit: PropTypes.func,
   onToggleLayerVisibility: PropTypes.func,
@@ -99,11 +98,7 @@ BasicLayerSettingsFormPresentation.propTypes = {
  */
 const BasicLayerSettingsForm = connect(
   // mapStateToProps
-  (state, ownProps) => ({
-    initialValues: {
-      label: ownProps.layer.label,
-    },
-  }),
+  null,
   // mapDispatchToProps
   (dispatch, ownProps) => ({
     onSubmit(values) {

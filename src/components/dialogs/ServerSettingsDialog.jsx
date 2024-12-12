@@ -14,10 +14,10 @@ import { Translation, useTranslation, withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import Button from '@material-ui/core/Button';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -52,10 +52,11 @@ import {
 } from '~/features/servers/selectors';
 import { isTCPConnectionSupported } from '~/features/servers/server-settings-dialog';
 import { Protocol } from '~/features/servers/types';
+import useSelectorOnce from '~/hooks/useSelectorOnce';
 import { tt } from '~/i18n';
 import {
-  createValidator,
   between,
+  createValidator,
   integer,
   required,
 } from '~/utils/validation';
@@ -179,49 +180,58 @@ const validator = createValidator({
   port: [required, integer, between(1, 65535)],
 });
 
-const ServerSettingsFormPresentation = ({
-  initialValues,
-  onKeyPress,
-  onSubmit,
-  t,
-}) => (
-  <Form initialValues={initialValues} validate={validator} onSubmit={onSubmit}>
-    {({ handleSubmit }) => (
-      <form id='serverSettings' onSubmit={handleSubmit} onKeyPress={onKeyPress}>
-        <TextField
-          fullWidth
-          name='hostName'
-          label={t('serverSettingsDialog.hostname')}
-          variant='filled'
-          margin='normal'
-        />
-        <TextField
-          fullWidth
-          name='port'
-          label={t('serverSettingsDialog.port')}
-          variant='filled'
-          margin='normal'
-        />
-        <Switches
-          name='isSecure'
-          data={{ label: t('serverSettingsDialog.useSecureConnection') }}
-        />
-        {isTCPConnectionSupported ? (
-          <Switches
-            name='isWebSocket'
-            data={{
-              label: t('serverSettingsDialog.useWebSocketLabel'),
-            }}
-            helperText={t('serverSettingsDialog.useWebSocketHelperText')}
+const ServerSettingsFormPresentation = ({ onKeyPress, onSubmit, t }) => {
+  const initialValues = useSelectorOnce((state) => ({
+    ...state.dialogs.serverSettings,
+    isWebSocket: getServerProtocolWithDefaultWS(state) === Protocol.WS,
+  }));
+
+  return (
+    <Form
+      initialValues={initialValues}
+      validate={validator}
+      onSubmit={onSubmit}
+    >
+      {({ handleSubmit }) => (
+        <form
+          id='serverSettings'
+          onSubmit={handleSubmit}
+          onKeyPress={onKeyPress}
+        >
+          <TextField
+            fullWidth
+            name='hostName'
+            label={t('serverSettingsDialog.hostname')}
+            variant='filled'
+            margin='normal'
           />
-        ) : null}
-      </form>
-    )}
-  </Form>
-);
+          <TextField
+            fullWidth
+            name='port'
+            label={t('serverSettingsDialog.port')}
+            variant='filled'
+            margin='normal'
+          />
+          <Switches
+            name='isSecure'
+            data={{ label: t('serverSettingsDialog.useSecureConnection') }}
+          />
+          {isTCPConnectionSupported ? (
+            <Switches
+              name='isWebSocket'
+              data={{
+                label: t('serverSettingsDialog.useWebSocketLabel'),
+              }}
+              helperText={t('serverSettingsDialog.useWebSocketHelperText')}
+            />
+          ) : null}
+        </form>
+      )}
+    </Form>
+  );
+};
 
 ServerSettingsFormPresentation.propTypes = {
-  initialValues: PropTypes.object,
   onKeyPress: PropTypes.func,
   onSubmit: PropTypes.func,
   t: PropTypes.func,
@@ -231,15 +241,7 @@ ServerSettingsFormPresentation.propTypes = {
  * Container of the form that shows the fields that the user can use to
  * edit the server settings.
  */
-const ServerSettingsForm = connect(
-  // mapStateToProps
-  (state) => ({
-    initialValues: {
-      ...state.dialogs.serverSettings,
-      isWebSocket: getServerProtocolWithDefaultWS(state) === Protocol.WS,
-    },
-  })
-)(withTranslation()(ServerSettingsFormPresentation));
+const ServerSettingsForm = withTranslation()(ServerSettingsFormPresentation);
 
 /**
  * Presentation component for the dialog that shows the form that the user

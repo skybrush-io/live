@@ -2,12 +2,12 @@
  * @file Tab that shows the geofence settings and allows the user to edit them.
  */
 
+import createDecorator from 'final-form-calculate';
 import { Checkboxes, Select, TextField } from 'mui-rff';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { withTranslation } from 'react-i18next';
 import { Form } from 'react-final-form';
-import createDecorator from 'final-form-calculate';
+import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import Box from '@material-ui/core/Box';
@@ -32,9 +32,10 @@ import {
   clearGeofencePolygonId,
   setGeofenceAction,
 } from '~/features/mission/slice';
+import useSelectorOnce from '~/hooks/useSelectorOnce';
 import {
-  createValidator,
   atLeast,
+  createValidator,
   finite,
   integer,
   required,
@@ -89,115 +90,127 @@ const SUPPORTED_GEOFENCE_ACTIONS = [
   GeofenceAction.LAND,
 ];
 
-const GeofenceSettingsFormPresentation = ({ initialValues, onSubmit, t }) => (
-  <Form
-    initialValues={initialValues}
-    validate={validator}
-    decorators={[calculator]}
-    onSubmit={onSubmit}
-  >
-    {({
-      handleSubmit,
-      values: { maxDistance, maxGeofence, maxHeight, simplify },
-    }) => (
-      <form id='geofenceSettings' onSubmit={handleSubmit}>
-        <FormHeader>{t('safetyDialog.geofenceTab.fenceAction')}</FormHeader>
-        <Box display='flex' flexDirection='column'>
-          <Select
-            name='action'
-            label={t('safetyDialog.geofenceTab.fenceActionLabel')}
-            variant='filled'
-          >
-            {SUPPORTED_GEOFENCE_ACTIONS.map((action) => (
-              <MenuItem key={action} value={action}>
-                {describeGeofenceAction(action)?.(t)}
-              </MenuItem>
-            ))}
-          </Select>
-          <FormHelperText>
-            {t('safetyDialog.geofenceTab.fenceActionHelperText')}
-          </FormHelperText>
-        </Box>
+const GeofenceSettingsFormPresentation = ({ onSubmit, t }) => {
+  const initialValues = useSelectorOnce((state) => ({
+    ...getGeofenceSettings(state),
+    maxDistance: getMaximumHorizontalDistanceForCurrentMissionType(state),
+    maxGeofence: getMaximumDistanceBetweenHomePositionsAndGeofence(state),
+    maxHeight: getMaximumHeightForCurrentMissionType(state),
+    action: getGeofenceAction(state),
+  }));
 
-        <FormHeader>{t('safetyDialog.geofenceTab.safetyMargins')}</FormHeader>
-        <Box display='flex' flexDirection='row'>
-          <TextField
-            name='horizontalMargin'
-            label={t('safetyDialog.geofenceTab.horizontal')}
-            type='number'
-            InputProps={{
-              endAdornment: <InputAdornment position='end'>m</InputAdornment>,
-            }}
-            variant='filled'
-          />
-          <Box p={1} />
-          <TextField
-            name='verticalMargin'
-            label={t('safetyDialog.geofenceTab.vertical')}
-            type='number'
-            InputProps={{
-              endAdornment: <InputAdornment position='end'>m</InputAdornment>,
-            }}
-            variant='filled'
-          />
-        </Box>
-        <FormHeader>{t('safetyDialog.geofenceTab.proposedLimits')}</FormHeader>
-        <Box display='flex' flexDirection='row'>
-          <TextField
-            disabled
-            name='distanceLimit'
-            label={t('safetyDialog.geofenceTab.maxDistance')}
-            error={maxDistance === 0 && maxGeofence === 0}
-            helperText={
-              maxDistance === 0 &&
-              maxGeofence === 0 &&
-              t('safetyDialog.geofenceTab.errors.distance')
-            }
-            InputProps={{
-              endAdornment: <InputAdornment position='end'>m</InputAdornment>,
-            }}
-            variant='standard'
-          />
-          <Box p={1} />
-          <TextField
-            disabled
-            name='heightLimit'
-            label={t('safetyDialog.geofenceTab.maxAltitude')}
-            error={maxHeight === 0}
-            helperText={
-              maxHeight === 0 && t('safetyDialog.geofenceTab.errors.height')
-            }
-            InputProps={{
-              endAdornment: <InputAdornment position='end'>m</InputAdornment>,
-            }}
-            variant='standard'
-          />
-        </Box>
+  return (
+    <Form
+      initialValues={initialValues}
+      validate={validator}
+      decorators={[calculator]}
+      onSubmit={onSubmit}
+    >
+      {({
+        handleSubmit,
+        values: { maxDistance, maxGeofence, maxHeight, simplify },
+      }) => (
+        <form id='geofenceSettings' onSubmit={handleSubmit}>
+          <FormHeader>{t('safetyDialog.geofenceTab.fenceAction')}</FormHeader>
+          <Box display='flex' flexDirection='column'>
+            <Select
+              name='action'
+              label={t('safetyDialog.geofenceTab.fenceActionLabel')}
+              variant='filled'
+            >
+              {SUPPORTED_GEOFENCE_ACTIONS.map((action) => (
+                <MenuItem key={action} value={action}>
+                  {describeGeofenceAction(action)?.(t)}
+                </MenuItem>
+              ))}
+            </Select>
+            <FormHelperText>
+              {t('safetyDialog.geofenceTab.fenceActionHelperText')}
+            </FormHelperText>
+          </Box>
 
-        <FormHeader>
-          {t('safetyDialog.geofenceTab.vertexCountReduction')}
-        </FormHeader>
-        <Box display='flex' flexDirection='column'>
-          <Checkboxes
-            name='simplify'
-            data={{ label: t('safetyDialog.geofenceTab.simplifyPolygon') }}
-          />
-          <TextField
-            fullWidth={false}
-            name='maxVertexCount'
-            label={t('safetyDialog.geofenceTab.maxVertexCount')}
-            disabled={!simplify}
-            type='number'
-            variant='filled'
-          />
-        </Box>
-      </form>
-    )}
-  </Form>
-);
+          <FormHeader>{t('safetyDialog.geofenceTab.safetyMargins')}</FormHeader>
+          <Box display='flex' flexDirection='row'>
+            <TextField
+              name='horizontalMargin'
+              label={t('safetyDialog.geofenceTab.horizontal')}
+              type='number'
+              InputProps={{
+                endAdornment: <InputAdornment position='end'>m</InputAdornment>,
+              }}
+              variant='filled'
+            />
+            <Box p={1} />
+            <TextField
+              name='verticalMargin'
+              label={t('safetyDialog.geofenceTab.vertical')}
+              type='number'
+              InputProps={{
+                endAdornment: <InputAdornment position='end'>m</InputAdornment>,
+              }}
+              variant='filled'
+            />
+          </Box>
+
+          <FormHeader>
+            {t('safetyDialog.geofenceTab.proposedLimits')}
+          </FormHeader>
+          <Box display='flex' flexDirection='row'>
+            <TextField
+              disabled
+              name='distanceLimit'
+              label={t('safetyDialog.geofenceTab.maxDistance')}
+              error={maxDistance === 0 && maxGeofence === 0}
+              helperText={
+                maxDistance === 0 &&
+                maxGeofence === 0 &&
+                t('safetyDialog.geofenceTab.errors.distance')
+              }
+              InputProps={{
+                endAdornment: <InputAdornment position='end'>m</InputAdornment>,
+              }}
+              variant='standard'
+            />
+            <Box p={1} />
+            <TextField
+              disabled
+              name='heightLimit'
+              label={t('safetyDialog.geofenceTab.maxAltitude')}
+              error={maxHeight === 0}
+              helperText={
+                maxHeight === 0 && t('safetyDialog.geofenceTab.errors.height')
+              }
+              InputProps={{
+                endAdornment: <InputAdornment position='end'>m</InputAdornment>,
+              }}
+              variant='standard'
+            />
+          </Box>
+
+          <FormHeader>
+            {t('safetyDialog.geofenceTab.vertexCountReduction')}
+          </FormHeader>
+          <Box display='flex' flexDirection='column'>
+            <Checkboxes
+              name='simplify'
+              data={{ label: t('safetyDialog.geofenceTab.simplifyPolygon') }}
+            />
+            <TextField
+              fullWidth={false}
+              name='maxVertexCount'
+              label={t('safetyDialog.geofenceTab.maxVertexCount')}
+              disabled={!simplify}
+              type='number'
+              variant='filled'
+            />
+          </Box>
+        </form>
+      )}
+    </Form>
+  );
+};
 
 GeofenceSettingsFormPresentation.propTypes = {
-  initialValues: PropTypes.object,
   onSubmit: PropTypes.func,
   t: PropTypes.func,
 };
@@ -208,15 +221,7 @@ GeofenceSettingsFormPresentation.propTypes = {
  */
 const GeofenceSettingsForm = connect(
   // mapStateToProps
-  (state) => ({
-    initialValues: {
-      ...getGeofenceSettings(state),
-      maxDistance: getMaximumHorizontalDistanceForCurrentMissionType(state),
-      maxGeofence: getMaximumDistanceBetweenHomePositionsAndGeofence(state),
-      maxHeight: getMaximumHeightForCurrentMissionType(state),
-      action: getGeofenceAction(state),
-    },
-  }),
+  null,
   // mapDispatchToProps
   {
     onSubmit: (data) => (dispatch) => {
