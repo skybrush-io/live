@@ -33,6 +33,7 @@ import {
   setGeofenceAction,
 } from '~/features/mission/slice';
 import useSelectorOnce from '~/hooks/useSelectorOnce';
+import { rejectNullish } from '~/utils/arrays';
 import {
   atLeast,
   createValidator,
@@ -63,7 +64,7 @@ const calculator = createDecorator(
       heightLimit(margin, { maxHeight }) {
         margin = Number.parseFloat(margin);
         return proposeHeightLimit(
-          maxHeight,
+          Math.max(...rejectNullish([maxHeight])),
           Number.isFinite(margin) ? margin : 0
         );
       },
@@ -75,7 +76,7 @@ const calculator = createDecorator(
       distanceLimit(margin, { maxDistance, maxGeofence }) {
         margin = Number.parseFloat(margin);
         return proposeDistanceLimit(
-          Math.max(maxDistance, maxGeofence),
+          Math.max(...rejectNullish([maxDistance, maxGeofence])),
           Number.isFinite(margin) ? margin : 0
         );
       },
@@ -160,10 +161,10 @@ const GeofenceSettingsFormPresentation = ({ onSubmit, t }) => {
               disabled
               name='distanceLimit'
               label={t('safetyDialog.geofenceTab.maxDistance')}
-              error={maxDistance === 0 && maxGeofence === 0}
+              error={maxDistance === undefined && maxGeofence === undefined}
               helperText={
-                maxDistance === 0 &&
-                maxGeofence === 0 &&
+                maxDistance === undefined &&
+                maxGeofence === undefined &&
                 t('safetyDialog.geofenceTab.errors.distance')
               }
               InputProps={{
@@ -176,9 +177,10 @@ const GeofenceSettingsFormPresentation = ({ onSubmit, t }) => {
               disabled
               name='heightLimit'
               label={t('safetyDialog.geofenceTab.maxAltitude')}
-              error={maxHeight === 0}
+              error={maxHeight === undefined}
               helperText={
-                maxHeight === 0 && t('safetyDialog.geofenceTab.errors.height')
+                maxHeight === undefined &&
+                t('safetyDialog.geofenceTab.errors.height')
               }
               InputProps={{
                 endAdornment: <InputAdornment position='end'>m</InputAdornment>,

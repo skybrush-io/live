@@ -9,6 +9,7 @@ import {
   getMaximumHorizontalDistanceFromTakeoffPositionInTrajectories,
 } from '~/features/show/selectors';
 import { MissionType } from '~/model/missions';
+import { rejectNullish } from '~/utils/arrays';
 
 import { proposeDistanceLimit, proposeHeightLimit } from './utils';
 
@@ -53,7 +54,6 @@ export const getMaximumHorizontalDistanceForCurrentMissionType = (state) => {
       console.warn(
         `Could not get maximum horizontal distance for mission type: '${missionType}'`
       );
-      return 0;
   }
 };
 
@@ -73,7 +73,6 @@ export const getMaximumHeightForCurrentMissionType = (state) => {
       console.warn(
         `Could not get maximum height for mission type: '${missionType}'`
       );
-      return 0;
   }
 };
 
@@ -85,7 +84,10 @@ export const getProposedDistanceLimit = (state) => {
   const maxDistance = getMaximumHorizontalDistanceForCurrentMissionType(state);
   const maxGeofence = getMaximumDistanceBetweenHomePositionsAndGeofence(state);
   const margin = getGeofenceSettings(state).horizontalMargin;
-  return proposeDistanceLimit(Math.max(maxDistance, maxGeofence), margin);
+  return proposeDistanceLimit(
+    Math.max(...rejectNullish([maxDistance, maxGeofence])),
+    margin
+  );
 };
 
 /**
@@ -95,7 +97,7 @@ export const getProposedDistanceLimit = (state) => {
 export const getProposedHeightLimit = (state) => {
   const maxHeight = getMaximumHeightForCurrentMissionType(state);
   const margin = getGeofenceSettings(state).verticalMargin;
-  return proposeHeightLimit(maxHeight, margin);
+  return proposeHeightLimit(Math.max(...rejectNullish([maxHeight])), margin);
 };
 
 /**

@@ -12,9 +12,12 @@ export function formatCoordinateArray(coords: number[]): string {
 /**
  * Formats a short (less than an hour) duration as minutes:seconds or
  * a long (not less than an hour) duration as hours:minutes:seconds.
+ * A placeholder is returned in case of missing input data.
  */
-export function formatDuration(duration: number): string {
-  return (duration < 60 * 60 ? formatDurationMS : formatDurationHMS)(duration);
+export function formatDuration(duration?: number): string {
+  return duration === undefined
+    ? '--:--:--'
+    : (duration < 60 * 60 ? formatDurationMS : formatDurationHMS)(duration);
 }
 
 /**

@@ -1,4 +1,5 @@
-import maxBy from 'lodash-es/maxBy';
+import max from 'lodash-es/max';
+
 import { convexHull, euclideanDistance2D } from '~/utils/math';
 
 /**
@@ -22,24 +23,25 @@ export function getFirstPointOfTrajectory(trajectory) {
  */
 export function getLastPointOfTrajectory(trajectory) {
   return isValidTrajectory(trajectory)
-    ? trajectory.points[trajectory.points.length - 1][1]
+    ? trajectory.points.at(-1)[1]
     : undefined;
 }
 
 /**
  * Returns the maximum distance of any point in a trajectory from its starting
- * point. Returns 0 for empty trajectories.
+ * point.
  */
 export function getMaximumHorizontalDistanceFromTakeoffPositionInTrajectory(
   trajectory
 ) {
   if (!isValidTrajectory(trajectory)) {
-    return 0;
+    return;
   }
 
+  // TODO: `isValidTrajectory` already ensures `points.length > 0`...
   const { points = [] } = trajectory;
   if (points.length === 0) {
-    return 0;
+    return;
   }
 
   // TODO(ntamas): calculate distances only for the convex hull of the trajectory!
@@ -52,22 +54,20 @@ export function getMaximumHorizontalDistanceFromTakeoffPositionInTrajectory(
     return euclideanDistance2D(point, firstPoint);
   };
 
-  const farthestPoint = maxBy(points, distanceToFirstPoint);
-  return farthestPoint ? distanceToFirstPoint(farthestPoint) : 0;
+  return max(trajectory.points.map(distanceToFirstPoint));
 }
 
 /**
- * Returns the maximum height in a single trajectory. Returns 0 for empty
- * trajectories.
+ * Returns the maximum height in a single trajectory.
  */
 export function getMaximumHeightOfTrajectory(trajectory) {
   if (!isValidTrajectory(trajectory)) {
-    return undefined;
+    return;
   }
 
-  const { points = [] } = trajectory;
-  const highestPoint = maxBy(points, (point) => point[1][2]);
-  return highestPoint ? highestPoint[1][2] : 0;
+  return max(
+    trajectory.points.map(([_timestamp, coordinates]) => coordinates[2])
+  );
 }
 
 /**
@@ -104,20 +104,19 @@ export function getPointsOfTrajectory(
 /**
  * Returns the duration of a single drone trajectory.
  */
-export function getTrajectoryDuration(trajectory) {
+export function getDurationOfTrajectory(trajectory) {
   if (!isValidTrajectory(trajectory)) {
-    return 0;
+    return;
   }
 
   const { points, takeoffTime } = trajectory;
 
+  // TODO: `isValidTrajectory` already ensures `points.length > 0`...
   if (points.length > 0) {
-    const lastPoint = points[points.length - 1];
+    const lastPoint = points.at(-1);
     if (Array.isArray(lastPoint) && lastPoint.length > 1) {
-      return lastPoint[0] + (takeoffTime || 0);
+      return lastPoint[0] + (takeoffTime ?? 0);
     }
-  } else {
-    return 0;
   }
 }
 
