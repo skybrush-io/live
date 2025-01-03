@@ -25,7 +25,7 @@ import {
 import { FlatEarthCoordinateSystem } from '~/utils/geography';
 import {
   calculateMinimumDistanceBetweenPairs,
-  convexHull,
+  convexHull2D,
   createGeometryFromPoints,
   getCentroid,
 } from '~/utils/math';
@@ -499,7 +499,7 @@ export const getConvexHullsOfTrajectories = createSelector(
  */
 export const getConvexHullOfShow = createSelector(
   getConvexHullsOfTrajectories,
-  (convexHulls) => convexHull(convexHulls.flat())
+  (convexHulls) => convexHull2D(convexHulls.flat())
 );
 
 const transformPoints = (points, transform) =>

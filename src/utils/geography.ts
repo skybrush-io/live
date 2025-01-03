@@ -49,7 +49,7 @@ import {
 } from './formatting';
 import {
   closePolygon,
-  convexHull,
+  convexHull2D,
   type Coordinate2D,
   type Coordinate3D,
   euclideanDistance2D,
@@ -943,7 +943,7 @@ export const bufferPolygon = (
       return [flatEarthCoord[0] + centroid[0], flatEarthCoord[1] + centroid[1]];
     });
 
-  return convexHull(outerLinearRing);
+  return convexHull2D(outerLinearRing);
 };
 
 /**
