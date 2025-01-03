@@ -45,7 +45,7 @@ import {
   turfDistanceInMeters,
 } from '~/utils/geography';
 import {
-  convexHull,
+  convexHull2D,
   type Coordinate2D,
   createGeometryFromPoints,
   estimatePathDuration,
@@ -573,7 +573,7 @@ export const getConvexHullOfMissionInWorldCoordinates: AppSelector<
   getMissionItemsWithCoordinatesInOrder,
   getMissionItemsWithAreasInOrder,
   (homePositions, missionItemsWithCoorinates, missionItemsWithAreas) =>
-    convexHull([
+    convexHull2D([
       ...rejectNullish(homePositions).map(
         ({ lon, lat }): Coordinate2D => [lon, lat]
       ),
