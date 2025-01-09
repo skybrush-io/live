@@ -14,7 +14,8 @@
     "drawPath": "Draw path",
     "drawPolygon": "Draw polygon",
     "drawRectangle": "Draw rectangle",
-    "editFeature": "Edit feature"
+    "editFeature": "Edit feature",
+    "selectedAction": "Selected {{tool}} tool"
   },
   "OnboardPreflightChecksDialog": {
     "noError": "None of the UAVs indicated an error.",

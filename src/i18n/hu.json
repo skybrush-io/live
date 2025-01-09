@@ -14,7 +14,8 @@
     "drawPath": "Útvonal rajzolás",
     "drawPolygon": "Sokszög rajzolás",
     "drawRectangle": "Négyszög rajzolás",
-    "editFeature": "Objektumok szerkesztése"
+    "editFeature": "Objektumok szerkesztése",
+    "selectedAction": "{{tool}} eszköz kiválasztva"
   },
   "OnboardPreflightChecksDialog": {
     "noError": "Egyik drón sem jelzett hibát.",

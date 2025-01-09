@@ -21,7 +21,7 @@ import { connect } from 'react-redux';
 
 import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
 import { getSelectedTool, setSelectedTool } from '~/features/map/tools';
-import { tt } from '~/i18n';
+import i18n, { tt } from '~/i18n';
 import ContentCut from '~/icons/ContentCut';
 import EditFeature from '~/icons/EditFeature';
 
@@ -126,7 +126,24 @@ const DrawingToolbar = connect(
   }),
   // mapDispatchToProps
   {
-    onToolSelected: setSelectedTool,
+    onToolSelected: (tool) => {
+      const voices = window.speechSynthesis.getVoices();
+      const en = voices.find((v) => v.lang === 'en-US');
+      const hu = voices.find((v) => v.lang === 'hu-HU');
+
+      window.speechSynthesis.speak(
+        Object.assign(
+          new SpeechSynthesisUtterance(
+            i18n.t('DrawingToolbar.selectedAction', {
+              tool: i18n.t(`DrawingToolbar.${tool}`),
+            })
+          ),
+          { voice: { en, hu }[i18n.language] }
+        )
+      );
+
+      return setSelectedTool(tool);
+    },
   }
 )(withTranslation()(DrawingToolbarPresentation));
 
