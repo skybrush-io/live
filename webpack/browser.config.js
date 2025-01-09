@@ -1,5 +1,5 @@
-// Webpack configuration for the output that is directly usable on
-// https://live.skybrush.io
+// Webpack configuration for dynamic bundling
+// and serving to browsers during development
 
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
