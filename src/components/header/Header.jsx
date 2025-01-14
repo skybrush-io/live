@@ -12,6 +12,7 @@ import AppSettingsButton from './AppSettingsButton';
 import AuthenticationButton from './AuthenticationButton';
 import BroadcastButton from './BroadcastButton';
 import ConnectionStatusButton from './ConnectionStatusButton';
+import CheckClockSyncButton from './CheckClockSync';
 import FullScreenButton from './FullScreenButton';
 import HelpButton from './HelpButton';
 import SafetyButton from './SafetyButton';
@@ -54,6 +55,7 @@ const componentRegistry = {
     <BroadcastButton timeoutLength={BROADCAST_MODE_TIMEOUT_LENGTH} />
   ),
   'connection-status-button': ConnectionStatusButton,
+  'check-clock-sync': () => (<CheckClockSyncButton />),
   'distance-summary-header-button': DistanceSummaryHeaderButton,
   'full-screen-button': FullScreenButton,
   'help-button': () => (config.urls.help ? <HelpButton /> : null),
