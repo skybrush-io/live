@@ -38,7 +38,7 @@ export type Feature =
   | {
       type: FeatureType.POLYGON;
       points: Coordinate2D[];
-      holes: Coordinate2D[][];
+      holes?: Coordinate2D[][];
     };
 
 /**

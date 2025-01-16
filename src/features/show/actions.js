@@ -2,7 +2,6 @@ import ky from 'ky';
 import get from 'lodash-es/get';
 import sum from 'lodash-es/sum';
 import throttle from 'lodash-es/throttle';
-import unary from 'lodash-es/unary';
 import Point from 'ol/geom/Point';
 
 import { freeze } from '@reduxjs/toolkit';
@@ -11,7 +10,6 @@ import { loadCompiledShow as processFile } from '@skybrush/show-format';
 
 import { removeFeaturesByIds } from '~/features/map-features/slice';
 import { getFeaturesInOrder } from '~/features/map-features/selectors';
-import { addGeofencePolygon } from '~/features/mission/actions';
 import {
   updateHomePositions,
   updateLandingPositions,
@@ -40,13 +38,11 @@ import { JOB_TYPE } from './constants';
 import { StartMethod } from './enums';
 import {
   getAbsolutePathOfShowFile,
-  getConvexHullOfShow,
   getFirstPointsOfTrajectoriesInWorldCoordinates,
   getLastPointsOfTrajectoriesInWorldCoordinates,
   getOutdoorShowOrigin,
   getRoomCorners,
   getOutdoorShowAltitudeReference,
-  getOutdoorShowToWorldCoordinateSystemTransformationObject,
   getOutdoorShowOrientation,
   getCommonTakeoffHeading,
   getShowClockReference,
@@ -143,41 +139,6 @@ export const removeShowFeatures = () => (dispatch, getState) => {
 
   dispatch(removeFeaturesByIds(showFeatureIds));
 };
-
-/**
- * Thunk that adds a geofence polygon based on the currently loaded show.
- */
-export const addGeofencePolygonBasedOnShowTrajectories =
-  () => (dispatch, getState) => {
-    const state = getState();
-
-    const coordinates = getConvexHullOfShow(state);
-    if (coordinates.length === 0) {
-      dispatch(
-        showNotification({
-          message: `Could not calculate geofence coordinates.
-                    Did you load a show file?`,
-          semantics: MessageSemantics.ERROR,
-          permanent: true,
-        })
-      );
-      return;
-    }
-
-    const transformation =
-      getOutdoorShowToWorldCoordinateSystemTransformationObject(state);
-    if (!transformation) {
-      throw new Error('Outdoor coordinate system not set up yet');
-    }
-
-    dispatch(
-      addGeofencePolygon(
-        coordinates,
-        MissionType.SHOW,
-        unary(transformation.toLonLat.bind(transformation))
-      )
-    );
-  };
 
 /**
  * Moves the show origin relative to its current position such that the delta

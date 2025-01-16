@@ -383,7 +383,7 @@ export const measureFeature = (feature: Feature): string => {
       // NOTE: `polygon.getArea()` doesn't include correction for the projection
       const area = getArea(
         new Polygon(
-          [feature.points, ...feature.holes].map((coordinates) =>
+          [feature.points, ...(feature.holes ?? [])].map((coordinates) =>
             coordinates.map(unary(mapViewCoordinateFromLonLat))
           )
         )

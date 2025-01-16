@@ -1,20 +1,42 @@
+import max from 'lodash-es/max';
+import unary from 'lodash-es/unary';
+import { err, ok, type Result } from 'neverthrow';
+
+import { createSelector } from '@reduxjs/toolkit';
+
+import * as TurfHelpers from '@turf/helpers';
+
 import {
-  getMaximumDistanceBetweenHomePositionsAndGeofence,
+  getConvexHullOfMissionInMapViewCoordinates,
+  getGeofencePolygonInWorldCoordinates,
+  getGPSBasedHomePositionsInMission,
   getMaximumHeightOfWaypoints,
   getMaximumHorizontalDistanceFromHomePositionInWaypointMission,
   getMissionType,
 } from '~/features/mission/selectors';
 import {
+  getConvexHullOfShow,
   getMaximumHeightInTrajectories,
   getMaximumHorizontalDistanceFromTakeoffPositionInTrajectories,
+  getOutdoorShowToWorldCoordinateSystemTransformationObject,
 } from '~/features/show/selectors';
 import { MissionType } from '~/model/missions';
 import { type AppSelector } from '~/store/reducers';
 import { rejectNullish } from '~/utils/arrays';
+import {
+  lonLatFromMapViewCoordinate,
+  mapViewCoordinateFromLonLat,
+  turfDistanceInMeters,
+} from '~/utils/geography';
+import { type Coordinate2D } from '~/utils/math';
 
 import { type SafetyDialogTab } from './constants';
 import { type SafetySliceState } from './slice';
-import { proposeDistanceLimit, proposeHeightLimit } from './utils';
+import {
+  makeGeofenceGenerationSettingsApplicator,
+  proposeDistanceLimit,
+  proposeHeightLimit,
+} from './utils';
 
 /**
  * Selector that returns whether the safety dialog is open.
@@ -42,6 +64,104 @@ export const getGeofenceSettings: AppSelector<SafetySliceState['geofence']> = (
 export const getSafetySettings: AppSelector<SafetySliceState['settings']> = (
   state
 ) => state.safety.settings;
+
+/**
+ * Selector that returns a function for applying the current geofence generation
+ * preferences to a polygon, such as simplification (vertex count reduction) and
+ * buffering (extension with an extra safety margin / padding zone).
+ */
+export const getGeofenceGenerationSettingsApplicator: AppSelector<
+  (coordinates: Coordinate2D[]) => Coordinate2D[]
+> = createSelector(
+  getGeofenceSettings,
+  makeGeofenceGenerationSettingsApplicator
+);
+
+/**
+ * Selector that returns a boundary polygon based on the currently loaded show.
+ */
+export const getBoundaryPolygonBasedOnShowTrajectories: AppSelector<
+  Result<Coordinate2D[], string>
+> = createSelector(
+  getConvexHullOfShow,
+  getOutdoorShowToWorldCoordinateSystemTransformationObject,
+  (coordinates, transformation) => {
+    if (coordinates.length === 0) {
+      return err('Did you load a show file?');
+    }
+
+    if (!transformation) {
+      return err('Outdoor coordinate system not set up yet');
+    }
+
+    return ok(
+      coordinates.map(unary(transformation.toLonLat.bind(transformation)))
+    );
+  }
+);
+
+/**
+ * Selector that returns a boundary polygon based on the current mission items.
+ */
+export const getBoundaryPolygonBasedOnMissionItems: AppSelector<
+  Result<Coordinate2D[], string>
+> = createSelector(
+  getConvexHullOfMissionInMapViewCoordinates,
+  (coordinates) => {
+    if (coordinates.length === 0) {
+      return err('Are there valid mission items with coordinates?');
+    }
+
+    return ok(
+      coordinates.map(
+        unary<Coordinate2D, Coordinate2D>(lonLatFromMapViewCoordinate)
+      )
+    );
+  }
+);
+
+/**
+ * Selector that returns a boundary polygon for the current mission type.
+ */
+export const getBoundaryPolygonForCurrentMissionType: AppSelector<
+  Result<Coordinate2D[], string>
+> = createSelector(
+  getMissionType,
+  getBoundaryPolygonBasedOnShowTrajectories,
+  getBoundaryPolygonBasedOnMissionItems,
+  (
+    missionType,
+    geofencePolygonBasedOnShowTrajectories,
+    geofencePolygonBasedOnMissionItems
+  ) =>
+    ({
+      [MissionType.SHOW]: geofencePolygonBasedOnShowTrajectories,
+      [MissionType.WAYPOINT]: geofencePolygonBasedOnMissionItems,
+      [MissionType.UNKNOWN]: err('Unknown mission type'),
+    })[missionType]
+);
+
+/**
+ * Selector that returns a geofence polygon for the current mission type.
+ */
+export const getAutomaticGeofencePolygonForCurrentMissionType: AppSelector<
+  Result<Coordinate2D[], string>
+> = createSelector(
+  getBoundaryPolygonForCurrentMissionType,
+  getGeofenceGenerationSettingsApplicator,
+  (
+    boundaryPolygonForCurrentMissionType,
+    geofenceGenerationSettingsApplicator
+  ) =>
+    boundaryPolygonForCurrentMissionType
+      .map((cs) =>
+        cs.map(unary<Coordinate2D, Coordinate2D>(mapViewCoordinateFromLonLat))
+      )
+      .map(geofenceGenerationSettingsApplicator)
+      .map((cs) =>
+        cs.map(unary<Coordinate2D, Coordinate2D>(lonLatFromMapViewCoordinate))
+      )
+);
 
 /**
  * Selector that calculates the maximal horizontal distance that any UAV will
@@ -90,17 +210,57 @@ export const getMaximumHeightForCurrentMissionType: AppSelector<
 };
 
 /**
+ * Returns the maximum distance of any geofence vertex from any home position.
+ */
+export const getMaximumDistanceBetweenHomePositionsAndGeofence: AppSelector<
+  number | undefined
+> = createSelector(
+  getGPSBasedHomePositionsInMission,
+  getGeofencePolygonInWorldCoordinates,
+  (homePositions, geofencePolygon) => {
+    if (!geofencePolygon) {
+      return;
+    }
+
+    const homePoints = rejectNullish(homePositions).map(({ lon, lat }) =>
+      TurfHelpers.point([lon, lat])
+    );
+    const geofencePoints = geofencePolygon.map(([lon, lat]) =>
+      TurfHelpers.point([lon, lat])
+    );
+    const distances = homePoints.flatMap((hp) =>
+      geofencePoints.map((gp) => turfDistanceInMeters(hp, gp))
+    );
+
+    return max(distances);
+  }
+);
+
+/**
  * Returns the automatically calculated distance limit by adding the declared
  * horizontal safety margin to the distance of the mission's farthest point.
  */
-export const getProposedDistanceLimit: AppSelector<number> = (state) => {
+export const getProposedDistanceLimit: AppSelector<number | undefined> = (
+  state
+) => {
+  const margin = getGeofenceSettings(state).horizontalMargin;
   const maxDistance = getMaximumHorizontalDistanceForCurrentMissionType(state);
   const maxGeofence = getMaximumDistanceBetweenHomePositionsAndGeofence(state);
-  const margin = getGeofenceSettings(state).horizontalMargin;
-  return proposeDistanceLimit(
-    Math.max(...rejectNullish([maxDistance, maxGeofence])),
-    margin
-  );
+  const missionType = getMissionType(state);
+
+  switch (missionType) {
+    case MissionType.SHOW:
+      return proposeDistanceLimit(maxDistance, margin);
+    case MissionType.WAYPOINT:
+      return maxGeofence === undefined
+        ? proposeDistanceLimit(maxDistance, margin)
+        : proposeDistanceLimit(maxGeofence, 0);
+
+    default:
+      console.warn(
+        `Could not get distance limit proposal for mission type: '${missionType}'`
+      );
+  }
 };
 
 /**
@@ -110,14 +270,16 @@ export const getProposedDistanceLimit: AppSelector<number> = (state) => {
 export const getProposedHeightLimit: AppSelector<number> = (state) => {
   const maxHeight = getMaximumHeightForCurrentMissionType(state);
   const margin = getGeofenceSettings(state).verticalMargin;
-  return proposeHeightLimit(Math.max(...rejectNullish([maxHeight])), margin);
+  return proposeHeightLimit(maxHeight, margin);
 };
 
 /**
  * Returns the user-defined distance limit, which should be above the
  * automatically proposed distance limit.
  */
-export const getUserDefinedDistanceLimit: AppSelector<number> = (state) => {
+export const getUserDefinedDistanceLimit: AppSelector<number | undefined> = (
+  state
+) => {
   // TODO(ntamas): this should be configurable by the user and not simply set
   // based on the proposal
   return getProposedDistanceLimit(state);

@@ -624,33 +624,6 @@ export const isWaypointMissionConvexHullInsideGeofence: AppSelector<
 );
 
 /**
- * Returns the maximum distance of any geofence vertex from any home position.
- */
-export const getMaximumDistanceBetweenHomePositionsAndGeofence: AppSelector<
-  number | undefined
-> = createSelector(
-  getGPSBasedHomePositionsInMission,
-  getGeofencePolygonInWorldCoordinates,
-  (homePositions, geofencePolygon) => {
-    if (!geofencePolygon) {
-      return;
-    }
-
-    const homePoints = rejectNullish(homePositions).map(({ lon, lat }) =>
-      TurfHelpers.point([lon, lat])
-    );
-    const geofencePoints = geofencePolygon.map(([lon, lat]) =>
-      TurfHelpers.point([lon, lat])
-    );
-    const distances = homePoints.flatMap((hp) =>
-      geofencePoints.map((gp) => turfDistanceInMeters(hp, gp))
-    );
-
-    return max(distances);
-  }
-);
-
-/**
  * Returns the maximum distance of any waypoint or flight area vertex in the
  * mission from the first home position in the UAV mapping.
  */
