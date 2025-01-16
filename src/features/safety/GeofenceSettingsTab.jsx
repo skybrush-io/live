@@ -109,7 +109,7 @@ const GeofenceSettingsFormPresentation = ({ onSubmit, t }) => {
     >
       {({
         handleSubmit,
-        values: { maxDistance, maxGeofence, maxHeight, simplify },
+        values: { generate, maxDistance, maxGeofence, maxHeight, simplify },
       }) => (
         <form id='geofenceSettings' onSubmit={handleSubmit}>
           <FormHeader>{t('safetyDialog.geofenceTab.fenceAction')}</FormHeader>
@@ -190,21 +190,35 @@ const GeofenceSettingsFormPresentation = ({ onSubmit, t }) => {
           </Box>
 
           <FormHeader>
-            {t('safetyDialog.geofenceTab.vertexCountReduction')}
+            {t('safetyDialog.geofenceTab.geofencePolygon')}
           </FormHeader>
           <Box display='flex' flexDirection='column'>
             <Checkboxes
-              name='simplify'
-              data={{ label: t('safetyDialog.geofenceTab.simplifyPolygon') }}
+              name='generate'
+              data={{
+                label: t('safetyDialog.geofenceTab.generateAutomatically'),
+              }}
             />
-            <TextField
-              fullWidth={false}
-              name='maxVertexCount'
-              label={t('safetyDialog.geofenceTab.maxVertexCount')}
-              disabled={!simplify}
-              type='number'
-              variant='filled'
-            />
+            <Box display='flex' flexDirection='row'>
+              <Checkboxes
+                name='simplify'
+                disabled={!generate}
+                data={{
+                  label: t('safetyDialog.geofenceTab.simplifyGeometry'),
+                }}
+                formControlProps={{ style: { flex: 1 } }}
+              />
+              <Box p={1} />
+              <TextField
+                size='small'
+                name='maxVertexCount'
+                label={t('safetyDialog.geofenceTab.maxVertexCount')}
+                disabled={!generate || !simplify}
+                type='number'
+                variant='filled'
+                style={{ flex: 1 }}
+              />
+            </Box>
           </Box>
         </form>
       )}
@@ -227,16 +241,19 @@ const GeofenceSettingsForm = connect(
   // mapDispatchToProps
   {
     onSubmit: (data) => (dispatch) => {
+      dispatch(setGeofenceAction(data.action));
       dispatch(
         updateGeofenceSettings({
           horizontalMargin: Number(data.horizontalMargin),
           verticalMargin: Number(data.verticalMargin),
+          generate: data.generate,
           simplify: data.simplify,
           maxVertexCount: Number(data.maxVertexCount),
         })
       );
-      dispatch(setGeofenceAction(data.action));
-      dispatch(updateGeofencePolygon());
+      if (data.generate) {
+        dispatch(updateGeofencePolygon());
+      }
     },
   }
 )(withTranslation()(GeofenceSettingsFormPresentation));
@@ -253,7 +270,6 @@ const GeofenceSettingsTabPresentation = ({
 }) => (
   <>
     <DialogContent>
-      {/* <FormHeader>Automatic geofence</FormHeader> */}
       <GeofenceSettingsForm />
     </DialogContent>
     <DialogActions>
