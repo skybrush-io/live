@@ -222,24 +222,48 @@ export function calculateMinimumDistanceBetweenPairs<T>(
   const getterFunction: (item: T) => Coordinate2D =
     typeof getter === 'function' ? getter : property(getter);
 
-  const sourcePositions = sources.map(getterFunction);
-  const targetPositions = (targets ?? sources).map(getterFunction);
+  const isSamePointSet = sources === targets || targets === undefined;
 
-  if (sourcePositions.length === 0 || targetPositions.length === 0) {
-    return Number.POSITIVE_INFINITY;
-  }
+  const sourcePositions = sources.map(getterFunction);
+  const targetPositions = isSamePointSet
+    ? sourcePositions
+    : (targets ?? sources).map(getterFunction);
 
   // This is definitely not the most efficient algorithm as it is O(n*m) but
   // since we are not going to do this multiple times it's probably okay.
   // Improve this when the time comes.
 
-  return Math.min(
-    ...sourcePositions.map((source) =>
-      Math.min(
-        ...targetPositions.map((target) => distanceFunction(source, target))
+  if (isSamePointSet) {
+    console.log('Skip diagonal');
+
+    if (sourcePositions.length < 2 || targetPositions.length < 2) {
+      return Number.POSITIVE_INFINITY;
+    }
+
+    return Math.min(
+      ...sourcePositions.map((source, sourceIndex) =>
+        Math.min(
+          ...targetPositions.map((target, targetIndex) =>
+            sourceIndex <= targetIndex
+              ? Number.POSITIVE_INFINITY
+              : distanceFunction(source, target)
+          )
+        )
       )
-    )
-  );
+    );
+  } else {
+    if (sourcePositions.length === 0 || targetPositions.length === 0) {
+      return Number.POSITIVE_INFINITY;
+    }
+
+    return Math.min(
+      ...sourcePositions.map((source) =>
+        Math.min(
+          ...targetPositions.map((target) => distanceFunction(source, target))
+        )
+      )
+    );
+  }
 }
 
 /**

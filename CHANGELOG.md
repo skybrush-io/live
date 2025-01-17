@@ -28,9 +28,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   be shown if any pair of takeoff positions or any pair of landing positions are
   too close to each other.
 
+- The minimum distance between takeoff positions is now shown in the button
+  that is used to load a show so you can quickly see what the spacing of the
+  takeoff grid is (assuming uniform spacing).
+
 - Make the "Flash lights" button latchable by holding Shift while activating it.
 
-- Implement range selection in list views. Click on one item and then hold
+- Implemented range selection in list views. Click on one item and then hold
   Shift while clicking on another one to select everything between them.
 
 ### Changed

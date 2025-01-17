@@ -636,19 +636,6 @@ export const getShowDurationAsString = createSelector(
 );
 
 /**
- * Returns a suitable short one-line description for the current show file.
- */
-export const getShowDescription = createSelector(
-  getNumberOfDronesInShow,
-  getShowDurationAsString,
-  getMaximumHeightInTrajectories,
-  isShowUsingYawControl,
-  (numberDrones, duration, maxHeight, hasYawControl) =>
-    `${numberDrones} drones, ${duration}, max AHL ${maxHeight.toFixed(1)}m` +
-    (hasYawControl ? ', yaw controlled' : '')
-);
-
-/**
  * Returns the progress of the current show loading process, as a percentage
  * between 0 and 100.
  */
@@ -788,6 +775,9 @@ export function proposeMappingFileName(state) {
  * Returns the minimum distance between any two points at the beginning of the
  * trajectories. This can be used to ensure that takeoff positions are not too
  * close to each other.
+ *
+ * The result of this selector is infinite if there are less than two
+ * trajectories.
  */
 export const getMinimumDistanceBetweenTakeoffPositions = createSelector(
   getFirstPointsOfTrajectories,
@@ -798,6 +788,9 @@ export const getMinimumDistanceBetweenTakeoffPositions = createSelector(
  * Returns the minimum distance between any two points at the end of the
  * trajectories. This can be used to ensure that landing positions are not too
  * close to each other.
+ *
+ * The result of this selector is infinite if there are less than two
+ * trajectories.
  */
 export const getMinimumDistanceBetweenLandingPositions = createSelector(
   getLastPointsOfTrajectories,
@@ -839,13 +832,28 @@ export const getShowValidationResult = (state) => {
     return 'notLoaded';
   }
 
-  if (areTakeoffPositionsFarEnough(state)) {
+  if (!areTakeoffPositionsFarEnough(state)) {
     return 'takeoffPositionsTooClose';
   }
 
-  if (areLandingPositionsFarEnough(state)) {
+  if (!areLandingPositionsFarEnough(state)) {
     return 'landingPositionsTooClose';
   }
 
   return 'ok';
 };
+
+/**
+ * Returns a suitable short one-line description for the current show file.
+ */
+export const getShowDescription = createSelector(
+  getNumberOfDronesInShow,
+  getShowDurationAsString,
+  getMaximumHeightInTrajectories,
+  getMinimumDistanceBetweenTakeoffPositions,
+  (numberDrones, duration, maxHeight, spacing) =>
+    `${numberDrones} drones, ${duration}, max AHL ${maxHeight.toFixed(1)}m` +
+    (spacing > 0 && Number.isFinite(spacing)
+      ? `, spacing ${spacing.toFixed(1)}m`
+      : '')
+);
