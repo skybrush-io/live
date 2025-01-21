@@ -12,4 +12,6 @@ const APIKeys = {
   NEXTZEN: process.env['SKYBRUSH_NEXTZEN_API_KEY'],
 };
 
+export type APIKeysRecord = Record<keyof typeof APIKeys, string>;
+
 export default APIKeys;

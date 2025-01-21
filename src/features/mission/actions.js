@@ -8,7 +8,6 @@ import unary from 'lodash-es/unary';
 import { getDistance as haversineDistance } from 'ol/sphere';
 
 import { findAssignmentInDistanceMatrix } from '~/algorithms/matching';
-import { Colors } from '~/components/colors';
 import { showErrorMessage } from '~/features/error-handling/actions';
 import { setSelection } from '~/features/map/selection';
 import {
@@ -54,7 +53,7 @@ import {
 import { openUploadDialogForJob } from '~/features/upload/slice';
 import { ServerPlanError } from '~/flockwave/operations';
 import messageHub from '~/message-hub';
-import { FeatureType, LabelStyle } from '~/model/features';
+import { FeatureType } from '~/model/features';
 import {
   missionItemIdToGlobalId,
   missionSlotIdToGlobalId,

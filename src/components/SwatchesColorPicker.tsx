@@ -4,9 +4,8 @@
  */
 
 import merge from 'lodash-es/merge';
-import PropTypes from 'prop-types';
 import React from 'react';
-import { SwatchesPicker } from 'react-color';
+import { SwatchesPicker, type SwatchesPickerProps } from 'react-color';
 
 import {
   red,
@@ -46,12 +45,12 @@ const hues = [
   deepOrange,
   brown,
   blueGrey,
-];
-const shades = ['700', '500', '300'];
+] as const;
+const shades = ['700', '500', '300'] as const;
 
 const pickerProps = {
   colors: hues
-    .map((hue) => shades.map((shade) => hue[shade]))
+    .map<string[]>((hue) => shades.map((shade) => hue[shade]))
     .concat([['#000000', '#808080', '#FFFFFF']]),
   width: 450,
   height: 170,
@@ -64,7 +63,9 @@ const pickerStyles = {
   },
 };
 
-const SwatchesColorPicker = ({ styles, ...rest }) => (
+type SwatchesColorPickerProps = Omit<SwatchesPickerProps, 'className'>;
+
+const SwatchesColorPicker = ({ styles, ...rest }: SwatchesColorPickerProps) => (
   <SwatchesPicker
     className='borderless'
     styles={merge(pickerStyles, styles)}
@@ -72,9 +73,5 @@ const SwatchesColorPicker = ({ styles, ...rest }) => (
     {...rest}
   />
 );
-
-SwatchesColorPicker.propTypes = {
-  styles: PropTypes.object,
-};
 
 export default SwatchesColorPicker;

@@ -2,6 +2,7 @@ import { createSelector } from '@reduxjs/toolkit';
 
 import { globalIdToDockId } from '~/model/identifiers';
 import { selectionForSubset } from '~/selectors/selection';
+import type { RootState } from '~/store/reducers';
 import { selectOrdered } from '~/utils/collections';
 
 /**
@@ -10,7 +11,7 @@ import { selectOrdered } from '~/utils/collections';
  * on the UI.
  */
 export const getDocksInOrder = createSelector(
-  (state) => state.docks,
+  (state: RootState) => state.docks,
   selectOrdered
 );
 
