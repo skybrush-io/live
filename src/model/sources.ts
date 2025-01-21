@@ -60,7 +60,7 @@ export namespace Source {
 /**
  * Constant containing all the sources in the order preferred on the UI.
  */
-export const Sources = [Source.OSM, Source.STAMEN.TERRAIN];
+export const Sources: Source.Source[] = [Source.OSM, Source.STAMEN.TERRAIN];
 
 // We add Mapbox, Maptiler, Bing Maps and Google Maps map sources only if we
 // have at least a default API key for them. This might change in the future.

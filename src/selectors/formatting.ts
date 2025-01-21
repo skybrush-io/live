@@ -36,8 +36,8 @@ const signedGeographicFormatter = makeDecimalCoordinateFormatter({
   unit: '°',
 });
 
-type CoordinateFormatter = (value: number) => string;
-type CoordinatePairFormatter = ([lon, lat]: [number, number]) => string;
+export type CoordinateFormatter = (value: number) => string;
+export type CoordinatePairFormatter = ([lon, lat]: [number, number]) => string;
 
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-return */

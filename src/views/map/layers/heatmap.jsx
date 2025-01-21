@@ -617,7 +617,7 @@ export const HeatmapLayer = connect(
   // mapDispatchToProps
   (dispatch, ownProps) => ({
     setLayerParameters(parameters) {
-      dispatch(setLayerParametersById(ownProps.layerId, parameters));
+      dispatch(setLayerParametersById(ownProps.layer.id, parameters));
     },
   })
 )(HeatmapLayerPresentation);

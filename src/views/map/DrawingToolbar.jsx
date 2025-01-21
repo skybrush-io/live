@@ -19,13 +19,12 @@ import ZoomIn from '@material-ui/icons/ZoomIn';
 import partial from 'lodash-es/partial';
 import { connect } from 'react-redux';
 
+import { Tool } from '~/components/map/tools';
 import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
 import { getSelectedTool, setSelectedTool } from '~/features/map/tools';
 import { tt } from '~/i18n';
 import ContentCut from '~/icons/ContentCut';
 import EditFeature from '~/icons/EditFeature';
-
-import { Tool } from './tools';
 
 const drawingToolRegistry = {
   'add-marker': {

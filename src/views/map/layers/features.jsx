@@ -1,8 +1,8 @@
 import createColor from 'color';
 import unary from 'lodash-es/unary';
+import FillPattern from 'ol-ext/style/FillPattern';
 import { MultiPoint, MultiPolygon, Polygon } from 'ol/geom';
 import { Circle, Style, Text } from 'ol/style';
-import FillPattern from 'ol-ext/style/FillPattern';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
@@ -15,6 +15,7 @@ import {
   source,
 } from '@collmot/ol-react';
 
+import { Tool } from '~/components/map/tools';
 import {
   getFeaturesInOrder,
   getSelectedFeatureIds,
@@ -41,7 +42,6 @@ import {
 } from '~/utils/styles';
 
 import { escapeKeyDown } from '../conditions';
-import { Tool } from '../tools';
 
 // === Helper functions ===
 
