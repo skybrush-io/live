@@ -3,8 +3,9 @@ import { createSelector } from '@reduxjs/toolkit';
 import { globalIdToBeaconId } from '~/model/identifiers';
 import { selectionForSubset } from '~/selectors/selection';
 import type { RootState } from '~/store/reducers';
-import type { Beacon } from './types';
 import { selectOrdered } from '~/utils/collections';
+
+import type { Beacon } from './types';
 
 /**
  * Selector that calculates and caches the list of all the beacons that
