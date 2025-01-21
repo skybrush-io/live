@@ -8,7 +8,6 @@ import unary from 'lodash-es/unary';
 import { getDistance as haversineDistance } from 'ol/sphere';
 
 import { findAssignmentInDistanceMatrix } from '~/algorithms/matching';
-import { Colors } from '~/components/colors';
 import { showErrorMessage } from '~/features/error-handling/actions';
 import { setSelection } from '~/features/map/selection';
 import {

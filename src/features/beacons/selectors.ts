@@ -2,6 +2,8 @@ import { createSelector } from '@reduxjs/toolkit';
 
 import { globalIdToBeaconId } from '~/model/identifiers';
 import { selectionForSubset } from '~/selectors/selection';
+import type { RootState } from '~/store/reducers';
+import type { Beacon } from './types';
 import { selectOrdered } from '~/utils/collections';
 
 /**
@@ -10,7 +12,7 @@ import { selectOrdered } from '~/utils/collections';
  * on the UI.
  */
 export const getBeaconsInOrder = createSelector(
-  (state) => state.beacons,
+  (state: RootState) => state.beacons,
   selectOrdered
 );
 
@@ -24,7 +26,7 @@ export const getSelectedBeaconIds = selectionForSubset(globalIdToBeaconId);
  * Funciton that returns the name of the given beacon that should be shown to
  * the user on the UI.
  */
-export const getBeaconDisplayName = (beacon) =>
+export const getBeaconDisplayName = (beacon: Beacon) =>
   (beacon ? beacon.name || beacon.id : null) || 'Unnamed beacon';
 
 /**
@@ -32,7 +34,7 @@ export const getBeaconDisplayName = (beacon) =>
  * information fetched from the server yet.
  */
 export const getBeaconIdsWithoutBasicInformation = createSelector(
-  (state) => state.beacons,
+  (state: RootState) => state.beacons,
   (beacons) => {
     const result = [];
 
