@@ -1,5 +1,6 @@
 import { setSelection } from '~/features/map/selection';
 import { dockIdToGlobalId } from '~/model/identifiers';
+import type { Identifier } from '~/utils/collections';
 
 /**
  * Action factory that creates an action that sets the set of selected
@@ -10,5 +11,5 @@ import { dockIdToGlobalId } from '~/model/identifiers';
  *        and so will be any feature that is not a docking station.
  * @return An appropriately constructed action.
  */
-export const setSelectedDockIds = (ids: string[]) =>
+export const setSelectedDockIds = (ids: Identifier[]) =>
   setSelection(ids.map(dockIdToGlobalId));
