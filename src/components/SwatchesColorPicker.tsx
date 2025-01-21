@@ -65,7 +65,7 @@ const pickerStyles = {
 
 type SwatchesColorPickerProps = Omit<SwatchesPickerProps, 'className'>;
 
-export default ({ styles, ...rest }: SwatchesColorPickerProps) => (
+const SwatchesColorPicker = ({ styles, ...rest }: SwatchesColorPickerProps) => (
   <SwatchesPicker
     className='borderless'
     styles={merge(pickerStyles, styles)}
@@ -73,3 +73,5 @@ export default ({ styles, ...rest }: SwatchesColorPickerProps) => (
     {...rest}
   />
 );
+
+export default SwatchesColorPicker;
