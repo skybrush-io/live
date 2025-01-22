@@ -9,36 +9,47 @@ import {
   getMaximumHorizontalDistanceFromTakeoffPositionInTrajectories,
 } from '~/features/show/selectors';
 import { MissionType } from '~/model/missions';
+import { type AppSelector } from '~/store/reducers';
 import { rejectNullish } from '~/utils/arrays';
 
+import { type SafetyDialogTab } from './constants';
+import { type SafetySliceState } from './slice';
 import { proposeDistanceLimit, proposeHeightLimit } from './utils';
 
 /**
  * Selector that returns whether the safety dialog is open.
  */
-export const isSafetyDialogOpen = (state) => state.safety.dialog.open;
+export const isSafetyDialogOpen: AppSelector<boolean> = (state) =>
+  state.safety.dialog.open;
 
 /**
  * Selector that determines the selected tab of the safety dialog.
  */
-export const getSelectedTabInSafetyDialog = (state) =>
-  state.safety.dialog.selectedTab;
+export const getSelectedTabInSafetyDialog: AppSelector<SafetyDialogTab> = (
+  state
+) => state.safety.dialog.selectedTab;
 
 /**
  * Selector that returns the currently set geofence preferences of the user.
  */
-export const getGeofenceSettings = (state) => state.safety.geofence;
+export const getGeofenceSettings: AppSelector<SafetySliceState['geofence']> = (
+  state
+) => state.safety.geofence;
 
 /**
  * Selector that returns the currently set safety preferences of the user.
  */
-export const getSafetySettings = (state) => state.safety.settings;
+export const getSafetySettings: AppSelector<SafetySliceState['settings']> = (
+  state
+) => state.safety.settings;
 
 /**
  * Selector that calculates the maximal horizontal distance that any UAV will
  * reach during the mission. (Measured from its starting position.)
  */
-export const getMaximumHorizontalDistanceForCurrentMissionType = (state) => {
+export const getMaximumHorizontalDistanceForCurrentMissionType: AppSelector<
+  number | undefined
+> = (state) => {
   const missionType = getMissionType(state);
   switch (missionType) {
     case MissionType.SHOW:
@@ -61,7 +72,9 @@ export const getMaximumHorizontalDistanceForCurrentMissionType = (state) => {
  * Selector that calculates the maximal height that any UAV will reach during
  * the mission.
  */
-export const getMaximumHeightForCurrentMissionType = (state) => {
+export const getMaximumHeightForCurrentMissionType: AppSelector<
+  number | undefined
+> = (state) => {
   const missionType = getMissionType(state);
   switch (missionType) {
     case MissionType.SHOW:
@@ -80,7 +93,7 @@ export const getMaximumHeightForCurrentMissionType = (state) => {
  * Returns the automatically calculated distance limit by adding the declared
  * horizontal safety margin to the distance of the mission's farthest point.
  */
-export const getProposedDistanceLimit = (state) => {
+export const getProposedDistanceLimit: AppSelector<number> = (state) => {
   const maxDistance = getMaximumHorizontalDistanceForCurrentMissionType(state);
   const maxGeofence = getMaximumDistanceBetweenHomePositionsAndGeofence(state);
   const margin = getGeofenceSettings(state).horizontalMargin;
@@ -94,7 +107,7 @@ export const getProposedDistanceLimit = (state) => {
  * Returns the automatically calculated height limit by adding the declared
  * vertical safety margin to the mission's highest point.
  */
-export const getProposedHeightLimit = (state) => {
+export const getProposedHeightLimit: AppSelector<number> = (state) => {
   const maxHeight = getMaximumHeightForCurrentMissionType(state);
   const margin = getGeofenceSettings(state).verticalMargin;
   return proposeHeightLimit(Math.max(...rejectNullish([maxHeight])), margin);
@@ -104,7 +117,7 @@ export const getProposedHeightLimit = (state) => {
  * Returns the user-defined distance limit, which should be above the
  * automatically proposed distance limit.
  */
-export const getUserDefinedDistanceLimit = (state) => {
+export const getUserDefinedDistanceLimit: AppSelector<number> = (state) => {
   // TODO(ntamas): this should be configurable by the user and not simply set
   // based on the proposal
   return getProposedDistanceLimit(state);
@@ -115,7 +128,7 @@ export const getUserDefinedDistanceLimit = (state) => {
  * automatically
  * proposed height limit.
  */
-export const getUserDefinedHeightLimit = (state) => {
+export const getUserDefinedHeightLimit: AppSelector<number> = (state) => {
   // TODO(ntamas): this should be configurable by the user and not simply set
   // based on the proposal
   return getProposedHeightLimit(state);
