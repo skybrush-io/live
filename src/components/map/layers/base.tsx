@@ -9,7 +9,7 @@ import React, { type ChangeEvent } from 'react';
 import { layer as olLayer, source } from '@collmot/ol-react';
 
 import type { APIKeysRecord } from '~/APIKeys';
-import { streetsV6Style } from '~/components/map/style';
+import { streetsV6Style } from '~/components/map/mapbox-style';
 import type { Layer } from '~/model/layers';
 import {
   Source,
