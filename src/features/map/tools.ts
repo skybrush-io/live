@@ -4,7 +4,7 @@
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
-import { Tool } from '~/views/map/tools';
+import { Tool } from '~/components/map/tools';
 import { type AppSelector } from '~/store/reducers';
 
 type MapToolsSliceState = {

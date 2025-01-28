@@ -1,12 +1,12 @@
 import { createSelector } from '@reduxjs/toolkit';
 
 import { Colors } from '~/components/colors';
+import { Tool } from '~/components/map/tools';
 import { getSelectedTool } from '~/features/map/tools';
 import { getGeofencePolygonId } from '~/features/mission/selectors';
 import { getNameOfFeatureType } from '~/model/features';
 import type { AppSelector } from '~/store/reducers';
 import type { Identifier } from '~/utils/collections';
-import { Tool } from '~/views/map/tools';
 
 import { getFeatureById } from './selectors';
 

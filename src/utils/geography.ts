@@ -614,7 +614,7 @@ export const WGS84 = makeEllipsoidModel(6378137, 298.257223563);
  * to [180.0 85.06] as seen here. @see https://epsg.io/3857
  */
 
-type CoordinateTransformationFunction = {
+export type CoordinateTransformationFunction = {
   // Special case for two dimensions
   (
     coordinates: Coordinate2D,

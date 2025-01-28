@@ -4,9 +4,9 @@
  */
 
 import Map from 'ol/Map';
-import PropTypes from 'prop-types';
 import React from 'react';
 
+// @ts-ignore
 import { withMap } from '@collmot/ol-react';
 
 import { mapReferenceRequestSignal } from '~/signals';
@@ -15,17 +15,11 @@ import { mapReferenceRequestSignal } from '~/signals';
  * React Component for sending reference of the map object to
  * other components that request it through mini-signals.
  */
-class MapReferenceRequestHandler extends React.Component {
-  static propTypes = {
-    map: PropTypes.instanceOf(Map),
-  };
-
+class MapReferenceRequestHandler extends React.Component<{ map: Map }> {
   /**
    * Constructor that adds signal handler.
-   *
-   * @param {Object} props properties of the react component
    */
-  constructor(props) {
+  constructor(props: { map: Map }) {
     super(props);
     mapReferenceRequestSignal.add(this._onMapReferenceRequested.bind(this));
   }
@@ -40,9 +34,9 @@ class MapReferenceRequestHandler extends React.Component {
    *
    * @listens {mapReferenceRequestSignal} listens for map references being requested.
    *
-   * @param {function} callback the callback sent by the component requesting the reference
+   * @param callback the callback sent by the component requesting the reference
    */
-  _onMapReferenceRequested(callback) {
+  _onMapReferenceRequested(callback: (map: Map) => void) {
     callback(this.props.map);
   }
 }

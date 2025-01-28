@@ -1,19 +1,15 @@
 import Fill from 'ol/style/Fill';
 import Stroke from 'ol/style/Stroke';
 import Text from 'ol/style/Text';
-import PropTypes from 'prop-types';
 import React from 'react';
-import { useSelector } from 'react-redux';
 
+// @ts-ignore
 import { layer as OLLayer } from '@collmot/ol-react';
 
 import useDarkMode from '~/hooks/useDarkMode';
-import {
-  getPreferredCoordinateFormat,
-  getPreferredLatitudeCoordinateFormatter,
-  getPreferredLongitudeCoordinateFormatter,
-} from '~/selectors/formatting';
+import type { Layer } from '~/model/layers';
 import { CoordinateFormat } from '~/model/settings';
+import type { CoordinateFormatter } from '~/selectors/formatting';
 
 // TODO(ntamas): implement support for setting the stroke width and color
 
@@ -112,10 +108,10 @@ const GRATICULE_INTERVALS_ALIGNED_TO_DEGREES = [
  * seconds, otherwise we prefer to align them with degrees that look nice in
  * decimal format.
  */
-function getPreferredGraticuleIntervals(state) {
-  const format = getPreferredCoordinateFormat(state);
-
-  switch (format) {
+function getPreferredGraticuleIntervalsForFormat(
+  coordinateformat: CoordinateFormat
+) {
+  switch (coordinateformat) {
     case CoordinateFormat.DEGREES:
     case CoordinateFormat.SIGNED_DEGREES:
       return GRATICULE_INTERVALS_ALIGNED_TO_DEGREES;
@@ -129,11 +125,23 @@ function getPreferredGraticuleIntervals(state) {
   }
 }
 
-export const GraticuleLayer = ({ layer, zIndex }) => {
+type GraticuleLayerProps = {
+  layer: Layer;
+  coordinateformat: CoordinateFormat;
+  latFormatter: CoordinateFormatter;
+  lonFormatter: CoordinateFormatter;
+  zIndex?: number;
+};
+
+export const GraticuleLayer = ({
+  coordinateformat,
+  latFormatter,
+  layer,
+  lonFormatter,
+  zIndex,
+}: GraticuleLayerProps) => {
   const isDark = useDarkMode();
-  const latFormatter = useSelector(getPreferredLatitudeCoordinateFormatter);
-  const lonFormatter = useSelector(getPreferredLongitudeCoordinateFormatter);
-  const intervals = useSelector(getPreferredGraticuleIntervals);
+  const intervals = getPreferredGraticuleIntervalsForFormat(coordinateformat);
   return (
     <OLLayer.Graticule
       showLabels
@@ -145,9 +153,4 @@ export const GraticuleLayer = ({ layer, zIndex }) => {
       zIndex={zIndex}
     />
   );
-};
-
-GraticuleLayer.propTypes = {
-  layer: PropTypes.object,
-  zIndex: PropTypes.number,
 };

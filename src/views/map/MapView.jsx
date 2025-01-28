@@ -7,7 +7,7 @@ import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import { connect } from 'react-redux';
 
-import { Map, View, control, interaction, withMap } from '@collmot/ol-react';
+import { control, interaction, Map, View, withMap } from '@collmot/ol-react';
 
 import * as Condition from './conditions';
 import {
@@ -16,16 +16,26 @@ import {
   TrackNearestFeature,
   TransformFeatures,
 } from './interactions';
-import { Layers, stateObjectToLayer } from './layers';
+import { Layers } from './layers';
 
 import DrawingToolbar from './DrawingToolbar';
 import MapContextMenu from './MapContextMenu';
 import MapReferenceRequestHandler from './MapReferenceRequestHandler';
 import MapToolbar from './MapToolbar';
-import { isDrawingTool, Tool, toolToDrawInteractionProps } from './tools';
 
+import { MapLayers as MapLayersPresentation } from '~/components/map/layers';
+import {
+  isDrawingTool,
+  Tool,
+  toolToDrawInteractionProps,
+} from '~/components/map/tools';
 import Widget from '~/components/Widget';
 import { handleError } from '~/error-handling';
+import {
+  addFeature,
+  showDetailsForFeatureInTooltipOrGivenFeature,
+} from '~/features/map-features/actions';
+import { getSelectedFeatureIds } from '~/features/map-features/selectors';
 import {
   addToSelection,
   removeFromSelection,
@@ -34,11 +44,6 @@ import {
 } from '~/features/map/selection';
 import { getSelectedTool } from '~/features/map/tools';
 import { updateMapViewSettings } from '~/features/map/view';
-import {
-  addFeature,
-  showDetailsForFeatureInTooltipOrGivenFeature,
-} from '~/features/map-features/actions';
-import { getSelectedFeatureIds } from '~/features/map-features/selectors';
 import { addNewMissionItem } from '~/features/mission/actions';
 import { getGeofencePolygonId } from '~/features/mission/selectors';
 import NearestItemTooltip from '~/features/session/NearestItemTooltip';
@@ -82,41 +87,6 @@ import 'ol/ol.css';
 /* ********************************************************************** */
 
 /**
- * React component that renders the layers of the map in the main window.
- *
- * @returns {JSX.Node[]}  the layers of the map
- */
-const MapViewLayersPresentation = ({
-  layers,
-  onFeaturesModified,
-  selectedTool,
-}) => {
-  let zIndex = 0;
-  const renderedLayers = [];
-
-  for (const layer of layers) {
-    if (layer.type in Layers) {
-      renderedLayers.push(
-        stateObjectToLayer(layer, {
-          onFeaturesModified,
-          selectedTool,
-          zIndex,
-        })
-      );
-      zIndex++;
-    }
-  }
-
-  return renderedLayers;
-};
-
-MapViewLayersPresentation.propTypes = {
-  layers: PropTypes.arrayOf(PropTypes.object),
-  onFeaturesModified: PropTypes.func,
-  selectedTool: PropTypes.string.isRequired,
-};
-
-/**
  * Connects the map view layers to the Redux store.
  */
 const MapViewLayers = connect(
@@ -124,8 +94,9 @@ const MapViewLayers = connect(
   (state) => ({
     layers: getVisibleLayersInOrder(state),
     selectedTool: getSelectedTool(state),
+    layerComponents: Layers,
   })
-)(MapViewLayersPresentation);
+)(MapLayersPresentation);
 
 /* ********************************************************************** */
 
@@ -463,6 +434,7 @@ class MapViewPresentation extends React.Component {
     zoom: PropTypes.number,
 
     glContainer: PropTypes.object,
+    excludedLayerTypes: PropTypes.arrayOf(PropTypes.string),
   };
 
   static defaultProps = {
@@ -527,8 +499,14 @@ class MapViewPresentation extends React.Component {
   }
 
   render() {
-    const { center, geofencePolygonId, rotation, selectedTool, zoom } =
-      this.props;
+    const {
+      center,
+      excludedLayerTypes,
+      geofencePolygonId,
+      rotation,
+      selectedTool,
+      zoom,
+    } = this.props;
     const view = (
       <View
         center={mapViewCoordinateFromLonLat(center)}
@@ -544,7 +522,7 @@ class MapViewPresentation extends React.Component {
     // give access to the underlying OpenLayers Map object instead.
     return (
       <NearestItemTooltip>
-        <div style={{ height: '100%' }}>
+        <div style={{ height: '100%', position: 'relative' }}>
           <Map
             ref={this._map}
             loadTilesWhileInteracting
@@ -558,7 +536,10 @@ class MapViewPresentation extends React.Component {
             <MapReferenceRequestHandler />
 
             <MapViewToolbars />
-            <MapViewLayers onFeaturesModified={this._onFeaturesModified} />
+            <MapViewLayers
+              onFeaturesModified={this._onFeaturesModified}
+              excludedLayerTypes={excludedLayerTypes}
+            />
             <MapViewControls />
             <MapViewInteractions
               geofencePolygonId={geofencePolygonId}

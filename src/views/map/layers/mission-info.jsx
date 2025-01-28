@@ -19,6 +19,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormGroup from '@material-ui/core/FormGroup';
 
 import Colors from '~/components/colors';
+import { Tool } from '~/components/map/tools';
 import { setLayerParametersById } from '~/features/map/layers';
 import {
   getCurrentMissionItemIndex,
@@ -74,12 +75,10 @@ import {
 import MissionSlotTrajectoryFeature from '~/views/map/features/MissionSlotTrajectoryFeature';
 import UAVTrajectoryFeature from '~/views/map/features/UAVTrajectoryFeature';
 
-import { Tool } from '../tools';
-
 import { styleForPointsOfPolygon } from './features';
 
-import mapMarker from '~/../assets/img/map-marker.svg';
 import mapMarkerOutline from '~/../assets/img/map-marker-outline.svg';
+import mapMarker from '~/../assets/img/map-marker.svg';
 import missionOriginMarkerIcon from '~/../assets/img/mission-origin-marker.svg';
 
 // === Settings for this particular layer type ===
@@ -337,10 +336,10 @@ const createMissionItemBaseStyle = memoize(
         color: selected
           ? Colors.selectedMissionItem
           : done
-          ? Colors.doneMissionItem
-          : current
-          ? Colors.currentMissionItem
-          : Colors.missionItem,
+            ? Colors.doneMissionItem
+            : current
+              ? Colors.currentMissionItem
+              : Colors.missionItem,
         rotateWithView: false,
         snapToPixel: false,
       }),

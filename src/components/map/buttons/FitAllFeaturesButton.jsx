@@ -17,8 +17,8 @@ import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
 import { showError } from '~/features/snackbar/actions';
 import { isUavId } from '~/model/identifiers';
 import {
-  mapReferenceRequestSignal,
   fitAllFeaturesSignal,
+  mapReferenceRequestSignal,
   mapViewToExtentSignal,
 } from '~/signals';
 import { mapViewCoordinateFromLonLat, mergeExtents } from '~/utils/geography';
@@ -214,7 +214,7 @@ class FitAllFeaturesButton extends React.Component {
   };
 }
 
-export default connect(
+const ConnectedFitAllFeaturesButton = connect(
   // mapStateToProps
   null,
   // mapDispatchToProps
@@ -222,3 +222,4 @@ export default connect(
     showError,
   }
 )(FitAllFeaturesButton);
+export default ConnectedFitAllFeaturesButton;
