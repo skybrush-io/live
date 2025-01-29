@@ -12,15 +12,14 @@ import PropTypes from 'prop-types';
 
 import { createOLInteractionComponent } from '@collmot/ol-react/lib/interaction';
 
-import * as Condition from '../conditions';
-
+import * as Condition from '~/components/map/conditions';
 import { getCenterOfFirstPointsOfTrajectoriesInWorldCoordinates } from '~/features/show/selectors';
 import {
-  isOriginId,
-  globalIdToAreaId,
   CONVEX_HULL_AREA_ID,
+  globalIdToAreaId,
+  isOriginId,
 } from '~/model/identifiers';
-import store from '~/store';
+import store from '~/store'; // TODO(vp): it would be nice to not have to import the store here.
 import { mapViewCoordinateFromLonLat } from '~/utils/geography';
 
 /**

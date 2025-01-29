@@ -162,12 +162,12 @@ class SelectNearestFeatureInteraction extends Interaction {
         const mode = this._activateCondition(mapBrowserEvent)
           ? 'activate'
           : this._addCondition(mapBrowserEvent)
-          ? 'add'
-          : this._removeCondition(mapBrowserEvent)
-          ? 'remove'
-          : this._toggleCondition(mapBrowserEvent)
-          ? 'toggle'
-          : 'set';
+            ? 'add'
+            : this._removeCondition(mapBrowserEvent)
+              ? 'remove'
+              : this._toggleCondition(mapBrowserEvent)
+                ? 'toggle'
+                : 'set';
 
         if (closestFeature !== undefined) {
           // Now call the callback

@@ -9,20 +9,20 @@ import { connect } from 'react-redux';
 
 import { control, interaction, Map, View, withMap } from '@collmot/ol-react';
 
-import * as Condition from './conditions';
+import DrawingToolbar from './DrawingToolbar';
+import { Layers } from './layers';
+import MapContextMenu from './MapContextMenu';
+import MapReferenceRequestHandler from './MapReferenceRequestHandler';
+import MapToolbar from './MapToolbar';
+
+import * as Condition from '~/components/map/conditions';
 import {
   SelectNearestFeature,
   ShowContextMenu,
   TrackNearestFeature,
   TransformFeatures,
-} from './interactions';
-import { Layers } from './layers';
-
-import DrawingToolbar from './DrawingToolbar';
-import MapContextMenu from './MapContextMenu';
-import MapReferenceRequestHandler from './MapReferenceRequestHandler';
-import MapToolbar from './MapToolbar';
-
+} from '~/components/map/interactions';
+import { snapEndToStart } from '~/components/map/interactions/utils';
 import { MapLayers as MapLayersPresentation } from '~/components/map/layers';
 import {
   isDrawingTool,
@@ -79,8 +79,6 @@ import {
 } from '~/utils/geography';
 import { toDegrees } from '~/utils/math';
 import { forwardCollectionChanges } from '~/utils/openlayers';
-
-import { snapEndToStart } from './interactions/utils';
 
 import 'ol/ol.css';
 
@@ -167,7 +165,7 @@ const MapViewToolbars = () => {
         style={{ top: 8 + 48 + 8, left: 8 }}
         showControls={false}
       >
-        <DrawingToolbar />
+        <DrawingToolbar drawingTools={config.map.drawingTools} />
       </Widget>
     );
   }

@@ -1,12 +1,11 @@
-import config from 'config';
-
-import PropTypes from 'prop-types';
+import type { TFunction } from 'i18next';
+import partial from 'lodash-es/partial';
 import React from 'react';
 import { withTranslation } from 'react-i18next';
 
+import type { SvgIconProps } from '@material-ui/core';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
-
 import CropSquare from '@material-ui/icons/CropSquare';
 import FiberManualRecord from '@material-ui/icons/FiberManualRecord';
 import PanoramaFishEye from '@material-ui/icons/PanoramaFishEye';
@@ -16,17 +15,31 @@ import ShowChart from '@material-ui/icons/ShowChart';
 import StarBorder from '@material-ui/icons/StarBorder';
 import ZoomIn from '@material-ui/icons/ZoomIn';
 
-import partial from 'lodash-es/partial';
-import { connect } from 'react-redux';
-
 import { Tool } from '~/components/map/tools';
 import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
-import { getSelectedTool, setSelectedTool } from '~/features/map/tools';
-import { tt } from '~/i18n';
+import { type PreparedI18nKey, tt } from '~/i18n';
 import ContentCut from '~/icons/ContentCut';
 import EditFeature from '~/icons/EditFeature';
 
-const drawingToolRegistry = {
+type ToolConfig = {
+  tool: Tool;
+  label: PreparedI18nKey;
+  icon: React.ComponentType<SvgIconProps>;
+};
+
+type DrawingToolId =
+  | 'add-marker'
+  | 'add-waypoint'
+  | 'cut-hole'
+  | 'draw-circle'
+  | 'draw-path'
+  | 'draw-polygon'
+  | 'draw-rectangle'
+  | 'edit-feature'
+  | 'select'
+  | 'zoom';
+
+const drawingToolRegistry: Record<DrawingToolId, ToolConfig> = {
   'add-marker': {
     tool: Tool.DRAW_POINT,
     label: tt('DrawingToolbar.addMarker'),
@@ -79,18 +92,30 @@ const drawingToolRegistry = {
   },
 };
 
-/**
- * Presentation component for the drawing toolbar.
- *
- * @return {React.Element} the rendered component
- */
-const DrawingToolbarPresentation = ({ onToolSelected, selectedTool, t }) => {
-  const colorForTool = (tool) =>
+type DrawingToolKeyGroup = DrawingToolId[];
+
+type DrawingToolbarProps = {
+  onToolSelected: (tool: Tool) => void;
+  selectedTool: Tool;
+  t: TFunction;
+  /**
+   * Groups of drawing tool keys.
+   */
+  drawingTools: DrawingToolKeyGroup[];
+};
+
+const DrawingToolbar = ({
+  drawingTools,
+  onToolSelected,
+  selectedTool,
+  t,
+}: DrawingToolbarProps) => {
+  const colorForTool = (tool: Tool): SvgIconProps['color'] =>
     selectedTool === tool ? 'primary' : undefined;
 
   return (
     <div style={{ display: 'flex', flexFlow: 'column nowrap' }}>
-      {config.map.drawingTools
+      {drawingTools
         .flatMap((group) => [
           <Divider key={`drawing-toolbar-group:${group.join(',')}`} />,
           ...group.map((toolId) => {
@@ -109,24 +134,9 @@ const DrawingToolbarPresentation = ({ onToolSelected, selectedTool, t }) => {
   );
 };
 
-DrawingToolbarPresentation.propTypes = {
-  onToolSelected: PropTypes.func,
-  selectedTool: PropTypes.string,
-  t: PropTypes.func,
-};
-
 /**
  * Drawing toolbar on the map.
  */
-const DrawingToolbar = connect(
-  // mapStateToProps
-  (state) => ({
-    selectedTool: getSelectedTool(state),
-  }),
-  // mapDispatchToProps
-  {
-    onToolSelected: setSelectedTool,
-  }
-)(withTranslation()(DrawingToolbarPresentation));
+const TranslatedDrawingToolbar = withTranslation()(DrawingToolbar);
 
-export default DrawingToolbar;
+export default TranslatedDrawingToolbar;

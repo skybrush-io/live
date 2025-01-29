@@ -41,7 +41,7 @@ import {
   whiteThinOutline,
 } from '~/utils/styles';
 
-import { escapeKeyDown } from '../conditions';
+import { escapeKeyDown } from '~/components/map/conditions';
 
 // === Helper functions ===
 
