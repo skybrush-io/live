@@ -2,8 +2,8 @@ import React from 'react';
 
 import withTheme from '@material-ui/core/styles/withTheme';
 
-import FitAllFeaturesButton from '~/components/map/buttons/FitAllFeaturesButton';
-import MapRotationTextBox from '~/components/map/MapRotationTextBox';
+import FitAllFeaturesButton from './buttons/FitAllFeaturesButton';
+import MapRotationTextBox from './MapRotationTextBox';
 
 /**
  * Separator component for the toolbar.
