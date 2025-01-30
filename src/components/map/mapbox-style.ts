@@ -31,10 +31,6 @@ function createMapboxStreetsV6Style() {
             'https://unpkg.com/@mapbox/maki@4.0.0/icons/' +
             iconName +
             '-15.svg',
-          // TODO(vp): Is this correct (copied from views.map.styles.mapbox)?
-          // Seems like the imgSize prop does not exist.
-          // @ts-ignore
-          imgSize: [15, 15],
           crossOrigin: 'anonymous',
         }),
       });

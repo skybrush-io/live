@@ -19,7 +19,27 @@ import {
   globalIdToAreaId,
   isOriginId,
 } from '~/model/identifiers';
-import store from '~/store'; // TODO(vp): it would be nice to not have to import the store here.
+/**
+ * TODO(vp): it would be nice to not have to import the store here.
+ *
+ * Note from Tamas:
+ *
+ * Just to add some context as to why the store is imported in case you can come up with a better solution:
+ * we need the store in TransformFeaturesInteraction because of only one thing. When the user attempts to
+ * rotate one or more features on the map, we rotate it around the center of the extent of the feature(s)
+ * being rotated because this is the most intuitive to users. However, there is one exception: if the last
+ * selected feature is the polygon that represents the convex hull of the show, we rotate this around the
+ * mean of the coordinates of the initial points of the trajectories, and in order to get this point we
+ * need to reach out to the store.
+ *
+ * One possible solution that I can think of is to provide an optional callback prop to the TransformFeaturesInteraction
+ * that receives the current selection and returns the center of the rotation interaction. This callback can
+ * then be injected from the point where the <TransformFeaturesInteraction> component is initialized where we
+ * probably have better access to the store itself (possibly in a connected component). When no such callback
+ * is provided, we fall back to the behaviour that selects the center of the extent of all selected features,
+ * which works in 99% of the cases by default.
+ */
+import store from '~/store';
 import { mapViewCoordinateFromLonLat } from '~/utils/geography';
 
 /**
