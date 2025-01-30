@@ -1,7 +1,10 @@
 import React from 'react';
+import { connect } from 'react-redux';
 
 import withTheme from '@material-ui/core/styles/withTheme';
 
+import { getMapViewRotationAngle } from '~/selectors/map';
+import type { RootState } from '~/store/reducers';
 import FitAllFeaturesButton from './buttons/FitAllFeaturesButton';
 import MapRotationTextBox from './MapRotationTextBox';
 
@@ -25,7 +28,7 @@ type MapToolbarProps = {
   initialRotation?: number;
 };
 
-const MapToolbar = ({ initialRotation }: MapToolbarProps) => (
+const MapToolbarPresentation = ({ initialRotation }: MapToolbarProps) => (
   <div>
     <MapRotationTextBox
       initialRotation={initialRotation}
@@ -46,5 +49,22 @@ const MapToolbar = ({ initialRotation }: MapToolbarProps) => (
   </div>
 );
 
-const ThemedMapToolbar = withTheme(MapToolbar);
-export default ThemedMapToolbar;
+const ThemedMapToolbarPresentation = withTheme(MapToolbarPresentation);
+
+/**
+ * Main toolbar on the map.
+ *
+ * Every map toolbar should be initialized with the rotation angle that is
+ * stored in the application state, but take care, because writing that state
+ * is not allowed for every map instance, so don't connect such actions to
+ * this component.
+ */
+const MapToolbar = connect(
+  // mapStateToProps
+  (state: RootState) => ({
+    initialRotation: getMapViewRotationAngle(state),
+  }),
+  // mapDispatchToProps
+  null
+)(ThemedMapToolbarPresentation);
+export default MapToolbar;

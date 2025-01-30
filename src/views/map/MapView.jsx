@@ -9,12 +9,6 @@ import { connect } from 'react-redux';
 
 import { control, interaction, Map, View, withMap } from '@collmot/ol-react';
 
-import DrawingToolbar from './DrawingToolbar';
-import { Layers } from './layers';
-import MapContextMenu from './MapContextMenu';
-import MapReferenceRequestHandler from './MapReferenceRequestHandler';
-import MapToolbar from './MapToolbar';
-
 import * as Condition from '~/components/map/conditions';
 import {
   SelectNearestFeature,
@@ -24,6 +18,7 @@ import {
 } from '~/components/map/interactions';
 import { snapEndToStart } from '~/components/map/interactions/utils';
 import { MapLayers as MapLayersPresentation } from '~/components/map/layers';
+import MapToolbar from '~/components/map/MapToolbar';
 import {
   isDrawingTool,
   Tool,
@@ -79,6 +74,10 @@ import {
 } from '~/utils/geography';
 import { toDegrees } from '~/utils/math';
 import { forwardCollectionChanges } from '~/utils/openlayers';
+import DrawingToolbar from './DrawingToolbar';
+import { Layers } from './layers';
+import MapContextMenu from './MapContextMenu';
+import MapReferenceRequestHandler from './MapReferenceRequestHandler';
 
 import 'ol/ol.css';
 
