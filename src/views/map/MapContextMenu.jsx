@@ -6,7 +6,7 @@
 import { createSelector } from '@reduxjs/toolkit';
 import { connect } from 'react-redux';
 
-import MapContextMenu from '~/components/map/MapContextMenu';
+import { MapContextMenu } from '~/components/map';
 import {
   cutFeature,
   showFeatureEditorDialog,

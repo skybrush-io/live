@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 
-import DrawingToolbarPresentation from '~/components/map/DrawingToolbar';
+import { DrawingToolbar as DrawingToolbarPresentation } from '~/components/map';
 import { getSelectedTool, setSelectedTool } from '~/features/map/tools';
 import type { RootState } from '~/store/reducers';
 

@@ -92,16 +92,16 @@ const drawingToolRegistry: Record<DrawingToolId, ToolConfig> = {
   },
 };
 
-type DrawingToolKeyGroup = DrawingToolId[];
+type DrawingToolIdGroup = DrawingToolId[];
 
 type DrawingToolbarProps = {
   onToolSelected: (tool: Tool) => void;
   selectedTool: Tool;
   t: TFunction;
   /**
-   * Groups of drawing tool keys.
+   * Groups of drawing tool IDs.
    */
-  drawingTools: DrawingToolKeyGroup[];
+  drawingTools: DrawingToolIdGroup[];
 };
 
 const DrawingToolbar = ({

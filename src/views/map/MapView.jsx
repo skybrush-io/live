@@ -9,7 +9,7 @@ import { connect } from 'react-redux';
 
 import { interaction, Map, View, withMap } from '@collmot/ol-react';
 
-import { MapControls, MapToolbar } from '~/components/map';
+import { MapControls, MapToolbars } from '~/components/map';
 import * as Condition from '~/components/map/conditions';
 import {
   SelectNearestFeature,
@@ -24,7 +24,6 @@ import {
   Tool,
   toolToDrawInteractionProps,
 } from '~/components/map/tools';
-import Widget from '~/components/Widget';
 import { handleError } from '~/error-handling';
 import {
   addFeature,
@@ -65,7 +64,6 @@ import {
 } from '~/selectors/map';
 import { getVisibleLayersInOrder } from '~/selectors/ordered';
 import { getSelection } from '~/selectors/selection';
-import { hasFeature } from '~/utils/configuration';
 import {
   findFeaturesById,
   lonLatFromMapViewCoordinate,
@@ -93,41 +91,6 @@ const MapViewLayers = connect(
     layerComponents: Layers,
   })
 )(MapLayersPresentation);
-
-/* ********************************************************************** */
-
-/**
- * React component that renders the toolbar of the map in the main window.
- *
- * @returns {JSX.Node[]}  the toolbars on the map
- */
-const MapViewToolbars = () => {
-  const toolbars = [];
-
-  toolbars.push(
-    <Widget
-      key='Widget.MapToolbar'
-      style={{ top: 8, left: 8 + 24 + 8 }}
-      showControls={false}
-    >
-      <MapToolbar />
-    </Widget>
-  );
-
-  if (hasFeature('mapFeatures')) {
-    toolbars.push(
-      <Widget
-        key='Widget.DrawingToolbar'
-        style={{ top: 8 + 48 + 8, left: 8 }}
-        showControls={false}
-      >
-        <DrawingToolbar drawingTools={config.map.drawingTools} />
-      </Widget>
-    );
-  }
-
-  return toolbars;
-};
 
 /* ********************************************************************** */
 
@@ -489,7 +452,13 @@ class MapViewPresentation extends React.Component {
           >
             <MapReferenceRequestHandler />
 
-            <MapViewToolbars />
+            <MapToolbars>
+              {{
+                drawingToolbar: (
+                  <DrawingToolbar drawingTools={config.map.drawingTools} />
+                ),
+              }}
+            </MapToolbars>
             <MapViewLayers
               onFeaturesModified={this._onFeaturesModified}
               excludedLayerTypes={excludedLayerTypes}
