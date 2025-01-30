@@ -7,8 +7,9 @@ import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import { connect } from 'react-redux';
 
-import { control, interaction, Map, View, withMap } from '@collmot/ol-react';
+import { interaction, Map, View, withMap } from '@collmot/ol-react';
 
+import { MapControls, MapToolbar } from '~/components/map';
 import * as Condition from '~/components/map/conditions';
 import {
   SelectNearestFeature,
@@ -18,7 +19,6 @@ import {
 } from '~/components/map/interactions';
 import { snapEndToStart } from '~/components/map/interactions/utils';
 import { MapLayers as MapLayersPresentation } from '~/components/map/layers';
-import MapToolbar from '~/components/map/MapToolbar';
 import {
   isDrawingTool,
   Tool,
@@ -59,7 +59,6 @@ import {
   isFeatureModifiable,
   isFeatureTransformable,
 } from '~/model/openlayers';
-import { getExtendedCoordinateFormatter } from '~/selectors/formatting';
 import {
   getMapViewCenterPosition,
   getMapViewRotationAngle,
@@ -94,48 +93,6 @@ const MapViewLayers = connect(
     layerComponents: Layers,
   })
 )(MapLayersPresentation);
-
-/* ********************************************************************** */
-
-const MapViewControlsPresentation = ({
-  formatCoordinate,
-  showMouseCoordinates,
-  showScaleLine,
-}) => (
-  <>
-    <control.Zoom />
-    <control.Attribution collapsed collapsible collapseLabel='&laquo;' />
-    {showMouseCoordinates && (
-      <control.MousePosition
-        key='control.MousePosition'
-        hideWhenOut
-        projection='EPSG:4326'
-        coordinateFormat={formatCoordinate}
-      />
-    )}
-    {showScaleLine && (
-      <control.ScaleLine key='control.ScaleLine' minWidth={128} />
-    )}
-  </>
-);
-
-MapViewControlsPresentation.propTypes = {
-  formatCoordinate: PropTypes.func,
-  showMouseCoordinates: PropTypes.bool,
-  showScaleLine: PropTypes.bool,
-};
-
-/**
- * React component that renders the standard OpenLayers controls that we
- * use on the map in the main window
- */
-const MapViewControls = connect(
-  // mapStateToProps
-  (state) => ({
-    formatCoordinate: getExtendedCoordinateFormatter(state),
-    ...state.settings.display,
-  })
-)(MapViewControlsPresentation);
 
 /* ********************************************************************** */
 
@@ -537,7 +494,7 @@ class MapViewPresentation extends React.Component {
               onFeaturesModified={this._onFeaturesModified}
               excludedLayerTypes={excludedLayerTypes}
             />
-            <MapViewControls />
+            <MapControls />
             <MapViewInteractions
               geofencePolygonId={geofencePolygonId}
               selectedTool={selectedTool}
