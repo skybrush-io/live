@@ -9,8 +9,8 @@ import React from 'react';
 import { Translation } from 'react-i18next';
 
 import IconButton from '@material-ui/core/IconButton';
-import RotateLeft from '@material-ui/icons/RotateLeft';
 import TextField from '@material-ui/core/TextField';
+import RotateLeft from '@material-ui/icons/RotateLeft';
 
 import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
 import { mapReferenceRequestSignal, mapRotationResetSignal } from '~/signals';
@@ -27,7 +27,7 @@ import { toDegrees, toRadians } from '~/utils/math';
  *
  * @emits {mapReferenceRequestSignal} requests map reference
  */
-export default class MapRotationTextBox extends React.Component {
+class MapRotationTextBox extends React.Component {
   static propTypes = {
     initialRotation: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
     resetDuration: PropTypes.number,
@@ -197,3 +197,5 @@ export default class MapRotationTextBox extends React.Component {
     });
   }
 }
+
+export default MapRotationTextBox;

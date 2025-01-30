@@ -7,29 +7,23 @@ import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import { connect } from 'react-redux';
 
-import { control, interaction, Map, View, withMap } from '@collmot/ol-react';
+import { interaction, Map, View, withMap } from '@collmot/ol-react';
 
-import * as Condition from './conditions';
+import { MapControls, MapToolbars } from '~/components/map';
+import * as Condition from '~/components/map/conditions';
 import {
   SelectNearestFeature,
   ShowContextMenu,
   TrackNearestFeature,
   TransformFeatures,
-} from './interactions';
-import { Layers } from './layers';
-
-import DrawingToolbar from './DrawingToolbar';
-import MapContextMenu from './MapContextMenu';
-import MapReferenceRequestHandler from './MapReferenceRequestHandler';
-import MapToolbar from './MapToolbar';
-
+} from '~/components/map/interactions';
+import { snapEndToStart } from '~/components/map/interactions/utils';
 import { MapLayers as MapLayersPresentation } from '~/components/map/layers';
 import {
   isDrawingTool,
   Tool,
   toolToDrawInteractionProps,
 } from '~/components/map/tools';
-import Widget from '~/components/Widget';
 import { handleError } from '~/error-handling';
 import {
   addFeature,
@@ -64,14 +58,12 @@ import {
   isFeatureModifiable,
   isFeatureTransformable,
 } from '~/model/openlayers';
-import { getExtendedCoordinateFormatter } from '~/selectors/formatting';
 import {
   getMapViewCenterPosition,
   getMapViewRotationAngle,
 } from '~/selectors/map';
 import { getVisibleLayersInOrder } from '~/selectors/ordered';
 import { getSelection } from '~/selectors/selection';
-import { hasFeature } from '~/utils/configuration';
 import {
   findFeaturesById,
   lonLatFromMapViewCoordinate,
@@ -79,8 +71,10 @@ import {
 } from '~/utils/geography';
 import { toDegrees } from '~/utils/math';
 import { forwardCollectionChanges } from '~/utils/openlayers';
-
-import { snapEndToStart } from './interactions/utils';
+import DrawingToolbar from './DrawingToolbar';
+import { Layers } from './layers';
+import MapContextMenu from './MapContextMenu';
+import MapReferenceRequestHandler from './MapReferenceRequestHandler';
 
 import 'ol/ol.css';
 
@@ -97,83 +91,6 @@ const MapViewLayers = connect(
     layerComponents: Layers,
   })
 )(MapLayersPresentation);
-
-/* ********************************************************************** */
-
-const MapViewControlsPresentation = ({
-  formatCoordinate,
-  showMouseCoordinates,
-  showScaleLine,
-}) => (
-  <>
-    <control.Zoom />
-    <control.Attribution collapsed collapsible collapseLabel='&laquo;' />
-    {showMouseCoordinates && (
-      <control.MousePosition
-        key='control.MousePosition'
-        hideWhenOut
-        projection='EPSG:4326'
-        coordinateFormat={formatCoordinate}
-      />
-    )}
-    {showScaleLine && (
-      <control.ScaleLine key='control.ScaleLine' minWidth={128} />
-    )}
-  </>
-);
-
-MapViewControlsPresentation.propTypes = {
-  formatCoordinate: PropTypes.func,
-  showMouseCoordinates: PropTypes.bool,
-  showScaleLine: PropTypes.bool,
-};
-
-/**
- * React component that renders the standard OpenLayers controls that we
- * use on the map in the main window
- */
-const MapViewControls = connect(
-  // mapStateToProps
-  (state) => ({
-    formatCoordinate: getExtendedCoordinateFormatter(state),
-    ...state.settings.display,
-  })
-)(MapViewControlsPresentation);
-
-/* ********************************************************************** */
-
-/**
- * React component that renders the toolbar of the map in the main window.
- *
- * @returns {JSX.Node[]}  the toolbars on the map
- */
-const MapViewToolbars = () => {
-  const toolbars = [];
-
-  toolbars.push(
-    <Widget
-      key='Widget.MapToolbar'
-      style={{ top: 8, left: 8 + 24 + 8 }}
-      showControls={false}
-    >
-      <MapToolbar />
-    </Widget>
-  );
-
-  if (hasFeature('mapFeatures')) {
-    toolbars.push(
-      <Widget
-        key='Widget.DrawingToolbar'
-        style={{ top: 8 + 48 + 8, left: 8 }}
-        showControls={false}
-      >
-        <DrawingToolbar />
-      </Widget>
-    );
-  }
-
-  return toolbars;
-};
 
 /* ********************************************************************** */
 
@@ -535,12 +452,18 @@ class MapViewPresentation extends React.Component {
           >
             <MapReferenceRequestHandler />
 
-            <MapViewToolbars />
+            <MapToolbars>
+              {{
+                drawingToolbar: (
+                  <DrawingToolbar drawingTools={config.map.drawingTools} />
+                ),
+              }}
+            </MapToolbars>
             <MapViewLayers
               onFeaturesModified={this._onFeaturesModified}
               excludedLayerTypes={excludedLayerTypes}
             />
-            <MapViewControls />
+            <MapControls />
             <MapViewInteractions
               geofencePolygonId={geofencePolygonId}
               selectedTool={selectedTool}

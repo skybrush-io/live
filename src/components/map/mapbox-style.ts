@@ -1,6 +1,6 @@
-import { Fill, Icon, Stroke, Style, Text } from 'ol/style';
-import { stylefunction as styleFunction } from 'ol-mapbox-style';
 import type { Feature } from 'ol';
+import { stylefunction as styleFunction } from 'ol-mapbox-style';
+import { Fill, Icon, Stroke, Style, Text } from 'ol/style';
 
 /**
  * Creates a style function for the mapbox-streets-v6 vector tile data set.
@@ -31,7 +31,7 @@ function createMapboxStreetsV6Style() {
             'https://unpkg.com/@mapbox/maki@4.0.0/icons/' +
             iconName +
             '-15.svg',
-          // TODO(volfpeter): Is this correct (copied from views.map.styles.mapbox)?
+          // TODO(vp): Is this correct (copied from views.map.styles.mapbox)?
           // Seems like the imgSize prop does not exist.
           // @ts-ignore
           imgSize: [15, 15],
