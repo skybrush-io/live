@@ -1,4 +1,3 @@
-import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
 import React from 'react';
 
 import {
@@ -19,15 +18,6 @@ import { OwnLocationLayer, OwnLocationLayerSettings } from './ownlocation';
 import { UAVsLayer, UAVsLayerSettings } from './uavs';
 import { UAVTraceLayer, UAVTraceLayerSettings } from './uavtrace';
 import { UntypedLayer, UntypedLayerSettings } from './untyped';
-
-const UnavailableLayerSettings = () => (
-  <div key='_hint' style={{ position: 'relative', height: 48 }}>
-    <BackgroundHint
-      text='This layer is unavailable under the license of the
-            currently connected server.'
-    />
-  </div>
-);
 
 export const LayerSettings = {
   ...layerSettingsComponents,
