@@ -20,6 +20,11 @@ import {
 import { snapEndToStart } from '~/components/map/interactions/utils';
 import { MapLayers as MapLayersPresentation } from '~/components/map/layers';
 import {
+  styles as mapStyles,
+  toolClasses,
+  viewDefaults,
+} from '~/components/map/Map';
+import {
   isDrawingTool,
   Tool,
   toolToDrawInteractionProps,
@@ -318,25 +323,6 @@ MapViewInteractions.propTypes = {
 
 /* ********************************************************************** */
 
-const MAP_STYLE = {
-  // Vector tile based maps assume that there is a light background
-  background: '#f8f4f0',
-  height: '100%',
-};
-
-const toolClasses = {
-  [Tool.SELECT]: 'tool-select',
-  [Tool.ZOOM]: 'tool-zoom',
-  [Tool.PAN]: 'tool-pan',
-  [Tool.DRAW_POINT]: 'tool-draw tool-draw-point',
-  [Tool.DRAW_CIRCLE]: 'tool-draw tool-draw-circle',
-  [Tool.DRAW_RECTANGLE]: 'tool-draw tool-draw-rectangle',
-  [Tool.DRAW_PATH]: 'tool-draw tool-draw-path',
-  [Tool.DRAW_POLYGON]: 'tool-draw tool-draw-polygon',
-  [Tool.CUT_HOLE]: 'tool-edit tool-cut-hole',
-  [Tool.EDIT_FEATURE]: 'tool-edit tool-edit-feature',
-};
-
 /**
  * React component for the map of the main window.
  */
@@ -354,10 +340,7 @@ class MapViewPresentation extends React.Component {
     excludedLayerTypes: PropTypes.arrayOf(PropTypes.string),
   };
 
-  static defaultProps = {
-    center: [19.061951, 47.47334],
-    zoom: 17,
-  };
+  static defaultProps = { ...viewDefaults };
 
   constructor(props) {
     super(props);
@@ -439,7 +422,7 @@ class MapViewPresentation extends React.Component {
     // give access to the underlying OpenLayers Map object instead.
     return (
       <NearestItemTooltip>
-        <div style={{ height: '100%', position: 'relative' }}>
+        <div style={mapStyles.mapWrapper}>
           <Map
             ref={this._map}
             loadTilesWhileInteracting
@@ -447,7 +430,7 @@ class MapViewPresentation extends React.Component {
             view={view}
             useDefaultControls={false}
             className={toolClasses[selectedTool]}
-            style={MAP_STYLE}
+            style={mapStyles.map}
             onMoveEnd={this._onMapMoved}
           >
             <MapReferenceRequestHandler />

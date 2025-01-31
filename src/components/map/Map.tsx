@@ -13,7 +13,7 @@ import { Tool } from './tools';
 
 import 'ol/ol.css';
 
-const styles: Record<'map' | 'mapWrapper', CSSProperties> = {
+export const styles: Record<'map' | 'mapWrapper', CSSProperties> = {
   map: {
     // Vector tile based maps assume that there is a light background
     background: '#f8f4f0',
@@ -26,7 +26,7 @@ const styles: Record<'map' | 'mapWrapper', CSSProperties> = {
   },
 };
 
-const toolClasses: Partial<Record<Tool, string>> = {
+export const toolClasses: Partial<Record<Tool, string>> = {
   [Tool.SELECT]: 'tool-select',
   [Tool.ZOOM]: 'tool-zoom',
   [Tool.PAN]: 'tool-pan',
@@ -45,7 +45,7 @@ type ViewProperties = {
   rotation: number;
 };
 
-const _viewDefaults: ViewProperties = {
+export const viewDefaults: ViewProperties = {
   center: [19.061951, 47.47334],
   zoom: 17,
   rotation: 0,
@@ -73,9 +73,9 @@ type MapProps = Partial<ViewProperties> & {
 
 const Map = (props: MapProps) => {
   const {
-    center = _viewDefaults.center,
-    rotation = _viewDefaults.rotation,
-    zoom = _viewDefaults.zoom,
+    center = viewDefaults.center,
+    rotation = viewDefaults.rotation,
+    zoom = viewDefaults.zoom,
     selectedTool,
     layers,
     onFeaturesModified,
