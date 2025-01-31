@@ -10,7 +10,7 @@ import {
   isConnected,
 } from '~/features/servers/selectors.js';
 import { type Layer, LayerType, ProLayerTypes } from '~/model/layers';
-import type { AppSelector, RootState } from '~/store/reducers';
+import type { AppSelector } from '~/store/reducers';
 import type { Collection, Identifier } from '~/utils/collections';
 
 /**
@@ -19,7 +19,8 @@ import type { Collection, Identifier } from '~/utils/collections';
  * @param state The state of the application.
  * @return The list of layers on the map.
  */
-export const getLayers = (state: RootState) => state.map.layers;
+export const getLayers: AppSelector<Collection<Layer>> = (state) =>
+  state.map.layers;
 
 /**
  * Selector that retrieves the list of layers filtered by the currently active
