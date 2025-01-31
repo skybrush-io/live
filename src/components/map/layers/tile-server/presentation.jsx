@@ -1,7 +1,6 @@
 import { layer, source } from '@collmot/ol-react';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { connect } from 'react-redux';
 
 import Button from '@material-ui/core/Button';
 import FormControl from '@material-ui/core/FormControl';
@@ -11,13 +10,11 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import TextField from '@material-ui/core/TextField';
 
-import { setLayerParametersById } from '~/features/map/layers';
-import { showNotification } from '~/features/snackbar/actions';
 import { TileServerType, TileServerTypes } from '~/model/layers';
 
 // === Settings for this particular layer type ===
 
-class TileServerLayerSettingsPresentation extends React.Component {
+export class TileServerLayerSettings extends React.Component {
   static propTypes = {
     layer: PropTypes.object.isRequired,
 
@@ -111,30 +108,9 @@ class TileServerLayerSettingsPresentation extends React.Component {
   };
 }
 
-export const TileServerLayerSettings = connect(
-  // mapStateToProps
-  null,
-  // mapDispatchToProps
-  (dispatch, ownProps) => ({
-    changeTileServerType(event) {
-      dispatch(
-        setLayerParametersById(ownProps.layerId, {
-          type: event.target.value,
-        })
-      );
-    },
-    setLayerParameters(parameters) {
-      dispatch(setLayerParametersById(ownProps.layerId, parameters));
-    },
-    showMessage(message) {
-      dispatch(showNotification(message));
-    },
-  })
-)(TileServerLayerSettingsPresentation);
-
 // === The actual layer to be rendered ===
 
-class TileServerLayerPresentation extends React.Component {
+export class TileServerLayer extends React.Component {
   static propTypes = {
     layer: PropTypes.object,
     zIndex: PropTypes.number,
@@ -180,5 +156,3 @@ class TileServerLayerPresentation extends React.Component {
     }
   }
 }
-
-export const TileServerLayer = TileServerLayerPresentation;

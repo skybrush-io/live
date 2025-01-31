@@ -1,7 +1,7 @@
 import { createSelector } from '@reduxjs/toolkit';
 
+import type { RootState } from '~/store/reducers';
 import { selectOrdered } from '~/utils/collections';
-
 import { getLicensedLayers } from './layers';
 
 /**
@@ -10,7 +10,7 @@ import { getLicensedLayers } from './layers';
  * same order as they should appear on the UI.
  */
 export const getConnectionsInOrder = createSelector(
-  (state) => state.connections,
+  (state: RootState) => state.connections,
   selectOrdered
 );
 

@@ -1,23 +1,24 @@
-import React from 'react';
 import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
+import React from 'react';
 
-import { BaseLayerSettings, BaseLayer } from './base';
+import {
+  layerComponents,
+  layerSettingsComponents,
+} from '~/components/map/layers';
+import { LayerType } from '~/model/layers';
+
 import { BeaconsLayer } from './beacons';
 import { DocksLayer } from './docks';
 import { FeaturesLayer } from './features';
-import { GeoJSONLayerSettings, GeoJSONLayer } from './geojson';
-import { GraticuleLayer } from './graticule';
-import { HeatmapLayerSettings, HeatmapLayer } from './heatmap';
-import { HexGridLayerSettings, HexGridLayer } from './hexgrid';
-import { ImageLayerSettings, ImageLayer } from './image';
-import { MissionInfoLayerSettings, MissionInfoLayer } from './mission-info';
-import { OwnLocationLayerSettings, OwnLocationLayer } from './ownlocation';
-import { TileServerLayerSettings, TileServerLayer } from './tileserver';
-import { UAVsLayerSettings, UAVsLayer } from './uavs';
-import { UAVTraceLayerSettings, UAVTraceLayer } from './uavtrace';
-import { UntypedLayerSettings, UntypedLayer } from './untyped';
-
-import { LayerType } from '~/model/layers';
+import { GeoJSONLayer, GeoJSONLayerSettings } from './geojson';
+import { HeatmapLayer, HeatmapLayerSettings } from './heatmap';
+import { HexGridLayer, HexGridLayerSettings } from './hexgrid';
+import { ImageLayer, ImageLayerSettings } from './image';
+import { MissionInfoLayer, MissionInfoLayerSettings } from './mission-info';
+import { OwnLocationLayer, OwnLocationLayerSettings } from './ownlocation';
+import { UAVsLayer, UAVsLayerSettings } from './uavs';
+import { UAVTraceLayer, UAVTraceLayerSettings } from './uavtrace';
+import { UntypedLayer, UntypedLayerSettings } from './untyped';
 
 const UnavailableLayerSettings = () => (
   <div key='_hint' style={{ position: 'relative', height: 48 }}>
@@ -29,17 +30,15 @@ const UnavailableLayerSettings = () => (
 );
 
 export const LayerSettings = {
-  [LayerType.BASE]: BaseLayerSettings,
+  ...layerSettingsComponents,
   [LayerType.GEOJSON]: GeoJSONLayerSettings,
   [LayerType.HEATMAP]: HeatmapLayerSettings,
   [LayerType.HEXGRID]: HexGridLayerSettings,
   [LayerType.IMAGE]: ImageLayerSettings,
   [LayerType.MISSION_INFO]: MissionInfoLayerSettings,
   [LayerType.OWN_LOCATION]: OwnLocationLayerSettings,
-  [LayerType.TILE_SERVER]: TileServerLayerSettings,
   [LayerType.UAVS]: UAVsLayerSettings,
   [LayerType.UAV_TRACE]: UAVTraceLayerSettings,
-  [LayerType.UNAVAILABLE]: UnavailableLayerSettings,
   [LayerType.UNTYPED]: UntypedLayerSettings,
 };
 
@@ -61,18 +60,16 @@ export const stateObjectToLayerSettings = (layer, layerId) => {
 };
 
 export const Layers = {
-  [LayerType.BASE]: BaseLayer,
+  ...layerComponents,
   [LayerType.BEACONS]: BeaconsLayer,
   [LayerType.DOCKS]: DocksLayer,
   [LayerType.FEATURES]: FeaturesLayer,
   [LayerType.GEOJSON]: GeoJSONLayer,
-  [LayerType.GRATICULE]: GraticuleLayer,
   [LayerType.HEATMAP]: HeatmapLayer,
   [LayerType.HEXGRID]: HexGridLayer,
   [LayerType.IMAGE]: ImageLayer,
   [LayerType.MISSION_INFO]: MissionInfoLayer,
   [LayerType.OWN_LOCATION]: OwnLocationLayer,
-  [LayerType.TILE_SERVER]: TileServerLayer,
   [LayerType.UAVS]: UAVsLayer,
   [LayerType.UAV_TRACE]: UAVTraceLayer,
   [LayerType.UNTYPED]: UntypedLayer,

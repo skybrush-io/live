@@ -5,7 +5,7 @@ import { hasFeature } from '~/utils/configuration';
 import MapToolbar from './MapToolbar';
 
 type MapToolbarsProps = {
-  children: {
+  children?: {
     drawingToolbar?: React.ReactChild;
   };
 };
@@ -13,7 +13,7 @@ type MapToolbarsProps = {
 /**
  * Component that renders the complete toolbar of a map.
  */
-const MapToolbars = ({ children: { drawingToolbar } }: MapToolbarsProps) => {
+const MapToolbars = ({ children }: MapToolbarsProps) => {
   const toolbars = [];
 
   toolbars.push(
@@ -26,19 +26,19 @@ const MapToolbars = ({ children: { drawingToolbar } }: MapToolbarsProps) => {
     </Widget>
   );
 
-  if (drawingToolbar !== undefined && hasFeature('mapFeatures')) {
+  if (children?.drawingToolbar !== undefined && hasFeature('mapFeatures')) {
     toolbars.push(
       <Widget
         key='Widget.DrawingToolbar'
         style={{ top: 8 + 48 + 8, left: 8 }}
         showControls={false}
       >
-        {drawingToolbar}
+        {children.drawingToolbar}
       </Widget>
     );
   }
 
-  return toolbars;
+  return <>{...toolbars}</>;
 };
 
 export default MapToolbars;

@@ -1,13 +1,13 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 
-import { GraticuleLayer as GraticuleLayerPresentation } from '~/components/map/layers/graticule';
 import type { Layer } from '~/model/layers';
 import {
   getPreferredCoordinateFormat,
   getPreferredLatitudeCoordinateFormatter,
   getPreferredLongitudeCoordinateFormatter,
 } from '~/selectors/formatting';
+import { GraticuleLayer as GraticuleLayerPresentation } from './presentation';
 
 type GraticuleLayerProps = {
   layer: Layer;
