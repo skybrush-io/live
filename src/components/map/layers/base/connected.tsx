@@ -10,6 +10,7 @@ import {
 } from '~/features/servers/selectors';
 import { getAPIKeys } from '~/features/settings/selectors';
 import { type Source } from '~/model/sources';
+import type { RootState } from '~/store/reducers';
 
 import {
   type BaseLayerProps,
@@ -18,21 +19,18 @@ import {
   BaseLayer as BaseLayerPresentation,
   BaseLayerSettings as BaseLayerSettingsPresentation,
   LayerSource as LayerSourcePresentation,
-} from '~/components/map/layers/base';
-import type { RootState } from '~/store/reducers';
+} from './presentation';
 
 // === Settings for this particular layer type ===
-
-type BaseLayerSettingsOwnProps = Omit<
-  BaseLayerSettingsProps,
-  'onLayerSourceChanged'
->;
 
 export const BaseLayerSettings = connect(
   // mapStateToProps
   null,
   // mapDispatchToProps
-  (dispatch, ownProps: BaseLayerSettingsOwnProps) => ({
+  (
+    dispatch,
+    ownProps: Omit<BaseLayerSettingsProps, 'onLayerSourceChanged'>
+  ) => ({
     onLayerSourceChanged(_event: any, value: Source.Source) {
       dispatch(selectMapSource({ layerId: ownProps.layerId, source: value }));
     },

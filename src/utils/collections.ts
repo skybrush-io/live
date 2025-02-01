@@ -473,10 +473,11 @@ export const selectOrdered = <T extends ItemLike>({
   byId,
   order,
 }: Collection<T>): T[] =>
-  // prettier-ignore
-  order === undefined ? Object.values(byId) :
-  order.length === 0 ? EMPTY_ARRAY :
-  rejectNullish(order.map((id) => byId[id]));
+  order === undefined
+    ? Object.values(byId)
+    : order.length === 0
+      ? EMPTY_ARRAY
+      : rejectNullish(order.map((id) => byId[id]));
 
 /**
  * Helper function that takes an array of item IDs and an ordered collection,

@@ -18,7 +18,7 @@ import {
   labelForSource,
 } from '~/model/sources';
 
-import type { BaseLayerSettingsProps as CommonLayerSettingsProps } from './types';
+import type { BaseLayerSettingsProps as CommonLayerSettingsProps } from '../types';
 
 // === Types ===
 

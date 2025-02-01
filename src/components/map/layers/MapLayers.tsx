@@ -6,14 +6,14 @@ import type { Layer, LayerType } from '~/model/layers';
 
 type FeatureModifiedHandler = (event: ModifyEvent) => void;
 
-type LayerProps = {
+export type LayerProps = {
   layer: Layer;
   selectedTool: Tool;
   zIndex: number;
   onFeaturesModified?: FeatureModifiedHandler;
 };
 
-type MapLayersProps = {
+export type LayerConfig = {
   /**
    * The layers to render.
    */
@@ -25,6 +25,13 @@ type MapLayersProps = {
   layerComponents: Partial<Record<LayerType, React.ComponentType<LayerProps>>>;
 
   /**
+   * Layer types that should not be rendered.
+   */
+  excludedLayerTypes?: LayerType[];
+};
+
+type MapLayersProps = LayerConfig & {
+  /**
    * The currently selected tool.
    */
   selectedTool: Tool;
@@ -33,11 +40,6 @@ type MapLayersProps = {
    * The `ModifyEvent` handler the layers should use.
    */
   onFeaturesModified?: FeatureModifiedHandler;
-
-  /**
-   * Layer types that should not be rendered.
-   */
-  excludedLayerTypes?: LayerType[];
 };
 
 /**
@@ -49,7 +51,7 @@ export const MapLayers = ({
   onFeaturesModified,
   selectedTool,
   excludedLayerTypes,
-}: MapLayersProps): React.ReactElement[] => {
+}: MapLayersProps) => {
   const shownLayers = excludedLayerTypes
     ? layers.filter((l) => !excludedLayerTypes.includes(l.type))
     : layers;
@@ -72,5 +74,5 @@ export const MapLayers = ({
     }
   }
 
-  return renderedLayers;
+  return <>{...renderedLayers}</>;
 };
