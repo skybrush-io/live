@@ -52,6 +52,7 @@ export enum LayerType {
   UNTYPED = 'untyped',
 
   RSSI = 'rssi',
+  RTK = "rtk",
 }
 
 export type Layer = {
@@ -80,6 +81,7 @@ export const LayerTypes = [
   LayerType.GEOJSON,
   LayerType.HEATMAP,
   LayerType.RSSI,
+  LayerType.RTK,
 ] as const;
 
 export const ProLayerTypes = [LayerType.IMAGE] as const;
@@ -257,6 +259,10 @@ const propertiesForLayerTypes: Record<
   },
   [LayerType.RSSI]: {
     label: 'RSSI',
+    icon: Wifi,
+  },
+  [LayerType.RTK]: {
+    label: 'RTK',
     icon: Wifi,
   },
 } as const;
