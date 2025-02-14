@@ -5,6 +5,7 @@ import ChangeAltitudeIcon from '@material-ui/icons/Height';
 import ChangeFlightModeIcon from '@material-ui/icons/Flight';
 import ChangeHeadingIcon from '@material-ui/icons/RotateLeft';
 import ChangeSpeedIcon from '@material-ui/icons/Speed';
+import HoverIcon from '@material-ui/icons/HourglassEmpty';
 import MarkerIcon from '@material-ui/icons/Flag';
 import SetPayloadIcon from '@material-ui/icons/Camera';
 import SetParameterIcon from '@material-ui/icons/Settings';
@@ -67,6 +68,7 @@ export enum MissionItemType {
   CHANGE_HEADING = 'changeHeading',
   CHANGE_SPEED = 'changeSpeed',
   GO_TO = 'goTo',
+  HOVER = 'hover',
   LAND = 'land',
   MARKER = 'marker',
   RETURN_TO_HOME = 'returnToHome',
@@ -163,6 +165,10 @@ export type MissionItem = MissionItemLike &
         };
       }
     | {
+        type: MissionItemType.HOVER;
+        parameters: { duration: number };
+      }
+    | {
         type: MissionItemType.LAND;
         parameters: { velocityZ?: number };
       }
@@ -208,6 +214,7 @@ export const iconForMissionItemType: Record<MissionItemType, React.ReactNode> =
     [MissionItemType.CHANGE_HEADING]: <ChangeHeadingIcon />,
     [MissionItemType.CHANGE_SPEED]: <ChangeSpeedIcon />,
     [MissionItemType.GO_TO]: '#',
+    [MissionItemType.HOVER]: <HoverIcon />,
     [MissionItemType.LAND]: <LandIcon />,
     [MissionItemType.MARKER]: <MarkerIcon />,
     [MissionItemType.RETURN_TO_HOME]: <HomeIcon />,
@@ -226,6 +233,7 @@ export const titleForMissionItemType: Record<MissionItemType, string> = {
   [MissionItemType.CHANGE_HEADING]: 'Change heading',
   [MissionItemType.CHANGE_SPEED]: 'Change speed',
   [MissionItemType.GO_TO]: 'Go to waypoint',
+  [MissionItemType.HOVER]: 'Hover at position',
   [MissionItemType.LAND]: 'Land',
   [MissionItemType.MARKER]: 'Marker',
   [MissionItemType.RETURN_TO_HOME]: 'Return to home',
@@ -333,6 +341,17 @@ export const schemaForMissionItemType: Record<
     },
     required: ['lat', 'lon'],
   },
+  [MissionItemType.HOVER]: {
+    properties: {
+      duration: {
+        title: 'Duration',
+        description: 'Duration of the hover in [s]',
+        type: 'number',
+        minimum: 0,
+      },
+    },
+    required: ['duration'],
+  },
   [MissionItemType.LAND]: { properties: {}, required: [] },
   [MissionItemType.MARKER]: { properties: {}, required: [] },
   [MissionItemType.RETURN_TO_HOME]: { properties: {}, required: [] },
@@ -417,6 +436,12 @@ export const isMissionItemValid = (item: unknown): item is MissionItem => {
         (velocityXY === undefined || Number.isFinite(velocityXY)) &&
         (velocityZ === undefined || Number.isFinite(velocityZ))
       );
+    }
+
+    case MissionItemType.HOVER: {
+      const { duration }: { duration?: unknown } = item.parameters;
+
+      return Number.isFinite(duration);
     }
 
     case MissionItemType.LAND: {

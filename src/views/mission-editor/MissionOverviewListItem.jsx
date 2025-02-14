@@ -119,6 +119,12 @@ const MissionOverviewListItem = ({
         : 'Invalid mission item';
       break;
 
+    case MissionItemType.HOVER:
+      secondaryText = isValid
+        ? `for ${item.parameters.duration} seconds`
+        : 'Invalid mission item';
+      break;
+
     case MissionItemType.LAND:
       if (item.parameters.velocityZ) {
         secondaryText = `${item.parameters.velocityZ} m/s vertical`;
@@ -150,7 +156,7 @@ const MissionOverviewListItem = ({
     case MissionItemType.CHANGE_FLIGHT_MODE:
       secondaryText = `${item.parameters?.mode}`
       break;
-  
+
     case MissionItemType.CHANGE_HEADING:
       secondaryText = isValid
         ? safelyFormatHeadingWithMode(
