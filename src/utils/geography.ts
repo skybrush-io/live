@@ -59,7 +59,9 @@ import {
 } from './math';
 import { isRunningOnMac } from './platform';
 
-// TODO: Define better types for coordinates? (Partially solved on 2023-08-12.)
+// TODO: Define better types for coordinates?
+// (Partially solved on 2023-08-12.)
+// (Further improved on 2025-02-18.)
 //
 // The one provided by OpenLayers is too generic (`Array<number>` instead
 // of [number, number]), while their docs do specify _"an `xy` coordinate"_.
@@ -73,6 +75,24 @@ import { isRunningOnMac } from './platform';
 // While we're at it, perhaps even `AHL`, `AGL` and other distinct measures
 // with the `unique symbol` trick?
 // https://github.com/Microsoft/TypeScript/issues/364#issuecomment-719046161
+
+const _Longitude: unique symbol = Symbol('Longitude');
+export type Longitude = number & { [_Longitude]: void };
+
+const _Latitude: unique symbol = Symbol('Latitude');
+export type Latitude = number & { [_Latitude]: void };
+
+export type LonLat = [Longitude, Latitude];
+export type LatLon = [Latitude, Longitude];
+
+const _Easting: unique symbol = Symbol('Easting');
+export type Easting = number & { [_Easting]: void };
+
+const _Northing: unique symbol = Symbol('Northing');
+export type Northing = number & { [_Northing]: void };
+
+export type EasNor = [Easting, Northing];
+export type NorEas = [Northing, Easting];
 
 // The angle sign spams lots of CoreText-related warnings in the console when
 // running under Electron on macOS, so we use the @ sign there as a replacement.
