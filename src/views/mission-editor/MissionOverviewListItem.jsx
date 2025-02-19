@@ -174,7 +174,7 @@ const MissionOverviewListItem = ({
       break;
 
     case MissionItemType.CHANGE_FLIGHT_MODE:
-      secondaryText = `${item.parameters?.mode}`
+      secondaryText = `${item.parameters?.mode}`;
       break;
 
     case MissionItemType.CHANGE_HEADING:
@@ -209,20 +209,22 @@ const MissionOverviewListItem = ({
       );
       break;
 
-    case MissionItemType.SET_PAYLOAD:
+    case MissionItemType.SET_PAYLOAD: {
       const { name, action, value } = item.parameters;
-      secondaryText = `${name}: ${action}` + (value !== undefined ? ` ${value}` : '');
+      secondaryText =
+        `${name}: ${action}` + (value === undefined ? '' : ` ${value}`);
 
       break;
+    }
 
     case MissionItemType.SET_PARAMETER:
       secondaryText = `${item.parameters?.name}=${item.parameters?.value}`;
       break;
 
     case MissionItemType.UPDATE_FLIGHT_AREA:
-      // TODO
-      //onClick = openFlightAreaSettingsTab;
-      //secondaryText = formatFlightAreaStatusText(missionFlightAreaStatus);
+      // TODO:
+      // onClick = openFlightAreaSettingsTab;
+      // secondaryText = formatFlightAreaStatusText(missionFlightAreaStatus);
       break;
 
     case MissionItemType.UPDATE_GEOFENCE:
@@ -292,12 +294,14 @@ MissionOverviewListItem.propTypes = {
     participants: PropTypes.arrayOf(PropTypes.number),
   }),
   missionGeofenceStatus: PropTypes.oneOf(Object.values(Status)),
+  ratio: PropTypes.number,
   ratios: PropTypes.shape({
     avg: PropTypes.number,
     max: PropTypes.number,
     min: PropTypes.number,
   }),
   selected: PropTypes.bool,
+  selectedMissionId: PropTypes.number,
   onSelectItem: PropTypes.func,
   openGeofenceSettingsTab: PropTypes.func,
   openSafetySettingsTab: PropTypes.func,

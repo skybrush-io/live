@@ -5,16 +5,16 @@ import ChangeAltitudeIcon from '@material-ui/icons/Height';
 import ChangeFlightModeIcon from '@material-ui/icons/Flight';
 import ChangeHeadingIcon from '@material-ui/icons/RotateLeft';
 import ChangeSpeedIcon from '@material-ui/icons/Speed';
+import ReturnToHomeIcon from '@material-ui/icons/Home';
 import HoverIcon from '@material-ui/icons/HourglassEmpty';
+import LandIcon from '@material-ui/icons/FlightLand';
 import MarkerIcon from '@material-ui/icons/Flag';
-import SetPayloadIcon from '@material-ui/icons/Camera';
 import SetParameterIcon from '@material-ui/icons/Settings';
+import SetPayloadIcon from '@material-ui/icons/Camera';
 import TakeoffIcon from '@material-ui/icons/FlightTakeoff';
 import UpdateFlightAreaIcon from '@material-ui/icons/FormatShapes';
 import UpdateGeofenceIcon from '~/icons/PlacesFence';
 import UpdateSafetyIcon from '@material-ui/icons/Security';
-import LandIcon from '@material-ui/icons/FlightLand';
-import HomeIcon from '@material-ui/icons/Home';
 
 import {
   type GeofenceConfiguration,
@@ -219,7 +219,7 @@ export const iconForMissionItemType: Record<MissionItemType, React.ReactNode> =
     [MissionItemType.HOVER]: <HoverIcon />,
     [MissionItemType.LAND]: <LandIcon />,
     [MissionItemType.MARKER]: <MarkerIcon />,
-    [MissionItemType.RETURN_TO_HOME]: <HomeIcon />,
+    [MissionItemType.RETURN_TO_HOME]: <ReturnToHomeIcon />,
     [MissionItemType.SET_PARAMETER]: <SetParameterIcon />,
     [MissionItemType.SET_PAYLOAD]: <SetPayloadIcon />,
     [MissionItemType.TAKEOFF]: <TakeoffIcon />,
