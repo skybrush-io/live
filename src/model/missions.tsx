@@ -5,7 +5,7 @@ import LandIcon from '@mui/icons-material/FlightLand';
 import TakeoffIcon from '@mui/icons-material/FlightTakeoff';
 import UpdateFlightAreaIcon from '@mui/icons-material/FormatShapes';
 import ChangeAltitudeIcon from '@mui/icons-material/Height';
-import HomeIcon from '@mui/icons-material/Home';
+import ReturnToHomeIcon from '@mui/icons-material/Home';
 import HoverIcon from '@mui/icons-material/HourglassEmpty';
 import ChangeHeadingIcon from '@mui/icons-material/RotateLeft';
 import UpdateSafetyIcon from '@mui/icons-material/Security';
@@ -217,7 +217,7 @@ export const iconForMissionItemType: Record<MissionItemType, React.ReactNode> =
     [MissionItemType.HOVER]: <HoverIcon />,
     [MissionItemType.LAND]: <LandIcon />,
     [MissionItemType.MARKER]: <MarkerIcon />,
-    [MissionItemType.RETURN_TO_HOME]: <HomeIcon />,
+    [MissionItemType.RETURN_TO_HOME]: <ReturnToHomeIcon />,
     [MissionItemType.SET_PARAMETER]: <SetParameterIcon />,
     [MissionItemType.SET_PAYLOAD]: <SetPayloadIcon />,
     [MissionItemType.TAKEOFF]: <TakeoffIcon />,

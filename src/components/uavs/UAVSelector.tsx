@@ -226,19 +226,19 @@ const UAVSelector = ({
     >
       <div className={classes.content} tabIndex={0}>
         {filtered.length > 0 ? (
-          filtered.map(({ uavId, missionIndex }) => (
-            // Enclose the Avatar in a `div`, as it renders a fragment
-            <div key={`${uavId}:${missionIndex}`}>
-              {(() => {
-                const avatarProps = {
-                  style: { cursor: 'pointer' },
-                  onClick() {
-                    onSelect({ uavId, missionIndex });
-                    onClose();
-                  },
-                };
+          filtered.map(({ uavId, missionIndex }) => {
+            const avatarProps = {
+              style: { cursor: 'pointer' },
+              onClick: () => {
+                onSelect({ uavId, missionIndex });
+                onClose();
+              },
+            };
 
-                return uavId ? (
+            return (
+              // Enclose the Avatar in a `div`, as it renders a fragment
+              <div key={`${uavId}:${missionIndex}`}>
+                {uavId ? (
                   <DroneAvatar
                     label={
                       useMissionIds ? formatMissionId(missionIndex) : undefined
@@ -252,10 +252,10 @@ const UAVSelector = ({
                     label={formatMissionId(missionIndex)}
                     AvatarProps={avatarProps}
                   />
-                );
-              })()}
-            </div>
-          ))
+                )}
+              </div>
+            );
+          })
         ) : filter ? (
           <BackgroundHint text={t('UAVSelector.noMatchingUAVs', { filter })} />
         ) : (
