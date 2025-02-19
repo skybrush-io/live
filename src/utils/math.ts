@@ -3,13 +3,26 @@ import minBy from 'lodash-es/minBy';
 import property, { type PropertyPath } from 'lodash-es/property';
 import range from 'lodash-es/range';
 
-import monotoneConvexHull2D from 'monotone-convex-hull-2d';
 import * as TurfHelpers from '@turf/helpers';
+import monotoneConvexHull2D from 'monotone-convex-hull-2d';
 
 export type Coordinate2D = [number, number];
+/**
+ * Utility type for 2D coordinates with an arbitrary number of additional
+ * dimensions. It is useful when a function ignores additional dimenstions
+ * and we want to allow for example 3D coordinates as input without data
+ * conversion or type errors.
+ */
+export type Coordinate2DPlus = [number, number, ...number[]];
 export type Coordinate3D = [number, number, number];
 export type Coordinate2DObject = { x: number; y: number };
 export type PolarCoordinate2DObject = { angle: number; radius: number };
+export type WorldCoordinate2D = {
+  lat: number;
+  lon: number;
+  ahl?: number;
+  amsl?: number;
+};
 
 /**
  * Type guard for checking whether the input is a valid 2D coordinate pair.
@@ -275,8 +288,10 @@ export const dotProduct2D = (a: Coordinate2D, b: Coordinate2D): number =>
 /**
  * Euclidean distance function between two points, restricted to two dimensions.
  */
-export const euclideanDistance2D = (a: Coordinate2D, b: Coordinate2D): number =>
-  Math.hypot(a[0] - b[0], a[1] - b[1]);
+export const euclideanDistance2D = (
+  a: Coordinate2DPlus,
+  b: Coordinate2DPlus
+): number => Math.hypot(a[0] - b[0], a[1] - b[1]);
 
 /**
  * Takes a polygon (i.e. an array of [x, y] coordinate pairs) and ensures that

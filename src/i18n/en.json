@@ -550,6 +550,11 @@
   "sidebar": {
     "missionType": "Mission type: ({{missionType}})"
   },
+  "siteSurveyDialog": {
+    "initializer": {
+      "fromShow": "Initialize from show"
+    }
+  },
   "sorting": {
     "ascending": "Ascending",
     "descending": "Descending",
@@ -644,6 +649,7 @@
     "licenseInfo": "License info",
     "offlineMaps": "Offline maps",
     "paramUpload": "Parameter upload",
+    "siteSurvey": "Site survey",
     "tooltip": "Toolbox",
     "uploadInProgress": "Upload in progress"
   },

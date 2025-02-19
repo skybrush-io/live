@@ -58,6 +58,10 @@ type MapProps = Partial<ViewProperties> & {
   // -- Selection
   selectedTool: Tool;
 
+  // -- Toolbar
+
+  toolbarEnabled?: boolean;
+
   // -- Callbacks
   onMapMoved?: () => void;
 
@@ -77,6 +81,11 @@ const Map = (props: MapProps) => {
     rotation = viewDefaults.rotation,
     zoom = viewDefaults.zoom,
     selectedTool,
+    // TODO(vp): disabled by default, because apparently one of the buttons in
+    // the toolbar keeps a reference to the map which indicates a memory leak...
+    // It indicates that maps are still not completely independent of the main
+    // map in map view.
+    toolbarEnabled = false,
     layers,
     onFeaturesModified,
     onMapMoved,
@@ -109,7 +118,7 @@ const Map = (props: MapProps) => {
         style={styles.map}
         onMoveEnd={onMapMoved}
       >
-        <MapToolbars />
+        {toolbarEnabled ? <MapToolbars /> : <></>}
         <MapLayers
           {...layers}
           selectedTool={selectedTool}

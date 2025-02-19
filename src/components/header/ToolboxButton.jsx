@@ -12,7 +12,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Build from '@material-ui/icons/Build';
 import BusinessCenter from '@material-ui/icons/BusinessCenter';
 import Functions from '@material-ui/icons/Functions';
-import MapCloudOff from '~/icons/MapCloudOff';
+import LandscapeIcon from '@material-ui/icons/Landscape';
 import Tune from '@material-ui/icons/Tune';
 import VpnKey from '@material-ui/icons/VpnKey';
 
@@ -29,18 +29,23 @@ import { showAveragingDialog } from '~/features/measurement/slice';
 import { showParameterUploadDialog } from '~/features/parameters/actions';
 import { JOB_TYPE as PARAMETER_UPLOAD_JOB_TYPE } from '~/features/parameters/constants';
 import { isConnected } from '~/features/servers/selectors';
+import { getShowSegment } from '~/features/show/selectors';
+import { showDialog as showSiteSurveyDialog } from '~/features/site-survey/dialog';
 import { getRunningUploadJobType } from '~/features/upload/selectors';
 import { showVersionCheckDialog } from '~/features/version-check/slice';
+import MapCloudOff from '~/icons/MapCloudOff';
 
 const ToolboxButtonPresentation = ({
   isConnected,
   numberOfAveragingInProgress,
   runningUploadJobType,
+  siteSurveyDisabled,
   showAveragingDialog,
   showFirmwareUpdateDialog,
   showLicenseInfoDialog,
   showMapCachingDialog,
   showParameterUploadDialog,
+  showSiteSurveyDialog,
   t,
 }) => {
   const [anchorElement, setAnchorElement] = useState(null);
@@ -122,6 +127,15 @@ const ToolboxButtonPresentation = ({
             }
           />
         </MenuItem>
+        <MenuItem
+          disabled={siteSurveyDisabled}
+          onClick={createClickListener(showSiteSurveyDialog)}
+        >
+          <ListItemIcon>
+            <LandscapeIcon />
+          </ListItemIcon>
+          <ListItemText primary={t('toolbox.siteSurvey')}></ListItemText>
+        </MenuItem>
         <Divider />
         <MenuItem
           disabled={!isConnected}
@@ -147,11 +161,13 @@ ToolboxButtonPresentation.propTypes = {
   isConnected: PropTypes.bool,
   numberOfAveragingInProgress: PropTypes.number,
   runningUploadJobType: PropTypes.string,
+  siteSurveyDisabled: PropTypes.bool.isRequired,
   showAveragingDialog: PropTypes.func,
   showFirmwareUpdateDialog: PropTypes.func,
   showMapCachingDialog: PropTypes.func,
   showParameterUploadDialog: PropTypes.func,
   showLicenseInfoDialog: PropTypes.func,
+  showSiteSurveyDialog: PropTypes.func.isRequired,
   t: PropTypes.func,
 };
 
@@ -161,6 +177,7 @@ export default connect(
     isConnected: isConnected(state),
     numberOfAveragingInProgress: getActiveUAVIdsBeingAveraged(state).length,
     runningUploadJobType: getRunningUploadJobType(state),
+    siteSurveyDisabled: getShowSegment(state) === undefined,
   }),
   // mapDispatchToProps
   {
@@ -169,6 +186,7 @@ export default connect(
     showLicenseInfoDialog,
     showMapCachingDialog,
     showParameterUploadDialog,
+    showSiteSurveyDialog,
     showVersionCheckDialog,
   }
 )(withTranslation()(ToolboxButtonPresentation));

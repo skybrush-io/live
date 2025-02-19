@@ -19,6 +19,7 @@ import layerSettingsReducer from '~/features/map/layer-settings-dialog';
 import promptReducer from '~/features/prompt/slice';
 import savedLocationEditorReducer from '~/features/saved-locations/editor';
 import serverSettingsReducer from '~/features/servers/server-settings-dialog';
+import siteSurveyReducer from '~/features/site-survey/dialog';
 import uavDetailsDialogReducer from '~/features/uavs/details';
 
 /**
@@ -80,6 +81,7 @@ const dialogsReducer = combineReducers({
   prompt: promptReducer,
   savedLocationEditor: savedLocationEditorReducer,
   serverSettings: serverSettingsReducer,
+  siteSurvey: siteSurveyReducer,
   uavDetails: uavDetailsDialogReducer,
 });
 

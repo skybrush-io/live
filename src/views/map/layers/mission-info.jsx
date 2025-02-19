@@ -10,7 +10,7 @@ import { connect } from 'react-redux';
 import * as Coordinate from 'ol/coordinate';
 import Point from 'ol/geom/Point';
 import { getPointResolution } from 'ol/proj';
-import { Circle, Icon, RegularShape, Style, Text } from 'ol/style';
+import { Circle, Icon, Style, Text } from 'ol/style';
 
 import { Feature, geom, layer as olLayer, source } from '@collmot/ol-react';
 
@@ -19,6 +19,11 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormGroup from '@material-ui/core/FormGroup';
 
 import Colors from '~/components/colors';
+import {
+  convexHullPolygon,
+  homePositionPoints,
+  landingPositionPoints,
+} from '~/components/map/layers/ShowInfoLayer';
 import { Tool } from '~/components/map/tools';
 import { setLayerParametersById } from '~/features/map/layers';
 import {
@@ -38,12 +43,6 @@ import {
 } from '~/features/show/selectors';
 import { getSelectedUAVIdsForTrajectoryDisplay } from '~/features/uavs/selectors';
 import {
-  areaIdToGlobalId,
-  CONVEX_HULL_AREA_ID,
-  globalIdToHomePositionId,
-  globalIdToLandingPositionId,
-  homePositionIdToGlobalId,
-  landingPositionIdToGlobalId,
   MAP_ORIGIN_ID,
   MISSION_ITEM_LINE_STRING_ID,
   MISSION_ORIGIN_ID,
@@ -56,12 +55,10 @@ import { MissionItemType } from '~/model/missions';
 import { getMapOriginRotationAngle } from '~/selectors/map';
 import { getSelection } from '~/selectors/selection';
 import { hasFeature } from '~/utils/configuration';
-import { formatMissionId } from '~/utils/formatting';
 import { mapViewCoordinateFromLonLat } from '~/utils/geography';
 import { closePolygon, toRadians } from '~/utils/math';
 import CustomPropTypes from '~/utils/prop-types';
 import {
-  blackVeryThinOutline,
   dashedThinOutline,
   dottedThickOutline,
   fill,
@@ -224,27 +221,6 @@ const greenLine = stroke(Colors.axes.y, 2);
 const originMarkerFill = fill(Colors.markers.origin);
 
 /**
- * Shape to use for takeoff markers.
- */
-const takeoffTriangle = new RegularShape({
-  fill: fill(Colors.markers.takeoff),
-  points: 3,
-  radius: 6,
-  stroke: blackVeryThinOutline,
-});
-
-/**
- * Shape to use for landing markers.
- */
-const landingMarker = new RegularShape({
-  fill: fill(Colors.markers.landing),
-  points: 3,
-  radius: 6,
-  rotation: Math.PI,
-  stroke: blackVeryThinOutline,
-});
-
-/**
  * Styling function for the marker representing the origin of the map
  * coordinate system.
  */
@@ -278,50 +254,6 @@ const originStyles = (selected, axis) => [
     stroke: axis === 'x' ? redLine : greenLine,
   }),
 ];
-
-/**
- * Style for the marker representing the takeoff positions of the drones in
- * the current mission.
- */
-const takeoffPositionStyle = (feature, resolution) => {
-  const index = globalIdToHomePositionId(feature.getId());
-  const style = {
-    image: takeoffTriangle,
-  };
-
-  if (resolution < 0.4) {
-    style.text = new Text({
-      font: '12px sans-serif',
-      offsetY: 12,
-      text: formatMissionId(Number.parseInt(index, 10)),
-      textAlign: 'center',
-    });
-  }
-
-  return new Style(style);
-};
-
-/**
- * Style for the marker representing the landing positions of the drones in
- * the current mission.
- */
-const landingPositionStyle = (feature, resolution) => {
-  const index = globalIdToLandingPositionId(feature.getId());
-  const style = {
-    image: landingMarker,
-  };
-
-  if (resolution < 0.4) {
-    style.text = new Text({
-      font: '12px sans-serif',
-      offsetY: -12,
-      text: formatMissionId(Number.parseInt(index, 10)),
-      textAlign: 'center',
-    });
-  }
-
-  return new Style(style);
-};
 
 /**
  * Style for the marker representing the individual items in a waypoint mission.
@@ -384,16 +316,6 @@ const createMissionOriginStyle = memoizeOne(
 );
 
 /**
- * Style for the convex hull of the mission.
- */
-const missionConvexHullBaseStyle = new Style({
-  stroke: thinOutline(Colors.convexHull),
-});
-const missionConvexHullSelectionStyle = new Style({
-  stroke: whiteThickOutline,
-});
-
-/**
  * Style for the flight area of the mission.
  */
 const missionFlightAreaBaseStyle = new Style({
@@ -426,70 +348,11 @@ const auxiliaryMissionItemLineStringStyle = (feature) => [
 /**
  * Global identifiers for certain mission-specific features.
  */
-const CONVEX_HULL_GLOBAL_ID = areaIdToGlobalId(CONVEX_HULL_AREA_ID);
 const MAP_ORIGIN_GLOBAL_ID = originIdToGlobalId(MAP_ORIGIN_ID);
 const MISSION_ITEM_LINE_STRING_GLOBAL_ID = plannedTrajectoryIdToGlobalId(
   MISSION_ITEM_LINE_STRING_ID
 );
 const MISSION_ORIGIN_GLOBAL_ID = originIdToGlobalId(MISSION_ORIGIN_ID);
-
-const landingPositionPoints = (landingPositions) =>
-  Array.isArray(landingPositions)
-    ? landingPositions
-        .map((landingPosition, index) => {
-          const featureKey = `land.${index}`;
-
-          if (!landingPosition) {
-            return null;
-          }
-
-          const globalIdOfFeature = landingPositionIdToGlobalId(index);
-          const center = mapViewCoordinateFromLonLat([
-            landingPosition.lon,
-            landingPosition.lat,
-          ]);
-
-          return (
-            <Feature
-              key={featureKey}
-              id={globalIdOfFeature}
-              style={landingPositionStyle}
-            >
-              <geom.Point coordinates={center} />
-            </Feature>
-          );
-        })
-        .filter(Boolean)
-    : [];
-
-const homePositionPoints = (homePositions) =>
-  Array.isArray(homePositions)
-    ? homePositions
-        .map((homePosition, index) => {
-          const featureKey = `home.${index}`;
-
-          if (!homePosition) {
-            return null;
-          }
-
-          const globalIdOfFeature = homePositionIdToGlobalId(index);
-          const center = mapViewCoordinateFromLonLat([
-            homePosition.lon,
-            homePosition.lat,
-          ]);
-
-          return (
-            <Feature
-              key={featureKey}
-              id={globalIdOfFeature}
-              style={takeoffPositionStyle}
-            >
-              <geom.Point coordinates={center} />
-            </Feature>
-          );
-        })
-        .filter(Boolean)
-    : [];
 
 const mapOriginMarker = (
   coordinateSystemType,
@@ -739,32 +602,6 @@ const missionOriginMarker = (missionOrientation, missionOrigin) =>
         </Feature>,
       ]
     : [];
-
-const convexHullPolygon = (convexHull, selection) => {
-  if (convexHull) {
-    const convexHullInMapCoordinates = convexHull.map((coord) =>
-      mapViewCoordinateFromLonLat([coord.lon, coord.lat])
-    );
-    closePolygon(convexHullInMapCoordinates);
-
-    const selected = selection.includes(CONVEX_HULL_GLOBAL_ID);
-
-    return [
-      <Feature
-        key='missionConvexHull'
-        id={CONVEX_HULL_GLOBAL_ID}
-        style={[
-          ...(selected ? [missionConvexHullSelectionStyle] : []),
-          missionConvexHullBaseStyle,
-        ]}
-      >
-        <geom.Polygon coordinates={convexHullInMapCoordinates} />
-      </Feature>,
-    ];
-  } else {
-    return [];
-  }
-};
 
 const selectionTrajectoryFeatures = (
   missionIndicesForTrajectories,

@@ -3,14 +3,14 @@
  * show being executed.
  */
 
-import getUnixTime from 'date-fns/getUnixTime';
-import isNil from 'lodash-es/isNil';
-import set from 'lodash-es/set';
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import {
   COORDINATE_SYSTEM_TYPE,
   type ShowSpecification,
 } from '@skybrush/show-format';
+import getUnixTime from 'date-fns/getUnixTime';
+import isNil from 'lodash-es/isNil';
+import set from 'lodash-es/set';
 
 import { type Clock } from '~/features/clocks/types';
 import type UAV from '~/model/uav';
@@ -29,9 +29,11 @@ import {
   SettingsSynchronizationStatus,
   StartMethod,
 } from './enums';
+import type { EnvironmentState } from './types';
 
 type ShowSliceState = {
   data?: ShowSpecification;
+  environment: EnvironmentState;
 
   loading: boolean;
   progress?: number;
@@ -39,31 +41,6 @@ type ShowSliceState = {
   sourceUrl?: string;
   changedSinceLoaded: boolean;
   lastLoadAttemptFailed: boolean;
-
-  environment: {
-    editing: boolean;
-    outdoor: {
-      coordinateSystem: {
-        orientation: string; // stored as a string to avoid rounding errors
-        origin?: Coordinate2D;
-        type: 'neu' | 'nwu';
-      };
-      altitudeReference: AltitudeReferenceSpecification;
-      takeoffHeading: TakeoffHeadingSpecification;
-    };
-    indoor: {
-      coordinateSystem: {
-        orientation: string; // stored as a string to avoid rounding errors
-      };
-      room: {
-        visible: false;
-        firstCorner: Coordinate3D;
-        secondCorner: Coordinate3D;
-      };
-      takeoffHeading: TakeoffHeadingSpecification;
-    };
-    type: EnvironmentType;
-  };
 
   loadShowFromCloudDialog: {
     open: boolean;

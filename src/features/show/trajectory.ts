@@ -1,28 +1,37 @@
 import maxBy from 'lodash-es/maxBy';
+
+import type {
+  TimeWindow,
+  Trajectory,
+  TrajectorySegment,
+} from '@skybrush/show-format';
+import { trajectorySegmentsInTimeWindow } from '@skybrush/show-format';
+
+import type { Coordinate2D, Coordinate3D } from '~/utils/math';
 import { convexHull, euclideanDistance2D } from '~/utils/math';
 
 /**
  * Returns the convex hull of a single drone trajectory.
  */
-export function getConvexHullOfTrajectory(trajectory) {
+export function getConvexHullOfTrajectory(trajectory: Trajectory) {
   // Here we make use of the fact that convexHull() happily ignores the Z
   // coordinate
-  return convexHull(getPointsOfTrajectory(trajectory));
+  return convexHull(getXYPointsOfTrajectory(trajectory));
 }
 
 /**
  * Returns the first point of a single drone trajectory.
  */
-export function getFirstPointOfTrajectory(trajectory) {
-  return isValidTrajectory(trajectory) ? trajectory.points[0][1] : undefined;
+export function getFirstPointOfTrajectory(trajectory: Trajectory) {
+  return isValidTrajectory(trajectory) ? trajectory.points[0]![1] : undefined;
 }
 
 /**
  * Returns the last point of a single drone trajectory.
  */
-export function getLastPointOfTrajectory(trajectory) {
+export function getLastPointOfTrajectory(trajectory: Trajectory) {
   return isValidTrajectory(trajectory)
-    ? trajectory.points[trajectory.points.length - 1][1]
+    ? trajectory.points[trajectory.points.length - 1]![1]
     : undefined;
 }
 
@@ -31,7 +40,7 @@ export function getLastPointOfTrajectory(trajectory) {
  * point. Returns 0 for empty trajectories.
  */
 export function getMaximumHorizontalDistanceFromTakeoffPositionInTrajectory(
-  trajectory
+  trajectory: Trajectory
 ) {
   if (!isValidTrajectory(trajectory)) {
     return 0;
@@ -44,11 +53,13 @@ export function getMaximumHorizontalDistanceFromTakeoffPositionInTrajectory(
 
   // TODO(ntamas): calculate distances only for the convex hull of the trajectory!
 
-  const firstKeyframe = points[0];
+  const firstKeyframe = points[0]!;
   const firstPoint = firstKeyframe[1];
 
-  const distanceToFirstPoint = (keyframe) => {
+  const distanceToFirstPoint = (keyframe: TrajectorySegment) => {
     const point = keyframe[1];
+    // Note: 3d to 2d conversion is done to please TS without type casting.
+    // It was not done in the original code, so with proper testing, we could
     return euclideanDistance2D(point, firstPoint);
   };
 
@@ -60,7 +71,7 @@ export function getMaximumHorizontalDistanceFromTakeoffPositionInTrajectory(
  * Returns the maximum height in a single trajectory. Returns 0 for empty
  * trajectories.
  */
-export function getMaximumHeightOfTrajectory(trajectory) {
+export function getMaximumHeightOfTrajectory(trajectory: Trajectory) {
   if (!isValidTrajectory(trajectory)) {
     return undefined;
   }
@@ -75,14 +86,14 @@ export function getMaximumHeightOfTrajectory(trajectory) {
  * but optionally including control points in the right order.
  */
 export function getPointsOfTrajectory(
-  trajectory,
+  trajectory: Trajectory,
   { includeControlPoints = false } = {}
-) {
+): Coordinate3D[] {
   if (!isValidTrajectory(trajectory)) {
     return [];
   }
 
-  const { points = [] } = trajectory;
+  const { points } = trajectory;
 
   if (includeControlPoints) {
     const result = [];
@@ -102,9 +113,22 @@ export function getPointsOfTrajectory(
 }
 
 /**
+ * Returns the raw, 2D (X-Y) points of a trajectory object, without their timestamps,
+ * but optionally including control points in the right order.
+ */
+export function getXYPointsOfTrajectory(
+  trajectory: Trajectory,
+  { includeControlPoints = false } = {}
+): Coordinate2D[] {
+  return getPointsOfTrajectory(trajectory, { includeControlPoints }).map(
+    (point) => [point[0], point[1]]
+  );
+}
+
+/**
  * Returns the duration of a single drone trajectory.
  */
-export function getTrajectoryDuration(trajectory) {
+export function getTrajectoryDuration(trajectory: Trajectory) {
   if (!isValidTrajectory(trajectory)) {
     return 0;
   }
@@ -122,9 +146,28 @@ export function getTrajectoryDuration(trajectory) {
 }
 
 /**
+ * Returns the subtrajectory of the given trajectory that is within the given time window.
+ *
+ * The function keeps the all the properties of the original trajectory, but replaces
+ * the `points` property with calculated subtrajectory.
+ *
+ * @param trajectory The trajectory to get the subtrajectory from.
+ * @param timeWindow The time window of the subtrajectory.
+ */
+export function getTrajectoryInTimeWindow(
+  trajectory: Trajectory,
+  timeWindow: TimeWindow
+): Trajectory {
+  return {
+    ...trajectory,
+    points: trajectorySegmentsInTimeWindow(trajectory.points, timeWindow),
+  };
+}
+
+/**
  * Returns whether a trajectory object "looks like" a valid trajectory.
  */
-export const isValidTrajectory = (trajectory) =>
+export const isValidTrajectory = (trajectory: Trajectory) =>
   typeof trajectory === 'object' &&
   trajectory.version === 1 &&
   typeof trajectory.points === 'object' &&
