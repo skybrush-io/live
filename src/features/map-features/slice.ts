@@ -131,9 +131,10 @@ const { actions, reducer } = createSlice({
       action: PayloadAction<{
         id: FeatureProperties['id'];
         feature: Feature;
+        properties?: Partial<Omit<FeatureProperties, 'id'>>;
       }>
     ) {
-      const { id, feature } = action.payload;
+      const { id, feature, properties } = action.payload;
       const { points, type } = feature;
 
       if (!id) {
@@ -155,9 +156,10 @@ const { actions, reducer } = createSlice({
       // Generate the new feature object by copying the argument and ensuring
       // that it has the chosen ID
       const newFeature: FeatureProperties = {
+        id,
         visible: true,
         ...structuredClone(feature),
-        id,
+        ...properties,
       };
 
       // Store the ID of the feature that is about to be inserted on the

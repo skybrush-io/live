@@ -45,7 +45,7 @@ import {
   turfDistanceInMeters,
 } from '~/utils/geography';
 import {
-  convexHull,
+  convexHull2D,
   type Coordinate2D,
   createGeometryFromPoints,
   estimatePathDuration,
@@ -573,7 +573,7 @@ export const getConvexHullOfMissionInWorldCoordinates: AppSelector<
   getMissionItemsWithCoordinatesInOrder,
   getMissionItemsWithAreasInOrder,
   (homePositions, missionItemsWithCoorinates, missionItemsWithAreas) =>
-    convexHull([
+    convexHull2D([
       ...rejectNullish(homePositions).map(
         ({ lon, lat }): Coordinate2D => [lon, lat]
       ),
@@ -624,70 +624,44 @@ export const isWaypointMissionConvexHullInsideGeofence: AppSelector<
 );
 
 /**
- * Returns the maximum distance of any geofence vertex from any home position.
+ * Returns the maximum distance of any waypoint or flight area vertex in the
+ * mission from the first home position in the UAV mapping.
  */
-export const getMaximumDistanceBetweenHomePositionsAndGeofence: AppSelector<number> =
-  createSelector(
-    getGPSBasedHomePositionsInMission,
-    getGeofencePolygonInWorldCoordinates,
-    (homePositions, geofencePolygon) => {
-      if (!geofencePolygon) {
-        return 0;
-      }
-
-      const homePoints = rejectNullish(homePositions).map(({ lon, lat }) =>
-        TurfHelpers.point([lon, lat])
-      );
-      const geofencePoints = geofencePolygon.map(([lon, lat]) =>
-        TurfHelpers.point([lon, lat])
-      );
-      const distances = homePoints.flatMap((hp) =>
-        geofencePoints.map((gp) => turfDistanceInMeters(hp, gp))
-      );
-
-      return max(distances) ?? 0;
+export const getMaximumHorizontalDistanceFromHomePositionInWaypointMission: AppSelector<
+  number | undefined
+> = createSelector(
+  getGPSBasedHomePositionsInMission,
+  getMissionItemsWithCoordinatesInOrder,
+  getMissionItemsWithAreasInOrder,
+  ([homePosition], missionItemsWithCoorinates, missionItemsWithAreas) => {
+    if (!homePosition) {
+      return;
     }
-  );
 
-/**
- * Returns the maximum distance of any waypoint in the mission from the first
- * home position in the UAV mapping.
- */
-export const getMaximumHorizontalDistanceFromHomePositionInWaypointMission: AppSelector<number> =
-  createSelector(
-    getGPSBasedHomePositionsInMission,
-    getMissionItemsWithCoordinatesInOrder,
-    getMissionItemsWithAreasInOrder,
-    ([homePosition], missionItemsWithCoorinates, missionItemsWithAreas) => {
-      if (!homePosition) {
-        return 0;
-      }
-
-      const homePoint = TurfHelpers.point([homePosition.lon, homePosition.lat]);
-      return (
-        max(
-          [
-            ...missionItemsWithCoorinates.map<[number, number]>(
-              ({ coordinate: { lon, lat } }) => [lon, lat]
-            ),
-            ...missionItemsWithAreas.flatMap(({ area: { points } }) => points),
-          ].map((point) =>
-            turfDistanceInMeters(homePoint, TurfHelpers.point(point))
-          )
-        ) ?? 0
-      );
-    }
-  );
+    const homePoint = TurfHelpers.point([homePosition.lon, homePosition.lat]);
+    return max(
+      [
+        ...missionItemsWithCoorinates.map<[number, number]>(
+          ({ coordinate: { lon, lat } }) => [lon, lat]
+        ),
+        ...missionItemsWithAreas.flatMap(({ area: { points } }) => points),
+      ].map((point) =>
+        turfDistanceInMeters(homePoint, TurfHelpers.point(point))
+      )
+    );
+  }
+);
 
 /**
  * Returns the maximum target altitude that appears among the waypoints.
  */
-export const getMaximumHeightOfWaypoints: AppSelector<number> = createSelector(
-  getMissionItemsWithAltitudesInOrder,
-  (missionItemsWithAltitude) =>
-    // TODO: Handle different altitude references?
-    max(missionItemsWithAltitude.map((mi) => mi.altitude.value)) ?? 0
-);
+export const getMaximumHeightOfWaypoints: AppSelector<number | undefined> =
+  createSelector(
+    getMissionItemsWithAltitudesInOrder,
+    (missionItemsWithAltitude) =>
+      // TODO: Handle different altitude references?
+      max(missionItemsWithAltitude.map((mi) => mi.altitude.value))
+  );
 
 /**
  * Selector that returns whether the mission planner dialog is open.
