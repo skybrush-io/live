@@ -10,6 +10,7 @@ import {
   getCurrentMissionItemIdForMissionIndex,
   getCurrentMissionItemIndexForMissionIndex,
   getCurrentMissionItemRatioForMissionIndex,
+  getMissionItemIds,
   getMissionItemIdsWithIndices,
   getParticipantsForMissionItemIds,
   getSelectedMissionIdInMissionEditorPanel,
