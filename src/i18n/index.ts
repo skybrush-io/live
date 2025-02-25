@@ -12,6 +12,7 @@ import * as fr from './fr.json';
 import * as hu from './hu.json';
 import * as it from './it.json';
 import * as ja from './ja.json';
+import * as ko from './ko.json';
 import * as nl from './nl.json';
 import * as pl from './pl.json';
 import * as ro from './ro.json';
@@ -38,8 +39,9 @@ const availableLanguages: Language[] = [
   { label: 'Polski', code: 'pl', translation: pl },
   { label: 'Română', code: 'ro', translation: ro },
   { label: 'Русский', code: 'ru', translation: ru },
-  { label: '日本語', code: 'ja', translation: ja },
   { label: '中文', code: 'zh-Hans', translation: zhHans },
+  { label: '日本語', code: 'ja', translation: ja },
+  { label: '한국어', code: 'ko', translation: ko },
 ];
 
 export const enabledLanguages = availableLanguages.filter(({ code }) =>
