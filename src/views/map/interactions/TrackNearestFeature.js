@@ -175,11 +175,11 @@ class TrackNearestFeatureInteraction extends Interaction {
 }
 
 /**
- * React wrapper around an instance of {@link SelectNearestFeatureInteraction}
+ * React wrapper around an instance of {@link TrackNearestFeatureInteraction}
  * that allows us to use it in JSX.
  */
 export default createOLInteractionComponent(
-  'SelectNearestFeature',
+  'TrackNearestFeature',
   (props) => new TrackNearestFeatureInteraction(props),
   {
     propTypes: {
