@@ -22,6 +22,7 @@ import DrawingToolbar from './DrawingToolbar';
 import MapContextMenu from './MapContextMenu';
 import MapReferenceRequestHandler from './MapReferenceRequestHandler';
 import MapToolbar from './MapToolbar';
+import TakeoffToolbar from './TakeoffToolbar';
 import { isDrawingTool, Tool, toolToDrawInteractionProps } from './tools';
 
 import Widget from '~/components/Widget';
@@ -32,7 +33,11 @@ import {
   setSelection,
   toggleInSelection,
 } from '~/features/map/selection';
-import { getSelectedTool } from '~/features/map/tools';
+import {
+  getSelectedTool,
+  getTakeoffGrid,
+  getTakeoffGridProperties,
+} from '~/features/map/tools';
 import { updateMapViewSettings } from '~/features/map/view';
 import {
   addFeature,
@@ -78,6 +83,10 @@ import { forwardCollectionChanges } from '~/utils/openlayers';
 import { snapEndToStart } from './interactions/utils';
 
 import 'ol/ol.css';
+import { Circle, Fill, RegularShape, Stroke, Style } from 'ol/style';
+import { takeoffTriangle } from './layers/mission-info';
+import { blackVeryThinOutline, fill } from '~/utils/styles';
+import Colors from '~/components/colors';
 
 /* ********************************************************************** */
 
@@ -176,33 +185,35 @@ const MapViewControls = connect(
  *
  * @returns {JSX.Node[]}  the toolbars on the map
  */
-const MapViewToolbars = () => {
-  const toolbars = [];
+const MapViewToolbars = () => [
+  <Widget
+    key='Widget.MapToolbar'
+    style={{ top: 8, left: 8 + 24 + 8 }}
+    showControls={false}
+  >
+    <MapToolbar />
+  </Widget>,
 
-  toolbars.push(
-    <Widget
-      key='Widget.MapToolbar'
-      style={{ top: 8, left: 8 + 24 + 8 }}
-      showControls={false}
-    >
-      <MapToolbar />
-    </Widget>
-  );
+  <Widget
+    key='Widget.TakeoffToolbar'
+    style={{ top: 8, left: '50%', transform: 'translateX(-50%)' }}
+    showControls={false}
+  >
+    <TakeoffToolbar />
+  </Widget>,
 
-  if (hasFeature('mapFeatures')) {
-    toolbars.push(
-      <Widget
-        key='Widget.DrawingToolbar'
-        style={{ top: 8 + 48 + 8, left: 8 }}
-        showControls={false}
-      >
-        <DrawingToolbar />
-      </Widget>
-    );
-  }
-
-  return toolbars;
-};
+  ...(hasFeature('mapFeatures')
+    ? [
+        <Widget
+          key='Widget.DrawingToolbar'
+          style={{ top: 8 + 48 + 8, left: 8 }}
+          showControls={false}
+        >
+          <DrawingToolbar />
+        </Widget>,
+      ]
+    : []),
+];
 
 /* ********************************************************************** */
 
@@ -227,6 +238,7 @@ const MapViewInteractions = withMap((props) => {
     onSingleFeatureSelected,
     selectedFeaturesProvider,
     selectedTool,
+    takeoffGrid,
   } = props;
 
   const onModifyStart = useCallback(
@@ -378,6 +390,59 @@ const MapViewInteractions = withMap((props) => {
     );
   }
 
+  const takeoffTriangleParameters = {
+    fill: fill(Colors.markers.takeoff),
+    points: 3,
+    radius: 6,
+    stroke: blackVeryThinOutline,
+  };
+
+  const takeoffTriangleWithDisplacement = (displacement) =>
+    new Style({
+      image: new RegularShape({ ...takeoffTriangleParameters, displacement }),
+    });
+
+  if (selectedTool === Tool.TAKEOFF_GRID) {
+    interactions.push(
+      <interaction.Draw
+        key='TakeoffGrid'
+        type='Point'
+        condition={Condition.primaryAction}
+        // style={[
+        //   new Style({ image: s2 }),
+        //   new Style({ image: takeoffTriangle }),
+        // ]}
+        style={(_f, r) =>
+          takeoffGrid.coordinates
+            .map(([dx, dy]) => [
+              dx - takeoffGrid.size.x / 2,
+              dy - takeoffGrid.size.y / 2,
+            ])
+            .map((displacement) =>
+              takeoffTriangleWithDisplacement(
+                displacement.map((d) => d * (5 / r))
+              )
+            )
+        }
+        // style={(f, r, ...args) =>
+        //   console.log({ r, args }) ?? [
+        //     new Style({ image: new RegularShape(takeoffTriangleParameters) }),
+        //     takeoffTriangleWithDisplacement([
+        //       0,
+        //       50 / r,
+        //       // takeoffGridProperties.subgrids[0].xSpace / r,
+        //     ]),
+        //     takeoffTriangleWithDisplacement([50 / r, 0]),
+        //     takeoffTriangleWithDisplacement([50 / r, 50 / r]),
+        //   ]
+        // }
+        onDrawEnd={(...args) => {
+          console.log({ args });
+        }}
+      />
+    );
+  }
+
   // NOTE:
   // The `Modify` interaction requires either a source or a feature collection,
   // but we'd like to have it act on multiple layers, so we create a new merged
@@ -417,6 +482,7 @@ const MapViewInteractions = withMap((props) => {
 MapViewInteractions.propTypes = {
   selectedFeaturesProvider: PropTypes.func,
   selectedTool: PropTypes.string.isRequired,
+  takeoffGrid: PropTypes.object,
 
   onAddFeaturesToSelection: PropTypes.func,
   onAddWaypoint: PropTypes.func,
@@ -460,6 +526,7 @@ class MapViewPresentation extends React.Component {
     rotation: PropTypes.number,
     selection: PropTypes.arrayOf(PropTypes.string).isRequired,
     selectedTool: PropTypes.string,
+    takeoffGrid: PropTypes.object,
     zoom: PropTypes.number,
 
     glContainer: PropTypes.object,
@@ -527,8 +594,14 @@ class MapViewPresentation extends React.Component {
   }
 
   render() {
-    const { center, geofencePolygonId, rotation, selectedTool, zoom } =
-      this.props;
+    const {
+      center,
+      geofencePolygonId,
+      rotation,
+      selectedTool,
+      takeoffGrid,
+      zoom,
+    } = this.props;
     const view = (
       <View
         center={mapViewCoordinateFromLonLat(center)}
@@ -563,6 +636,7 @@ class MapViewPresentation extends React.Component {
             <MapViewInteractions
               geofencePolygonId={geofencePolygonId}
               selectedTool={selectedTool}
+              takeoffGrid={takeoffGrid}
               selectedFeaturesProvider={this._getSelectedTransformableFeatures}
               onAddFeaturesToSelection={this._onAddFeaturesToSelection}
               onAddWaypoint={this._onAddWaypoint}
@@ -848,6 +922,7 @@ const MapView = connect(
     selectedFeatures: getSelectedFeatureIds(state),
     selectedTool: getSelectedTool(state),
     selection: getSelection(state),
+    takeoffGrid: getTakeoffGrid(state),
 
     uavDetailsPanelFollowsSelection:
       getFollowMapSelectionInUAVDetailsPanel(state),
