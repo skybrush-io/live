@@ -26,6 +26,8 @@ export enum Tool {
   EDIT_FEATURE = 'editFeature',
 
   ADD_WAYPOINT = 'addWaypoint',
+
+  TAKEOFF_GRID = 'takeoffGrid',
 }
 
 /**
