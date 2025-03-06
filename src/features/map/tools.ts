@@ -9,6 +9,7 @@ import { type AppSelector } from '~/store/reducers';
 
 type MapToolsSliceState = {
   selectedTool: Tool;
+  takeoffGridProperties: unknown;
 };
 
 /**
@@ -16,6 +17,7 @@ type MapToolsSliceState = {
  */
 const initialState: MapToolsSliceState = {
   selectedTool: Tool.SELECT,
+  takeoffGridProperties: {},
 };
 
 /**
@@ -28,12 +30,18 @@ const { reducer, actions } = createSlice({
     setSelectedTool(state, action: PayloadAction<Tool>) {
       state.selectedTool = action.payload;
     },
+    setTakeoffGridProperties(state, action: PayloadAction<unknown>) {
+      state.takeoffGridProperties = action.payload;
+    },
   },
 });
 
-export const { setSelectedTool } = actions;
+export const { setSelectedTool, setTakeoffGridProperties } = actions;
 
 export const getSelectedTool: AppSelector<Tool> = (state) =>
   state.map.tools.selectedTool;
+
+export const getTakeoffGridProperties: AppSelector<unknown> = (state) =>
+  state.map.tools.takeoffGridProperties;
 
 export default reducer;
