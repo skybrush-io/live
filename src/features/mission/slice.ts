@@ -43,6 +43,8 @@ import {
  *       be distinguished, this still seems like the safer approach.
  */
 export type MissionSliceState = {
+  homePositionsLocked: boolean;
+
   /**
    * Type of the mission; ``show`` for drone shows. Empty string means that
    * there is no mission yet.
@@ -155,6 +157,7 @@ export type MissionSliceState = {
 };
 
 const initialState: MissionSliceState = {
+  homePositionsLocked: true,
   type: MissionType.UNKNOWN,
   mapping: [],
   homePositions: [],
@@ -197,6 +200,10 @@ const { actions, reducer } = createSlice({
   name: 'mission',
   initialState,
   reducers: {
+    toggleHomePositionsLocked(state) {
+      state.homePositionsLocked = !state.homePositionsLocked;
+    },
+
     addMissionItem(
       state,
       action: PayloadAction<{ item: MissionItem; index: number }>
@@ -676,6 +683,7 @@ const { actions, reducer } = createSlice({
 });
 
 export const {
+  toggleHomePositionsLocked,
   addMissionItem,
   adjustMissionMapping,
   cancelMappingEditorSessionAtCurrentSlot,
