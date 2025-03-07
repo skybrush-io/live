@@ -87,6 +87,8 @@ import { Circle, Fill, RegularShape, Stroke, Style } from 'ol/style';
 import { takeoffTriangle } from './layers/mission-info';
 import { blackVeryThinOutline, fill } from '~/utils/styles';
 import Colors from '~/components/colors';
+import { updateHomePositions } from '~/features/mission/slice';
+import { bindActionCreators } from 'redux';
 
 /* ********************************************************************** */
 
@@ -239,6 +241,7 @@ const MapViewInteractions = withMap((props) => {
     selectedFeaturesProvider,
     selectedTool,
     takeoffGrid,
+    updateHomePositions,
   } = props;
 
   const onModifyStart = useCallback(
@@ -412,6 +415,9 @@ const MapViewInteractions = withMap((props) => {
         //   new Style({ image: s2 }),
         //   new Style({ image: takeoffTriangle }),
         // ]}
+        // HACK: Generating a whole list of styles with displacements is
+        //       probably not the best approach, maybe have a single style
+        //       and a custom interaction that has a MultiPoint sketch feature?
         style={(_f, r) =>
           takeoffGrid.coordinates
             .map(([dx, dy]) => [
@@ -436,8 +442,18 @@ const MapViewInteractions = withMap((props) => {
         //     takeoffTriangleWithDisplacement([50 / r, 50 / r]),
         //   ]
         // }
-        onDrawEnd={(...args) => {
-          console.log({ args });
+        onDrawEnd={(event) => {
+          const [cx, cy] = event.feature.getGeometry().getCoordinates();
+          const newCoords = takeoffGrid.coordinates
+            .map(([dx, dy]) => [
+              dx - takeoffGrid.size.x / 2,
+              dy - takeoffGrid.size.y / 2,
+            ])
+            .map(([dx, dy]) =>
+              lonLatFromMapViewCoordinate([cx + dx * 5, cy + dy * 5])
+            );
+
+          updateHomePositions(newCoords.map(([lon, lat]) => ({ lon, lat })));
         }}
       />
     );
@@ -483,6 +499,7 @@ MapViewInteractions.propTypes = {
   selectedFeaturesProvider: PropTypes.func,
   selectedTool: PropTypes.string.isRequired,
   takeoffGrid: PropTypes.object,
+  updateHomePositions: PropTypes.func,
 
   onAddFeaturesToSelection: PropTypes.func,
   onAddWaypoint: PropTypes.func,
@@ -527,6 +544,7 @@ class MapViewPresentation extends React.Component {
     selection: PropTypes.arrayOf(PropTypes.string).isRequired,
     selectedTool: PropTypes.string,
     takeoffGrid: PropTypes.object,
+    updateHomePositions: PropTypes.func,
     zoom: PropTypes.number,
 
     glContainer: PropTypes.object,
@@ -600,6 +618,7 @@ class MapViewPresentation extends React.Component {
       rotation,
       selectedTool,
       takeoffGrid,
+      updateHomePositions,
       zoom,
     } = this.props;
     const view = (
@@ -637,6 +656,7 @@ class MapViewPresentation extends React.Component {
               geofencePolygonId={geofencePolygonId}
               selectedTool={selectedTool}
               takeoffGrid={takeoffGrid}
+              updateHomePositions={updateHomePositions}
               selectedFeaturesProvider={this._getSelectedTransformableFeatures}
               onAddFeaturesToSelection={this._onAddFeaturesToSelection}
               onAddWaypoint={this._onAddWaypoint}
@@ -926,6 +946,16 @@ const MapView = connect(
 
     uavDetailsPanelFollowsSelection:
       getFollowMapSelectionInUAVDetailsPanel(state),
+  }),
+  // mapDispatchToProps
+  (dispatch) => ({
+    dispatch,
+    ...bindActionCreators(
+      {
+        updateHomePositions,
+      },
+      dispatch
+    ),
   })
 )(MapViewPresentation);
 
