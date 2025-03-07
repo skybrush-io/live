@@ -1,5 +1,3 @@
-import config from 'config';
-
 import PropTypes from 'prop-types';
 import React, { useRef, useState } from 'react';
 import { Field, Form } from 'react-final-form';
@@ -54,8 +52,8 @@ import {
 import { TextField } from 'mui-rff';
 
 const DEFAULT_SUBGRID = {
-  xCount: 3,
-  yCount: 3,
+  xCount: 2,
+  yCount: 2,
   linkCount: true,
   xSpace: 1,
   ySpace: 1,
@@ -74,7 +72,7 @@ const useStyles = makeStyles((theme) => ({
 
 const decorator = createDecorator(
   {
-    field: /(subgrids\[\d+].linkCount)|(subgrids\[\d+].xCount)/,
+    field: /(subgrids\[\d+].xCount)|(subgrids\[\d+].linkCount)/,
     updates(_value, name, allValues) {
       const index = Number(
         name.match(/subgrids\[(?<index>\d+)]/).groups?.index
@@ -87,7 +85,7 @@ const decorator = createDecorator(
     },
   },
   {
-    field: /(subgrids\[\d+].linkSpace)|(subgrids\[\d+].xSpace)/,
+    field: /(subgrids\[\d+].xSpace)|(subgrids\[\d+].linkSpace)/,
     updates(_value, name, allValues) {
       const index = Number(
         name.match(/subgrids\[(?<index>\d+)]/).groups?.index
@@ -323,6 +321,13 @@ const TakeoffGridPropertiesForm = ({
   />
 );
 
+TakeoffGridPropertiesForm.propTypes = {
+  anchorEl: PropTypes.object,
+  setAnchorEl: PropTypes.func,
+  takeoffGridProperties: PropTypes.object,
+  setTakeoffGridProperties: PropTypes.func,
+};
+
 /**
  * Presentation component for the drawing toolbar.
  *
@@ -393,6 +398,9 @@ TakeoffToolbarPresentation.propTypes = {
   selectedTool: PropTypes.string,
   takeoffGridProperties: PropTypes.object, // TODO:
   t: PropTypes.func,
+  homePositionsLocked: PropTypes.bool,
+  toggleHomePositionsLocked: PropTypes.func,
+  setTakeoffGridProperties: PropTypes.func,
 };
 
 /**
