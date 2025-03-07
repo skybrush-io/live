@@ -1,0 +1,21 @@
+diff --git a/node_modules/@collmot/ol-react/lib/interaction/draw.js b/node_modules/@collmot/ol-react/lib/interaction/draw.js
+index 7d5cd64..3a097a9 100644
+--- a/node_modules/@collmot/ol-react/lib/interaction/draw.js
++++ b/node_modules/@collmot/ol-react/lib/interaction/draw.js
+@@ -10,6 +10,7 @@ var _olInteraction = require("./ol-interaction");
+ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+ var _default = exports["default"] = (0, _olInteraction.createOLInteractionComponent)('Draw', function (props) {
+   return new _Draw["default"]({
++    style: props.style,
+     condition: props.condition,
+     geometryFunction: props.geometryFunction,
+     type: props.type
+@@ -22,7 +23,7 @@ var _default = exports["default"] = (0, _olInteraction.createOLInteractionCompon
+     type: _propTypes["default"].string.isRequired,
+     geometryFunction: _propTypes["default"].func
+   },
+-  fragileProps: ['condition', 'geometryFunction', 'type'],
++  fragileProps: ['condition', 'geometryFunction', 'style', 'type'],
+   events: ['drawend', 'drawstart'],
+   eventMap: {
+     onDrawEnd: 'drawend',
