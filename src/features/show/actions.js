@@ -193,7 +193,8 @@ export const rotateOutdoorShowOrientationByAngleAroundPoint =
 
 export const updateOutdoorShowSettings =
   ({ origin, orientation, takeoffHeading, setupMission }) =>
-  (dispatch) => {
+  (dispatch, getState) => {
+    const state = getState();
     let changed = false;
 
     if (origin) {
@@ -214,7 +215,7 @@ export const updateOutdoorShowSettings =
     if (changed) {
       dispatch(clearLastUploadResult());
 
-      if (setupMission) {
+      if (setupMission && state.mission.homePositionsLocked) {
         dispatch(setupMissionFromShow());
       }
     }
