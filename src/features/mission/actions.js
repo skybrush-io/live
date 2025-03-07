@@ -16,6 +16,7 @@ import {
 } from '~/features/map-features/actions';
 import {
   getFeatureById,
+  getSelectedFeatureIdsByType,
   getSingleSelectedFeatureIdOfType,
 } from '~/features/map-features/selectors';
 import { showPromptDialog } from '~/features/prompt/actions';
@@ -40,6 +41,7 @@ import {
   getCurrentGPSPositionByUavId,
   getCurrentLocalPositionByUavId,
   getMissingUAVIdsInMapping,
+  getSelectedUAVIds,
   getSingleSelectedUAVId,
   getUAVIdList,
   getUnmappedUAVIds,
@@ -423,6 +425,41 @@ export const prepareMappingForSingleUAVMissionFromSelection =
 
       // TODO: amsl of marker?
       dispatch(updateHomePositions([{ lon, lat, agl: 0, amsl: undefined }]));
+    }
+  };
+
+/**
+ * Thunk that assumes that a multi-UAV mission is going to be executed and
+ * assigns the selected UAV to the mission.
+ */
+export const prepareMappingForMultiUAVMissionFromSelection =
+  () => (dispatch, getState) => {
+    const state = getState();
+    const uavIds = getSelectedUAVIds(state);
+
+    if (uavIds.length > 0) {
+      const uavPositions = uavIds.map((uavId) =>
+        getCurrentGPSPositionByUavId(state, uavId)
+      );
+
+      dispatch(setMappingLength(uavIds.length));
+      dispatch(replaceMapping(uavIds));
+
+      if (uavPositions) {
+        dispatch(updateHomePositions(uavPositions));
+      }
+    } else {
+      const featureIds = getSelectedFeatureIdsByType(FeatureType.POINTS)(state);
+
+      dispatch(setMappingLength(featureIds.length));
+      dispatch(replaceMapping(featureIds));
+
+      const positions = featureIds
+        .map((featureId) => getFeatureById(state, featureId).points[0])
+        .map(([lon, lat]) => ({ lon, lat, agl: 0, amsl: undefined }));
+
+      // TODO: amsl of marker?
+      dispatch(updateHomePositions(positions));
     }
   };
 

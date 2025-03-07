@@ -50,6 +50,8 @@ import {
   Typography,
 } from '@material-ui/core';
 import { TextField } from 'mui-rff';
+import { setupMissionFromShow } from '~/features/show/actions';
+import { prepareMappingForMultiUAVMissionFromSelection } from '~/features/mission/actions';
 
 const DEFAULT_SUBGRID = {
   xCount: 2,
@@ -341,6 +343,8 @@ const TakeoffToolbarPresentation = ({
   onToolSelected,
   selectedTool,
   t,
+  autoSetTakeoffGrid,
+  resetTakeoffGrid,
 }) => {
   const colorForTool = (tool) =>
     selectedTool === tool ? 'primary' : undefined;
@@ -359,7 +363,7 @@ const TakeoffToolbarPresentation = ({
       <Divider flexItem orientation='vertical' />
 
       <Tooltip placement='bottom' content='Reset'>
-        <IconButton onClick={() => {}}>
+        <IconButton onClick={resetTakeoffGrid}>
           <Replay />
         </IconButton>
       </Tooltip>
@@ -385,7 +389,7 @@ const TakeoffToolbarPresentation = ({
       />
 
       <Tooltip placement='bottom' content='Auto'>
-        <IconButton onClick={() => {}}>
+        <IconButton onClick={autoSetTakeoffGrid}>
           <FontDownload />
         </IconButton>
       </Tooltip>
@@ -401,6 +405,8 @@ TakeoffToolbarPresentation.propTypes = {
   homePositionsLocked: PropTypes.bool,
   toggleHomePositionsLocked: PropTypes.func,
   setTakeoffGridProperties: PropTypes.func,
+  autoSetTakeoffGrid: PropTypes.func,
+  resetTakeoffGrid: PropTypes.func,
 };
 
 /**
@@ -418,6 +424,8 @@ const TakeoffToolbar = connect(
     toggleHomePositionsLocked,
     setTakeoffGridProperties,
     onToolSelected: setSelectedTool,
+    autoSetTakeoffGrid: prepareMappingForMultiUAVMissionFromSelection,
+    resetTakeoffGrid: setupMissionFromShow,
   }
 )(withTranslation()(TakeoffToolbarPresentation));
 
