@@ -411,10 +411,6 @@ const MapViewInteractions = withMap((props) => {
         key='TakeoffGrid'
         type='Point'
         condition={Condition.primaryAction}
-        // style={[
-        //   new Style({ image: s2 }),
-        //   new Style({ image: takeoffTriangle }),
-        // ]}
         // HACK: Generating a whole list of styles with displacements is
         //       probably not the best approach, maybe have a single style
         //       and a custom interaction that has a MultiPoint sketch feature?
@@ -430,30 +426,23 @@ const MapViewInteractions = withMap((props) => {
               )
             )
         }
-        // style={(f, r, ...args) =>
-        //   console.log({ r, args }) ?? [
-        //     new Style({ image: new RegularShape(takeoffTriangleParameters) }),
-        //     takeoffTriangleWithDisplacement([
-        //       0,
-        //       50 / r,
-        //       // takeoffGridProperties.subgrids[0].xSpace / r,
-        //     ]),
-        //     takeoffTriangleWithDisplacement([50 / r, 0]),
-        //     takeoffTriangleWithDisplacement([50 / r, 50 / r]),
-        //   ]
-        // }
         onDrawEnd={(event) => {
+          const rotation = event.target.getMap().getView().getRotation();
           const [cx, cy] = event.feature.getGeometry().getCoordinates();
-          const newCoords = takeoffGrid.coordinates
-            .map(([dx, dy]) => [
-              dx - takeoffGrid.size.x / 2,
-              dy - takeoffGrid.size.y / 2,
-            ])
-            .map(([dx, dy]) =>
-              lonLatFromMapViewCoordinate([cx + dx * 5, cy + dy * 5])
-            );
-
-          updateHomePositions(newCoords.map(([lon, lat]) => ({ lon, lat })));
+          updateHomePositions(
+            takeoffGrid.coordinates
+              .map(([dx, dy]) => [
+                dx - takeoffGrid.size.x / 2,
+                dy - takeoffGrid.size.y / 2,
+              ])
+              .map(([dx, dy]) =>
+                lonLatFromMapViewCoordinate([
+                  cx + (dx * Math.cos(rotation) + dy * -Math.sin(rotation)) * 5,
+                  cy + (dx * Math.sin(rotation) + dy * Math.cos(rotation)) * 5,
+                ])
+              )
+              .map(([lon, lat]) => ({ lon, lat }))
+          );
         }}
       />
     );
