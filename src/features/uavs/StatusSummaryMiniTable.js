@@ -113,7 +113,7 @@ const StatusSummaryMiniTable = ({
         <StatusText status={getSemanticsForRSSI(rssiValue)}>
           {formatRSSI(rssiValue)}
         </StatusText>,
-        '/'
+        ' / '
       );
     }
 

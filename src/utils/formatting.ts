@@ -341,7 +341,12 @@ export function truncate(
  * as such.
  */
 export function formatRSSI(rssi?: number): string {
-  if (!rssi || rssi < 0 || !Number.isFinite(rssi)) {
+  if (
+    rssi === undefined ||
+    rssi === null ||
+    rssi < 0 ||
+    !Number.isFinite(rssi)
+  ) {
     return '—';
   } else {
     return rssi.toFixed(0) + '%';
