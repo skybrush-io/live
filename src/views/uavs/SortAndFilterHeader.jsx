@@ -189,7 +189,7 @@ const COMMON_HEADER_TEXT_PARTS = Object.freeze([
     sortKey: UAVSortKey.RSSI,
     style: {
       textAlign: 'center',
-      width: 70,
+      width: 100,
     },
   },
   {
