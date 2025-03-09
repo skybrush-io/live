@@ -87,7 +87,6 @@ const useStyles = makeStyles(
     rssiPills: {
       width: 72,
       paddingLeft: 2,
-      transform: 'translateY(1px)',
     },
     batteryIndicator: {
       display: 'inline-block',

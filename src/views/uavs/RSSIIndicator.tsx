@@ -15,6 +15,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   group: {
     display: 'inline-flex',
     flexDirection: 'row',
+    transform: 'translateY(1px)',
   },
   pill: {
     verticalAlign: 'text-top',
