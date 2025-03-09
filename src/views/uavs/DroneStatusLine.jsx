@@ -70,7 +70,6 @@ const useStyles = makeStyles(
       color: theme.palette.text.disabled,
     },
     pill: {
-      display: 'inline-block',
       margin: theme.spacing(0, 0.5),
       verticalAlign: 'text-top',
       transform: 'translateY(-1px)',

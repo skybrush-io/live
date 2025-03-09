@@ -28,7 +28,6 @@ const FLASH_STYLE = {
 const useStyles = makeStyles(
   (theme: Theme) => ({
     root: {
-      borderRadius: theme.spacing(1),
       color: theme.palette.primary.contrastText,
       fontSize: 'small',
       overflow: 'hidden',
@@ -39,8 +38,26 @@ const useStyles = makeStyles(
       whiteSpace: 'nowrap',
     },
 
+    'position-left': {
+      borderRadius: theme.spacing(1, 0, 0, 1),
+    },
+
+    'position-right': {
+      borderRadius: theme.spacing(0, 1, 1, 0),
+    },
+
+    'position-single': {
+      borderRadius: theme.spacing(1),
+    },
+
+    'position-middle': {},
+
     fullWidth: {
       width: '100%',
+    },
+
+    inline: {
+      display: 'inline-block',
     },
 
     'status-off': {
@@ -128,6 +145,7 @@ type StatusPillProps = Readonly<{
   className?: string;
   inline?: boolean;
   hollow?: boolean;
+  position?: 'left' | 'right' | 'middle' | 'single';
   status?: Status;
 }>;
 
@@ -140,6 +158,7 @@ const StatusPill = ({
   className,
   inline,
   hollow,
+  position = 'single',
   status = Status.INFO,
   ...rest
 }: StatusPillProps): JSX.Element => {
@@ -149,7 +168,8 @@ const StatusPill = ({
       className={clsx(
         className,
         classes.root,
-        !inline && classes.fullWidth,
+        inline ? classes.inline : classes.fullWidth,
+        classes[`position-${position}`],
         hollow
           ? classes[`status-hollow-${status}`]
           : classes[`status-${status}`]
