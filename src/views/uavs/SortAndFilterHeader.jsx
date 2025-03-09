@@ -494,7 +494,7 @@ const SortAndFilterHeader = ({
           }
           size='small'
           deleteIcon={
-            !isFilterActive ? <Filter /> : undefined /* default X icon */
+            isFilterActive ? undefined /* default X icon */ : <Filter />
           }
           {...bindChip({
             state: filterPopupState,
