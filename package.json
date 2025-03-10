@@ -104,6 +104,7 @@
     "nanoid": "^5.0.8",
     "natural-orderby": "^3.0.2",
     "ndjson": "^2.0.0",
+    "neverthrow": "^8.1.1",
     "node-ssdp-lite": "^0.2.0",
     "node-watch": "^0.7.4",
     "numbro": "^2.5.0",

@@ -7,7 +7,6 @@ import get from 'lodash-es/get';
 import identity from 'lodash-es/identity';
 import isNil from 'lodash-es/isNil';
 import max from 'lodash-es/max';
-import maxBy from 'lodash-es/maxBy';
 
 import { createSelector } from '@reduxjs/toolkit';
 import createCachedSelector from 're-reselect';
@@ -18,11 +17,15 @@ import {
   getGeofencePolygonInWorldCoordinates,
   selectMissionIndex,
 } from '~/features/mission/selectors';
-import { formatDuration, formatDurationHMS } from '~/utils/formatting';
+import {
+  formatDistance,
+  formatDuration,
+  formatDurationHMS,
+} from '~/utils/formatting';
 import { FlatEarthCoordinateSystem } from '~/utils/geography';
 import {
   calculateMinimumDistanceBetweenPairs,
-  convexHull,
+  convexHull2D,
   createGeometryFromPoints,
   getCentroid,
 } from '~/utils/math';
@@ -42,7 +45,7 @@ import {
   getMaximumHeightOfTrajectory,
   getMaximumHorizontalDistanceFromTakeoffPositionInTrajectory,
   getPointsOfTrajectory,
-  getTrajectoryDuration,
+  getDurationOfTrajectory,
   isValidTrajectory,
 } from './trajectory';
 import { isYawActivelyControlled } from './yaw';
@@ -496,7 +499,7 @@ export const getConvexHullsOfTrajectories = createSelector(
  */
 export const getConvexHullOfShow = createSelector(
   getConvexHullsOfTrajectories,
-  (convexHulls) => convexHull(convexHulls.flat())
+  (convexHulls) => convexHull2D(convexHulls.flat())
 );
 
 const transformPoints = (points, transform) =>
@@ -597,14 +600,12 @@ export const getLastPointsOfTrajectoriesInWorldCoordinates = createSelector(
  * starting point of that trajectory.
  */
 export const getMaximumHorizontalDistanceFromTakeoffPositionInTrajectories =
-  createSelector(
-    getTrajectories,
-    (trajectories) =>
-      max(
-        trajectories.map(
-          getMaximumHorizontalDistanceFromTakeoffPositionInTrajectory
-        )
-      ) || 0
+  createSelector(getTrajectories, (trajectories) =>
+    max(
+      trajectories.map(
+        getMaximumHorizontalDistanceFromTakeoffPositionInTrajectory
+      )
+    )
   );
 
 /**
@@ -613,18 +614,14 @@ export const getMaximumHorizontalDistanceFromTakeoffPositionInTrajectories =
  */
 export const getMaximumHeightInTrajectories = createSelector(
   getTrajectories,
-  (trajectories) => max(trajectories.map(getMaximumHeightOfTrajectory)) || 0
+  (trajectories) => max(trajectories.map(getMaximumHeightOfTrajectory))
 );
 
 /**
  * Returns the total duration of the show, in seconds.
  */
-export const getShowDuration = createSelector(
-  getTrajectories,
-  (trajectories) => {
-    const longest = maxBy(trajectories, getTrajectoryDuration);
-    return longest ? getTrajectoryDuration(longest) : 0;
-  }
+export const getShowDuration = createSelector(getTrajectories, (trajectories) =>
+  max(trajectories.map(getDurationOfTrajectory))
 );
 
 /**
@@ -848,12 +845,18 @@ export const getShowValidationResult = (state) => {
  */
 export const getShowDescription = createSelector(
   getNumberOfDronesInShow,
-  getShowDurationAsString,
+  getShowDuration,
   getMaximumHeightInTrajectories,
   getMinimumDistanceBetweenTakeoffPositions,
-  (numberDrones, duration, maxHeight, spacing) =>
-    `${numberDrones} drones, ${duration}, max AHL ${maxHeight.toFixed(1)}m` +
-    (spacing > 0 && Number.isFinite(spacing)
-      ? `, spacing ${spacing.toFixed(1)}m`
-      : '')
+  isShowUsingYawControl,
+  (numberDrones, duration, maxHeight, spacing, hasYawControl) =>
+    [
+      `${numberDrones} drones`,
+      ...(isNil(duration) ? [] : [formatDuration(duration)]),
+      ...(isNil(maxHeight) ? [] : [`max AHL ${formatDistance(maxHeight, 1)}`]),
+      ...(spacing > 0 && Number.isFinite(spacing)
+        ? [`spacing ${formatDistance(spacing, 1)}`]
+        : []),
+      ...(hasYawControl ? ['yaw controlled'] : []),
+    ].join(', ')
 );

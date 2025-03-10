@@ -30,6 +30,7 @@ export type FeatureProperties = {
   label?: string;
   labelStyle?: LabelStyle;
   measure?: boolean;
+  owner?: string;
   showPoints?: boolean;
   visible: boolean;
 };
