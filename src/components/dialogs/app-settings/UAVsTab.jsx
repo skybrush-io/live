@@ -5,7 +5,6 @@ import { connect } from 'react-redux';
 
 import Box from '@material-ui/core/Box';
 import Checkbox from '@material-ui/core/Checkbox';
-import Divider from '@material-ui/core/Divider';
 import FormControl from '@material-ui/core/FormControl';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormGroup from '@material-ui/core/FormGroup';
@@ -29,6 +28,7 @@ import { updateAppSettings } from '~/features/settings/slice';
 import {
   getDesiredPlacementAccuracyInMeters,
   getDesiredTakeoffHeadingAccuracy,
+  getMaximumConcurrentUploadTaskCount,
 } from '~/features/settings/selectors';
 import {
   BatteryDisplayStyle,
@@ -57,6 +57,7 @@ const UAVsTabPresentation = ({
   fullChargeVoltage,
   goneThreshold,
   lowVoltageThreshold,
+  maxUploadConcurrency,
   onCheckboxToggled,
   onDistanceFieldUpdated,
   onEnumFieldUpdated,
@@ -126,27 +127,44 @@ const UAVsTabPresentation = ({
         </FormControl>
       </FormGroup>
 
-      <Box display='flex' flexDirection='row' mb={1}>
-        <FormControl fullWidth variant='filled'>
-          <InputLabel id='uav-operation-confirmation-style'>
-            UAV operation confirmations
-          </InputLabel>
-          <Select
-            labelId='uav-operation-confirmation-style'
-            name='uavOperationConfirmationStyle'
-            value={
-              uavOperationConfirmationStyle ||
-              UAVOperationConfirmationStyle.NEVER
-            }
-            onChange={onEnumFieldUpdated}
-          >
-            {uavOperationConfirmationStyleOrder.map((value) => (
-              <MenuItem key={value} value={value}>
-                {describeUAVOperationConfirmationStyle(value)}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+      <Box my={2}>
+        <Header>{t('settings.uavs.operationSettings')}</Header>
+
+        <Box display='flex' flexDirection='row' mb={1}>
+          <FormControl fullWidth variant='filled'>
+            <InputLabel id='uav-operation-confirmation-style'>
+              UAV operation confirmations
+            </InputLabel>
+            <Select
+              labelId='uav-operation-confirmation-style'
+              name='uavOperationConfirmationStyle'
+              value={
+                uavOperationConfirmationStyle ||
+                UAVOperationConfirmationStyle.NEVER
+              }
+              onChange={onEnumFieldUpdated}
+            >
+              {uavOperationConfirmationStyleOrder.map((value) => (
+                <MenuItem key={value} value={value}>
+                  {describeUAVOperationConfirmationStyle(value)}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Box>
+
+        <Box display='flex' flexDirection='row' mb={1}>
+          <SimpleNumericField
+            fullWidth
+            label={t('settings.uavs.maxUploadConcurrency')}
+            name='maxUploadConcurrency'
+            min={1}
+            max={250}
+            step={1}
+            value={maxUploadConcurrency}
+            onChange={onIntegerFieldUpdated}
+          />
+        </Box>
       </Box>
 
       <Box my={2}>
@@ -262,6 +280,7 @@ UAVsTabPresentation.propTypes = {
   fullChargeVoltage: PropTypes.number,
   goneThreshold: PropTypes.number,
   lowVoltageThreshold: PropTypes.number,
+  maxUploadConcurrency: PropTypes.number,
   onCheckboxToggled: PropTypes.func,
   onDistanceFieldUpdated: PropTypes.func,
   onEnumFieldUpdated: PropTypes.func,
@@ -287,6 +306,7 @@ export default connect(
     ...state.settings.uavs,
     placementAccuracy: getDesiredPlacementAccuracyInMeters(state),
     takeoffHeadingAccuracy: getDesiredTakeoffHeadingAccuracy(state),
+    maxUploadConcurrency: getMaximumConcurrentUploadTaskCount(state),
   }),
   // mapDispatchToProps
   (dispatch) => ({

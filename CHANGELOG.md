@@ -37,6 +37,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Implemented range selection in list views. Click on one item and then hold
   Shift while clicking on another one to select everything between them.
 
+- Maximum number of concurrent show upload tasks can now be changed from the
+  settings.
+
 ### Changed
 
 - When setting the start time based on a time offset from the current time,

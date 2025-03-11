@@ -89,6 +89,13 @@ export const getLightingConditionsForThreeDView = (state) => {
 };
 
 /**
+ * Returns the maximum number of concurrent upload tasks that the client should
+ * attempt to start on the server during upload jobs.
+ */
+export const getMaximumConcurrentUploadTaskCount = (state) =>
+  state.settings.uavs.maxUploadConcurrency ?? 8;
+
+/**
  * Returns the currently selected preferred battery display style.
  */
 export const getPreferredBatteryDisplayStyle = (state) =>
