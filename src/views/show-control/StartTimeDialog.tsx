@@ -101,15 +101,24 @@ const makeFormValidator =
 
     if (!isValid(values.utcDate)) {
       errors.utcDate = t('startTimeDialog.errors.invalidDate');
-    } else if (isPast(endOfDay(values.utcDate))) {
-      errors.utcDate = t('startTimeDialog.errors.pastDate');
-    } else if (isValid(values.utcTime)) {
-      const dateTime = createDateTimeFromParts(values.utcDate, values.utcTime);
-      if (isPast(dateTime)) {
-        errors.utcTime = t('startTimeDialog.errors.pastTime');
-      }
-    } else {
+    } else if (!isValid(values.utcTime)) {
       errors.utcTime = t('startTimeDialog.errors.invalidTime');
+    } else if (values.clock === LocalClockId.ABSOLUTE) {
+      /* both start date and start time are valid. We need to check whether
+       * they are in the past only if the start time is based on an absolute
+       * timestamp and not a fixed delay (or MIDI timecode).
+       */
+      if (isPast(endOfDay(values.utcDate))) {
+        errors.utcDate = t('startTimeDialog.errors.pastDate');
+      } else {
+        const dateTime = createDateTimeFromParts(
+          values.utcDate,
+          values.utcTime
+        );
+        if (isPast(dateTime)) {
+          errors.utcTime = t('startTimeDialog.errors.pastTime');
+        }
+      }
     }
 
     return errors;
@@ -246,7 +255,9 @@ const StartTimeFormPresentation = ({
             )}
 
             <Box mt={2}>
-              <Header>{t('startTimeDialog.additionalSettings')}</Header>
+              <Header>
+                {invalid ? 'invalid' : t('startTimeDialog.additionalSettings')}
+              </Header>
             </Box>
 
             <Select
