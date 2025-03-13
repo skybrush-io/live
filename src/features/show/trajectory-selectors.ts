@@ -21,7 +21,7 @@ import {
 } from './trajectory';
 import {
   isOutdoorCoordinateSystemWithOrigin,
-  type EnvironmentState,
+  type OutdoorCoordinateSystem,
 } from './types';
 
 /**
@@ -34,7 +34,7 @@ export const transformPoints = <TCoord extends Coordinate2DPlus, TTransformed>(
 
 export function makeSelectors(
   selectSwarm: AppSelector<SwarmSpecification | undefined>,
-  selectEnvironment: AppSelector<EnvironmentState>
+  selectOutdoorShowCoordinateSystem: AppSelector<OutdoorCoordinateSystem>
 ) {
   // === Base selectors ===
 
@@ -62,20 +62,11 @@ export function makeSelectors(
   // === Coordinate transformation ===
 
   /**
-   * Selector that returns the definition of the coordinate system of an outdoor
-   * show.
-   */
-  const getOutdoorShowCoordinateSystem = createSelector(
-    selectEnvironment,
-    (environment) => environment.outdoor.coordinateSystem
-  );
-
-  /**
    * Selector that returns an object that can be used to transform GPS coordinates
    * from/to the show coordinate system.
    */
   const getOutdoorShowToWorldCoordinateSystemTransformationObject =
-    createSelector(getOutdoorShowCoordinateSystem, (coordinateSystem) =>
+    createSelector(selectOutdoorShowCoordinateSystem, (coordinateSystem) =>
       isOutdoorCoordinateSystemWithOrigin(coordinateSystem)
         ? new FlatEarthCoordinateSystem(coordinateSystem)
         : undefined
@@ -197,7 +188,6 @@ export function makeSelectors(
 
   return {
     getDroneSpecifications,
-    getOutdoorShowCoordinateSystem,
     getHomePositionsInWorldCoordinates,
     getLandingPositionsInWorldCoordinates,
     getConvexHullsOfTrajectories,

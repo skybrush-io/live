@@ -7,7 +7,7 @@ import type {
 import type { AppSelector, RootState } from '~/store/reducers';
 import type { FlatEarthCoordinateSystem } from '~/utils/geography';
 import type { Coordinate2D, WorldCoordinate2D } from '~/utils/math';
-import type { EnvironmentState } from './types';
+import type { EnvironmentState, OutdoorCoordinateSystem } from './types';
 
 type ShowValidationResult =
   | 'loadingFailed'
@@ -63,4 +63,7 @@ export const getConvexHullsOfShowSegmentTrajectories: AppSelector<
 export const getConvexHullOfShowSegment: AppSelector<Coordinate2D[]>;
 export const getConvexHullOfShowSegmentInWorldCoordinates: AppSelector<
   WorldCoordinate2D[]
+>;
+export const getOutdoorShowCoordinateSystem: AppSelector<
+  OutdoorCoordinateSystem | undefined
 >;

@@ -1,19 +1,17 @@
 import Collection from 'ol/Collection';
-import React, { useCallback } from 'react';
-
-import type OLEvent from 'ol/events/Event';
 import type Feature from 'ol/Feature';
 import type { DragBoxEvent } from 'ol/interaction/DragBox';
 import type { ModifyEvent } from 'ol/interaction/Modify';
 import VectorLayer from 'ol/layer/Vector';
 import type Map from 'ol/Map';
+import React, { useCallback } from 'react';
 
 // @ts-ignore
 import { interaction, withMap } from '@collmot/ol-react';
 
 import * as Condition from '~/components/map/conditions';
 import { Tool } from '~/components/map/tools';
-import { FeatureUpdateType } from '~/features/site-survey/actions';
+import type { FeatureUpdateOptions } from '~/features/site-survey/actions';
 import {
   getVisibleEditableLayers,
   isLayerVisibleAndSelectable,
@@ -38,7 +36,7 @@ type Props = {
   ) => void;
   updateModifiedFeatures?: (
     features: Feature[],
-    options: { event: OLEvent; type: FeatureUpdateType }
+    options: FeatureUpdateOptions
   ) => void;
 };
 

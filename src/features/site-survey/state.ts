@@ -5,20 +5,34 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import type { SwarmSpecification } from '@skybrush/show-format';
 import xor from 'lodash-es/xor';
+import { Point } from 'ol/geom';
 
 import { updateSelection as updateSelectedIds } from '~/features/map/utils';
-import { Identifier } from '~/utils/collections';
+import type { OutdoorCoordinateSystemWithOrigin } from '~/features/show/types';
+import type { Identifier } from '~/utils/collections';
+import {
+  lonLatFromMapViewCoordinate,
+  mapViewCoordinateFromLonLat,
+  translateLonLatWithMapViewDelta,
+} from '~/utils/geography';
+import { Coordinate2D, toRadians } from '~/utils/math';
+import { EMPTY_ARRAY } from '~/utils/redux';
+
+export type ShowData = {
+  swarm: SwarmSpecification;
+  coordinateSystem: OutdoorCoordinateSystemWithOrigin;
+};
 
 export type SiteSurveyState = {
   open: boolean;
-  swarm?: SwarmSpecification;
   selection: Identifier[];
+  showData?: ShowData;
 };
 
 const initialState: SiteSurveyState = {
   open: false,
-  swarm: undefined, // Just to be explicit.
-  selection: [],
+  selection: EMPTY_ARRAY,
+  showData: undefined,
 };
 
 const { reducer, actions } = createSlice({
@@ -77,13 +91,78 @@ const { reducer, actions } = createSlice({
     /**
      * Initializes the dialog with the given data.
      */
-    initializeWithData(state, action: PayloadAction<SwarmSpecification>) {
-      state.swarm = action.payload;
+    initializeWithData(state, action: PayloadAction<ShowData>) {
+      state.showData = action.payload;
+    },
+
+    // -- Transformations
+
+    /**
+     * Moves the show origin relative to its current position such that the delta
+     * is expressed in map view coordinates.
+     */
+    moveOutdoorShowOriginByMapCoordinateDelta(
+      state,
+      action: PayloadAction<Coordinate2D>
+    ) {
+      if (state.showData === undefined) {
+        console.warn('Cannot move show: no show data.');
+        return;
+      }
+
+      state.showData.coordinateSystem.origin = translateLonLatWithMapViewDelta(
+        state.showData.coordinateSystem.origin,
+        action.payload
+      );
+    },
+
+    /**
+     * Rotates the show origin by the given angle in degrees around a given point,
+     * snapping the angle to one decimal digit.
+     */
+    rotateShow(
+      state,
+      action: PayloadAction<{
+        rotationOriginInMapCoordinates: Coordinate2D;
+        angle: number;
+      }>
+    ) {
+      if (state.showData === undefined) {
+        console.warn('Cannot rotate show: no show data.');
+        return;
+      }
+
+      const { rotationOriginInMapCoordinates, angle } = action.payload;
+      const showOriginInMapCoordinates = mapViewCoordinateFromLonLat(
+        state.showData.coordinateSystem.origin
+      );
+      const showOriginPoint = new Point(showOriginInMapCoordinates);
+      showOriginPoint.rotate(toRadians(-angle), rotationOriginInMapCoordinates);
+      const newOrigin = lonLatFromMapViewCoordinate(
+        showOriginPoint.getFlatCoordinates()
+      );
+
+      const newOrientation =
+        Number.parseFloat(state.showData.coordinateSystem.orientation) + angle;
+
+      if (!Number.isFinite(newOrientation)) {
+        console.warn('Cannot rotate show: invalid orientation.');
+        return;
+      }
+
+      state.showData.coordinateSystem.origin = [newOrigin[0]!, newOrigin[1]!];
+      state.showData.coordinateSystem.orientation = newOrientation.toFixed(1);
     },
   },
 });
 
-export const { closeDialog, initializeWithData, showDialog, updateSelection } =
-  actions;
+export const {
+  closeDialog,
+  initializeWithData,
+  moveOutdoorShowOriginByMapCoordinateDelta,
+  rotateShow,
+  showDialog,
+  updateSelection,
+} = actions;
 
 export default reducer;

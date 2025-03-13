@@ -9,15 +9,14 @@ import React from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import type { SwarmSpecification } from '@skybrush/show-format';
-
 import {
   type DataSources,
-  selectDataSources,
+  selectInitDataSources,
 } from '~/features/site-survey/selectors';
 import {
   closeDialog,
   initializeWithData,
+  type ShowData,
   type SiteSurveyState,
 } from '~/features/site-survey/state';
 import type { AppDispatch, RootState } from '~/store/reducers';
@@ -39,7 +38,7 @@ type TranslationProps = {
   t: TFunction;
 };
 type DispatchProps = {
-  initializeWithData: (swarm: SwarmSpecification) => void;
+  initializeWithData: (swarm: ShowData) => void;
   closeDialog: () => void;
 };
 
@@ -54,7 +53,7 @@ function Initializer(props: InitializerProps) {
     closeDialog,
     initializeWithData,
     t,
-    dataSources: { swarm },
+    dataSources: { show },
   } = props;
   const styles = useInitializerStyles();
 
@@ -62,10 +61,10 @@ function Initializer(props: InitializerProps) {
     <Box className={styles.box}>
       <Button
         color='primary'
-        disabled={swarm.show === undefined}
+        disabled={show === undefined}
         onClick={() => {
-          if (swarm.show) {
-            initializeWithData(swarm.show);
+          if (show) {
+            initializeWithData(show);
           }
         }}
       >
@@ -82,10 +81,10 @@ type Props = SiteSurveyState &
   DispatchProps;
 
 function SiteSurveyDialog(props: Props) {
-  const { closeDialog, open, swarm, t } = props;
+  const { closeDialog, open, showData, t } = props;
   return (
     <Dialog fullScreen open={open} onClose={closeDialog}>
-      {swarm ? (
+      {showData ? (
         <>
           <DialogContent>
             <Map />
@@ -108,12 +107,12 @@ export default connect(
   // -- map state to props (get full dialog state)
   (state: RootState) => ({
     ...state.dialogs.siteSurvey,
-    dataSources: selectDataSources(state),
+    dataSources: selectInitDataSources(state),
   }),
   // -- map dispatch to props
   (dispatch: AppDispatch) => ({
     closeDialog: () => dispatch(closeDialog()),
-    initializeWithData: (swarm: SwarmSpecification) =>
-      dispatch(initializeWithData(swarm)),
+    initializeWithData: (showData: ShowData) =>
+      dispatch(initializeWithData(showData)),
   })
 )(withTranslation()(SiteSurveyDialog));
