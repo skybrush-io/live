@@ -498,8 +498,11 @@
       "fullCharge": "Full charge",
       "gone": "Mark drones as gone after",
       "lowTreshold": "Low threshold",
+      "maxConcurrency": "Maximum number of concurrent uploads",
+      "maxUploadConcurrency": "Maximum number of concurrent uploads",
       "missionSetup": "Mission setup",
       "missionSetupDescription": "Used before multi-drone missions to check whether each drone is at its prescribed takeoff position and is facing the right direction.",
+      "operationSettings": "Operations",
       "warn": "Warn about drones not seen for at least"
     }
   },

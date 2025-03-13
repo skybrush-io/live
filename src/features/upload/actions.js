@@ -161,8 +161,8 @@ export function startUploadJobFromUploadDialog() {
     const targets = areItemsInUploadBacklog(state)
       ? getItemsInUploadBacklog(state)
       : selector
-      ? selector(state)
-      : null;
+        ? selector(state)
+        : null;
 
     // Set up the next upload job and start it if at least one target was
     // selected

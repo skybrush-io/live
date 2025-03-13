@@ -181,16 +181,20 @@ export type SettingsState = {
     criticalVoltageThreshold: number;
 
     /**
-     * Whether to prefer percentages or voltages
-     * when showing the battery status
+     * Whether to prefer percentages or voltages when showing the battery status
      */
     preferredBatteryDisplayStyle: BatteryDisplayStyle;
 
     /**
-     * Wheter to ask for confirmation when performing
-     * certain UAV-related operations
+     * Whether to ask for confirmation when performing certain UAV-related operations
      */
     uavOperationConfirmationStyle: UAVOperationConfirmationStyle;
+
+    /**
+     * Maximum number of concurrent upload tasks for UAVs. May be undefined
+     * for older versions of the application (2.8.1 or earlier).
+     */
+    maxUploadConcurrency?: number;
   };
 
   apiKeys: Record<string, string>;

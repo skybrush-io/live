@@ -6,7 +6,7 @@
 
 export function formatParameters(parameters) {
   const rows = parameters.map(({ name, value }) => `${name}=${value}`);
-  return rows.join('\n');
+  return rows.length > 0 ? rows.join('\n') + '\n' : '';
 }
 
 export function parseParameters(parameterString) {

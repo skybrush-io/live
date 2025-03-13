@@ -547,7 +547,7 @@ const createNumericField = ({
           size,
           type: 'text',
           inputMode: 'decimal',
-          pattern: '[-0-9+.,]*',
+          pattern: '[\\-0-9+.,]*',
         }}
         variant='filled'
         value={displayedValue}

@@ -39,6 +39,7 @@ import {
   _setProgressInfoForUAV,
   startUpload,
 } from './slice';
+import { getMaximumConcurrentUploadTaskCount } from '../settings/selectors';
 
 /* ----- Progress handling -------------------------------------------------- */
 
@@ -128,7 +129,7 @@ function* runUploadWorker(chan, failed) {
  * Saga that manages the execution of an upload operation to multiple drones
  * with a set of worker sagas forked off from the main uploader saga.
  */
-function* forkingWorkerManagementSaga(spec, job, { workerCount = 8 } = {}) {
+function* forkingWorkerManagementSaga(spec, job) {
   const { executor, selector } = spec;
   if (!executor) {
     console.warn(
@@ -138,6 +139,7 @@ function* forkingWorkerManagementSaga(spec, job, { workerCount = 8 } = {}) {
   }
 
   const chan = yield call(channel, buffers.fixed(1));
+  const workerCount = yield select(getMaximumConcurrentUploadTaskCount);
   const failed = [];
   const workers = [];
 
@@ -154,10 +156,11 @@ function* forkingWorkerManagementSaga(spec, job, { workerCount = 8 } = {}) {
   // feed the workers with upload jobs
   while (!finished) {
     const uavId = yield select(getNextDroneFromUploadQueue);
+    const hasMore = !isNil(uavId);
 
     // First we check whether there is any job in the upload queue that we
     // can start straight away
-    if (!isNil(uavId)) {
+    if (hasMore) {
       yield put(_notifyUploadOnUavQueued(uavId));
       yield putWithRetry(chan, {
         executor,
