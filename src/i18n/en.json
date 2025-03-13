@@ -363,12 +363,15 @@
       "fenceAction": "Geofence action",
       "fenceActionHelperText": "Support for these options depends on the drones themselves; not all options are supported by all drones.",
       "fenceActionLabel": "Primary geofence action",
+      "generateAutomatically": "Generate automatically",
+      "geofencePolygon": "Geofence polygon",
       "horizontal": "Horizontal",
       "maxAltitude": "Max altitude",
       "maxDistance": "Max distance",
       "maxVertexCount": "Maximum vertex count",
       "proposedLimits": "Proposed limits for current mission",
       "safetyMargins": "Safety margins",
+      "simplifyGeometry": "Simplify geometry",
       "simplifyPolygon": "Simplify polygon",
       "vertexCountReduction": "Vertex count reduction",
       "vertical": "Vertical"
@@ -495,8 +498,11 @@
       "fullCharge": "Full charge",
       "gone": "Mark drones as gone after",
       "lowTreshold": "Low threshold",
+      "maxConcurrency": "Maximum number of concurrent uploads",
+      "maxUploadConcurrency": "Maximum number of concurrent uploads",
       "missionSetup": "Mission setup",
       "missionSetupDescription": "Used before multi-drone missions to check whether each drone is at its prescribed takeoff position and is facing the right direction.",
+      "operationSettings": "Operations",
       "warn": "Warn about drones not seen for at least"
     }
   },

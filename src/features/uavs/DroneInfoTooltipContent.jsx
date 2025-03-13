@@ -39,7 +39,6 @@ const useStyles = makeStyles(
       overflow: 'hidden',
     },
     pill: {
-      display: 'inline-block',
       margin: theme.spacing(0, 0.5, 0, 0),
       verticalAlign: 'text-top',
     },

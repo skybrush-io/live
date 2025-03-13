@@ -12,9 +12,12 @@ export function formatCoordinateArray(coords: number[]): string {
 /**
  * Formats a short (less than an hour) duration as minutes:seconds or
  * a long (not less than an hour) duration as hours:minutes:seconds.
+ * A placeholder is returned in case of missing input data.
  */
-export function formatDuration(duration: number): string {
-  return (duration < 60 * 60 ? formatDurationMS : formatDurationHMS)(duration);
+export function formatDuration(duration?: number): string {
+  return duration === undefined
+    ? '--:--:--'
+    : (duration < 60 * 60 ? formatDurationMS : formatDurationHMS)(duration);
 }
 
 /**
@@ -341,7 +344,12 @@ export function truncate(
  * as such.
  */
 export function formatRSSI(rssi?: number): string {
-  if (!rssi || rssi < 0 || !Number.isFinite(rssi)) {
+  if (
+    rssi === undefined ||
+    rssi === null ||
+    rssi < 0 ||
+    !Number.isFinite(rssi)
+  ) {
     return '—';
   } else {
     return rssi.toFixed(0) + '%';

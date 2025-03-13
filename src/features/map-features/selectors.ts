@@ -75,7 +75,7 @@ export const getFeatureById: AppSelector<
  */
 export const getProposedIdForNewFeature: AppSelector<
   string,
-  [Feature, string | undefined]
+  [Feature, string?]
 > = (state, feature, name) => {
   const { type } = feature;
 

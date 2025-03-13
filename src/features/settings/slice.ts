@@ -82,6 +82,7 @@ const initialState: SettingsSliceState = {
     criticalVoltageThreshold: LIPO_CRITICAL_VOLTAGE_THRESHOLD,
     preferredBatteryDisplayStyle: BatteryDisplayStyle.VOLTAGE,
     uavOperationConfirmationStyle: UAVOperationConfirmationStyle.NEVER,
+    maxUploadConcurrency: 8,
   },
 
   apiKeys: {},

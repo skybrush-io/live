@@ -26,10 +26,11 @@ import {
   abbreviateFlightMode,
   abbreviateGPSFixType,
   getSemanticsForGPSFixType,
-  getSemanticsForRSSI,
 } from '~/model/enums';
 import { getPreferredCoordinateFormatter } from '~/selectors/formatting';
-import { formatCoordinateArray, formatRSSI } from '~/utils/formatting';
+import { formatCoordinateArray } from '~/utils/formatting';
+
+import { RSSIIndicator } from './RSSIIndicator';
 
 /**
  * Converts the absolute value of a heading deviation, in degrees, to the
@@ -70,7 +71,6 @@ const useStyles = makeStyles(
       color: theme.palette.text.disabled,
     },
     pill: {
-      display: 'inline-block',
       margin: theme.spacing(0, 0.5),
       verticalAlign: 'text-top',
       transform: 'translateY(-1px)',
@@ -84,9 +84,9 @@ const useStyles = makeStyles(
     gpsPill: {
       width: 40,
     },
-    rssiPill: {
-      marginLeft: theme.spacing(1),
-      width: 40,
+    rssiPills: {
+      width: 72,
+      paddingLeft: 2,
     },
     batteryIndicator: {
       display: 'inline-block',
@@ -154,13 +154,7 @@ const DroneStatusLine = ({
             {...batteryStatus}
           />
           <ColoredLight inline color={color} />
-          <StatusPill
-            inline
-            className={clsx(classes.pill, classes.rssiPill)}
-            status={getSemanticsForRSSI(rssi)}
-          >
-            {formatRSSI(rssi)}
-          </StatusPill>
+          <RSSIIndicator className={classes.rssiPills} rssi={rssi} />
           <StatusPill
             inline
             hollow
@@ -231,7 +225,7 @@ DroneStatusLine.propTypes = {
     ahl: PropTypes.number,
     agl: PropTypes.number,
   }),
-  rssi: PropTypes.number,
+  rssi: PropTypes.arrayOf(PropTypes.number),
   secondaryLabel: PropTypes.string,
   text: PropTypes.string,
   textSemantics: PropTypes.oneOf([
@@ -274,7 +268,7 @@ export default connect(
         missing: !uav,
         mode: uav ? uav.mode : undefined,
         position: uav ? uav.position : undefined,
-        rssi: uav ? uav.rssi?.[0] : undefined,
+        rssi: uav ? uav.rssi : undefined,
         ...statusSummarySelector(state, ownProps.id),
       };
     };

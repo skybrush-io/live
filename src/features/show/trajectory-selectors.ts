@@ -12,7 +12,7 @@ import type {
 import type { AppSelector } from '~/store/reducers';
 import { FlatEarthCoordinateSystem } from '~/utils/geography';
 import type { Coordinate2DPlus, WorldCoordinate2D } from '~/utils/math';
-import { convexHull } from '~/utils/math';
+import { convexHull2D } from '~/utils/math';
 import { EMPTY_ARRAY } from '~/utils/redux';
 import {
   getConvexHullOfTrajectory,
@@ -182,7 +182,7 @@ export function makeSelectors(
    */
   const getConvexHullOfShow = createSelector(
     getConvexHullsOfTrajectories,
-    (convexHulls) => convexHull(convexHulls.flat())
+    (convexHulls) => convexHull2D(convexHulls.flat())
   );
 
   /**
@@ -366,11 +366,11 @@ export function makeSegmentSelectors(
    */
   const getConvexHullOfShowSegment = createSelector(
     getConvexHullsOfShowSegmentTrajectories,
-    (convexHulls) => convexHull(convexHulls.flat())
+    (convexHulls) => convexHull2D(convexHulls.flat())
   );
 
   /**
-   * Returns the coordinates of the convex hull of the "show" segment of the
+   * Returns the coordinates of the convex hull of the "show" segment of thenpm
    * currently loaded show, in world coordinates, or `undefined` if the "show"
    * segment does not exist.
    */

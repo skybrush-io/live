@@ -33,12 +33,12 @@ export const UAVSortKeys = [
   UAVSortKey.STATUS,
   UAVSortKey.FLIGHT_MODE,
   UAVSortKey.BATTERY,
+  UAVSortKey.RSSI,
   UAVSortKey.GPS_FIX,
   UAVSortKey.ALTITUDE_MSL,
   UAVSortKey.ALTITUDE_HOME,
   UAVSortKey.ALTITUDE_GROUND,
   UAVSortKey.HEADING,
-  UAVSortKey.RSSI,
 ];
 
 /**
@@ -50,12 +50,12 @@ export const labelsForUAVSortKey: Record<UAVSortKey, PreparedI18nKey> = {
   [UAVSortKey.STATUS]: tt('sorting.label.status'),
   [UAVSortKey.FLIGHT_MODE]: tt('sorting.label.flightMode'),
   [UAVSortKey.BATTERY]: tt('sorting.label.battery'),
+  [UAVSortKey.RSSI]: tt('sorting.label.rssi'),
   [UAVSortKey.GPS_FIX]: tt('sorting.label.gpsFix'),
   [UAVSortKey.ALTITUDE_MSL]: tt('sorting.label.amsl'),
   [UAVSortKey.ALTITUDE_HOME]: tt('sorting.label.ahl'),
   [UAVSortKey.ALTITUDE_GROUND]: tt('sorting.label.agl'),
   [UAVSortKey.HEADING]: tt('sorting.label.heading'),
-  [UAVSortKey.RSSI]: tt('sorting.label.rssi'),
 };
 
 /**
@@ -67,12 +67,12 @@ export const shortLabelsForUAVSortKey: Record<UAVSortKey, PreparedI18nKey> = {
   [UAVSortKey.STATUS]: tt('sorting.shortLabel.status'),
   [UAVSortKey.FLIGHT_MODE]: tt('sorting.shortLabel.flightMode'),
   [UAVSortKey.BATTERY]: tt('sorting.shortLabel.battery'),
+  [UAVSortKey.RSSI]: tt('sorting.shortLabel.rssi'),
   [UAVSortKey.GPS_FIX]: tt('sorting.shortLabel.gpsFix'),
   [UAVSortKey.ALTITUDE_MSL]: tt('sorting.shortLabel.amsl'),
   [UAVSortKey.ALTITUDE_HOME]: tt('sorting.shortLabel.ahl'),
   [UAVSortKey.ALTITUDE_GROUND]: tt('sorting.shortLabel.agl'),
   [UAVSortKey.HEADING]: tt('sorting.shortLabel.heading'),
-  [UAVSortKey.RSSI]: tt('sorting.shortLabel.rssi'),
 };
 
 /**

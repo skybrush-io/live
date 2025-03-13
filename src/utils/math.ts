@@ -6,6 +6,8 @@ import range from 'lodash-es/range';
 import * as TurfHelpers from '@turf/helpers';
 import monotoneConvexHull2D from 'monotone-convex-hull-2d';
 
+// TODO: Rename `Coordinate{2,3}D` to `Vector{2,3}Tuple` for
+//       consistency with Three.js and `@skybrush/show-format`
 export type Coordinate2D = [number, number];
 /**
  * Utility type for 2D coordinates with an arbitrary number of additional
@@ -331,10 +333,9 @@ export function closePolygon(poly: Coordinate2D[]): void {
 /**
  * Returns the 2D convex hull of a set of coordinates.
  */
-export const convexHull = (coordinates: Coordinate2D[]): Coordinate2D[] =>
-  monotoneConvexHull2D(coordinates)
-    .map((index) => coordinates[index])
-    .flatMap((c) => (c ? [c.length > 2 ? [c[0], c[1]] : c] : []));
+export const convexHull2D = (coordinates: Coordinate2D[]): Coordinate2D[] =>
+  // NOTE: Bang justified by `monotoneConvexHull2D` returning an index subset
+  monotoneConvexHull2D(coordinates).map((index) => coordinates[index]!);
 
 /**
  * Creates an appropriate Turf.js geometry from the given list of coordinates.

@@ -25,14 +25,14 @@ import { forceFormSubmission } from '../forms';
 import { closeLayerSettingsDialog } from '~/features/map/layer-settings-dialog';
 import {
   adjustLayerZIndex,
+  removeLayer,
   renameLayer,
   toggleLayerVisibility,
-  removeLayer,
 } from '~/features/map/layers';
 import { LayerType } from '~/model/layers';
+import { getLayers, getLicensedLayerById } from '~/selectors/layers';
 import { createValidator, required } from '~/utils/validation';
 import { LayerSettings, stateObjectToLayerSettings } from '~/views/map/layers';
-import { getLayers, getLicensedLayerById } from '~/selectors/layers';
 
 const validator = createValidator({
   label: required,
@@ -43,7 +43,6 @@ const validator = createValidator({
  * regardless of its type.
  */
 const BasicLayerSettingsFormPresentation = ({
-  initialValues,
   layer,
   onSubmit,
   onToggleLayerVisibility,
@@ -51,7 +50,7 @@ const BasicLayerSettingsFormPresentation = ({
 }) => (
   <Form
     validateOnBlur
-    initialValues={initialValues}
+    initialValues={{ label: layer.label }}
     validate={validate}
     onSubmit={onSubmit}
   >
@@ -84,10 +83,10 @@ const BasicLayerSettingsFormPresentation = ({
 
 BasicLayerSettingsFormPresentation.propTypes = {
   layer: PropTypes.shape({
+    label: PropTypes.string,
     visible: PropTypes.bool,
     type: PropTypes.string,
   }),
-  initialValues: PropTypes.object,
   validate: PropTypes.func,
   onSubmit: PropTypes.func,
   onToggleLayerVisibility: PropTypes.func,
@@ -99,11 +98,7 @@ BasicLayerSettingsFormPresentation.propTypes = {
  */
 const BasicLayerSettingsForm = connect(
   // mapStateToProps
-  (state, ownProps) => ({
-    initialValues: {
-      label: ownProps.layer.label,
-    },
-  }),
+  null,
   // mapDispatchToProps
   (dispatch, ownProps) => ({
     onSubmit(values) {

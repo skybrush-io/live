@@ -189,7 +189,7 @@ const COMMON_HEADER_TEXT_PARTS = Object.freeze([
     sortKey: UAVSortKey.RSSI,
     style: {
       textAlign: 'center',
-      width: 70,
+      width: 100,
     },
   },
   {
@@ -494,7 +494,7 @@ const SortAndFilterHeader = ({
           }
           size='small'
           deleteIcon={
-            !isFilterActive ? <Filter /> : undefined /* default X icon */
+            isFilterActive ? undefined /* default X icon */ : <Filter />
           }
           {...bindChip({
             state: filterPopupState,
