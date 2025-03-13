@@ -4,21 +4,29 @@
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import type { SwarmSpecification } from '@skybrush/show-format';
+import xor from 'lodash-es/xor';
+
+import { updateSelection as updateSelectedIds } from '~/features/map/utils';
+import { Identifier } from '~/utils/collections';
 
 export type SiteSurveyState = {
   open: boolean;
   swarm?: SwarmSpecification;
+  selection: Identifier[];
 };
 
 const initialState: SiteSurveyState = {
   open: false,
   swarm: undefined, // Just to be explicit.
+  selection: [],
 };
 
 const { reducer, actions } = createSlice({
   name: 'site-survey',
   initialState,
   reducers: {
+    // -- Dialog
+
     /**
      * Opens the dialog.
      *
@@ -42,6 +50,30 @@ const { reducer, actions } = createSlice({
       return initialState;
     },
 
+    // -- Selection
+
+    updateSelection(
+      state,
+      action: PayloadAction<{
+        mode: 'add' | 'clear' | 'remove' | 'set' | 'toggle';
+        ids: Identifier[];
+      }>
+    ) {
+      const { mode, ids } = action.payload;
+      if (mode === 'add') {
+        state.selection = updateSelectedIds(state.selection, ids);
+      } else if (mode === 'clear') {
+        state.selection = [];
+      } else if (mode === 'remove') {
+        state.selection = updateSelectedIds(state.selection, [], ids);
+      } else if (mode === 'set') {
+        state.selection = updateSelectedIds([], ids);
+      } else if (mode === 'toggle') {
+        state.selection = updateSelectedIds([], xor(state.selection, ids));
+      }
+    },
+    // -- Intitialization
+
     /**
      * Initializes the dialog with the given data.
      */
@@ -51,6 +83,7 @@ const { reducer, actions } = createSlice({
   },
 });
 
-export const { closeDialog, showDialog, initializeWithData } = actions;
+export const { closeDialog, initializeWithData, showDialog, updateSelection } =
+  actions;
 
 export default reducer;

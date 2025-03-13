@@ -6,6 +6,7 @@ import { Map as OLMap, View } from '@collmot/ol-react';
 
 import { mapViewCoordinateFromLonLat } from '~/utils/geography';
 import type { Coordinate2D } from '~/utils/math';
+
 import { MapLayers, type LayerConfig } from './layers';
 import MapControls from './MapControls';
 import MapToolbars from './MapToolbars';
@@ -52,6 +53,8 @@ export const viewDefaults: ViewProperties = {
 };
 
 type MapProps = Partial<ViewProperties> & {
+  children?: React.ReactNode;
+
   // -- Layer configuration
   layers: LayerConfig;
 
@@ -77,6 +80,7 @@ type MapProps = Partial<ViewProperties> & {
 
 const Map = (props: MapProps) => {
   const {
+    children,
     center = viewDefaults.center,
     rotation = viewDefaults.rotation,
     zoom = viewDefaults.zoom,
@@ -125,6 +129,7 @@ const Map = (props: MapProps) => {
           onFeaturesModified={onFeaturesModified}
         />
         <MapControls />
+        {children}
       </OLMap>
     </div>
   );

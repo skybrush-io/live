@@ -3,15 +3,14 @@
  * model objects and converting between the two.
  */
 
-import { produce } from 'immer';
 import isEmpty from 'lodash-es/isEmpty';
 import isNil from 'lodash-es/isNil';
 import unary from 'lodash-es/unary';
 import { batch } from 'react-redux';
 
-import { updateFlatEarthCoordinateSystem } from '~/features/map/origin';
 import { cloneFeatureById } from '~/features/map-features/actions';
 import { updateFeaturePropertiesByIds } from '~/features/map-features/slice';
+import { updateFlatEarthCoordinateSystem } from '~/features/map/origin';
 import { updateMissionItemFromFeature } from '~/features/mission/actions';
 import {
   moveOutdoorShowOriginByMapCoordinateDelta,

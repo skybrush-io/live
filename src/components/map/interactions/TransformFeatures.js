@@ -371,7 +371,7 @@ const TransformEventType = {
   TRANSFORM_END: 'transformEnd',
 };
 
-class TransformFeaturesInteractionEvent extends OLEvent {
+export class TransformFeaturesInteractionEvent extends OLEvent {
   constructor(
     type,
     subType,

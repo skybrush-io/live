@@ -9,7 +9,8 @@ import {
 import { makeSelectors as makeTrajectorySelectors } from '~/features/show/trajectory-selectors';
 import type { EnvironmentState } from '~/features/show/types';
 import type { AppSelector, RootState } from '~/store/reducers';
-import type { SiteSurveyState } from './dialog';
+
+import type { SiteSurveyState } from './state';
 
 const selectSiteSurveyState: AppSelector<SiteSurveyState> = (
   state: RootState
@@ -30,6 +31,17 @@ const selectSwarmSpecification = createSelector(
  */
 const selectEnvironment: AppSelector<EnvironmentState> = getEnvironmentState;
 
+/**
+ * Selector that returns the selection from the site survey state.
+ */
+export const getSelection = createSelector(
+  selectSiteSurveyState,
+  (state) => state.selection
+);
+
+/**
+ * Data sources that can be used to initialize the dialog.
+ */
 export type DataSources = {
   swarm: {
     /** The swarm specification of the currently loaded show. */
@@ -37,6 +49,9 @@ export type DataSources = {
   };
 };
 
+/**
+ * Selector that returns the data sources the dialog can be initialized with.
+ */
 export const selectDataSources: AppSelector<DataSources> = createSelector(
   getSwarmSpecificationForShowSegment,
   (showSwarm) => ({

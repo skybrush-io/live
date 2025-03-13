@@ -1,20 +1,18 @@
-import PropTypes from 'prop-types';
-import React, { useState } from 'react';
-import { withTranslation } from 'react-i18next';
-import { connect } from 'react-redux';
-
 import Divider from '@material-ui/core/Divider';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-
 import Build from '@material-ui/icons/Build';
 import BusinessCenter from '@material-ui/icons/BusinessCenter';
 import Functions from '@material-ui/icons/Functions';
 import LandscapeIcon from '@material-ui/icons/Landscape';
 import Tune from '@material-ui/icons/Tune';
 import VpnKey from '@material-ui/icons/VpnKey';
+import PropTypes from 'prop-types';
+import React, { useState } from 'react';
+import { withTranslation } from 'react-i18next';
+import { connect } from 'react-redux';
 
 import GenericHeaderButton from '@skybrush/mui-components/lib/GenericHeaderButton';
 import SidebarBadge from '@skybrush/mui-components/lib/SidebarBadge';
@@ -29,8 +27,8 @@ import { showAveragingDialog } from '~/features/measurement/slice';
 import { showParameterUploadDialog } from '~/features/parameters/actions';
 import { JOB_TYPE as PARAMETER_UPLOAD_JOB_TYPE } from '~/features/parameters/constants';
 import { isConnected } from '~/features/servers/selectors';
-import { getShowSegment } from '~/features/show/selectors';
-import { showDialog as showSiteSurveyDialog } from '~/features/site-survey/dialog';
+import { getShowSegment, hasShowOrigin } from '~/features/show/selectors';
+import { showDialog as showSiteSurveyDialog } from '~/features/site-survey/state';
 import { getRunningUploadJobType } from '~/features/upload/selectors';
 import { showVersionCheckDialog } from '~/features/version-check/slice';
 import MapCloudOff from '~/icons/MapCloudOff';
@@ -177,7 +175,8 @@ export default connect(
     isConnected: isConnected(state),
     numberOfAveragingInProgress: getActiveUAVIdsBeingAveraged(state).length,
     runningUploadJobType: getRunningUploadJobType(state),
-    siteSurveyDisabled: getShowSegment(state) === undefined,
+    siteSurveyDisabled:
+      getShowSegment(state) === undefined || !hasShowOrigin(state),
   }),
   // mapDispatchToProps
   {

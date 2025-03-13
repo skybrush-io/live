@@ -1,7 +1,19 @@
-import React from 'react';
+import Feature from 'ol/Feature';
+import type { ModifyEvent } from 'ol/interaction/Modify';
+import React, { useCallback } from 'react';
 import { connect } from 'react-redux';
+// Import from ol/Map because that one has typing.
+import type OLMap from 'ol/Map';
+import type { DragBoxEvent } from 'ol/interaction/DragBox';
+import VectorLayer from 'ol/layer/Vector';
 
 import { Map } from '~/components/map';
+import MapInteractions from '~/components/map/interactions/MapInteractions';
+import type {
+  BoxDragMode,
+  FeatureSelectionMode,
+  FeatureSelectionOrActivationMode,
+} from '~/components/map/interactions/types';
 import {
   layerComponents as defaultLayerComponent,
   LayerProps,
@@ -14,14 +26,22 @@ import ShowInfoLayerPresentation, {
 } from '~/components/map/layers/ShowInfoLayer';
 import { Tool } from '~/components/map/tools';
 import {
+  updateModifiedFeatures as updateModifiedFeaturesAction,
+  type FeatureUpdateOptions,
+} from '~/features/site-survey/actions';
+import {
   getConvexHullOfShowInWorldCoordinates,
   getHomePositionsInWorldCoordinates,
-  getLandingPositionsInWorldCoordinates,
+  getSelection,
 } from '~/features/site-survey/selectors';
-import { LayerType } from '~/model/layers';
+import { updateSelection } from '~/features/site-survey/state';
+import { getVisibleSelectableLayers, LayerType } from '~/model/layers';
+import { isFeatureTransformable } from '~/model/openlayers';
 import { getVisibleLayersInOrder } from '~/selectors/ordered';
-import { RootState } from '~/store/reducers';
-import { WorldCoordinate2D } from '~/utils/math';
+import type { RootState } from '~/store/reducers';
+import type { Identifier } from '~/utils/collections';
+import { findFeaturesById } from '~/utils/geography';
+import type { WorldCoordinate2D } from '~/utils/math';
 
 // === Layers ===
 
@@ -29,18 +49,23 @@ type ShowInfoLayerProps = LayerProps & {
   convexHull?: WorldCoordinate2D[];
   homePositions?: (WorldCoordinate2D | undefined)[];
   landingPositions?: (WorldCoordinate2D | undefined)[];
-  selection?: string[];
+  selection: Identifier[];
 };
 
 const ShowInfoLayer = (props: ShowInfoLayerProps) => {
-  const { convexHull, homePositions, landingPositions, ...layerProps } = props;
+  const {
+    convexHull,
+    homePositions,
+    landingPositions,
+    selection,
+    ...layerProps
+  } = props;
 
   return (
     <ShowInfoLayerPresentation {...layerProps}>
       {...homePositionPoints(homePositions)}
       {...landingPositionPoints(landingPositions)}
-      {/** TODO(vp): get selection working. */}
-      {...convexHullPolygon(convexHull, [])}
+      {...convexHullPolygon(convexHull, selection)}
     </ShowInfoLayerPresentation>
   );
 };
@@ -48,7 +73,7 @@ const ShowInfoLayer = (props: ShowInfoLayerProps) => {
 const ConnectedShowInfoLayer = connect((state: RootState) => ({
   convexHull: getConvexHullOfShowInWorldCoordinates(state),
   homePositions: getHomePositionsInWorldCoordinates(state),
-  landingPositions: getLandingPositionsInWorldCoordinates(state),
+  selection: getSelection(state),
 }))(ShowInfoLayer);
 
 // === Map ===
@@ -60,11 +85,151 @@ const layerComponents = {
 
 type SiteSurveyMapProps = {
   layers: LayerConfig['layers'];
+  selectedTool: Tool;
+  updateModifiedFeatures: (
+    features: Feature[],
+    options: FeatureUpdateOptions
+  ) => void;
+  updateSelection: (mode: FeatureSelectionMode, ids: Identifier[]) => void;
+  selection: Identifier[];
 };
 
-const SiteSurveyMap = ({ layers }: SiteSurveyMapProps) => {
+const useOwnState = (props: SiteSurveyMapProps) => {
+  const { selection, updateModifiedFeatures, updateSelection } = props;
+
+  const getSelectedTransformableFeatures = useCallback(
+    (map: OLMap): Feature[] => {
+      return findFeaturesById(map, selection).filter(
+        (val): val is Feature =>
+          val instanceof Feature && isFeatureTransformable(val)
+      );
+    },
+    [selection]
+  );
+
+  const onFeaturesSelected = useCallback(
+    (
+      mode: FeatureSelectionOrActivationMode,
+      features: Feature[] | undefined
+    ) => {
+      if (mode === 'activate') {
+        return; // Not supported.
+      }
+
+      const ids = features
+        ? features
+            .map((feature) => feature.getId()?.toString())
+            .filter((v) => v !== undefined)
+        : [];
+      if (mode === 'set' || (ids && ids.length > 0)) {
+        updateSelection(mode, ids);
+      }
+    },
+    [updateSelection]
+  );
+
+  const onBoxDragEnded = useCallback(
+    (mode: BoxDragMode, event: DragBoxEvent) => {
+      const target: Feature = event.target;
+      const geometry = target.getGeometry();
+      if (geometry === undefined) {
+        return;
+      }
+
+      const extent = geometry.getExtent();
+      const features: Feature[] = [];
+      const map = event.mapBrowserEvent.map;
+
+      for (const layer of getVisibleSelectableLayers(map)) {
+        if (!(layer instanceof VectorLayer)) {
+          continue;
+        }
+
+        const source = layer.getSource();
+        if (!source) {
+          continue;
+        }
+
+        source.forEachFeatureIntersectingExtent(extent, (feature) => {
+          const featureGeometry = feature.getGeometry();
+          if (
+            featureGeometry.getType() === 'Point' &&
+            geometry.intersectsCoordinate(featureGeometry.getCoordinates())
+          ) {
+            features.push(feature);
+          }
+        });
+      }
+
+      onFeaturesSelected(mode, features);
+    },
+    [onFeaturesSelected]
+  );
+
+  const onSingleFeatureSelected = useCallback(
+    (mode: FeatureSelectionOrActivationMode, feature: Feature | undefined) => {
+      if (mode === 'activate') {
+        // Not supported here.
+        return;
+      }
+
+      const id = feature ? feature.getId() : undefined;
+      if (id === undefined && mode !== 'set' && mode !== 'clear') {
+        return;
+      }
+
+      if (mode === 'clear') {
+        mode = 'set';
+        feature = undefined;
+      }
+
+      onFeaturesSelected(mode, feature ? [feature] : []);
+    },
+    [onFeaturesSelected]
+  );
+
+  const onFeaturesModified = useCallback(
+    (event: ModifyEvent) => {
+      updateModifiedFeatures(event.features.getArray(), {
+        type: 'modify',
+        event,
+      });
+    },
+    [updateModifiedFeatures]
+  );
+
+  return {
+    getSelectedTransformableFeatures,
+    onBoxDragEnded,
+    onFeaturesModified,
+    onSingleFeatureSelected,
+    updateModifiedFeatures,
+  };
+};
+
+const SiteSurveyMap = (props: SiteSurveyMapProps) => {
+  const { layers, selectedTool } = props;
+  const {
+    getSelectedTransformableFeatures,
+    onBoxDragEnded,
+    onFeaturesModified,
+    onSingleFeatureSelected,
+    updateModifiedFeatures,
+  } = useOwnState(props);
   return (
-    <Map selectedTool={Tool.SELECT} layers={{ layers, layerComponents }}></Map>
+    <Map
+      selectedTool={selectedTool}
+      layers={{ layers, layerComponents }}
+      onFeaturesModified={onFeaturesModified}
+    >
+      <MapInteractions
+        selectedTool={selectedTool}
+        getSelectedTransformableFeatures={getSelectedTransformableFeatures}
+        onBoxDragEnded={onBoxDragEnded}
+        onSingleFeatureSelected={onSingleFeatureSelected}
+        updateModifiedFeatures={updateModifiedFeatures}
+      />
+    </Map>
   );
 };
 
@@ -72,6 +237,17 @@ const ConnectedSiteSurveyMap = connect(
   // mapStateToProps
   (state: RootState) => ({
     layers: getVisibleLayersInOrder(state),
+    selectedTool: Tool.SELECT,
+    selection: getSelection(state),
+  }),
+  // mapDispatchToProps
+  (dispatch) => ({
+    updateSelection: (mode: FeatureSelectionMode, ids: Identifier[]) =>
+      dispatch(updateSelection({ mode, ids })),
+    updateModifiedFeatures: (
+      features: Feature[],
+      options: FeatureUpdateOptions
+    ) => updateModifiedFeaturesAction(dispatch, features, options),
   })
 )(SiteSurveyMap);
 
