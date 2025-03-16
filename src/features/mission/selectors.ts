@@ -616,7 +616,11 @@ export const isWaypointMissionConvexHullInsideGeofence: AppSelector<
     ) {
       const geofence = createGeometryFromPoints(geofencePoints);
       const convexHull = createGeometryFromPoints(convexHullPoints);
-      return geofence && convexHull && turfContains(geofence, convexHull);
+      return (
+        geofence.isOk() &&
+        convexHull.isOk() &&
+        turfContains(geofence.value, convexHull.value)
+      );
     } else {
       return false;
     }

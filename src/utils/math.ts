@@ -4,6 +4,7 @@ import property, { type PropertyPath } from 'lodash-es/property';
 import range from 'lodash-es/range';
 
 import monotoneConvexHull2D from 'monotone-convex-hull-2d';
+import { err, ok, type Result } from 'neverthrow';
 import * as TurfHelpers from '@turf/helpers';
 
 // TODO: Rename `Coordinate{2,3}D` to `Vector{2,3}Tuple` for
@@ -327,29 +328,29 @@ export const convexHull2D = (coordinates: Coordinate2D[]): Coordinate2D[] =>
  * coordinate is provided, a point geometry is returned. When two coordinates
  * are provided, a linestring geometry is returned with two points. When three
  * or more coordinates are provided, the result will be a Turf.js polygon.
- *
- * NOTE: This currently seems to only be used for polygons, maybe a separate
- * function is unnecessary?
  */
 export function createGeometryFromPoints(
   coordinates: Coordinate2D[]
-): TurfHelpers.Geometry | undefined {
+): Result<
+  TurfHelpers.Point | TurfHelpers.LineString | TurfHelpers.Polygon,
+  string
+> {
   if (coordinates.length === 0) {
-    return undefined;
+    return err('at least one point is required to create a geometry');
   }
 
   if (coordinates.length === 1 && isCoordinate2D(coordinates[0])) {
-    return TurfHelpers.point(coordinates[0]).geometry;
+    return ok(TurfHelpers.point(coordinates[0]).geometry);
   }
 
   if (coordinates.length === 2) {
-    return TurfHelpers.lineString(coordinates).geometry;
+    return ok(TurfHelpers.lineString(coordinates).geometry);
   }
 
   const closedPoly = [...coordinates];
   closePolygon(closedPoly);
 
-  return TurfHelpers.polygon([closedPoly]).geometry;
+  return ok(TurfHelpers.polygon([closedPoly]).geometry);
 }
 
 /**
@@ -491,14 +492,14 @@ export const simplifyPolygonUntilLimit = (
 export const simplifyPolygon = (
   [_, ...coordinates]: Coordinate2D[],
   target: number
-): Coordinate2D[] => {
+): Result<Coordinate2D[], string> => {
   const result = simplifyPolygonUntilLimit(coordinates, target);
 
   if (!isCoordinate2D(result[0])) {
-    throw new Error('polygons need to have at least three 2D vertices');
+    return err('polygons need to have at least three 2D vertices');
   }
 
-  return [...result, result[0]];
+  return ok([...result, result[0]]);
 };
 
 /**

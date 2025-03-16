@@ -738,7 +738,11 @@ export const isShowConvexHullInsideGeofence = createSelector(
     ) {
       geofence = createGeometryFromPoints(geofence);
       convexHull = createGeometryFromPoints(convexHull);
-      return turfContains(geofence, convexHull);
+      return (
+        geofence.isOk() &&
+        convexHull.isOk() &&
+        turfContains(geofence.value, convexHull.value)
+      );
     }
 
     return false;

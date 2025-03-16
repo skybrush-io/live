@@ -71,7 +71,7 @@ export const getSafetySettings: AppSelector<SafetySliceState['settings']> = (
  * buffering (extension with an extra safety margin / padding zone).
  */
 export const getGeofenceGenerationSettingsApplicator: AppSelector<
-  (coordinates: Coordinate2D[]) => Coordinate2D[]
+  (coordinates: Coordinate2D[]) => Result<Coordinate2D[], string>
 > = createSelector(
   getGeofenceSettings,
   makeGeofenceGenerationSettingsApplicator
@@ -131,12 +131,12 @@ export const getBoundaryPolygonForCurrentMissionType: AppSelector<
   getBoundaryPolygonBasedOnMissionItems,
   (
     missionType,
-    geofencePolygonBasedOnShowTrajectories,
-    geofencePolygonBasedOnMissionItems
+    boundaryPolygonBasedOnShowTrajectories,
+    boundaryPolygonBasedOnMissionItems
   ) =>
     ({
-      [MissionType.SHOW]: geofencePolygonBasedOnShowTrajectories,
-      [MissionType.WAYPOINT]: geofencePolygonBasedOnMissionItems,
+      [MissionType.SHOW]: boundaryPolygonBasedOnShowTrajectories,
+      [MissionType.WAYPOINT]: boundaryPolygonBasedOnMissionItems,
       [MissionType.UNKNOWN]: err('Unknown mission type'),
     })[missionType]
 );
@@ -157,7 +157,7 @@ export const getAutomaticGeofencePolygonForCurrentMissionType: AppSelector<
       .map((cs) =>
         cs.map(unary<Coordinate2D, Coordinate2D>(mapViewCoordinateFromLonLat))
       )
-      .map(geofenceGenerationSettingsApplicator)
+      .andThen(geofenceGenerationSettingsApplicator)
       .map((cs) =>
         cs.map(unary<Coordinate2D, Coordinate2D>(lonLatFromMapViewCoordinate))
       )

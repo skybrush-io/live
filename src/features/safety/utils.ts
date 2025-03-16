@@ -1,3 +1,5 @@
+import { ok, type Result } from 'neverthrow';
+
 import { bufferPolygon } from '~/utils/geography';
 import { type Coordinate2D, simplifyPolygon } from '~/utils/math';
 
@@ -11,12 +13,13 @@ export const makeGeofenceGenerationSettingsApplicator =
     maxVertexCount: number;
     simplify: boolean;
   }) =>
-  (coordinates: Coordinate2D[]): Coordinate2D[] => {
-    const bufferedCoordinates = bufferPolygon(coordinates, horizontalMargin);
-    return simplify
-      ? simplifyPolygon(bufferedCoordinates, maxVertexCount)
-      : bufferedCoordinates;
-  };
+  (coordinates: Coordinate2D[]): Result<Coordinate2D[], string> =>
+    bufferPolygon(coordinates, horizontalMargin).andThen(
+      (bufferedCoordinates) =>
+        simplify
+          ? simplifyPolygon(bufferedCoordinates, maxVertexCount)
+          : ok(bufferedCoordinates)
+    );
 
 /**
  * Common implementation of height and distance limits.

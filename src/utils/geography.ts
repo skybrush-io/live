@@ -8,6 +8,7 @@ import curry from 'lodash-es/curry';
 import isNil from 'lodash-es/isNil';
 import minBy from 'lodash-es/minBy';
 import unary from 'lodash-es/unary';
+import { err, ok, type Result } from 'neverthrow';
 import * as Coordinate from 'ol/coordinate';
 import * as Extent from 'ol/extent';
 import type OLFeature from 'ol/Feature';
@@ -48,12 +49,10 @@ import {
   type UnitDescriptor,
 } from './formatting';
 import {
-  closePolygon,
-  convexHull2D,
   type Coordinate2D,
   type Coordinate3D,
+  createGeometryFromPoints,
   euclideanDistance2D,
-  getCentroid,
   isCoordinate2D,
   toDegrees,
   toRadians,
@@ -890,60 +889,37 @@ export function toPolar(coords: [number, number]): [number, number] {
 export const bufferPolygon = (
   coordinates: Coordinate2D[],
   margin: number
-): Coordinate2D[] => {
-  if (coordinates.length === 0) {
-    return [];
-  }
-
-  let geometry;
-
-  // Shift 'coordinates' in a way that it is centered around the origin. This
-  // is needed because otherwise we would get incorrect results if the
-  // coordinate magnitudes are very large (e.g., when working in Australia)
-  const centroid = getCentroid(coordinates);
-  const shiftedCoordinates = coordinates.map<Coordinate2D>((coordinate) => [
-    coordinate[0] - centroid[0],
-    coordinate[1] - centroid[1],
-  ]);
-  const transform = new FlatEarthCoordinateSystem({
-    origin: [0, 0],
-  });
-  const geoCoordinates = shiftedCoordinates.map((coordinate) =>
-    transform.toLonLat(coordinate)
+): Result<Coordinate2D[], string> => {
+  const geoCoordinates = coordinates.map(
+    unary<Coordinate2D, Coordinate2D>(lonLatFromMapViewCoordinate)
   );
 
-  // Create a Turf.js geometry to buffer. Watch out for degenerate cases.
-  if (coordinates.length === 1) {
-    geometry = TurfHelpers.point(geoCoordinates[0]!);
-  } else if (coordinates.length === 2) {
-    geometry = TurfHelpers.lineString([geoCoordinates[0]!, geoCoordinates[1]!]);
-  } else {
-    closePolygon(geoCoordinates);
-    geometry = TurfHelpers.polygon([geoCoordinates]);
+  const geometry = createGeometryFromPoints(geoCoordinates);
+  if (geometry.isErr()) {
+    return err(geometry.error);
   }
 
+  // NOTE: The types declared for `turfBuffer` seem to be wrong, it can
+  //       possibly return `undefined` (and radius isn't optional either)
   const bufferedPoly = turfBuffer(
-    geometry,
+    geometry.value,
     margin / 1000 /* Turf.js needs kilometers */
   );
 
-  if (!Array.isArray(bufferedPoly.geometry.coordinates[0])) {
-    throw new TypeError(
+  if (!Array.isArray(bufferedPoly?.geometry?.coordinates[0])) {
+    return err(
       'a coordinate array is expected as the first linear ring of the polygon'
     );
   }
 
-  // Take the outer ring of the buffered polygon and transform it back to
-  // flat Earth. Also undo the shift that we did in the beginning.
   const outerLinearRing =
-    bufferedPoly.geometry.coordinates[0].map<Coordinate2D>((coordinate) => {
-      // NOTE: Type assertion justified by the documentation of `Position` in
-      // `TurfHelpers`: "Array should contain between two and three elements."
-      const flatEarthCoord = transform.fromLonLat(coordinate as Coordinate2D);
-      return [flatEarthCoord[0] + centroid[0], flatEarthCoord[1] + centroid[1]];
-    });
+    // NOTE: Type assertion justified by the documentation of `Position` in
+    // `TurfHelpers`: "Array should contain between two and three elements."
+    (bufferedPoly.geometry.coordinates[0] as Coordinate2D[])?.map(
+      unary<Coordinate2D, Coordinate2D>(mapViewCoordinateFromLonLat)
+    );
 
-  return convexHull2D(outerLinearRing);
+  return ok(outerLinearRing);
 };
 
 /**

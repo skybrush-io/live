@@ -25,7 +25,14 @@ export const addGeofencePolygon =
     const state = getState();
 
     if (points.length < 3) {
-      throw new Error('Geofence to be added contains less than 3 points');
+      dispatch(
+        showNotification({
+          message: 'Geofence to be added contains less than 3 points',
+          semantics: MessageSemantics.ERROR,
+          permanent: true,
+        })
+      );
+      return;
     }
 
     const geofencePolygon: Feature = {
