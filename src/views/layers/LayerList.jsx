@@ -13,9 +13,10 @@ import AddCircleOutline from '@material-ui/icons/AddCircleOutline';
 
 import { selectableListOf } from '~/components/helpers/lists';
 import { showLayerSettingsDialog } from '~/features/map/layer-settings-dialog';
-import { addLayer } from '~/features/map/layers';
+import { addLayer, toggleLayerVisibility } from '~/features/map/layers';
 import { labelForLayerType, iconForLayerType } from '~/model/layers';
 import { getLayersInTopmostFirstOrder } from '~/selectors/ordered';
+import { ListItemSecondaryAction, Switch } from '@material-ui/core';
 
 /**
  * Creates a single list item for the layer list.
@@ -38,6 +39,13 @@ const createListItemForLayer = (layer, props) => {
         primary={layer.label}
         secondary={labelForLayerType(layer.type)}
       />
+      <ListItemSecondaryAction>
+        <Switch
+          checked={layer.visible}
+          color='primary'
+          onChange={() => props.onToggleLayerVisibility(layer.id)}
+        />
+      </ListItemSecondaryAction>
     </ListItem>
   );
 };
@@ -97,6 +105,10 @@ const LayerList = connect(
       if (action.id) {
         dispatch(showLayerSettingsDialog(action.id));
       }
+    },
+
+    onToggleLayerVisibility(id) {
+      dispatch(toggleLayerVisibility(id));
     },
   })
 )(LayerListPresentation);

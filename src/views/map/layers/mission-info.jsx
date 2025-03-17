@@ -74,6 +74,7 @@ import {
 import MissionSlotTrajectoryFeature from '~/views/map/features/MissionSlotTrajectoryFeature';
 import UAVTrajectoryFeature from '~/views/map/features/UAVTrajectoryFeature';
 
+import { PlaceTakeoffGrid } from '../interactions';
 import { Tool } from '../tools';
 
 import { styleForPointsOfPolygon } from './features';
@@ -227,7 +228,7 @@ const originMarkerFill = fill(Colors.markers.origin);
 /**
  * Shape to use for takeoff markers.
  */
-const takeoffTriangle = new RegularShape({
+export const takeoffTriangle = new RegularShape({
   fill: fill(Colors.markers.takeoff),
   points: 3,
   radius: 6,
@@ -337,10 +338,10 @@ const createMissionItemBaseStyle = memoize(
         color: selected
           ? Colors.selectedMissionItem
           : done
-          ? Colors.doneMissionItem
-          : current
-          ? Colors.currentMissionItem
-          : Colors.missionItem,
+            ? Colors.doneMissionItem
+            : current
+              ? Colors.currentMissionItem
+              : Colors.missionItem,
         rotateWithView: false,
         snapToPixel: false,
       }),
@@ -876,14 +877,22 @@ MissionInfoVectorSource.defaultProps = {
   orientation: 0,
 };
 
-const MissionInfoLayerPresentation = ({ layer, zIndex, ...rest }) => (
+const MissionInfoLayerPresentation = ({
+  layer,
+  zIndex,
+  selectedTool,
+  ...rest
+}) => (
   <olLayer.Vector
     ref={markAsSelectableAndEditable}
     updateWhileAnimating
     updateWhileInteracting
     zIndex={zIndex}
   >
-    <MissionInfoVectorSource {...rest} />
+    <MissionInfoVectorSource selectedTool={selectedTool} {...rest} />
+    {/* {selectedTool === Tool.TAKEOFF_GRID && ( */}
+    {/*   <PlaceTakeoffGrid onPlace={(...args) => console.log({ args })} /> */}
+    {/* )} */}
   </olLayer.Vector>
 );
 
