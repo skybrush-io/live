@@ -236,8 +236,6 @@ export function calculateMinimumDistanceBetweenPairs<T>(
   // Improve this when the time comes.
 
   if (isSamePointSet) {
-    console.log('Skip diagonal');
-
     if (sourcePositions.length < 2 || targetPositions.length < 2) {
       return Number.POSITIVE_INFINITY;
     }
