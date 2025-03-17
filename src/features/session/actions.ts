@@ -1,3 +1,4 @@
+import { showNotification } from '~/features/snackbar/actions';
 import type { AppDispatch, RootState } from '~/store/reducers';
 
 import { setBroadcast, setDeveloperMode } from './slice';
@@ -15,8 +16,8 @@ export const toggleDeveloperMode =
   (dispatch: AppDispatch, getState: () => RootState): void => {
     dispatch(setDeveloperMode(!isDeveloperModeEnabled(getState())));
     if (isDeveloperModeEnabled(getState())) {
-      console.log('Developer mode is enabled');
+      dispatch(showNotification('Developer mode is enabled') as any);
     } else {
-      console.log('Developer mode is disabled');
+      dispatch(showNotification('Developer mode is disabled') as any);
     }
   };
