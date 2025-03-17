@@ -6,12 +6,15 @@ import type {
   ShowSegmentId,
   SwarmSpecification,
   TimeWindow,
-  Vector3Tuple,
 } from '@skybrush/show-format';
 
 import type { AppSelector } from '~/store/reducers';
 import { FlatEarthCoordinateSystem } from '~/utils/geography';
-import type { Coordinate2DPlus, WorldCoordinate2D } from '~/utils/math';
+import type {
+  Coordinate2DPlus,
+  Coordinate3D,
+  WorldCoordinate2D,
+} from '~/utils/math';
 import { convexHull2D } from '~/utils/math';
 import { EMPTY_ARRAY } from '~/utils/redux';
 import {
@@ -24,6 +27,12 @@ import {
   type OutdoorCoordinateSystem,
 } from './types';
 
+export type CoordinateToWorldTransformationFunction = <
+  TCoord extends Coordinate2DPlus,
+>(
+  point: TCoord
+) => WorldCoordinate2D;
+
 /**
  * Transforms the given coordinates using the given transformation function.
  */
@@ -31,6 +40,31 @@ export const transformPoints = <TCoord extends Coordinate2DPlus, TTransformed>(
   points: TCoord[],
   transform: ((point: TCoord) => TTransformed) | undefined
 ) => (transform ? points.map(transform) : []);
+
+/**
+ * Redux combiner that applies the given world coordinate transformation to every
+ * received coordinate. If any of the coordinates is `undefined`, the combiner will
+ * return `undefined`.
+ *
+ * @param coords The coordinates to transform.
+ * @param transform The coordinate transformation function.
+ *
+ * @returns `undefined` if any of the coordinates is `undefined`, otherwise the
+ *          transformed coordinates.
+ */
+export const positionsToWorldCoordinatesCombiner = (
+  coords: (Coordinate3D | undefined)[],
+  transform: CoordinateToWorldTransformationFunction | undefined
+) => {
+  if (coords.includes(undefined)) {
+    // Return undefined if the home position of at least one drone is not known.
+    // We can probably relax this criteria later.
+    return undefined;
+  }
+
+  // No undefined in the list, so we can type cast here.
+  return transformPoints(coords as Coordinate3D[], transform);
+};
 
 export function makeSelectors(
   selectSwarm: AppSelector<SwarmSpecification | undefined>,
@@ -110,16 +144,7 @@ export function makeSelectors(
   const getHomePositionsInWorldCoordinates = createSelector(
     getHomePositions,
     getOutdoorShowToWorldCoordinateSystemTransformation,
-    (positions, transform) => {
-      if (positions.includes(undefined)) {
-        // Return undefined if the home position of at least one drone is not known.
-        // We can probably relax this criteria later.
-        return undefined;
-      }
-
-      // No undefined in the list, so we can type cast here.
-      return transformPoints(positions as Vector3Tuple[], transform);
-    }
+    positionsToWorldCoordinatesCombiner
   );
 
   // === Landing position selectors ===
@@ -142,16 +167,7 @@ export function makeSelectors(
   const getLandingPositionsInWorldCoordinates = createSelector(
     getLandingPositions,
     getOutdoorShowToWorldCoordinateSystemTransformation,
-    (positions, transform) => {
-      if (positions.includes(undefined)) {
-        // Return undefined if the landing position of at least one drone is not known.
-        // We can probably relax this criteria later.
-        return undefined;
-      }
-
-      // No undefined in the list, so we can type cast here.
-      return transformPoints(positions as Vector3Tuple[], transform);
-    }
+    positionsToWorldCoordinatesCombiner
   );
 
   // === Convex hull selectors ===
@@ -188,11 +204,13 @@ export function makeSelectors(
 
   return {
     getDroneSpecifications,
+    getHomePositions,
     getHomePositionsInWorldCoordinates,
     getLandingPositionsInWorldCoordinates,
     getConvexHullsOfTrajectories,
     getConvexHullOfShow,
     getConvexHullOfShowInWorldCoordinates,
+    getOutdoorShowToWorldCoordinateSystemTransformation,
   };
 }
 

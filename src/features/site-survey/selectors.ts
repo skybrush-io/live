@@ -1,12 +1,13 @@
 import { createSelector } from 'reselect';
 
-import { SwarmSpecification } from '@skybrush/show-format';
-
 import {
   getOutdoorShowCoordinateSystem as getOutdoorShowCoordinateSystemFromShow,
   getSwarmSpecificationForShowSegment as getSwarmSpecificationForShowSegmentFromShow,
 } from '~/features/show/selectors';
-import { makeSelectors as makeTrajectorySelectors } from '~/features/show/trajectory-selectors';
+import {
+  makeSelectors as makeTrajectorySelectors,
+  positionsToWorldCoordinatesCombiner,
+} from '~/features/show/trajectory-selectors';
 import { isOutdoorCoordinateSystemWithOrigin } from '~/features/show/types';
 import type { AppSelector, RootState } from '~/store/reducers';
 import { EMPTY_ARRAY } from '~/utils/redux';
@@ -18,9 +19,6 @@ const _defaultCoordinateSystem: ShowData['coordinateSystem'] = {
   origin: [19.061951, 47.47334],
   orientation: '0',
 };
-const _defaultSwarm: SwarmSpecification = {
-  drones: EMPTY_ARRAY,
-};
 
 const selectSiteSurveyState: AppSelector<SiteSurveyState> = (
   state: RootState
@@ -31,7 +29,8 @@ const selectShowData = createSelector(
   (state): ShowData =>
     state.showData ?? {
       // Provide a default instead of doing a ton of dealing with undefined everywhere.
-      swarm: _defaultSwarm,
+      swarm: { drones: EMPTY_ARRAY },
+      homePositions: EMPTY_ARRAY,
       coordinateSystem: _defaultCoordinateSystem,
     }
 );
@@ -50,6 +49,14 @@ export const selectCoordinateSystem = createSelector(
 const selectSwarmSpecification = createSelector(
   selectShowData,
   (showData) => showData.swarm
+);
+
+/**
+ * Selector that returns the home positions of drones from the site survey state.
+ */
+const getHomePositions = createSelector(
+  selectShowData,
+  (showData) => showData.homePositions
 );
 
 /**
@@ -75,17 +82,21 @@ export const selectInitDataSources: AppSelector<DataSources> = createSelector(
   getSwarmSpecificationForShowSegmentFromShow,
   getOutdoorShowCoordinateSystemFromShow,
   (showSwarm, showCoordinateSystem) => {
-    const show: ShowData | undefined =
+    if (
       showSwarm === undefined ||
       showCoordinateSystem === undefined ||
       !isOutdoorCoordinateSystemWithOrigin(showCoordinateSystem)
-        ? undefined
-        : {
-            swarm: showSwarm,
-            coordinateSystem: showCoordinateSystem,
-          };
+    ) {
+      return { show: undefined };
+    }
 
-    return { show };
+    return {
+      show: {
+        swarm: showSwarm,
+        coordinateSystem: showCoordinateSystem,
+        homePositions: showSwarm.drones.map((drone) => drone.settings?.home),
+      },
+    };
   }
 );
 
@@ -94,6 +105,14 @@ export const {
   getConvexHullOfShowInWorldCoordinates,
   getConvexHullsOfTrajectories,
   getDroneSpecifications,
-  getHomePositionsInWorldCoordinates,
+  getHomePositions: getDefaultHomePositions,
+  getHomePositionsInWorldCoordinates: getDefaultHomePositionsInWorldCoordinates,
   getLandingPositionsInWorldCoordinates,
+  getOutdoorShowToWorldCoordinateSystemTransformation,
 } = makeTrajectorySelectors(selectSwarmSpecification, selectCoordinateSystem);
+
+export const getHomePositionsInWorldCoordinates = createSelector(
+  getHomePositions,
+  getOutdoorShowToWorldCoordinateSystemTransformation,
+  positionsToWorldCoordinatesCombiner
+);

@@ -3,6 +3,10 @@
  * @file Geography-related utility functions and variables.
  */
 
+import turfBuffer from '@turf/buffer';
+import turfDifference from '@turf/difference';
+import turfDistance from '@turf/distance';
+import * as TurfHelpers from '@turf/helpers';
 import * as CoordinateParser from 'coordinate-parser';
 import curry from 'lodash-es/curry';
 import isNil from 'lodash-es/isNil';
@@ -28,10 +32,6 @@ import type RenderFeature from 'ol/render/Feature';
 import VectorSource from 'ol/source/Vector';
 import { getArea, getLength } from 'ol/sphere';
 import { type Vector3 } from 'three';
-import turfBuffer from '@turf/buffer';
-import turfDifference from '@turf/difference';
-import turfDistance from '@turf/distance';
-import * as TurfHelpers from '@turf/helpers';
 
 import { type Feature, FeatureType } from '~/model/features';
 import {

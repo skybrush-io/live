@@ -5,9 +5,14 @@ import { batch } from 'react-redux';
 import type { TransformFeaturesInteractionEvent } from '~/components/map/interactions/TransformFeatures';
 import { CONVEX_HULL_AREA_ID, globalIdToAreaId } from '~/model/identifiers';
 import type { AppDispatch } from '~/store/reducers';
-import { toDegrees } from '~/utils/math';
+import { type Coordinate2D, toDegrees } from '~/utils/math';
 
-import { moveOutdoorShowOriginByMapCoordinateDelta, rotateShow } from './state';
+import {
+  moveHomePositionsByMapCoordinateDelta,
+  moveOutdoorShowOriginByMapCoordinateDelta,
+  rotateHomePositions,
+  rotateShow,
+} from './state';
 
 export type FeatureUpdateType = 'modify' | 'transform';
 export type FeatureUpdateOptions = {
@@ -37,10 +42,18 @@ function updateConvexHull(
   }
 
   if (event.subType === 'move' && event.delta) {
-    dispatch(moveOutdoorShowOriginByMapCoordinateDelta(event.delta));
+    const delta: Coordinate2D = event.delta;
+    dispatch(moveOutdoorShowOriginByMapCoordinateDelta(delta));
+    dispatch(moveHomePositionsByMapCoordinateDelta([-delta[0], -delta[1]]));
   } else if (event.subType === 'rotate' && event.angleDelta && event.origin) {
     dispatch(
       rotateShow({
+        rotationOriginInMapCoordinates: event.origin,
+        angle: toDegrees(-event.angleDelta),
+      })
+    );
+    dispatch(
+      rotateHomePositions({
         rotationOriginInMapCoordinates: event.origin,
         angle: toDegrees(event.angleDelta),
       })
