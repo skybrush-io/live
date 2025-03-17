@@ -87,6 +87,12 @@ const globalKeyMap = {
     sequence: 'mod+b',
   },
 
+  TOGGLE_DEVELOPER_MODE: {
+    name: 'Toggle the developer mode switch',
+    sequence: 'mod+shift+d',
+    group: HIDDEN,
+  },
+
   SEND_FLASH_LIGHTS_COMMAND: {
     name: 'Flash lights on selected UAVs',
     sequence: 'w',

@@ -15,12 +15,17 @@ export type SessionSliceState = {
   /** Whether UAV commands should be broadcast */
   broadcast: boolean;
 
+  /**
+   * Whether developer mode is enabled. Dev mode may show additional menu items
+   * or other UI elements that are useful for development only,
+   */
+  developerMode: boolean;
+
   /** Expiry date/time of the current session */
   expiresAt?: number;
 
   /**
-   * ID of the feature that is (or was) closest
-   * to the mouse cursor on the map view
+   * ID of the feature that is (or was) closest to the mouse cursor on the map view
    */
   featureIdForTooltip?: Identifier;
 
@@ -30,6 +35,7 @@ export type SessionSliceState = {
 
 const initialState: SessionSliceState = {
   broadcast: false,
+  developerMode: false,
   expiresAt: undefined,
   featureIdForTooltip: undefined,
   isExpired: false,
@@ -63,6 +69,10 @@ const { actions, reducer } = createSlice({
       state.broadcast = Boolean(action.payload);
     },
 
+    setDeveloperMode(state, action: PayloadAction<boolean>) {
+      state.developerMode = Boolean(action.payload);
+    },
+
     setFeatureIdForTooltip(
       state,
       action: PayloadAction<Identifier | undefined>
@@ -74,6 +84,7 @@ const { actions, reducer } = createSlice({
 
 export const {
   setBroadcast,
+  setDeveloperMode,
   ensureSessionExpiresNoLaterThan,
   ensureSessionIsNotLongerThan,
   expireSession,
