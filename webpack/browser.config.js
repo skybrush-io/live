@@ -45,4 +45,10 @@ module.exports = merge(baseConfig, {
   },
   optimization,
   plugins,
+  devServer: {
+    allowedHosts: 'all',
+  },
+  snapshot: {
+    managedPaths: [],
+  },
 });

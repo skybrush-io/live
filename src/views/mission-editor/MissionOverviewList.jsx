@@ -16,6 +16,7 @@ import {
 import { setEditorPanelFollowScroll } from '~/features/mission/slice';
 
 import MissionOverviewListItem from './MissionOverviewListItem';
+import { getTakeoffGridProperties } from '~/features/map/tools';
 
 const renderMissionListItem = (index, itemId, context) => (
   <MissionOverviewListItem
@@ -37,6 +38,7 @@ const renderMissionListItem = (index, itemId, context) => (
 );
 
 const MissionOverviewList = ({
+  takeoffGridProperties,
   currentItemIndex,
   currentItemRatio,
   followScroll,
@@ -75,6 +77,12 @@ const MissionOverviewList = ({
   }, [followScroll, scrollToCurrent]);
 
   return (
+    <div style={{ whiteSpace: 'pre' }}>
+      {JSON.stringify(takeoffGridProperties, null, 2)}
+    </div>
+  );
+
+  return (
     <Virtuoso
       ref={virtuoso}
       data={itemIds}
@@ -96,6 +104,7 @@ MissionOverviewList.propTypes = {
 export default connect(
   // mapStateToProps
   (state) => ({
+    takeoffGridProperties: getTakeoffGridProperties(state),
     currentItemIndex: getCurrentMissionItemIndex(state),
     currentItemRatio: getCurrentMissionItemRatio(state),
     followScroll: shouldMissionEditorPanelFollowScroll(state),
