@@ -4,6 +4,7 @@ import formatDate from 'date-fns/format';
 import { produce } from 'immer';
 import isNil from 'lodash-es/isNil';
 import pickBy from 'lodash-es/pickBy';
+import shuffle from 'lodash-es/shuffle';
 import { getDistance as haversineDistance } from 'ol/sphere';
 
 import { findAssignmentInDistanceMatrix } from '~/algorithms/matching';
@@ -198,6 +199,33 @@ export const augmentMappingAutomaticallyFromSpareDrones =
 export const recalculateMapping = () => (dispatch) => {
   dispatch(clearMapping());
   dispatch(augmentMappingAutomaticallyFromSpareDrones());
+};
+
+/**
+ * Thunk that generates a random mapping for debugging purposes.
+ */
+export const generateRandomMapping = () => (dispatch, getState) => {
+  dispatch(clearMapping());
+
+  const state = getState();
+  const uavIds = getUAVIdList(state);
+  const numDronesInMission = getMissionMapping(state).length;
+
+  if (uavIds.length >= numDronesInMission) {
+    // More drones than mission slots, shuffle the UAV IDs and slice
+    dispatch(replaceMapping(shuffle(uavIds).slice(0, numDronesInMission)));
+  } else {
+    // More mission slots than drones, shuffle the slot indices and add the drones
+    const newMapping = [...getMissionMapping(state)];
+    const order = shuffle(
+      Array.from(Array.from({ length: numDronesInMission }).keys())
+    );
+    for (const uavId of uavIds) {
+      newMapping[order.pop()] = uavId;
+    }
+
+    dispatch(replaceMapping(newMapping));
+  }
 };
 
 /**
