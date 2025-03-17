@@ -97,7 +97,7 @@ export function createShowConfigurationForUav(state, uavId) {
     );
   }
 
-  const { id: missionId } = getShowMetadata(state);
+  const { id: missionId, title } = getShowMetadata(state);
 
   const amslReference = getMeanSeaLevelReferenceOfShowCoordinatesOrNull(state);
 
@@ -109,6 +109,7 @@ export function createShowConfigurationForUav(state, uavId) {
     geofence,
     mission: {
       id: missionId,
+      title,
       index: missionIndex,
       displayName: `${missionId || 'drone-show'} / ${missionIndex + 1}`,
       numDrones: drones.length,
