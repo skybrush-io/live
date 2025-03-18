@@ -27,11 +27,11 @@ export const getCurrentUploadJob = createSelector(
 
 /**
  * Returns the type of the current upload job _if and only if_ a job is running
- * now, or <code>null</code> if no job has been set up yet or no job is running.
+ * now, or <code>undefined</code> if no job has been set up yet or no job is running.
  */
 export const getRunningUploadJobType = createSelector(
   (state: RootState) => state.upload.currentJob,
-  ({ type, running }) => (!isNil(type) && running ? type : null)
+  ({ type, running }) => (!isNil(type) && running ? type : undefined)
 );
 
 /**
