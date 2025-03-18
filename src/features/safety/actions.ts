@@ -12,7 +12,7 @@ import { showNotification } from '~/features/snackbar/actions';
 import { MessageSemantics } from '~/features/snackbar/types';
 import { type Feature, FeatureType } from '~/model/features';
 import { type AppThunk } from '~/store/reducers';
-import { type Coordinate2D } from '~/utils/math';
+import { type LonLat } from '~/utils/geography';
 
 import { getAutomaticGeofencePolygonForCurrentMissionType } from './selectors';
 
@@ -20,12 +20,19 @@ import { getAutomaticGeofencePolygonForCurrentMissionType } from './selectors';
  * Thunk that adds a geofence polygon with the given coordinates and owner.
  */
 export const addGeofencePolygon =
-  (points: Coordinate2D[], owner: string): AppThunk =>
+  (points: LonLat[], owner: string): AppThunk =>
   (dispatch, getState) => {
     const state = getState();
 
     if (points.length < 3) {
-      throw new Error('Geofence to be added contains less than 3 points');
+      dispatch(
+        showNotification({
+          message: 'Geofence to be added contains less than 3 points',
+          semantics: MessageSemantics.ERROR,
+          permanent: true,
+        })
+      );
+      return;
     }
 
     const geofencePolygon: Feature = {

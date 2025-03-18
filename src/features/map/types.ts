@@ -1,7 +1,7 @@
-import { type Coordinate2D } from '~/utils/math';
+import { type LonLat } from '~/utils/geography';
 
 export type Origin = {
-  position: Coordinate2D;
+  position: LonLat;
   angle: string;
   type: OriginType;
 };
@@ -12,7 +12,7 @@ export enum OriginType {
 }
 
 export type View = {
-  position: Coordinate2D;
+  position: LonLat;
   angle: string;
   zoom: number;
 };

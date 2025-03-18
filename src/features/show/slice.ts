@@ -14,7 +14,8 @@ import set from 'lodash-es/set';
 
 import { type Clock } from '~/features/clocks/types';
 import type UAV from '~/model/uav';
-import { type Coordinate2D, type Coordinate3D } from '~/utils/math';
+import { type LonLat } from '~/utils/geography';
+import { type Coordinate3D } from '~/utils/math';
 import { noPayload } from '~/utils/redux';
 
 import {
@@ -382,7 +383,7 @@ const { actions, reducer } = createSlice({
       );
     },
 
-    setOutdoorShowOrigin(state, action: PayloadAction<Coordinate2D>) {
+    setOutdoorShowOrigin(state, action: PayloadAction<LonLat>) {
       state.environment.outdoor.coordinateSystem.origin = action.payload;
     },
 

@@ -4,11 +4,14 @@ import { connect } from 'react-redux';
 // @ts-ignore
 import { control } from '@collmot/ol-react';
 
-import { getExtendedCoordinateFormatter } from '~/selectors/formatting';
+import {
+  type CoordinatePairFormatter,
+  getExtendedCoordinateFormatter,
+} from '~/selectors/formatting';
 import type { RootState } from '~/store/reducers';
 
 type MapControlsPresentationProps = {
-  formatCoordinate: (coords: [number, number]) => string;
+  formatCoordinate: CoordinatePairFormatter;
   showMouseCoordinates: boolean;
   showScaleLine: boolean;
 };

@@ -1,23 +1,27 @@
-import type { Coordinate2D, Coordinate3D } from '~/utils/math';
+import { type SetRequired } from 'type-fest';
+
+import { type LonLat } from '~/utils/geography';
+import type { Coordinate3D } from '~/utils/math';
 
 import type {
   AltitudeReferenceSpecification,
   TakeoffHeadingSpecification,
 } from './constants';
-import { EnvironmentType } from './enums';
+import { type EnvironmentType } from './enums';
 
 export type CoordinateSystem = {
   orientation: string; // stored as a string to avoid rounding errors
 };
 
 export type OutdoorCoordinateSystem = CoordinateSystem & {
-  origin?: Coordinate2D;
+  origin?: LonLat;
   type: 'neu' | 'nwu';
 };
 
-export type OutdoorCoordinateSystemWithOrigin = OutdoorCoordinateSystem & {
-  origin: Coordinate2D;
-};
+export type OutdoorCoordinateSystemWithOrigin = SetRequired<
+  OutdoorCoordinateSystem,
+  'origin'
+>;
 
 export const isOutdoorCoordinateSystemWithOrigin = (
   coordinateSystem: OutdoorCoordinateSystem

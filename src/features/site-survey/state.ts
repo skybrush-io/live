@@ -11,12 +11,13 @@ import { updateSelection as updateSelectedIds } from '~/features/map/utils';
 import type { OutdoorCoordinateSystemWithOrigin } from '~/features/show/types';
 import type { Identifier } from '~/utils/collections';
 import {
+  type EasNor,
   FlatEarthCoordinateSystem,
   lonLatFromMapViewCoordinate,
   mapViewCoordinateFromLonLat,
   translateLonLatWithMapViewDelta,
 } from '~/utils/geography';
-import { type Coordinate2D, type Coordinate3D, toRadians } from '~/utils/math';
+import { type Coordinate3D, toRadians } from '~/utils/math';
 import { EMPTY_ARRAY } from '~/utils/redux';
 
 export type ShowData = {
@@ -118,7 +119,7 @@ const { reducer, actions } = createSlice({
      */
     moveHomePositionsByMapCoordinateDelta(
       state,
-      action: PayloadAction<Coordinate2D>
+      action: PayloadAction<EasNor>
     ) {
       if (state.showData === undefined) {
         console.warn('Cannot move show: no show data.');
@@ -154,7 +155,7 @@ const { reducer, actions } = createSlice({
      */
     moveOutdoorShowOriginByMapCoordinateDelta(
       state,
-      action: PayloadAction<Coordinate2D>
+      action: PayloadAction<EasNor>
     ) {
       if (state.showData === undefined) {
         console.warn('Cannot move show: no show data.');
@@ -173,7 +174,7 @@ const { reducer, actions } = createSlice({
     rotateHomePositions(
       state,
       action: PayloadAction<{
-        rotationOriginInMapCoordinates: Coordinate2D;
+        rotationOriginInMapCoordinates: EasNor;
         angle: number;
       }>
     ) {
@@ -202,13 +203,15 @@ const { reducer, actions } = createSlice({
           point.rotate(toRadians(-angle), rotationOriginShow);
           // TODO(vp): rotate heading
 
-          const rotatedPoint = point.getFlatCoordinates();
+          // NOTE: Type assertion justified by the OpenLayers definition of `Coordinate`.
+          // https://openlayers.org/en/v9.1.0/apidoc/module-ol_coordinate.html#~Coordinate
+          const rotatedPoint = point.getFlatCoordinates() as EasNor;
           if (rotatedPoint.length < 2) {
             console.warn('Invalid rotated point:', rotatedPoint);
             return undefined;
           }
 
-          return [rotatedPoint[0]!, rotatedPoint[1]!, homePosition[2]];
+          return [rotatedPoint[0], rotatedPoint[1], homePosition[2]];
         }
       );
     },
@@ -220,7 +223,7 @@ const { reducer, actions } = createSlice({
     rotateShow(
       state,
       action: PayloadAction<{
-        rotationOriginInMapCoordinates: Coordinate2D;
+        rotationOriginInMapCoordinates: EasNor;
         angle: number;
       }>
     ) {
@@ -236,7 +239,9 @@ const { reducer, actions } = createSlice({
       const showOriginPoint = new Point(showOriginInMapCoordinates);
       showOriginPoint.rotate(toRadians(-angle), rotationOriginInMapCoordinates);
       const newOrigin = lonLatFromMapViewCoordinate(
-        showOriginPoint.getFlatCoordinates()
+        // NOTE: Type assertion justified by the OpenLayers definition of `Coordinate`.
+        // https://openlayers.org/en/v9.1.0/apidoc/module-ol_coordinate.html#~Coordinate
+        showOriginPoint.getFlatCoordinates() as EasNor
       );
 
       const newOrientation =
@@ -247,7 +252,7 @@ const { reducer, actions } = createSlice({
         return;
       }
 
-      state.showData.coordinateSystem.origin = [newOrigin[0]!, newOrigin[1]!];
+      state.showData.coordinateSystem.origin = newOrigin;
       state.showData.coordinateSystem.orientation = newOrientation.toFixed(1);
     },
   },

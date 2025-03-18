@@ -17,6 +17,7 @@ import OpenWith from '@material-ui/icons/OpenWith';
 import {
   augmentMappingAutomaticallyFromSpareDrones,
   exportMapping,
+  generateRandomMapping,
   importMapping,
   removeMissingUAVsFromMapping,
 } from '~/features/mission/actions';
@@ -26,6 +27,7 @@ import {
   finishMappingEditorSession,
 } from '~/features/mission/slice';
 import useDropdown from '~/hooks/useDropdown';
+import { isDeveloperModeEnabled } from '~/features/session/selectors';
 
 const instructionsStyle = {
   overflow: 'ellipsis',
@@ -39,8 +41,10 @@ const MappingEditorToolbar = React.forwardRef(
       augmentMapping,
       canAugmentMapping,
       clearMapping,
+      devMode,
       exportMapping,
       finishMappingEditorSession,
+      generateRandomMapping,
       importMapping,
       removeMissingUAVsFromMapping,
       ...rest
@@ -95,6 +99,12 @@ const MappingEditorToolbar = React.forwardRef(
                 {t('mappingEditorToolbar.exportMapping')}
               </MenuItem>
               <Divider />
+              {devMode && (
+                <MenuItem onClick={closeMappingMenu(generateRandomMapping)}>
+                  {t('mappingEditorToolbar.generateRandomMapping')}
+                </MenuItem>
+              )}
+              {devMode && <Divider />}
               <MenuItem onClick={closeMappingMenu(clearMapping)}>
                 {t('general.action.clear')}
               </MenuItem>
@@ -115,9 +125,12 @@ MappingEditorToolbar.propTypes = {
   augmentMapping: PropTypes.func,
   canAugmentMapping: PropTypes.bool,
   clearMapping: PropTypes.func,
+  devMode: PropTypes.bool,
   exportMapping: PropTypes.func,
   finishMappingEditorSession: PropTypes.func,
+  generateRandomMapping: PropTypes.func,
   importMapping: PropTypes.func,
+  isDeveloperModeEnabled: PropTypes.bool,
   removeMissingUAVsFromMapping: PropTypes.func,
   selectedUAVIds: PropTypes.array,
 };
@@ -126,12 +139,14 @@ export default connect(
   // mapStateToProps
   (state) => ({
     canAugmentMapping: canAugmentMappingAutomaticallyFromSpareDrones(state),
+    devMode: isDeveloperModeEnabled(state),
   }),
   // mapDispatchToProps
   {
     augmentMapping: augmentMappingAutomaticallyFromSpareDrones,
     clearMapping,
     exportMapping,
+    generateRandomMapping,
     importMapping,
     finishMappingEditorSession,
     removeMissingUAVsFromMapping,

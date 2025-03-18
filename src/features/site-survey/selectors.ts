@@ -10,13 +10,14 @@ import {
 } from '~/features/show/trajectory-selectors';
 import { isOutdoorCoordinateSystemWithOrigin } from '~/features/show/types';
 import type { AppSelector, RootState } from '~/store/reducers';
+import { type Latitude, type Longitude } from '~/utils/geography';
 import { EMPTY_ARRAY } from '~/utils/redux';
 
 import type { ShowData, SiteSurveyState } from './state';
 
 const _defaultCoordinateSystem: ShowData['coordinateSystem'] = {
   type: 'nwu',
-  origin: [19.061951, 47.47334],
+  origin: [19.061951 as Longitude, 47.47334 as Latitude],
   orientation: '0',
 };
 

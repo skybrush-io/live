@@ -21,8 +21,8 @@ export type Notification = {
     label: string;
     action: Action;
   }>;
-  header: string;
+  header?: string;
   message: string;
-  permanent: boolean;
-  semantics: MessageSemantics;
+  permanent?: boolean;
+  semantics?: MessageSemantics;
 };

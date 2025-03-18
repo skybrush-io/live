@@ -12,6 +12,7 @@ import { shallowEqual } from 'react-redux';
 
 import { type StoredUAV } from '~/features/uavs/types';
 import { type ErrorCode } from '~/flockwave/errors';
+import { type Latitude, type Longitude } from '~/utils/geography';
 import { type Coordinate3D } from '~/utils/math';
 
 import { GPSFixType } from './enums';
@@ -270,8 +271,11 @@ export default class UAV {
 
     if (position) {
       this.position = {
-        lat: position[0] / 1e7,
-        lon: position[1] / 1e7,
+        // NOTE: Type assertion justified by `flockwave-spec`:
+        // UAVStatusInfo['position'] is supposed to be of type `GPSCoordinate`,
+        // which is at least a `[Latitude, Longitude]` pair
+        lat: (position[0] / 1e7) as Latitude,
+        lon: (position[1] / 1e7) as Longitude,
         amsl: isNil(position[2]) ? undefined : position[2] / 1e3,
         ahl: isNil(position[3]) ? undefined : position[3] / 1e3,
         agl: isNil(position[4]) ? undefined : position[4] / 1e3,

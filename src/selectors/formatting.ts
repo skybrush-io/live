@@ -9,13 +9,14 @@ import { createSelector } from '@reduxjs/toolkit';
 import { CoordinateFormat } from '~/model/settings';
 import { DISTANCE_UNITS } from '~/utils/formatting';
 import {
+  type LonLat,
   makeDecimalCoordinateFormatter,
   makePolarCoordinateFormatter,
   toPolar,
 } from '~/utils/geography';
 
 import { getFlatEarthCoordinateTransformer } from './map';
-import type { RootState } from '~/store/reducers';
+import type { AppSelector, RootState } from '~/store/reducers';
 
 const trailingZeroRegExp = /\.?0+([°′″'"]?)$/;
 
@@ -37,7 +38,7 @@ const signedGeographicFormatter = makeDecimalCoordinateFormatter({
 });
 
 export type CoordinateFormatter = (value: number) => string;
-export type CoordinatePairFormatter = ([lon, lat]: [number, number]) => string;
+export type CoordinatePairFormatter = ([lon, lat]: LonLat) => string;
 
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
@@ -178,64 +179,62 @@ export const getPreferredCoordinateFormat = (
  * pairs and that returns a nicely formatted representation according to the
  * preferred format of the user.
  */
-export const getPreferredCoordinateFormatter = createSelector(
-  getPreferredCoordinateFormat,
-  getFormatterForCoordinateFormat
-);
+export const getPreferredCoordinateFormatter: AppSelector<CoordinatePairFormatter> =
+  createSelector(getPreferredCoordinateFormat, getFormatterForCoordinateFormat);
 
 /**
  * Selector that returns a function that can be called with a latitude
  * and that returns a nicely formatted representation according to the
  * preferred format of the user.
  */
-export const getPreferredLatitudeCoordinateFormatter = createSelector(
-  getPreferredCoordinateFormat,
-  getLatitudeFormatterForCoordinateFormat
-);
+export const getPreferredLatitudeCoordinateFormatter: AppSelector<CoordinateFormatter> =
+  createSelector(
+    getPreferredCoordinateFormat,
+    getLatitudeFormatterForCoordinateFormat
+  );
 
 /**
  * Selector that returns a function that can be called with a longitude
  * and that returns a nicely formatted representation according to the
  * preferred format of the user.
  */
-export const getPreferredLongitudeCoordinateFormatter = createSelector(
-  getPreferredCoordinateFormat,
-  getLongitudeFormatterForCoordinateFormat
-);
+export const getPreferredLongitudeCoordinateFormatter: AppSelector<CoordinateFormatter> =
+  createSelector(
+    getPreferredCoordinateFormat,
+    getLongitudeFormatterForCoordinateFormat
+  );
 
 /**
  * Selector that returns a function that can be called with longitude-latitude
  * pairs and that returns a nicely formatted representation of the corresponding
  * flat Earth coordinates according to the current flat Earth coordinate system.
  */
-export const getFlatEarthCartesianCoordinateFormatter = createSelector(
-  getFlatEarthCoordinateTransformer,
-  (transformer) => {
-    if (transformer !== undefined) {
-      return (coords: [number, number]): string =>
-        cartesianFormatter(transformer.fromLonLat(coords));
-    }
-
-    return undefined;
+export const getFlatEarthCartesianCoordinateFormatter: AppSelector<
+  CoordinatePairFormatter | undefined
+> = createSelector(getFlatEarthCoordinateTransformer, (transformer) => {
+  if (transformer !== undefined) {
+    return (coords: LonLat): string =>
+      cartesianFormatter(transformer.fromLonLat(coords));
   }
-);
+
+  return undefined;
+});
 
 /**
  * Selector that returns a function that can be called with longitude-latitude
  * pairs and that returns a nicely formatted representation of the corresponding
  * flat Earth coordinates according to the current flat Earth coordinate system.
  */
-export const getFlatEarthPolarCoordinateFormatter = createSelector(
-  getFlatEarthCoordinateTransformer,
-  (transformer) => {
-    if (transformer !== undefined) {
-      return (coords: [number, number]): string =>
-        polarFormatter(toPolar(transformer.fromLonLat(coords)));
-    }
-
-    return undefined;
+export const getFlatEarthPolarCoordinateFormatter: AppSelector<
+  CoordinatePairFormatter | undefined
+> = createSelector(getFlatEarthCoordinateTransformer, (transformer) => {
+  if (transformer !== undefined) {
+    return (coords: LonLat): string =>
+      polarFormatter(toPolar(transformer.fromLonLat(coords)));
   }
-);
+
+  return undefined;
+});
 
 /**
  * Selector that returns a function that can be called with longitude-latitude
@@ -243,40 +242,40 @@ export const getFlatEarthPolarCoordinateFormatter = createSelector(
  * flat Earth coordinates according to the current flat Earth coordinate system,
  * both in Cartesian (X-Y) and polar coordinates.
  */
-export const getFlatEarthCombinedCoordinateFormatter = createSelector(
-  getFlatEarthCoordinateTransformer,
-  (transformer) => {
-    if (transformer !== undefined) {
-      return (coords: [number, number]): string => {
-        const transformed = transformer.fromLonLat(coords);
-        return (
-          cartesianFormatter(transformed) +
-          '<br/>' +
-          polarFormatter(toPolar(transformed))
-        );
-      };
-    }
-
-    return undefined;
+export const getFlatEarthCombinedCoordinateFormatter: AppSelector<
+  CoordinatePairFormatter | undefined
+> = createSelector(getFlatEarthCoordinateTransformer, (transformer) => {
+  if (transformer !== undefined) {
+    return (coords: LonLat): string => {
+      const transformed = transformer.fromLonLat(coords);
+      return (
+        cartesianFormatter(transformed) +
+        '<br/>' +
+        polarFormatter(toPolar(transformed))
+      );
+    };
   }
-);
+
+  return undefined;
+});
 
 /**
  * Selector that returns a coordinate formatter that can be used in contexts
  * where we want to show both the geographical coordinates and the coordinates
  * relative to the origin of the flat Earth coordinate system.
  */
-export const getExtendedCoordinateFormatter = createSelector(
-  getPreferredCoordinateFormatter,
-  getFlatEarthCombinedCoordinateFormatter,
-  (geographicFormatter, flatEarthFormatter) =>
-    (coords: [number, number]): string => {
-      const geoCoords = geographicFormatter(coords);
+export const getExtendedCoordinateFormatter: AppSelector<CoordinatePairFormatter> =
+  createSelector(
+    getPreferredCoordinateFormatter,
+    getFlatEarthCombinedCoordinateFormatter,
+    (geographicFormatter, flatEarthFormatter) =>
+      (coords: LonLat): string => {
+        const geoCoords = geographicFormatter(coords);
 
-      if (flatEarthFormatter === undefined) {
-        return geoCoords;
+        if (flatEarthFormatter === undefined) {
+          return geoCoords;
+        }
+
+        return geoCoords + '<br/>' + flatEarthFormatter(coords);
       }
-
-      return geoCoords + '<br/>' + flatEarthFormatter(coords);
-    }
-);
+  );

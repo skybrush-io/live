@@ -12,7 +12,10 @@ import { selectAllUAVs } from '~/features/map/selection';
 import { removeSelectedFeatures } from '~/features/map-features/actions';
 import { removeSelectedMissionItems } from '~/features/mission/actions';
 import { getPreferredCommunicationChannelIndex } from '~/features/mission/selectors';
-import { toggleBroadcast } from '~/features/session/actions';
+import {
+  toggleBroadcast,
+  toggleDeveloperMode,
+} from '~/features/session/actions';
 import { isBroadcast } from '~/features/session/selectors';
 import { toggleMissionIds } from '~/features/settings/slice';
 import { requestRemovalOfSelectedUAVs } from '~/features/uavs/actions';
@@ -142,6 +145,7 @@ export default connect(
         SEND_RTH_COMMAND: callUAVActionOnSelection('returnToHome'),
         SHOW_HOTKEY_DIALOG: showHotkeyDialog,
         TOGGLE_BROADCAST_MODE: toggleBroadcast,
+        TOGGLE_DEVELOPER_MODE: toggleDeveloperMode,
         TOGGLE_SORT_BY_MISSION_ID: toggleMissionIds,
         TYPE_0: () => appendToPendingUAVId(0),
         TYPE_1: () => appendToPendingUAVId(1),

@@ -264,6 +264,7 @@
     "clickToEdit": "Click to edit a single slot.",
     "dragNodes": "Drag nodes to rearrange the mapping.",
     "exportMapping": "Export mapping…",
+    "generateRandomMapping": "Randomize mapping",
     "importMapping": "Import mapping…"
   },
   "mappingSlotEditorToolbar": {
