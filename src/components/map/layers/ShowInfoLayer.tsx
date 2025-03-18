@@ -16,6 +16,7 @@ import {
   landingPositionIdToGlobalId,
 } from '~/model/identifiers';
 import { setLayerEditable, setLayerSelectable } from '~/model/layers';
+import type { Identifier } from '~/utils/collections';
 import { formatMissionId } from '~/utils/formatting';
 import { mapViewCoordinateFromLonLat } from '~/utils/geography';
 import { closePolygon, WorldCoordinate2D } from '~/utils/math';
@@ -24,6 +25,7 @@ import {
   fill,
   thinOutline,
   whiteThickOutline,
+  whiteVeryThinOutline,
 } from '~/utils/styles';
 
 const globalIds = {
@@ -74,22 +76,35 @@ export const convexHullPolygon = (
 /**
  * Shape to use for landing markers.
  */
-const landingMarker = new RegularShape({
-  fill: fill(Colors.markers.landing),
-  points: 3,
-  radius: 6,
-  rotation: Math.PI,
-  stroke: blackVeryThinOutline,
-});
+const landingMarker = {
+  base: new RegularShape({
+    fill: fill(Colors.markers.landing),
+    points: 3,
+    radius: 6,
+    rotation: Math.PI,
+    stroke: blackVeryThinOutline,
+  }),
+  selected: new RegularShape({
+    fill: fill(Colors.markers.landing),
+    points: 3,
+    radius: 6,
+    rotation: Math.PI,
+    stroke: whiteVeryThinOutline,
+  }),
+};
 
 /**
  * Style for the marker representing the landing positions of the drones in
  * the current mission.
  */
-const landingPositionStyle = (feature: Feature, resolution: number) => {
+const landingPositionStyle = (
+  feature: Feature,
+  resolution: number,
+  selected?: boolean
+) => {
   const index = globalIdToLandingPositionId(feature.getId()) ?? '';
   const style: StyleOptions = {
-    image: landingMarker,
+    image: landingMarker[selected ? 'selected' : 'base'],
   };
 
   if (resolution < 0.4) {
@@ -105,7 +120,8 @@ const landingPositionStyle = (feature: Feature, resolution: number) => {
 };
 
 export const landingPositionPoints = (
-  landingPositions: (WorldCoordinate2D | undefined)[] | undefined
+  landingPositions: (WorldCoordinate2D | undefined)[] | undefined,
+  selection?: Identifier[]
 ) =>
   Array.isArray(landingPositions)
     ? landingPositions
@@ -123,12 +139,16 @@ export const landingPositionPoints = (
             landingPosition.lon,
             landingPosition.lat,
           ]);
+          const isSelected =
+            selection !== undefined && selection.includes(globalIdOfFeature);
 
           return (
             <Feature
               key={featureKey}
               id={globalIdOfFeature}
-              style={landingPositionStyle}
+              style={(feature: Feature, resolution: number) =>
+                landingPositionStyle(feature, resolution, isSelected)
+              }
             >
               <geom.Point coordinates={center} />
             </Feature>
@@ -142,21 +162,33 @@ export const landingPositionPoints = (
 /**
  * Shape to use for takeoff markers.
  */
-const takeoffTriangle = new RegularShape({
-  fill: fill(Colors.markers.takeoff),
-  points: 3,
-  radius: 6,
-  stroke: blackVeryThinOutline,
-});
+const takeoffTriangle = {
+  base: new RegularShape({
+    fill: fill(Colors.markers.takeoff),
+    points: 3,
+    radius: 6,
+    stroke: blackVeryThinOutline,
+  }),
+  selected: new RegularShape({
+    fill: fill(Colors.markers.takeoff),
+    points: 3,
+    radius: 6,
+    stroke: whiteVeryThinOutline,
+  }),
+};
 
 /**
  * Style for the marker representing the takeoff positions of the drones in
  * the current mission.
  */
-const takeoffPositionStyle = (feature: Feature, resolution: number) => {
+const takeoffPositionStyle = (
+  feature: Feature,
+  resolution: number,
+  selected?: boolean
+) => {
   const index = globalIdToHomePositionId(feature.getId()) ?? '';
   const style: StyleOptions = {
-    image: takeoffTriangle,
+    image: takeoffTriangle[selected ? 'selected' : 'base'],
   };
 
   if (resolution < 0.4) {
@@ -172,7 +204,8 @@ const takeoffPositionStyle = (feature: Feature, resolution: number) => {
 };
 
 export const homePositionPoints = (
-  homePositions: (WorldCoordinate2D | undefined)[] | undefined
+  homePositions: (WorldCoordinate2D | undefined)[] | undefined,
+  selection?: Identifier[]
 ) =>
   Array.isArray(homePositions)
     ? homePositions
@@ -180,19 +213,22 @@ export const homePositionPoints = (
           if (!homePosition) {
             return null;
           }
-
           const featureKey = `home.${index}`;
           const globalIdOfFeature = homePositionIdToGlobalId(index.toString());
           const center = mapViewCoordinateFromLonLat([
             homePosition.lon,
             homePosition.lat,
           ]);
+          const isSelected =
+            selection !== undefined && selection.includes(globalIdOfFeature);
 
           return (
             <Feature
               key={featureKey}
               id={globalIdOfFeature}
-              style={takeoffPositionStyle}
+              style={(feature: Feature, resolution: number) =>
+                takeoffPositionStyle(feature, resolution, isSelected)
+              }
             >
               <geom.Point coordinates={center} />
             </Feature>

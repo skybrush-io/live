@@ -3,7 +3,12 @@ import { ModifyEvent } from 'ol/interaction/Modify';
 import { batch } from 'react-redux';
 
 import type { TransformFeaturesInteractionEvent } from '~/components/map/interactions/TransformFeatures';
-import { CONVEX_HULL_AREA_ID, globalIdToAreaId } from '~/model/identifiers';
+import {
+  CONVEX_HULL_AREA_ID,
+  globalIdToAreaId,
+  globalIdToHomePositionId,
+  isHomePositionId,
+} from '~/model/identifiers';
 import type { AppDispatch } from '~/store/reducers';
 import { type EasNor, type Easting, type Northing } from '~/utils/geography';
 import { toDegrees } from '~/utils/math';
@@ -16,40 +21,56 @@ import {
 } from './state';
 
 export type FeatureUpdateType = 'modify' | 'transform';
-export type FeatureUpdateOptions = {
-  event: ModifyEvent | TransformFeaturesInteractionEvent;
-  type: FeatureUpdateType;
+
+type TransformUpdateOptions = {
+  event: TransformFeaturesInteractionEvent;
+  type: 'transform';
 };
 
+type ModifyUpdateOptions = {
+  event: ModifyEvent;
+  type: 'modify';
+};
+
+export type FeatureUpdateOptions = TransformUpdateOptions | ModifyUpdateOptions;
+
 /**
- * Handles the convex hull feature changes.
+ * Type guard that checks if the given options are for a transformation event.
+ */
+function isTransformInteraction(
+  options: FeatureUpdateOptions
+): options is TransformUpdateOptions {
+  return (
+    options.type === 'transform' &&
+    // This check houldn't be necessary, but do it anyway to be on the safe side.
+    !(options.event instanceof ModifyEvent)
+  );
+}
+
+/**
+ * Handles convex hull feature changes.
  */
 function updateConvexHull(
   dispatch: AppDispatch,
   options: FeatureUpdateOptions
 ) {
-  if (options.type !== 'transform') {
-    console.warn('This transformation is not handled for the convex hull yet');
+  if (!isTransformInteraction(options)) {
+    console.warn(
+      'Only transformation events are supported for the convex hull.'
+    );
     return;
   }
 
   const { event } = options;
-  if (event instanceof ModifyEvent) {
-    console.warn(
-      'This event type is not supported for the convex hull:',
-      event
-    );
-    return;
-  }
 
   if (event.subType === 'move' && event.delta) {
     const delta: EasNor = event.delta;
     dispatch(moveOutdoorShowOriginByMapCoordinateDelta(delta));
     dispatch(
-      moveHomePositionsByMapCoordinateDelta(
+      moveHomePositionsByMapCoordinateDelta({
         // NOTE: Type assertions justified by simple unary minus operation
-        [-delta[0] as Easting, -delta[1] as Northing]
-      )
+        delta: [-delta[0] as Easting, -delta[1] as Northing],
+      })
     );
   } else if (event.subType === 'rotate' && event.angleDelta && event.origin) {
     dispatch(
@@ -65,6 +86,49 @@ function updateConvexHull(
       })
     );
   }
+}
+
+/**
+ * Handles home position changes.
+ */
+function updateHomePosition(
+  dispatch: AppDispatch,
+  globalId: string,
+  options: FeatureUpdateOptions
+) {
+  if (!isTransformInteraction(options)) {
+    console.warn(
+      'Only transformation events are supported for the home positions.'
+    );
+    return;
+  }
+
+  const { event } = options;
+
+  if (event.subType !== 'move') {
+    console.warn('Only move events are supported for the home positions.');
+    return;
+  }
+
+  const homePositionId = globalIdToHomePositionId(globalId);
+  if (homePositionId === undefined) {
+    console.warn('Invalid home position ID:', globalId);
+    return;
+  }
+
+  const homePositionIndex = Number.parseInt(homePositionId);
+  if (!Number.isFinite(homePositionIndex)) {
+    console.warn('Invalid home position ID:', globalId);
+  }
+
+  const delta: EasNor = event.delta;
+
+  dispatch(
+    moveHomePositionsByMapCoordinateDelta({
+      delta,
+      drones: { [homePositionIndex]: true },
+    })
+  );
 }
 
 /**
@@ -85,6 +149,8 @@ function updateFeature(
 
   if (globalIdToAreaId(globalId) === CONVEX_HULL_AREA_ID) {
     return updateConvexHull(dispatch, options);
+  } else if (isHomePositionId(globalId)) {
+    return updateHomePosition(dispatch, globalId, options);
   }
 }
 

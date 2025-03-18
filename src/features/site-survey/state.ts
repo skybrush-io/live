@@ -115,20 +115,30 @@ const { reducer, actions } = createSlice({
      *
      * @param state The slice's current state.
      * @param action.delta The delta to move the home positions by.
-     * @param action.negative Whether to move the home positions in the negative direction.
+     * @param action.drones The set of drones whose home positions should be moved.
+     *        Technically a record where the drone IDs are the keys. Values are
+     *        ignored. If `undefined`, all drones are moved.
+
      */
     moveHomePositionsByMapCoordinateDelta(
       state,
-      action: PayloadAction<EasNor>
+      action: PayloadAction<{
+        delta: EasNor;
+        drones?: Record<number, unknown>;
+      }>
     ) {
       if (state.showData === undefined) {
         console.warn('Cannot move show: no show data.');
         return;
       }
 
+      const { delta, drones } = action.payload;
+      const shouldMoveDrone = // Function that returns if a drone should be moved.
+        drones === undefined ? () => true : (index: number) => index in drones;
+
       const newOriginLonLat = translateLonLatWithMapViewDelta(
         state.showData.coordinateSystem.origin,
-        action.payload
+        delta
       );
       const earthCS = new FlatEarthCoordinateSystem(
         state.showData.coordinateSystem
@@ -136,10 +146,11 @@ const { reducer, actions } = createSlice({
       const newOrigin = earthCS.fromLonLat(newOriginLonLat);
 
       state.showData.homePositions = state.showData.homePositions.map(
-        (homePosition) => {
-          if (homePosition === undefined) {
-            return undefined;
+        (homePosition, index) => {
+          if (homePosition === undefined || !shouldMoveDrone(index)) {
+            return homePosition;
           }
+
           return [
             homePosition[0] + newOrigin[0],
             homePosition[1] + newOrigin[1],

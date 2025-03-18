@@ -35,8 +35,12 @@ import {
   getSelection,
 } from '~/features/site-survey/selectors';
 import { updateSelection } from '~/features/site-survey/state';
+import {
+  CONVEX_HULL_AREA_ID,
+  isAreaId,
+  isHomePositionId,
+} from '~/model/identifiers';
 import { getVisibleSelectableLayers, LayerType } from '~/model/layers';
-import { isFeatureTransformable } from '~/model/openlayers';
 import { getVisibleLayersInOrder } from '~/selectors/ordered';
 import type { RootState } from '~/store/reducers';
 import type { Identifier } from '~/utils/collections';
@@ -63,8 +67,8 @@ const ShowInfoLayer = (props: ShowInfoLayerProps) => {
 
   return (
     <ShowInfoLayerPresentation {...layerProps}>
-      {...homePositionPoints(homePositions)}
-      {...landingPositionPoints(landingPositions)}
+      {...homePositionPoints(homePositions, selection)}
+      {...landingPositionPoints(landingPositions, selection)}
       {...convexHullPolygon(convexHull, selection)}
     </ShowInfoLayerPresentation>
   );
@@ -73,6 +77,7 @@ const ShowInfoLayer = (props: ShowInfoLayerProps) => {
 const ConnectedShowInfoLayer = connect((state: RootState) => ({
   convexHull: getConvexHullOfShowInWorldCoordinates(state),
   homePositions: getHomePositionsInWorldCoordinates(state),
+  // landingPositions: getLandingPositionsInWorldCoordinates(state),
   selection: getSelection(state),
 }))(ShowInfoLayer);
 
@@ -99,10 +104,19 @@ const useOwnState = (props: SiteSurveyMapProps) => {
 
   const getSelectedTransformableFeatures = useCallback(
     (map: OLMap): Feature[] => {
-      return findFeaturesById(map, selection).filter(
-        (val): val is Feature =>
-          val instanceof Feature && isFeatureTransformable(val)
-      );
+      return findFeaturesById(map, selection).filter((val): val is Feature => {
+        if (!(val instanceof Feature)) {
+          return false;
+        }
+        const id = val.getId();
+        if (typeof id !== 'string') {
+          return false;
+        }
+        return (
+          (isAreaId(id) && id.endsWith(CONVEX_HULL_AREA_ID)) || // Convex hull is transformable.
+          isHomePositionId(id) // Home positions are transformable
+        );
+      });
     },
     [selection]
   );
