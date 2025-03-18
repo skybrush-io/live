@@ -1,5 +1,5 @@
 import { type PreparedI18nKey, tt } from '~/i18n';
-import { type Coordinate2D } from '~/utils/math';
+import { type LonLat } from '~/utils/geography';
 
 /**
  * Enum describing the possible geofence actions.
@@ -46,7 +46,7 @@ export function isValidGeofenceAction(action: GeofenceAction): boolean {
 
 export type GeofencePolygon = {
   isInclusion: boolean;
-  points: Coordinate2D[];
+  points: LonLat[];
 };
 
 /**
@@ -57,7 +57,7 @@ export type GeofenceConfiguration = {
   minAltitude?: number;
   maxDistance?: number;
   polygons?: GeofencePolygon[];
-  rallyPoints?: Coordinate2D[];
+  rallyPoints?: LonLat[];
   action?: GeofenceAction;
 };
 

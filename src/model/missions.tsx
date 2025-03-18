@@ -20,7 +20,7 @@ import {
   type GeofenceConfiguration,
   type SafetyConfiguration,
 } from '~/features/safety/model';
-import { type Coordinate2D } from '~/utils/math';
+import { type Latitude, type Longitude, type LonLat } from '~/utils/geography';
 
 import {
   type Altitude,
@@ -103,7 +103,7 @@ export const isPayloadAction = (action: unknown): action is PayloadAction =>
 
 export type FlightAreaPolygon = {
   isInclusion: boolean;
-  points: Coordinate2D[];
+  points: LonLat[];
 };
 
 export type FlightAreaConfiguration = {
@@ -157,8 +157,8 @@ export type MissionItem = MissionItemLike &
     | {
         type: MissionItemType.GO_TO;
         parameters: {
-          lat: number;
-          lon: number;
+          lat: Latitude;
+          lon: Longitude;
           alt?: Altitude;
           velocityXY?: number;
           velocityZ?: number;
@@ -545,7 +545,7 @@ export const isMissionItemValid = (item: unknown): item is MissionItem => {
  */
 export function getAreaFromMissionItem(
   item: MissionItem
-): { points: Coordinate2D[] } | undefined {
+): { points: LonLat[] } | undefined {
   if (!isMissionItemValid(item)) {
     return undefined;
   }

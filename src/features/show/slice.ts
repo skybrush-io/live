@@ -14,7 +14,8 @@ import {
 
 import { type Clock } from '~/features/clocks/types';
 import type UAV from '~/model/uav';
-import { type Coordinate2D, type Coordinate3D } from '~/utils/math';
+import { type LonLat } from '~/utils/geography';
+import { type Coordinate3D } from '~/utils/math';
 import { noPayload } from '~/utils/redux';
 
 import {
@@ -45,7 +46,7 @@ type ShowSliceState = {
     outdoor: {
       coordinateSystem: {
         orientation: string; // stored as a string to avoid rounding errors
-        origin?: Coordinate2D;
+        origin?: LonLat;
         type: 'neu' | 'nwu';
       };
       altitudeReference: AltitudeReferenceSpecification;
@@ -405,7 +406,7 @@ const { actions, reducer } = createSlice({
       );
     },
 
-    setOutdoorShowOrigin(state, action: PayloadAction<Coordinate2D>) {
+    setOutdoorShowOrigin(state, action: PayloadAction<LonLat>) {
       state.environment.outdoor.coordinateSystem.origin = action.payload;
     },
 

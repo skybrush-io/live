@@ -10,7 +10,7 @@ import PanoramaFishEyeTwoTone from '@material-ui/icons/PanoramaFishEyeTwoTone';
 import StarBorder from '@material-ui/icons/StarBorder';
 import StarTwoTone from '@material-ui/icons/StarTwoTone';
 
-import { type Coordinate2D } from '~/utils/math';
+import { type LonLat } from '~/utils/geography';
 
 /**
  * Enum containing constants for the various feature types that we support.
@@ -25,20 +25,20 @@ export enum FeatureType {
 export type Feature =
   | {
       type: FeatureType.CIRCLE;
-      points: [Coordinate2D, Coordinate2D];
+      points: [LonLat, LonLat];
     }
   | {
       type: FeatureType.LINE_STRING;
-      points: Coordinate2D[];
+      points: LonLat[];
     }
   | {
       type: FeatureType.POINTS;
-      points: Coordinate2D[];
+      points: LonLat[];
     }
   | {
       type: FeatureType.POLYGON;
-      points: Coordinate2D[];
-      holes?: Coordinate2D[][];
+      points: LonLat[];
+      holes?: LonLat[][];
     };
 
 /**

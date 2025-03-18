@@ -7,6 +7,8 @@ import monotoneConvexHull2D from 'monotone-convex-hull-2d';
 import { err, ok, type Result } from 'neverthrow';
 import * as TurfHelpers from '@turf/helpers';
 
+import type { EasNor, LonLat } from './geography';
+
 // TODO: Rename `Coordinate{2,3}D` to `Vector{2,3}Tuple` for
 //       consistency with Three.js and `@skybrush/show-format`
 export type Coordinate2D = [number, number];
@@ -317,7 +319,9 @@ export function closePolygon(poly: Coordinate2D[]): void {
 /**
  * Returns the 2D convex hull of a set of coordinates.
  */
-export const convexHull2D = (coordinates: Coordinate2D[]): Coordinate2D[] =>
+export const convexHull2D = <C extends Coordinate2D | EasNor | LonLat>(
+  coordinates: C[]
+): C[] =>
   // NOTE: Bang justified by `monotoneConvexHull2D` returning an index subset
   monotoneConvexHull2D(coordinates).map((index) => coordinates[index]!);
 
@@ -330,7 +334,7 @@ export const convexHull2D = (coordinates: Coordinate2D[]): Coordinate2D[] =>
  * or more coordinates are provided, the result will be a Turf.js polygon.
  */
 export function createGeometryFromPoints(
-  coordinates: Coordinate2D[]
+  coordinates: LonLat[]
 ): Result<
   TurfHelpers.Point | TurfHelpers.LineString | TurfHelpers.Polygon,
   string
@@ -489,17 +493,19 @@ export const simplifyPolygonUntilLimit = (
  * compatible with the OpenLayers style coordinate lists where the first and
  * last vertices are duplicates of each other.
  */
-export const simplifyPolygon = (
-  [_, ...coordinates]: Coordinate2D[],
+export const simplifyPolygon = <C extends Coordinate2D | EasNor | LonLat>(
+  [_, ...coordinates]: C[],
   target: number
-): Result<Coordinate2D[], string> => {
+): Result<C[], string> => {
   const result = simplifyPolygonUntilLimit(coordinates, target);
 
   if (!isCoordinate2D(result[0])) {
     return err('polygons need to have at least three 2D vertices');
   }
 
-  return ok([...result, result[0]]);
+  // NOTE: Type assertion justified by `simplifyPolygonUntilLimit`
+  //       returning coordinates of the same type as were passed.
+  return ok([...result, result[0]] as C[]);
 };
 
 /**

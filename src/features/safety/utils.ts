@@ -1,7 +1,7 @@
 import { ok, type Result } from 'neverthrow';
 
-import { bufferPolygon } from '~/utils/geography';
-import { type Coordinate2D, simplifyPolygon } from '~/utils/math';
+import { bufferPolygon, type EasNor } from '~/utils/geography';
+import { simplifyPolygon } from '~/utils/math';
 
 export const makeGeofenceGenerationSettingsApplicator =
   ({
@@ -13,7 +13,7 @@ export const makeGeofenceGenerationSettingsApplicator =
     maxVertexCount: number;
     simplify: boolean;
   }) =>
-  (coordinates: Coordinate2D[]): Result<Coordinate2D[], string> =>
+  (coordinates: EasNor[]): Result<EasNor[], string> =>
     bufferPolygon(coordinates, horizontalMargin).andThen(
       (bufferedCoordinates) =>
         simplify

@@ -2,6 +2,7 @@ import { produce } from 'immer';
 import isNil from 'lodash-es/isNil';
 import max from 'lodash-es/max';
 import range from 'lodash-es/range';
+import unary from 'lodash-es/unary';
 import { createSelector } from '@reduxjs/toolkit';
 import turfContains from '@turf/boolean-contains';
 import * as TurfHelpers from '@turf/helpers';
@@ -41,12 +42,13 @@ import {
   selectOrdered,
 } from '~/utils/collections';
 import {
+  type EasNor,
+  type LonLat,
   mapViewCoordinateFromLonLat,
   turfDistanceInMeters,
 } from '~/utils/geography';
 import {
   convexHull2D,
-  type Coordinate2D,
   createGeometryFromPoints,
   estimatePathDuration,
 } from '~/utils/math';
@@ -383,7 +385,7 @@ export const getGeofencePolygon: AppSelector<
  * world coordinates, or undefined if no geofence polygon is defined.
  */
 export const getGeofencePolygonInWorldCoordinates: AppSelector<
-  Coordinate2D[] | undefined
+  LonLat[] | undefined
 > = createSelector(
   getGeofencePolygon,
   (geofencePolygon) => geofencePolygon?.points
@@ -514,7 +516,7 @@ const getMissionItemsWithExtraFieldInOrder = <Field extends PropertyKey, Type>(
  * geofence calculation.
  */
 export const getMissionItemsWithAreasInOrder: AppSelector<
-  Array<MissionItemWithExtraField<'area', { points: Coordinate2D[] }>>
+  Array<MissionItemWithExtraField<'area', { points: LonLat[] }>>
 > = getMissionItemsWithExtraFieldInOrder('area', getAreaFromMissionItem);
 
 /**
@@ -566,37 +568,35 @@ export const getMissionItemsWithAltitudesInOrder: AppSelector<
  * Returns the coordinates of the convex hull of the currently loaded mission
  * in world coordinates.
  */
-export const getConvexHullOfMissionInWorldCoordinates: AppSelector<
-  Coordinate2D[]
-> = createSelector(
-  getGPSBasedHomePositionsInMission,
-  getMissionItemsWithCoordinatesInOrder,
-  getMissionItemsWithAreasInOrder,
-  (homePositions, missionItemsWithCoorinates, missionItemsWithAreas) =>
-    convexHull2D([
-      ...rejectNullish(homePositions).map(
-        ({ lon, lat }): Coordinate2D => [lon, lat]
-      ),
-      ...missionItemsWithCoorinates.map(
-        ({ coordinate: { lon, lat } }): Coordinate2D => [lon, lat]
-      ),
-      ...missionItemsWithAreas.flatMap(({ area: { points } }) => points),
-    ])
-);
+export const getConvexHullOfMissionInWorldCoordinates: AppSelector<LonLat[]> =
+  createSelector(
+    getGPSBasedHomePositionsInMission,
+    getMissionItemsWithCoordinatesInOrder,
+    getMissionItemsWithAreasInOrder,
+    (homePositions, missionItemsWithCoorinates, missionItemsWithAreas) =>
+      convexHull2D([
+        ...rejectNullish(homePositions).map(
+          ({ lon, lat }): LonLat => [lon, lat]
+        ),
+        ...missionItemsWithCoorinates.map(
+          ({ coordinate: { lon, lat } }): LonLat => [lon, lat]
+        ),
+        ...missionItemsWithAreas.flatMap(({ area: { points } }) => points),
+      ])
+  );
 
 /**
  * Returns the coordinates of the convex hull of the currently loaded mission
  * in the coordinate system of the map view.
  */
-export const getConvexHullOfMissionInMapViewCoordinates: AppSelector<
-  Coordinate2D[]
-> = createSelector(
-  getConvexHullOfMissionInWorldCoordinates,
-  (convexHullOfHomePositionsAndMissionItemsInWorldCoordinates) =>
-    convexHullOfHomePositionsAndMissionItemsInWorldCoordinates.map(
-      (worldCoordinate) => mapViewCoordinateFromLonLat(worldCoordinate)
-    )
-);
+export const getConvexHullOfMissionInMapViewCoordinates: AppSelector<EasNor[]> =
+  createSelector(
+    getConvexHullOfMissionInWorldCoordinates,
+    (convexHullOfHomePositionsAndMissionItemsInWorldCoordinates) =>
+      convexHullOfHomePositionsAndMissionItemsInWorldCoordinates.map(
+        unary<LonLat, EasNor>(mapViewCoordinateFromLonLat)
+      )
+  );
 
 /**
  * Returns whether the convex hull of the waypoint mission (home positions and

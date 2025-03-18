@@ -110,7 +110,7 @@ const ANGLE_SIGN = isRunningOnMac ? '@' : '∠';
  * @param second - The second point
  * @returns Bearing, in degrees, in the [0; 360) range
  */
-export function bearing(first: Coordinate2D, second: Coordinate2D): number {
+export function bearing(first: LonLat, second: LonLat): number {
   const lonDiff = toRadians(second[0] - first[0]);
   const firstLatRadians = toRadians(first[1]);
   const secondLatRadians = toRadians(second[1]);
@@ -133,10 +133,7 @@ export function bearing(first: Coordinate2D, second: Coordinate2D): number {
  * @param second - The second point
  * @returns Bearing, in degrees, in the [0; 360) range
  */
-export function finalBearing(
-  first: Coordinate2D,
-  second: Coordinate2D
-): number {
+export function finalBearing(first: LonLat, second: LonLat): number {
   const angle = bearing(second, first);
   return (angle + 180) % 360;
 }
@@ -566,10 +563,14 @@ export const safelyFormatCoordinate = (coordinate?: Coordinate2D): string => {
  * @returns The parsed coordinates in OpenLayers format
  *          or undefined in case of a parsing error
  */
-export const parseCoordinate = (text: string): Coordinate2D | undefined => {
+export const parseCoordinate = (text: string): LonLat | undefined => {
   try {
     const parsed = new CoordinateParser(text);
-    return [parsed.getLongitude(), parsed.getLatitude()];
+    return [
+      // NOTE: Type assertions justified by the `coordinate-parser` library
+      parsed.getLongitude() as Longitude,
+      parsed.getLatitude() as Latitude,
+    ];
   } catch {
     return undefined;
   }
@@ -633,13 +634,29 @@ export const WGS84 = makeEllipsoidModel(6378137, 298.257223563);
  * to [180.0 85.06] as seen here. @see https://epsg.io/3857
  */
 
-type CoordinateTransformationFunction = {
-  // Special case for two dimensions
+/**
+ * Helper function to convert a longitude-latitude pair to the coordinate
+ * system used by the map view.
+ *
+ * Longitudes and latitudes are assumed to be given in WGS 84.
+ *
+ * TODO: Maybe we should establish a fixed projection with `unary` right
+ *       here instead of every time this is used to `map` over an array?
+ *
+ * @param coordinate - The longitude and latitude, in this order
+ * @param projection - The projection to use for the conversion
+ * @returns The OpenLayers coordinates corresponding
+ *          to the given longitude-latitude pair
+ */
+export const mapViewCoordinateFromLonLat = Projection.fromLonLat as {
+  // Precisely typed case, specific for exact coordinate types
+  (coordinates: LonLat, projection?: Projection.ProjectionLike): EasNor;
+  // Special case for two dimensions, generic in terms of coordinate types
   (
     coordinates: Coordinate2D,
     projection?: Projection.ProjectionLike
   ): Coordinate2D;
-  // Original type
+  // Original type, generic in terms of dimensions and coordinate types
   (
     coordinates: Coordinate.Coordinate,
     projection?: Projection.ProjectionLike
@@ -647,46 +664,48 @@ type CoordinateTransformationFunction = {
 };
 
 /**
- * Helper function to convert a longitude-latitude pair to the coordinate
- * system used by the map view.
- *
- * Longitudes and latitudes are assumed to be given in WGS 84.
- *
- * @param coordinate - The longitude and latitude, in this order
- * @param projection - The projection to use for the conversion
- * @returns The OpenLayers coordinates corresponding
- *          to the given longitude-latitude pair
- */
-export const mapViewCoordinateFromLonLat =
-  Projection.fromLonLat as CoordinateTransformationFunction;
-
-/**
  * Helper function to convert a coordinate from the map view into a
  * longitude-latitude pair.
  *
  * Coordinates are assumed to be given in EPSG:3857.
+ *
+ * TODO: Maybe we should establish a fixed projection with `unary` right
+ *       here instead of every time this is used to `map` over an array?
  *
  * @param coordinate - The OpenLayers coordinate
  * @param projection - The projection to use for the conversion
  * @returns The longtitude-latitude pair corresponding
  *          to the given OpenLayers coordinates
  */
-export const lonLatFromMapViewCoordinate =
-  Projection.toLonLat as CoordinateTransformationFunction;
+export const lonLatFromMapViewCoordinate = Projection.toLonLat as {
+  // Precisely typed case, specific for exact coordinate types
+  (coordinates: EasNor, projection?: Projection.ProjectionLike): LonLat;
+  // Special case for two dimensions, generic in terms of coordinate types
+  (
+    coordinates: Coordinate2D,
+    projection?: Projection.ProjectionLike
+  ): Coordinate2D;
+  // Original type, generic in terms of dimensions and coordinate types
+  (
+    coordinates: Coordinate.Coordinate,
+    projection?: Projection.ProjectionLike
+  ): Coordinate.Coordinate;
+};
 
 /**
  * Helper function to move a longitude-latitude coordinate pair by a vector
  * expressed in map view coordinates.
  */
 export const translateLonLatWithMapViewDelta = (
-  origin: Coordinate2D,
-  delta: Coordinate2D
-): Coordinate2D => {
+  origin: LonLat,
+  delta: EasNor
+): LonLat => {
   const originInMapView = mapViewCoordinateFromLonLat(origin);
 
   return lonLatFromMapViewCoordinate([
-    originInMapView[0] + delta[0],
-    originInMapView[1] + delta[1],
+    // NOTE: Type assertion justfied by the summing of homogeneous coordinates
+    (originInMapView[0] + delta[0]) as Easting,
+    (originInMapView[1] + delta[1]) as Northing,
   ]);
 };
 
@@ -699,7 +718,7 @@ export const translateLonLatWithMapViewDelta = (
  */
 export class FlatEarthCoordinateSystem {
   _vec: Coordinate3D = [0, 0, 0]; // dummy vector used to avoid allocations
-  _origin: Coordinate2D;
+  _origin: LonLat;
   _orientation: number;
   _ellipsoid: EllipsoidModel;
   _type: string;
@@ -735,7 +754,7 @@ export class FlatEarthCoordinateSystem {
     type = 'neu',
     ellipsoid = WGS84,
   }: {
-    origin: Coordinate2D;
+    origin: LonLat;
     orientation?: number | string;
     type?: string;
     ellipsoid?: EllipsoidModel;
@@ -766,8 +785,8 @@ export class FlatEarthCoordinateSystem {
    * @param coords - A longitude-latitude pair to convert
    * @returns The converted coordinates
    */
-  fromLonLat(coords: [number, number]): [number, number] {
-    const result: [number, number] = [0, 0];
+  fromLonLat(coords: LonLat): Coordinate2D {
+    const result: Coordinate2D = [0, 0];
     this._updateArrayFromLonLat(result, coords[0], coords[1]);
     return result;
   }
@@ -797,13 +816,14 @@ export class FlatEarthCoordinateSystem {
    * @param coords - A flat Earth coordinate pair to convert
    * @returns The converted coordinates
    */
-  toLonLat(coords: [number, number]): [number, number] {
+  toLonLat(coords: Coordinate2D): LonLat {
     const result: Coordinate2D = [coords[0], coords[1] * this._yMul];
     Coordinate.rotate(result, this._orientation);
+    // NOTE: Type assertions justified by the nature of the calculation
     return [
-      result[1] / this._r2OverCosOriginLatInRadians / this._piOver180 +
-        this._origin[0],
-      result[0] / this._r1 / this._piOver180 + this._origin[1],
+      (result[1] / this._r2OverCosOriginLatInRadians / this._piOver180 +
+        this._origin[0]) as Longitude,
+      (result[0] / this._r1 / this._piOver180 + this._origin[1]) as Latitude,
     ];
   }
 
@@ -905,13 +925,16 @@ export function toPolar(coords: [number, number]): [number, number] {
 /**
  * Buffer a polygon by inserting a padding around it, so its new edge is at
  * least as far from the old one, as given in the margin parameter.
+ *
+ * TODO: Make `bufferPolygon` simply operate with `LonLat` as input
+ *       and output to avoid a bunch of back and forth conversions!
  */
 export const bufferPolygon = (
-  coordinates: Coordinate2D[],
+  coordinates: EasNor[],
   margin: number
-): Result<Coordinate2D[], string> => {
+): Result<EasNor[], string> => {
   const geoCoordinates = coordinates.map(
-    unary<Coordinate2D, Coordinate2D>(lonLatFromMapViewCoordinate)
+    unary<EasNor, LonLat>(lonLatFromMapViewCoordinate)
   );
 
   const geometry = createGeometryFromPoints(geoCoordinates);
@@ -935,8 +958,8 @@ export const bufferPolygon = (
   const outerLinearRing =
     // NOTE: Type assertion justified by the documentation of `Position` in
     // `TurfHelpers`: "Array should contain between two and three elements."
-    (bufferedPoly.geometry.coordinates[0] as Coordinate2D[])?.map(
-      unary<Coordinate2D, Coordinate2D>(mapViewCoordinateFromLonLat)
+    (bufferedPoly.geometry.coordinates[0] as LonLat[])?.map(
+      unary<LonLat, EasNor>(mapViewCoordinateFromLonLat)
     );
 
   return ok(outerLinearRing);
@@ -992,12 +1015,13 @@ type ScaledJSONGPSCoordinate = [number, number];
  * @return the JSON representation, scaled up to 1e7 degrees. Note
  *         that it returns the <em>latitude</em> first
  */
-export function toScaledJSONFromObject(coords: {
-  lat: number;
-  lon: number;
-}): ScaledJSONGPSCoordinate {
-  return [Math.round(coords.lat * 1e7), Math.round(coords.lon * 1e7)];
-}
+export const toScaledJSONFromObject = (coords: {
+  lat: Latitude;
+  lon: Longitude;
+}): ScaledJSONGPSCoordinate => [
+  Math.round(coords.lat * 1e7),
+  Math.round(coords.lon * 1e7),
+];
 
 /**
  * Converts a longitude-latitude pair to a representation that is safe to be
@@ -1010,11 +1034,12 @@ export function toScaledJSONFromObject(coords: {
  * @return the JSON representation, scaled up to 1e7 degrees. Note
  *         that it returns the <em>latitude</em> first
  */
-export function toScaledJSONFromLonLat(
-  coords: [number, number]
-): ScaledJSONGPSCoordinate {
-  return [Math.round(coords[1] * 1e7), Math.round(coords[0] * 1e7)];
-}
+export const toScaledJSONFromLonLat = (
+  coords: LonLat
+): ScaledJSONGPSCoordinate => [
+  Math.round(coords[1] * 1e7),
+  Math.round(coords[0] * 1e7),
+];
 
 /**
  * Reverts a "JSON-safe" multiplier offset coordinate representation to a
@@ -1026,11 +1051,11 @@ export function toScaledJSONFromLonLat(
  *         as an array in lon-lat order (<em>longitude</em> first, OpenLayers
  *         convention)
  */
-export function toLonLatFromScaledJSON(
+export const toLonLatFromScaledJSON = (
   coords: ScaledJSONGPSCoordinate
-): [number, number] {
-  return [coords[1] / 1e7, coords[0] / 1e7];
-}
+): LonLat =>
+  // TODO: Eliminate or justify this type assertion
+  [(coords[1] / 1e7) as Longitude, (coords[0] / 1e7) as Latitude];
 
 /**
  * Calculates the distance in meters between two GeoJSON point features.
@@ -1041,9 +1066,7 @@ export function toLonLatFromScaledJSON(
  * @param second  the second point
  * @return the distance between the two points in meters
  */
-export function turfDistanceInMeters(
+export const turfDistanceInMeters = (
   first: TurfHelpers.Coord,
   second: TurfHelpers.Coord
-): number {
-  return turfDistance(first, second) * 1000;
-}
+): number => turfDistance(first, second) * 1000;
