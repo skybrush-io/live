@@ -8,7 +8,11 @@ import { Status } from '~/components/semantics';
 import { JOB_TYPE as FIRMWARE_UPDATE_JOB_TYPE } from '~/features/firmware-update/constants';
 import { getSupportingObjectIdsForTargetId } from '~/features/firmware-update/selectors';
 
-import { getScopeForJobType } from './jobs';
+import { getScopeForJobType, JobScope } from './jobs';
+import type { RootState } from '~/store/reducers';
+import type { JobPayload, UploadJob } from './types';
+import type { UploadSliceState } from './slice';
+import type UAV from '~/model/uav';
 
 /**
  * Returns the current upload job. The returned object is guaranteed to have
@@ -17,8 +21,8 @@ import { getScopeForJobType } from './jobs';
  * yet.
  */
 export const getCurrentUploadJob = createSelector(
-  (state) => state.upload.currentJob,
-  ({ type, payload }) => ({ type: type || null, payload })
+  (state: RootState) => state.upload.currentJob,
+  ({ type, payload }) => ({ type: type ?? null, payload })
 );
 
 /**
@@ -26,22 +30,26 @@ export const getCurrentUploadJob = createSelector(
  * now, or <code>null</code> if no job has been set up yet or no job is running.
  */
 export const getRunningUploadJobType = createSelector(
-  (state) => state.upload.currentJob,
+  (state: RootState) => state.upload.currentJob,
   ({ type, running }) => (!isNil(type) && running ? type : null)
 );
 
 /**
  * Returns the failed upload items from the uploader.
  */
-export const getFailedUploadItems = (state) => state.upload.queues.failedItems;
+export const getFailedUploadItems = (state: RootState): string[] =>
+  state.upload.queues.failedItems;
 
 /**
  * Returns the result of the last job with the given types: success, error or cancelled
- * (as a string), or null if there was no job with the given type yet. Also
- * returns null if the job type is null.
+ * (as a string), or undefined if there was no job with the given type yet. Also
+ * returns undefined if the job type is nullish.
  */
-export const getLastUploadResultByJobType = (state, type) =>
-  type ? state.upload.history.byId[type]?.result : null;
+export const getLastUploadResultByJobType = (
+  state: RootState,
+  type: string
+): UploadJob['result'] | undefined =>
+  type ? state.upload.history.byId[type]?.result : undefined;
 
 /**
  * Returns the upload items that are either already sent to a worker or that
@@ -49,8 +57,8 @@ export const getLastUploadResultByJobType = (state, type) =>
  * cannot intervene with the upload process.
  */
 export const getUploadItemsBeingProcessed = createSelector(
-  (state) => state.upload.queues.itemsQueued,
-  (state) => state.upload.queues.itemsInProgress,
+  (state: RootState) => state.upload.queues.itemsQueued,
+  (state: RootState) => state.upload.queues.itemsInProgress,
   (queued, waiting) => [...queued, ...waiting]
 );
 
@@ -60,15 +68,15 @@ export const getUploadItemsBeingProcessed = createSelector(
  * inside the uploader saga but have not been taken up by a worker yet.
  */
 export const getItemsInUploadBacklog = createSelector(
-  (state) => state.upload.queues.itemsQueued,
-  (state) => state.upload.queues.itemsWaitingToStart,
+  (state: RootState) => state.upload.queues.itemsQueued,
+  (state: RootState) => state.upload.queues.itemsWaitingToStart,
   (queued, waiting) => [...queued, ...waiting]
 );
 
 /**
  * Returns the successful upload items from the uploader.
  */
-export const getSuccessfulUploadItems = (state) =>
+export const getSuccessfulUploadItems = (state: RootState): string[] =>
   state.upload.queues.itemsFinished;
 
 /**
@@ -77,7 +85,7 @@ export const getSuccessfulUploadItems = (state) =>
  * that has been queued inside the uploader saga but has not been taken up
  * by a worker yet.
  */
-export function areItemsInUploadBacklog(state) {
+export function areItemsInUploadBacklog(state: RootState): boolean {
   const { itemsQueued, itemsWaitingToStart } = state.upload.queues;
   return itemsQueued.length > 0 || itemsWaitingToStart.length > 0;
 }
@@ -86,7 +94,10 @@ export function areItemsInUploadBacklog(state) {
  * Returns whether the UAV with the given ID is in the upload backlog at the
  * moment.
  */
-export function isItemInUploadBacklog(state, uavId) {
+export function isItemInUploadBacklog(
+  state: RootState,
+  uavId: string
+): boolean {
   const { itemsQueued, itemsWaitingToStart } = state.upload.queues;
   return itemsWaitingToStart.includes(uavId) || itemsQueued.includes(uavId);
 }
@@ -95,7 +106,9 @@ export function isItemInUploadBacklog(state, uavId) {
  * Returns the ID of the next drone from the upload queue during an upload
  * process, or undefined if the queue is empty.
  */
-export const getNextDroneFromUploadQueue = (state) => {
+export const getNextDroneFromUploadQueue = (
+  state: RootState
+): string | undefined => {
   const { itemsWaitingToStart } = state.upload.queues;
   if (itemsWaitingToStart && itemsWaitingToStart.length > 0) {
     return itemsWaitingToStart[0];
@@ -107,12 +120,16 @@ export const getNextDroneFromUploadQueue = (state) => {
 /**
  * Returns the state object of the upload dialog.
  */
-export const getUploadDialogState = (state) => state.upload.dialog;
+export const getUploadDialogState = (
+  state: RootState
+): UploadSliceState['dialog'] => state.upload.dialog;
 
 /**
  * Returns the selected job in the upload dialog.
  */
-export const getSelectedJobInUploadDialog = (state) =>
+export const getSelectedJobInUploadDialog = (
+  state: RootState
+): { type?: string; payload?: JobPayload } =>
   getUploadDialogState(state)?.selectedJob ?? {};
 
 /**
@@ -120,15 +137,22 @@ export const getSelectedJobInUploadDialog = (state) =>
  */
 export const getScopeOfSelectedJobInUploadDialog = createSelector(
   getSelectedJobInUploadDialog,
-  ({ type }) => getScopeForJobType(type)
+  ({ type }) => (type ? getScopeForJobType(type) : JobScope.ALL)
 );
 
-export const getObjectIdsCompatibleWithSelectedJobInUploadDialog = (state) => {
+export const getObjectIdsCompatibleWithSelectedJobInUploadDialog = (
+  state: RootState
+): string[] => {
   const job = getSelectedJobInUploadDialog(state);
 
   switch (job.type) {
     case FIRMWARE_UPDATE_JOB_TYPE:
-      return getSupportingObjectIdsForTargetId(state, job.payload.target) ?? [];
+      return (
+        getSupportingObjectIdsForTargetId(
+          state,
+          (job.payload as any as { target: string }).target
+        ) ?? []
+      );
 
     default:
       return [];
@@ -139,14 +163,16 @@ export const getObjectIdsCompatibleWithSelectedJobInUploadDialog = (state) => {
  * Returns an object mapping UAV IDs to the corresponding error messages that
  * should be shown next to them (or as a tooltip) in the upload dialog.
  */
-export const getUploadErrorMessageMapping = (state) => state.upload.errors;
+export const getUploadErrorMessageMapping = (
+  state: RootState
+): Record<UAV['id'], unknown> => state.upload.errors;
 
 /**
  * Returns an object that counts how many drones are currently in the
  * "waiting", "in progress", "failed" and "successful" stages of the upload.
  */
 export const getUploadStatusCodeCounters = createSelector(
-  (state) => state.upload.queues,
+  (state: RootState) => state.upload.queues,
   ({
     failedItems,
     itemsFinished,
@@ -177,7 +203,7 @@ export const getUploadStatusCodeCounters = createSelector(
  * current upload; they should be treated as Status.OFF
  */
 export const getUploadStatusCodeMapping = createSelector(
-  (state) => state.upload.queues,
+  (state: RootState) => state.upload.queues,
   ({
     failedItems,
     itemsFinished,
@@ -185,7 +211,7 @@ export const getUploadStatusCodeMapping = createSelector(
     itemsQueued,
     itemsWaitingToStart,
   }) => {
-    const result = {};
+    const result: Record<UAV['id'], Status> = {};
 
     for (const uavId of itemsWaitingToStart) {
       result[uavId] = Status.WAITING;
@@ -212,8 +238,8 @@ export const getUploadStatusCodeMapping = createSelector(
 );
 
 export const getAverageProgressOfItemsInProgress = createSelector(
-  (state) => state.upload.queues.itemsInProgress,
-  (state) => state.upload.progresses,
+  (state: RootState) => state.upload.queues.itemsInProgress,
+  (state: RootState) => state.upload.progresses,
   (itemsInProgress, progresses) =>
     itemsInProgress.length > 0
       ? mean(itemsInProgress.map((id) => progresses[id] ?? 0))
@@ -246,23 +272,25 @@ export const getUploadProgress = createSelector(
 /**
  * Returns whether there is at least one queued item in the backlog.
  */
-export const hasQueuedItems = (state) =>
+export const hasQueuedItems = (state: RootState): boolean =>
   getItemsInUploadBacklog(state).length > 0;
 
 /**
  * Returns whether we are currently uploading show data to the drones.
  */
-export const isUploadInProgress = (state) => state.upload.currentJob.running;
+export const isUploadInProgress = (state: RootState): boolean =>
+  state.upload.currentJob.running;
 
 /**
  * Returns whether failed uploads should be retried automatically.
  */
-export const shouldRetryFailedUploadsAutomatically = (state) =>
-  Boolean(state.upload.settings?.autoRetry);
+export const shouldRetryFailedUploadsAutomatically = (
+  state: RootState
+): boolean => Boolean(state.upload.settings?.autoRetry);
 
 /**
  * Returns whether the UAVs that failed the upload should be instructed to
  * flash their lights.
  */
-export const shouldFlashLightsOfFailedUploads = (state) =>
+export const shouldFlashLightsOfFailedUploads = (state: RootState): boolean =>
   Boolean(state.upload.settings?.flashFailed);
