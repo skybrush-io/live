@@ -1,8 +1,24 @@
-export const JobScope = {
-  ALL: 'all',
-  COMPATIBLE: 'compatible',
-  MISSION: 'mission',
-  SINGLE: 'single',
+import type { RootState } from '~/store/reducers';
+
+import type { JobPayload } from './types';
+
+export enum JobScope {
+  ALL = 'all',
+  COMPATIBLE = 'compatible',
+  MISSION = 'mission',
+  SINGLE = 'single',
+}
+
+export type JobSpecification<T> = {
+  type: string;
+  title?: string;
+  scope?: JobScope;
+  selector?: (state: RootState, uavId: string) => T;
+  executor: (params: {
+    uavId: string;
+    payload: JobPayload;
+    data: T;
+  }) => Promise<void>;
 };
 
 /**
@@ -48,27 +64,29 @@ export const JobScope = {
  * You can register new entries in this map from other modules with
  * `registerUploadJobType()`.
  */
-const JOB_TYPE_TO_SPEC_MAP = {};
+const JOB_TYPE_TO_SPEC_MAP: Record<string, JobSpecification<any>> = {};
 
 /**
  * Returns the job specification object corresponding to the given job type,
  * or null if there is no such job type.
  */
-export function getSpecificationForJobType(type) {
-  return JOB_TYPE_TO_SPEC_MAP[type] ?? null;
+export function getSpecificationForJobType(
+  type: string
+): JobSpecification<any> | undefined {
+  return JOB_TYPE_TO_SPEC_MAP[type] ?? undefined;
 }
 
 /**
  * Returns the title to show for jobs of a given type in dialog boxes.
  */
-export function getDialogTitleForJobType(type) {
+export function getDialogTitleForJobType(type: string): string {
   return getSpecificationForJobType(type)?.title ?? 'Upload data';
 }
 
 /**
  * Returns the scope of an upload job with the given type.
  */
-export function getScopeForJobType(type) {
+export function getScopeForJobType(type: string): JobScope {
   return getSpecificationForJobType(type)?.scope ?? JobScope.ALL;
 }
 
@@ -80,7 +98,7 @@ export function getScopeForJobType(type) {
  *
  * @returns a disposer function that can be called to unregister the job type
  */
-export function registerUploadJobType(spec) {
+export function registerUploadJobType(spec: JobSpecification<any>): () => void {
   const type = spec?.type;
 
   if (typeof type !== 'string' || type.length === 0) {
