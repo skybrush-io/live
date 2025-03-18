@@ -24,11 +24,12 @@ import { MissionType } from '~/model/missions';
 import { type AppSelector } from '~/store/reducers';
 import { rejectNullish } from '~/utils/arrays';
 import {
+  type EasNor,
+  type LonLat,
   lonLatFromMapViewCoordinate,
   mapViewCoordinateFromLonLat,
   turfDistanceInMeters,
 } from '~/utils/geography';
-import { type Coordinate2D } from '~/utils/math';
 
 import { type SafetyDialogTab } from './constants';
 import { type SafetySliceState } from './slice';
@@ -71,7 +72,7 @@ export const getSafetySettings: AppSelector<SafetySliceState['settings']> = (
  * buffering (extension with an extra safety margin / padding zone).
  */
 export const getGeofenceGenerationSettingsApplicator: AppSelector<
-  (coordinates: Coordinate2D[]) => Coordinate2D[]
+  (coordinates: EasNor[]) => Result<EasNor[], string>
 > = createSelector(
   getGeofenceSettings,
   makeGeofenceGenerationSettingsApplicator
@@ -81,7 +82,7 @@ export const getGeofenceGenerationSettingsApplicator: AppSelector<
  * Selector that returns a boundary polygon based on the currently loaded show.
  */
 export const getBoundaryPolygonBasedOnShowTrajectories: AppSelector<
-  Result<Coordinate2D[], string>
+  Result<LonLat[], string>
 > = createSelector(
   getConvexHullOfShow,
   getOutdoorShowToWorldCoordinateSystemTransformationObject,
@@ -104,7 +105,7 @@ export const getBoundaryPolygonBasedOnShowTrajectories: AppSelector<
  * Selector that returns a boundary polygon based on the current mission items.
  */
 export const getBoundaryPolygonBasedOnMissionItems: AppSelector<
-  Result<Coordinate2D[], string>
+  Result<LonLat[], string>
 > = createSelector(
   getConvexHullOfMissionInMapViewCoordinates,
   (coordinates) => {
@@ -113,9 +114,7 @@ export const getBoundaryPolygonBasedOnMissionItems: AppSelector<
     }
 
     return ok(
-      coordinates.map(
-        unary<Coordinate2D, Coordinate2D>(lonLatFromMapViewCoordinate)
-      )
+      coordinates.map(unary<EasNor, LonLat>(lonLatFromMapViewCoordinate))
     );
   }
 );
@@ -124,19 +123,19 @@ export const getBoundaryPolygonBasedOnMissionItems: AppSelector<
  * Selector that returns a boundary polygon for the current mission type.
  */
 export const getBoundaryPolygonForCurrentMissionType: AppSelector<
-  Result<Coordinate2D[], string>
+  Result<LonLat[], string>
 > = createSelector(
   getMissionType,
   getBoundaryPolygonBasedOnShowTrajectories,
   getBoundaryPolygonBasedOnMissionItems,
   (
     missionType,
-    geofencePolygonBasedOnShowTrajectories,
-    geofencePolygonBasedOnMissionItems
+    boundaryPolygonBasedOnShowTrajectories,
+    boundaryPolygonBasedOnMissionItems
   ) =>
     ({
-      [MissionType.SHOW]: geofencePolygonBasedOnShowTrajectories,
-      [MissionType.WAYPOINT]: geofencePolygonBasedOnMissionItems,
+      [MissionType.SHOW]: boundaryPolygonBasedOnShowTrajectories,
+      [MissionType.WAYPOINT]: boundaryPolygonBasedOnMissionItems,
       [MissionType.UNKNOWN]: err('Unknown mission type'),
     })[missionType]
 );
@@ -145,7 +144,7 @@ export const getBoundaryPolygonForCurrentMissionType: AppSelector<
  * Selector that returns a geofence polygon for the current mission type.
  */
 export const getAutomaticGeofencePolygonForCurrentMissionType: AppSelector<
-  Result<Coordinate2D[], string>
+  Result<LonLat[], string>
 > = createSelector(
   getBoundaryPolygonForCurrentMissionType,
   getGeofenceGenerationSettingsApplicator,
@@ -154,13 +153,9 @@ export const getAutomaticGeofencePolygonForCurrentMissionType: AppSelector<
     geofenceGenerationSettingsApplicator
   ) =>
     boundaryPolygonForCurrentMissionType
-      .map((cs) =>
-        cs.map(unary<Coordinate2D, Coordinate2D>(mapViewCoordinateFromLonLat))
-      )
-      .map(geofenceGenerationSettingsApplicator)
-      .map((cs) =>
-        cs.map(unary<Coordinate2D, Coordinate2D>(lonLatFromMapViewCoordinate))
-      )
+      .map((cs) => cs.map(unary<LonLat, EasNor>(mapViewCoordinateFromLonLat)))
+      .andThen(geofenceGenerationSettingsApplicator)
+      .map((cs) => cs.map(unary<EasNor, LonLat>(lonLatFromMapViewCoordinate)))
 );
 
 /**

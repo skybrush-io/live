@@ -132,7 +132,7 @@ const calculator = createDecorator(
                       });
                     const wouldBeGeofence = boundaryPolygonBasedOnMissionItems
                       .map((cs) => cs.map(unary(mapViewCoordinateFromLonLat)))
-                      .map(wouldBeGeofenceSettingsApplicator)
+                      .andThen(wouldBeGeofenceSettingsApplicator)
                       .map((cs) => cs.map(unary(lonLatFromMapViewCoordinate)));
 
                     if (wouldBeGeofence.isOk()) {
@@ -241,6 +241,7 @@ const GeofenceSettingsFormPresentation = ({ onSubmit, t }) => {
               fieldProps={{ parse: (v) => v.length > 0 && Number(v) }}
               InputProps={{
                 endAdornment: <InputAdornment position='end'>m</InputAdornment>,
+                inputProps: { min: 1 },
               }}
             />
             <Box p={1} />
@@ -252,6 +253,7 @@ const GeofenceSettingsFormPresentation = ({ onSubmit, t }) => {
               fieldProps={{ parse: (v) => v.length > 0 && Number(v) }}
               InputProps={{
                 endAdornment: <InputAdornment position='end'>m</InputAdornment>,
+                inputProps: { min: 1 },
               }}
             />
           </Box>

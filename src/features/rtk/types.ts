@@ -1,4 +1,5 @@
-import { type Coordinate2D, type Coordinate3D } from '~/utils/math';
+import { type LonLat } from '~/utils/geography';
+import { type Coordinate3D } from '~/utils/math';
 
 export enum RTKAntennaPositionFormat {
   LON_LAT = 'lonLat',
@@ -63,7 +64,7 @@ export type RTKStatistics = {
   antenna: {
     descriptor?: string;
     height?: number;
-    position?: Coordinate2D; // should be [lon, lat]
+    position?: LonLat; // should be [lon, lat]
     positionECEF?: Coordinate3D; // should be [x, y, z] integers, in mm
     serialNumber?: string;
     stationId?: number;

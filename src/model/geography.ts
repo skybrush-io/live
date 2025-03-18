@@ -1,5 +1,7 @@
 import { isObject } from 'lodash-es';
 
+import { type Latitude, type Longitude } from '~/utils/geography';
+
 import { type GPSFixType } from './enums';
 
 /* ----- Position ----------------------------------------------------------- */
@@ -12,8 +14,8 @@ export type GPSFix = {
 };
 
 export type GPSPosition = {
-  lat: number;
-  lon: number;
+  lat: Latitude;
+  lon: Longitude;
   amsl?: number;
   ahl?: number;
   agl?: number;

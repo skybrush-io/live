@@ -6,8 +6,7 @@ import { createSelector } from '@reduxjs/toolkit';
 import { OriginType } from '~/features/map/types';
 import type { RootState } from '~/store/reducers';
 
-import { FlatEarthCoordinateSystem } from '~/utils/geography';
-import type { Coordinate2D } from '~/utils/math';
+import { FlatEarthCoordinateSystem, type LonLat } from '~/utils/geography';
 
 /**
  * Selector that returns a conversion object that can be used to transform
@@ -29,7 +28,7 @@ export const getFlatEarthCoordinateTransformer = createSelector(
 /**
  * Selector that returns the center position of the map view in lon-lat format.
  */
-export const getMapViewCenterPosition = (state: RootState): Coordinate2D =>
+export const getMapViewCenterPosition = (state: RootState): LonLat =>
   state.map.view.position;
 
 /**
