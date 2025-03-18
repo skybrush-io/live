@@ -10,7 +10,7 @@ import {
   isHomePositionId,
 } from '~/model/identifiers';
 import type { AppDispatch } from '~/store/reducers';
-import { type EasNor, type Easting, type Northing } from '~/utils/geography';
+import type { EasNor, Easting, Northing } from '~/utils/geography';
 import { toDegrees } from '~/utils/math';
 
 import {
@@ -105,11 +105,6 @@ function updateHomePosition(
 
   const { event } = options;
 
-  if (event.subType !== 'move') {
-    console.warn('Only move events are supported for the home positions.');
-    return;
-  }
-
   const homePositionId = globalIdToHomePositionId(globalId);
   if (homePositionId === undefined) {
     console.warn('Invalid home position ID:', globalId);
@@ -121,14 +116,24 @@ function updateHomePosition(
     console.warn('Invalid home position ID:', globalId);
   }
 
-  const delta: EasNor = event.delta;
+  if (event.subType === 'move') {
+    const delta: EasNor = event.delta;
 
-  dispatch(
-    moveHomePositionsByMapCoordinateDelta({
-      delta,
-      drones: { [homePositionIndex]: true },
-    })
-  );
+    dispatch(
+      moveHomePositionsByMapCoordinateDelta({
+        delta,
+        drones: { [homePositionIndex]: true },
+      })
+    );
+  } else if (event.subType === 'rotate' && event.angleDelta && event.origin) {
+    dispatch(
+      rotateHomePositions({
+        rotationOriginInMapCoordinates: event.origin,
+        angle: toDegrees(-event.angleDelta),
+        drones: { [homePositionIndex]: true },
+      })
+    );
+  }
 }
 
 /**

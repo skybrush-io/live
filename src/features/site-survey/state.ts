@@ -116,9 +116,8 @@ const { reducer, actions } = createSlice({
      * @param state The slice's current state.
      * @param action.delta The delta to move the home positions by.
      * @param action.drones The set of drones whose home positions should be moved.
-     *        Technically a record where the drone IDs are the keys. Values are
+     *        Technically a record where the drone indexes are the keys. Values are
      *        ignored. If `undefined`, all drones are moved.
-
      */
     moveHomePositionsByMapCoordinateDelta(
       state,
@@ -181,19 +180,28 @@ const { reducer, actions } = createSlice({
 
     /**
      * Rotates the home positions around a given point in map coordinates.
+     *
+     * @param state The slice's current state.
+     * @param action.angle The rotation angle in degrees.
+     * @param action.drones The set of drones whose home positions should be rotated.
+     *        Technically a record where the drone indexes are the keys. Values are
+     *        ignored. If `undefined`, all drones are rotated.
      */
     rotateHomePositions(
       state,
       action: PayloadAction<{
         rotationOriginInMapCoordinates: EasNor;
         angle: number;
+        drones?: Record<number, unknown>;
       }>
     ) {
       if (state.showData === undefined) {
         console.warn('Cannot rotate home positions: no show data.');
         return;
       }
-      const { rotationOriginInMapCoordinates, angle } = action.payload;
+      const { rotationOriginInMapCoordinates, angle, drones } = action.payload;
+      const shouldRotateDrone = // Function that returns if a drone should be rotated.
+        drones === undefined ? () => true : (index: number) => index in drones;
 
       const earthCS = new FlatEarthCoordinateSystem(
         state.showData.coordinateSystem
@@ -205,9 +213,9 @@ const { reducer, actions } = createSlice({
       );
 
       state.showData.homePositions = state.showData.homePositions.map(
-        (homePosition): Coordinate3D | undefined => {
-          if (homePosition === undefined) {
-            return undefined;
+        (homePosition, index): Coordinate3D | undefined => {
+          if (homePosition === undefined || !shouldRotateDrone(index)) {
+            return homePosition;
           }
 
           const point = new Point(homePosition);
