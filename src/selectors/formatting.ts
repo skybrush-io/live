@@ -37,11 +37,9 @@ const signedGeographicFormatter = makeDecimalCoordinateFormatter({
   unit: '°',
 });
 
-type CoordinateFormatter = (value: number) => string;
-type CoordinatePairFormatter = ([lon, lat]: LonLat) => string;
+export type CoordinateFormatter = (value: number) => string;
+export type CoordinatePairFormatter = ([lon, lat]: LonLat) => string;
 
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
 const _formattersForCoordinateFormat: Record<
   CoordinateFormat,
   CoordinatePairFormatter
@@ -129,8 +127,6 @@ const _formattersForLatitudeOnlyFormat: Record<
       .split('|')[0]!
       .replace(trailingZeroRegExp, '$1'),
 };
-/* eslint-enable @typescript-eslint/no-unsafe-return */
-/* eslint-enable @typescript-eslint/no-unsafe-call */
 
 /**
  * Returns the preferred formatter function for the coordinate format
