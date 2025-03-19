@@ -19,6 +19,7 @@ import {
   rotateHomePositions,
   rotateShow,
 } from './state';
+import type { Identifier } from '~/utils/collections';
 
 export type FeatureUpdateType = 'modify' | 'transform';
 
@@ -91,9 +92,9 @@ function updateConvexHull(
 /**
  * Handles home position changes.
  */
-function updateHomePosition(
+function updateHomePositions(
   dispatch: AppDispatch,
-  globalId: string,
+  globalIds: Identifier[],
   options: FeatureUpdateOptions
 ) {
   if (!isTransformInteraction(options)) {
@@ -105,16 +106,16 @@ function updateHomePosition(
 
   const { event } = options;
 
-  const homePositionId = globalIdToHomePositionId(globalId);
-  if (homePositionId === undefined) {
-    console.warn('Invalid home position ID:', globalId);
-    return;
-  }
-
-  const homePositionIndex = Number.parseInt(homePositionId);
-  if (!Number.isFinite(homePositionIndex)) {
-    console.warn('Invalid home position ID:', globalId);
-  }
+  const homePositionIndexes = globalIds.reduce(
+    (acc, globalId) => {
+      const index = Number.parseInt(globalIdToHomePositionId(globalId) ?? '');
+      if (Number.isFinite(index)) {
+        acc[index] = true;
+      }
+      return acc;
+    },
+    {} as Record<number, true>
+  );
 
   if (event.subType === 'move') {
     const delta: EasNor = event.delta;
@@ -122,7 +123,7 @@ function updateHomePosition(
     dispatch(
       moveHomePositionsByMapCoordinateDelta({
         delta,
-        drones: { [homePositionIndex]: true },
+        drones: homePositionIndexes,
       })
     );
   } else if (event.subType === 'rotate' && event.angleDelta && event.origin) {
@@ -130,32 +131,9 @@ function updateHomePosition(
       rotateHomePositions({
         rotationOriginInMapCoordinates: event.origin,
         angle: toDegrees(-event.angleDelta),
-        drones: { [homePositionIndex]: true },
+        drones: homePositionIndexes,
       })
     );
-  }
-}
-
-/**
- * Handles the modification of a single feature on the map.
- */
-function updateFeature(
-  dispatch: AppDispatch,
-  feature: OLFeature,
-  options: FeatureUpdateOptions
-) {
-  // Partial, modified version of_handleFeatureUpdatesInOpenLayers() in model/openlayers.js
-  // TODO(vp): refactor openlayers.js to avoid code duplication.
-  const globalId = feature.getId();
-  if (!(typeof globalId === 'string')) {
-    console.warn('Non-string global feature ID:', globalId);
-    return;
-  }
-
-  if (globalIdToAreaId(globalId) === CONVEX_HULL_AREA_ID) {
-    return updateConvexHull(dispatch, options);
-  } else if (isHomePositionId(globalId)) {
-    return updateHomePosition(dispatch, globalId, options);
   }
 }
 
@@ -170,7 +148,30 @@ export const updateModifiedFeatures = (
   // Using batch will not be necessary after upgrading to React 18.
   // See https://react-redux.js.org/api/batch
   batch(() => {
+    // -- Collect updatable feature IDs
+    const updatedIds = {
+      convexHull: [] as Identifier[],
+      homePositions: [] as Identifier[],
+    };
     for (const feature of features) {
-      updateFeature(dispatch, feature, options);
+      const gid = feature.getId();
+      if (!(typeof gid === 'string')) {
+        console.warn('Non-string global feature ID:', gid);
+        continue;
+      }
+
+      if (globalIdToAreaId(gid) === CONVEX_HULL_AREA_ID) {
+        updatedIds.convexHull.push(gid);
+      } else if (isHomePositionId(gid)) {
+        updatedIds.homePositions.push(gid);
+      }
+    }
+
+    // -- Update features
+    if (updatedIds.convexHull.length === 1) {
+      updateConvexHull(dispatch, options);
+    }
+    if (updatedIds.homePositions.length > 0) {
+      updateHomePositions(dispatch, updatedIds.homePositions, options);
     }
   });
