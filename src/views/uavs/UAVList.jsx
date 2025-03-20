@@ -12,7 +12,6 @@ import React, { useCallback } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { connect } from 'react-redux';
-import { withTranslation } from 'react-i18next';
 import { bindActionCreators } from '@reduxjs/toolkit';
 
 import AppBar from '@material-ui/core/AppBar';
@@ -28,7 +27,7 @@ import MappingSlotEditorForGrid from './MappingSlotEditorForGrid';
 import MappingSlotEditorForList from './MappingSlotEditorForList';
 import MappingSlotEditorToolbar from './MappingSlotEditorToolbar';
 import SortAndFilterHeader from './SortAndFilterHeader';
-import UAVListSubheader from './UAVListSubheader';
+import UAVListBody from './UAVListBody';
 import UAVToolbar from './UAVToolbar';
 
 import { createSelectionHandlerThunk } from '~/components/helpers/lists';
@@ -58,6 +57,7 @@ import {
 import { setSelectedUAVIds } from '~/features/uavs/actions';
 import { openUAVDetailsDialog } from '~/features/uavs/details';
 import { getSelectedUAVIds } from '~/features/uavs/selectors';
+import { usePersistentScrollPosition } from '~/hooks';
 import { formatMissionId } from '~/utils/formatting';
 
 import {
@@ -67,7 +67,6 @@ import {
   getSelectionInfo,
 } from './selectors';
 import { uavIdToDOMNodeId } from './utils';
-import { usePersistentScrollPosition } from '~/hooks';
 
 const useListStyles = makeStyles(
   (theme) => ({
@@ -86,37 +85,6 @@ const useListStyles = makeStyles(
     },
   }),
   { name: 'UAVList' }
-);
-
-const useListSectionStyles = makeStyles(
-  (theme) => ({
-    grid: {
-      display: 'flex',
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-
-      '&>div': {
-        padding: theme.spacing(1),
-      },
-    },
-
-    list: {
-      display: 'flex',
-      alignItems: 'stretch',
-      flexDirection: 'column',
-      fontSize: '12px',
-
-      '&>div': {
-        padding: theme.spacing(0.5),
-        borderBottom: `1px solid ${theme.palette.divider}`,
-      },
-
-      '&>div:first-child': {
-        borderTop: `1px solid ${theme.palette.divider}`,
-      },
-    },
-  }),
-  { name: 'UAVListSection' }
 );
 
 /**
@@ -285,38 +253,6 @@ const createListItems = (
     );
   });
 
-const UAVListSection = ({
-  forceVisible,
-  ids,
-  itemFactory,
-  itemFactoryOptions,
-  layout,
-  ...rest
-}) => {
-  const classes = useListSectionStyles();
-
-  if (ids.length <= 0 && !forceVisible) {
-    return null;
-  }
-
-  return (
-    <>
-      <UAVListSubheader {...rest} />
-      <Box className={layout === 'grid' ? classes.grid : classes.list}>
-        {itemFactory(ids, itemFactoryOptions)}
-      </Box>
-    </>
-  );
-};
-
-UAVListSection.propTypes = {
-  forceVisible: PropTypes.bool,
-  ids: PropTypes.array,
-  itemFactory: PropTypes.func,
-  itemFactoryOptions: PropTypes.object,
-  layout: PropTypes.oneOf(['grid', 'list']),
-};
-
 /**
  * Presentation component for showing the drone show configuration view.
  */
@@ -335,7 +271,6 @@ const UAVListPresentation = ({
   selectedMissionSlotIds,
   selectionInfo,
   showMissionIds,
-  t,
   uavIds,
 }) => {
   const classes = useListStyles();
@@ -353,7 +288,7 @@ const UAVListPresentation = ({
 
   const [uavListRef, uavListOnScroll] = usePersistentScrollPosition();
 
-  const { mainUAVIds, spareUAVIds, extraSlots } = uavIds;
+  const { extraSlots } = uavIds;
 
   const itemFactory = layout === 'grid' ? createGridItems : createListItems;
 
@@ -405,28 +340,15 @@ const UAVListPresentation = ({
          * calculate how many columns there are in the grid. Revise the
          * layout functions in connect() if this is not the case any more */}
         <SortAndFilterHeader layout={layout} />
-        <UAVListSection
-          ids={mainUAVIds}
+        <UAVListBody
+          editingMapping={editingMapping}
           itemFactory={itemFactory}
           itemFactoryOptions={itemFactoryOptions}
-          label={
-            showMissionIds ? t('UAVList.assignedUAVs') : t('UAVList.allUAVs')
-          }
           layout={layout}
-          value='mainUAVIds'
-          onSelect={onSelectSection}
-          {...selectionInfo.mainUAVIds}
-        />
-        <UAVListSection
-          ids={spareUAVIds}
-          itemFactory={itemFactory}
-          itemFactoryOptions={itemFactoryOptions}
-          label={t('UAVList.spareUAVs')}
-          layout={layout}
-          value='spareUAVIds'
-          forceVisible={editingMapping}
-          onSelect={onSelectSection}
-          {...selectionInfo.spareUAVIds}
+          selectionInfo={selectionInfo}
+          showMissionIds={showMissionIds}
+          uavIds={uavIds}
+          onSelectSection={onSelectSection}
         />
       </Box>
       {extraSlots.length > 0 && layout === 'grid' ? (
@@ -477,7 +399,6 @@ UAVListPresentation.propTypes = {
     }),
   }),
   showMissionIds: PropTypes.bool,
-  t: PropTypes.func,
   uavIds: PropTypes.exact({
     mainUAVIds: PropTypes.arrayOf(PropTypes.array).isRequired,
     spareUAVIds: PropTypes.arrayOf(PropTypes.array).isRequired,
@@ -622,6 +543,6 @@ const UAVList = connect(
       ),
     });
   }
-)(withTranslation()(UAVListPresentation));
+)(UAVListPresentation);
 
 export default UAVList;
