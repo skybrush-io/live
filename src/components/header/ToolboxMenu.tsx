@@ -26,8 +26,12 @@ import { isConnected } from '~/features/servers/selectors';
 import { getRunningUploadJobType } from '~/features/upload/selectors';
 import { showVersionCheckDialog } from '~/features/version-check/slice';
 import type { RootState } from '~/store/reducers';
+import { isDeveloperModeEnabled } from '~/features/session/selectors';
+
+import ToolboxDevMenuItems from './ToolboxDevMenuItems';
 
 type ToolboxMenuPresentationProps = Readonly<{
+  devMode: boolean;
   isConnected: boolean;
   numberOfAveragingInProgress: number;
   runningUploadJobType?: string;
@@ -37,10 +41,12 @@ type ToolboxMenuPresentationProps = Readonly<{
   showLicenseInfoDialog: () => void;
   showMapCachingDialog: () => void;
   showParameterUploadDialog: () => void;
+  showVersionCheckDialog: () => void;
 }> &
   MenuProps;
 
 const ToolboxMenuPresentation = ({
+  devMode,
   isConnected,
   numberOfAveragingInProgress,
   runningUploadJobType,
@@ -49,6 +55,7 @@ const ToolboxMenuPresentation = ({
   showLicenseInfoDialog,
   showMapCachingDialog,
   showParameterUploadDialog,
+  showVersionCheckDialog: _showVersionCheckDialog,
   requestClose,
   ...rest
 }: ToolboxMenuPresentationProps): JSX.Element => {
@@ -121,6 +128,9 @@ const ToolboxMenuPresentation = ({
           Version check
         </MenuItem>
         */}
+      {devMode && (
+        <ToolboxDevMenuItems createClickListener={createClickListener} />
+      )}
     </Menu>
   );
 };
@@ -128,6 +138,7 @@ const ToolboxMenuPresentation = ({
 export default connect(
   // mapStateToProps
   (state: RootState) => ({
+    devMode: isDeveloperModeEnabled(state),
     isConnected: isConnected(state),
     numberOfAveragingInProgress: getActiveUAVIdsBeingAveraged(state).length,
     runningUploadJobType: getRunningUploadJobType(state),
