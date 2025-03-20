@@ -13,7 +13,6 @@ import type { UAVListLayout } from '~/features/settings/types';
 type UAVListBodyProps = Readonly<{
   editingMapping: boolean;
   itemFactory: UAVListSectionProps['itemFactory'];
-  itemFactoryOptions: UAVListSectionProps['itemFactoryOptions'];
   layout: UAVListLayout;
   onSelectSection: UAVListSectionProps['onSelect'];
   selectionInfo: {
@@ -33,7 +32,6 @@ type UAVListBodyProps = Readonly<{
  */
 const UAVListBody = ({
   itemFactory,
-  itemFactoryOptions,
   editingMapping,
   layout,
   onSelectSection,
@@ -49,8 +47,6 @@ const UAVListBody = ({
       <UAVListSection
         ids={mainUAVIds}
         itemFactory={itemFactory}
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        itemFactoryOptions={itemFactoryOptions}
         label={
           showMissionIds ? t('UAVList.assignedUAVs') : t('UAVList.allUAVs')
         }
@@ -62,8 +58,6 @@ const UAVListBody = ({
       <UAVListSection
         ids={spareUAVIds}
         itemFactory={itemFactory}
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        itemFactoryOptions={itemFactoryOptions}
         label={t('UAVList.spareUAVs')}
         layout={layout}
         value='spareUAVIds'

@@ -88,13 +88,12 @@ const useListStyles = makeStyles(
 );
 
 /**
- * Helper function to create the items in the grid view of drone avatars and
+ * Helper function to create a single item in the grid view of drone avatars and
  * placeholders.
  */
 /* eslint-disable complexity */
-const createGridItems = (
-  items,
-  {
+const createGridItemFactory =
+  ({
     draggable,
     isInEditMode,
     mappingSlotBeingEdited,
@@ -105,9 +104,8 @@ const createGridItems = (
     selectedMissionSlotIds,
     selectedUAVIds,
     showMissionIds,
-  }
-) =>
-  items.map((item) => {
+  }) =>
+  (item) => {
     const [uavId, missionIndex, proposedLabel] = item;
     const missionSlotId = String(missionIndex);
     const editingThisItem =
@@ -181,16 +179,15 @@ const createGridItems = (
         />
       </DroneListItem>
     );
-  });
+  };
 /* eslint-enable complexity */
 
 /**
- * Helper function to create the items in the list view of drone avatars and
+ * Helper function to create a single item in the list view of drone avatars and
  * placeholders.
  */
-const createListItems = (
-  items,
-  {
+const createListItemFactory =
+  ({
     isInEditMode,
     mappingSlotBeingEdited,
     onDropped,
@@ -200,9 +197,8 @@ const createListItems = (
     selectedUAVIds,
     selectedMissionSlotIds,
     showMissionIds,
-  }
-) =>
-  items.map((item) => {
+  }) =>
+  (item) => {
     if (item === deletionMarker) {
       return null;
     }
@@ -251,7 +247,7 @@ const createListItems = (
         />
       </DroneListItem>
     );
-  });
+  };
 
 /**
  * Presentation component for showing the drone show configuration view.
@@ -290,8 +286,6 @@ const UAVListPresentation = ({
 
   const { extraSlots } = uavIds;
 
-  const itemFactory = layout === 'grid' ? createGridItems : createListItems;
-
   const itemFactoryOptions = {
     draggable: editingMapping,
     isInEditMode: editingMapping,
@@ -304,6 +298,10 @@ const UAVListPresentation = ({
     selectedMissionSlotIds,
     showMissionIds,
   };
+  const itemFactory =
+    layout === 'grid'
+      ? createGridItemFactory(itemFactoryOptions)
+      : createListItemFactory(itemFactoryOptions);
 
   const mainBox = (
     <Box display='flex' flexDirection='column' height='100%'>
@@ -343,7 +341,6 @@ const UAVListPresentation = ({
         <UAVListBody
           editingMapping={editingMapping}
           itemFactory={itemFactory}
-          itemFactoryOptions={itemFactoryOptions}
           layout={layout}
           selectionInfo={selectionInfo}
           showMissionIds={showMissionIds}
@@ -354,7 +351,7 @@ const UAVListPresentation = ({
       {extraSlots.length > 0 && layout === 'grid' ? (
         <Box className='bottom-bar'>
           <Box display='flex' flexDirection='row' flexWrap='wrap'>
-            {createGridItems(extraSlots, itemFactoryOptions)}
+            {extraSlots.map((slot) => itemFactory(slot))}
           </Box>
         </Box>
       ) : null}

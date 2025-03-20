@@ -45,8 +45,7 @@ export type UAVListSectionProps = UAVListSubheaderProps &
   Readonly<{
     forceVisible?: boolean;
     ids: string[];
-    itemFactory: (ids: string[], options: any) => React.ReactNode;
-    itemFactoryOptions: any;
+    itemFactory: (id: string) => React.ReactNode;
     layout: UAVListLayout;
   }>;
 
@@ -54,7 +53,6 @@ const UAVListSection = ({
   forceVisible,
   ids,
   itemFactory,
-  itemFactoryOptions,
   layout,
   ...rest
   // eslint-disable-next-line @typescript-eslint/ban-types
@@ -71,7 +69,7 @@ const UAVListSection = ({
       <Box
         className={layout === UAVListLayout.GRID ? classes.grid : classes.list}
       >
-        {itemFactory(ids, itemFactoryOptions)}
+        {ids.map((id) => itemFactory(id))}
       </Box>
     </>
   );
