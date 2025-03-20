@@ -102,6 +102,7 @@ const PromptDialogPresentation: React.FunctionComponent<
 
 const PromptDialog = connect<PromptDialogPresentationProps>(
   // mapStateToProps
+  // TODO: RootState
   (state: any): any => state.dialogs.prompt as PromptSliceState,
 
   // mapDispatchToProps
