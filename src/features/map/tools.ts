@@ -10,6 +10,7 @@ import {
 
 import { Tool } from '~/views/map/tools';
 import { type AppSelector } from '~/store/reducers';
+import { Coordinate2D } from '~/utils/math';
 
 type MapToolsSliceState = {
   selectedTool: Tool;
@@ -64,23 +65,37 @@ export const getTakeoffGridProperties: AppSelector<
 export const getTakeoffGrid = createSelector(
   getTakeoffGridProperties,
   (takeoffGridProperties) =>
-    takeoffGridProperties.subgrids.reduce(
+    takeoffGridProperties.subgrids.reduce<{
+      coordinates: Coordinate2D[];
+      size: { x: number; y: number };
+    }>(
       (unit, grid) => ({
+        coordinates: Array.from({ length: grid.yCount }, (_, i) =>
+          Array.from({ length: grid.xCount }, (_, j) =>
+            unit.coordinates.map<Coordinate2D>(([x, y]) => [
+              x + j * (grid.xSpace + unit.size.x),
+              y + i * (grid.ySpace + unit.size.y),
+            ])
+          ).flat()
+        ).flat(),
         size: {
           x: grid.xCount * unit.size.x + (grid.xCount - 1) * grid.xSpace,
           y: grid.yCount * unit.size.y + (grid.yCount - 1) * grid.ySpace,
         },
-        coordinates: Array.from({ length: grid.yCount }, (_, i) =>
-          Array.from({ length: grid.xCount }, (_, j) =>
-            unit.coordinates.map(([x, y]) => [
-              x! + j * (grid.xSpace + unit.size.x), // TODO: Remove bang!
-              y! + i * (grid.ySpace + unit.size.y), // TODO: Remove bang!
-            ])
-          ).flat()
-        ).flat(),
       }),
-      { size: { x: 0, y: 0 }, coordinates: [[0, 0]] }
+      { coordinates: [[0, 0]], size: { x: 0, y: 0 } }
     )
+);
+
+export const getCenteredTakeoffGrid = createSelector(
+  getTakeoffGrid,
+  ({ coordinates, size }) => ({
+    coordinates: coordinates.map(([dx, dy]) => [
+      dx - size.x / 2,
+      dy - size.y / 2,
+    ]),
+    size,
+  })
 );
 
 export default reducer;

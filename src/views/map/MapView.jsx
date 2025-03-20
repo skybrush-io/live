@@ -11,6 +11,7 @@ import { Map, View, control, interaction, withMap } from '@collmot/ol-react';
 
 import * as Condition from './conditions';
 import {
+  PlaceTakeoffGrid,
   SelectNearestFeature,
   ShowContextMenu,
   TrackNearestFeature,
@@ -33,11 +34,7 @@ import {
   setSelection,
   toggleInSelection,
 } from '~/features/map/selection';
-import {
-  getSelectedTool,
-  getTakeoffGrid,
-  getTakeoffGridProperties,
-} from '~/features/map/tools';
+import { getSelectedTool, getCenteredTakeoffGrid } from '~/features/map/tools';
 import { updateMapViewSettings } from '~/features/map/view';
 import {
   addFeature,
@@ -83,10 +80,6 @@ import { forwardCollectionChanges } from '~/utils/openlayers';
 import { snapEndToStart } from './interactions/utils';
 
 import 'ol/ol.css';
-import { Circle, Fill, RegularShape, Stroke, Style } from 'ol/style';
-import { takeoffTriangle } from './layers/mission-info';
-import { blackVeryThinOutline, fill } from '~/utils/styles';
-import Colors from '~/components/colors';
 import { updateHomePositions } from '~/features/mission/slice';
 import { bindActionCreators } from 'redux';
 
@@ -393,57 +386,11 @@ const MapViewInteractions = withMap((props) => {
     );
   }
 
-  const takeoffTriangleParameters = {
-    fill: fill(Colors.markers.takeoff),
-    points: 3,
-    radius: 6,
-    stroke: blackVeryThinOutline,
-  };
-
-  const takeoffTriangleWithDisplacement = (displacement) =>
-    new Style({
-      image: new RegularShape({ ...takeoffTriangleParameters, displacement }),
-    });
-
   if (selectedTool === Tool.TAKEOFF_GRID) {
     interactions.push(
-      <interaction.Draw
-        key='TakeoffGrid'
-        type='Point'
-        condition={Condition.primaryAction}
-        // HACK: Generating a whole list of styles with displacements is
-        //       probably not the best approach, maybe have a single style
-        //       and a custom interaction that has a MultiPoint sketch feature?
-        style={(_f, r) =>
-          takeoffGrid.coordinates
-            .map(([dx, dy]) => [
-              dx - takeoffGrid.size.x / 2,
-              dy - takeoffGrid.size.y / 2,
-            ])
-            .map((displacement) =>
-              takeoffTriangleWithDisplacement(
-                displacement.map((d) => d * (5 / r))
-              )
-            )
-        }
-        onDrawEnd={(event) => {
-          const rotation = event.target.getMap().getView().getRotation();
-          const [cx, cy] = event.feature.getGeometry().getCoordinates();
-          updateHomePositions(
-            takeoffGrid.coordinates
-              .map(([dx, dy]) => [
-                dx - takeoffGrid.size.x / 2,
-                dy - takeoffGrid.size.y / 2,
-              ])
-              .map(([dx, dy]) =>
-                lonLatFromMapViewCoordinate([
-                  cx + (dx * Math.cos(rotation) + dy * -Math.sin(rotation)) * 5,
-                  cy + (dx * Math.sin(rotation) + dy * Math.cos(rotation)) * 5,
-                ])
-              )
-              .map(([lon, lat]) => ({ lon, lat }))
-          );
-        }}
+      <PlaceTakeoffGrid
+        takeoffGrid={takeoffGrid}
+        updateHomePositions={updateHomePositions}
       />
     );
   }
@@ -931,7 +878,7 @@ const MapView = connect(
     selectedFeatures: getSelectedFeatureIds(state),
     selectedTool: getSelectedTool(state),
     selection: getSelection(state),
-    takeoffGrid: getTakeoffGrid(state),
+    takeoffGrid: getCenteredTakeoffGrid(state),
 
     uavDetailsPanelFollowsSelection:
       getFollowMapSelectionInUAVDetailsPanel(state),
