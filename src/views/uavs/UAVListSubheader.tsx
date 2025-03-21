@@ -6,11 +6,9 @@ import ListSubheader from '@material-ui/core/ListSubheader';
 
 export type UAVListSubheaderProps = Readonly<{
   label: string;
-  onSelect: (
-    event: React.SyntheticEvent<HTMLInputElement | HTMLButtonElement>
-  ) => void;
+  onSelect: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }> &
-  CheckboxProps;
+  Omit<CheckboxProps, 'onSelect'>;
 
 const UAVListSubheader = ({
   label,

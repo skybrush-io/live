@@ -156,7 +156,7 @@ const FeatureListEntryPresentation = (props) => {
     </>
   );
 
-  const [menuAnchorElement, openMenu, closeMenu] = useDropdown();
+  const [menuAnchorElement, openMenu, closeMenu, closeMenuWith] = useDropdown();
   const actionMenu = (
     <>
       <IconButton className={classes.menu} edge='end' onClick={openMenu}>
@@ -169,7 +169,7 @@ const FeatureListEntryPresentation = (props) => {
         onClose={closeMenu}
       >
         {actions.map(({ action, icon, key, label }) => (
-          <MenuItem key={key} onClick={closeMenu(action)}>
+          <MenuItem key={key} onClick={closeMenuWith(action)}>
             <ListItemIcon>{icon}</ListItemIcon>
             <ListItemText primary={label} />
           </MenuItem>

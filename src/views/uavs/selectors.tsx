@@ -23,12 +23,20 @@ import {
 import { UAVSortKey } from '~/model/sorting';
 
 import { applyFiltersAndSortDisplayedUAVIdList } from './sorting';
+import type { ExtraSlot, GroupedUAVIds } from './types';
+import type { AppSelector, RootState } from '~/store/reducers';
+import type { StoredUAV } from '~/features/uavs/types';
+import type { Nullable } from '~/utils/types';
 
 /**
  * Special marker that we can place into the list items returned from
  * getDisplayedIdListBySections() to produce a slot where deleted UAVs can be dragged.
  */
-export const deletionMarker = [undefined, undefined, <Delete key='__delete' />];
+export const deletionMarker: ExtraSlot = [
+  undefined,
+  undefined,
+  <Delete key='__delete' />,
+];
 
 /**
  * Selector that provides the list of UAV IDs to show in the UAV list when
@@ -47,10 +55,15 @@ const getUnprocessedDisplayedIdListSortedByMissionId = createSelector(
   isMappingEditable,
   getUAVIdList,
   isShowingEmptyMissionSlots,
-  (mapping, editable, uavIds, showEmpty) => {
-    const mainUAVIds = [];
-    const spareUAVIds = [];
-    const extraSlots = [];
+  (
+    mapping: Array<Nullable<string>>,
+    editable: boolean,
+    uavIds: string[],
+    showEmpty: boolean
+  ): GroupedUAVIds => {
+    const mainUAVIds: Array<[string | undefined, number | undefined]> = [];
+    const spareUAVIds: Array<[string, undefined]> = [];
+    const extraSlots: ExtraSlot[] = [];
     const seenUAVIds = new Set();
 
     for (const [index, uavId] of mapping.entries()) {
@@ -97,14 +110,16 @@ const getUnprocessedDisplayedIdListSortedByMissionId = createSelector(
 const getUnprocessedDisplayedIdListSortedByUavId = createSelector(
   getUAVIdList,
   getReverseMissionMapping,
-  (uavIds, reverseMapping) => ({
+  (uavIds, reverseMapping): GroupedUAVIds => ({
     mainUAVIds: uavIds.map((uavId) => [uavId, reverseMapping[uavId]]),
     spareUAVIds: [],
     extraSlots: [],
   })
 );
 
-const getUnprocessedDisplayedIdListBySections = (state) =>
+const getUnprocessedDisplayedIdListBySections: AppSelector<GroupedUAVIds> = (
+  state: RootState
+) =>
   isShowingMissionIds(state)
     ? getUnprocessedDisplayedIdListSortedByMissionId(state)
     : getUnprocessedDisplayedIdListSortedByUavId(state);
@@ -112,7 +127,9 @@ const getUnprocessedDisplayedIdListBySections = (state) =>
 /**
  * Helper function for getDisplayedIdListBySections(); see an explanation there.
  */
-const getUAVIdToStateMappingForSortAndFilter = (state) => {
+const getUAVIdToStateMappingForSortAndFilter: AppSelector<
+  Nullable<Record<string, StoredUAV>>
+> = (state: RootState) => {
   const { key } = getUAVListSortPreference(state);
   const filters = getUAVListFilters(state);
   return key === UAVSortKey.DEFAULT && filters.length === 0
@@ -131,13 +148,14 @@ const getUAVIdToStateMappingForSortAndFilter = (state) => {
  * list stays the same _when_ we are not sorting or filtering based on UAV
  * properties.
  */
-export const getDisplayedIdListBySections = createSelector(
-  getUAVListFilters,
-  getUAVListSortPreference,
-  getUnprocessedDisplayedIdListBySections,
-  getUAVIdToStateMappingForSortAndFilter,
-  applyFiltersAndSortDisplayedUAVIdList
-);
+export const getDisplayedIdListBySections: AppSelector<GroupedUAVIds> =
+  createSelector(
+    getUAVListFilters,
+    getUAVListSortPreference,
+    getUnprocessedDisplayedIdListBySections,
+    getUAVIdToStateMappingForSortAndFilter,
+    applyFiltersAndSortDisplayedUAVIdList
+  );
 
 /**
  * Selector that provides the list of UAV IDs to show in the UAV list, in the
@@ -146,11 +164,12 @@ export const getDisplayedIdListBySections = createSelector(
 export const getDisplayedIdList = createSelector(
   getDisplayedIdListBySections,
   ({ mainUAVIds, spareUAVIds }) => {
-    const result = [];
+    const result: string[] = [];
 
     for (const item of mainUAVIds) {
-      if (!isNil(item[0])) {
-        result.push(item[0]);
+      const uavId = item[0];
+      if (!isNil(uavId)) {
+        result.push(uavId);
       }
     }
 
@@ -175,34 +194,41 @@ export const getSelectionInfo = createSelector(
   getDisplayedIdListBySections,
   getSelectedUAVIds,
   (displayedIdList, selectedIds) =>
-    mapValues(displayedIdList, (idsAndLabels) => {
-      const nonEmptyIdsAndLabels = idsAndLabels.filter(
-        (idAndLabel) => !isNil(idAndLabel[0])
-      );
-      const itemIsSelected = (idAndLabel) =>
-        selectedIds.includes(idAndLabel[0]);
-      if (nonEmptyIdsAndLabels.length > 0) {
-        // Check the first item in idsAndLabels; it will settle either someSelected
-        // or allSelected
-        if (itemIsSelected(nonEmptyIdsAndLabels[0])) {
-          const allIsSelected = nonEmptyIdsAndLabels.every(itemIsSelected);
+    mapValues(
+      displayedIdList,
+      (
+        idsAndLabels
+      ): { checked: boolean; indeterminate: boolean; disabled: boolean } => {
+        const nonEmptyIdsAndLabels: Array<[string | undefined, ...any]> =
+          idsAndLabels.filter((idAndLabel) => !isNil(idAndLabel[0]));
+        const itemIsSelected = (
+          idAndLabel: [string | undefined, ...any]
+        ): boolean => selectedIds.includes(idAndLabel[0]!);
+        if (nonEmptyIdsAndLabels.length > 0) {
+          // Check the first item in idsAndLabels; it will settle either someSelected
+          // or allSelected
+          if (itemIsSelected(nonEmptyIdsAndLabels[0]!)) {
+            const allIsSelected = nonEmptyIdsAndLabels.every(itemIsSelected);
+            return {
+              checked: allIsSelected,
+              indeterminate: !allIsSelected,
+              disabled: false,
+            };
+          }
+
+          const someIsSelected = nonEmptyIdsAndLabels.some(itemIsSelected);
           return {
-            checked: allIsSelected,
-            indeterminate: !allIsSelected,
+            checked: false,
+            indeterminate: someIsSelected,
+            disabled: false,
           };
         }
 
-        const someIsSelected = nonEmptyIdsAndLabels.some(itemIsSelected);
         return {
           checked: false,
-          indeterminate: someIsSelected,
+          indeterminate: false,
+          disabled: true,
         };
       }
-
-      return {
-        checked: false,
-        indeterminate: false,
-        disabled: true,
-      };
-    })
+    )
 );

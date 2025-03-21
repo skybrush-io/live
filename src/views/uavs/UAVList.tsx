@@ -12,7 +12,7 @@ import React, { useCallback } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { connect } from 'react-redux';
-import { bindActionCreators } from '@reduxjs/toolkit';
+import { bindActionCreators, type AnyAction } from '@reduxjs/toolkit';
 
 import AppBar from '@material-ui/core/AppBar';
 import Box from '@material-ui/core/Box';
@@ -67,6 +67,10 @@ import {
   getSelectionInfo,
 } from './selectors';
 import { uavIdToDOMNodeId } from './utils';
+import type { GroupedUAVIds, GroupSelectionInfo, Item } from './types';
+import { UAVListLayout, UAVListOrientation } from '~/features/settings/types';
+import type { AppThunk, RootState } from '~/store/reducers';
+import type { Nullable } from '~/utils/types';
 
 const useListStyles = makeStyles(
   (theme) => ({
@@ -87,6 +91,21 @@ const useListStyles = makeStyles(
   { name: 'UAVList' }
 );
 
+type ItemFactoryOptions = {
+  draggable: boolean;
+  isInEditMode: boolean;
+  mappingSlotBeingEdited: number;
+  onDropped?: (
+    targetIndex: number | undefined
+  ) => (droppedUAVId: string) => void;
+  onSelectedMissionSlot: (missionSlotId: string) => void;
+  onSelectedUAV: (uavId: string) => void;
+  onStartEditing: (missionIndex: number) => void;
+  selectedMissionSlotIds: string[];
+  selectedUAVIds: string[];
+  showMissionIds: boolean;
+};
+
 /**
  * Helper function to create a single item in the grid view of drone avatars and
  * placeholders.
@@ -104,20 +123,20 @@ const createGridItemFactory =
     selectedMissionSlotIds,
     selectedUAVIds,
     showMissionIds,
-  }) =>
-  (item) => {
+  }: ItemFactoryOptions) =>
+  (item: Item): JSX.Element => {
     const [uavId, missionIndex, proposedLabel] = item;
     const missionSlotId = String(missionIndex);
     const editingThisItem =
       mappingSlotBeingEdited !== undefined &&
       missionIndex === mappingSlotBeingEdited;
     const selected =
-      selectedUAVIds.includes(uavId) ||
+      selectedUAVIds.includes(uavId!) ||
       selectedMissionSlotIds.includes(missionSlotId);
-    const listItemProps = {
+    const listItemProps: Record<string, any> = {
       /* prettier-ignore */
       onClick:
-        isInEditMode  ? onStartEditing.bind(null, missionIndex) :
+        isInEditMode  ? onStartEditing.bind(null, missionIndex!) :
         uavId         ? onSelectedUAV.bind(null, uavId) :
         missionSlotId ? onSelectedMissionSlot.bind(null, missionSlotId) :
         undefined,
@@ -127,7 +146,7 @@ const createGridItemFactory =
     };
 
     if (item === deletionMarker) {
-      listItemProps.fill = true;
+      listItemProps['fill'] = true;
     }
 
     // Derive the main (large) label of the grid item. The rules are:
@@ -141,14 +160,14 @@ const createGridItemFactory =
     //   what we are going to allow the user to modify
 
     const label =
-      proposedLabel ||
+      proposedLabel ??
       (showMissionIds
         ? missionIndex !== undefined && (!isInEditMode || uavId === undefined)
           ? formatMissionId(missionIndex)
           : uavId
         : uavId);
 
-    const key = uavId === undefined ? `placeholder-${label || 'null'}` : uavId;
+    const key = uavId ?? `placeholder-${String(label) || 'null'}`;
 
     return uavId === undefined ? (
       <DroneListItem
@@ -197,8 +216,9 @@ const createListItemFactory =
     selectedUAVIds,
     selectedMissionSlotIds,
     showMissionIds,
-  }) =>
-  (item) => {
+  }: ItemFactoryOptions) =>
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  (item: Item): JSX.Element | null => {
     if (item === deletionMarker) {
       return null;
     }
@@ -208,12 +228,12 @@ const createListItemFactory =
     const editingThisItem =
       isInEditMode && missionIndex === mappingSlotBeingEdited;
     const selected =
-      selectedUAVIds.includes(uavId) ||
+      selectedUAVIds.includes(uavId!) ||
       selectedMissionSlotIds.includes(missionSlotId);
     const listItemProps = {
       /* prettier-ignore */
       onClick:
-        isInEditMode  ? onStartEditing.bind(null, missionIndex) :
+        isInEditMode  ? onStartEditing.bind(null, missionIndex!) :
         uavId         ? onSelectedUAV.bind(null, uavId) :
         missionSlotId ? onSelectedMissionSlot.bind(null, missionSlotId) :
         undefined,
@@ -227,7 +247,7 @@ const createListItemFactory =
       ? formatMissionId(missionIndex)
       : '';
     const label =
-      proposedLabel ||
+      proposedLabel ??
       (showMissionIds && isInMission ? formattedMissionIndex : uavId);
     const secondaryLabel =
       editingThisItem || (showMissionIds && !isInMission)
@@ -235,19 +255,37 @@ const createListItemFactory =
         : showMissionIds
           ? uavId
           : formattedMissionIndex;
-    const key = uavId === undefined ? `placeholder-${label || 'null'}` : uavId;
+    const key = uavId ?? `placeholder-${String(label) || 'null'}`;
 
     return (
       <DroneListItem key={key} stretch uavId={uavId} {...listItemProps}>
         {editingThisItem && <MappingSlotEditorForList />}
         <DroneStatusLine
           id={uavId}
-          label={label}
+          label={String(label)}
           secondaryLabel={secondaryLabel}
         />
       </DroneListItem>
     );
   };
+
+type UAVListPresentationProps = Readonly<{
+  containerDOMNodeId?: string;
+  editingMapping: boolean;
+  keyboardNav: Record<string, any>; // TODO: Define type
+  layout: UAVListLayout;
+  mappingSlotBeingEdited: number;
+  onEditMappingSlot: (missionIndex: number) => void;
+  onMappingAdjusted: (args: { uavId: string; to: Nullable<number> }) => void;
+  onSelectMissionSlot: (missionSlotId: string) => void;
+  onSelectSection: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onSelectUAV: (uavId: string) => void;
+  selectedMissionSlotIds: string[];
+  selectionInfo: GroupSelectionInfo;
+  selectedUAVIds: string[];
+  showMissionIds: boolean;
+  uavIds: GroupedUAVIds;
+}>;
 
 /**
  * Presentation component for showing the drone show configuration view.
@@ -268,17 +306,19 @@ const UAVListPresentation = ({
   selectionInfo,
   showMissionIds,
   uavIds,
-}) => {
+}: UAVListPresentationProps): JSX.Element => {
   const classes = useListStyles();
 
   useKeyboardNavigation(keyboardNav);
 
   const onDropped = useCallback(
-    (targetIndex) => (droppedUAVId) =>
-      onMappingAdjusted({
-        uavId: droppedUAVId,
-        to: targetIndex,
-      }),
+    (targetIndex: number | undefined) =>
+      (droppedUAVId: string): void => {
+        onMappingAdjusted({
+          uavId: droppedUAVId,
+          to: isNil(targetIndex) ? null : targetIndex,
+        });
+      },
     [onMappingAdjusted]
   );
 
@@ -290,7 +330,7 @@ const UAVListPresentation = ({
     draggable: editingMapping,
     isInEditMode: editingMapping,
     mappingSlotBeingEdited,
-    onDropped: editingMapping && onDropped,
+    onDropped: editingMapping ? onDropped : undefined,
     onSelectedUAV: onSelectUAV,
     onSelectedMissionSlot: onSelectMissionSlot,
     onStartEditing: onEditMappingSlot,
@@ -299,7 +339,7 @@ const UAVListPresentation = ({
     showMissionIds,
   };
   const itemFactory =
-    layout === 'grid'
+    layout === UAVListLayout.GRID
       ? createGridItemFactory(itemFactoryOptions)
       : createListItemFactory(itemFactoryOptions);
 
@@ -328,7 +368,7 @@ const UAVListPresentation = ({
         </FadeAndSlide>
       </AppBar>
       <Box
-        ref={uavListRef}
+        {...{ ref: uavListRef }} // fugly but works -- Box does not have ref in its typing
         flex={1}
         overflow='auto'
         id={containerDOMNodeId}
@@ -337,7 +377,7 @@ const UAVListPresentation = ({
         {/* We assume that each grid item is a <div> in the <Box> when we
          * calculate how many columns there are in the grid. Revise the
          * layout functions in connect() if this is not the case any more */}
-        <SortAndFilterHeader layout={layout} />
+        <SortAndFilterHeader />
         <UAVListBody
           editingMapping={editingMapping}
           itemFactory={itemFactory}
@@ -348,7 +388,7 @@ const UAVListPresentation = ({
           onSelectSection={onSelectSection}
         />
       </Box>
-      {extraSlots.length > 0 && layout === 'grid' ? (
+      {extraSlots.length > 0 && layout === UAVListLayout.GRID ? (
         <Box className='bottom-bar'>
           <Box display='flex' flexDirection='row' flexWrap='wrap'>
             {extraSlots.map((slot) => itemFactory(slot))}
@@ -365,50 +405,12 @@ const UAVListPresentation = ({
   );
 };
 
-UAVListPresentation.propTypes = {
-  containerDOMNodeId: PropTypes.string,
-  editingMapping: PropTypes.bool,
-  keyboardNav: PropTypes.object,
-  mappingSlotBeingEdited: PropTypes.number,
-  layout: PropTypes.oneOf(['list', 'grid']),
-  onEditMappingSlot: PropTypes.func,
-  onMappingAdjusted: PropTypes.func,
-  onSelectUAV: PropTypes.func,
-  onSelectMissionSlot: PropTypes.func,
-  onSelectSection: PropTypes.func,
-  selectedUAVIds: PropTypes.array,
-  selectedMissionSlotIds: PropTypes.array,
-  selectionInfo: PropTypes.exact({
-    mainUAVIds: PropTypes.exact({
-      checked: PropTypes.bool,
-      disabled: PropTypes.bool,
-      indeterminate: PropTypes.bool,
-    }),
-    spareUAVIds: PropTypes.exact({
-      checked: PropTypes.bool,
-      disabled: PropTypes.bool,
-      indeterminate: PropTypes.bool,
-    }),
-    extraSlots: PropTypes.exact({
-      checked: PropTypes.bool,
-      disabled: PropTypes.bool,
-      indeterminate: PropTypes.bool,
-    }),
-  }),
-  showMissionIds: PropTypes.bool,
-  uavIds: PropTypes.exact({
-    mainUAVIds: PropTypes.arrayOf(PropTypes.array).isRequired,
-    spareUAVIds: PropTypes.arrayOf(PropTypes.array).isRequired,
-    extraSlots: PropTypes.arrayOf(PropTypes.array).isRequired,
-  }).isRequired,
-};
-
 /**
  * Smart component for showing the drone show configuration view.
  */
 const UAVList = connect(
   // mapStateToProps
-  (state) => ({
+  (state: RootState) => ({
     editingMapping: isMappingEditable(state),
     mappingSlotBeingEdited: getIndexOfMappingSlotBeingEdited(state),
     layout: getUAVListLayout(state),
@@ -422,13 +424,13 @@ const UAVList = connect(
   () => {
     const containerDOMNodeId = `__keyboardNav-${nanoid()}`;
 
-    const getColumnCount = () => {
+    const getColumnCount = (): number => {
       const containerDOMNode = document.querySelector(`#${containerDOMNodeId}`);
 
       // Assumption: the width of the container divided by 80 is an estimate of
       // how many columns there are in the grid.
       const { width: containerWidth } =
-        containerDOMNode?.getBoundingClientRect() || {};
+        containerDOMNode?.getBoundingClientRect() ?? {};
       if (typeof containerWidth === 'number' && containerWidth > 0) {
         return Math.max(1, Math.floor(containerWidth / 80));
       } else {
@@ -436,10 +438,13 @@ const UAVList = connect(
       }
     };
 
-    const getNavigationDeltaInDirection = (state, direction) => {
+    const getNavigationDeltaInDirection = (
+      state: RootState,
+      direction: string
+    ): number => {
       const orientation = getUAVListOrientation(state);
 
-      if (orientation === 'vertical') {
+      if (orientation === UAVListOrientation.VERTICAL) {
         // Vertical layout. Horizontal navigation is disallowed and we always
         // step by 1 vertically.
         switch (direction) {
@@ -475,6 +480,7 @@ const UAVList = connect(
       }
     };
 
+    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
     return (dispatch) => ({
       containerDOMNodeId,
 
@@ -486,7 +492,7 @@ const UAVList = connect(
         getSelectedIds: getSelectedUAVIds,
         getLayout: getUAVListOrientation,
         setSelectedIds: setSelectedUAVIds,
-        setFocusToId: (id) => `#${uavIdToDOMNodeId(id)}`,
+        setFocusToId: (id: string) => `#${uavIdToDOMNodeId(id)}`,
       }),
 
       ...bindActionCreators(
@@ -497,44 +503,62 @@ const UAVList = connect(
             activateItem: openUAVDetailsDialog,
             getSelection: getSelectedUAVIds,
             setSelection: setSelectedUAVIds,
-            getListItems: (state) =>
-              getDisplayedIdListBySections(state)[
-                isShowingMissionIds(state) ? 'spareUAVIds' : 'mainUAVIds'
-              ].map(([u, _m]) => u),
-          }),
+            getListItems(state: RootState) {
+              const displayedIds = getDisplayedIdListBySections(state);
+              const allIds = displayedIds.mainUAVIds
+                .concat(displayedIds.spareUAVIds)
+                .map(([u, _m]) => u)
+                .filter((u) => !isNil(u));
+              return allIds;
+            },
+          }) as any as (uavId: string) => AnyAction,
           // FIXME: Currently selecting a range between an empty and an assigned
           //        mission slot doesn't work, as assigned slots actually select
           //        the UAV id instead of the mission slot ID.
           onSelectMissionSlot: createSelectionHandlerThunk({
             getSelection: getSelectedMissionSlotIds,
-            setSelection: setSelectedMissionSlotIds,
-            getListItems: (state) =>
+            setSelection: setSelectedMissionSlotIds as any as (
+              ids: string[]
+            ) => AnyAction, // TODO: remove the cast when setSelectedMissionSlotIds is migrated to TypeScript
+            getListItems: (state: RootState) =>
               getDisplayedIdListBySections(state).mainUAVIds.map(([_u, m]) =>
                 String(m)
               ),
-          }),
-          onSelectSection: (event) => (dispatch, getState) => {
-            const { value } = event.target;
-            const state = getState();
-            const displayedIdsAndLabels =
-              getDisplayedIdListBySections(state)[value];
-            const selectedUAVIds = getSelectedUAVIds(state);
-            const selectionInfo = getSelectionInfo(state)[value];
-
-            if (selectionInfo && displayedIdsAndLabels) {
-              const displayedIds = [];
-              for (const idAndLabel of displayedIdsAndLabels) {
-                if (!isNil(idAndLabel[0])) {
-                  displayedIds.push(idAndLabel[0]);
-                }
+          }) as any as (missionSlotId: string) => AnyAction,
+          onSelectSection:
+            (event: React.ChangeEvent<HTMLInputElement>): AppThunk =>
+            (dispatch, getState) => {
+              const { value } = event.target;
+              const state = getState();
+              if (
+                value !== 'mainUAVIds' &&
+                value !== 'spareUAVIds' &&
+                value !== 'extraSlots'
+              ) {
+                // This is to make TypeScript happy
+                return;
               }
 
-              const newSelection = selectionInfo.checked
-                ? difference(selectedUAVIds, displayedIds)
-                : union(selectedUAVIds, displayedIds);
-              dispatch(setSelectedUAVIds(newSelection));
-            }
-          },
+              const displayedIdsAndLabels =
+                getDisplayedIdListBySections(state)[value];
+              const selectedUAVIds = getSelectedUAVIds(state);
+              const selectionInfo = getSelectionInfo(state)[value];
+
+              if (selectionInfo && displayedIdsAndLabels) {
+                const displayedIds: string[] = [];
+                for (const idAndLabel of displayedIdsAndLabels) {
+                  const head = idAndLabel[0];
+                  if (!isNil(head)) {
+                    displayedIds.push(head);
+                  }
+                }
+
+                const newSelection = selectionInfo.checked
+                  ? difference(selectedUAVIds, displayedIds)
+                  : union(selectedUAVIds, displayedIds);
+                dispatch(setSelectedUAVIds(newSelection));
+              }
+            },
         },
         dispatch
       ),

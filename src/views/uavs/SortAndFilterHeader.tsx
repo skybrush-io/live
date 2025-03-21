@@ -1,19 +1,21 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import clsx from 'clsx';
 import createColor from 'color';
-import PropTypes from 'prop-types';
-import React, { useCallback, useRef } from 'react';
+import type { TFunction } from 'i18next';
+import React, { useCallback, useRef, type SyntheticEvent } from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import Chip from '@material-ui/core/Chip';
+import Chip, { type ChipProps } from '@material-ui/core/Chip';
 import Divider from '@material-ui/core/Divider';
 import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
+import MenuItem, { type MenuItemProps } from '@material-ui/core/MenuItem';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Check from '@material-ui/icons/Check';
 import Filter from '@material-ui/icons/FilterList';
 import SortAscending from '@material-ui/icons/ArrowDownward';
 import SortDescending from '@material-ui/icons/ArrowUpward';
+import type { PopupState } from 'material-ui-popup-state/core';
 import {
   bindMenu,
   bindTrigger,
@@ -47,9 +49,20 @@ import {
   labelsForUAVSortKey,
   shortLabelsForUAVSortKey,
 } from '~/model/sorting';
+import type { Theme } from '@material-ui/core/styles';
+import {
+  UAVListLayout,
+  type UAVSortKeyAndOrder,
+} from '~/features/settings/types';
+import type { Nullable } from '~/utils/types';
+import type { RootState } from '~/store/reducers';
 
-const createChipStyle = (color, theme) => {
-  const result = {
+const createChipStyle = (
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  color: string | null,
+  theme: Theme
+): Record<string, any> => {
+  const result: Record<string, any> = {
     cursor: 'hand',
     '& .MuiChip-deleteIcon': {
       color: 'inherit',
@@ -58,9 +71,9 @@ const createChipStyle = (color, theme) => {
 
   if (color) {
     const lighter = createColor(color).hsl().lighten(0.08).string();
-    result.color = theme.palette.getContrastText(color);
-    result.backgroundColor = color;
-    result.boxShadow = `0 0 4px 2px ${color}`;
+    result['color'] = theme.palette.getContrastText(color);
+    result['backgroundColor'] = color;
+    result['boxShadow'] = `0 0 4px 2px ${color}`;
     result['&:focus'] = {
       color: theme.palette.getContrastText(color),
       backgroundColor: [lighter, '!important'],
@@ -159,7 +172,13 @@ const useStyles = makeStyles(
   }
 );
 
-const COMMON_HEADER_TEXT_PARTS = Object.freeze([
+type HeaderPart = {
+  sortKey?: UAVSortKey;
+  label: string;
+  style: React.CSSProperties;
+};
+
+const COMMON_HEADER_TEXT_PARTS: readonly HeaderPart[] = Object.freeze([
   {
     label: 'Status',
     sortKey: UAVSortKey.STATUS,
@@ -247,7 +266,7 @@ const COMMON_HEADER_TEXT_PARTS = Object.freeze([
   },
 ]);
 
-const HEADER_TEXT_PARTS = {
+const HEADER_TEXT_PARTS: Record<string, HeaderPart[]> = {
   missionIds: [
     {
       label: 'sID',
@@ -291,7 +310,10 @@ const HEADER_TEXT_PARTS = {
 const checkStyle = { fontSize: 'inherit', marginLeft: 8 };
 const check = <Check style={checkStyle} />;
 
-const getFilterChipClass = (filters, classes) => {
+const getFilterChipClass = (
+  filters: UAVFilter[],
+  classes: ReturnType<typeof useStyles>
+): string => {
   const isFilterActive = Array.isArray(filters) && filters.length > 0;
 
   if (isFilterActive) {
@@ -311,22 +333,33 @@ const getFilterChipClass = (filters, classes) => {
   }
 };
 
-const CheckableMenuItem = React.forwardRef(
-  ({ label, selected, ...rest }, ref) => (
-    <MenuItem ref={ref} dense selected={selected} {...rest}>
-      {label}
-    </MenuItem>
-  )
-);
+type CheckableMenuItemProps = MenuItemProps & Readonly<{ label: string }>;
 
-CheckableMenuItem.propTypes = {
-  label: PropTypes.string,
-  selected: PropTypes.bool,
-};
+const CheckableMenuItem = React.forwardRef<
+  HTMLLIElement,
+  CheckableMenuItemProps
+>(({ label, selected, ...rest }, ref) => (
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  <MenuItem ref={ref as any} dense {...(rest as any)}>
+    {label}
+  </MenuItem>
+));
 
-function bindChip({ state, ref, action, popupTrigger = 'chip' }) {
-  const result = bindTrigger(state);
-  const opener = (event) => state.open(ref || event);
+function bindChip({
+  state,
+  ref,
+  action,
+  popupTrigger = 'chip',
+}: {
+  state: PopupState;
+  ref?: HTMLElement;
+  action?: () => void;
+  popupTrigger?: 'chip' | 'icon';
+}): Partial<ChipProps> {
+  const result: Partial<ChipProps> = bindTrigger(state);
+  const opener = (event: SyntheticEvent<any>): void => {
+    state.open(ref ?? event);
+  };
 
   result.onContextMenu = result.onClick;
 
@@ -338,13 +371,18 @@ function bindChip({ state, ref, action, popupTrigger = 'chip' }) {
     }
   } else {
     // Right icon triggers special action (if any), the whole chip opens the popup
-    result.onDelete = action || opener;
+    result.onDelete = action ?? opener;
   }
 
   return result;
 }
 
-function formatHeaderParts(parts, sortBy, classes, onClick) {
+function formatHeaderParts(
+  parts: string | HeaderPart[] | undefined,
+  sortBy: UAVSortKeyAndOrder,
+  classes: ReturnType<typeof useStyles>,
+  onClick: (key: UAVSortKey) => void
+): React.ReactNode {
   if (typeof parts === 'string') {
     // Whole header is a single item
     return parts;
@@ -360,7 +398,13 @@ function formatHeaderParts(parts, sortBy, classes, onClick) {
             classes.sortActive
         )}
         style={style}
-        onClick={sortKey ? () => onClick(sortKey) : null}
+        onClick={
+          sortKey
+            ? (): void => {
+                onClick(sortKey);
+              }
+            : undefined
+        }
       >
         {label}
       </div>
@@ -369,6 +413,17 @@ function formatHeaderParts(parts, sortBy, classes, onClick) {
     return '';
   }
 }
+
+type SortAndFilterHeaderProps = Readonly<{
+  filters: UAVFilter[];
+  layout: UAVListLayout;
+  onSetFilter: (filter: Nullable<UAVFilter>) => void;
+  onSetSortBy: (sortBy: Partial<UAVSortKeyAndOrder>) => void;
+  onToggleSortDirection: () => void;
+  showMissionIds: boolean;
+  sortBy: UAVSortKeyAndOrder;
+  t: TFunction;
+}>;
 
 const SortAndFilterHeader = ({
   filters,
@@ -379,21 +434,21 @@ const SortAndFilterHeader = ({
   showMissionIds,
   sortBy,
   t,
-}) => {
+}: SortAndFilterHeaderProps): JSX.Element => {
   const classes = useStyles();
-  const sortChipRef = useRef();
+  const sortChipRef = useRef<HTMLDivElement>();
   const sortPopupState = usePopupState({
     variant: 'popover',
     popupId: 'uav-list-sort-options',
   });
-  const filterChipRef = useRef();
+  const filterChipRef = useRef<HTMLDivElement>();
   const filterPopupState = usePopupState({
     variant: 'popover',
     popupId: 'uav-list-filter-options',
   });
 
   const setFilter = useCallback(
-    (value) => {
+    (value: Nullable<UAVFilter>) => {
       if (onSetFilter) {
         onSetFilter(value);
       }
@@ -403,9 +458,9 @@ const SortAndFilterHeader = ({
     [onSetFilter, filterPopupState]
   );
   const setSortKey = useCallback(
-    (value) => {
+    (value: UAVSortKey) => {
       if (onSetSortBy) {
-        onSetSortBy({ key: String(value) });
+        onSetSortBy({ key: value });
       }
 
       sortPopupState.close();
@@ -413,7 +468,7 @@ const SortAndFilterHeader = ({
     [onSetSortBy, sortPopupState]
   );
   const setSortReversed = useCallback(
-    (value) => {
+    (value: boolean) => {
       if (onSetSortBy) {
         onSetSortBy({ reverse: Boolean(value) });
       }
@@ -423,16 +478,14 @@ const SortAndFilterHeader = ({
     [onSetSortBy, sortPopupState]
   );
   const onSetSortKeyOrToggleSortDirection = useCallback(
-    (value) => {
-      value = String(value);
-
+    (value: UAVSortKey) => {
       if (sortBy.key === value) {
         if (onToggleSortDirection) {
           onToggleSortDirection();
         }
       } else {
         if (onSetSortBy) {
-          onSetSortBy({ key: String(value) });
+          onSetSortBy({ key: value });
         }
       }
     },
@@ -446,7 +499,8 @@ const SortAndFilterHeader = ({
     <div className={classes.root}>
       <div className={classes.widgets}>
         <Chip
-          ref={sortChipRef}
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          ref={sortChipRef as any}
           className={isSortActive ? classes.chipActive : classes.chip}
           variant='outlined'
           label={shortLabelsForUAVSortKey[sortBy.key](t)}
@@ -467,29 +521,42 @@ const SortAndFilterHeader = ({
               key={sortKey}
               label={labelsForUAVSortKey[sortKey](t)}
               selected={sortBy.key === sortKey}
-              onClick={() => setSortKey(sortKey)}
+              onClick={() => {
+                setSortKey(sortKey);
+              }}
             />
           ))}
           <Divider style={{ margin: '4px 0' }} />
-          <MenuItem dense onClick={() => setSortReversed(false)}>
+          <MenuItem
+            dense
+            onClick={() => {
+              setSortReversed(false);
+            }}
+          >
             {t('sorting.ascending')}
             {!sortBy?.reverse && check}
           </MenuItem>
-          <MenuItem dense onClick={() => setSortReversed(true)}>
+          <MenuItem
+            dense
+            onClick={() => {
+              setSortReversed(true);
+            }}
+          >
             {t('sorting.descending')}
             {sortBy?.reverse && check}
           </MenuItem>
         </Menu>
 
         <Chip
-          ref={filterChipRef}
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          ref={filterChipRef as any}
           className={getFilterChipClass(filters, classes)}
           variant='outlined'
           label={
             isFilterActive
               ? filters.length > 1
                 ? t('filtering.composite')
-                : shortLabelsForUAVFilter[filters[0]](t)
+                : shortLabelsForUAVFilter[filters[0]!](t)
               : t('filtering.filter')
           }
           size='small'
@@ -499,7 +566,11 @@ const SortAndFilterHeader = ({
           {...bindChip({
             state: filterPopupState,
             ref: filterChipRef.current,
-            action: isFilterActive ? () => setFilter(null) : null,
+            action: isFilterActive
+              ? (): void => {
+                  setFilter(null);
+                }
+              : undefined,
           })}
         />
         <Menu {...bindMenu(filterPopupState)}>
@@ -514,17 +585,19 @@ const SortAndFilterHeader = ({
                 (filters.length === 1 && filters[0] === filter) ||
                 (filter === UAVFilter.DEFAULT && filters.length === 0)
               }
-              onClick={() => setFilter(filter)}
+              onClick={() => {
+                setFilter(filter);
+              }}
             />
           ))}
         </Menu>
       </div>
-      <FadeAndSlide in={layout === 'list'}>
+      <FadeAndSlide in={layout === UAVListLayout.LIST}>
         <div className={classes.headerLine}>
           {formatHeaderParts(
             showMissionIds
-              ? HEADER_TEXT_PARTS.missionIds
-              : HEADER_TEXT_PARTS.droneIds,
+              ? HEADER_TEXT_PARTS['missionIds']
+              : HEADER_TEXT_PARTS['droneIds'],
             sortBy,
             classes,
             onSetSortKeyOrToggleSortDirection
@@ -535,23 +608,9 @@ const SortAndFilterHeader = ({
   );
 };
 
-SortAndFilterHeader.propTypes = {
-  filters: PropTypes.arrayOf(PropTypes.string),
-  layout: PropTypes.oneOf(['grid', 'list']),
-  onSetFilter: PropTypes.func,
-  onSetSortBy: PropTypes.func,
-  onToggleSortDirection: PropTypes.func,
-  showMissionIds: PropTypes.bool,
-  sortBy: PropTypes.shape({
-    key: PropTypes.string,
-    reverse: PropTypes.bool,
-  }),
-  t: PropTypes.func,
-};
-
 export default connect(
   // mapStateToProps
-  (state) => ({
+  (state: RootState) => ({
     filters: getUAVListFilters(state),
     layout: getUAVListLayout(state),
     showMissionIds: isShowingMissionIds(state),

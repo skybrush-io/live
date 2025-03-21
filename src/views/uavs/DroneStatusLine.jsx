@@ -214,6 +214,7 @@ DroneStatusLine.propTypes = {
   gpsFixType: PropTypes.number,
   heading: PropTypes.number,
   headingDeviation: PropTypes.number,
+  id: PropTypes.string,
   label: PropTypes.string,
   localPosition: PropTypes.arrayOf(PropTypes.number),
   missing: PropTypes.bool,

@@ -12,6 +12,8 @@ import {
   getUAVIdList,
   getUAVIdsMarkedAsGone,
 } from './selectors';
+import type { AppThunk } from '~/store/reducers';
+import type { PayloadAction } from '@reduxjs/toolkit';
 
 /**
  * Action factory that returns a thunk that requests the global flock object
@@ -19,7 +21,7 @@ import {
  * dispatch events when the removal is done, and these events will in turn
  * update the store and remove the UAVs from there as well.
  */
-export const requestRemovalOfUAVsByIds = (selection) => () => {
+export const requestRemovalOfUAVsByIds = (selection: string[]) => (): void => {
   if (selection.length > 0) {
     flock.removeUAVsByIds(selection);
   }
@@ -29,23 +31,25 @@ export const requestRemovalOfUAVsByIds = (selection) => () => {
  * Action factory that returns a thunk that removes the UAVs that are marked
  * as gone from the list of known UAVs.
  */
-export const requestRemovalOfUAVsMarkedAsGone = () => (dispatch, getState) => {
-  const selection = getUAVIdsMarkedAsGone(getState());
-  if (selection.length > 0) {
-    dispatch(requestRemovalOfUAVsByIds(selection));
-  }
-};
+export const requestRemovalOfUAVsMarkedAsGone =
+  (): AppThunk => (dispatch, getState) => {
+    const selection = getUAVIdsMarkedAsGone(getState());
+    if (selection.length > 0) {
+      dispatch(requestRemovalOfUAVsByIds(selection));
+    }
+  };
 
 /**
  * Action factory that returns a thunk that removes the selected UAVs from the
  * list of known UAVs.
  */
-export const requestRemovalOfSelectedUAVs = () => (dispatch, getState) => {
-  const selection = getSelectedUAVIds(getState()).filter(Boolean);
-  if (selection.length > 0) {
-    dispatch(requestRemovalOfUAVsByIds(selection));
-  }
-};
+export const requestRemovalOfSelectedUAVs =
+  (): AppThunk => (dispatch, getState) => {
+    const selection = getSelectedUAVIds(getState()).filter(Boolean);
+    if (selection.length > 0) {
+      dispatch(requestRemovalOfUAVsByIds(selection));
+    }
+  };
 
 /**
  * Action factory that creates an action that sets the set of selected
@@ -56,7 +60,7 @@ export const requestRemovalOfSelectedUAVs = () => (dispatch, getState) => {
  *        any feature that is not an UAV.
  * @return {Object} an appropriately constructed action
  */
-export const setSelectedUAVIds = (ids) =>
+export const setSelectedUAVIds = (ids: string[]): PayloadAction<string[]> =>
   setSelection(
     (Array.isArray(ids) ? ids : [])
       .filter((id) => !isNil(id))
@@ -69,25 +73,28 @@ export const setSelectedUAVIds = (ids) =>
  *
  * @param {Array.<string>} ids  the IDs of the UAVs to toggle.
  */
-export const toggleUAVIdsInSelection = (ids) => (dispatch, getState) => {
-  if (ids.length === 0) {
-    return;
-  }
+export const toggleUAVIdsInSelection =
+  (ids: string[]): AppThunk =>
+  (dispatch, getState) => {
+    if (ids.length === 0) {
+      return;
+    }
 
-  const selection = getSelectedUAVIds(getState());
-  dispatch(setSelectedUAVIds(xor(selection, ids)));
-};
+    const selection = getSelectedUAVIds(getState());
+    dispatch(setSelectedUAVIds(xor(selection, ids)));
+  };
 
 /**
  * Thunk that selects the single UAV in the flock if the user only has a single
  * UAV and does nothing otherwise.
  */
-export const selectSingleUAVUnlessAmbiguous = () => (dispatch, getState) => {
-  const state = getState();
-  const uavIds = getUAVIdList(state);
+export const selectSingleUAVUnlessAmbiguous =
+  (): AppThunk => (dispatch, getState) => {
+    const state = getState();
+    const uavIds = getUAVIdList(state);
 
-  if (Array.isArray(uavIds) && uavIds.length === 1) {
-    const otherSelection = reject(getSelection(state), isUavId);
-    dispatch(setSelection([...otherSelection, uavIdToGlobalId(uavIds[0])]));
-  }
-};
+    if (Array.isArray(uavIds) && uavIds.length === 1) {
+      const otherSelection = reject(getSelection(state), isUavId);
+      dispatch(setSelection([...otherSelection, uavIdToGlobalId(uavIds[0]!)]));
+    }
+  };
