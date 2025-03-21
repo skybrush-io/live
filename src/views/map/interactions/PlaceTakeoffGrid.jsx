@@ -20,7 +20,6 @@ import memoizeOne from 'memoize-one';
  */
 const getTakeoffTriangleStyles = memoizeOne(
   (coordinates, resolution) => {
-    console.log({ resolution });
     const triangleStyle = new Style({ image: takeoffTriangle });
 
     return coordinates.map((displacement) => {

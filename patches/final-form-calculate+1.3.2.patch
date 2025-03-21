@@ -1,25 +1,48 @@
-# Manually copy the latest types, as they aren't included in the release.
+# Manually update the latest types, as they aren't included in the release.
+# The project seems to be abandoned.
 # See: https://github.com/final-form/final-form-calculate/issues/47
 
 diff --git a/node_modules/final-form-calculate/dist/index.d.ts b/node_modules/final-form-calculate/dist/index.d.ts
-index a4c76ad..b0d227b 100644
+index a4c76ad..7b4630f 100644
 --- a/node_modules/final-form-calculate/dist/index.d.ts
 +++ b/node_modules/final-form-calculate/dist/index.d.ts
-@@ -2,7 +2,7 @@ import { Decorator } from 'final-form'
+@@ -2,27 +2,27 @@ import { Decorator } from 'final-form'
  
  export type FieldName = string
  
 -export type FieldPattern = FieldName | RegExp | FieldName[]
 +export type FieldPattern = FieldName | RegExp | (FieldName | RegExp)[]
  
- export type UpdatesByName = {
-   [FieldName: string]: (value: any, allValues?: Object, prevValues?: Object) => any
-@@ -23,6 +23,6 @@ export type Calculation = {
+-export type UpdatesByName = {
+-  [FieldName: string]: (value: any, allValues?: Object, prevValues?: Object) => any
++export type UpdatesByName<FormValues> = {
++  [FieldName: string]: (value: any, allValues?: FormValues, prevValues?: FormValues) => any
+ }
+ 
+-export type UpdatesForAll = (
++export type UpdatesForAll<FormValues = object> = (
+   value: any,
+   field: string,
+-  allValues?: Object,
+-  prevValues?: Object,
++  allValues?: FormValues,
++  prevValues?: FormValues,
+ ) => { [FieldName: string]: any }
+ 
+-export type Updates = UpdatesByName | UpdatesForAll
++export type Updates<FormValues = object> = UpdatesByName<FormValues> | UpdatesForAll<FormValues>
+ 
+-export type Calculation = {
++export type Calculation<FormValues = object> = {
+   field: FieldPattern,
+-  updates: Updates,
++  updates: Updates<FormValues>,
    isEqual?: (a: any, b: any) => boolean,
  }
  
 -export default function createDecorator(
-+export default function createDecorator<FormValues = object>(
-   ...calculations: Calculation[]
+-  ...calculations: Calculation[]
 -): Decorator
++export default function createDecorator<FormValues = object>(
++  ...calculations: Calculation<FormValues>[]
 +): Decorator<FormValues>
