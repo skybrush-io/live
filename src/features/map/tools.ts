@@ -10,20 +10,24 @@ import {
 
 import { Tool } from '~/views/map/tools';
 import { type AppSelector } from '~/store/reducers';
-import { Coordinate2D } from '~/utils/math';
+import { type Coordinate2D } from '~/utils/math';
 
-type MapToolsSliceState = {
+export type SubgridConfig = {
+  xCount: number;
+  yCount: number;
+  linkCount: boolean;
+  xSpace: number;
+  ySpace: number;
+  linkSpace: boolean;
+};
+
+export type TakeoffGridProperties = {
+  subgrids: SubgridConfig[];
+};
+
+export type MapToolsSliceState = {
   selectedTool: Tool;
-  takeoffGridProperties: {
-    subgrids: Array<{
-      xCount: number;
-      yCount: number;
-      linkCount: boolean;
-      xSpace: number;
-      ySpace: number;
-      linkSpace: boolean;
-    }>;
-  };
+  takeoffGridProperties: TakeoffGridProperties;
 };
 
 /**

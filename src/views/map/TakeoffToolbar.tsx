@@ -1,45 +1,37 @@
-import PropTypes from 'prop-types';
-import React, { useRef, useState } from 'react';
-import { Field, Form } from 'react-final-form';
-import arrayMutators from 'final-form-arrays';
-import { FieldArray } from 'react-final-form-arrays';
-import { withTranslation } from 'react-i18next';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import clsx from 'clsx';
+import arrayMutators from 'final-form-arrays';
 import createDecorator from 'final-form-calculate';
-
-import Box from '@material-ui/core/Box';
-import Divider from '@material-ui/core/Divider';
-import IconButton from '@material-ui/core/IconButton';
-
+import { type TFunction } from 'i18next';
 import partial from 'lodash-es/partial';
+import React, {
+  type Dispatch,
+  type DispatchWithoutAction,
+  type FunctionComponent,
+  type SetStateAction,
+  // useRef,
+  useState,
+} from 'react';
+import {
+  DragDropContext,
+  Draggable,
+  type DraggableProvided,
+  type DraggableStateSnapshot,
+  Droppable,
+  type DropResult,
+} from 'react-beautiful-dnd';
+import { Field, Form } from 'react-final-form';
+import {
+  FieldArray,
+  type FieldArrayRenderProps,
+} from 'react-final-form-arrays';
+import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
 import {
-  getSelectedTool,
-  getTakeoffGridProperties,
-  setSelectedTool,
-  setTakeoffGridProperties,
-} from '~/features/map/tools';
-import { tt } from '~/i18n';
-
-import { Tool } from './tools';
-import {
-  Add,
-  Delete,
-  FontDownload,
-  GridOn,
-  LinkOff,
-  Link,
-  Lock,
-  LockOpen,
-  Replay,
-  DragHandle,
-} from '@material-ui/icons';
-import { toggleHomePositionsLocked } from '~/features/mission/slice';
-import {
+  Box,
   Checkbox,
+  Divider,
+  IconButton,
   InputAdornment,
   List,
   ListItem,
@@ -49,11 +41,38 @@ import {
   Popover,
   Typography,
 } from '@material-ui/core';
+import {
+  Add,
+  Delete,
+  DragHandle,
+  FontDownload,
+  GridOn,
+  Link,
+  LinkOff,
+  Lock,
+  LockOpen,
+  Replay,
+} from '@material-ui/icons';
 import { TextField } from 'mui-rff';
-import { setupMissionFromShow } from '~/features/show/actions';
-import { prepareMappingForMultiUAVMissionFromSelection } from '~/features/mission/actions';
 
-const DEFAULT_SUBGRID = {
+import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
+import {
+  getSelectedTool,
+  getTakeoffGridProperties,
+  setSelectedTool,
+  setTakeoffGridProperties,
+  type SubgridConfig,
+  type TakeoffGridProperties,
+} from '~/features/map/tools';
+import { prepareMappingForMultiUAVMissionFromSelection } from '~/features/mission/actions';
+import { toggleHomePositionsLocked } from '~/features/mission/slice';
+import { setupMissionFromShow } from '~/features/show/actions';
+import { tt } from '~/i18n';
+import { type RootState } from '~/store/reducers';
+
+import { Tool } from './tools';
+
+const DEFAULT_SUBGRID: SubgridConfig = {
   xCount: 2,
   yCount: 2,
   linkCount: true,
@@ -62,26 +81,29 @@ const DEFAULT_SUBGRID = {
   linkSpace: true,
 };
 
-const makeOnDragEndFunction = (fields) => (result) => {
-  if (result.destination) {
-    fields.move(result.source.index, result.destination.index);
-  }
-};
+const makeOnDragEndFunction =
+  (fields: FieldArrayRenderProps<SubgridConfig, HTMLElement>['fields']) =>
+  (result: DropResult): void => {
+    if (result.destination) {
+      fields.move(result.source.index, result.destination.index);
+    }
+  };
 
 const useStyles = makeStyles((theme) => ({
   dragged: { background: theme.palette.action.hover },
 }));
 
-const decorator = createDecorator(
+const decorator = createDecorator<TakeoffGridProperties>(
   {
     field: /(subgrids\[\d+].xCount)|(subgrids\[\d+].linkCount)/,
     updates(_value, name, allValues) {
       const index = Number(
-        name.match(/subgrids\[(?<index>\d+)]/).groups?.index
+        // NOTE: Bang justified by the field name matching the RegEx in the first place.
+        name.match(/subgrids\[(?<index>\d+)]/)?.groups?.['index']
       );
-      return allValues.subgrids[index].linkCount
+      return allValues?.subgrids[index]?.linkCount
         ? {
-            [`subgrids[${index}].yCount`]: allValues.subgrids[index].xCount,
+            [`subgrids[${index}].yCount`]: allValues?.subgrids[index]?.xCount,
           }
         : {};
     },
@@ -90,24 +112,27 @@ const decorator = createDecorator(
     field: /(subgrids\[\d+].xSpace)|(subgrids\[\d+].linkSpace)/,
     updates(_value, name, allValues) {
       const index = Number(
-        name.match(/subgrids\[(?<index>\d+)]/).groups?.index
+        // NOTE: Bang justified by the field name matching the RegEx in the first place.
+        name.match(/subgrids\[(?<index>\d+)]/)?.groups?.['index']
       );
-      return allValues.subgrids[index].linkSpace
+      return allValues?.subgrids[index]?.linkSpace
         ? {
-            [`subgrids[${index}].ySpace`]: allValues.subgrids[index].xSpace,
+            [`subgrids[${index}].ySpace`]: allValues?.subgrids[index]?.xSpace,
           }
         : {};
     },
   }
 );
 
-const TakeoffSubgridProperties = ({
-  fields,
-  index,
-  name,
-  provided,
-  snapshot,
-}) => {
+const TakeoffSubgridProperties: FunctionComponent<
+  Readonly<{
+    fields: FieldArrayRenderProps<SubgridConfig, HTMLElement>['fields'];
+    index: number;
+    name: string;
+    provided: DraggableProvided;
+    snapshot: DraggableStateSnapshot;
+  }>
+> = ({ fields, index, name, provided, snapshot }) => {
   const classes = useStyles();
   return (
     <ListItem
@@ -120,7 +145,6 @@ const TakeoffSubgridProperties = ({
     >
       <Box
         display='grid'
-        gap='4px 0px'
         gridTemplateColumns='32px 60px 75px 40px 75px'
         gridTemplateAreas={`
         '.......... .......... xLabel ......... yLabel'
@@ -172,7 +196,7 @@ const TakeoffSubgridProperties = ({
         </Field>
         <TextField
           name={`${name}.yCount`}
-          disabled={fields.value[index].linkCount}
+          disabled={fields?.value[index]?.linkCount}
           type='number'
           fieldProps={{ parse: (v) => v.length > 0 && Number(v) }}
           variant='outlined'
@@ -215,7 +239,7 @@ const TakeoffSubgridProperties = ({
         </Field>
         <TextField
           name={`${name}.ySpace`}
-          disabled={fields.value[index].linkSpace}
+          disabled={fields.value[index]?.linkSpace}
           type='number'
           fieldProps={{ parse: (v) => v.length > 0 && Number(v) }}
           variant='outlined'
@@ -235,22 +259,20 @@ const TakeoffSubgridProperties = ({
   );
 };
 
-TakeoffSubgridProperties.propTypes = {
-  fields: PropTypes.object,
-  index: PropTypes.number,
-  name: PropTypes.string,
-  snapshot: PropTypes.object,
-  provided: PropTypes.object,
-};
-
-const TakeoffGridPropertiesForm = ({
+const TakeoffGridPropertiesForm: FunctionComponent<
+  Readonly<{
+    anchorEl: HTMLElement | undefined;
+    setAnchorEl: Dispatch<SetStateAction<HTMLElement | undefined>>;
+    setTakeoffGridProperties: Dispatch<TakeoffGridProperties>;
+    takeoffGridProperties: TakeoffGridProperties;
+  }>
+> = ({
   anchorEl,
   setAnchorEl,
   takeoffGridProperties,
   setTakeoffGridProperties,
 }) => (
   <Form
-    onSubmit={setTakeoffGridProperties}
     mutators={{ ...arrayMutators }}
     initialValues={takeoffGridProperties}
     decorators={[decorator]}
@@ -262,8 +284,10 @@ const TakeoffGridPropertiesForm = ({
         transformOrigin={{ vertical: 'top', horizontal: 'center' }}
         PaperProps={{ style: { marginTop: 4 } }}
         onClose={() => {
-          form.submit();
-          setAnchorEl();
+          form.submit()?.catch((error) => {
+            console.error('Error submitting TakeoffGridPropertiesForm:', error);
+          });
+          setAnchorEl(undefined);
         }}
       >
         <form onSubmit={handleSubmit}>
@@ -271,7 +295,7 @@ const TakeoffGridPropertiesForm = ({
             {({ fields }) => (
               <DragDropContext onDragEnd={makeOnDragEndFunction(fields)}>
                 <Droppable droppableId='droppable'>
-                  {(provided, snapshot) => (
+                  {(provided, _snapshot) => (
                     <List
                       ref={provided.innerRef}
                       {...provided.droppableProps}
@@ -301,7 +325,9 @@ const TakeoffGridPropertiesForm = ({
                       <ListItem
                         button
                         style={{ minWidth: 315 }}
-                        onClick={() => fields.push(DEFAULT_SUBGRID)}
+                        onClick={() => {
+                          fields.push(DEFAULT_SUBGRID);
+                        }}
                       >
                         <ListItemIcon style={{ minWidth: 32 }}>
                           <Add />
@@ -320,22 +346,26 @@ const TakeoffGridPropertiesForm = ({
         </form>
       </Popover>
     )}
+    onSubmit={setTakeoffGridProperties}
   />
 );
 
-TakeoffGridPropertiesForm.propTypes = {
-  anchorEl: PropTypes.object,
-  setAnchorEl: PropTypes.func,
-  takeoffGridProperties: PropTypes.object,
-  setTakeoffGridProperties: PropTypes.func,
-};
-
 /**
  * Presentation component for the drawing toolbar.
- *
- * @return {React.Element} the rendered component
  */
-const TakeoffToolbarPresentation = ({
+const TakeoffToolbarPresentation: FunctionComponent<
+  Readonly<{
+    homePositionsLocked: boolean;
+    toggleHomePositionsLocked: DispatchWithoutAction;
+    setTakeoffGridProperties: Dispatch<TakeoffGridProperties>;
+    takeoffGridProperties: TakeoffGridProperties;
+    onToolSelected: Dispatch<Tool>;
+    selectedTool: Tool;
+    t: TFunction;
+    autoSetTakeoffGrid: DispatchWithoutAction;
+    resetTakeoffGrid: DispatchWithoutAction;
+  }>
+> = ({
   homePositionsLocked,
   toggleHomePositionsLocked,
   setTakeoffGridProperties,
@@ -346,14 +376,18 @@ const TakeoffToolbarPresentation = ({
   autoSetTakeoffGrid,
   resetTakeoffGrid,
 }) => {
-  const colorForTool = (tool) =>
+  const colorForTool = (tool: Tool) =>
     selectedTool === tool ? 'primary' : undefined;
 
-  const [anchorEl, setAnchorEl] = useState();
-  const toolbarRef = useRef();
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | undefined>();
+  // const toolbarRef = useRef();
 
   return (
-    <Box ref={toolbarRef} display='flex'>
+    // NOTE: Box doesn't have `ref` in MUI v4, and I didn't feel like adding an
+    //       extra patch / type augmentation just for the sake of this...
+    //       We should use it instead of the `parentElement` trick when migrating to MUI v5 though
+    // <Box ref={toolbarRef} display='flex'>
+    <Box display='flex'>
       <Tooltip placement='bottom' content='Lock'>
         <IconButton onClick={toggleHomePositionsLocked}>
           {homePositionsLocked ? <Lock /> : <LockOpen />}
@@ -368,12 +402,14 @@ const TakeoffToolbarPresentation = ({
         </IconButton>
       </Tooltip>
 
-      <Tooltip placement='bottom' content='Grid'>
+      <Tooltip placement='bottom' content={t('takeoffToolbar.grid')}>
         <IconButton
           onClick={partial(onToolSelected, Tool.TAKEOFF_GRID)}
           onContextMenu={(e) => {
+            console.log({ e });
             e.preventDefault();
-            setAnchorEl(toolbarRef.current);
+            // setAnchorEl(toolbarRef.current);
+            setAnchorEl(e.currentTarget.parentElement ?? undefined);
             // setAnchorEl(e.currentTarget);
           }}
         >
@@ -397,24 +433,12 @@ const TakeoffToolbarPresentation = ({
   );
 };
 
-TakeoffToolbarPresentation.propTypes = {
-  onToolSelected: PropTypes.func,
-  selectedTool: PropTypes.string,
-  takeoffGridProperties: PropTypes.object, // TODO:
-  t: PropTypes.func,
-  homePositionsLocked: PropTypes.bool,
-  toggleHomePositionsLocked: PropTypes.func,
-  setTakeoffGridProperties: PropTypes.func,
-  autoSetTakeoffGrid: PropTypes.func,
-  resetTakeoffGrid: PropTypes.func,
-};
-
 /**
  * Takeoff toolbar on the map.
  */
 const TakeoffToolbar = connect(
   // mapStateToProps
-  (state) => ({
+  (state: RootState) => ({
     homePositionsLocked: state.mission.homePositionsLocked,
     takeoffGridProperties: getTakeoffGridProperties(state),
     selectedTool: getSelectedTool(state),
