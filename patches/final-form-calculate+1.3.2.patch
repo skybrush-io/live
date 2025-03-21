@@ -1,0 +1,25 @@
+# Manually copy the latest types, as they aren't included in the release.
+# See: https://github.com/final-form/final-form-calculate/issues/47
+
+diff --git a/node_modules/final-form-calculate/dist/index.d.ts b/node_modules/final-form-calculate/dist/index.d.ts
+index a4c76ad..b0d227b 100644
+--- a/node_modules/final-form-calculate/dist/index.d.ts
++++ b/node_modules/final-form-calculate/dist/index.d.ts
+@@ -2,7 +2,7 @@ import { Decorator } from 'final-form'
+ 
+ export type FieldName = string
+ 
+-export type FieldPattern = FieldName | RegExp | FieldName[]
++export type FieldPattern = FieldName | RegExp | (FieldName | RegExp)[]
+ 
+ export type UpdatesByName = {
+   [FieldName: string]: (value: any, allValues?: Object, prevValues?: Object) => any
+@@ -23,6 +23,6 @@ export type Calculation = {
+   isEqual?: (a: any, b: any) => boolean,
+ }
+ 
+-export default function createDecorator(
++export default function createDecorator<FormValues = object>(
+   ...calculations: Calculation[]
+-): Decorator
++): Decorator<FormValues>
