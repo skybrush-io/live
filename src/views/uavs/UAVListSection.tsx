@@ -44,8 +44,10 @@ const useStyles = makeStyles(
 export type UAVListSectionProps = UAVListSubheaderProps &
   Readonly<{
     forceVisible?: boolean;
-    ids: string[];
-    itemFactory: (id: string) => React.ReactNode;
+    ids: Array<[string | undefined, number | undefined]>;
+    itemFactory: (
+      id: [string | undefined, number | undefined]
+    ) => React.ReactNode;
     layout: UAVListLayout;
   }>;
 

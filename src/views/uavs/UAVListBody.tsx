@@ -6,7 +6,11 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import type { GroupSelectionInfo } from './types';
+import type {
+  GroupedUAVIds,
+  GroupSelectionInfo,
+  GroupSelectionInfoEntry,
+} from './types';
 import UAVListSection, { type UAVListSectionProps } from './UAVListSection';
 import type { UAVListLayout } from '~/features/settings/types';
 
@@ -15,16 +19,9 @@ type UAVListBodyProps = Readonly<{
   itemFactory: UAVListSectionProps['itemFactory'];
   layout: UAVListLayout;
   onSelectSection: UAVListSectionProps['onSelect'];
-  selectionInfo: {
-    mainUAVIds: GroupSelectionInfo;
-    spareUAVIds: GroupSelectionInfo;
-    extraSlots: GroupSelectionInfo;
-  };
+  selectionInfo: GroupSelectionInfo;
   showMissionIds: boolean;
-  uavIds: {
-    mainUAVIds: string[];
-    spareUAVIds: string[];
-  };
+  uavIds: Pick<GroupedUAVIds, 'mainUAVIds' | 'spareUAVIds'>;
 }>;
 
 /**

@@ -8,7 +8,7 @@ import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import Toolbar from '@material-ui/core/Toolbar';
+import Toolbar, { type ToolbarProps } from '@material-ui/core/Toolbar';
 import Check from '@material-ui/icons/Check';
 import Mouse from '@material-ui/icons/Mouse';
 import MoreVert from '@material-ui/icons/MoreVert';
@@ -28,14 +28,31 @@ import {
 } from '~/features/mission/slice';
 import useDropdown from '~/hooks/useDropdown';
 import { isDeveloperModeEnabled } from '~/features/session/selectors';
+import type { RootState } from '~/store/reducers';
 
-const instructionsStyle = {
+const instructionsStyle: React.CSSProperties = {
   overflow: 'ellipsis',
   userSelect: 'none',
   whiteSpace: 'nowrap',
 };
 
-const MappingEditorToolbar = React.forwardRef(
+type MappingEditorToolbarProps = ToolbarProps &
+  Readonly<{
+    augmentMapping: () => void;
+    canAugmentMapping: boolean;
+    clearMapping: () => void;
+    devMode: boolean;
+    exportMapping: () => void;
+    finishMappingEditorSession: () => void;
+    generateRandomMapping: () => void;
+    importMapping: () => void;
+    removeMissingUAVsFromMapping: () => void;
+  }>;
+
+const MappingEditorToolbar = React.forwardRef<
+  HTMLDivElement,
+  MappingEditorToolbarProps
+>(
   (
     {
       augmentMapping,
@@ -51,8 +68,12 @@ const MappingEditorToolbar = React.forwardRef(
     },
     ref
   ) => {
-    const [menuAnchorElement, openMappingMenu, closeMappingMenu] =
-      useDropdown();
+    const [
+      menuAnchorElement,
+      openMappingMenu,
+      closeMappingMenu,
+      closeMappingMenuWith,
+    ] = useDropdown();
 
     return (
       <Translation>
@@ -86,30 +107,32 @@ const MappingEditorToolbar = React.forwardRef(
               <MenuItem
                 disabled={!canAugmentMapping}
                 onClick={
-                  canAugmentMapping ? closeMappingMenu(augmentMapping) : null
+                  canAugmentMapping
+                    ? closeMappingMenuWith(augmentMapping)
+                    : undefined
                 }
               >
                 {t('mappingEditorToolbar.assignSpares')}
               </MenuItem>
               <Divider />
-              <MenuItem onClick={closeMappingMenu(importMapping)}>
+              <MenuItem onClick={closeMappingMenuWith(importMapping)}>
                 {t('mappingEditorToolbar.importMapping')}
               </MenuItem>
-              <MenuItem onClick={closeMappingMenu(exportMapping)}>
+              <MenuItem onClick={closeMappingMenuWith(exportMapping)}>
                 {t('mappingEditorToolbar.exportMapping')}
               </MenuItem>
               <Divider />
               {devMode && (
-                <MenuItem onClick={closeMappingMenu(generateRandomMapping)}>
+                <MenuItem onClick={closeMappingMenuWith(generateRandomMapping)}>
                   {t('mappingEditorToolbar.generateRandomMapping')}
                 </MenuItem>
               )}
               {devMode && <Divider />}
-              <MenuItem onClick={closeMappingMenu(clearMapping)}>
+              <MenuItem onClick={closeMappingMenuWith(clearMapping)}>
                 {t('general.action.clear')}
               </MenuItem>
               <MenuItem
-                onClick={closeMappingMenu(removeMissingUAVsFromMapping)}
+                onClick={closeMappingMenuWith(removeMissingUAVsFromMapping)}
               >
                 {t('mappingEditorToolbar.clearMissing')}
               </MenuItem>
@@ -121,23 +144,9 @@ const MappingEditorToolbar = React.forwardRef(
   }
 );
 
-MappingEditorToolbar.propTypes = {
-  augmentMapping: PropTypes.func,
-  canAugmentMapping: PropTypes.bool,
-  clearMapping: PropTypes.func,
-  devMode: PropTypes.bool,
-  exportMapping: PropTypes.func,
-  finishMappingEditorSession: PropTypes.func,
-  generateRandomMapping: PropTypes.func,
-  importMapping: PropTypes.func,
-  isDeveloperModeEnabled: PropTypes.bool,
-  removeMissingUAVsFromMapping: PropTypes.func,
-  selectedUAVIds: PropTypes.array,
-};
-
 export default connect(
   // mapStateToProps
-  (state) => ({
+  (state: RootState) => ({
     canAugmentMapping: canAugmentMappingAutomaticallyFromSpareDrones(state),
     devMode: isDeveloperModeEnabled(state),
   }),
