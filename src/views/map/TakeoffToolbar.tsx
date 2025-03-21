@@ -8,7 +8,6 @@ import React, {
   type DispatchWithoutAction,
   type FunctionComponent,
   type SetStateAction,
-  // useRef,
   useState,
 } from 'react';
 import {
@@ -17,7 +16,6 @@ import {
   type DraggableProvided,
   type DraggableStateSnapshot,
   Droppable,
-  type DropResult,
 } from 'react-beautiful-dnd';
 import { Field, Form } from 'react-final-form';
 import {
@@ -67,61 +65,59 @@ import {
 import { prepareMappingForMultiUAVMissionFromSelection } from '~/features/mission/actions';
 import { toggleHomePositionsLocked } from '~/features/mission/slice';
 import { setupMissionFromShow } from '~/features/show/actions';
-import { tt } from '~/i18n';
 import { type RootState } from '~/store/reducers';
 
 import { Tool } from './tools';
 
-const DEFAULT_SUBGRID: SubgridConfig = {
-  xCount: 2,
-  yCount: 2,
-  linkCount: true,
-  xSpace: 1,
-  ySpace: 1,
-  linkSpace: true,
-};
-
-const makeOnDragEndFunction =
-  (fields: FieldArrayRenderProps<SubgridConfig, HTMLElement>['fields']) =>
-  (result: DropResult): void => {
-    if (result.destination) {
-      fields.move(result.source.index, result.destination.index);
-    }
-  };
+// --- TakeoffSubgridProperties ---
 
 const useStyles = makeStyles((theme) => ({
   dragged: { background: theme.palette.action.hover },
 }));
 
-const decorator = createDecorator<TakeoffGridProperties>(
-  {
-    field: /(subgrids\[\d+].xCount)|(subgrids\[\d+].linkCount)/,
-    updates(_value, name, allValues) {
-      const index = Number(
-        // NOTE: Bang justified by the field name matching the RegEx in the first place.
-        name.match(/subgrids\[(?<index>\d+)]/)?.groups?.['index']
-      );
-      return allValues?.subgrids[index]?.linkCount
-        ? {
-            [`subgrids[${index}].yCount`]: allValues?.subgrids[index]?.xCount,
-          }
-        : {};
-    },
-  },
-  {
-    field: /(subgrids\[\d+].xSpace)|(subgrids\[\d+].linkSpace)/,
-    updates(_value, name, allValues) {
-      const index = Number(
-        // NOTE: Bang justified by the field name matching the RegEx in the first place.
-        name.match(/subgrids\[(?<index>\d+)]/)?.groups?.['index']
-      );
-      return allValues?.subgrids[index]?.linkSpace
-        ? {
-            [`subgrids[${index}].ySpace`]: allValues?.subgrids[index]?.xSpace,
-          }
-        : {};
-    },
-  }
+const NumericTextField: FunctionComponent<
+  Readonly<{
+    disabled?: boolean;
+    gridArea: string;
+    max?: number;
+    min?: number;
+    name: string;
+    step?: number;
+    unit?: string;
+  }>
+> = ({ disabled, gridArea, max, min, name, step, unit }) => (
+  <TextField
+    disabled={disabled}
+    name={name}
+    size='small'
+    style={{ gridArea }}
+    type='number'
+    variant='outlined'
+    fieldProps={{ parse: (v) => v.length > 0 && Number(v) }}
+    inputProps={{ style: { appearance: 'textfield' }, min, step, max }}
+    InputProps={{
+      ...(Boolean(unit) && {
+        endAdornment: <InputAdornment position='end'>{unit}</InputAdornment>,
+      }),
+    }}
+  />
+);
+
+const LinkCheckboxField: FunctionComponent<
+  Readonly<{ gridArea: string; name: string }>
+> = ({ name, gridArea }) => (
+  // TODO: Is `type="checkbox"` necessary?
+  <Field name={name} type='checkbox'>
+    {({ input }) => (
+      <Checkbox
+        {...input}
+        icon={<LinkOff />}
+        checkedIcon={<Link />}
+        color='primary'
+        style={{ gridArea }}
+      />
+    )}
+  </Field>
 );
 
 const TakeoffSubgridProperties: FunctionComponent<
@@ -137,24 +133,22 @@ const TakeoffSubgridProperties: FunctionComponent<
   return (
     <ListItem
       ref={provided.innerRef}
-      {...provided.draggableProps}
       className={clsx(snapshot.isDragging && classes.dragged)}
-      style={{
-        ...provided.draggableProps.style,
-      }}
+      {...provided.draggableProps}
     >
       <Box
         display='grid'
         gridTemplateColumns='32px 60px 75px 40px 75px'
         gridTemplateAreas={`
-        '.......... .......... xLabel ......... yLabel'
-        'dragHandle countLabel xCount countLink yCount'
-        'removeIcon spaceLabel xSpace spaceLink ySpace'
-      `}
+          '.......... .......... xLabel ......... yLabel'
+          'dragHandle countLabel xCount countLink yCount'
+          'removeIcon spaceLabel xSpace spaceLink ySpace'
+        `}
         // TODO: Should just be `placeItems='center'`,
         //       but MUI v4 doesn't seem to support it
         alignItems='center'
         justifyItems='center'
+        style={{ userSelect: 'none' }}
       >
         <ListItemIcon
           style={{ gridArea: 'dragHandle', minWidth: 32 }}
@@ -167,109 +161,88 @@ const TakeoffSubgridProperties: FunctionComponent<
             <Delete />
           </IconButton>
         </ListItemIcon>
+
         <Typography style={{ gridArea: 'xLabel' }}>X</Typography>
         <Typography style={{ gridArea: 'yLabel' }}>Y</Typography>
+
         <Typography style={{ gridArea: 'countLabel' }}>Count</Typography>
-        <TextField
-          name={`${name}.xCount`}
-          type='number'
-          fieldProps={{ parse: (v) => v.length > 0 && Number(v) }}
-          variant='outlined'
-          size='small'
-          style={{ gridArea: 'xCount' }}
-          inputProps={{
-            style: { appearance: 'textfield' },
-            min: 1,
-          }}
-        />
-        {/* TODO: Is `type="checkbox"` necessary? */}
-        <Field name={`${name}.linkCount`} type='checkbox'>
-          {({ input }) => (
-            <Checkbox
-              {...input}
-              icon={<LinkOff />}
-              checkedIcon={<Link />}
-              color='primary'
-              style={{ gridArea: 'countLink' }}
-            />
-          )}
-        </Field>
-        <TextField
+        <NumericTextField gridArea='xCount' name={`${name}.xCount`} min={1} />
+        <LinkCheckboxField gridArea='countLink' name={`${name}.linkCount`} />
+        <NumericTextField
+          gridArea='yCount'
           name={`${name}.yCount`}
           disabled={fields?.value[index]?.linkCount}
-          type='number'
-          fieldProps={{ parse: (v) => v.length > 0 && Number(v) }}
-          variant='outlined'
-          size='small'
-          style={{ gridArea: 'yCount' }}
-          inputProps={{
-            style: { appearance: 'textfield' },
-            min: 1,
-          }}
+          min={1}
         />
 
         <Typography style={{ gridArea: 'spaceLabel' }}>Space</Typography>
-        <TextField
+        <NumericTextField
+          gridArea='xSpace'
           name={`${name}.xSpace`}
-          type='number'
-          fieldProps={{ parse: (v) => v.length > 0 && Number(v) }}
-          variant='outlined'
-          size='small'
-          style={{ gridArea: 'xSpace' }}
-          inputProps={{
-            style: { appearance: 'textfield' },
-            min: 0.1,
-            step: 0.1,
-          }}
-          InputProps={{
-            endAdornment: <InputAdornment position='end'>m</InputAdornment>,
-          }}
+          min={0.1}
+          step={0.1}
+          unit='m'
         />
-        {/* TODO: Is `type="checkbox"` necessary? */}
-        <Field name={`${name}.linkSpace`} type='checkbox'>
-          {({ input }) => (
-            <Checkbox
-              {...input}
-              icon={<LinkOff />}
-              checkedIcon={<Link />}
-              color='primary'
-              style={{ gridArea: 'spaceLink' }}
-            />
-          )}
-        </Field>
-        <TextField
+        <LinkCheckboxField gridArea='spaceLink' name={`${name}.linkSpace`} />
+        <NumericTextField
+          gridArea='ySpace'
           name={`${name}.ySpace`}
           disabled={fields.value[index]?.linkSpace}
-          type='number'
-          fieldProps={{ parse: (v) => v.length > 0 && Number(v) }}
-          variant='outlined'
-          size='small'
-          style={{ gridArea: 'ySpace' }}
-          inputProps={{
-            style: { appearance: 'textfield' },
-            min: 0.1,
-            step: 0.1,
-          }}
-          InputProps={{
-            endAdornment: <InputAdornment position='end'>m</InputAdornment>,
-          }}
+          min={0.1}
+          step={0.1}
+          unit='m'
         />
       </Box>
     </ListItem>
   );
 };
 
+// --- TakeoffSubgridPropertiesForm ---
+
+const DEFAULT_SUBGRID: SubgridConfig = {
+  xCount: 2,
+  yCount: 2,
+  linkCount: true,
+  xSpace: 1,
+  ySpace: 1,
+  linkSpace: true,
+};
+
+const fieldNameToSubgridIndex = (name: string): number =>
+  Number(name.match(/subgrids\[(?<index>\d+)]/)?.groups?.['index']);
+
+const decorator = createDecorator<TakeoffGridProperties>(
+  {
+    field: /(subgrids\[\d+].xCount)|(subgrids\[\d+].linkCount)/,
+    updates(_value, name, allValues) {
+      const index = fieldNameToSubgridIndex(name);
+      const { linkCount, xCount } = allValues?.subgrids[index] ?? {};
+      return linkCount ? { [`subgrids[${index}].yCount`]: xCount } : {};
+    },
+  },
+  {
+    field: /(subgrids\[\d+].xSpace)|(subgrids\[\d+].linkSpace)/,
+    updates(_value, name, allValues) {
+      const index = fieldNameToSubgridIndex(name);
+      const { linkSpace, xSpace } = allValues?.subgrids[index] ?? {};
+      return linkSpace ? { [`subgrids[${index}].ySpace`]: xSpace } : {};
+    },
+  }
+);
+
 const TakeoffGridPropertiesForm: FunctionComponent<
   Readonly<{
     anchorEl: HTMLElement | undefined;
     setAnchorEl: Dispatch<SetStateAction<HTMLElement | undefined>>;
     setTakeoffGridProperties: Dispatch<TakeoffGridProperties>;
+    t: TFunction;
     takeoffGridProperties: TakeoffGridProperties;
   }>
 > = ({
   anchorEl,
   setAnchorEl,
   takeoffGridProperties,
+  t,
   setTakeoffGridProperties,
 }) => (
   <Form
@@ -293,19 +266,20 @@ const TakeoffGridPropertiesForm: FunctionComponent<
         <form onSubmit={handleSubmit}>
           <FieldArray name='subgrids'>
             {({ fields }) => (
-              <DragDropContext onDragEnd={makeOnDragEndFunction(fields)}>
+              <DragDropContext
+                onDragEnd={(result) => {
+                  if (result.destination) {
+                    fields.move(result.source.index, result.destination.index);
+                  }
+                }}
+              >
                 <Droppable droppableId='droppable'>
-                  {(provided, _snapshot) => (
+                  {(provided) => (
                     <List
                       ref={provided.innerRef}
                       {...provided.droppableProps}
                       dense
                       disablePadding
-                      style={
-                        {
-                          // ...(snapshot.isDraggingOver && { background: 'gray' }),
-                        }
-                      }
                     >
                       {fields?.map((name, index) => (
                         <Draggable key={name} draggableId={name} index={index}>
@@ -333,7 +307,7 @@ const TakeoffGridPropertiesForm: FunctionComponent<
                           <Add />
                         </ListItemIcon>
                         <ListItemText
-                          primary='Add new subgrid'
+                          primary={t('takeoffGridEditor.addNewSubgrid')}
                           primaryTypographyProps={{ align: 'center' }}
                         />
                       </ListItem>
@@ -351,44 +325,43 @@ const TakeoffGridPropertiesForm: FunctionComponent<
 );
 
 /**
- * Presentation component for the drawing toolbar.
+ * Presentation component for the takeoff toolbar.
  */
 const TakeoffToolbarPresentation: FunctionComponent<
   Readonly<{
-    homePositionsLocked: boolean;
-    toggleHomePositionsLocked: DispatchWithoutAction;
-    setTakeoffGridProperties: Dispatch<TakeoffGridProperties>;
-    takeoffGridProperties: TakeoffGridProperties;
-    onToolSelected: Dispatch<Tool>;
-    selectedTool: Tool;
-    t: TFunction;
     autoSetTakeoffGrid: DispatchWithoutAction;
+    homePositionsLocked: boolean;
+    onToolSelected: Dispatch<Tool>;
     resetTakeoffGrid: DispatchWithoutAction;
+    selectedTool: Tool;
+    setTakeoffGridProperties: Dispatch<TakeoffGridProperties>;
+    t: TFunction;
+    takeoffGridProperties: TakeoffGridProperties;
+    toggleHomePositionsLocked: DispatchWithoutAction;
   }>
 > = ({
-  homePositionsLocked,
-  toggleHomePositionsLocked,
-  setTakeoffGridProperties,
-  takeoffGridProperties,
-  onToolSelected,
-  selectedTool,
-  t,
   autoSetTakeoffGrid,
+  homePositionsLocked,
+  onToolSelected,
   resetTakeoffGrid,
+  selectedTool,
+  setTakeoffGridProperties,
+  t,
+  takeoffGridProperties,
+  toggleHomePositionsLocked,
 }) => {
   const colorForTool = (tool: Tool) =>
     selectedTool === tool ? 'primary' : undefined;
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | undefined>();
-  // const toolbarRef = useRef();
 
   return (
     // NOTE: Box doesn't have `ref` in MUI v4, and I didn't feel like adding an
     //       extra patch / type augmentation just for the sake of this...
-    //       We should use it instead of the `parentElement` trick when migrating to MUI v5 though
-    // <Box ref={toolbarRef} display='flex'>
+    //       We should use that instead of the `parentElement` trick
+    //       after migrating to MUI v5!
     <Box display='flex'>
-      <Tooltip placement='bottom' content='Lock'>
+      <Tooltip placement='bottom' content={t('general.action.lock')}>
         <IconButton onClick={toggleHomePositionsLocked}>
           {homePositionsLocked ? <Lock /> : <LockOpen />}
         </IconButton>
@@ -396,7 +369,7 @@ const TakeoffToolbarPresentation: FunctionComponent<
 
       <Divider flexItem orientation='vertical' />
 
-      <Tooltip placement='bottom' content='Reset'>
+      <Tooltip placement='bottom' content={t('general.action.reset')}>
         <IconButton onClick={resetTakeoffGrid}>
           <Replay />
         </IconButton>
@@ -406,11 +379,8 @@ const TakeoffToolbarPresentation: FunctionComponent<
         <IconButton
           onClick={partial(onToolSelected, Tool.TAKEOFF_GRID)}
           onContextMenu={(e) => {
-            console.log({ e });
             e.preventDefault();
-            // setAnchorEl(toolbarRef.current);
             setAnchorEl(e.currentTarget.parentElement ?? undefined);
-            // setAnchorEl(e.currentTarget);
           }}
         >
           <GridOn color={colorForTool(Tool.TAKEOFF_GRID)} />
@@ -420,11 +390,12 @@ const TakeoffToolbarPresentation: FunctionComponent<
       <TakeoffGridPropertiesForm
         anchorEl={anchorEl}
         setAnchorEl={setAnchorEl}
-        takeoffGridProperties={takeoffGridProperties}
         setTakeoffGridProperties={setTakeoffGridProperties}
+        t={t}
+        takeoffGridProperties={takeoffGridProperties}
       />
 
-      <Tooltip placement='bottom' content='Auto'>
+      <Tooltip placement='bottom' content={t('general.action.auto')}>
         <IconButton onClick={autoSetTakeoffGrid}>
           <FontDownload />
         </IconButton>
