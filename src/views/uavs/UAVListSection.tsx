@@ -6,6 +6,7 @@ import { UAVListLayout } from '~/features/settings/types';
 import UAVListSubheader, {
   type UAVListSubheaderProps,
 } from './UAVListSubheader';
+import type { Item } from './types';
 
 const useStyles = makeStyles(
   (theme) => ({
@@ -44,17 +45,15 @@ const useStyles = makeStyles(
 export type UAVListSectionProps = UAVListSubheaderProps &
   Readonly<{
     forceVisible?: boolean;
-    ids: Array<[string | undefined, number | undefined]>;
-    itemFactory: (
-      id: [string | undefined, number | undefined]
-    ) => React.ReactNode;
+    items: Item[];
+    itemRenderer: (item: Item) => React.ReactNode;
     layout: UAVListLayout;
   }>;
 
 const UAVListSection = ({
   forceVisible,
-  ids,
-  itemFactory,
+  items: ids,
+  itemRenderer,
   layout,
   ...rest
   // eslint-disable-next-line @typescript-eslint/ban-types
@@ -71,7 +70,7 @@ const UAVListSection = ({
       <Box
         className={layout === UAVListLayout.GRID ? classes.grid : classes.list}
       >
-        {ids.map((id) => itemFactory(id))}
+        {ids.map((id) => itemRenderer(id))}
       </Box>
     </>
   );
