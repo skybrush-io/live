@@ -4,7 +4,6 @@ export type ExtraSlot = [undefined, undefined, string | JSX.Element];
 export type GroupedUAVIds = {
   mainUAVIds: Array<[string | undefined, number | undefined]>;
   spareUAVIds: Array<[string, undefined]>;
-  extraSlots: ExtraSlot[];
 };
 
 export type GroupSelectionInfoEntry = {
@@ -16,7 +15,8 @@ export type GroupSelectionInfoEntry = {
 export type GroupSelectionInfo = {
   mainUAVIds: GroupSelectionInfoEntry;
   spareUAVIds: GroupSelectionInfoEntry;
-  extraSlots: GroupSelectionInfoEntry;
 };
 
-export type Item = UAVIdAndMissionIndexPair | ExtraSlot;
+export type Item =
+  | UAVIdAndMissionIndexPair
+  | [...UAVIdAndMissionIndexPair, string | JSX.Element];

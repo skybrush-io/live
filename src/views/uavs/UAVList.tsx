@@ -111,7 +111,7 @@ type ItemFactoryOptions = {
  * placeholders.
  */
 /* eslint-disable complexity */
-const createGridItemFactory =
+const createGridItemRenderer =
   ({
     draggable,
     isInEditMode,
@@ -205,7 +205,7 @@ const createGridItemFactory =
  * Helper function to create a single item in the list view of drone avatars and
  * placeholders.
  */
-const createListItemFactory =
+const createListItemRenderer =
   ({
     isInEditMode,
     mappingSlotBeingEdited,
@@ -324,9 +324,7 @@ const UAVListPresentation = ({
 
   const [uavListRef, uavListOnScroll] = usePersistentScrollPosition();
 
-  const { extraSlots } = uavIds;
-
-  const itemFactoryOptions = {
+  const itemRendererOptions = {
     draggable: editingMapping,
     isInEditMode: editingMapping,
     mappingSlotBeingEdited,
@@ -338,10 +336,10 @@ const UAVListPresentation = ({
     selectedMissionSlotIds,
     showMissionIds,
   };
-  const itemFactory =
+  const itemRenderer =
     layout === UAVListLayout.GRID
-      ? createGridItemFactory(itemFactoryOptions)
-      : createListItemFactory(itemFactoryOptions);
+      ? createGridItemRenderer(itemRendererOptions)
+      : createListItemRenderer(itemRendererOptions);
 
   const mainBox = (
     <Box display='flex' flexDirection='column' height='100%'>
@@ -380,7 +378,7 @@ const UAVListPresentation = ({
         <SortAndFilterHeader />
         <UAVListBody
           editingMapping={editingMapping}
-          itemFactory={itemFactory}
+          itemRenderer={itemRenderer}
           layout={layout}
           selectionInfo={selectionInfo}
           showMissionIds={showMissionIds}
@@ -388,10 +386,10 @@ const UAVListPresentation = ({
           onSelectSection={onSelectSection}
         />
       </Box>
-      {extraSlots.length > 0 && layout === UAVListLayout.GRID ? (
+      {editingMapping && layout === UAVListLayout.GRID ? (
         <Box className='bottom-bar'>
           <Box display='flex' flexDirection='row' flexWrap='wrap'>
-            {extraSlots.map((slot) => itemFactory(slot))}
+            {itemRenderer(deletionMarker)}
           </Box>
         </Box>
       ) : null}
@@ -530,11 +528,7 @@ const UAVList = connect(
             (dispatch, getState) => {
               const { value } = event.target;
               const state = getState();
-              if (
-                value !== 'mainUAVIds' &&
-                value !== 'spareUAVIds' &&
-                value !== 'extraSlots'
-              ) {
+              if (value !== 'mainUAVIds' && value !== 'spareUAVIds') {
                 // This is to make TypeScript happy
                 return;
               }

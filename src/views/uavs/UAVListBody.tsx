@@ -6,17 +6,13 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import type {
-  GroupedUAVIds,
-  GroupSelectionInfo,
-  GroupSelectionInfoEntry,
-} from './types';
+import type { GroupedUAVIds, GroupSelectionInfo } from './types';
 import UAVListSection, { type UAVListSectionProps } from './UAVListSection';
 import type { UAVListLayout } from '~/features/settings/types';
 
 type UAVListBodyProps = Readonly<{
   editingMapping: boolean;
-  itemFactory: UAVListSectionProps['itemFactory'];
+  itemRenderer: UAVListSectionProps['itemRenderer'];
   layout: UAVListLayout;
   onSelectSection: UAVListSectionProps['onSelect'];
   selectionInfo: GroupSelectionInfo;
@@ -28,7 +24,7 @@ type UAVListBodyProps = Readonly<{
  * Presentation component for showing the drone show configuration view.
  */
 const UAVListBody = ({
-  itemFactory,
+  itemRenderer,
   editingMapping,
   layout,
   onSelectSection,
@@ -42,8 +38,8 @@ const UAVListBody = ({
   return (
     <>
       <UAVListSection
-        ids={mainUAVIds}
-        itemFactory={itemFactory}
+        items={mainUAVIds}
+        itemRenderer={itemRenderer}
         label={
           showMissionIds ? t('UAVList.assignedUAVs') : t('UAVList.allUAVs')
         }
@@ -53,8 +49,8 @@ const UAVListBody = ({
         {...selectionInfo.mainUAVIds}
       />
       <UAVListSection
-        ids={spareUAVIds}
-        itemFactory={itemFactory}
+        items={spareUAVIds}
+        itemRenderer={itemRenderer}
         label={t('UAVList.spareUAVs')}
         layout={layout}
         value='spareUAVIds'

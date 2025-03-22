@@ -63,7 +63,6 @@ const getUnprocessedDisplayedIdListSortedByMissionId = createSelector(
   ): GroupedUAVIds => {
     const mainUAVIds: Array<[string | undefined, number | undefined]> = [];
     const spareUAVIds: Array<[string, undefined]> = [];
-    const extraSlots: ExtraSlot[] = [];
     const seenUAVIds = new Set();
 
     for (const [index, uavId] of mapping.entries()) {
@@ -86,13 +85,7 @@ const getUnprocessedDisplayedIdListSortedByMissionId = createSelector(
       }
     }
 
-    // If we are in editing mode, we always add one extra slot where the user
-    // can drag UAVs that should be deleted
-    if (editable) {
-      extraSlots.push(deletionMarker);
-    }
-
-    return { mainUAVIds, spareUAVIds, extraSlots };
+    return { mainUAVIds, spareUAVIds };
   }
 );
 
@@ -113,7 +106,6 @@ const getUnprocessedDisplayedIdListSortedByUavId = createSelector(
   (uavIds, reverseMapping): GroupedUAVIds => ({
     mainUAVIds: uavIds.map((uavId) => [uavId, reverseMapping[uavId]]),
     spareUAVIds: [],
-    extraSlots: [],
   })
 );
 
