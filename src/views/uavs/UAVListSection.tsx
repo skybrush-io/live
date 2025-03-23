@@ -44,14 +44,12 @@ const useStyles = makeStyles(
 
 export type UAVListSectionProps = UAVListSubheaderProps &
   Readonly<{
-    forceVisible?: boolean;
     items: Item[];
     itemRenderer: (item: Item) => React.ReactNode;
     layout: UAVListLayout;
   }>;
 
 const UAVListSection = ({
-  forceVisible,
   items: ids,
   itemRenderer,
   layout,
@@ -59,11 +57,6 @@ const UAVListSection = ({
   // eslint-disable-next-line @typescript-eslint/ban-types
 }: UAVListSectionProps): JSX.Element | null => {
   const classes = useStyles();
-
-  if (ids.length <= 0 && !forceVisible) {
-    return null;
-  }
-
   return (
     <>
       <UAVListSubheader {...rest} />

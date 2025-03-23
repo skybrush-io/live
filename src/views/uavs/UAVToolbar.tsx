@@ -17,6 +17,7 @@ import MappingButtonGroup from './MappingButtonGroup';
 import { isBroadcast } from '~/features/session/selectors';
 import type { RootState } from '~/store/reducers';
 import { useTranslation } from 'react-i18next';
+import { getSelectedUAVIds } from '~/features/uavs/selectors';
 
 type UAVToolbarProps = ToolbarProps &
   Readonly<{
@@ -68,6 +69,7 @@ export default connect(
   // mapStateToProps
   (state: RootState) => ({
     isBroadcast: isBroadcast(state),
+    selectedUAVIds: getSelectedUAVIds(state),
   }),
   // mapDispatchToProps
   {}

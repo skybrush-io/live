@@ -70,9 +70,9 @@ type SelectionHandlerFunctions<T = string> = {
 };
 
 type SelectionHandlerReduxFunctions<T = string> = {
-  activateItem?: (item: T) => AnyAction;
+  activateItem?: (item: T) => AnyAction | undefined | void;
   getSelection: (state: RootState) => T[];
-  setSelection?: (value: T[]) => AnyAction;
+  setSelection?: (value: T[]) => AnyAction | undefined | void;
   getListItems?: (state: RootState) => T[];
 };
 
