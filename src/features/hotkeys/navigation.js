@@ -57,10 +57,11 @@ export function createKeyboardNavigationHandlers({
           const state = getState();
           const selectedIds = getSelectedIds(state);
           if (selectedIds && selectedIds.length > 0) {
-            if (activateIds) {
-              dispatch(activateIds(selectedIds));
-            } else {
-              dispatch(activateId(selectedIds[selectedIds.length - 1]));
+            const action = activateIds
+              ? activateIds(selectedIds)
+              : activateId(selectedIds.at(-1));
+            if (action) {
+              dispatch(action);
             }
           }
         }

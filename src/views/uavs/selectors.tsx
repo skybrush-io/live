@@ -23,16 +23,23 @@ import {
 import { UAVSortKey } from '~/model/sorting';
 
 import { applyFiltersAndSortDisplayedUAVIdList } from './sorting';
-import type { ExtraSlot, GroupedUAVIds } from './types';
 import type { AppSelector, RootState } from '~/store/reducers';
 import type { StoredUAV } from '~/features/uavs/types';
 import type { Nullable } from '~/utils/types';
+import {
+  UAVGroupType,
+  type GroupSelectionInfo,
+  type Item,
+  type UAVGroup,
+} from './types';
+import { flatten } from 'lodash-es';
+import { itemToGlobalId } from './utils';
 
 /**
  * Special marker that we can place into the list items returned from
- * getDisplayedIdListBySections() to produce a slot where deleted UAVs can be dragged.
+ * getDisplayedUAVGroups() to produce a slot where deleted UAVs can be dragged.
  */
-export const deletionMarker: ExtraSlot = [
+export const deletionMarker: Item = [
   undefined,
   undefined,
   <Delete key='__delete' />,
@@ -50,7 +57,7 @@ export const deletionMarker: ExtraSlot = [
  * one before applying any filters or sorting criteria. See below for more
  * functions that perform the sorting and filtering.
  */
-const getUnprocessedDisplayedIdListSortedByMissionId = createSelector(
+const getUnprocessedGroupsSortedByMissionId = createSelector(
   getMissionMapping,
   isMappingEditable,
   getUAVIdList,
@@ -60,9 +67,10 @@ const getUnprocessedDisplayedIdListSortedByMissionId = createSelector(
     editable: boolean,
     uavIds: string[],
     showEmpty: boolean
-  ): GroupedUAVIds => {
-    const mainUAVIds: Array<[string | undefined, number | undefined]> = [];
-    const spareUAVIds: Array<[string, undefined]> = [];
+  ): UAVGroup[] => {
+    const mainUAVIds: Item[] = [];
+    const spareUAVIds: Item[] = [];
+    const result: UAVGroup[] = [];
     const seenUAVIds = new Set();
 
     for (const [index, uavId] of mapping.entries()) {
@@ -85,7 +93,21 @@ const getUnprocessedDisplayedIdListSortedByMissionId = createSelector(
       }
     }
 
-    return { mainUAVIds, spareUAVIds };
+    result.push({
+      id: 'assigned',
+      type: UAVGroupType.ASSIGNED,
+      items: mainUAVIds,
+    });
+
+    if (spareUAVIds.length > 0 || editable) {
+      result.push({
+        id: 'spare',
+        type: UAVGroupType.SPARE,
+        items: spareUAVIds,
+      });
+    }
+
+    return result;
   }
 );
 
@@ -93,31 +115,31 @@ const getUnprocessedDisplayedIdListSortedByMissionId = createSelector(
  * Selector that provides the list of UAV IDs to show in the UAV list when we
  * are using the UAV IDs without their mission-specific identifiers.
  *
- * The main section of the view will be sorted based on the UAV IDs in the
- * state store. The "spare UAVs" section in the view will be empty.
- *
  * The list returned from this selector is the "unprocessed" list, i.e. the
  * one before applying any filters or sorting criteria. See below for more
  * functions that perform the sorting and filtering.
  */
-const getUnprocessedDisplayedIdListSortedByUavId = createSelector(
+const getUnprocessedGroupsSortedByUavId = createSelector(
   getUAVIdList,
   getReverseMissionMapping,
-  (uavIds, reverseMapping): GroupedUAVIds => ({
-    mainUAVIds: uavIds.map((uavId) => [uavId, reverseMapping[uavId]]),
-    spareUAVIds: [],
-  })
+  (uavIds, reverseMapping): UAVGroup[] => [
+    {
+      id: 'all',
+      type: UAVGroupType.ALL,
+      items: uavIds.map((uavId) => [uavId, reverseMapping[uavId]]),
+    },
+  ]
 );
 
-const getUnprocessedDisplayedIdListBySections: AppSelector<GroupedUAVIds> = (
+const getUnprocessedGroupsBySections: AppSelector<UAVGroup[]> = (
   state: RootState
 ) =>
   isShowingMissionIds(state)
-    ? getUnprocessedDisplayedIdListSortedByMissionId(state)
-    : getUnprocessedDisplayedIdListSortedByUavId(state);
+    ? getUnprocessedGroupsSortedByMissionId(state)
+    : getUnprocessedGroupsSortedByUavId(state);
 
 /**
- * Helper function for getDisplayedIdListBySections(); see an explanation there.
+ * Helper function for getDisplayedUAVGroups(); see an explanation there.
  */
 const getUAVIdToStateMappingForSortAndFilter: AppSelector<
   Nullable<Record<string, StoredUAV>>
@@ -140,37 +162,66 @@ const getUAVIdToStateMappingForSortAndFilter: AppSelector<
  * list stays the same _when_ we are not sorting or filtering based on UAV
  * properties.
  */
-export const getDisplayedIdListBySections: AppSelector<GroupedUAVIds> =
-  createSelector(
-    getUAVListFilters,
-    getUAVListSortPreference,
-    getUnprocessedDisplayedIdListBySections,
-    getUAVIdToStateMappingForSortAndFilter,
-    applyFiltersAndSortDisplayedUAVIdList
-  );
+export const getDisplayedGroups: AppSelector<UAVGroup[]> = createSelector(
+  getUAVListFilters,
+  getUAVListSortPreference,
+  getUnprocessedGroupsBySections,
+  getUAVIdToStateMappingForSortAndFilter,
+  applyFiltersAndSortDisplayedUAVIdList
+);
+
+/**
+ * Selector that returns the global IDs of all items (UAVs or mission slots)
+ * that are currently shown in each of the groups, in the order they are shown.
+ */
+export const getGlobalIdsInDisplayedGroups = createSelector(
+  getDisplayedGroups,
+  (groups) =>
+    groups.map(
+      (group) =>
+        group.items
+          .map((item) => itemToGlobalId(item))
+          .filter(Boolean) as string[]
+    )
+);
+
+/**
+ * Selector that returns _only_ the IDs of the UAVs that are currently shown
+ * in each of the groups, in the order they are shown. Empty mission slots are
+ * not included.
+ */
+
+export const getUAVIdsInDisplayedGroups = createSelector(
+  getDisplayedGroups,
+  (groups) =>
+    groups.map((group) => {
+      const result: string[] = [];
+      for (const [uavId] of group.items) {
+        if (!isNil(uavId)) {
+          result.push(uavId);
+        }
+      }
+
+      return result;
+    })
+);
+
+/**
+ * Selector that provides the global IDs of all UAVs and mission slots in the
+ * UAV list, order they appear on the UI, but without sorting them into groups.
+ */
+export const getAllGlobalIdsInDisplayedGroups = createSelector(
+  getGlobalIdsInDisplayedGroups,
+  flatten
+);
 
 /**
  * Selector that provides the list of UAV IDs to show in the UAV list, in the
- * order they appear on the UI, but without sorting them into sections.
+ * order they appear on the UI, but without sorting them into groups.
  */
-export const getDisplayedIdList = createSelector(
-  getDisplayedIdListBySections,
-  ({ mainUAVIds, spareUAVIds }) => {
-    const result: string[] = [];
-
-    for (const item of mainUAVIds) {
-      const uavId = item[0];
-      if (!isNil(uavId)) {
-        result.push(uavId);
-      }
-    }
-
-    for (const item of spareUAVIds) {
-      result.push(item[0]);
-    }
-
-    return result;
-  }
+export const getAllUAVIdsInDisplayedGroups = createSelector(
+  getUAVIdsInDisplayedGroups,
+  flatten
 );
 
 /**
@@ -183,44 +234,36 @@ export const getDisplayedIdList = createSelector(
  * component.
  */
 export const getSelectionInfo = createSelector(
-  getDisplayedIdListBySections,
+  getUAVIdsInDisplayedGroups,
   getSelectedUAVIds,
-  (displayedIdList, selectedIds) =>
-    mapValues(
-      displayedIdList,
-      (
-        idsAndLabels
-      ): { checked: boolean; indeterminate: boolean; disabled: boolean } => {
-        const nonEmptyIdsAndLabels: Array<[string | undefined, ...any]> =
-          idsAndLabels.filter((idAndLabel) => !isNil(idAndLabel[0]));
-        const itemIsSelected = (
-          idAndLabel: [string | undefined, ...any]
-        ): boolean => selectedIds.includes(idAndLabel[0]!);
-        if (nonEmptyIdsAndLabels.length > 0) {
-          // Check the first item in idsAndLabels; it will settle either someSelected
-          // or allSelected
-          if (itemIsSelected(nonEmptyIdsAndLabels[0]!)) {
-            const allIsSelected = nonEmptyIdsAndLabels.every(itemIsSelected);
-            return {
-              checked: allIsSelected,
-              indeterminate: !allIsSelected,
-              disabled: false,
-            };
-          }
-
-          const someIsSelected = nonEmptyIdsAndLabels.some(itemIsSelected);
+  (uavIdsByGroups, selectedIds) =>
+    uavIdsByGroups.map((uavIds): GroupSelectionInfo => {
+      const isSelected = (uavId: string): boolean =>
+        selectedIds.includes(uavId);
+      if (uavIds.length > 0) {
+        // Check the first item; it will settle either someSelected
+        // or allSelected
+        if (isSelected(uavIds[0]!)) {
+          const allIsSelected = uavIds.every(isSelected);
           return {
-            checked: false,
-            indeterminate: someIsSelected,
+            checked: allIsSelected,
+            indeterminate: !allIsSelected,
             disabled: false,
           };
         }
 
+        const someIsSelected = uavIds.some(isSelected);
         return {
           checked: false,
-          indeterminate: false,
-          disabled: true,
+          indeterminate: someIsSelected,
+          disabled: false,
         };
       }
-    )
+
+      return {
+        checked: false,
+        indeterminate: false,
+        disabled: true,
+      };
+    })
 );

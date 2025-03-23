@@ -6,58 +6,63 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import type { GroupedUAVIds, GroupSelectionInfo } from './types';
+import { UAVGroupType, type GroupSelectionInfo, type UAVGroup } from './types';
 import UAVListSection, { type UAVListSectionProps } from './UAVListSection';
 import type { UAVListLayout } from '~/features/settings/types';
 
 type UAVListBodyProps = Readonly<{
-  editingMapping: boolean;
+  groups: UAVGroup[];
   itemRenderer: UAVListSectionProps['itemRenderer'];
   layout: UAVListLayout;
   onSelectSection: UAVListSectionProps['onSelect'];
-  selectionInfo: GroupSelectionInfo;
-  showMissionIds: boolean;
-  uavIds: Pick<GroupedUAVIds, 'mainUAVIds' | 'spareUAVIds'>;
+  selectionInfo: GroupSelectionInfo[];
 }>;
+
+function getLabelForUAVGroup(
+  group: UAVGroup,
+  t: (key: string) => string
+): string {
+  if (group.label) {
+    return group.label;
+  }
+
+  switch (group.type) {
+    case UAVGroupType.ALL:
+      return t('UAVList.allUAVs');
+    case UAVGroupType.ASSIGNED:
+      return t('UAVList.assignedUAVs');
+    case UAVGroupType.SPARE:
+      return t('UAVList.spareUAVs');
+  }
+
+  return '';
+}
 
 /**
  * Presentation component for showing the drone show configuration view.
  */
 const UAVListBody = ({
+  groups,
   itemRenderer,
-  editingMapping,
   layout,
   onSelectSection,
   selectionInfo,
-  showMissionIds,
-  uavIds,
 }: UAVListBodyProps): JSX.Element => {
-  const { mainUAVIds, spareUAVIds } = uavIds;
   const { t } = useTranslation();
-
   return (
     <>
-      <UAVListSection
-        items={mainUAVIds}
-        itemRenderer={itemRenderer}
-        label={
-          showMissionIds ? t('UAVList.assignedUAVs') : t('UAVList.allUAVs')
-        }
-        layout={layout}
-        value='mainUAVIds'
-        onSelect={onSelectSection}
-        {...selectionInfo.mainUAVIds}
-      />
-      <UAVListSection
-        items={spareUAVIds}
-        itemRenderer={itemRenderer}
-        label={t('UAVList.spareUAVs')}
-        layout={layout}
-        value='spareUAVIds'
-        forceVisible={editingMapping}
-        onSelect={onSelectSection}
-        {...selectionInfo.spareUAVIds}
-      />
+      {groups.map((group) => (
+        <UAVListSection
+          key={group.id}
+          items={group.items}
+          itemRenderer={itemRenderer}
+          label={getLabelForUAVGroup(group, t)}
+          layout={layout}
+          value={group.id}
+          onSelect={onSelectSection}
+          {...selectionInfo}
+        />
+      ))}
     </>
   );
 };

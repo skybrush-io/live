@@ -14,14 +14,10 @@ import {
   type Comparable,
   type UAVSortKey,
 } from '~/model/sorting';
-import type { GroupedUAVIds, Item, UAVIdAndMissionIndexPair } from './types';
+import type { Item, UAVGroup, UAVIdAndMissionIndexPair } from './types';
 import type { Nullable } from '~/utils/types';
 
 // Helper functions related to sorting and filtering the UAVs list
-
-function reversedValues<T>(object: Record<string, T[]>): Record<string, T[]> {
-  return mapValues(object, (array) => array.concat().reverse());
-}
 
 function alwaysTrue(): boolean {
   return true;
@@ -59,60 +55,60 @@ const getSortFunctionForKey = memoize((key: UAVSortKey) => {
       () => identity;
 });
 
-function applyFiltersToUAVIdsBySections(
+function applyFiltersToUAVGroups(
   filters: UAVFilter[],
-  uavIdsBySections: GroupedUAVIds,
+  groups: UAVGroup[],
   uavsByIds: Nullable<Record<string, StoredUAV>>
-): GroupedUAVIds {
+): UAVGroup[] {
   if (filters.length === 0) {
-    return uavIdsBySections;
+    return groups;
   }
 
   for (const filter of filters) {
     const func = getFilterFunctionForFilterIdentifier(filter)(uavsByIds!);
-    uavIdsBySections = mapValues(
-      uavIdsBySections,
-      (uavIds: UAVIdAndMissionIndexPair[] | Item[]) => uavIds.filter(func)
-    ) as any as GroupedUAVIds;
+    groups = groups.map((group: UAVGroup) => ({
+      ...group,
+      items: group.items.filter(func),
+    }));
   }
 
-  return uavIdsBySections;
+  return groups;
 }
 
-function applySortCriteriaToUAVIdsBySections(
+function applySortCriteriaToUAVGroups(
   sort: UAVSortKeyAndOrder,
-  uavIdsBySections: GroupedUAVIds,
+  groups: UAVGroup[],
   uavsByIds: Nullable<Record<string, StoredUAV>>
-): GroupedUAVIds {
+): UAVGroup[] {
   const { key, reverse } = sort || {};
   if (uavsByIds) {
-    // Use lodash to sort all values in uavIdsBySections
+    // Use lodash to sort all items in each group
     const func = getSortFunctionForKey(key);
-    return mapValues(uavIdsBySections, (uavIds) => {
-      return orderBy(uavIds, [func(uavsByIds)], [reverse ? 'desc' : 'asc']);
-    }) as any as GroupedUAVIds;
+    return groups.map((group) => ({
+      ...group,
+      items: orderBy(
+        group.items,
+        [func(uavsByIds)],
+        [reverse ? 'desc' : 'asc']
+      ),
+    }));
   } else {
-    // No need to sort, but we may need to reverse the arrays
+    // No need to sort, but we may need to reverse the groups
     return reverse
-      ? (reversedValues<any>(uavIdsBySections) as any as GroupedUAVIds)
-      : uavIdsBySections;
+      ? groups.map((group) => ({
+          ...group,
+          items: group.items.concat().reverse(),
+        }))
+      : groups;
   }
 }
 
 export function applyFiltersAndSortDisplayedUAVIdList(
   filters: UAVFilter[],
   sort: UAVSortKeyAndOrder,
-  uavIdsBySections: GroupedUAVIds,
+  groups: UAVGroup[],
   uavsByIds: Nullable<Record<string, StoredUAV>>
-): GroupedUAVIds {
-  const filteredUAVIdsBySections = applyFiltersToUAVIdsBySections(
-    filters,
-    uavIdsBySections,
-    uavsByIds
-  );
-  return applySortCriteriaToUAVIdsBySections(
-    sort,
-    filteredUAVIdsBySections,
-    uavsByIds
-  );
+): UAVGroup[] {
+  const filteredGroups = applyFiltersToUAVGroups(filters, groups, uavsByIds);
+  return applySortCriteriaToUAVGroups(sort, filteredGroups, uavsByIds);
 }
