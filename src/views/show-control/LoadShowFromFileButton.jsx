@@ -38,6 +38,8 @@ import { openLoadShowFromCloudDialog } from '~/features/show/slice';
 import { getSetupStageStatuses } from '~/features/show/stages';
 import { hasFeature } from '~/utils/configuration';
 import { truncate } from '~/utils/formatting';
+import AutoFix from '~/icons/AutoFix';
+import { adaptLoadedShow, saveLoadedShow } from '~/features/show/actions';
 
 /**
  * Helper function to test whether a dropped file is a real file and not a
@@ -95,6 +97,9 @@ const LoadShowFromFileButton = ({
   t,
   title,
   validationResult,
+  doesShowNeedAdapt,
+  onAdaptLoadedShow,
+  onSaveLoadedShow,
 }) => (
   <FileButton
     accepts={isFile}
@@ -141,6 +146,19 @@ const LoadShowFromFileButton = ({
             <Refresh />
           </IconButton>
         </Tooltip>
+      ) : doesShowNeedAdapt ? (
+        <>
+          <Tooltip content={t('show.clear', 'Clear loaded show')}>
+            <IconButton edge='end' onClick={onClearLoadedShow}>
+              <Clear />
+            </IconButton>
+          </Tooltip>
+          <Tooltip content={t('show.adapt', 'Adapt loaded show')}>
+            <IconButton edge='end' onClick={onAdaptLoadedShow}>
+              <AutoFix />
+            </IconButton>
+          </Tooltip>
+        </>
       ) : hasLoadedShowFile ? (
         <Tooltip content={t('show.clear', 'Clear loaded show')}>
           <IconButton edge='end' onClick={onClearLoadedShow}>
@@ -171,6 +189,7 @@ LoadShowFromFileButton.propTypes = {
   status: PropTypes.oneOf(Object.values(Status)),
   t: PropTypes.func,
   title: PropTypes.string,
+  doesShowNeedAdapt: PropTypes.bool,
 };
 
 export default connect(
@@ -184,12 +203,15 @@ export default connect(
     status: getSetupStageStatuses(state).selectShowFile,
     title: getShowTitle(state),
     validationResult: getShowValidationResult(state),
+    doesShowNeedAdapt: hasLoadedShowFile(state),
   }),
   // mapDispatchToProps
   {
+    onAdaptLoadedShow: adaptLoadedShow,
     onClearLoadedShow: clearLoadedShow,
     onLoadShowFromCloud: openLoadShowFromCloudDialog,
     onReloadShowFile: reloadCurrentShowFile,
+    onSaveLoadedShow: saveLoadedShow,
     onShowFileSelected: loadShowFromFile,
   }
 )(withTranslation()(LoadShowFromFileButton));

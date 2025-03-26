@@ -3,6 +3,7 @@
 import formatDate from 'date-fns/format';
 import formatISO9075 from 'date-fns/formatISO9075';
 import fromUnixTime from 'date-fns/fromUnixTime';
+import JSZip from 'jszip';
 import get from 'lodash-es/get';
 import identity from 'lodash-es/identity';
 import isNil from 'lodash-es/isNil';
@@ -15,6 +16,7 @@ import turfContains from '@turf/boolean-contains';
 import { CommonClockId } from '~/features/clocks/types';
 import {
   getGeofencePolygonInWorldCoordinates,
+  getGPSBasedHomePositionsInMission,
   selectMissionIndex,
 } from '~/features/mission/selectors';
 import {
@@ -863,4 +865,22 @@ export const getShowDescription = createSelector(
         : []),
       ...(hasYawControl ? ['yaw controlled'] : []),
     ].join(', ')
+);
+
+export const getTakeoffPositionsInShowCoordinates = createSelector(
+  getGPSBasedHomePositionsInMission,
+  getOutdoorShowToWorldCoordinateSystemTransformationObject,
+  (homePositions, transformation) =>
+    // TODO: Decide on `lat` / `lon` order... Is there an official one?
+    //       Latitude is more significant, but XY is more usual...
+    homePositions.map(({ lat, lon }) => transformation.fromLonLat([lon, lat]))
+);
+
+export const getLoadedShowAsZip = createSelector(
+  (state) => state.show.data,
+  (data) => {
+    const zip = new JSZip();
+    zip.file('show.json', JSON.stringify(data));
+    return zip;
+  }
 );

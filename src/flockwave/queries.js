@@ -14,6 +14,54 @@ import { errorToString } from '~/error-handling';
 import { extractResponseForId } from './parsing';
 import { validateExtensionName } from './validation';
 
+window.tmp = {
+  type: 'X-SHOW-ADAPT',
+  show: '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',
+  transformations: [
+    {
+      type: 'takeoff',
+      parameters: {
+        positions: [
+          [5, 5, 5],
+          [6, 5, 5],
+          [7, 5, 5],
+          [8, 5, 5],
+        ],
+        min_distance: 2,
+      },
+    },
+    {
+      type: 'rth',
+      parameters: {
+        min_distance: 2,
+      },
+    },
+  ],
+};
+
+/**
+ * TODO: Returns the ...
+ *
+ * // TODO: Maybe use `options = {show, transformations}` instead? 🤔
+ * // Other queries do so and destructure, but could be spread as well!
+ */
+export async function adaptShow(hub, show, transformations) {
+  const response = await hub.sendMessage({
+    type: 'X-SHOW-ADAPT',
+    show,
+    transformations,
+  });
+
+  console.log({ show, transformations, response });
+
+  switch (response?.body?.type) {
+    case 'X-SHOW-ADAPT':
+      return response.body;
+    case 'ACK-NAK':
+      throw new Error(`Error while adapting show: ${response.body.reason}`);
+  }
+}
+
 /**
  * Returns the basic properties of the beacons with the given IDs.
  */
@@ -412,6 +460,7 @@ export async function isExtensionLoaded(hub, name) {
  */
 export class QueryHandler {
   _queries = {
+    adaptShow,
     getBasicBeaconProperties,
     getConfigurationOfExtension,
     getFirmwareUpdateObjects,
