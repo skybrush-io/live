@@ -9,6 +9,7 @@ import { Point } from 'ol/geom';
 
 import { updateSelection as updateSelectedIds } from '~/features/map/utils';
 import type { OutdoorCoordinateSystemWithOrigin } from '~/features/show/types';
+import { type GPSPosition } from '~/model/geography';
 import type { Identifier } from '~/utils/collections';
 import {
   type EasNor,
@@ -274,6 +275,22 @@ const { reducer, actions } = createSlice({
       state.showData.coordinateSystem.origin = newOrigin;
       state.showData.coordinateSystem.orientation = newOrientation.toFixed(1);
     },
+
+    updateHomePositions(state, action: PayloadAction<GPSPosition[]>) {
+      if (state.showData === undefined) {
+        console.warn('Cannot update show: no show data.');
+        return;
+      }
+
+      const earthCS = new FlatEarthCoordinateSystem(
+        state.showData.coordinateSystem
+      );
+
+      state.showData.homePositions = action.payload.map(({ lon, lat }) => [
+        ...earthCS.fromLonLat([lon, lat]),
+        0,
+      ]);
+    },
   },
 });
 
@@ -286,6 +303,7 @@ export const {
   rotateShow,
   showDialog,
   updateSelection,
+  updateHomePositions,
 } = actions;
 
 export default reducer;

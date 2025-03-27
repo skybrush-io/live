@@ -1,13 +1,14 @@
 import Feature from 'ol/Feature';
 import type { ModifyEvent } from 'ol/interaction/Modify';
 import React, { useCallback } from 'react';
-import { connect } from 'react-redux';
+import { connect, useDispatch, useSelector } from 'react-redux';
 // Import from ol/Map because that one has typing.
 import type OLMap from 'ol/Map';
 import type { DragBoxEvent } from 'ol/interaction/DragBox';
 import VectorLayer from 'ol/layer/Vector';
 
 import { Map } from '~/components/map';
+import { PlaceTakeoffGrid } from '~/components/map/interactions';
 import MapInteractions from '~/components/map/interactions/MapInteractions';
 import type {
   BoxDragMode,
@@ -25,6 +26,8 @@ import ShowInfoLayerPresentation, {
   landingPositionPoints,
 } from '~/components/map/layers/ShowInfoLayer';
 import { Tool } from '~/components/map/tools';
+import Widget from '~/components/Widget';
+import { getCenteredTakeoffGrid, getSelectedTool } from '~/features/map/tools';
 import {
   updateModifiedFeatures as updateModifiedFeaturesAction,
   type FeatureUpdateOptions,
@@ -34,7 +37,10 @@ import {
   getHomePositionsInWorldCoordinates,
   getSelection,
 } from '~/features/site-survey/selectors';
-import { updateSelection } from '~/features/site-survey/state';
+import {
+  updateSelection,
+  updateHomePositions,
+} from '~/features/site-survey/state';
 import {
   CONVEX_HULL_AREA_ID,
   isAreaId,
@@ -46,6 +52,7 @@ import type { RootState } from '~/store/reducers';
 import type { Identifier } from '~/utils/collections';
 import { findFeaturesById } from '~/utils/geography';
 import type { WorldCoordinate2D } from '~/utils/math';
+import TakeoffToolbar from '~/views/map/TakeoffToolbar';
 import type { MapControlDisplaySettings } from '~/components/map/MapControls';
 
 // === Layers ===
@@ -236,6 +243,8 @@ const SiteSurveyMap = (props: SiteSurveyMapProps) => {
     onSingleFeatureSelected,
     updateModifiedFeatures,
   } = useOwnState(props);
+  const takeoffGrid = useSelector(getCenteredTakeoffGrid);
+  const dispatch = useDispatch();
   return (
     <Map
       selectedTool={selectedTool}
@@ -243,6 +252,13 @@ const SiteSurveyMap = (props: SiteSurveyMapProps) => {
       onFeaturesModified={onFeaturesModified}
       controlSettings={mapControlSettings}
     >
+      <Widget
+        key='Widget.TakeoffToolbar'
+        style={{ top: 8, left: '50%', transform: 'translateX(-50%)' }}
+        showControls={false}
+      >
+        <TakeoffToolbar />
+      </Widget>
       <MapInteractions
         selectedTool={selectedTool}
         getSelectedTransformableFeatures={getSelectedTransformableFeatures}
@@ -250,6 +266,15 @@ const SiteSurveyMap = (props: SiteSurveyMapProps) => {
         onSingleFeatureSelected={onSingleFeatureSelected}
         updateModifiedFeatures={updateModifiedFeatures}
       />
+      {selectedTool === Tool.TAKEOFF_GRID && (
+        <PlaceTakeoffGrid
+          takeoffGrid={takeoffGrid}
+          updateHomePositions={
+            // @ts-ignore
+            (...args) => dispatch(updateHomePositions(...args))
+          }
+        />
+      )}
     </Map>
   );
 };
@@ -258,7 +283,7 @@ const ConnectedSiteSurveyMap = connect(
   // mapStateToProps
   (state: RootState) => ({
     layers: getVisibleLayersInOrder(state),
-    selectedTool: Tool.SELECT,
+    selectedTool: getSelectedTool(state),
     selection: getSelection(state),
   }),
   // mapDispatchToProps

@@ -162,7 +162,7 @@ export const landingPositionPoints = (
 /**
  * Shape to use for takeoff markers.
  */
-const takeoffTriangle = {
+export const takeoffTriangle = {
   base: new RegularShape({
     fill: fill(Colors.markers.takeoff),
     points: 3,

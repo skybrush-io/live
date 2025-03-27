@@ -4,6 +4,7 @@ import type { TakeoffHeadingSpecification } from './constants';
 
 export const authorizeIfAndOnlyIfHasStartTime: () => AppThunk;
 export const clearStartTime: () => AppThunk;
+export const setupMissionFromShow: () => AppThunk;
 export const updateOutdoorShowSettings: (payload: {
   origin?: Coordinate2D;
   orientation?: number | string;
