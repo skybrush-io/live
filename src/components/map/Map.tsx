@@ -19,7 +19,7 @@ import {
 } from '~/utils/geography';
 
 import { MapLayers, type LayerConfig } from './layers';
-import MapControls from './MapControls';
+import MapControls, { type MapControlDisplaySettings } from './MapControls';
 import MapToolbars from './MapToolbars';
 import { Tool } from './tools';
 
@@ -72,8 +72,8 @@ type MapProps = Partial<ViewProperties> & {
   // -- Selection
   selectedTool: Tool;
 
-  // -- Toolbar
-
+  // -- Controls & toolbar
+  controlSettings?: Partial<MapControlDisplaySettings>;
   toolbarEnabled?: boolean;
 
   // -- Callbacks
@@ -96,6 +96,7 @@ const Map = (props: MapProps) => {
     rotation = viewDefaults.rotation,
     zoom = viewDefaults.zoom,
     selectedTool,
+    controlSettings = {},
     // TODO(vp): disabled by default, because apparently one of the buttons in
     // the toolbar keeps a reference to the map which indicates a memory leak...
     // It indicates that maps are still not completely independent of the main
@@ -139,7 +140,7 @@ const Map = (props: MapProps) => {
           selectedTool={selectedTool}
           onFeaturesModified={onFeaturesModified}
         />
-        <MapControls />
+        <MapControls {...controlSettings} />
         {children}
       </OLMap>
     </div>

@@ -46,6 +46,7 @@ import type { RootState } from '~/store/reducers';
 import type { Identifier } from '~/utils/collections';
 import { findFeaturesById } from '~/utils/geography';
 import type { WorldCoordinate2D } from '~/utils/math';
+import type { MapControlDisplaySettings } from '~/components/map/MapControls';
 
 // === Layers ===
 
@@ -86,6 +87,11 @@ const ConnectedShowInfoLayer = connect((state: RootState) => ({
 const layerComponents = {
   ...defaultLayerComponent,
   [LayerType.MISSION_INFO]: ConnectedShowInfoLayer,
+};
+
+const mapControlSettings: Partial<MapControlDisplaySettings> = {
+  showMouseCoordinates: false,
+  showScaleLine: false,
 };
 
 type SiteSurveyMapProps = {
@@ -235,6 +241,7 @@ const SiteSurveyMap = (props: SiteSurveyMapProps) => {
       selectedTool={selectedTool}
       layers={{ layers, layerComponents }}
       onFeaturesModified={onFeaturesModified}
+      controlSettings={mapControlSettings}
     >
       <MapInteractions
         selectedTool={selectedTool}
