@@ -1,0 +1,22 @@
+diff --git a/node_modules/p-min-delay/index.js b/node_modules/p-min-delay/index.js
+index 0a1aae4..eb000ae 100644
+--- a/node_modules/p-min-delay/index.js
++++ b/node_modules/p-min-delay/index.js
+@@ -1,7 +1,14 @@
+ import delay from 'yoctodelay';
+ 
+ export default async function pMinDelay(promise, minimumDelay, {delayRejection = true} = {}) {
+-	const delayPromise = delay(minimumDelay);
+-	await (delayRejection ? delayPromise : Promise.all([promise, delayPromise]));
+-	return promise;
++  const delayPromise = delay(minimumDelay);
++  return new Promise((resolve, reject) => {
++    Promise.resolve(promise).then(async value => {
++      await delayPromise;
++      resolve(value);
++    }, async error => {
++      if (delayRejection) { await delayPromise; }
++      reject(error);
++    });
++  });
+ }

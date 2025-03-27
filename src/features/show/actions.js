@@ -67,6 +67,11 @@ import {
   synchronizeShowSettings,
   setShowAuthorization,
 } from './slice';
+import messageHub from '~/message-hub';
+import { getLoadedShowAsZip } from './selectors';
+import { writeBlobToFile } from '~/utils/filesystem';
+import { getTakeoffPositionsInShowCoordinates } from './selectors';
+import { getHomePositions } from '../site-survey/selectors';
 
 /**
  * Thunk that approves the takeoff area arrangement with the current timestamp.
@@ -282,6 +287,7 @@ export const loadShowFromFile = createShowLoaderThunkFactory(
   async (file) => {
     const url = file && file.path ? `file://${file.path}` : undefined;
     const spec = await processFile(file);
+    console.log('file', { spec });
     // Pre-freeze the show data shallowly to give a hint to Redux Toolkit that
     // the show content won't change
     return { spec: freeze(spec), url };
@@ -444,3 +450,50 @@ export const setOutdoorShowAltitudeReferenceToAverageAMSL =
       dispatch(setOutdoorShowAltitudeReferenceValue(avgAltitude.toFixed(1)));
     }
   };
+
+// TODO: Should this be "Save" or "Export" ???
+export const saveLoadedShow = () => async (_dispatch, getState) => {
+  const zip = getLoadedShowAsZip(getState());
+  const blob = await zip.generateAsync({ type: 'blob' });
+  writeBlobToFile(blob, 'show.skyc');
+};
+
+export const adaptShow = createShowLoaderThunkFactory(
+  async ({ show, transformations }) => {
+    if (!messageHub._emitter) {
+      return { spec: {} };
+    }
+
+    const response = await messageHub.query.adaptShow(show, transformations);
+
+    const { show: adapted, takeoffLengthChange, rthLengthChange } = response;
+
+    const spec = await processFile(Uint8Array.fromBase64(adapted));
+
+    // Pre-freeze the show data shallowly to give a hint to Redux Toolkit that
+    // the show content won't change
+    return { spec: freeze(spec) };
+  },
+  {
+    errorMessage: 'Failed to adapt show.',
+  }
+);
+
+export const adaptLoadedShow = () => async (dispatch, getState) => {
+  const state = getState();
+
+  const zip = getLoadedShowAsZip(state);
+  const show = await zip.generateAsync({ type: 'base64' });
+
+  // TODO: This returns XY, do we need XYZ?
+  // const positions = getTakeoffPositionsInShowCoordinates(state);
+  const positions = getHomePositions(state);
+
+  const common = { min_distance: 2, altitude: 3 };
+  const transformations = [
+    { type: 'takeoff', parameters: { replace: true, positions, ...common } },
+    { type: 'rth', parameters: { replace: true, ...common } },
+  ];
+
+  dispatch(adaptShow({ show, transformations }));
+};

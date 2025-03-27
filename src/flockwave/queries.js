@@ -15,6 +15,29 @@ import { extractResponseForId } from './parsing';
 import { validateExtensionName } from './validation';
 
 /**
+ * TODO: Returns the ...
+ *
+ * // TODO: Maybe use `options = {show, transformations}` instead? 🤔
+ * // Other queries do so and destructure, but could be spread as well!
+ */
+export async function adaptShow(hub, show, transformations) {
+  const response = await hub.sendMessage({
+    type: 'X-SHOW-ADAPT',
+    show,
+    transformations,
+  });
+
+  console.log({ show, transformations, response });
+
+  switch (response?.body?.type) {
+    case 'X-SHOW-ADAPT':
+      return response.body;
+    case 'ACK-NAK':
+      throw new Error(`Error while adapting show: ${response.body.reason}`);
+  }
+}
+
+/**
  * Returns the basic properties of the beacons with the given IDs.
  */
 export async function getBasicBeaconProperties(hub, ids) {
@@ -412,6 +435,7 @@ export async function isExtensionLoaded(hub, name) {
  */
 export class QueryHandler {
   _queries = {
+    adaptShow,
     getBasicBeaconProperties,
     getConfigurationOfExtension,
     getFirmwareUpdateObjects,

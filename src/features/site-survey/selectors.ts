@@ -55,7 +55,7 @@ const selectSwarmSpecification = createSelector(
 /**
  * Selector that returns the home positions of drones from the site survey state.
  */
-const getHomePositions = createSelector(
+export const getHomePositions = createSelector(
   selectShowData,
   (showData) => showData.homePositions
 );

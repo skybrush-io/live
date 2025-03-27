@@ -7,6 +7,7 @@ import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import { selectInitDataSources } from '~/features/site-survey/selectors';
+import { adaptLoadedShow } from '~/features/show/actions';
 import {
   closeDialog,
   initializeWithData,
@@ -59,7 +60,10 @@ export default connect(
   }),
   // -- map dispatch to props
   (dispatch: AppDispatch) => ({
-    closeDialog: () => dispatch(closeDialog()),
+    closeDialog: () => {
+      dispatch(adaptLoadedShow());
+      dispatch(closeDialog());
+    },
     initializeWithData: (showData: ShowData) =>
       dispatch(initializeWithData(showData)),
   })
