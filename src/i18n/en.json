@@ -559,7 +559,16 @@
   },
   "siteSurveyDialog": {
     "initializer": {
-      "fromShow": "Initialize from show"
+      "show": {
+        "title": "Show",
+        "description": "Initialize the dialog from the currently loaded show.",
+        "requirement": {
+          "showLoaded": "An outdoor show must be loaded.",
+          "hasShowSegment": "The show must have a \"show\" segment.",
+          "showOriginSet": "The show origin must be set."
+        }
+      },
+      "action": "Initialize"
     }
   },
   "sorting": {

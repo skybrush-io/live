@@ -27,7 +27,6 @@ import { showAveragingDialog } from '~/features/measurement/slice';
 import { showParameterUploadDialog } from '~/features/parameters/actions';
 import { JOB_TYPE as PARAMETER_UPLOAD_JOB_TYPE } from '~/features/parameters/constants';
 import { isConnected } from '~/features/servers/selectors';
-import { getShowSegment, hasShowOrigin } from '~/features/show/selectors';
 import { showDialog as showSiteSurveyDialog } from '~/features/site-survey/state';
 import { getRunningUploadJobType } from '~/features/upload/selectors';
 import { showVersionCheckDialog } from '~/features/version-check/slice';
@@ -37,7 +36,6 @@ const ToolboxButtonPresentation = ({
   isConnected,
   numberOfAveragingInProgress,
   runningUploadJobType,
-  siteSurveyDisabled,
   showAveragingDialog,
   showFirmwareUpdateDialog,
   showLicenseInfoDialog,
@@ -125,10 +123,7 @@ const ToolboxButtonPresentation = ({
             }
           />
         </MenuItem>
-        <MenuItem
-          disabled={siteSurveyDisabled}
-          onClick={createClickListener(showSiteSurveyDialog)}
-        >
+        <MenuItem onClick={createClickListener(showSiteSurveyDialog)}>
           <ListItemIcon>
             <LandscapeIcon />
           </ListItemIcon>
@@ -159,7 +154,6 @@ ToolboxButtonPresentation.propTypes = {
   isConnected: PropTypes.bool,
   numberOfAveragingInProgress: PropTypes.number,
   runningUploadJobType: PropTypes.string,
-  siteSurveyDisabled: PropTypes.bool.isRequired,
   showAveragingDialog: PropTypes.func,
   showFirmwareUpdateDialog: PropTypes.func,
   showMapCachingDialog: PropTypes.func,
@@ -175,8 +169,6 @@ export default connect(
     isConnected: isConnected(state),
     numberOfAveragingInProgress: getActiveUAVIdsBeingAveraged(state).length,
     runningUploadJobType: getRunningUploadJobType(state),
-    siteSurveyDisabled:
-      getShowSegment(state) === undefined || !hasShowOrigin(state),
   }),
   // mapDispatchToProps
   {
