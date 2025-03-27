@@ -361,7 +361,7 @@ const TakeoffToolbarPresentation: FunctionComponent<
     //       We should use that instead of the `parentElement` trick
     //       after migrating to MUI v5!
     <Box display='flex'>
-      <Tooltip placement='bottom' content={t('general.action.lock')}>
+      <Tooltip placement='bottom' content={t('general.action.lock', 'Lock')}>
         <IconButton onClick={toggleHomePositionsLocked}>
           {homePositionsLocked ? <Lock /> : <LockOpen />}
         </IconButton>
@@ -375,7 +375,7 @@ const TakeoffToolbarPresentation: FunctionComponent<
         </IconButton>
       </Tooltip>
 
-      <Tooltip placement='bottom' content={t('takeoffToolbar.grid')}>
+      <Tooltip placement='bottom' content={t('takeoffToolbar.grid', 'Grid')}>
         <IconButton
           onClick={partial(onToolSelected, Tool.TAKEOFF_GRID)}
           onContextMenu={(e) => {
@@ -395,7 +395,7 @@ const TakeoffToolbarPresentation: FunctionComponent<
         takeoffGridProperties={takeoffGridProperties}
       />
 
-      <Tooltip placement='bottom' content={t('general.action.auto')}>
+      <Tooltip placement='bottom' content={t('general.action.auto', 'Auto')}>
         <IconButton onClick={autoSetTakeoffGrid}>
           <FontDownload />
         </IconButton>

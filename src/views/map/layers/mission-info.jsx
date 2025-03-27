@@ -74,7 +74,6 @@ import {
 import MissionSlotTrajectoryFeature from '~/views/map/features/MissionSlotTrajectoryFeature';
 import UAVTrajectoryFeature from '~/views/map/features/UAVTrajectoryFeature';
 
-import { PlaceTakeoffGrid } from '../interactions';
 import { Tool } from '../tools';
 
 import { styleForPointsOfPolygon } from './features';

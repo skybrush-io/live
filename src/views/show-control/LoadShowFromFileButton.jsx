@@ -12,6 +12,7 @@ import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import Clear from '@material-ui/icons/Clear';
 import CloudDownload from '@material-ui/icons/CloudDownload';
 import Refresh from '@material-ui/icons/Refresh';
+import Export from '~/icons/Download';
 
 import StatusLight from '@skybrush/mui-components/lib/StatusLight';
 import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
@@ -156,6 +157,11 @@ const LoadShowFromFileButton = ({
           <Tooltip content={t('show.adapt', 'Adapt loaded show')}>
             <IconButton edge='end' onClick={onAdaptLoadedShow}>
               <AutoFix />
+            </IconButton>
+          </Tooltip>
+          <Tooltip content={t('show.save', 'Save loaded show')}>
+            <IconButton edge='end' onClick={onSaveLoadedShow}>
+              <Export />
             </IconButton>
           </Tooltip>
         </>

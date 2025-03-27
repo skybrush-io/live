@@ -11,6 +11,8 @@ import {
   type PrepareAction,
 } from '@reduxjs/toolkit';
 
+(window as any).pmd = pMinDelay;
+
 /**
  * Creates an action factory with an async preparation function.
  *

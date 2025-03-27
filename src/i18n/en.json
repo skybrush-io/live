@@ -508,6 +508,7 @@
     }
   },
   "show": {
+    "adapt": "Adapt loaded show",
     "authorizationReq": "Authorization required before takeoff",
     "authorizeTheStart": "Authorize start of show",
     "authorized": "Show authorized to start",
@@ -534,6 +535,7 @@
     "placementAccuracy": "Placement accuracy ≤ {{distance}}",
     "reload": "Reload show",
     "revokeAuthorization": "Click here to revoke authorization",
+    "save": "Save loaded show",
     "selectFile": "Select or drop a show file here",
     "setupEnvironment": "Setup environment",
     "setupGeofence": "Setup geofence",

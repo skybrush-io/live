@@ -314,8 +314,6 @@ export const loadShowFromUrl = createShowLoaderThunkFactory(
       },
     }).arrayBuffer();
 
-    throw new Error('sajtossajt');
-
     const spec = await processFile(response);
 
     // Pre-freeze the show data shallowly to give a hint to Redux Toolkit that
@@ -485,17 +483,6 @@ export const adaptShow = createShowLoaderThunkFactory(
 );
 
 export const adaptLoadedShow = () => async (dispatch, getState) => {
-  if (!messageHub._emitter) {
-    dispatch(
-      showNotification({
-        message: 'Not connected!',
-        semantics: MessageSemantics.ERROR,
-        permanent: true,
-      })
-    );
-    return;
-  }
-
   const state = getState();
 
   const zip = getLoadedShowAsZip(state);
@@ -503,22 +490,30 @@ export const adaptLoadedShow = () => async (dispatch, getState) => {
 
   // TODO: This returns XY, do we need XYZ?
   const positions = getTakeoffPositionsInShowCoordinates(state);
+  // const transformations = [{ type: 'takeoff', parameters: { positions } }];
+
+  const common = { min_distance: 2, altitude: 3 };
 
   const transformations = [
-    {
-      type: 'takeoff',
-      parameters: {
-        positions,
-        min_distance: 2,
-      },
-    },
-    {
-      type: 'rth',
-      parameters: {
-        min_distance: 2,
-      },
-    },
+    { type: 'takeoff', parameters: { positions, ...common } },
+    { type: 'rth', parameters: { replace: true, ...common } },
   ];
+
+  // const transformations = [
+  //   {
+  //     type: 'takeoff',
+  //     parameters: {
+  //       positions,
+  //       min_distance: 2,
+  //     },
+  //   },
+  //   {
+  //     type: 'rth',
+  //     parameters: {
+  //       min_distance: 2,
+  //     },
+  //   },
+  // ];
 
   dispatch(adaptShow({ show, transformations }));
 };
