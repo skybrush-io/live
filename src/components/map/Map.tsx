@@ -1,11 +1,22 @@
 import type { ModifyEvent } from 'ol/interaction/Modify';
 import React, { useMemo, type CSSProperties } from 'react';
+import { connect } from 'react-redux';
 
 // @ts-ignore
 import { Map as OLMap, View } from '@collmot/ol-react';
 
-import { mapViewCoordinateFromLonLat } from '~/utils/geography';
-import type { Coordinate2D } from '~/utils/math';
+import {
+  getMapViewCenterPosition,
+  getMapViewRotationAngle,
+  getMapViewZoom,
+} from '~/selectors/map';
+import { RootState } from '~/store/reducers';
+import {
+  mapViewCoordinateFromLonLat,
+  type Latitude,
+  type Longitude,
+  type LonLat,
+} from '~/utils/geography';
 
 import { MapLayers, type LayerConfig } from './layers';
 import MapControls from './MapControls';
@@ -41,13 +52,13 @@ export const toolClasses: Partial<Record<Tool, string>> = {
 };
 
 type ViewProperties = {
-  center: Coordinate2D;
+  center: LonLat;
   zoom: number;
   rotation: number;
 };
 
 export const viewDefaults: ViewProperties = {
-  center: [19.061951, 47.47334],
+  center: [19.061951 as Longitude, 47.47334 as Latitude],
   zoom: 17,
   rotation: 0,
 };
@@ -135,4 +146,10 @@ const Map = (props: MapProps) => {
   );
 };
 
-export default Map;
+const ConnectedMap = connect((state: RootState) => ({
+  center: getMapViewCenterPosition(state),
+  rotation: getMapViewRotationAngle(state),
+  zoom: getMapViewZoom(state),
+}))(Map);
+
+export default ConnectedMap;
