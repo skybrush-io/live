@@ -538,6 +538,10 @@
     "setupEnvironment": "Setup environment",
     "setupGeofence": "Setup geofence",
     "setupTakeoffArea": "Setup takeoff area",
+    "siteSurvey": {
+      "button": "Site survey",
+      "description": "Finetune drone and show placement"
+    },
     "startMethod": {
       "AUTO": "Show will start automatically",
       "RC": "Use the switch on your RC to start"
@@ -556,20 +560,6 @@
   },
   "sidebar": {
     "missionType": "Mission type: ({{missionType}})"
-  },
-  "siteSurveyDialog": {
-    "initializer": {
-      "show": {
-        "title": "Show",
-        "description": "Initialize the dialog from the currently loaded show.",
-        "requirement": {
-          "showLoaded": "An outdoor show must be loaded.",
-          "hasShowSegment": "The show must have a \"show\" segment.",
-          "showOriginSet": "The show origin must be set."
-        }
-      },
-      "action": "Initialize"
-    }
   },
   "sorting": {
     "ascending": "Ascending",
@@ -665,7 +655,6 @@
     "licenseInfo": "License info",
     "offlineMaps": "Offline maps",
     "paramUpload": "Parameter upload",
-    "siteSurvey": "Site survey",
     "tooltip": "Toolbox",
     "uploadInProgress": "Upload in progress"
   },

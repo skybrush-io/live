@@ -53,12 +53,12 @@ const { reducer, actions } = createSlice({
 
     /**
      * Opens the dialog.
-     *
-     * The dialog must always be explicitly initialized with the desired
-     * data by the user after it is opened.
      */
-    showDialog(state) {
+    showDialog(state, action: PayloadAction<ShowData | undefined>) {
       state.open = true;
+      if (action.payload !== undefined) {
+        state.showData = action.payload;
+      }
     },
 
     /**

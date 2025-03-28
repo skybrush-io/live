@@ -6,7 +6,6 @@ import React from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import { selectInitDataSources } from '~/features/site-survey/selectors';
 import {
   closeDialog,
   initializeWithData,
@@ -15,38 +14,24 @@ import {
 } from '~/features/site-survey/state';
 import type { AppDispatch, RootState } from '~/store/reducers';
 
-import Initializer from './Initializer';
 import Map from './map';
-import type {
-  DataSourcesProps,
-  DispatchProps,
-  TranslationProps,
-} from './types';
+import type { DispatchProps, TranslationProps } from './types';
 
-type Props = SiteSurveyState &
-  DataSourcesProps &
-  TranslationProps &
-  DispatchProps;
+type Props = SiteSurveyState & TranslationProps & DispatchProps;
 
 function SiteSurveyDialog(props: Props) {
-  const { closeDialog, open, showData, t } = props;
+  const { closeDialog, open, t } = props;
   return (
     <Dialog fullScreen open={open} onClose={closeDialog}>
-      {showData ? (
-        <>
-          <DialogContent>
-            <Map />
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={closeDialog}>{t('general.action.close')}</Button>
-            <Button color='primary' onClick={closeDialog}>
-              {t('general.action.save')}
-            </Button>
-          </DialogActions>
-        </>
-      ) : (
-        <Initializer {...props} />
-      )}
+      <DialogContent>
+        <Map />
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={closeDialog}>{t('general.action.close')}</Button>
+        <Button color='primary' onClick={closeDialog}>
+          {t('general.action.save')}
+        </Button>
+      </DialogActions>
     </Dialog>
   );
 }
@@ -55,7 +40,6 @@ export default connect(
   // -- map state to props (get full dialog state)
   (state: RootState) => ({
     ...state.dialogs.siteSurvey,
-    dataSources: selectInitDataSources(state),
   }),
   // -- map dispatch to props
   (dispatch: AppDispatch) => ({

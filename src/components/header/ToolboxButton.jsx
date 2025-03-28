@@ -6,7 +6,6 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Build from '@material-ui/icons/Build';
 import BusinessCenter from '@material-ui/icons/BusinessCenter';
 import Functions from '@material-ui/icons/Functions';
-import LandscapeIcon from '@material-ui/icons/Landscape';
 import Tune from '@material-ui/icons/Tune';
 import VpnKey from '@material-ui/icons/VpnKey';
 import PropTypes from 'prop-types';
@@ -27,7 +26,6 @@ import { showAveragingDialog } from '~/features/measurement/slice';
 import { showParameterUploadDialog } from '~/features/parameters/actions';
 import { JOB_TYPE as PARAMETER_UPLOAD_JOB_TYPE } from '~/features/parameters/constants';
 import { isConnected } from '~/features/servers/selectors';
-import { showDialog as showSiteSurveyDialog } from '~/features/site-survey/state';
 import { getRunningUploadJobType } from '~/features/upload/selectors';
 import { showVersionCheckDialog } from '~/features/version-check/slice';
 import MapCloudOff from '~/icons/MapCloudOff';
@@ -41,7 +39,6 @@ const ToolboxButtonPresentation = ({
   showLicenseInfoDialog,
   showMapCachingDialog,
   showParameterUploadDialog,
-  showSiteSurveyDialog,
   t,
 }) => {
   const [anchorElement, setAnchorElement] = useState(null);
@@ -123,12 +120,6 @@ const ToolboxButtonPresentation = ({
             }
           />
         </MenuItem>
-        <MenuItem onClick={createClickListener(showSiteSurveyDialog)}>
-          <ListItemIcon>
-            <LandscapeIcon />
-          </ListItemIcon>
-          <ListItemText primary={t('toolbox.siteSurvey')}></ListItemText>
-        </MenuItem>
         <Divider />
         <MenuItem
           disabled={!isConnected}
@@ -159,7 +150,6 @@ ToolboxButtonPresentation.propTypes = {
   showMapCachingDialog: PropTypes.func,
   showParameterUploadDialog: PropTypes.func,
   showLicenseInfoDialog: PropTypes.func,
-  showSiteSurveyDialog: PropTypes.func.isRequired,
   t: PropTypes.func,
 };
 
@@ -177,7 +167,6 @@ export default connect(
     showLicenseInfoDialog,
     showMapCachingDialog,
     showParameterUploadDialog,
-    showSiteSurveyDialog,
     showVersionCheckDialog,
   }
 )(withTranslation()(ToolboxButtonPresentation));

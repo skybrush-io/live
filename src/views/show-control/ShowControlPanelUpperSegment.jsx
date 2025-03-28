@@ -18,6 +18,7 @@ import LoadShowFromFileButton from './LoadShowFromFileButton';
 import ManualPreflightChecksButton from './ManualPreflightChecksButton';
 import OnboardPreflightChecksButton from './OnboardPreflightChecksButton';
 import ShowUploadDialogButton from './ShowUploadDialogButton';
+import SiteSurveyButton from './SiteSurveyButton';
 import StartTimeButton from './StartTimeButton';
 import TakeoffAreaButton from './TakeoffAreaButton';
 
@@ -34,6 +35,7 @@ const ShowControlPanelUpperSegment = ({ environmentType, isAuthorized }) => (
         <Divider />
 
         <EnvironmentButton />
+        {environmentType === 'outdoor' && <SiteSurveyButton />}
         <TakeoffAreaButton />
         {environmentType === 'outdoor' && <GeofenceButton />}
         <ShowUploadDialogButton />

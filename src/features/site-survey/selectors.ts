@@ -69,37 +69,28 @@ export const getSelection = createSelector(
 );
 
 /**
- * Data sources that can be used to initialize the dialog.
+ * Selector that returns the show data from the currently loaded show.
  */
-export type DataSources = {
-  /** Show data from the currently loaded show. */
-  show?: ShowData;
-};
+export const selectSiteSurveyDataFromShow: AppSelector<ShowData | undefined> =
+  createSelector(
+    getSwarmSpecificationForShowSegmentFromShow,
+    getOutdoorShowCoordinateSystemFromShow,
+    (showSwarm, showCoordinateSystem) => {
+      if (
+        showSwarm === undefined ||
+        showCoordinateSystem === undefined ||
+        !isOutdoorCoordinateSystemWithOrigin(showCoordinateSystem)
+      ) {
+        return undefined;
+      }
 
-/**
- * Selector that returns the data sources the dialog can be initialized with.
- */
-export const selectInitDataSources: AppSelector<DataSources> = createSelector(
-  getSwarmSpecificationForShowSegmentFromShow,
-  getOutdoorShowCoordinateSystemFromShow,
-  (showSwarm, showCoordinateSystem) => {
-    if (
-      showSwarm === undefined ||
-      showCoordinateSystem === undefined ||
-      !isOutdoorCoordinateSystemWithOrigin(showCoordinateSystem)
-    ) {
-      return { show: undefined };
-    }
-
-    return {
-      show: {
+      return {
         swarm: showSwarm,
         coordinateSystem: showCoordinateSystem,
         homePositions: showSwarm.drones.map((drone) => drone.settings?.home),
-      },
-    };
-  }
-);
+      };
+    }
+  );
 
 export const {
   getConvexHullOfShow,
