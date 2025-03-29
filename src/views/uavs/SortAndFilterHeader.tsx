@@ -90,7 +90,7 @@ const createChipStyle = (
   return result;
 };
 
-const HEIGHT = 38;
+export const HEIGHT = 38;
 
 const useStyles = makeStyles(
   (theme) => ({
@@ -102,8 +102,10 @@ const useStyles = makeStyles(
       borderBottom: `1px solid ${theme.palette.divider}`,
       minWidth: 800,
       overflow: 'hidden',
-      position: 'sticky',
+      position: 'absolute',
       top: 0,
+      left: 0,
+      right: 0,
       zIndex: 10,
       minHeight: HEIGHT + 1 /* 1px for the border */,
     },
