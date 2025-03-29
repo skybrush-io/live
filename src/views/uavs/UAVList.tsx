@@ -37,6 +37,7 @@ import { useKeyboardNavigation } from '~/features/hotkeys/hooks';
 import {
   createKeyboardNavigationHandlers,
   Direction,
+  type KeyboardNavigationHandlers,
 } from '~/features/hotkeys/navigation';
 import {
   adjustMissionMapping,
@@ -76,6 +77,8 @@ import type { Nullable } from '~/utils/types';
 import { globalIdToUavId } from '~/model/identifiers';
 import { getSelection } from '~/selectors/selection';
 import { setSelection } from '~/features/map/selection';
+import VirtualizedUAVListBody from './VirtualizedUAVListBody';
+import usePersistentVirtualizedScrollPosition from '~/hooks/usePersistentVirtualizedScrollPosition';
 
 const useListStyles = makeStyles(
   (theme) => ({
@@ -92,11 +95,22 @@ const useListStyles = makeStyles(
       right: 0,
       top: 0,
     },
+
+    listItem: {
+      padding: theme.spacing(0.5),
+      borderBottom: `1px solid ${theme.palette.divider}`,
+
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      '&:first-child': {
+        borderTop: `1px solid ${theme.palette.divider}`,
+      },
+    },
   }),
   { name: 'UAVList' }
 );
 
 type ItemRendererOptions = {
+  className?: string;
   draggable: boolean;
   isInEditMode: boolean;
   mappingSlotBeingEdited: number;
@@ -115,6 +129,7 @@ type ItemRendererOptions = {
  */
 const createGridItemRenderer =
   ({
+    className,
     draggable,
     isInEditMode,
     mappingSlotBeingEdited,
@@ -132,11 +147,12 @@ const createGridItemRenderer =
       missionIndex === mappingSlotBeingEdited;
     const selected = selection.includes(itemId!);
     const listItemProps: Record<string, any> = {
-      /* prettier-ignore */
-      onClick:
-        isInEditMode  ? onStartEditing.bind(null, missionIndex!) :
-        itemId        ? onSelectedItem.bind(null, itemId) :
-        undefined,
+      className,
+      onClick: isInEditMode
+        ? onStartEditing.bind(null, missionIndex!)
+        : itemId
+          ? onSelectedItem.bind(null, itemId)
+          : undefined,
       onDrop: onDropped ? onDropped(missionIndex) : undefined,
       editing: editingThisItem,
       selected,
@@ -203,6 +219,7 @@ const createGridItemRenderer =
  */
 const createListItemRenderer =
   ({
+    className,
     isInEditMode,
     mappingSlotBeingEdited,
     onDropped,
@@ -223,11 +240,12 @@ const createListItemRenderer =
       isInEditMode && missionIndex === mappingSlotBeingEdited;
     const selected = selection.includes(itemId!);
     const listItemProps = {
-      /* prettier-ignore */
-      onClick:
-        isInEditMode  ? onStartEditing.bind(null, missionIndex!) :
-        itemId        ? onSelectedItem.bind(null, itemId) :
-        undefined,
+      className,
+      onClick: isInEditMode
+        ? onStartEditing.bind(null, missionIndex!)
+        : itemId
+          ? onSelectedItem.bind(null, itemId)
+          : undefined,
       onDrop: onDropped ? onDropped(missionIndex) : undefined,
       editing: editingThisItem,
       selected: isInEditMode ? editingThisItem : selected,
@@ -264,7 +282,7 @@ type UAVListPresentationProps = Readonly<{
   containerDOMNodeId?: string;
   editingMapping: boolean;
   groups: UAVGroup[];
-  keyboardNav: Record<string, any>; // TODO: Define type
+  keyboardNav: KeyboardNavigationHandlers;
   layout: UAVListLayout;
   mappingSlotBeingEdited: number;
   onEditMappingSlot: (missionIndex: number) => void;
@@ -309,9 +327,12 @@ const UAVListPresentation = ({
     [onMappingAdjusted]
   );
 
-  const [uavListRef, uavListOnScroll] = usePersistentScrollPosition();
+  // TODO: get rid of flickering when switching between mapping editor mode and
+  // normal mode
+  const propsForScrolling = usePersistentVirtualizedScrollPosition();
 
   const itemRendererOptions: ItemRendererOptions = {
+    className: classes.listItem,
     draggable: editingMapping,
     isInEditMode: editingMapping,
     mappingSlotBeingEdited,
@@ -347,23 +368,20 @@ const UAVListPresentation = ({
           <MappingSlotEditorToolbar className={classes.toolbar} />
         </FadeAndSlide>
       </AppBar>
-      <Box
-        {...{ ref: uavListRef }} // fugly but works -- Box does not have ref in its typing
-        flex={1}
-        overflow='auto'
-        id={containerDOMNodeId}
-        onScroll={uavListOnScroll}
-      >
+      <Box flex={1} position='relative'>
+        {/* <Box> is positioned relative so it becomes an anchor for the positioning of the header */}
+        <SortAndFilterHeader />
         {/* We assume that each grid item is a <div> in the <Box> when we
          * calculate how many columns there are in the grid. Revise the
          * layout functions in connect() if this is not the case any more */}
-        <SortAndFilterHeader />
-        <UAVListBody
+        <VirtualizedUAVListBody
+          id={containerDOMNodeId}
           groups={groups}
           itemRenderer={itemRenderer}
           layout={layout}
           selectionInfo={selectionInfo}
           onSelectSection={onSelectSection}
+          {...propsForScrolling}
         />
       </Box>
       {editingMapping && layout === UAVListLayout.GRID ? (
@@ -417,7 +435,7 @@ const UAVList = connect(
 
     const getNavigationDeltaInDirection = (
       state: RootState,
-      direction: string
+      direction: Direction
     ): number => {
       const orientation = getUAVListOrientation(state);
 
@@ -451,6 +469,7 @@ const UAVList = connect(
           case Direction.NEXT_PAGE:
             return getColumnCount();
 
+          // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
           default:
             return 0;
         }
@@ -469,7 +488,9 @@ const UAVList = connect(
     return (dispatch) => ({
       containerDOMNodeId,
 
-      // TODO(ntamas): sort out keyboardNav completely
+      // TODO(ntamas): keyboard navigation does not work with the virtualized
+      // layout yet; setFocusToId() is not able to scroll to the item when it
+      // does not have a DOM node yet
 
       keyboardNav: createKeyboardNavigationHandlers({
         dispatch,
@@ -477,7 +498,6 @@ const UAVList = connect(
         getNavigationDeltaInDirection,
         getVisibleIds: getAllGlobalIdsInDisplayedGroups,
         getSelectedIds: getSelectedUAVIdsAndMissionSlotIds,
-        getLayout: getUAVListOrientation,
         setSelectedIds: setSelection,
         setFocusToId: (id: string) => `#${globalIdToDOMNodeId(id)}`,
       }),

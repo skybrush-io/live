@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
-import { useDrag, useDrop } from 'react-dnd';
+import { useDrag, useDrop, type ConnectableElement } from 'react-dnd';
 
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -53,7 +54,7 @@ const useStyles = makeStyles(
     },
 
     stretch: {
-      alignItems: ['stretch', '!important'],
+      alignItems: ['stretch', '!important'] as any as string,
     },
   }),
   {
@@ -66,11 +67,24 @@ const addDropIndicator = {
   style: { backgroundColor: Colors.dropTarget },
 };
 
+type DragDropAreaProps = React.PropsWithChildren<
+  Readonly<{
+    id: string;
+    onDrop?: (id: string) => void;
+  }>
+> &
+  Omit<React.HTMLAttributes<HTMLDivElement>, 'onDrop'>;
+
 /**
  * Component that encapsulates the logic required to handle drag-and-drop
  * gestures in a list item.
  */
-const DragDropArea = ({ children, id, onDrop, ...rest }) => {
+const DragDropArea = ({
+  children,
+  id,
+  onDrop,
+  ...rest
+}: DragDropAreaProps): JSX.Element => {
   const [collectedDragProps, drag] = useDrag({
     item: { id },
     type: 'uav',
@@ -79,14 +93,18 @@ const DragDropArea = ({ children, id, onDrop, ...rest }) => {
 
   const [collectedDropProps, drop] = useDrop({
     accept: 'uav',
-    canDrop: (item) => id !== item.id,
+    canDrop: (item: { id: string }) => id !== item.id,
     collect: (monitor) =>
       monitor.isOver() && monitor.canDrop() && addDropIndicator,
-    drop: onDrop ? (item) => onDrop(item.id) : undefined,
+    drop: onDrop
+      ? (item: { id: string }): void => {
+          onDrop(item.id);
+        }
+      : undefined,
   });
 
   const ref = useCallback(
-    (value) => {
+    (value: ConnectableElement) => {
       drag(value);
       drop(value);
     },
@@ -106,14 +124,22 @@ const DragDropArea = ({ children, id, onDrop, ...rest }) => {
   );
 };
 
-DragDropArea.propTypes = {
-  children: PropTypes.node,
-  id: PropTypes.string,
-  onDrop: PropTypes.func,
-};
+export type DroneListItemProps = React.PropsWithChildren<
+  Readonly<{
+    className?: string;
+    draggable?: boolean;
+    fill?: boolean;
+    onClick?: () => void;
+    onDrop?: (id: string) => void;
+    selected?: boolean;
+    stretch?: boolean;
+    uavId?: string;
+  }>
+>;
 
 const DroneListItem = ({
   children,
+  className,
   draggable,
   fill,
   onClick,
@@ -121,17 +147,19 @@ const DroneListItem = ({
   selected,
   stretch,
   uavId,
-}) => {
+}: DroneListItemProps): JSX.Element => {
   const classes = useStyles();
   const mergedClassNames = clsx(
     classes.root,
+    className,
     onClick && classes.selectable,
     draggable && classes.draggable,
     selected && classes.selected,
     fill && classes.fill,
     stretch && classes.stretch
   );
-  return draggable || onDrop ? (
+  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+  return (draggable || onDrop) && uavId ? (
     <DragDropArea
       className={mergedClassNames}
       id={uavId}
@@ -149,17 +177,6 @@ const DroneListItem = ({
       {children}
     </div>
   );
-};
-
-DroneListItem.propTypes = {
-  children: PropTypes.node,
-  draggable: PropTypes.bool,
-  fill: PropTypes.bool,
-  onClick: PropTypes.func,
-  onDrop: PropTypes.func,
-  selected: PropTypes.bool,
-  stretch: PropTypes.bool,
-  uavId: PropTypes.string,
 };
 
 export default DroneListItem;

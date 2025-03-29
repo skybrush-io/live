@@ -1,15 +1,45 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import isNil from 'lodash-es/isNil';
 import { bindActionCreators } from '@reduxjs/toolkit';
 
+import type { AppDispatch, AppThunk, RootState } from '~/store/reducers';
 import { scrollIntoView } from '~/utils/navigation';
 
-export const Direction = {
-  UP: 'up',
-  DOWN: 'down',
-  LEFT: 'left',
-  RIGHT: 'right',
-  PREVIOUS_PAGE: 'previousPage',
-  NEXT_PAGE: 'nextPage',
+export enum Direction {
+  UP = 'up',
+  DOWN = 'down',
+  LEFT = 'left',
+  RIGHT = 'right',
+  PREVIOUS_PAGE = 'previousPage',
+  NEXT_PAGE = 'nextPage',
+}
+
+export type KeyboardNavigationOptions<
+  S = RootState,
+  D extends (...args: any) => any = AppDispatch,
+> = {
+  dispatch: D;
+  activateId?: (id: string) => Parameters<D>[0] | undefined;
+  activateIds?: (ids: string[]) => Parameters<D>[0] | undefined;
+  getNavigationDeltaInDirection: (state: S, direction: Direction) => number;
+  getSelectedIds: (state: S) => string[];
+  getVisibleIds: (state: S) => string[];
+  setFocusToId: (id: string) => string | void;
+  setSelectedIds: (ids: string[]) => Parameters<D>[0] | undefined;
+};
+
+export type KeyboardNavigationHandlers<
+  D extends (...args: any) => any = AppDispatch,
+> = {
+  ACTIVATE_SELECTION: () => Parameters<D>[0];
+  PAGE_DOWN: (event: KeyboardEvent) => Parameters<D>[0];
+  PAGE_UP: (event: KeyboardEvent) => Parameters<D>[0];
+  SELECT_FIRST: (event: KeyboardEvent) => Parameters<D>[0];
+  SELECT_LAST: (event: KeyboardEvent) => Parameters<D>[0];
+  SELECT_DOWN: (event: KeyboardEvent) => Parameters<D>[0];
+  SELECT_UP: (event: KeyboardEvent) => Parameters<D>[0];
+  SELECT_LEFT: (event: KeyboardEvent) => Parameters<D>[0];
+  SELECT_RIGHT: (event: KeyboardEvent) => Parameters<D>[0];
 };
 
 /**
@@ -41,7 +71,10 @@ export const Direction = {
  *        is ignored, but you can still perform any side effect inside the
  *        handler.
  */
-export function createKeyboardNavigationHandlers({
+export function createKeyboardNavigationHandlers<
+  S = RootState,
+  D extends (...args: any) => any = AppDispatch,
+>({
   dispatch,
   activateId,
   activateIds,
@@ -50,29 +83,33 @@ export function createKeyboardNavigationHandlers({
   getSelectedIds,
   setFocusToId,
   setSelectedIds,
-}) {
+}: KeyboardNavigationOptions<S, D>): KeyboardNavigationHandlers<D> {
   const activateSelection =
-    activateId || activateIds
-      ? () => (dispatch, getState) => {
-          const state = getState();
-          const selectedIds = getSelectedIds(state);
-          if (selectedIds && selectedIds.length > 0) {
-            const action = activateIds
-              ? activateIds(selectedIds)
-              : activateId(selectedIds.at(-1));
-            if (action) {
-              dispatch(action);
-            }
-          }
+    () =>
+    (dispatch: D, getState: () => S): void => {
+      if (!activateId && !activateIds) {
+        // No action to perform
+        return;
+      }
+
+      const state = getState();
+      const selectedIds = getSelectedIds(state);
+      if (selectedIds && selectedIds.length > 0) {
+        const action = activateIds
+          ? activateIds(selectedIds)
+          : activateId!(selectedIds.at(-1)!);
+        if (action) {
+          dispatch(action);
         }
-      : undefined;
+      }
+    };
 
   const dispatchActionForAdjustingSelectionByDelta = (
-    event,
-    delta,
-    dispatch,
-    getState
-  ) => {
+    event: KeyboardEvent,
+    delta: number,
+    dispatch: D,
+    getState: () => S
+  ): void => {
     const state = getState();
     const visibleIds = getVisibleIds(state);
 
@@ -107,11 +144,13 @@ export function createKeyboardNavigationHandlers({
     }
 
     const newSelectedId = visibleIds[newIndex];
-    const newSelection = event.shiftKey
-      ? selectedIds.includes(newSelectedId)
-        ? null
-        : [...selectedIds, newSelectedId]
-      : [newSelectedId];
+    const newSelection = isNil(newSelectedId)
+      ? selectedIds
+      : event.shiftKey
+        ? selectedIds.includes(newSelectedId)
+          ? null
+          : [...selectedIds, newSelectedId]
+        : [newSelectedId];
 
     // If we have a focus callback, call it so we can scroll to the newly
     // selected item
@@ -127,20 +166,22 @@ export function createKeyboardNavigationHandlers({
     }
   };
 
-  const adjustSelectionByDelta = (delta) => (event) => (dispatch, getState) => {
-    const action = dispatchActionForAdjustingSelectionByDelta(
-      event,
-      delta,
-      dispatch,
-      getState
-    );
-    if (action) {
-      dispatch(action);
-    }
-  };
+  const adjustSelectionByDelta =
+    (delta: number) =>
+    (event: KeyboardEvent) =>
+    (dispatch: D, getState: () => S): void => {
+      dispatchActionForAdjustingSelectionByDelta(
+        event,
+        delta,
+        dispatch,
+        getState
+      );
+    };
 
   const adjustSelectionInDirection =
-    (direction) => (event) => (dispatch, getState) => {
+    (direction: Direction) =>
+    (event: KeyboardEvent) =>
+    (dispatch: D, getState: () => S): void => {
       // We need to prevent the browser from adjusting the selection of the _text_
       // of the webpage when the Shift key is held down
       event.preventDefault();
@@ -148,15 +189,12 @@ export function createKeyboardNavigationHandlers({
       const state = getState();
       const delta = getNavigationDeltaInDirection(state, direction);
       if (delta !== 0) {
-        const action = dispatchActionForAdjustingSelectionByDelta(
+        dispatchActionForAdjustingSelectionByDelta(
           event,
           delta,
           dispatch,
           getState
         );
-        if (action) {
-          dispatch(action);
-        }
       }
     };
 

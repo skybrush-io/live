@@ -1,42 +1,19 @@
-/**
- * @file Component that displays the status of the known UAVs in a Skybrush
- * flock.
- */
-
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { UAVGroupType, type GroupSelectionInfo, type UAVGroup } from './types';
+import { type GroupSelectionInfo, type UAVGroup } from './types';
 import UAVListSection, { type UAVListSectionProps } from './UAVListSection';
 import type { UAVListLayout } from '~/features/settings/types';
+import { getLabelForUAVGroup } from './utils';
 
-type UAVListBodyProps = Readonly<{
+export type UAVListBodyProps = Readonly<{
+  id?: string;
   groups: UAVGroup[];
   itemRenderer: UAVListSectionProps['itemRenderer'];
   layout: UAVListLayout;
   onSelectSection: UAVListSectionProps['onSelect'];
   selectionInfo: GroupSelectionInfo[];
 }>;
-
-function getLabelForUAVGroup(
-  group: UAVGroup,
-  t: (key: string) => string
-): string {
-  if (group.label) {
-    return group.label;
-  }
-
-  switch (group.type) {
-    case UAVGroupType.ALL:
-      return t('UAVList.allUAVs');
-    case UAVGroupType.ASSIGNED:
-      return t('UAVList.assignedUAVs');
-    case UAVGroupType.SPARE:
-      return t('UAVList.spareUAVs');
-  }
-
-  return '';
-}
 
 /**
  * Presentation component for showing the drone show configuration view.

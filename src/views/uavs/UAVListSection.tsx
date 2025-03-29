@@ -26,17 +26,6 @@ const useStyles = makeStyles(
       alignItems: 'stretch',
       flexDirection: 'column',
       fontSize: '12px',
-
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      '&>div': {
-        padding: theme.spacing(0.5),
-        borderBottom: `1px solid ${theme.palette.divider}`,
-      },
-
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      '&>div:first-child': {
-        borderTop: `1px solid ${theme.palette.divider}`,
-      },
     },
   }),
   { name: 'UAVListSection' }
