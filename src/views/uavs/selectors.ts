@@ -1,8 +1,5 @@
 import isNil from 'lodash-es/isNil';
-import mapValues from 'lodash-es/mapValues';
-import React from 'react';
 import { createSelector } from '@reduxjs/toolkit';
-import Delete from '@material-ui/icons/Delete';
 
 import {
   getMissionMapping,
@@ -34,16 +31,6 @@ import {
 } from './types';
 import { flatten } from 'lodash-es';
 import { itemToGlobalId } from './utils';
-
-/**
- * Special marker that we can place into the list items returned from
- * getDisplayedUAVGroups() to produce a slot where deleted UAVs can be dragged.
- */
-export const deletionMarker: Item = [
-  undefined,
-  undefined,
-  <Delete key='__delete' />,
-];
 
 /**
  * Selector that provides the list of UAV IDs to show in the UAV list when

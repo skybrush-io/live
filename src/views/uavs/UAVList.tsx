@@ -59,7 +59,6 @@ import { usePersistentScrollPosition } from '~/hooks';
 import { formatMissionId } from '~/utils/formatting';
 
 import {
-  deletionMarker,
   getDisplayedGroups,
   getSelectionInfo,
   getUAVIdsInDisplayedGroups,
@@ -79,6 +78,7 @@ import { getSelection } from '~/selectors/selection';
 import { setSelection } from '~/features/map/selection';
 import VirtualizedUAVListBody from './VirtualizedUAVListBody';
 import usePersistentVirtualizedScrollPosition from '~/hooks/usePersistentVirtualizedScrollPosition';
+import Delete from '@material-ui/icons/Delete';
 
 const useListStyles = makeStyles(
   (theme) => ({
@@ -122,6 +122,12 @@ type ItemRendererOptions = {
   selection: string[];
   showMissionIds: boolean;
 };
+
+/**
+ * Special marker that we can place into the list items returned from
+ * getDisplayedUAVGroups() to produce a slot where deleted UAVs can be dragged.
+ */
+const deletionMarker: Item = [undefined, undefined, <Delete key='__delete' />];
 
 /**
  * Helper function to create a single item in the grid view of drone avatars and
