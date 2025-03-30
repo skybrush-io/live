@@ -62,14 +62,15 @@ import {
   getDisplayedGroups,
   getSelectionInfo,
   getUAVIdsInDisplayedGroups,
-  getAllGlobalIdsInDisplayedGroups,
+  getGlobalIdsOfDisplayedItems,
+  getDisplayedItems,
 } from './selectors';
+import type { Item } from './types';
 import {
   getSelectedUAVIdsAndMissionSlotIds,
   globalIdToDOMNodeId,
   itemToGlobalId,
 } from './utils';
-import type { GroupSelectionInfo, Item, UAVGroup } from './types';
 import { UAVListLayout, UAVListOrientation } from '~/features/settings/types';
 import type { AppThunk, RootState } from '~/store/reducers';
 import type { Nullable } from '~/utils/types';
@@ -125,7 +126,7 @@ type ItemRendererOptions = {
 
 /**
  * Special marker that we can place into the list items returned from
- * getDisplayedUAVGroups() to produce a slot where deleted UAVs can be dragged.
+ * getDisplayedItems() to produce a slot where deleted UAVs can be dragged.
  */
 const deletionMarker: Item = [undefined, undefined, <Delete key='__delete' />];
 
@@ -287,16 +288,14 @@ const createListItemRenderer =
 type UAVListPresentationProps = Readonly<{
   containerDOMNodeId?: string;
   editingMapping: boolean;
-  groups: UAVGroup[];
+  items: Item[];
   keyboardNav: KeyboardNavigationHandlers;
   layout: UAVListLayout;
   mappingSlotBeingEdited: number;
   onEditMappingSlot: (missionIndex: number) => void;
   onMappingAdjusted: (args: { uavId: string; to: Nullable<number> }) => void;
   onSelectItem: (id: string) => void;
-  onSelectSection: (event: React.ChangeEvent<HTMLInputElement>) => void;
   selection: string[];
-  selectionInfo: GroupSelectionInfo[];
   showMissionIds: boolean;
 }>;
 
@@ -306,16 +305,14 @@ type UAVListPresentationProps = Readonly<{
 const UAVListPresentation = ({
   containerDOMNodeId,
   editingMapping,
-  groups,
+  items,
   keyboardNav,
   layout,
   mappingSlotBeingEdited,
   onEditMappingSlot,
   onMappingAdjusted,
   onSelectItem,
-  onSelectSection,
   selection,
-  selectionInfo,
   showMissionIds,
 }: UAVListPresentationProps): JSX.Element => {
   const classes = useListStyles();
@@ -375,18 +372,14 @@ const UAVListPresentation = ({
         </FadeAndSlide>
       </AppBar>
       <Box flex={1} position='relative'>
-        {/* <Box> is positioned relative so it becomes an anchor for the positioning of the header */}
-        <SortAndFilterHeader />
         {/* We assume that each grid item is a <div> in the <Box> when we
          * calculate how many columns there are in the grid. Revise the
          * layout functions in connect() if this is not the case any more */}
         <VirtualizedUAVListBody
           id={containerDOMNodeId}
-          groups={groups}
+          items={items}
           itemRenderer={itemRenderer}
           layout={layout}
-          selectionInfo={selectionInfo}
-          onSelectSection={onSelectSection}
           {...propsForScrolling}
         />
       </Box>
@@ -414,11 +407,10 @@ const UAVList = connect(
   // mapStateToProps
   (state: RootState) => ({
     editingMapping: isMappingEditable(state),
-    groups: getDisplayedGroups(state),
+    items: getDisplayedItems(state),
     mappingSlotBeingEdited: getIndexOfMappingSlotBeingEdited(state),
     layout: getUAVListLayout(state),
     selection: getSelection(state),
-    selectionInfo: getSelectionInfo(state),
     showMissionIds: isShowingMissionIds(state),
   }),
   // mapDispatchToProps
@@ -502,7 +494,7 @@ const UAVList = connect(
         dispatch,
         activateId: maybeOpenUAVDetailsDialog,
         getNavigationDeltaInDirection,
-        getVisibleIds: getAllGlobalIdsInDisplayedGroups,
+        getVisibleIds: getGlobalIdsOfDisplayedItems,
         getSelectedIds: getSelectedUAVIdsAndMissionSlotIds,
         setSelectedIds: setSelection,
         setFocusToId: (id: string) => `#${globalIdToDOMNodeId(id)}`,
@@ -516,7 +508,7 @@ const UAVList = connect(
             activateItem: maybeOpenUAVDetailsDialog,
             getSelection: getSelectedUAVIdsAndMissionSlotIds,
             setSelection,
-            getListItems: getAllGlobalIdsInDisplayedGroups,
+            getListItems: getGlobalIdsOfDisplayedItems,
           }) as any as (id: string) => AnyAction,
           onSelectSection:
             (event: React.ChangeEvent<HTMLInputElement>): AppThunk =>
