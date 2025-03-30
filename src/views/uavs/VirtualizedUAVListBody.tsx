@@ -1,18 +1,18 @@
-/* eslint-disable @typescript-eslint/naming-convention */
-import React, { useCallback } from 'react';
-import { useTranslation } from 'react-i18next';
+import React from 'react';
 import {
-  GroupedVirtuoso,
-  type GroupedVirtuosoHandle,
-  type GroupedVirtuosoProps,
+  Virtuoso,
+  type VirtuosoHandle,
+  type VirtuosoProps,
 } from 'react-virtuoso';
 import { makeStyles } from '@material-ui/core/styles';
 
-import { HEIGHT as sortAndFilterHeaderHeight } from './SortAndFilterHeader';
-import type { UAVListBodyProps } from './UAVListBody';
-import UAVListSubheader from './UAVListSubheader';
+import type { UAVListLayout } from '~/features/settings/types';
+
+import type { UAVListSectionProps } from './UAVListSection';
 import type { Item, UAVGroup } from './types';
-import { getLabelForUAVGroup } from './utils';
+import SortAndFilterHeader, {
+  HEIGHT as headerHeight,
+} from './SortAndFilterHeader';
 
 const useStyles = makeStyles(
   {
@@ -22,61 +22,38 @@ const useStyles = makeStyles(
       alignItems: 'stretch',
       fontSize: '12px',
     },
-
-    listHeader: {
-      // use a background color when the list header is floating to ensure that
-      // it covers the items below it
-      // backgroundColor: theme.palette.background.paper,
-      paddingTop: sortAndFilterHeaderHeight,
-    },
   },
   { name: 'UAVListSection' }
 );
 
-type VirtualizedUAVListBodyProps = UAVListBodyProps &
-  Pick<GroupedVirtuosoProps<Item, UAVGroup>, 'restoreStateFrom' | 'onScroll'>;
+type VirtualizedUAVListBodyProps = Readonly<{
+  id?: string;
+  items: Item[];
+  itemRenderer: UAVListSectionProps['itemRenderer'];
+  layout: UAVListLayout;
+}> &
+  Pick<VirtuosoProps<Item, UAVGroup>, 'restoreStateFrom' | 'onScroll'>;
 
 /**
  * Presentation component for showing the drone show configuration view.
  */
 const VirtualizedUAVListBody = React.forwardRef<
-  GroupedVirtuosoHandle,
+  VirtuosoHandle,
   VirtualizedUAVListBodyProps
 >((props, ref): JSX.Element => {
-  const {
-    groups,
-    itemRenderer,
-    layout,
-    onSelectSection,
-    selectionInfo,
-    ...rest
-  } = props;
+  const { items, itemRenderer, layout, ...rest } = props;
   const classes = useStyles();
-  const { t } = useTranslation();
-
-  const groupCounts = groups.map((group) => group.items.length);
 
   return (
-    <GroupedVirtuoso
+    <Virtuoso
       ref={ref}
       className={classes.list}
-      components={{
-        TopItemList: React.Fragment, // for non-sticky group headers
-      }}
-      groupCounts={groupCounts}
-      groupContent={(index) => (
-        <UAVListSubheader
-          className={classes.listHeader}
-          label={getLabelForUAVGroup(groups[index]!, t)}
-          value={groups[index]!.id}
-          onSelect={onSelectSection}
-          {...selectionInfo[index]}
-        />
-      )}
-      increaseViewportBy={50} // to account for the flickering due to non-sticky headers
-      itemContent={(index, groupIndex) =>
-        itemRenderer(groups[groupIndex]!.items[index]!)
+      itemContent={(index) =>
+        index > 0 ? itemRenderer(items[index - 1]!) : <SortAndFilterHeader />
       }
+      topItemCount={1}
+      totalCount={items.length + 1}
+      increaseViewportBy={headerHeight}
       {...rest}
     />
   );

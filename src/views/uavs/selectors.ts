@@ -19,7 +19,10 @@ import {
 } from '~/features/uavs/selectors';
 import { UAVSortKey } from '~/model/sorting';
 
-import { applyFiltersAndSortDisplayedUAVIdList } from './sorting';
+import {
+  applyFiltersAndSortDisplayedUAVGroups,
+  applyFiltersAndSortDisplayedUAVIdList,
+} from './sorting';
 import type { AppSelector, RootState } from '~/store/reducers';
 import type { StoredUAV } from '~/features/uavs/types';
 import type { Nullable } from '~/utils/types';
@@ -33,12 +36,138 @@ import { flatten } from 'lodash-es';
 import { itemToGlobalId } from './utils';
 
 /**
- * Selector that provides the list of UAV IDs to show in the UAV list when
- * we are using the mission-specific identifiers.
+ * Helper function for getDisplayedItems() and getDisplayedGroups().
  *
- * The main section of the view will be sorted based on the mission-specific
- * indices. The "spare UAVs" section in the view will include all the UAVs
- * that are not currently assigned to the mission.
+ * This function returns a mapping from UAV IDs to the corresponding stored
+ * UAV objects _if_ this information is required to perform the sorting or
+ * filtering that the user requested. When the user requested no sorting or
+ * filtering, this function returns null. This prevents selectors depending
+ * on this function from being invalidated when the state of the UAVs change but
+ * the downstream selector does not need this information.
+ */
+const getUAVIdToStateMappingForSortAndFilter: AppSelector<
+  Nullable<Record<string, StoredUAV>>
+> = (state: RootState) => {
+  const { key } = getUAVListSortPreference(state);
+  const filters = getUAVListFilters(state);
+  return key === UAVSortKey.DEFAULT && filters.length === 0
+    ? null
+    : getUAVIdToStateMapping(state);
+};
+
+/* ************************************************************************* */
+/* Selectors for ungrouped, virtualized UAV lists                            */
+/* ************************************************************************* */
+
+/**
+ * Selector that provides list of UAV IDs and mission slots to show in the
+ * UAV list when the list is sorted by mission-specific identifiers.
+ *
+ * The selector creates entries for UAVs with assigned mission slots (and
+ * optionally also empty mission slots), followed by spare UAVs that are not
+ * assigned to mission slots.
+ *
+ * The list returned from this selector is the "unprocessed" list, i.e. the
+ * one before applying any filters or sorting criteria. See below for more
+ * functions that perform the sorting and filtering.
+ */
+const getUnprocessedItemsSortedByMissionId = createSelector(
+  getMissionMapping,
+  isMappingEditable,
+  getUAVIdList,
+  isShowingEmptyMissionSlots,
+  (
+    mapping: Array<Nullable<string>>,
+    editable: boolean,
+    uavIds: string[],
+    showEmpty: boolean
+  ): Item[] => {
+    const result: Item[] = [];
+    const seenUAVIds = new Set();
+
+    for (const [index, uavId] of mapping.entries()) {
+      if (isNil(uavId)) {
+        // No UAV assigned to this slot
+        if (showEmpty || editable) {
+          result.push([undefined, index]);
+        }
+      } else {
+        // Some UAV is assigned to this slot
+        result.push([uavId, index]);
+        seenUAVIds.add(uavId);
+      }
+    }
+
+    for (const uavId of uavIds) {
+      if (!seenUAVIds.has(uavId)) {
+        // This UAV is not part of the current mapping.
+        result.push([uavId, undefined]);
+      }
+    }
+
+    return result;
+  }
+);
+
+/**
+ * Selector that provides the list of UAV IDs to show in the UAV list when the
+ * list is sorted by UAV IDs.
+ *
+ * The list returned from this selector is the "unprocessed" list, i.e. the
+ * one before applying any filters or sorting criteria. See below for more
+ * functions that perform the sorting and filtering.
+ */
+const getUnprocessedItemsSortedByUavId = createSelector(
+  getUAVIdList,
+  getReverseMissionMapping,
+  (uavIds, reverseMapping): Item[] =>
+    uavIds.map((uavId) => [uavId, reverseMapping[uavId]])
+);
+
+const getUnprocessedItems: AppSelector<Item[]> = (state: RootState) =>
+  isShowingMissionIds(state)
+    ? getUnprocessedItemsSortedByMissionId(state)
+    : getUnprocessedItemsSortedByUavId(state);
+
+/**
+ * Selector that provides the list of UAV IDs and mission slots to show in the
+ * UAV list, after applying the sorting and filtering criteria that the user
+ * requested.
+ */
+export const getDisplayedItems: AppSelector<Item[]> = createSelector(
+  getUAVListFilters,
+  getUAVListSortPreference,
+  getUnprocessedItems,
+  getUAVIdToStateMappingForSortAndFilter,
+  applyFiltersAndSortDisplayedUAVIdList
+);
+
+/**
+ * Selector that provides the global IDs of all UAVs and mission slots in the
+ * UAV list, order they appear on the UI, but without sorting them into groups.
+ */
+export const getGlobalIdsOfDisplayedItems = createSelector(
+  getDisplayedItems,
+  (items) => items.map(itemToGlobalId).filter(Boolean) as string[]
+);
+
+/* ************************************************************************* */
+/* Selectors for grouped UAV lists (legacy)                                  */
+/* ************************************************************************* */
+
+/**
+ * Selector that provides the grouped list of UAV IDs to show in the UAV list
+ * when the list is sorted by mission-specific identifiers.
+ *
+ * The selector returns UAVs in two sections: the "assigned UAVs" section
+ * contains all the UAVs that are currently assigned to the mission slots,
+ * and the "spare UAVs" section contains all the UAVs that are not
+ * currently assigned to the mission slots. This grouping is used by the
+ * legacy (non-virtualized) UAV list.
+ *
+ * The "assigned UAVs" section of the view will be sorted based on the
+ * mission-specific indices. The "spare UAVs" section in the view will be
+ * sorted based on the UAV IDs.
  *
  * The list returned from this selector is the "unprocessed" list, i.e. the
  * one before applying any filters or sorting criteria. See below for more
@@ -99,62 +228,40 @@ const getUnprocessedGroupsSortedByMissionId = createSelector(
 );
 
 /**
- * Selector that provides the list of UAV IDs to show in the UAV list when we
- * are using the UAV IDs without their mission-specific identifiers.
+ * Selector that provides the grouped list of UAV IDs to show in the UAV list
+ * when the list is sorted by UAV IDs.
  *
  * The list returned from this selector is the "unprocessed" list, i.e. the
  * one before applying any filters or sorting criteria. See below for more
  * functions that perform the sorting and filtering.
  */
 const getUnprocessedGroupsSortedByUavId = createSelector(
-  getUAVIdList,
-  getReverseMissionMapping,
-  (uavIds, reverseMapping): UAVGroup[] => [
+  getUnprocessedItemsSortedByUavId,
+  (items: Item[]): UAVGroup[] => [
     {
       id: 'all',
       type: UAVGroupType.ALL,
-      items: uavIds.map((uavId) => [uavId, reverseMapping[uavId]]),
+      items,
     },
   ]
 );
 
-const getUnprocessedGroupsBySections: AppSelector<UAVGroup[]> = (
-  state: RootState
-) =>
+const getUnprocessedGroups: AppSelector<UAVGroup[]> = (state: RootState) =>
   isShowingMissionIds(state)
     ? getUnprocessedGroupsSortedByMissionId(state)
     : getUnprocessedGroupsSortedByUavId(state);
 
 /**
- * Helper function for getDisplayedUAVGroups(); see an explanation there.
- */
-const getUAVIdToStateMappingForSortAndFilter: AppSelector<
-  Nullable<Record<string, StoredUAV>>
-> = (state: RootState) => {
-  const { key } = getUAVListSortPreference(state);
-  const filters = getUAVListFilters(state);
-  return key === UAVSortKey.DEFAULT && filters.length === 0
-    ? null
-    : getUAVIdToStateMapping(state);
-};
-
-/**
- * Selector that provides the list of UAV IDs to show in the UAV list, sorted
- * by sections.
- *
- * Note the weird helper selector: getUAVIdToStateMappingForSortAndFilter() returns the
- * UAV ID to state mapping only if it would be needed for the current sort option
- * or for the currently active filter(s), otherwise it returns null. This
- * prevents this selector from being invalidated if the UAVs change but the ID
- * list stays the same _when_ we are not sorting or filtering based on UAV
- * properties.
+ * Selector that provides the list of UAV IDs to show in the grouped UAV list,
+ * after applying the sorting and filtering criteria that the user requested
+ * to each group individually.
  */
 export const getDisplayedGroups: AppSelector<UAVGroup[]> = createSelector(
   getUAVListFilters,
   getUAVListSortPreference,
-  getUnprocessedGroupsBySections,
+  getUnprocessedGroups,
   getUAVIdToStateMappingForSortAndFilter,
-  applyFiltersAndSortDisplayedUAVIdList
+  applyFiltersAndSortDisplayedUAVGroups
 );
 
 /**
@@ -177,7 +284,6 @@ export const getGlobalIdsInDisplayedGroups = createSelector(
  * in each of the groups, in the order they are shown. Empty mission slots are
  * not included.
  */
-
 export const getUAVIdsInDisplayedGroups = createSelector(
   getDisplayedGroups,
   (groups) =>
@@ -191,15 +297,6 @@ export const getUAVIdsInDisplayedGroups = createSelector(
 
       return result;
     })
-);
-
-/**
- * Selector that provides the global IDs of all UAVs and mission slots in the
- * UAV list, order they appear on the UI, but without sorting them into groups.
- */
-export const getAllGlobalIdsInDisplayedGroups = createSelector(
-  getGlobalIdsInDisplayedGroups,
-  flatten
 );
 
 /**

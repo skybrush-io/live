@@ -55,6 +55,38 @@ const getSortFunctionForKey = memoize((key: UAVSortKey) => {
       () => identity;
 });
 
+function applyFiltersToItems(
+  filters: UAVFilter[],
+  items: Item[],
+  uavsByIds: Nullable<Record<string, StoredUAV>>
+): Item[] {
+  if (filters.length === 0) {
+    return items;
+  }
+
+  for (const filter of filters) {
+    const func = getFilterFunctionForFilterIdentifier(filter)(uavsByIds!);
+    items = items.filter(func);
+  }
+
+  return items;
+}
+
+function applySortCriteriaToItems(
+  sort: UAVSortKeyAndOrder,
+  items: Item[],
+  uavsByIds: Nullable<Record<string, StoredUAV>>
+): Item[] {
+  const { key, reverse } = sort || {};
+  if (uavsByIds) {
+    const func = getSortFunctionForKey(key);
+    return orderBy(items, [func(uavsByIds)], [reverse ? 'desc' : 'asc']);
+  } else {
+    // No need to sort, but we may need to reverse the items
+    return reverse ? items.concat().reverse() : items;
+  }
+}
+
 function applyFiltersToUAVGroups(
   filters: UAVFilter[],
   groups: UAVGroup[],
@@ -104,6 +136,16 @@ function applySortCriteriaToUAVGroups(
 }
 
 export function applyFiltersAndSortDisplayedUAVIdList(
+  filters: UAVFilter[],
+  sort: UAVSortKeyAndOrder,
+  items: Item[],
+  uavsByIds: Nullable<Record<string, StoredUAV>>
+): Item[] {
+  const filteredItems = applyFiltersToItems(filters, items, uavsByIds);
+  return applySortCriteriaToItems(sort, filteredItems, uavsByIds);
+}
+
+export function applyFiltersAndSortDisplayedUAVGroups(
   filters: UAVFilter[],
   sort: UAVSortKeyAndOrder,
   groups: UAVGroup[],
