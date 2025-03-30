@@ -3,7 +3,7 @@
 
 const path = require('path');
 const process = require('process');
-const webpack = require('webpack');
+const { rspack } = require('@rspack/core');
 const Dotenv = require('dotenv-webpack');
 
 const { GitRevisionPlugin } = require('git-revision-webpack-plugin');
@@ -45,20 +45,20 @@ module.exports = {
 
   plugins: [
     // The next module is needed for golden-layout to work nicely
-    new webpack.ProvidePlugin({
+    new rspack.ProvidePlugin({
       ReactDOM: 'react-dom',
       React: 'react',
     }),
 
     // Resolve process.env in the code; the object below provides the default
     // values
-    new webpack.EnvironmentPlugin({
+    new rspack.EnvironmentPlugin({
       NODE_ENV: 'development',
       DEPLOYMENT: '0',
     }),
 
     // Resolve the git version number and commit hash in the code
-    new webpack.DefinePlugin({
+    new rspack.DefinePlugin({
       VERSION: JSON.stringify(gitRevisionPlugin.version()),
       COMMIT_HASH: JSON.stringify(gitRevisionPlugin.commithash()),
     }),
@@ -70,7 +70,7 @@ module.exports = {
     }),
 
     // Add VERSION and COMMITHASH file to output
-    gitRevisionPlugin,
+    // gitRevisionPlugin,
   ].filter(Boolean),
 
   resolve: {
