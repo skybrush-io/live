@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import clsx from 'clsx';
-import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import { useDrag, useDrop, type ConnectableElement } from 'react-dnd';
 
@@ -9,6 +8,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Colors from '~/components/colors';
 
 import { uavIdToDOMNodeId } from './utils';
+import { GRID_ITEM_WIDTH } from './constants';
 
 const useStyles = makeStyles(
   (theme) => ({
@@ -17,7 +17,7 @@ const useStyles = makeStyles(
       cursor: 'pointer',
       display: 'flex',
       flexDirection: 'column',
-      minWidth: theme.spacing(10),
+      minWidth: GRID_ITEM_WIDTH,
       position: 'relative',
 
       scrollMarginTop:
@@ -69,7 +69,7 @@ const addDropIndicator = {
 
 type DragDropAreaProps = React.PropsWithChildren<
   Readonly<{
-    id: string;
+    id?: string;
     onDrop?: (id: string) => void;
   }>
 > &
@@ -159,7 +159,7 @@ const DroneListItem = ({
     stretch && classes.stretch
   );
   // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
-  return (draggable || onDrop) && uavId ? (
+  return draggable || onDrop ? (
     <DragDropArea
       className={mergedClassNames}
       id={uavId}

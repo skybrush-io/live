@@ -10,7 +10,7 @@ import Chip, { type ChipProps } from '@material-ui/core/Chip';
 import Divider from '@material-ui/core/Divider';
 import Menu from '@material-ui/core/Menu';
 import MenuItem, { type MenuItemProps } from '@material-ui/core/MenuItem';
-import makeStyles from '@material-ui/core/styles/makeStyles';
+import { type Theme, makeStyles } from '@material-ui/core/styles';
 import Check from '@material-ui/icons/Check';
 import Filter from '@material-ui/icons/FilterList';
 import SortAscending from '@material-ui/icons/ArrowDownward';
@@ -38,6 +38,10 @@ import {
   isShowingMissionIds,
 } from '~/features/settings/selectors';
 import {
+  UAVListLayout,
+  type UAVSortKeyAndOrder,
+} from '~/features/settings/types';
+import {
   UAVFilter,
   UAVFilters,
   labelsForUAVFilter,
@@ -49,13 +53,10 @@ import {
   labelsForUAVSortKey,
   shortLabelsForUAVSortKey,
 } from '~/model/sorting';
-import type { Theme } from '@material-ui/core/styles';
-import {
-  UAVListLayout,
-  type UAVSortKeyAndOrder,
-} from '~/features/settings/types';
 import type { Nullable } from '~/utils/types';
 import type { RootState } from '~/store/reducers';
+
+import { HEADER_HEIGHT } from './constants';
 
 const createChipStyle = (
   // eslint-disable-next-line @typescript-eslint/ban-types
@@ -90,8 +91,6 @@ const createChipStyle = (
   return result;
 };
 
-export const HEIGHT = 38;
-
 const useStyles = makeStyles(
   (theme) => ({
     root: {
@@ -103,7 +102,14 @@ const useStyles = makeStyles(
       minWidth: 800,
       overflow: 'hidden',
       zIndex: 10,
-      minHeight: HEIGHT + 1 /* 1px for the border */,
+      minHeight: HEADER_HEIGHT + 1 /* 1px for the border */,
+    },
+
+    floating: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
     },
 
     widgets: {
@@ -126,7 +132,7 @@ const useStyles = makeStyles(
       flexWrap: 'nowrap',
       fontFamily: monospacedFont,
       fontSize: 'small',
-      height: HEIGHT,
+      height: HEADER_HEIGHT,
       overflow: 'hidden',
       userSelect: 'none',
       whiteSpace: 'pre',
@@ -135,7 +141,7 @@ const useStyles = makeStyles(
     },
 
     headerLineItem: {
-      lineHeight: HEIGHT + 'px',
+      lineHeight: HEADER_HEIGHT + 'px',
       padding: theme.spacing(0, 0.5),
 
       '&:last-child': {
@@ -414,6 +420,7 @@ function formatHeaderParts(
 
 type SortAndFilterHeaderProps = Readonly<{
   filters: UAVFilter[];
+  floating?: boolean;
   layout: UAVListLayout;
   onSetFilter: (filter: Nullable<UAVFilter>) => void;
   onSetSortBy: (sortBy: Partial<UAVSortKeyAndOrder>) => void;
@@ -425,6 +432,7 @@ type SortAndFilterHeaderProps = Readonly<{
 
 const SortAndFilterHeader = ({
   filters,
+  floating,
   layout,
   onSetFilter,
   onSetSortBy,
@@ -494,7 +502,7 @@ const SortAndFilterHeader = ({
   const isFilterActive = Array.isArray(filters) && filters.length > 0;
 
   return (
-    <div className={classes.root}>
+    <div className={clsx(classes.root, floating && classes.floating)}>
       <div className={classes.widgets}>
         <Chip
           // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
