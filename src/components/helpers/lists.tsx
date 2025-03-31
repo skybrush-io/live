@@ -235,6 +235,7 @@ export function createSelectionHandlerThunk<T = string>({
   }
 
   return (id: T, event: React.UIEvent) =>
+    // eslint-disable-next-line complexity
     (dispatch: AppDispatch, getState: () => RootState) => {
       const state = getState();
       const selection = getSelection ? getSelection(state) : [];
@@ -252,17 +253,26 @@ export function createSelectionHandlerThunk<T = string>({
         setSelection
       ) {
         const listItems = getListItems(state);
-        if (selection.length === 1) {
+        if (selection.length > 0) {
           // NOTE: Bang justified by `selection.length === 1`
-          const singleSelectedId = selection[0]!;
+          const singleSelectedId = selection.at(-1)!;
           const singleSelectedIndex = listItems.indexOf(singleSelectedId);
           const newSelectedIndex = listItems.indexOf(id);
-          action = setSelection(
-            listItems.slice(
-              Math.min(singleSelectedIndex, newSelectedIndex),
-              Math.max(singleSelectedIndex, newSelectedIndex) + 1
-            )
+          const newSelection = listItems.slice(
+            Math.min(singleSelectedIndex, newSelectedIndex),
+            Math.max(singleSelectedIndex, newSelectedIndex) + 1
           );
+
+          // Make sure that singleSelectedId remains at the end of the selection
+          // array in case the user keeps on clicking on other items with the
+          // Shift key being held down
+          const index = newSelection.indexOf(singleSelectedId);
+          if (index >= 0 && index !== newSelection.length - 1) {
+            newSelection.splice(index, 1);
+            newSelection.push(singleSelectedId);
+          }
+
+          action = setSelection(newSelection);
         }
       } else {
         const alreadySelected =
