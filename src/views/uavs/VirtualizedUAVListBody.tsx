@@ -3,9 +3,7 @@ import {
   Virtuoso,
   VirtuosoGrid,
   type FlatIndexLocationWithAlign,
-  type LocationOptions,
-  type VirtuosoGridHandle,
-  type VirtuosoHandle,
+  type FlatScrollIntoViewLocation,
   type VirtuosoProps,
 } from 'react-virtuoso';
 import { makeStyles } from '@material-ui/core/styles';
@@ -55,8 +53,8 @@ const GridHeaderPadding = (): JSX.Element => (
 );
 
 export type VirtuosoCommonHandle = {
-  scrollIntoView?: (location: { index: number }) => void; // for lists
-  scrollToIndex: (location: FlatIndexLocationWithAlign) => void; // for grids
+  scrollIntoView?: (location: FlatScrollIntoViewLocation) => void; // for lists
+  scrollToIndex?: (location: FlatIndexLocationWithAlign) => void; // for grids
 };
 
 /**
