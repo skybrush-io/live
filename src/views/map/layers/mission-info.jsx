@@ -82,6 +82,8 @@ import mapMarker from '~/../assets/img/map-marker.svg';
 import mapMarkerOutline from '~/../assets/img/map-marker-outline.svg';
 import missionOriginMarkerIcon from '~/../assets/img/mission-origin-marker.svg';
 
+const TAKEOFF_LANDING_POSITION_TEXT_VISIBILITY_THRESHOLD = 0.05;
+
 // === Settings for this particular layer type ===
 
 const MissionInfoLayerSettingsPresentation = ({
@@ -283,6 +285,9 @@ const originStyles = (selected, axis) => [
 /**
  * Style for the marker representing the takeoff positions of the drones in
  * the current mission.
+ *
+ * PERF: Apply caching / memoization similarly to the
+ *       takeoff grid placement interaction's preview
  */
 const takeoffPositionStyle = (feature, resolution) => {
   const index = globalIdToHomePositionId(feature.getId());
@@ -290,7 +295,13 @@ const takeoffPositionStyle = (feature, resolution) => {
     image: takeoffTriangle,
   };
 
-  if (resolution < 0.4) {
+  const pointResolution = getPointResolution(
+    'EPSG:3857',
+    resolution,
+    feature.getGeometry().getCoordinates()
+  );
+
+  if (pointResolution < TAKEOFF_LANDING_POSITION_TEXT_VISIBILITY_THRESHOLD) {
     style.text = new Text({
       font: '12px sans-serif',
       offsetY: 12,
@@ -305,6 +316,9 @@ const takeoffPositionStyle = (feature, resolution) => {
 /**
  * Style for the marker representing the landing positions of the drones in
  * the current mission.
+ *
+ * PERF: Apply caching / memoization similarly to the
+ *       takeoff grid placement interaction's preview
  */
 const landingPositionStyle = (feature, resolution) => {
   const index = globalIdToLandingPositionId(feature.getId());
@@ -312,7 +326,13 @@ const landingPositionStyle = (feature, resolution) => {
     image: landingMarker,
   };
 
-  if (resolution < 0.4) {
+  const pointResolution = getPointResolution(
+    'EPSG:3857',
+    resolution,
+    feature.getGeometry().getCoordinates()
+  );
+
+  if (pointResolution < TAKEOFF_LANDING_POSITION_TEXT_VISIBILITY_THRESHOLD) {
     style.text = new Text({
       font: '12px sans-serif',
       offsetY: -12,
