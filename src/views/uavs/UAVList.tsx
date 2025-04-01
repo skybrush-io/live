@@ -33,11 +33,7 @@ import FadeAndSlide from '~/components/transitions/FadeAndSlide';
 import DroneAvatar from '~/components/uavs/DroneAvatar';
 import DronePlaceholder from '~/components/uavs/DronePlaceholder';
 import { useKeyboardNavigation } from '~/features/hotkeys/hooks';
-import {
-  createKeyboardNavigationHandlers,
-  Direction,
-  type KeyboardNavigationHandlers,
-} from '~/features/hotkeys/navigation';
+import { type KeyboardNavigationHandlers } from '~/features/hotkeys/navigation';
 import { setSelection } from '~/features/map/selection';
 import {
   adjustMissionMapping,
@@ -49,20 +45,19 @@ import {
 } from '~/features/mission/selectors';
 import {
   getUAVListLayout,
-  getUAVListOrientation,
   isShowingMissionIds,
 } from '~/features/settings/selectors';
-import { UAVListLayout, UAVListOrientation } from '~/features/settings/types';
+import { UAVListLayout } from '~/features/settings/types';
 import { setSelectedUAVIds } from '~/features/uavs/actions';
-import { openUAVDetailsDialog } from '~/features/uavs/details';
 import { getSelectedUAVIds } from '~/features/uavs/selectors';
-import { globalIdToUavId } from '~/model/identifiers';
 import { getSelection } from '~/selectors/selection';
 import type { AppThunk, RootState } from '~/store/reducers';
 import { formatMissionId } from '~/utils/formatting';
 import type { Nullable } from '~/utils/types';
 
-import { GRID_ITEM_WIDTH } from './constants';
+import handleKeyboardNavigation, {
+  maybeOpenUAVDetailsDialog,
+} from './navigation';
 import {
   getDisplayedGroups,
   getSelectionInfo,
@@ -71,11 +66,7 @@ import {
   getDisplayedItems,
 } from './selectors';
 import type { Item } from './types';
-import {
-  getSelectedUAVIdsAndMissionSlotIds,
-  globalIdToDOMNodeId,
-  itemToGlobalId,
-} from './utils';
+import { getSelectedUAVIdsAndMissionSlotIds, itemToGlobalId } from './utils';
 import SortAndFilterHeader from './SortAndFilterHeader';
 import VirtualizedUAVListBody from './VirtualizedUAVListBody';
 
@@ -409,91 +400,10 @@ const UAVList = connect(
   () => {
     const containerDOMNodeId = `__keyboardNav-${nanoid()}`;
 
-    const getColumnCount = (): number => {
-      const containerDOMNode = document.querySelector(`#${containerDOMNodeId}`);
-
-      // Assumption: the width of the container divided by 80 is an estimate of
-      // how many columns there are in the grid.
-      //
-      // In theory we could also do this by getting the computed style of the
-      // container, see https://stackoverflow.com/questions/55204205/
-      const { width: containerWidth } =
-        containerDOMNode?.getBoundingClientRect() ?? {};
-      if (typeof containerWidth === 'number' && containerWidth > 0) {
-        return Math.max(1, Math.floor(containerWidth / GRID_ITEM_WIDTH));
-      } else {
-        return 1;
-      }
-    };
-
-    const getNavigationDeltaInDirection = (
-      state: RootState,
-      direction: Direction
-    ): number => {
-      const orientation = getUAVListOrientation(state);
-
-      if (orientation === UAVListOrientation.VERTICAL) {
-        // Vertical layout. Horizontal navigation is disallowed and we always
-        // step by 1 vertically.
-        switch (direction) {
-          case Direction.DOWN:
-            return 1;
-          case Direction.UP:
-            return -1;
-          case Direction.NEXT_PAGE:
-            return 10;
-          case Direction.PREVIOUS_PAGE:
-            return -10;
-          default:
-            return 0;
-        }
-      } else {
-        // Horizontal layout. We always step by 1 horizontally. In vertical
-        // direction we need to figure out how many columns there are.
-        switch (direction) {
-          case Direction.LEFT:
-            return -1;
-          case Direction.RIGHT:
-            return 1;
-          case Direction.UP:
-          case Direction.PREVIOUS_PAGE:
-            return -getColumnCount();
-          case Direction.DOWN:
-          case Direction.NEXT_PAGE:
-            return getColumnCount();
-
-          // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
-          default:
-            return 0;
-        }
-      }
-    };
-
-    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-    const maybeOpenUAVDetailsDialog = (globalId: string) => {
-      const uavId = globalIdToUavId(globalId);
-      if (uavId) {
-        return openUAVDetailsDialog(uavId);
-      }
-    };
-
     // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
     return (dispatch) => ({
       containerDOMNodeId,
-
-      // TODO(ntamas): keyboard navigation does not work with the virtualized
-      // layout yet; setFocusToId() is not able to scroll to the item when it
-      // does not have a DOM node yet
-
-      keyboardNav: createKeyboardNavigationHandlers({
-        dispatch,
-        activateId: maybeOpenUAVDetailsDialog,
-        getNavigationDeltaInDirection,
-        getVisibleIds: getGlobalIdsOfDisplayedItems,
-        getSelectedIds: getSelectedUAVIdsAndMissionSlotIds,
-        setSelectedIds: setSelection,
-        setFocusToId: (id: string) => `#${globalIdToDOMNodeId(id)}`,
-      }),
+      keyboardNav: handleKeyboardNavigation(dispatch, containerDOMNodeId),
 
       ...bindActionCreators(
         {
@@ -505,35 +415,6 @@ const UAVList = connect(
             setSelection,
             getListItems: getGlobalIdsOfDisplayedItems,
           }) as any as (id: string) => AnyAction,
-          onSelectSection:
-            (event: React.ChangeEvent<HTMLInputElement>): AppThunk =>
-            (dispatch, getState) => {
-              const { value } = event.target;
-              const state = getState();
-              let index = 0;
-
-              for (const group of getDisplayedGroups(state)) {
-                if (group.id === value) {
-                  const selectedUAVIds = getSelectedUAVIds(state);
-                  const selectionInfo = getSelectionInfo(state)[index];
-                  const displayedIds = getUAVIdsInDisplayedGroups(state)[index];
-
-                  if (selectionInfo && displayedIds) {
-                    const newSelection = selectionInfo.checked
-                      ? difference(selectedUAVIds, displayedIds)
-                      : union(selectedUAVIds, displayedIds);
-
-                    // This will deselect objects of any other type, but this is
-                    // exactly what we want
-                    dispatch(setSelectedUAVIds(newSelection));
-                  }
-
-                  break;
-                }
-
-                index++;
-              }
-            },
         },
         dispatch
       ),
