@@ -5,7 +5,7 @@
 
 import isNil from 'lodash-es/isNil';
 import { nanoid } from 'nanoid';
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { connect } from 'react-redux';
@@ -47,7 +47,7 @@ import {
 } from '~/features/settings/selectors';
 import { UAVListLayout } from '~/features/settings/types';
 import { getSelection } from '~/selectors/selection';
-import type { RootState } from '~/store/reducers';
+import type { AppDispatch, RootState } from '~/store/reducers';
 import { formatMissionId } from '~/utils/formatting';
 import type { Nullable } from '~/utils/types';
 
@@ -58,7 +58,10 @@ import { getGlobalIdsOfDisplayedItems, getDisplayedItems } from './selectors';
 import type { Item } from './types';
 import { getSelectedUAVIdsAndMissionSlotIds, itemToGlobalId } from './utils';
 import SortAndFilterHeader from './SortAndFilterHeader';
-import VirtualizedUAVListBody from './VirtualizedUAVListBody';
+import VirtualizedUAVListBody, {
+  type VirtuosoCommonHandle,
+} from './VirtualizedUAVListBody';
+import type { VirtuosoHandle } from 'react-virtuoso';
 
 const useListStyles = makeStyles(
   (theme) => ({
@@ -266,10 +269,10 @@ const createListItemRenderer =
   };
 
 type UAVListPresentationProps = Readonly<{
-  containerDOMNodeId?: string;
+  containerDOMNodeId: string;
+  dispatch: AppDispatch;
   editingMapping: boolean;
   items: Item[];
-  keyboardNav: KeyboardNavigationHandlers;
   layout: UAVListLayout;
   mappingSlotBeingEdited: number;
   onEditMappingSlot: (missionIndex: number) => void;
@@ -284,9 +287,9 @@ type UAVListPresentationProps = Readonly<{
  */
 const UAVListPresentation = ({
   containerDOMNodeId,
+  dispatch,
   editingMapping,
   items,
-  keyboardNav,
   layout,
   mappingSlotBeingEdited,
   onEditMappingSlot,
@@ -296,6 +299,12 @@ const UAVListPresentation = ({
   showMissionIds,
 }: UAVListPresentationProps): JSX.Element => {
   const classes = useListStyles();
+  const scrollerFunctions = useRef<VirtuosoCommonHandle>();
+  const keyboardNav = useMemo(
+    () =>
+      handleKeyboardNavigation(dispatch, containerDOMNodeId, scrollerFunctions),
+    [dispatch, containerDOMNodeId]
+  );
 
   useKeyboardNavigation(keyboardNav);
 
@@ -355,6 +364,7 @@ const UAVListPresentation = ({
            * calculate how many columns there are in the grid. Revise the
            * layout functions in connect() if this is not the case any more */}
           <VirtualizedUAVListBody
+            ref={scrollerFunctions}
             id={containerDOMNodeId}
             items={items}
             itemRenderer={itemRenderer}
@@ -393,8 +403,7 @@ const UAVList = connect(
     // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
     return (dispatch) => ({
       containerDOMNodeId,
-      keyboardNav: handleKeyboardNavigation(dispatch, containerDOMNodeId),
-
+      dispatch,
       ...bindActionCreators(
         {
           onEditMappingSlot: startMappingEditorSessionAtSlot,

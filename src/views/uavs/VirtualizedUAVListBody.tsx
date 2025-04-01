@@ -2,6 +2,8 @@ import React from 'react';
 import {
   Virtuoso,
   VirtuosoGrid,
+  type FlatIndexLocationWithAlign,
+  type LocationOptions,
   type VirtuosoGridHandle,
   type VirtuosoHandle,
   type VirtuosoProps,
@@ -52,11 +54,16 @@ const GridHeaderPadding = (): JSX.Element => (
   <Box sx={{ height: HEADER_HEIGHT }} />
 );
 
+export type VirtuosoCommonHandle = {
+  scrollIntoView?: (location: { index: number }) => void; // for lists
+  scrollToIndex: (location: FlatIndexLocationWithAlign) => void; // for grids
+};
+
 /**
  * Presentation component for showing the drone show configuration view.
  */
 const VirtualizedUAVListBody = React.forwardRef<
-  VirtuosoHandle | VirtuosoGridHandle,
+  VirtuosoCommonHandle | undefined,
   VirtualizedUAVListBodyProps
 >((props, ref): JSX.Element => {
   const { items, itemRenderer, layout, ...rest } = props;
@@ -64,8 +71,7 @@ const VirtualizedUAVListBody = React.forwardRef<
 
   return layout === UAVListLayout.GRID ? (
     <VirtuosoGrid
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      ref={ref as any}
+      ref={ref}
       components={{
         // eslint-disable-next-line @typescript-eslint/naming-convention
         Header: GridHeaderPadding,
