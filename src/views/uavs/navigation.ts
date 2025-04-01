@@ -15,6 +15,7 @@ import type { AppDispatch, RootState } from '~/store/reducers';
 import { GRID_ITEM_WIDTH } from './constants';
 import { getGlobalIdsOfDisplayedItems } from './selectors';
 import { getSelectedUAVIdsAndMissionSlotIds } from './utils';
+import type { VirtuosoCommonHandle } from './VirtualizedUAVListBody';
 
 /**
  * Estimates the number of columns in the grid based on the width of the
@@ -105,22 +106,11 @@ export function maybeOpenUAVDetailsDialog(
   }
 }
 
-/**
- * Sets the focus to the UAV list or grid view holding the item with the given
- * global ID.
- */
-function onItemFocused(_id: string, index: number): void {
-  console.log('Setting focus to item with index:', index);
-}
-
 export default function handleKeyboardNavigation(
   dispatch: AppDispatch,
-  containerDOMNodeId: string
+  containerDOMNodeId: string,
+  scrollerFunctions: React.RefObject<VirtuosoCommonHandle | undefined>
 ): KeyboardNavigationHandlers {
-  // TODO(ntamas): keyboard navigation does not work with the virtualized
-  // layout yet; setFocusToId() is not able to scroll to the item when it
-  // does not have a DOM node yet
-
   return createKeyboardNavigationHandlers({
     dispatch,
     activateId: maybeOpenUAVDetailsDialog,
@@ -128,7 +118,25 @@ export default function handleKeyboardNavigation(
       getNavigationDeltaInDirection(containerDOMNodeId),
     getVisibleIds: getGlobalIdsOfDisplayedItems,
     getSelectedIds: getSelectedUAVIdsAndMissionSlotIds,
-    onItemFocused,
+    onItemFocused(_id, index) {
+      const funcs = scrollerFunctions.current;
+      if (!funcs) {
+        return;
+      }
+
+      if (funcs.scrollIntoView) {
+        // for lists
+        // TODO(ntamas): use calculateViewLocation() to ensure that the top
+        // header does not cover the item being scrolled into view
+        funcs.scrollIntoView({ index });
+      } else if (funcs.scrollToIndex) {
+        // for grids
+        // TODO(ntamas): this does not really work nice yet as it strives to
+        // scroll the item to the center of the viewport, but it should leave
+        // the scroll position as is when the item is already visible.
+        funcs.scrollToIndex({ index, align: 'center' });
+      }
+    },
     setSelectedIds: setSelection,
   });
 }
