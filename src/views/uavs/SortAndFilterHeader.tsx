@@ -143,6 +143,7 @@ const useStyles = makeStyles(
     headerLineItem: {
       lineHeight: HEADER_HEIGHT + 'px',
       padding: theme.spacing(0, 0.5),
+      flexShrink: 0, // important, otherwise the fixed width will not be respected if the view is very narrow
 
       '&:last-child': {
         flex: 1,
