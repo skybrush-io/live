@@ -3,9 +3,7 @@
  * flock.
  */
 
-import difference from 'lodash-es/difference';
 import isNil from 'lodash-es/isNil';
-import union from 'lodash-es/union';
 import { nanoid } from 'nanoid';
 import React, { useCallback } from 'react';
 import { DndProvider } from 'react-dnd';
@@ -48,23 +46,15 @@ import {
   isShowingMissionIds,
 } from '~/features/settings/selectors';
 import { UAVListLayout } from '~/features/settings/types';
-import { setSelectedUAVIds } from '~/features/uavs/actions';
-import { getSelectedUAVIds } from '~/features/uavs/selectors';
 import { getSelection } from '~/selectors/selection';
-import type { AppThunk, RootState } from '~/store/reducers';
+import type { RootState } from '~/store/reducers';
 import { formatMissionId } from '~/utils/formatting';
 import type { Nullable } from '~/utils/types';
 
 import handleKeyboardNavigation, {
   maybeOpenUAVDetailsDialog,
 } from './navigation';
-import {
-  getDisplayedGroups,
-  getSelectionInfo,
-  getUAVIdsInDisplayedGroups,
-  getGlobalIdsOfDisplayedItems,
-  getDisplayedItems,
-} from './selectors';
+import { getGlobalIdsOfDisplayedItems, getDisplayedItems } from './selectors';
 import type { Item } from './types';
 import { getSelectedUAVIdsAndMissionSlotIds, itemToGlobalId } from './utils';
 import SortAndFilterHeader from './SortAndFilterHeader';
