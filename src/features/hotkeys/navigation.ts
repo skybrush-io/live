@@ -24,7 +24,7 @@ export type KeyboardNavigationOptions<
   getNavigationDeltaInDirection: (state: S, direction: Direction) => number;
   getSelectedIds: (state: S) => string[];
   getVisibleIds: (state: S) => string[];
-  setFocusToId: (id: string) => string | void;
+  onItemFocused: (id: string, index: number) => string | void;
   setSelectedIds: (ids: string[]) => Parameters<D>[0] | undefined;
 };
 
@@ -60,16 +60,17 @@ export type KeyboardNavigationHandlers<
  *        currently visible in the list, in the same order as they are displayed
  * @param {func} getSelectedIds Redux selector that returns the array of IDs
  *        that are currently selected in the list
- * @param {func} setSelectedIds Redux action factory that creates an action that
- *        updates the currently selected IDs in the list when dispatched to the
- *        store
- * @param {func} setFocusToId Plain function that is called when an item with the given
- *        ID is about to be selected. It can be used to trigger a side-effect
- *        that scrolls a view to make the item visible. When it returns a string,
+ * @param {func} onItemFocused Plain function that is called when an item is
+ *        about to be selected. The function receives the ID and index of the
+ *        item being selected. It can be used to trigger a side-effect that
+ *        scrolls a view to make the item visible. When it returns a string,
  *        it is interpreted as a CSS selector, and the first element matching
  *        the selector will be scrolled into view. Otherwise, the return value
  *        is ignored, but you can still perform any side effect inside the
  *        handler.
+ * @param {func} setSelectedIds Redux action factory that creates an action that
+ *        updates the currently selected IDs in the list when dispatched to the
+ *        store
  */
 export function createKeyboardNavigationHandlers<
   S = RootState,
@@ -81,7 +82,7 @@ export function createKeyboardNavigationHandlers<
   getNavigationDeltaInDirection,
   getVisibleIds,
   getSelectedIds,
-  setFocusToId,
+  onItemFocused,
   setSelectedIds,
 }: KeyboardNavigationOptions<S, D>): KeyboardNavigationHandlers<D> {
   const activateSelection =
@@ -154,8 +155,8 @@ export function createKeyboardNavigationHandlers<
 
     // If we have a focus callback, call it so we can scroll to the newly
     // selected item
-    if (setFocusToId && !isNil(newSelectedId)) {
-      const result = setFocusToId(newSelectedId);
+    if (onItemFocused && !isNil(newSelectedId)) {
+      const result = onItemFocused(newSelectedId, newIndex);
       if (typeof result === 'string') {
         scrollIntoView(result);
       }
