@@ -98,6 +98,7 @@ const useStyles = makeStyles(
     counter: {
       padding: theme.spacing(0, 1.5, 0, 0.5),
       userSelect: 'none',
+      fontVariantNumeric: 'tabular-nums',
     },
 
     off: {

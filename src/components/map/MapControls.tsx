@@ -1,12 +1,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
-// @ts-ignore
+// @ts-expect-error: no declaration file for @collmot/ol-react yet
 import { control } from '@collmot/ol-react';
 
 import {
-  type CoordinatePairFormatter,
   getExtendedCoordinateFormatter,
+  type CoordinatePairFormatter,
 } from '~/selectors/formatting';
 import type { RootState } from '~/store/reducers';
 
@@ -25,7 +25,7 @@ const MapControlsPresentation = ({
   formatCoordinate,
   showMouseCoordinates,
   showScaleLine,
-}: MapControlsPresentationProps) => (
+}: MapControlsPresentationProps): JSX.Element => (
   <>
     <control.Zoom />
     <control.Attribution collapsed collapsible collapseLabel='&laquo;' />
