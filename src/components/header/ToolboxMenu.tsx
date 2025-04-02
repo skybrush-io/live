@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
@@ -10,9 +10,9 @@ import MenuItem from '@material-ui/core/MenuItem';
 
 import Build from '@material-ui/icons/Build';
 import Functions from '@material-ui/icons/Functions';
-import MapCloudOff from '~/icons/MapCloudOff';
 import Tune from '@material-ui/icons/Tune';
 import VpnKey from '@material-ui/icons/VpnKey';
+import MapCloudOff from '~/icons/MapCloudOff';
 
 import { showFirmwareUpdateDialog } from '~/features/firmware-update/actions';
 import { JOB_TYPE as FIRMWARE_UPLOAD_JOB_TYPE } from '~/features/firmware-update/constants';
@@ -23,12 +23,17 @@ import { showAveragingDialog } from '~/features/measurement/slice';
 import { showParameterUploadDialog } from '~/features/parameters/actions';
 import { JOB_TYPE as PARAMETER_UPLOAD_JOB_TYPE } from '~/features/parameters/constants';
 import { isConnected } from '~/features/servers/selectors';
+import { isDeveloperModeEnabled } from '~/features/session/selectors';
 import { getRunningUploadJobType } from '~/features/upload/selectors';
 import { showVersionCheckDialog } from '~/features/version-check/slice';
 import type { RootState } from '~/store/reducers';
-import { isDeveloperModeEnabled } from '~/features/session/selectors';
 
 import ToolboxDevMenuItems from './ToolboxDevMenuItems';
+
+const anchorOrigin: MenuProps['anchorOrigin'] = {
+  vertical: 'bottom',
+  horizontal: 'left',
+};
 
 type ToolboxMenuPresentationProps = Readonly<{
   devMode: boolean;
@@ -43,7 +48,7 @@ type ToolboxMenuPresentationProps = Readonly<{
   showParameterUploadDialog: () => void;
   showVersionCheckDialog: () => void;
 }> &
-  MenuProps;
+  Omit<MenuProps, 'anchorOrigin' | 'getContentAnchorEl'>;
 
 const ToolboxMenuPresentation = ({
   devMode,
@@ -67,7 +72,7 @@ const ToolboxMenuPresentation = ({
   };
 
   return (
-    <Menu {...rest}>
+    <Menu {...rest} getContentAnchorEl={null} anchorOrigin={anchorOrigin}>
       <MenuItem onClick={createClickListener(showAveragingDialog)}>
         <ListItemIcon>
           <Functions />
