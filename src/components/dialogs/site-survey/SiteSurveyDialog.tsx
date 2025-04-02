@@ -23,7 +23,7 @@ type Props = SiteSurveyState & TranslationProps & DispatchProps;
 function SiteSurveyDialog(props: Props) {
   const { closeDialog, open, t } = props;
   return (
-    <Dialog fullScreen open={open} onClose={closeDialog}>
+    <Dialog fullScreen open={open}>
       <DialogContent>
         <Map />
       </DialogContent>
