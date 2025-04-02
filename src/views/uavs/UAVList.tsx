@@ -246,14 +246,12 @@ const createListItemRenderer =
       ? formatMissionId(missionIndex)
       : '';
     const label =
-      proposedLabel ??
-      (showMissionIds && isInMission ? formattedMissionIndex : uavId);
-    const secondaryLabel =
-      editingThisItem || (showMissionIds && !isInMission)
-        ? ''
-        : showMissionIds
-          ? uavId
-          : formattedMissionIndex;
+      proposedLabel ?? (showMissionIds ? formattedMissionIndex : uavId);
+    const secondaryLabel = editingThisItem
+      ? ''
+      : showMissionIds
+        ? uavId
+        : formattedMissionIndex;
     const key = uavId ?? `placeholder-${String(label) || 'null'}`;
 
     return (
