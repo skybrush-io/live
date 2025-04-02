@@ -49,6 +49,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   was pressed, not 30 seconds after the time when the "+30s" button was
   pressed.
 
+- Filtering for drones with "No telemetry" now also includes drones in the
+  "GONE" state.
+
 ### Fixed
 
 - Fixed an issue with degenerate geofences consisting of one or two points only.
