@@ -100,14 +100,15 @@ const landingMarker = {
 const landingPositionStyle = (
   feature: Feature,
   resolution: number,
-  selected?: boolean
+  selected?: boolean,
+  hideLabel?: boolean
 ) => {
   const index = globalIdToLandingPositionId(feature.getId()) ?? '';
   const style: StyleOptions = {
     image: landingMarker[selected ? 'selected' : 'base'],
   };
 
-  if (resolution < 0.4) {
+  if (!hideLabel && resolution < 0.4) {
     style.text = new Text({
       font: '12px sans-serif',
       offsetY: -12,
@@ -121,7 +122,8 @@ const landingPositionStyle = (
 
 export const landingPositionPoints = (
   landingPositions: (WorldCoordinate2D | undefined)[] | undefined,
-  selection?: Identifier[]
+  selection?: Identifier[],
+  hideLabel?: boolean
 ) =>
   Array.isArray(landingPositions)
     ? landingPositions
@@ -147,7 +149,7 @@ export const landingPositionPoints = (
               key={featureKey}
               id={globalIdOfFeature}
               style={(feature: Feature, resolution: number) =>
-                landingPositionStyle(feature, resolution, isSelected)
+                landingPositionStyle(feature, resolution, isSelected, hideLabel)
               }
             >
               <geom.Point coordinates={center} />
@@ -184,14 +186,15 @@ const takeoffTriangle = {
 const takeoffPositionStyle = (
   feature: Feature,
   resolution: number,
-  selected?: boolean
+  selected?: boolean,
+  hideLabel?: boolean
 ) => {
   const index = globalIdToHomePositionId(feature.getId()) ?? '';
   const style: StyleOptions = {
     image: takeoffTriangle[selected ? 'selected' : 'base'],
   };
 
-  if (resolution < 0.4) {
+  if (!hideLabel && resolution < 0.4) {
     style.text = new Text({
       font: '12px sans-serif',
       offsetY: 12,
@@ -205,7 +208,8 @@ const takeoffPositionStyle = (
 
 export const homePositionPoints = (
   homePositions: (WorldCoordinate2D | undefined)[] | undefined,
-  selection?: Identifier[]
+  selection?: Identifier[],
+  hideLabel?: boolean
 ) =>
   Array.isArray(homePositions)
     ? homePositions
@@ -227,7 +231,7 @@ export const homePositionPoints = (
               key={featureKey}
               id={globalIdOfFeature}
               style={(feature: Feature, resolution: number) =>
-                takeoffPositionStyle(feature, resolution, isSelected)
+                takeoffPositionStyle(feature, resolution, isSelected, hideLabel)
               }
             >
               <geom.Point coordinates={center} />
@@ -253,7 +257,7 @@ function markLayerAsSelectableAndEditable(
   }
 }
 
-const MissionInfoLayer = (props: Props) => {
+const ShowInfoLayer = (props: Props) => {
   const { children, zIndex } = props;
   return (
     <olLayer.Vector
@@ -267,4 +271,4 @@ const MissionInfoLayer = (props: Props) => {
   );
 };
 
-export default MissionInfoLayer;
+export default ShowInfoLayer;

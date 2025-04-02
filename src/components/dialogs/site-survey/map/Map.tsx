@@ -8,6 +8,7 @@ import type { DragBoxEvent } from 'ol/interaction/DragBox';
 import VectorLayer from 'ol/layer/Vector';
 
 import { Map } from '~/components/map';
+import type { MapControlDisplaySettings } from '~/components/map/MapControls';
 import MapInteractions from '~/components/map/interactions/MapInteractions';
 import type {
   BoxDragMode,
@@ -46,7 +47,6 @@ import type { RootState } from '~/store/reducers';
 import type { Identifier } from '~/utils/collections';
 import { findFeaturesById } from '~/utils/geography';
 import type { WorldCoordinate2D } from '~/utils/math';
-import type { MapControlDisplaySettings } from '~/components/map/MapControls';
 
 // === Layers ===
 
@@ -68,8 +68,8 @@ const ShowInfoLayer = (props: ShowInfoLayerProps) => {
 
   return (
     <ShowInfoLayerPresentation {...layerProps}>
-      {...homePositionPoints(homePositions, selection)}
-      {...landingPositionPoints(landingPositions, selection)}
+      {...homePositionPoints(homePositions, selection, true)}
+      {...landingPositionPoints(landingPositions, selection, true)}
       {...convexHullPolygon(convexHull, selection)}
     </ShowInfoLayerPresentation>
   );
