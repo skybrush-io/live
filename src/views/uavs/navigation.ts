@@ -165,8 +165,6 @@ export default function handleKeyboardNavigation(
 
       if (funcs.scrollIntoView) {
         // for lists
-        // TODO(ntamas): use calculateViewLocation() to ensure that the top
-        // header does not cover the item being scrolled into view
         funcs.scrollIntoView({
           index,
           calculateViewLocation: calculateViewLocationInList,
