@@ -72,7 +72,7 @@ export const getFilterFunctionForUAVFilter = memoize(
             : false;
 
       case UAVFilter.INACTIVE_ONLY:
-        return (uav) => uav?.age === UAVAge.INACTIVE;
+        return (uav) => uav?.age !== UAVAge.ACTIVE;
 
       default:
         return undefined;
