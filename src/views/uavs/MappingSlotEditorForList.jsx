@@ -17,7 +17,7 @@ import {
 } from '~/features/mission/slice';
 import { shouldOptimizeUIForTouch } from '~/features/settings/selectors';
 
-const WIDTH = 64;
+const WIDTH = 80;
 
 const useStyles = makeStyles(
   (theme) => ({
