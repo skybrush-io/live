@@ -6,6 +6,7 @@ import React from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
+import DialogHelpIcon from '~/components/DialogHelpIcon';
 import {
   closeDialog,
   initializeWithData,
@@ -27,6 +28,7 @@ function SiteSurveyDialog(props: Props) {
         <Map />
       </DialogContent>
       <DialogActions>
+        <DialogHelpIcon content={t('siteSurveyDialog.help')} />
         <Button onClick={closeDialog}>{t('general.action.close')}</Button>
         <Button color='primary' onClick={closeDialog}>
           {t('general.action.save')}

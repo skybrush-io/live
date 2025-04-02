@@ -561,6 +561,9 @@
   "sidebar": {
     "missionType": "Mission type: ({{missionType}})"
   },
+  "siteSurveyDialog": {
+    "help": "Move and rotate the show to finetune its location.\nMove and rotate the takeoff grid and individual takeoff positions to adjust them to the local terrain."
+  },
   "sorting": {
     "ascending": "Ascending",
     "descending": "Descending",
