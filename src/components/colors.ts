@@ -19,7 +19,7 @@ export const Colors = {
 
   geofence: red['700'],
   convexHull: '#fc0',
-  netShowConvexHull: '#295',
+  netShowConvexHull: '#fc0fc0',
   flightArea: '#0c4',
   plannedTrajectory: '#08f',
   missionItem: '#0cf',
