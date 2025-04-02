@@ -1,5 +1,4 @@
 import identity from 'lodash-es/identity';
-import mapValues from 'lodash-es/mapValues';
 import memoize from 'memoizee';
 import { orderBy } from 'natural-orderby';
 import type { UAVSortKeyAndOrder } from '~/features/settings/types';
