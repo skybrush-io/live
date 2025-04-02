@@ -70,7 +70,7 @@ const ShowInfoLayer = (props: ShowInfoLayerProps) => {
     <ShowInfoLayerPresentation {...layerProps}>
       {...homePositionPoints(homePositions, selection, true)}
       {...landingPositionPoints(landingPositions, selection, true)}
-      {...convexHullPolygon(convexHull, selection)}
+      {...convexHullPolygon(convexHull, selection, true)}
     </ShowInfoLayerPresentation>
   );
 };

@@ -38,6 +38,9 @@ const convexHullStyles = {
   base: new Style({
     stroke: thinOutline(Colors.convexHull),
   }),
+  netShow: new Style({
+    stroke: thinOutline(Colors.netShowConvexHull),
+  }),
   selection: new Style({
     stroke: whiteThickOutline,
   }),
@@ -45,7 +48,8 @@ const convexHullStyles = {
 
 export const convexHullPolygon = (
   convexHull: WorldCoordinate2D[] | undefined,
-  selection: string[]
+  selection: string[],
+  netShow?: boolean
 ) => {
   if (!convexHull) {
     return [];
@@ -63,7 +67,7 @@ export const convexHullPolygon = (
       id={globalIds.convexHull}
       style={[
         ...(selected ? [convexHullStyles.selection] : []),
-        convexHullStyles.base,
+        netShow ? convexHullStyles.netShow : convexHullStyles.base,
       ]}
     >
       <geom.Polygon coordinates={convexHullInMapCoordinates} />
