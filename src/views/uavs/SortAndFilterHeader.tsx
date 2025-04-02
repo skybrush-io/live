@@ -278,7 +278,7 @@ const HEADER_TEXT_PARTS: Record<string, HeaderPart[]> = {
       sortKey: UAVSortKey.DEFAULT,
       style: {
         textAlign: 'right',
-        width: 40,
+        width: 48,
       },
     },
     {
@@ -286,7 +286,7 @@ const HEADER_TEXT_PARTS: Record<string, HeaderPart[]> = {
       sortKey: UAVSortKey.DEFAULT,
       style: {
         textAlign: 'right',
-        width: 32,
+        width: 40,
       },
     },
     ...COMMON_HEADER_TEXT_PARTS,
