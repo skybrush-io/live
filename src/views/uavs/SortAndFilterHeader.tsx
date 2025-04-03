@@ -209,11 +209,18 @@ const COMMON_HEADER_TEXT_PARTS: readonly HeaderPart[] = Object.freeze([
     },
   },
   {
+    label: '', // LED light
+    style: {
+      textAlign: 'center',
+      width: 12,
+    },
+  },
+  {
     label: 'RSSI',
     sortKey: UAVSortKey.RSSI,
     style: {
       textAlign: 'center',
-      width: 96,
+      width: 82,
     },
   },
   {
@@ -221,7 +228,7 @@ const COMMON_HEADER_TEXT_PARTS: readonly HeaderPart[] = Object.freeze([
     sortKey: UAVSortKey.GPS_FIX,
     style: {
       textAlign: 'center',
-      width: 42,
+      width: 44,
     },
   },
   {
