@@ -52,6 +52,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Filtering for drones with "No telemetry" now also includes drones in the
   "GONE" state.
 
+- The width of the show upload dialog is now tailored towards larger shows
+  as it now includes 20 drones per row.
+
 ### Fixed
 
 - Fixed an issue with degenerate geofences consisting of one or two points only.

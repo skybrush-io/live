@@ -23,7 +23,7 @@ import {
 import UploadStatusPill from './UploadStatusPill';
 import UploadStatusRowHeader from './UploadStatusRowHeader';
 
-const NUMBER_OF_ITEMS_PER_ROW = 10;
+const NUMBER_OF_ITEMS_PER_ROW = 20;
 
 const useStyles = makeStyles((theme) => ({
   root: {

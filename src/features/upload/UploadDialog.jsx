@@ -40,7 +40,7 @@ const UploadDialog = ({
     <DraggableDialog
       fullWidth
       open={Boolean(open)}
-      maxWidth='sm'
+      maxWidth='md'
       title={getDialogTitleForJobType(selectedJobType)}
       onClose={onClose}
     >
