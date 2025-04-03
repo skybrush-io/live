@@ -213,7 +213,7 @@ const COMMON_HEADER_TEXT_PARTS: readonly HeaderPart[] = Object.freeze([
     sortKey: UAVSortKey.RSSI,
     style: {
       textAlign: 'center',
-      width: 100,
+      width: 96,
     },
   },
   {
@@ -221,14 +221,14 @@ const COMMON_HEADER_TEXT_PARTS: readonly HeaderPart[] = Object.freeze([
     sortKey: UAVSortKey.GPS_FIX,
     style: {
       textAlign: 'center',
-      width: 40,
+      width: 42,
     },
   },
   {
     label: 'Position',
     style: {
       textAlign: 'left',
-      width: 198,
+      width: 200,
     },
   },
   {
@@ -287,7 +287,7 @@ const HEADER_TEXT_PARTS: Record<string, HeaderPart[]> = {
       style: {
         textAlign: 'right',
         width: 40,
-      },
+      }
     },
     ...COMMON_HEADER_TEXT_PARTS,
   ],
@@ -297,7 +297,7 @@ const HEADER_TEXT_PARTS: Record<string, HeaderPart[]> = {
       sortKey: UAVSortKey.DEFAULT,
       style: {
         textAlign: 'right',
-        width: 40,
+        width: 48,
       },
     },
     {
@@ -305,7 +305,7 @@ const HEADER_TEXT_PARTS: Record<string, HeaderPart[]> = {
       sortKey: UAVSortKey.DEFAULT,
       style: {
         textAlign: 'right',
-        width: 32,
+        width: 40,
       },
     },
     ...COMMON_HEADER_TEXT_PARTS,
