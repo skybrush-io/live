@@ -2,7 +2,7 @@ import type { PayloadAction } from '@reduxjs/toolkit';
 
 import {
   Direction,
-  createKeyboardNavigationHandlers,
+  createKeyboardNavigationHandlers as createKeyboardNavigationHandlers_,
   type KeyboardNavigationHandlers,
 } from '~/features/hotkeys/navigation';
 import { setSelection } from '~/features/map/selection';
@@ -12,14 +12,9 @@ import { openUAVDetailsDialog } from '~/features/uavs/details';
 import { globalIdToUavId } from '~/model/identifiers';
 import type { AppDispatch, RootState } from '~/store/reducers';
 
-import { GRID_ITEM_WIDTH, HEADER_HEIGHT } from './constants';
+import { GRID_ITEM_WIDTH } from './constants';
 import { getGlobalIdsOfDisplayedItems } from './selectors';
 import { getSelectedUAVIdsAndMissionSlotIds } from './utils';
-import type { VirtuosoCommonHandle } from './VirtualizedUAVListBody';
-import type {
-  CalculateViewLocationParams,
-  FlatIndexLocationWithAlign,
-} from 'react-virtuoso';
 
 /**
  * Estimates the number of columns in the grid based on the width of the
@@ -110,47 +105,12 @@ export function maybeOpenUAVDetailsDialog(
   }
 }
 
-/**
- * Helper function to calculate the location to scroll to in the UAV list,
- * taking into account the size of the header.
- */
-function calculateViewLocationInList({
-  itemBottom,
-  itemTop,
-  viewportBottom,
-  viewportTop,
-  locationParams,
-  // eslint-disable-next-line @typescript-eslint/ban-types
-}: CalculateViewLocationParams): FlatIndexLocationWithAlign | null {
-  // Default implementation taken from here:
-  // https://virtuoso.dev/virtuoso-api/interfaces/FlatScrollIntoViewLocation/
-  //
-  // Adjusted to take into account the header height.
-
-  if (itemTop < viewportTop + HEADER_HEIGHT) {
-    const { align, ...rest } = locationParams as FlatIndexLocationWithAlign;
-    const offset = align ? 0 : -HEADER_HEIGHT;
-    return {
-      ...rest,
-      align: align ?? 'start',
-      offset,
-    };
-  }
-
-  if (itemBottom > viewportBottom) {
-    const { align, ...rest } = locationParams as FlatIndexLocationWithAlign;
-    return { ...rest, align: align ?? 'end' };
-  }
-
-  return null;
-}
-
-export default function handleKeyboardNavigation(
+export default function createKeyboardNavigationHandlers(
   dispatch: AppDispatch,
   containerDOMNodeId: string,
-  scrollerFunctions: React.RefObject<VirtuosoCommonHandle | undefined>
+  onIndexFocused: (index: number) => void
 ): KeyboardNavigationHandlers {
-  return createKeyboardNavigationHandlers({
+  return createKeyboardNavigationHandlers_({
     dispatch,
     activateId: maybeOpenUAVDetailsDialog,
     getNavigationDeltaInDirection:
@@ -158,24 +118,7 @@ export default function handleKeyboardNavigation(
     getVisibleIds: getGlobalIdsOfDisplayedItems,
     getSelectedIds: getSelectedUAVIdsAndMissionSlotIds,
     onItemFocused(_id, index) {
-      const funcs = scrollerFunctions.current;
-      if (!funcs) {
-        return;
-      }
-
-      if (funcs.scrollIntoView) {
-        // for lists
-        funcs.scrollIntoView({
-          index,
-          calculateViewLocation: calculateViewLocationInList,
-        });
-      } else if (funcs.scrollToIndex) {
-        // for grids
-        // TODO(ntamas): this does not really work nice yet as it strives to
-        // scroll the item to the center of the viewport, but it should leave
-        // the scroll position as is when the item is already visible.
-        funcs.scrollToIndex({ index, align: 'center' });
-      }
+      onIndexFocused(index);
     },
     setSelectedIds: setSelection,
   });

@@ -1,19 +1,17 @@
 import React from 'react';
-import {
-  Virtuoso,
-  VirtuosoGrid,
-  type FlatIndexLocationWithAlign,
-  type FlatScrollIntoViewLocation,
-  type VirtuosoProps,
-} from 'react-virtuoso';
+import { connect } from 'react-redux';
+import { Virtuoso, VirtuosoGrid } from 'react-virtuoso';
+import Box from '@material-ui/core/Box';
 import { makeStyles } from '@material-ui/core/styles';
 
 import { UAVListLayout } from '~/features/settings/types';
+import type { RootState } from '~/store/reducers';
+import type { VirtualizedScrollFunctions } from '~/utils/navigation';
 
 import type { UAVListSectionProps } from './UAVListSection';
 import { GRID_ITEM_WIDTH, GRID_ROW_HEIGHT, HEADER_HEIGHT } from './constants';
-import type { Item, UAVGroup } from './types';
-import Box from '@material-ui/core/Box';
+import { getDisplayedItems } from './selectors';
+import type { Item } from './types';
 
 const useStyles = makeStyles(
   {
@@ -39,9 +37,7 @@ type VirtualizedUAVListBodyProps = Readonly<{
   items: Item[];
   itemRenderer: UAVListSectionProps['itemRenderer'];
   layout: UAVListLayout;
-  restoreStateFrom?: any;
-}> &
-  Pick<VirtuosoProps<Item, UAVGroup>, 'onScroll'>;
+}>;
 
 /**
  * Padding that is placed as the topmost item in the virtual grid layout to
@@ -52,16 +48,11 @@ const GridHeaderPadding = (): JSX.Element => (
   <Box sx={{ height: HEADER_HEIGHT }} />
 );
 
-export type VirtuosoCommonHandle = {
-  scrollIntoView?: (location: FlatScrollIntoViewLocation) => void; // for lists
-  scrollToIndex?: (location: FlatIndexLocationWithAlign) => void; // for grids
-};
-
 /**
  * Presentation component for showing the drone show configuration view.
  */
 const VirtualizedUAVListBody = React.forwardRef<
-  VirtuosoCommonHandle | undefined,
+  VirtualizedScrollFunctions | undefined,
   VirtualizedUAVListBodyProps
 >((props, ref): JSX.Element => {
   const { items, itemRenderer, layout, ...rest } = props;
@@ -96,4 +87,18 @@ const VirtualizedUAVListBody = React.forwardRef<
   );
 });
 
-export default VirtualizedUAVListBody;
+export default connect(
+  // mapStateToProps
+  (state: RootState) => ({
+    // items are extracted here from the state and not in UAVList to avoid
+    // re-rendering UAVList constantly when the list is sorted and thus the items
+    // array changes frequently
+    items: getDisplayedItems(state),
+  }),
+  // mapDispatchToProps
+  {},
+  // mergeProps
+  null,
+  // options
+  { forwardRef: true }
+)(VirtualizedUAVListBody);
