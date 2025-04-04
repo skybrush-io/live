@@ -130,6 +130,8 @@
   "general": {
     "action": {
       "apply": "Apply",
+      "approve": "Approve",
+      "back": "Back",
       "cancel": "Cancel",
       "clear": "Clear",
       "close": "Close",
@@ -562,7 +564,31 @@
     "missionType": "Mission type: ({{missionType}})"
   },
   "siteSurveyDialog": {
-    "help": "Move and rotate the show to finetune its location.\nMove and rotate the takeoff grid and individual takeoff positions to adjust them to the local terrain."
+    "help": {
+      "config": "Move and rotate the show to finetune its location.\nMove and rotate the takeoff grid and individual takeoff positions to adjust them to the local terrain.",
+      "review": "Review the changes before applying them to the show."
+    },
+    "action": {
+      "adapt": "Adapt"
+    },
+    "adaptParameters": {
+      "section": {
+        "global": "Global",
+        "takeoff": "Takeoff",
+        "rth": "Return to home"
+      },
+      "form": {
+        "minDistance": "Minimum distance",
+        "takeoff": {
+          "altitude": "Altitude",
+          "velocity": "Max velocity"
+        },
+        "rth": {
+          "horizontalVelocity": "Horizontal velocity",
+          "verticalVelocity": "Vertical velocity"
+        }
+      }
+    }
   },
   "sorting": {
     "ascending": "Ascending",
