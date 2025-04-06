@@ -1,12 +1,14 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import clsx from 'clsx';
-import PropTypes from 'prop-types';
 import React from 'react';
 
-import ButtonBase from '@material-ui/core/ButtonBase';
+import ButtonBase, { type ButtonBaseProps } from '@material-ui/core/ButtonBase';
 import { makeStyles } from '@material-ui/core/styles';
 
 import StatusLight from '@skybrush/mui-components/lib/StatusLight';
 import Tooltip from '@skybrush/mui-components/lib/Tooltip';
+import type { Status } from '@skybrush/app-theme-material-ui';
+import type { Nullable } from '~/utils/types';
 
 const useStyles = makeStyles(
   (theme) => ({
@@ -39,6 +41,15 @@ const useStyles = makeStyles(
   }
 );
 
+type UploadStatusLegendButtonProps = Readonly<{
+  counter: number;
+  label: string;
+  status: Status;
+  tooltip?: Nullable<string>;
+  onClick?: () => void;
+}> &
+  ButtonBaseProps;
+
 const UploadStatusLegendButton = ({
   counter,
   label,
@@ -46,7 +57,7 @@ const UploadStatusLegendButton = ({
   status,
   tooltip,
   ...rest
-}) => {
+}: UploadStatusLegendButtonProps): JSX.Element => {
   const classes = useStyles();
   const enabled = onClick && counter > 0;
   const button = (
@@ -63,14 +74,6 @@ const UploadStatusLegendButton = ({
   );
 
   return tooltip ? <Tooltip content={tooltip}>{button}</Tooltip> : button;
-};
-
-UploadStatusLegendButton.propTypes = {
-  counter: PropTypes.number,
-  label: PropTypes.string,
-  status: PropTypes.string,
-  tooltip: PropTypes.string,
-  onClick: PropTypes.func,
 };
 
 export default UploadStatusLegendButton;

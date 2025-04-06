@@ -13,7 +13,7 @@ import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
 import { getCurrentUploadJob, getSelectedJobInUploadDialog } from './selectors';
 import { cancelUpload, openUploadDialogForJob } from './slice';
 
-const AnotherJobTypeRunningHint = () => {
+const AnotherJobTypeRunningHint = (): JSX.Element => {
   const dispatch = useDispatch();
   const currentJob = useSelector(getCurrentUploadJob);
   const selectedJob = useSelector(getSelectedJobInUploadDialog);

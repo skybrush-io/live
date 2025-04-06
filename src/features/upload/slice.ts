@@ -18,6 +18,7 @@ import {
   ensureItemsInQueue,
   moveItemsBetweenQueues,
 } from './utils';
+import type { Nullable } from '~/utils/types';
 
 export type UploadSliceState = {
   currentJob: {
@@ -285,7 +286,7 @@ const { actions, reducer } = createSlice({
         action: PayloadAction<{ uavId: UAV['id']; progress: number }>
       ) {
         const { uavId, progress } = action.payload;
-        if (0 <= progress && progress <= 1) {
+        if (progress >= 0 && progress <= 1) {
           state.progresses[uavId] = progress;
         } else {
           delete state.progresses[uavId];
@@ -315,7 +316,7 @@ const { actions, reducer } = createSlice({
     openUploadDialogForJob(
       state,
       action: PayloadAction<{
-        job?: { type?: string; payload?: JobPayload };
+        job?: { type?: Nullable<string>; payload?: JobPayload };
         options?: { backAction?: Action };
       }>
     ) {
