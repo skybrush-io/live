@@ -14,6 +14,7 @@ import Mouse from '@material-ui/icons/Mouse';
 import MoreVert from '@material-ui/icons/MoreVert';
 import OpenWith from '@material-ui/icons/OpenWith';
 
+import Colors from '~/components/colors';
 import {
   augmentMappingAutomaticallyFromSpareDrones,
   exportMapping,
@@ -93,7 +94,7 @@ const MappingEditorToolbar = React.forwardRef<
             </Box>
             <Box flex={1} />
             <IconButton onClick={finishMappingEditorSession}>
-              <Check />
+              <Check htmlColor={Colors.success} />
             </IconButton>
             <IconButton onClick={openMappingMenu}>
               <MoreVert />
