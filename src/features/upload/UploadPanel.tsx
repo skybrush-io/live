@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
@@ -15,7 +14,9 @@ import { makeStyles } from '@material-ui/core/styles';
 import Clear from '@material-ui/icons/Clear';
 import NavigateBack from '@material-ui/icons/NavigateBefore';
 
-import LabeledStatusLight from '@skybrush/mui-components/lib/LabeledStatusLight';
+import LabeledStatusLight, {
+  type LabeledStatusLightProps,
+} from '@skybrush/mui-components/lib/LabeledStatusLight';
 
 import { Status } from '~/components/semantics';
 import {
@@ -37,12 +38,23 @@ import StartUploadButton from '~/features/upload/StartUploadButton';
 import UploadProgressBar from '~/features/upload/UploadProgressBar';
 import UploadStatusLegend from '~/features/upload/UploadStatusLegend';
 import UploadStatusLights from '~/features/upload/UploadStatusLights';
+import type { AppThunk, RootState } from '~/store/reducers';
+
+type UploadResultIndicatorProps = Omit<LabeledStatusLightProps, 'children'> &
+  Readonly<{
+    result?: 'success' | 'error' | 'cancelled';
+    running?: boolean;
+  }>;
 
 /**
  * Helper componeht that shows an alert summarizing the result of the last
  * upload attempt.
  */
-const UploadResultIndicator = ({ result, running, ...rest }) => {
+const UploadResultIndicator = ({
+  result,
+  running,
+  ...rest
+}: UploadResultIndicatorProps): JSX.Element => {
   const { t } = useTranslation();
 
   let status;
@@ -82,11 +94,6 @@ const UploadResultIndicator = ({ result, running, ...rest }) => {
   );
 };
 
-UploadResultIndicator.propTypes = {
-  result: PropTypes.oneOf(['success', 'error', 'cancelled']),
-  running: PropTypes.bool,
-};
-
 const useStyles = makeStyles((theme) => ({
   actions: {
     padding: theme.spacing(1, 3, 1, 3),
@@ -96,6 +103,22 @@ const useStyles = makeStyles((theme) => ({
     cursor: 'pointer',
   },
 }));
+
+type UploadPanelProps = Readonly<{
+  autoRetry: boolean;
+  flashFailed: boolean;
+  hasQueuedItems: boolean;
+  jobType: string;
+  lastUploadResult?: 'success' | 'error' | 'cancelled';
+  onCancelUpload: () => void;
+  onDismissLastUploadResult: () => void;
+  onStartUpload?: () => void;
+  onStepBack?: () => void;
+  onToggleAutoRetry: () => void;
+  onToggleFlashFailed: () => void;
+  running?: boolean;
+  showLastUploadResult?: boolean;
+}>;
 
 /**
  * Presentation component for the main panel that allows the user to monitor the
@@ -112,9 +135,9 @@ const UploadPanel = ({
   onStepBack,
   onToggleAutoRetry,
   onToggleFlashFailed,
-  running,
-  showLastUploadResult,
-}) => {
+  running = false,
+  showLastUploadResult = false,
+}: UploadPanelProps): JSX.Element => {
   const classes = useStyles();
   const { t } = useTranslation();
 
@@ -178,29 +201,12 @@ const UploadPanel = ({
   );
 };
 
-UploadPanel.propTypes = {
-  autoRetry: PropTypes.bool,
-  flashFailed: PropTypes.bool,
-  hasQueuedItems: PropTypes.bool,
-  lastUploadResult: PropTypes.oneOf(['success', 'error', 'cancelled']),
-  onCancelUpload: PropTypes.func,
-  onDismissLastUploadResult: PropTypes.func,
-  onStartUpload: PropTypes.func,
-  onStepBack: PropTypes.func,
-  onToggleAutoRetry: PropTypes.func,
-  onToggleFlashFailed: PropTypes.func,
-  running: PropTypes.bool,
-  showLastUploadResult: PropTypes.bool,
-};
-
-UploadPanel.defaultProps = {
-  running: false,
-  showLastUploadResult: false,
-};
-
 export default connect(
   // mapStateToProps
-  (state, ownProps) => ({
+  (
+    state: RootState,
+    ownProps: Pick<UploadPanelProps, 'jobType' | 'onStepBack' | 'onStartUpload'>
+  ) => ({
     ...getUploadDialogState(state),
     autoRetry: shouldRetryFailedUploadsAutomatically(state),
     flashFailed: shouldFlashLightsOfFailedUploads(state),
@@ -214,12 +220,12 @@ export default connect(
     onCancelUpload: cancelUpload,
     onClose: closeUploadDialog,
     onDismissLastUploadResult: dismissLastUploadResult,
-    onToggleAutoRetry: () => (dispatch, getState) => {
+    onToggleAutoRetry: (): AppThunk => (dispatch, getState) => {
       const state = getState();
       const autoRetry = shouldRetryFailedUploadsAutomatically(state);
       dispatch(setUploadAutoRetry(!autoRetry));
     },
-    onToggleFlashFailed: () => (dispatch, getState) => {
+    onToggleFlashFailed: (): AppThunk => (dispatch, getState) => {
       const state = getState();
       const flashFailed = shouldFlashLightsOfFailedUploads(state);
       dispatch(setFlashFailed(!flashFailed));

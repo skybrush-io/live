@@ -23,22 +23,29 @@ import {
 import UploadStatusPill from './UploadStatusPill';
 import UploadStatusRowHeader from './UploadStatusRowHeader';
 
+const HEADER_WIDTH = 92;
 const NUMBER_OF_ITEMS_PER_ROW = 20;
 
 const useStyles = makeStyles((theme) => ({
   root: {
     display: 'grid',
-    gridTemplateColumns: `64px repeat(${NUMBER_OF_ITEMS_PER_ROW}, 1fr)`,
-    padding: theme.spacing(1, 0),
+    gridTemplateColumns: `${HEADER_WIDTH}px repeat(${NUMBER_OF_ITEMS_PER_ROW}, 1fr)`,
+    margin: theme.spacing(1, 0),
 
     '& div': {
       whiteSpace: 'nowrap',
       overflow: 'hidden',
     },
+
+    // Make sure that the lights container itself becomes scrollable when
+    // there are lots of drones instead of relying on the _dialog_ to become
+    // scrollable.
+    overflowY: 'auto',
+    maxHeight: 'calc(100vh - 320px)',
   },
 
   empty: {
-    padding: theme.spacing(1, 0),
+    margin: theme.spacing(1, 0),
     height: 64,
   },
 }));
