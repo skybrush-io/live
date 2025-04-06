@@ -110,12 +110,14 @@
       "all": "Mind",
       "errors": "Csak hibák",
       "noTelemetry": "Csak telemetria nélküliek",
+      "sleeping": "Alvó üzemmód",
       "warningsAndErrors": "Figyelmeztetések és hibák"
     },
     "shortLabel": {
       "all": "Mind",
       "errors": "Hibák",
       "noTelemetry": "Nincs telem",
+      "sleeping": "Alvó mód",
       "warningsAndErrors": "Figyelm/Hiba"
     }
   },

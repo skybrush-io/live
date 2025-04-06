@@ -110,12 +110,14 @@
       "all": "All",
       "errors": "Errors only",
       "noTelemetry": "No telemetry only",
+      "sleeping": "Low-power mode",
       "warningsAndErrors": "Warnings and errors"
     },
     "shortLabel": {
       "all": "All",
       "errors": "Errors",
       "noTelemetry": "No telem",
+      "sleeping": "Low-power",
       "warningsAndErrors": "Warn/Err"
     }
   },
