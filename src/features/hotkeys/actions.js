@@ -3,7 +3,10 @@ import isNil from 'lodash-es/isNil';
 import { dismissAlerts } from '~/features/alert/slice';
 import { hasPendingAudibleAlerts } from '~/features/alert/selectors';
 import { clearSelection } from '~/features/map/selection';
-import { getMissionMapping } from '~/features/mission/selectors';
+import {
+  getMissionMapping,
+  isMappingEditable,
+} from '~/features/mission/selectors';
 import { showNotification } from '~/features/snackbar/actions';
 import { setSelectedUAVIds } from '~/features/uavs/actions';
 import { getUAVById } from '~/features/uavs/selectors';
@@ -12,6 +15,7 @@ import { copyDisplayedCoordinatesToClipboard } from '~/views/map/utils';
 
 import { getPendingUAVId, isPendingUAVIdOverlayVisible } from './selectors';
 import { setPendingUAVId, startPendingUAVIdTimeout } from './slice';
+import { finishMappingEditorSession } from '../mission/slice';
 
 /* Prefixes to try in front of a UAV ID in case the "real" UAV ID has leading
  * zeros */
@@ -163,7 +167,8 @@ export function clearPendingUAVId() {
 /**
  * Action factory that is bound to the Esc key; clears the pending UAV ID
  * overlay if it is visible; otherwise it dismisses the current audible alert
- * if there are any and the alerts are audible; otherwise it clears the
+ * if there are any and the alerts are audible; otherwise it exits the mapping
+ * editor if the user is currently editing the mapping; otherwise it clears the
  * selection.
  */
 export function clearSelectionOrPendingUAVId() {
@@ -173,6 +178,8 @@ export function clearSelectionOrPendingUAVId() {
       dispatch(clearPendingUAVId());
     } else if (hasPendingAudibleAlerts(state)) {
       dispatch(dismissAlerts());
+    } else if (isMappingEditable(state)) {
+      dispatch(finishMappingEditorSession());
     } else {
       dispatch(clearSelection());
     }
