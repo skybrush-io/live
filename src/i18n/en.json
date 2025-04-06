@@ -604,7 +604,7 @@
     "setTheStartTime": "Set the start time of the show below",
     "startDate": "Start date",
     "startShowAuto": "Start show automatically",
-    "startShowWithRC": "Start show with remote controller only (safer)",
+    "startShowWithRC": "Start show with remote controller only",
     "startSignal": "Start signal",
     "startTime": "Start time",
     "startTimeHms": "Start time (hours:minutes:seconds)",
