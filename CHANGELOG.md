@@ -66,6 +66,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed a bug in the automatic coordinate system fitting algorithm when some
   UAVs did not have a GPS fix yet.
 
+- The rotation interaction now performs transformations predictably and
+  consistently when multiple features are selected.
+
 ### Miscellaneous
 
 - Performance optimizations.
