@@ -23,6 +23,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   each drone if the server provides this information. Thanks to @mwls-sean for
   implementing the first version of this feature!
 
+- The UAV list can now be filtered to show drones in low-power mode only.
+
 - When loading a show, we now validate the minimum distance between takeoff
   positions and the minimum distance between landing positions. An error will
   be shown if any pair of takeoff positions or any pair of landing positions are
@@ -51,6 +53,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Filtering for drones with "No telemetry" now also includes drones in the
   "GONE" state.
+
+- The width of the show upload dialog is now tailored towards larger shows
+  as it now includes 20 drones per row.
 
 ### Fixed
 

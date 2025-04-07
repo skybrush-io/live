@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-types */
 /**
  * @file Component that displays the status of the known UAVs in a Skybrush
  * flock.
@@ -5,11 +6,22 @@
 
 import isNil from 'lodash-es/isNil';
 import { nanoid } from 'nanoid';
-import React, { useCallback, useMemo, useRef } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type RefCallback,
+} from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import { connect } from 'react-redux';
-import { bindActionCreators, type AnyAction } from '@reduxjs/toolkit';
+import { connect, useStore } from 'react-redux';
+import {
+  bindActionCreators,
+  type AnyAction,
+  type Store,
+} from '@reduxjs/toolkit';
 
 import AppBar from '@material-ui/core/AppBar';
 import Box from '@material-ui/core/Box';
@@ -31,7 +43,6 @@ import FadeAndSlide from '~/components/transitions/FadeAndSlide';
 import DroneAvatar from '~/components/uavs/DroneAvatar';
 import DronePlaceholder from '~/components/uavs/DronePlaceholder';
 import { useKeyboardNavigation } from '~/features/hotkeys/hooks';
-import { type KeyboardNavigationHandlers } from '~/features/hotkeys/navigation';
 import { setSelection } from '~/features/map/selection';
 import {
   adjustMissionMapping,
@@ -49,19 +60,26 @@ import { UAVListLayout } from '~/features/settings/types';
 import { getSelection } from '~/selectors/selection';
 import type { AppDispatch, RootState } from '~/store/reducers';
 import { formatMissionId } from '~/utils/formatting';
+import {
+  createScrollerToIndex,
+  registerVirtualizedScrollableComponent,
+  VirtualizedScrollableComponentId,
+  type ScrollerToIndex,
+  type VirtualizedScrollableComponentRegistration,
+  type VirtualizedScrollFunctions,
+} from '~/utils/navigation';
 import type { Nullable } from '~/utils/types';
 
-import handleKeyboardNavigation, {
+import createKeyboardNavigationHandlers, {
   maybeOpenUAVDetailsDialog,
 } from './navigation';
 import { getGlobalIdsOfDisplayedItems, getDisplayedItems } from './selectors';
 import type { Item } from './types';
 import { getSelectedUAVIdsAndMissionSlotIds, itemToGlobalId } from './utils';
 import SortAndFilterHeader from './SortAndFilterHeader';
-import VirtualizedUAVListBody, {
-  type VirtuosoCommonHandle,
-} from './VirtualizedUAVListBody';
-import type { VirtuosoHandle } from 'react-virtuoso';
+import VirtualizedUAVListBody from './VirtualizedUAVListBody';
+import { HEADER_HEIGHT } from './constants';
+import { noop } from 'lodash-es';
 
 const useListStyles = makeStyles(
   (theme) => ({
@@ -219,7 +237,6 @@ const createListItemRenderer =
     selection,
     showMissionIds,
   }: ItemRendererOptions) =>
-  // eslint-disable-next-line @typescript-eslint/ban-types
   (item: Item): JSX.Element | null => {
     if (item === deletionMarker) {
       return null;
@@ -287,7 +304,6 @@ const UAVListPresentation = ({
   containerDOMNodeId,
   dispatch,
   editingMapping,
-  items,
   layout,
   mappingSlotBeingEdited,
   onEditMappingSlot,
@@ -296,16 +312,69 @@ const UAVListPresentation = ({
   selection,
   showMissionIds,
 }: UAVListPresentationProps): JSX.Element => {
+  // Regular styling stuff
   const classes = useListStyles();
-  const scrollerFunctions = useRef<VirtuosoCommonHandle>();
-  const keyboardNav = useMemo(
-    () =>
-      handleKeyboardNavigation(dispatch, containerDOMNodeId, scrollerFunctions),
-    [dispatch, containerDOMNodeId]
+
+  // Create a callback that can be used to retrun the index of the item showing
+  // the given UAV. This is used to focus the list to a specific UAV.
+  const store: Store<RootState> = useStore();
+  const getIndexOfUavId = useCallback(
+    (uavId: string): number => {
+      const items = getDisplayedItems(store.getState());
+      for (const [i, item] of items.entries()) {
+        if (item[0] === uavId) {
+          return i;
+        }
+      }
+
+      return -1;
+    },
+    [store]
   );
 
+  // Get a ref to the virtualized list or grid and create a scroll-to-index
+  // function for it
+  const scrollToIndex = useRef<ScrollerToIndex>(() => false);
+  const scrollFunctionsRef: RefCallback<VirtualizedScrollFunctions> = (
+    value
+  ) => {
+    scrollToIndex.current = createScrollerToIndex({
+      functions: value,
+      headerHeight: HEADER_HEIGHT,
+    });
+  };
+
+  // Register this component as _the_ UAV list component that needs to be
+  // focused when the user selects a UAV with the keyboard overlay
+  const registration = useMemo(
+    (): VirtualizedScrollableComponentRegistration => ({
+      id: VirtualizedScrollableComponentId.UAV_LIST,
+      getIndexOfItem: getIndexOfUavId,
+      scrollToIndex: (index) => scrollToIndex.current(index),
+    }),
+    [getIndexOfUavId]
+  );
+  useEffect(
+    () => registerVirtualizedScrollableComponent(registration),
+    [registration]
+  );
+
+  // Create the keyboard navigation handler functios
+  const keyboardNav = useMemo(
+    () =>
+      createKeyboardNavigationHandlers(
+        dispatch,
+        containerDOMNodeId,
+        (index) => {
+          scrollToIndex.current(index);
+        }
+      ),
+    [dispatch, containerDOMNodeId]
+  );
   useKeyboardNavigation(keyboardNav);
 
+  // Create a callback for dropping a UAV on another item in the list when
+  // rearranging the mapping using drag-and-drop
   const onDropped = useCallback(
     (targetIndex: number | undefined) =>
       (droppedUAVId: string): void => {
@@ -317,6 +386,7 @@ const UAVListPresentation = ({
     [onMappingAdjusted]
   );
 
+  // Create the item renderer
   const itemRendererOptions: ItemRendererOptions = {
     className:
       layout === UAVListLayout.GRID ? classes.gridItem : classes.listItem,
@@ -334,6 +404,7 @@ const UAVListPresentation = ({
       ? createGridItemRenderer(itemRendererOptions)
       : createListItemRenderer(itemRendererOptions);
 
+  // Finally, render time!
   return (
     <DndProvider backend={HTML5Backend}>
       <Box display='flex' flexDirection='column' height='100%'>
@@ -362,9 +433,8 @@ const UAVListPresentation = ({
            * calculate how many columns there are in the grid. Revise the
            * layout functions in connect() if this is not the case any more */}
           <VirtualizedUAVListBody
-            ref={scrollerFunctions}
+            ref={scrollFunctionsRef}
             id={containerDOMNodeId}
-            items={items}
             itemRenderer={itemRenderer}
             layout={layout}
           />
@@ -388,7 +458,6 @@ const UAVList = connect(
   // mapStateToProps
   (state: RootState) => ({
     editingMapping: isMappingEditable(state),
-    items: getDisplayedItems(state),
     mappingSlotBeingEdited: getIndexOfMappingSlotBeingEdited(state),
     layout: getUAVListLayout(state),
     selection: getSelection(state),

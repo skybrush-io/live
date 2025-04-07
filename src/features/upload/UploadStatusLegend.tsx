@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import React from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
@@ -11,6 +10,18 @@ import { restartSuccessfulUploads, retryFailedUploads } from './actions';
 import { getUploadStatusCodeCounters } from './selectors';
 import { clearUploadQueue } from './slice';
 import UploadStatusLegendButton from './UploadStatusLegendButton';
+import type { TFunction } from 'i18next';
+
+type UploadStatusLegendProps = Readonly<{
+  failed: number;
+  finished: number;
+  inProgress: number;
+  waiting: number;
+  onClearUploadQueue: () => void;
+  onRestartSuccessfulUploads: () => void;
+  onRetryFailedUploads: () => void;
+  t: TFunction;
+}>;
 
 const UploadStatusLegend = ({
   failed,
@@ -21,7 +32,7 @@ const UploadStatusLegend = ({
   onRetryFailedUploads,
   t,
   waiting,
-}) => (
+}: UploadStatusLegendProps): JSX.Element => (
   <Box display='flex' justifyContent='space-around'>
     <UploadStatusLegendButton
       counter={waiting}
@@ -51,17 +62,6 @@ const UploadStatusLegend = ({
     />
   </Box>
 );
-
-UploadStatusLegend.propTypes = {
-  failed: PropTypes.number,
-  finished: PropTypes.number,
-  inProgress: PropTypes.number,
-  waiting: PropTypes.number,
-  onClearUploadQueue: PropTypes.func,
-  onRestartSuccessfulUploads: PropTypes.func,
-  onRetryFailedUploads: PropTypes.func,
-  t: PropTypes.func,
-};
 
 export default connect(
   // mapStateToProps

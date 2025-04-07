@@ -110,12 +110,14 @@
       "all": "Mind",
       "errors": "Csak hibák",
       "noTelemetry": "Csak telemetria nélküliek",
+      "sleeping": "Alvó üzemmód",
       "warningsAndErrors": "Figyelmeztetések és hibák"
     },
     "shortLabel": {
       "all": "Mind",
       "errors": "Hibák",
       "noTelemetry": "Nincs telem",
+      "sleeping": "Alvó mód",
       "warningsAndErrors": "Figyelm/Hiba"
     }
   },
@@ -591,7 +593,7 @@
     "setTheStartTime": "Állítsa be a műsor kezdési időpontját alább",
     "startDate": "Kezdési dátum",
     "startShowAuto": "A műsor indítása automatikusan",
-    "startShowWithRC": "A műsor indítása kizárólag távirányítóval (biztonságosabb)",
+    "startShowWithRC": "A műsor indítása kizárólag távirányítóval",
     "startSignal": "Kezdési jel",
     "startTime": "Kezdési idő",
     "startTimeHms": "Kezdési idő (óra:perc:másodperc)",
