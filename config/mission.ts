@@ -15,6 +15,7 @@ const overrides: ConfigOverrides = {
 
   features: {
     missionEditor: true,
+    safetySettings: true,
   },
 
   map: {
