@@ -117,7 +117,9 @@ function useOwnState(props: Props) {
         return;
       }
 
-      adaptShow(adaptParameters.parameters);
+      if (adaptedBase64Show === undefined) {
+        adaptShow(adaptParameters.parameters);
+      }
       setStage('review');
     } else if (stage === 'review') {
       if (adaptedBase64Show === undefined) {
