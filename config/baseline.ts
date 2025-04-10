@@ -32,6 +32,7 @@ const baseline: Config = {
   features: {
     loadShowFromCloud: false,
     missionEditor: false,
+    safetySettings: false,
   },
 
   headerComponents: [

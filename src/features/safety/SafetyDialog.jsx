@@ -24,21 +24,17 @@ import { getSelectedTabInSafetyDialog, isSafetyDialogOpen } from './selectors';
 import { closeSafetyDialog, setSafetyDialogTab } from './slice';
 
 const tabs = [
-  ...(hasFeature('geofence')
-    ? [
-        {
-          id: SafetyDialogTab.GEOFENCE,
-          name: tt('safetyDialog.geofence'),
-          component: GeofenceSettingsTab,
-        },
-      ]
-    : []),
-  {
+  hasFeature('geofence') && {
+    id: SafetyDialogTab.GEOFENCE,
+    name: tt('safetyDialog.geofence'),
+    component: GeofenceSettingsTab,
+  },
+  hasFeature('safetySettings') && {
     id: SafetyDialogTab.SETTINGS,
     name: tt('safetyDialog.settings'),
     component: SafetySettingsTab,
   },
-];
+].filter(Boolean);
 
 /**
  * Dialog for configuring safety related settings, including the geofence.

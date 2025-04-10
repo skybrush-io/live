@@ -315,7 +315,7 @@ const GeofenceSettingsFormPresentation = ({ onSubmit, t }) => {
                 label: t('safetyDialog.geofenceTab.generateAutomatically'),
               }}
             />
-            <Box display='flex' flexDirection='row'>
+            <Box display='flex' flexDirection='row' alignItems='baseline'>
               <Checkboxes
                 name='simplify'
                 disabled={!generate}

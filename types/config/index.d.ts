@@ -118,11 +118,12 @@ declare module 'config' {
       Record<
         | 'beacons'
         | 'docks'
-        | 'mapFeatures' // (Objects that can be drawn and edited on the map.)
         | 'geofence'
         | 'loadShowFromCloud'
+        | 'mapFeatures' // (Objects that can be drawn and edited on the map.)
         | 'missionEditor'
         | 'perspectives'
+        | 'safetySettings'
         | 'showControl'
         | 'threeDView'
         | 'toolboxMenu',
