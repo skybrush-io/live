@@ -8,6 +8,7 @@ import {
   isWarningCodeOrMoreSevere,
 } from './status-codes';
 import { UAVAge } from './uav';
+import UAVErrorCode from '~/flockwave/UAVErrorCode';
 
 /**
  * Enum that describes the possible filtering presets for a list that shows UAVs.
@@ -17,6 +18,7 @@ export enum UAVFilter {
   WITH_WARNINGS = 'withWarnings',
   WITH_ERRORS = 'withErrors',
   INACTIVE_ONLY = 'inactiveOnly',
+  SLEEPING = 'sleeping',
   // INACTIVE_ONLY could be NO_TELEMETRY after the rename, but we cannot change
   // its string value because people might have saved state slices with
   // 'inactiveOnly' and it would be a fuss to migrate these. So, to keep things
@@ -32,6 +34,7 @@ export const UAVFilters: readonly UAVFilter[] = [
   UAVFilter.WITH_WARNINGS,
   UAVFilter.WITH_ERRORS,
   UAVFilter.INACTIVE_ONLY,
+  UAVFilter.SLEEPING,
 ] as const;
 
 /**
@@ -42,6 +45,7 @@ export const labelsForUAVFilter: Record<UAVFilter, PreparedI18nKey> = {
   [UAVFilter.WITH_WARNINGS]: tt('filtering.label.warningsAndErrors'),
   [UAVFilter.WITH_ERRORS]: tt('filtering.label.errors'),
   [UAVFilter.INACTIVE_ONLY]: tt('filtering.label.noTelemetry'),
+  [UAVFilter.SLEEPING]: tt('filtering.label.sleeping'),
 };
 
 /**
@@ -52,6 +56,7 @@ export const shortLabelsForUAVFilter: Record<UAVFilter, PreparedI18nKey> = {
   [UAVFilter.WITH_WARNINGS]: tt('filtering.shortLabel.warningsAndErrors'),
   [UAVFilter.WITH_ERRORS]: tt('filtering.shortLabel.errors'),
   [UAVFilter.INACTIVE_ONLY]: tt('filtering.shortLabel.noTelemetry'),
+  [UAVFilter.SLEEPING]: tt('filtering.shortLabel.sleeping'),
 };
 
 export const getFilterFunctionForUAVFilter = memoize(
@@ -72,7 +77,13 @@ export const getFilterFunctionForUAVFilter = memoize(
             : false;
 
       case UAVFilter.INACTIVE_ONLY:
-        return (uav) => uav?.age === UAVAge.INACTIVE;
+        return (uav) => uav?.age !== UAVAge.ACTIVE;
+
+      case UAVFilter.SLEEPING:
+        return (uav) =>
+          uav && Array.isArray(uav.errors)
+            ? uav.errors.includes(UAVErrorCode.SLEEPING)
+            : false;
 
       default:
         return undefined;

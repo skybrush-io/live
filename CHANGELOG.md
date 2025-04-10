@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [2.9.0] - 2025-04-07
 
 ### Added
 
@@ -22,6 +22,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The UAV list and the UAV details dialog now show the RSSI (signal strength) of
   each drone if the server provides this information. Thanks to @mwls-sean for
   implementing the first version of this feature!
+
+- The UAV list can now be filtered to show drones in low-power mode only.
 
 - When loading a show, we now validate the minimum distance between takeoff
   positions and the minimum distance between landing positions. An error will
@@ -49,6 +51,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   was pressed, not 30 seconds after the time when the "+30s" button was
   pressed.
 
+- Filtering for drones with "No telemetry" now also includes drones in the
+  "GONE" state.
+
+- The width of the show upload dialog is now tailored towards larger shows
+  as it now includes 20 drones per row.
+
 ### Fixed
 
 - Fixed an issue with degenerate geofences consisting of one or two points only.
@@ -57,6 +65,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fixed a bug in the automatic coordinate system fitting algorithm when some
   UAVs did not have a GPS fix yet.
+
+- The rotation interaction now performs transformations predictably and
+  consistently when multiple features are selected.
 
 ### Miscellaneous
 

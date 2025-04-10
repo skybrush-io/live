@@ -27,6 +27,16 @@ export enum UAVListLayout {
   LIST = 'list',
 }
 
+export enum UAVListOrientation {
+  HORIZONTAL = 'horizontal',
+  VERTICAL = 'vertical',
+}
+
+export type UAVSortKeyAndOrder = {
+  key: UAVSortKey;
+  reverse: boolean;
+};
+
 // Set of application settings.
 // This is a two-level key-value store; the first level is the
 // setting 'categories', the second level is the actual settings.
@@ -75,10 +85,7 @@ export type SettingsState = {
     uavListLayout: UAVListLayout;
 
     /** Sort preference of the UAV list */
-    uavListSortPreference: {
-      key: UAVSortKey;
-      reverse: boolean;
-    };
+    uavListSortPreference: UAVSortKeyAndOrder;
   };
 
   // TODO: Find / create proper enums from AFrame for some of these.

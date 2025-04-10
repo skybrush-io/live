@@ -249,7 +249,7 @@ function _handleFeatureUpdatesInOpenLayers(
         ) {
           dispatch(
             rotateOutdoorShowOrientationByAngleAroundPoint(
-              toDegrees(-event.angleDelta),
+              toDegrees(event.angleDelta),
               event.origin
             )
           );

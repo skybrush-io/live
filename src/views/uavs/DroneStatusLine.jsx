@@ -128,8 +128,8 @@ const DroneStatusLine = ({
   const { amsl, ahl, agl } = position || {};
   return (
     <div className={clsx(classes.root, gone && classes.gone)}>
-      {padStart(label, 4)}
-      <span className={classes.muted}>{padStart(secondaryLabel, 4)}</span>
+      {padStart(label, 5)}
+      <span className={classes.muted}>{padStart(secondaryLabel, 5)}</span>
       {(details || text) && (
         <StatusPill
           inline
@@ -214,6 +214,7 @@ DroneStatusLine.propTypes = {
   gpsFixType: PropTypes.number,
   heading: PropTypes.number,
   headingDeviation: PropTypes.number,
+  id: PropTypes.string,
   label: PropTypes.string,
   localPosition: PropTypes.arrayOf(PropTypes.number),
   missing: PropTypes.bool,

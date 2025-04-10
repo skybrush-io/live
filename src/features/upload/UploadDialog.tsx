@@ -1,5 +1,4 @@
-import { isNil } from 'lodash-es';
-import PropTypes from 'prop-types';
+import isNil from 'lodash-es/isNil';
 import React from 'react';
 import { connect } from 'react-redux';
 
@@ -23,6 +22,18 @@ import {
 } from './selectors';
 import { closeUploadDialog } from './slice';
 import UploadPanel from './UploadPanel';
+import type { RootState } from '~/store/reducers';
+
+type UploadDialogProps = Readonly<{
+  canGoBack: boolean;
+  canStartUpload: boolean;
+  onClose: () => void;
+  onStartUpload: () => void;
+  onStepBack: () => void;
+  open: boolean;
+  runningJobType?: string;
+  selectedJobType?: string;
+}>;
 
 const UploadDialog = ({
   canGoBack,
@@ -33,15 +44,15 @@ const UploadDialog = ({
   open,
   runningJobType,
   selectedJobType,
-}) => {
+}: UploadDialogProps): JSX.Element => {
   const isRunningJobTypeMatching =
     !runningJobType || runningJobType === selectedJobType;
   return (
     <DraggableDialog
       fullWidth
       open={Boolean(open)}
-      maxWidth='sm'
-      title={getDialogTitleForJobType(selectedJobType)}
+      maxWidth='md'
+      title={getDialogTitleForJobType(selectedJobType ?? '')}
       onClose={onClose}
     >
       {selectedJobType === FIRMWARE_UPDATE_JOB_TYPE && (
@@ -49,9 +60,9 @@ const UploadDialog = ({
       )}
       {isRunningJobTypeMatching ? (
         <UploadPanel
-          jobType={selectedJobType}
-          onStepBack={canGoBack ? onStepBack : null}
-          onStartUpload={canStartUpload ? onStartUpload : null}
+          jobType={selectedJobType ?? ''}
+          onStepBack={canGoBack ? onStepBack : undefined}
+          onStartUpload={canStartUpload ? onStartUpload : undefined}
         />
       ) : (
         <Box height={240}>
@@ -62,20 +73,9 @@ const UploadDialog = ({
   );
 };
 
-UploadDialog.propTypes = {
-  canGoBack: PropTypes.bool,
-  canStartUpload: PropTypes.bool,
-  onClose: PropTypes.func,
-  onStartUpload: PropTypes.func,
-  onStepBack: PropTypes.func,
-  open: PropTypes.bool,
-  runningJobType: PropTypes.string,
-  selectedJobType: PropTypes.string,
-};
-
 export default connect(
   // mapStateToProps
-  (state) => {
+  (state: RootState) => {
     const { open, backAction } = getUploadDialogState(state);
     return {
       open,

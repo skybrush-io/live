@@ -9,7 +9,7 @@ import { getUploadProgress, isUploadInProgress } from './selectors';
 /**
  * Linear progress bar that shows the state of the current upload.
  */
-const UploadProgressBar = () => {
+const UploadProgressBar = (): JSX.Element => {
   const progress = useSelector(getUploadProgress);
   const running = useSelector(isUploadInProgress);
 

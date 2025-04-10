@@ -226,7 +226,10 @@ const { actions, reducer } = createSlice({
 
     adjustMissionMapping(
       state,
-      action: PayloadAction<{ uavId: UAV['id']; to: MissionIndex }>
+      action: PayloadAction<{
+        uavId: UAV['id'];
+        to: Nullable<MissionIndex>;
+      }>
     ) {
       const { uavId, to } = action.payload;
       const from = state.mapping.indexOf(uavId);

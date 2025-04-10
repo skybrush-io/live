@@ -57,34 +57,23 @@ export const TransformationType = {
  * transformation parameters.
  */
 const transformationTypeToHandler = {
-  move(geom, deltaX, deltaY) {
+  move(geom, oldCoordinate, newCoordinate) {
+    const deltaX = newCoordinate[0] - oldCoordinate[0];
+    const deltaY = newCoordinate[1] - oldCoordinate[1];
     geom.translate(deltaX, deltaY);
   },
 
-  rotate(geom, deltaX, deltaY, totalDelta) {
-    // Rotation gesture is handled by assuming that this.pivot was moved by
-    // (deltaX, deltaY) to P = (this.pivot + totalDelta). We calculate the angle
-    // of the rotation around this.center that would make this.center,
-    // this.pivot and P collinear.
-
-    const centerToPivot = [
-      this.pivot[0] - this.center[0],
-      this.pivot[1] - this.center[1],
-    ];
-    const centerToTarget = [
-      centerToPivot[0] + totalDelta[0],
-      centerToPivot[1] + totalDelta[1],
-    ];
-    const centerToPivotAngle = Math.atan2(centerToPivot[1], centerToPivot[0]);
-    const centerToTargetAngle = Math.atan2(
-      centerToTarget[1],
-      centerToTarget[0]
+  rotate(geom, oldCoordinate, newCoordinate) {
+    const centerToOldAngle = Math.atan2(
+      oldCoordinate[1] - this.center[1],
+      oldCoordinate[0] - this.center[0]
     );
-    const angle = centerToTargetAngle - centerToPivotAngle;
-
-    const angleDelta = angle - (this.lastAngle || 0);
+    const centerToNewAngle = Math.atan2(
+      newCoordinate[1] - this.center[1],
+      newCoordinate[0] - this.center[0]
+    );
+    const angleDelta = centerToNewAngle - centerToOldAngle;
     geom.rotate(angleDelta, this.center);
-    this.lastAngle = angle;
   },
 };
 
@@ -160,11 +149,7 @@ export class TransformFeaturesInteraction extends PointerInteraction {
                 centerOfFirstPointsInLonLat.lat,
               ]);
             }
-
-            this.transformation_.pivot = event.coordinate;
           }
-
-          this.transformation_.lastAngle = 0;
 
           this.dispatchEvent(
             new TransformFeaturesInteractionEvent(
@@ -192,20 +177,21 @@ export class TransformFeaturesInteraction extends PointerInteraction {
 
         if (this.lastCoordinate_) {
           const newCoordinate = event.coordinate;
-          const deltaX = newCoordinate[0] - this.lastCoordinate_[0];
-          const deltaY = newCoordinate[1] - this.lastCoordinate_[1];
-          const totalDelta = this.calculateTotalDelta_();
           const features = this.features_;
           const { type } = this.transformation_;
 
           for (const feature of features) {
-            const geom = feature.getGeometry();
-            this.transformation_.handler(geom, deltaX, deltaY, totalDelta);
-            feature.setGeometry(geom);
+            this.transformation_.handler(
+              feature.getGeometry(),
+              this.lastCoordinate_,
+              newCoordinate
+            );
           }
 
           this.lastCoordinate_ = newCoordinate;
 
+          const totalDelta = this.calculateTotalDelta_();
+          const totalAngleDelta = this.calculateTotalAngleDelta_();
           this.dispatchEvent(
             new TransformFeaturesInteractionEvent(
               TransformEventType.TRANSFORMING,
@@ -213,7 +199,7 @@ export class TransformFeaturesInteraction extends PointerInteraction {
               features,
               newCoordinate,
               totalDelta,
-              this.transformation_.lastAngle,
+              totalAngleDelta,
               this.transformation_.center
             )
           );
@@ -224,7 +210,8 @@ export class TransformFeaturesInteraction extends PointerInteraction {
         if (this.lastCoordinate_) {
           const features = this.features_;
           const totalDelta = this.calculateTotalDelta_();
-          const { center, lastAngle, type } = this.transformation_;
+          const totalAngleDelta = this.calculateTotalAngleDelta_();
+          const { center, type } = this.transformation_;
 
           this.firstCoordinate_ = null;
           this.lastCoordinate_ = null;
@@ -238,7 +225,7 @@ export class TransformFeaturesInteraction extends PointerInteraction {
               features,
               event.coordinate,
               totalDelta,
-              lastAngle,
+              totalAngleDelta,
               center
             )
           );
@@ -281,6 +268,26 @@ export class TransformFeaturesInteraction extends PointerInteraction {
       this.lastCoordinate_[0] - this.firstCoordinate_[0],
       this.lastCoordinate_[1] - this.firstCoordinate_[1],
     ];
+  }
+
+  /**
+   * Calculate the total rotation between the first and the last
+   * mouse events during a drag.
+   *
+   * @return {number}  the total rotation
+   */
+  calculateTotalAngleDelta_() {
+    if (this.transformation_.center) {
+      const firstAngle = Math.atan2(
+        this.firstCoordinate_[0] - this.transformation_.center[0],
+        this.firstCoordinate_[1] - this.transformation_.center[1]
+      );
+      const lastAngle = Math.atan2(
+        this.lastCoordinate_[0] - this.transformation_.center[0],
+        this.lastCoordinate_[1] - this.transformation_.center[1]
+      );
+      return lastAngle - firstAngle;
+    }
   }
 
   /**
