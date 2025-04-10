@@ -591,7 +591,7 @@
       }
     },
     "adaptReview": {
-      "showAdaptInProgress": "Please wait, adapting the show. It may take a few minutes.",
+      "showAdaptInProgress": "Adapting the show, please wait. It may take a few minutes.",
       "error": {
         "invalidState": "Invalid state, please try again."
       },
