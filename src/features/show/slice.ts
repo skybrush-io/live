@@ -34,6 +34,7 @@ import type { EnvironmentState } from './types';
 
 type ShowSliceState = {
   data?: ShowSpecification;
+  base64Blob?: string;
   environment: EnvironmentState;
 
   loading: boolean;
@@ -110,6 +111,7 @@ type ShowSliceState = {
 
 const initialState: ShowSliceState = {
   data: undefined,
+  base64Blob: undefined,
 
   loading: false,
   progress: 0,
@@ -287,11 +289,16 @@ const { actions, reducer } = createSlice({
 
     loadingPromiseFulfilled(
       state,
-      action: PayloadAction<{ spec: ShowSpecification; url?: string }>
+      action: PayloadAction<{
+        spec: ShowSpecification;
+        url?: string;
+        base64Blob?: string;
+      }>
     ) {
-      const { spec, url } = action.payload;
+      const { spec, url, base64Blob } = action.payload;
 
       state.data = spec;
+      state.base64Blob = base64Blob;
       state.sourceUrl = url;
       state.loading = false;
       state.progress = undefined;

@@ -662,6 +662,12 @@ export const getShowMetadata = createSelector(
 );
 
 /**
+ * Selector that returns the base64-encoded blob of the currently loaded show
+ * if it exists.
+ */
+export const getBase64ShowBlob = (state) => state.show.base64Blob;
+
+/**
  * Returns the start method of the show.
  */
 export const getShowStartMethod = (state) => state.show.start.method;

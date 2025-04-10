@@ -33,16 +33,26 @@ export type ShowData = {
   coordinateSystem: OutdoorCoordinateSystemWithOrigin;
 };
 
+export type AdaptResult = {
+  show: string;
+  takeoffLengthChange: number;
+  rthLengthChange: number;
+};
+
+type AdaptResultOrStatus = AdaptResult | { error: string } | { loading: true };
+
 export type SiteSurveyState = {
   open: boolean;
   selection: Identifier[];
   showData?: ShowData;
+  adaptResult?: AdaptResultOrStatus;
 };
 
 const initialState: SiteSurveyState = {
   open: false,
   selection: EMPTY_ARRAY,
   showData: undefined,
+  adaptResult: undefined,
 };
 
 const { reducer, actions } = createSlice({
@@ -96,6 +106,7 @@ const { reducer, actions } = createSlice({
         state.selection = updateSelectedIds([], xor(state.selection, ids));
       }
     },
+
     // -- Intitialization
 
     /**
@@ -103,6 +114,16 @@ const { reducer, actions } = createSlice({
      */
     initializeWithData(state, action: PayloadAction<ShowData>) {
       state.showData = action.payload;
+      state.adaptResult = undefined;
+    },
+
+    // -- Show adapt
+
+    setAdaptResult(
+      state,
+      action: PayloadAction<AdaptResultOrStatus | undefined>
+    ) {
+      state.adaptResult = action.payload;
     },
 
     // -- Transformations
@@ -284,6 +305,7 @@ export const {
   moveOutdoorShowOriginByMapCoordinateDelta,
   rotateHomePositions,
   rotateShow,
+  setAdaptResult,
   showDialog,
   updateSelection,
 } = actions;

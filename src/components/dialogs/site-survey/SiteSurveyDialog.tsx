@@ -4,24 +4,36 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import Paper from '@material-ui/core/Paper';
+import type { TFunction } from 'i18next';
 import React, { useCallback, useState } from 'react';
 import { withTranslation } from 'react-i18next';
-import { connect } from 'react-redux';
+import { batch, connect } from 'react-redux';
 
 import DialogHelpIcon from '~/components/DialogHelpIcon';
+import { loadBase64EncodedShow } from '~/features/show/actions';
 import {
-  closeDialog,
-  initializeWithData,
-  type ShowData,
-  type SiteSurveyState,
-} from '~/features/site-survey/state';
+  setOutdoorShowOrientation,
+  setOutdoorShowOrigin,
+} from '~/features/show/slice';
+import type { OutdoorCoordinateSystemWithOrigin } from '~/features/show/types';
+import {
+  adaptShow,
+  type ShowAdaptParameters,
+} from '~/features/site-survey/actions';
+import {
+  selectAdaptedShowAsBase64String,
+  selectCoordinateSystem,
+  selectIsShowAdaptInProgress,
+} from '~/features/site-survey/selectors';
+import { closeDialog, setAdaptResult } from '~/features/site-survey/state';
 import type { AppDispatch, RootState } from '~/store/reducers';
+import { LonLat } from '~/utils/geography';
 
 import AdaptParametersForm, {
   useAdaptParametersFormState,
 } from './AdaptParametersForm';
+import AdaptReviewForm from './AdaptReviewForm';
 import Map from './map';
-import type { DispatchProps, TranslationProps } from './types';
 
 const useStyles = makeStyles((theme) => ({
   contentRoot: {
@@ -40,7 +52,28 @@ const useStyles = makeStyles((theme) => ({
 
 const paperElevation = 2;
 
-type Props = SiteSurveyState & TranslationProps & DispatchProps;
+type DispatchProps = {
+  adaptShow: (parameters: ShowAdaptParameters) => void;
+  approveAdaptedShow: (
+    base64Blob: string,
+    showOrigin: LonLat,
+    showOrientation: string
+  ) => void;
+  closeDialog: () => void;
+  resetAdaptResult: () => void;
+};
+
+type StateProps = {
+  adaptedBase64Show: string | undefined;
+  backDisabled: boolean;
+  coordinateSystem: OutdoorCoordinateSystemWithOrigin;
+  open: boolean;
+};
+
+type Props = StateProps &
+  DispatchProps & {
+    t: TFunction;
+  };
 
 type AdaptStage = 'config' | 'review';
 
@@ -49,41 +82,74 @@ const hiddenStyle: React.CSSProperties = {
 };
 
 function useOwnState(props: Props) {
-  const { closeDialog } = props;
+  const {
+    adaptShow,
+    adaptedBase64Show,
+    approveAdaptedShow,
+    backDisabled,
+    closeDialog,
+    coordinateSystem,
+    resetAdaptResult,
+  } = props;
   const [stage, setStage] = useState<AdaptStage>('config');
-  const adaptParameters = useAdaptParametersFormState();
+  const adaptParameters = useAdaptParametersFormState(
+    undefined,
+    resetAdaptResult
+  );
+
   const back = useCallback(() => {
+    if (backDisabled) {
+      // Shouldn't happen, because the button should be disabled.
+      console.error('Back actions is disabled but action was triggered.');
+      return;
+    }
+
     if (stage === 'config') {
       closeDialog();
     } else if (stage === 'review') {
       setStage('config');
     }
-  }, [closeDialog, stage]);
+  }, [backDisabled, closeDialog, stage]);
+
   const submit = useCallback(() => {
     if (stage === 'config') {
       if (!adaptParameters.isValid) {
         return;
       }
 
-      // TODO: adapt show, show a loading indicator.
+      adaptShow(adaptParameters.parameters);
       setStage('review');
     } else if (stage === 'review') {
-      // TODO: save adapted show
+      if (adaptedBase64Show === undefined) {
+        // Shouldn't happen.
+        console.error('Adapted show is undefined');
+        return;
+      }
+
+      approveAdaptedShow(
+        adaptedBase64Show,
+        coordinateSystem.origin,
+        coordinateSystem.orientation
+      );
       setStage('config');
       closeDialog();
     }
   }, [adaptParameters, closeDialog, stage]);
 
   return {
+    adaptedBase64Show,
     adaptParameters,
+    adaptShow,
+    approveAdaptedShow,
     back,
+    coordinateSystem,
     stage,
     submit,
   };
 }
 
 function SiteSurveyDialog(props: Props) {
-  const { open, t } = props;
+  const { backDisabled, open, t } = props;
   const styles = useStyles();
   const { adaptParameters, back, stage, submit } = useOwnState(props);
 
@@ -102,16 +168,7 @@ function SiteSurveyDialog(props: Props) {
           elevation={paperElevation}
           style={stage === 'review' ? undefined : hiddenStyle}
         >
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              height: '100%',
-            }}
-          >
-            TODO: show overview of changes!
-          </div>
+          <AdaptReviewForm />
         </Paper>
         <Paper className={styles.sidebar} elevation={paperElevation}>
           <AdaptParametersForm
@@ -122,7 +179,7 @@ function SiteSurveyDialog(props: Props) {
       </DialogContent>
       <DialogActions>
         <DialogHelpIcon content={t(`siteSurveyDialog.help.${stage}`)} />
-        <Button onClick={back}>
+        <Button onClick={back} disabled={backDisabled}>
           {stage === 'review'
             ? t('general.action.back')
             : t('general.action.close')}
@@ -142,14 +199,27 @@ function SiteSurveyDialog(props: Props) {
 }
 
 export default connect(
-  // -- map state to props (get full dialog state)
+  // -- map state to props
   (state: RootState) => ({
-    ...state.dialogs.siteSurvey,
+    adaptedBase64Show: selectAdaptedShowAsBase64String(state),
+    backDisabled: selectIsShowAdaptInProgress(state),
+    coordinateSystem: selectCoordinateSystem(state),
+    open: state.dialogs.siteSurvey.open,
   }),
   // -- map dispatch to props
   (dispatch: AppDispatch) => ({
+    adaptShow: (params: ShowAdaptParameters) => dispatch(adaptShow(params)),
+    approveAdaptedShow: (
+      base64Blob: string,
+      showOrigin: LonLat,
+      showOrientation: string
+    ) =>
+      batch(() => {
+        dispatch(setOutdoorShowOrigin(showOrigin));
+        dispatch(setOutdoorShowOrientation(showOrientation));
+        dispatch(loadBase64EncodedShow(base64Blob));
+      }),
     closeDialog: () => dispatch(closeDialog()),
-    initializeWithData: (showData: ShowData) =>
-      dispatch(initializeWithData(showData)),
+    resetAdaptResult: () => dispatch(setAdaptResult(undefined)),
   })
 )(withTranslation()(SiteSurveyDialog));

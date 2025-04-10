@@ -15,11 +15,11 @@ import {
   createMessageWithType,
   createResumeRequest,
 } from './builders';
+import { OperationExecutor } from './operations';
 import {
   ensureNotNAK,
   extractResultOrReceiptFromMaybeAsyncResponse,
 } from './parsing';
-import { OperationExecutor } from './operations';
 import { QueryHandler } from './queries';
 import { validateObjectId } from './validation';
 import version from './version';
@@ -1296,9 +1296,12 @@ export default class MessageHub {
    * @param {Object} body  the body of the message to send, or the type of
    *        the message to send (in which case an appropriate body with
    *        only the given type is created)
+   * @oaram {number|undefined} options.timeout  number of seconds to wait
+   *        for a response. If `undefined`, then the default timeout of the
+   *        message hub is used.
    * @return {Promise} a promise that resolves to the response of the server
    */
-  async sendMessage(body = {}) {
+  async sendMessage(body = {}, { timeout = undefined } = {}) {
     if (!this._emitter) {
       console.warn(
         'sendMessage() was called before associating an emitter ' +
@@ -1311,7 +1314,7 @@ export default class MessageHub {
     const messageId = message.id;
 
     const pendingResponse = new PendingResponse(messageId, {
-      timeout: this.timeout,
+      timeout: timeout ?? this.timeout,
       onTimeout: this._onMessageTimedOut,
     });
 

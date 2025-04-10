@@ -1,35 +1,17 @@
 import Box from '@material-ui/core/Box';
 import FormGroup from '@material-ui/core/FormGroup';
 import React, { useCallback, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import FormHeader from '@skybrush/mui-components/lib/FormHeader';
 
-import { useTranslation } from 'react-i18next';
 import {
   SimpleDistanceField,
   SimpleVelocityField,
 } from '~/components/forms/fields';
+import type { ShowAdaptParameters } from '~/features/site-survey/actions';
 
-type Meters = number;
-type MetersPerSecond = number;
-
-type TakeoffParameters = {
-  altitude: Meters;
-  velocity: MetersPerSecond;
-};
-
-type RTHParameters = {
-  horizontalVelocity: MetersPerSecond;
-  verticalVelocity: MetersPerSecond;
-};
-
-export type AdaptParameters = {
-  minDistance: Meters;
-  takeoff: TakeoffParameters;
-  rth: RTHParameters;
-};
-
-const defaultAdaptParameters: AdaptParameters = {
+const defaultAdaptParameters: ShowAdaptParameters = {
   minDistance: NaN,
   takeoff: {
     altitude: 5,
@@ -44,7 +26,7 @@ const defaultAdaptParameters: AdaptParameters = {
 /**
  * Returns whether the given adapt parameters are valid.
  */
-function adaptParametersValid(parameters: AdaptParameters): boolean {
+function adaptParametersValid(parameters: ShowAdaptParameters): boolean {
   return (
     !isNaN(parameters.minDistance) &&
     parameters.minDistance > 0 &&
@@ -63,19 +45,20 @@ function adaptParametersValid(parameters: AdaptParameters): boolean {
  * Parses a distance (string) as meters and returns the result as an integer
  * to avoid rounding issues.
  */
-function parseDistanceAsMillimeters(value: string): Meters {
+function parseDistanceAsMillimeters(value: string): number {
   return Math.round(Number.parseFloat(value));
 }
 
 /**
  * Parses a velocity (string) as meters per second.
  */
-function parseVelocityMpS(value: string): MetersPerSecond {
+function parseVelocityMpS(value: string): number {
   return Number.parseFloat(value);
 }
 
 export function useAdaptParametersFormState(
-  defaultParameters?: AdaptParameters
+  defaultParameters?: ShowAdaptParameters,
+  onChange?: () => void
 ) {
   const [parameters, setParameters] = useState(
     defaultParameters ?? defaultAdaptParameters
@@ -90,8 +73,9 @@ export function useAdaptParametersFormState(
       const newParameters = { ...parameters, minDistance: value };
       setParameters(newParameters);
       setIsValid(adaptParametersValid(newParameters));
+      onChange?.();
     },
-    [parameters]
+    [onChange, parameters]
   );
   const onTakeoffAltitudeChanged = useCallback(
     (evt: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -102,8 +86,9 @@ export function useAdaptParametersFormState(
       };
       setParameters(newParameters);
       setIsValid(adaptParametersValid(newParameters));
+      onChange?.();
     },
-    [parameters]
+    [onChange, parameters]
   );
   const onTakeoffVelocityChanged = useCallback(
     (evt: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -114,8 +99,9 @@ export function useAdaptParametersFormState(
       };
       setParameters(newParameters);
       setIsValid(adaptParametersValid(newParameters));
+      onChange?.();
     },
-    [parameters]
+    [onChange, parameters]
   );
   const onRTHHorizontalVelocityChanged = useCallback(
     (evt: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -126,8 +112,9 @@ export function useAdaptParametersFormState(
       };
       setParameters(newParameters);
       setIsValid(adaptParametersValid(newParameters));
+      onChange?.();
     },
-    [parameters]
+    [onChange, parameters]
   );
   const onRTHVerticalVelocityChanged = useCallback(
     (evt: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -138,8 +125,9 @@ export function useAdaptParametersFormState(
       };
       setParameters(newParameters);
       setIsValid(adaptParametersValid(newParameters));
+      onChange?.();
     },
-    [parameters]
+    [onChange, parameters]
   );
 
   return {

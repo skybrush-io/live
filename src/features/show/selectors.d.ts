@@ -50,6 +50,7 @@ export const isShowIndoor: (state: RootState) => boolean;
 export const isShowOutdoor: (state: RootState) => boolean;
 export const isTakeoffAreaApproved: (state: RootState) => boolean;
 
+export const getBase64ShowBlob: AppSelector<string | undefined>;
 export const getShowSegment: AppSelector<ShowSegment | undefined>;
 export const getSwarmSpecificationForShowSegment: AppSelector<
   SwarmSpecification | undefined

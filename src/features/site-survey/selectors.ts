@@ -13,7 +13,7 @@ import type { AppSelector, RootState } from '~/store/reducers';
 import { type Latitude, type Longitude } from '~/utils/geography';
 import { EMPTY_ARRAY } from '~/utils/redux';
 
-import type { ShowData, SiteSurveyState } from './state';
+import type { AdaptResult, ShowData, SiteSurveyState } from './state';
 
 const _defaultCoordinateSystem: ShowData['coordinateSystem'] = {
   type: 'nwu',
@@ -55,7 +55,7 @@ const selectSwarmSpecification = createSelector(
 /**
  * Selector that returns the home positions of drones from the site survey state.
  */
-const getHomePositions = createSelector(
+export const getHomePositions = createSelector(
   selectShowData,
   (showData) => showData.homePositions
 );
@@ -69,28 +69,72 @@ export const getSelection = createSelector(
 );
 
 /**
+ * Selector that returns the partial show data from the currently loaded show.
+ *
+ * This is useful for showing feedback to the user about what's missing but necessary
+ * to use the site survey dialog.
+ */
+export const selectPartialSiteSurveyDataFromShow: AppSelector<
+  Partial<ShowData>
+> = createSelector(
+  getSwarmSpecificationForShowSegmentFromShow,
+  getOutdoorShowCoordinateSystemFromShow,
+  (showSwarm, showCoordinateSystem) => {
+    return {
+      swarm: showSwarm,
+      coordinateSystem:
+        showCoordinateSystem &&
+        isOutdoorCoordinateSystemWithOrigin(showCoordinateSystem)
+          ? showCoordinateSystem
+          : undefined,
+      homePositions: showSwarm?.drones.map((drone) => drone.settings?.home),
+    };
+  }
+);
+
+/**
  * Selector that returns the show data from the currently loaded show.
  */
 export const selectSiteSurveyDataFromShow: AppSelector<ShowData | undefined> =
   createSelector(
-    getSwarmSpecificationForShowSegmentFromShow,
-    getOutdoorShowCoordinateSystemFromShow,
-    (showSwarm, showCoordinateSystem) => {
+    selectPartialSiteSurveyDataFromShow,
+    ({ swarm, coordinateSystem, homePositions }) => {
       if (
-        showSwarm === undefined ||
-        showCoordinateSystem === undefined ||
-        !isOutdoorCoordinateSystemWithOrigin(showCoordinateSystem)
+        swarm === undefined ||
+        coordinateSystem === undefined ||
+        homePositions === undefined
       ) {
         return undefined;
       }
 
-      return {
-        swarm: showSwarm,
-        coordinateSystem: showCoordinateSystem,
-        homePositions: showSwarm.drones.map((drone) => drone.settings?.home),
-      };
+      return { swarm, coordinateSystem, homePositions };
     }
   );
+
+export const selectIsShowAdaptInProgress: AppSelector<boolean> = createSelector(
+  selectSiteSurveyState,
+  (state) =>
+    state.adaptResult !== undefined &&
+    'loading' in state.adaptResult &&
+    state.adaptResult.loading // Just to be safe.
+);
+
+export const selectShowAdaptError: AppSelector<string | undefined> =
+  createSelector(selectSiteSurveyState, (state) =>
+    state.adaptResult !== undefined && 'error' in state.adaptResult
+      ? state.adaptResult.error
+      : undefined
+  );
+
+export const selectAdaptResult: AppSelector<AdaptResult | undefined> =
+  createSelector(selectSiteSurveyState, (state) =>
+    state.adaptResult !== undefined && 'show' in state.adaptResult
+      ? state.adaptResult
+      : undefined
+  );
+
+export const selectAdaptedShowAsBase64String: AppSelector<string | undefined> =
+  createSelector(selectAdaptResult, (result) => result?.show);
 
 export const {
   getConvexHullOfShow,

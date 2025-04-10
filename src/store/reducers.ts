@@ -1,7 +1,7 @@
 import {
   type Action,
-  type Dispatch,
   type ThunkAction,
+  type ThunkDispatch,
   combineReducers,
 } from '@reduxjs/toolkit';
 
@@ -138,7 +138,7 @@ export default reducer;
 // respectively, when `~/store/index` gets annotated, according to:
 // https://redux.js.org/usage/usage-with-typescript#define-root-state-and-dispatch-types
 export type RootState = ReturnType<typeof reducer>;
-export type AppDispatch = Dispatch;
+export type AppDispatch = ThunkDispatch<RootState, unknown, Action<unknown>>;
 // eslint-disable-next-line @typescript-eslint/ban-types
 export type AppSelector<T, ExtraArgs extends unknown[] = []> = (
   state: RootState,
