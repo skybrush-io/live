@@ -1,8 +1,9 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { connect } from 'react-redux';
 import { Trans, withTranslation } from 'react-i18next';
+import { connect } from 'react-redux';
 
+import AutoFix from '~/icons/AutoFix';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import FormControl from '@material-ui/core/FormControl';
@@ -37,14 +38,14 @@ import {
   TakeoffHeadingMode,
 } from '~/features/show/constants';
 import {
+  getEnvironmentFromLoadedShowData,
   getOutdoorShowOrientation,
   getOutdoorShowTakeoffHeadingSpecification,
 } from '~/features/show/selectors';
 import { showSuccess } from '~/features/snackbar/actions';
 import { getAverageHeadingOfActiveUAVs } from '~/features/uavs/selectors';
-import AutoFix from '~/icons/AutoFix';
-import { normalizeAngle } from '~/utils/geography';
 import i18n from '~/i18n';
+import { normalizeAngle, toLonLatFromScaledJSON } from '~/utils/geography';
 
 import { TakeoffHeadingSpecEditor } from './TakeoffHeadingSpecEditor';
 
@@ -55,6 +56,7 @@ import { TakeoffHeadingSpecEditor } from './TakeoffHeadingSpecEditor';
 const OutdoorEnvironmentEditor = ({
   altitudeReference,
   canEstimateShowCoordinateSystem,
+  environmentFromLoadedShowData,
   onAltitudeReferenceTypeChanged,
   onAltitudeReferenceValueChanged,
   onCopyCoordinateSystemToMap,
@@ -62,6 +64,7 @@ const OutdoorEnvironmentEditor = ({
   onOriginChanged,
   onOrientationChanged,
   onSetAltitudeReferenceToAverageAMSL,
+  onSetCoordinateSystemFromFile,
   onSetCoordinateSystemFromMap,
   onSetTakeoffHeading,
   onSetTakeoffHeadingToAverageActiveUAVHeading,
@@ -87,12 +90,34 @@ const OutdoorEnvironmentEditor = ({
             onOrientationChanged={onOrientationChanged}
           />
 
-          <Box display='flex' justifyContent='space-evenly' py={1}>
+          <Box
+            display='flex'
+            justifyContent='space-evenly'
+            alignItems='center'
+            py={1}
+          >
+            <Typography variant='button' color='textSecondary'>
+              Copy coordinate system:
+            </Typography>
+            <Tooltip
+              disabled={environmentFromLoadedShowData?.location}
+              content={t('outdoorEnvironmentEditor.fileToShowTooltip')}
+            >
+              {/* NOTE: Wrapper required to show tooltip on disabled button. */}
+              <span>
+                <Button
+                  disabled={!environmentFromLoadedShowData?.location}
+                  onClick={onSetCoordinateSystemFromFile}
+                >
+                  {t('outdoorEnvironmentEditor.fileToShow')}
+                </Button>
+              </span>
+            </Tooltip>
             <Button onClick={onSetCoordinateSystemFromMap}>
-              {t('outdoorEnvironmentEditor.copyMapOriginToShow')}
+              {t('outdoorEnvironmentEditor.mapToShow')}
             </Button>
             <Button onClick={onCopyCoordinateSystemToMap}>
-              {t('outdoorEnvironmentEditor.copyShowOriginToMap')}
+              {t('outdoorEnvironmentEditor.showToMap')}
             </Button>
           </Box>
         </Box>
@@ -190,6 +215,7 @@ OutdoorEnvironmentEditor.propTypes = {
     value: PropTypes.number,
   }),
   canEstimateShowCoordinateSystem: PropTypes.bool,
+  environmentFromLoadedShowData: PropTypes.object,
   onAltitudeReferenceTypeChanged: PropTypes.func,
   onAltitudeReferenceValueChanged: PropTypes.func,
   onCopyCoordinateSystemToMap: PropTypes.func,
@@ -197,6 +223,7 @@ OutdoorEnvironmentEditor.propTypes = {
   onOriginChanged: PropTypes.func,
   onOrientationChanged: PropTypes.func,
   onSetAltitudeReferenceToAverageAMSL: PropTypes.func,
+  onSetCoordinateSystemFromFile: PropTypes.func,
   onSetCoordinateSystemFromMap: PropTypes.func,
   onSetTakeoffHeading: PropTypes.func,
   onSetTakeoffHeadingToAverageActiveUAVHeading: PropTypes.func,
@@ -217,6 +244,7 @@ export default connect(
     altitudeReference: state.show.environment.outdoor.altitudeReference,
     canEstimateShowCoordinateSystem:
       canEstimateShowCoordinateSystemFromActiveUAVs(state),
+    environmentFromLoadedShowData: getEnvironmentFromLoadedShowData(state),
     showCoordinateSystem: state.show.environment.outdoor.coordinateSystem,
     mapCoordinateSystem: state.map.origin,
     takeoffHeading: getOutdoorShowTakeoffHeadingSpecification(state),
@@ -228,20 +256,8 @@ export default connect(
       setOutdoorShowAltitudeReferenceType(event.target.value),
     onAltitudeReferenceValueChanged: (event) =>
       setOutdoorShowAltitudeReferenceValue(event.target.value),
-    onCopyCoordinateSystemToMap: (showCoordinateSystem) => (dispatch) => {
-      dispatch(
-        updateFlatEarthCoordinateSystem({
-          position: showCoordinateSystem.origin,
-          angle: showCoordinateSystem.orientation,
-        })
-      );
-      dispatch(
-        showSuccess(
-          i18n.t('outdoorEnvironmentEditor.showCoordinateSystemAppliedToMap')
-        )
-      );
-    },
     onEstimateShowCoordinateSystem: estimateShowCoordinateSystemFromActiveUAVs,
+
     onOrientationChanged: (value) =>
       updateOutdoorShowSettings({
         orientation: value,
@@ -256,21 +272,6 @@ export default connect(
 
     onSetAltitudeReferenceToAverageAMSL:
       setOutdoorShowAltitudeReferenceToAverageAMSL,
-
-    onSetCoordinateSystemFromMap: (mapCoordinateSystem) => (dispatch) => {
-      dispatch(
-        updateOutdoorShowSettings({
-          origin: mapCoordinateSystem.position,
-          orientation: mapCoordinateSystem.angle,
-          setupMission: true,
-        })
-      );
-      dispatch(
-        showSuccess(
-          i18n.t('outdoorEnvironmentEditor.showCoordinateSystemUpdatedFromMap')
-        )
-      );
-    },
 
     onSetTakeoffHeading: (value) =>
       updateOutdoorShowSettings({
@@ -307,26 +308,66 @@ export default connect(
           })
         );
       },
+
+    showSuccess,
+    updateFlatEarthCoordinateSystem,
+    updateOutdoorShowSettings,
   },
 
   // mergeProps
-  (stateProps, dispatchProps, ownProps) => {
-    const mergedProps = {
-      ...ownProps,
-      ...stateProps,
-      ...dispatchProps,
-      onCopyCoordinateSystemToMap: () =>
-        dispatchProps.onCopyCoordinateSystemToMap(
-          stateProps.showCoordinateSystem
-        ),
-      onSetCoordinateSystemFromMap: () =>
-        dispatchProps.onSetCoordinateSystemFromMap(
-          stateProps.mapCoordinateSystem
-        ),
-    };
+  (
+    {
+      environmentFromLoadedShowData,
+      mapCoordinateSystem,
+      showCoordinateSystem,
+      ...stateProps
+    },
+    {
+      showSuccess,
+      updateFlatEarthCoordinateSystem,
+      updateOutdoorShowSettings,
+      ...dispatchProps
+    },
+    ownProps
+  ) => ({
+    ...ownProps,
+    ...stateProps,
+    ...dispatchProps,
 
-    delete mergedProps.mapCoordinateSystem;
+    environmentFromLoadedShowData,
+    showCoordinateSystem,
 
-    return mergedProps;
-  }
+    onCopyCoordinateSystemToMap: () => {
+      updateFlatEarthCoordinateSystem({
+        position: showCoordinateSystem.origin,
+        angle: showCoordinateSystem.orientation,
+      });
+      showSuccess(
+        i18n.t('outdoorEnvironmentEditor.showCoordinateSystemAppliedToMap')
+      );
+    },
+
+    onSetCoordinateSystemFromMap: () => {
+      updateOutdoorShowSettings({
+        origin: mapCoordinateSystem.position,
+        orientation: mapCoordinateSystem.angle,
+        setupMission: true,
+      });
+      showSuccess(
+        i18n.t('outdoorEnvironmentEditor.showCoordinateSystemUpdatedFromMap')
+      );
+    },
+
+    onSetCoordinateSystemFromFile: () => {
+      const { origin, orientation } = environmentFromLoadedShowData.location;
+      updateOutdoorShowSettings({
+        origin: toLonLatFromScaledJSON(origin),
+        orientation,
+        setupMission: true,
+      });
+      showSuccess(
+        i18n.t('outdoorEnvironmentEditor.showCoordinateSystemUpdatedFromFile')
+      );
+    },
+  })
 )(withTranslation()(OutdoorEnvironmentEditor));
