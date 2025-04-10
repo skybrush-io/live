@@ -259,6 +259,13 @@
         "error",
         "always"
       ],
+      "object-shorthand": [
+        "error",
+        "always",
+        {
+          "avoidExplicitReturnArrows": false
+        }
+      ],
       "react/boolean-prop-naming": 0,
       "react/function-component-definition": 0,
       "react/jsx-no-duplicate-props": 0,
