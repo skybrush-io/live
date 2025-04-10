@@ -5,7 +5,6 @@
 import { createSelector } from '@reduxjs/toolkit';
 import { OriginType } from '~/features/map/types';
 import type { RootState } from '~/store/reducers';
-
 import { FlatEarthCoordinateSystem, type LonLat } from '~/utils/geography';
 
 /**
@@ -43,6 +42,11 @@ export const getMapViewRotationAngle = createSelector(
   (state: RootState) => state.map.view.angle,
   Number.parseFloat
 );
+
+/**
+ * Selector that returns the zoom level of the map view.
+ */
+export const getMapViewZoom = (state: RootState) => state.map.view.zoom;
 
 /**
  * Selector that returns the rotation angle of the flat Earth coordinate

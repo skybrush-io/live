@@ -66,6 +66,7 @@ import {
 import {
   getMapViewCenterPosition,
   getMapViewRotationAngle,
+  getMapViewZoom,
 } from '~/selectors/map';
 import { getVisibleLayersInOrder } from '~/selectors/ordered';
 import { getSelection } from '~/selectors/selection';
@@ -728,7 +729,7 @@ const MapView = connect(
   (state) => ({
     center: getMapViewCenterPosition(state),
     rotation: getMapViewRotationAngle(state),
-    zoom: state.map.view.zoom,
+    zoom: getMapViewZoom(state),
 
     geofencePolygonId: getGeofencePolygonId(state),
 

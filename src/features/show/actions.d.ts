@@ -1,5 +1,5 @@
 import type { AppThunk } from '~/store/reducers';
-import { type Coordinate2D } from '~/utils/math';
+import type { Coordinate2D } from '~/utils/math';
 import type { TakeoffHeadingSpecification } from './constants';
 
 export const authorizeIfAndOnlyIfHasStartTime: () => AppThunk;
@@ -10,3 +10,5 @@ export const updateOutdoorShowSettings: (payload: {
   takeoffHeading?: TakeoffHeadingSpecification;
   setupMission?: boolean;
 }) => AppThunk;
+
+export const loadBase64EncodedShow: (base64Blob: string) => AppThunk;

@@ -566,11 +566,10 @@ export const safelyFormatCoordinate = (coordinate?: Coordinate2D): string => {
 export const parseCoordinate = (text: string): LonLat | undefined => {
   try {
     const parsed = new CoordinateParser(text);
-    return [
+    return (
       // NOTE: Type assertions justified by the `coordinate-parser` library
-      parsed.getLongitude() as Longitude,
-      parsed.getLatitude() as Latitude,
-    ];
+      [parsed.getLongitude() as Longitude, parsed.getLatitude() as Latitude]
+    );
   } catch {
     return undefined;
   }
@@ -635,12 +634,12 @@ export const WGS84 = makeEllipsoidModel(6378137, 298.257223563);
  */
 
 export type CoordinateTransformationFunction = {
-  // Special case for two dimensions
+  // Special case for two dimensions, generic in terms of coordinate types
   (
     coordinates: Coordinate2D,
     projection?: Projection.ProjectionLike
   ): Coordinate2D;
-  // Original type
+  // Original type, generic in terms of dimensions and coordinate types
   (
     coordinates: Coordinate.Coordinate,
     projection?: Projection.ProjectionLike
@@ -661,20 +660,11 @@ export type CoordinateTransformationFunction = {
  * @returns The OpenLayers coordinates corresponding
  *          to the given longitude-latitude pair
  */
-export const mapViewCoordinateFromLonLat = Projection.fromLonLat as {
+// prettier-ignore
+export const mapViewCoordinateFromLonLat = Projection.fromLonLat as
   // Precisely typed case, specific for exact coordinate types
-  (coordinates: LonLat, projection?: Projection.ProjectionLike): EasNor;
-  // Special case for two dimensions, generic in terms of coordinate types
-  (
-    coordinates: Coordinate2D,
-    projection?: Projection.ProjectionLike
-  ): Coordinate2D;
-  // Original type, generic in terms of dimensions and coordinate types
-  (
-    coordinates: Coordinate.Coordinate,
-    projection?: Projection.ProjectionLike
-  ): Coordinate.Coordinate;
-};
+  ((coordinates: LonLat, projection?: Projection.ProjectionLike) => EasNor)
+  & CoordinateTransformationFunction;
 
 /**
  * Helper function to convert a coordinate from the map view into a
@@ -690,20 +680,11 @@ export const mapViewCoordinateFromLonLat = Projection.fromLonLat as {
  * @returns The longtitude-latitude pair corresponding
  *          to the given OpenLayers coordinates
  */
-export const lonLatFromMapViewCoordinate = Projection.toLonLat as {
+// prettier-ignore
+export const lonLatFromMapViewCoordinate = Projection.toLonLat as
   // Precisely typed case, specific for exact coordinate types
-  (coordinates: EasNor, projection?: Projection.ProjectionLike): LonLat;
-  // Special case for two dimensions, generic in terms of coordinate types
-  (
-    coordinates: Coordinate2D,
-    projection?: Projection.ProjectionLike
-  ): Coordinate2D;
-  // Original type, generic in terms of dimensions and coordinate types
-  (
-    coordinates: Coordinate.Coordinate,
-    projection?: Projection.ProjectionLike
-  ): Coordinate.Coordinate;
-};
+  ((coordinates: EasNor, projection?: Projection.ProjectionLike) => LonLat)
+  & CoordinateTransformationFunction;
 
 /**
  * Helper function to move a longitude-latitude coordinate pair by a vector

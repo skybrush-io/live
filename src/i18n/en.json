@@ -132,6 +132,8 @@
   "general": {
     "action": {
       "apply": "Apply",
+      "approve": "Approve",
+      "back": "Back",
       "cancel": "Cancel",
       "clear": "Clear",
       "close": "Close",
@@ -540,6 +542,15 @@
     "setupEnvironment": "Setup environment",
     "setupGeofence": "Setup geofence",
     "setupTakeoffArea": "Setup takeoff area",
+    "siteSurvey": {
+      "button": "Site survey",
+      "description": "Finetune drone and show placement",
+      "error": {
+        "outdoorShowAndOriginRequired": "An outdoor show must be loaded.\nThe show must have a \"show\" segment.\nThe show origin must be set.",
+        "showNotInMemory": "The show is not in memory. Please reload it.",
+        "swarmRequired": "A show must be loaded and it must have drones."
+      }
+    },
     "startMethod": {
       "AUTO": "Show will start automatically",
       "RC": "Use the switch on your RC to start"
@@ -558,6 +569,49 @@
   },
   "sidebar": {
     "missionType": "Mission type: ({{missionType}})"
+  },
+  "siteSurveyDialog": {
+    "action": {
+      "adapt": "Adapt"
+    },
+    "adaptParameters": {
+      "form": {
+        "minDistance": "Minimum distance",
+        "rth": {
+          "horizontalVelocity": "Horizontal velocity",
+          "verticalVelocity": "Vertical velocity"
+        },
+        "takeoff": {
+          "altitude": "Altitude",
+          "velocity": "Max velocity"
+        }
+      },
+      "section": {
+        "global": "Global",
+        "rth": "Return to home",
+        "takeoff": "Takeoff"
+      }
+    },
+    "adaptReview": {
+      "showAdaptInProgress": "Adapting the show, please wait. It may take a few minutes.",
+      "error": {
+        "invalidState": "Invalid state, please try again."
+      },
+      "form": {
+        "rth": {
+          "lengthChange": "RTH length change:",
+          "lengthChangeValue": "{{value}} seconds"
+        },
+        "takeoff": {
+          "lengthChange": "Takeoff length change:",
+          "lengthChangeValue": "{{value}} seconds"
+        }
+      }
+    },
+    "help": {
+      "config": "Move and rotate the show to finetune its location.\nMove and rotate the takeoff grid and individual takeoff positions to adjust them to the local terrain.",
+      "review": "Review the changes before applying them to the show."
+    }
   },
   "sorting": {
     "ascending": "Ascending",
