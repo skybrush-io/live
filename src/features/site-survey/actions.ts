@@ -83,13 +83,15 @@ function updateConvexHull(
     dispatch(
       rotateShow({
         rotationOriginInMapCoordinates: event.origin,
-        angle: toDegrees(-event.angleDelta),
+        angle: toDegrees(event.angleDelta),
       })
     );
+    // NOTE: Rotate the home positions in the opposite direction to
+    //       cancel out the transformation and keep them in place.
     dispatch(
       rotateHomePositions({
         rotationOriginInMapCoordinates: event.origin,
-        angle: toDegrees(event.angleDelta),
+        angle: toDegrees(-event.angleDelta),
       })
     );
   }
@@ -136,7 +138,7 @@ function updateHomePositions(
     dispatch(
       rotateHomePositions({
         rotationOriginInMapCoordinates: event.origin,
-        angle: toDegrees(-event.angleDelta),
+        angle: toDegrees(event.angleDelta),
         drones: homePositionIndexes,
       })
     );
