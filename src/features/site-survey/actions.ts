@@ -6,7 +6,7 @@ import type { TransformFeaturesInteractionEvent } from '~/components/map/interac
 import { getBase64ShowBlob } from '~/features/show/selectors';
 import messageHub from '~/message-hub';
 import {
-  CONVEX_HULL_AREA_ID,
+  NET_CONVEX_HULL_AREA_ID,
   globalIdToAreaId,
   globalIdToHomePositionId,
   isHomePositionId,
@@ -171,7 +171,7 @@ export const updateModifiedFeatures = (
         continue;
       }
 
-      if (globalIdToAreaId(gid) === CONVEX_HULL_AREA_ID) {
+      if (globalIdToAreaId(gid) === NET_CONVEX_HULL_AREA_ID) {
         updatedIds.convexHull.push(gid);
       } else if (isHomePositionId(gid)) {
         updatedIds.homePositions.push(gid);

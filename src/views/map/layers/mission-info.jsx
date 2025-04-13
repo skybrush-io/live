@@ -21,6 +21,7 @@ import FormGroup from '@material-ui/core/FormGroup';
 import Colors from '~/components/colors';
 import {
   convexHullPolygon,
+  ConvexHullVariant,
   homePositionPoints,
   landingPositionPoints,
 } from '~/components/map/layers/ShowInfoLayer';
@@ -679,7 +680,7 @@ const MissionInfoVectorSource = ({
         returnToHomeItems
       ),
       missionOriginMarker(missionOrientation, missionOrigin),
-      convexHullPolygon(convexHull, selection),
+      convexHullPolygon(convexHull, selection, ConvexHullVariant.GROSS),
       selectionTrajectoryFeatures(
         missionIndicesForTrajectories,
         uavIdsForTrajectories

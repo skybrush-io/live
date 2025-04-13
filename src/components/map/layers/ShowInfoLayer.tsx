@@ -9,11 +9,12 @@ import { Feature, geom, layer as olLayer, source } from '@collmot/ol-react';
 import Colors from '~/components/colors';
 import {
   areaIdToGlobalId,
-  CONVEX_HULL_AREA_ID,
   globalIdToHomePositionId,
   globalIdToLandingPositionId,
+  GROSS_CONVEX_HULL_AREA_ID,
   homePositionIdToGlobalId,
   landingPositionIdToGlobalId,
+  NET_CONVEX_HULL_AREA_ID,
 } from '~/model/identifiers';
 import { setLayerEditable, setLayerSelectable } from '~/model/layers';
 import type { Identifier } from '~/utils/collections';
@@ -28,19 +29,27 @@ import {
   whiteVeryThinOutline,
 } from '~/utils/styles';
 
-const globalIds = {
-  convexHull: areaIdToGlobalId(CONVEX_HULL_AREA_ID),
-};
-
 // === Convex hull ===
 
+export enum ConvexHullVariant {
+  GROSS = 'gross',
+  NET = 'net',
+}
+
+const convexHullGlobalIdsByVariant: Record<ConvexHullVariant, Identifier> = {
+  [ConvexHullVariant.GROSS]: areaIdToGlobalId(GROSS_CONVEX_HULL_AREA_ID),
+  [ConvexHullVariant.NET]: areaIdToGlobalId(NET_CONVEX_HULL_AREA_ID),
+};
+
 const convexHullStyles = {
-  base: new Style({
-    stroke: thinOutline(Colors.convexHull),
-  }),
-  netShow: new Style({
-    stroke: thinOutline(Colors.netShowConvexHull),
-  }),
+  byVariant: {
+    [ConvexHullVariant.GROSS]: new Style({
+      stroke: thinOutline(Colors.grossShowConvexHull),
+    }),
+    [ConvexHullVariant.NET]: new Style({
+      stroke: thinOutline(Colors.netShowConvexHull),
+    }),
+  } satisfies Record<ConvexHullVariant, Style>,
   selection: new Style({
     stroke: whiteThickOutline,
   }),
@@ -49,8 +58,10 @@ const convexHullStyles = {
 export const convexHullPolygon = (
   convexHull: WorldCoordinate2D[] | undefined,
   selection: string[],
-  netShow?: boolean
+  variant: ConvexHullVariant
 ) => {
+  const globalId = convexHullGlobalIdsByVariant[variant];
+
   if (!convexHull) {
     return [];
   }
@@ -59,15 +70,15 @@ export const convexHullPolygon = (
     mapViewCoordinateFromLonLat([coord.lon, coord.lat])
   );
   closePolygon(convexHullInMapCoordinates);
-  const selected = selection.includes(globalIds.convexHull);
+  const selected = selection.includes(globalId);
 
   return [
     <Feature
       key='missionConvexHull'
-      id={globalIds.convexHull}
+      id={globalId}
       style={[
         ...(selected ? [convexHullStyles.selection] : []),
-        netShow ? convexHullStyles.netShow : convexHullStyles.base,
+        convexHullStyles.byVariant[variant],
       ]}
     >
       <geom.Polygon coordinates={convexHullInMapCoordinates} />

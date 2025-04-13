@@ -18,7 +18,7 @@ export const Colors = {
   main: blue['500'],
 
   geofence: red['700'],
-  convexHull: '#fc0',
+  grossShowConvexHull: '#fc0',
   netShowConvexHull: '#fc0fc0',
   flightArea: '#0c4',
   plannedTrajectory: '#08f',

@@ -22,6 +22,7 @@ import {
 } from '~/components/map/layers';
 import ShowInfoLayerPresentation, {
   convexHullPolygon,
+  ConvexHullVariant,
   homePositionPoints,
   landingPositionPoints,
 } from '~/components/map/layers/ShowInfoLayer';
@@ -37,9 +38,9 @@ import {
 } from '~/features/site-survey/selectors';
 import { updateSelection } from '~/features/site-survey/state';
 import {
-  CONVEX_HULL_AREA_ID,
-  isAreaId,
+  globalIdToAreaId,
   isHomePositionId,
+  NET_CONVEX_HULL_AREA_ID,
 } from '~/model/identifiers';
 import { getVisibleSelectableLayers, LayerType } from '~/model/layers';
 import { getVisibleLayersInOrder } from '~/selectors/ordered';
@@ -70,7 +71,7 @@ const ShowInfoLayer = (props: ShowInfoLayerProps) => {
     <ShowInfoLayerPresentation {...layerProps}>
       {...homePositionPoints(homePositions, selection, true)}
       {...landingPositionPoints(landingPositions, selection, true)}
-      {...convexHullPolygon(convexHull, selection, true)}
+      {...convexHullPolygon(convexHull, selection, ConvexHullVariant.NET)}
     </ShowInfoLayerPresentation>
   );
 };
@@ -119,7 +120,7 @@ const useOwnState = (props: SiteSurveyMapProps) => {
           return false;
         }
         return (
-          (isAreaId(id) && id.endsWith(CONVEX_HULL_AREA_ID)) || // Convex hull is transformable.
+          globalIdToAreaId(id) === NET_CONVEX_HULL_AREA_ID || // Convex hull is transformable.
           isHomePositionId(id) // Home positions are transformable
         );
       });

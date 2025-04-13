@@ -24,11 +24,11 @@ import { toDegrees } from '~/utils/math';
 
 import { FeatureType } from './features';
 import {
-  CONVEX_HULL_AREA_ID,
   globalIdToAreaId,
   globalIdToFeatureId,
   globalIdToMissionItemId,
   globalIdToOriginId,
+  GROSS_CONVEX_HULL_AREA_ID,
   isAreaId,
   isFeatureId,
   isMissionItemId,
@@ -238,7 +238,7 @@ function _handleFeatureUpdatesInOpenLayers(
 
     // Is this feature an area such as the convex hull of the show?
     const areaId = globalIdToAreaId(globalId);
-    if (areaId === CONVEX_HULL_AREA_ID) {
+    if (areaId === GROSS_CONVEX_HULL_AREA_ID) {
       if (type === 'transform') {
         if (event.subType === 'move' && event.delta) {
           dispatch(moveOutdoorShowOriginByMapCoordinateDelta(event.delta));
