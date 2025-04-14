@@ -11,6 +11,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Build from '@material-ui/icons/Build';
 import Functions from '@material-ui/icons/Functions';
 import MapCloudOff from '~/icons/MapCloudOff';
+import Pro from '~/icons/Pro';
 import Tune from '@material-ui/icons/Tune';
 import VpnKey from '@material-ui/icons/VpnKey';
 
@@ -88,7 +89,12 @@ const ToolboxMenuPresentation = ({
           <Build />
         </ListItemIcon>
         <ListItemText
-          primary={t('toolbox.firmwareUpdate')}
+          primary={
+            <>
+              {t('toolbox.firmwareUpdate')}
+              <Pro style={{ verticalAlign: 'middle', marginLeft: 8 }} />
+            </>
+          }
           secondary={
             runningUploadJobType === FIRMWARE_UPLOAD_JOB_TYPE &&
             t('toolbox.uploadInProgress')
@@ -99,7 +105,14 @@ const ToolboxMenuPresentation = ({
         <ListItemIcon>
           <MapCloudOff />
         </ListItemIcon>
-        <ListItemText primary={t('toolbox.offlineMaps')} />
+        <ListItemText
+          primary={
+            <>
+              {t('toolbox.offlineMaps')}
+              <Pro style={{ verticalAlign: 'middle', marginLeft: 8 }} />
+            </>
+          }
+        />
       </MenuItem>
       <MenuItem onClick={createClickListener(showParameterUploadDialog)}>
         <ListItemIcon>
