@@ -541,10 +541,10 @@
     "selectFile": "Select or drop a show file here",
     "setupEnvironment": "Setup environment",
     "setupGeofence": "Setup geofence",
-    "setupTakeoffArea": "Setup takeoff area",
+    "setupTakeoffArea": "Assign drones to show",
     "siteSurvey": {
-      "button": "Site survey",
-      "description": "Finetune drone and show placement",
+      "button": "Adapt show to venue",
+      "description": "Redefine takeoff grid and show layout",
       "error": {
         "outdoorShowAndOriginRequired": "An outdoor show must be loaded.\nThe show must have a \"show\" segment.\nThe show origin must be set.",
         "showNotInMemory": "The show is not in memory. Please reload it.",
@@ -593,7 +593,6 @@
       }
     },
     "adaptReview": {
-      "showAdaptInProgress": "Adapting the show, please wait. It may take a few minutes.",
       "error": {
         "invalidState": "Invalid state, please try again."
       },
@@ -606,10 +605,11 @@
           "lengthChange": "Takeoff length change:",
           "lengthChangeValue": "{{value}} seconds"
         }
-      }
+      },
+      "showAdaptInProgress": "Adapting the show, please wait. It may take a few minutes."
     },
     "help": {
-      "config": "Move and rotate the show to finetune its location.\nMove and rotate the takeoff grid and individual takeoff positions to adjust them to the local terrain.",
+      "config": "This tool lets you adjust takeoff positions and net show layout independently.\nSelect takeoff positions (yellow triangles) or the net show (purple convex hull)\nand move or rotate them as you need. When done, setup transformation parameters\non the right side and press ADAPT to recalculate trajectories, keeping original\nshow content, yet aligned to your new arrangement. The new show layout should\nbe validated thoroughly and saved to a production ready .skyc file on exit.",
       "review": "Review the changes before applying them to the show."
     }
   },
