@@ -23,6 +23,7 @@ import { openUAVDetailsDialog } from '~/features/uavs/details';
 import { getSelectedUAVIds, getUAVIdList } from '~/features/uavs/selectors';
 import { clearStoreAfterConfirmation } from '~/store';
 import { createUAVOperationThunks } from '~/utils/messaging';
+import { submitPromptDialog } from '~/features/prompt/actions';
 
 import {
   appendToPendingUAVId,
@@ -116,7 +117,10 @@ export default connect(
       {
         ACTIVATE_SELECTION: handlePendingUAVIdThenDispatch(
           () => (dispatch, getState) => {
-            if (isKeyboardNavigationActive()) {
+            const state = getState();
+            if (state.dialogs.prompt.open) {
+              dispatch(submitPromptDialog({ confirmed: true }));
+            } else if (isKeyboardNavigationActive()) {
               sendKeyboardNavigationSignal('ACTIVATE_SELECTION')();
             } else {
               const selectedUAVIds = getSelectedUAVIds(getState());
