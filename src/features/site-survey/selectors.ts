@@ -11,6 +11,7 @@ import {
 import { isOutdoorCoordinateSystemWithOrigin } from '~/features/show/types';
 import type { AppSelector, RootState } from '~/store/reducers';
 import { type Latitude, type Longitude } from '~/utils/geography';
+import { convexHull2D, type Coordinate2D } from '~/utils/math';
 import { EMPTY_ARRAY } from '~/utils/redux';
 
 import type { AdaptResult, ShowData, SiteSurveyState } from './state';
@@ -152,3 +153,22 @@ export const getHomePositionsInWorldCoordinates = createSelector(
   getOutdoorShowToWorldCoordinateSystemTransformation,
   positionsToWorldCoordinatesCombiner
 );
+
+const selectApproximateConvexHullOfFullShow = createSelector(
+  getConvexHullOfShow,
+  getHomePositions,
+  (convexHull, homePositions) =>
+    convexHull2D([
+      ...convexHull,
+      ...homePositions
+        .filter((p) => p !== undefined)
+        .map((p): Coordinate2D => [p[0], p[1]]),
+    ])
+);
+
+export const selectApproximateConvexHullOfFullShowInWorldCoordinates =
+  createSelector(
+    selectApproximateConvexHullOfFullShow,
+    getOutdoorShowToWorldCoordinateSystemTransformation,
+    positionsToWorldCoordinatesCombiner
+  );

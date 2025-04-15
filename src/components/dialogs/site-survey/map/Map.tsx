@@ -35,10 +35,12 @@ import {
   getConvexHullOfShowInWorldCoordinates,
   getHomePositionsInWorldCoordinates,
   getSelection,
+  selectApproximateConvexHullOfFullShowInWorldCoordinates,
 } from '~/features/site-survey/selectors';
 import { updateSelection } from '~/features/site-survey/state';
 import {
   globalIdToAreaId,
+  GROSS_CONVEX_HULL_AREA_ID,
   isHomePositionId,
   NET_CONVEX_HULL_AREA_ID,
 } from '~/model/identifiers';
@@ -52,6 +54,7 @@ import type { WorldCoordinate2D } from '~/utils/math';
 // === Layers ===
 
 type ShowInfoLayerProps = LayerProps & {
+  approximateConvexHullOfFullShow?: WorldCoordinate2D[];
   convexHull?: WorldCoordinate2D[];
   homePositions?: (WorldCoordinate2D | undefined)[];
   landingPositions?: (WorldCoordinate2D | undefined)[];
@@ -60,6 +63,7 @@ type ShowInfoLayerProps = LayerProps & {
 
 const ShowInfoLayer = (props: ShowInfoLayerProps) => {
   const {
+    approximateConvexHullOfFullShow,
     convexHull,
     homePositions,
     landingPositions,
@@ -69,6 +73,12 @@ const ShowInfoLayer = (props: ShowInfoLayerProps) => {
 
   return (
     <ShowInfoLayerPresentation {...layerProps}>
+      {...convexHullPolygon(
+        // First layer, interactive ones should be on top of this.
+        approximateConvexHullOfFullShow,
+        selection,
+        ConvexHullVariant.GROSS
+      )}
       {...homePositionPoints(homePositions, selection, true)}
       {...landingPositionPoints(landingPositions, selection, true)}
       {...convexHullPolygon(convexHull, selection, ConvexHullVariant.NET)}
@@ -77,6 +87,8 @@ const ShowInfoLayer = (props: ShowInfoLayerProps) => {
 };
 
 const ConnectedShowInfoLayer = connect((state: RootState) => ({
+  approximateConvexHullOfFullShow:
+    selectApproximateConvexHullOfFullShowInWorldCoordinates(state),
   convexHull: getConvexHullOfShowInWorldCoordinates(state),
   homePositions: getHomePositionsInWorldCoordinates(state),
   // landingPositions: getLandingPositionsInWorldCoordinates(state),
@@ -119,9 +131,14 @@ const useOwnState = (props: SiteSurveyMapProps) => {
         if (typeof id !== 'string') {
           return false;
         }
+        const areaId = globalIdToAreaId(id);
         return (
-          globalIdToAreaId(id) === NET_CONVEX_HULL_AREA_ID || // Convex hull is transformable.
-          isHomePositionId(id) // Home positions are transformable
+          // Convex hull is transformable.
+          areaId === NET_CONVEX_HULL_AREA_ID ||
+          // Convex hull (incl. home positions) is transformable.
+          areaId === GROSS_CONVEX_HULL_AREA_ID ||
+          // Home positions are transformable
+          isHomePositionId(id)
         );
       });
     },

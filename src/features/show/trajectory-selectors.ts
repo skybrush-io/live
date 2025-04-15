@@ -53,7 +53,7 @@ export const transformPoints = <TCoord extends Coordinate2DPlus, TTransformed>(
  *          transformed coordinates.
  */
 export const positionsToWorldCoordinatesCombiner = (
-  coords: (Coordinate3D | undefined)[],
+  coords: (Coordinate2DPlus | undefined)[],
   transform: CoordinateToWorldTransformationFunction | undefined
 ) => {
   if (coords.includes(undefined)) {

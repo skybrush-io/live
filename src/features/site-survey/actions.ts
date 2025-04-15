@@ -6,6 +6,7 @@ import type { TransformFeaturesInteractionEvent } from '~/components/map/interac
 import { getBase64ShowBlob } from '~/features/show/selectors';
 import messageHub from '~/message-hub';
 import {
+  GROSS_CONVEX_HULL_AREA_ID,
   NET_CONVEX_HULL_AREA_ID,
   globalIdToAreaId,
   globalIdToHomePositionId,
@@ -99,10 +100,15 @@ function updateConvexHull(
 
 /**
  * Handles home position changes.
+ *
+ * @param dispatch Redux dispatch function.
+ * @param globalIds The global IDs of the home positions to update or
+ *                 `undefined` if all home positions should be updated.
+ * @param options Feature update options.
  */
 function updateHomePositions(
   dispatch: AppDispatch,
-  globalIds: Identifier[],
+  globalIds: Identifier[] | undefined,
   options: FeatureUpdateOptions
 ) {
   if (!isTransformInteraction(options)) {
@@ -114,16 +120,21 @@ function updateHomePositions(
 
   const { event } = options;
 
-  const homePositionIndexes = globalIds.reduce(
-    (acc, globalId) => {
-      const index = Number.parseInt(globalIdToHomePositionId(globalId) ?? '');
-      if (Number.isFinite(index)) {
-        acc[index] = true;
-      }
-      return acc;
-    },
-    {} as Record<number, true>
-  );
+  const homePositionIndexes =
+    globalIds === undefined
+      ? undefined
+      : globalIds.reduce(
+          (acc, globalId) => {
+            const index = Number.parseInt(
+              globalIdToHomePositionId(globalId) ?? ''
+            );
+            if (Number.isFinite(index)) {
+              acc[index] = true;
+            }
+            return acc;
+          },
+          {} as Record<number, true>
+        );
 
   if (event.subType === 'move') {
     const delta: EasNor = event.delta;
@@ -159,11 +170,12 @@ export const updateModifiedFeatures = (
     // -- Reset adapt result
     dispatch(setAdaptResult(undefined));
 
-    // -- Collect updatable feature IDs
-    const updatedIds = {
-      convexHull: [] as Identifier[],
-      homePositions: [] as Identifier[],
+    const requiresUpdate = {
+      convexHull: false,
+      homePositionIds: [] as Identifier[],
+      allHomePositions: false,
     };
+
     for (const feature of features) {
       const gid = feature.getId();
       if (!(typeof gid === 'string')) {
@@ -171,19 +183,25 @@ export const updateModifiedFeatures = (
         continue;
       }
 
-      if (globalIdToAreaId(gid) === NET_CONVEX_HULL_AREA_ID) {
-        updatedIds.convexHull.push(gid);
+      const areaId = globalIdToAreaId(gid);
+      if (areaId === NET_CONVEX_HULL_AREA_ID) {
+        requiresUpdate.convexHull = true;
+      } else if (areaId === GROSS_CONVEX_HULL_AREA_ID) {
+        requiresUpdate.convexHull = true;
+        requiresUpdate.allHomePositions = true;
       } else if (isHomePositionId(gid)) {
-        updatedIds.homePositions.push(gid);
+        requiresUpdate.homePositionIds.push(gid);
       }
     }
 
     // -- Update features
-    if (updatedIds.convexHull.length === 1) {
+    if (requiresUpdate.convexHull) {
       updateConvexHull(dispatch, options);
     }
-    if (updatedIds.homePositions.length > 0) {
-      updateHomePositions(dispatch, updatedIds.homePositions, options);
+    if (requiresUpdate.allHomePositions) {
+      updateHomePositions(dispatch, undefined, options);
+    } else if (requiresUpdate.homePositionIds.length > 0) {
+      updateHomePositions(dispatch, requiresUpdate.homePositionIds, options);
     }
   });
 
