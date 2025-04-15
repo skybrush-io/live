@@ -12,6 +12,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import Typography from '@material-ui/core/Typography';
+import Navigation from '@material-ui/icons/Navigation';
 import VerticalAlignCenter from '@material-ui/icons/VerticalAlignCenter';
 import Warning from '@material-ui/icons/Warning';
 
@@ -42,9 +43,11 @@ import {
   getOutdoorShowOrientation,
   getOutdoorShowTakeoffHeadingSpecification,
 } from '~/features/show/selectors';
-import { showSuccess } from '~/features/snackbar/actions';
+import { showNotification } from '~/features/snackbar/actions';
+import { MessageSemantics } from '~/features/snackbar/types';
 import { getAverageHeadingOfActiveUAVs } from '~/features/uavs/selectors';
 import i18n from '~/i18n';
+import { scrollToMapLocation } from '~/signals';
 import { normalizeAngle, toLonLatFromScaledJSON } from '~/utils/geography';
 
 import { TakeoffHeadingSpecEditor } from './TakeoffHeadingSpecEditor';
@@ -309,7 +312,24 @@ export default connect(
         );
       },
 
-    showSuccess,
+    showNotificationWithNavigationOption: (message, location) => (dispatch) => {
+      dispatch(
+        showNotification({
+          message,
+          semantics: MessageSemantics.SUCCESS,
+          buttons: [
+            {
+              label: i18n.t('general.action.navigate', 'Navigate'),
+              endIcon: <Navigation />,
+              action: () => scrollToMapLocation(location),
+            },
+          ],
+          timeout: 10000,
+          topic: 'coordinate-system-updated',
+        })
+      );
+    },
+
     updateFlatEarthCoordinateSystem,
     updateOutdoorShowSettings,
   },
@@ -323,7 +343,7 @@ export default connect(
       ...stateProps
     },
     {
-      showSuccess,
+      showNotificationWithNavigationOption,
       updateFlatEarthCoordinateSystem,
       updateOutdoorShowSettings,
       ...dispatchProps
@@ -342,8 +362,9 @@ export default connect(
         position: showCoordinateSystem.origin,
         angle: showCoordinateSystem.orientation,
       });
-      showSuccess(
-        i18n.t('outdoorEnvironmentEditor.showCoordinateSystemAppliedToMap')
+      showNotificationWithNavigationOption(
+        i18n.t('outdoorEnvironmentEditor.showCoordinateSystemAppliedToMap'),
+        showCoordinateSystem.origin
       );
     },
 
@@ -353,20 +374,23 @@ export default connect(
         orientation: mapCoordinateSystem.angle,
         setupMission: true,
       });
-      showSuccess(
-        i18n.t('outdoorEnvironmentEditor.showCoordinateSystemUpdatedFromMap')
+
+      showNotificationWithNavigationOption(
+        i18n.t('outdoorEnvironmentEditor.showCoordinateSystemUpdatedFromMap'),
+        mapCoordinateSystem.position
       );
     },
 
     onSetCoordinateSystemFromFile: () => {
-      const { origin, orientation } = environmentFromLoadedShowData.location;
-      updateOutdoorShowSettings({
-        origin: toLonLatFromScaledJSON(origin),
-        orientation,
-        setupMission: true,
-      });
-      showSuccess(
-        i18n.t('outdoorEnvironmentEditor.showCoordinateSystemUpdatedFromFile')
+      const { origin: scaledOrigin, orientation } =
+        environmentFromLoadedShowData.location;
+      const origin = toLonLatFromScaledJSON(scaledOrigin);
+
+      updateOutdoorShowSettings({ origin, orientation, setupMission: true });
+
+      showNotificationWithNavigationOption(
+        i18n.t('outdoorEnvironmentEditor.showCoordinateSystemUpdatedFromFile'),
+        origin
       );
     },
   })
