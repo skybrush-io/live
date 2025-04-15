@@ -210,20 +210,11 @@ export const updateModifiedFeatures = (
 type Meters = number;
 type MetersPerSecond = number;
 
-type TakeoffParameters = {
-  altitude: Meters;
-  velocity: MetersPerSecond;
-};
-
-type RTHParameters = {
-  horizontalVelocity: MetersPerSecond;
-  verticalVelocity: MetersPerSecond;
-};
-
 export type ShowAdaptParameters = {
   minDistance: Meters;
-  takeoff: TakeoffParameters;
-  rth: RTHParameters;
+  altitude: Meters;
+  horizontalVelocity: MetersPerSecond;
+  verticalVelocity: MetersPerSecond;
 };
 
 export const adaptShow =
@@ -248,16 +239,16 @@ export const adaptShow =
         type: 'takeoff',
         parameters: {
           positions,
-          altitude: params.takeoff.altitude,
-          speed: params.takeoff.velocity,
+          altitude: params.altitude,
+          speed: params.verticalVelocity,
           ...common,
         },
       },
       {
         type: 'rth',
         parameters: {
-          velocity_xy: params.rth.horizontalVelocity,
-          velocity_z: params.rth.verticalVelocity,
+          velocity_xy: params.horizontalVelocity,
+          velocity_z: params.verticalVelocity,
           ...common,
         },
       },

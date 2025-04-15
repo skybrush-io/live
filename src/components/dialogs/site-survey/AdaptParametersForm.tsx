@@ -13,14 +13,9 @@ import type { ShowAdaptParameters } from '~/features/site-survey/actions';
 
 const defaultAdaptParameters: ShowAdaptParameters = {
   minDistance: NaN,
-  takeoff: {
-    altitude: 5,
-    velocity: 1.5,
-  },
-  rth: {
-    horizontalVelocity: NaN,
-    verticalVelocity: NaN,
-  },
+  altitude: 5,
+  horizontalVelocity: NaN,
+  verticalVelocity: NaN,
 };
 
 /**
@@ -30,14 +25,12 @@ function adaptParametersValid(parameters: ShowAdaptParameters): boolean {
   return (
     !isNaN(parameters.minDistance) &&
     parameters.minDistance > 0 &&
-    !isNaN(parameters.takeoff.altitude) &&
-    parameters.takeoff.altitude > 0 &&
-    !isNaN(parameters.takeoff.velocity) &&
-    parameters.takeoff.velocity > 0 &&
-    !isNaN(parameters.rth.horizontalVelocity) &&
-    parameters.rth.horizontalVelocity > 0 &&
-    !isNaN(parameters.rth.verticalVelocity) &&
-    parameters.rth.verticalVelocity > 0
+    !isNaN(parameters.altitude) &&
+    parameters.altitude > 0 &&
+    !isNaN(parameters.verticalVelocity) &&
+    parameters.verticalVelocity > 0 &&
+    !isNaN(parameters.horizontalVelocity) &&
+    parameters.horizontalVelocity > 0
   );
 }
 
@@ -70,19 +63,22 @@ export function useAdaptParametersFormState(
   const onMinDistanceChanged = useCallback(
     (evt: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       const value = parseDistanceAsMillimeters(evt.target.value);
-      const newParameters = { ...parameters, minDistance: value };
+      const newParameters: ShowAdaptParameters = {
+        ...parameters,
+        minDistance: value,
+      };
       setParameters(newParameters);
       setIsValid(adaptParametersValid(newParameters));
       onChange?.();
     },
     [onChange, parameters]
   );
-  const onTakeoffAltitudeChanged = useCallback(
+  const onAltitudeChanged = useCallback(
     (evt: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       const value = parseDistanceAsMillimeters(evt.target.value);
-      const newParameters = {
+      const newParameters: ShowAdaptParameters = {
         ...parameters,
-        takeoff: { ...parameters.takeoff, altitude: value },
+        altitude: value,
       };
       setParameters(newParameters);
       setIsValid(adaptParametersValid(newParameters));
@@ -90,12 +86,12 @@ export function useAdaptParametersFormState(
     },
     [onChange, parameters]
   );
-  const onTakeoffVelocityChanged = useCallback(
+  const onHorizontalVelocityChanged = useCallback(
     (evt: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       const value = parseVelocityMpS(evt.target.value);
-      const newParameters = {
+      const newParameters: ShowAdaptParameters = {
         ...parameters,
-        takeoff: { ...parameters.takeoff, velocity: value },
+        horizontalVelocity: value,
       };
       setParameters(newParameters);
       setIsValid(adaptParametersValid(newParameters));
@@ -103,25 +99,12 @@ export function useAdaptParametersFormState(
     },
     [onChange, parameters]
   );
-  const onRTHHorizontalVelocityChanged = useCallback(
+  const onVerticalVelocityChanged = useCallback(
     (evt: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       const value = parseVelocityMpS(evt.target.value);
-      const newParameters = {
+      const newParameters: ShowAdaptParameters = {
         ...parameters,
-        rth: { ...parameters.rth, horizontalVelocity: value },
-      };
-      setParameters(newParameters);
-      setIsValid(adaptParametersValid(newParameters));
-      onChange?.();
-    },
-    [onChange, parameters]
-  );
-  const onRTHVerticalVelocityChanged = useCallback(
-    (evt: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      const value = parseVelocityMpS(evt.target.value);
-      const newParameters = {
-        ...parameters,
-        rth: { ...parameters.rth, verticalVelocity: value },
+        verticalVelocity: value,
       };
       setParameters(newParameters);
       setIsValid(adaptParametersValid(newParameters));
@@ -134,10 +117,9 @@ export function useAdaptParametersFormState(
     parameters,
     isValid,
     onMinDistanceChanged,
-    onTakeoffAltitudeChanged,
-    onTakeoffVelocityChanged,
-    onRTHHorizontalVelocityChanged,
-    onRTHVerticalVelocityChanged,
+    onAltitudeChanged,
+    onHorizontalVelocityChanged,
+    onVerticalVelocityChanged,
   };
 }
 
@@ -150,10 +132,9 @@ function AdaptParametersForm(props: Props) {
     disabled,
     parameters,
     onMinDistanceChanged,
-    onTakeoffAltitudeChanged,
-    onTakeoffVelocityChanged,
-    onRTHHorizontalVelocityChanged,
-    onRTHVerticalVelocityChanged,
+    onAltitudeChanged,
+    onHorizontalVelocityChanged,
+    onVerticalVelocityChanged,
   } = props;
   const { t } = useTranslation(undefined, {
     keyPrefix: 'siteSurveyDialog.adaptParameters',
@@ -161,7 +142,7 @@ function AdaptParametersForm(props: Props) {
   return (
     <Box>
       <FormGroup>
-        <FormHeader>{t('section.global')}</FormHeader>
+        <FormHeader>{t('section.parameters')}</FormHeader>
         <SimpleDistanceField
           label={t('form.minDistance')}
           min={0.2}
@@ -170,42 +151,28 @@ function AdaptParametersForm(props: Props) {
           onChange={onMinDistanceChanged}
           disabled={disabled}
         />
-      </FormGroup>
-      <FormGroup>
-        <FormHeader>{t('section.takeoff')}</FormHeader>
         <SimpleDistanceField
-          label={t('form.takeoff.altitude')}
+          label={t('form.altitude')}
           min={1}
           max={100}
-          value={parameters.takeoff.altitude}
-          onChange={onTakeoffAltitudeChanged}
+          value={parameters.altitude}
+          onChange={onAltitudeChanged}
           disabled={disabled}
         />
         <SimpleVelocityField
-          label={t('form.takeoff.velocity')}
+          label={t('form.horizontalVelocity')}
           min={0.1}
           max={100}
-          value={parameters.takeoff.velocity}
-          onChange={onTakeoffVelocityChanged}
-          disabled={disabled}
-        />
-      </FormGroup>
-      <FormGroup>
-        <FormHeader>{t('section.rth')}</FormHeader>
-        <SimpleVelocityField
-          label={t('form.rth.horizontalVelocity')}
-          min={0.1}
-          max={100}
-          value={parameters.rth.horizontalVelocity}
-          onChange={onRTHHorizontalVelocityChanged}
+          value={parameters.horizontalVelocity}
+          onChange={onHorizontalVelocityChanged}
           disabled={disabled}
         />
         <SimpleVelocityField
-          label={t('form.rth.verticalVelocity')}
+          label={t('form.verticalVelocity')}
           min={0.1}
           max={100}
-          value={parameters.rth.verticalVelocity}
-          onChange={onRTHVerticalVelocityChanged}
+          value={parameters.verticalVelocity}
+          onChange={onVerticalVelocityChanged}
           disabled={disabled}
         />
       </FormGroup>

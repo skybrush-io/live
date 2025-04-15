@@ -576,20 +576,13 @@
     },
     "adaptParameters": {
       "form": {
+        "altitude": "Altitude",
+        "horizontalVelocity": "Horizontal velocity",
         "minDistance": "Minimum distance",
-        "rth": {
-          "horizontalVelocity": "Horizontal velocity",
-          "verticalVelocity": "Vertical velocity"
-        },
-        "takeoff": {
-          "altitude": "Altitude",
-          "velocity": "Max velocity"
-        }
+        "verticalVelocity": "Vertical velocity"
       },
       "section": {
-        "global": "Global",
-        "rth": "Return to home",
-        "takeoff": "Takeoff"
+        "parameters": "Parameters"
       }
     },
     "adaptReview": {
