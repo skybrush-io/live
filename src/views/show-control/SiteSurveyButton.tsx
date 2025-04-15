@@ -64,8 +64,15 @@ function SiteSurveyButton(props: Props) {
     tooltipLines.push(t('show.siteSurvey.error.outdoorShowAndOriginRequired'));
   }
 
+  // Join and then split to try to handle multiline strings
+  // even in a single error description.
+  const tooltipContent = tooltipLines
+    .join('\n')
+    .split('\n')
+    .map((line, idx) => <p key={idx}>{line}</p>);
+
   return (
-    <Tooltip content={tooltipLines.join('\n')}>
+    <Tooltip content={tooltipContent}>
       {/* We need a wrapper div because tooltips are not shown on disabled elements. */}
       <div>{listItem}</div>
     </Tooltip>
