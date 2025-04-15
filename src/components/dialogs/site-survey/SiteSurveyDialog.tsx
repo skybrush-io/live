@@ -27,6 +27,7 @@ import {
 } from '~/features/site-survey/selectors';
 import { closeDialog, setAdaptResult } from '~/features/site-survey/state';
 import type { AppDispatch, RootState } from '~/store/reducers';
+import { writeBlobToFile } from '~/utils/filesystem';
 import { LonLat } from '~/utils/geography';
 
 import AdaptParametersForm, {
@@ -111,7 +112,17 @@ function useOwnState(props: Props) {
     }
   }, [backDisabled, closeDialog, stage]);
 
+  const submitDisabled =
+    !adaptParameters.isValid ||
+    (stage === 'review' && adaptedBase64Show === undefined);
+
   const submit = useCallback(() => {
+    if (submitDisabled) {
+      // Shouldn't happen.
+      console.error('Submit action is disabled but action was triggered.');
+      return;
+    }
+
     if (stage === 'config') {
       if (!adaptParameters.isValid) {
         return;
@@ -136,7 +147,7 @@ function useOwnState(props: Props) {
       setStage('config');
       closeDialog();
     }
-  }, [adaptParameters, closeDialog, stage]);
+  }, [adaptParameters, closeDialog, stage, submitDisabled]);
 
   return {
     adaptedBase64Show,
@@ -147,13 +158,15 @@ function useOwnState(props: Props) {
     coordinateSystem,
     stage,
     submit,
+    submitDisabled,
   };
 }
 
 function SiteSurveyDialog(props: Props) {
-  const { backDisabled, open, t } = props;
+  const { adaptedBase64Show, backDisabled, open, t } = props;
   const styles = useStyles();
-  const { adaptParameters, back, stage, submit } = useOwnState(props);
+  const { adaptParameters, back, stage, submit, submitDisabled } =
+    useOwnState(props);
 
   return (
     <Dialog fullScreen open={open}>
@@ -186,11 +199,30 @@ function SiteSurveyDialog(props: Props) {
             ? t('general.action.back')
             : t('general.action.close')}
         </Button>
-        <Button
-          color='primary'
-          disabled={!adaptParameters.isValid}
-          onClick={submit}
-        >
+        {stage === 'review' && (
+          <Button
+            color='primary'
+            disabled={submitDisabled}
+            onClick={async () => {
+              if (submitDisabled || !adaptedBase64Show) {
+                return;
+              }
+              await writeBlobToFile(
+                new Blob([
+                  Uint8Array.from(
+                    atob(adaptedBase64Show)
+                      .split('')
+                      .map((char) => char.charCodeAt(0))
+                  ),
+                ]),
+                'adapted-show.skyc'
+              );
+            }}
+          >
+            {t('general.action.save')}
+          </Button>
+        )}
+        <Button color='primary' disabled={submitDisabled} onClick={submit}>
           {stage === 'review'
             ? t('general.action.approve')
             : t('siteSurveyDialog.action.adapt')}

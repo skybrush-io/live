@@ -16,7 +16,7 @@ import type { Identifier } from '~/utils/collections';
 import type { EasNor, Easting, Northing } from '~/utils/geography';
 import { toDegrees } from '~/utils/math';
 
-import { getHomePositions } from './selectors';
+import { getHomePositions, selectCoordinateSystem } from './selectors';
 import {
   moveHomePositionsByMapCoordinateDelta,
   moveOutdoorShowOriginByMapCoordinateDelta,
@@ -219,6 +219,7 @@ export const adaptShow =
     // if this becomes an issue.
     const base64ShowBlob = getBase64ShowBlob(state);
     const positions = getHomePositions(state);
+    const coordinateSystem = selectCoordinateSystem(state);
 
     const common = {
       min_distance: params.minDistance,
@@ -249,7 +250,11 @@ export const adaptShow =
     try {
       const { show, takeoffLengthChange, rthLengthChange } =
         // @ts-ignore ts(2339)
-        await messageHub.query.adaptShow(base64ShowBlob, transformations);
+        await messageHub.query.adaptShow(
+          base64ShowBlob,
+          transformations,
+          coordinateSystem
+        );
 
       dispatch(setAdaptResult({ show, takeoffLengthChange, rthLengthChange }));
     } catch (error) {
