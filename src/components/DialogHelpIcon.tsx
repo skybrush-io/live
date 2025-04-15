@@ -13,7 +13,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 type Props = {
-  content: string;
+  content: React.ReactNode;
 };
 
 function DialogHelpIcon(props: Props) {

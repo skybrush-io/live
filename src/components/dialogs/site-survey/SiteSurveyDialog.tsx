@@ -193,7 +193,13 @@ function SiteSurveyDialog(props: Props) {
         </Paper>
       </DialogContent>
       <DialogActions>
-        <DialogHelpIcon content={t(`siteSurveyDialog.help.${stage}`)} />
+        <DialogHelpIcon
+          content={t(`siteSurveyDialog.help.${stage}`)
+            .split('\n')
+            .map((item, idx) => (
+              <p key={idx}>{item}</p>
+            ))}
+        />
         <Button onClick={back} disabled={backDisabled}>
           {stage === 'review'
             ? t('general.action.back')
