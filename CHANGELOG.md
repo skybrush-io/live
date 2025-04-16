@@ -42,6 +42,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Maximum number of concurrent show upload tasks can now be changed from the
   settings.
 
+- Made it possible to import geospatial information from shapefiles.
+
+- Enabled over-the-air firmware updates. (Requires compatible / supported UAVs.)
+
+- Added new header widgets for displaying summarized distance and velocity data.
+
+- Added a new panel for displaying detailed information about a single UAV.
+  (Similarly to the UAV details dialog, but docked on the layout.)
+
+- Added a component for visualizing measurement values from rangefinder sensors.
+
+- Introduced support for multiple UI languages via community translations.
+
 ### Changed
 
 - When setting the start time based on a time offset from the current time,
@@ -57,6 +70,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The width of the show upload dialog is now tailored towards larger shows
   as it now includes 20 drones per row.
 
+- The labeling and styling of certain special features are now based on
+  automatic suggestions unless manually overridden by the user.
+
+- Improved the log download workflow and user experience.
+
 ### Fixed
 
 - Fixed an issue with degenerate geofences consisting of one or two points only.
@@ -68,6 +86,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - The rotation interaction now performs transformations predictably and
   consistently when multiple features are selected.
+
+- Eliminated performance issues with the map and UAV list views that caused
+  sluggish framerates in certain conditions with several hundred active drones.
 
 ### Miscellaneous
 
