@@ -15,6 +15,40 @@ import { extractResponseForId } from './parsing';
 import { validateExtensionName } from './validation';
 
 /**
+ * Adapts the given base64-encoded show using the given transformation
+ * definitions and coordinate system.
+ */
+export async function adaptShow(hub, show, transformations, coordinateSystem) {
+  const response = await hub.sendMessage(
+    {
+      type: 'X-SHOW-ADAPT',
+      show,
+      transformations,
+      environment: {
+        location: {
+          origin: [
+            // Convert the origin to a lat-lon integer pair.
+            // Unit must be 1e-7 degrees (so multiple by 1e7).
+            Math.round(coordinateSystem.origin[1] * 1e7),
+            Math.round(coordinateSystem.origin[0] * 1e7),
+          ],
+          orientation: coordinateSystem.orientation,
+        },
+      },
+    },
+    // Use a very long timeout for this message as the transformations
+    // require a lot of computation.
+    { timeout: 60 }
+  );
+
+  if (response?.body?.type === 'X-SHOW-ADAPT') {
+    return response.body;
+  } else {
+    throw new Error(response?.body?.reason ?? 'Unknown error.');
+  }
+}
+
+/**
  * Returns the basic properties of the beacons with the given IDs.
  */
 export async function getBasicBeaconProperties(hub, ids) {
@@ -412,6 +446,7 @@ export async function isExtensionLoaded(hub, name) {
  */
 export class QueryHandler {
   _queries = {
+    adaptShow,
     getBasicBeaconProperties,
     getConfigurationOfExtension,
     getFirmwareUpdateObjects,

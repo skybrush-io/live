@@ -15,7 +15,7 @@ import { createOLInteractionComponent } from '@collmot/ol-react/lib/interaction'
 import * as Condition from '~/components/map/conditions';
 import { getCenterOfFirstPointsOfTrajectoriesInWorldCoordinates } from '~/features/show/selectors';
 import {
-  CONVEX_HULL_AREA_ID,
+  GROSS_CONVEX_HULL_AREA_ID,
   globalIdToAreaId,
   isOriginId,
 } from '~/model/identifiers';
@@ -137,7 +137,7 @@ export class TransformFeaturesInteraction extends PointerInteraction {
             // investigate whether there is a way around it
             if (
               globalIdToAreaId(this.lastFeature_.getId()) ===
-              CONVEX_HULL_AREA_ID
+              GROSS_CONVEX_HULL_AREA_ID
             ) {
               const centerOfFirstPointsInLonLat =
                 getCenterOfFirstPointsOfTrajectoriesInWorldCoordinates(
@@ -378,7 +378,7 @@ const TransformEventType = {
   TRANSFORM_END: 'transformEnd',
 };
 
-class TransformFeaturesInteractionEvent extends OLEvent {
+export class TransformFeaturesInteractionEvent extends OLEvent {
   constructor(
     type,
     subType,

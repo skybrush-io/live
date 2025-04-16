@@ -1,7 +1,12 @@
 import isObject from 'lodash-es/isObject';
 import max from 'lodash-es/max';
 
-import { type Trajectory, type TrajectorySegment } from '@skybrush/show-format';
+import {
+  type TimeWindow,
+  type Trajectory,
+  type TrajectorySegment,
+  trajectorySegmentsInTimeWindow,
+} from '@skybrush/show-format';
 
 import {
   convexHull2D,
@@ -134,6 +139,25 @@ export const getDurationOfTrajectory = (
     }
   }
 };
+
+/**
+ * Returns the subtrajectory of the given trajectory that is within the given time window.
+ *
+ * The function keeps the all the properties of the original trajectory, but replaces
+ * the `points` property with calculated subtrajectory.
+ *
+ * @param trajectory The trajectory to get the subtrajectory from.
+ * @param timeWindow The time window of the subtrajectory.
+ */
+export function getTrajectoryInTimeWindow(
+  trajectory: Trajectory,
+  timeWindow: TimeWindow
+): Trajectory {
+  return {
+    ...trajectory,
+    points: trajectorySegmentsInTimeWindow(trajectory.points, timeWindow),
+  };
+}
 
 /**
  * Returns whether a trajectory object "looks like" a valid trajectory.

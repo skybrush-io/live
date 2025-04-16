@@ -3,14 +3,14 @@
  * show being executed.
  */
 
-import getUnixTime from 'date-fns/getUnixTime';
-import isNil from 'lodash-es/isNil';
-import set from 'lodash-es/set';
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import {
   COORDINATE_SYSTEM_TYPE,
   type ShowSpecification,
 } from '@skybrush/show-format';
+import getUnixTime from 'date-fns/getUnixTime';
+import isNil from 'lodash-es/isNil';
+import set from 'lodash-es/set';
 
 import { type Clock } from '~/features/clocks/types';
 import type UAV from '~/model/uav';
@@ -30,9 +30,12 @@ import {
   SettingsSynchronizationStatus,
   StartMethod,
 } from './enums';
+import type { EnvironmentState } from './types';
 
 type ShowSliceState = {
   data?: ShowSpecification;
+  base64Blob?: string;
+  environment: EnvironmentState;
 
   loading: boolean;
   progress?: number;
@@ -40,31 +43,6 @@ type ShowSliceState = {
   sourceUrl?: string;
   changedSinceLoaded: boolean;
   lastLoadAttemptFailed: boolean;
-
-  environment: {
-    editing: boolean;
-    outdoor: {
-      coordinateSystem: {
-        orientation: string; // stored as a string to avoid rounding errors
-        origin?: LonLat;
-        type: 'neu' | 'nwu';
-      };
-      altitudeReference: AltitudeReferenceSpecification;
-      takeoffHeading: TakeoffHeadingSpecification;
-    };
-    indoor: {
-      coordinateSystem: {
-        orientation: string; // stored as a string to avoid rounding errors
-      };
-      room: {
-        visible: false;
-        firstCorner: Coordinate3D;
-        secondCorner: Coordinate3D;
-      };
-      takeoffHeading: TakeoffHeadingSpecification;
-    };
-    type: EnvironmentType;
-  };
 
   loadShowFromCloudDialog: {
     open: boolean;
@@ -133,6 +111,7 @@ type ShowSliceState = {
 
 const initialState: ShowSliceState = {
   data: undefined,
+  base64Blob: undefined,
 
   loading: false,
   progress: 0,
@@ -310,11 +289,16 @@ const { actions, reducer } = createSlice({
 
     loadingPromiseFulfilled(
       state,
-      action: PayloadAction<{ spec: ShowSpecification; url?: string }>
+      action: PayloadAction<{
+        spec: ShowSpecification;
+        url?: string;
+        base64Blob?: string;
+      }>
     ) {
-      const { spec, url } = action.payload;
+      const { spec, url, base64Blob } = action.payload;
 
       state.data = spec;
+      state.base64Blob = base64Blob;
       state.sourceUrl = url;
       state.loading = false;
       state.progress = undefined;
