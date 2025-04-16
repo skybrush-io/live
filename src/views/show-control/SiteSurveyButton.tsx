@@ -16,6 +16,7 @@ import {
   selectSiteSurveyDataFromShow,
 } from '~/features/site-survey/selectors';
 import { type ShowData, showDialog } from '~/features/site-survey/state';
+import Pro from '~/icons/Pro';
 import type { RootState } from '~/store/reducers';
 
 type Props = {
@@ -43,7 +44,12 @@ function SiteSurveyButton(props: Props) {
     >
       <StatusLight status={Status.INFO} />
       <ListItemText
-        primary={t('show.siteSurvey.button')}
+        primary={
+          <>
+            {t('show.siteSurvey.button')}
+            <Pro style={{ verticalAlign: 'middle', marginLeft: 8 }} />
+          </>
+        }
         secondary={t('show.siteSurvey.description')}
       />
     </ListItem>
