@@ -27,6 +27,7 @@ import {
   calculateMinimumDistanceBetweenPairs,
   convexHull2D,
   createGeometryFromPoints,
+  euclideanDistance2D,
   getCentroid,
 } from '~/utils/math';
 import { EMPTY_ARRAY, EMPTY_OBJECT } from '~/utils/redux';
@@ -786,7 +787,10 @@ export function proposeMappingFileName(state) {
  */
 export const getMinimumDistanceBetweenTakeoffPositions = createSelector(
   getFirstPointsOfTrajectories,
-  (points) => calculateMinimumDistanceBetweenPairs(points, points)
+  (points) =>
+    calculateMinimumDistanceBetweenPairs(points, points, {
+      distanceFunction: euclideanDistance2D,
+    })
 );
 
 /**
@@ -799,7 +803,10 @@ export const getMinimumDistanceBetweenTakeoffPositions = createSelector(
  */
 export const getMinimumDistanceBetweenLandingPositions = createSelector(
   getLastPointsOfTrajectories,
-  (points) => calculateMinimumDistanceBetweenPairs(points, points)
+  (points) =>
+    calculateMinimumDistanceBetweenPairs(points, points, {
+      distanceFunction: euclideanDistance2D,
+    })
 );
 
 /**

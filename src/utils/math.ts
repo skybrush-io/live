@@ -185,27 +185,21 @@ export function getMeanAngle(angles: number[]): number {
   return result < 0 ? result + 360 : result;
 }
 
-type DistanceCalculationOptions<T> = {
-  distanceFunction?: (a: Coordinate2D, b: Coordinate2D) => number;
-  getter?: ((item: T) => Coordinate2D) | PropertyPath;
+type DistanceCalculationOptions<T, U = Coordinate2D> = {
+  distanceFunction: (a: U, b: U) => number;
+  getter?: (item: T) => U;
 };
 
 /**
  * Create a distance matrix between two arrays.
  */
-export function calculateDistanceMatrix<T>(
+export function calculateDistanceMatrix<T, U = Coordinate2D>(
   sources: T[],
-  targets: T[] | undefined = undefined,
-  {
-    distanceFunction = euclideanDistance2D,
-    getter = identity,
-  }: DistanceCalculationOptions<T> = {}
+  targets: T[],
+  { distanceFunction, getter = identity }: DistanceCalculationOptions<T, U>
 ): number[][] {
-  const getterFunction: (item: T) => Coordinate2D =
-    typeof getter === 'function' ? getter : property(getter);
-
-  const sourcePositions = sources.map(getterFunction);
-  const targetPositions = (targets ?? sources).map(getterFunction);
+  const sourcePositions = sources.map(getter);
+  const targetPositions = targets.map(getter);
 
   return sourcePositions.map((source) =>
     targetPositions.map((target) => distanceFunction(source, target))
@@ -214,59 +208,26 @@ export function calculateDistanceMatrix<T>(
 
 /**
  * Calculates the minimum distance between all pairs formed from the given
- * spurce and target points.
+ * source and target points. The diagonal items of the distance matrix are
+ * ignored if the same set of points is provided as sources and targets.
  */
-export function calculateMinimumDistanceBetweenPairs<T>(
+export function calculateMinimumDistanceBetweenPairs<T, U = Coordinate2D>(
   sources: T[],
-  targets: T[] | undefined = undefined,
-  {
-    distanceFunction = euclideanDistance2D,
-    getter = identity,
-  }: DistanceCalculationOptions<T> = {}
+  targets: T[],
+  options: DistanceCalculationOptions<T, U>
 ): number {
-  const getterFunction: (item: T) => Coordinate2D =
-    typeof getter === 'function' ? getter : property(getter);
-
-  const isSamePointSet = sources === targets || targets === undefined;
-
-  const sourcePositions = sources.map(getterFunction);
-  const targetPositions = isSamePointSet
-    ? sourcePositions
-    : (targets ?? sources).map(getterFunction);
-
-  // This is definitely not the most efficient algorithm as it is O(n*m) but
-  // since we are not going to do this multiple times it's probably okay.
+  // PERF: This is probably not the most efficient algorithm as it is O(n*m)
+  // but since we are not going to do this multiple times it's probably okay.
   // Improve this when the time comes.
 
-  if (isSamePointSet) {
-    if (sourcePositions.length < 2 || targetPositions.length < 2) {
-      return Number.POSITIVE_INFINITY;
-    }
+  const distanceMatrix = calculateDistanceMatrix(sources, targets, options);
 
-    return Math.min(
-      ...sourcePositions.map((source, sourceIndex) =>
-        Math.min(
-          ...targetPositions.map((target, targetIndex) =>
-            sourceIndex <= targetIndex
-              ? Number.POSITIVE_INFINITY
-              : distanceFunction(source, target)
-          )
-        )
-      )
-    );
-  } else {
-    if (sourcePositions.length === 0 || targetPositions.length === 0) {
-      return Number.POSITIVE_INFINITY;
-    }
+  const distances =
+    sources === targets
+      ? distanceMatrix.flatMap((row, i) => row.filter((_, j) => i !== j))
+      : distanceMatrix.flat();
 
-    return Math.min(
-      ...sourcePositions.map((source) =>
-        Math.min(
-          ...targetPositions.map((target) => distanceFunction(source, target))
-        )
-      )
-    );
-  }
+  return Math.min(...distances);
 }
 
 /**

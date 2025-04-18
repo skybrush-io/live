@@ -25,6 +25,8 @@ import {
   getCurrentMissionItemRatio,
   getGPSBasedHomePositionsInMission,
   getGPSBasedLandingPositionsInMission,
+  getMinimumDistanceBetweenHomePositions,
+  getMinimumDistanceBetweenLandingPositions,
   getMissionItemsOfTypeWithIndices,
   getMissionItemsWithAreasInOrder,
   getMissionItemsWithCoordinatesInOrder,
@@ -81,8 +83,6 @@ import { styleForPointsOfPolygon } from './features';
 import mapMarker from '~/../assets/img/map-marker.svg';
 import mapMarkerOutline from '~/../assets/img/map-marker-outline.svg';
 import missionOriginMarkerIcon from '~/../assets/img/mission-origin-marker.svg';
-
-const TAKEOFF_LANDING_POSITION_TEXT_VISIBILITY_THRESHOLD = 0.05;
 
 // === Settings for this particular layer type ===
 
@@ -289,29 +289,35 @@ const originStyles = (selected, axis) => [
  * PERF: Apply caching / memoization similarly to the
  *       takeoff grid placement interaction's preview
  */
-const takeoffPositionStyle = (feature, resolution) => {
-  const index = globalIdToHomePositionId(feature.getId());
-  const style = {
-    image: takeoffTriangle,
+const takeoffPositionStyleFactory =
+  (minimumDistanceBetweenTakeoffPositions) => (feature, resolution) => {
+    const index = globalIdToHomePositionId(feature.getId());
+    const style = { image: takeoffTriangle };
+
+    const pointResolution = getPointResolution(
+      'EPSG:3857',
+      resolution,
+      feature.getGeometry().getCoordinates()
+    );
+
+    /**
+     * The width of four characters (e.g. "s000") is approximately 30 pixels.
+     * To fit these labels without overlap on a takeoff grid with X meters of
+     * spacing, we need one pixel to be at most about X / 30 meters.
+     *
+     * TODO: Calculate the estimated label width based on the number of drones.
+     */
+    if (pointResolution < minimumDistanceBetweenTakeoffPositions / 30) {
+      style.text = new Text({
+        font: '12px sans-serif',
+        offsetY: 12,
+        text: formatMissionId(Number.parseInt(index, 10)),
+        textAlign: 'center',
+      });
+    }
+
+    return new Style(style);
   };
-
-  const pointResolution = getPointResolution(
-    'EPSG:3857',
-    resolution,
-    feature.getGeometry().getCoordinates()
-  );
-
-  if (pointResolution < TAKEOFF_LANDING_POSITION_TEXT_VISIBILITY_THRESHOLD) {
-    style.text = new Text({
-      font: '12px sans-serif',
-      offsetY: 12,
-      text: formatMissionId(Number.parseInt(index, 10)),
-      textAlign: 'center',
-    });
-  }
-
-  return new Style(style);
-};
 
 /**
  * Style for the marker representing the landing positions of the drones in
@@ -320,29 +326,35 @@ const takeoffPositionStyle = (feature, resolution) => {
  * PERF: Apply caching / memoization similarly to the
  *       takeoff grid placement interaction's preview
  */
-const landingPositionStyle = (feature, resolution) => {
-  const index = globalIdToLandingPositionId(feature.getId());
-  const style = {
-    image: landingMarker,
+const landingPositionStyleFactory =
+  (minimumDistanceBetweenLandingPositions) => (feature, resolution) => {
+    const index = globalIdToLandingPositionId(feature.getId());
+    const style = { image: landingMarker };
+
+    const pointResolution = getPointResolution(
+      'EPSG:3857',
+      resolution,
+      feature.getGeometry().getCoordinates()
+    );
+
+    /**
+     * The width of four characters (e.g. "s000") is approximately 30 pixels.
+     * To fit these labels without overlap on a landing grid with X meters of
+     * spacing, we need one pixel to be at most about X / 30 meters.
+     *
+     * TODO: Calculate the estimated label width based on the number of drones.
+     */
+    if (pointResolution < minimumDistanceBetweenLandingPositions / 30) {
+      style.text = new Text({
+        font: '12px sans-serif',
+        offsetY: -12,
+        text: formatMissionId(Number.parseInt(index, 10)),
+        textAlign: 'center',
+      });
+    }
+
+    return new Style(style);
   };
-
-  const pointResolution = getPointResolution(
-    'EPSG:3857',
-    resolution,
-    feature.getGeometry().getCoordinates()
-  );
-
-  if (pointResolution < TAKEOFF_LANDING_POSITION_TEXT_VISIBILITY_THRESHOLD) {
-    style.text = new Text({
-      font: '12px sans-serif',
-      offsetY: -12,
-      text: formatMissionId(Number.parseInt(index, 10)),
-      textAlign: 'center',
-    });
-  }
-
-  return new Style(style);
-};
 
 /**
  * Style for the marker representing the individual items in a waypoint mission.
@@ -454,7 +466,10 @@ const MISSION_ITEM_LINE_STRING_GLOBAL_ID = plannedTrajectoryIdToGlobalId(
 );
 const MISSION_ORIGIN_GLOBAL_ID = originIdToGlobalId(MISSION_ORIGIN_ID);
 
-const landingPositionPoints = (landingPositions) =>
+const landingPositionPoints = (
+  landingPositions,
+  minimumDistanceBetweenLandingPositions
+) =>
   Array.isArray(landingPositions)
     ? landingPositions
         .map((landingPosition, index) => {
@@ -474,7 +489,9 @@ const landingPositionPoints = (landingPositions) =>
             <Feature
               key={featureKey}
               id={globalIdOfFeature}
-              style={landingPositionStyle}
+              style={landingPositionStyleFactory(
+                minimumDistanceBetweenLandingPositions
+              )}
             >
               <geom.Point coordinates={center} />
             </Feature>
@@ -483,7 +500,10 @@ const landingPositionPoints = (landingPositions) =>
         .filter(Boolean)
     : [];
 
-const homePositionPoints = (homePositions) =>
+const homePositionPoints = (
+  homePositions,
+  minimumDistanceBetweenHomePositions
+) =>
   Array.isArray(homePositions)
     ? homePositions
         .map((homePosition, index) => {
@@ -503,7 +523,9 @@ const homePositionPoints = (homePositions) =>
             <Feature
               key={featureKey}
               id={globalIdOfFeature}
-              style={takeoffPositionStyle}
+              style={takeoffPositionStyleFactory(
+                minimumDistanceBetweenHomePositions
+              )}
             >
               <geom.Point coordinates={center} />
             </Feature>
@@ -829,6 +851,8 @@ const MissionInfoVectorSource = ({
   homePositions,
   landingPositions,
   mapOrigin,
+  minimumDistanceBetweenHomePositions,
+  minimumDistanceBetweenLandingPositions,
   missionItemsWithAreas,
   missionItemsWithCoordinates,
   missionOrientation,
@@ -842,8 +866,11 @@ const MissionInfoVectorSource = ({
 }) => (
   <source.Vector>
     {[].concat(
-      landingPositionPoints(landingPositions),
-      homePositionPoints(homePositions),
+      homePositionPoints(homePositions, minimumDistanceBetweenHomePositions),
+      landingPositionPoints(
+        landingPositions,
+        minimumDistanceBetweenLandingPositions
+      ),
       mapOriginMarker(coordinateSystemType, mapOrigin, orientation, selection),
       missionAreaBoundaries(missionItemsWithAreas, selection, selectedTool),
       missionWaypointMarkers(
@@ -880,6 +907,8 @@ MissionInfoVectorSource.propTypes = {
   homePositions: PropTypes.arrayOf(CustomPropTypes.coordinate),
   landingPositions: PropTypes.arrayOf(CustomPropTypes.coordinate),
   mapOrigin: PropTypes.arrayOf(PropTypes.number),
+  minimumDistanceBetweenLandingPositions: PropTypes.number,
+  minimumDistanceBetweenHomePositions: PropTypes.number,
   missionItemsWithAreas: PropTypes.arrayOf(PropTypes.object),
   missionItemsWithCoordinates: PropTypes.arrayOf(PropTypes.object),
   missionOrientation: CustomPropTypes.angle,
@@ -928,6 +957,10 @@ export const MissionInfoLayer = connect(
       ? getGPSBasedLandingPositionsInMission(state)
       : undefined,
     mapOrigin: layer?.parameters?.showOrigin && state.map.origin.position,
+    minimumDistanceBetweenLandingPositions:
+      getMinimumDistanceBetweenLandingPositions(state),
+    minimumDistanceBetweenHomePositions:
+      getMinimumDistanceBetweenHomePositions(state),
     missionItemsWithAreas: layer?.parameters?.showMissionItems
       ? getMissionItemsWithAreasInOrder(state)
       : undefined,
