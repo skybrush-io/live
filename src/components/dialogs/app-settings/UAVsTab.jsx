@@ -29,6 +29,8 @@ import {
   getDesiredPlacementAccuracyInMeters,
   getDesiredTakeoffHeadingAccuracy,
   getMaximumConcurrentUploadTaskCount,
+  getMinimumIndoorTakeoffSpacing,
+  getMinimumOutdoorTakeoffSpacing,
 } from '~/features/settings/selectors';
 import {
   BatteryDisplayStyle,
@@ -58,6 +60,8 @@ const UAVsTabPresentation = ({
   goneThreshold,
   lowVoltageThreshold,
   maxUploadConcurrency,
+  minIndoorTakeoffSpacing,
+  minOutdoorTakeoffSpacing,
   onCheckboxToggled,
   onDistanceFieldUpdated,
   onEnumFieldUpdated,
@@ -243,6 +247,30 @@ const UAVsTabPresentation = ({
         <Box display='flex' flexDirection='row' mb={1}>
           <SimpleDistanceField
             fullWidth
+            name='minOutdoorTakeoffSpacing'
+            label={t('settings.uavs.minOutdoorTakeoffSpacing')}
+            min={0.1}
+            max={10}
+            step={0.1}
+            value={minOutdoorTakeoffSpacing}
+            onChange={onDistanceFieldUpdated}
+          />
+          <Box width={theme.spacing(2)} />
+          <SimpleDistanceField
+            fullWidth
+            name='minIndoorTakeoffSpacing'
+            label={t('settings.uavs.minIndoorTakeoffSpacing')}
+            min={0.1}
+            max={10}
+            step={0.1}
+            value={minIndoorTakeoffSpacing}
+            onChange={onDistanceFieldUpdated}
+          />
+        </Box>
+
+        <Box display='flex' flexDirection='row' mb={1}>
+          <SimpleDistanceField
+            fullWidth
             name='placementAccuracy'
             label={t('settings.uavs.desiredPlacementAccuracy')}
             min={0.5}
@@ -281,6 +309,8 @@ UAVsTabPresentation.propTypes = {
   goneThreshold: PropTypes.number,
   lowVoltageThreshold: PropTypes.number,
   maxUploadConcurrency: PropTypes.number,
+  minIndoorTakeoffSpacing: PropTypes.number,
+  minOutdoorTakeoffSpacing: PropTypes.number,
   onCheckboxToggled: PropTypes.func,
   onDistanceFieldUpdated: PropTypes.func,
   onEnumFieldUpdated: PropTypes.func,
@@ -307,6 +337,8 @@ export default connect(
     placementAccuracy: getDesiredPlacementAccuracyInMeters(state),
     takeoffHeadingAccuracy: getDesiredTakeoffHeadingAccuracy(state),
     maxUploadConcurrency: getMaximumConcurrentUploadTaskCount(state),
+    minIndoorTakeoffSpacing: getMinimumIndoorTakeoffSpacing(state),
+    minOutdoorTakeoffSpacing: getMinimumOutdoorTakeoffSpacing(state),
   }),
   // mapDispatchToProps
   (dispatch) => ({

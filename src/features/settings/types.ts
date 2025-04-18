@@ -202,6 +202,16 @@ export type SettingsState = {
      * for older versions of the application (2.8.1 or earlier).
      */
     maxUploadConcurrency?: number;
+
+    /**
+     * Minimum distance allowed between two UAVs for indoor shows, in meters.
+     */
+    minIndoorTakeoffSpacing?: number;
+
+    /**
+     * Minimum distance allowed between two UAVs for outdoor shows, in meters.
+     */
+    minOutdoorTakeoffSpacing?: number;
   };
 
   apiKeys: Record<string, string>;

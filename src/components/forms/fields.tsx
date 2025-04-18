@@ -566,7 +566,7 @@ const createNumericField = ({
 };
 
 // These fields are NOT designed to be used in conjunction with react-final-form;
-// they are standalone controlled field based on Material UI
+// they are standalone controlled fields based on Material UI
 export const SimpleAngleField = createNumericField({
   displayName: 'SimpleAngleField',
   defaultProps: {

@@ -83,6 +83,8 @@ const initialState: SettingsSliceState = {
     preferredBatteryDisplayStyle: BatteryDisplayStyle.VOLTAGE,
     uavOperationConfirmationStyle: UAVOperationConfirmationStyle.NEVER,
     maxUploadConcurrency: 8,
+    minIndoorTakeoffSpacing: 200,
+    minOutdoorTakeoffSpacing: 400,
   },
 
   apiKeys: {},
