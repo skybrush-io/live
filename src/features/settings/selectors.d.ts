@@ -16,3 +16,5 @@ export function getUAVListOrientation(state: RootState): UAVListOrientation;
 export function getUAVListSortPreference(state: RootState): UAVSortKeyAndOrder;
 export function isShowingEmptyMissionSlots(state: RootState): boolean;
 export function isShowingMissionIds(state: RootState): boolean;
+export function getMinimumIndoorTakeoffSpacing(state: RootState): number;
+export function getMinimumOutdoorTakeoffSpacing(state: RootState): number;

@@ -49,6 +49,10 @@ import {
   isValidTrajectory,
 } from './trajectory';
 import { isYawActivelyControlled } from './yaw';
+import {
+  getMinimumIndoorTakeoffSpacing,
+  getMinimumOutdoorTakeoffSpacing,
+} from '../settings/selectors';
 
 /**
  * Returns whether the manual preflight checks are signed off (i.e. approved)
@@ -799,12 +803,25 @@ export const getMinimumDistanceBetweenLandingPositions = createSelector(
 );
 
 /**
+ * Returns the preferred minimum spacing between takeoff positions, in meters.
+ */
+export const getMinimumTakeoffSpacing = createSelector(
+  getMinimumOutdoorTakeoffSpacing,
+  getMinimumIndoorTakeoffSpacing,
+  isShowIndoor,
+  (minDistOutdoor, minDistIndoor, isIndoor) =>
+    isIndoor ? minDistIndoor : minDistOutdoor
+);
+
+const getMinimumLandingSpacing = getMinimumTakeoffSpacing;
+
+/**
  * Returns whether the takeoff positions are far enough to be considered safe.
  */
 export const areTakeoffPositionsFarEnough = createSelector(
   getMinimumDistanceBetweenTakeoffPositions,
-  isShowIndoor,
-  (minDist, isIndoor) => minDist >= (isIndoor ? 0.2 : 0.4)
+  getMinimumTakeoffSpacing,
+  (minDist, threshold) => minDist >= threshold
 );
 
 /**
@@ -812,8 +829,8 @@ export const areTakeoffPositionsFarEnough = createSelector(
  */
 export const areLandingPositionsFarEnough = createSelector(
   getMinimumDistanceBetweenLandingPositions,
-  isShowIndoor,
-  (minDist, isIndoor) => minDist >= (isIndoor ? 0.2 : 0.4)
+  getMinimumLandingSpacing,
+  (minDist, threshold) => minDist >= threshold
 );
 
 /**
@@ -853,6 +870,7 @@ export const getShowDescription = createSelector(
   getMaximumHeightInTrajectories,
   getMinimumDistanceBetweenTakeoffPositions,
   isShowUsingYawControl,
+  // eslint-disable-next-line max-params
   (numberDrones, duration, maxHeight, spacing, hasYawControl) =>
     [
       `${numberDrones} drones`,
