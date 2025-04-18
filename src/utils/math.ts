@@ -185,23 +185,24 @@ export function getMeanAngle(angles: number[]): number {
   return result < 0 ? result + 360 : result;
 }
 
-type DistanceCalculationOptions<T> = {
-  distanceFunction?: (a: Coordinate2D, b: Coordinate2D) => number;
-  getter?: ((item: T) => Coordinate2D) | PropertyPath;
+type DistanceCalculationOptions<T, U = Coordinate2D> = {
+  distanceFunction?: (a: U, b: U) => number;
+  getter?: ((item: T) => U) | PropertyPath;
 };
 
 /**
  * Create a distance matrix between two arrays.
  */
-export function calculateDistanceMatrix<T>(
+export function calculateDistanceMatrix<T, U = Coordinate2D>(
   sources: T[],
   targets: T[] | undefined = undefined,
   {
+    // @ts-ignore
     distanceFunction = euclideanDistance2D,
     getter = identity,
-  }: DistanceCalculationOptions<T> = {}
+  }: DistanceCalculationOptions<T, U> = {}
 ): number[][] {
-  const getterFunction: (item: T) => Coordinate2D =
+  const getterFunction: (item: T) => U =
     typeof getter === 'function' ? getter : property(getter);
 
   const sourcePositions = sources.map(getterFunction);
@@ -216,15 +217,16 @@ export function calculateDistanceMatrix<T>(
  * Calculates the minimum distance between all pairs formed from the given
  * spurce and target points.
  */
-export function calculateMinimumDistanceBetweenPairs<T>(
+export function calculateMinimumDistanceBetweenPairs<T, U = Coordinate2D>(
   sources: T[],
   targets: T[] | undefined = undefined,
   {
+    // @ts-ignore
     distanceFunction = euclideanDistance2D,
     getter = identity,
-  }: DistanceCalculationOptions<T> = {}
+  }: DistanceCalculationOptions<T, U> = {}
 ): number {
-  const getterFunction: (item: T) => Coordinate2D =
+  const getterFunction: (item: T) => U =
     typeof getter === 'function' ? getter : property(getter);
 
   const isSamePointSet = sources === targets || targets === undefined;
