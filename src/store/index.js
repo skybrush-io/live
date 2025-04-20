@@ -198,13 +198,28 @@ const store = configureStore({
           // the Redux devtools
           actionSanitizer: (action) =>
             action.type === loadingPromiseFulfilled.type && action.payload
-              ? { ...action, payload: '<<JSON_DATA>>' }
+              ? {
+                  ...action,
+                  payload: {
+                    ...action.payload,
+                    spec: '<<JSON_DATA>>',
+                    base64Blob: action.payload.base64Blob
+                      ? '<<BLOB>>'
+                      : action.payload.base64Blob,
+                  },
+                }
               : action,
           stateSanitizer: (state) =>
-            state.show && state.show.data
+            state.show
               ? {
                   ...state,
-                  show: { ...state.show, data: '<<JSON_DATA>>' },
+                  show: {
+                    ...state.show,
+                    data: state.show.data ? '<<JSON_DATA>>' : state.show.data,
+                    base64Blob: state.show.base64Blob
+                      ? '<<BLOB>>'
+                      : state.show.base64Blob,
+                  },
                 }
               : state,
         },
