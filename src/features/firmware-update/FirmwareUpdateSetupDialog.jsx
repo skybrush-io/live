@@ -8,7 +8,6 @@ import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Collapse from '@material-ui/core/Collapse';
 import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import NavigateBefore from '@material-ui/icons/NavigateBefore';
@@ -94,7 +93,7 @@ const FirmwareUpdateSetupDialog = ({ onClose, onNext, open }) => {
       // TODO: Maybe call `getTargets.clear()` on close instead of `maxAge`
       onClose={onClose}
     >
-      <DialogContent>
+      <Box>
         <Collapse in={target === undefined}>
           <FirmwareUpdateTargetSelector
             getTargets={getTargets}
@@ -112,7 +111,7 @@ const FirmwareUpdateSetupDialog = ({ onClose, onNext, open }) => {
             </Box>
           </FileButton>
         </Collapse>
-      </DialogContent>
+      </Box>
       <Collapse in={target !== undefined}>
         <DialogActions>
           <Button startIcon={<NavigateBefore />} onClick={onBack}>
