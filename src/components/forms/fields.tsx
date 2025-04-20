@@ -13,12 +13,11 @@ import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import isNil from 'lodash-es/isNil';
 import {
   Select as RFFSelect,
-  type SelectProps as RFFSelectProps,
   TextField as RFFTextField,
+  type SelectProps as RFFSelectProps,
   type TextFieldProps as RFFTextFieldProps,
 } from 'mui-rff';
 import numbro from 'numbro';
-import type { Coordinate } from 'ol/coordinate';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
@@ -593,6 +592,15 @@ export const SimpleDurationField = createNumericField({
 
 export const SimpleNumericField = createNumericField({
   displayName: 'SimpleNumericField',
+});
+
+export const SimpleVelocityField = createNumericField({
+  displayName: 'SimpleVelocityField',
+  unit: 'm/s',
+  defaultProps: {
+    min: 0,
+    size: 'small',
+  },
 });
 
 export const SimpleVoltageField = createNumericField({

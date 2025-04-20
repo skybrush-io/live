@@ -132,6 +132,8 @@
   "general": {
     "action": {
       "apply": "Apply",
+      "approve": "Approve",
+      "back": "Back",
       "cancel": "Cancel",
       "clear": "Clear",
       "close": "Close",
@@ -541,7 +543,16 @@
     "selectFile": "Select or drop a show file here",
     "setupEnvironment": "Setup environment",
     "setupGeofence": "Setup geofence",
-    "setupTakeoffArea": "Setup takeoff area",
+    "setupTakeoffArea": "Assign drones to show",
+    "siteSurvey": {
+      "button": "Adapt show to venue",
+      "description": "Redefine takeoff grid and show layout",
+      "error": {
+        "outdoorShowAndOriginRequired": "An outdoor show must be loaded.\nThe show must have a \"show\" segment.\nThe show origin must be set.",
+        "showNotInMemory": "The show is not in memory. Please reload it.",
+        "swarmRequired": "A show must be loaded and it must have drones."
+      }
+    },
     "startMethod": {
       "AUTO": "Show will start automatically",
       "RC": "Use the switch on your RC to start"
@@ -560,6 +571,42 @@
   },
   "sidebar": {
     "missionType": "Mission type: ({{missionType}})"
+  },
+  "siteSurveyDialog": {
+    "action": {
+      "adapt": "Adapt"
+    },
+    "adaptParameters": {
+      "form": {
+        "altitude": "Takeoff altitude",
+        "horizontalVelocity": "Horizontal velocity",
+        "minDistance": "Minimum distance",
+        "verticalVelocity": "Vertical velocity"
+      },
+      "section": {
+        "parameters": "Parameters"
+      }
+    },
+    "adaptReview": {
+      "error": {
+        "invalidState": "Invalid state, please try again."
+      },
+      "form": {
+        "rth": {
+          "lengthChange": "RTH length change:",
+          "lengthChangeValue": "{{value}} seconds"
+        },
+        "takeoff": {
+          "lengthChange": "Takeoff length change:",
+          "lengthChangeValue": "{{value}} seconds"
+        }
+      },
+      "showAdaptInProgress": "Adapting the show, please wait. It may take some time."
+    },
+    "help": {
+      "config": "This tool lets you adjust takeoff positions and net show layout independently.\nSelect takeoff positions (yellow triangles) or the net show (purple convex hull) and move or rotate them as you need.\nWhen done, setup transformation parameters on the right side and press ADAPT to recalculate trajectories, keeping the original show content, yet aligned to your new arrangement.\nThe new show layout should be validated thoroughly and saved to a production ready .skyc file on exit.",
+      "review": "Review the changes before applying them to the show."
+    }
   },
   "sorting": {
     "ascending": "Ascending",

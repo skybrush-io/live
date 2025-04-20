@@ -1,5 +1,7 @@
 /* eslint unicorn/no-array-callback-reference: 0 */
 
+import { createSelector } from '@reduxjs/toolkit';
+import turfContains from '@turf/boolean-contains';
 import formatDate from 'date-fns/format';
 import formatISO9075 from 'date-fns/formatISO9075';
 import fromUnixTime from 'date-fns/fromUnixTime';
@@ -7,10 +9,7 @@ import get from 'lodash-es/get';
 import identity from 'lodash-es/identity';
 import isNil from 'lodash-es/isNil';
 import max from 'lodash-es/max';
-
-import { createSelector } from '@reduxjs/toolkit';
 import createCachedSelector from 're-reselect';
-import turfContains from '@turf/boolean-contains';
 
 import { CommonClockId } from '~/features/clocks/types';
 import {
@@ -40,14 +39,15 @@ import {
 } from './constants';
 import {
   getConvexHullOfTrajectory,
+  getDurationOfTrajectory,
   getFirstPointOfTrajectory,
   getLastPointOfTrajectory,
   getMaximumHeightOfTrajectory,
   getMaximumHorizontalDistanceFromTakeoffPositionInTrajectory,
   getPointsOfTrajectory,
-  getDurationOfTrajectory,
   isValidTrajectory,
 } from './trajectory';
+import { makeSegmentSelectors, transformPoints } from './trajectory-selectors';
 import { isYawActivelyControlled } from './yaw';
 import {
   getMinimumIndoorTakeoffSpacing,
@@ -154,12 +154,17 @@ export const getCommonShowSettings = (state) => {
 };
 
 /**
+ * Returns the entire swarm specification if it exists.
+ */
+export const getSwarmSpecification = (state) => state.show.data?.swarm;
+
+/**
  * Returns the specification of the drone swarm in the currently loaded show.
  */
-export const getDroneSwarmSpecification = (state) => {
-  const result = get(state, 'show.data.swarm.drones');
-  return Array.isArray(result) ? result : EMPTY_ARRAY;
-};
+export const getDroneSwarmSpecification = createSelector(
+  getSwarmSpecification,
+  (swarm) => (Array.isArray(swarm?.drones) ? swarm.drones : EMPTY_ARRAY)
+);
 
 /**
  * Selector that returns the type of the show (indoor or outdoor).
@@ -189,6 +194,11 @@ export const isShowUsingYawControl = createSelector(
       return isYawActivelyControlled(yawControl);
     })
 );
+
+/**
+ * Selector that returns the `environment` part of the `show` state.
+ */
+export const getEnvironmentState = (state) => state.show.environment;
 
 /**
  * Selector that returns the part of the state object that is related to the
@@ -506,9 +516,6 @@ export const getConvexHullOfShow = createSelector(
   (convexHulls) => convexHull2D(convexHulls.flat())
 );
 
-const transformPoints = (points, transform) =>
-  transform ? points.map(transform) : [];
-
 const transformPointsOrFillWithUndefined = (points, transform) =>
   transform
     ? points.map(transform)
@@ -657,6 +664,12 @@ export const getShowMetadata = createSelector(
   (state) => state.show.data,
   (data) => (data && typeof data.meta === 'object' ? data.meta : null) || {}
 );
+
+/**
+ * Selector that returns the base64-encoded blob of the currently loaded show
+ * if it exists.
+ */
+export const getBase64ShowBlob = (state) => state.show.base64Blob;
 
 /**
  * Returns the start method of the show.
@@ -881,4 +894,22 @@ export const getShowDescription = createSelector(
         : []),
       ...(hasYawControl ? ['yaw controlled'] : []),
     ].join(', ')
+);
+
+/**
+ * Selector that returns the segments of the show.
+ */
+const getShowSegments = (state) => state.show.data?.meta?.segments;
+
+export const {
+  getShowSegment,
+  getSwarmSpecificationForShowSegment,
+  getShowSegmentTrajectories,
+  getConvexHullsOfShowSegmentTrajectories,
+  getConvexHullOfShowSegment,
+  getConvexHullOfShowSegmentInWorldCoordinates,
+} = makeSegmentSelectors(
+  getSwarmSpecification,
+  getShowSegments,
+  getOutdoorShowToWorldCoordinateSystemTransformation
 );

@@ -41,4 +41,4 @@ class MapReferenceRequestHandler extends React.Component<{ map: Map }> {
   }
 }
 
-export default withMap(MapReferenceRequestHandler);
+export default withMap(MapReferenceRequestHandler) as React.Component<{}>;

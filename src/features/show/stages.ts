@@ -44,12 +44,31 @@ import {
   getMissingUAVIdsInMapping,
 } from '~/features/uavs/selectors';
 import { getLastUploadResultByJobType } from '~/features/upload/selectors';
+import type { AppSelector, RootState } from '~/store/reducers';
+
+type Stage =
+  | 'selectShowFile'
+  | 'setupEnvironment'
+  | 'siteSurvey'
+  | 'setupTakeoffArea'
+  | 'setupGeofence'
+  | 'uploadShow'
+  | 'waitForOnboardPreflightChecks'
+  | 'performManualPreflightChecks'
+  | 'setupStartTime'
+  | 'authorization';
+
+type StageSpecification = {
+  evaluate: (state: RootState) => Status | boolean;
+  requires?: Array<Stage | AppSelector<boolean>>;
+  suggests?: Array<Stage | AppSelector<boolean>>;
+};
 
 /**
  * Definitions of the stages that one needs to pass through in order to launch
  * a drone show.
  */
-const stages = {
+const stages: Record<Stage, StageSpecification> = {
   selectShowFile: {
     evaluate(state) {
       if (hasShowChangedExternallySinceLoaded(state)) {
@@ -77,6 +96,11 @@ const stages = {
   setupEnvironment: {
     evaluate: (state) =>
       hasLoadedShowFile(state) && (hasShowOrigin(state) || isShowIndoor(state)),
+    requires: ['selectShowFile'],
+  },
+
+  siteSurvey: {
+    evaluate: () => Status.OFF, // TODO(ntamas): add logic here!
     requires: ['selectShowFile'],
   },
 
@@ -168,9 +192,10 @@ const stages = {
  * Topological sort of the stages such that it holds for each stage that it
  * has a higher index in this array than any of the stages it depends on.
  */
-const stageOrder = [
+const stageOrder: Stage[] = [
   'selectShowFile',
   'setupEnvironment',
+  'siteSurvey',
   'setupTakeoffArea',
   'setupGeofence',
   'uploadShow',
@@ -180,18 +205,24 @@ const stageOrder = [
   'authorization',
 ];
 
+type SetupStageStatusReport = Record<Stage, Status>;
+
 /**
  * Returns whether the status code is treated as "done" from the point of view
  * of inspecting dependencies between stages.
  */
-const isDone = (status) =>
+const isDone = (status: Status | undefined): boolean =>
   status === Status.SUCCESS || status === Status.SKIPPED;
 
 /**
  * Returns whether all dependencies in the given list are considered "done"
  */
-const allDone = (result, deps, state) =>
-  (deps || []).every((dep) =>
+const allDone = (
+  result: Partial<SetupStageStatusReport>,
+  deps: Array<Stage | AppSelector<boolean>> | undefined,
+  state: RootState
+): boolean =>
+  (deps ?? []).every((dep) =>
     typeof dep === 'function' ? dep(state) : isDone(result[dep])
   );
 
@@ -200,8 +231,10 @@ const allDone = (result, deps, state) =>
  * to a status constant, marking the next suggested stage that the user should
  * execute with 'next'.
  */
-export const getSetupStageStatuses = (state) => {
-  const result = {};
+export const getSetupStageStatuses = (
+  state: RootState
+): SetupStageStatusReport => {
+  const result: Partial<SetupStageStatusReport> = {};
 
   for (const stageId of stageOrder) {
     const stage = stages[stageId];
@@ -231,5 +264,5 @@ export const getSetupStageStatuses = (state) => {
     result[stageId] = status;
   }
 
-  return result;
+  return result as any as SetupStageStatusReport;
 };

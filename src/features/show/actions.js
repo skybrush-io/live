@@ -6,23 +6,23 @@ import Point from 'ol/geom/Point';
 
 import { freeze } from '@reduxjs/toolkit';
 
-import { loadCompiledShow as processFile } from '@skybrush/show-format';
+import { loadShowSpecificationAndZip as processFile } from '@skybrush/show-format';
 
-import { removeFeaturesByIds } from '~/features/map-features/slice';
 import { getFeaturesInOrder } from '~/features/map-features/selectors';
+import { removeFeaturesByIds } from '~/features/map-features/slice';
 import {
+  setCommandsAreBroadcast,
+  setMappingLength,
+  setMissionType,
   updateHomePositions,
   updateLandingPositions,
   updateTakeoffHeadings,
-  setMappingLength,
-  setMissionType,
-  setCommandsAreBroadcast,
 } from '~/features/mission/slice';
 import { showNotification } from '~/features/snackbar/actions';
 import { MessageSemantics } from '~/features/snackbar/types';
 import {
-  getCurrentGPSPositionByUavId,
   getActiveUAVIds,
+  getCurrentGPSPositionByUavId,
 } from '~/features/uavs/selectors';
 import { clearLastUploadResultForJobType } from '~/features/upload/slice';
 import { MissionType } from '~/model/missions';
@@ -38,34 +38,34 @@ import { JOB_TYPE } from './constants';
 import { StartMethod } from './enums';
 import {
   getAbsolutePathOfShowFile,
+  getCommonTakeoffHeading,
   getFirstPointsOfTrajectoriesInWorldCoordinates,
   getLastPointsOfTrajectoriesInWorldCoordinates,
-  getOutdoorShowOrigin,
-  getRoomCorners,
   getOutdoorShowAltitudeReference,
   getOutdoorShowOrientation,
-  getCommonTakeoffHeading,
+  getOutdoorShowOrigin,
+  getRoomCorners,
   getShowClockReference,
   hasScheduledStartTime,
 } from './selectors';
 import {
+  _clearLoadedShow,
+  _setOutdoorShowAltitudeReference,
   approveTakeoffAreaAt,
   loadingProgress,
   revokeTakeoffAreaApproval,
   setEnvironmentType,
   setLastLoadingAttemptFailed,
-  setOutdoorShowOrigin,
   setOutdoorShowOrientation,
+  setOutdoorShowOrigin,
   setOutdoorShowTakeoffHeadingSpecification,
   setRoomCorners,
+  setShowAuthorization,
   setStartMethod,
+  setStartTime,
   signOffOnManualPreflightChecksAt,
   signOffOnOnboardPreflightChecksAt,
-  _setOutdoorShowAltitudeReference,
-  _clearLoadedShow,
-  setStartTime,
   synchronizeShowSettings,
-  setShowAuthorization,
 } from './slice';
 
 /**
@@ -281,13 +281,32 @@ const createShowLoaderThunkFactory = (
 export const loadShowFromFile = createShowLoaderThunkFactory(
   async (file) => {
     const url = file && file.path ? `file://${file.path}` : undefined;
-    const spec = await processFile(file);
+    const { showSpec, zip } = await processFile(file);
+    const base64Blob = await zip.generateAsync({ type: 'base64' });
     // Pre-freeze the show data shallowly to give a hint to Redux Toolkit that
     // the show content won't change
-    return { spec: freeze(spec), url };
+    return { spec: freeze(showSpec), url, base64Blob };
   },
   {
     errorMessage: 'Failed to load show from the given file.',
+  }
+);
+
+export const loadBase64EncodedShow = createShowLoaderThunkFactory(
+  async (base64Blob) => {
+    const { showSpec } = await processFile(
+      Uint8Array.from(
+        atob(base64Blob)
+          .split('')
+          .map((char) => char.charCodeAt(0))
+      )
+    );
+    // Pre-freeze the show data shallowly to give a hint to Redux Toolkit that
+    // the show content won't change
+    return { spec: freeze(showSpec), base64Blob };
+  },
+  {
+    errorMessage: 'Failed to load show from the given base64-encoded data.',
   }
 );
 
@@ -308,14 +327,12 @@ export const loadShowFromUrl = createShowLoaderThunkFactory(
       },
     }).arrayBuffer();
 
-    const spec = await processFile(response);
+    const { showSpec, zip } = await processFile(response);
+    const base64Blob = await zip.generateAsync({ type: 'base64' });
 
     // Pre-freeze the show data shallowly to give a hint to Redux Toolkit that
     // the show content won't change
-    return {
-      spec: freeze(spec),
-      url,
-    };
+    return { spec: freeze(showSpec), url, base64Blob };
   },
   {
     errorMessage: 'Failed to load show from the given URL.',

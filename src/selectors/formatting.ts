@@ -3,10 +3,11 @@
  * objects on the user interface.
  */
 
-import { createSelector } from '@reduxjs/toolkit';
 import formatCoords from 'formatcoords';
+import { createSelector } from '@reduxjs/toolkit';
 
 import { CoordinateFormat } from '~/model/settings';
+import type { AppSelector, RootState } from '~/store/reducers';
 import { DISTANCE_UNITS } from '~/utils/formatting';
 import {
   type LonLat,
@@ -15,7 +16,6 @@ import {
   toPolar,
 } from '~/utils/geography';
 
-import type { AppSelector, RootState } from '~/store/reducers';
 import { getFlatEarthCoordinateTransformer } from './map';
 
 const trailingZeroRegExp = /\.?0+([°′″'"]?)$/;

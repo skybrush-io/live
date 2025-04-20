@@ -1,13 +1,25 @@
 import type { ModifyEvent } from 'ol/interaction/Modify';
 import React, { useMemo, type CSSProperties } from 'react';
+import { connect } from 'react-redux';
 
 // @ts-ignore
 import { Map as OLMap, View } from '@collmot/ol-react';
 
-import { mapViewCoordinateFromLonLat } from '~/utils/geography';
-import type { Coordinate2D } from '~/utils/math';
+import {
+  getMapViewCenterPosition,
+  getMapViewRotationAngle,
+  getMapViewZoom,
+} from '~/selectors/map';
+import { RootState } from '~/store/reducers';
+import {
+  mapViewCoordinateFromLonLat,
+  type Latitude,
+  type Longitude,
+  type LonLat,
+} from '~/utils/geography';
+
 import { MapLayers, type LayerConfig } from './layers';
-import MapControls from './MapControls';
+import MapControls, { type MapControlDisplaySettings } from './MapControls';
 import MapToolbars from './MapToolbars';
 import { Tool } from './tools';
 
@@ -40,23 +52,29 @@ export const toolClasses: Partial<Record<Tool, string>> = {
 };
 
 type ViewProperties = {
-  center: Coordinate2D;
+  center: LonLat;
   zoom: number;
   rotation: number;
 };
 
 export const viewDefaults: ViewProperties = {
-  center: [19.061951, 47.47334],
+  center: [19.061951 as Longitude, 47.47334 as Latitude],
   zoom: 17,
   rotation: 0,
 };
 
 type MapProps = Partial<ViewProperties> & {
+  children?: React.ReactNode;
+
   // -- Layer configuration
   layers: LayerConfig;
 
   // -- Selection
   selectedTool: Tool;
+
+  // -- Controls & toolbar
+  controlSettings?: Partial<MapControlDisplaySettings>;
+  toolbarEnabled?: boolean;
 
   // -- Callbacks
   onMapMoved?: () => void;
@@ -73,10 +91,17 @@ type MapProps = Partial<ViewProperties> & {
 
 const Map = (props: MapProps) => {
   const {
+    children,
     center = viewDefaults.center,
     rotation = viewDefaults.rotation,
     zoom = viewDefaults.zoom,
     selectedTool,
+    controlSettings = {},
+    // TODO(vp): disabled by default, because apparently one of the buttons in
+    // the toolbar keeps a reference to the map which indicates a memory leak...
+    // It indicates that maps are still not completely independent of the main
+    // map in map view.
+    toolbarEnabled = false,
     layers,
     onFeaturesModified,
     onMapMoved,
@@ -109,16 +134,23 @@ const Map = (props: MapProps) => {
         style={styles.map}
         onMoveEnd={onMapMoved}
       >
-        <MapToolbars />
+        {toolbarEnabled ? <MapToolbars /> : <></>}
         <MapLayers
           {...layers}
           selectedTool={selectedTool}
           onFeaturesModified={onFeaturesModified}
         />
-        <MapControls />
+        <MapControls {...controlSettings} />
+        {children}
       </OLMap>
     </div>
   );
 };
 
-export default Map;
+const ConnectedMap = connect((state: RootState) => ({
+  center: getMapViewCenterPosition(state),
+  rotation: getMapViewRotationAngle(state),
+  zoom: getMapViewZoom(state),
+}))(Map);
+
+export default ConnectedMap;

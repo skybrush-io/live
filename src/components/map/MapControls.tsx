@@ -10,13 +10,18 @@ import {
 } from '~/selectors/formatting';
 import type { RootState } from '~/store/reducers';
 
-type MapControlsPresentationProps = Readonly<{
-  formatCoordinate: CoordinatePairFormatter;
+export type MapControlDisplaySettings = {
   showMouseCoordinates: boolean;
   showScaleLine: boolean;
-}>;
+};
+
+type MapControlsPresentationProps = Partial<MapControlDisplaySettings> & {
+  formatCoordinate: CoordinatePairFormatter;
+  defaultDisplaySettings: MapControlDisplaySettings;
+};
 
 const MapControlsPresentation = ({
+  defaultDisplaySettings,
   formatCoordinate,
   showMouseCoordinates,
   showScaleLine,
@@ -24,7 +29,7 @@ const MapControlsPresentation = ({
   <>
     <control.Zoom />
     <control.Attribution collapsed collapsible collapseLabel='&laquo;' />
-    {showMouseCoordinates && (
+    {(showMouseCoordinates ?? defaultDisplaySettings.showMouseCoordinates) && (
       <control.MousePosition
         key='control.MousePosition'
         hideWhenOut
@@ -32,7 +37,7 @@ const MapControlsPresentation = ({
         coordinateFormat={formatCoordinate}
       />
     )}
-    {showScaleLine && (
+    {(showScaleLine ?? defaultDisplaySettings.showScaleLine) && (
       <control.ScaleLine key='control.ScaleLine' minWidth={128} />
     )}
   </>
@@ -47,7 +52,7 @@ const MapControls = connect(
   // mapStateToProps
   (state: RootState) => ({
     formatCoordinate: getExtendedCoordinateFormatter(state),
-    ...state.settings.display,
+    defaultDisplaySettings: state.settings.display,
   })
 )(MapControlsPresentation);
 export default MapControls;
