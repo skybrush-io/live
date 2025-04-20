@@ -26,12 +26,7 @@ export async function adaptShow(hub, show, transformations, coordinateSystem) {
       transformations,
       environment: {
         location: {
-          origin: [
-            // Convert the origin to a lat-lon integer pair.
-            // Unit must be 1e-7 degrees (so multiple by 1e7).
-            Math.round(coordinateSystem.origin[1] * 1e7),
-            Math.round(coordinateSystem.origin[0] * 1e7),
-          ],
+          origin: toScaledJSONFromLonLat(coordinateSystem.origin),
           orientation: coordinateSystem.orientation,
         },
       },

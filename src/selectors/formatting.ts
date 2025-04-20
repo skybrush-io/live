@@ -7,6 +7,7 @@ import formatCoords from 'formatcoords';
 import { createSelector } from '@reduxjs/toolkit';
 
 import { CoordinateFormat } from '~/model/settings';
+import type { AppSelector, RootState } from '~/store/reducers';
 import { DISTANCE_UNITS } from '~/utils/formatting';
 import {
   type LonLat,
@@ -16,7 +17,6 @@ import {
 } from '~/utils/geography';
 
 import { getFlatEarthCoordinateTransformer } from './map';
-import type { AppSelector, RootState } from '~/store/reducers';
 
 const trailingZeroRegExp = /\.?0+([°′″'"]?)$/;
 
