@@ -56,7 +56,7 @@ export const getSwarmSpecificationForShowSegment: AppSelector<
   SwarmSpecification | undefined
 >;
 export const getShowSegmentTrajectories: AppSelector<
-  (Trajectory | undefined)[]
+  Array<Trajectory | undefined>
 >;
 export const getConvexHullsOfShowSegmentTrajectories: AppSelector<
   Coordinate2D[][]

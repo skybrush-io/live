@@ -4,13 +4,12 @@ import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-// @ts-ignore
 import StatusLight from '@skybrush/mui-components/lib/StatusLight';
-// @ts-ignore
 import Tooltip from '@skybrush/mui-components/lib/Tooltip';
 
-import { Status } from '~/components/semantics';
+import type { Status } from '~/components/semantics';
 import { getBase64ShowBlob } from '~/features/show/selectors';
+import { getSetupStageStatuses } from '~/features/show/stages';
 import {
   selectPartialSiteSurveyDataFromShow,
   selectSiteSurveyDataFromShow,
@@ -19,15 +18,16 @@ import { type ShowData, showDialog } from '~/features/site-survey/state';
 import Pro from '~/icons/Pro';
 import type { RootState } from '~/store/reducers';
 
-type Props = {
+type Props = Readonly<{
   base64Blob?: string;
   show: ShowData | undefined;
   partialShow: Partial<ShowData>;
   showDialog: (data?: ShowData) => void;
-};
+  status: Status;
+}>;
 
-function SiteSurveyButton(props: Props) {
-  const { base64Blob, partialShow, show, showDialog } = props;
+const SiteSurveyButton = (props: Props): JSX.Element => {
+  const { base64Blob, partialShow, show, showDialog, status } = props;
   const { t } = useTranslation();
 
   const openWithShow = useCallback(() => {
@@ -42,7 +42,7 @@ function SiteSurveyButton(props: Props) {
       disabled={show === undefined || base64Blob === undefined}
       onClick={openWithShow}
     >
-      <StatusLight status={Status.INFO} />
+      <StatusLight status={status} />
       <ListItemText
         primary={
           <>
@@ -75,7 +75,8 @@ function SiteSurveyButton(props: Props) {
   const tooltipContent = tooltipLines
     .join('\n')
     .split('\n')
-    .map((line, idx) => <p key={idx}>{line}</p>);
+    // eslint-disable-next-line react/no-array-index-key
+    .map((line, idx) => <div key={idx}>{line}</div>);
 
   return (
     <Tooltip content={tooltipContent}>
@@ -83,13 +84,14 @@ function SiteSurveyButton(props: Props) {
       <div>{listItem}</div>
     </Tooltip>
   );
-}
+};
 
 const ConnectedSiteSurveyButton = connect(
   (state: RootState) => ({
     partialShow: selectPartialSiteSurveyDataFromShow(state),
     show: selectSiteSurveyDataFromShow(state),
     base64Blob: getBase64ShowBlob(state),
+    status: getSetupStageStatuses(state).siteSurvey,
   }),
   {
     showDialog,
