@@ -128,6 +128,8 @@ export async function getFirmwareUpdateTargets(hub, options = {}) {
       });
       const firmwareUpdateTargetsById = infResponse?.body?.result ?? {};
       return sortBy(firmwareUpdateTargetsById, ['name', 'id']);
+    } else {
+      return [];
     }
   } else {
     return [];
