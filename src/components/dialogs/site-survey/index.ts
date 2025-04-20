@@ -1,1 +1,1 @@
-export { default as SiteSurveyDialog } from './SiteSurveyDialog';
+export { default } from './SiteSurveyDialog';
