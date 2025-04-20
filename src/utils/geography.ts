@@ -32,6 +32,7 @@ import * as Projection from 'ol/proj';
 import type RenderFeature from 'ol/render/Feature';
 import VectorSource from 'ol/source/Vector';
 import { getArea, getLength } from 'ol/sphere';
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { type Vector3 } from 'three';
 
 import { type Feature, FeatureType } from '~/model/features';
@@ -211,7 +212,9 @@ export const findFeatureById = curry(
   }
 );
 
-const isVectorLayer = (layer: unknown): layer is VectorLayer<FeatureLike> =>
+const isVectorLayer = (
+  layer: unknown
+): layer is VectorLayer<VectorSource, FeatureLike> =>
   layer instanceof VectorLayer && layer.getSource() instanceof VectorSource;
 
 /**

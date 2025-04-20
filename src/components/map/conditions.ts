@@ -76,4 +76,4 @@ export const contextMenu: Condition = (mapBrowserEvent) =>
  */
 export const escapeKeyDown: Condition = (mapBrowserEvent) =>
   mapBrowserEvent.type === 'keydown' &&
-  mapBrowserEvent.originalEvent.code === 'Escape';
+  (mapBrowserEvent.originalEvent as KeyboardEvent).code === 'Escape';

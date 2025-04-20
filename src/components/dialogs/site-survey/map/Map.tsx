@@ -1,11 +1,12 @@
 import Feature from 'ol/Feature';
+import type Point from 'ol/geom/Point';
 import type { ModifyEvent } from 'ol/interaction/Modify';
-import React, { useCallback } from 'react';
-import { connect } from 'react-redux';
-// Import from ol/Map because that one has typing.
 import type OLMap from 'ol/Map';
 import type { DragBoxEvent } from 'ol/interaction/DragBox';
 import VectorLayer from 'ol/layer/Vector';
+import type VectorSource from 'ol/source/Vector';
+import React, { useCallback } from 'react';
+import { connect } from 'react-redux';
 
 import { Map } from '~/components/map';
 import type { MapControlDisplaySettings } from '~/components/map/MapControls';
@@ -17,7 +18,7 @@ import type {
 } from '~/components/map/interactions/types';
 import {
   layerComponents as defaultLayerComponent,
-  LayerProps,
+  type LayerProps,
   type LayerConfig,
 } from '~/components/map/layers';
 import ShowInfoLayerPresentation, {
@@ -46,22 +47,23 @@ import {
 } from '~/model/identifiers';
 import { getVisibleSelectableLayers, LayerType } from '~/model/layers';
 import { getVisibleLayersInOrder } from '~/selectors/ordered';
-import type { RootState } from '~/store/reducers';
+import type { AppDispatch, RootState } from '~/store/reducers';
 import type { Identifier } from '~/utils/collections';
 import { findFeaturesById } from '~/utils/geography';
 import type { WorldCoordinate2D } from '~/utils/math';
 
 // === Layers ===
 
-type ShowInfoLayerProps = LayerProps & {
-  approximateConvexHullOfFullShow?: WorldCoordinate2D[];
-  convexHull?: WorldCoordinate2D[];
-  homePositions?: (WorldCoordinate2D | undefined)[];
-  landingPositions?: (WorldCoordinate2D | undefined)[];
-  selection: Identifier[];
-};
+type ShowInfoLayerProps = LayerProps &
+  Readonly<{
+    approximateConvexHullOfFullShow?: WorldCoordinate2D[];
+    convexHull?: WorldCoordinate2D[];
+    homePositions?: Array<WorldCoordinate2D | undefined>;
+    landingPositions?: Array<WorldCoordinate2D | undefined>;
+    selection: Identifier[];
+  }>;
 
-const ShowInfoLayer = (props: ShowInfoLayerProps) => {
+const ShowInfoLayer = (props: ShowInfoLayerProps): JSX.Element => {
   const {
     approximateConvexHullOfFullShow,
     convexHull,
@@ -107,7 +109,7 @@ const mapControlSettings: Partial<MapControlDisplaySettings> = {
   showScaleLine: false,
 };
 
-type SiteSurveyMapProps = {
+type SiteSurveyMapProps = Readonly<{
   layers: LayerConfig['layers'];
   selectedTool: Tool;
   updateModifiedFeatures: (
@@ -116,8 +118,9 @@ type SiteSurveyMapProps = {
   ) => void;
   updateSelection: (mode: FeatureSelectionMode, ids: Identifier[]) => void;
   selection: Identifier[];
-};
+}>;
 
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 const useOwnState = (props: SiteSurveyMapProps) => {
   const { selection, updateModifiedFeatures, updateSelection } = props;
 
@@ -127,10 +130,12 @@ const useOwnState = (props: SiteSurveyMapProps) => {
         if (!(val instanceof Feature)) {
           return false;
         }
+
         const id = val.getId();
         if (typeof id !== 'string') {
           return false;
         }
+
         const areaId = globalIdToAreaId(id);
         return (
           // Convex hull is transformable.
@@ -168,7 +173,7 @@ const useOwnState = (props: SiteSurveyMapProps) => {
 
   const onBoxDragEnded = useCallback(
     (mode: BoxDragMode, event: DragBoxEvent) => {
-      const target: Feature = event.target;
+      const target: Feature = event.target as Feature;
       const geometry = target.getGeometry();
       if (geometry === undefined) {
         return;
@@ -183,7 +188,7 @@ const useOwnState = (props: SiteSurveyMapProps) => {
           continue;
         }
 
-        const source = layer.getSource();
+        const source: VectorSource = layer.getSource() as VectorSource;
         if (!source) {
           continue;
         }
@@ -191,8 +196,10 @@ const useOwnState = (props: SiteSurveyMapProps) => {
         source.forEachFeatureIntersectingExtent(extent, (feature) => {
           const featureGeometry = feature.getGeometry();
           if (
-            featureGeometry.getType() === 'Point' &&
-            geometry.intersectsCoordinate(featureGeometry.getCoordinates())
+            featureGeometry?.getType() === 'Point' &&
+            geometry.intersectsCoordinate(
+              (featureGeometry as Point).getCoordinates()
+            )
           ) {
             features.push(feature);
           }
@@ -245,7 +252,7 @@ const useOwnState = (props: SiteSurveyMapProps) => {
   };
 };
 
-const SiteSurveyMap = (props: SiteSurveyMapProps) => {
+const SiteSurveyMap = (props: SiteSurveyMapProps): JSX.Element => {
   const { layers, selectedTool } = props;
   const {
     getSelectedTransformableFeatures,
@@ -258,15 +265,15 @@ const SiteSurveyMap = (props: SiteSurveyMapProps) => {
     <Map
       selectedTool={selectedTool}
       layers={{ layers, layerComponents }}
-      onFeaturesModified={onFeaturesModified}
       controlSettings={mapControlSettings}
+      onFeaturesModified={onFeaturesModified}
     >
       <MapInteractions
         selectedTool={selectedTool}
         getSelectedTransformableFeatures={getSelectedTransformableFeatures}
+        updateModifiedFeatures={updateModifiedFeatures}
         onBoxDragEnded={onBoxDragEnded}
         onSingleFeatureSelected={onSingleFeatureSelected}
-        updateModifiedFeatures={updateModifiedFeatures}
       />
     </Map>
   );
@@ -280,13 +287,16 @@ const ConnectedSiteSurveyMap = connect(
     selection: getSelection(state),
   }),
   // mapDispatchToProps
-  (dispatch) => ({
-    updateSelection: (mode: FeatureSelectionMode, ids: Identifier[]) =>
-      dispatch(updateSelection({ mode, ids })),
-    updateModifiedFeatures: (
+  (dispatch: AppDispatch) => ({
+    updateSelection(mode: FeatureSelectionMode, ids: Identifier[]): void {
+      dispatch(updateSelection({ mode, ids }));
+    },
+    updateModifiedFeatures(
       features: Feature[],
       options: FeatureUpdateOptions
-    ) => updateModifiedFeaturesAction(dispatch, features, options),
+    ): void {
+      updateModifiedFeaturesAction(dispatch, features, options);
+    },
   })
 )(SiteSurveyMap);
 

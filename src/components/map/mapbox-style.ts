@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import type { Feature } from 'ol';
 import { stylefunction as styleFunction } from 'ol-mapbox-style';
 import { Fill, Icon, Stroke, Style, Text } from 'ol/style';
@@ -22,6 +24,7 @@ function createMapboxStreetsV6Style() {
     }),
   });
   const iconCache: Record<string, Style> = {};
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   function getIcon(iconName: string) {
     let icon = iconCache[iconName];
     if (!icon) {
@@ -42,7 +45,7 @@ function createMapboxStreetsV6Style() {
 
   const styles: Style[] = [];
 
-  // eslint-disable-next-line complexity
+  // eslint-disable-next-line complexity, @typescript-eslint/explicit-function-return-type
   return function (feature: Feature, resolution: number) {
     let length = 0;
     const layer = feature.get('layer');
@@ -92,6 +95,8 @@ function createMapboxStreetsV6Style() {
 
           break;
         }
+
+        default:
         // No default
       }
     } else if (
@@ -442,19 +447,26 @@ export const streetsV6Style = createMapboxStreetsV6Style();
 // ol-mapbox-style does this, but it needs a layer that it can work on.
 // We provide a fake layer here.
 const fakeLayer = {
-  changed() {},
-  set() {},
-  setStyle() {},
+  changed(): void {
+    /* nop */
+  },
+  set(): void {
+    /* nop */
+  },
+  setStyle(): void {
+    /* nop */
+  },
 };
 
 /**
  * Creates a Mapbox style function from its JSON representation.
  */
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export function createMapboxStyleFromJSON(
   style: string | any,
   source: string | string[]
 ) {
-  return styleFunction(fakeLayer, style, source);
+  return styleFunction(fakeLayer as any, style, source);
 }
 
 /*

@@ -61,7 +61,7 @@ function isTransformInteraction(
 function updateConvexHull(
   dispatch: AppDispatch,
   options: FeatureUpdateOptions
-) {
+): void {
   if (!isTransformInteraction(options)) {
     console.warn(
       'Only transformation events are supported for the convex hull.'
@@ -110,7 +110,7 @@ function updateHomePositions(
   dispatch: AppDispatch,
   globalIds: Identifier[] | undefined,
   options: FeatureUpdateOptions
-) {
+): void {
   if (!isTransformInteraction(options)) {
     console.warn(
       'Only transformation events are supported for the home positions.'
@@ -123,18 +123,17 @@ function updateHomePositions(
   const homePositionIndexes =
     globalIds === undefined
       ? undefined
-      : globalIds.reduce(
-          (acc, globalId) => {
-            const index = Number.parseInt(
-              globalIdToHomePositionId(globalId) ?? ''
-            );
-            if (Number.isFinite(index)) {
-              acc[index] = true;
-            }
-            return acc;
-          },
-          {} as Record<number, true>
-        );
+      : globalIds.reduce<Record<number, true>>((acc, globalId) => {
+          const index = Number.parseInt(
+            globalIdToHomePositionId(globalId) ?? '',
+            10
+          );
+          if (Number.isFinite(index)) {
+            acc[index] = true;
+          }
+
+          return acc;
+        }, {});
 
   if (event.subType === 'move') {
     const delta: EasNor = event.delta;
@@ -163,10 +162,10 @@ export const updateModifiedFeatures = (
   dispatch: AppDispatch,
   features: OLFeature[],
   options: FeatureUpdateOptions
-) =>
+): void =>
   // Using batch will not be necessary after upgrading to React 18.
   // See https://react-redux.js.org/api/batch
-  batch(() => {
+  batch((): void => {
     // -- Reset adapt result
     dispatch(setAdaptResult(undefined));
 
@@ -198,6 +197,7 @@ export const updateModifiedFeatures = (
     if (requiresUpdate.convexHull) {
       updateConvexHull(dispatch, options);
     }
+
     if (requiresUpdate.allHomePositions) {
       updateHomePositions(dispatch, undefined, options);
     } else if (requiresUpdate.homePositionIds.length > 0) {
