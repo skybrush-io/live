@@ -1,3 +1,5 @@
+export { MAX_DRONE_COUNT } from '@skybrush/show-format';
+
 /**
  * Altitude reference types for drone shows.
  */
@@ -71,8 +73,3 @@ export const JOB_TYPE = 'showUpload';
 export const SHOW_UPLOAD_JOB = Object.freeze({
   type: JOB_TYPE,
 });
-
-/**
- * Maximum number of drones that we support in a single show.
- */
-export const MAX_DRONE_COUNT = 5000;
