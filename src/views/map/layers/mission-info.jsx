@@ -84,6 +84,11 @@ import mapMarker from '~/../assets/img/map-marker.svg';
 import mapMarkerOutline from '~/../assets/img/map-marker-outline.svg';
 import missionOriginMarkerIcon from '~/../assets/img/mission-origin-marker.svg';
 
+// Estimate the character width based on the font size.
+const TAKEOFF_LANDING_POSITION_LABEL_FONT_SIZE = 12;
+const TAKEOFF_LANDING_POSITION_CHARACTER_WIDTH =
+  TAKEOFF_LANDING_POSITION_LABEL_FONT_SIZE * 0.6;
+
 // === Settings for this particular layer type ===
 
 const MissionInfoLayerSettingsPresentation = ({
@@ -290,7 +295,11 @@ const originStyles = (selected, axis) => [
  *       takeoff grid placement interaction's preview
  */
 const takeoffPositionStyleFactory =
-  (minimumDistanceBetweenTakeoffPositions) => (feature, resolution) => {
+  (
+    minimumDistanceBetweenTakeoffPositions,
+    estimatedTakeoffPositionLabelWidth
+  ) =>
+  (feature, resolution) => {
     const index = globalIdToHomePositionId(feature.getId());
     const style = { image: takeoffTriangle };
 
@@ -301,17 +310,18 @@ const takeoffPositionStyleFactory =
     );
 
     /**
-     * The width of four characters (e.g. "s000") is approximately 30 pixels.
-     * To fit these labels without overlap on a takeoff grid with X meters of
-     * spacing, we need one pixel to be at most about X / 30 meters.
-     *
-     * TODO: Calculate the estimated label width based on the number of drones.
+     * The estimated width of a label is approximately X pixels.
+     * To fit them without overlap on a takeoff grid with Y meters
+     * of spacing, we need one pixel to be at most about X / Y meters.
      */
-    if (pointResolution < minimumDistanceBetweenTakeoffPositions / 30) {
+    if (
+      minimumDistanceBetweenTakeoffPositions >
+      estimatedTakeoffPositionLabelWidth * pointResolution
+    ) {
       style.text = new Text({
-        font: '12px sans-serif',
-        offsetY: 12,
-        text: formatMissionId(Number.parseInt(index, 10)),
+        font: `${TAKEOFF_LANDING_POSITION_LABEL_FONT_SIZE}px sans-serif`,
+        offsetY: TAKEOFF_LANDING_POSITION_LABEL_FONT_SIZE,
+        text: formatMissionId(Number(index)),
         textAlign: 'center',
       });
     }
@@ -327,7 +337,11 @@ const takeoffPositionStyleFactory =
  *       takeoff grid placement interaction's preview
  */
 const landingPositionStyleFactory =
-  (minimumDistanceBetweenLandingPositions) => (feature, resolution) => {
+  (
+    minimumDistanceBetweenLandingPositions,
+    estimatedLandingPositionLabelWidth
+  ) =>
+  (feature, resolution) => {
     const index = globalIdToLandingPositionId(feature.getId());
     const style = { image: landingMarker };
 
@@ -338,17 +352,18 @@ const landingPositionStyleFactory =
     );
 
     /**
-     * The width of four characters (e.g. "s000") is approximately 30 pixels.
-     * To fit these labels without overlap on a landing grid with X meters of
-     * spacing, we need one pixel to be at most about X / 30 meters.
-     *
-     * TODO: Calculate the estimated label width based on the number of drones.
+     * The estimated width of a label is approximately X pixels.
+     * To fit them without overlap on a landing grid with Y meters
+     * of spacing, we need one pixel to be at most about X / Y meters.
      */
-    if (pointResolution < minimumDistanceBetweenLandingPositions / 30) {
+    if (
+      minimumDistanceBetweenLandingPositions >
+      estimatedLandingPositionLabelWidth * pointResolution
+    ) {
       style.text = new Text({
-        font: '12px sans-serif',
-        offsetY: -12,
-        text: formatMissionId(Number.parseInt(index, 10)),
+        font: `${TAKEOFF_LANDING_POSITION_LABEL_FONT_SIZE}px sans-serif`,
+        offsetY: -TAKEOFF_LANDING_POSITION_LABEL_FONT_SIZE,
+        text: formatMissionId(Number(index)),
         textAlign: 'center',
       });
     }
@@ -468,7 +483,11 @@ const MISSION_ORIGIN_GLOBAL_ID = originIdToGlobalId(MISSION_ORIGIN_ID);
 
 const landingPositionPoints = (
   landingPositions,
-  minimumDistanceBetweenLandingPositions
+  minimumDistanceBetweenLandingPositions,
+  estimatedLandingPositionLabelWidth = landingPositions
+    ? formatMissionId(landingPositions.length - 1).length *
+      TAKEOFF_LANDING_POSITION_CHARACTER_WIDTH
+    : 0
 ) =>
   Array.isArray(landingPositions)
     ? landingPositions
@@ -490,7 +509,8 @@ const landingPositionPoints = (
               key={featureKey}
               id={globalIdOfFeature}
               style={landingPositionStyleFactory(
-                minimumDistanceBetweenLandingPositions
+                minimumDistanceBetweenLandingPositions,
+                estimatedLandingPositionLabelWidth
               )}
             >
               <geom.Point coordinates={center} />
@@ -502,7 +522,11 @@ const landingPositionPoints = (
 
 const homePositionPoints = (
   homePositions,
-  minimumDistanceBetweenHomePositions
+  minimumDistanceBetweenHomePositions,
+  estimatedTakeoffPositionLabelWidth = homePositions
+    ? formatMissionId(homePositions.length - 1).length *
+      TAKEOFF_LANDING_POSITION_CHARACTER_WIDTH
+    : 0
 ) =>
   Array.isArray(homePositions)
     ? homePositions
@@ -524,7 +548,8 @@ const homePositionPoints = (
               key={featureKey}
               id={globalIdOfFeature}
               style={takeoffPositionStyleFactory(
-                minimumDistanceBetweenHomePositions
+                minimumDistanceBetweenHomePositions,
+                estimatedTakeoffPositionLabelWidth
               )}
             >
               <geom.Point coordinates={center} />
