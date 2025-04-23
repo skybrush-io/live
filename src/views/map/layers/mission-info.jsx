@@ -242,6 +242,11 @@ const takeoffTriangle = new RegularShape({
 });
 
 /**
+ * Style to use for takeoff markers.
+ */
+const takeoffTriangleStyle = new Style({ image: takeoffTriangle });
+
+/**
  * Shape to use for landing markers.
  */
 const landingMarker = new RegularShape({
@@ -251,6 +256,11 @@ const landingMarker = new RegularShape({
   rotation: Math.PI,
   stroke: blackVeryThinOutline,
 });
+
+/**
+ * Style to use for landing markers.
+ */
+const landingMarkerStyle = new Style({ image: landingMarker });
 
 /**
  * Styling function for the marker representing the origin of the map
@@ -288,11 +298,23 @@ const originStyles = (selected, axis) => [
 ];
 
 /**
+ * Memoized function to generate the label styles for takeoff position markers.
+ */
+const takeoffPositionLabelStyleCache = memoize(
+  (index) =>
+    new Style({
+      text: new Text({
+        font: `${TAKEOFF_LANDING_POSITION_LABEL_FONT_SIZE}px sans-serif`,
+        offsetY: TAKEOFF_LANDING_POSITION_LABEL_FONT_SIZE,
+        text: formatMissionId(Number(index)),
+        textAlign: 'center',
+      }),
+    })
+);
+
+/**
  * Style for the marker representing the takeoff positions of the drones in
  * the current mission.
- *
- * PERF: Apply caching / memoization similarly to the
- *       takeoff grid placement interaction's preview
  */
 const takeoffPositionStyleFactory =
   (
@@ -301,7 +323,6 @@ const takeoffPositionStyleFactory =
   ) =>
   (feature, resolution) => {
     const index = globalIdToHomePositionId(feature.getId());
-    const style = { image: takeoffTriangle };
 
     const pointResolution = getPointResolution(
       'EPSG:3857',
@@ -309,32 +330,38 @@ const takeoffPositionStyleFactory =
       feature.getGeometry().getCoordinates()
     );
 
-    /**
-     * The estimated width of a label is approximately X pixels.
-     * To fit them without overlap on a takeoff grid with Y meters
-     * of spacing, we need one pixel to be at most about X / Y meters.
-     */
-    if (
-      minimumDistanceBetweenTakeoffPositions >
+    return [
+      takeoffTriangleStyle,
+      /**
+       * The estimated width of the label is approximately X pixels.
+       * To fit them without overlap on a takeoff grid with Y meters
+       * of spacing, we need one pixel to be at most about X / Y meters.
+       */
+      ...(minimumDistanceBetweenTakeoffPositions >
       estimatedTakeoffPositionLabelWidth * pointResolution
-    ) {
-      style.text = new Text({
+        ? [takeoffPositionLabelStyleCache(index)]
+        : []),
+    ];
+  };
+
+/**
+ * Memoized function to generate the label styles for landing position markers.
+ */
+const landingPositionLabelStyleCache = memoize(
+  (index) =>
+    new Style({
+      text: new Text({
         font: `${TAKEOFF_LANDING_POSITION_LABEL_FONT_SIZE}px sans-serif`,
-        offsetY: TAKEOFF_LANDING_POSITION_LABEL_FONT_SIZE,
+        offsetY: -TAKEOFF_LANDING_POSITION_LABEL_FONT_SIZE,
         text: formatMissionId(Number(index)),
         textAlign: 'center',
-      });
-    }
-
-    return new Style(style);
-  };
+      }),
+    })
+);
 
 /**
  * Style for the marker representing the landing positions of the drones in
  * the current mission.
- *
- * PERF: Apply caching / memoization similarly to the
- *       takeoff grid placement interaction's preview
  */
 const landingPositionStyleFactory =
   (
@@ -343,7 +370,6 @@ const landingPositionStyleFactory =
   ) =>
   (feature, resolution) => {
     const index = globalIdToLandingPositionId(feature.getId());
-    const style = { image: landingMarker };
 
     const pointResolution = getPointResolution(
       'EPSG:3857',
@@ -351,24 +377,18 @@ const landingPositionStyleFactory =
       feature.getGeometry().getCoordinates()
     );
 
-    /**
-     * The estimated width of a label is approximately X pixels.
-     * To fit them without overlap on a landing grid with Y meters
-     * of spacing, we need one pixel to be at most about X / Y meters.
-     */
-    if (
-      minimumDistanceBetweenLandingPositions >
+    return [
+      landingMarkerStyle,
+      /**
+       * The estimated width of the label is approximately X pixels.
+       * To fit them without overlap on a landing grid with Y meters
+       * of spacing, we need one pixel to be at most about X / Y meters.
+       */
+      ...(minimumDistanceBetweenLandingPositions >
       estimatedLandingPositionLabelWidth * pointResolution
-    ) {
-      style.text = new Text({
-        font: `${TAKEOFF_LANDING_POSITION_LABEL_FONT_SIZE}px sans-serif`,
-        offsetY: -TAKEOFF_LANDING_POSITION_LABEL_FONT_SIZE,
-        text: formatMissionId(Number(index)),
-        textAlign: 'center',
-      });
-    }
-
-    return new Style(style);
+        ? [landingPositionLabelStyleCache(index)]
+        : []),
+    ];
   };
 
 /**
