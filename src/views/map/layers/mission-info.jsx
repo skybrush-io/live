@@ -1,7 +1,6 @@
 import dropWhile from 'lodash-es/dropWhile';
 import takeWhile from 'lodash-es/takeWhile';
 import unary from 'lodash-es/unary';
-import memoizeOne from 'memoize-one';
 import memoize from 'memoizee';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -24,6 +23,7 @@ import {
   ConvexHullVariant,
   homePositionPoints,
   landingPositionPoints,
+  orientationMarker,
 } from '~/components/map/layers/ShowInfoLayer';
 import { Tool } from '~/components/map/tools';
 import { setLayerParametersById } from '~/features/map/layers';
@@ -77,7 +77,6 @@ import { styleForPointsOfPolygon } from './features';
 
 import mapMarkerOutline from '~/../assets/img/map-marker-outline.svg';
 import mapMarker from '~/../assets/img/map-marker.svg';
-import missionOriginMarkerIcon from '~/../assets/img/mission-origin-marker.svg';
 
 // === Settings for this particular layer type ===
 
@@ -298,22 +297,6 @@ const createMissionItemBaseStyle = memoize(
       return new Style(style);
     }
   }
-);
-
-/**
- * Style for the marker representing the origin of the mission-specific
- * coordinate system.
- */
-const createMissionOriginStyle = memoizeOne(
-  (heading) =>
-    new Style({
-      image: new Icon({
-        src: missionOriginMarkerIcon,
-        rotateWithView: true,
-        rotation: toRadians(heading),
-        snapToPixel: false,
-      }),
-    })
 );
 
 /**
@@ -591,16 +574,11 @@ const auxiliaryMissionLines = (
 const missionOriginMarker = (missionOrientation, missionOrigin) =>
   missionOrigin
     ? [
-        <Feature
-          key='missionOrigin'
-          id={MISSION_ORIGIN_GLOBAL_ID}
-          properties={{ skipSelection: true }}
-          style={createMissionOriginStyle(missionOrientation)}
-        >
-          <geom.Point
-            coordinates={mapViewCoordinateFromLonLat(missionOrigin)}
-          />
-        </Feature>,
+        orientationMarker(
+          missionOrientation,
+          missionOrigin,
+          MISSION_ORIGIN_GLOBAL_ID
+        ),
       ]
     : [];
 
