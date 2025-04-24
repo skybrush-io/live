@@ -1,9 +1,10 @@
 import mapValues from 'lodash-es/mapValues';
+import memoizeOne from 'memoize-one';
 import memoize from 'memoizee';
 import React from 'react';
 
 import { getPointResolution } from 'ol/proj';
-import { RegularShape, Style, Text } from 'ol/style';
+import { Icon, RegularShape, Style, Text } from 'ol/style';
 
 // @ts-expect-error
 import { Feature, geom, layer as olLayer, source } from '@collmot/ol-react';
@@ -21,8 +22,8 @@ import {
 import { setLayerEditable, setLayerSelectable } from '~/model/layers';
 import type { Identifier } from '~/utils/collections';
 import { formatMissionId } from '~/utils/formatting';
-import { mapViewCoordinateFromLonLat } from '~/utils/geography';
-import { closePolygon, WorldCoordinate2D } from '~/utils/math';
+import { type LonLat, mapViewCoordinateFromLonLat } from '~/utils/geography';
+import { closePolygon, toRadians, type WorldCoordinate2D } from '~/utils/math';
 import {
   blackVeryThinOutline,
   fill,
@@ -30,6 +31,41 @@ import {
   whiteThickOutline,
   whiteVeryThinOutline,
 } from '~/utils/styles';
+
+// @ts-expect-error: untyped
+import missionOriginMarkerIcon from '~/../assets/img/mission-origin-marker.svg';
+
+// === Show origin ===
+
+const orientationMarkerStyle = memoizeOne(
+  (orientation: number, color?: string) =>
+    new Style({
+      image: new Icon({
+        src: missionOriginMarkerIcon,
+        rotateWithView: true,
+        rotation: toRadians(orientation),
+        color,
+      }),
+    })
+);
+
+const skipSelection = { skipSelection: true };
+
+export const orientationMarker = (
+  orientation: number,
+  origin: LonLat,
+  id: string,
+  color?: string
+) => (
+  <Feature
+    key={id}
+    id={id}
+    properties={skipSelection}
+    style={orientationMarkerStyle(orientation, color)}
+  >
+    <geom.Point coordinates={mapViewCoordinateFromLonLat(origin)} />
+  </Feature>
+);
 
 // === Convex hull ===
 

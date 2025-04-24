@@ -1,3 +1,4 @@
+import { boundingExtent } from 'ol/extent';
 import { createSelector } from 'reselect';
 
 import {
@@ -10,7 +11,7 @@ import {
 } from '~/features/show/trajectory-selectors';
 import { isOutdoorCoordinateSystemWithOrigin } from '~/features/show/types';
 import type { AppSelector, RootState } from '~/store/reducers';
-import { type Latitude, type Longitude } from '~/utils/geography';
+import type { Latitude, Longitude, LonLat } from '~/utils/geography';
 import { convexHull2D, type Coordinate2D } from '~/utils/math';
 import { EMPTY_ARRAY } from '~/utils/redux';
 
@@ -147,6 +148,37 @@ export const {
   getLandingPositionsInWorldCoordinates,
   getOutdoorShowToWorldCoordinateSystemTransformation,
 } = makeTrajectorySelectors(selectSwarmSpecification, selectCoordinateSystem);
+
+export type ConvexHullMarkerData = {
+  orientation: number;
+  origin: LonLat;
+};
+
+export const selectConvexHullMarkerData: AppSelector<
+  ConvexHullMarkerData | undefined
+> = createSelector(
+  selectCoordinateSystem,
+  getConvexHullOfShow,
+  getOutdoorShowToWorldCoordinateSystemTransformation,
+  (coordinateSystem, convexHull, transform) => {
+    if (transform === undefined) {
+      return undefined;
+    }
+
+    const extent = boundingExtent(convexHull);
+    const x = extent[0]! + (extent[2]! - extent[0]!) / 2;
+    const y = extent[1]! + (extent[3]! - extent[1]!) / 2;
+    if (!Number.isFinite(x) || !Number.isFinite(y)) {
+      return undefined;
+    }
+
+    const coords = transform([x, y]);
+    return {
+      orientation: Number.parseFloat(coordinateSystem.orientation),
+      origin: [coords.lon, coords.lat] as LonLat,
+    };
+  }
+);
 
 export const getHomePositionsInWorldCoordinates = createSelector(
   getHomePositions,
