@@ -8,6 +8,7 @@ import type VectorSource from 'ol/source/Vector';
 import React, { useCallback } from 'react';
 import { connect } from 'react-redux';
 
+import Colors from '~/components/colors';
 import { Map } from '~/components/map';
 import type { MapControlDisplaySettings } from '~/components/map/MapControls';
 import MapInteractions from '~/components/map/interactions/MapInteractions';
@@ -26,6 +27,7 @@ import ShowInfoLayerPresentation, {
   ConvexHullVariant,
   homePositionPoints,
   landingPositionPoints,
+  orientationMarker,
 } from '~/components/map/layers/ShowInfoLayer';
 import { Tool } from '~/components/map/tools';
 import {
@@ -37,6 +39,8 @@ import {
   getHomePositionsInWorldCoordinates,
   getSelection,
   selectApproximateConvexHullOfFullShowInWorldCoordinates,
+  selectConvexHullMarkerData,
+  type ConvexHullMarkerData,
 } from '~/features/site-survey/selectors';
 import { updateSelection } from '~/features/site-survey/state';
 import {
@@ -58,6 +62,7 @@ type ShowInfoLayerProps = LayerProps &
   Readonly<{
     approximateConvexHullOfFullShow?: WorldCoordinate2D[];
     convexHull?: WorldCoordinate2D[];
+    convexHullMarker: ConvexHullMarkerData | undefined;
     homePositions?: Array<WorldCoordinate2D | undefined>;
     landingPositions?: Array<WorldCoordinate2D | undefined>;
     selection: Identifier[];
@@ -67,6 +72,7 @@ const ShowInfoLayer = (props: ShowInfoLayerProps): JSX.Element => {
   const {
     approximateConvexHullOfFullShow,
     convexHull,
+    convexHullMarker,
     homePositions,
     landingPositions,
     selection,
@@ -75,6 +81,13 @@ const ShowInfoLayer = (props: ShowInfoLayerProps): JSX.Element => {
 
   return (
     <ShowInfoLayerPresentation {...layerProps}>
+      {convexHullMarker &&
+        orientationMarker(
+          convexHullMarker.orientation,
+          convexHullMarker.origin,
+          'show-orientation',
+          Colors.netShowConvexHull
+        )}
       {...convexHullPolygon(
         approximateConvexHullOfFullShow,
         selection,
@@ -91,6 +104,7 @@ const ConnectedShowInfoLayer = connect((state: RootState) => ({
   approximateConvexHullOfFullShow:
     selectApproximateConvexHullOfFullShowInWorldCoordinates(state),
   convexHull: getConvexHullOfShowInWorldCoordinates(state),
+  convexHullMarker: selectConvexHullMarkerData(state),
   homePositions: getHomePositionsInWorldCoordinates(state),
   // landingPositions: getLandingPositionsInWorldCoordinates(state),
   selection: getSelection(state),
