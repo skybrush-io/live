@@ -1,12 +1,12 @@
 import { Circle, Icon, Style, Text } from 'ol/style';
 import React from 'react';
 
-// @ts-ignore: untyped
+// @ts-expect-error: untyped
 import { Feature, geom, layer, source } from '@collmot/ol-react';
 
-// @ts-ignore: untyped
+// @ts-expect-error: untyped
 import BeaconImage from '~/../assets/img/beacon-24x24.png';
-// @ts-ignore: untyped
+// @ts-expect-error: untyped
 import SelectionGlow from '~/../assets/img/beacon-selection-glow.png';
 
 import { RGBColors } from '~/components/colors';
@@ -34,7 +34,7 @@ const selectionStyle = new Style({
   }),
 });
 
-// @ts-ignore: RGBColors doesn't have the right keys.
+// @ts-expect-error: RGBColors doesn't have the right keys.
 const activeMarkerStyles = [RGBColors.error, RGBColors.success].map(
   (color: number[]) =>
     new Style({

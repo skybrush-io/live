@@ -3,7 +3,7 @@ import Stroke from 'ol/style/Stroke';
 import Text from 'ol/style/Text';
 import React from 'react';
 
-// @ts-ignore
+// @ts-expect-error
 import { layer as OLLayer } from '@collmot/ol-react';
 
 import useDarkMode from '~/hooks/useDarkMode';

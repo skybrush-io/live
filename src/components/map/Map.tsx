@@ -2,7 +2,7 @@ import type { ModifyEvent } from 'ol/interaction/Modify';
 import React, { useMemo, type CSSProperties } from 'react';
 import { connect } from 'react-redux';
 
-// @ts-ignore
+// @ts-expect-error
 import { Map as OLMap, View } from '@collmot/ol-react';
 
 import {

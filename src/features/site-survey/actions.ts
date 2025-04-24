@@ -260,7 +260,7 @@ export const adaptShow =
 
     try {
       const { show, takeoffLengthChange, rthLengthChange } =
-        // @ts-ignore ts(2339)
+        // @ts-expect-error: ts(2339)
         await messageHub.query.adaptShow(
           base64ShowBlob,
           transformations,

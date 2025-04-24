@@ -1,8 +1,8 @@
 import Feature from 'ol/Feature';
-import type Point from 'ol/geom/Point';
-import type { ModifyEvent } from 'ol/interaction/Modify';
 import type OLMap from 'ol/Map';
+import type Point from 'ol/geom/Point';
 import type { DragBoxEvent } from 'ol/interaction/DragBox';
+import type { ModifyEvent } from 'ol/interaction/Modify';
 import VectorLayer from 'ol/layer/Vector';
 import type VectorSource from 'ol/source/Vector';
 import React, { useCallback } from 'react';
@@ -18,8 +18,8 @@ import type {
 } from '~/components/map/interactions/types';
 import {
   layerComponents as defaultLayerComponent,
-  type LayerProps,
   type LayerConfig,
+  type LayerProps,
 } from '~/components/map/layers';
 import ShowInfoLayerPresentation, {
   convexHullPolygon,
@@ -76,7 +76,6 @@ const ShowInfoLayer = (props: ShowInfoLayerProps): JSX.Element => {
   return (
     <ShowInfoLayerPresentation {...layerProps}>
       {...convexHullPolygon(
-        // First layer, interactive ones should be on top of this.
         approximateConvexHullOfFullShow,
         selection,
         ConvexHullVariant.GROSS

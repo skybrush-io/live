@@ -3,7 +3,7 @@ import React from 'react';
 import { RegularShape, Style, Text } from 'ol/style';
 import type { Options as StyleOptions } from 'ol/style/Style';
 
-// @ts-ignore
+// @ts-expect-error
 import { Feature, geom, layer as olLayer, source } from '@collmot/ol-react';
 
 import Colors from '~/components/colors';

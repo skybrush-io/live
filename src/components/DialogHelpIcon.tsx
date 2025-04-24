@@ -2,7 +2,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import HelpIcon from '@material-ui/icons/Help';
 import React from 'react';
 
-// @ts-ignore
 import Tooltip from '@skybrush/mui-components/lib/Tooltip';
 
 const useStyles = makeStyles((theme) => ({

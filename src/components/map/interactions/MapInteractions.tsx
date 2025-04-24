@@ -6,7 +6,7 @@ import VectorLayer from 'ol/layer/Vector';
 import type Map from 'ol/Map';
 import React, { useCallback } from 'react';
 
-// @ts-ignore
+// @ts-expect-error
 import { interaction, withMap } from '@collmot/ol-react';
 
 import * as Condition from '~/components/map/conditions';

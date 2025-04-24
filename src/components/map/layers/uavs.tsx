@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-// @ts-ignore
+// @ts-expect-error
 import { layer as olLayer } from '@collmot/ol-react';
 
 import Header from '@skybrush/mui-components/lib/FormHeader';

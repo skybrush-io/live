@@ -1,4 +1,4 @@
-// @ts-ignore: untyped
+// @ts-expect-error: untyped
 import type { Feature } from '@collmot/ol-react';
 import type { Layer } from '~/model/layers';
 

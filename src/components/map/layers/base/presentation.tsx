@@ -5,7 +5,7 @@ import MVTFormat from 'ol/format/MVT';
 import type ImageTile from 'ol/ImageTile';
 import React, { type ChangeEvent } from 'react';
 
-// @ts-ignore, Missing type declaration
+// @ts-expect-error: untyped
 import { layer as olLayer, source } from '@collmot/ol-react';
 
 import type { APIKeysRecord } from '~/APIKeys';

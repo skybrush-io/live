@@ -6,7 +6,7 @@
 import Map from 'ol/Map';
 import React from 'react';
 
-// @ts-ignore
+// @ts-expect-error
 import { withMap } from '@collmot/ol-react';
 
 import { mapReferenceRequestSignal } from '~/signals';
