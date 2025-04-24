@@ -1,7 +1,9 @@
+import mapValues from 'lodash-es/mapValues';
+import memoize from 'memoizee';
 import React from 'react';
 
+import { getPointResolution } from 'ol/proj';
 import { RegularShape, Style, Text } from 'ol/style';
-import type { Options as StyleOptions } from 'ol/style/Style';
 
 // @ts-expect-error
 import { Feature, geom, layer as olLayer, source } from '@collmot/ol-react';
@@ -86,6 +88,75 @@ export const convexHullPolygon = (
   ];
 };
 
+// === Takeoff & Landing ===
+
+// Estimate the character width based on the font size.
+export const TAKEOFF_LANDING_POSITION_LABEL_FONT_SIZE = 12;
+export const TAKEOFF_LANDING_POSITION_CHARACTER_WIDTH =
+  TAKEOFF_LANDING_POSITION_LABEL_FONT_SIZE * 0.6;
+
+type StyleFunctionFactoryForPositionWithDynamicallyVisibleLabelContext = {
+  estimatedLabelWidth?: number;
+  minimumDistanceBetweenPositions?: number;
+  selection?: Identifier[];
+};
+type StyleFunctionFactoryForPositionWithDynamicallyVisibleLabelOptions = {
+  hideLabels?: boolean;
+};
+
+/**
+ * Factory for creating style functions that dynamically show / hide the label
+ * of a position marker based on spacing, estimated width and map resolution.
+ */
+const styleFunctionFactoryForPositionWithDynamicallyVisibleLabel =
+  (
+    styles: {
+      label: (id: Identifier) => Style;
+      marker: Style;
+      selection: Style;
+    },
+    context?: StyleFunctionFactoryForPositionWithDynamicallyVisibleLabelContext,
+    options?: StyleFunctionFactoryForPositionWithDynamicallyVisibleLabelOptions
+  ) =>
+  (feature: Feature, resolution: number) => {
+    // PERF: Move the resolution calculation out of the style function,
+    //       such that it only gets computed once for all positions...
+    const pointResolution = getPointResolution(
+      'EPSG:3857',
+      resolution,
+      feature.getGeometry().getCoordinates()
+    );
+
+    /**
+     * The labels should only be visible if there is enough space between the
+     * positions to fit them without overlap given the spacing and resolution.
+     *
+     * Units of the calculation:
+     * - distance: m
+     * - width: px
+     * - resolution: m/px
+     *
+     * NOTE: In case of missing context data we assume the optimistic outcome.
+     */
+    const labelsWouldFitWithoutOverlap =
+      context &&
+      typeof context.minimumDistanceBetweenPositions === 'number' &&
+      typeof context.estimatedLabelWidth === 'number'
+        ? context?.minimumDistanceBetweenPositions >
+          context?.estimatedLabelWidth * pointResolution
+        : true;
+
+    return [
+      styles.marker,
+      ...(context?.selection?.includes?.(feature.getId())
+        ? [styles.selection]
+        : []),
+      ...(labelsWouldFitWithoutOverlap && !options?.hideLabels
+        ? [styles.label(feature.getId())]
+        : []),
+    ];
+  };
+
 // === Landing ===
 
 /**
@@ -109,46 +180,41 @@ const landingMarker = {
 };
 
 /**
- * Style for the marker representing the landing positions of the drones in
- * the current mission.
+ * Style to use for landing markers.
  */
-const landingPositionStyle = (
-  feature: Feature,
-  resolution: number,
-  selected?: boolean,
-  hideLabel?: boolean
-) => {
-  const index = globalIdToLandingPositionId(feature.getId()) ?? '';
-  const style: StyleOptions = {
-    image: landingMarker[selected ? 'selected' : 'base'],
-  };
+const landingMarkerStyle = mapValues(
+  landingMarker,
+  (image) => new Style({ image })
+);
 
-  if (!hideLabel && resolution < 0.4) {
-    style.text = new Text({
-      font: '12px sans-serif',
-      offsetY: -12,
-      text: formatMissionId(Number.parseInt(index, 10)),
-      textAlign: 'center',
-    });
-  }
-
-  return new Style(style);
-};
+/**
+ * Memoized function to generate styles for landing position marker labels.
+ */
+const landingPositionLabelStyle = memoize(
+  (id: Identifier) =>
+    new Style({
+      text: new Text({
+        font: `${TAKEOFF_LANDING_POSITION_LABEL_FONT_SIZE}px sans-serif`,
+        offsetY: -TAKEOFF_LANDING_POSITION_LABEL_FONT_SIZE,
+        text: formatMissionId(Number(globalIdToLandingPositionId(id))),
+        textAlign: 'center',
+      }),
+    })
+);
 
 export const landingPositionPoints = (
   landingPositions: (WorldCoordinate2D | undefined)[] | undefined,
-  selection?: Identifier[],
-  hideLabel?: boolean
+  context?: StyleFunctionFactoryForPositionWithDynamicallyVisibleLabelContext,
+  options?: StyleFunctionFactoryForPositionWithDynamicallyVisibleLabelOptions
 ) =>
   Array.isArray(landingPositions)
     ? landingPositions
         .map((landingPosition, index) => {
-          const featureKey = `land.${index}`;
-
           if (!landingPosition) {
             return null;
           }
 
+          const featureKey = `land.${index}`;
           const globalIdOfFeature = landingPositionIdToGlobalId(
             index.toString()
           );
@@ -156,16 +222,20 @@ export const landingPositionPoints = (
             landingPosition.lon,
             landingPosition.lat,
           ]);
-          const isSelected =
-            selection !== undefined && selection.includes(globalIdOfFeature);
 
           return (
             <Feature
               key={featureKey}
               id={globalIdOfFeature}
-              style={(feature: Feature, resolution: number) =>
-                landingPositionStyle(feature, resolution, isSelected, hideLabel)
-              }
+              style={styleFunctionFactoryForPositionWithDynamicallyVisibleLabel(
+                {
+                  label: landingPositionLabelStyle,
+                  marker: landingMarkerStyle.base,
+                  selection: landingMarkerStyle.selected,
+                },
+                context,
+                options
+              )}
             >
               <geom.Point coordinates={center} />
             </Feature>
@@ -195,36 +265,32 @@ const takeoffTriangle = {
 };
 
 /**
- * Style for the marker representing the takeoff positions of the drones in
- * the current mission.
+ * Style to use for takeoff markers.
  */
-const takeoffPositionStyle = (
-  feature: Feature,
-  resolution: number,
-  selected?: boolean,
-  hideLabel?: boolean
-) => {
-  const index = globalIdToHomePositionId(feature.getId()) ?? '';
-  const style: StyleOptions = {
-    image: takeoffTriangle[selected ? 'selected' : 'base'],
-  };
+const takeoffTriangleStyle = mapValues(
+  takeoffTriangle,
+  (image) => new Style({ image })
+);
 
-  if (!hideLabel && resolution < 0.4) {
-    style.text = new Text({
-      font: '12px sans-serif',
-      offsetY: 12,
-      text: formatMissionId(Number.parseInt(index, 10)),
-      textAlign: 'center',
-    });
-  }
-
-  return new Style(style);
-};
+/**
+ * Memoized function to generate styles for takeoff position marker labels.
+ */
+const takeoffPositionLabelStyle = memoize(
+  (id: Identifier) =>
+    new Style({
+      text: new Text({
+        font: `${TAKEOFF_LANDING_POSITION_LABEL_FONT_SIZE}px sans-serif`,
+        offsetY: TAKEOFF_LANDING_POSITION_LABEL_FONT_SIZE,
+        text: formatMissionId(Number(globalIdToHomePositionId(id))),
+        textAlign: 'center',
+      }),
+    })
+);
 
 export const homePositionPoints = (
   homePositions: (WorldCoordinate2D | undefined)[] | undefined,
-  selection?: Identifier[],
-  hideLabel?: boolean
+  context?: StyleFunctionFactoryForPositionWithDynamicallyVisibleLabelContext,
+  options?: StyleFunctionFactoryForPositionWithDynamicallyVisibleLabelOptions
 ) =>
   Array.isArray(homePositions)
     ? homePositions
@@ -232,22 +298,27 @@ export const homePositionPoints = (
           if (!homePosition) {
             return null;
           }
+
           const featureKey = `home.${index}`;
           const globalIdOfFeature = homePositionIdToGlobalId(index.toString());
           const center = mapViewCoordinateFromLonLat([
             homePosition.lon,
             homePosition.lat,
           ]);
-          const isSelected =
-            selection !== undefined && selection.includes(globalIdOfFeature);
 
           return (
             <Feature
               key={featureKey}
               id={globalIdOfFeature}
-              style={(feature: Feature, resolution: number) =>
-                takeoffPositionStyle(feature, resolution, isSelected, hideLabel)
-              }
+              style={styleFunctionFactoryForPositionWithDynamicallyVisibleLabel(
+                {
+                  label: takeoffPositionLabelStyle,
+                  marker: takeoffTriangleStyle.base,
+                  selection: takeoffTriangleStyle.selected,
+                },
+                context,
+                options
+              )}
             >
               <geom.Point coordinates={center} />
             </Feature>

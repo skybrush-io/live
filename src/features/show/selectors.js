@@ -26,6 +26,7 @@ import {
   calculateMinimumDistanceBetweenPairs,
   convexHull2D,
   createGeometryFromPoints,
+  euclideanDistance2D,
   getCentroid,
 } from '~/utils/math';
 import { EMPTY_ARRAY, EMPTY_OBJECT } from '~/utils/redux';
@@ -143,6 +144,12 @@ export const isShowAuthorizedToStart = (state) =>
  */
 export const isTakeoffAreaApproved = (state) =>
   Boolean(state.show.preflight.takeoffAreaApprovedAt);
+
+/**
+ * Returns the environment specification from the currently loaded show data.
+ */
+export const getEnvironmentFromLoadedShowData = (state) =>
+  state.show.data?.environment;
 
 /**
  * Returns the common show settings that apply to all drones in the currently
@@ -807,7 +814,10 @@ export function proposeMappingFileName(state) {
  */
 export const getMinimumDistanceBetweenTakeoffPositions = createSelector(
   getFirstPointsOfTrajectories,
-  (points) => calculateMinimumDistanceBetweenPairs(points, points)
+  (points) =>
+    calculateMinimumDistanceBetweenPairs(points, points, {
+      distanceFunction: euclideanDistance2D,
+    })
 );
 
 /**
@@ -820,7 +830,10 @@ export const getMinimumDistanceBetweenTakeoffPositions = createSelector(
  */
 export const getMinimumDistanceBetweenLandingPositions = createSelector(
   getLastPointsOfTrajectories,
-  (points) => calculateMinimumDistanceBetweenPairs(points, points)
+  (points) =>
+    calculateMinimumDistanceBetweenPairs(points, points, {
+      distanceFunction: euclideanDistance2D,
+    })
 );
 
 /**

@@ -24,6 +24,7 @@ import {
   ConvexHullVariant,
   homePositionPoints,
   landingPositionPoints,
+  TAKEOFF_LANDING_POSITION_CHARACTER_WIDTH,
 } from '~/components/map/layers/ShowInfoLayer';
 import { Tool } from '~/components/map/tools';
 import { setLayerParametersById } from '~/features/map/layers';
@@ -32,6 +33,8 @@ import {
   getCurrentMissionItemRatio,
   getGPSBasedHomePositionsInMission,
   getGPSBasedLandingPositionsInMission,
+  getMinimumDistanceBetweenHomePositions,
+  getMinimumDistanceBetweenLandingPositions,
   getMissionItemsOfTypeWithIndices,
   getMissionItemsWithAreasInOrder,
   getMissionItemsWithCoordinatesInOrder,
@@ -56,6 +59,7 @@ import { MissionItemType } from '~/model/missions';
 import { getMapOriginRotationAngle } from '~/selectors/map';
 import { getSelection } from '~/selectors/selection';
 import { hasFeature } from '~/utils/configuration';
+import { formatMissionId } from '~/utils/formatting';
 import { mapViewCoordinateFromLonLat } from '~/utils/geography';
 import { closePolygon, toRadians } from '~/utils/math';
 import CustomPropTypes from '~/utils/prop-types';
@@ -646,6 +650,8 @@ const MissionInfoVectorSource = ({
   homePositions,
   landingPositions,
   mapOrigin,
+  minimumDistanceBetweenHomePositions,
+  minimumDistanceBetweenLandingPositions,
   missionItemsWithAreas,
   missionItemsWithCoordinates,
   missionOrientation,
@@ -659,8 +665,20 @@ const MissionInfoVectorSource = ({
 }) => (
   <source.Vector>
     {[].concat(
-      landingPositionPoints(landingPositions),
-      homePositionPoints(homePositions),
+      homePositionPoints(homePositions, {
+        minimumDistanceBetweenPositions: minimumDistanceBetweenHomePositions,
+        estimatedLabelWidth: homePositions
+          ? formatMissionId(homePositions.length - 1).length *
+            TAKEOFF_LANDING_POSITION_CHARACTER_WIDTH
+          : 0,
+      }),
+      landingPositionPoints(landingPositions, {
+        minimumDistanceBetweenPositions: minimumDistanceBetweenLandingPositions,
+        estimatedLabelWidth: landingPositions
+          ? formatMissionId(landingPositions.length - 1).length *
+            TAKEOFF_LANDING_POSITION_CHARACTER_WIDTH
+          : 0,
+      }),
       mapOriginMarker(coordinateSystemType, mapOrigin, orientation, selection),
       missionAreaBoundaries(missionItemsWithAreas, selection, selectedTool),
       missionWaypointMarkers(
@@ -697,6 +715,8 @@ MissionInfoVectorSource.propTypes = {
   homePositions: PropTypes.arrayOf(CustomPropTypes.coordinate),
   landingPositions: PropTypes.arrayOf(CustomPropTypes.coordinate),
   mapOrigin: PropTypes.arrayOf(PropTypes.number),
+  minimumDistanceBetweenLandingPositions: PropTypes.number,
+  minimumDistanceBetweenHomePositions: PropTypes.number,
   missionItemsWithAreas: PropTypes.arrayOf(PropTypes.object),
   missionItemsWithCoordinates: PropTypes.arrayOf(PropTypes.object),
   missionOrientation: CustomPropTypes.angle,
@@ -745,6 +765,10 @@ export const MissionInfoLayer = connect(
       ? getGPSBasedLandingPositionsInMission(state)
       : undefined,
     mapOrigin: layer?.parameters?.showOrigin && state.map.origin.position,
+    minimumDistanceBetweenLandingPositions:
+      getMinimumDistanceBetweenLandingPositions(state),
+    minimumDistanceBetweenHomePositions:
+      getMinimumDistanceBetweenHomePositions(state),
     missionItemsWithAreas: layer?.parameters?.showMissionItems
       ? getMissionItemsWithAreasInOrder(state)
       : undefined,

@@ -36,17 +36,21 @@ const createContentNode = ({ buttons, message, header }, dispatch) => {
   let result = message;
 
   if (Array.isArray(buttons) && buttons.length > 0) {
-    const buttonComponents = buttons.map(({ label, action }, index) => (
-      <ToastNotificationButton
-        // eslint-disable-next-line react/no-array-index-key
-        key={index}
-        size='small'
-        variant='outlined'
-        onClick={() => dispatch(action)}
-      >
-        {label}
-      </ToastNotificationButton>
-    ));
+    const buttonComponents = buttons.map(
+      ({ action, label, ...rest }, index) => (
+        <ToastNotificationButton
+          // eslint-disable-next-line react/no-array-index-key
+          key={index}
+          size='small'
+          variant='outlined'
+          style={{ flexShrink: 0 }}
+          onClick={() => dispatch(action)}
+          {...rest}
+        >
+          {label}
+        </ToastNotificationButton>
+      )
+    );
 
     result = (
       <Box

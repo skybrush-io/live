@@ -80,8 +80,16 @@ const ShowInfoLayer = (props: ShowInfoLayerProps): JSX.Element => {
         selection,
         ConvexHullVariant.GROSS
       )}
-      {...homePositionPoints(homePositions, selection, true)}
-      {...landingPositionPoints(landingPositions, selection, true)}
+      {...homePositionPoints(
+        homePositions,
+        { selection },
+        { hideLabels: true }
+      )}
+      {...landingPositionPoints(
+        landingPositions,
+        { selection },
+        { hideLabels: true }
+      )}
       {...convexHullPolygon(convexHull, selection, ConvexHullVariant.NET)}
     </ShowInfoLayerPresentation>
   );
