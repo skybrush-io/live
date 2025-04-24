@@ -9,13 +9,16 @@ import {
   SimpleDistanceField,
   SimpleVelocityField,
 } from '~/components/forms/fields';
-import type { ShowAdaptParameters } from '~/features/site-survey/actions';
+import type {
+  OptionalShowAdaptParameters,
+  ShowAdaptParameters,
+} from '~/features/site-survey/actions';
 
 const defaultAdaptParameters: ShowAdaptParameters = {
-  minDistance: NaN,
+  minDistance: 2,
   altitude: 5,
-  horizontalVelocity: NaN,
-  verticalVelocity: NaN,
+  horizontalVelocity: 5,
+  verticalVelocity: 1.5,
 };
 
 /**
@@ -50,15 +53,21 @@ function parseVelocityMpS(value: string): number {
 }
 
 export function useAdaptParametersFormState(
-  defaultParameters?: ShowAdaptParameters,
+  defaultParameters?: OptionalShowAdaptParameters,
   onChange?: () => void
 ) {
-  const [parameters, setParameters] = useState(
-    defaultParameters ?? defaultAdaptParameters
-  );
-  const [isValid, setIsValid] = useState(
-    adaptParametersValid(defaultParameters ?? defaultAdaptParameters)
-  );
+  const [parameters, setParameters] = useState<ShowAdaptParameters>({
+    altitude: defaultParameters?.altitude ?? defaultAdaptParameters.altitude,
+    minDistance:
+      defaultParameters?.minDistance ?? defaultAdaptParameters.minDistance,
+    horizontalVelocity:
+      defaultParameters?.horizontalVelocity ??
+      defaultAdaptParameters.horizontalVelocity,
+    verticalVelocity:
+      defaultParameters?.verticalVelocity ??
+      defaultAdaptParameters.verticalVelocity,
+  });
+  const [isValid, setIsValid] = useState(adaptParametersValid(parameters));
 
   const onMinDistanceChanged = useCallback(
     (evt: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -145,7 +154,7 @@ function AdaptParametersForm(props: Props) {
         <FormHeader>{t('section.parameters')}</FormHeader>
         <SimpleDistanceField
           label={t('form.minDistance')}
-          min={0.2}
+          min={0.1}
           max={100}
           value={parameters.minDistance}
           onChange={onMinDistanceChanged}

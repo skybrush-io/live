@@ -2,6 +2,7 @@ import type {
   ShowSegment,
   SwarmSpecification,
   Trajectory,
+  ValidationSettings,
 } from '@skybrush/show-format';
 
 import type { AppSelector, RootState } from '~/store/reducers';
@@ -34,6 +35,9 @@ export const getOutdoorShowToWorldCoordinateSystemTransformationObject: (
 ) => FlatEarthCoordinateSystem | undefined;
 export const getShowStartTimeAsString: (state: RootState) => string;
 export const getEnvironmentState: AppSelector<EnvironmentState>;
+export const getShowValidationSettings: AppSelector<
+  ValidationSettings | undefined
+>;
 export const getShowValidationResult: (
   state: RootState
 ) => ShowValidationResult;
