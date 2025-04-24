@@ -74,7 +74,7 @@ export const convexHullPolygon = (
 
   return [
     <Feature
-      key='missionConvexHull'
+      key={variant}
       id={globalId}
       style={[
         ...(selected ? [convexHullStyles.selection] : []),
