@@ -298,97 +298,68 @@ const originStyles = (selected, axis) => [
 ];
 
 /**
- * Memoized function to generate the label styles for takeoff position markers.
+ * Memoized function to generate styles for takeoff position markers and labels.
  */
-const takeoffPositionLabelStyleCache = memoize(
-  (index) =>
+const takeoffPositionStyleWithLabel = memoize(
+  (id) =>
     new Style({
+      image: takeoffTriangle,
       text: new Text({
         font: `${TAKEOFF_LANDING_POSITION_LABEL_FONT_SIZE}px sans-serif`,
         offsetY: TAKEOFF_LANDING_POSITION_LABEL_FONT_SIZE,
-        text: formatMissionId(Number(index)),
+        text: formatMissionId(Number(globalIdToHomePositionId(id))),
         textAlign: 'center',
       }),
     })
 );
 
 /**
- * Style for the marker representing the takeoff positions of the drones in
- * the current mission.
+ * Memoized function to generate styles for landing position markers and labels.
  */
-const takeoffPositionStyleFactory =
-  (
-    minimumDistanceBetweenTakeoffPositions,
-    estimatedTakeoffPositionLabelWidth
-  ) =>
-  (feature, resolution) => {
-    const index = globalIdToHomePositionId(feature.getId());
-
-    const pointResolution = getPointResolution(
-      'EPSG:3857',
-      resolution,
-      feature.getGeometry().getCoordinates()
-    );
-
-    return [
-      takeoffTriangleStyle,
-      /**
-       * The estimated width of the label is approximately X pixels.
-       * To fit them without overlap on a takeoff grid with Y meters
-       * of spacing, we need one pixel to be at most about X / Y meters.
-       */
-      ...(minimumDistanceBetweenTakeoffPositions >
-      estimatedTakeoffPositionLabelWidth * pointResolution
-        ? [takeoffPositionLabelStyleCache(index)]
-        : []),
-    ];
-  };
-
-/**
- * Memoized function to generate the label styles for landing position markers.
- */
-const landingPositionLabelStyleCache = memoize(
-  (index) =>
+const landingPositionStyleWithLabel = memoize(
+  (id) =>
     new Style({
+      image: landingMarker,
       text: new Text({
         font: `${TAKEOFF_LANDING_POSITION_LABEL_FONT_SIZE}px sans-serif`,
         offsetY: -TAKEOFF_LANDING_POSITION_LABEL_FONT_SIZE,
-        text: formatMissionId(Number(index)),
+        text: formatMissionId(Number(globalIdToLandingPositionId(id))),
         textAlign: 'center',
       }),
     })
 );
 
 /**
- * Style for the marker representing the landing positions of the drones in
- * the current mission.
+ * Factory for creating style functions that dynamically show / hide the label
+ * of a position marker based on spacing, estimated width and map resolution.
  */
-const landingPositionStyleFactory =
+const styleFunctionFactoryForPositionWithDynamicallyVisibleLabel =
   (
-    minimumDistanceBetweenLandingPositions,
-    estimatedLandingPositionLabelWidth
+    styleWithoutLabel,
+    styleWithLabel,
+    minimumDistanceBetweenPositions,
+    estimatedLabelWidth
   ) =>
   (feature, resolution) => {
-    const index = globalIdToLandingPositionId(feature.getId());
-
     const pointResolution = getPointResolution(
       'EPSG:3857',
       resolution,
       feature.getGeometry().getCoordinates()
     );
 
-    return [
-      landingMarkerStyle,
-      /**
-       * The estimated width of the label is approximately X pixels.
-       * To fit them without overlap on a landing grid with Y meters
-       * of spacing, we need one pixel to be at most about X / Y meters.
-       */
-      ...(minimumDistanceBetweenLandingPositions >
-      estimatedLandingPositionLabelWidth * pointResolution
-        ? [landingPositionLabelStyleCache(index)]
-        : []),
-    ];
+    /**
+     * The labels should only be visible if there is enough space between the
+     * positions to fit them without overlap given the spacing and resolution.
+     *
+     * Units of the calculation:
+     * - distance: m
+     * - width: px
+     * - resolution: m/px
+     */
+    return minimumDistanceBetweenPositions >
+      estimatedLabelWidth * pointResolution
+      ? styleWithLabel(feature.getId())
+      : styleWithoutLabel;
   };
 
 /**
@@ -528,7 +499,9 @@ const landingPositionPoints = (
             <Feature
               key={featureKey}
               id={globalIdOfFeature}
-              style={landingPositionStyleFactory(
+              style={styleFunctionFactoryForPositionWithDynamicallyVisibleLabel(
+                landingMarkerStyle,
+                landingPositionStyleWithLabel,
                 minimumDistanceBetweenLandingPositions,
                 estimatedLandingPositionLabelWidth
               )}
@@ -567,7 +540,9 @@ const homePositionPoints = (
             <Feature
               key={featureKey}
               id={globalIdOfFeature}
-              style={takeoffPositionStyleFactory(
+              style={styleFunctionFactoryForPositionWithDynamicallyVisibleLabel(
+                takeoffTriangleStyle,
+                takeoffPositionStyleWithLabel,
                 minimumDistanceBetweenHomePositions,
                 estimatedTakeoffPositionLabelWidth
               )}
