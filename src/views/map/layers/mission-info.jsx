@@ -25,6 +25,8 @@ import {
   getCurrentMissionItemRatio,
   getGPSBasedHomePositionsInMission,
   getGPSBasedLandingPositionsInMission,
+  getMinimumDistanceBetweenHomePositions,
+  getMinimumDistanceBetweenLandingPositions,
   getMissionItemsOfTypeWithIndices,
   getMissionItemsWithAreasInOrder,
   getMissionItemsWithCoordinatesInOrder,
@@ -81,6 +83,11 @@ import { styleForPointsOfPolygon } from './features';
 import mapMarker from '~/../assets/img/map-marker.svg';
 import mapMarkerOutline from '~/../assets/img/map-marker-outline.svg';
 import missionOriginMarkerIcon from '~/../assets/img/mission-origin-marker.svg';
+
+// Estimate the character width based on the font size.
+const TAKEOFF_LANDING_POSITION_LABEL_FONT_SIZE = 12;
+const TAKEOFF_LANDING_POSITION_CHARACTER_WIDTH =
+  TAKEOFF_LANDING_POSITION_LABEL_FONT_SIZE * 0.6;
 
 // === Settings for this particular layer type ===
 
@@ -235,6 +242,11 @@ const takeoffTriangle = new RegularShape({
 });
 
 /**
+ * Style to use for takeoff markers.
+ */
+const takeoffTriangleStyle = new Style({ image: takeoffTriangle });
+
+/**
  * Shape to use for landing markers.
  */
 const landingMarker = new RegularShape({
@@ -244,6 +256,11 @@ const landingMarker = new RegularShape({
   rotation: Math.PI,
   stroke: blackVeryThinOutline,
 });
+
+/**
+ * Style to use for landing markers.
+ */
+const landingMarkerStyle = new Style({ image: landingMarker });
 
 /**
  * Styling function for the marker representing the origin of the map
@@ -281,48 +298,69 @@ const originStyles = (selected, axis) => [
 ];
 
 /**
- * Style for the marker representing the takeoff positions of the drones in
- * the current mission.
+ * Memoized function to generate styles for takeoff position markers and labels.
  */
-const takeoffPositionStyle = (feature, resolution) => {
-  const index = globalIdToHomePositionId(feature.getId());
-  const style = {
-    image: takeoffTriangle,
-  };
-
-  if (resolution < 0.4) {
-    style.text = new Text({
-      font: '12px sans-serif',
-      offsetY: 12,
-      text: formatMissionId(Number.parseInt(index, 10)),
-      textAlign: 'center',
-    });
-  }
-
-  return new Style(style);
-};
+const takeoffPositionStyleWithLabel = memoize(
+  (id) =>
+    new Style({
+      image: takeoffTriangle,
+      text: new Text({
+        font: `${TAKEOFF_LANDING_POSITION_LABEL_FONT_SIZE}px sans-serif`,
+        offsetY: TAKEOFF_LANDING_POSITION_LABEL_FONT_SIZE,
+        text: formatMissionId(Number(globalIdToHomePositionId(id))),
+        textAlign: 'center',
+      }),
+    })
+);
 
 /**
- * Style for the marker representing the landing positions of the drones in
- * the current mission.
+ * Memoized function to generate styles for landing position markers and labels.
  */
-const landingPositionStyle = (feature, resolution) => {
-  const index = globalIdToLandingPositionId(feature.getId());
-  const style = {
-    image: landingMarker,
+const landingPositionStyleWithLabel = memoize(
+  (id) =>
+    new Style({
+      image: landingMarker,
+      text: new Text({
+        font: `${TAKEOFF_LANDING_POSITION_LABEL_FONT_SIZE}px sans-serif`,
+        offsetY: -TAKEOFF_LANDING_POSITION_LABEL_FONT_SIZE,
+        text: formatMissionId(Number(globalIdToLandingPositionId(id))),
+        textAlign: 'center',
+      }),
+    })
+);
+
+/**
+ * Factory for creating style functions that dynamically show / hide the label
+ * of a position marker based on spacing, estimated width and map resolution.
+ */
+const styleFunctionFactoryForPositionWithDynamicallyVisibleLabel =
+  (
+    styleWithoutLabel,
+    styleWithLabel,
+    minimumDistanceBetweenPositions,
+    estimatedLabelWidth
+  ) =>
+  (feature, resolution) => {
+    const pointResolution = getPointResolution(
+      'EPSG:3857',
+      resolution,
+      feature.getGeometry().getCoordinates()
+    );
+
+    /**
+     * The labels should only be visible if there is enough space between the
+     * positions to fit them without overlap given the spacing and resolution.
+     *
+     * Units of the calculation:
+     * - distance: m
+     * - width: px
+     * - resolution: m/px
+     */
+    return minimumDistanceBetweenPositions >
+      estimatedLabelWidth * pointResolution
+      ? styleWithLabel(feature.getId())
+      : styleWithoutLabel;
   };
-
-  if (resolution < 0.4) {
-    style.text = new Text({
-      font: '12px sans-serif',
-      offsetY: -12,
-      text: formatMissionId(Number.parseInt(index, 10)),
-      textAlign: 'center',
-    });
-  }
-
-  return new Style(style);
-};
 
 /**
  * Style for the marker representing the individual items in a waypoint mission.
@@ -434,7 +472,14 @@ const MISSION_ITEM_LINE_STRING_GLOBAL_ID = plannedTrajectoryIdToGlobalId(
 );
 const MISSION_ORIGIN_GLOBAL_ID = originIdToGlobalId(MISSION_ORIGIN_ID);
 
-const landingPositionPoints = (landingPositions) =>
+const landingPositionPoints = (
+  landingPositions,
+  minimumDistanceBetweenLandingPositions,
+  estimatedLandingPositionLabelWidth = landingPositions
+    ? formatMissionId(landingPositions.length - 1).length *
+      TAKEOFF_LANDING_POSITION_CHARACTER_WIDTH
+    : 0
+) =>
   Array.isArray(landingPositions)
     ? landingPositions
         .map((landingPosition, index) => {
@@ -454,7 +499,12 @@ const landingPositionPoints = (landingPositions) =>
             <Feature
               key={featureKey}
               id={globalIdOfFeature}
-              style={landingPositionStyle}
+              style={styleFunctionFactoryForPositionWithDynamicallyVisibleLabel(
+                landingMarkerStyle,
+                landingPositionStyleWithLabel,
+                minimumDistanceBetweenLandingPositions,
+                estimatedLandingPositionLabelWidth
+              )}
             >
               <geom.Point coordinates={center} />
             </Feature>
@@ -463,7 +513,14 @@ const landingPositionPoints = (landingPositions) =>
         .filter(Boolean)
     : [];
 
-const homePositionPoints = (homePositions) =>
+const homePositionPoints = (
+  homePositions,
+  minimumDistanceBetweenHomePositions,
+  estimatedTakeoffPositionLabelWidth = homePositions
+    ? formatMissionId(homePositions.length - 1).length *
+      TAKEOFF_LANDING_POSITION_CHARACTER_WIDTH
+    : 0
+) =>
   Array.isArray(homePositions)
     ? homePositions
         .map((homePosition, index) => {
@@ -483,7 +540,12 @@ const homePositionPoints = (homePositions) =>
             <Feature
               key={featureKey}
               id={globalIdOfFeature}
-              style={takeoffPositionStyle}
+              style={styleFunctionFactoryForPositionWithDynamicallyVisibleLabel(
+                takeoffTriangleStyle,
+                takeoffPositionStyleWithLabel,
+                minimumDistanceBetweenHomePositions,
+                estimatedTakeoffPositionLabelWidth
+              )}
             >
               <geom.Point coordinates={center} />
             </Feature>
@@ -809,6 +871,8 @@ const MissionInfoVectorSource = ({
   homePositions,
   landingPositions,
   mapOrigin,
+  minimumDistanceBetweenHomePositions,
+  minimumDistanceBetweenLandingPositions,
   missionItemsWithAreas,
   missionItemsWithCoordinates,
   missionOrientation,
@@ -822,8 +886,11 @@ const MissionInfoVectorSource = ({
 }) => (
   <source.Vector>
     {[].concat(
-      landingPositionPoints(landingPositions),
-      homePositionPoints(homePositions),
+      homePositionPoints(homePositions, minimumDistanceBetweenHomePositions),
+      landingPositionPoints(
+        landingPositions,
+        minimumDistanceBetweenLandingPositions
+      ),
       mapOriginMarker(coordinateSystemType, mapOrigin, orientation, selection),
       missionAreaBoundaries(missionItemsWithAreas, selection, selectedTool),
       missionWaypointMarkers(
@@ -860,6 +927,8 @@ MissionInfoVectorSource.propTypes = {
   homePositions: PropTypes.arrayOf(CustomPropTypes.coordinate),
   landingPositions: PropTypes.arrayOf(CustomPropTypes.coordinate),
   mapOrigin: PropTypes.arrayOf(PropTypes.number),
+  minimumDistanceBetweenLandingPositions: PropTypes.number,
+  minimumDistanceBetweenHomePositions: PropTypes.number,
   missionItemsWithAreas: PropTypes.arrayOf(PropTypes.object),
   missionItemsWithCoordinates: PropTypes.arrayOf(PropTypes.object),
   missionOrientation: CustomPropTypes.angle,
@@ -908,6 +977,10 @@ export const MissionInfoLayer = connect(
       ? getGPSBasedLandingPositionsInMission(state)
       : undefined,
     mapOrigin: layer?.parameters?.showOrigin && state.map.origin.position,
+    minimumDistanceBetweenLandingPositions:
+      getMinimumDistanceBetweenLandingPositions(state),
+    minimumDistanceBetweenHomePositions:
+      getMinimumDistanceBetweenHomePositions(state),
     missionItemsWithAreas: layer?.parameters?.showMissionItems
       ? getMissionItemsWithAreasInOrder(state)
       : undefined,

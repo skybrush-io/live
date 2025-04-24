@@ -48,6 +48,7 @@ import {
   turfDistanceInMeters,
 } from '~/utils/geography';
 import {
+  calculateMinimumDistanceBetweenPairs,
   convexHull2D,
   createGeometryFromPoints,
   estimatePathDuration,
@@ -159,11 +160,25 @@ export const getGPSBasedHomePositionsInMission: AppSelector<
 > = (state) => state.mission.homePositions;
 
 /**
+ * Returns the current list of non-null home positions in the mission.
+ */
+export const getNonNullGPSBasedHomePositionsInMission: AppSelector<
+  GPSPosition[]
+> = createSelector(getGPSBasedHomePositionsInMission, rejectNullish);
+
+/**
  * Returns the current list of landing positions in the mission.
  */
 export const getGPSBasedLandingPositionsInMission: AppSelector<
   MissionSliceState['landingPositions']
 > = (state) => state.mission.landingPositions;
+
+/**
+ * Returns the current list of non-null landing positions in the mission.
+ */
+export const getNonNullGPSBasedLandingPositionsInMission: AppSelector<
+  GPSPosition[]
+> = createSelector(getGPSBasedLandingPositionsInMission, rejectNullish);
 
 /**
  * Returns the current list of takeoff headings in the mission.
@@ -666,6 +681,32 @@ export const getMaximumHeightOfWaypoints: AppSelector<number | undefined> =
       // TODO: Handle different altitude references?
       max(missionItemsWithAltitude.map((mi) => mi.altitude.value))
   );
+
+/**
+ * Returns the minimum distance between any two home positions. The result of
+ * this selector is `Infinity` if there are less than two home positions.
+ */
+export const getMinimumDistanceBetweenHomePositions = createSelector(
+  getNonNullGPSBasedHomePositionsInMission,
+  (points) =>
+    calculateMinimumDistanceBetweenPairs(points, points, {
+      getter: ({ lon, lat }) => TurfHelpers.point([lon, lat]),
+      distanceFunction: turfDistanceInMeters,
+    })
+);
+
+/**
+ * Returns the minimum distance between any two landing positions. The result of
+ * this selector is `Infinity` if there are less than two landing positions.
+ */
+export const getMinimumDistanceBetweenLandingPositions = createSelector(
+  getNonNullGPSBasedLandingPositionsInMission,
+  (points) =>
+    calculateMinimumDistanceBetweenPairs(points, points, {
+      getter: ({ lon, lat }) => TurfHelpers.point([lon, lat]),
+      distanceFunction: turfDistanceInMeters,
+    })
+);
 
 /**
  * Selector that returns whether the mission planner dialog is open.
