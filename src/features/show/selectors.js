@@ -146,6 +146,12 @@ export const isTakeoffAreaApproved = (state) =>
   Boolean(state.show.preflight.takeoffAreaApprovedAt);
 
 /**
+ * Returns the environment specification from the currently loaded show data.
+ */
+export const getEnvironmentFromLoadedShowData = (state) =>
+  state.show.data?.environment;
+
+/**
  * Returns the common show settings that apply to all drones in the currently
  * loaded show.
  */
