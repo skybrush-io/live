@@ -31,6 +31,10 @@ import {
 import { EMPTY_ARRAY, EMPTY_OBJECT } from '~/utils/redux';
 
 import {
+  getMinimumIndoorTakeoffSpacing,
+  getMinimumOutdoorTakeoffSpacing,
+} from '../settings/selectors';
+import {
   AltitudeReference,
   DEFAULT_ALTITUDE_REFERENCE,
   DEFAULT_ROOM_SIZE,
@@ -49,10 +53,6 @@ import {
 } from './trajectory';
 import { makeSegmentSelectors, transformPoints } from './trajectory-selectors';
 import { isYawActivelyControlled } from './yaw';
-import {
-  getMinimumIndoorTakeoffSpacing,
-  getMinimumOutdoorTakeoffSpacing,
-} from '../settings/selectors';
 
 /**
  * Returns whether the manual preflight checks are signed off (i.e. approved)
@@ -152,6 +152,14 @@ export const getCommonShowSettings = (state) => {
   const result = get(state, 'show.data.settings');
   return typeof result === 'object' ? result : EMPTY_OBJECT;
 };
+
+/**
+ * Returns the validation settings of the currently loaded show.
+ */
+export const getShowValidationSettings = createSelector(
+  getCommonShowSettings,
+  (settings) => settings.validation
+);
 
 /**
  * Returns the entire swarm specification if it exists.

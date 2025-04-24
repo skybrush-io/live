@@ -210,12 +210,14 @@ export const updateModifiedFeatures = (
 type Meters = number;
 type MetersPerSecond = number;
 
-export type ShowAdaptParameters = {
-  minDistance: Meters;
-  altitude: Meters;
-  horizontalVelocity: MetersPerSecond;
-  verticalVelocity: MetersPerSecond;
+export type OptionalShowAdaptParameters = {
+  altitude?: Meters | undefined;
+  minDistance?: Meters | undefined;
+  horizontalVelocity?: MetersPerSecond | undefined;
+  verticalVelocity?: MetersPerSecond | undefined;
 };
+
+export type ShowAdaptParameters = Required<OptionalShowAdaptParameters>;
 
 export const adaptShow =
   (params: ShowAdaptParameters): AppThunk =>

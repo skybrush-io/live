@@ -9,8 +9,11 @@ import React, { useCallback, useState } from 'react';
 import { withTranslation } from 'react-i18next';
 import { batch, connect } from 'react-redux';
 
+import type { ValidationSettings } from '@skybrush/show-format';
+
 import DialogHelpIcon from '~/components/DialogHelpIcon';
 import { loadBase64EncodedShow } from '~/features/show/actions';
+import { getShowValidationSettings } from '~/features/show/selectors';
 import {
   setOutdoorShowOrientation,
   setOutdoorShowOrigin,
@@ -69,6 +72,7 @@ type StateProps = {
   backDisabled: boolean;
   coordinateSystem: OutdoorCoordinateSystemWithOrigin;
   open: boolean;
+  validationSettings: ValidationSettings | undefined;
 };
 
 type Props = StateProps &
@@ -91,10 +95,17 @@ function useOwnState(props: Props) {
     closeDialog,
     coordinateSystem,
     resetAdaptResult,
+    validationSettings,
   } = props;
   const [stage, setStage] = useState<AdaptStage>('config');
   const adaptParameters = useAdaptParametersFormState(
-    undefined,
+    validationSettings === undefined
+      ? undefined
+      : {
+          minDistance: validationSettings.minDistance,
+          horizontalVelocity: validationSettings.maxVelocityXY,
+          verticalVelocity: validationSettings.maxVelocityZ,
+        },
     resetAdaptResult
   );
 
@@ -238,13 +249,27 @@ function SiteSurveyDialog(props: Props) {
   );
 }
 
-export default connect(
+/**
+ * Wrapper that only renders the dialog when it is open.
+ *
+ * The reason for this is to correctly initialize the dialog's state
+ * when it is opened.
+ */
+function SiteSurveyDialogWrapper(props: Props) {
+  const { open, ...rest } = props;
+  return open ? <SiteSurveyDialog open {...rest} /> : null;
+}
+
+const ConnectedSiteSurveyDialogWrapper = connect(
   // -- map state to props
   (state: RootState) => ({
     adaptedBase64Show: selectAdaptedShowAsBase64String(state),
     backDisabled: selectIsShowAdaptInProgress(state),
     coordinateSystem: selectCoordinateSystem(state),
     open: state.dialogs.siteSurvey.open,
+    // Take validation settings directly from the loaded show.
+    // We'll copy that to the dialog's state when necessary.
+    validationSettings: getShowValidationSettings(state),
   }),
   // -- map dispatch to props
   (dispatch: AppDispatch) => ({
@@ -262,4 +287,6 @@ export default connect(
     closeDialog: () => dispatch(closeDialog()),
     resetAdaptResult: () => dispatch(setAdaptResult(undefined)),
   })
-)(withTranslation()(SiteSurveyDialog));
+)(withTranslation()(SiteSurveyDialogWrapper));
+
+export default ConnectedSiteSurveyDialogWrapper;
