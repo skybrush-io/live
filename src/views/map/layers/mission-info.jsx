@@ -581,7 +581,8 @@ const missionOriginMarker = (missionOrientation, missionOrigin) =>
         orientationMarker(
           missionOrientation,
           missionOrigin,
-          MISSION_ORIGIN_GLOBAL_ID
+          MISSION_ORIGIN_GLOBAL_ID,
+          Colors.grossShowConvexHull
         ),
       ]
     : [];
