@@ -585,20 +585,20 @@
     "adaptParameters": {
       "form": {
         "altitude": {
-          "label": "Takeoff altitude",
-          "help": "Takeoff altitude"
+          "help": "of vertical motion at takeoff & land",
+          "label": "Altitude"
         },
         "horizontalVelocity": {
-          "label": "Horizontal velocity",
-          "help": "Horizontal velocity"
+          "help": "during takeoff & RTH phases",
+          "label": "Horizontal velocity"
         },
         "minDistance": {
-          "label": "Minimum distance",
-          "help": "Minimum distance"
+          "help": "between drones during takeoff & RTH",
+          "label": "Minimum distance"
         },
         "verticalVelocity": {
-          "label": "Vertical velocity",
-          "help": "Vertical velocity"
+          "help": "during takeoff & RTH phases",
+          "label": "Vertical velocity"
         }
       },
       "section": {
