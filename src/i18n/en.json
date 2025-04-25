@@ -584,10 +584,22 @@
     },
     "adaptParameters": {
       "form": {
-        "altitude": "Takeoff altitude",
-        "horizontalVelocity": "Horizontal velocity",
-        "minDistance": "Minimum distance",
-        "verticalVelocity": "Vertical velocity"
+        "altitude": {
+          "label": "Takeoff altitude",
+          "help": "Takeoff altitude"
+        },
+        "horizontalVelocity": {
+          "label": "Horizontal velocity",
+          "help": "Horizontal velocity"
+        },
+        "minDistance": {
+          "label": "Minimum distance",
+          "help": "Minimum distance"
+        },
+        "verticalVelocity": {
+          "label": "Vertical velocity",
+          "help": "Vertical velocity"
+        }
       },
       "section": {
         "parameters": "Parameters"
