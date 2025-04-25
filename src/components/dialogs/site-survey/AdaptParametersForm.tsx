@@ -1,3 +1,4 @@
+import { makeStyles } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import FormGroup from '@material-ui/core/FormGroup';
 import React, { useCallback, useState } from 'react';
@@ -20,6 +21,12 @@ const defaultAdaptParameters: ShowAdaptParameters = {
   horizontalVelocity: 5,
   verticalVelocity: 1.5,
 };
+
+const useStyles = makeStyles((theme) => ({
+  formGroup: {
+    gap: theme.spacing(2),
+  },
+}));
 
 /**
  * Returns whether the given adapt parameters are valid.
@@ -148,41 +155,46 @@ function AdaptParametersForm(props: Props) {
   const { t } = useTranslation(undefined, {
     keyPrefix: 'siteSurveyDialog.adaptParameters',
   });
+  const styles = useStyles();
   return (
     <Box>
-      <FormGroup>
+      <FormGroup className={styles.formGroup}>
         <FormHeader>{t('section.parameters')}</FormHeader>
         <SimpleDistanceField
-          label={t('form.minDistance')}
+          label={t('form.minDistance.label')}
           min={0.1}
           max={100}
           value={parameters.minDistance}
           onChange={onMinDistanceChanged}
           disabled={disabled}
+          helperText={t('form.minDistance.help')}
         />
         <SimpleDistanceField
-          label={t('form.altitude')}
+          label={t('form.altitude.label')}
           min={1}
           max={100}
           value={parameters.altitude}
           onChange={onAltitudeChanged}
           disabled={disabled}
+          helperText={t('form.altitude.help')}
         />
         <SimpleVelocityField
-          label={t('form.horizontalVelocity')}
+          label={t('form.horizontalVelocity.label')}
           min={0.1}
           max={100}
           value={parameters.horizontalVelocity}
           onChange={onHorizontalVelocityChanged}
           disabled={disabled}
+          helperText={t('form.horizontalVelocity.help')}
         />
         <SimpleVelocityField
-          label={t('form.verticalVelocity')}
+          label={t('form.verticalVelocity.label')}
           min={0.1}
           max={100}
           value={parameters.verticalVelocity}
           onChange={onVerticalVelocityChanged}
           disabled={disabled}
+          helperText={t('form.verticalVelocity.help')}
         />
       </FormGroup>
     </Box>
