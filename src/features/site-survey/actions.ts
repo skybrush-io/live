@@ -234,7 +234,9 @@ export const adaptShow =
 
     const common = {
       min_distance: params.minDistance,
-      replace: true,
+      velocity_xy: params.horizontalVelocity,
+      velocity_z: params.verticalVelocity,
+  replace: true,
     };
     const transformations = [
       {
@@ -242,15 +244,12 @@ export const adaptShow =
         parameters: {
           positions,
           altitude: params.altitude,
-          speed: params.verticalVelocity,
           ...common,
         },
       },
       {
         type: 'rth',
         parameters: {
-          velocity_xy: params.horizontalVelocity,
-          velocity_z: params.verticalVelocity,
           ...common,
         },
       },
