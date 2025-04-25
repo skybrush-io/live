@@ -22,12 +22,6 @@ export type Coordinate2DPlus = [number, number, ...number[]];
 export type Coordinate3D = [number, number, number];
 export type Coordinate2DObject = { x: number; y: number };
 export type PolarCoordinate2DObject = { angle: number; radius: number };
-export type WorldCoordinate2D = {
-  lat: number;
-  lon: number;
-  ahl?: number;
-  amsl?: number;
-};
 
 /**
  * Type guard for checking whether the input is a valid 2D coordinate pair.

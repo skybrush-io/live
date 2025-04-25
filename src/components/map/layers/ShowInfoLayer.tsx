@@ -3,13 +3,17 @@ import memoizeOne from 'memoize-one';
 import memoize from 'memoizee';
 import React from 'react';
 
+import { Point } from 'ol/geom';
+import type OLLayer from 'ol/layer/Layer';
 import { getPointResolution } from 'ol/proj';
 import { Icon, RegularShape, Style, Text } from 'ol/style';
+import { type StyleFunction } from 'ol/style/Style';
 
-// @ts-expect-error
+// @ts-expect-error: untyped
 import { Feature, geom, layer as olLayer, source } from '@collmot/ol-react';
 
 import Colors from '~/components/colors';
+import { type GPSPosition } from '~/model/geography';
 import {
   areaIdToGlobalId,
   globalIdToHomePositionId,
@@ -23,7 +27,7 @@ import { setLayerEditable, setLayerSelectable } from '~/model/layers';
 import type { Identifier } from '~/utils/collections';
 import { formatMissionId } from '~/utils/formatting';
 import { type LonLat, mapViewCoordinateFromLonLat } from '~/utils/geography';
-import { closePolygon, toRadians, type WorldCoordinate2D } from '~/utils/math';
+import { closePolygon, toRadians } from '~/utils/math';
 import {
   blackVeryThinOutline,
   fill,
@@ -32,7 +36,6 @@ import {
   whiteVeryThinOutline,
 } from '~/utils/styles';
 
-// @ts-expect-error: untyped
 import missionOriginMarkerIcon from '~/../assets/img/mission-origin-marker.svg';
 
 // === Show origin ===
@@ -94,7 +97,7 @@ const convexHullStyles = {
 };
 
 export const convexHullPolygon = (
-  convexHull: WorldCoordinate2D[] | undefined,
+  convexHull: GPSPosition[] | undefined,
   selection: string[],
   variant: ConvexHullVariant
 ) => {
@@ -153,14 +156,19 @@ const styleFunctionFactoryForPositionWithDynamicallyVisibleLabel =
     },
     context?: StyleFunctionFactoryForPositionWithDynamicallyVisibleLabelContext,
     options?: StyleFunctionFactoryForPositionWithDynamicallyVisibleLabelOptions
-  ) =>
-  (feature: Feature, resolution: number) => {
+  ): StyleFunction =>
+  (feature, resolution) => {
+    const geometry = feature.getGeometry();
+    if (!(geometry instanceof Point)) {
+      return;
+    }
+
     // PERF: Move the resolution calculation out of the style function,
     //       such that it only gets computed once for all positions...
     const pointResolution = getPointResolution(
       'EPSG:3857',
       resolution,
-      feature.getGeometry().getCoordinates()
+      geometry.getCoordinates()
     );
 
     /**
@@ -178,17 +186,17 @@ const styleFunctionFactoryForPositionWithDynamicallyVisibleLabel =
       context &&
       typeof context.minimumDistanceBetweenPositions === 'number' &&
       typeof context.estimatedLabelWidth === 'number'
-        ? context?.minimumDistanceBetweenPositions >
-          context?.estimatedLabelWidth * pointResolution
+        ? context.minimumDistanceBetweenPositions >
+          context.estimatedLabelWidth * pointResolution
         : true;
 
     return [
       styles.marker,
-      ...(context?.selection?.includes?.(feature.getId())
+      ...(context?.selection?.includes?.(String(feature.getId()))
         ? [styles.selection]
         : []),
       ...(labelsWouldFitWithoutOverlap && !options?.hideLabels
-        ? [styles.label(feature.getId())]
+        ? [styles.label(String(feature.getId()))]
         : []),
     ];
   };
@@ -239,7 +247,7 @@ const landingPositionLabelStyle = memoize(
 );
 
 export const landingPositionPoints = (
-  landingPositions: (WorldCoordinate2D | undefined)[] | undefined,
+  landingPositions: Array<GPSPosition | undefined> | undefined,
   context?: StyleFunctionFactoryForPositionWithDynamicallyVisibleLabelContext,
   options?: StyleFunctionFactoryForPositionWithDynamicallyVisibleLabelOptions
 ) =>
@@ -324,7 +332,7 @@ const takeoffPositionLabelStyle = memoize(
 );
 
 export const homePositionPoints = (
-  homePositions: (WorldCoordinate2D | undefined)[] | undefined,
+  homePositions: Array<GPSPosition | undefined> | undefined,
   context?: StyleFunctionFactoryForPositionWithDynamicallyVisibleLabelContext,
   options?: StyleFunctionFactoryForPositionWithDynamicallyVisibleLabelOptions
 ) =>
@@ -365,19 +373,14 @@ export const homePositionPoints = (
 
 // === Layer ===
 
-type Props = {
-  children: React.ReactNode;
-  zIndex?: number;
-};
+type Props = React.PropsWithChildren<Readonly<{ zIndex?: number }>>;
 
-function markLayerAsSelectableAndEditable(
-  layer: typeof olLayer.Vector | null | undefined
-) {
+const markLayerAsSelectableAndEditable = (layer: { layer: OLLayer }) => {
   if (layer) {
     setLayerEditable(layer.layer);
     setLayerSelectable(layer.layer);
   }
-}
+};
 
 const ShowInfoLayer = (props: Props) => {
   const { children, zIndex } = props;

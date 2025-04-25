@@ -5,9 +5,11 @@ import type {
   ValidationSettings,
 } from '@skybrush/show-format';
 
+import type { GPSPosition } from '~/model/geography';
 import type { AppSelector, RootState } from '~/store/reducers';
 import type { FlatEarthCoordinateSystem } from '~/utils/geography';
-import type { Coordinate2D, WorldCoordinate2D } from '~/utils/math';
+import type { Coordinate2D } from '~/utils/math';
+
 import type { EnvironmentState, OutdoorCoordinateSystem } from './types';
 
 type ShowValidationResult =
@@ -67,7 +69,7 @@ export const getConvexHullsOfShowSegmentTrajectories: AppSelector<
 >;
 export const getConvexHullOfShowSegment: AppSelector<Coordinate2D[]>;
 export const getConvexHullOfShowSegmentInWorldCoordinates: AppSelector<
-  WorldCoordinate2D[]
+  GPSPosition[]
 >;
 export const getOutdoorShowCoordinateSystem: AppSelector<
   OutdoorCoordinateSystem | undefined

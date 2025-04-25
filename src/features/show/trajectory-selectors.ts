@@ -8,15 +8,16 @@ import type {
   TimeWindow,
 } from '@skybrush/show-format';
 
-import type { AppSelector } from '~/store/reducers';
+import { type GPSPosition } from '~/model/geography';
+import { type AppSelector } from '~/store/reducers';
 import { FlatEarthCoordinateSystem } from '~/utils/geography';
-import type {
-  Coordinate2DPlus,
-  Coordinate3D,
-  WorldCoordinate2D,
+import {
+  convexHull2D,
+  type Coordinate2DPlus,
+  type Coordinate3D,
 } from '~/utils/math';
-import { convexHull2D } from '~/utils/math';
 import { EMPTY_ARRAY } from '~/utils/redux';
+
 import {
   getConvexHullOfTrajectory,
   getTrajectoryInTimeWindow,
@@ -31,7 +32,7 @@ export type CoordinateToWorldTransformationFunction = <
   TCoord extends Coordinate2DPlus,
 >(
   point: TCoord
-) => WorldCoordinate2D;
+) => GPSPosition;
 
 /**
  * Transforms the given coordinates using the given transformation function.
@@ -53,7 +54,7 @@ export const transformPoints = <TCoord extends Coordinate2DPlus, TTransformed>(
  *          transformed coordinates.
  */
 export const positionsToWorldCoordinatesCombiner = (
-  coords: (Coordinate2DPlus | undefined)[],
+  coords: Array<Coordinate2DPlus | undefined>,
   transform: CoordinateToWorldTransformationFunction | undefined
 ) => {
   if (coords.includes(undefined)) {
@@ -117,9 +118,7 @@ export function makeSelectors(
         return undefined;
       }
 
-      return <TCoord extends Coordinate2DPlus>(
-        point: TCoord
-      ): WorldCoordinate2D => {
+      return <TCoord extends Coordinate2DPlus>(point: TCoord): GPSPosition => {
         const [x, y, z] = point;
         const [lon, lat] = transform.toLonLat([x, y]);
         return { lon, lat, amsl: undefined, ahl: z };
@@ -230,7 +229,7 @@ export function makeSegmentSelectors(
     Record<ShowSegmentId, ShowSegment> | undefined
   >,
   selectOutdoorShowToWorldCoordinateSystemTransformation: AppSelector<
-    | (<TCoord extends Coordinate2DPlus>(point: TCoord) => WorldCoordinate2D)
+    | (<TCoord extends Coordinate2DPlus>(point: TCoord) => GPSPosition)
     | undefined
   >
 ) {
@@ -261,11 +260,12 @@ export function makeSegmentSelectors(
   const makeSegmentSelector = (segmentId: ShowSegmentId) =>
     createSelector(selectShowSegments, (segments) => {
       const result = segments?.[segmentId];
-      if (result == undefined) {
+      if (result === undefined) {
         return undefined;
       }
+
       // Not full validation, but should be enough here.
-      return Array.isArray(result) && result.length == 2 ? result : undefined;
+      return Array.isArray(result) && result.length === 2 ? result : undefined;
     });
 
   /**
@@ -283,7 +283,7 @@ export function makeSegmentSelectors(
       makeSegmentSelector(segmentId),
       selectSwarm,
       (segment, swarm): SwarmSpecification | undefined => {
-        if (segment == undefined) {
+        if (segment === undefined) {
           return undefined;
         }
 
@@ -323,7 +323,7 @@ export function makeSegmentSelectors(
       makeSegmentSelector(segmentId),
       getTrajectories,
       (segment, trajectories) => {
-        if (segment == undefined) {
+        if (segment === undefined) {
           return undefined;
         }
 

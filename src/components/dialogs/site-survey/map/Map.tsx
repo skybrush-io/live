@@ -43,6 +43,7 @@ import {
   type ConvexHullMarkerData,
 } from '~/features/site-survey/selectors';
 import { updateSelection } from '~/features/site-survey/state';
+import { type GPSPosition } from '~/model/geography';
 import {
   globalIdToAreaId,
   GROSS_CONVEX_HULL_AREA_ID,
@@ -54,17 +55,16 @@ import { getVisibleLayersInOrder } from '~/selectors/ordered';
 import type { AppDispatch, RootState } from '~/store/reducers';
 import type { Identifier } from '~/utils/collections';
 import { findFeaturesById } from '~/utils/geography';
-import type { WorldCoordinate2D } from '~/utils/math';
 
 // === Layers ===
 
 type ShowInfoLayerProps = LayerProps &
   Readonly<{
-    approximateConvexHullOfFullShow?: WorldCoordinate2D[];
-    convexHull?: WorldCoordinate2D[];
+    approximateConvexHullOfFullShow?: GPSPosition[];
+    convexHull?: GPSPosition[];
     convexHullMarker: ConvexHullMarkerData | undefined;
-    homePositions?: Array<WorldCoordinate2D | undefined>;
-    landingPositions?: Array<WorldCoordinate2D | undefined>;
+    homePositions?: Array<GPSPosition | undefined>;
+    landingPositions?: Array<GPSPosition | undefined>;
     selection: Identifier[];
   }>;
 
