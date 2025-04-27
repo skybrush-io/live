@@ -1,22 +1,63 @@
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
 import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
+
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
 
 import StatusLight from '@skybrush/mui-components/lib/StatusLight';
 import Tooltip from '@skybrush/mui-components/lib/Tooltip';
 
-import type { Status } from '~/components/semantics';
-import { getBase64ShowBlob } from '~/features/show/selectors';
-import { getSetupStageStatuses } from '~/features/show/stages';
+import { Status } from '~/components/semantics';
 import {
-  selectPartialSiteSurveyDataFromShow,
-  selectSiteSurveyDataFromShow,
-} from '~/features/site-survey/selectors';
+  isConnected,
+  supportsStudioInterop,
+} from '~/features/servers/selectors';
+import {
+  getEnvironmentFromLoadedShowData,
+  getOutdoorShowOrigin,
+  getShowSegments,
+  hasLoadedShowFile,
+} from '~/features/show/selectors';
+import { getSetupStageStatuses } from '~/features/show/stages';
+import { selectSiteSurveyDataFromShow } from '~/features/site-survey/selectors';
 import { type ShowData, showDialog } from '~/features/site-survey/state';
+import { type PreparedI18nKey, tt } from '~/i18n';
 import Pro from '~/icons/Pro';
-import type { RootState } from '~/store/reducers';
+import { type AppSelector, type RootState } from '~/store/reducers';
+
+const PREREQUISITES: ReadonlyArray<
+  Readonly<{
+    selector: AppSelector<boolean>;
+    message: PreparedI18nKey;
+  }>
+> = Object.freeze([
+  {
+    selector: hasLoadedShowFile,
+    message: tt('show.siteSurvey.prerequisites.loaded'),
+  },
+  {
+    selector: (state: RootState) => getShowSegments(state)?.show !== undefined,
+    message: tt('show.siteSurvey.prerequisites.segments'),
+  },
+  {
+    selector: isConnected,
+    message: tt('show.siteSurvey.prerequisites.server'),
+  },
+  {
+    selector: supportsStudioInterop,
+    message: tt('show.siteSurvey.prerequisites.extension'),
+  },
+  {
+    selector: (state: RootState) =>
+      [
+        getOutdoorShowOrigin(state),
+        getEnvironmentFromLoadedShowData(state)?.location?.origin,
+      ].some((v) => v !== undefined),
+    message: tt('show.siteSurvey.prerequisites.origin'),
+  },
+]);
 
 type Props = Readonly<{
   base64Blob?: string;
@@ -27,8 +68,16 @@ type Props = Readonly<{
 }>;
 
 const SiteSurveyButton = (props: Props): JSX.Element => {
-  const { base64Blob, partialShow, show, showDialog, status } = props;
+  const { show, showDialog, status } = props;
   const { t } = useTranslation();
+
+  const evaluatedPrerequisites = PREREQUISITES.map(({ selector, message }) => ({
+    // NOTE: The `PREREQUISITES` list being readonly and frozen ensures that the
+    //       `useSelector` hook will always be called the same number of times.
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    result: useSelector(selector),
+    message: message(t),
+  }));
 
   const openWithShow = useCallback(() => {
     if (show) {
@@ -39,7 +88,10 @@ const SiteSurveyButton = (props: Props): JSX.Element => {
   const listItem = (
     <ListItem
       button
-      disabled={show === undefined || base64Blob === undefined}
+      disabled={
+        status === Status.OFF ||
+        evaluatedPrerequisites.some(({ result }) => !result)
+      }
       onClick={openWithShow}
     >
       <StatusLight status={status} />
@@ -54,33 +106,22 @@ const SiteSurveyButton = (props: Props): JSX.Element => {
       />
     </ListItem>
   );
-  if (show !== undefined) {
-    return listItem;
-  }
 
-  const tooltipLines: string[] = [];
-  if (partialShow.swarm === undefined) {
-    tooltipLines.push(t('show.siteSurvey.error.swarmRequired'));
-  } else if (base64Blob === undefined) {
-    // Only show if there's a loaded show.
-    tooltipLines.push(t('show.siteSurvey.error.showNotInMemory'));
-  }
-
-  if (partialShow.coordinateSystem === undefined) {
-    tooltipLines.push(t('show.siteSurvey.error.outdoorShowAndOriginRequired'));
-  }
-
-  // Join and then split to try to handle multiline strings
-  // even in a single error description.
-  const tooltipContent = tooltipLines
-    .join('\n')
-    .split('\n')
-    // eslint-disable-next-line react/no-array-index-key
-    .map((line, idx) => <div key={idx}>{line}</div>);
+  const tooltipContent = (
+    <List dense disablePadding style={{ background: 'unset' }}>
+      {evaluatedPrerequisites.map(({ result, message }, idx) => (
+        // eslint-disable-next-line react/no-array-index-key
+        <ListItem key={idx}>
+          <StatusLight status={result ? Status.SUCCESS : Status.ERROR} />
+          <ListItemText primary={message} />
+        </ListItem>
+      ))}
+    </List>
+  );
 
   return (
-    <Tooltip content={tooltipContent}>
-      {/* We need a wrapper div because tooltips are not shown on disabled elements. */}
+    <Tooltip maxWidth={500} content={tooltipContent} placement='left'>
+      {/* NOTE: A wrapper is needed to show tooltips on disabled elements. */}
       <div>{listItem}</div>
     </Tooltip>
   );
@@ -88,9 +129,7 @@ const SiteSurveyButton = (props: Props): JSX.Element => {
 
 const ConnectedSiteSurveyButton = connect(
   (state: RootState) => ({
-    partialShow: selectPartialSiteSurveyDataFromShow(state),
     show: selectSiteSurveyDataFromShow(state),
-    base64Blob: getBase64ShowBlob(state),
     status: getSetupStageStatuses(state).siteSurvey,
   }),
   {

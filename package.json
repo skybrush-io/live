@@ -48,7 +48,7 @@
     "@skybrush/electron-app-framework": "^2.5.1",
     "@skybrush/flockwave-spec": "^2.1.0",
     "@skybrush/mui-components": "^1.15.1",
-    "@skybrush/show-format": "^3.2.0",
+    "@skybrush/show-format": "^3.3.0",
     "@tippyjs/react": "^4.2.6",
     "@turf/boolean-contains": "^6.5.0",
     "@turf/buffer": "^6.5.0",

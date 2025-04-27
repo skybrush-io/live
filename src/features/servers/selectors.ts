@@ -284,6 +284,11 @@ export const supportsVirtualDrones =
 export const supportsMapCaching = makeSupportsFeatureSelector('map_cache');
 
 /**
+ * Returns whether the server we are connected to supports studio operations.
+ */
+export const supportsStudioInterop = makeSupportsFeatureSelector('studio');
+
+/**
  * Creates a selector that returns true if and only if a license containing
  * the given feature type is active on the currently connected server.
  */

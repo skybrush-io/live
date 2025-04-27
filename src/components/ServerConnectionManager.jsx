@@ -557,19 +557,18 @@ async function executeTasksAfterConnection(dispatch, getState) {
       handleBeaconPropertiesMessage(response.body, dispatch);
     }
 
-    // Check whether the server supports virtual drones and map caching
-    const features = [];
-    for (const feature of ['virtual_uavs', 'map_cache']) {
-      // eslint-disable-next-line no-await-in-loop
-      const supported = await messageHub.query.isExtensionLoaded(feature);
-      if (supported) {
-        features.push(feature);
-      }
-    }
-
-    if (features.length > 0) {
-      dispatch(addServerFeatures(features));
-    }
+    // Check whether the server supports the following optional features
+    const OPTIONAL_FEATURES = ['virtual_uavs', 'map_cache', 'studio'];
+    dispatch(
+      addServerFeatures(
+        await Promise.all(
+          OPTIONAL_FEATURES.map(async (name) => ({
+            name,
+            data: await messageHub.query.isExtensionLoaded(name),
+          }))
+        )
+      )
+    );
 
     // Retrieve the mapping of services to ports on the server -- used by the
     // offline maps feature when it needs to connect back to the server via

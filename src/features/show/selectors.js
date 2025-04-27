@@ -147,6 +147,9 @@ export const isTakeoffAreaApproved = (state) =>
 
 /**
  * Returns the environment specification from the currently loaded show data.
+ *
+ * @param state {import('~/store/reducers').RootState}
+ * @returns {import('@skybrush/show-format').Environment | undefined}
  */
 export const getEnvironmentFromLoadedShowData = (state) =>
   state.show.data?.environment;
@@ -919,8 +922,10 @@ export const getShowDescription = createSelector(
 
 /**
  * Selector that returns the segments of the show.
+ *
+ * @param state {import('~/store/reducers').RootState}
  */
-const getShowSegments = (state) => state.show.data?.meta?.segments;
+export const getShowSegments = (state) => state.show.data?.meta?.segments;
 
 export const {
   getShowSegment,

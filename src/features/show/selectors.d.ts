@@ -1,5 +1,7 @@
 import type {
+  Environment,
   ShowSegment,
+  ShowSegmentId,
   SwarmSpecification,
   Trajectory,
   ValidationSettings,
@@ -26,23 +28,32 @@ export const areStartConditionsSyncedWithServer: (state: RootState) => boolean;
 export const didLastLoadingAttemptFail: (state: RootState) => boolean;
 export const didStartConditionSyncFail: (state: RootState) => boolean;
 export const getConvexHullOfShow: (state: RootState) => Coordinate2D[];
+export const getEnvironmentFromLoadedShowData: AppSelector<
+  Environment | undefined
+>;
+export const getEnvironmentState: AppSelector<EnvironmentState>;
 export const getMaximumHeightInTrajectories: (
   state: RootState
 ) => number | undefined;
 export const getMaximumHorizontalDistanceFromTakeoffPositionInTrajectories: (
   state: RootState
 ) => number | undefined;
+export const getOutdoorShowOrigin: AppSelector<
+  OutdoorCoordinateSystem['origin']
+>;
 export const getOutdoorShowToWorldCoordinateSystemTransformationObject: (
   state: RootState
 ) => FlatEarthCoordinateSystem | undefined;
-export const getShowStartTimeAsString: (state: RootState) => string;
-export const getEnvironmentState: AppSelector<EnvironmentState>;
-export const getShowValidationSettings: AppSelector<
-  ValidationSettings | undefined
+export const getShowSegments: AppSelector<
+  Partial<Record<ShowSegmentId, ShowSegment>> | undefined
 >;
+export const getShowStartTimeAsString: (state: RootState) => string;
 export const getShowValidationResult: (
   state: RootState
 ) => ShowValidationResult;
+export const getShowValidationSettings: AppSelector<
+  ValidationSettings | undefined
+>;
 export const getSwarmSpecification: AppSelector<SwarmSpecification | undefined>;
 export const hasLoadedShowFile: (state: RootState) => boolean;
 export const hasScheduledStartTime: (state: RootState) => boolean;

@@ -553,10 +553,12 @@
     "siteSurvey": {
       "button": "Adapt show to venue",
       "description": "Redefine takeoff grid and show layout",
-      "error": {
-        "outdoorShowAndOriginRequired": "An outdoor show must be loaded.\nThe show must have a \"show\" segment.\nThe show origin must be set.",
-        "showNotInMemory": "The show is not in memory. Please reload it.",
-        "swarmRequired": "A show must be loaded and it must have drones."
+      "prerequisites": {
+        "extension": "The studio extension must be enabled on the server.",
+        "loaded": "A compiled outdoor show file must be loaded.",
+        "origin": "A show origin must be included or set manually.",
+        "segments": "The show must be annotated with segment markers.",
+        "server": "Connection must be established to the server."
       }
     },
     "startMethod": {
