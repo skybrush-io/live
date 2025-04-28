@@ -14,6 +14,7 @@ import NavigateBefore from '@material-ui/icons/NavigateBefore';
 import NavigateNext from '@material-ui/icons/NavigateNext';
 import SaveAlt from '@material-ui/icons/SaveAlt';
 
+import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
 import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
 
 import AsyncGuard from '~/components/AsyncGuard';
@@ -40,7 +41,13 @@ const FirmwareUpdateTargetSelectorPresentation = selectableListOf(
   {
     dataProvider: 'items',
     displayName: 'FirmwareUpdateTargetSelectorPresentation',
-    backgroundHint: 'No firmware update targets',
+    backgroundHint: (
+      <BackgroundHint
+        header='No firmware update targets'
+        text='Enable firmware update support in the server first'
+        style={{ minHeight: 200 }}
+      />
+    ),
   }
 );
 

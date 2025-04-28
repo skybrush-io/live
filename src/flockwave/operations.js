@@ -190,8 +190,10 @@ export async function uploadFirmware(hub, { objectId, target, blob }, options) {
     await hub.startAsyncOperationForSingleId(objectId, command, options);
   } catch (error) {
     const errorString = errorToString(error);
+    // Currently we assume that we can only post a firmware update to a UAV;
+    // this might change in the future but so far we are okay
     throw new Error(
-      `Failed to upload ${target} update to object ${objectId}: ${errorString}`
+      `Failed to upload firmware update to UAV ${objectId}: ${errorString}`
     );
   }
 }
