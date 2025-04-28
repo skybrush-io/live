@@ -88,22 +88,18 @@ const ShowInfoLayer = (props: ShowInfoLayerProps): JSX.Element => {
           'show-orientation',
           Colors.netShowConvexHull
         )}
-      {...convexHullPolygon(
+      {convexHullPolygon(
         approximateConvexHullOfFullShow,
         selection,
         ConvexHullVariant.GROSS
       )}
-      {...homePositionPoints(
-        homePositions,
-        { selection },
-        { hideLabels: true }
-      )}
-      {...landingPositionPoints(
+      {homePositionPoints(homePositions, { selection }, { hideLabels: true })}
+      {landingPositionPoints(
         landingPositions,
         { selection },
         { hideLabels: true }
       )}
-      {...convexHullPolygon(convexHull, selection, ConvexHullVariant.NET)}
+      {convexHullPolygon(convexHull, selection, ConvexHullVariant.NET)}
     </ShowInfoLayerPresentation>
   );
 };

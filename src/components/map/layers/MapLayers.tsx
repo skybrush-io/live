@@ -74,5 +74,5 @@ export const MapLayers = ({
     }
   }
 
-  return <>{...renderedLayers}</>;
+  return <>{renderedLayers}</>;
 };

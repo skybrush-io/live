@@ -38,7 +38,7 @@ const MapToolbars = ({ children }: MapToolbarsProps) => {
     );
   }
 
-  return <>{...toolbars}</>;
+  return <>{toolbars}</>;
 };
 
 export default MapToolbars;

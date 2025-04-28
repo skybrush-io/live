@@ -253,7 +253,7 @@ const MapInteractions: React.FunctionComponent<Omit<Props, 'map'>> = withMap(
 
     return (
       <>
-        {...interactions}
+        {interactions}
         {children}
       </>
     );
