@@ -72,7 +72,7 @@ const getMapTileLoaderFunction = createSelector(
   supportsMapCaching,
   getServerHttpUrl,
   (cachingEnabled, cachingSupported, serverHttpUrl) =>
-    cachingEnabled && cachingSupported
+    cachingEnabled && cachingSupported && serverHttpUrl
       ? getCachedTileLoader(serverHttpUrl)
       : loadTile
 );

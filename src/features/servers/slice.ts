@@ -32,6 +32,8 @@ export type ServersSliceState = {
     license?: License;
     ports: Record<string, number>;
     state: ConnectionState;
+    // TODO: Do `adjusting` and `calculating` really need to be optional?
+    //       (Get rid of `... | undefined` in selectors as well if possible!)
     timeSync: {
       adjusting?: boolean;
       adjustmentResult?: boolean;

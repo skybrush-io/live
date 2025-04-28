@@ -6,7 +6,7 @@ import ExternalWindow from './ExternalWindow';
 import { detachedPanels } from './selectors';
 import { attachPanel } from './slice';
 
-import { componentRegistry } from '~/workbench.js';
+import { componentRegistry } from '~/workbench';
 
 const DetachedPanelManagerPresentation = ({ attachPanel, detachedPanels }) =>
   detachedPanels.map((name) => {

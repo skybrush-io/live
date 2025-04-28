@@ -8,7 +8,7 @@ import mapValues from 'lodash-es/mapValues';
 import {
   hasLicenseWithProFeatures,
   isConnected,
-} from '~/features/servers/selectors.js';
+} from '~/features/servers/selectors';
 import { type Layer, LayerType, ProLayerTypes } from '~/model/layers';
 import type { AppSelector } from '~/store/reducers';
 import type { Collection, Identifier } from '~/utils/collections';
@@ -35,7 +35,13 @@ export const getLicensedLayers: AppSelector<Collection<Layer>> = createSelector(
     byId: isConnected
       ? mapValues(byId, (layer) =>
           ProLayerTypes.includes(layer.type) && !isProLicenseActive
-            ? { id: layer.id, type: LayerType.UNAVAILABLE, label: layer.label }
+            ? {
+                id: layer.id,
+                type: LayerType.UNAVAILABLE,
+                label: layer.label,
+                visible: false,
+                parameters: {},
+              }
             : layer
         )
       : byId, // Filtering is skipped if no server is connected.

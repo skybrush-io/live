@@ -62,7 +62,7 @@ export type Layer = {
 /**
  * Constant containing all the layer types in the order preferred on the UI.
  */
-export const LayerTypes = [
+export const LayerTypes: readonly LayerType[] = [
   LayerType.BASE,
   LayerType.TILE_SERVER,
   LayerType.GRATICULE,
@@ -78,7 +78,7 @@ export const LayerTypes = [
   LayerType.HEATMAP,
 ] as const;
 
-export const ProLayerTypes = [LayerType.IMAGE] as const;
+export const ProLayerTypes: readonly LayerType[] = [LayerType.IMAGE] as const;
 
 /**
  * Enum containing constants for the various tile server types that we support.
