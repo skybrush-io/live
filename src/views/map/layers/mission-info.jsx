@@ -18,6 +18,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormGroup from '@material-ui/core/FormGroup';
 
 import Colors from '~/components/colors';
+import { styleForPointsOfPolygon } from '~/components/map/layers/features';
 import {
   convexHullPolygon,
   ConvexHullVariant,
@@ -26,6 +27,7 @@ import {
   orientationMarker,
   TAKEOFF_LANDING_POSITION_CHARACTER_WIDTH,
 } from '~/components/map/layers/ShowInfoLayer';
+import { markAsSelectableAndEditable } from '~/components/map/layers/utils';
 import { Tool } from '~/components/map/tools';
 import { setLayerParametersById } from '~/features/map/layers';
 import {
@@ -54,7 +56,6 @@ import {
   originIdToGlobalId,
   plannedTrajectoryIdToGlobalId,
 } from '~/model/identifiers';
-import { setLayerEditable, setLayerSelectable } from '~/model/layers';
 import { MissionItemType } from '~/model/missions';
 import { getMapOriginRotationAngle } from '~/selectors/map';
 import { getSelection } from '~/selectors/selection';
@@ -76,8 +77,6 @@ import {
 } from '~/utils/styles';
 import MissionSlotTrajectoryFeature from '~/views/map/features/MissionSlotTrajectoryFeature';
 import UAVTrajectoryFeature from '~/views/map/features/UAVTrajectoryFeature';
-
-import { styleForPointsOfPolygon } from './features';
 
 import mapMarkerOutline from '~/../assets/img/map-marker-outline.svg';
 import mapMarker from '~/../assets/img/map-marker.svg';
@@ -201,13 +200,6 @@ export const MissionInfoLayerSettings = connect(
 )(MissionInfoLayerSettingsPresentation);
 
 // === The actual layer to be rendered ===
-
-function markAsSelectableAndEditable(layer) {
-  if (layer) {
-    setLayerEditable(layer.layer);
-    setLayerSelectable(layer.layer);
-  }
-}
 
 /**
  * Styling for stroke of the X axis of the coordinate system.

@@ -15,6 +15,8 @@ import {
   source,
 } from '@collmot/ol-react';
 
+import { escapeKeyDown } from '~/components/map/conditions';
+import { markAsSelectableAndEditable } from '~/components/map/layers/utils';
 import { Tool } from '~/components/map/tools';
 import {
   getFeaturesInOrder,
@@ -29,7 +31,6 @@ import { getGeofencePolygonId } from '~/features/mission/selectors';
 import { showError } from '~/features/snackbar/actions';
 import { FeatureType, LabelStyle } from '~/model/features';
 import { featureIdToGlobalId } from '~/model/identifiers';
-import { setLayerEditable, setLayerSelectable } from '~/model/layers';
 import { mapViewCoordinateFromLonLat, measureFeature } from '~/utils/geography';
 import { closePolygon, euclideanDistance2D } from '~/utils/math';
 import {
@@ -40,8 +41,6 @@ import {
   whiteThickOutline,
   whiteThinOutline,
 } from '~/utils/styles';
-
-import { escapeKeyDown } from '~/components/map/conditions';
 
 // === Helper functions ===
 
@@ -335,23 +334,17 @@ const Feature = connect(
 
 // === The actual layer to be rendered ===
 
-function markAsSelectableAndEditable(layer) {
-  if (layer) {
-    setLayerEditable(layer.layer);
-    setLayerSelectable(layer.layer);
-  }
-}
-
 const FeaturesLayerPresentation = ({
   features,
   onError,
   onFeatureModificationStarted,
   onFeaturesModified,
   selectedTool,
+  layerRefHandler = markAsSelectableAndEditable,
   zIndex,
 }) => (
   <layer.Vector
-    ref={markAsSelectableAndEditable}
+    ref={layerRefHandler}
     updateWhileAnimating
     updateWhileInteracting
     zIndex={zIndex}
@@ -377,6 +370,7 @@ const FeaturesLayerPresentation = ({
 FeaturesLayerPresentation.propTypes = {
   selectedTool: PropTypes.string,
   zIndex: PropTypes.number,
+  layerRefHandler: PropTypes.func,
 
   features: PropTypes.arrayOf(PropTypes.object).isRequired,
 
