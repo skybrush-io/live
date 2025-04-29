@@ -8,8 +8,8 @@ import React from 'react';
 import { configure as configureHotkeys, GlobalHotKeys } from 'react-hotkeys';
 import { connect } from 'react-redux';
 
-import { selectAllUAVs } from '~/features/map/selection';
 import { removeSelectedFeatures } from '~/features/map-features/actions';
+import { selectAllUAVs } from '~/features/map/selection';
 import { removeSelectedMissionItems } from '~/features/mission/actions';
 import { getPreferredCommunicationChannelIndex } from '~/features/mission/selectors';
 import {
@@ -71,6 +71,10 @@ const AppHotkeys = ({ handlers }) => (
 const bindHotkeyHandlers = (reduxHandlers, nonReduxHandlers, dispatch) => ({
   ...nonReduxHandlers,
   ...mapValues(reduxHandlers, (handler) => (event) => {
+    if (event.defaultPrevented) {
+      return;
+    }
+    // Prevent the default action of the event (e.g. scrolling the page
     event.preventDefault();
     dispatch(handler());
   }),
