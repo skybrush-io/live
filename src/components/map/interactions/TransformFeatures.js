@@ -15,6 +15,10 @@ import { createOLInteractionComponent } from '@collmot/ol-react/lib/interaction'
 import * as Condition from '~/components/map/conditions';
 import { getCenterOfFirstPointsOfTrajectoriesInWorldCoordinates } from '~/features/show/selectors';
 import {
+  getCenterOfSiteSurveyHomePositionsInWorldCoordinates,
+  isSiteSurveyDialogOpen,
+} from '~/features/site-survey/selectors';
+import {
   GROSS_CONVEX_HULL_AREA_ID,
   globalIdToAreaId,
   isOriginId,
@@ -139,15 +143,19 @@ export class TransformFeaturesInteraction extends PointerInteraction {
               globalIdToAreaId(this.lastFeature_.getId()) ===
               GROSS_CONVEX_HULL_AREA_ID
             ) {
-              const centerOfFirstPointsInLonLat =
-                getCenterOfFirstPointsOfTrajectoriesInWorldCoordinates(
-                  store.getState()
-                );
+              const state = store.getState();
 
-              this.transformation_.center = mapViewCoordinateFromLonLat([
-                centerOfFirstPointsInLonLat.lon,
-                centerOfFirstPointsInLonLat.lat,
-              ]);
+              // HACK: This is a very dubious approach, find a cleaner solution!
+              const centerOfFirstPointsInLonLat = isSiteSurveyDialogOpen(state)
+                ? getCenterOfSiteSurveyHomePositionsInWorldCoordinates(state)
+                : getCenterOfFirstPointsOfTrajectoriesInWorldCoordinates(state);
+
+              if (centerOfFirstPointsInLonLat) {
+                this.transformation_.center = mapViewCoordinateFromLonLat([
+                  centerOfFirstPointsInLonLat.lon,
+                  centerOfFirstPointsInLonLat.lat,
+                ]);
+              }
             }
           }
 

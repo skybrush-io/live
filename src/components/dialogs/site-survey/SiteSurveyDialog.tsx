@@ -24,6 +24,7 @@ import {
   type ShowAdaptParameters,
 } from '~/features/site-survey/actions';
 import {
+  isSiteSurveyDialogOpen,
   selectAdaptedShowAsBase64String,
   selectCoordinateSystem,
   selectIsShowAdaptInProgress,
@@ -266,7 +267,7 @@ const ConnectedSiteSurveyDialogWrapper = connect(
     adaptedBase64Show: selectAdaptedShowAsBase64String(state),
     backDisabled: selectIsShowAdaptInProgress(state),
     coordinateSystem: selectCoordinateSystem(state),
-    open: state.dialogs.siteSurvey.open,
+    open: isSiteSurveyDialogOpen(state),
     // Take validation settings directly from the loaded show.
     // We'll copy that to the dialog's state when necessary.
     validationSettings: getShowValidationSettings(state),

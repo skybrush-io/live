@@ -10,9 +10,10 @@ import {
   positionsToWorldCoordinatesCombiner,
 } from '~/features/show/trajectory-selectors';
 import { isOutdoorCoordinateSystemWithOrigin } from '~/features/show/types';
+import { type GPSPosition } from '~/model/geography';
 import type { AppSelector, RootState } from '~/store/reducers';
 import type { Latitude, Longitude, LonLat } from '~/utils/geography';
-import { convexHull2D, type Coordinate2D } from '~/utils/math';
+import { convexHull2D, type Coordinate2D, getCentroid } from '~/utils/math';
 import { EMPTY_ARRAY } from '~/utils/redux';
 
 import type { AdaptResult, ShowData, SiteSurveyState } from './state';
@@ -26,6 +27,9 @@ const _defaultCoordinateSystem: ShowData['coordinateSystem'] = {
 const selectSiteSurveyState: AppSelector<SiteSurveyState> = (
   state: RootState
 ) => state.dialogs.siteSurvey;
+
+export const isSiteSurveyDialogOpen: AppSelector<boolean> = (state) =>
+  state.dialogs.siteSurvey.open;
 
 const selectShowData = createSelector(
   selectSiteSurveyState,
@@ -185,6 +189,15 @@ export const getHomePositionsInWorldCoordinates = createSelector(
   getOutdoorShowToWorldCoordinateSystemTransformation,
   positionsToWorldCoordinatesCombiner
 );
+
+export const getCenterOfSiteSurveyHomePositionsInWorldCoordinates: AppSelector<
+  GPSPosition | undefined
+> = createSelector(getHomePositionsInWorldCoordinates, (homePositions) => {
+  if (homePositions) {
+    const [lon, lat] = getCentroid(homePositions.map((p) => [p.lon, p.lat]));
+    return { lon, lat };
+  }
+});
 
 const selectApproximateConvexHullOfFullShow = createSelector(
   getConvexHullOfShow,

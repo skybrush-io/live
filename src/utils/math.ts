@@ -155,6 +155,7 @@ export const toPolar = ({
 /**
  * Returns the centroid of an array of points.
  */
+export function getCentroid(points: LonLat[], dim?: 2): LonLat;
 export function getCentroid(points: Coordinate2D[], dim?: 2): Coordinate2D;
 export function getCentroid(points: number[][], dim = 2): number[] {
   const result: number[] = Array.from({ length: dim }, () => 0);
