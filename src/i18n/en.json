@@ -552,14 +552,14 @@
     "setupTakeoffArea": "Assign drones to show",
     "siteSurvey": {
       "button": "Adapt show to venue",
-      "description": "Redefine takeoff grid and show layout",
+      "description": "Adjust takeoff grid and show layout if needed",
       "noShowData": "Show segment data is missing",
       "prerequisites": {
-        "extension": "The studio extension must be enabled on the server.",
-        "loaded": "A compiled outdoor show file must be loaded.",
-        "origin": "A show origin must be included or set manually.",
-        "segments": "The show must be annotated with segment markers.",
-        "server": "Connection must be established to the server."
+        "extension": "The studio extension must be enabled on the server",
+        "loaded": "A show file must be loaded",
+        "origin": "A show origin must be included or set manually",
+        "segments": "The show must be annotated with segment markers",
+        "server": "Connection must be established to the server"
       }
     },
     "startMethod": {
