@@ -122,6 +122,7 @@ const SiteSurveyButton = (props: Props): JSX.Element => {
     </MiniList>
   );
 
+  const tooltipVisible = status !== Status.OFF && !prerequisitesFulfilled;
   const disabled = status === Status.OFF || !prerequisitesFulfilled;
 
   return (
@@ -132,7 +133,7 @@ const SiteSurveyButton = (props: Props): JSX.Element => {
           primary={
             <Tooltip
               content={tooltipContent}
-              disabled={prerequisitesFulfilled}
+              disabled={!tooltipVisible}
               maxWidth={500}
               placement='left'
               triggerTarget={tooltipTriggerTarget}
