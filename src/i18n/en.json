@@ -624,7 +624,7 @@
       "showAdaptInProgress": "Adapting the show, please wait. It may take some time."
     },
     "help": {
-      "config": "This tool lets you adjust takeoff positions and net show layout independently.\nSelect takeoff positions (yellow triangles) or the net show (purple convex hull) and move or rotate them as you need.\nWhen done, setup transformation parameters on the right side and press ADAPT to recalculate trajectories, keeping the original show content, yet aligned to your new arrangement.\nThe new show layout should be validated thoroughly and saved to a production ready .skyc file on exit.",
+      "config": "This tool lets you adjust takeoff positions and net show layout independently.\nSelect takeoff positions (yellow triangles), the net show (purple convex hull) or both (yellow convex hull) and move or rotate them as you need.\nWhen done, setup transformation parameters on the right side and press ADAPT to recalculate trajectories, keeping the original net show content, yet aligned to your new arrangement.\nThe new show layout should be validated thoroughly and saved to a production ready .skyc file on exit.",
       "review": "Review the changes before applying them to the show."
     }
   },
