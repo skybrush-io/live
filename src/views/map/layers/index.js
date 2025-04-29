@@ -4,11 +4,11 @@ import {
   layerComponents,
   layerSettingsComponents,
 } from '~/components/map/layers';
+import { FeaturesLayer } from '~/components/map/layers/features';
 import { LayerType } from '~/model/layers';
 
 import { BeaconsLayer } from './beacons';
 import { DocksLayer } from './docks';
-import { FeaturesLayer } from './features';
 import { GeoJSONLayer, GeoJSONLayerSettings } from './geojson';
 import { HeatmapLayer, HeatmapLayerSettings } from './heatmap';
 import { HexGridLayer, HexGridLayerSettings } from './hexgrid';

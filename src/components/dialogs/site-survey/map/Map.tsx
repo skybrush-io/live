@@ -29,6 +29,8 @@ import ShowInfoLayerPresentation, {
   landingPositionPoints,
   orientationMarker,
 } from '~/components/map/layers/ShowInfoLayer';
+import { FeaturesLayer } from '~/components/map/layers/features';
+import { noMark } from '~/components/map/layers/utils';
 import { Tool } from '~/components/map/tools';
 import {
   updateModifiedFeatures as updateModifiedFeaturesAction,
@@ -118,6 +120,9 @@ const ConnectedShowInfoLayer = connect((state: RootState) => ({
 
 const layerComponents = {
   ...defaultLayerComponent,
+  [LayerType.FEATURES]: (props: LayerProps) => (
+    <FeaturesLayer {...props} layerRefHandler={noMark} />
+  ),
   [LayerType.MISSION_INFO]: ConnectedShowInfoLayer,
 };
 
