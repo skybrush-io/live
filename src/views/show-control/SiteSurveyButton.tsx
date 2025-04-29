@@ -1,6 +1,6 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { connect, useSelector } from 'react-redux';
+import { connect, useDispatch, useSelector } from 'react-redux';
 
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -23,9 +23,15 @@ import {
 import { getSetupStageStatuses } from '~/features/show/stages';
 import { selectSiteSurveyDataFromShow } from '~/features/site-survey/selectors';
 import { type ShowData, showDialog } from '~/features/site-survey/state';
+import { showError } from '~/features/snackbar/actions';
 import { type PreparedI18nKey, tt } from '~/i18n';
 import Pro from '~/icons/Pro';
-import { type AppSelector, type RootState } from '~/store/reducers';
+import {
+  type AppDispatch,
+  type AppSelector,
+  type RootState,
+} from '~/store/reducers';
+import { type Nullable } from '~/utils/types';
 
 const PREREQUISITES: ReadonlyArray<
   Readonly<{
@@ -69,7 +75,14 @@ type Props = Readonly<{
 
 const SiteSurveyButton = (props: Props): JSX.Element => {
   const { show, showDialog, status } = props;
+
+  const dispatch = useDispatch<AppDispatch>();
   const { t } = useTranslation();
+
+  // NOTE: Using a `ref` here broke when rearranging the GolenLayout panels...
+  //       (The popup wouldn't show up until something triggered a rerender.)
+  const [tooltipTriggerTarget, setTooltipTriggerTarget] =
+    useState<Nullable<HTMLDivElement>>();
 
   const evaluatedPrerequisites = PREREQUISITES.map(({ selector, message }) => ({
     // NOTE: The `PREREQUISITES` list being readonly and frozen ensures that the
@@ -79,33 +92,17 @@ const SiteSurveyButton = (props: Props): JSX.Element => {
     message: message(t),
   }));
 
+  const prerequisitesFulfilled = evaluatedPrerequisites.every(
+    ({ result }) => result
+  );
+
   const openWithShow = useCallback(() => {
     if (show) {
       showDialog(show);
+    } else {
+      dispatch(showError(t('show.siteSurvey.noShowData')));
     }
-  }, [show, showDialog]);
-
-  const listItem = (
-    <ListItem
-      button
-      disabled={
-        status === Status.OFF ||
-        evaluatedPrerequisites.some(({ result }) => !result)
-      }
-      onClick={openWithShow}
-    >
-      <StatusLight status={status} />
-      <ListItemText
-        primary={
-          <>
-            {t('show.siteSurvey.button')}
-            <Pro style={{ verticalAlign: 'middle', marginLeft: 8 }} />
-          </>
-        }
-        secondary={t('show.siteSurvey.description')}
-      />
-    </ListItem>
-  );
+  }, [dispatch, show, showDialog, t]);
 
   const tooltipContent = (
     <List dense disablePadding style={{ background: 'unset' }}>
@@ -120,10 +117,32 @@ const SiteSurveyButton = (props: Props): JSX.Element => {
   );
 
   return (
-    <Tooltip maxWidth={500} content={tooltipContent} placement='left'>
-      {/* NOTE: A wrapper is needed to show tooltips on disabled elements. */}
-      <div>{listItem}</div>
-    </Tooltip>
+    <div ref={setTooltipTriggerTarget}>
+      <ListItem
+        button
+        disabled={status === Status.OFF || !prerequisitesFulfilled}
+        onClick={openWithShow}
+      >
+        <StatusLight status={status} />
+        <ListItemText
+          primary={
+            <Tooltip
+              content={tooltipContent}
+              disabled={prerequisitesFulfilled}
+              maxWidth={500}
+              placement='left'
+              triggerTarget={tooltipTriggerTarget}
+            >
+              <span>
+                {t('show.siteSurvey.button')}
+                <Pro style={{ verticalAlign: 'middle', marginLeft: 8 }} />
+              </span>
+            </Tooltip>
+          }
+          secondary={t('show.siteSurvey.description')}
+        />
+      </ListItem>
+    </div>
   );
 };
 

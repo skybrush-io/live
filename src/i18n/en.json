@@ -553,6 +553,7 @@
     "siteSurvey": {
       "button": "Adapt show to venue",
       "description": "Redefine takeoff grid and show layout",
+      "noShowData": "Show segment data is missing",
       "prerequisites": {
         "extension": "The studio extension must be enabled on the server.",
         "loaded": "A compiled outdoor show file must be loaded.",
