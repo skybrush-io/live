@@ -31,12 +31,13 @@ import {
 import { closeDialog, setAdaptResult } from '~/features/site-survey/state';
 import type { AppDispatch, RootState } from '~/store/reducers';
 import { writeBlobToFile } from '~/utils/filesystem';
-import type { LonLat } from '~/utils/geography';
+import { type LonLat } from '~/utils/geography';
 
 import AdaptParametersForm, {
   useAdaptParametersFormState,
 } from './AdaptParametersForm';
 import AdaptReviewForm from './AdaptReviewForm';
+import InteractionHints from './InteractionHints';
 import Map from './map';
 
 const useStyles = makeStyles((theme) => ({
@@ -238,6 +239,8 @@ function SiteSurveyDialog(props: Props) {
               <p key={idx}>{item}</p>
             ))}
         />
+        <InteractionHints />
+        <Box flex={1} />
         <Button disabled={backDisabled} onClick={back}>
           {stage === 'review'
             ? t('general.action.back')

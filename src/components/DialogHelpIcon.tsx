@@ -6,7 +6,6 @@ import Tooltip from '@skybrush/mui-components/lib/Tooltip';
 
 const useStyles = makeStyles((theme) => ({
   iconContainer: {
-    flexGrow: 1,
     padding: theme.spacing(1),
   },
 }));
