@@ -120,24 +120,29 @@ export function createKeyboardNavigationHandlers<
     }
 
     const selectedIds = getSelectedIds(state);
+    let caretIndex = -1;
     let newIndex = 0;
 
-    if (Number.isFinite(delta)) {
-      if (selectedIds.length > 0) {
-        // Select the item above the topmost selected item if delta is
-        // negative, or select the item below the lowermost selected item if
-        // delta is positive, and deselect the rest
-        const indices = selectedIds
-          .map((uavId) => visibleIds.indexOf(uavId))
-          .filter((index) => index >= 0);
-        if (delta < 0) {
-          newIndex = Math.min(visibleIds.length - 1, ...indices) + delta;
-        } else {
-          newIndex = Math.max(0, ...indices) + delta;
-        }
+    // We don't really have the concept of a "caret" in the list, but the
+    // navigation keys are expected to move as if we had one. If we had no
+    // selection yet, we assume that the caret index is -1 (no caret); otherwise
+    // if the delta is negative (we are moving upwards) we assume that the caret
+    // is the topmost item in the selection, and if the delta is positive (we are
+    // moving downwards) we assume that the caret is the lowermost item in the
+    // selection. This works well enough for most of the cases.
+    if (Number.isFinite(delta) && selectedIds.length > 0) {
+      const indices = selectedIds
+        .map((uavId) => visibleIds.indexOf(uavId))
+        .filter((index) => index >= 0);
+      if (delta < 0) {
+        caretIndex = Math.min(visibleIds.length - 1, ...indices);
+      } else {
+        caretIndex = Math.max(0, ...indices);
       }
+    }
 
-      newIndex = Math.min(Math.max(newIndex, 0), visibleIds.length - 1);
+    if (Number.isFinite(delta)) {
+      newIndex = caretIndex + delta;
     } else if (delta < 0) {
       newIndex = 0;
     } else {
@@ -150,7 +155,10 @@ export function createKeyboardNavigationHandlers<
       : event.shiftKey
         ? selectedIds.includes(newSelectedId)
           ? null
-          : [...selectedIds, newSelectedId]
+          : /* TODO: we should select all items between caretIndex and newIndex,
+             * inclusive, but we should also make sure that the selection does
+             * not have duplicates */
+            [...selectedIds, newSelectedId]
         : [newSelectedId];
 
     // If we have a focus callback, call it so we can scroll to the newly
