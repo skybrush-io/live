@@ -1,4 +1,10 @@
-import { makeStyles } from '@material-ui/core';
+import {
+  Box,
+  Divider,
+  IconButton,
+  makeStyles,
+  Typography,
+} from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -39,6 +45,7 @@ import AdaptParametersForm, {
 } from './AdaptParametersForm';
 import AdaptReviewForm from './AdaptReviewForm';
 import Map from './map';
+import { Mouse } from '@material-ui/icons';
 
 const useStyles = makeStyles((theme) => ({
   contentRoot: {
@@ -174,6 +181,49 @@ function useOwnState(props: Props) {
   };
 }
 
+const InteractionHint = ({
+  keys,
+  action,
+}: Readonly<{ keys: string[]; action: string }>): JSX.Element => (
+  <span>
+    {keys.map((k) => (
+      <kbd key={k}>{k}</kbd>
+    ))}
+    {/* <Typography variant='caption'>{action}</Typography> */}
+    <span>{action}</span>
+  </span>
+);
+
+const interactionHints = (
+  <Box display='flex'>
+    <IconButton disabled>
+      <Mouse />
+    </IconButton>
+    <Box>
+      <Box display='flex' alignItems='center' style={{ gap: 8 }}>
+        <Typography variant='subtitle2'>Navigation:</Typography>
+        <InteractionHint keys={['Drag']} action='Pan' />
+        <InteractionHint keys={['Scroll']} action='Zoom' />
+        <InteractionHint keys={['Shift', 'Alt', 'Drag']} action='Rotate' />
+      </Box>
+      <Divider style={{ margin: '4px 0px' }} />
+      <Box display='flex' alignItems='center' style={{ gap: 8 }}>
+        <Typography variant='subtitle2'>Selection:</Typography>
+        <InteractionHint keys={['Click']} action='Select' />
+        <InteractionHint keys={['Ctrl', 'Click']} action='Toggle selection' />
+        <InteractionHint keys={['Shift', 'Drag']} action='Box select' />
+        <InteractionHint keys={['Alt', 'Drag']} action='Box unselect' />
+      </Box>
+      <Divider style={{ margin: '4px 0px' }} />
+      <Box display='flex' alignItems='center' style={{ gap: 8 }}>
+        <Typography variant='subtitle2'>Manipulation:</Typography>
+        <InteractionHint keys={['Drag']} action='Move selection' />
+        <InteractionHint keys={['Alt', 'Drag']} action='Rotate selection' />
+      </Box>
+    </Box>
+  </Box>
+);
+
 function SiteSurveyDialog(props: Props) {
   const { adaptedBase64Show, backDisabled, open, t } = props;
   const styles = useStyles();
@@ -212,6 +262,8 @@ function SiteSurveyDialog(props: Props) {
               <p key={idx}>{item}</p>
             ))}
         />
+        {interactionHints}
+        <Box flex={1} />
         <Button onClick={back} disabled={backDisabled}>
           {stage === 'review'
             ? t('general.action.back')
