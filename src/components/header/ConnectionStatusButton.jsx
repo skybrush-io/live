@@ -8,6 +8,7 @@ import LazyTooltip from '@skybrush/mui-components/lib/LazyTooltip';
 import ConnectionStatusMiniList from '~/components/ConnectionStatusMiniList';
 import ConnectionStatusBadge from '~/components/badges/ConnectionStatusBadge';
 import { isConnected } from '~/features/servers/selectors';
+import ChannelIndicator from '~/components/header/ChannelIndicator';
 
 const ConnectionStatusButtonPresentation = (props) => (
   <LazyTooltip
@@ -18,6 +19,7 @@ const ConnectionStatusButtonPresentation = (props) => (
     <GenericHeaderButton {...props}>
       <ConnectionStatusBadge />
       <SettingsEthernet />
+      <ChannelIndicator />
     </GenericHeaderButton>
   </LazyTooltip>
 );
