@@ -689,7 +689,8 @@
     "show-control": "Show control",
     "three-d-view": "3D View",
     "uav-details": "UAV details",
-    "uav-list": "UAVs"
+    "uav-list": "UAVs",
+    "uav-statuses": "UAV statuses"
   },
   "weatherMiniList": {
     "compassDeclination": "Compass declination",
