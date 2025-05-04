@@ -110,7 +110,7 @@
     "numbro": "^2.5.0",
     "ol": "^10.0.0",
     "ol-ext": "^4.0.30",
-    "ol-mapbox-style": "^12.5.0",
+    "ol-mapbox-style": "^12.6.0",
     "os-browserify": "^0.3.0",
     "p-defer": "^4.0.1",
     "p-min-delay": "^4.1.0",
