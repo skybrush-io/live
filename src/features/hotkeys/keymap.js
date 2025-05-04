@@ -82,9 +82,15 @@ const globalKeyMap = {
     group: HIDDEN,
   },
 
+  TOGGLE_BROADCAST_MODE_LEGACY: {
+    name: 'Toggle the broadcast mode switch (legacy version)',
+    sequence: 'mod+b',
+    group: HIDDEN,
+  },
+
   TOGGLE_BROADCAST_MODE: {
     name: 'Toggle the broadcast mode switch',
-    sequence: 'mod+b',
+    sequence: 'b',
   },
 
   TOGGLE_PREFERRED_CHANNEL: {

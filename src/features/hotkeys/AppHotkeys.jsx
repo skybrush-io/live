@@ -146,6 +146,7 @@ export default connect(
         SEND_RTH_COMMAND: callUAVActionOnSelection('returnToHome'),
         SHOW_HOTKEY_DIALOG: showHotkeyDialog,
         TOGGLE_BROADCAST_MODE: toggleBroadcast,
+        TOGGLE_BROADCAST_MODE_LEGACY: toggleBroadcast,
         TOGGLE_PREFERRED_CHANNEL: togglePreferredChannel,
         TOGGLE_DEVELOPER_MODE: toggleDeveloperMode,
         TOGGLE_SORT_BY_MISSION_ID: toggleMissionIds,
