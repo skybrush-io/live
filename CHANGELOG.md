@@ -12,6 +12,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The minimum allowed distance between takeoff and landing positions in a
   show file can now be adjusted from the settings.
 
+- Added `C` as a hotkey for toggling between sending commands via the primary
+  or the secondary channel if the server is configured to use two channels.
+
+- The "Connection" icon in the header now shows whether the communication
+  with the drones happens on the primary or the secondary channel.
+
+### Changed
+
+- The primary hotkey of the "Toggle broadcast mode" button is now `B` instead
+  of `Ctrl-B` or `Cmd-B`. The old hotkeys will keep on working nevertheless
+  so you do not need to re-train your muscle memory.
+
 ## [2.9.0] - 2025-04-07
 
 ### Added
