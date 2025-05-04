@@ -211,7 +211,9 @@ export const findFeatureById = curry(
   }
 );
 
-const isVectorLayer = (layer: unknown): layer is VectorLayer<FeatureLike> =>
+const isVectorLayer = (
+  layer: unknown
+): layer is VectorLayer<VectorSource, FeatureLike> =>
   layer instanceof VectorLayer && layer.getSource() instanceof VectorSource;
 
 /**
