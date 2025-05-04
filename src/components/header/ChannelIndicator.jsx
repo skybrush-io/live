@@ -29,8 +29,6 @@ ChannelIndicator.propTypes = {
   channel: PropTypes.number.isRequired,
 };
 
-export default connect(
-  (state) => ({
-    channel: getPreferredCommunicationChannelIndex(state) + 1,
-  })
-)(ChannelIndicator);
+export default connect((state) => ({
+  channel: getPreferredCommunicationChannelIndex(state) + 1,
+}))(ChannelIndicator);
