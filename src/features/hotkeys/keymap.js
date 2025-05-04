@@ -87,6 +87,11 @@ const globalKeyMap = {
     sequence: 'mod+b',
   },
 
+  TOGGLE_PREFERRED_CHANNEL: {
+    name: 'Toggle the preferred channel switch',
+    sequence: 'c',
+  },
+
   TOGGLE_DEVELOPER_MODE: {
     name: 'Toggle the developer mode switch',
     sequence: 'mod+shift+d',

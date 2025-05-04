@@ -16,6 +16,7 @@ import {
   toggleBroadcast,
   toggleDeveloperMode,
 } from '~/features/session/actions';
+import { togglePreferredChannel } from '~/features/mission/slice';
 import { isBroadcast } from '~/features/session/selectors';
 import { toggleMissionIds } from '~/features/settings/slice';
 import { requestRemovalOfSelectedUAVs } from '~/features/uavs/actions';
@@ -145,6 +146,7 @@ export default connect(
         SEND_RTH_COMMAND: callUAVActionOnSelection('returnToHome'),
         SHOW_HOTKEY_DIALOG: showHotkeyDialog,
         TOGGLE_BROADCAST_MODE: toggleBroadcast,
+        TOGGLE_PREFERRED_CHANNEL: togglePreferredChannel,
         TOGGLE_DEVELOPER_MODE: toggleDeveloperMode,
         TOGGLE_SORT_BY_MISSION_ID: toggleMissionIds,
         TYPE_0: () => appendToPendingUAVId(0),
