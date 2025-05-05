@@ -89,6 +89,7 @@ import {
   getMissionPlannerDialogContextParameters,
   getMissionPlannerDialogSelectedType,
   getMissionPlannerDialogUserParameters,
+  getMissionType,
   getSelectedMissionItemIds,
   shouldMissionPlannerDialogApplyGeofence,
 } from './selectors';
