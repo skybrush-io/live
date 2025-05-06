@@ -1,6 +1,6 @@
 import identity from 'lodash-es/identity';
+import min from 'lodash-es/min';
 import minBy from 'lodash-es/minBy';
-import property, { type PropertyPath } from 'lodash-es/property';
 import range from 'lodash-es/range';
 
 import monotoneConvexHull2D from 'monotone-convex-hull-2d';
@@ -8,7 +8,6 @@ import { err, ok, type Result } from 'neverthrow';
 import * as TurfHelpers from '@turf/helpers';
 
 import type { EasNor, LonLat } from './geography';
-import min from 'lodash-es/min';
 
 // TODO: Rename `Coordinate{2,3}D` to `Vector{2,3}Tuple` for
 //       consistency with Three.js and `@skybrush/show-format`
@@ -230,7 +229,7 @@ export function calculateMinimumDistanceBetweenPairs<T, U = Coordinate2D>(
 
   // Do not use Math.min() here -- it fails if the distance matrix is large,
   // which may happen for thousands of drones.
-  return min(distances)!;
+  return min(distances) ?? Number.POSITIVE_INFINITY;
 }
 
 /**
