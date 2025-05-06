@@ -10,6 +10,7 @@ import { connect } from 'react-redux';
 import { interaction, Map, View, withMap } from '@collmot/ol-react';
 
 import { MapControls, MapToolbars } from '~/components/map';
+import ConnectedFitAllFeaturesButton from '~/components/map/buttons/FitAllFeaturesButton';
 import * as Condition from '~/components/map/conditions';
 import {
   SelectNearestFeature,
@@ -20,6 +21,8 @@ import {
 import { snapEndToStart } from '~/components/map/interactions/utils';
 import { MapLayers as MapLayersPresentation } from '~/components/map/layers';
 import { styles as mapStyles, toolClasses } from '~/components/map/Map';
+import MapRotationTextBox from '~/components/map/MapRotationTextBox';
+import { VerticalToolbarSeparator } from '~/components/map/MapToolbars';
 import {
   isDrawingTool,
   Tool,
@@ -426,13 +429,18 @@ class MapViewPresentation extends React.Component {
           >
             <MapReferenceRequestHandler />
 
-            <MapToolbars>
-              {{
-                drawingToolbar: (
-                  <DrawingToolbar drawingTools={config.map.drawingTools} />
-                ),
-              }}
-            </MapToolbars>
+            <MapToolbars
+              left={<DrawingToolbar drawingTools={config.map.drawingTools} />}
+              top={
+                <>
+                  <MapRotationTextBox resetDuration={500} fieldWidth='75px' />
+                  <VerticalToolbarSeparator />
+                  {/* NOTE: Margin is calibrated such that the vertical      */}
+                  {/*       drawing toolbar will not cover any of the drones */}
+                  <ConnectedFitAllFeaturesButton duration={500} margin={80} />
+                </>
+              }
+            />
             <MapViewLayers onFeaturesModified={this._onFeaturesModified} />
             <MapControls />
             <MapViewInteractions

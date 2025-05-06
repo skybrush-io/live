@@ -9,7 +9,7 @@ import React, { useCallback } from 'react';
 import { connect } from 'react-redux';
 
 import Colors from '~/components/colors';
-import { Map } from '~/components/map';
+import { Map, MapToolbars } from '~/components/map';
 import { type ViewProperties } from '~/components/map/Map';
 import type { MapControlDisplaySettings } from '~/components/map/MapControls';
 import MapInteractions from '~/components/map/interactions/MapInteractions';
@@ -33,6 +33,7 @@ import ShowInfoLayerPresentation, {
 import { FeaturesLayer } from '~/components/map/layers/features';
 import { UAVsLayer, type UAVsLayerProps } from '~/components/map/layers/uavs';
 import { noMark } from '~/components/map/layers/utils';
+import MapRotationTextBox from '~/components/map/MapRotationTextBox';
 import { Tool } from '~/components/map/tools';
 import { type GPSPosition } from '~/model/geography';
 import {
@@ -147,6 +148,7 @@ const layerComponents: Partial<
 };
 
 const mapControlSettings: Partial<MapControlDisplaySettings> = {
+  showAttribution: false,
   showMouseCoordinates: false,
   showScaleLine: false,
 };
@@ -306,12 +308,16 @@ const SiteSurveyMap = (props: SiteSurveyMapProps): JSX.Element => {
   } = useOwnState(props);
   return (
     <Map
+      id='adapt-map-view'
       position={defaultPosition}
       selectedTool={selectedTool}
       layers={{ layers, layerComponents }}
       controlSettings={mapControlSettings}
       onFeaturesModified={onFeaturesModified}
     >
+      <MapToolbars
+        top={<MapRotationTextBox resetDuration={500} fieldWidth='75px' />}
+      />
       <MapInteractions
         selectedTool={selectedTool}
         getSelectedTransformableFeatures={getSelectedTransformableFeatures}

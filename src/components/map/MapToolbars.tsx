@@ -1,44 +1,48 @@
 import React from 'react';
 
-import Widget from '~/components/Widget';
-import { hasFeature } from '~/utils/configuration';
-import MapToolbar from './MapToolbar';
+import Box from '@material-ui/core/Box';
 
-type MapToolbarsProps = {
-  children?: {
-    drawingToolbar?: React.ReactChild;
-  };
-};
+import Widget from '~/components/Widget';
+
+type MapToolbarsProps = Readonly<{
+  left?: React.ReactChild;
+  top?: React.ReactChild;
+}>;
 
 /**
- * Component that renders the complete toolbar of a map.
+ * Vertical separator component for horizontal toolbars.
  */
-const MapToolbars = ({ children }: MapToolbarsProps) => {
-  const toolbars: React.ReactNode[] = [];
+export const VerticalToolbarSeparator = () => (
+  <div
+    style={{
+      display: 'inline-block',
+      height: '48px',
+      borderLeft: '1px solid rgba(0, 0, 0,  0.172549)',
+      verticalAlign: 'top',
+    }}
+  />
+);
 
-  toolbars.push(
-    <Widget
-      key='Widget.MapToolbar'
-      style={{ top: 8, left: 8 + 24 + 8 }}
-      showControls={false}
-    >
-      <MapToolbar />
-    </Widget>
-  );
-
-  if (children?.drawingToolbar !== undefined && hasFeature('mapFeatures')) {
-    toolbars.push(
-      <Widget
-        key='Widget.DrawingToolbar'
-        style={{ top: 8 + 48 + 8, left: 8 }}
-        showControls={false}
-      >
-        {children.drawingToolbar}
+/**
+ * Component that renders the toolbars of a map.
+ */
+const MapToolbars = ({ left, top }: MapToolbarsProps) => (
+  <>
+    {left && (
+      <Widget key='Widget.LeftToolbar' style={{ top: 8 + 48 + 8, left: 8 }}>
+        <Box display='flex' flexDirection='column'>
+          {left}
+        </Box>
       </Widget>
-    );
-  }
-
-  return <>{toolbars}</>;
-};
+    )}
+    {top && (
+      <Widget key='Widget.TopToolbar' style={{ top: 8, left: 8 + 24 + 8 }}>
+        <Box display='flex' flexDirection='row'>
+          {top}
+        </Box>
+      </Widget>
+    )}
+  </>
+);
 
 export default MapToolbars;

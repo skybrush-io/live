@@ -8,31 +8,26 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Translation } from 'react-i18next';
 
+import { withMap } from '@collmot/ol-react';
+
 import IconButton from '@material-ui/core/IconButton';
 import TextField from '@material-ui/core/TextField';
 import RotateLeft from '@material-ui/icons/RotateLeft';
 
 import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
-import { mapReferenceRequestSignal, mapRotationResetSignal } from '~/signals';
 import { normalizeAngle } from '~/utils/geography';
 import { toDegrees, toRadians } from '~/utils/math';
 
+/** @import Map from 'ol/Map' */
+
 /**
  * React Component to display and adjust the rotation of the map view.
- *
- * @param {Object} props properties of the react component
- * @property {number} resetDuration the amount of time the reset transition should take (in ms)
- * @property {string} fieldWidth the width of the actual input field
- * @property {string} style styling of the outermost element (a div)
- *
- * @emits {mapReferenceRequestSignal} requests map reference
  */
 class MapRotationTextBox extends React.Component {
   static propTypes = {
-    initialRotation: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-    resetDuration: PropTypes.number,
     fieldWidth: PropTypes.string,
-    style: PropTypes.object,
+    map: PropTypes.object,
+    resetDuration: PropTypes.number,
   };
 
   state = {
@@ -45,16 +40,13 @@ class MapRotationTextBox extends React.Component {
    * adds signal event handler and requests map reference.
    *
    * @param {Object} props properties of the react component
-   * @property {number} resetDuration the amount of time the reset transition should take (in ms)
-   * @property {string} fieldWidth the width of the actual input field
-   * @property {string} style styling of the outermost element (a div)
-   *
-   * @emits {mapReferenceRequestSignal} requests map reference
+   * @param {string} props.fieldWidth the width of the actual input field
+   * @param {Map} props.map the map on which the control appears
+   * @param {number} props.resetDuration the amount of time the reset transition should take (in ms)
    */
   constructor(props) {
     super(props);
 
-    this._onMapReferenceReceived = this._onMapReferenceReceived.bind(this);
     this._updateRotationFromMapView = throttle(
       this._updateRotationFromMapView.bind(this),
       100
@@ -65,16 +57,16 @@ class MapRotationTextBox extends React.Component {
     this._onKeyDown = this._onKeyDown.bind(this);
     this._onButtonClick = this._onButtonClick.bind(this);
 
-    mapRotationResetSignal.add(this._onButtonClick);
+    this.state.rotation = normalizeAngle(props.map.getView().getRotation());
 
-    mapReferenceRequestSignal.dispatch(this._onMapReferenceReceived);
-
-    this.state.rotation = normalizeAngle(props.initialRotation || 0);
+    props.map.on('change:view', ({ target }) => {
+      target.getView().on('change:rotation', this._updateRotationFromMapView);
+    });
   }
 
   render() {
     return (
-      <div style={this.props.style}>
+      <div style={{ marginRight: '12px' }}>
         <Translation>
           {(t) => (
             <Tooltip content={t('map.resetRotation')}>
@@ -104,28 +96,6 @@ class MapRotationTextBox extends React.Component {
         />
       </div>
     );
-  }
-
-  /**
-   * Callback for receiving the map reference.
-   * Attaches event handlers to the map and it's view.
-   *
-   * @param {ol.Map} map the map to attach the event handlers to
-   */
-  _onMapReferenceReceived(map) {
-    const view = map ? map.getView() : undefined;
-
-    this.map = map;
-
-    // If the map already has a view, bind an event listener to the view
-    if (view) {
-      view.on('change:rotation', this._updateRotationFromMapView);
-    }
-
-    // Listen also for changes in the view of the map
-    map.on('change:view', (_event) => {
-      map.getView().on('change:rotation', this._updateRotationFromMapView);
-    });
   }
 
   /**
@@ -166,7 +136,7 @@ class MapRotationTextBox extends React.Component {
    */
   _onChange(event) {
     // Maybe this should be done in componentWill/DidUpdate, but it causes feedback loop
-    this.map.getView().setRotation(toRadians(-event.target.value));
+    this.props.map.getView().setRotation(toRadians(-event.target.value));
 
     this.setState({
       rotation: event.target.value,
@@ -190,7 +160,7 @@ class MapRotationTextBox extends React.Component {
    * @param {Event} event the event fired from the IconButton component
    */
   _onButtonClick() {
-    this.map.getView().animate({
+    this.props.map.getView().animate({
       rotation: 0,
       duration: this.props.resetDuration,
       easing: easeOut,
@@ -198,4 +168,4 @@ class MapRotationTextBox extends React.Component {
   }
 }
 
-export default MapRotationTextBox;
+export default withMap(MapRotationTextBox);
