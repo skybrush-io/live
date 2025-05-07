@@ -146,13 +146,15 @@
       "import": "Import",
       "navigate": "Navigate",
       "open": "Open",
+      "redo": "Redo",
       "remove": "Remove",
       "reset": "Reset",
       "retry": "Retry",
       "save": "Save",
       "select": "Select",
       "start": "Start",
-      "stop": "Stop"
+      "stop": "Stop",
+      "undo": "Undo"
     },
     "commands": {
       "land": "Land",

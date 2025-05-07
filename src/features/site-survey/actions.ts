@@ -38,6 +38,7 @@ import {
   rotateHomePositions,
   rotateShow,
   setAdaptResult,
+  snap,
 } from './state';
 
 // -- Transformations
@@ -218,6 +219,8 @@ export const updateModifiedFeatures = (
     } else if (requiresUpdate.homePositionIds.length > 0) {
       updateHomePositions(dispatch, requiresUpdate.homePositionIds, options);
     }
+
+    dispatch(snap());
   });
 
 /**

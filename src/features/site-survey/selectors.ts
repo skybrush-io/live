@@ -36,7 +36,7 @@ const _defaultCoordinateSystem: ShowData['coordinateSystem'] = {
 
 const selectSiteSurveyState: AppSelector<SiteSurveyState> = (
   state: RootState
-) => state.dialogs.siteSurvey;
+) => state.dialogs.siteSurvey.present;
 
 export const isSiteSurveyDialogOpen: AppSelector<boolean> = createSelector(
   selectSiteSurveyState,
@@ -63,6 +63,12 @@ const selectShowData = createSelector(
       coordinateSystem: _defaultCoordinateSystem,
     }
 );
+
+export const canSiteSurveyUndo: AppSelector<boolean> = (state) =>
+  state.dialogs.siteSurvey.past.length > 0;
+
+export const canSiteSurveyRedo: AppSelector<boolean> = (state) =>
+  state.dialogs.siteSurvey.future.length > 0;
 
 /**
  * Selector that returns the coordinate system from the site survey state.
