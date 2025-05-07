@@ -34,9 +34,15 @@ const _defaultCoordinateSystem: ShowData['coordinateSystem'] = {
   orientation: '0',
 };
 
+export const getPastHistoryLength: AppSelector<number> = (state) =>
+  state.dialogs.siteSurvey.past.length;
+
+export const getFutureHistoryLength: AppSelector<number> = (state) =>
+  state.dialogs.siteSurvey.future.length;
+
 const selectSiteSurveyState: AppSelector<SiteSurveyState> = (
   state: RootState
-) => state.dialogs.siteSurvey;
+) => state.dialogs.siteSurvey.present;
 
 export const isSiteSurveyDialogOpen: AppSelector<boolean> = createSelector(
   selectSiteSurveyState,

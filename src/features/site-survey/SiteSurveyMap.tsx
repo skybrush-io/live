@@ -1,3 +1,7 @@
+import {
+  type ActionCreatorWithoutPayload,
+  type ActionCreatorWithPayload,
+} from '@reduxjs/toolkit';
 import Feature from 'ol/Feature';
 import type OLMap from 'ol/Map';
 import type Point from 'ol/geom/Point';
@@ -7,11 +11,13 @@ import VectorLayer from 'ol/layer/Vector';
 import type VectorSource from 'ol/source/Vector';
 import React, { useCallback } from 'react';
 import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
 import Colors from '~/components/colors';
 import { Map, MapToolbars } from '~/components/map';
 import { type ViewProperties } from '~/components/map/Map';
 import type { MapControlDisplaySettings } from '~/components/map/MapControls';
+import MapRotationTextBox from '~/components/map/MapRotationTextBox';
 import MapInteractions from '~/components/map/interactions/MapInteractions';
 import type {
   BoxDragMode,
@@ -33,8 +39,9 @@ import ShowInfoLayerPresentation, {
 import { FeaturesLayer } from '~/components/map/layers/features';
 import { UAVsLayer, type UAVsLayerProps } from '~/components/map/layers/uavs';
 import { noMark } from '~/components/map/layers/utils';
-import MapRotationTextBox from '~/components/map/MapRotationTextBox';
 import { Tool } from '~/components/map/tools';
+import ToolbarDivider from '~/components/ToolbarDivider';
+import UndoRedoButtons from '~/components/UndoRedoButtons';
 import { type GPSPosition } from '~/model/geography';
 import {
   globalIdToAreaId,
@@ -58,14 +65,21 @@ import {
 import {
   getCenterOfSiteSurveyHomePositionsInWorldCoordinates,
   getConvexHullOfShowInWorldCoordinates,
+  getFutureHistoryLength,
   getHomePositionsInWorldCoordinates,
+  getPastHistoryLength,
   getSelection,
   getVisibleLayersInOrder,
   selectApproximateConvexHullOfFullShowInWorldCoordinates,
   selectConvexHullMarkerData,
   type ConvexHullMarkerData,
 } from './selectors';
-import { updateSelection } from './state';
+import {
+  historyJump,
+  historyRedo,
+  historyUndo,
+  updateSelection,
+} from './state';
 
 // === Layers ===
 
@@ -155,14 +169,19 @@ const mapControlSettings: Partial<MapControlDisplaySettings> = {
 
 type SiteSurveyMapProps = Readonly<{
   defaultPosition?: ViewProperties['position'];
+  futureHistoryLength: number;
+  historyJump: ActionCreatorWithPayload<number>;
+  historyRedo: ActionCreatorWithoutPayload;
+  historyUndo: ActionCreatorWithoutPayload;
   layers: LayerConfig['layers'];
+  pastHistoryLength: number;
   selectedTool: Tool;
+  selection: Identifier[];
   updateModifiedFeatures: (
     features: Feature[],
     options: FeatureUpdateOptions
   ) => void;
   updateSelection: (mode: FeatureSelectionMode, ids: Identifier[]) => void;
-  selection: Identifier[];
 }>;
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
@@ -298,7 +317,16 @@ const useOwnState = (props: SiteSurveyMapProps) => {
 };
 
 const SiteSurveyMap = (props: SiteSurveyMapProps): JSX.Element => {
-  const { defaultPosition, layers, selectedTool } = props;
+  const {
+    defaultPosition,
+    futureHistoryLength,
+    historyJump,
+    historyRedo,
+    historyUndo,
+    layers,
+    pastHistoryLength,
+    selectedTool,
+  } = props;
   const {
     getSelectedTransformableFeatures,
     onBoxDragEnded,
@@ -316,7 +344,21 @@ const SiteSurveyMap = (props: SiteSurveyMapProps): JSX.Element => {
       onFeaturesModified={onFeaturesModified}
     >
       <MapToolbars
-        top={<MapRotationTextBox resetDuration={500} fieldWidth='75px' />}
+        top={
+          <>
+            <MapRotationTextBox resetDuration={500} fieldWidth='75px' />
+            <ToolbarDivider orientation='vertical' />
+            <UndoRedoButtons
+              canDiscard={pastHistoryLength > 0}
+              canUndo={pastHistoryLength > 0}
+              canRedo={futureHistoryLength > 0}
+              tooltipPlacement='bottom'
+              undo={() => historyUndo()}
+              redo={() => historyRedo()}
+              discard={() => historyJump(-pastHistoryLength)}
+            />
+          </>
+        }
       />
       <MapInteractions
         selectedTool={selectedTool}
@@ -336,12 +378,22 @@ const ConnectedSiteSurveyMap = connect(
       center && ([center.lon, center.lat] satisfies LonLat))(
       getCenterOfSiteSurveyHomePositionsInWorldCoordinates(state)
     ),
+    futureHistoryLength: getFutureHistoryLength(state),
     layers: getVisibleLayersInOrder(state),
+    pastHistoryLength: getPastHistoryLength(state),
     selectedTool: Tool.SELECT,
     selection: getSelection(state),
   }),
   // mapDispatchToProps
   (dispatch: AppDispatch) => ({
+    ...bindActionCreators(
+      {
+        historyJump,
+        historyRedo,
+        historyUndo,
+      },
+      dispatch
+    ),
     updateSelection(mode: FeatureSelectionMode, ids: Identifier[]): void {
       dispatch(updateSelection({ mode, ids }));
     },

@@ -2,7 +2,11 @@
  * @file Redux slice for the site survey dialog.
  */
 
-import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import {
+  type CaseReducer,
+  createSlice,
+  type PayloadAction,
+} from '@reduxjs/toolkit';
 import type { SwarmSpecification } from '@skybrush/show-format';
 import xor from 'lodash-es/xor';
 import { Point } from 'ol/geom';
@@ -62,10 +66,29 @@ const initialState: SiteSurveyState = {
   adaptResult: undefined,
 };
 
+// prettier-ignore
+const historyReducers: {
+  historyInit: CaseReducer;
+  historyJump: CaseReducer<SiteSurveyState, PayloadAction<number>>;
+  historyRedo: CaseReducer;
+  historySnap: CaseReducer;
+  historyUndo: CaseReducer;
+} = {
+  historyInit() { /* do nothing, to be handled by `redux-undo` */ },
+  historyJump() { /* do nothing, to be handled by `redux-undo` */ },
+  historyRedo() { /* do nothing, to be handled by `redux-undo` */ },
+  historySnap() { /* do nothing, to be handled by `redux-undo` */ },
+  historyUndo() { /* do nothing, to be handled by `redux-undo` */ },
+};
+
 const { reducer, actions } = createSlice({
   name: 'site-survey',
   initialState,
   reducers: {
+    // -- History
+
+    ...historyReducers,
+
     // -- Dialog
 
     /**
@@ -362,6 +385,11 @@ const { reducer, actions } = createSlice({
 
 export const {
   closeDialog,
+  historyInit,
+  historyJump,
+  historyRedo,
+  historySnap,
+  historyUndo,
   initializeWithData,
   moveHomePositionsByMapCoordinateDelta,
   moveHomePositionsToLonLat,
@@ -369,8 +397,8 @@ export const {
   rotateHomePositions,
   rotateShow,
   setAdaptResult,
-  showDialog,
   setDronesVisible,
+  showDialog,
   updateSelection,
 } = actions;
 

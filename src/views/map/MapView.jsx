@@ -22,12 +22,12 @@ import { snapEndToStart } from '~/components/map/interactions/utils';
 import { MapLayers as MapLayersPresentation } from '~/components/map/layers';
 import { styles as mapStyles, toolClasses } from '~/components/map/Map';
 import MapRotationTextBox from '~/components/map/MapRotationTextBox';
-import { VerticalToolbarSeparator } from '~/components/map/MapToolbars';
 import {
   isDrawingTool,
   Tool,
   toolToDrawInteractionProps,
 } from '~/components/map/tools';
+import ToolbarDivider from '~/components/ToolbarDivider';
 import { handleError } from '~/error-handling';
 import {
   addFeature,
@@ -76,6 +76,7 @@ import {
 } from '~/utils/geography';
 import { toDegrees } from '~/utils/math';
 import { forwardCollectionChanges } from '~/utils/openlayers';
+
 import DrawingToolbar from './DrawingToolbar';
 import { Layers } from './layers';
 import MapContextMenu from './MapContextMenu';
@@ -434,7 +435,7 @@ class MapViewPresentation extends React.Component {
               top={
                 <>
                   <MapRotationTextBox resetDuration={500} fieldWidth='75px' />
-                  <VerticalToolbarSeparator />
+                  <ToolbarDivider orientation='vertical' />
                   {/* NOTE: Margin is calibrated such that the vertical      */}
                   {/*       drawing toolbar will not cover any of the drones */}
                   <ConnectedFitAllFeaturesButton duration={500} margin={80} />

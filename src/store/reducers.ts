@@ -4,6 +4,7 @@ import {
   type ThunkDispatch,
   combineReducers,
 } from '@reduxjs/toolkit';
+import undoable, { includeAction } from 'redux-undo';
 
 /**
  * Reducer functions for handling the part of the state object that stores the
@@ -19,7 +20,15 @@ import authenticationReducer from '~/features/servers/authentication-dialog';
 import deauthenticationReducer from '~/features/servers/deauthentication-dialog';
 import serverSettingsReducer from '~/features/servers/server-settings-dialog';
 import appSettingsReducer from '~/features/settings/dialog';
-import siteSurveyReducer from '~/features/site-survey/state';
+import siteSurveyReducer, {
+  historyInit,
+  historyJump,
+  historyRedo,
+  historySnap,
+  historyUndo,
+  type ShowData,
+  type SiteSurveyState,
+} from '~/features/site-survey/state';
 import uavDetailsDialogReducer from '~/features/uavs/details';
 
 /**
@@ -81,7 +90,18 @@ const dialogsReducer = combineReducers({
   prompt: promptReducer,
   savedLocationEditor: savedLocationEditorReducer,
   serverSettings: serverSettingsReducer,
-  siteSurvey: siteSurveyReducer,
+  siteSurvey: undoable<SiteSurveyState, { showData?: ShowData }>(
+    siteSurveyReducer,
+    {
+      clearHistoryType: historyInit.type,
+      filter: includeAction([historySnap.type]),
+      capture: ({ showData }) => ({ showData }),
+      restore: ({ showData }, current) => ({ ...current, showData }),
+      jumpType: historyJump.type,
+      redoType: historyRedo.type,
+      undoType: historyUndo.type,
+    }
+  ),
   uavDetails: uavDetailsDialogReducer,
 });
 

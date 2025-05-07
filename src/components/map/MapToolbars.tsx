@@ -10,20 +10,6 @@ type MapToolbarsProps = Readonly<{
 }>;
 
 /**
- * Vertical separator component for horizontal toolbars.
- */
-export const VerticalToolbarSeparator = () => (
-  <div
-    style={{
-      display: 'inline-block',
-      height: '48px',
-      borderLeft: '1px solid rgba(0, 0, 0,  0.172549)',
-      verticalAlign: 'top',
-    }}
-  />
-);
-
-/**
  * Component that renders the toolbars of a map.
  */
 const MapToolbars = ({ left, top }: MapToolbarsProps) => (

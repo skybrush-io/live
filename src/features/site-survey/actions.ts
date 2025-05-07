@@ -32,13 +32,25 @@ import {
   selectCoordinateSystem,
 } from './selectors';
 import {
+  historyInit,
+  historySnap,
   moveHomePositionsByMapCoordinateDelta,
   moveHomePositionsToLonLat,
   moveOutdoorShowOriginByMapCoordinateDelta,
   rotateHomePositions,
   rotateShow,
   setAdaptResult,
+  type ShowData,
+  showDialog,
 } from './state';
+
+// -- Initializing
+
+export const showDialogAndClearUndoHistory =
+  (showData?: ShowData) => (dispatch: AppDispatch) => {
+    dispatch(showDialog(showData));
+    dispatch(historyInit());
+  };
 
 // -- Transformations
 
@@ -218,6 +230,8 @@ export const updateModifiedFeatures = (
     } else if (requiresUpdate.homePositionIds.length > 0) {
       updateHomePositions(dispatch, requiresUpdate.homePositionIds, options);
     }
+
+    dispatch(historySnap());
   });
 
 /**
@@ -259,6 +273,7 @@ export const adjustHomePositionsToDronePositions =
     );
 
     dispatch(moveHomePositionsToLonLat(newPositions));
+    dispatch(historySnap());
   };
 
 // -- Show adapt
