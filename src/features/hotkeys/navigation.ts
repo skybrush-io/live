@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import isNil from 'lodash-es/isNil';
 import { bindActionCreators } from '@reduxjs/toolkit';
+import isNil from 'lodash-es/isNil';
 
-import type { AppDispatch, AppThunk, RootState } from '~/store/reducers';
+import type { AppDispatch, RootState } from '~/store/reducers';
 import { scrollIntoView } from '~/utils/navigation';
 
 export enum Direction {
@@ -130,15 +130,14 @@ export function createKeyboardNavigationHandlers<
     // is the topmost item in the selection, and if the delta is positive (we are
     // moving downwards) we assume that the caret is the lowermost item in the
     // selection. This works well enough for most of the cases.
-    if (Number.isFinite(delta) && selectedIds.length > 0) {
+    if (selectedIds.length > 0) {
       const indices = selectedIds
         .map((uavId) => visibleIds.indexOf(uavId))
         .filter((index) => index >= 0);
-      if (delta < 0) {
-        caretIndex = Math.min(visibleIds.length - 1, ...indices);
-      } else {
-        caretIndex = Math.max(0, ...indices);
-      }
+      caretIndex =
+        delta < 0
+          ? Math.min(visibleIds.length - 1, ...indices)
+          : Math.max(0, ...indices);
     }
 
     if (Number.isFinite(delta)) {
@@ -149,16 +148,28 @@ export function createKeyboardNavigationHandlers<
       newIndex = visibleIds.length - 1;
     }
 
+    // Make sure selection works correct even if we'd be overindexing.
+    newIndex = Math.max(0, Math.min(visibleIds.length - 1, newIndex));
+
+    const getVisibleIdsSlice = (ci: number, ni: number) =>
+      visibleIds
+        .slice(Math.min(Math.max(0, ci), ni), Math.max(ci, ni + 1))
+        .filter((v) => v !== undefined);
+
     const newSelectedId = visibleIds[newIndex];
     const newSelection = isNil(newSelectedId)
       ? selectedIds
       : event.shiftKey
         ? selectedIds.includes(newSelectedId)
-          ? null
-          : /* TODO: we should select all items between caretIndex and newIndex,
-             * inclusive, but we should also make sure that the selection does
-             * not have duplicates */
-            [...selectedIds, newSelectedId]
+          ? selectedIds.length > 0
+            ? null
+            : getVisibleIdsSlice(caretIndex, newIndex)
+          : Array.from(
+              new Set([
+                ...selectedIds,
+                ...getVisibleIdsSlice(caretIndex, newIndex),
+              ])
+            )
         : [newSelectedId];
 
     // If we have a focus callback, call it so we can scroll to the newly
