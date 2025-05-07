@@ -160,7 +160,7 @@ const showUAVsList = (workbench, dispatch) => () => {
     return;
   }
 
-  if (!workbench.bringToFront('uavs')) {
+  if (!workbench.bringToFront('uavList')) {
     dispatch(
       showNotification({
         message: 'UAVs panel is not added to the workbench yet',
