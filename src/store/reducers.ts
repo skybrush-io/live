@@ -4,6 +4,7 @@ import {
   type ThunkDispatch,
   combineReducers,
 } from '@reduxjs/toolkit';
+import undoable from 'redux-undo';
 
 /**
  * Reducer functions for handling the part of the state object that stores the
@@ -19,7 +20,7 @@ import authenticationReducer from '~/features/servers/authentication-dialog';
 import deauthenticationReducer from '~/features/servers/deauthentication-dialog';
 import serverSettingsReducer from '~/features/servers/server-settings-dialog';
 import appSettingsReducer from '~/features/settings/dialog';
-import siteSurveyReducer from '~/features/site-survey/state';
+import siteSurveyReducer, { redo, undo } from '~/features/site-survey/state';
 import uavDetailsDialogReducer from '~/features/uavs/details';
 
 /**
@@ -81,7 +82,10 @@ const dialogsReducer = combineReducers({
   prompt: promptReducer,
   savedLocationEditor: savedLocationEditorReducer,
   serverSettings: serverSettingsReducer,
-  siteSurvey: siteSurveyReducer,
+  siteSurvey: undoable(siteSurveyReducer, {
+    undoType: undo.type,
+    redoType: redo.type,
+  }),
   uavDetails: uavDetailsDialogReducer,
 });
 

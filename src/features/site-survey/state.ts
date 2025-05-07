@@ -59,6 +59,14 @@ const { reducer, actions } = createSlice({
   name: 'site-survey',
   initialState,
   reducers: {
+    // TODO: Or maybe use `createAction` instead?
+    undo() {
+      // do nothing, to be handled by `redux-undo`
+    },
+    redo() {
+      // do nothing, to be handled by `redux-undo`
+    },
+
     // -- Dialog
 
     /**
@@ -308,6 +316,8 @@ export const {
   setAdaptResult,
   showDialog,
   updateSelection,
+  undo,
+  redo,
 } = actions;
 
 export default reducer;

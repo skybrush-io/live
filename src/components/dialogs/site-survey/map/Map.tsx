@@ -7,6 +7,9 @@ import VectorLayer from 'ol/layer/Vector';
 import type VectorSource from 'ol/source/Vector';
 import React, { useCallback } from 'react';
 import { connect } from 'react-redux';
+import { ActionCreators } from 'redux-undo';
+import UndoRedoButtons from '~/components/UndoRedoButtons';
+import Widget from '~/components/Widget';
 
 import Colors from '~/components/colors';
 import { Map } from '~/components/map';
@@ -37,6 +40,8 @@ import {
   type FeatureUpdateOptions,
 } from '~/features/site-survey/actions';
 import {
+  canSiteSurveyRedo,
+  canSiteSurveyUndo,
   getConvexHullOfShowInWorldCoordinates,
   getHomePositionsInWorldCoordinates,
   getSelection,
@@ -44,7 +49,7 @@ import {
   selectConvexHullMarkerData,
   type ConvexHullMarkerData,
 } from '~/features/site-survey/selectors';
-import { updateSelection } from '~/features/site-survey/state';
+import { redo, undo, updateSelection } from '~/features/site-survey/state';
 import { type GPSPosition } from '~/model/geography';
 import {
   globalIdToAreaId,
@@ -140,6 +145,10 @@ type SiteSurveyMapProps = Readonly<{
   ) => void;
   updateSelection: (mode: FeatureSelectionMode, ids: Identifier[]) => void;
   selection: Identifier[];
+  canUndo: boolean;
+  canRedo: boolean;
+  undo: () => void;
+  redo: () => void;
 }>;
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
@@ -275,7 +284,7 @@ const useOwnState = (props: SiteSurveyMapProps) => {
 };
 
 const SiteSurveyMap = (props: SiteSurveyMapProps): JSX.Element => {
-  const { layers, selectedTool } = props;
+  const { undo, redo, canUndo, canRedo, layers, selectedTool } = props;
   const {
     getSelectedTransformableFeatures,
     onBoxDragEnded,
@@ -297,6 +306,20 @@ const SiteSurveyMap = (props: SiteSurveyMapProps): JSX.Element => {
         onBoxDragEnded={onBoxDragEnded}
         onSingleFeatureSelected={onSingleFeatureSelected}
       />
+
+      <Widget
+        key='Widget.UndoRedoToolbar'
+        style={{ top: 8, left: 8 + 24 + 8 }}
+        showControls={false}
+      >
+        <UndoRedoButtons
+          canUndo={canUndo}
+          canRedo={canRedo}
+          tooltipPlacement='bottom'
+          undo={undo}
+          redo={redo}
+        />
+      </Widget>
     </Map>
   );
 };
@@ -307,6 +330,8 @@ const ConnectedSiteSurveyMap = connect(
     layers: getVisibleLayersInOrder(state),
     selectedTool: Tool.SELECT,
     selection: getSelection(state),
+    canUndo: canSiteSurveyUndo(state),
+    canRedo: canSiteSurveyRedo(state),
   }),
   // mapDispatchToProps
   (dispatch: AppDispatch) => ({
@@ -319,6 +344,8 @@ const ConnectedSiteSurveyMap = connect(
     ): void {
       updateModifiedFeaturesAction(dispatch, features, options);
     },
+    undo: () => dispatch(undo()),
+    redo: () => dispatch(redo()),
   })
 )(SiteSurveyMap);
 
