@@ -14,7 +14,7 @@ type MapToolbarsProps = {
  * Component that renders the complete toolbar of a map.
  */
 const MapToolbars = ({ children }: MapToolbarsProps) => {
-  const toolbars = [];
+  const toolbars: React.ReactNode[] = [];
 
   toolbars.push(
     <Widget
