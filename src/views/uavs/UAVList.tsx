@@ -4,6 +4,15 @@
  * flock.
  */
 
+import AppBar from '@material-ui/core/AppBar';
+import Box from '@material-ui/core/Box';
+import makeStyles from '@material-ui/core/styles/makeStyles';
+import Delete from '@material-ui/icons/Delete';
+import {
+  bindActionCreators,
+  type AnyAction,
+  type Store,
+} from '@reduxjs/toolkit';
 import isNil from 'lodash-es/isNil';
 import { nanoid } from 'nanoid';
 import React, {
@@ -11,32 +20,13 @@ import React, {
   useEffect,
   useMemo,
   useRef,
-  useState,
   type RefCallback,
 } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { connect, useStore } from 'react-redux';
-import {
-  bindActionCreators,
-  type AnyAction,
-  type Store,
-} from '@reduxjs/toolkit';
-
-import AppBar from '@material-ui/core/AppBar';
-import Box from '@material-ui/core/Box';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import Delete from '@material-ui/icons/Delete';
 
 import { isThemeDark } from '@skybrush/app-theme-material-ui';
-
-import DroneListItem, { type DroneListItemProps } from './DroneListItem';
-import DroneStatusLine from './DroneStatusLine';
-import MappingEditorToolbar from './MappingEditorToolbar';
-import MappingSlotEditorForGrid from './MappingSlotEditorForGrid';
-import MappingSlotEditorForList from './MappingSlotEditorForList';
-import MappingSlotEditorToolbar from './MappingSlotEditorToolbar';
-import UAVToolbar from './UAVToolbar';
 
 import { createSelectionHandlerThunk } from '~/components/helpers/lists';
 import FadeAndSlide from '~/components/transitions/FadeAndSlide';
@@ -45,13 +35,13 @@ import DronePlaceholder from '~/components/uavs/DronePlaceholder';
 import { useKeyboardNavigation } from '~/features/hotkeys/hooks';
 import { setSelection } from '~/features/map/selection';
 import {
-  adjustMissionMapping,
-  startMappingEditorSessionAtSlot,
-} from '~/features/mission/slice';
-import {
   getIndexOfMappingSlotBeingEdited,
   isMappingEditable,
 } from '~/features/mission/selectors';
+import {
+  adjustMissionMapping,
+  startMappingEditorSessionAtSlot,
+} from '~/features/mission/slice';
 import {
   getUAVListLayout,
   isShowingMissionIds,
@@ -70,16 +60,22 @@ import {
 } from '~/utils/navigation';
 import type { Nullable } from '~/utils/types';
 
+import DroneListItem, { type DroneListItemProps } from './DroneListItem';
+import DroneStatusLine from './DroneStatusLine';
+import MappingEditorToolbar from './MappingEditorToolbar';
+import MappingSlotEditorForGrid from './MappingSlotEditorForGrid';
+import MappingSlotEditorForList from './MappingSlotEditorForList';
+import MappingSlotEditorToolbar from './MappingSlotEditorToolbar';
+import SortAndFilterHeader from './SortAndFilterHeader';
+import UAVToolbar from './UAVToolbar';
+import VirtualizedUAVListBody from './VirtualizedUAVListBody';
+import { HEADER_HEIGHT } from './constants';
 import createKeyboardNavigationHandlers, {
   maybeOpenUAVDetailsDialog,
 } from './navigation';
-import { getGlobalIdsOfDisplayedItems, getDisplayedItems } from './selectors';
+import { getDisplayedItems, getGlobalIdsOfDisplayedItems } from './selectors';
 import type { Item } from './types';
 import { getSelectedUAVIdsAndMissionSlotIds, itemToGlobalId } from './utils';
-import SortAndFilterHeader from './SortAndFilterHeader';
-import VirtualizedUAVListBody from './VirtualizedUAVListBody';
-import { HEADER_HEIGHT } from './constants';
-import { noop } from 'lodash-es';
 
 const useListStyles = makeStyles(
   (theme) => ({
@@ -359,7 +355,7 @@ const UAVListPresentation = ({
     [registration]
   );
 
-  // Create the keyboard navigation handler functios
+  // Create the keyboard navigation handler functions
   const keyboardNav = useMemo(
     () =>
       createKeyboardNavigationHandlers(
