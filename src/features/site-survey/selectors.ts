@@ -29,7 +29,7 @@ const selectSiteSurveyState: AppSelector<SiteSurveyState> = (
 ) => state.dialogs.siteSurvey;
 
 export const isSiteSurveyDialogOpen: AppSelector<boolean> = (state) =>
-  state.dialogs.siteSurvey.open;
+  state.dialogs.siteSurvey.open || true;
 
 const selectShowData = createSelector(
   selectSiteSurveyState,

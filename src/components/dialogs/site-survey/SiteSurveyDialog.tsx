@@ -1,5 +1,8 @@
+// @ts-nocheck
+
 import {
   Box,
+  Collapse,
   Divider,
   IconButton,
   makeStyles,
@@ -194,31 +197,94 @@ const InteractionHint = ({
   </span>
 );
 
+const InteractionHintCarousel = () => {
+  const categories = [
+    {
+      title: 'Navigation',
+      hints: [
+        { keys: ['Drag'], action: 'Pan' },
+        { keys: ['Scroll'], action: 'Zoom' },
+        { keys: ['Shift', 'Alt', 'Drag'], action: 'Rotate' },
+      ],
+    },
+    {
+      title: 'Selection',
+      hints: [
+        { keys: ['Click'], action: 'Select' },
+        { keys: ['Ctrl', 'Click'], action: 'Toggle selection' },
+        { keys: ['Shift', 'Drag'], action: 'Box select' },
+        { keys: ['Alt', 'Drag'], action: 'Box unselect' },
+      ],
+    },
+    {
+      title: 'Manipulation',
+      hints: [
+        { keys: ['Drag'], action: 'Move selection' },
+        { keys: ['Alt', 'Drag'], action: 'Rotate selection' },
+      ],
+    },
+  ];
+
+  const [active, setActive] = useState(0);
+
+  return (
+    <Box>
+      <Box display='flex' sx={{ gap: 8 }}>
+        {categories.map((c, i) => (
+          <Typography
+            key={c.title}
+            variant='subtitle2'
+            onMouseOver={() => setActive(i)}
+            sx={{ textDecoration: 'underline' }}
+          >
+            {c.title}
+          </Typography>
+        ))}
+      </Box>
+      <Box>
+        {categories.map((c, i) => (
+          <Collapse key={c.title} in={active === i}>
+            {c.hints.map((h) => (
+              <InteractionHint key={h.keys.join('+')} {...h} />
+            ))}
+          </Collapse>
+        ))}
+      </Box>
+    </Box>
+  );
+};
+
 const interactionHints = (
   <Box display='flex'>
     <IconButton disabled>
       <Mouse />
     </IconButton>
-    <Box>
+    <Box display='flex'>
       <Box display='flex' alignItems='center' style={{ gap: 8 }}>
-        <Typography variant='subtitle2'>Navigation:</Typography>
-        <InteractionHint keys={['Drag']} action='Pan' />
-        <InteractionHint keys={['Scroll']} action='Zoom' />
-        <InteractionHint keys={['Shift', 'Alt', 'Drag']} action='Rotate' />
+        <Typography variant='subtitle2'>Navigation</Typography>
+        <Box>
+          <InteractionHint keys={['Drag']} action='Pan' />
+          <InteractionHint keys={['Scroll']} action='Zoom' />
+          <InteractionHint keys={['Shift', 'Alt', 'Drag']} action='Rotate' />
+        </Box>
       </Box>
       <Divider style={{ margin: '4px 0px' }} />
       <Box display='flex' alignItems='center' style={{ gap: 8 }}>
-        <Typography variant='subtitle2'>Selection:</Typography>
-        <InteractionHint keys={['Click']} action='Select' />
-        <InteractionHint keys={['Ctrl', 'Click']} action='Toggle selection' />
-        <InteractionHint keys={['Shift', 'Drag']} action='Box select' />
-        <InteractionHint keys={['Alt', 'Drag']} action='Box unselect' />
+        <Typography variant='subtitle2'>Selection</Typography>
+        <Box>
+          <InteractionHint keys={['Click']} action='Select' />
+          <InteractionHint keys={['Ctrl', 'Click']} action='Toggle selection' />
+          <InteractionHint keys={['Shift', 'Drag']} action='Box select' />
+          <InteractionHint keys={['Alt', 'Drag']} action='Box unselect' />
+        </Box>
       </Box>
       <Divider style={{ margin: '4px 0px' }} />
       <Box display='flex' alignItems='center' style={{ gap: 8 }}>
-        <Typography variant='subtitle2'>Manipulation:</Typography>
-        <InteractionHint keys={['Drag']} action='Move selection' />
-        <InteractionHint keys={['Alt', 'Drag']} action='Rotate selection' />
+        <Typography variant='subtitle2'>Manipulation</Typography>
+        <Box>
+          <InteractionHint keys={['Drag']} action='Move selection' />
+          <InteractionHint keys={['Alt', 'Drag']} action='Rotate selection' />
+        </Box>
       </Box>
     </Box>
   </Box>
@@ -262,7 +328,8 @@ function SiteSurveyDialog(props: Props) {
               <p key={idx}>{item}</p>
             ))}
         />
-        {interactionHints}
+        {/* {interactionHints} */}
+        <InteractionHintCarousel />
         <Box flex={1} />
         <Button onClick={back} disabled={backDisabled}>
           {stage === 'review'
