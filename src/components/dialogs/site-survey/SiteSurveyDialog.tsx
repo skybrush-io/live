@@ -1,14 +1,13 @@
 import { makeStyles } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import Paper from '@material-ui/core/Paper';
 import type { TFunction } from 'i18next';
 import React, { useCallback, useState } from 'react';
 import { withTranslation } from 'react-i18next';
 import { batch, connect } from 'react-redux';
 
+import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
 import type { ValidationSettings } from '@skybrush/show-format';
 
 import DialogHelpIcon from '~/components/DialogHelpIcon';
@@ -32,7 +31,7 @@ import {
 import { closeDialog, setAdaptResult } from '~/features/site-survey/state';
 import type { AppDispatch, RootState } from '~/store/reducers';
 import { writeBlobToFile } from '~/utils/filesystem';
-import { LonLat } from '~/utils/geography';
+import type { LonLat } from '~/utils/geography';
 
 import AdaptParametersForm, {
   useAdaptParametersFormState,
@@ -41,23 +40,42 @@ import AdaptReviewForm from './AdaptReviewForm';
 import Map from './map';
 
 const useStyles = makeStyles((theme) => ({
-  contentRoot: {
-    display: 'grid',
-    gridTemplateColumns: '1fr auto',
-    gap: theme.spacing(2),
+  /* Ugly hack to move the sidebar to the right */
+  root: {
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    '& div.MuiDialog-paper > div > div:first-child': {
+      order: 100,
+      boxShadow: '2px 0 6px -2px inset rgba(0, 0, 0, 0.54)',
+    },
   },
-  sidebar: {
-    padding: theme.spacing(1),
-    overflow: 'auto',
+  contentRoot: {
+    flex: 1,
+    minHeight: '80vh',
+    position: 'relative',
+  },
+  contentItem: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
   },
   mainContent: {
     padding: theme.spacing(1),
   },
+  shadowOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    boxShadow: '-1px 0 6px 2px inset rgba(0, 0, 0, 0.54)',
+    pointerEvents: 'none',
+    zIndex: 10,
+  },
 }));
 
-const paperElevation = 2;
-
-type DispatchProps = {
+type DispatchProps = Readonly<{
   adaptShow: (parameters: ShowAdaptParameters) => void;
   approveAdaptedShow: (
     base64Blob: string,
@@ -66,20 +84,21 @@ type DispatchProps = {
   ) => void;
   closeDialog: () => void;
   resetAdaptResult: () => void;
-};
+}>;
 
-type StateProps = {
+type StateProps = Readonly<{
   adaptedBase64Show: string | undefined;
   backDisabled: boolean;
   coordinateSystem: OutdoorCoordinateSystemWithOrigin;
   open: boolean;
   validationSettings: ValidationSettings | undefined;
-};
+}>;
 
 type Props = StateProps &
-  DispatchProps & {
+  DispatchProps &
+  Readonly<{
     t: TFunction;
-  };
+  }>;
 
 type AdaptStage = 'config' | 'review';
 
@@ -143,6 +162,7 @@ function useOwnState(props: Props) {
       if (adaptedBase64Show === undefined) {
         adaptShow(adaptParameters.parameters);
       }
+
       setStage('review');
     } else if (stage === 'review') {
       if (adaptedBase64Show === undefined) {
@@ -181,29 +201,35 @@ function SiteSurveyDialog(props: Props) {
     useOwnState(props);
 
   return (
-    <Dialog fullScreen open={open}>
-      <DialogContent className={styles.contentRoot}>
-        <Paper
-          className={styles.mainContent}
-          elevation={paperElevation}
+    <DraggableDialog
+      fullWidth
+      className={styles.root}
+      maxWidth='xl'
+      title={t('siteSurveyDialog.title')}
+      open={open}
+      sidebarComponents={
+        <AdaptParametersForm
+          {...adaptParameters}
+          disabled={stage !== 'config'}
+        />
+      }
+      onClose={props.closeDialog}
+    >
+      <Box className={styles.contentRoot}>
+        <Box
+          className={styles.contentItem}
           style={stage === 'config' ? undefined : hiddenStyle}
         >
           <Map />
-        </Paper>
-        <Paper
-          className={styles.mainContent}
-          elevation={paperElevation}
+        </Box>
+        <Box
+          className={styles.contentItem}
           style={stage === 'review' ? undefined : hiddenStyle}
         >
           <AdaptReviewForm />
-        </Paper>
-        <Paper className={styles.sidebar} elevation={paperElevation}>
-          <AdaptParametersForm
-            {...adaptParameters}
-            disabled={stage !== 'config'}
-          />
-        </Paper>
-      </DialogContent>
+        </Box>
+        <Box className={styles.shadowOverlay} />
+      </Box>
       <DialogActions>
         <DialogHelpIcon
           content={t(`siteSurveyDialog.help.${stage}`)
@@ -212,7 +238,7 @@ function SiteSurveyDialog(props: Props) {
               <p key={idx}>{item}</p>
             ))}
         />
-        <Button onClick={back} disabled={backDisabled}>
+        <Button disabled={backDisabled} onClick={back}>
           {stage === 'review'
             ? t('general.action.back')
             : t('general.action.close')}
@@ -246,7 +272,7 @@ function SiteSurveyDialog(props: Props) {
             : t('siteSurveyDialog.action.adapt')}
         </Button>
       </DialogActions>
-    </Dialog>
+    </DraggableDialog>
   );
 }
 
@@ -256,10 +282,11 @@ function SiteSurveyDialog(props: Props) {
  * The reason for this is to correctly initialize the dialog's state
  * when it is opened.
  */
-function SiteSurveyDialogWrapper(props: Props) {
+// eslint-disable-next-line @typescript-eslint/ban-types
+const SiteSurveyDialogWrapper = (props: Props): JSX.Element | null => {
   const { open, ...rest } = props;
   return open ? <SiteSurveyDialog open {...rest} /> : null;
-}
+};
 
 const ConnectedSiteSurveyDialogWrapper = connect(
   // -- map state to props
@@ -274,19 +301,26 @@ const ConnectedSiteSurveyDialogWrapper = connect(
   }),
   // -- map dispatch to props
   (dispatch: AppDispatch) => ({
-    adaptShow: (params: ShowAdaptParameters) => dispatch(adaptShow(params)),
+    adaptShow: (params: ShowAdaptParameters): void => {
+      dispatch(adaptShow(params));
+    },
     approveAdaptedShow: (
       base64Blob: string,
       showOrigin: LonLat,
       showOrientation: string
-    ) =>
-      batch(() => {
+    ): void => {
+      batch((): void => {
         dispatch(setOutdoorShowOrigin(showOrigin));
         dispatch(setOutdoorShowOrientation(showOrientation));
         dispatch(loadBase64EncodedShow(base64Blob));
-      }),
-    closeDialog: () => dispatch(closeDialog()),
-    resetAdaptResult: () => dispatch(setAdaptResult(undefined)),
+      });
+    },
+    closeDialog: (): void => {
+      dispatch(closeDialog());
+    },
+    resetAdaptResult: (): void => {
+      dispatch(setAdaptResult(undefined));
+    },
   })
 )(withTranslation()(SiteSurveyDialogWrapper));
 

@@ -25,6 +25,7 @@ const defaultAdaptParameters: ShowAdaptParameters = {
 const useStyles = makeStyles((theme) => ({
   formGroup: {
     gap: theme.spacing(2),
+    marginTop: theme.spacing(-2),
   },
 }));
 
@@ -157,7 +158,7 @@ function AdaptParametersForm(props: Props) {
   });
   const styles = useStyles();
   return (
-    <Box>
+    <Box p={2}>
       <FormGroup className={styles.formGroup}>
         <FormHeader>{t('section.parameters')}</FormHeader>
         <SimpleDistanceField
