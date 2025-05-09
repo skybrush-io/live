@@ -235,8 +235,8 @@ export const selectApproximateConvexHullOfFullShowInWorldCoordinates =
 /**
  * Returns the layers that should be shown in the dialog in bottom-first order.
  *
- * The UAVs layer (if visible) will always be above the base map layers, but
- * below all other layers.
+ * The UAVs layer (if visible) will always be above the base map layers
+ * (see `targetLayers` in the code), but below all other layers.
  */
 export const getVisibleLayersInOrder = createSelector(
   _getVisibleLayersInOrder,
@@ -270,6 +270,7 @@ export const getVisibleLayersInOrder = createSelector(
       LayerType.BASE,
       LayerType.GRATICULE,
       LayerType.TILE_SERVER,
+      LayerType.FEATURES,
     ]);
     // The index of the last base layer, that should be below the UAVs layer.
     const targetIndex = result.findLastIndex((l) => targetLayers.has(l.type));
