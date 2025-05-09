@@ -1,24 +1,22 @@
 // @ts-nocheck
 
-import {
-  Box,
-  Collapse,
-  Fade,
-  IconButton,
-  Slide,
-  Tab,
-  Tabs,
-  Typography,
-  withStyles,
-} from '@material-ui/core';
 import React, { useState } from 'react';
 
-import { Edit, Mouse, PanTool, SelectAll } from '@material-ui/icons';
-import { TabContext, TabPanel } from '@material-ui/lab';
+import Box from '@material-ui/core/Box';
+import Fade from '@material-ui/core/Fade';
+import Tab from '@material-ui/core/Tab';
+import Tabs from '@material-ui/core/Tabs';
+
+import { withStyles } from '@material-ui/core';
+
+import { Edit, Mouse, SelectAll } from '@material-ui/icons';
 
 const MiniTabs = withStyles({
   root: {
     minHeight: 0,
+  },
+  flexContainer: {
+    gap: 16,
   },
   indicator: {
     display: 'none',
@@ -28,20 +26,13 @@ const MiniTabs = withStyles({
 const MiniTab = withStyles({
   root: {
     minHeight: 0,
-    padding: '0 8px',
+    padding: 0,
   },
   wrapper: {
     flexDirection: 'row',
     gap: 4,
-
-    // '& .MuiSvgIcon-root': {
-    //   width: '0.75em',
-    //   height: '0.75em',
-    //
-    //   margin: 0,
-    // },
   },
-})((props) => <Tab disableRipple {...props} />);
+})((props) => <Tab {...props} />);
 
 const InteractionHint = ({
   keys,
@@ -50,12 +41,12 @@ const InteractionHint = ({
   <span>
     {keys.map((k) => (
       <kbd key={k}>{k}</kbd>
-    ))}
+    ))}{' '}
     <span>{action}</span>
   </span>
 );
 
-const InteractionHints = () => {
+const InteractionHints = (): JSX.Element => {
   const categories = [
     {
       title: 'Navigation',
@@ -89,96 +80,31 @@ const InteractionHints = () => {
   const [active, setActive] = useState(0);
 
   return (
-    <Box display='flex'>
-      <Box>
-        <TabContext>
-          <MiniTabs value={active}>
-            {categories.map(({ icon: Icon, title }, i) => (
-              <MiniTab
-                icon={<Icon fontSize='small' style={{ margin: 0 }} />}
-                key={title}
-                label={title}
-                onMouseOver={() => setActive(i)}
-              />
+    <Box height={48}>
+      <MiniTabs value={active}>
+        {categories.map(({ icon: Icon, title }, i) => (
+          <MiniTab
+            key={title}
+            icon={<Icon fontSize='small' style={{ margin: 0 }} />}
+            label={title}
+            onMouseOver={() => {
+              setActive(i);
+            }}
+          />
+        ))}
+      </MiniTabs>
+
+      {categories.map((c, i) => (
+        <Fade key={c.title} in={active === i}>
+          <Box position='absolute' display='flex' sx={{ gap: 16 }}>
+            {c.hints.map((h) => (
+              <InteractionHint key={h.keys.join('+')} {...h} />
             ))}
-          </MiniTabs>
-
-          {categories.map((c, i) => (
-            // <TabPanel key={c.title} value={c.title}>
-            <Fade key={c.title} in={active === i}>
-              <Box position='absolute' display='flex' sx={{ gap: 16 }}>
-                {c.hints.map((h) => (
-                  <InteractionHint key={h.keys.join('+')} {...h} />
-                ))}
-              </Box>
-            </Fade>
-            // </TabPanel>
-          ))}
-        </TabContext>
-
-        {/* <Box display='flex' sx={{ gap: 8 }}> */}
-        {/*   {categories.map((c, i) => ( */}
-        {/*     <Typography */}
-        {/*       key={c.title} */}
-        {/*       variant='subtitle2' */}
-        {/*       onMouseOver={() => { */}
-        {/*         setActive(i); */}
-        {/*       }} */}
-        {/*       sx={{ textDecoration: 'underline' }} */}
-        {/*     > */}
-        {/*       {c.title} */}
-        {/*     </Typography> */}
-        {/*   ))} */}
-        {/* </Box> */}
-
-        {/* <Box> */}
-        {/*   {categories.map((c, i) => ( */}
-        {/*     <Collapse key={c.title} in={active === i}> */}
-        {/*       {c.hints.map((h) => ( */}
-        {/*         <InteractionHint key={h.keys.join('+')} {...h} /> */}
-        {/*       ))} */}
-        {/*     </Collapse> */}
-        {/*   ))} */}
-        {/* </Box> */}
-      </Box>
+          </Box>
+        </Fade>
+      ))}
     </Box>
   );
 };
-
-// const interactionHints = (
-//   <Box display='flex'>
-//     <IconButton disabled>
-//       <Mouse />
-//     </IconButton>
-//     <Box display='flex'>
-//       <Box display='flex' alignItems='center' style={{ gap: 8 }}>
-//         <Typography variant='subtitle2'>Navigation</Typography>
-//         <Box>
-//           <InteractionHint keys={['Drag']} action='Pan' />
-//           <InteractionHint keys={['Scroll']} action='Zoom' />
-//           <InteractionHint keys={['Shift', 'Alt', 'Drag']} action='Rotate' />
-//         </Box>
-//       </Box>
-//       <Divider style={{ margin: '4px 0px' }} />
-//       <Box display='flex' alignItems='center' style={{ gap: 8 }}>
-//         <Typography variant='subtitle2'>Selection</Typography>
-//         <Box>
-//           <InteractionHint keys={['Click']} action='Select' />
-//           <InteractionHint keys={['Ctrl', 'Click']} action='Toggle selection' />
-//           <InteractionHint keys={['Shift', 'Drag']} action='Box select' />
-//           <InteractionHint keys={['Alt', 'Drag']} action='Box unselect' />
-//         </Box>
-//       </Box>
-//       <Divider style={{ margin: '4px 0px' }} />
-//       <Box display='flex' alignItems='center' style={{ gap: 8 }}>
-//         <Typography variant='subtitle2'>Manipulation</Typography>
-//         <Box>
-//           <InteractionHint keys={['Drag']} action='Move selection' />
-//           <InteractionHint keys={['Alt', 'Drag']} action='Rotate selection' />
-//         </Box>
-//       </Box>
-//     </Box>
-//   </Box>
-// );
 
 export default InteractionHints;
