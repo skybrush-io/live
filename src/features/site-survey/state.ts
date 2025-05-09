@@ -44,6 +44,9 @@ type AdaptResultOrStatus = AdaptResult | { error: string } | { loading: true };
 export type SiteSurveyState = {
   open: boolean;
   selection: Identifier[];
+  settings: {
+    dronesVisible: boolean;
+  };
   showData?: ShowData;
   adaptResult?: AdaptResultOrStatus;
 };
@@ -51,6 +54,9 @@ export type SiteSurveyState = {
 const initialState: SiteSurveyState = {
   open: false,
   selection: EMPTY_ARRAY,
+  settings: {
+    dronesVisible: true,
+  },
   showData: undefined,
   adaptResult: undefined,
 };
@@ -77,15 +83,19 @@ const { reducer, actions } = createSlice({
      * The dialog must always be explicitly initialized with the desired
      * data by the user after it is opened.
      */
-    closeDialog() {
+    closeDialog(state) {
       // Not only close the dialog, but also reset all the stored data.
       // The dialog should always be explicitly initialized by the user
       // after it is opened.
-      return initialState;
+      // Keep the settings, though.
+      return { ...initialState, settings: { ...state.settings } };
     },
 
     // -- Selection
 
+    /**
+     * Updates the selection.
+     */
     updateSelection(
       state,
       action: PayloadAction<{
@@ -107,6 +117,15 @@ const { reducer, actions } = createSlice({
       }
     },
 
+    // -- Settings
+
+    /**
+     * Sets whether the drones are visible.
+     */
+    setDronesVisible(state, action: PayloadAction<boolean>) {
+      state.settings.dronesVisible = action.payload;
+    },
+
     // -- Intitialization
 
     /**
@@ -119,6 +138,11 @@ const { reducer, actions } = createSlice({
 
     // -- Show adapt
 
+    /**
+     * Stores the given show adapt result.
+     *
+     * If `undefined`, the result is cleared.
+     */
     setAdaptResult(
       state,
       action: PayloadAction<AdaptResultOrStatus | undefined>
@@ -307,6 +331,7 @@ export const {
   rotateShow,
   setAdaptResult,
   showDialog,
+  setDronesVisible,
   updateSelection,
 } = actions;
 

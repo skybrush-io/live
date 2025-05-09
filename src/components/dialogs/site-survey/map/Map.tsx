@@ -30,6 +30,7 @@ import ShowInfoLayerPresentation, {
   orientationMarker,
 } from '~/components/map/layers/ShowInfoLayer';
 import { FeaturesLayer } from '~/components/map/layers/features';
+import { UAVsLayer, type UAVsLayerProps } from '~/components/map/layers/uavs';
 import { noMark } from '~/components/map/layers/utils';
 import { Tool } from '~/components/map/tools';
 import {
@@ -40,6 +41,7 @@ import {
   getConvexHullOfShowInWorldCoordinates,
   getHomePositionsInWorldCoordinates,
   getSelection,
+  getVisibleLayersInOrder,
   selectApproximateConvexHullOfFullShowInWorldCoordinates,
   selectConvexHullMarkerData,
   type ConvexHullMarkerData,
@@ -53,10 +55,13 @@ import {
   NET_CONVEX_HULL_AREA_ID,
 } from '~/model/identifiers';
 import { getVisibleSelectableLayers, LayerType } from '~/model/layers';
-import { getVisibleLayersInOrder } from '~/selectors/ordered';
 import type { AppDispatch, RootState } from '~/store/reducers';
 import type { Identifier } from '~/utils/collections';
 import { findFeaturesById } from '~/utils/geography';
+import { EMPTY_ARRAY } from '~/utils/redux';
+// TODO(vp): try to move or generalize this component
+// to get rid of the `~/views` import.
+import ActiveUAVsLayerSource from '~/views/map/sources/ActiveUAVsLayerSource';
 
 // === Layers ===
 
@@ -124,6 +129,16 @@ const layerComponents = {
     <FeaturesLayer {...props} layerRefHandler={noMark} />
   ),
   [LayerType.MISSION_INFO]: ConnectedShowInfoLayer,
+  [LayerType.UAVS]: (
+    props: Omit<UAVsLayerProps, 'LayerSource' | 'selection'>
+  ) => (
+    <UAVsLayer
+      {...props}
+      LayerSource={ActiveUAVsLayerSource}
+      selection={EMPTY_ARRAY}
+      labelHidden
+    />
+  ),
 };
 
 const mapControlSettings: Partial<MapControlDisplaySettings> = {

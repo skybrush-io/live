@@ -16,6 +16,8 @@ import type { Latitude, Longitude, LonLat } from '~/utils/geography';
 import { convexHull2D, type Coordinate2D, getCentroid } from '~/utils/math';
 import { EMPTY_ARRAY } from '~/utils/redux';
 
+import { Layer, LayerType } from '~/model/layers';
+import { getVisibleLayersInOrder as _getVisibleLayersInOrder } from '~/selectors/ordered';
 import type { AdaptResult, ShowData, SiteSurveyState } from './state';
 
 const _defaultCoordinateSystem: ShowData['coordinateSystem'] = {
@@ -28,8 +30,20 @@ const selectSiteSurveyState: AppSelector<SiteSurveyState> = (
   state: RootState
 ) => state.dialogs.siteSurvey;
 
-export const isSiteSurveyDialogOpen: AppSelector<boolean> = (state) =>
-  state.dialogs.siteSurvey.open;
+export const isSiteSurveyDialogOpen: AppSelector<boolean> = createSelector(
+  selectSiteSurveyState,
+  (state) => state.open
+);
+
+const selectSettings = createSelector(
+  selectSiteSurveyState,
+  (state) => state.settings
+);
+
+export const selectDronesVisible: AppSelector<boolean> = createSelector(
+  selectSettings,
+  (settings) => settings.dronesVisible
+);
 
 const selectShowData = createSelector(
   selectSiteSurveyState,
@@ -217,3 +231,37 @@ export const selectApproximateConvexHullOfFullShowInWorldCoordinates =
     getOutdoorShowToWorldCoordinateSystemTransformation,
     positionsToWorldCoordinatesCombiner
   );
+
+export const getVisibleLayersInOrder = createSelector(
+  _getVisibleLayersInOrder,
+  selectDronesVisible,
+  (layers, dronesVisible): Layer[] => {
+    let uavsLayer: Layer = {
+      id: 'site-survey-uavs',
+      type: LayerType.UAVS,
+      label: 'UAVs',
+      visible: true,
+      parameters: {},
+    };
+    const result = layers.filter((layer) => {
+      if (layer.type === LayerType.UAVS) {
+        uavsLayer = layer;
+        return false;
+      }
+      return true;
+    });
+
+    if (!dronesVisible) {
+      return result;
+    }
+
+    const targetLayers = new Set([
+      LayerType.BASE,
+      LayerType.GRATICULE,
+      LayerType.TILE_SERVER,
+    ]);
+    const targetIndex = result.findLastIndex((l) => targetLayers.has(l.type));
+    result.splice(targetIndex + 1, 0, uavsLayer);
+    return result;
+  }
+);
