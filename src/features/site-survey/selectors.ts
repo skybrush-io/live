@@ -232,10 +232,17 @@ export const selectApproximateConvexHullOfFullShowInWorldCoordinates =
     positionsToWorldCoordinatesCombiner
   );
 
+/**
+ * Returns the layers that should be shown in the dialog in bottom-first order.
+ *
+ * The UAVs layer (if visible) will always be above the base map layers, but
+ * below all other layers.
+ */
 export const getVisibleLayersInOrder = createSelector(
   _getVisibleLayersInOrder,
   selectDronesVisible,
   (layers, dronesVisible): Layer[] => {
+    // The default UAVs layer that'll be used if `layers` doesn't contain one.
     let uavsLayer: Layer = {
       id: 'site-survey-uavs',
       type: LayerType.UAVS,
@@ -243,24 +250,30 @@ export const getVisibleLayersInOrder = createSelector(
       visible: true,
       parameters: {},
     };
+    // All the visible layers except UAVs.
     const result = layers.filter((layer) => {
       if (layer.type === LayerType.UAVS) {
+        // Use the found UAVs layer instead of the default one.
         uavsLayer = layer;
         return false;
       }
       return true;
     });
 
+    // If drones are not visible, we can return the filtered layers array.
     if (!dronesVisible) {
       return result;
     }
 
+    // Some of the base layers that should be below the UAVs layer.
     const targetLayers = new Set([
       LayerType.BASE,
       LayerType.GRATICULE,
       LayerType.TILE_SERVER,
     ]);
+    // The index of the last base layer, that should be below the UAVs layer.
     const targetIndex = result.findLastIndex((l) => targetLayers.has(l.type));
+    // Insert the UAVs layer at the right place.
     result.splice(targetIndex + 1, 0, uavsLayer);
     return result;
   }
