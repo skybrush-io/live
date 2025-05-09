@@ -136,9 +136,11 @@
       "back": "Back",
       "cancel": "Cancel",
       "clear": "Clear",
+      "click": "Click",
       "close": "Close",
       "delete": "Delete",
       "discard": "Discard",
+      "drag": "Drag",
       "edit": "Edit",
       "export": "Export",
       "import": "Import",
@@ -560,6 +562,24 @@
         "origin": "A show origin must be included or set manually",
         "segments": "The show must be annotated with segment markers",
         "server": "Connection must be established to the server"
+      },
+      "interactionHints": {
+        "action": {
+          "boxSelect": "Box select",
+          "boxUnselect": "Box unselect",
+          "moveSelection": "Move selection",
+          "pan": "Pan",
+          "rotate": "Rotate",
+          "rotateSelection": "Rotate selection",
+          "select": "Select",
+          "toggleSelect": "Toggle select",
+          "zoom": "Zoom"
+        },
+        "category": {
+          "manipulation": "Manipulation",
+          "navigation": "Navigation",
+          "selection": "Selection"
+        }
       }
     },
     "startMethod": {

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import Box from '@material-ui/core/Box';
 import Fade from '@material-ui/core/Fade';
@@ -12,32 +13,61 @@ import Edit from '@material-ui/icons/Edit';
 import Mouse from '@material-ui/icons/Mouse';
 import SelectAll from '@material-ui/icons/SelectAll';
 
+import { tt } from '~/i18n';
+
 const CATEGORIES = [
   {
-    title: 'Navigation',
+    title: tt('show.siteSurvey.interactionHints.category.navigation'),
     icon: Mouse, // TODO: Maybe `PanTool` instead?
     hints: [
-      { keys: ['Drag'], action: 'Pan' },
-      { keys: ['Scroll'], action: 'Zoom' },
-      { keys: ['Shift', 'Alt', 'Drag'], action: 'Rotate' },
+      {
+        keys: ['Drag'],
+        action: tt('show.siteSurvey.interactionHints.action.pan'),
+      },
+      {
+        keys: ['Scroll'],
+        action: tt('show.siteSurvey.interactionHints.action.zoom'),
+      },
+      {
+        keys: ['Shift', 'Alt', 'Drag'],
+        action: tt('show.siteSurvey.interactionHints.action.rotate'),
+      },
     ],
   },
   {
-    title: 'Selection',
+    title: tt('show.siteSurvey.interactionHints.category.selection'),
     icon: SelectAll,
     hints: [
-      { keys: ['Click'], action: 'Select' },
-      { keys: ['Ctrl', 'Click'], action: 'Toggle selection' },
-      { keys: ['Shift', 'Drag'], action: 'Box select' },
-      { keys: ['Alt', 'Drag'], action: 'Box unselect' },
+      {
+        keys: ['Click'],
+        action: tt('show.siteSurvey.interactionHints.action.select'),
+      },
+      {
+        keys: ['Ctrl', 'Click'],
+        action: tt('show.siteSurvey.interactionHints.action.toggleSelect'),
+      },
+      {
+        keys: ['Shift', 'Drag'],
+        action: tt('show.siteSurvey.interactionHints.action.boxSelect'),
+      },
+      {
+        keys: ['Alt', 'Drag'],
+        action: tt('show.siteSurvey.interactionHints.action.boxUnselect'),
+      },
     ],
   },
   {
-    title: 'Manipulation',
+    title: tt('show.siteSurvey.interactionHints.category.manipulation'),
     icon: Edit,
     hints: [
-      { keys: ['Drag'], action: 'Move selection' },
-      { keys: ['Alt', 'Drag'], action: 'Rotate selection' },
+      {
+        keys: ['Drag'],
+        action: tt('show.siteSurvey.interactionHints.action.moveSelection'),
+      },
+      {
+        keys: ['Alt', 'Drag'],
+        action: tt('show.siteSurvey.interactionHints.action.rotateSelection'),
+      },
     ],
   },
 ];
@@ -95,6 +125,7 @@ const InteractionHint = ({
 );
 
 const InteractionHints = (): JSX.Element => {
+  const { t } = useTranslation();
   const [active, setActive] = useState(0);
 
   return (
@@ -103,9 +134,9 @@ const InteractionHints = (): JSX.Element => {
         {/* eslint-disable-next-line @typescript-eslint/naming-convention */}
         {CATEGORIES.map(({ icon: Icon, title }, i) => (
           <MiniTab
-            key={title}
+            key={title(t)}
             icon={<Icon fontSize='small' style={{ margin: 0 }} />}
-            label={title}
+            label={title(t)}
             onMouseOver={() => {
               setActive(i);
             }}
@@ -114,10 +145,14 @@ const InteractionHints = (): JSX.Element => {
       </MiniTabs>
 
       {CATEGORIES.map((c, i) => (
-        <Fade key={c.title} in={active === i}>
+        <Fade key={c.title(t)} in={active === i}>
           <Box position='absolute' display='flex' style={{ gap: 16 }}>
             {c.hints.map((h) => (
-              <InteractionHint key={h.keys.join('+')} {...h} />
+              <InteractionHint
+                key={h.keys.join('+')}
+                keys={h.keys}
+                action={h.action(t)}
+              />
             ))}
           </Box>
         </Fade>
