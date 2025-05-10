@@ -51,7 +51,7 @@ const useStyles = makeStyles((theme) => ({
   },
   contentRoot: {
     flex: 1,
-    minHeight: '80vh',
+    minHeight: 'calc(100vh - 256px)',
     position: 'relative',
   },
   contentItem: {
