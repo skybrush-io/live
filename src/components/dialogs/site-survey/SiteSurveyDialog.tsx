@@ -3,6 +3,7 @@ import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import DialogActions from '@material-ui/core/DialogActions';
 import type { TFunction } from 'i18next';
+import { Base64 } from 'js-base64';
 import React, { useCallback, useState } from 'react';
 import { withTranslation } from 'react-i18next';
 import { batch, connect } from 'react-redux';
@@ -180,7 +181,16 @@ function useOwnState(props: Props) {
       setStage('config');
       closeDialog();
     }
-  }, [adaptParameters, closeDialog, stage, submitDisabled]);
+  }, [
+    adaptParameters,
+    adaptShow,
+    adaptedBase64Show,
+    approveAdaptedShow,
+    closeDialog,
+    coordinateSystem,
+    stage,
+    submitDisabled,
+  ]);
 
   return {
     adaptedBase64Show,
@@ -195,7 +205,7 @@ function useOwnState(props: Props) {
   };
 }
 
-function SiteSurveyDialog(props: Props) {
+const SiteSurveyDialog = (props: Props): JSX.Element => {
   const { adaptedBase64Show, backDisabled, open, t } = props;
   const styles = useStyles();
   const { adaptParameters, back, stage, submit, submitDisabled } =
@@ -236,6 +246,7 @@ function SiteSurveyDialog(props: Props) {
           content={t(`siteSurveyDialog.help.${stage}`)
             .split('\n')
             .map((item, idx) => (
+              // eslint-disable-next-line react/no-array-index-key
               <p key={idx}>{item}</p>
             ))}
         />
@@ -254,12 +265,13 @@ function SiteSurveyDialog(props: Props) {
               if (submitDisabled || !adaptedBase64Show) {
                 return;
               }
+
               await writeBlobToFile(
                 new Blob([
                   Uint8Array.from(
-                    atob(adaptedBase64Show)
+                    Base64.atob(adaptedBase64Show)
                       .split('')
-                      .map((char) => char.charCodeAt(0))
+                      .map((char) => char.codePointAt(0))
                   ),
                 ]),
                 'adapted-show.skyc'
@@ -277,7 +289,7 @@ function SiteSurveyDialog(props: Props) {
       </DialogActions>
     </DraggableDialog>
   );
-}
+};
 
 /**
  * Wrapper that only renders the dialog when it is open.
