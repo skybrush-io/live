@@ -1,14 +1,14 @@
 import { FormControlLabel, makeStyles, Switch } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import Paper from '@material-ui/core/Paper';
 import type { TFunction } from 'i18next';
+import { Base64 } from 'js-base64';
 import React, { useCallback, useState } from 'react';
 import { withTranslation } from 'react-i18next';
 import { batch, connect } from 'react-redux';
 
+import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
 import type { ValidationSettings } from '@skybrush/show-format';
 
 import DialogHelpIcon from '~/components/DialogHelpIcon';
@@ -37,32 +37,54 @@ import {
 } from '~/features/site-survey/state';
 import type { AppDispatch, RootState } from '~/store/reducers';
 import { writeBlobToFile } from '~/utils/filesystem';
-import { LonLat } from '~/utils/geography';
+import { type LonLat } from '~/utils/geography';
 
 import AdaptParametersForm, {
   useAdaptParametersFormState,
 } from './AdaptParametersForm';
 import AdaptReviewForm from './AdaptReviewForm';
+import InteractionHints from './InteractionHints';
 import Map from './map';
+import Separator from '~/components/chat/Separator';
+import ToolbarDivider from '~/components/ToolbarDivider';
 
 const useStyles = makeStyles((theme) => ({
-  contentRoot: {
-    display: 'grid',
-    gridTemplateColumns: '1fr auto',
-    gap: theme.spacing(2),
+  /* Ugly hack to move the sidebar to the right */
+  root: {
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    '& div.MuiDialog-paper > div > div:first-child': {
+      order: 100,
+      boxShadow: '2px 0 6px -2px inset rgba(0, 0, 0, 0.54)',
+    },
   },
-  sidebar: {
-    padding: theme.spacing(1),
-    overflow: 'auto',
+  contentRoot: {
+    flex: 1,
+    minHeight: 'calc(100vh - 256px)',
+    position: 'relative',
+  },
+  contentItem: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
   },
   mainContent: {
     padding: theme.spacing(1),
   },
+  shadowOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    boxShadow: '-1px 0 6px 2px inset rgba(0, 0, 0, 0.54)',
+    pointerEvents: 'none',
+    zIndex: 10,
+  },
 }));
 
-const paperElevation = 2;
-
-type DispatchProps = {
+type DispatchProps = Readonly<{
   adaptShow: (parameters: ShowAdaptParameters) => void;
   approveAdaptedShow: (
     base64Blob: string,
@@ -72,21 +94,22 @@ type DispatchProps = {
   closeDialog: () => void;
   resetAdaptResult: () => void;
   setDronesVisible: (value: boolean) => void;
-};
+}>;
 
-type StateProps = {
+type StateProps = Readonly<{
   adaptedBase64Show: string | undefined;
   backDisabled: boolean;
   coordinateSystem: OutdoorCoordinateSystemWithOrigin;
   open: boolean;
   validationSettings: ValidationSettings | undefined;
   dronesVisible: boolean;
-};
+}>;
 
 type Props = StateProps &
-  DispatchProps & {
+  DispatchProps &
+  Readonly<{
     t: TFunction;
-  };
+  }>;
 
 type AdaptStage = 'config' | 'review';
 
@@ -150,6 +173,7 @@ function useOwnState(props: Props) {
       if (adaptedBase64Show === undefined) {
         adaptShow(adaptParameters.parameters);
       }
+
       setStage('review');
     } else if (stage === 'review') {
       if (adaptedBase64Show === undefined) {
@@ -166,7 +190,16 @@ function useOwnState(props: Props) {
       setStage('config');
       closeDialog();
     }
-  }, [adaptParameters, closeDialog, stage, submitDisabled]);
+  }, [
+    adaptParameters,
+    adaptShow,
+    adaptedBase64Show,
+    approveAdaptedShow,
+    closeDialog,
+    coordinateSystem,
+    stage,
+    submitDisabled,
+  ]);
 
   return {
     adaptedBase64Show,
@@ -181,7 +214,7 @@ function useOwnState(props: Props) {
   };
 }
 
-function SiteSurveyDialog(props: Props) {
+const SiteSurveyDialog = (props: Props): JSX.Element => {
   const {
     adaptedBase64Show,
     backDisabled,
@@ -195,23 +228,14 @@ function SiteSurveyDialog(props: Props) {
     useOwnState(props);
 
   return (
-    <Dialog fullScreen open={open}>
-      <DialogContent className={styles.contentRoot}>
-        <Paper
-          className={styles.mainContent}
-          elevation={paperElevation}
-          style={stage === 'config' ? undefined : hiddenStyle}
-        >
-          <Map />
-        </Paper>
-        <Paper
-          className={styles.mainContent}
-          elevation={paperElevation}
-          style={stage === 'review' ? undefined : hiddenStyle}
-        >
-          <AdaptReviewForm />
-        </Paper>
-        <Paper className={styles.sidebar} elevation={paperElevation}>
+    <DraggableDialog
+      fullWidth
+      className={styles.root}
+      maxWidth='xl'
+      title={t('siteSurveyDialog.title')}
+      open={open}
+      sidebarComponents={
+        <>
           <AdaptParametersForm
             {...adaptParameters}
             disabled={stage !== 'config'}
@@ -225,17 +249,38 @@ function SiteSurveyDialog(props: Props) {
             }
             label={t('siteSurveyDialog.settings.dronesVisible')}
           />
-        </Paper>
-      </DialogContent>
+        </>
+      }
+      onClose={props.closeDialog}
+    >
+      <Box className={styles.contentRoot}>
+        <Box
+          className={styles.contentItem}
+          style={stage === 'config' ? undefined : hiddenStyle}
+        >
+          <Map />
+        </Box>
+        <Box
+          className={styles.contentItem}
+          style={stage === 'review' ? undefined : hiddenStyle}
+        >
+          <AdaptReviewForm />
+        </Box>
+        <Box className={styles.shadowOverlay} />
+      </Box>
       <DialogActions>
         <DialogHelpIcon
           content={t(`siteSurveyDialog.help.${stage}`)
             .split('\n')
             .map((item, idx) => (
+              // eslint-disable-next-line react/no-array-index-key
               <p key={idx}>{item}</p>
             ))}
         />
-        <Button onClick={back} disabled={backDisabled}>
+        <ToolbarDivider orientation='vertical' />
+        <InteractionHints />
+        <Box flex={1} />
+        <Button disabled={backDisabled} onClick={back}>
           {stage === 'review'
             ? t('general.action.back')
             : t('general.action.close')}
@@ -248,12 +293,13 @@ function SiteSurveyDialog(props: Props) {
               if (submitDisabled || !adaptedBase64Show) {
                 return;
               }
+
               await writeBlobToFile(
                 new Blob([
                   Uint8Array.from(
-                    atob(adaptedBase64Show)
+                    Base64.atob(adaptedBase64Show)
                       .split('')
-                      .map((char) => char.charCodeAt(0))
+                      .map((char) => char.codePointAt(0))
                   ),
                 ]),
                 'adapted-show.skyc'
@@ -269,9 +315,9 @@ function SiteSurveyDialog(props: Props) {
             : t('siteSurveyDialog.action.adapt')}
         </Button>
       </DialogActions>
-    </Dialog>
+    </DraggableDialog>
   );
-}
+};
 
 /**
  * Wrapper that only renders the dialog when it is open.
@@ -279,10 +325,11 @@ function SiteSurveyDialog(props: Props) {
  * The reason for this is to correctly initialize the dialog's state
  * when it is opened.
  */
-function SiteSurveyDialogWrapper(props: Props) {
+// eslint-disable-next-line @typescript-eslint/ban-types
+const SiteSurveyDialogWrapper = (props: Props): JSX.Element | null => {
   const { open, ...rest } = props;
   return open ? <SiteSurveyDialog open {...rest} /> : null;
-}
+};
 
 const ConnectedSiteSurveyDialogWrapper = connect(
   // -- map state to props
@@ -298,20 +345,29 @@ const ConnectedSiteSurveyDialogWrapper = connect(
   }),
   // -- map dispatch to props
   (dispatch: AppDispatch) => ({
-    adaptShow: (params: ShowAdaptParameters) => dispatch(adaptShow(params)),
+    adaptShow: (params: ShowAdaptParameters): void => {
+      dispatch(adaptShow(params));
+    },
     approveAdaptedShow: (
       base64Blob: string,
       showOrigin: LonLat,
       showOrientation: string
-    ) =>
-      batch(() => {
+    ): void => {
+      batch((): void => {
         dispatch(setOutdoorShowOrigin(showOrigin));
         dispatch(setOutdoorShowOrientation(showOrientation));
         dispatch(loadBase64EncodedShow(base64Blob));
-      }),
-    closeDialog: () => dispatch(closeDialog()),
-    resetAdaptResult: () => dispatch(setAdaptResult(undefined)),
-    setDronesVisible: (value: boolean) => dispatch(setDronesVisible(value)),
+      });
+    },
+    closeDialog: (): void => {
+      dispatch(closeDialog());
+    },
+    resetAdaptResult: (): void => {
+      dispatch(setAdaptResult(undefined));
+    },
+    setDronesVisible: (value: boolean) => {
+      dispatch(setDronesVisible(value));
+    }
   })
 )(withTranslation()(SiteSurveyDialogWrapper));
 

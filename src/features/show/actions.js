@@ -1,3 +1,4 @@
+import { Base64 } from 'js-base64';
 import ky from 'ky';
 import get from 'lodash-es/get';
 import sum from 'lodash-es/sum';
@@ -296,9 +297,9 @@ export const loadBase64EncodedShow = createShowLoaderThunkFactory(
   async (base64Blob) => {
     const { showSpec } = await processFile(
       Uint8Array.from(
-        atob(base64Blob)
+        Base64.atob(base64Blob)
           .split('')
-          .map((char) => char.charCodeAt(0))
+          .map((char) => char.codePointAt(0))
       )
     );
     // Pre-freeze the show data shallowly to give a hint to Redux Toolkit that
