@@ -16,6 +16,8 @@ import type { Latitude, Longitude, LonLat } from '~/utils/geography';
 import { convexHull2D, type Coordinate2D, getCentroid } from '~/utils/math';
 import { EMPTY_ARRAY } from '~/utils/redux';
 
+import { Layer, LayerType } from '~/model/layers';
+import { getVisibleLayersInOrder as _getVisibleLayersInOrder } from '~/selectors/ordered';
 import type { AdaptResult, ShowData, SiteSurveyState } from './state';
 
 const _defaultCoordinateSystem: ShowData['coordinateSystem'] = {
@@ -28,8 +30,20 @@ const selectSiteSurveyState: AppSelector<SiteSurveyState> = (
   state: RootState
 ) => state.dialogs.siteSurvey;
 
-export const isSiteSurveyDialogOpen: AppSelector<boolean> = (state) =>
-  state.dialogs.siteSurvey.open;
+export const isSiteSurveyDialogOpen: AppSelector<boolean> = createSelector(
+  selectSiteSurveyState,
+  (state) => state.open
+);
+
+const selectSettings = createSelector(
+  selectSiteSurveyState,
+  (state) => state.settings
+);
+
+export const selectDronesVisible: AppSelector<boolean> = createSelector(
+  selectSettings,
+  (settings) => settings.dronesVisible
+);
 
 const selectShowData = createSelector(
   selectSiteSurveyState,
@@ -217,3 +231,51 @@ export const selectApproximateConvexHullOfFullShowInWorldCoordinates =
     getOutdoorShowToWorldCoordinateSystemTransformation,
     positionsToWorldCoordinatesCombiner
   );
+
+/**
+ * Returns the layers that should be shown in the dialog in bottom-first order.
+ *
+ * The UAVs layer (if visible) will always be above the base map layers
+ * (see `targetLayers` in the code), but below all other layers.
+ */
+export const getVisibleLayersInOrder = createSelector(
+  _getVisibleLayersInOrder,
+  selectDronesVisible,
+  (layers, dronesVisible): Layer[] => {
+    // The default UAVs layer that'll be used if `layers` doesn't contain one.
+    let uavsLayer: Layer = {
+      id: 'site-survey-uavs',
+      type: LayerType.UAVS,
+      label: 'UAVs',
+      visible: true,
+      parameters: {},
+    };
+    // All the visible layers except UAVs.
+    const result = layers.filter((layer) => {
+      if (layer.type === LayerType.UAVS) {
+        // Use the found UAVs layer instead of the default one.
+        uavsLayer = layer;
+        return false;
+      }
+      return true;
+    });
+
+    // If drones are not visible, we can return the filtered layers array.
+    if (!dronesVisible) {
+      return result;
+    }
+
+    // Some of the base layers that should be below the UAVs layer.
+    const targetLayers = new Set([
+      LayerType.BASE,
+      LayerType.GRATICULE,
+      LayerType.TILE_SERVER,
+      LayerType.FEATURES,
+    ]);
+    // The index of the last base layer, that should be below the UAVs layer.
+    const targetIndex = result.findLastIndex((l) => targetLayers.has(l.type));
+    // Insert the UAVs layer at the right place.
+    result.splice(targetIndex + 1, 0, uavsLayer);
+    return result;
+  }
+);

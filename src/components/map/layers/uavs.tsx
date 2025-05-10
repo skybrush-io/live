@@ -56,6 +56,7 @@ type UAVsLayerSourceProps = {
   labelColor?: string;
   flock: FlockModel;
   projection?: CoordinateTransformationFunction;
+  labelHidden?: boolean;
 };
 
 export type UAVsLayerProps = {
@@ -64,6 +65,7 @@ export type UAVsLayerProps = {
   selection: Identifier[];
   projection?: CoordinateTransformationFunction;
   zIndex?: number;
+  labelHidden?: boolean;
 };
 
 export const UAVsLayer = ({
@@ -72,6 +74,7 @@ export const UAVsLayer = ({
   projection = mapViewCoordinateFromLonLat,
   selection,
   zIndex,
+  labelHidden,
 }: UAVsLayerProps) => (
   <olLayer.Vector updateWhileAnimating updateWhileInteracting zIndex={zIndex}>
     <LayerSource
@@ -81,6 +84,7 @@ export const UAVsLayer = ({
       }
       flock={flock}
       projection={projection}
+      labelHidden={labelHidden}
     />
   </olLayer.Vector>
 );

@@ -5,14 +5,13 @@
 import Feature from 'ol/Feature';
 import { Fill, Icon, Style, Text } from 'ol/style';
 
-import { toRadians } from '~/utils/math';
-
+import SelectionGlow from '~/../assets/img/drone-selection-glow.png';
 import DroneImage from '~/../assets/img/drone-x-black-32x32.png';
+import DroneImageError from '~/../assets/img/drone-x-black-error-32x32.png';
 import DroneImageInfo from '~/../assets/img/drone-x-black-info-32x32.png';
 import DroneImageWarning from '~/../assets/img/drone-x-black-warning-32x32.png';
-import DroneImageError from '~/../assets/img/drone-x-black-error-32x32.png';
-import SelectionGlow from '~/../assets/img/drone-selection-glow.png';
 import { Severity } from '~/model/enums';
+import { toRadians } from '~/utils/math';
 
 const droneImages = {
   [Severity.INFO]: DroneImageInfo,
@@ -32,8 +31,9 @@ export default class UAVFeature extends Feature {
    * @param  {Object}  geometryOrProperties  the geometry that the feature represents
    *         or a properties object for the feature. This is passed on intact
    *         to the superclass but the style will be overwritten.
+   * @param  {boolean|undefined} hideLabel  whether to hide the label of the UAV
    */
-  constructor(uavId, geometryOrProperties) {
+  constructor(uavId, geometryOrProperties, hideLabel = undefined) {
     super(geometryOrProperties);
 
     this._selected = false;
@@ -41,6 +41,7 @@ export default class UAVFeature extends Feature {
     this._labelColor = '';
     this._heading = 0;
     this._status = null;
+    this._hideLabel = hideLabel ?? false;
 
     this.uavId = uavId;
     this._setupStyle();
@@ -190,21 +191,23 @@ export default class UAVFeature extends Feature {
 
     // Label
 
-    const labelStyle = new Style({
-      text: new Text({
-        fill: new Fill({
-          color:
-            this._labelColor && this._labelColor.length > 0
-              ? this._labelColor
-              : 'black',
+    if (!this._hideLabel) {
+      const labelStyle = new Style({
+        text: new Text({
+          fill: new Fill({
+            color:
+              this._labelColor && this._labelColor.length > 0
+                ? this._labelColor
+                : 'black',
+          }),
+          font: '12px sans-serif',
+          offsetY: 24,
+          text: this.uavId || 'undefined',
+          textAlign: 'center',
         }),
-        font: '12px sans-serif',
-        offsetY: 24,
-        text: this.uavId || 'undefined',
-        textAlign: 'center',
-      }),
-    });
-    styles.push(labelStyle);
+      });
+      styles.push(labelStyle);
+    }
 
     this.setStyle(styles);
   }

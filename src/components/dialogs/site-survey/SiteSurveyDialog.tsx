@@ -1,4 +1,4 @@
-import { makeStyles } from '@material-ui/core';
+import { FormControlLabel, makeStyles, Switch } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -27,9 +27,14 @@ import {
   isSiteSurveyDialogOpen,
   selectAdaptedShowAsBase64String,
   selectCoordinateSystem,
+  selectDronesVisible,
   selectIsShowAdaptInProgress,
 } from '~/features/site-survey/selectors';
-import { closeDialog, setAdaptResult } from '~/features/site-survey/state';
+import {
+  closeDialog,
+  setAdaptResult,
+  setDronesVisible,
+} from '~/features/site-survey/state';
 import type { AppDispatch, RootState } from '~/store/reducers';
 import { writeBlobToFile } from '~/utils/filesystem';
 import { type LonLat } from '~/utils/geography';
@@ -88,6 +93,7 @@ type DispatchProps = Readonly<{
   ) => void;
   closeDialog: () => void;
   resetAdaptResult: () => void;
+  setDronesVisible: (value: boolean) => void;
 }>;
 
 type StateProps = Readonly<{
@@ -96,6 +102,7 @@ type StateProps = Readonly<{
   coordinateSystem: OutdoorCoordinateSystemWithOrigin;
   open: boolean;
   validationSettings: ValidationSettings | undefined;
+  dronesVisible: boolean;
 }>;
 
 type Props = StateProps &
@@ -208,7 +215,14 @@ function useOwnState(props: Props) {
 }
 
 const SiteSurveyDialog = (props: Props): JSX.Element => {
-  const { adaptedBase64Show, backDisabled, open, t } = props;
+  const {
+    adaptedBase64Show,
+    backDisabled,
+    dronesVisible,
+    setDronesVisible,
+    open,
+    t,
+  } = props;
   const styles = useStyles();
   const { adaptParameters, back, stage, submit, submitDisabled } =
     useOwnState(props);
@@ -221,10 +235,21 @@ const SiteSurveyDialog = (props: Props): JSX.Element => {
       title={t('siteSurveyDialog.title')}
       open={open}
       sidebarComponents={
-        <AdaptParametersForm
-          {...adaptParameters}
-          disabled={stage !== 'config'}
-        />
+        <>
+          <AdaptParametersForm
+            {...adaptParameters}
+            disabled={stage !== 'config'}
+          />
+          <FormControlLabel
+            control={
+              <Switch
+                checked={dronesVisible}
+                onChange={(event) => setDronesVisible(event.target.checked)}
+              />
+            }
+            label={t('siteSurveyDialog.settings.dronesVisible')}
+          />
+        </>
       }
       onClose={props.closeDialog}
     >
@@ -312,6 +337,7 @@ const ConnectedSiteSurveyDialogWrapper = connect(
     adaptedBase64Show: selectAdaptedShowAsBase64String(state),
     backDisabled: selectIsShowAdaptInProgress(state),
     coordinateSystem: selectCoordinateSystem(state),
+    dronesVisible: selectDronesVisible(state),
     open: isSiteSurveyDialogOpen(state),
     // Take validation settings directly from the loaded show.
     // We'll copy that to the dialog's state when necessary.
@@ -339,6 +365,9 @@ const ConnectedSiteSurveyDialogWrapper = connect(
     resetAdaptResult: (): void => {
       dispatch(setAdaptResult(undefined));
     },
+    setDronesVisible: (value: boolean) => {
+      dispatch(setDronesVisible(value));
+    }
   })
 )(withTranslation()(SiteSurveyDialogWrapper));
 
