@@ -78,9 +78,12 @@ const CATEGORIES = [
 const MiniTabs = withStyles((theme) => ({
   root: {
     minHeight: 0,
+    color: theme.palette.text.primary,
+    marginTop: -theme.spacing(0.25),
+    paddingBottom: theme.spacing(0.5),
   },
   flexContainer: {
-    gap: 16,
+    gap: theme.spacing(2),
   },
   indicator: {
     height: 0,
@@ -89,26 +92,27 @@ const MiniTabs = withStyles((theme) => ({
     '&::after': {
       content: '""',
       display: 'block',
-      marginTop: '-4px',
-      marginLeft: '24px',
-      borderBottom: `1px solid ${theme.palette.text.secondary}`,
+      marginTop: -theme.spacing(0.5),
+      marginLeft: theme.spacing(3),
+      borderBottom: `2px solid ${theme.palette.text.secondary}`,
     },
   },
 }))(Tabs);
 
-const MiniTab = withStyles((theme) => ({
+const MiniTab = withStyles({
   root: {
     minHeight: 0,
     padding: 0,
+    opacity: 1,
   },
   wrapper: {
     flexDirection: 'row',
     gap: 4,
   },
   selected: {
-    color: theme.palette.text.secondary,
+    background: 'gradient(linear, 0deg, #0000 0%, #f000 100%)',
   },
-}))(Tab);
+})(Tab);
 
 const InteractionHint = ({
   keys,
