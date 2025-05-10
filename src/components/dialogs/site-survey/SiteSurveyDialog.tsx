@@ -40,6 +40,8 @@ import AdaptParametersForm, {
 import AdaptReviewForm from './AdaptReviewForm';
 import InteractionHints from './InteractionHints';
 import Map from './map';
+import Separator from '~/components/chat/Separator';
+import ToolbarDivider from '~/components/ToolbarDivider';
 
 const useStyles = makeStyles((theme) => ({
   /* Ugly hack to move the sidebar to the right */
@@ -250,6 +252,7 @@ const SiteSurveyDialog = (props: Props): JSX.Element => {
               <p key={idx}>{item}</p>
             ))}
         />
+        <ToolbarDivider orientation='vertical' />
         <InteractionHints />
         <Box flex={1} />
         <Button disabled={backDisabled} onClick={back}>
