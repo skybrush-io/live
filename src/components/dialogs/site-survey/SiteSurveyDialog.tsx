@@ -72,6 +72,12 @@ const useStyles = makeStyles((theme) => ({
   mainContent: {
     padding: theme.spacing(1),
   },
+  sidebarContent: {
+    display: 'flex',
+    flexDirection: 'column',
+    padding: theme.spacing(2),
+    gap: theme.spacing(2),
+  },
   shadowOverlay: {
     position: 'absolute',
     top: 0,
@@ -235,7 +241,7 @@ const SiteSurveyDialog = (props: Props): JSX.Element => {
       title={t('siteSurveyDialog.title')}
       open={open}
       sidebarComponents={
-        <>
+        <Box className={styles.sidebarContent}>
           <AdaptParametersForm
             {...adaptParameters}
             disabled={stage !== 'config'}
@@ -249,7 +255,7 @@ const SiteSurveyDialog = (props: Props): JSX.Element => {
             }
             label={t('siteSurveyDialog.settings.dronesVisible')}
           />
-        </>
+        </Box>
       }
       onClose={props.closeDialog}
     >
@@ -367,7 +373,7 @@ const ConnectedSiteSurveyDialogWrapper = connect(
     },
     setDronesVisible: (value: boolean) => {
       dispatch(setDronesVisible(value));
-    }
+    },
   })
 )(withTranslation()(SiteSurveyDialogWrapper));
 

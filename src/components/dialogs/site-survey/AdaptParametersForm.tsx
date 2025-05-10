@@ -158,7 +158,7 @@ function AdaptParametersForm(props: Props) {
   });
   const styles = useStyles();
   return (
-    <Box p={2}>
+    <Box>
       <FormGroup className={styles.formGroup}>
         <FormHeader>{t('section.parameters')}</FormHeader>
         <SimpleDistanceField
