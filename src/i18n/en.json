@@ -629,6 +629,9 @@
       }
     },
     "adaptReview": {
+      "button": {
+        "reviewInViewer": "Review in Skybrush Viewer"
+      },
       "error": {
         "invalidState": "Invalid state, please try again."
       },

@@ -57,6 +57,7 @@ function parseVelocityMpS(value: string): number {
   return Number.parseFloat(value);
 }
 
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export function useAdaptParametersFormState(
   defaultParameters?: OptionalShowAdaptParameters,
   onChange?: () => void
@@ -137,11 +138,13 @@ export function useAdaptParametersFormState(
   };
 }
 
-type Props = ReturnType<typeof useAdaptParametersFormState> & {
-  disabled: boolean;
-};
+type Props = Readonly<
+  ReturnType<typeof useAdaptParametersFormState> & {
+    disabled: boolean;
+  }
+>;
 
-function AdaptParametersForm(props: Props) {
+const AdaptParametersForm = (props: Props): JSX.Element => {
   const {
     disabled,
     parameters,
@@ -163,40 +166,40 @@ function AdaptParametersForm(props: Props) {
           min={0.1}
           max={100}
           value={parameters.minDistance}
-          onChange={onMinDistanceChanged}
           disabled={disabled}
           helperText={t('form.minDistance.help')}
+          onChange={onMinDistanceChanged}
         />
         <SimpleDistanceField
           label={t('form.altitude.label')}
           min={1}
           max={100}
           value={parameters.altitude}
-          onChange={onAltitudeChanged}
           disabled={disabled}
           helperText={t('form.altitude.help')}
+          onChange={onAltitudeChanged}
         />
         <SimpleVelocityField
           label={t('form.horizontalVelocity.label')}
           min={0.1}
           max={100}
           value={parameters.horizontalVelocity}
-          onChange={onHorizontalVelocityChanged}
           disabled={disabled}
           helperText={t('form.horizontalVelocity.help')}
+          onChange={onHorizontalVelocityChanged}
         />
         <SimpleVelocityField
           label={t('form.verticalVelocity.label')}
           min={0.1}
           max={100}
           value={parameters.verticalVelocity}
-          onChange={onVerticalVelocityChanged}
           disabled={disabled}
           helperText={t('form.verticalVelocity.help')}
+          onChange={onVerticalVelocityChanged}
         />
       </FormGroup>
     </Box>
   );
-}
+};
 
 export default AdaptParametersForm;

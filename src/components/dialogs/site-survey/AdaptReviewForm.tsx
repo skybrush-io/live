@@ -1,8 +1,9 @@
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { makeStyles } from '@material-ui/core/styles';
+import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
-import React, { ReactNode } from 'react';
+import React, { type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
@@ -31,13 +32,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-type AdaptReviewFormProps = {
+type AdaptReviewFormProps = Readonly<{
   adaptResult: AdaptResult | undefined;
   error: string | undefined;
   isShowAdaptInProgress: boolean;
-};
+}>;
 
-function AdaptReviewForm(props: AdaptReviewFormProps) {
+const AdaptReviewForm = (props: AdaptReviewFormProps): JSX.Element => {
   const { adaptResult, error, isShowAdaptInProgress } = props;
   const { t } = useTranslation(undefined, {
     keyPrefix: 'siteSurveyDialog.adaptReview',
@@ -48,33 +49,44 @@ function AdaptReviewForm(props: AdaptReviewFormProps) {
     content = (
       <>
         {t('showAdaptInProgress')}
-        <CircularProgress size={20} />
+        <CircularProgress />
       </>
     );
   } else if (adaptResult) {
     content = (
-      <div className={styles.reviewGrid}>
-        <Typography variant='body1'>
-          {t('form.takeoff.lengthChange')}
-        </Typography>
-        <Typography
-          variant='body1'
-          color={adaptResult.takeoffLengthChange !== 0 ? 'error' : 'primary'}
+      <>
+        <div className={styles.reviewGrid}>
+          <Typography variant='body1'>
+            {t('form.takeoff.lengthChange')}
+          </Typography>
+          <Typography
+            variant='body1'
+            color={adaptResult.takeoffLengthChange === 0 ? 'primary' : 'error'}
+          >
+            {t('form.takeoff.lengthChangeValue', {
+              value: adaptResult.takeoffLengthChange,
+            })}
+          </Typography>
+          <Typography variant='body1'>{t('form.rth.lengthChange')}</Typography>
+          <Typography
+            variant='body1'
+            color={adaptResult.rthLengthChange === 0 ? 'primary' : 'error'}
+          >
+            {t('form.rth.lengthChangeValue', {
+              value: adaptResult.rthLengthChange,
+            })}
+          </Typography>
+        </div>
+        <Button
+          variant='contained'
+          color='primary'
+          onClick={() => {
+            // Handle the button click
+          }}
         >
-          {t('form.takeoff.lengthChangeValue', {
-            value: adaptResult.takeoffLengthChange,
-          })}
-        </Typography>
-        <Typography variant='body1'>{t('form.rth.lengthChange')}</Typography>
-        <Typography
-          variant='body1'
-          color={adaptResult.rthLengthChange !== 0 ? 'error' : 'primary'}
-        >
-          {t('form.rth.lengthChangeValue', {
-            value: adaptResult.rthLengthChange,
-          })}
-        </Typography>
-      </div>
+          {t('button.reviewInViewer')}
+        </Button>
+      </>
     );
   } else {
     content = (
@@ -86,7 +98,7 @@ function AdaptReviewForm(props: AdaptReviewFormProps) {
   }
 
   return <div className={styles.centered}>{content}</div>;
-}
+};
 
 const ConnectedAdaptReviewForm = connect((state: RootState) => ({
   isShowAdaptInProgress: selectIsShowAdaptInProgress(state),
