@@ -33,14 +33,11 @@ const useStyles = makeStyles((theme) => ({
  * Returns whether the given adapt parameters are valid.
  */
 function adaptParametersValid(parameters: ShowAdaptParameters): boolean {
+  // No need to check for NaN because NaN > 0 is always false.
   return (
-    !isNaN(parameters.minDistance) &&
     parameters.minDistance > 0 &&
-    !isNaN(parameters.altitude) &&
     parameters.altitude > 0 &&
-    !isNaN(parameters.verticalVelocity) &&
     parameters.verticalVelocity > 0 &&
-    !isNaN(parameters.horizontalVelocity) &&
     parameters.horizontalVelocity > 0
   );
 }
