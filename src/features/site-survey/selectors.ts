@@ -19,6 +19,7 @@ import { EMPTY_ARRAY } from '~/utils/redux';
 import { type Layer, LayerType } from '~/model/layers';
 import { getVisibleLayersInOrder as _getVisibleLayersInOrder } from '~/selectors/ordered';
 import type { AdaptResult, ShowData, SiteSurveyState } from './state';
+import { Base64 } from 'js-base64';
 
 const _defaultCoordinateSystem: ShowData['coordinateSystem'] = {
   type: 'nwu',
@@ -155,6 +156,17 @@ export const selectAdaptResult: AppSelector<AdaptResult | undefined> =
 
 export const selectAdaptedShowAsBase64String: AppSelector<string | undefined> =
   createSelector(selectAdaptResult, (result) => result?.show);
+
+export const selectAdaptedShowAsUint8Array: AppSelector<
+  Uint8Array | undefined
+> = createSelector(selectAdaptedShowAsBase64String, (result) =>
+  result ? Base64.toUint8Array(result) : undefined
+);
+
+export const selectAdaptedShowAsBlob: AppSelector<Blob | undefined> =
+  createSelector(selectAdaptedShowAsUint8Array, (result) =>
+    result ? new Blob([result]) : undefined
+  );
 
 export const {
   getConvexHullOfShow,

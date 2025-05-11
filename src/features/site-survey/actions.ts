@@ -17,7 +17,12 @@ import type { Identifier } from '~/utils/collections';
 import type { EasNor, Easting, Northing } from '~/utils/geography';
 import { toDegrees } from '~/utils/math';
 
-import { getHomePositions, selectCoordinateSystem } from './selectors';
+import {
+  getHomePositions,
+  selectAdaptedShowAsBlob,
+  selectAdaptedShowAsUint8Array,
+  selectCoordinateSystem,
+} from './selectors';
 import {
   moveHomePositionsByMapCoordinateDelta,
   moveOutdoorShowOriginByMapCoordinateDelta,
@@ -25,6 +30,12 @@ import {
   rotateShow,
   setAdaptResult,
 } from './state';
+import type { App } from 'electron';
+import { writeBlobToFile } from '~/utils/filesystem';
+import { writeBufferToTemporaryFile } from '~/desktop/launcher/filesystem.mjs';
+import { showError } from '../snackbar/actions';
+import { errorToString } from '~/error-handling';
+import { fi } from 'date-fns/locale';
 
 // -- Transformations
 
@@ -165,6 +176,7 @@ export const updateModifiedFeatures = (
 ): void =>
   // Using batch will not be necessary after upgrading to React 18.
   // See https://react-redux.js.org/api/batch
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   batch((): void => {
     // -- Reset adapt result
     dispatch(setAdaptResult(undefined));
@@ -232,12 +244,14 @@ export const adaptShow =
     const positions = getHomePositions(state);
     const coordinateSystem = selectCoordinateSystem(state);
 
+    /* eslint-disable @typescript-eslint/naming-convention */
     const common = {
       min_distance: params.minDistance,
       velocity_xy: params.horizontalVelocity,
       velocity_z: params.verticalVelocity,
-  replace: true,
+      replace: true,
     };
+    /* eslint-enable @typescript-eslint/naming-convention */
     const transformations = [
       {
         type: 'takeoff',
@@ -277,3 +291,62 @@ export const adaptShow =
       dispatch(setAdaptResult({ error: errorMessage }));
     }
   };
+
+export const reviewInViewer = (): AppThunk => async (dispatch, getState) => {
+  const { bridge } = window;
+  if (!bridge) {
+    console.warn('This action is available only when running in Electron');
+    return;
+  }
+
+  const { removeTemporaryFile, writeBufferToTemporaryFile } = bridge;
+  const show = selectAdaptedShowAsBlob(getState());
+  if (!show) {
+    console.warn('No adapted show available');
+    return;
+  }
+
+  let filename: string | undefined;
+  try {
+    try {
+      filename = await writeBufferToTemporaryFile(await show.arrayBuffer(), {
+        extension: 'skyc',
+      });
+    } catch (error) {
+      dispatch(
+        showError(
+          errorToString(
+            error,
+            'Error while saving adapted show to a temporary file'
+          )
+        )
+      );
+    }
+
+    if (filename) {
+      try {
+        await bridge.openPath(filename);
+      } catch (error) {
+        dispatch(
+          showError(
+            errorToString(
+              error,
+              'Error while opening adapted show in Skybrush Viewer'
+            )
+          )
+        );
+      }
+    }
+  } finally {
+    if (filename) {
+      await removeTemporaryFile(filename);
+    }
+  }
+};
+
+export const saveAdaptedShow = (): AppThunk => async (_dispatch, getState) => {
+  const adaptedBase64Show = selectAdaptedShowAsBlob(getState());
+  if (adaptedBase64Show) {
+    await writeBlobToFile(adaptedBase64Show, 'adapted-show.skyc');
+  }
+};

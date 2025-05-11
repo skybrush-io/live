@@ -13,14 +13,13 @@ type WriteOptions = Electron.SaveDialogOptions;
  *
  * Not supported in the browser at the moment.
  *
- * @param {object} options  additional options to pass on to the Electron open
+ * @param options  additional options to pass on to the Electron open
  *        file dialog when running in Electron, except <code>maxSize</code>,
  *        which is treated as an upper limit on the size of the file being
  *        picked (defaults to 1M)
  *        NOTE: When running in the browser, these options are currently ignored
  *
- * @returns {Promise} a promise that resolves to the contents of the file as a
- *          blob
+ * @returns a promise that resolves to the contents of the file as a blob
  */
 export const readBlobFromFile = async ({
   maxSize,

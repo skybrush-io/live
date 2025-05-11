@@ -41,6 +41,7 @@ function createSSDPClient(callback) {
   if (callback) {
     client.on('response', callback);
   }
+
   return {
     search: client.search.bind(client),
   };
@@ -157,6 +158,8 @@ contextBridge.exposeInMainWorld('bridge', {
     terminate: localServerModule.terminate,
   },
 
+  openPath: async (path) => ipc.callMain('openPath', path),
+
   provideActions: receiveActionsFromRenderer,
   provideSubscriptions: receiveSubscriptionsFromRenderer,
   reverseDNSLookup,
@@ -169,6 +172,13 @@ contextBridge.exposeInMainWorld('bridge', {
    */
   readBufferFromFile: async (options) =>
     ipc.callMain('readBufferFromFile', options),
+
+  /**
+   * Removes the given temporary file from the disk. The file must have been
+   * created earlier by the main process.
+   */
+  removeTemporaryFile: async (filename) =>
+    ipc.callMain('removeTemporaryFile', filename),
 
   /**
    * Starts watching the file with the given name for changes and calls a
@@ -202,6 +212,16 @@ contextBridge.exposeInMainWorld('bridge', {
       preferredFilename,
       options,
     }),
+
+  /**
+   * Writes the given array buffer to a temporary file, returning the name of the
+   * file in which the buffer is stored.
+   *
+   * @param {object} buffer  the buffer containing the data to save to a
+   *        temporary file
+   */
+  writeBufferToTemporaryFile: async (buffer, options) =>
+    ipc.callMain('writeBufferToTemporaryFile', { buffer, options }),
 });
 
 // Set up IPC channels that we are going to listen to

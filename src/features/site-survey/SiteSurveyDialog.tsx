@@ -6,7 +6,6 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
 import { makeStyles } from '@material-ui/core/styles';
 import type { TFunction } from 'i18next';
-import { Base64 } from 'js-base64';
 import React, { useCallback, useState } from 'react';
 import { withTranslation } from 'react-i18next';
 import { batch, connect } from 'react-redux';
@@ -24,10 +23,13 @@ import {
 } from '~/features/show/slice';
 import type { OutdoorCoordinateSystemWithOrigin } from '~/features/show/types';
 import type { AppDispatch, RootState } from '~/store/reducers';
-import { writeBlobToFile } from '~/utils/filesystem';
 import { type LonLat } from '~/utils/geography';
 
-import { adaptShow, type ShowAdaptParameters } from './actions';
+import {
+  adaptShow,
+  saveAdaptedShow,
+  type ShowAdaptParameters,
+} from './actions';
 import {
   isSiteSurveyDialogOpen,
   selectAdaptedShowAsBase64String,
@@ -98,6 +100,7 @@ type DispatchProps = Readonly<{
   ) => void;
   closeDialog: () => void;
   resetAdaptResult: () => void;
+  saveAdaptedShow: () => void;
   setDronesVisible: (value: boolean) => void;
 }>;
 
@@ -225,6 +228,7 @@ const SiteSurveyDialog = (props: Props): JSX.Element => {
     adaptedBase64Show,
     backDisabled,
     dronesVisible,
+    saveAdaptedShow,
     setDronesVisible,
     open,
     t,
@@ -291,14 +295,7 @@ const SiteSurveyDialog = (props: Props): JSX.Element => {
           <Button
             color='primary'
             disabled={submitDisabled}
-            onClick={async () => {
-              if (adaptedBase64Show) {
-                await writeBlobToFile(
-                  new Blob([Base64.toUint8Array(adaptedBase64Show)]),
-                  'adapted-show.skyc'
-                );
-              }
-            }}
+            onClick={saveAdaptedShow}
           >
             {t('general.action.save')}
           </Button>
@@ -358,6 +355,9 @@ const ConnectedSiteSurveyDialogWrapper = connect(
     },
     resetAdaptResult: (): void => {
       dispatch(setAdaptResult(undefined));
+    },
+    saveAdaptedShow: (): void => {
+      dispatch(saveAdaptedShow());
     },
     setDronesVisible: (value: boolean): void => {
       dispatch(setDronesVisible(value));

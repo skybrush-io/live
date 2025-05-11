@@ -1,14 +1,22 @@
+import type { FileOptions } from 'tempy';
+
 export type Bridge = {
   createTCPSocket: unknown;
-  readBufferFromFile: (options: {
+  openPath: (path: string) => Promise<void>;
+  readBufferFromFile: (options?: {
     maxSize?: number;
     dialogOptions?: Electron.OpenDialogOptions;
   }) => Promise<Uint8Array>;
+  removeTemporaryFile: (path: string) => Promise<void>;
   writeBufferToFile: (
     buffer: ArrayBuffer,
     preferredFilename: string,
-    options: Electron.SaveDialogOptions
+    options?: Electron.SaveDialogOptions
   ) => Promise<void>;
+  writeBufferToTemporaryFile: (
+    buffer: ArrayBuffer,
+    options?: FileOptions
+  ) => Promise<string>;
 };
 
 declare global {

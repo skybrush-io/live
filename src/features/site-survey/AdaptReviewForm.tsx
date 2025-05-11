@@ -15,6 +15,7 @@ import {
   selectShowAdaptError,
 } from './selectors';
 import type { AdaptResult } from './state';
+import { reviewInViewer } from './actions';
 
 const useStyles = makeStyles((theme) => ({
   centered: {
@@ -37,10 +38,11 @@ type AdaptReviewFormProps = Readonly<{
   adaptResult: AdaptResult | undefined;
   error: string | undefined;
   isShowAdaptInProgress: boolean;
+  reviewInViewer: () => void;
 }>;
 
 const AdaptReviewForm = (props: AdaptReviewFormProps): JSX.Element => {
-  const { adaptResult, error, isShowAdaptInProgress } = props;
+  const { adaptResult, error, isShowAdaptInProgress, reviewInViewer } = props;
   const { t } = useTranslation(undefined, {
     keyPrefix: 'siteSurveyDialog.adaptReview',
   });
@@ -78,15 +80,17 @@ const AdaptReviewForm = (props: AdaptReviewFormProps): JSX.Element => {
             })}
           </Typography>
         </div>
-        <Button
-          variant='contained'
-          color='primary'
-          onClick={() => {
-            // Handle the button click
-          }}
-        >
-          {t('button.reviewInViewer')}
-        </Button>
+        {window.bridge && (
+          <Button
+            variant='contained'
+            color='primary'
+            onClick={() => {
+              reviewInViewer();
+            }}
+          >
+            {t('button.reviewInViewer')}
+          </Button>
+        )}
       </>
     );
   } else {
@@ -101,10 +105,17 @@ const AdaptReviewForm = (props: AdaptReviewFormProps): JSX.Element => {
   return <div className={styles.centered}>{content}</div>;
 };
 
-const ConnectedAdaptReviewForm = connect((state: RootState) => ({
-  isShowAdaptInProgress: selectIsShowAdaptInProgress(state),
-  error: selectShowAdaptError(state),
-  adaptResult: selectAdaptResult(state),
-}))(AdaptReviewForm);
+const ConnectedAdaptReviewForm = connect(
+  // mapStateToProps
+  (state: RootState) => ({
+    isShowAdaptInProgress: selectIsShowAdaptInProgress(state),
+    error: selectShowAdaptError(state),
+    adaptResult: selectAdaptResult(state),
+  }),
+  // mapDispatchToProps
+  {
+    reviewInViewer,
+  }
+)(AdaptReviewForm);
 
 export default ConnectedAdaptReviewForm;
