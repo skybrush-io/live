@@ -2,6 +2,12 @@ import { saveAs } from 'file-saver';
 
 import { getFileFromUser, readFileAsArrayBuffer } from './files';
 
+type ReadOptions = {
+  maxSize?: number;
+} & Electron.OpenDialogOptions;
+
+type WriteOptions = Electron.SaveDialogOptions;
+
 /**
  * Allows the user to pick a file, then reads the contents of the file as a blob.
  *
@@ -16,13 +22,16 @@ import { getFileFromUser, readFileAsArrayBuffer } from './files';
  * @returns {Promise} a promise that resolves to the contents of the file as a
  *          blob
  */
-export const readBlobFromFile = async ({ maxSize, ...dialogOptions } = {}) =>
+export const readBlobFromFile = async ({
+  maxSize,
+  ...dialogOptions
+}: ReadOptions = {}): Promise<Blob> =>
   new Blob(
     [
       (await window?.bridge?.readBufferFromFile({ maxSize, dialogOptions })) ??
         // TODO: Pass the relevant subset of options, e.g. filters -> accept,
         //       multiSelections -> multiple, openDirectory -> webkitdirectory
-        (await readFileAsArrayBuffer(await getFileFromUser())),
+        (await readFileAsArrayBuffer(await getFileFromUser()))!,
     ],
     { type: 'application/octet-stream' }
   );
@@ -30,10 +39,11 @@ export const readBlobFromFile = async ({ maxSize, ...dialogOptions } = {}) =>
 /**
  * Allows the user to pick a file, then reads the contents of the file as text.
  *
- * @returns {Promise} a promise that resolves to the contents of the file as a
- *          string
+ * @returns a promise that resolves to the contents of the file as a string
  */
-export async function readTextFromFile(options) {
+export async function readTextFromFile(
+  options: ReadOptions = {}
+): Promise<string> {
   const blob = await readBlobFromFile(options);
   return blob.text();
 }
@@ -43,14 +53,18 @@ export async function readTextFromFile(options) {
  * file when running in Electron, or showing a standard "Save file" dialog box
  * when running in the browser.
  *
- * @param {blob} blob  the blob to save
- * @param {string} preferredFilename  the preferred filename when running in the browser
- * @param {object} options  additional options to pass on to the Electron save
+ * @param  blob  the blob to save
+ * @param  preferredFilename  the preferred filename when running in the browser
+ * @param  options  additional options to pass on to the Electron save
  *        file dialog when running in Electron
- * @returns {Promise} a promise that resolves when the file was saved
+ * @returns a promise that resolves when the file was saved
  */
-export async function writeBlobToFile(blob, preferredFilename, options = {}) {
-  const { writeBufferToFile } = window?.bridge || {};
+export async function writeBlobToFile(
+  blob: Blob,
+  preferredFilename: string,
+  options: WriteOptions = {}
+): Promise<void> {
+  const { writeBufferToFile } = window?.bridge ?? {};
   if (writeBufferToFile) {
     return writeBufferToFile(
       // we cannot send a blob directly over the context boundary so we send
@@ -60,7 +74,7 @@ export async function writeBlobToFile(blob, preferredFilename, options = {}) {
       options
     );
   } else {
-    return saveAs(blob, preferredFilename);
+    saveAs(blob, preferredFilename);
   }
 }
 
@@ -69,13 +83,17 @@ export async function writeBlobToFile(blob, preferredFilename, options = {}) {
  * file when running in Electron, or showing a standard "Save file" dialog box
  * when running in the browser.
  *
- * @param {string} text  the text to save
- * @param {string} preferredFilename  the preferred filename when running in the browser
- * @param {object} options  additional options to pass on to the Electron save
- *        file dialog when running in Electron
- * @returns {Promise} a promise that resolves when the file was saved
+ * @param text  the text to save
+ * @param preferredFilename  the preferred filename when running in the browser
+ * @param options  additional options to pass on to the Electron save file dialog
+ *        when running in Electron
+ * @returns a promise that resolves when the file was saved
  */
-export function writeTextToFile(text, preferredFilename, options) {
+export async function writeTextToFile(
+  text: string,
+  preferredFilename: string,
+  options: WriteOptions = {}
+): Promise<void> {
   const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
   return writeBlobToFile(blob, preferredFilename, options);
 }
