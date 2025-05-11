@@ -292,20 +292,12 @@ const SiteSurveyDialog = (props: Props): JSX.Element => {
             color='primary'
             disabled={submitDisabled}
             onClick={async () => {
-              if (submitDisabled || !adaptedBase64Show) {
-                return;
+              if (adaptedBase64Show) {
+                await writeBlobToFile(
+                  new Blob([Base64.toUint8Array(adaptedBase64Show)]),
+                  'adapted-show.skyc'
+                );
               }
-
-              await writeBlobToFile(
-                new Blob([
-                  Uint8Array.from(
-                    Base64.atob(adaptedBase64Show)
-                      .split('')
-                      .map((char) => char.codePointAt(0))
-                  ),
-                ]),
-                'adapted-show.skyc'
-              );
             }}
           >
             {t('general.action.save')}

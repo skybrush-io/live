@@ -295,13 +295,7 @@ export const loadShowFromFile = createShowLoaderThunkFactory(
 
 export const loadBase64EncodedShow = createShowLoaderThunkFactory(
   async (base64Blob) => {
-    const { showSpec } = await processFile(
-      Uint8Array.from(
-        Base64.atob(base64Blob)
-          .split('')
-          .map((char) => char.codePointAt(0))
-      )
-    );
+    const { showSpec } = await processFile(Base64.toUint8Array(base64Blob));
     // Pre-freeze the show data shallowly to give a hint to Redux Toolkit that
     // the show content won't change
     return { spec: freeze(showSpec), base64Blob };
