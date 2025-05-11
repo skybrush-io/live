@@ -1,6 +1,5 @@
 import AppSettingsDialog from './app-settings';
 import FeatureEditorDialog from './feature-editor';
-import SiteSurveyDialog from './site-survey';
 
 import AuthenticationDialog from './AuthenticationDialog';
 import DeauthenticationDialog from './DeauthenticationDialog';
@@ -22,7 +21,6 @@ const dialogs = {
   LayerSettingsDialog,
   ServerSettingsDialog,
   SessionExpiryDialog,
-  SiteSurveyDialog,
   SubscriptionDialog,
   TimeSyncDialog,
 };

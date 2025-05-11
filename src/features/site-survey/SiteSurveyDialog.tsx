@@ -15,6 +15,7 @@ import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
 import type { ValidationSettings } from '@skybrush/show-format';
 
 import DialogHelpIcon from '~/components/DialogHelpIcon';
+import ToolbarDivider from '~/components/ToolbarDivider';
 import { loadBase64EncodedShow } from '~/features/show/actions';
 import { getShowValidationSettings } from '~/features/show/selectors';
 import {
@@ -22,34 +23,25 @@ import {
   setOutdoorShowOrigin,
 } from '~/features/show/slice';
 import type { OutdoorCoordinateSystemWithOrigin } from '~/features/show/types';
-import {
-  adaptShow,
-  type ShowAdaptParameters,
-} from '~/features/site-survey/actions';
+import type { AppDispatch, RootState } from '~/store/reducers';
+import { writeBlobToFile } from '~/utils/filesystem';
+import { type LonLat } from '~/utils/geography';
+
+import { adaptShow, type ShowAdaptParameters } from './actions';
 import {
   isSiteSurveyDialogOpen,
   selectAdaptedShowAsBase64String,
   selectCoordinateSystem,
   selectDronesVisible,
   selectIsShowAdaptInProgress,
-} from '~/features/site-survey/selectors';
-import {
-  closeDialog,
-  setAdaptResult,
-  setDronesVisible,
-} from '~/features/site-survey/state';
-import type { AppDispatch, RootState } from '~/store/reducers';
-import { writeBlobToFile } from '~/utils/filesystem';
-import { type LonLat } from '~/utils/geography';
-
+} from './selectors';
+import { closeDialog, setAdaptResult, setDronesVisible } from './state';
 import AdaptParametersForm, {
   useAdaptParametersFormState,
 } from './AdaptParametersForm';
 import AdaptReviewForm from './AdaptReviewForm';
 import InteractionHints from './InteractionHints';
-import Map from './map';
-import Separator from '~/components/chat/Separator';
-import ToolbarDivider from '~/components/ToolbarDivider';
+import Map from './SiteSurveyMap';
 
 const useStyles = makeStyles((theme) => ({
   /* Ugly hack to move the sidebar to the right */

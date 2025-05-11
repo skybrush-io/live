@@ -16,7 +16,7 @@ import type { Latitude, Longitude, LonLat } from '~/utils/geography';
 import { convexHull2D, type Coordinate2D, getCentroid } from '~/utils/math';
 import { EMPTY_ARRAY } from '~/utils/redux';
 
-import { Layer, LayerType } from '~/model/layers';
+import { type Layer, LayerType } from '~/model/layers';
 import { getVisibleLayersInOrder as _getVisibleLayersInOrder } from '~/selectors/ordered';
 import type { AdaptResult, ShowData, SiteSurveyState } from './state';
 
@@ -250,6 +250,7 @@ export const getVisibleLayersInOrder = createSelector(
       visible: true,
       parameters: {},
     };
+
     // All the visible layers except UAVs.
     const result = layers.filter((layer) => {
       if (layer.type === LayerType.UAVS) {
@@ -257,6 +258,7 @@ export const getVisibleLayersInOrder = createSelector(
         uavsLayer = layer;
         return false;
       }
+
       return true;
     });
 

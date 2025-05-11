@@ -555,14 +555,6 @@
     "siteSurvey": {
       "button": "Adapt show to venue",
       "description": "Adjust takeoff grid and show layout if needed",
-      "noShowData": "Show segment data is missing",
-      "prerequisites": {
-        "extension": "The studio extension must be enabled on the server",
-        "loaded": "A show file must be loaded",
-        "origin": "A show origin must be included or set manually",
-        "segments": "The show must be annotated with segment markers",
-        "server": "Connection must be established to the server"
-      },
       "interactionHints": {
         "action": {
           "boxSelect": "Box select",
@@ -580,6 +572,14 @@
           "navigation": "Navigation",
           "selection": "Selection"
         }
+      },
+      "noShowData": "Show segment data is missing",
+      "prerequisites": {
+        "extension": "The studio extension must be enabled on the server",
+        "loaded": "A show file must be loaded",
+        "origin": "A show origin must be included or set manually",
+        "segments": "The show must be annotated with segment markers",
+        "server": "Connection must be established to the server"
       }
     },
     "startMethod": {

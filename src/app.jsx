@@ -34,6 +34,7 @@ import SafetyDialog from './features/safety/SafetyDialog';
 import SavedLocationEditorDialog from './features/saved-locations/SavedLocationEditorDialog';
 import RTKSetupDialog from './features/rtk/RTKSetupDialog';
 import Sidebar from './features/sidebar/Sidebar';
+import SiteSurveyDialog from './features/site-survey/SiteSurveyDialog';
 import ToastNotificationManager from './features/snackbar/ToastNotificationManager';
 import UAVDetailsDialog from './features/uavs/UAVDetailsDialog';
 import UploadDialog from './features/upload/UploadDialog';
@@ -173,7 +174,6 @@ const App = ({ onFirstRender }) => (
       <dialogs.LayerSettingsDialog />
       <dialogs.ServerSettingsDialog />
       {hasTimeLimitedSession && <dialogs.SessionExpiryDialog />}
-      <dialogs.SiteSurveyDialog />
       <dialogs.TimeSyncDialog />
 
       <CoordinateAveragingDialog />
@@ -188,6 +188,7 @@ const App = ({ onFirstRender }) => (
       <RTKSetupDialog />
       <SafetyDialog />
       <SavedLocationEditorDialog />
+      <SiteSurveyDialog />
       <UAVDetailsDialog />
       <UploadDialog />
       <VersionCheckDialog />
@@ -224,7 +225,6 @@ const DragProxy = () => <div className='drag-proxy' />;
 const enhancer = (Component) =>
   class extends React.Component {
     static displayName = 'WorkbenchRoot';
-
     static propTypes = {
       glDragging: PropTypes.bool,
     };

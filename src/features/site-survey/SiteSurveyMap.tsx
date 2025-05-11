@@ -33,20 +33,6 @@ import { FeaturesLayer } from '~/components/map/layers/features';
 import { UAVsLayer, type UAVsLayerProps } from '~/components/map/layers/uavs';
 import { noMark } from '~/components/map/layers/utils';
 import { Tool } from '~/components/map/tools';
-import {
-  updateModifiedFeatures as updateModifiedFeaturesAction,
-  type FeatureUpdateOptions,
-} from '~/features/site-survey/actions';
-import {
-  getConvexHullOfShowInWorldCoordinates,
-  getHomePositionsInWorldCoordinates,
-  getSelection,
-  getVisibleLayersInOrder,
-  selectApproximateConvexHullOfFullShowInWorldCoordinates,
-  selectConvexHullMarkerData,
-  type ConvexHullMarkerData,
-} from '~/features/site-survey/selectors';
-import { updateSelection } from '~/features/site-survey/state';
 import { type GPSPosition } from '~/model/geography';
 import {
   globalIdToAreaId,
@@ -62,6 +48,21 @@ import { EMPTY_ARRAY } from '~/utils/redux';
 // TODO(vp): try to move or generalize this component
 // to get rid of the `~/views` import.
 import ActiveUAVsLayerSource from '~/views/map/sources/ActiveUAVsLayerSource';
+
+import {
+  updateModifiedFeatures as updateModifiedFeaturesAction,
+  type FeatureUpdateOptions,
+} from './actions';
+import {
+  getConvexHullOfShowInWorldCoordinates,
+  getHomePositionsInWorldCoordinates,
+  getSelection,
+  getVisibleLayersInOrder,
+  selectApproximateConvexHullOfFullShowInWorldCoordinates,
+  selectConvexHullMarkerData,
+  type ConvexHullMarkerData,
+} from './selectors';
+import { updateSelection } from './state';
 
 // === Layers ===
 
@@ -123,7 +124,9 @@ const ConnectedShowInfoLayer = connect((state: RootState) => ({
 
 // === Map ===
 
-const layerComponents = {
+const layerComponents: Partial<
+  Record<LayerType, React.ComponentType<LayerProps>>
+> = {
   ...defaultLayerComponent,
   [LayerType.FEATURES]: (props: LayerProps) => (
     <FeaturesLayer {...props} layerRefHandler={noMark} />
@@ -134,9 +137,9 @@ const layerComponents = {
   ) => (
     <UAVsLayer
       {...props}
+      labelHidden
       LayerSource={ActiveUAVsLayerSource}
       selection={EMPTY_ARRAY}
-      labelHidden
     />
   ),
 };

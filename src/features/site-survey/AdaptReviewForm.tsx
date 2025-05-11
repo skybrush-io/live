@@ -7,13 +7,14 @@ import React, { type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
+import type { RootState } from '~/store/reducers';
+
 import {
   selectAdaptResult,
   selectIsShowAdaptInProgress,
   selectShowAdaptError,
-} from '~/features/site-survey/selectors';
-import type { AdaptResult } from '~/features/site-survey/state';
-import type { RootState } from '~/store/reducers';
+} from './selectors';
+import type { AdaptResult } from './state';
 
 const useStyles = makeStyles((theme) => ({
   centered: {

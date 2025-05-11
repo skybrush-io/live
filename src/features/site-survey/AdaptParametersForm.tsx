@@ -10,10 +10,11 @@ import {
   SimpleDistanceField,
   SimpleVelocityField,
 } from '~/components/forms/fields';
+
 import type {
   OptionalShowAdaptParameters,
   ShowAdaptParameters,
-} from '~/features/site-survey/actions';
+} from './actions';
 
 const defaultAdaptParameters: ShowAdaptParameters = {
   minDistance: 2,
