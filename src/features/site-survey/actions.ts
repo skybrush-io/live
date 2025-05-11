@@ -1,9 +1,12 @@
+import delay from 'delay';
 import type { Feature as OLFeature } from 'ol';
 import { ModifyEvent } from 'ol/interaction/Modify';
 import { batch } from 'react-redux';
 
 import type { TransformFeaturesInteractionEvent } from '~/components/map/interactions/TransformFeatures';
+import { errorToString } from '~/error-handling';
 import { getBase64ShowBlob } from '~/features/show/selectors';
+import { showError } from '~/features/snackbar/actions';
 import messageHub from '~/message-hub';
 import {
   GROSS_CONVEX_HULL_AREA_ID,
@@ -14,13 +17,13 @@ import {
 } from '~/model/identifiers';
 import type { AppDispatch, AppThunk } from '~/store/reducers';
 import type { Identifier } from '~/utils/collections';
+import { writeBlobToFile } from '~/utils/filesystem';
 import type { EasNor, Easting, Northing } from '~/utils/geography';
 import { toDegrees } from '~/utils/math';
 
 import {
   getHomePositions,
   selectAdaptedShowAsBlob,
-  selectAdaptedShowAsUint8Array,
   selectCoordinateSystem,
 } from './selectors';
 import {
@@ -30,12 +33,6 @@ import {
   rotateShow,
   setAdaptResult,
 } from './state';
-import type { App } from 'electron';
-import { writeBlobToFile } from '~/utils/filesystem';
-import { writeBufferToTemporaryFile } from '~/desktop/launcher/filesystem.mjs';
-import { showError } from '../snackbar/actions';
-import { errorToString } from '~/error-handling';
-import { fi } from 'date-fns/locale';
 
 // -- Transformations
 
@@ -337,6 +334,8 @@ export const reviewInViewer = (): AppThunk => async (dispatch, getState) => {
         );
       }
     }
+
+    await delay(60000);
   } finally {
     if (filename) {
       await removeTemporaryFile(filename);
