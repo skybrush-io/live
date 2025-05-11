@@ -1,7 +1,10 @@
-import { FormControlLabel, makeStyles, Switch } from '@material-ui/core';
+import Backdrop from '@material-ui/core/Backdrop';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import DialogActions from '@material-ui/core/DialogActions';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Switch from '@material-ui/core/Switch';
+import { makeStyles } from '@material-ui/core/styles';
 import type { TFunction } from 'i18next';
 import { Base64 } from 'js-base64';
 import React, { useCallback, useState } from 'react';
@@ -56,6 +59,10 @@ const useStyles = makeStyles((theme) => ({
       order: 100,
       boxShadow: '2px 0 6px -2px inset rgba(0, 0, 0, 0.54)',
     },
+  },
+  backdrop: {
+    position: 'absolute',
+    zIndex: theme.zIndex.modal + 1,
   },
   contentRoot: {
     flex: 1,
@@ -123,6 +130,7 @@ const hiddenStyle: React.CSSProperties = {
   display: 'none',
 };
 
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 function useOwnState(props: Props) {
   const {
     adaptShow,
@@ -250,7 +258,9 @@ const SiteSurveyDialog = (props: Props): JSX.Element => {
             control={
               <Switch
                 checked={dronesVisible}
-                onChange={(event) => setDronesVisible(event.target.checked)}
+                onChange={(event) => {
+                  setDronesVisible(event.target.checked);
+                }}
               />
             }
             label={t('siteSurveyDialog.settings.dronesVisible')}
@@ -260,18 +270,12 @@ const SiteSurveyDialog = (props: Props): JSX.Element => {
       onClose={props.closeDialog}
     >
       <Box className={styles.contentRoot}>
-        <Box
-          className={styles.contentItem}
-          style={stage === 'config' ? undefined : hiddenStyle}
-        >
+        <Box className={styles.contentItem}>
           <Map />
         </Box>
-        <Box
-          className={styles.contentItem}
-          style={stage === 'review' ? undefined : hiddenStyle}
-        >
+        <Backdrop className={styles.backdrop} open={stage === 'review'}>
           <AdaptReviewForm />
-        </Box>
+        </Backdrop>
         <Box className={styles.shadowOverlay} />
       </Box>
       <DialogActions>
@@ -371,7 +375,7 @@ const ConnectedSiteSurveyDialogWrapper = connect(
     resetAdaptResult: (): void => {
       dispatch(setAdaptResult(undefined));
     },
-    setDronesVisible: (value: boolean) => {
+    setDronesVisible: (value: boolean): void => {
       dispatch(setDronesVisible(value));
     },
   })
