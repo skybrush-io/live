@@ -301,6 +301,5 @@ export const selectAdjustHomePositionsToDronePositionsEnabled = createSelector(
   (homePositions, dronePositions) =>
     homePositions !== undefined &&
     dronePositions.length > 0 &&
-    !dronePositions.includes(undefined) &&
-    dronePositions.length >= homePositions.length
+    !dronePositions.includes(undefined)
 );
