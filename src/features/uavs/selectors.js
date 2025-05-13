@@ -12,8 +12,8 @@ import {
   getGPSBasedHomePositionsInMission,
   getMissionMapping,
   getReverseMissionMapping,
-  getUAVIdsParticipatingInMission,
   getTakeoffHeadingsInMission,
+  getUAVIdsParticipatingInMission,
 } from '~/features/mission/selectors';
 import {
   getDesiredPlacementAccuracyInMeters,
@@ -21,8 +21,8 @@ import {
 } from '~/features/settings/selectors';
 import {
   getFirstPointsOfTrajectories,
-  getShowToFlatEarthCoordinateSystemTransformation,
   getOutdoorShowToWorldCoordinateSystemTransformation,
+  getShowToFlatEarthCoordinateSystemTransformation,
   getTrajectories,
   isShowIndoor,
 } from '~/features/show/selectors';
@@ -36,8 +36,8 @@ import {
   getSeverityOfMostSevereErrorCode,
   Severity,
 } from '~/flockwave/errors';
-import UAVErrorCode from '~/flockwave/UAVErrorCode';
 import { convertRGB565ToCSSNotation } from '~/flockwave/parsing';
+import UAVErrorCode from '~/flockwave/UAVErrorCode';
 import { globalIdToUavId } from '~/model/identifiers';
 import { UAVAge } from '~/model/uav';
 import { selectionForSubset } from '~/selectors/selection';
@@ -75,6 +75,18 @@ export const getUAVById = (state, uavId) => state.uavs.byId[uavId];
 export const getCurrentGPSPositionByUavId = (state, uavId) => {
   const uav = getUAVById(state, uavId);
   return uav ? uav.position : undefined;
+};
+
+/**
+ * Returns the current GPS positions of all active UAVs.
+ *
+ * Technically the returned array may contain `undefined` values, but in
+ * practice it should not happen.
+ */
+export const getCurrentGPSPositionsOfActiveUAVs = (state) => {
+  const activeUAVIds = getActiveUAVIds(state);
+  const uavsById = getUAVIdToStateMapping(state);
+  return activeUAVIds.map((id) => uavsById[id]?.position);
 };
 
 /**
