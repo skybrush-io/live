@@ -22,13 +22,14 @@ export const UAVsLayerSettings = connect(
     dispatch,
     ownProps: Omit<UAVsLayerSettingsProps, 'setLayerParametersById'>
   ) => ({
-    setLayerParameters(parameters: Record<string, any>) {
+    setLayerParameters(parameters: Record<string, any>): void {
       dispatch(setLayerParametersById(ownProps.layerId, parameters));
     },
   })
 )(UAVsLayerSettingsPresentation);
 
 const UAVsLayerPresentation = (props: Omit<UAVsLayerProps, 'LayerSource'>) => (
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   <BaseUAVsLayerPresentation {...props} LayerSource={ActiveUAVsLayerSource} />
 );
 

@@ -1,3 +1,4 @@
+import { Base64 } from 'js-base64';
 import { boundingExtent } from 'ol/extent';
 import { createSelector } from 'reselect';
 
@@ -10,16 +11,16 @@ import {
   positionsToWorldCoordinatesCombiner,
 } from '~/features/show/trajectory-selectors';
 import { isOutdoorCoordinateSystemWithOrigin } from '~/features/show/types';
+import { getCurrentGPSPositionsOfActiveUAVs } from '~/features/uavs/selectors';
 import { type GPSPosition } from '~/model/geography';
+import { type Layer, LayerType } from '~/model/layers';
+import { getVisibleLayersInOrder as _getVisibleLayersInOrder } from '~/selectors/ordered';
 import type { AppSelector, RootState } from '~/store/reducers';
 import type { Latitude, Longitude, LonLat } from '~/utils/geography';
 import { convexHull2D, type Coordinate2D, getCentroid } from '~/utils/math';
 import { EMPTY_ARRAY } from '~/utils/redux';
 
-import { type Layer, LayerType } from '~/model/layers';
-import { getVisibleLayersInOrder as _getVisibleLayersInOrder } from '~/selectors/ordered';
 import type { AdaptResult, ShowData, SiteSurveyState } from './state';
-import { Base64 } from 'js-base64';
 
 const _defaultCoordinateSystem: ShowData['coordinateSystem'] = {
   type: 'nwu',
@@ -292,4 +293,14 @@ export const getVisibleLayersInOrder = createSelector(
     result.splice(targetIndex + 1, 0, uavsLayer);
     return result;
   }
+);
+
+export const selectAdjustHomePositionsToDronePositionsEnabled = createSelector(
+  getHomePositionsInWorldCoordinates,
+  getCurrentGPSPositionsOfActiveUAVs,
+  (homePositions, dronePositions) =>
+    homePositions !== undefined &&
+    dronePositions.length > 0 &&
+    !dronePositions.includes(undefined) &&
+    dronePositions.length >= homePositions.length
 );

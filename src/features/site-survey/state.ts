@@ -13,6 +13,7 @@ import type { Identifier } from '~/utils/collections';
 import {
   type EasNor,
   FlatEarthCoordinateSystem,
+  type LonLat,
   lonLatFromMapViewCoordinate,
   mapViewCoordinateFromLonLat,
   translateLonLatWithMapViewDelta,
@@ -29,7 +30,7 @@ export type ShowData = {
    * That is considered a default home position that we can use for
    * example to reset changes made to this property.
    */
-  homePositions: (Coordinate3D | undefined)[];
+  homePositions: Array<Coordinate3D | undefined>;
   coordinateSystem: OutdoorCoordinateSystemWithOrigin;
 };
 
@@ -104,6 +105,7 @@ const { reducer, actions } = createSlice({
       }>
     ) {
       const { mode, ids } = action.payload;
+      // eslint-disable-next-line unicorn/prefer-switch
       if (mode === 'add') {
         state.selection = updateSelectedIds(state.selection, ids);
       } else if (mode === 'clear') {
@@ -172,7 +174,7 @@ const { reducer, actions } = createSlice({
       }>
     ) {
       if (state.showData === undefined) {
-        console.warn('Cannot move show: no show data.');
+        console.warn('Cannot move home positions: no show data.');
         return;
       }
 
@@ -202,6 +204,41 @@ const { reducer, actions } = createSlice({
           ];
         }
       );
+    },
+
+    /**
+     * Expects an array of home position index - desired position pairs and moves
+     * the specified home positions to the given positions.
+     *
+     * Home positions whose index is not in the array are not moved. The same
+     * applies to home positions whose target poristion is `undefined`.
+     */
+    moveHomePositionsToLonLat(
+      state,
+      action: PayloadAction<Array<[number, LonLat | undefined]>>
+    ) {
+      if (state.showData === undefined) {
+        console.warn('Cannot move home positions: no show data.');
+        return;
+      }
+
+      const earthCS = new FlatEarthCoordinateSystem(
+        state.showData.coordinateSystem
+      );
+
+      for (const [homePositionIndex, newLonLat] of action.payload) {
+        if (newLonLat === undefined) {
+          continue;
+        }
+
+        const newOrigin = earthCS.fromLonLat(newLonLat);
+        const current = state.showData.homePositions[homePositionIndex];
+        state.showData.homePositions[homePositionIndex] = [
+          newOrigin[0],
+          newOrigin[1],
+          current ? current[2] : 0,
+        ];
+      }
     },
 
     /**
@@ -244,6 +281,7 @@ const { reducer, actions } = createSlice({
         console.warn('Cannot rotate home positions: no show data.');
         return;
       }
+
       const { rotationOriginInMapCoordinates, angle, drones } = action.payload;
       const shouldRotateDrone = // Function that returns if a drone should be rotated.
         drones === undefined ? () => true : (index: number) => index in drones;
@@ -326,6 +364,7 @@ export const {
   closeDialog,
   initializeWithData,
   moveHomePositionsByMapCoordinateDelta,
+  moveHomePositionsToLonLat,
   moveOutdoorShowOriginByMapCoordinateDelta,
   rotateHomePositions,
   rotateShow,

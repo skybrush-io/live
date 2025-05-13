@@ -25,25 +25,27 @@ import type { OutdoorCoordinateSystemWithOrigin } from '~/features/show/types';
 import type { AppDispatch, RootState } from '~/store/reducers';
 import { type LonLat } from '~/utils/geography';
 
-import {
-  adaptShow,
-  saveAdaptedShow,
-  type ShowAdaptParameters,
-} from './actions';
-import {
-  isSiteSurveyDialogOpen,
-  selectAdaptedShowAsBase64String,
-  selectCoordinateSystem,
-  selectDronesVisible,
-  selectIsShowAdaptInProgress,
-} from './selectors';
-import { closeDialog, setAdaptResult, setDronesVisible } from './state';
 import AdaptParametersForm, {
   useAdaptParametersFormState,
 } from './AdaptParametersForm';
 import AdaptReviewForm from './AdaptReviewForm';
 import InteractionHints from './InteractionHints';
 import Map from './SiteSurveyMap';
+import {
+  adaptShow,
+  adjustHomePositionsToDronePositions,
+  saveAdaptedShow,
+  type ShowAdaptParameters,
+} from './actions';
+import {
+  isSiteSurveyDialogOpen,
+  selectAdaptedShowAsBase64String,
+  selectAdjustHomePositionsToDronePositionsEnabled,
+  selectCoordinateSystem,
+  selectDronesVisible,
+  selectIsShowAdaptInProgress,
+} from './selectors';
+import { closeDialog, setAdaptResult, setDronesVisible } from './state';
 
 const useStyles = makeStyles((theme) => ({
   /* Ugly hack to move the sidebar to the right */
@@ -93,6 +95,7 @@ const useStyles = makeStyles((theme) => ({
 
 type DispatchProps = Readonly<{
   adaptShow: (parameters: ShowAdaptParameters) => void;
+  adjustHomePositionsToDronePositions: () => void;
   approveAdaptedShow: (
     base64Blob: string,
     showOrigin: LonLat,
@@ -107,6 +110,7 @@ type DispatchProps = Readonly<{
 type StateProps = Readonly<{
   adaptedBase64Show: string | undefined;
   backDisabled: boolean;
+  adjustHomePositionsToDronePositionsEnabled: boolean;
   coordinateSystem: OutdoorCoordinateSystemWithOrigin;
   open: boolean;
   validationSettings: ValidationSettings | undefined;
@@ -225,7 +229,8 @@ function useOwnState(props: Props) {
 
 const SiteSurveyDialog = (props: Props): JSX.Element => {
   const {
-    adaptedBase64Show,
+    adjustHomePositionsToDronePositionsEnabled,
+    adjustHomePositionsToDronePositions,
     backDisabled,
     dronesVisible,
     saveAdaptedShow,
@@ -261,6 +266,15 @@ const SiteSurveyDialog = (props: Props): JSX.Element => {
             }
             label={t('siteSurveyDialog.settings.dronesVisible')}
           />
+          <Button
+            color='primary'
+            disabled={!adjustHomePositionsToDronePositionsEnabled}
+            onClick={() => {
+              adjustHomePositionsToDronePositions();
+            }}
+          >
+            {t('siteSurveyDialog.action.adjustHomePositionsToDronePositions')}
+          </Button>
         </Box>
       }
       onClose={props.closeDialog}
@@ -326,6 +340,8 @@ const ConnectedSiteSurveyDialogWrapper = connect(
   // -- map state to props
   (state: RootState) => ({
     adaptedBase64Show: selectAdaptedShowAsBase64String(state),
+    adjustHomePositionsToDronePositionsEnabled:
+      selectAdjustHomePositionsToDronePositionsEnabled(state),
     backDisabled: selectIsShowAdaptInProgress(state),
     coordinateSystem: selectCoordinateSystem(state),
     dronesVisible: selectDronesVisible(state),
@@ -339,11 +355,15 @@ const ConnectedSiteSurveyDialogWrapper = connect(
     adaptShow: (params: ShowAdaptParameters): void => {
       dispatch(adaptShow(params));
     },
+    adjustHomePositionsToDronePositions: (): void => {
+      dispatch(adjustHomePositionsToDronePositions());
+    },
     approveAdaptedShow: (
       base64Blob: string,
       showOrigin: LonLat,
       showOrientation: string
     ): void => {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
       batch((): void => {
         dispatch(setOutdoorShowOrigin(showOrigin));
         dispatch(setOutdoorShowOrientation(showOrientation));

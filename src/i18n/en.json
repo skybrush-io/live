@@ -603,7 +603,8 @@
   },
   "siteSurveyDialog": {
     "action": {
-      "adapt": "Adapt"
+      "adapt": "Adapt",
+      "adjustHomePositionsToDronePositions": "Fit to drone positions"
     },
     "adaptParameters": {
       "form": {
