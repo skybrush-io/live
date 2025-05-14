@@ -3,6 +3,7 @@ import { boundingExtent } from 'ol/extent';
 import { createSelector } from 'reselect';
 
 import {
+  getEnvironmentFromLoadedShowData,
   getOutdoorShowCoordinateSystem as getOutdoorShowCoordinateSystemFromShow,
   getSwarmSpecificationForShowSegment as getSwarmSpecificationForShowSegmentFromShow,
 } from '~/features/show/selectors';
@@ -16,7 +17,12 @@ import { type GPSPosition } from '~/model/geography';
 import { type Layer, LayerType } from '~/model/layers';
 import { getVisibleLayersInOrder as _getVisibleLayersInOrder } from '~/selectors/ordered';
 import type { AppSelector, RootState } from '~/store/reducers';
-import type { Latitude, Longitude, LonLat } from '~/utils/geography';
+import {
+  type Latitude,
+  type Longitude,
+  type LonLat,
+  toLonLatFromScaledJSON,
+} from '~/utils/geography';
 import { convexHull2D, type Coordinate2D, getCentroid } from '~/utils/math';
 import { EMPTY_ARRAY } from '~/utils/redux';
 
@@ -24,7 +30,7 @@ import type { AdaptResult, ShowData, SiteSurveyState } from './state';
 
 const _defaultCoordinateSystem: ShowData['coordinateSystem'] = {
   type: 'nwu',
-  origin: [19.061951 as Longitude, 47.47334 as Latitude],
+  origin: [0 as Longitude, 0 as Latitude],
   orientation: '0',
 };
 
@@ -101,17 +107,23 @@ export const selectPartialSiteSurveyDataFromShow: AppSelector<
 > = createSelector(
   getSwarmSpecificationForShowSegmentFromShow,
   getOutdoorShowCoordinateSystemFromShow,
-  (showSwarm, showCoordinateSystem) => {
-    return {
-      swarm: showSwarm,
-      coordinateSystem:
-        showCoordinateSystem &&
-        isOutdoorCoordinateSystemWithOrigin(showCoordinateSystem)
-          ? showCoordinateSystem
-          : undefined,
-      homePositions: showSwarm?.drones.map((drone) => drone.settings?.home),
-    };
-  }
+  getEnvironmentFromLoadedShowData,
+  (showSwarm, showCoordinateSystem, loadedShowEnvironment) => ({
+    swarm: showSwarm,
+    coordinateSystem: isOutdoorCoordinateSystemWithOrigin(showCoordinateSystem)
+      ? showCoordinateSystem
+      : loadedShowEnvironment?.location
+        ? {
+            origin: toLonLatFromScaledJSON([
+              loadedShowEnvironment.location.origin[0],
+              loadedShowEnvironment.location.origin[1],
+            ]),
+            orientation: String(loadedShowEnvironment.location.orientation),
+            type: showCoordinateSystem.type,
+          }
+        : undefined,
+    homePositions: showSwarm?.drones.map((drone) => drone.settings?.home),
+  })
 );
 
 /**

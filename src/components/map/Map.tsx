@@ -51,20 +51,15 @@ export const toolClasses: Partial<Record<Tool, string>> = {
   [Tool.EDIT_FEATURE]: 'tool-edit tool-edit-feature',
 };
 
-type ViewProperties = {
-  center: LonLat;
+export type ViewProperties = {
+  angle: number;
+  position: LonLat;
   zoom: number;
-  rotation: number;
-};
-
-export const viewDefaults: ViewProperties = {
-  center: [19.061951 as Longitude, 47.47334 as Latitude],
-  zoom: 17,
-  rotation: 0,
 };
 
 type MapProps = Partial<ViewProperties> & {
   children?: React.ReactNode;
+  mainMapViewProperties: ViewProperties;
 
   // -- Layer configuration
   layers: LayerConfig;
@@ -92,9 +87,10 @@ type MapProps = Partial<ViewProperties> & {
 const Map = (props: MapProps) => {
   const {
     children,
-    center = viewDefaults.center,
-    rotation = viewDefaults.rotation,
-    zoom = viewDefaults.zoom,
+    mainMapViewProperties,
+    angle = mainMapViewProperties.angle,
+    position = mainMapViewProperties.position,
+    zoom = mainMapViewProperties.zoom,
     selectedTool,
     controlSettings = {},
     // TODO(vp): disabled by default, because apparently one of the buttons in
@@ -112,14 +108,14 @@ const Map = (props: MapProps) => {
   const view = useMemo(
     () => (
       <View
-        center={mapViewCoordinateFromLonLat(center)}
-        rotation={(-rotation * Math.PI) / 180}
+        center={mapViewCoordinateFromLonLat(position)}
+        rotation={(-angle * Math.PI) / 180}
         zoom={zoom}
         maxZoom={24}
         constrainRotation={false}
       />
     ),
-    [center, rotation, zoom]
+    [angle, position, zoom]
   );
 
   return (
@@ -148,9 +144,11 @@ const Map = (props: MapProps) => {
 };
 
 const ConnectedMap = connect((state: RootState) => ({
-  center: getMapViewCenterPosition(state),
-  rotation: getMapViewRotationAngle(state),
-  zoom: getMapViewZoom(state),
+  mainMapViewProperties: {
+    angle: getMapViewRotationAngle(state),
+    position: getMapViewCenterPosition(state),
+    zoom: getMapViewZoom(state),
+  },
 }))(Map);
 
 export default ConnectedMap;

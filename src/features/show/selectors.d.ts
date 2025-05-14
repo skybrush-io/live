@@ -82,6 +82,4 @@ export const getConvexHullOfShowSegment: AppSelector<Coordinate2D[]>;
 export const getConvexHullOfShowSegmentInWorldCoordinates: AppSelector<
   GPSPosition[]
 >;
-export const getOutdoorShowCoordinateSystem: AppSelector<
-  OutdoorCoordinateSystem | undefined
->;
+export const getOutdoorShowCoordinateSystem: AppSelector<OutdoorCoordinateSystem>;

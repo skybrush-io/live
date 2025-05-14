@@ -10,6 +10,7 @@ import { connect } from 'react-redux';
 
 import Colors from '~/components/colors';
 import { Map } from '~/components/map';
+import { type ViewProperties } from '~/components/map/Map';
 import type { MapControlDisplaySettings } from '~/components/map/MapControls';
 import MapInteractions from '~/components/map/interactions/MapInteractions';
 import type {
@@ -43,7 +44,7 @@ import {
 import { getVisibleSelectableLayers, LayerType } from '~/model/layers';
 import type { AppDispatch, RootState } from '~/store/reducers';
 import type { Identifier } from '~/utils/collections';
-import { findFeaturesById } from '~/utils/geography';
+import { findFeaturesById, type LonLat } from '~/utils/geography';
 import { EMPTY_ARRAY } from '~/utils/redux';
 // TODO(vp): try to move or generalize this component
 // to get rid of the `~/views` import.
@@ -54,6 +55,7 @@ import {
   type FeatureUpdateOptions,
 } from './actions';
 import {
+  getCenterOfSiteSurveyHomePositionsInWorldCoordinates,
   getConvexHullOfShowInWorldCoordinates,
   getHomePositionsInWorldCoordinates,
   getSelection,
@@ -150,6 +152,7 @@ const mapControlSettings: Partial<MapControlDisplaySettings> = {
 };
 
 type SiteSurveyMapProps = Readonly<{
+  defaultPosition?: ViewProperties['position'];
   layers: LayerConfig['layers'];
   selectedTool: Tool;
   updateModifiedFeatures: (
@@ -293,7 +296,7 @@ const useOwnState = (props: SiteSurveyMapProps) => {
 };
 
 const SiteSurveyMap = (props: SiteSurveyMapProps): JSX.Element => {
-  const { layers, selectedTool } = props;
+  const { defaultPosition, layers, selectedTool } = props;
   const {
     getSelectedTransformableFeatures,
     onBoxDragEnded,
@@ -303,6 +306,7 @@ const SiteSurveyMap = (props: SiteSurveyMapProps): JSX.Element => {
   } = useOwnState(props);
   return (
     <Map
+      position={defaultPosition}
       selectedTool={selectedTool}
       layers={{ layers, layerComponents }}
       controlSettings={mapControlSettings}
@@ -322,6 +326,10 @@ const SiteSurveyMap = (props: SiteSurveyMapProps): JSX.Element => {
 const ConnectedSiteSurveyMap = connect(
   // mapStateToProps
   (state: RootState) => ({
+    defaultPosition: ((center): LonLat | undefined =>
+      center && ([center.lon, center.lat] satisfies LonLat))(
+      getCenterOfSiteSurveyHomePositionsInWorldCoordinates(state)
+    ),
     layers: getVisibleLayersInOrder(state),
     selectedTool: Tool.SELECT,
     selection: getSelection(state),

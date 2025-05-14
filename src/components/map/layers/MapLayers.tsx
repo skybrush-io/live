@@ -23,11 +23,6 @@ export type LayerConfig = {
    * Record that maps layer types to the component that should be used for rendering.
    */
   layerComponents: Partial<Record<LayerType, React.ComponentType<LayerProps>>>;
-
-  /**
-   * Layer types that should not be rendered.
-   */
-  excludedLayerTypes?: LayerType[];
 };
 
 type MapLayersProps = LayerConfig & {
@@ -50,15 +45,11 @@ export const MapLayers = ({
   layerComponents,
   onFeaturesModified,
   selectedTool,
-  excludedLayerTypes,
 }: MapLayersProps) => {
-  const shownLayers = excludedLayerTypes
-    ? layers.filter((l) => !excludedLayerTypes.includes(l.type))
-    : layers;
   const renderedLayers: React.ReactElement[] = [];
 
   let zIndex = 0;
-  for (const layer of shownLayers) {
+  for (const layer of layers) {
     const CurrentLayer = layerComponents[layer.type];
     if (CurrentLayer !== undefined) {
       renderedLayers.push(

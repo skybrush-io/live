@@ -19,11 +19,7 @@ import {
 } from '~/components/map/interactions';
 import { snapEndToStart } from '~/components/map/interactions/utils';
 import { MapLayers as MapLayersPresentation } from '~/components/map/layers';
-import {
-  styles as mapStyles,
-  toolClasses,
-  viewDefaults,
-} from '~/components/map/Map';
+import { styles as mapStyles, toolClasses } from '~/components/map/Map';
 import {
   isDrawingTool,
   Tool,
@@ -331,17 +327,17 @@ class MapViewPresentation extends React.Component {
   static propTypes = {
     dispatch: PropTypes.func.isRequired,
 
-    center: PropTypes.arrayOf(PropTypes.number),
-    rotation: PropTypes.number,
-    selection: PropTypes.arrayOf(PropTypes.string).isRequired,
+    angle: PropTypes.number,
+    geofencePolygonId: PropTypes.string,
+    position: PropTypes.arrayOf(PropTypes.number),
     selectedTool: PropTypes.string,
+    selection: PropTypes.arrayOf(PropTypes.string).isRequired,
     zoom: PropTypes.number,
 
     glContainer: PropTypes.object,
-    excludedLayerTypes: PropTypes.arrayOf(PropTypes.string),
   };
 
-  static defaultProps = { ...viewDefaults };
+  static defaultProps = { ...config.map.view };
 
   constructor(props) {
     super(props);
@@ -400,18 +396,12 @@ class MapViewPresentation extends React.Component {
   }
 
   render() {
-    const {
-      center,
-      excludedLayerTypes,
-      geofencePolygonId,
-      rotation,
-      selectedTool,
-      zoom,
-    } = this.props;
+    const { angle, geofencePolygonId, position, selectedTool, zoom } =
+      this.props;
     const view = (
       <View
-        center={mapViewCoordinateFromLonLat(center)}
-        rotation={(-rotation * Math.PI) / 180}
+        center={mapViewCoordinateFromLonLat(position)}
+        rotation={(-angle * Math.PI) / 180}
         zoom={zoom}
         maxZoom={24}
         constrainRotation={false}
@@ -443,10 +433,7 @@ class MapViewPresentation extends React.Component {
                 ),
               }}
             </MapToolbars>
-            <MapViewLayers
-              onFeaturesModified={this._onFeaturesModified}
-              excludedLayerTypes={excludedLayerTypes}
-            />
+            <MapViewLayers onFeaturesModified={this._onFeaturesModified} />
             <MapControls />
             <MapViewInteractions
               geofencePolygonId={geofencePolygonId}
@@ -727,8 +714,8 @@ class MapViewPresentation extends React.Component {
 const MapView = connect(
   // mapStateToProps
   (state) => ({
-    center: getMapViewCenterPosition(state),
-    rotation: getMapViewRotationAngle(state),
+    angle: getMapViewRotationAngle(state),
+    position: getMapViewCenterPosition(state),
     zoom: getMapViewZoom(state),
 
     geofencePolygonId: getGeofencePolygonId(state),
