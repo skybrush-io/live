@@ -22,6 +22,12 @@ export type GPSPosition = {
 };
 
 /**
+ * Returns whether the given GPS position is the null island.
+ */
+const isNullIsland = (pos: GPSPosition): boolean =>
+  pos.lat === 0 && pos.lon === 0;
+
+/**
  * Returns whether the given input represents a valid position.
  */
 export const isGPSPosition = (position: unknown): position is GPSPosition =>
@@ -31,7 +37,18 @@ export const isGPSPosition = (position: unknown): position is GPSPosition =>
   && ( ('lon'  in position) && typeof position.lon  === 'number')
   && (!('amsl' in position) || typeof position.amsl === 'number')
   && (!('ahl'  in position) || typeof position.ahl  === 'number')
-  && (!('agl'  in position) || typeof position.agl  === 'number');
+  && (!('agl'  in position) || typeof position.agl  === 'number')
+  && !isNullIsland(position as GPSPosition);
+
+/**
+ * Return whether the given (optional) GPS position is valid, meaning it is not
+ * `undefined` or `null` and not the null island.
+ */
+export const isGPSPositionValid = (
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  pos: GPSPosition | undefined | null
+): pos is GPSPosition =>
+  pos !== undefined && pos !== null && !isNullIsland(pos);
 
 /* ----- Heading ------------------------------------------------------------ */
 

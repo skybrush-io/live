@@ -11,7 +11,7 @@ import { getBase64ShowBlob } from '~/features/show/selectors';
 import { showError } from '~/features/snackbar/actions';
 import { getCurrentGPSPositionsOfActiveUAVs } from '~/features/uavs/selectors';
 import messageHub from '~/message-hub';
-import { isGPSPosition, type GPSPosition } from '~/model/geography';
+import { isGPSPositionValid, type GPSPosition } from '~/model/geography';
 import {
   GROSS_CONVEX_HULL_AREA_ID,
   NET_CONVEX_HULL_AREA_ID,
@@ -233,7 +233,7 @@ export const adjustHomePositionsToDronePositions =
     const dronePositions = getCurrentGPSPositionsOfActiveUAVs(getState());
     if (
       homePositions === undefined ||
-      dronePositions.some((val) => !isGPSPosition(val))
+      dronePositions.some((val) => !isGPSPositionValid(val))
     ) {
       return;
     }
