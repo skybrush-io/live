@@ -14,7 +14,7 @@ import sortBy from 'lodash-es/sortBy';
  *
  * @param {number[][]} matrix the input matrix
  * @param {object} parameters additional parameters to forward to the algorithm
- * @param {string} parameters.algorithm the algorithm to run; `hungarian` or `greedy`
+ * @param {string} algorithm the algorithm to run; `hungarian` or `greedy`
  * @returns the assignment in a matrix with N rows and 2 columns, representing
  *          the row and column indices of the matrix cells that were chosen
  */
