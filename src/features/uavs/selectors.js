@@ -12,8 +12,8 @@ import {
   getGPSBasedHomePositionsInMission,
   getMissionMapping,
   getReverseMissionMapping,
-  getUAVIdsParticipatingInMission,
   getTakeoffHeadingsInMission,
+  getUAVIdsParticipatingInMission,
 } from '~/features/mission/selectors';
 import {
   getDesiredPlacementAccuracyInMeters,
@@ -21,8 +21,8 @@ import {
 } from '~/features/settings/selectors';
 import {
   getFirstPointsOfTrajectories,
-  getShowToFlatEarthCoordinateSystemTransformation,
   getOutdoorShowToWorldCoordinateSystemTransformation,
+  getShowToFlatEarthCoordinateSystemTransformation,
   getTrajectories,
   isShowIndoor,
 } from '~/features/show/selectors';
@@ -36,8 +36,9 @@ import {
   getSeverityOfMostSevereErrorCode,
   Severity,
 } from '~/flockwave/errors';
-import UAVErrorCode from '~/flockwave/UAVErrorCode';
 import { convertRGB565ToCSSNotation } from '~/flockwave/parsing';
+import UAVErrorCode from '~/flockwave/UAVErrorCode';
+import { isGPSPositionValid } from '~/model/geography';
 import { globalIdToUavId } from '~/model/identifiers';
 import { UAVAge } from '~/model/uav';
 import { selectionForSubset } from '~/selectors/selection';
@@ -76,6 +77,17 @@ export const getCurrentGPSPositionByUavId = (state, uavId) => {
   const uav = getUAVById(state, uavId);
   return uav ? uav.position : undefined;
 };
+
+/**
+ * Returns all valid UAV positions, as defined by `isGPSPositionValid()`.
+ */
+export const getAllValidUAVPositions = createSelector(
+  getUAVIdToStateMapping,
+  (uavsById) =>
+    Object.values(uavsById)
+      .map((uav) => uav.position)
+      .filter(isGPSPositionValid)
+);
 
 /**
  * Returns the current local position of the UAV with the given ID, given the

@@ -1,13 +1,17 @@
 import delay from 'delay';
 import type { Feature as OLFeature } from 'ol';
 import { ModifyEvent } from 'ol/interaction/Modify';
+import { getDistance as haversineDistance } from 'ol/sphere';
 import { batch } from 'react-redux';
 
+import { findAssignmentInDistanceMatrix } from '~/algorithms/matching';
 import type { TransformFeaturesInteractionEvent } from '~/components/map/interactions/TransformFeatures';
 import { errorToString } from '~/error-handling';
 import { getBase64ShowBlob } from '~/features/show/selectors';
 import { showError } from '~/features/snackbar/actions';
+import { getAllValidUAVPositions } from '~/features/uavs/selectors';
 import messageHub from '~/message-hub';
+import { type GPSPosition } from '~/model/geography';
 import {
   GROSS_CONVEX_HULL_AREA_ID,
   NET_CONVEX_HULL_AREA_ID,
@@ -18,16 +22,18 @@ import {
 import type { AppDispatch, AppThunk } from '~/store/reducers';
 import type { Identifier } from '~/utils/collections';
 import { writeBlobToFile } from '~/utils/filesystem';
-import type { EasNor, Easting, Northing } from '~/utils/geography';
-import { toDegrees } from '~/utils/math';
+import type { EasNor, Easting, LonLat, Northing } from '~/utils/geography';
+import { calculateDistanceMatrix, toDegrees } from '~/utils/math';
 
 import {
   getHomePositions,
+  getHomePositionsInWorldCoordinates,
   selectAdaptedShowAsBlob,
   selectCoordinateSystem,
 } from './selectors';
 import {
   moveHomePositionsByMapCoordinateDelta,
+  moveHomePositionsToLonLat,
   moveOutdoorShowOriginByMapCoordinateDelta,
   rotateHomePositions,
   rotateShow,
@@ -80,7 +86,7 @@ function updateConvexHull(
   const { event } = options;
 
   if (event.subType === 'move' && event.delta) {
-    const delta: EasNor = event.delta;
+    const delta: EasNor = event.delta; // eslint-disable-line @typescript-eslint/no-unsafe-assignment
     dispatch(moveOutdoorShowOriginByMapCoordinateDelta(delta));
     dispatch(
       moveHomePositionsByMapCoordinateDelta({
@@ -91,7 +97,7 @@ function updateConvexHull(
   } else if (event.subType === 'rotate' && event.angleDelta && event.origin) {
     dispatch(
       rotateShow({
-        rotationOriginInMapCoordinates: event.origin,
+        rotationOriginInMapCoordinates: event.origin, // eslint-disable-line @typescript-eslint/no-unsafe-assignment
         angle: toDegrees(event.angleDelta),
       })
     );
@@ -99,7 +105,7 @@ function updateConvexHull(
     //       cancel out the transformation and keep them in place.
     dispatch(
       rotateHomePositions({
-        rotationOriginInMapCoordinates: event.origin,
+        rotationOriginInMapCoordinates: event.origin, // eslint-disable-line @typescript-eslint/no-unsafe-assignment
         angle: toDegrees(-event.angleDelta),
       })
     );
@@ -144,7 +150,7 @@ function updateHomePositions(
         }, {});
 
   if (event.subType === 'move') {
-    const delta: EasNor = event.delta;
+    const delta: EasNor = event.delta; // eslint-disable-line @typescript-eslint/no-unsafe-assignment
 
     dispatch(
       moveHomePositionsByMapCoordinateDelta({
@@ -155,7 +161,7 @@ function updateHomePositions(
   } else if (event.subType === 'rotate' && event.angleDelta && event.origin) {
     dispatch(
       rotateHomePositions({
-        rotationOriginInMapCoordinates: event.origin,
+        rotationOriginInMapCoordinates: event.origin, // eslint-disable-line @typescript-eslint/no-unsafe-assignment
         angle: toDegrees(event.angleDelta),
         drones: homePositionIndexes,
       })
@@ -173,7 +179,7 @@ export const updateModifiedFeatures = (
 ): void =>
   // Using batch will not be necessary after upgrading to React 18.
   // See https://react-redux.js.org/api/batch
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
   batch((): void => {
     // -- Reset adapt result
     dispatch(setAdaptResult(undefined));
@@ -213,6 +219,44 @@ export const updateModifiedFeatures = (
       updateHomePositions(dispatch, requiresUpdate.homePositionIds, options);
     }
   });
+
+/**
+ * Action that adjusts home positions to the current drone positions
+ * if possible.
+ */
+export const adjustHomePositionsToDronePositions =
+  (): AppThunk => async (dispatch, getState) => {
+    // Only outdoor shows are supported by the dialog.
+
+    const distanceFunction = haversineDistance;
+    const homePositions = getHomePositionsInWorldCoordinates(getState());
+    const dronePositions = getAllValidUAVPositions(getState());
+    if (homePositions === undefined || dronePositions.length === 0) {
+      return;
+    }
+
+    const distances = calculateDistanceMatrix(homePositions, dronePositions, {
+      distanceFunction,
+      getter: (item: GPSPosition): LonLat =>
+        item ? [item.lon, item.lat] : ([Number.NaN, Number.NaN] as LonLat),
+    });
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const assignment: Array<[number, number]> =
+      findAssignmentInDistanceMatrix(distances);
+
+    const newPositions = assignment.map(
+      ([homePositionIndex, dronePositionIndex]): [
+        number,
+        LonLat | undefined,
+      ] => {
+        const pos = dronePositions[dronePositionIndex];
+        return [homePositionIndex, pos ? [pos.lon, pos.lat] : undefined];
+      }
+    );
+
+    dispatch(moveHomePositionsToLonLat(newPositions));
+  };
 
 // -- Show adapt
 
@@ -269,14 +313,17 @@ export const adaptShow =
     dispatch(setAdaptResult({ loading: true }));
 
     try {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const { show, takeoffLengthChange, rthLengthChange } =
         // @ts-expect-error: ts(2339)
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
         await messageHub.query.adaptShow(
           base64ShowBlob,
           transformations,
           coordinateSystem
         );
 
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       dispatch(setAdaptResult({ show, takeoffLengthChange, rthLengthChange }));
     } catch (error) {
       const errorMessage =

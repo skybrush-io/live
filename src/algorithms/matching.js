@@ -13,8 +13,8 @@ import sortBy from 'lodash-es/sortBy';
  * yields more intutive results.
  *
  * @param {number[][]} matrix the input matrix
- * @param {string} algorithm the algorithm to run; `hungarian` or `greedy`
  * @param {object} parameters additional parameters to forward to the algorithm
+ * @param {string} algorithm the algorithm to run; `hungarian` or `greedy`
  * @returns the assignment in a matrix with N rows and 2 columns, representing
  *          the row and column indices of the matrix cells that were chosen
  */
@@ -73,7 +73,6 @@ export function greedyMatchingAlgorithm(matrix, parameters = {}) {
   let numberOfRowsLeft = numberOfRows;
   let numberOfColumnsLeft = numberOfColumns;
 
-  // eslint-disable-next-line no-unused-vars
   for (const [rowIndex, colIndex, _] of sortedPairs) {
     if (!isRowUsed[rowIndex] && !isColUsed[colIndex]) {
       result.push([rowIndex, colIndex]);
