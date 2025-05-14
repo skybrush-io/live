@@ -15,6 +15,8 @@ import SelectAll from '@material-ui/icons/SelectAll';
 
 import { tt } from '~/i18n';
 
+// TODO: Make a factory function for `tt` that is smart enough to support
+//       `keyPrefix` and still compatible with `babel-plugin-i18n-extract`
 const CATEGORIES = [
   {
     title: tt('show.siteSurvey.interactionHints.category.navigation'),
