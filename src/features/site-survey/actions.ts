@@ -11,7 +11,7 @@ import { getBase64ShowBlob } from '~/features/show/selectors';
 import { showError } from '~/features/snackbar/actions';
 import { getCurrentGPSPositionsOfActiveUAVs } from '~/features/uavs/selectors';
 import messageHub from '~/message-hub';
-import type { GPSPosition } from '~/model/geography';
+import { isGPSPosition, type GPSPosition } from '~/model/geography';
 import {
   GROSS_CONVEX_HULL_AREA_ID,
   NET_CONVEX_HULL_AREA_ID,
@@ -231,7 +231,10 @@ export const adjustHomePositionsToDronePositions =
     const distanceFunction = haversineDistance;
     const homePositions = getHomePositionsInWorldCoordinates(getState());
     const dronePositions = getCurrentGPSPositionsOfActiveUAVs(getState());
-    if (homePositions === undefined || dronePositions.includes(undefined)) {
+    if (
+      homePositions === undefined ||
+      dronePositions.some((val) => !isGPSPosition(val))
+    ) {
       return;
     }
 
@@ -240,8 +243,7 @@ export const adjustHomePositionsToDronePositions =
       dronePositions as GPSPosition[], // Validated in guard clause above.
       {
         distanceFunction,
-        // eslint-disable-next-line @typescript-eslint/ban-types
-        getter: (item: GPSPosition | null): LonLat =>
+        getter: (item: GPSPosition): LonLat =>
           item ? [item.lon, item.lat] : ([Number.NaN, Number.NaN] as LonLat),
       }
     );
