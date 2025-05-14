@@ -604,7 +604,7 @@
   "siteSurveyDialog": {
     "action": {
       "adapt": "Adapt",
-      "adjustHomePositionsToDronePositions": "Fit takeoff"
+      "adjustHomePositionsToDronePositions": "Fit takeoff to drones"
     },
     "adaptParameters": {
       "form": {

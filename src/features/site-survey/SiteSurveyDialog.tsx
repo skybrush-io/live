@@ -91,13 +91,6 @@ const useStyles = makeStyles((theme) => ({
     pointerEvents: 'none',
     zIndex: 10,
   },
-  dronesButtons: {
-    display: 'grid',
-    gridTemplateColumns: '1fr max-content',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: theme.spacing(1),
-  },
 }));
 
 type DispatchProps = Readonly<{
@@ -259,28 +252,26 @@ const SiteSurveyDialog = (props: Props): JSX.Element => {
             {...adaptParameters}
             disabled={stage !== 'config'}
           />
-          <Box className={styles.dronesButtons}>
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={dronesVisible}
-                  onChange={(event) => {
-                    setDronesVisible(event.target.checked);
-                  }}
-                />
-              }
-              label={t('siteSurveyDialog.settings.dronesVisible')}
-            />
-            <Button
-              color='primary'
-              disabled={!adjustHomePositionsToDronePositionsEnabled}
-              onClick={() => {
-                adjustHomePositionsToDronePositions();
-              }}
-            >
-              {t('siteSurveyDialog.action.adjustHomePositionsToDronePositions')}
-            </Button>
-          </Box>
+          <FormControlLabel
+            control={
+              <Switch
+                checked={dronesVisible}
+                onChange={(event) => {
+                  setDronesVisible(event.target.checked);
+                }}
+              />
+            }
+            label={t('siteSurveyDialog.settings.dronesVisible')}
+          />
+          <Button
+            color='primary'
+            disabled={!adjustHomePositionsToDronePositionsEnabled}
+            onClick={() => {
+              adjustHomePositionsToDronePositions();
+            }}
+          >
+            {t('siteSurveyDialog.action.adjustHomePositionsToDronePositions')}
+          </Button>
         </Box>
       }
       onClose={props.closeDialog}
