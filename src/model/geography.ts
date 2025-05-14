@@ -37,8 +37,7 @@ export const isGPSPosition = (position: unknown): position is GPSPosition =>
   && ( ('lon'  in position) && typeof position.lon  === 'number')
   && (!('amsl' in position) || typeof position.amsl === 'number')
   && (!('ahl'  in position) || typeof position.ahl  === 'number')
-  && (!('agl'  in position) || typeof position.agl  === 'number')
-  && !isNullIsland(position as GPSPosition);
+  && (!('agl'  in position) || typeof position.agl  === 'number');
 
 /**
  * Return whether the given (optional) GPS position is valid, meaning it is not
