@@ -12,7 +12,7 @@ import {
 } from '~/features/show/trajectory-selectors';
 import { isOutdoorCoordinateSystemWithOrigin } from '~/features/show/types';
 import { getCurrentGPSPositionsOfActiveUAVs } from '~/features/uavs/selectors';
-import { type GPSPosition } from '~/model/geography';
+import { type GPSPosition, isGPSPositionValid } from '~/model/geography';
 import { type Layer, LayerType } from '~/model/layers';
 import { getVisibleLayersInOrder as _getVisibleLayersInOrder } from '~/selectors/ordered';
 import type { AppSelector, RootState } from '~/store/reducers';
@@ -301,5 +301,5 @@ export const selectAdjustHomePositionsToDronePositionsEnabled = createSelector(
   (homePositions, dronePositions) =>
     homePositions !== undefined &&
     dronePositions.length > 0 &&
-    !dronePositions.includes(undefined)
+    !dronePositions.some((val) => !isGPSPositionValid(val))
 );
