@@ -125,10 +125,6 @@ type Props = StateProps &
 
 type AdaptStage = 'config' | 'review';
 
-const hiddenStyle: React.CSSProperties = {
-  display: 'none',
-};
-
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 function useOwnState(props: Props) {
   const {
