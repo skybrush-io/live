@@ -245,6 +245,7 @@ const SiteSurveyDialog = (props: Props): JSX.Element => {
   return (
     <DraggableDialog
       fullWidth
+      disableEscapeKeyDown
       className={styles.root}
       maxWidth='xl'
       title={t('siteSurveyDialog.title')}
