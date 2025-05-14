@@ -9,9 +9,9 @@ import type { TransformFeaturesInteractionEvent } from '~/components/map/interac
 import { errorToString } from '~/error-handling';
 import { getBase64ShowBlob } from '~/features/show/selectors';
 import { showError } from '~/features/snackbar/actions';
-import { getCurrentGPSPositionsOfActiveUAVs } from '~/features/uavs/selectors';
+import { getAllValidUAVPositions } from '~/features/uavs/selectors';
 import messageHub from '~/message-hub';
-import { isGPSPositionValid, type GPSPosition } from '~/model/geography';
+import { type GPSPosition } from '~/model/geography';
 import {
   GROSS_CONVEX_HULL_AREA_ID,
   NET_CONVEX_HULL_AREA_ID,
@@ -230,23 +230,16 @@ export const adjustHomePositionsToDronePositions =
 
     const distanceFunction = haversineDistance;
     const homePositions = getHomePositionsInWorldCoordinates(getState());
-    const dronePositions = getCurrentGPSPositionsOfActiveUAVs(getState());
-    if (
-      homePositions === undefined ||
-      dronePositions.some((val) => !isGPSPositionValid(val))
-    ) {
+    const dronePositions = getAllValidUAVPositions(getState());
+    if (homePositions === undefined || dronePositions.length === 0) {
       return;
     }
 
-    const distances = calculateDistanceMatrix(
-      homePositions,
-      dronePositions as GPSPosition[], // Validated in guard clause above.
-      {
-        distanceFunction,
-        getter: (item: GPSPosition): LonLat =>
-          item ? [item.lon, item.lat] : ([Number.NaN, Number.NaN] as LonLat),
-      }
-    );
+    const distances = calculateDistanceMatrix(homePositions, dronePositions, {
+      distanceFunction,
+      getter: (item: GPSPosition): LonLat =>
+        item ? [item.lon, item.lat] : ([Number.NaN, Number.NaN] as LonLat),
+    });
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const assignment: Array<[number, number]> =

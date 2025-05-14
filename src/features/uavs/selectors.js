@@ -38,6 +38,7 @@ import {
 } from '~/flockwave/errors';
 import { convertRGB565ToCSSNotation } from '~/flockwave/parsing';
 import UAVErrorCode from '~/flockwave/UAVErrorCode';
+import { isGPSPositionValid } from '~/model/geography';
 import { globalIdToUavId } from '~/model/identifiers';
 import { UAVAge } from '~/model/uav';
 import { selectionForSubset } from '~/selectors/selection';
@@ -78,16 +79,15 @@ export const getCurrentGPSPositionByUavId = (state, uavId) => {
 };
 
 /**
- * Returns the current GPS positions of all active UAVs.
- *
- * Technically the returned array may contain `undefined` values, but in
- * practice it should not happen.
+ * Returns all valid UAV positions, as defined by `isGPSPositionValid()`.
  */
-export const getCurrentGPSPositionsOfActiveUAVs = (state) => {
-  const activeUAVIds = getActiveUAVIds(state);
-  const uavsById = getUAVIdToStateMapping(state);
-  return activeUAVIds.map((id) => uavsById[id]?.position);
-};
+export const getAllValidUAVPositions = createSelector(
+  getUAVIdToStateMapping,
+  (uavsById) =>
+    Object.values(uavsById)
+      .map((uav) => uav.position)
+      .filter(isGPSPositionValid)
+);
 
 /**
  * Returns the current local position of the UAV with the given ID, given the

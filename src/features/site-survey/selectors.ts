@@ -11,8 +11,8 @@ import {
   positionsToWorldCoordinatesCombiner,
 } from '~/features/show/trajectory-selectors';
 import { isOutdoorCoordinateSystemWithOrigin } from '~/features/show/types';
-import { getCurrentGPSPositionsOfActiveUAVs } from '~/features/uavs/selectors';
-import { type GPSPosition, isGPSPositionValid } from '~/model/geography';
+import { getAllValidUAVPositions } from '~/features/uavs/selectors';
+import { type GPSPosition } from '~/model/geography';
 import { type Layer, LayerType } from '~/model/layers';
 import { getVisibleLayersInOrder as _getVisibleLayersInOrder } from '~/selectors/ordered';
 import type { AppSelector, RootState } from '~/store/reducers';
@@ -297,9 +297,7 @@ export const getVisibleLayersInOrder = createSelector(
 
 export const selectAdjustHomePositionsToDronePositionsEnabled = createSelector(
   getHomePositionsInWorldCoordinates,
-  getCurrentGPSPositionsOfActiveUAVs,
+  getAllValidUAVPositions,
   (homePositions, dronePositions) =>
-    homePositions !== undefined &&
-    dronePositions.length > 0 &&
-    !dronePositions.some((val) => !isGPSPositionValid(val))
+    homePositions !== undefined && dronePositions.length > 0
 );
