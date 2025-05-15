@@ -232,6 +232,9 @@ export const adjustHomePositionsToDronePositions =
     const homePositions = getHomePositionsInWorldCoordinates(getState());
     const dronePositions = getAllValidUAVPositions(getState());
     if (homePositions === undefined || dronePositions.length === 0) {
+      console.warn(
+        'adjustHomePositionsToDronePositions(): no home positions or drones.'
+      );
       return;
     }
 
