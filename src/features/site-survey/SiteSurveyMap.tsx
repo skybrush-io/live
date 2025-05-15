@@ -7,14 +7,14 @@ import VectorLayer from 'ol/layer/Vector';
 import type VectorSource from 'ol/source/Vector';
 import React, { useCallback } from 'react';
 import { connect } from 'react-redux';
-import { ActionCreators } from 'redux-undo';
 import UndoRedoButtons from '~/components/UndoRedoButtons';
-import Widget from '~/components/Widget';
 
+import ToolbarDivider from '~/components/ToolbarDivider';
 import Colors from '~/components/colors';
 import { Map, MapToolbars } from '~/components/map';
 import { type ViewProperties } from '~/components/map/Map';
 import type { MapControlDisplaySettings } from '~/components/map/MapControls';
+import MapRotationTextBox from '~/components/map/MapRotationTextBox';
 import MapInteractions from '~/components/map/interactions/MapInteractions';
 import type {
   BoxDragMode,
@@ -36,7 +36,6 @@ import ShowInfoLayerPresentation, {
 import { FeaturesLayer } from '~/components/map/layers/features';
 import { UAVsLayer, type UAVsLayerProps } from '~/components/map/layers/uavs';
 import { noMark } from '~/components/map/layers/utils';
-import MapRotationTextBox from '~/components/map/MapRotationTextBox';
 import { Tool } from '~/components/map/tools';
 import { type GPSPosition } from '~/model/geography';
 import {
@@ -59,8 +58,8 @@ import {
   type FeatureUpdateOptions,
 } from './actions';
 import {
-  canSiteSurveyRedo,
-  canSiteSurveyUndo,
+  getFutureHistoryLength,
+  getPastHistoryLength,
   getCenterOfSiteSurveyHomePositionsInWorldCoordinates,
   getConvexHullOfShowInWorldCoordinates,
   getHomePositionsInWorldCoordinates,
@@ -70,7 +69,14 @@ import {
   selectConvexHullMarkerData,
   type ConvexHullMarkerData,
 } from './selectors';
-import { redo, undo, updateSelection } from './state';
+import {
+  historyJump,
+  historyRedo,
+  historyUndo,
+  updateSelection,
+} from './state';
+import { bindActionCreators } from 'redux';
+import { IconButton } from '@material-ui/core';
 
 // === Layers ===
 
@@ -160,18 +166,19 @@ const mapControlSettings: Partial<MapControlDisplaySettings> = {
 
 type SiteSurveyMapProps = Readonly<{
   defaultPosition?: ViewProperties['position'];
+  futureHistoryLength: number;
+  historyJump: (n: number) => void;
+  historyRedo: () => void;
+  historyUndo: () => void;
   layers: LayerConfig['layers'];
+  pastHistoryLength: number;
   selectedTool: Tool;
+  selection: Identifier[];
   updateModifiedFeatures: (
     features: Feature[],
     options: FeatureUpdateOptions
   ) => void;
   updateSelection: (mode: FeatureSelectionMode, ids: Identifier[]) => void;
-  selection: Identifier[];
-  canUndo: boolean;
-  canRedo: boolean;
-  undo: () => void;
-  redo: () => void;
 }>;
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
@@ -308,12 +315,13 @@ const useOwnState = (props: SiteSurveyMapProps) => {
 
 const SiteSurveyMap = (props: SiteSurveyMapProps): JSX.Element => {
   const {
-    undo,
-    redo,
-    canUndo,
-    canRedo,
     defaultPosition,
+    futureHistoryLength,
+    historyJump,
+    historyRedo,
+    historyUndo,
     layers,
+    pastHistoryLength,
     selectedTool,
   } = props;
   const {
@@ -336,13 +344,23 @@ const SiteSurveyMap = (props: SiteSurveyMapProps): JSX.Element => {
         top={
           <>
             <MapRotationTextBox resetDuration={500} fieldWidth='75px' />
-            <VerticalToolbarSeparator />
+            <ToolbarDivider orientation='vertical' />
             <UndoRedoButtons
-              canUndo={canUndo}
-              canRedo={canRedo}
+              canDiscard={pastHistoryLength > 0}
+              canUndo={pastHistoryLength > 0}
+              canRedo={futureHistoryLength > 0}
               tooltipPlacement='bottom'
-              undo={undo}
-              redo={redo}
+              undo={() => historyUndo()} // TODO: Non-serializable value in reducer error without lambda. 🤔
+              redo={() => historyRedo()} // TODO: Non-serializable value in reducer error without lambda. 🤨
+              discard={() => {
+                console.log({
+                  l: -pastHistoryLength,
+                  historyUndo,
+                  historyJump,
+                  historyRedo,
+                });
+                historyJump(-pastHistoryLength);
+              }}
             />
           </>
         }
@@ -368,11 +386,22 @@ const ConnectedSiteSurveyMap = connect(
     layers: getVisibleLayersInOrder(state),
     selectedTool: Tool.SELECT,
     selection: getSelection(state),
-    canUndo: canSiteSurveyUndo(state),
-    canRedo: canSiteSurveyRedo(state),
+    pastHistoryLength: getPastHistoryLength(state),
+    futureHistoryLength: getFutureHistoryLength(state),
   }),
   // mapDispatchToProps
   (dispatch: AppDispatch) => ({
+    ...bindActionCreators(
+      {
+        historyJump,
+        historyRedo,
+        historyUndo,
+      },
+      dispatch
+    ),
+    // historyJump(n: number): void {
+    //   dispatch((historyJump as any)(n));
+    // },
     updateSelection(mode: FeatureSelectionMode, ids: Identifier[]): void {
       dispatch(updateSelection({ mode, ids }));
     },
@@ -382,8 +411,6 @@ const ConnectedSiteSurveyMap = connect(
     ): void {
       updateModifiedFeaturesAction(dispatch, features, options);
     },
-    undo: () => dispatch(undo()),
-    redo: () => dispatch(redo()),
   })
 )(SiteSurveyMap);
 

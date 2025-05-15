@@ -4,6 +4,7 @@ import { type WithTranslation, withTranslation } from 'react-i18next';
 
 import IconButton from '@material-ui/core/IconButton';
 
+import Delete from '@material-ui/icons/Delete';
 import Redo from '@material-ui/icons/Redo';
 import Undo from '@material-ui/icons/Undo';
 
@@ -14,23 +15,32 @@ import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
 // TODO: Figure out DispatchActionWithoutPayload or whatever instead of `() => void`!
 
 type UndoRedoButtonsProps = Readonly<{
+  canDiscard: boolean;
   canRedo: boolean;
   canUndo: boolean;
+  discard: () => void;
   redo: () => void;
-  undo: () => void;
   tooltipPlacement: TooltipProps['placement'];
+  undo: () => void;
 }> &
   WithTranslation;
 
 const UndoRedoButtons: React.FC<UndoRedoButtonsProps> = ({
+  canDiscard,
   canRedo,
   canUndo,
+  discard,
   redo,
   t,
   tooltipPlacement,
   undo,
 }) => (
   <>
+    <Tooltip content={t('general.action.discard')} placement={tooltipPlacement}>
+      <IconButton disabled={!canDiscard} onClick={discard}>
+        <Delete />
+      </IconButton>
+    </Tooltip>
     <Tooltip content={t('general.action.undo')} placement={tooltipPlacement}>
       <IconButton disabled={!canUndo} onClick={undo}>
         <Undo />

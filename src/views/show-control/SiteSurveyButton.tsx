@@ -22,8 +22,9 @@ import {
   hasLoadedShowFile,
 } from '~/features/show/selectors';
 import { getSetupStageStatuses } from '~/features/show/stages';
+import { showDialogAndClearUndoHistory } from '~/features/site-survey/actions';
 import { selectSiteSurveyDataFromShow } from '~/features/site-survey/selectors';
-import { type ShowData, showDialog } from '~/features/site-survey/state';
+import { type ShowData } from '~/features/site-survey/state';
 import { showError } from '~/features/snackbar/actions';
 import { type PreparedI18nKey, tt } from '~/i18n';
 import Pro from '~/icons/Pro';
@@ -70,12 +71,12 @@ type Props = Readonly<{
   base64Blob?: string;
   show: ShowData | undefined;
   partialShow: Partial<ShowData>;
-  showDialog: (data?: ShowData) => void;
+  showDialogAndClearUndoHistory: (data?: ShowData) => void;
   status: Status;
 }>;
 
 const SiteSurveyButton = (props: Props): JSX.Element => {
-  const { show, showDialog, status } = props;
+  const { show, showDialogAndClearUndoHistory, status } = props;
 
   const dispatch = useDispatch<AppDispatch>();
   const { t } = useTranslation();
@@ -99,11 +100,11 @@ const SiteSurveyButton = (props: Props): JSX.Element => {
 
   const openWithShow = useCallback(() => {
     if (show) {
-      showDialog(show);
+      showDialogAndClearUndoHistory(show);
     } else {
       dispatch(showError(t('show.siteSurvey.noShowData')));
     }
-  }, [dispatch, show, showDialog, t]);
+  }, [dispatch, show, showDialogAndClearUndoHistory, t]);
 
   const tooltipContent = (
     <MiniList>
@@ -157,7 +158,7 @@ const ConnectedSiteSurveyButton = connect(
     status: getSetupStageStatuses(state).siteSurvey,
   }),
   {
-    showDialog,
+    showDialogAndClearUndoHistory,
   }
 )(SiteSurveyButton);
 

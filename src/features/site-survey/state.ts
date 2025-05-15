@@ -2,7 +2,7 @@
  * @file Redux slice for the site survey dialog.
  */
 
-import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import { CaseReducer, createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import type { SwarmSpecification } from '@skybrush/show-format';
 import xor from 'lodash-es/xor';
 import { Point } from 'ol/geom';
@@ -62,20 +62,46 @@ const initialState: SiteSurveyState = {
   adaptResult: undefined,
 };
 
+// prettier-ignore
+const historyReducers: {
+  historyInit: CaseReducer<SiteSurveyState, PayloadAction<undefined>>;
+  historyJump: CaseReducer<SiteSurveyState, PayloadAction<number>>;
+  historyRedo: CaseReducer<SiteSurveyState, PayloadAction<undefined>>;
+  historySnap: CaseReducer<SiteSurveyState, PayloadAction<undefined>>;
+  historyUndo: CaseReducer<SiteSurveyState, PayloadAction<undefined>>;
+} = {
+  historyInit() { /* do nothing, to be handled by `redux-undo` */ },
+  historyJump() { /* do nothing, to be handled by `redux-undo` */ },
+  historyRedo() { /* do nothing, to be handled by `redux-undo` */ },
+  historySnap() { /* do nothing, to be handled by `redux-undo` */ },
+  historyUndo() { /* do nothing, to be handled by `redux-undo` */ },
+};
+
 const { reducer, actions } = createSlice({
   name: 'site-survey',
   initialState,
   reducers: {
-    // TODO: Or maybe use `createAction` instead?
-    undo() {
-      // do nothing, to be handled by `redux-undo`
-    },
-    redo() {
-      // do nothing, to be handled by `redux-undo`
-    },
-    snap() {
-      // do nothing, to be handled by `redux-undo`
-    },
+    // -- History
+
+    // prettier-ignore
+    // ...{ // eslint-disable-line unicorn/no-useless-spread
+    //   // historyJump: {
+    //   //   prepare: (index: number) => ({ payload: index }),
+    //   //   reducer: () => { /* do nothing, to be handled by `redux-undo` */ }
+    //   // },
+    //
+    //   // historyJump(_state, _action: PayloadAction<number>): void { /* do nothing, to be handled by `redux-undo` */ },
+    //
+    //   // historyJump: (() => { /* do nothing, to be handled by `redux-undo` */ }) satisfies CaseReducer<SiteSurveyState, PayloadAction<number>>,
+    //
+    //   historyInit(): void { /* do nothing, to be handled by `redux-undo` */ },
+    //   // historyJump(): void { /* do nothing, to be handled by `redux-undo` */ },
+    //   historyRedo(): void { /* do nothing, to be handled by `redux-undo` */ },
+    //   historySnap(): void { /* do nothing, to be handled by `redux-undo` */ },
+    //   historyUndo(): void { /* do nothing, to be handled by `redux-undo` */ },
+    // },
+
+    ...historyReducers,
 
     // -- Dialog
 
@@ -373,6 +399,11 @@ const { reducer, actions } = createSlice({
 
 export const {
   closeDialog,
+  historyInit,
+  historyJump,
+  historyRedo,
+  historySnap,
+  historyUndo,
   initializeWithData,
   moveHomePositionsByMapCoordinateDelta,
   moveHomePositionsToLonLat,
@@ -380,12 +411,9 @@ export const {
   rotateHomePositions,
   rotateShow,
   setAdaptResult,
-  showDialog,
   setDronesVisible,
+  showDialog,
   updateSelection,
-  undo,
-  redo,
-  snap,
 } = actions;
 
 export default reducer;

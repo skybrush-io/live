@@ -32,14 +32,25 @@ import {
   selectCoordinateSystem,
 } from './selectors';
 import {
+  historyInit,
   moveHomePositionsByMapCoordinateDelta,
   moveHomePositionsToLonLat,
   moveOutdoorShowOriginByMapCoordinateDelta,
   rotateHomePositions,
   rotateShow,
   setAdaptResult,
-  snap,
+  type ShowData,
+  showDialog,
+  historySnap,
 } from './state';
+
+// -- Initializing
+
+export const showDialogAndClearUndoHistory =
+  (showData?: ShowData) => (dispatch: AppDispatch) => {
+    dispatch(showDialog(showData));
+    dispatch(historyInit());
+  };
 
 // -- Transformations
 
@@ -220,7 +231,7 @@ export const updateModifiedFeatures = (
       updateHomePositions(dispatch, requiresUpdate.homePositionIds, options);
     }
 
-    dispatch(snap());
+    dispatch(historySnap());
   });
 
 /**
@@ -228,7 +239,7 @@ export const updateModifiedFeatures = (
  * if possible.
  */
 export const adjustHomePositionsToDronePositions =
-  (): AppThunk => async (dispatch, getState) => {
+  (): AppThunk => (dispatch, getState) => {
     // Only outdoor shows are supported by the dialog.
 
     const distanceFunction = haversineDistance;
@@ -262,6 +273,7 @@ export const adjustHomePositionsToDronePositions =
     );
 
     dispatch(moveHomePositionsToLonLat(newPositions));
+    dispatch(historySnap());
   };
 
 // -- Show adapt

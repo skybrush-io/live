@@ -64,11 +64,11 @@ const selectShowData = createSelector(
     }
 );
 
-export const canSiteSurveyUndo: AppSelector<boolean> = (state) =>
-  state.dialogs.siteSurvey.past.length > 0;
+export const getPastHistoryLength: AppSelector<number> = (state) =>
+  state.dialogs.siteSurvey.past.length;
 
-export const canSiteSurveyRedo: AppSelector<boolean> = (state) =>
-  state.dialogs.siteSurvey.future.length > 0;
+export const getFutureHistoryLength: AppSelector<number> = (state) =>
+  state.dialogs.siteSurvey.future.length;
 
 /**
  * Selector that returns the coordinate system from the site survey state.

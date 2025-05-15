@@ -21,9 +21,11 @@ import deauthenticationReducer from '~/features/servers/deauthentication-dialog'
 import serverSettingsReducer from '~/features/servers/server-settings-dialog';
 import appSettingsReducer from '~/features/settings/dialog';
 import siteSurveyReducer, {
-  redo,
-  snap,
-  undo,
+  historyInit,
+  historyJump,
+  historyRedo,
+  historySnap,
+  historyUndo,
 } from '~/features/site-survey/state';
 import uavDetailsDialogReducer from '~/features/uavs/details';
 
@@ -87,9 +89,11 @@ const dialogsReducer = combineReducers({
   savedLocationEditor: savedLocationEditorReducer,
   serverSettings: serverSettingsReducer,
   siteSurvey: undoable(siteSurveyReducer, {
-    undoType: undo.type,
-    redoType: redo.type,
-    filter: includeAction([snap.type]),
+    clearHistoryType: historyInit.type,
+    filter: includeAction([historySnap.type]),
+    jumpType: historyJump.type,
+    redoType: historyRedo.type,
+    undoType: historyUndo.type,
   }),
   uavDetails: uavDetailsDialogReducer,
 });

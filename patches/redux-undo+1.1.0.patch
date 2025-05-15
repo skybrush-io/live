@@ -1,0 +1,36 @@
+diff --git a/node_modules/redux-undo/dist/redux-undo.mjs b/node_modules/redux-undo/dist/redux-undo.mjs
+index 1f4f18c..e847749 100644
+--- a/node_modules/redux-undo/dist/redux-undo.mjs
++++ b/node_modules/redux-undo/dist/redux-undo.mjs
+@@ -13,13 +13,13 @@ const c = {
+     return { type: c.REDO };
+   },
+   jumpToFuture(e) {
+-    return { type: c.JUMP_TO_FUTURE, index: e };
++    return { type: c.JUMP_TO_FUTURE, payload: e };
+   },
+   jumpToPast(e) {
+-    return { type: c.JUMP_TO_PAST, index: e };
++    return { type: c.JUMP_TO_PAST, payload: e };
+   },
+   jump(e) {
+-    return { type: c.JUMP, index: e };
++    return { type: c.JUMP, payload: e };
+   },
+   clearHistory() {
+     return { type: c.CLEAR_HISTORY };
+@@ -189,11 +189,11 @@ function C(e, t = {}) {
+       case n.redoType:
+         return u = O(r, 1), f("perform redo"), a(u), s(u, o, ...p);
+       case n.jumpToPastType:
+-        return u = x(r, o.index), f(`perform jumpToPast to ${o.index}`), a(u), s(u, o, ...p);
++        return u = x(r, o.payload), f(`perform jumpToPast to ${o.payload}`), a(u), s(u, o, ...p);
+       case n.jumpToFutureType:
+-        return u = A(r, o.index), f(`perform jumpToFuture to ${o.index}`), a(u), s(u, o, ...p);
++        return u = A(r, o.payload), f(`perform jumpToFuture to ${o.payload}`), a(u), s(u, o, ...p);
+       case n.jumpType:
+-        return u = O(r, o.index), f(`perform jump to ${o.index}`), a(u), s(u, o, ...p);
++        return u = O(r, o.payload), f(`perform jump to ${o.payload}`), a(u), s(u, o, ...p);
+       case J(o.type, n.clearHistoryType):
+         return u = m(r.present, n.ignoreInitialState), f("perform clearHistory"), a(u), s(u, o, ...p);
+       default:
