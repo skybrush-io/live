@@ -11,6 +11,7 @@ import type { SwarmSpecification } from '@skybrush/show-format';
 import xor from 'lodash-es/xor';
 import { Point } from 'ol/geom';
 
+import { type FeatureSelectionMode } from '~/components/map/interactions/types';
 import { updateSelection as updateSelectedIds } from '~/features/map/utils';
 import type { OutdoorCoordinateSystemWithOrigin } from '~/features/show/types';
 import type { Identifier } from '~/utils/collections';
@@ -120,26 +121,28 @@ const { reducer, actions } = createSlice({
     /**
      * Updates the selection.
      */
-    updateSelection(
-      state,
-      action: PayloadAction<{
-        mode: 'add' | 'clear' | 'remove' | 'set' | 'toggle';
-        ids: Identifier[];
-      }>
-    ) {
-      const { mode, ids } = action.payload;
-      // eslint-disable-next-line unicorn/prefer-switch
-      if (mode === 'add') {
-        state.selection = updateSelectedIds(state.selection, ids);
-      } else if (mode === 'clear') {
-        state.selection = [];
-      } else if (mode === 'remove') {
-        state.selection = updateSelectedIds(state.selection, [], ids);
-      } else if (mode === 'set') {
-        state.selection = updateSelectedIds([], ids);
-      } else if (mode === 'toggle') {
-        state.selection = updateSelectedIds([], xor(state.selection, ids));
-      }
+    updateSelection: {
+      prepare: (mode: FeatureSelectionMode, ids: Identifier[]) => ({
+        payload: { mode, ids },
+      }),
+      reducer(
+        state,
+        action: PayloadAction<{ mode: FeatureSelectionMode; ids: Identifier[] }>
+      ) {
+        const { mode, ids } = action.payload;
+        // eslint-disable-next-line unicorn/prefer-switch
+        if (mode === 'add') {
+          state.selection = updateSelectedIds(state.selection, ids);
+        } else if (mode === 'clear') {
+          state.selection = [];
+        } else if (mode === 'remove') {
+          state.selection = updateSelectedIds(state.selection, [], ids);
+        } else if (mode === 'set') {
+          state.selection = updateSelectedIds([], ids);
+        } else if (mode === 'toggle') {
+          state.selection = updateSelectedIds([], xor(state.selection, ids));
+        }
+      },
     },
 
     // -- Settings

@@ -152,7 +152,7 @@ function useOwnState(props: Props) {
   const back = useCallback(() => {
     if (backDisabled) {
       // Shouldn't happen, because the button should be disabled.
-      console.error('Back actions is disabled but action was triggered.');
+      console.error('Back action is disabled but action was triggered.');
       return;
     }
 

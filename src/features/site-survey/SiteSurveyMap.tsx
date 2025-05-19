@@ -11,7 +11,6 @@ import VectorLayer from 'ol/layer/Vector';
 import type VectorSource from 'ol/source/Vector';
 import React, { useCallback } from 'react';
 import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
 
 import Colors from '~/components/colors';
 import { Map, MapToolbars } from '~/components/map';
@@ -50,7 +49,7 @@ import {
   NET_CONVEX_HULL_AREA_ID,
 } from '~/model/identifiers';
 import { getVisibleSelectableLayers, LayerType } from '~/model/layers';
-import type { AppDispatch, RootState } from '~/store/reducers';
+import type { RootState } from '~/store/reducers';
 import type { Identifier } from '~/utils/collections';
 import { findFeaturesById, type LonLat } from '~/utils/geography';
 import { EMPTY_ARRAY } from '~/utils/redux';
@@ -58,11 +57,9 @@ import { EMPTY_ARRAY } from '~/utils/redux';
 // to get rid of the `~/views` import.
 import ActiveUAVsLayerSource from '~/views/map/sources/ActiveUAVsLayerSource';
 
+import { type FeatureUpdateOptions, updateModifiedFeatures } from './actions';
 import {
-  updateModifiedFeatures as updateModifiedFeaturesAction,
-  type FeatureUpdateOptions,
-} from './actions';
-import {
+  type ConvexHullMarkerData,
   getCenterOfSiteSurveyHomePositionsInWorldCoordinates,
   getConvexHullOfShowInWorldCoordinates,
   getFutureHistoryLength,
@@ -72,7 +69,6 @@ import {
   getVisibleLayersInOrder,
   selectApproximateConvexHullOfFullShowInWorldCoordinates,
   selectConvexHullMarkerData,
-  type ConvexHullMarkerData,
 } from './selectors';
 import {
   historyJump,
@@ -385,25 +381,13 @@ const ConnectedSiteSurveyMap = connect(
     selection: getSelection(state),
   }),
   // mapDispatchToProps
-  (dispatch: AppDispatch) => ({
-    ...bindActionCreators(
-      {
-        historyJump,
-        historyRedo,
-        historyUndo,
-      },
-      dispatch
-    ),
-    updateSelection(mode: FeatureSelectionMode, ids: Identifier[]): void {
-      dispatch(updateSelection({ mode, ids }));
-    },
-    updateModifiedFeatures(
-      features: Feature[],
-      options: FeatureUpdateOptions
-    ): void {
-      updateModifiedFeaturesAction(dispatch, features, options);
-    },
-  })
+  {
+    historyJump,
+    historyRedo,
+    historyUndo,
+    updateModifiedFeatures,
+    updateSelection,
+  }
 )(SiteSurveyMap);
 
 export default ConnectedSiteSurveyMap;
