@@ -19,9 +19,9 @@ import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
 
 import { isRunningOnMac, platformModifierKey } from '~/utils/platform';
 
-import { HIDDEN } from './keymap';
 import { isHotkeyDialogVisible } from './selectors';
 import { closeHotkeyDialog } from './slice';
+import { HotkeyGroup } from './types';
 
 /**
  * Formats the given hotkey sequence to make it suitable for the user.
@@ -98,7 +98,7 @@ const HotkeyDialog = ({ onClose, open }) => {
           <TableBody>
             {Object.keys(hotkeys || {}).map(
               (hotkey) =>
-                hotkeys[hotkey].group !== HIDDEN && (
+                hotkeys[hotkey].group !== HotkeyGroup.HIDDEN && (
                   <HotkeyRow key={hotkey} {...hotkeys[hotkey]} />
                 )
             )}

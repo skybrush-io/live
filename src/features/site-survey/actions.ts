@@ -15,8 +15,10 @@ import { type GPSPosition } from '~/model/geography';
 import {
   GROSS_CONVEX_HULL_AREA_ID,
   NET_CONVEX_HULL_AREA_ID,
+  areaIdToGlobalId,
   globalIdToAreaId,
   globalIdToHomePositionId,
+  homePositionIdToGlobalId,
   isHomePositionId,
 } from '~/model/identifiers';
 import type { AppThunk } from '~/store/reducers';
@@ -28,6 +30,7 @@ import { calculateDistanceMatrix, toDegrees } from '~/utils/math';
 import {
   getHomePositions,
   getHomePositionsInWorldCoordinates,
+  getSelection,
   selectAdaptedShowAsBlob,
   selectCoordinateSystem,
 } from './selectors';
@@ -42,6 +45,7 @@ import {
   setAdaptResult,
   type ShowData,
   showDialog,
+  updateSelection,
 } from './state';
 
 // -- Initializing
@@ -52,6 +56,24 @@ export const showDialogAndClearUndoHistory =
     dispatch(showDialog(showData));
     dispatch(historyInit());
   };
+
+// -- Selection
+
+export const selectAllModifiableItems =
+  (): AppThunk => (dispatch, getState) => {
+    const state = getState();
+    const homePositions = getHomePositionsInWorldCoordinates(state) ?? [];
+    dispatch(
+      updateSelection('set', [
+        ...homePositions.map((_, i) => homePositionIdToGlobalId(String(i))),
+        areaIdToGlobalId(GROSS_CONVEX_HULL_AREA_ID),
+        areaIdToGlobalId(NET_CONVEX_HULL_AREA_ID),
+      ])
+    );
+  };
+
+export const clearSelection = (): AppThunk => (dispatch) =>
+  dispatch(updateSelection('clear', [])); // TODO: Empty list is redundant...
 
 // -- Transformations
 

@@ -12,13 +12,14 @@ import { removeSelectedFeatures } from '~/features/map-features/actions';
 import { selectAllUAVs } from '~/features/map/selection';
 import { removeSelectedMissionItems } from '~/features/mission/actions';
 import { getPreferredCommunicationChannelIndex } from '~/features/mission/selectors';
+import { togglePreferredChannel } from '~/features/mission/slice';
 import {
   toggleBroadcast,
   toggleDeveloperMode,
 } from '~/features/session/actions';
-import { togglePreferredChannel } from '~/features/mission/slice';
 import { isBroadcast } from '~/features/session/selectors';
 import { toggleMissionIds } from '~/features/settings/slice';
+import { handlers as siteSurveyHandlers } from '~/features/site-survey/hotkeys';
 import { requestRemovalOfSelectedUAVs } from '~/features/uavs/actions';
 import { openUAVDetailsDialog } from '~/features/uavs/details';
 import { getSelectedUAVIds, getUAVIdList } from '~/features/uavs/selectors';
@@ -33,6 +34,7 @@ import {
   handlePendingUAVIdThenDispatch,
 } from './actions';
 import keyMap from './keymap';
+import { getActiveHotkeyScope } from './selectors';
 import {
   isKeyboardNavigationActive,
   sendKeyboardNavigationSignal,
@@ -65,9 +67,16 @@ configureHotkeys({
 // Luckily it is not a problem if we use GlobalHotKeys "outside" the workbench
 // and normal <HotKeys> "inside" the workbench.
 
-const AppHotkeys = ({ handlers }) => (
-  <GlobalHotKeys keyMap={keyMap} handlers={handlers} />
-);
+const AppHotkeys = ({ activeHotkeyScope, handlers }) => {
+  const filteredKeyMap = Object.fromEntries(
+    Object.entries(keyMap).filter(([, { scopes }]) =>
+      scopes.includes(activeHotkeyScope)
+    )
+  );
+  return (
+    <GlobalHotKeys allowChanges keyMap={filteredKeyMap} handlers={handlers} />
+  );
+};
 
 const bindHotkeyHandlers = (reduxHandlers, nonReduxHandlers, dispatch) => ({
   ...nonReduxHandlers,
@@ -82,6 +91,7 @@ const bindHotkeyHandlers = (reduxHandlers, nonReduxHandlers, dispatch) => ({
 });
 
 AppHotkeys.propTypes = {
+  activeHotkeyScope: PropTypes.object,
   handlers: PropTypes.object,
 };
 
@@ -113,7 +123,9 @@ const callUAVActionOnSelection = (actionName) => () => {
 
 export default connect(
   // mapStateToProps
-  null,
+  (state) => ({
+    activeHotkeyScope: getActiveHotkeyScope(state),
+  }),
   // mapDispatchToProps
   (dispatch) => ({
     handlers: bindHotkeyHandlers(
@@ -165,6 +177,7 @@ export default connect(
         TYPE_8: () => appendToPendingUAVId(8),
         TYPE_9: () => appendToPendingUAVId(9),
         TYPE_S: () => appendToPendingUAVId('s'),
+        ...siteSurveyHandlers,
       },
       // Plain callable functions bound to hotkeys
       {
