@@ -1,11 +1,13 @@
-import CircularProgress from '@material-ui/core/CircularProgress';
-import { makeStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
-import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
+import clsx from 'clsx';
 import React, { type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
+
+import CircularProgress from '@material-ui/core/CircularProgress';
+import Button from '@material-ui/core/Button';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
+import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 
 import type { RootState } from '~/store/reducers';
 
@@ -31,6 +33,21 @@ const useStyles = makeStyles((theme) => ({
     gridTemplateColumns: 'max-content 1fr',
     gap: theme.spacing(1),
     alignItems: 'center',
+
+    // TODO: Add a `filter` to the `eslint` rule to ignore these cases globally!
+    //       https://typescript-eslint.io/rules/naming-convention/#filter
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    '& > p': {
+      fontWeight: theme.typography.fontWeightMedium,
+    },
+
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    '& > p:nth-child(odd)': {
+      textAlign: 'right',
+    },
+  },
+  changedDuration: {
+    color: theme.palette.warning.main,
   },
 }));
 
@@ -51,7 +68,7 @@ const AdaptReviewForm = (props: AdaptReviewFormProps): JSX.Element => {
   if (isShowAdaptInProgress) {
     content = (
       <>
-        {t('showAdaptInProgress')}
+        <Typography>{t('showAdaptInProgress')}</Typography>
         <CircularProgress />
       </>
     );
@@ -59,21 +76,21 @@ const AdaptReviewForm = (props: AdaptReviewFormProps): JSX.Element => {
     content = (
       <>
         <div className={styles.reviewGrid}>
-          <Typography variant='body1'>
-            {t('form.takeoff.lengthChange')}
-          </Typography>
+          <Typography>{t('form.takeoff.lengthChange')}</Typography>
           <Typography
-            variant='body1'
-            color={adaptResult.takeoffLengthChange === 0 ? 'primary' : 'error'}
+            className={clsx(
+              adaptResult.takeoffLengthChange !== 0 && styles.changedDuration
+            )}
           >
             {t('form.takeoff.lengthChangeValue', {
               value: adaptResult.takeoffLengthChange,
             })}
           </Typography>
-          <Typography variant='body1'>{t('form.rth.lengthChange')}</Typography>
+          <Typography>{t('form.rth.lengthChange')}</Typography>
           <Typography
-            variant='body1'
-            color={adaptResult.rthLengthChange === 0 ? 'primary' : 'error'}
+            className={clsx(
+              adaptResult.rthLengthChange !== 0 && styles.changedDuration
+            )}
           >
             {t('form.rth.lengthChangeValue', {
               value: adaptResult.rthLengthChange,

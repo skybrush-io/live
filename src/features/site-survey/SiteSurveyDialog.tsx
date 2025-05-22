@@ -59,6 +59,10 @@ const useStyles = makeStyles((theme) => ({
   backdrop: {
     position: 'absolute',
     zIndex: theme.zIndex.modal + 1,
+    backdropFilter: 'blur(4px)',
+    // NOTE: The backdrop is dark regardless of the system theme, so the text
+    //       should always be white in order to ensure the appropriate contrast
+    color: 'white',
   },
   contentRoot: {
     flex: 1,
