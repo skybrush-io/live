@@ -328,6 +328,7 @@ export const adaptShow =
       min_distance: params.minDistance,
       velocity_xy: params.horizontalVelocity,
       velocity_z: params.verticalVelocity,
+      altitude: params.altitude,
       replace: true,
     };
     /* eslint-enable @typescript-eslint/naming-convention */
@@ -336,7 +337,6 @@ export const adaptShow =
         type: 'takeoff',
         parameters: {
           positions,
-          altitude: params.altitude,
           ...common,
         },
       },
