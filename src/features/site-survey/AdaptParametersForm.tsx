@@ -44,11 +44,10 @@ function adaptParametersValid(parameters: ShowAdaptParameters): boolean {
 }
 
 /**
- * Parses a distance (string) as meters and returns the result as an integer
- * to avoid rounding issues.
+ * Parses a distance (string) as meters, rounded to 3 digits.
  */
-function parseDistanceAsMillimeters(value: string): number {
-  return Math.round(Number.parseFloat(value));
+function parseDistanceAsMeters(value: string): number {
+  return Math.round(Number.parseFloat(value) * 1000) * 0.001;
 }
 
 /**
@@ -78,7 +77,7 @@ export function useAdaptParametersFormState(
 
   const onMinDistanceChanged = useCallback(
     (evt: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      const value = parseDistanceAsMillimeters(evt.target.value);
+      const value = parseDistanceAsMeters(evt.target.value);
       const newParameters: ShowAdaptParameters = {
         ...parameters,
         minDistance: value,
@@ -91,7 +90,7 @@ export function useAdaptParametersFormState(
   );
   const onAltitudeChanged = useCallback(
     (evt: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      const value = parseDistanceAsMillimeters(evt.target.value);
+      const value = parseDistanceAsMeters(evt.target.value);
       const newParameters: ShowAdaptParameters = {
         ...parameters,
         altitude: value,
