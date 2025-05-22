@@ -30,7 +30,6 @@ import { calculateDistanceMatrix, toDegrees } from '~/utils/math';
 import {
   getHomePositions,
   getHomePositionsInWorldCoordinates,
-  getSelection,
   selectAdaptedShowAsBlob,
   selectCoordinateSystem,
 } from './selectors';
@@ -43,9 +42,9 @@ import {
   rotateHomePositions,
   rotateShow,
   setAdaptResult,
-  type ShowData,
   showDialog,
   updateSelection,
+  type ShowData,
 } from './state';
 
 // -- Initializing
