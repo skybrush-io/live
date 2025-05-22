@@ -179,11 +179,11 @@ function useOwnState(props: Props) {
         return;
       }
 
+      setStage('review');
+
       if (adaptedBase64Show === undefined) {
         adaptShow(adaptParameters.parameters);
       }
-
-      setStage('review');
     } else if (stage === 'review') {
       if (adaptedBase64Show === undefined) {
         // Shouldn't happen.
@@ -265,7 +265,9 @@ const SiteSurveyDialog = (props: Props): JSX.Element => {
           />
           <Button
             color='primary'
-            disabled={!adjustHomePositionsToDronePositionsEnabled}
+            disabled={
+              !adjustHomePositionsToDronePositionsEnabled || stage !== 'config'
+            }
             onClick={() => {
               adjustHomePositionsToDronePositions();
             }}
