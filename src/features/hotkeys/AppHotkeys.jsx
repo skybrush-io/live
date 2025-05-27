@@ -40,6 +40,7 @@ import {
   sendKeyboardNavigationSignal,
 } from './signal';
 import { showHotkeyDialog } from './slice';
+import { HotkeyScope } from './types';
 
 configureHotkeys({
   // This is necessary to ensure that the appropriate handlers are triggered
@@ -91,7 +92,7 @@ const bindHotkeyHandlers = (reduxHandlers, nonReduxHandlers, dispatch) => ({
 });
 
 AppHotkeys.propTypes = {
-  activeHotkeyScope: PropTypes.object,
+  activeHotkeyScope: PropTypes.oneOf(Object.values(HotkeyScope)),
   handlers: PropTypes.object,
 };
 
