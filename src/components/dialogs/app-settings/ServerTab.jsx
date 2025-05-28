@@ -1,19 +1,18 @@
+import Folder from '@mui/icons-material/FolderOpen';
+import Box from '@mui/material/Box';
+import FormGroup from '@mui/material/FormGroup';
+import IconButton from '@mui/material/IconButton';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import Switch from '@mui/material/Switch';
+import TextField from '@mui/material/TextField';
 import remove from 'lodash-es/remove';
 import trim from 'lodash-es/trim';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
-
-import Box from '@material-ui/core/Box';
-import Folder from '@material-ui/icons/FolderOpen';
-import FormGroup from '@material-ui/core/FormGroup';
-import IconButton from '@material-ui/core/IconButton';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import Switch from '@material-ui/core/Switch';
-import TextField from '@material-ui/core/TextField';
 
 import Tooltip from '@skybrush/mui-components/lib/Tooltip';
 
@@ -76,7 +75,7 @@ const ServerTabPresentation = ({
         />
         {onSelectSearchPath && (
           <Tooltip content='Select folder containing server executable'>
-            <IconButton onClick={onSelectSearchPath}>
+            <IconButton size='large' onClick={onSelectSearchPath}>
               <Folder />
             </IconButton>
           </Tooltip>
@@ -125,9 +124,8 @@ export default connect(
               Array.isArray(currentPaths) && currentPaths.length > 0
                 ? currentPaths[0]
                 : null;
-            const path = await window.bridge.localServer.selectPath(
-              currentPath
-            );
+            const path =
+              await window.bridge.localServer.selectPath(currentPath);
             if (typeof path === 'string' && path.length > 0) {
               dispatch(
                 updateAppSettings('localServer', { searchPath: [path] })

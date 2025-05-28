@@ -1,9 +1,8 @@
+import Box from '@mui/material/Box';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 import TimeAgo from 'react-timeago';
-
-import Box from '@material-ui/core/Box';
 
 const headingFormatter = (_value, _unit, suffix) =>
   suffix === 'ago' ? 'Session expired' : 'Session expires';

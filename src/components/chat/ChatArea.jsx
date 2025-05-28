@@ -3,10 +3,9 @@
  * chat bubbles.
  */
 
+import Box from '@mui/material/Box';
 import PropTypes from 'prop-types';
 import React from 'react';
-
-import Box from '@material-ui/core/Box';
 
 /**
  * Stateless React component showing a chat area that may host one or

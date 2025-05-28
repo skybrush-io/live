@@ -1,5 +1,4 @@
-import DarkModeIcon from '@material-ui/icons/Brightness4';
-
+import DarkModeIcon from '@mui/icons-material/Brightness4';
 import PropTypes from 'prop-types';
 import React from 'react';
 

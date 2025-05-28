@@ -4,6 +4,9 @@
  * @file List-related component helper functions and higher order components.
  */
 
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import type { AnyAction } from '@reduxjs/toolkit';
 import get from 'lodash-es/get';
 import identity from 'lodash-es/identity';
 import includes from 'lodash-es/includes';
@@ -12,12 +15,6 @@ import partial from 'lodash-es/partial';
 import xor from 'lodash-es/xor';
 import PropTypes from 'prop-types';
 import React, { type PropsWithoutRef, type RefAttributes } from 'react';
-import { isElement } from 'react-is';
-
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-
-import type { AnyAction } from '@reduxjs/toolkit';
 
 import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
 
@@ -80,15 +77,14 @@ const createBackgroundHint = (
   backgroundHint: string | React.ReactElement | undefined,
   ref: React.ForwardedRef<unknown>
 ): JSX.Element | null => {
-  if (isElement(backgroundHint)) {
-    return <div>{backgroundHint}</div>;
+  switch (typeof backgroundHint) {
+    case 'string':
+      return <BackgroundHint ref={ref} text={backgroundHint} />;
+    case 'undefined':
+      return null;
+    default:
+      return backgroundHint ? <div>{backgroundHint}</div> : null;
   }
-
-  if (backgroundHint) {
-    return <BackgroundHint ref={ref} text={backgroundHint} />;
-  }
-
-  return null;
 };
 
 /**

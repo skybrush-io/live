@@ -1,13 +1,11 @@
+import Mapping from '@mui/icons-material/FormatLineSpacing';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import Mapping from '@material-ui/icons/FormatLineSpacing';
-
-import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
-
 import ToggleButton from '~/components/ToggleButton';
+import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
 import { isShowingMissionIds } from '~/features/settings/selectors';
 import { toggleMissionIds } from '~/features/settings/slice';
 

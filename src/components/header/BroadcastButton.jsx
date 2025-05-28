@@ -1,18 +1,17 @@
+import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import React, { useEffect, useRef } from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import { makeStyles } from '@material-ui/core/styles';
 import GenericHeaderButton from '@skybrush/mui-components/lib/GenericHeaderButton';
 import SidebarBadge from '@skybrush/mui-components/lib/SidebarBadge';
-
 import Tooltip from '@skybrush/mui-components/lib/Tooltip';
 
 import Colors from '~/components/colors';
-import { setBroadcast } from '~/features/session/slice';
 import { isBroadcast } from '~/features/session/selectors';
+import { setBroadcast } from '~/features/session/slice';
 import Campaign from '~/icons/Campaign';
 
 const isValidTimeoutLength = (value) => typeof value === 'number' && value > 0;

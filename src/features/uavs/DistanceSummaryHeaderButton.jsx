@@ -1,3 +1,4 @@
+import Straighten from '@mui/icons-material/Straighten';
 import isNil from 'lodash-es/isNil';
 import reject from 'lodash-es/reject';
 import PropTypes from 'prop-types';
@@ -5,7 +6,6 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import Straighten from '@material-ui/icons/Straighten';
 import GenericHeaderButton from '@skybrush/mui-components/lib/GenericHeaderButton';
 
 import { isConnected } from '~/features/servers/selectors';

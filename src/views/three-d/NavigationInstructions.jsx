@@ -1,11 +1,10 @@
+import Mouse from '@mui/icons-material/Mouse';
+import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Translation, withTranslation } from 'react-i18next';
 import { TransitionGroup } from 'react-transition-group';
-
-import Box from '@material-ui/core/Box';
-import IconButton from '@material-ui/core/IconButton';
-import Mouse from '@material-ui/icons/Mouse';
 
 import FadeAndSlide from '~/components/transitions/FadeAndSlide';
 
@@ -32,7 +31,7 @@ const instructionsByMode = {
             <kbd>Shift</kbd>
             <span> {t('navigationInstructions.run')} </span>
           </div>
-          <IconButton disabled>
+          <IconButton disabled size='large'>
             <Mouse />
           </IconButton>
           <div style={{ ...divStyle, marginLeft: -8 }}>
@@ -58,7 +57,7 @@ const instructionsByMode = {
             <kbd>C</kbd>
             <span> {t('navigationInstructions.altitude')} </span>
           </div>
-          <IconButton disabled>
+          <IconButton disabled size='large'>
             <Mouse />
           </IconButton>
           <div style={{ ...divStyle, marginLeft: -8 }}>

@@ -5,6 +5,21 @@
 
 import config from 'config';
 
+import Computer from '@mui/icons-material/Computer';
+import EditIcon from '@mui/icons-material/Edit';
+import SignalWifi0Bar from '@mui/icons-material/SignalWifi0Bar';
+import WifiIcon from '@mui/icons-material/Wifi';
+import Button from '@mui/material/Button';
+import CircularProgress from '@mui/material/CircularProgress';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import Tab from '@mui/material/Tab';
+import Typography from '@mui/material/Typography';
 import partial from 'lodash-es/partial';
 import { Switches, TextField } from 'mui-rff';
 import PropTypes from 'prop-types';
@@ -13,31 +28,13 @@ import { Form } from 'react-final-form';
 import { Translation, useTranslation, withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import Button from '@material-ui/core/Button';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import Tab from '@material-ui/core/Tab';
-import Typography from '@material-ui/core/Typography';
-
-import Computer from '@material-ui/icons/Computer';
-import EditIcon from '@material-ui/icons/Edit';
-import SignalWifi0Bar from '@material-ui/icons/SignalWifi0Bar';
-import WifiIcon from '@material-ui/icons/Wifi';
-
 import DialogTabs from '@skybrush/mui-components/lib/DialogTabs';
 import SmallProgressIndicator from '@skybrush/mui-components/lib/SmallProgressIndicator';
 
 import {
   ServerDetectionManager,
   isServerDetectionSupported,
-} from '../ServerDetectionManager';
-
+} from '~/components/ServerDetectionManager';
 import { forceFormSubmission } from '~/components/forms';
 import {
   closeServerSettingsDialog,

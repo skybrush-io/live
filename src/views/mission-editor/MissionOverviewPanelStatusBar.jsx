@@ -1,18 +1,16 @@
+import Error from '@mui/icons-material/Error';
+import Info from '@mui/icons-material/Info';
+import Timeline from '@mui/icons-material/Timeline';
+import Timer from '@mui/icons-material/Timer';
+import Warning from '@mui/icons-material/Warning';
+import Box from '@mui/material/Box';
+import Chip from '@mui/material/Chip';
+import Paper from '@mui/material/Paper';
+import Toolbar from '@mui/material/Toolbar';
+import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import { connect } from 'react-redux';
-
-import Box from '@material-ui/core/Box';
-import Chip from '@material-ui/core/Chip';
-import Paper from '@material-ui/core/Paper';
-import Toolbar from '@material-ui/core/Toolbar';
-import { makeStyles } from '@material-ui/core/styles';
-
-import Error from '@material-ui/icons/Error';
-import Info from '@material-ui/icons/Info';
-import Timeline from '@material-ui/icons/Timeline';
-import Timer from '@material-ui/icons/Timer';
-import Warning from '@material-ui/icons/Warning';
 
 import Colors from '~/components/colors';
 import ToggleButton from '~/components/ToggleButton';

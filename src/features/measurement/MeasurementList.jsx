@@ -1,3 +1,9 @@
+import IconButton from '@mui/material/IconButton';
+import ListItem from '@mui/material/ListItem';
+import ListItemAvatar from '@mui/material/ListItemAvatar';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import ListItemText from '@mui/material/ListItemText';
+import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import identity from 'lodash-es/identity';
 import isNil from 'lodash-es/isNil';
@@ -6,13 +12,6 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Translation, useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
-
-import IconButton from '@material-ui/core/IconButton';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
-import { makeStyles } from '@material-ui/core/styles';
 
 import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
 import Tooltip from '@skybrush/mui-components/lib/Tooltip';
@@ -197,7 +196,12 @@ const MeasurementListItem = ({
       {numSamples > 0 && (
         <ListItemSecondaryAction>
           <Tooltip content={t('measurementList.copyToClipboard')}>
-            <IconButton edge='end' aria-label='copy' onClick={() => onCopy(id)}>
+            <IconButton
+              edge='end'
+              aria-label='copy'
+              size='large'
+              onClick={() => onCopy(id)}
+            >
               <ContentCopy />
             </IconButton>
           </Tooltip>

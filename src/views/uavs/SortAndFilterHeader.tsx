@@ -1,28 +1,28 @@
 /* eslint-disable @typescript-eslint/naming-convention */
+import SortAscending from '@mui/icons-material/ArrowDownward';
+import SortDescending from '@mui/icons-material/ArrowUpward';
+import Check from '@mui/icons-material/Check';
+import Filter from '@mui/icons-material/FilterList';
+import Chip, { type ChipProps } from '@mui/material/Chip';
+import Divider from '@mui/material/Divider';
+import Menu from '@mui/material/Menu';
+import MenuItem, { type MenuItemProps } from '@mui/material/MenuItem';
+import type { Theme } from '@mui/material/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import createColor from 'color';
 import type { TFunction } from 'i18next';
-import React, { useCallback, useRef, type SyntheticEvent } from 'react';
-import { withTranslation } from 'react-i18next';
-import { connect } from 'react-redux';
-
-import Chip, { type ChipProps } from '@material-ui/core/Chip';
-import Divider from '@material-ui/core/Divider';
-import Menu from '@material-ui/core/Menu';
-import MenuItem, { type MenuItemProps } from '@material-ui/core/MenuItem';
-import { type Theme, makeStyles } from '@material-ui/core/styles';
-import Check from '@material-ui/icons/Check';
-import Filter from '@material-ui/icons/FilterList';
-import SortAscending from '@material-ui/icons/ArrowDownward';
-import SortDescending from '@material-ui/icons/ArrowUpward';
 import type { PopupState } from 'material-ui-popup-state/core';
 import {
   bindMenu,
   bindTrigger,
   usePopupState,
 } from 'material-ui-popup-state/hooks';
+import React, { useCallback, useRef, type SyntheticEvent } from 'react';
+import { withTranslation } from 'react-i18next';
+import { connect } from 'react-redux';
 
-import { isThemeDark, monospacedFont } from '@skybrush/app-theme-material-ui';
+import { isThemeDark, monospacedFont } from '@skybrush/app-theme-mui';
 
 import Colors from '~/components/colors';
 import FadeAndSlide from '~/components/transitions/FadeAndSlide';
@@ -53,8 +53,8 @@ import {
   labelsForUAVSortKey,
   shortLabelsForUAVSortKey,
 } from '~/model/sorting';
-import type { Nullable } from '~/utils/types';
 import type { RootState } from '~/store/reducers';
+import type { Nullable } from '~/utils/types';
 
 import { HEADER_HEIGHT } from './constants';
 
@@ -92,7 +92,7 @@ const createChipStyle = (
 };
 
 const useStyles = makeStyles(
-  (theme) => ({
+  (theme: Theme) => ({
     root: {
       backdropFilter: 'blur(5px)',
       background: isThemeDark(theme)
@@ -294,7 +294,7 @@ const HEADER_TEXT_PARTS: Record<string, HeaderPart[]> = {
       style: {
         textAlign: 'right',
         width: 40,
-      }
+      },
     },
     ...COMMON_HEADER_TEXT_PARTS,
   ],

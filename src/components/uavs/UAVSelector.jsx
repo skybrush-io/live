@@ -2,16 +2,15 @@
  * @file Component that allows the user to select a UAV from a dropdown list.
  */
 
+import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { shallowEqual, useSelector } from 'react-redux';
 
-import { makeStyles } from '@material-ui/core/styles';
 import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
 
 import { PopoverWithContainerFromContext as Popover } from '~/containerContext';
-
 import { getReverseMissionMapping } from '~/features/mission/selectors';
 import {
   getUAVIdList,
@@ -31,11 +30,11 @@ const useStyles = makeStyles(
 
       width:
         5 * 40 + // Five avatars
-        6 * theme.spacing(1) + // Paddings and gaps
+        6 * Number.parseInt(theme.spacing(1)) + // Paddings and gaps
         SCROLLBAR_WIDTH,
       maxHeight:
         5 * 40 + // Five avatars
-        6 * theme.spacing(1), // Paddings and gaps
+        6 * Number.parseInt(theme.spacing(1)), // Paddings and gaps
 
       padding: theme.spacing(1),
 
@@ -57,16 +56,16 @@ const useStyles = makeStyles(
         height: theme.spacing(2),
 
         position: 'absolute',
-        top: -theme.spacing(1),
+        top: `-${theme.spacing(1)}`,
         left: ({ anchorCenter }) =>
-          `calc(50% - ${theme.spacing(1)}px + ${
+          `calc(50% - ${theme.spacing(1)} + ${
             // Adjust arrow position when the `Popover` is pushed against the
             // edge of the viewport, thus isn't centered on the anchor element
             (() => {
-              const margin = theme.spacing(2);
+              const margin = Number.parseInt(theme.spacing(2));
               const width =
                 5 * 40 + // Five avatars
-                6 * theme.spacing(1); // Paddings and gaps
+                6 * Number.parseInt(theme.spacing(1)); // Paddings and gaps
               const leftLimit = margin + width / 2;
               const rightLimit = window.innerWidth - leftLimit;
 

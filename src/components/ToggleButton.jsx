@@ -1,5 +1,5 @@
-import { styled } from '@material-ui/core/styles';
-import ToggleButton_ from '@material-ui/lab/ToggleButton';
+import { styled } from '@mui/material/styles';
+import ToggleButton_ from '@mui/material/ToggleButton';
 
 /**
  * Borderless variant of the Material-UI toggle button.

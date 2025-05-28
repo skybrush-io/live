@@ -1,6 +1,7 @@
-import { makeStyles } from '@material-ui/core';
-import Box from '@material-ui/core/Box';
-import FormGroup from '@material-ui/core/FormGroup';
+import Box from '@mui/material/Box';
+import FormGroup from '@mui/material/FormGroup';
+import type { Theme } from '@mui/material/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -23,7 +24,7 @@ const defaultAdaptParameters: ShowAdaptParameters = {
   verticalVelocity: 1.5,
 };
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   formGroup: {
     gap: theme.spacing(2),
     marginTop: theme.spacing(-2),

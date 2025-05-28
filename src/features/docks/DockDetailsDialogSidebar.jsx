@@ -1,20 +1,18 @@
+import MeetingRoom from '@mui/icons-material/MeetingRoom';
+import NoMeetingRoom from '@mui/icons-material/NoMeetingRoom';
+import PowerSettingsNew from '@mui/icons-material/PowerSettingsNew';
+import Refresh from '@mui/icons-material/Refresh';
+import Box from '@mui/material/Box';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import IconButton from '@mui/material/IconButton';
+import Switch from '@mui/material/Switch';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 import { useToggle } from 'react-use';
-
-import Box from '@material-ui/core/Box';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import IconButton from '@material-ui/core/IconButton';
-import Switch from '@material-ui/core/Switch';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
-
-import MeetingRoom from '@material-ui/icons/MeetingRoom';
-import NoMeetingRoom from '@material-ui/icons/NoMeetingRoom';
-import PowerSettingsNew from '@material-ui/icons/PowerSettingsNew';
-import Refresh from '@material-ui/icons/Refresh';
 
 import StatusText from '@skybrush/mui-components/lib/StatusText';
 import Tooltip from '@skybrush/mui-components/lib/Tooltip';
@@ -127,7 +125,7 @@ const DockDetailsDialogSidebar = ({ dockId }) => {
       />
       <Box flex={1} />
       <FormControlLabel
-        control={<Switch color='primary' />}
+        control={<Switch />}
         label='Automatic mode'
         style={{ margin: '0 !important' }}
         checked={modeIsAuto}

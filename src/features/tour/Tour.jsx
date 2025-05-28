@@ -1,11 +1,10 @@
 import config from 'config';
 
+import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
 import React from 'react';
-import ReactTour from 'reactour';
 import { connect } from 'react-redux';
-
-import { makeStyles } from '@material-ui/core/styles';
+import ReactTour from 'reactour';
 
 import { dismissTour } from '~/features/tour/slice';
 

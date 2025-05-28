@@ -2,21 +2,19 @@
  * @file Component that shows the list of locations saved by the user.
  */
 
+import Add from '@mui/icons-material/Add';
+import Edit from '@mui/icons-material/Edit';
+import IconButton from '@mui/material/IconButton';
+import ListItem from '@mui/material/ListItem';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import ListItemText from '@mui/material/ListItemText';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Translation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import IconButton from '@material-ui/core/IconButton';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
-import Add from '@material-ui/icons/Add';
-import Edit from '@material-ui/icons/Edit';
-
-import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
-
 import { listOf } from '~/components/helpers/lists';
+import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
 import {
   createNewSavedLocation,
   editSavedLocation,
@@ -45,7 +43,7 @@ const LocationListEntry = (props) => {
     <Translation>
       {(t) => (
         <Tooltip content={t('savedLocation.edit')}>
-          <IconButton edge='end' onClick={editLocation}>
+          <IconButton edge='end' size='large' onClick={editLocation}>
             <Edit />
           </IconButton>
         </Tooltip>
@@ -78,7 +76,7 @@ const createNewItemEntry = (props) => (
       {(t) => <ListItemText primary={t('savedLocation.addNew')} />}
     </Translation>
     <ListItemSecondaryAction>
-      <IconButton edge='end' onClick={props.onNewItem}>
+      <IconButton edge='end' size='large' onClick={props.onNewItem}>
         <Add />
       </IconButton>
     </ListItemSecondaryAction>

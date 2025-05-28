@@ -4,11 +4,10 @@
  * the scan.
  */
 
+import ListItemText from '@mui/material/ListItemText';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
-
-import ListItemText from '@material-ui/core/ListItemText';
 
 import DialogHeaderListItem, {
   ICON_PRESETS,
@@ -28,10 +27,10 @@ const PathScannerPresentation = ({
     {scanning
       ? ICON_PRESETS.inProgress
       : error
-      ? ICON_PRESETS.error
-      : result
-      ? ICON_PRESETS.success
-      : ICON_PRESETS.warning}
+        ? ICON_PRESETS.error
+        : result
+          ? ICON_PRESETS.success
+          : ICON_PRESETS.warning}
     <ListItemText
       primary={
         error ||

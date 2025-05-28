@@ -1,17 +1,17 @@
 /* eslint-disable @typescript-eslint/naming-convention */
+import type { Theme } from '@mui/material/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import React, { useCallback } from 'react';
 import { useDrag, useDrop, type ConnectableElement } from 'react-dnd';
 
-import { makeStyles } from '@material-ui/core/styles';
-
 import Colors from '~/components/colors';
 
-import { uavIdToDOMNodeId } from './utils';
 import { GRID_ITEM_WIDTH } from './constants';
+import { uavIdToDOMNodeId } from './utils';
 
 const useStyles = makeStyles(
-  (theme) => ({
+  (theme: Theme) => ({
     root: {
       alignItems: 'center',
       cursor: 'pointer',

@@ -1,12 +1,11 @@
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 import { TextField } from 'mui-rff';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { withTranslation } from 'react-i18next';
 import { Form } from 'react-final-form';
+import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
-
-import Box from '@material-ui/core/Box';
-import Typography from '@material-ui/core/Typography';
 
 import FormSubmissionButtonRow from '~/components/forms/FormSubmissionButtonRow';
 import { updateManualPreflightCheckItemsFromString } from '~/features/preflight/actions';

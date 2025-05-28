@@ -1,6 +1,6 @@
+import Box from '@mui/material/Box';
 import React from 'react';
 
-import Box from '@material-ui/core/Box';
 import MissionOverviewList from './MissionOverviewList';
 import MissionOverviewPanelFooter from './MissionOverviewPanelFooter';
 import MissionOverviewPanelHeader from './MissionOverviewPanelHeader';

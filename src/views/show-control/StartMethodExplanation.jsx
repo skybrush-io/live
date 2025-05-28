@@ -1,16 +1,14 @@
+import Alarm from '@mui/icons-material/Alarm';
+import HelpOutline from '@mui/icons-material/HelpOutline';
+import SettingsRemote from '@mui/icons-material/SettingsRemote';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
-
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-
-import Alarm from '@material-ui/icons/Alarm';
-import HelpOutline from '@material-ui/icons/HelpOutline';
-import SettingsRemote from '@material-ui/icons/SettingsRemote';
 
 import ClockDisplayLabel from '~/components/ClockDisplayLabel';
 import { StartMethod } from '~/features/show/enums';
