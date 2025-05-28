@@ -2,10 +2,9 @@
  * @file React component for message input with history.
  */
 
+import TextField from '@mui/material/TextField';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
-
-import TextField from '@material-ui/core/TextField';
 
 const MessageField = React.forwardRef(
   ({ history, onEscape, onSubmit, ...rest }, ref) => {

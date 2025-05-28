@@ -1,9 +1,8 @@
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
 import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect, useDispatch, useSelector } from 'react-redux';
-
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
 
 import MiniList from '@skybrush/mui-components/lib/MiniList';
 import MiniListItem from '@skybrush/mui-components/lib/MiniListItem';

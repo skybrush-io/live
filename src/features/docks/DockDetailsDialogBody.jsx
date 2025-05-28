@@ -1,21 +1,20 @@
+import Sync from '@mui/icons-material/Sync';
+import Divider from '@mui/material/Divider';
+import IconButton from '@mui/material/IconButton';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import ListItemText from '@mui/material/ListItemText';
+import ListSubheader from '@mui/material/ListSubheader';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
-import IconButton from '@material-ui/core/IconButton';
-import Divider from '@material-ui/core/Divider';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
-import ListSubheader from '@material-ui/core/ListSubheader';
-import Sync from '@material-ui/icons/Sync';
-
 import StatusLight from '@skybrush/mui-components/lib/StatusLight';
 
 import {
-  getSelectedTabInDockDetailsDialog,
   getSelectedDockIdInDockDetailsDialog,
+  getSelectedTabInDockDetailsDialog,
 } from './details';
 
 const DockDetailsDialogBody = ({ dockId, selectedTab }) => {
@@ -112,7 +111,7 @@ const DockDetailsDialogBody = ({ dockId, selectedTab }) => {
                 secondary='0.5 GB used • 63.1 GB free • 0.8%'
               />
               <ListItemSecondaryAction>
-                <IconButton>
+                <IconButton size='large'>
                   <Sync />
                 </IconButton>
               </ListItemSecondaryAction>

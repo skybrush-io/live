@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
 
 import AsyncGuard from '~/components/AsyncGuard';
 import { selectableListOf } from '~/components/helpers/lists';

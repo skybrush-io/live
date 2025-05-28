@@ -1,38 +1,36 @@
+import AccessTime from '@mui/icons-material/AccessTime';
+import AdapterDateFns from '@mui/lab/AdapterDateFns';
+import LocalizationProvider from '@mui/lab/LocalizationProvider';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import FormGroup from '@mui/material/FormGroup';
+import MenuItem from '@mui/material/MenuItem';
 import {
-  add,
-  endOfDay,
-  fromUnixTime,
-  getUnixTime,
-  isPast,
-  isValid,
-  setSeconds,
-  startOfDay,
-  startOfSecond,
+    add,
+    endOfDay,
+    fromUnixTime,
+    getUnixTime,
+    isPast,
+    isValid,
+    setSeconds,
+    startOfDay,
+    startOfSecond,
 } from 'date-fns';
 import type { FormApi } from 'final-form';
 import type { TFunction } from 'i18next';
 import {
-  Checkboxes,
-  KeyboardDatePicker,
-  KeyboardTimePicker,
-  Select,
+    Checkboxes,
+    KeyboardDatePicker,
+    KeyboardTimePicker,
+    Select,
 } from 'mui-rff';
 import React, { useMemo } from 'react';
 import { Form, type FormProps } from 'react-final-form';
 import { useTranslation, withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
-
-import DateFnsUtils from '@date-io/date-fns';
-
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import FormGroup from '@material-ui/core/FormGroup';
-import MenuItem from '@material-ui/core/MenuItem';
-import AccessTime from '@material-ui/icons/AccessTime';
-import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 
 import Header from '@skybrush/mui-components/lib/FormHeader';
 
@@ -41,10 +39,10 @@ import { CommonClockId } from '~/features/clocks/types';
 import { authorizeIfAndOnlyIfHasStartTime } from '~/features/show/actions';
 import { StartMethod } from '~/features/show/enums';
 import {
-  closeStartTimeDialog,
-  setStartMethod,
-  setStartTime,
-  synchronizeShowSettings,
+    closeStartTimeDialog,
+    setStartMethod,
+    setStartTime,
+    synchronizeShowSettings,
 } from '~/features/show/slice';
 import type { RootState } from '~/store/reducers';
 import { formatDurationHMS } from '~/utils/formatting';
@@ -213,7 +211,7 @@ const StartTimeFormPresentation = ({
                       fullWidth={false}
                       inputVariant='filled'
                       label={t('startTimeDialog.startDate')}
-                      margin='dense'
+                      size='small'
                       name='utcDate'
                       variant='dialog'
                     />
@@ -226,7 +224,7 @@ const StartTimeFormPresentation = ({
                       inputVariant='filled'
                       keyboardIcon={<AccessTime />}
                       label={t('startTimeDialog.startTime')}
-                      margin='dense'
+                      size='small'
                       name='utcTime'
                       variant='dialog'
                     />
@@ -236,7 +234,7 @@ const StartTimeFormPresentation = ({
                 <Box flex={1}>
                   <HMSDurationField
                     label={t('startTimeDialog.startTimeHms')}
-                    margin='dense'
+                    size='small'
                     name='timeOnClock'
                     variant='filled'
                   />
@@ -350,7 +348,7 @@ const StartTimeDialog = ({
     : LocalClockId.ABSOLUTE;
 
   return (
-    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+    <LocalizationProvider utils={AdapterDateFns}>
       <Dialog fullWidth open={open} maxWidth='sm' onClose={onClose}>
         <StartTimeForm
           alwaysAllowSubmission={!hasUtcStartTime}
@@ -368,7 +366,7 @@ const StartTimeDialog = ({
           onSubmit={onUpdateSettings}
         />
       </Dialog>
-    </MuiPickersUtilsProvider>
+    </LocalizationProvider>
   );
 };
 

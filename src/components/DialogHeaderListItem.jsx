@@ -1,15 +1,14 @@
+import Clear from '@mui/icons-material/Clear';
+import Done from '@mui/icons-material/Done';
+import Warning from '@mui/icons-material/Warning';
+import CircularProgress from '@mui/material/CircularProgress';
+import ListItem from '@mui/material/ListItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import { green, red, yellow } from '@mui/material/colors';
+import makeStyles from '@mui/styles/makeStyles';
 import React from 'react';
 
-import CircularProgress from '@material-ui/core/CircularProgress';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import { green, red, yellow } from '@material-ui/core/colors';
-import { makeStyles } from '@material-ui/core/styles';
-import Clear from '@material-ui/icons/Clear';
-import Done from '@material-ui/icons/Done';
-import Warning from '@material-ui/icons/Warning';
-
-import { isThemeDark } from '@skybrush/app-theme-material-ui';
+import { isThemeDark } from '@skybrush/app-theme-mui';
 
 const useStyles = makeStyles(
   (theme) => ({

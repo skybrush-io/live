@@ -2,19 +2,18 @@
  * @file Component that shows the list of layers on the current map.
  */
 
+import AddCircleOutline from '@mui/icons-material/AddCircleOutline';
+import ListItem from '@mui/material/ListItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import AddCircleOutline from '@material-ui/icons/AddCircleOutline';
-
 import { selectableListOf } from '~/components/helpers/lists';
 import { showLayerSettingsDialog } from '~/features/map/layer-settings-dialog';
 import { addLayer } from '~/features/map/layers';
-import { labelForLayerType, iconForLayerType } from '~/model/layers';
+import { iconForLayerType, labelForLayerType } from '~/model/layers';
 import { getLayersInTopmostFirstOrder } from '~/selectors/ordered';
 
 /**

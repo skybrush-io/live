@@ -3,28 +3,27 @@
  * currently selected UAVs.
  */
 
+import Add from '@mui/icons-material/Add';
+import Assignment from '@mui/icons-material/Assignment';
+import Block from '@mui/icons-material/Block';
+import ActionDelete from '@mui/icons-material/Delete';
+import Edit from '@mui/icons-material/Edit';
+import PositionHold from '@mui/icons-material/Flag';
+import Flight from '@mui/icons-material/Flight';
+import FlightLand from '@mui/icons-material/FlightLand';
+import FlightTakeoff from '@mui/icons-material/FlightTakeoff';
+import Grain from '@mui/icons-material/Grain';
+import Home from '@mui/icons-material/Home';
+import Moon from '@mui/icons-material/NightsStay';
+import PinDrop from '@mui/icons-material/PinDrop';
+import ActionPowerSettingsNew from '@mui/icons-material/PowerSettingsNew';
+import Refresh from '@mui/icons-material/Refresh';
+import Divider from '@mui/material/Divider';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import MenuItem from '@mui/material/MenuItem';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Translation } from 'react-i18next';
-
-import Divider from '@material-ui/core/Divider';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import MenuItem from '@material-ui/core/MenuItem';
-import Add from '@material-ui/icons/Add';
-import Assignment from '@material-ui/icons/Assignment';
-import Block from '@material-ui/icons/Block';
-import ActionDelete from '@material-ui/icons/Delete';
-import Edit from '@material-ui/icons/Edit';
-import PositionHold from '@material-ui/icons/Flag';
-import Flight from '@material-ui/icons/Flight';
-import FlightLand from '@material-ui/icons/FlightLand';
-import FlightTakeoff from '@material-ui/icons/FlightTakeoff';
-import Grain from '@material-ui/icons/Grain';
-import Home from '@material-ui/icons/Home';
-import Moon from '@material-ui/icons/NightsStay';
-import PinDrop from '@material-ui/icons/PinDrop';
-import ActionPowerSettingsNew from '@material-ui/icons/PowerSettingsNew';
-import Refresh from '@material-ui/icons/Refresh';
 
 import ContextMenu from '~/components/ContextMenu';
 import Bolt from '~/icons/Bolt';

@@ -1,9 +1,8 @@
+import ListItem from '@mui/material/ListItem';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
-
-import ListItem from '@material-ui/core/ListItem';
 
 import StatusLight from '@skybrush/mui-components/lib/StatusLight';
 
