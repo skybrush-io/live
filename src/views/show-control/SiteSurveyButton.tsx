@@ -1,4 +1,4 @@
-import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -129,7 +129,7 @@ const SiteSurveyButton = (props: Props): JSX.Element => {
 
   return (
     <div ref={setTooltipTriggerTarget}>
-      <ListItem button disabled={disabled} onClick={openWithShow}>
+      <ListItemButton disabled={disabled} onClick={openWithShow}>
         <StatusLight status={disabled ? Status.OFF : status} />
         <ListItemText
           primary={
@@ -148,7 +148,7 @@ const SiteSurveyButton = (props: Props): JSX.Element => {
           }
           secondary={t('show.siteSurvey.description')}
         />
-      </ListItem>
+      </ListItemButton>
     </div>
   );
 };

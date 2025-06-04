@@ -3,7 +3,7 @@ import GetApp from '@mui/icons-material/GetApp';
 import Save from '@mui/icons-material/Save';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
-import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
 import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
@@ -142,7 +142,7 @@ const UAVLogListItem = ({ id, kind, size, timestamp, uavId }) => {
   const onClick = isLoading ? undefined : log ? save : download;
 
   return (
-    <ListItem button onClick={onClick}>
+    <ListItemButton onClick={onClick}>
       <StatusLight
         status={
           {
@@ -175,7 +175,7 @@ const UAVLogListItem = ({ id, kind, size, timestamp, uavId }) => {
           )}
         </IconButton>
       </ListItemSecondaryAction>
-    </ListItem>
+    </ListItemButton>
   );
 };
 

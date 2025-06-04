@@ -2,7 +2,7 @@ import Sync from '@mui/icons-material/Sync';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
 import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import ListItemText from '@mui/material/ListItemText';
 import ListSubheader from '@mui/material/ListSubheader';
@@ -22,31 +22,31 @@ const DockDetailsDialogBody = ({ dockId, selectedTab }) => {
     case 'status':
       return (
         <List>
-          <ListItem button>
+          <ListItemButton>
             <StatusLight status='success' />
             <ListItemText primary='Door closed' />
-          </ListItem>
-          <ListItem button>
+          </ListItemButton>
+          <ListItemButton>
             <StatusLight status='success' />
             <ListItemText primary='Tilt angle: 0.7°' />
-          </ListItem>
+          </ListItemButton>
 
           <ListSubheader>Landing pad 1</ListSubheader>
-          <ListItem button>
+          <ListItemButton>
             <StatusLight status='success' />
             <ListItemText primary='Landing pad is at the bottom' />
-          </ListItem>
-          <ListItem button>
+          </ListItemButton>
+          <ListItemButton>
             <StatusLight status='success' />
             <ListItemText primary='Tweezers touching drone leg (left, right)' />
-          </ListItem>
-          <ListItem button>
+          </ListItemButton>
+          <ListItemButton>
             <StatusLight status='info' />
             <ListItemText
               primary='Drone is charging'
               secondary='11.6V • Time until full: 17m 12s'
             />
-          </ListItem>
+          </ListItemButton>
         </List>
       );
 

@@ -3,7 +3,7 @@ import Box from '@mui/material/Box';
 import FormGroup from '@mui/material/FormGroup';
 import IconButton from '@mui/material/IconButton';
 import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Switch from '@mui/material/Switch';
@@ -34,7 +34,7 @@ const ServerTabPresentation = ({
   <div style={{ position: 'relative', top: -8 }}>
     <List dense disablePadding style={{ margin: '0 -24px' }}>
       <PathScanner />
-      <ListItem button disableRipple onClick={enabled ? onDisable : onEnable}>
+      <ListItemButton disableRipple onClick={enabled ? onDisable : onEnable}>
         <ListItemIcon style={{ margin: '0 17px 0 2px' }}>
           <Switch checked={enabled} />
         </ListItemIcon>
@@ -42,7 +42,7 @@ const ServerTabPresentation = ({
           primary='Launch local server automatically'
           secondary='Only if the application is connecting to localhost'
         />
-      </ListItem>
+      </ListItemButton>
     </List>
     <FormGroup>
       <Box mt={1}>

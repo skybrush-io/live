@@ -4,7 +4,7 @@ import NavigateNext from '@mui/icons-material/NavigateNext';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
-import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
 import makeStyles from '@mui/styles/makeStyles';
 import { animated, useTransition } from '@react-spring/web';
 import PropTypes from 'prop-types';
@@ -109,14 +109,14 @@ const ParameterListSidebar = ({
               ...rest,
             }}
           >
-            <ListItem button onClick={() => onRemoveItem(name)}>
+            <ListItemButton onClick={() => onRemoveItem(name)}>
               <Box display='flex' flexDirection='row' flexGrow={1}>
                 <Box flexGrow={1}>{name}</Box>
                 <Box color='text.secondary' ml={1}>
                   {value}
                 </Box>
               </Box>
-            </ListItem>
+            </ListItemButton>
           </animated.div>
         ))}
       </MiniList>

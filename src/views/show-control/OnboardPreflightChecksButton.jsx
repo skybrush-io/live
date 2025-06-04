@@ -1,4 +1,4 @@
-import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -30,7 +30,7 @@ const OnboardPreflightChecksButton = ({
   const { t } = useTranslation();
 
   return (
-    <ListItem button disabled={status === Status.OFF} {...rest}>
+    <ListItemButton disabled={status === Status.OFF} {...rest}>
       <StatusLight status={status} />
       <ListItemText
         primary={t('show.onboardPreflightChecks', 'Onboard preflight checks')}
@@ -45,7 +45,7 @@ const OnboardPreflightChecksButton = ({
         />
       </ListItemSecondaryAction>
       */}
-    </ListItem>
+    </ListItemButton>
   );
 };
 

@@ -1,6 +1,6 @@
 import IconButton from '@mui/material/IconButton';
-import ListItem from '@mui/material/ListItem';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
+import ListItemButton from '@mui/material/ListItemButton';
 import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import ListItemText from '@mui/material/ListItemText';
 import makeStyles from '@mui/styles/makeStyles';
@@ -184,7 +184,7 @@ const MeasurementListItem = ({
   }
 
   return (
-    <ListItem button {...rest} className={classes.root}>
+    <ListItemButton {...rest} className={classes.root}>
       <ListItemAvatar>
         <DroneAvatar id={id} variant='minimal' crossed={!sampling} />
       </ListItemAvatar>
@@ -207,7 +207,7 @@ const MeasurementListItem = ({
           </Tooltip>
         </ListItemSecondaryAction>
       )}
-    </ListItem>
+    </ListItemButton>
   );
 };
 

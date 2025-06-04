@@ -5,7 +5,7 @@
 import Add from '@mui/icons-material/Add';
 import Edit from '@mui/icons-material/Edit';
 import IconButton from '@mui/material/IconButton';
-import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
 import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import ListItemText from '@mui/material/ListItemText';
 import PropTypes from 'prop-types';
@@ -52,10 +52,10 @@ const LocationListEntry = (props) => {
   );
 
   return (
-    <ListItem button onClick={scrollToLocation}>
+    <ListItemButton onClick={scrollToLocation}>
       <ListItemText primary={name} />
       <ListItemSecondaryAction>{actionButton}</ListItemSecondaryAction>
-    </ListItem>
+    </ListItemButton>
   );
 };
 
