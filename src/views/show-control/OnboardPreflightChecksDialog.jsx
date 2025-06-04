@@ -4,7 +4,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import Switch from '@mui/material/Switch';
 import PropTypes from 'prop-types';
@@ -55,7 +55,7 @@ const PreflightCheckListPresentation = ({ items, showMissionIds, ...rest }) => {
         const itemId = `preflight-item-${item.code}`;
         const status = severityToStatus[getSeverityOfErrorCode(item.code)];
         return (
-          <ListItem key={itemId} button disableRipple>
+          <ListItemButton key={itemId} button disableRipple>
             <StatusLight status={status} />
             <ListItemText
               id={itemId}
@@ -68,7 +68,7 @@ const PreflightCheckListPresentation = ({ items, showMissionIds, ...rest }) => {
                 )
               )}
             />
-          </ListItem>
+          </ListItemButton>
         );
       })}
     </List>
