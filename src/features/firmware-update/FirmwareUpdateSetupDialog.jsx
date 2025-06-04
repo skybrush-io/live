@@ -4,15 +4,15 @@ import PropTypes from 'prop-types';
 import React, { useCallback, useMemo, useState } from 'react';
 import { connect } from 'react-redux';
 
+import NavigateBefore from '@mui/icons-material/NavigateBefore';
+import NavigateNext from '@mui/icons-material/NavigateNext';
+import SaveAlt from '@mui/icons-material/SaveAlt';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Collapse from '@mui/material/Collapse';
 import DialogActions from '@mui/material/DialogActions';
-import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
-import NavigateBefore from '@mui/icons-material/NavigateBefore';
-import NavigateNext from '@mui/icons-material/NavigateNext';
-import SaveAlt from '@mui/icons-material/SaveAlt';
 
 import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
 import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
@@ -34,9 +34,9 @@ import {
 
 const FirmwareUpdateTargetSelectorPresentation = selectableListOf(
   ({ name, id }, { onItemSelected }) => (
-    <ListItem key={id} button onClick={onItemSelected}>
+    <ListItemButton key={id} onClick={onItemSelected}>
       <ListItemText primary={name} secondary={id} />
-    </ListItem>
+    </ListItemButton>
   ),
   {
     dataProvider: 'items',

@@ -3,7 +3,7 @@
  */
 
 import AddCircleOutline from '@mui/icons-material/AddCircleOutline';
-import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import PropTypes from 'prop-types';
@@ -26,9 +26,8 @@ import { getLayersInTopmostFirstOrder } from '~/selectors/ordered';
 const createListItemForLayer = (layer, props) => {
   const icon = iconForLayerType(layer.type);
   return (
-    <ListItem
+    <ListItemButton
       key={layer.id}
-      button
       style={layer.visible ? undefined : { opacity: 0.3 }}
       onClick={props.onItemSelected}
     >
@@ -37,7 +36,7 @@ const createListItemForLayer = (layer, props) => {
         primary={layer.label}
         secondary={labelForLayerType(layer.type)}
       />
-    </ListItem>
+    </ListItemButton>
   );
 };
 
@@ -49,12 +48,12 @@ const createListItemForLayer = (layer, props) => {
  */
 const createNewItemEntry = (props) => {
   return (
-    <ListItem key='__newItem__' button onClick={props.onNewItem}>
+    <ListItemButton key='__newItem__' onClick={props.onNewItem}>
       <ListItemIcon>
         <AddCircleOutline />
       </ListItemIcon>
       <ListItemText primary='Add new layer' />
-    </ListItem>
+    </ListItemButton>
   );
 };
 

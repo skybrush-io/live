@@ -16,6 +16,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Tab from '@mui/material/Tab';
@@ -122,7 +123,7 @@ const DetectedServersListPresentation = ({
       </ListItem>
     ) : null}
     {items.map((item) => (
-      <ListItem key={item.id} button onClick={partial(onItemSelected, item)}>
+      <ListItemButton key={item.id} onClick={partial(onItemSelected, item)}>
         <ListItemIcon>{iconForServerItem(item)}</ListItemIcon>
         <ListItemText
           {...(item.label
@@ -140,15 +141,15 @@ const DetectedServersListPresentation = ({
                 secondary: protocolForServerItem(item)(t),
               })}
         />
-      </ListItem>
+      </ListItemButton>
     ))}
     {manualSetupAllowed && (
-      <ListItem key='__manual' button onClick={partial(onItemSelected, null)}>
+      <ListItemButton key='__manual' onClick={partial(onItemSelected, null)}>
         <ListItemIcon>
           <EditIcon />
         </ListItemIcon>
         <ListItemText primary={t('serverSettingsDialog.enterManually')} />
-      </ListItem>
+      </ListItemButton>
     )}
   </List>
 );
