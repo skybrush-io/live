@@ -11,7 +11,6 @@ import React from 'react';
  */
 const ListItemTextWithProgress = ({ secondary, ...rest }) => (
   <ListItemText
-    disableTypography
     {...rest}
     secondary={
       <Box
