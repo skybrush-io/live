@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import DialogActions from '@mui/material/DialogActions';
-import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Switch from '@mui/material/Switch';
@@ -41,8 +41,7 @@ const MapCachingPanel = ({
           }
         />
       </DialogHeaderListItem>
-      <ListItem
-        button
+      <ListItemButton
         disableRipple
         onClick={() => setMapCachingEnabled(!isMapCachingEnabled)}
       >
@@ -50,7 +49,7 @@ const MapCachingPanel = ({
           <Switch checked={isMapCachingEnabled} />
         </ListItemIcon>
         <ListItemText primary={t('mapCachingPanel.useCachedMapTiles')} />
-      </ListItem>
+      </ListItemButton>
       <DialogActions>
         <Button
           disabled={!isMapCachingSupported || !onClearCache}

@@ -4,7 +4,7 @@ import CloudDownload from '@mui/icons-material/CloudDownload';
 import Refresh from '@mui/icons-material/Refresh';
 import IconButton from '@mui/material/IconButton';
 import LinearProgress from '@mui/material/LinearProgress';
-import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
 import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import isNil from 'lodash-es/isNil';
 import PropTypes from 'prop-types';
@@ -97,8 +97,7 @@ const LoadShowFromFileButton = ({
 }) => (
   <FileButton
     accepts={isFile}
-    component={ListItem}
-    componentProps={{ button: true }}
+    component={ListItemButton}
     filter={EXTENSIONS}
     id='show-file-upload'
     onSelected={onShowFileSelected}

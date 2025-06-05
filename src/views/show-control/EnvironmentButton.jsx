@@ -1,4 +1,4 @@
-import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import { createSelector } from '@reduxjs/toolkit';
 import PropTypes from 'prop-types';
@@ -67,8 +67,7 @@ const EnvironmentButton = ({
   const { t } = useTranslation();
 
   return (
-    <ListItem
-      button
+    <ListItemButton
       disabled={status === Status.OFF}
       onClick={onEditEnvironment}
       {...rest}
@@ -78,7 +77,7 @@ const EnvironmentButton = ({
         primary={t('show.setupEnvironment')}
         secondary={secondaryText(t)}
       />
-    </ListItem>
+    </ListItemButton>
   );
 };
 

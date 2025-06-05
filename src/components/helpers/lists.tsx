@@ -6,6 +6,7 @@
 
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
 import type { AnyAction } from '@reduxjs/toolkit';
 import get from 'lodash-es/get';
 import identity from 'lodash-es/identity';
@@ -584,7 +585,10 @@ function validateItemRenderer<T extends ItemWithId, P>(
 ): ItemRenderer<T, P> {
   if (Object.prototype.isPrototypeOf.call(React.Component, itemRenderer)) {
     /* eslint-disable react/prop-types */
-    const clickHandler = itemRenderer === ListItem ? 'onTouchTap' : 'onClick';
+    const clickHandler =
+      itemRenderer === ListItem || itemRenderer == ListItemButton
+        ? 'onTouchTap'
+        : 'onClick';
     return (item: T, props: P, selected = false) => {
       return React.createElement(itemRenderer as any, {
         ...item,

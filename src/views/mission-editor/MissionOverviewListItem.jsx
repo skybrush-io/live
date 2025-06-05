@@ -2,8 +2,8 @@ import Settings from '@mui/icons-material/Settings';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
-import ListItem from '@mui/material/ListItem';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
+import ListItemButton from '@mui/material/ListItemButton';
 import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import ListItemText from '@mui/material/ListItemText';
 import makeStyles from '@mui/styles/makeStyles';
@@ -235,8 +235,7 @@ const MissionOverviewListItem = ({
           width: `${(ratio ?? 0) * 100}%`,
         }}
       />
-      <ListItem
-        button
+      <ListItemButton
         dense
         selected={selected}
         onClick={onClick}
@@ -259,7 +258,7 @@ const MissionOverviewListItem = ({
             </IconButton>
           </ListItemSecondaryAction>
         )}
-      </ListItem>
+      </ListItemButton>
     </Box>
   );
 };

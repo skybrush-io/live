@@ -1,4 +1,4 @@
-import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
 import StatusLight from '@skybrush/mui-components/lib/StatusLight';
@@ -33,8 +33,7 @@ const AuthorizationButton = ({
   const { t } = useTranslation();
 
   return (
-    <ListItem
-      button
+    <ListItemButton
       /* disabled={!isAuthorized && status === Status.OFF} */
       selected={isAuthorized}
       {...rest}
@@ -63,7 +62,7 @@ const AuthorizationButton = ({
           </Typography>
         }
       />
-    </ListItem>
+    </ListItemButton>
   );
 };
 

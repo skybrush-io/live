@@ -5,7 +5,7 @@
 import Search from '@mui/icons-material/Search';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
-import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
 import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import ListItemText from '@mui/material/ListItemText';
 import PropTypes from 'prop-types';
@@ -42,16 +42,15 @@ const BeaconListPresentation = multiSelectableListOf(
     ) : null;
 
     return (
-      <ListItem
+      <ListItemButton
         key={beacon.id}
-        button
         className={selected ? 'selected-list-item' : undefined}
         onClick={props.onItemSelected}
       >
         <StatusLight status={beacon.active ? 'success' : 'error'} />
         <ListItemText primary={getBeaconDisplayName(beacon)} />
         <ListItemSecondaryAction>{rightIconButton}</ListItemSecondaryAction>
-      </ListItem>
+      </ListItemButton>
     );
   },
   {

@@ -6,6 +6,7 @@ import DialogContent from '@mui/material/DialogContent';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import ListSubheader from '@mui/material/ListSubheader';
@@ -48,9 +49,8 @@ const PreflightCheckListPresentation = ({
 
       const itemId = `preflight-item-${item.id}`;
       return (
-        <ListItem
+        <ListItemButton
           key={itemId}
-          button
           disableRipple
           onClick={() => onToggle(item.id)}
         >
@@ -63,7 +63,7 @@ const PreflightCheckListPresentation = ({
             />
           </ListItemIcon>
           <ListItemText id={itemId} primary={item.label} />
-        </ListItem>
+        </ListItemButton>
       );
     })}
     {items.length === 0 && (

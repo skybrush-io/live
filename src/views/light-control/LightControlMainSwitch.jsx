@@ -1,4 +1,4 @@
-import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import Switch from '@mui/material/Switch';
 import PropTypes from 'prop-types';
@@ -15,8 +15,7 @@ import { isConnected } from '~/features/servers/selectors';
  * authorization has been given.
  */
 const LightControlMainSwitch = ({ active, connected, onToggle, t }) => (
-  <ListItem
-    button
+  <ListItemButton
     disabled={!connected}
     onClick={connected ? onToggle : undefined}
   >
@@ -37,7 +36,7 @@ const LightControlMainSwitch = ({ active, connected, onToggle, t }) => (
           : t('lightControl.connectToAServer')
       }
     />
-  </ListItem>
+  </ListItemButton>
 );
 
 LightControlMainSwitch.propTypes = {

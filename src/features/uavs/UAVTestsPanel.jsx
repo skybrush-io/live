@@ -1,6 +1,6 @@
 import Button from '@mui/material/Button';
 import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
 import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import ListItemText from '@mui/material/ListItemText';
 import Zoom from '@mui/material/Zoom';
@@ -127,8 +127,7 @@ const UAVTestButton = ({
   }, []);
 
   return (
-    <ListItem
-      button
+    <ListItemButton
       onClick={needsConfirmation ? askForConfirmation : giveConfirmation}
     >
       <StatusLight
@@ -178,7 +177,7 @@ const UAVTestButton = ({
           </Button>
         </Zoom>
       </ListItemSecondaryAction>
-    </ListItem>
+    </ListItemButton>
   );
 };
 

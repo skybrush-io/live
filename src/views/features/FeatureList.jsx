@@ -9,7 +9,7 @@ import MoreVert from '@mui/icons-material/MoreVert';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import IconButton from '@mui/material/IconButton';
-import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import ListItemText from '@mui/material/ListItemText';
@@ -186,8 +186,7 @@ const FeatureListEntryPresentation = (props) => {
   );
 
   return (
-    <ListItem
-      button
+    <ListItemButton
       ContainerProps={{ className: classes.container }}
       className={classes.item}
       selected={selected}
@@ -207,7 +206,7 @@ const FeatureListEntryPresentation = (props) => {
         {actionButtons}
         {actionMenu}
       </ListItemSecondaryAction>
-    </ListItem>
+    </ListItemButton>
   );
 };
 

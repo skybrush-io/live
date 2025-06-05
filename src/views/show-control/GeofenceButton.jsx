@@ -1,4 +1,4 @@
-import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -43,8 +43,7 @@ const GeofenceButton = ({ onClick, status, ...rest }) => {
   const { t } = useTranslation();
 
   return (
-    <ListItem
-      button
+    <ListItemButton
       disabled={status === Status.OFF}
       onClick={onClick}
       {...rest}
@@ -54,7 +53,7 @@ const GeofenceButton = ({ onClick, status, ...rest }) => {
         primary={t('show.setupGeofence', 'Setup geofence')}
         secondary={formatStatusText(status)(t)}
       />
-    </ListItem>
+    </ListItemButton>
   );
 };
 
