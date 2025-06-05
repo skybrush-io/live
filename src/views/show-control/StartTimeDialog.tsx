@@ -8,28 +8,24 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import FormGroup from '@mui/material/FormGroup';
 import MenuItem from '@mui/material/MenuItem';
+import TextField from '@mui/material/TextField';
 import {
-    add,
-    endOfDay,
-    fromUnixTime,
-    getUnixTime,
-    isPast,
-    isValid,
-    setSeconds,
-    startOfDay,
-    startOfSecond,
+  add,
+  endOfDay,
+  fromUnixTime,
+  getUnixTime,
+  isPast,
+  isValid,
+  setSeconds,
+  startOfDay,
+  startOfSecond,
 } from 'date-fns';
 import type { FormApi } from 'final-form';
 import type { TFunction } from 'i18next';
-import {
-    Checkboxes,
-    KeyboardDatePicker,
-    KeyboardTimePicker,
-    Select,
-} from 'mui-rff';
+import { Checkboxes, DatePicker, Select, TimePicker } from 'mui-rff';
 import React, { useMemo } from 'react';
 import { Form, type FormProps } from 'react-final-form';
-import { useTranslation, withTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import Header from '@skybrush/mui-components/lib/FormHeader';
@@ -39,10 +35,10 @@ import { CommonClockId } from '~/features/clocks/types';
 import { authorizeIfAndOnlyIfHasStartTime } from '~/features/show/actions';
 import { StartMethod } from '~/features/show/enums';
 import {
-    closeStartTimeDialog,
-    setStartMethod,
-    setStartTime,
-    synchronizeShowSettings,
+  closeStartTimeDialog,
+  setStartMethod,
+  setStartTime,
+  synchronizeShowSettings,
 } from '~/features/show/slice';
 import type { RootState } from '~/store/reducers';
 import { formatDurationHMS } from '~/utils/formatting';
@@ -150,7 +146,7 @@ type StartTimeFormPresentationProps = Readonly<{
  * Form in the start time management dialog that keeps track of the changes
  * made by the user before the changes are submitted.
  */
-const StartTimeFormPresentation = ({
+const StartTimeForm = ({
   alwaysAllowSubmission,
   initialValues,
   onClose,
@@ -179,7 +175,7 @@ const StartTimeFormPresentation = ({
                 <Select
                   labelId='reference-clock-label'
                   name='clock'
-                  label={t('startTimeDialog.reference')}
+                  label={t('startTimeDialog.reference') as string}
                   formControlProps={{
                     fullWidth: true,
                     margin: 'dense',
@@ -205,28 +201,34 @@ const StartTimeFormPresentation = ({
                    * day, but the time needs to be adjusted by the user */}
 
                   <Box flex={1} mr={1}>
-                    <KeyboardDatePicker
+                    <DatePicker
                       disablePast
-                      format='yyyy-MM-dd'
-                      fullWidth={false}
-                      inputVariant='filled'
+                      inputFormat='yyyy-MM-dd'
+                      renderInput={(inputProps) => (
+                        <TextField
+                          {...inputProps}
+                          variant='filled'
+                          size='small'
+                        />
+                      )}
                       label={t('startTimeDialog.startDate')}
-                      size='small'
                       name='utcDate'
-                      variant='dialog'
                     />
                   </Box>
                   <Box flex={1}>
-                    <KeyboardTimePicker
+                    <TimePicker
                       ampm={false}
-                      format='HH:mm:ss'
-                      fullWidth={false}
-                      inputVariant='filled'
-                      keyboardIcon={<AccessTime />}
+                      inputFormat='HH:mm:ss'
+                      renderInput={(inputProps) => (
+                        <TextField
+                          {...inputProps}
+                          variant='filled'
+                          size='small'
+                        />
+                      )}
+                      components={{ OpenPickerIcon: AccessTime }}
                       label={t('startTimeDialog.startTime')}
-                      size='small'
                       name='utcTime'
-                      variant='dialog'
                     />
                   </Box>
                 </>
@@ -261,7 +263,7 @@ const StartTimeFormPresentation = ({
             <Select
               labelId='start-signal-label'
               name='method'
-              label={t('startTimeDialog.startSignal')}
+              label={t('startTimeDialog.startSignal') as string}
               formControlProps={{
                 fullWidth: true,
                 margin: 'dense',
@@ -279,7 +281,9 @@ const StartTimeFormPresentation = ({
             <Checkboxes
               name='authorizeWhenSettingStartTime'
               data={{
-                label: t('startTimeDialog.authorizeWhenSettingStartTime'),
+                label: t(
+                  'startTimeDialog.authorizeWhenSettingStartTime'
+                ) as string,
                 value: true,
               }}
             />
@@ -309,8 +313,6 @@ const StartTimeFormPresentation = ({
     </Form>
   );
 };
-
-const StartTimeForm = withTranslation()(StartTimeFormPresentation);
 
 type StartTimeDialogProps = Readonly<{
   authorizeWhenSettingStartTime?: boolean;

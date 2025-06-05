@@ -9,7 +9,6 @@ import MaterialUISwitch, {
 import MaterialUITextField, {
   type TextFieldProps as MaterialUITextFieldProps,
 } from '@mui/material/TextField';
-
 import isNil from 'lodash-es/isNil';
 import {
   Select as RFFSelect,
