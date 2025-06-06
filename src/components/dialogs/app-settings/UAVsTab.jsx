@@ -1,18 +1,17 @@
+import Box from '@mui/material/Box';
+import Checkbox from '@mui/material/Checkbox';
+import FormControl from '@mui/material/FormControl';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormGroup from '@mui/material/FormGroup';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import Typography from '@mui/material/Typography';
+import { useTheme } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
-
-import Box from '@material-ui/core/Box';
-import Checkbox from '@material-ui/core/Checkbox';
-import FormControl from '@material-ui/core/FormControl';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormGroup from '@material-ui/core/FormGroup';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
-import Typography from '@material-ui/core/Typography';
-import { useTheme } from '@material-ui/core/styles';
 
 import Header from '@skybrush/mui-components/lib/FormHeader';
 
@@ -24,7 +23,6 @@ import {
   SimpleVoltageField,
 } from '~/components/forms';
 import { updateUAVVoltageThreshold } from '~/features/settings/actions';
-import { updateAppSettings } from '~/features/settings/slice';
 import {
   getDesiredPlacementAccuracyInMeters,
   getDesiredTakeoffHeadingAccuracy,
@@ -32,11 +30,12 @@ import {
   getMinimumIndoorTakeoffSpacing,
   getMinimumOutdoorTakeoffSpacing,
 } from '~/features/settings/selectors';
+import { updateAppSettings } from '~/features/settings/slice';
 import {
   BatteryDisplayStyle,
   describeBatteryDisplayStyle,
-  UAVOperationConfirmationStyle,
   describeUAVOperationConfirmationStyle,
+  UAVOperationConfirmationStyle,
 } from '~/model/settings';
 
 const batteryDisplayStyleOrder = [
@@ -130,7 +129,6 @@ const UAVsTabPresentation = ({
           />
         </FormControl>
       </FormGroup>
-
       <Box my={2}>
         <Header>{t('settings.uavs.operationSettings')}</Header>
 

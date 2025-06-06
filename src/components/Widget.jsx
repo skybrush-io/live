@@ -6,10 +6,9 @@
  * widgets around or close them.
  */
 
+import Paper from '@mui/material/Paper';
 import PropTypes from 'prop-types';
 import React from 'react';
-
-import Paper from '@material-ui/core/Paper';
 
 const Widget = ({ children, style }) => (
   <Paper className='widget' style={style}>

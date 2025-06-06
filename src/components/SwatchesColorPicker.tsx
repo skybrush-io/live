@@ -3,29 +3,28 @@
  * places where there is enough space.
  */
 
+import {
+  amber,
+  blue,
+  blueGrey,
+  brown,
+  cyan,
+  deepOrange,
+  deepPurple,
+  green,
+  indigo,
+  lightGreen,
+  lime,
+  orange,
+  pink,
+  purple,
+  red,
+  teal,
+  yellow,
+} from '@mui/material/colors';
 import merge from 'lodash-es/merge';
 import React from 'react';
 import { SwatchesPicker, type SwatchesPickerProps } from 'react-color';
-
-import {
-  red,
-  pink,
-  purple,
-  deepPurple,
-  indigo,
-  blue,
-  cyan,
-  teal,
-  green,
-  lightGreen,
-  lime,
-  yellow,
-  amber,
-  orange,
-  deepOrange,
-  brown,
-  blueGrey,
-} from '@material-ui/core/colors';
 
 const hues = [
   red,

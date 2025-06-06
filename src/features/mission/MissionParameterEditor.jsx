@@ -1,18 +1,16 @@
+import Tab from '@mui/material/Tab';
+import Tabs from '@mui/material/Tabs';
+import makeStyles from '@mui/styles/makeStyles';
+import { getDefaultRegistry } from '@rjsf/core';
+import { Form } from '@rjsf/mui';
+import { getDefaultFormState } from '@rjsf/utils';
+import validator from '@rjsf/validator-ajv8';
 import omitBy from 'lodash-es/omitBy';
 import pickBy from 'lodash-es/pickBy';
 import uniq from 'lodash-es/uniq';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-
-import Tab from '@material-ui/core/Tab';
-import Tabs from '@material-ui/core/Tabs';
-import { makeStyles } from '@material-ui/core/styles';
-
-import { getDefaultRegistry } from '@rjsf/core';
-import Form from '@rjsf/material-ui';
-import { getDefaultFormState } from '@rjsf/utils';
-import validator from '@rjsf/validator-ajv8';
 
 import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
 
@@ -30,7 +28,7 @@ const useStyles = makeStyles(
 
       backgroundColor: theme.palette.background.paper,
 
-      // Use the z-index of AppBars (https://v4.mui.com/customization/z-index)
+      // Use the z-index of AppBars (https://mui.com/material-ui/customization/z-index/)
       zIndex: 1100,
     },
 

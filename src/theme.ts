@@ -2,17 +2,19 @@
  * @file Theme setup for Material-UI.
  */
 
+import { blue, blueGrey, lightBlue, orange } from '@mui/material/colors';
+import { useTheme } from '@mui/material/styles';
 import { connect } from 'react-redux';
-
-import { blue, lightBlue, orange, blueGrey } from '@material-ui/core/colors';
-import { useTheme } from '@material-ui/core/styles';
 
 import {
   createThemeProvider,
   isThemeDark,
   useConditionalCSS,
-} from '@skybrush/app-theme-material-ui';
+} from '@skybrush/app-theme-mui';
 
+import type { RootState } from './store/reducers';
+
+// @ts-expect-error TS(2307)
 // eslint-disable-next-line import/no-webpack-loader-syntax
 import darkModeExtraCSS from '!!raw-loader!~/../assets/css/dark-mode.css';
 
@@ -23,16 +25,6 @@ import darkModeExtraCSS from '!!raw-loader!~/../assets/css/dark-mode.css';
 const DarkModeAwareThemeProvider = createThemeProvider({
   primaryColor: (dark) => (dark ? orange : blue),
   secondaryColor: (dark) => (dark ? lightBlue : blueGrey),
-
-  themeOptionsHook(themeOptions) {
-    if (typeof themeOptions.props === 'undefined') {
-      themeOptions.props = {};
-    }
-
-    themeOptions.props.MuiTextField = {
-      variant: 'filled',
-    };
-  },
 });
 
 /**
@@ -41,13 +33,14 @@ const DarkModeAwareThemeProvider = createThemeProvider({
  */
 export const DarkModeExtraCSSProvider = () => {
   const isDark = isThemeDark(useTheme());
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   useConditionalCSS(darkModeExtraCSS, isDark);
   return null;
 };
 
 export default connect(
   // mapStateToProps
-  (state) => ({
+  (state: RootState) => ({
     type: state.settings.display.theme,
   })
 )(DarkModeAwareThemeProvider);

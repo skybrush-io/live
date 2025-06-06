@@ -1,3 +1,4 @@
+import { Speed } from '@mui/icons-material';
 import isNil from 'lodash-es/isNil';
 import maxBy from 'lodash-es/maxBy';
 import PropTypes from 'prop-types';
@@ -7,7 +8,6 @@ import { connect } from 'react-redux';
 
 import GenericHeaderButton from '@skybrush/mui-components/lib/GenericHeaderButton';
 
-import { Speed } from '@material-ui/icons';
 import { isConnected } from '~/features/servers/selectors';
 import { usePeriodicSelector } from '~/hooks/usePeriodicSelector';
 import { formatSpeed } from '~/utils/formatting';

@@ -1,15 +1,14 @@
-import React from 'react';
+import Box from '@mui/material/Box';
+import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
+import React from 'react';
 
-import Box from '@material-ui/core/Box';
-
-import { makeStyles } from '@material-ui/core/styles';
 import { formatNumberAndUnit } from '~/utils/formatting';
 
+import RangefinderDisplayCenter from './RangefinderDisplayCenter';
 import RangefinderDisplaySector, {
   SectorStatus,
 } from './RangefinderDisplaySector';
-import RangefinderDisplayCenter from './RangefinderDisplayCenter';
 
 const useStyles = makeStyles((theme) => ({
   container: {

@@ -1,3 +1,5 @@
+import type { ThemeType } from '@skybrush/app-theme-mui';
+
 import { type UAVFilter } from '~/model/filtering';
 import {
   type AltitudeSummaryType,
@@ -14,12 +16,6 @@ export enum AppSettingsDialogTab {
   SERVER = 'server',
   THREE_D = 'threeD',
   UAVS = 'uavs',
-}
-
-export enum Theme {
-  AUTO = 'auto',
-  DARK = 'dark',
-  LIGHT = 'light',
 }
 
 export enum UAVListLayout {
@@ -73,7 +69,7 @@ export type SettingsState = {
     showScaleLine: boolean;
 
     /** Which UI theme to use (choose from OS, use light mode or use dark mode) */
-    theme: Theme;
+    theme: ThemeType;
 
     /** Whether to hide inactive segments on dark mode LCD clocks */
     hideInactiveSegmentsOnDarkLCD: boolean;

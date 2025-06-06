@@ -3,27 +3,25 @@
  * for `window.prompt()`.
  */
 
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import MenuItem from '@mui/material/MenuItem';
 import PropTypes from 'prop-types';
-import { Form } from 'react-final-form';
 import React from 'react';
+import { Form } from 'react-final-form';
 import { connect } from 'react-redux';
-
-import Button from '@material-ui/core/Button';
-import Box from '@material-ui/core/Box';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import MenuItem from '@material-ui/core/MenuItem';
 
 import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
 
+import { CoordinateField, DistanceField, Select } from '~/components/forms';
 import DronePlaceholderList from '~/components/uavs/DronePlaceholderList';
 import { shouldOptimizeUIForTouch } from '~/features/settings/selectors';
 import { submitFlyToTargetDialog } from '~/features/uav-control/actions';
 import { closeFlyToTargetDialog } from '~/features/uav-control/slice';
 import { getSelectedUAVIds } from '~/features/uavs/selectors';
 import { getPreferredCoordinateFormatter } from '~/selectors/formatting';
-
-import { CoordinateField, DistanceField, Select } from '../forms';
 
 /**
  * Prop type that describes how the initial values should look like in the form.

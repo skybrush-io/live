@@ -2,16 +2,15 @@
  * @file Dialog that shows the editor for a saved location.
  */
 
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
 import PropTypes from 'prop-types';
 import React, { useCallback, useRef } from 'react';
-import { Translation, withTranslation } from 'react-i18next';
 import { Form } from 'react-final-form';
+import { Translation, withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
-
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
 
 import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
 
@@ -52,7 +51,7 @@ const SavedLocationEditorFormPresentation = React.forwardRef(
                 <TextField
                   autoFocus={!optimizeUIForTouch}
                   fullWidth
-                  margin='dense'
+                  size='small'
                   name='name'
                   label={t('savedLocationEditor.name')}
                   fieldProps={{ validate: required }}
@@ -60,14 +59,14 @@ const SavedLocationEditorFormPresentation = React.forwardRef(
                 <Box display='flex' flexDirection='row'>
                   <LatitudeField
                     fullWidth
-                    margin='dense'
+                    size='small'
                     name='center.lat'
                     label={t('general.geography.latitude')}
                   />
                   <Box p={0.75} />
                   <LongitudeField
                     fullWidth
-                    margin='dense'
+                    size='small'
                     name='center.lon'
                     label={t('general.geography.longitude')}
                   />
@@ -75,7 +74,7 @@ const SavedLocationEditorFormPresentation = React.forwardRef(
                 <Box display='flex' flexDirection='row'>
                   <HeadingField
                     fullWidth
-                    margin='dense'
+                    size='small'
                     name='rotation'
                     label={t('general.geometry.rotation')}
                   />
@@ -83,7 +82,7 @@ const SavedLocationEditorFormPresentation = React.forwardRef(
                   <TextField
                     fullWidth
                     type='number'
-                    margin='dense'
+                    size='small'
                     name='zoom'
                     label={t('savedLocationEditor.zoomLevel')}
                     fieldProps={{
@@ -95,7 +94,7 @@ const SavedLocationEditorFormPresentation = React.forwardRef(
                 <TextField
                   fullWidth
                   multiline
-                  margin='dense'
+                  size='small'
                   name='notes'
                   label={t('savedLocationEditor.notes')}
                   minRows={3}

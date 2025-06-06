@@ -1,20 +1,19 @@
+import Clear from '@mui/icons-material/Clear';
+import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
+import List from '@mui/material/List';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import ListItemText from '@mui/material/ListItemText';
 import memoizee from 'memoizee';
 import PropTypes from 'prop-types';
 import React, { useEffect, useMemo } from 'react';
-
-import Box from '@material-ui/core/Box';
-import IconButton from '@material-ui/core/IconButton';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
-import List from '@material-ui/core/List';
-import Clear from '@material-ui/icons/Clear';
 
 import DialogHeaderListItem from '~/components/DialogHeaderListItem';
 import MultiPagePanel, { Page } from '~/components/MultiPagePanel';
 import { useMessageHub } from '~/hooks';
 
-import MissionTypeSelector from './MissionTypeSelector';
 import MissionParameterEditor from './MissionParameterEditor';
+import MissionTypeSelector from './MissionTypeSelector';
 
 const MissionPlannerMainPanel = ({
   onMissionTypeChange,
@@ -98,6 +97,7 @@ const MissionPlannerMainPanel = ({
                 <IconButton
                   edge='end'
                   aria-label='remove'
+                  size='large'
                   onClick={onMissionTypeCleared}
                 >
                   <Clear />
