@@ -55,6 +55,12 @@ const tests = [
     type: 'test',
   },
   {
+    component: 'pyro',
+    label: 'Execute pyro test',
+    needsConfirmation: true,
+    type: 'test',
+  },
+  {
     component: 'motor',
     label: 'Execute motor test',
     needsConfirmation: true,
