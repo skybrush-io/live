@@ -94,7 +94,7 @@ const MiniTabs = withStyles((theme: Theme) => ({
       content: '""',
       display: 'block',
       marginTop: `-${theme.spacing(0.5)}`,
-      marginLeft: theme.spacing(3),
+      marginLeft: theme.spacing(2.5),
       borderBottom: `2px solid ${theme.palette.text.secondary}`,
     },
   },
@@ -105,10 +105,8 @@ const MiniTab = withStyles({
     minHeight: 0,
     padding: 0,
     opacity: 1,
-  },
-  wrapper: {
+    display: 'flex',
     flexDirection: 'row',
-    gap: 4,
   },
   selected: {
     background: 'gradient(linear, 0deg, #0000 0%, #f000 100%)',
