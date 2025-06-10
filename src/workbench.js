@@ -173,6 +173,11 @@ export const componentRegistry = {
     label: 'UAVs',
     detachable: true,
   },
+  'uav-statuses': {
+    component: views.UAVStatusPanel,
+    label: 'UAV Statuses',
+    detachable: true,
+  },
 };
 
 function constructDefaultWorkbench(store) {
