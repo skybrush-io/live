@@ -5,14 +5,11 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
-import ResizableBox from '@skybrush/mui-components/lib/ResizableBox';
 
 import { clearPendingUAVId } from '~/features/hotkeys/actions';
 import { isPendingUAVIdOverlayVisible } from '~/features/hotkeys/selectors';
 
 import {
-  UAV_DETAILS_DIALOG_BODY_HEIGHT as BODY_HEIGHT,
-  UAV_DETAILS_DIALOG_BODY_MIN_WIDTH as BODY_MIN_WIDTH,
   UAV_DETAILS_DIALOG_HEIGHT as HEIGHT,
   UAV_DETAILS_DIALOG_SIDEBAR_WIDTH as SIDEBAR_WIDTH,
 } from './constants';
@@ -59,21 +56,9 @@ const UAVDetailsDialog = ({
       )}
       onClose={onClose}
     >
-      <ResizableBox
-        axis='x'
-        resizeHandles={['e']}
-        initialSize={{
-          width: initialWidth - SIDEBAR_WIDTH,
-          height: BODY_HEIGHT,
-        }}
-        minConstraints={[BODY_MIN_WIDTH, BODY_HEIGHT]}
-        boxProps={{ maxWidth: '100%' }}
-        onResizeStop={onResizeStop}
-      >
-        <Box height='100%' overflow='auto'>
-          <UAVDetailsDialogBody />
-        </Box>
-      </ResizableBox>
+      <Box height='100%' overflow='auto'>
+        <UAVDetailsDialogBody />
+      </Box>
     </DraggableDialog>
   );
 };
