@@ -178,9 +178,11 @@ const UAVSelector = ({
       anchorEl={anchorEl}
       anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       transformOrigin={{ vertical: 'top', horizontal: 'center' }}
-      PaperProps={{
-        className: classes.paper,
-        onKeyDown: filterable ? handleKeyDown : undefined,
+      slotProps={{
+        paper: {
+          className: classes.paper,
+          onKeyDown: filterable ? handleKeyDown : undefined,
+        },
       }}
       onClose={onClose}
       onFocus={onFocus}
