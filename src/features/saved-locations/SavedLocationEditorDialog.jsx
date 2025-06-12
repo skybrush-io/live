@@ -45,7 +45,14 @@ const SavedLocationEditorFormPresentation = React.forwardRef(
             return (
               <form
                 id='SavedLocationEditor'
-                style={{ marginTop: 8, marginBottom: 0 }}
+                style={{
+                  // TODO(vp): use mui styling utilities and theme. Grid would simplify the DOM.
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 8,
+                  marginTop: 8,
+                  marginBottom: 0,
+                }}
                 onSubmit={handleSubmit}
               >
                 <TextField
@@ -56,14 +63,13 @@ const SavedLocationEditorFormPresentation = React.forwardRef(
                   label={t('savedLocationEditor.name')}
                   fieldProps={{ validate: required }}
                 />
-                <Box display='flex' flexDirection='row'>
+                <Box display='flex' flexDirection='row' gap={1}>
                   <LatitudeField
                     fullWidth
                     size='small'
                     name='center.lat'
                     label={t('general.geography.latitude')}
                   />
-                  <Box p={0.75} />
                   <LongitudeField
                     fullWidth
                     size='small'
@@ -71,14 +77,13 @@ const SavedLocationEditorFormPresentation = React.forwardRef(
                     label={t('general.geography.longitude')}
                   />
                 </Box>
-                <Box display='flex' flexDirection='row'>
+                <Box display='flex' flexDirection='row' gap={1}>
                   <HeadingField
                     fullWidth
                     size='small'
                     name='rotation'
                     label={t('general.geometry.rotation')}
                   />
-                  <Box p={0.75} />
                   <TextField
                     fullWidth
                     type='number'
