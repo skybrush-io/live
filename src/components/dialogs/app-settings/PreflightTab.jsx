@@ -14,7 +14,7 @@ import { getFormattedHeadersAndItems } from '~/features/preflight/selectors';
 const PreflightTabPresentation = ({ items, onSubmit, t }) => (
   <Form initialValues={{ items }} onSubmit={onSubmit}>
     {({ dirty, form, handleSubmit }) => (
-      <Box pt={1} pb={2}>
+      <Box>
         <Typography>{t('preflightTab.enterCheckItems')}</Typography>
         <Box py={1}>
           <TextField

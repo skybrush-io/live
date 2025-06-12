@@ -38,7 +38,7 @@ const coordinateFormatOrder = [
 
 const DisplayTabPresentation = ({ t, ...props }) => (
   <>
-    <Box my={2}>
+    <Box>
       <FormControl fullWidth variant='filled'>
         <InputLabel id='language-selector-label'>
           {t('settings.display.language')}
@@ -59,10 +59,11 @@ const DisplayTabPresentation = ({ t, ...props }) => (
     </Box>
 
     <Box my={2}>
+      {/* TODO(vp): gap should be used on the parent component instead... */}
       <ThemeSelector value={props.theme} onChange={props.onFieldChanged} />
     </Box>
 
-    <Box my={2}>
+    <Box>
       <FormControl fullWidth variant='filled'>
         <InputLabel id='coordinate-format-label'>
           {t('settings.display.coordinateFormat')}

@@ -64,7 +64,7 @@ const grids = [
 const ThreeDViewTab = (props) => (
   <Translation>
     {(t) => (
-      <Box mb={2}>
+      <Box>
         <FormGroup>
           <Header>{t('settings.threeDView.environment')}</Header>
           <Box display='flex'>

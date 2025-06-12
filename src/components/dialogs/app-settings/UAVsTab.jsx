@@ -129,6 +129,7 @@ const UAVsTabPresentation = ({
           />
         </FormControl>
       </FormGroup>
+
       <Box my={2}>
         <Header>{t('settings.uavs.operationSettings')}</Header>
 
@@ -239,7 +240,7 @@ const UAVsTabPresentation = ({
         </Box>
       </Box>
 
-      <Box my={2}>
+      <Box>
         <Header>{t('settings.uavs.missionSetup')}</Header>
 
         <Box display='flex' flexDirection='row' mb={1}>

@@ -25,7 +25,7 @@ const providers = [
 const APIKeysTabPresentation = ({ apiKeys, onSubmit, t }) => (
   <Form initialValues={apiKeys} onSubmit={onSubmit}>
     {({ dirty, form, handleSubmit }) => (
-      <Box pt={1} pb={2}>
+      <Box>
         {providers.map((provider) => (
           <Box key={provider.key} py={1}>
             <TextField
