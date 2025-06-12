@@ -1,6 +1,4 @@
 import AccessTime from '@mui/icons-material/AccessTime';
-import AdapterDateFns from '@mui/lab/AdapterDateFns';
-import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -8,7 +6,9 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import FormGroup from '@mui/material/FormGroup';
 import MenuItem from '@mui/material/MenuItem';
-import TextField from '@mui/material/TextField';
+import TextField, { type TextFieldProps } from '@mui/material/TextField';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import {
   add,
   endOfDay,
@@ -204,7 +204,7 @@ const StartTimeForm = ({
                     <DatePicker
                       disablePast
                       inputFormat='yyyy-MM-dd'
-                      renderInput={(inputProps) => (
+                      renderInput={(inputProps: TextFieldProps) => (
                         <TextField
                           {...inputProps}
                           variant='filled'
@@ -219,7 +219,7 @@ const StartTimeForm = ({
                     <TimePicker
                       ampm={false}
                       inputFormat='HH:mm:ss'
-                      renderInput={(inputProps) => (
+                      renderInput={(inputProps: TextFieldProps) => (
                         <TextField
                           {...inputProps}
                           variant='filled'
@@ -350,7 +350,7 @@ const StartTimeDialog = ({
     : LocalClockId.ABSOLUTE;
 
   return (
-    <LocalizationProvider utils={AdapterDateFns}>
+    <LocalizationProvider dateAdapter={AdapterDateFns}>
       <Dialog fullWidth open={open} maxWidth='sm' onClose={onClose}>
         <StartTimeForm
           alwaysAllowSubmission={!hasUtcStartTime}
