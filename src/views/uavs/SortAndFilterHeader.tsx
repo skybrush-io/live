@@ -12,11 +12,11 @@ import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import createColor from 'color';
 import type { TFunction } from 'i18next';
-import type { PopupState } from 'material-ui-popup-state/core';
 import {
   bindMenu,
   bindTrigger,
   usePopupState,
+  type PopupState,
 } from 'material-ui-popup-state/hooks';
 import React, { useCallback, useRef, type SyntheticEvent } from 'react';
 import { withTranslation } from 'react-i18next';
