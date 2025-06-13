@@ -98,6 +98,7 @@ const StartTimeSuggestions = ({
         /* eslint-disable react/no-array-index-key */
         <BorderlessButton
           key={`button${index}`}
+          color='inherit'
           onClick={() => {
             onChange(suggestion);
           }}
