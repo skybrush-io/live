@@ -1,8 +1,8 @@
+import type { Theme } from '@mui/material/styles';
+import makeStyles from '@mui/styles/makeStyles';
+import { colorForStatus, Status } from '@skybrush/app-theme-mui';
 import clsx from 'clsx';
 import React from 'react';
-
-import { makeStyles, type Theme } from '@material-ui/core/styles';
-import { colorForStatus, Status } from '@skybrush/app-theme-material-ui';
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 const createStyleForStatus = (status: Status, theme: Theme) => {

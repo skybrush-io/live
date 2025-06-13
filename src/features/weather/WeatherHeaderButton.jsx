@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 import TimeAgo from 'react-timeago';
 import { useToggle } from 'react-use';
 
-import { colorForStatus, Status } from '@skybrush/app-theme-material-ui';
+import { colorForStatus, Status } from '@skybrush/app-theme-mui';
 import GenericHeaderButton from '@skybrush/mui-components/lib/GenericHeaderButton';
 import LazyTooltip from '@skybrush/mui-components/lib/LazyTooltip';
 import SidebarBadge from '@skybrush/mui-components/lib/SidebarBadge';
@@ -17,8 +17,8 @@ import Sunset from '~/icons/Sunset';
 import { shortRelativeTimeFormatter } from '~/utils/formatting';
 
 import {
-  getSunriseSunsetTimesForMapViewCenterPosition,
-  getWeatherBadgeStatus,
+    getSunriseSunsetTimesForMapViewCenterPosition,
+    getWeatherBadgeStatus,
 } from './selectors';
 import WeatherDetailsMiniList from './WeatherDetailsMiniList';
 

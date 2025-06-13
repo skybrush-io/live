@@ -1,15 +1,14 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import IconButton from '@material-ui/core/IconButton';
-import InputAdornment from '@material-ui/core/InputAdornment';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import IconButton from '@mui/material/IconButton';
+import InputAdornment from '@mui/material/InputAdornment';
 import MaterialUISwitch, {
   type SwitchProps as MaterialUISwitchProps,
-} from '@material-ui/core/Switch';
+} from '@mui/material/Switch';
 import MaterialUITextField, {
   type TextFieldProps as MaterialUITextFieldProps,
-} from '@material-ui/core/TextField';
-import Visibility from '@material-ui/icons/Visibility';
-import VisibilityOff from '@material-ui/icons/VisibilityOff';
-
+} from '@mui/material/TextField';
 import isNil from 'lodash-es/isNil';
 import {
   Select as RFFSelect,
@@ -139,6 +138,7 @@ const PasswordFieldFormBinding = ({
           <InputAdornment position='end'>
             <IconButton
               aria-label='toggle password visibility'
+              size='large'
               onClick={togglePasswordMask}
               onMouseDown={preventDefault}
             >

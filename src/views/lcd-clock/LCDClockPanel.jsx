@@ -1,15 +1,14 @@
+import Box from '@mui/material/Box';
+import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
-import Box from '@material-ui/core/Box';
-import { makeStyles } from '@material-ui/core/styles';
-
-import LCDClockDisplay from './LCDClockDisplay';
-
 import { addClockDisplayAutomatically } from '~/features/lcd-clock/actions';
 import { removeClockDisplay } from '~/features/lcd-clock/slice';
+
+import LCDClockDisplay from './LCDClockDisplay';
 
 const useStyles = makeStyles(
   () => ({

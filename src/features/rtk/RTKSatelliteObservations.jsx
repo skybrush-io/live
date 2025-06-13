@@ -1,14 +1,14 @@
 import loadable from '@loadable/component';
+import Box from '@mui/material/Box';
+import { useTheme } from '@mui/material/styles';
+import { createSelector } from '@reduxjs/toolkit';
 import isNil from 'lodash-es/isNil';
 import PropTypes from 'prop-types';
 import React, { useEffect, useRef, useState } from 'react';
 import { connect } from 'react-redux';
 import { useHarmonicIntervalFn, useUpdate } from 'react-use';
-import { createSelector } from '@reduxjs/toolkit';
 
-import Box from '@material-ui/core/Box';
-import { useTheme } from '@material-ui/core/styles';
-import { defaultFont, isThemeDark } from '@skybrush/app-theme-material-ui';
+import { defaultFont, isThemeDark } from '@skybrush/app-theme-mui';
 
 import Colors from '~/components/colors';
 import { createGradientBackground, NO_DATA } from '~/utils/charts';
