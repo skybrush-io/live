@@ -22,6 +22,7 @@ import { connect } from 'react-redux';
 
 import FormHeader from '@skybrush/mui-components/lib/FormHeader';
 
+import { dialogContent } from '~/components/dialogs/utils';
 import { removeFeaturesByIds } from '~/features/map-features/slice';
 import {
   getGeofenceAction,
@@ -390,7 +391,7 @@ const GeofenceSettingsTabPresentation = ({
   t,
 }) => (
   <>
-    <DialogContent>
+    <DialogContent sx={dialogContent.smallVerticalPadding}>
       <GeofenceSettingsForm />
     </DialogContent>
     <DialogActions>

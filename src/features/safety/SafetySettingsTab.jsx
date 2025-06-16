@@ -25,6 +25,7 @@ import {
   required,
 } from '~/utils/validation';
 
+import { dialogContent } from '~/components/dialogs/utils';
 import { BatteryThresholdType, unitForBatteryThresholdType } from './model';
 import { getSafetySettings } from './selectors';
 import { updateSafetySettings } from './slice';
@@ -203,7 +204,7 @@ const SafetySettingsForm = connect(
  */
 const SafetySettingsTabPresentation = ({ onClose, t }) => (
   <>
-    <DialogContent>
+    <DialogContent sx={dialogContent.smallVerticalPadding}>
       <SafetySettingsForm />
     </DialogContent>
     <DialogActions>
