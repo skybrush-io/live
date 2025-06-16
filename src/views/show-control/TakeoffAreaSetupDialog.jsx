@@ -2,7 +2,6 @@ import VerticalAlignBottom from '@mui/icons-material/VerticalAlignBottom';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import PropTypes from 'prop-types';
@@ -12,6 +11,7 @@ import { connect } from 'react-redux';
 
 import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
 
+import CompactDialogContent from '~/components/dialogs/CompactDialogContent';
 import DronePlaceholderList from '~/components/uavs/DronePlaceholderList';
 import { addVirtualDronesForMission } from '~/features/mission/actions';
 import {
@@ -205,7 +205,7 @@ const TakeoffAreaSetupDialog = ({
       titleComponents={titleComponents}
       onClose={onClose}
     >
-      <DialogContent>
+      <CompactDialogContent>
         <TakeoffAreaSetupDialogIndicators />
         <Box py={2} display='flex' flexDirection='row' justifyContent='center'>
           <RecalculateMappingButton />
@@ -223,7 +223,7 @@ const TakeoffAreaSetupDialog = ({
             label={t('takeoffAreaSetupDialog.approveTakeoffAreaArrangement')}
           />
         </Box>
-      </DialogContent>
+      </CompactDialogContent>
       <DialogActions />
     </DraggableDialog>
   );

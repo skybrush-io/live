@@ -40,7 +40,7 @@ const EnvironmentEditorDialog = ({ editing, onClose, type, t }) => (
     onClose={onClose}
   >
     <DialogContent>
-      <Box my={2}>
+      <Box>
         <Instructions type={type} />
         {type === 'outdoor' && <OutdoorEnvironmentEditor />}
         {type === 'indoor' && <IndoorEnvironmentEditor />}
