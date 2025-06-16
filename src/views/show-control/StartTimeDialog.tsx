@@ -3,7 +3,6 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
 import FormGroup from '@mui/material/FormGroup';
 import MenuItem from '@mui/material/MenuItem';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
@@ -43,6 +42,7 @@ import type { RootState } from '~/store/reducers';
 import { formatDurationHMS } from '~/utils/formatting';
 import { parseDurationHMS } from '~/utils/parsing';
 
+import CompactDialogContent from '~/components/dialogs/CompactDialogContent';
 import StartTimeDisplay from './StartTimeDisplay';
 import type { StartTimeSuggestion } from './StartTimeSuggestions';
 import StartTimeSuggestionsBox from './StartTimeSuggestionsBox';
@@ -162,7 +162,7 @@ const StartTimeForm = ({
     >
       {({ dirty, form, handleSubmit, invalid, values }) => (
         <form id='start-time-form' onSubmit={handleSubmit}>
-          <DialogContent>
+          <CompactDialogContent sx={{ paddingTop: 2 }}>
             <StartTimeDisplay />
 
             <Box mt={2}>
@@ -273,7 +273,7 @@ const StartTimeForm = ({
                 value: true,
               }}
             />
-          </DialogContent>
+          </CompactDialogContent>
           <DialogActions>
             <Button
               disabled={!dirty}
