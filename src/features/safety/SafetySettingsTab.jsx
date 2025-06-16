@@ -5,7 +5,6 @@
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import FormHelperText from '@mui/material/FormHelperText';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -17,6 +16,7 @@ import { Form } from 'react-final-form';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
+import CompactDialogContent from '~/components/dialogs/CompactDialogContent';
 import {
   between,
   join,
@@ -25,7 +25,6 @@ import {
   required,
 } from '~/utils/validation';
 
-import { dialogContent } from '~/components/dialogs/utils';
 import { BatteryThresholdType, unitForBatteryThresholdType } from './model';
 import { getSafetySettings } from './selectors';
 import { updateSafetySettings } from './slice';
@@ -204,9 +203,9 @@ const SafetySettingsForm = connect(
  */
 const SafetySettingsTabPresentation = ({ onClose, t }) => (
   <>
-    <DialogContent sx={dialogContent.smallVerticalPadding}>
+    <CompactDialogContent>
       <SafetySettingsForm />
-    </DialogContent>
+    </CompactDialogContent>
     <DialogActions>
       <Button form='safetySettings' type='submit' color='primary'>
         {t('general.action.save')}

@@ -5,7 +5,6 @@
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
 import FormHelperText from '@mui/material/FormHelperText';
 import InputAdornment from '@mui/material/InputAdornment';
 import MenuItem from '@mui/material/MenuItem';
@@ -22,7 +21,7 @@ import { connect } from 'react-redux';
 
 import FormHeader from '@skybrush/mui-components/lib/FormHeader';
 
-import { dialogContent } from '~/components/dialogs/utils';
+import CompactDialogContent from '~/components/dialogs/CompactDialogContent';
 import { removeFeaturesByIds } from '~/features/map-features/slice';
 import {
   getGeofenceAction,
@@ -391,9 +390,9 @@ const GeofenceSettingsTabPresentation = ({
   t,
 }) => (
   <>
-    <DialogContent sx={dialogContent.smallVerticalPadding}>
+    <CompactDialogContent>
       <GeofenceSettingsForm />
-    </DialogContent>
+    </CompactDialogContent>
     <DialogActions>
       <Button color='secondary' disabled={!hasFence} onClick={onClearGeofence}>
         {t('safetyDialog.geofenceTab.clear')}
