@@ -2,16 +2,17 @@ import Clear from '@mui/icons-material/Clear';
 import Done from '@mui/icons-material/Done';
 import Warning from '@mui/icons-material/Warning';
 import CircularProgress from '@mui/material/CircularProgress';
-import ListItem from '@mui/material/ListItem';
+import ListItem, { type ListItemProps } from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import { green, red, yellow } from '@mui/material/colors';
+import type { Theme } from '@mui/material/styles';
 import makeStyles from '@mui/styles/makeStyles';
 import React from 'react';
 
 import { isThemeDark } from '@skybrush/app-theme-mui';
 
 const useStyles = makeStyles(
-  (theme) => ({
+  (theme: Theme) => ({
     root: {
       backgroundColor: isThemeDark(theme)
         ? theme.palette.grey.A400
@@ -27,7 +28,9 @@ const useStyles = makeStyles(
  * below the dialog title or toolbar, to provide a single line of information
  * to the user in a prominent manner.
  */
-const DialogHeaderListItem = (props) => {
+const DialogHeaderListItem = (
+  props: Omit<ListItemProps, 'divider' | 'className'>
+) => {
   const classes = useStyles();
   return <ListItem divider className={classes.root} {...props} />;
 };
