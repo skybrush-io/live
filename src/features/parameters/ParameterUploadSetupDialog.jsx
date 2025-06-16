@@ -1,6 +1,5 @@
 import Button from '@mui/material/Button';
 import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
 import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -8,6 +7,8 @@ import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
+
+import CompactDialogContent from '~/components/dialogs/CompactDialogContent';
 
 import ParameterListSidebar from './ParameterListSidebar';
 import ParameterUploadMainPanel from './ParameterUploadMainPanel';
@@ -46,9 +47,9 @@ const ParameterUploadSetupDialog = ({ onClose, open, t }) => {
       title={t('parameterUploadSetupDialog.uploadParameters')}
       onClose={onClose}
     >
-      <DialogContent>
+      <CompactDialogContent>
         <ParameterUploadMainPanel />
-      </DialogContent>
+      </CompactDialogContent>
       <DialogActions>
         <Button onClick={onClose}>{t('general.action.close')}</Button>
       </DialogActions>
