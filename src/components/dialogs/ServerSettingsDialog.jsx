@@ -13,7 +13,6 @@ import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
@@ -58,6 +57,8 @@ import {
   integer,
   required,
 } from '~/utils/validation';
+
+import CompactDialogContent from './CompactDialogContent';
 
 const iconForServerItem = ({ hostName, type }) =>
   type === 'inferred' ? (
@@ -318,7 +319,7 @@ class ServerSettingsDialogPresentation extends React.Component {
         if (manualSetupAllowed) {
           if (!isServerDetectionSupported) {
             content.push(
-              <DialogContent key='contents'>
+              <CompactDialogContent key='contents'>
                 <Translation>
                   {(t) => (
                     <Typography variant='body2' color='textSecondary'>
@@ -326,12 +327,12 @@ class ServerSettingsDialogPresentation extends React.Component {
                     </Typography>
                   )}
                 </Translation>
-              </DialogContent>
+              </CompactDialogContent>
             );
           }
         } else {
           content.push(
-            <DialogContent key='contents'>
+            <CompactDialogContent key='contents'>
               <Translation>
                 {(t) => (
                   <Typography variant='body2' color='textSecondary'>
@@ -339,7 +340,7 @@ class ServerSettingsDialogPresentation extends React.Component {
                   </Typography>
                 )}
               </Translation>
-            </DialogContent>
+            </CompactDialogContent>
           );
         }
 
@@ -348,12 +349,12 @@ class ServerSettingsDialogPresentation extends React.Component {
       case 'manual':
         if (manualSetupAllowed) {
           content.push(
-            <DialogContent key='contents'>
+            <CompactDialogContent key='contents'>
               <ServerSettingsForm
                 onSubmit={onSubmit}
                 onKeyPress={this._handleKeyPress}
               />
-            </DialogContent>
+            </CompactDialogContent>
           );
           actions.push(
             <Translation key='connect'>
