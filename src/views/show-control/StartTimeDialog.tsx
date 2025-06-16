@@ -6,7 +6,6 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import FormGroup from '@mui/material/FormGroup';
 import MenuItem from '@mui/material/MenuItem';
-import TextField, { type TextFieldProps } from '@mui/material/TextField';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import {
@@ -170,15 +169,14 @@ const StartTimeForm = ({
               <Header>{t('startTimeDialog.setTheStartTime')}</Header>
             </Box>
 
-            <FormGroup row>
-              <Box mr={1} minWidth={180}>
+            <FormGroup row sx={{ gap: 1 }}>
+              <Box alignContent='center' minWidth={180}>
                 <Select
                   labelId='reference-clock-label'
                   name='clock'
                   label={t('startTimeDialog.reference') as string}
                   formControlProps={{
                     fullWidth: true,
-                    margin: 'dense',
                     variant: 'filled',
                   }}
                 >
@@ -200,32 +198,20 @@ const StartTimeForm = ({
                    * because in most cases the date should default to the current
                    * day, but the time needs to be adjusted by the user */}
 
-                  <Box flex={1} mr={1}>
+                  <Box alignContent='center' flex={1}>
                     <DatePicker
                       disablePast
                       inputFormat='yyyy-MM-dd'
-                      renderInput={(inputProps: TextFieldProps) => (
-                        <TextField
-                          {...inputProps}
-                          variant='filled'
-                          size='small'
-                        />
-                      )}
+                      TextFieldProps={{ variant: 'filled' }}
                       label={t('startTimeDialog.startDate')}
                       name='utcDate'
                     />
                   </Box>
-                  <Box flex={1}>
+                  <Box alignContent='center' flex={1}>
                     <TimePicker
                       ampm={false}
                       inputFormat='HH:mm:ss'
-                      renderInput={(inputProps: TextFieldProps) => (
-                        <TextField
-                          {...inputProps}
-                          variant='filled'
-                          size='small'
-                        />
-                      )}
+                      TextFieldProps={{ variant: 'filled' }}
                       components={{ OpenPickerIcon: AccessTime }}
                       label={t('startTimeDialog.startTime')}
                       name='utcTime'
@@ -233,7 +219,7 @@ const StartTimeForm = ({
                   </Box>
                 </>
               ) : (
-                <Box flex={1}>
+                <Box alignContent='center' flex={1}>
                   <HMSDurationField
                     label={t('startTimeDialog.startTimeHms')}
                     size='small'
