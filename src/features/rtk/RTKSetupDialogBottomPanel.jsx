@@ -26,6 +26,8 @@ const useStyles = makeStyles(
   (theme) => ({
     root: {
       ...createSecondaryAreaStyle(theme),
+      display: 'flex',
+      flexDirection: 'column',
     },
 
     inset: {
