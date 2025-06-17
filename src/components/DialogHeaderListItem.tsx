@@ -14,9 +14,7 @@ import { isThemeDark } from '@skybrush/app-theme-mui';
 const useStyles = makeStyles(
   (theme: Theme) => ({
     root: {
-      backgroundColor: isThemeDark(theme)
-        ? theme.palette.grey.A400
-        : theme.palette.grey[200],
+      backgroundColor: isThemeDark(theme) ? '#303030' : theme.palette.grey[200],
       paddingTop: 6,
     },
   }),
