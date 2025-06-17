@@ -5,6 +5,7 @@
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import FormHelperText from '@mui/material/FormHelperText';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -16,7 +17,6 @@ import { Form } from 'react-final-form';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import CompactDialogContent from '~/components/dialogs/CompactDialogContent';
 import {
   between,
   join,
@@ -203,9 +203,9 @@ const SafetySettingsForm = connect(
  */
 const SafetySettingsTabPresentation = ({ onClose, t }) => (
   <>
-    <CompactDialogContent>
+    <DialogContent>
       <SafetySettingsForm />
-    </CompactDialogContent>
+    </DialogContent>
     <DialogActions>
       <Button form='safetySettings' type='submit' color='primary'>
         {t('general.action.save')}

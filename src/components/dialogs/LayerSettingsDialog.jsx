@@ -7,6 +7,7 @@ import ArrowUp from '@mui/icons-material/ArrowDropUp';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
 import IconButton from '@mui/material/IconButton';
 import Switch from '@mui/material/Switch';
 import { TextField } from 'mui-rff';
@@ -30,7 +31,6 @@ import { LayerType } from '~/model/layers';
 import { getLayers, getLicensedLayerById } from '~/selectors/layers';
 import { createValidator, required } from '~/utils/validation';
 import { LayerSettings, stateObjectToLayerSettings } from '~/views/map/layers';
-import CompactDialogContent from './CompactDialogContent';
 
 const validator = createValidator({
   label: required,
@@ -272,9 +272,9 @@ class LayerSettingsDialogPresentation extends React.Component {
         onClose={onClose}
         title='Layer settings'
       >
-        <CompactDialogContent style={{ overflow: 'auto' }}>
+        <DialogContent style={{ overflow: 'auto' }}>
           <LayerSettingsContainer layerId={selectedLayerId} />
-        </CompactDialogContent>
+        </DialogContent>
         <DialogActions>{actions}</DialogActions>
       </DraggableDialog>
     );

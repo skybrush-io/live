@@ -35,7 +35,7 @@ const DeauthenticationDialogPresentation = ({
 }) => (
   <DraggableDialog maxWidth='xs' open={open} title={title}>
     <DialogContent>
-      <Box pt={2}>
+      <Box>
         <Typography paragraph>
           {user ? (
             <>
