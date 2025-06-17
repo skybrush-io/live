@@ -1,13 +1,12 @@
+import ArrowBack from '@mui/icons-material/ArrowBack';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Form } from 'react-final-form';
 import { connect } from 'react-redux';
 import { useAsync } from 'react-use';
-
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
-import ArrowBack from '@material-ui/icons/ArrowBack';
 
 import SmallProgressIndicator from '@skybrush/mui-components/lib/SmallProgressIndicator';
 
@@ -33,7 +32,7 @@ const SurveySettingsEditor = ({ onClose, onSubmit, ...rest }) => {
 
   return (
     <Box display='flex' flexDirection='row' alignItems='center' {...rest}>
-      <IconButton onClick={onClose}>
+      <IconButton size='large' onClick={onClose}>
         <ArrowBack />
       </IconButton>
       {settings.loading ? (

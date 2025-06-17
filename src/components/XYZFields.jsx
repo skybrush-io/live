@@ -1,7 +1,6 @@
+import Box from '@mui/material/Box';
 import PropTypes from 'prop-types';
 import React from 'react';
-
-import Box from '@material-ui/core/Box';
 
 import { SimpleDistanceField } from './forms/fields';
 

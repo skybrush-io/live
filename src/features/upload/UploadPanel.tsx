@@ -1,18 +1,18 @@
+import Clear from '@mui/icons-material/Clear';
+import NavigateBack from '@mui/icons-material/NavigateBefore';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Checkbox from '@mui/material/Checkbox';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import Fade from '@mui/material/Fade';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import IconButton from '@mui/material/IconButton';
+import type { Theme } from '@mui/material/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
-
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import Checkbox from '@material-ui/core/Checkbox';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import Fade from '@material-ui/core/Fade';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import IconButton from '@material-ui/core/IconButton';
-import { makeStyles } from '@material-ui/core/styles';
-import Clear from '@material-ui/icons/Clear';
-import NavigateBack from '@material-ui/icons/NavigateBefore';
 
 import LabeledStatusLight, {
   type LabeledStatusLightProps,
@@ -24,15 +24,15 @@ import {
   getUploadDialogState,
   hasQueuedItems,
   isUploadInProgress,
-  shouldRetryFailedUploadsAutomatically,
   shouldFlashLightsOfFailedUploads,
+  shouldRetryFailedUploadsAutomatically,
 } from '~/features/upload/selectors';
 import {
   cancelUpload,
   closeUploadDialog,
   dismissLastUploadResult,
-  setUploadAutoRetry,
   setFlashFailed,
+  setUploadAutoRetry,
 } from '~/features/upload/slice';
 import StartUploadButton from '~/features/upload/StartUploadButton';
 import UploadProgressBar from '~/features/upload/UploadProgressBar';
@@ -94,7 +94,7 @@ const UploadResultIndicator = ({
   );
 };
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   actions: {
     padding: theme.spacing(1, 3, 1, 3),
   },

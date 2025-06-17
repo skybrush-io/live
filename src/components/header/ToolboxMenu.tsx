@@ -1,19 +1,15 @@
+import Build from '@mui/icons-material/Build';
+import Functions from '@mui/icons-material/Functions';
+import Tune from '@mui/icons-material/Tune';
+import VpnKey from '@mui/icons-material/VpnKey';
+import Divider from '@mui/material/Divider';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import Menu, { type MenuProps } from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
-
-import Divider from '@material-ui/core/Divider';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import Menu, { type MenuProps } from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-
-import Build from '@material-ui/icons/Build';
-import Functions from '@material-ui/icons/Functions';
-import MapCloudOff from '~/icons/MapCloudOff';
-import Pro from '~/icons/Pro';
-import Tune from '@material-ui/icons/Tune';
-import VpnKey from '@material-ui/icons/VpnKey';
 
 import { showFirmwareUpdateDialog } from '~/features/firmware-update/actions';
 import { JOB_TYPE as FIRMWARE_UPLOAD_JOB_TYPE } from '~/features/firmware-update/constants';
@@ -27,14 +23,11 @@ import { isConnected } from '~/features/servers/selectors';
 import { isDeveloperModeEnabled } from '~/features/session/selectors';
 import { getRunningUploadJobType } from '~/features/upload/selectors';
 import { showVersionCheckDialog } from '~/features/version-check/slice';
+import MapCloudOff from '~/icons/MapCloudOff';
+import Pro from '~/icons/Pro';
 import type { RootState } from '~/store/reducers';
 
 import ToolboxDevMenuItems from './ToolboxDevMenuItems';
-
-const anchorOrigin: MenuProps['anchorOrigin'] = {
-  vertical: 'bottom',
-  horizontal: 'left',
-};
 
 type ToolboxMenuPresentationProps = Readonly<{
   devMode: boolean;
@@ -49,7 +42,7 @@ type ToolboxMenuPresentationProps = Readonly<{
   showParameterUploadDialog: () => void;
   showVersionCheckDialog: () => void;
 }> &
-  Omit<MenuProps, 'anchorOrigin' | 'getContentAnchorEl'>;
+  MenuProps;
 
 const ToolboxMenuPresentation = ({
   devMode,
@@ -73,7 +66,7 @@ const ToolboxMenuPresentation = ({
   };
 
   return (
-    <Menu {...rest} getContentAnchorEl={null} anchorOrigin={anchorOrigin}>
+    <Menu {...rest}>
       <MenuItem onClick={createClickListener(showAveragingDialog)}>
         <ListItemIcon>
           <Functions />

@@ -1,13 +1,12 @@
+import Box from '@mui/material/Box';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Switch from '@mui/material/Switch';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { connect, useDispatch, useSelector } from 'react-redux';
-
-import Box from '@material-ui/core/Box';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Switch from '@material-ui/core/Switch';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
 
 import { shouldOptimizeUIForTouch } from '~/features/settings/selectors';
 
@@ -102,8 +101,8 @@ const ParameterUploadMainPanel = () => {
     }
   };
 
-  const handleRebootStateChange = (value, checked) => {
-    dispatch(setRebootAfterUpload(checked));
+  const handleRebootStateChange = (event) => {
+    dispatch(setRebootAfterUpload(event.target.checked));
   };
 
   return (
@@ -121,11 +120,7 @@ const ParameterUploadMainPanel = () => {
         <FormControlLabel
           style={{ margin: '0' }}
           control={
-            <Switch
-              checked={shouldReboot}
-              color='primary'
-              onChange={handleRebootStateChange}
-            />
+            <Switch checked={shouldReboot} onChange={handleRebootStateChange} />
           }
           label={t('parameterUploadMainPanel.rebootAfterUpload')}
         />

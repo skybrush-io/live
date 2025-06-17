@@ -1,9 +1,8 @@
+import Shuffle from '@mui/icons-material/Shuffle';
+import Button from '@mui/material/Button';
 import React from 'react';
 import { Translation } from 'react-i18next';
 import { connect } from 'react-redux';
-
-import Button from '@material-ui/core/Button';
-import Shuffle from '@material-ui/icons/Shuffle';
 
 import { augmentMappingAutomaticallyFromSpareDrones } from '~/features/mission/actions';
 import { canAugmentMappingAutomaticallyFromSpareDrones } from '~/features/mission/selectors';

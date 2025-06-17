@@ -1,19 +1,18 @@
+import Box from '@mui/material/Box';
+import Card from '@mui/material/Card';
+import CardHeader from '@mui/material/CardHeader';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
-import Box from '@material-ui/core/Box';
-import Card from '@material-ui/core/Card';
-import CardHeader from '@material-ui/core/CardHeader';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-
 import { changeLayerType } from '~/features/map/layers';
 import {
   areMultipleInstancesAllowedForLayerType,
-  LayerTypes,
   iconForLayerType,
   labelForLayerType,
+  LayerTypes,
 } from '~/model/layers';
 import { getLayersInBottomFirstOrder } from '~/selectors/ordered';
 

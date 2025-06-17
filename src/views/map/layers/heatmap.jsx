@@ -1,3 +1,13 @@
+import Button from '@mui/material/Button';
+import FormControl from '@mui/material/FormControl';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormGroup from '@mui/material/FormGroup';
+import InputAdornment from '@mui/material/InputAdornment';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import Switch from '@mui/material/Switch';
+import TextField from '@mui/material/TextField';
 import partial from 'lodash-es/partial';
 import toNumber from 'lodash-es/toNumber';
 import numbro from 'numbro';
@@ -11,25 +21,14 @@ import { connect } from 'react-redux';
 
 import { layer, source } from '@collmot/ol-react';
 
-import Button from '@material-ui/core/Button';
-import FormControl from '@material-ui/core/FormControl';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormGroup from '@material-ui/core/FormGroup';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import Switch from '@material-ui/core/Switch';
-import Select from '@material-ui/core/Select';
-import TextField from '@material-ui/core/TextField';
-
 import SubscriptionDialog from '~/components/dialogs/SubscriptionDialog';
 import { setLayerParametersById } from '~/features/map/layers';
 import messageHub from '~/message-hub';
-import HashedMap from '~/utils/hashedmap';
 import {
-  mapViewCoordinateFromLonLat,
   lonLatFromMapViewCoordinate,
+  mapViewCoordinateFromLonLat,
 } from '~/utils/geography';
+import HashedMap from '~/utils/hashedmap';
 
 const formatNumber = (x) => numbro(x).format({ mantissa: 3 });
 
@@ -77,12 +76,12 @@ class HeatmapLayerSettingsPresentation extends React.Component {
       ].map((x) => ({ [x]: React.createRef() }))
     );
 
-    this._setAutoScale = (event, checked) => {
-      this.props.setLayerParameters({ autoScale: checked });
+    this._setAutoScale = (event) => {
+      this.props.setLayerParameters({ autoScale: event.target.checked });
     };
 
-    this._setSnapToGrid = (event, checked) => {
-      this.props.setLayerParameters({ snapToGrid: checked });
+    this._setSnapToGrid = (event) => {
+      this.props.setLayerParameters({ snapToGrid: event.target.checked });
     };
   }
 

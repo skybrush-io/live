@@ -1,18 +1,16 @@
-import PropTypes from 'prop-types';
+import Check from '@mui/icons-material/Check';
+import MoreVert from '@mui/icons-material/MoreVert';
+import Mouse from '@mui/icons-material/Mouse';
+import OpenWith from '@mui/icons-material/OpenWith';
+import Box from '@mui/material/Box';
+import Divider from '@mui/material/Divider';
+import IconButton from '@mui/material/IconButton';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import Toolbar, { type ToolbarProps } from '@mui/material/Toolbar';
 import React from 'react';
 import { Translation } from 'react-i18next';
 import { connect } from 'react-redux';
-
-import Box from '@material-ui/core/Box';
-import Divider from '@material-ui/core/Divider';
-import IconButton from '@material-ui/core/IconButton';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import Toolbar, { type ToolbarProps } from '@material-ui/core/Toolbar';
-import Check from '@material-ui/icons/Check';
-import Mouse from '@material-ui/icons/Mouse';
-import MoreVert from '@material-ui/icons/MoreVert';
-import OpenWith from '@material-ui/icons/OpenWith';
 
 import Colors from '~/components/colors';
 import {
@@ -27,8 +25,8 @@ import {
   clearMapping,
   finishMappingEditorSession,
 } from '~/features/mission/slice';
-import useDropdown from '~/hooks/useDropdown';
 import { isDeveloperModeEnabled } from '~/features/session/selectors';
+import useDropdown from '~/hooks/useDropdown';
 import type { RootState } from '~/store/reducers';
 
 const instructionsStyle: React.CSSProperties = {
@@ -80,23 +78,23 @@ const MappingEditorToolbar = React.forwardRef<
       <Translation>
         {(t) => (
           <Toolbar ref={ref} disableGutters variant='dense' {...rest}>
-            <IconButton disabled>
+            <IconButton disabled size='large'>
               <Mouse />
             </IconButton>
             <Box style={instructionsStyle}>
               {t('mappingEditorToolbar.clickToEdit')}
             </Box>
-            <IconButton disabled>
+            <IconButton disabled size='large'>
               <OpenWith />
             </IconButton>
             <Box style={instructionsStyle}>
               {t('mappingEditorToolbar.dragNodes')}
             </Box>
             <Box flex={1} />
-            <IconButton onClick={finishMappingEditorSession}>
+            <IconButton size='large' onClick={finishMappingEditorSession}>
               <Check htmlColor={Colors.success} />
             </IconButton>
-            <IconButton onClick={openMappingMenu}>
+            <IconButton size='large' onClick={openMappingMenu}>
               <MoreVert />
             </IconButton>
             <Menu

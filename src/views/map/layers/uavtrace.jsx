@@ -1,3 +1,4 @@
+import TextField from '@mui/material/TextField';
 import toNumber from 'lodash-es/toNumber';
 import Feature from 'ol/Feature';
 import LineString from 'ol/geom/LineString';
@@ -7,8 +8,6 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 import { layer as olLayer, source } from '@collmot/ol-react';
-
-import TextField from '@material-ui/core/TextField';
 
 import Colors from '~/components/colors';
 import SwatchesColorPicker from '~/components/SwatchesColorPicker';

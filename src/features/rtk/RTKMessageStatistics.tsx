@@ -1,22 +1,18 @@
+import Box from '@mui/material/Box';
 import React from 'react';
 import { Translation } from 'react-i18next';
 import { connect } from 'react-redux';
 import TimeAgo from 'react-timeago';
 
-import Box from '@material-ui/core/Box';
-import ArrowDownward from '@material-ui/icons/ArrowDownward';
-import ArrowUpward from '@material-ui/icons/ArrowUpward';
-
+import { colorForStatus, Status } from '@skybrush/app-theme-mui';
 import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
 
 import { listOf } from '~/components/helpers/lists';
+import type { RootState } from '~/store/reducers';
 import { shortTimeAgoFormatter } from '~/utils/formatting';
 
 import { getDisplayedListOfMessages } from './selectors';
 import { describeMessageType } from './utils';
-import type { RootState } from '~/store/reducers';
-import { Typography } from '@material-ui/core';
-import { colorForStatus, Status } from '@skybrush/app-theme-material-ui';
 
 /* ************************************************************************ */
 
@@ -71,7 +67,12 @@ const RTKMessageStatistics = listOf(RTKMessageStatisticsListEntry, {
   dataProvider: 'items',
   backgroundHint: (
     <Translation>
-      {(t) => <BackgroundHint text={t('RTKMessage.noRTKMessagesYet')} />}
+      {(t) => (
+        <BackgroundHint
+          // TODO(vp): fix type coercion.
+          text={t('RTKMessage.noRTKMessagesYet') as string | undefined}
+        />
+      )}
     </Translation>
   ),
 });
