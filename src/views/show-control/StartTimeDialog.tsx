@@ -1,4 +1,3 @@
-import AccessTime from '@mui/icons-material/AccessTime';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -212,7 +211,6 @@ const StartTimeForm = ({
                       ampm={false}
                       inputFormat='HH:mm:ss'
                       TextFieldProps={{ variant: 'filled' }}
-                      components={{ OpenPickerIcon: AccessTime }}
                       label={t('startTimeDialog.startTime')}
                       name='utcTime'
                     />
