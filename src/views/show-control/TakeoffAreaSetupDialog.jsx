@@ -1,15 +1,15 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import { connect } from 'react-redux';
-import { Translation, withTranslation } from 'react-i18next';
-
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
+import { SelectAll } from '@material-ui/icons';
 import VerticalAlignBottom from '@material-ui/icons/VerticalAlignBottom';
+import PropTypes from 'prop-types';
+import React from 'react';
+import { Translation, withTranslation } from 'react-i18next';
+import { connect } from 'react-redux';
 
 import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
 
@@ -26,6 +26,7 @@ import {
   closeTakeoffAreaSetupDialog,
   revokeTakeoffAreaApproval,
 } from '~/features/show/slice';
+import { setSelectedUAVIds } from '~/features/uavs/actions';
 import {
   getMisalignedUAVIds,
   getMisplacedUAVIds,
@@ -33,6 +34,8 @@ import {
 } from '~/features/uavs/selectors';
 import AugmentMappingButton from '~/views/uavs/AugmentMappingButton';
 import RecalculateMappingButton from '~/views/uavs/RecalculateMappingButton';
+
+const _cursorPointerStyle = { cursor: 'pointer' };
 
 /**
  * Presentation component that shows how many mapping slots are empty at the
@@ -59,7 +62,11 @@ EmptySlotsIndicator.propTypes = {
  * slot such that the UAV itself does not seem to exist (i.e. we have received no
  * status report about them).
  */
-const MissingDronesIndicator = ({ hasNonemptyMappingSlot, uavIds }) => (
+const MissingDronesIndicator = ({
+  hasNonemptyMappingSlot,
+  selectDrones,
+  uavIds,
+}) => (
   <Translation>
     {(t) => (
       <DronePlaceholderList
@@ -68,13 +75,22 @@ const MissingDronesIndicator = ({ hasNonemptyMappingSlot, uavIds }) => (
         successMessage={t('takeoffAreaSetupDialog.allDroneOnline')}
         emptyMessage={t('takeoffAreaSetupDialog.noDrones')}
         preferEmptyMessage={!hasNonemptyMappingSlot}
-      />
+      >
+        {uavIds && uavIds.length > 0 && (
+          <SelectAll
+            style={_cursorPointerStyle}
+            fontSize='large'
+            onClick={() => selectDrones(uavIds)}
+          />
+        )}
+      </DronePlaceholderList>
     )}
   </Translation>
 );
 
 MissingDronesIndicator.propTypes = {
   hasNonemptyMappingSlot: PropTypes.bool,
+  selectDrones: PropTypes.func.isRequired,
   uavIds: PropTypes.arrayOf(PropTypes.string),
 };
 
@@ -82,7 +98,11 @@ MissingDronesIndicator.propTypes = {
  * Presentation component that shows which UAVs seem to be placed at the wrong
  * place (far from its takeoff position).
  */
-const MisplacedDronesIndicator = ({ hasNonemptyMappingSlot, uavIds }) => (
+const MisplacedDronesIndicator = ({
+  hasNonemptyMappingSlot,
+  selectDrones,
+  uavIds,
+}) => (
   <Translation>
     {(t) => (
       <DronePlaceholderList
@@ -91,13 +111,22 @@ const MisplacedDronesIndicator = ({ hasNonemptyMappingSlot, uavIds }) => (
         successMessage={t('takeoffAreaSetupDialog.allDronesAtTakeoffPositions')}
         emptyMessage={t('takeoffAreaSetupDialog.noDrones')}
         preferEmptyMessage={!hasNonemptyMappingSlot}
-      />
+      >
+        {uavIds && uavIds.length > 0 && (
+          <SelectAll
+            style={_cursorPointerStyle}
+            fontSize='large'
+            onClick={() => selectDrones(uavIds)}
+          />
+        )}
+      </DronePlaceholderList>
     )}
   </Translation>
 );
 
 MisplacedDronesIndicator.propTypes = {
   hasNonemptyMappingSlot: PropTypes.bool,
+  selectDrones: PropTypes.func.isRequired,
   uavIds: PropTypes.arrayOf(PropTypes.string),
 };
 
@@ -105,7 +134,11 @@ MisplacedDronesIndicator.propTypes = {
  * Presentation component that shows which UAVs seem to be facing the wrong
  * direction.
  */
-const MisalignedDronesIndicator = ({ hasNonemptyMappingSlot, uavIds }) => (
+const MisalignedDronesIndicator = ({
+  hasNonemptyMappingSlot,
+  selectDrones,
+  uavIds,
+}) => (
   <Translation>
     {(t) => (
       <DronePlaceholderList
@@ -116,13 +149,22 @@ const MisalignedDronesIndicator = ({ hasNonemptyMappingSlot, uavIds }) => (
         )}
         emptyMessage={t('takeoffAreaSetupDialog.noDrones')}
         preferEmptyMessage={!hasNonemptyMappingSlot}
-      />
+      >
+        {uavIds && uavIds.length > 0 && (
+          <SelectAll
+            style={_cursorPointerStyle}
+            fontSize='large'
+            onClick={() => selectDrones(uavIds)}
+          />
+        )}
+      </DronePlaceholderList>
     )}
   </Translation>
 );
 
 MisalignedDronesIndicator.propTypes = {
   hasNonemptyMappingSlot: PropTypes.bool,
+  selectDrones: PropTypes.func.isRequired,
   uavIds: PropTypes.arrayOf(PropTypes.string),
 };
 
@@ -135,20 +177,24 @@ const TakeoffAreaSetupDialogIndicatorsPresentation = ({
   misalignedUAVIds,
   misplacedUAVIds,
   missingUAVIds,
+  selectDrones,
 }) => (
   <>
     <EmptySlotsIndicator indices={emptySlotIndices} />
     <MissingDronesIndicator
       uavIds={missingUAVIds}
       hasNonemptyMappingSlot={hasNonemptyMappingSlot}
+      selectDrones={selectDrones}
     />
     <MisplacedDronesIndicator
       uavIds={misplacedUAVIds}
       hasNonemptyMappingSlot={hasNonemptyMappingSlot}
+      selectDrones={selectDrones}
     />
     <MisalignedDronesIndicator
       uavIds={misalignedUAVIds}
       hasNonemptyMappingSlot={hasNonemptyMappingSlot}
+      selectDrones={selectDrones}
     />
   </>
 );
@@ -159,6 +205,7 @@ TakeoffAreaSetupDialogIndicatorsPresentation.propTypes = {
   misalignedUAVIds: PropTypes.arrayOf(PropTypes.string),
   misplacedUAVIds: PropTypes.arrayOf(PropTypes.string),
   missingUAVIds: PropTypes.arrayOf(PropTypes.string),
+  selectDrones: PropTypes.func.isRequired,
 };
 
 const TakeoffAreaSetupDialogIndicators = connect(
@@ -171,7 +218,9 @@ const TakeoffAreaSetupDialogIndicators = connect(
     misalignedUAVIds: getMisalignedUAVIds(state),
   }),
   // mapDispatchToProps
-  {}
+  (dispatch) => ({
+    selectDrones: (ids) => dispatch(setSelectedUAVIds(ids)),
+  })
 )(TakeoffAreaSetupDialogIndicatorsPresentation);
 
 /**
