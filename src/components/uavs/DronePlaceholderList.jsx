@@ -5,8 +5,8 @@ import React from 'react';
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 
-import DronePlaceholder from './DronePlaceholder';
 import { formatMissionId } from '~/utils/formatting';
+import DronePlaceholder from './DronePlaceholder';
 
 /**
  * Presentation component that receives a list of drone IDs or mapping slot
@@ -15,6 +15,7 @@ import { formatMissionId } from '~/utils/formatting';
  */
 const DronePlaceholderList = ({
   actions,
+  children,
   emptyMessage,
   items = [],
   maxCount,
@@ -75,6 +76,7 @@ const DronePlaceholderList = ({
             </Box>
           )
         ) : null}
+        {children}
         {actions && (
           <>
             <Box key='padding' flex={1} />
@@ -93,6 +95,7 @@ DronePlaceholderList.propTypes = {
     PropTypes.node,
     PropTypes.arrayOf(PropTypes.node),
   ]),
+  children: PropTypes.node,
   emptyMessage: PropTypes.node,
   items: PropTypes.arrayOf(
     PropTypes.oneOfType([PropTypes.number, PropTypes.string])
