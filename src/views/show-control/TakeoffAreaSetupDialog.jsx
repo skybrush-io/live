@@ -4,7 +4,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
-import { SelectAll } from '@material-ui/icons';
+import SelectAll from '@material-ui/icons/SelectAll';
 import VerticalAlignBottom from '@material-ui/icons/VerticalAlignBottom';
 import PropTypes from 'prop-types';
 import React from 'react';
