@@ -170,6 +170,13 @@ const uavIdOverlayKeyMap: KeyMap = {
     scopes: [HotkeyScope.GLOBAL],
   },
 
+  TYPE_COLON: {
+    name: 'Define a range of pending UAV IDs',
+    sequence: ':',
+    group: HotkeyGroup.HIDDEN,
+    scopes: [HotkeyScope.GLOBAL],
+  },
+
   DELETE_LAST_CHARACTER: {
     name: 'Delete last character of pending UAV ID',
     sequence: 'backspace',

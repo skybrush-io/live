@@ -13,17 +13,90 @@ import { setSelectedUAVIds } from '~/features/uavs/actions';
 import { getUAVById } from '~/features/uavs/selectors';
 import { scrollUAVListItemIntoView } from '~/utils/navigation';
 
+import { finishMappingEditorSession } from '../mission/slice';
 import { getPendingUAVId, isPendingUAVIdOverlayVisible } from './selectors';
 import { setPendingUAVId, startPendingUAVIdTimeout } from './slice';
-import { finishMappingEditorSession } from '../mission/slice';
 
 /* Prefixes to try in front of a UAV ID in case the "real" UAV ID has leading
  * zeros */
 const LEADING_ZEROS = ['', '0', '00', '000', '0000'];
 
+/**
+ * Generator that resolves the string description of a range declaration
+ * into an sequence of *string* identifiers.
+ *
+ * @param {string} The string description of the range.
+ *
+ * @yields {string} The identifiers of all items in the range.
+ */
+function* resolveRange(desc) {
+  const split = desc.split(':');
+  if (split.length > 2) {
+    return []; // Invalid input, return an empty array.
+  }
+
+  const [startStr, endStr] = split.length == 2 ? split : [split[0], split[0]];
+  const start = Number.parseInt(startStr);
+  const end = Number.parseInt(endStr);
+  if (!(Number.isFinite(start) && Number.isFinite(end) && start <= end)) {
+    return []; // Invalid range, return an empty array.
+  }
+
+  for (let i = start; i <= end; i++) {
+    yield i.toString();
+  }
+}
+
+/**
+ * Resolves the given show index to a selection index.
+ *
+ * @param {string} value The ID to resolve.
+ * @param {Nullable<string>[]} missionMapping Mapping from mission-specific
+ *     slots to the corresponding UAV identifiers.
+ *
+ * @returns {number|undefined} The resolved ID or `undefined`
+ *     if the ID could not be resolved.
+ */
+function showIndexToSelectionIndex(value, missionMapping) {
+  const index = Number.parseInt(value);
+  if (!Number.isFinite(index)) {
+    return undefined;
+  }
+
+  const uavId = missionMapping[index - 1];
+  return isNil(uavId) ? undefined : uavId;
+}
+
+/**
+ * Resolves the given drone ID to a selection index.
+ *
+ * @param {string} value The ID to resolve.
+ * @param {Nullable<string>[]} missionMapping Mapping from mission-specific
+ *     slots to the corresponding UAV identifiers.
+ * @param {RootState} state The root redux state.
+ *
+ * @returns {number|undefined} The resolved ID or `undefined`
+ *     if the ID could not be resolved.
+ */
+function droneIdsToSelectionIndex(value, missionMapping, state) {
+  const allNumeric = /^\d+$/.test(value);
+  const prefixes = allNumeric ? LEADING_ZEROS : [''];
+  for (const prefix of prefixes) {
+    const uavId = prefix + value;
+    const uav = getUAVById(state, uavId);
+
+    /* we consider the UAV ID as found if we either have a UAV with status
+     * information that corresponds to this ID, or if the UAV ID is in the
+     * mission mapping */
+    if (uav || missionMapping.includes(uavId)) {
+      return uavId;
+    }
+  }
+}
+
 function handleAndClearPendingUAVId(dispatch, getState) {
   const state = getState();
-  const pendingUAVId = getPendingUAVId(state);
+  let pendingUAVId = getPendingUAVId(state);
 
   if (
     pendingUAVId &&
@@ -33,28 +106,19 @@ function handleAndClearPendingUAVId(dispatch, getState) {
     const newSelection = [];
     const mapping = getMissionMapping(state);
 
+    // Function that expects a single string identifier, the mission mapping, and the root redux state.
+    let resolveUAVId;
     if (pendingUAVId.charAt(0) === 's') {
-      const index = Number(pendingUAVId.slice(1));
-      if (Number.isFinite(index)) {
-        const uavId = mapping[index - 1];
-        if (!isNil(uavId)) {
-          newSelection.push(uavId);
-        }
-      }
+      resolveUAVId = showIndexToSelectionIndex;
+      pendingUAVId = pendingUAVId.slice(1); // Remove the s prefix, keep the pure ID.
     } else {
-      const allNumeric = /^\d+$/.test(pendingUAVId);
-      const prefixes = allNumeric ? LEADING_ZEROS : [''];
-      for (const prefix of prefixes) {
-        const uavId = prefix + pendingUAVId;
-        const uav = getUAVById(state, uavId);
+      resolveUAVId = droneIdsToSelectionIndex;
+    }
 
-        /* we consider the UAV ID as found if we either have a UAV with status
-         * information that corresponds to this ID, or if the UAV ID is in the
-         * mission mapping */
-        if (uav || mapping.includes(uavId)) {
-          newSelection.push(uavId);
-          break;
-        }
+    for (const key of resolveRange(pendingUAVId)) {
+      const uavId = resolveUAVId(key, mapping, state);
+      if (uavId !== undefined) {
+        newSelection.push(uavId);
       }
     }
 
@@ -139,20 +203,33 @@ export function appendToPendingUAVId(char) {
       char = String(char);
     }
 
-    if (
-      typeof char === 'string' &&
-      char.length === 1 &&
-      char >= '0' &&
-      char <= '9'
-    ) {
+    if (typeof char === 'string' && char.length === 1) {
       const pendingUAVId = getPendingUAVId(getState());
-
-      /* impose a length limit */
-      if (pendingUAVId.length < 10) {
-        dispatch(setPendingUAVId(pendingUAVId + char));
+      const segment = pendingUAVId.split(':').pop();
+      let validCharacterTyped = false;
+      if (char >= '0' && char <= '9') {
+        validCharacterTyped = true;
+        /* impose a length limit on IDs */
+        if (segment.length < 10) {
+          dispatch(setPendingUAVId(pendingUAVId + char));
+        }
+      } else if (char === ':') {
+        validCharacterTyped = true;
+        // Make sure pending UAV is:
+        // - not empty
+        // - does already contain a colon
+        // - ends with a number
+        if (pendingUAVId.length > 0 && !pendingUAVId.includes(':')) {
+          const lastChar = pendingUAVId.slice(-1);
+          if (lastChar >= '0' && lastChar <= '9') {
+            dispatch(setPendingUAVId(pendingUAVId + char));
+          }
+        }
       }
 
-      dispatch(startPendingUAVIdTimeout());
+      if (validCharacterTyped) {
+        dispatch(startPendingUAVIdTimeout());
+      }
     }
   };
 }
