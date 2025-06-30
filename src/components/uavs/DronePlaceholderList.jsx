@@ -76,11 +76,11 @@ const DronePlaceholderList = ({
             </Box>
           )
         ) : null}
-        {children}
-        {actions && (
+        {(actions || children) && (
           <>
             <Box key='padding' flex={1} />
             <Box key='actions' ml={1}>
+              {children}
               {actions}
             </Box>
           </>
