@@ -7,9 +7,9 @@ import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import { connect } from 'react-redux';
 
-import { interaction, Map, View, withMap } from '@collmot/ol-react';
+import { interaction, View, withMap } from '@collmot/ol-react';
 
-import { MapControls, MapToolbars } from '~/components/map';
+import { BaseMap, MapControls, MapToolbars } from '~/components/map';
 import ConnectedFitAllFeaturesButton from '~/components/map/buttons/FitAllFeaturesButton';
 import * as Condition from '~/components/map/conditions';
 import {
@@ -418,7 +418,7 @@ class MapViewPresentation extends React.Component {
     return (
       <NearestItemTooltip>
         <div style={mapStyles.mapWrapper}>
-          <Map
+          <BaseMap
             ref={this._map}
             loadTilesWhileInteracting
             id='main-map-view'
@@ -472,7 +472,7 @@ class MapViewPresentation extends React.Component {
               {/* The context menu that appears on the map when the user right-clicks */}
               <MapContextMenu />
             </ShowContextMenu>
-          </Map>
+          </BaseMap>
         </div>
       </NearestItemTooltip>
     );
@@ -484,7 +484,7 @@ class MapViewPresentation extends React.Component {
    * only user-defined features but anything that can be transformed (e.g.,
    * home position objects).
    *
-   * @param  {Map} map  the map
+   * @param  {BaseMap} map  the map
    * @return {ol.Feature[]} the selected OpenLayers features
    */
   _getSelectedTransformableFeatures = (map) => {
