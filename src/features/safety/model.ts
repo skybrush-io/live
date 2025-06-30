@@ -28,6 +28,7 @@ const geofenceActionDescriptions: Record<GeofenceAction, PreparedI18nKey> = {
   [GeofenceAction.SHUT_DOWN]: tt('geofenceAction.shutDown'),
 };
 
+
 /**
  * Returns a human-readable description of the given geofence action.
  */
@@ -42,6 +43,39 @@ export const describeGeofenceAction = (
  */
 export function isValidGeofenceAction(action: GeofenceAction): boolean {
   return VALID_GEOFENCE_ACTIONS.includes(action);
+}
+
+/**
+ * Enum describing the possible geofence generation methods.
+ */
+export enum GeofenceGenerationMethod {
+  MANUAL = 'manual',
+  CONVEX = 'convex',
+  CONCAVE = 'concave',
+}
+
+const VALID_GEOFENCE_GENERATION_METHODS = Object.values(GeofenceGenerationMethod);
+
+const geofenceGenerationMethodDescriptions: Record<GeofenceGenerationMethod, PreparedI18nKey> = {
+  [GeofenceGenerationMethod.MANUAL]: tt('geofenceGenerationMethod.manual'),
+  [GeofenceGenerationMethod.CONVEX]: tt('geofenceGenerationMethod.convex'),
+  [GeofenceGenerationMethod.CONCAVE]: tt('geofenceGenerationMethod.concave'),
+};
+
+/**
+ * Returns a human-readable description of the given geofence generation method.
+ */
+export const describeGeofenceGenerationMethod = (
+  method: GeofenceGenerationMethod
+): PreparedI18nKey =>
+  geofenceGenerationMethodDescriptions[method] ??
+  tt('geofenceGenerationMethod.unknown', { method });
+
+/**
+ * Returns whether the given input represents a valid geofence genearation method.
+ */
+export function isValidGeofenceGenerationMethod(method: GeofenceGenerationMethod): boolean {
+  return VALID_GEOFENCE_GENERATION_METHODS.includes(method);
 }
 
 export type GeofencePolygon = {
