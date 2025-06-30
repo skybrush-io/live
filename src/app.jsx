@@ -11,9 +11,9 @@ import { PersistGate } from 'redux-persist/es/integration/react';
 import loadable from '@loadable/component';
 import CssBaseline from '@material-ui/core/CssBaseline';
 
+import CornerRibbon from './components/CornerRibbon';
 import dialogs from './components/dialogs';
 import Header from './components/header';
-import CornerRibbon from './components/CornerRibbon';
 import ServerConnectionManager from './components/ServerConnectionManager';
 import ShowFileWatcher from './views/show-control/ShowFileWatcher';
 
@@ -30,11 +30,11 @@ import MissionPlannerDialog from './features/mission/MissionPlannerDialog';
 import MissionProgressObserver from './features/mission/MissionProgressObserver';
 import ParameterUploadSetupDialog from './features/parameters/ParameterUploadSetupDialog';
 import PromptDialog from './features/prompt/PromptDialog';
+import RTKSetupDialog from './features/rtk/RTKSetupDialog';
 import SafetyDialog from './features/safety/SafetyDialog';
 import SavedLocationEditorDialog from './features/saved-locations/SavedLocationEditorDialog';
-import RTKSetupDialog from './features/rtk/RTKSetupDialog';
+import ShowConfiguratorDialog from './features/show-configurator/ShowConfiguratorDialog';
 import Sidebar from './features/sidebar/Sidebar';
-import SiteSurveyDialog from './features/site-survey/SiteSurveyDialog';
 import ToastNotificationManager from './features/snackbar/ToastNotificationManager';
 import UAVDetailsDialog from './features/uavs/UAVDetailsDialog';
 import UploadDialog from './features/upload/UploadDialog';
@@ -188,7 +188,7 @@ const App = ({ onFirstRender }) => (
       <RTKSetupDialog />
       <SafetyDialog />
       <SavedLocationEditorDialog />
-      <SiteSurveyDialog />
+      <ShowConfiguratorDialog />
       <UAVDetailsDialog />
       <UploadDialog />
       <VersionCheckDialog />

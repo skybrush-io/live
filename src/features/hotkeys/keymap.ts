@@ -1,4 +1,4 @@
-import { keyMap as siteSurveyKeyMap } from '~/features/site-survey/hotkeys';
+import { keyMap as showConfiguratorKeyMap } from '~/features/show-configurator/hotkeys';
 import { isRunningOnMac } from '~/utils/platform';
 
 import { HotkeyGroup, HotkeyScope } from './types';
@@ -195,7 +195,7 @@ const keyMap: KeyMap = {
   ...toggleOptionKeyMap,
   ...sendCommandKeyMap,
   ...uavIdOverlayKeyMap,
-  ...siteSurveyKeyMap,
+  ...showConfiguratorKeyMap,
 
   CLEAR_STORED_SETTINGS: {
     name: 'Clear stored settings and reload',
@@ -213,7 +213,7 @@ const keyMap: KeyMap = {
     name: 'Show hotkeys',
     sequence: '?',
     group: HotkeyGroup.HIDDEN,
-    scopes: [HotkeyScope.GLOBAL, HotkeyScope.SITE_SURVEY],
+    scopes: [HotkeyScope.GLOBAL, HotkeyScope.SHOW_CONFIGURATOR],
   },
 };
 

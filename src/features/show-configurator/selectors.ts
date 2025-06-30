@@ -26,7 +26,7 @@ import {
 import { convexHull2D, type Coordinate2D, getCentroid } from '~/utils/math';
 import { EMPTY_ARRAY } from '~/utils/redux';
 
-import type { AdaptResult, ShowData, SiteSurveyState } from './state';
+import type { AdaptResult, ShowData, ShowConfiguratorState } from './state';
 
 const _defaultCoordinateSystem: ShowData['coordinateSystem'] = {
   type: 'nwu',
@@ -35,22 +35,20 @@ const _defaultCoordinateSystem: ShowData['coordinateSystem'] = {
 };
 
 export const getPastHistoryLength: AppSelector<number> = (state) =>
-  state.dialogs.siteSurvey.past.length;
+  state.dialogs.showConfigurator.past.length;
 
 export const getFutureHistoryLength: AppSelector<number> = (state) =>
-  state.dialogs.siteSurvey.future.length;
+  state.dialogs.showConfigurator.future.length;
 
-const selectSiteSurveyState: AppSelector<SiteSurveyState> = (
+const selectShowConfiguratorState: AppSelector<ShowConfiguratorState> = (
   state: RootState
-) => state.dialogs.siteSurvey.present;
+) => state.dialogs.showConfigurator.present;
 
-export const isSiteSurveyDialogOpen: AppSelector<boolean> = createSelector(
-  selectSiteSurveyState,
-  (state) => state.open
-);
+export const isShowConfiguratorDialogOpen: AppSelector<boolean> =
+  createSelector(selectShowConfiguratorState, (state) => state.open);
 
 const selectSettings = createSelector(
-  selectSiteSurveyState,
+  selectShowConfiguratorState,
   (state) => state.settings
 );
 
@@ -60,7 +58,7 @@ export const selectDronesVisible: AppSelector<boolean> = createSelector(
 );
 
 const selectShowData = createSelector(
-  selectSiteSurveyState,
+  selectShowConfiguratorState,
   (state): ShowData =>
     state.showData ?? {
       // Provide a default instead of doing a ton of dealing with undefined everywhere.
@@ -71,7 +69,7 @@ const selectShowData = createSelector(
 );
 
 /**
- * Selector that returns the coordinate system from the site survey state.
+ * Selector that returns the coordinate system from the show configurator state.
  */
 export const selectCoordinateSystem = createSelector(
   selectShowData,
@@ -79,7 +77,7 @@ export const selectCoordinateSystem = createSelector(
 );
 
 /**
- * Selector that returns the swarm specification from the site survey state.
+ * Selector that returns the swarm specification from the show configurator state.
  */
 const selectSwarmSpecification = createSelector(
   selectShowData,
@@ -87,7 +85,7 @@ const selectSwarmSpecification = createSelector(
 );
 
 /**
- * Selector that returns the home positions of drones from the site survey state.
+ * Selector that returns the home positions of drones from the show configurator state.
  */
 export const getHomePositions = createSelector(
   selectShowData,
@@ -95,10 +93,10 @@ export const getHomePositions = createSelector(
 );
 
 /**
- * Selector that returns the selection from the site survey state.
+ * Selector that returns the selection from the show configurator state.
  */
 export const getSelection = createSelector(
-  selectSiteSurveyState,
+  selectShowConfiguratorState,
   (state) => state.selection
 );
 
@@ -106,9 +104,9 @@ export const getSelection = createSelector(
  * Selector that returns the partial show data from the currently loaded show.
  *
  * This is useful for showing feedback to the user about what's missing but necessary
- * to use the site survey dialog.
+ * to use the show configurator dialog.
  */
-export const selectPartialSiteSurveyDataFromShow: AppSelector<
+export const selectPartialShowConfiguratorDataFromShow: AppSelector<
   Partial<ShowData>
 > = createSelector(
   getSwarmSpecificationForShowSegmentFromShow,
@@ -135,24 +133,25 @@ export const selectPartialSiteSurveyDataFromShow: AppSelector<
 /**
  * Selector that returns the show data from the currently loaded show.
  */
-export const selectSiteSurveyDataFromShow: AppSelector<ShowData | undefined> =
-  createSelector(
-    selectPartialSiteSurveyDataFromShow,
-    ({ swarm, coordinateSystem, homePositions }) => {
-      if (
-        swarm === undefined ||
-        coordinateSystem === undefined ||
-        homePositions === undefined
-      ) {
-        return undefined;
-      }
-
-      return { swarm, coordinateSystem, homePositions };
+export const selectShowConfiguratorDataFromShow: AppSelector<
+  ShowData | undefined
+> = createSelector(
+  selectPartialShowConfiguratorDataFromShow,
+  ({ swarm, coordinateSystem, homePositions }) => {
+    if (
+      swarm === undefined ||
+      coordinateSystem === undefined ||
+      homePositions === undefined
+    ) {
+      return undefined;
     }
-  );
+
+    return { swarm, coordinateSystem, homePositions };
+  }
+);
 
 export const selectIsShowAdaptInProgress: AppSelector<boolean> = createSelector(
-  selectSiteSurveyState,
+  selectShowConfiguratorState,
   (state) =>
     state.adaptResult !== undefined &&
     'loading' in state.adaptResult &&
@@ -160,14 +159,14 @@ export const selectIsShowAdaptInProgress: AppSelector<boolean> = createSelector(
 );
 
 export const selectShowAdaptError: AppSelector<string | undefined> =
-  createSelector(selectSiteSurveyState, (state) =>
+  createSelector(selectShowConfiguratorState, (state) =>
     state.adaptResult !== undefined && 'error' in state.adaptResult
       ? state.adaptResult.error
       : undefined
   );
 
 export const selectAdaptResult: AppSelector<AdaptResult | undefined> =
-  createSelector(selectSiteSurveyState, (state) =>
+  createSelector(selectShowConfiguratorState, (state) =>
     state.adaptResult !== undefined && 'show' in state.adaptResult
       ? state.adaptResult
       : undefined
@@ -235,7 +234,7 @@ export const getHomePositionsInWorldCoordinates = createSelector(
   positionsToWorldCoordinatesCombiner
 );
 
-export const getCenterOfSiteSurveyHomePositionsInWorldCoordinates: AppSelector<
+export const getCenterOfShowConfiguratorHomePositionsInWorldCoordinates: AppSelector<
   GPSPosition | undefined
 > = createSelector(getHomePositionsInWorldCoordinates, (homePositions) => {
   if (homePositions) {
@@ -275,7 +274,7 @@ export const getVisibleLayersInOrder = createSelector(
   (layers, dronesVisible): Layer[] => {
     // The default UAVs layer that'll be used if `layers` doesn't contain one.
     let uavsLayer: Layer = {
-      id: 'site-survey-uavs',
+      id: 'show-configurator-uavs',
       type: LayerType.UAVS,
       label: 'UAVs',
       visible: true,

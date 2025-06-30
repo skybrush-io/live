@@ -1,16 +1,16 @@
 import { createSelector } from '@reduxjs/toolkit';
 
-import { isSiteSurveyDialogOpen } from '~/features/site-survey/selectors';
+import { isShowConfiguratorDialogOpen } from '~/features/show-configurator/selectors';
 import { type AppSelector } from '~/store/reducers';
 
 import { HotkeyScope } from './types';
 
 export const getActiveHotkeyScope: AppSelector<HotkeyScope> = createSelector(
-  isSiteSurveyDialogOpen,
-  (isSiteSurveyDialogOpen) => {
+  isShowConfiguratorDialogOpen,
+  (isShowConfiguratorDialogOpen) => {
     switch (true) {
-      case isSiteSurveyDialogOpen:
-        return HotkeyScope.SITE_SURVEY;
+      case isShowConfiguratorDialogOpen:
+        return HotkeyScope.SHOW_CONFIGURATOR;
 
       default:
         return HotkeyScope.GLOBAL;

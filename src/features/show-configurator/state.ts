@@ -1,5 +1,5 @@
 /**
- * @file Redux slice for the site survey dialog.
+ * @file Redux slice for the show configurator dialog.
  */
 
 import {
@@ -47,7 +47,7 @@ export type AdaptResult = {
 
 type AdaptResultOrStatus = AdaptResult | { error: string } | { loading: true };
 
-export type SiteSurveyState = {
+export type ShowConfiguratorState = {
   open: boolean;
   selection: Identifier[];
   settings: {
@@ -57,7 +57,7 @@ export type SiteSurveyState = {
   adaptResult?: AdaptResultOrStatus;
 };
 
-const initialState: SiteSurveyState = {
+const initialState: ShowConfiguratorState = {
   open: false,
   selection: EMPTY_ARRAY,
   settings: {
@@ -70,7 +70,7 @@ const initialState: SiteSurveyState = {
 // prettier-ignore
 const historyReducers: {
   historyInit: CaseReducer;
-  historyJump: CaseReducer<SiteSurveyState, PayloadAction<number>>;
+  historyJump: CaseReducer<ShowConfiguratorState, PayloadAction<number>>;
   historyRedo: CaseReducer;
   historySnap: CaseReducer;
   historyUndo: CaseReducer;
@@ -83,7 +83,7 @@ const historyReducers: {
 };
 
 const { reducer, actions } = createSlice({
-  name: 'site-survey',
+  name: 'show-configurator',
   initialState,
   reducers: {
     // -- History

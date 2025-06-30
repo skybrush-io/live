@@ -11,7 +11,7 @@ import { interaction, withMap } from '@collmot/ol-react';
 
 import * as Condition from '~/components/map/conditions';
 import { Tool } from '~/components/map/tools';
-import type { FeatureUpdateOptions } from '~/features/site-survey/actions';
+import type { FeatureUpdateOptions } from '~/features/show-configurator/actions';
 import {
   getVisibleEditableLayers,
   isLayerVisibleAndSelectable,

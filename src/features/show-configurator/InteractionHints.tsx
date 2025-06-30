@@ -19,56 +19,62 @@ import { tt } from '~/i18n';
 //       `keyPrefix` and still compatible with `babel-plugin-i18n-extract`
 const CATEGORIES = [
   {
-    title: tt('show.siteSurvey.interactionHints.category.navigation'),
+    title: tt('show.showConfigurator.interactionHints.category.navigation'),
     icon: Mouse, // TODO: Maybe `PanTool` instead?
     hints: [
       {
         keys: ['Drag'],
-        action: tt('show.siteSurvey.interactionHints.action.pan'),
+        action: tt('show.showConfigurator.interactionHints.action.pan'),
       },
       {
         keys: ['Scroll'],
-        action: tt('show.siteSurvey.interactionHints.action.zoom'),
+        action: tt('show.showConfigurator.interactionHints.action.zoom'),
       },
       {
         keys: ['Shift', 'Alt', 'Drag'],
-        action: tt('show.siteSurvey.interactionHints.action.rotate'),
+        action: tt('show.showConfigurator.interactionHints.action.rotate'),
       },
     ],
   },
   {
-    title: tt('show.siteSurvey.interactionHints.category.selection'),
+    title: tt('show.showConfigurator.interactionHints.category.selection'),
     icon: SelectAll,
     hints: [
       {
         keys: ['Click'],
-        action: tt('show.siteSurvey.interactionHints.action.select'),
+        action: tt('show.showConfigurator.interactionHints.action.select'),
       },
       {
         keys: ['Ctrl', 'Click'],
-        action: tt('show.siteSurvey.interactionHints.action.toggleSelect'),
+        action: tt(
+          'show.showConfigurator.interactionHints.action.toggleSelect'
+        ),
       },
       {
         keys: ['Shift', 'Drag'],
-        action: tt('show.siteSurvey.interactionHints.action.boxSelect'),
+        action: tt('show.showConfigurator.interactionHints.action.boxSelect'),
       },
       {
         keys: ['Alt', 'Drag'],
-        action: tt('show.siteSurvey.interactionHints.action.boxUnselect'),
+        action: tt('show.showConfigurator.interactionHints.action.boxUnselect'),
       },
     ],
   },
   {
-    title: tt('show.siteSurvey.interactionHints.category.manipulation'),
+    title: tt('show.showConfigurator.interactionHints.category.manipulation'),
     icon: Edit,
     hints: [
       {
         keys: ['Drag'],
-        action: tt('show.siteSurvey.interactionHints.action.moveSelection'),
+        action: tt(
+          'show.showConfigurator.interactionHints.action.moveSelection'
+        ),
       },
       {
         keys: ['Alt', 'Drag'],
-        action: tt('show.siteSurvey.interactionHints.action.rotateSelection'),
+        action: tt(
+          'show.showConfigurator.interactionHints.action.rotateSelection'
+        ),
       },
     ],
   },
