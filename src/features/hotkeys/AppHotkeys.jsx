@@ -19,7 +19,7 @@ import {
 } from '~/features/session/actions';
 import { isBroadcast } from '~/features/session/selectors';
 import { toggleMissionIds } from '~/features/settings/slice';
-import { handlers as siteSurveyHandlers } from '~/features/site-survey/hotkeys';
+import { handlers as showConfiguratorHandlers } from '~/features/show-configurator/hotkeys';
 import { requestRemovalOfSelectedUAVs } from '~/features/uavs/actions';
 import { openUAVDetailsDialog } from '~/features/uavs/details';
 import { getSelectedUAVIds, getUAVIdList } from '~/features/uavs/selectors';
@@ -179,7 +179,7 @@ export default connect(
         TYPE_9: () => appendToPendingUAVId(9),
         TYPE_S: () => appendToPendingUAVId('s'),
         TYPE_MINUS: () => appendToPendingUAVId('-'),
-        ...siteSurveyHandlers,
+        ...showConfiguratorHandlers,
       },
       // Plain callable functions bound to hotkeys
       {

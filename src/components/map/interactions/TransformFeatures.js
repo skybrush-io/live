@@ -13,11 +13,11 @@ import PropTypes from 'prop-types';
 import { createOLInteractionComponent } from '@collmot/ol-react/lib/interaction';
 
 import * as Condition from '~/components/map/conditions';
-import { getCenterOfFirstPointsOfTrajectoriesInWorldCoordinates } from '~/features/show/selectors';
 import {
-  getCenterOfSiteSurveyHomePositionsInWorldCoordinates,
-  isSiteSurveyDialogOpen,
-} from '~/features/site-survey/selectors';
+  getCenterOfShowConfiguratorHomePositionsInWorldCoordinates,
+  isShowConfiguratorDialogOpen,
+} from '~/features/show-configurator/selectors';
+import { getCenterOfFirstPointsOfTrajectoriesInWorldCoordinates } from '~/features/show/selectors';
 import {
   GROSS_CONVEX_HULL_AREA_ID,
   globalIdToAreaId,
@@ -146,8 +146,12 @@ export class TransformFeaturesInteraction extends PointerInteraction {
               const state = store.getState();
 
               // HACK: This is a very dubious approach, find a cleaner solution!
-              const centerOfFirstPointsInLonLat = isSiteSurveyDialogOpen(state)
-                ? getCenterOfSiteSurveyHomePositionsInWorldCoordinates(state)
+              const centerOfFirstPointsInLonLat = isShowConfiguratorDialogOpen(
+                state
+              )
+                ? getCenterOfShowConfiguratorHomePositionsInWorldCoordinates(
+                    state
+                  )
                 : getCenterOfFirstPointsOfTrajectoriesInWorldCoordinates(state);
 
               if (centerOfFirstPointsInLonLat) {
