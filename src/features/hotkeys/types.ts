@@ -1,6 +1,6 @@
 export enum HotkeyScope {
   GLOBAL = 'global',
-  SITE_SURVEY = 'siteSurvey',
+  SHOW_CONFIGURATOR = 'showConfigurator',
 }
 
 export enum HotkeyGroup {
