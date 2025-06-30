@@ -170,9 +170,9 @@ const uavIdOverlayKeyMap: KeyMap = {
     scopes: [HotkeyScope.GLOBAL],
   },
 
-  TYPE_COLON: {
+  TYPE_MINUS: {
     name: 'Define a range of pending UAV IDs',
-    sequence: ':',
+    sequence: '-',
     group: HotkeyGroup.HIDDEN,
     scopes: [HotkeyScope.GLOBAL],
   },

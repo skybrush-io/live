@@ -178,7 +178,7 @@ export default connect(
         TYPE_8: () => appendToPendingUAVId(8),
         TYPE_9: () => appendToPendingUAVId(9),
         TYPE_S: () => appendToPendingUAVId('s'),
-        TYPE_COLON: () => appendToPendingUAVId(':'),
+        TYPE_MINUS: () => appendToPendingUAVId('-'),
         ...siteSurveyHandlers,
       },
       // Plain callable functions bound to hotkeys

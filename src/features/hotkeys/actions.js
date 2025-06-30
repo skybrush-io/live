@@ -23,14 +23,14 @@ const LEADING_ZEROS = ['', '0', '00', '000', '0000'];
 
 /**
  * Generator that resolves the string description of a range declaration
- * into an sequence of *string* identifiers.
+ * (inclusive on both ends) into an sequence of *string* identifiers.
  *
  * @param {string} The string description of the range.
  *
  * @yields {string} The identifiers of all items in the range.
  */
-function* resolveRange(desc) {
-  const split = desc.split(':');
+function* resolveRange(desc, rangeSeparator = '-') {
+  const split = desc.split(rangeSeparator);
   if (split.length > 2) {
     return []; // Invalid input, return an empty array.
   }
@@ -115,7 +115,7 @@ function handleAndClearPendingUAVId(dispatch, getState) {
       resolveUAVId = droneIdsToSelectionIndex;
     }
 
-    for (const key of resolveRange(pendingUAVId)) {
+    for (const key of resolveRange(pendingUAVId, '-')) {
       const uavId = resolveUAVId(key, mapping, state);
       if (uavId !== undefined) {
         newSelection.push(uavId);
@@ -213,13 +213,13 @@ export function appendToPendingUAVId(char) {
         if (segment.length < 10) {
           dispatch(setPendingUAVId(pendingUAVId + char));
         }
-      } else if (char === ':') {
+      } else if (char === '-') {
         validCharacterTyped = true;
         // Make sure pending UAV is:
         // - not empty
-        // - does already contain a colon
+        // - does already contain a minus sign
         // - ends with a number
-        if (pendingUAVId.length > 0 && !pendingUAVId.includes(':')) {
+        if (pendingUAVId.length > 0 && !pendingUAVId.includes('-')) {
           const lastChar = pendingUAVId.slice(-1);
           if (lastChar >= '0' && lastChar <= '9') {
             dispatch(setPendingUAVId(pendingUAVId + char));
