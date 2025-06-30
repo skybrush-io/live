@@ -8,7 +8,7 @@ import { type PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { noPayload } from '~/utils/redux';
 
 import { SafetyDialogTab } from './constants';
-import { type BatteryThreshold } from './model';
+import { GeofenceGenerationMethod, type BatteryThreshold } from './model';
 
 export type SafetySliceState = {
   dialog: {
@@ -19,7 +19,7 @@ export type SafetySliceState = {
   geofence: {
     horizontalMargin: number;
     verticalMargin: number;
-    generate: boolean;
+    generationMethod: GeofenceGenerationMethod;
     simplify: boolean;
     maxVertexCount: number;
   };
@@ -39,7 +39,7 @@ export const initialState: SafetySliceState = {
   geofence: {
     horizontalMargin: 20,
     verticalMargin: 10,
-    generate: true,
+    generationMethod: GeofenceGenerationMethod.CONVEX,
     simplify: true,
     maxVertexCount: 10,
   },
