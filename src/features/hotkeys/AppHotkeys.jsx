@@ -178,6 +178,7 @@ export default connect(
         TYPE_8: () => appendToPendingUAVId(8),
         TYPE_9: () => appendToPendingUAVId(9),
         TYPE_S: () => appendToPendingUAVId('s'),
+        TYPE_MINUS: () => appendToPendingUAVId('-'),
         ...showConfiguratorHandlers,
       },
       // Plain callable functions bound to hotkeys

@@ -1,3 +1,4 @@
+export { default as BaseMap } from './BaseMap';
 export { default as DrawingToolbar } from './DrawingToolbar';
 export { default as Map } from './Map';
 export { default as MapContextMenu } from './MapContextMenu';

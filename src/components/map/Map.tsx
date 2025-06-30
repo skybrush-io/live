@@ -3,7 +3,7 @@ import React, { useMemo, type CSSProperties } from 'react';
 import { connect } from 'react-redux';
 
 // @ts-expect-error
-import { Map as OLMap, View } from '@collmot/ol-react';
+import { View } from '@collmot/ol-react';
 
 import {
   getMapViewCenterPosition,
@@ -11,19 +11,12 @@ import {
   getMapViewZoom,
 } from '~/selectors/map';
 import { RootState } from '~/store/reducers';
-import {
-  mapViewCoordinateFromLonLat,
-  type Latitude,
-  type Longitude,
-  type LonLat,
-} from '~/utils/geography';
+import { mapViewCoordinateFromLonLat, type LonLat } from '~/utils/geography';
 
+import BaseMap from './BaseMap';
 import { MapLayers, type LayerConfig } from './layers';
 import MapControls, { type MapControlDisplaySettings } from './MapControls';
-import MapToolbars from './MapToolbars';
 import { Tool } from './tools';
-
-import 'ol/ol.css';
 
 export const styles: Record<'map' | 'mapWrapper', CSSProperties> = {
   map: {
@@ -80,7 +73,7 @@ type MapProps = Partial<ViewProperties> & {
 
   // -- Ids and refs.
   id?: string;
-  mapRef?: React.Ref<OLMap>;
+  mapRef?: React.Ref<typeof BaseMap>;
 };
 
 const Map = (props: MapProps) => {
@@ -114,7 +107,7 @@ const Map = (props: MapProps) => {
 
   return (
     <div style={styles.mapWrapper}>
-      <OLMap
+      <BaseMap
         id={id}
         ref={mapRef}
         loadTilesWhileInteracting
@@ -131,7 +124,7 @@ const Map = (props: MapProps) => {
         />
         <MapControls {...controlSettings} />
         {children}
-      </OLMap>
+      </BaseMap>
     </div>
   );
 };
