@@ -207,6 +207,12 @@
     "stop": "Stop and hover",
     "unknown": "Unknown action: {{action}}"
   },
+  "geofenceGenerationMethod": {
+    "concave": "Generate concave fence",
+    "convex": "Generate convex fence",
+    "manual": "Do not generate fence",
+    "unknown": "Unknown method: {{method}}"
+  },
   "header": {
     "distanceSummary": "Maximum and minimum distance from home position",
     "velocitySummary": "Maximum horizontal and vertical velocity"
@@ -388,6 +394,7 @@
       "fenceAction": "Geofence action",
       "fenceActionHelperText": "Support for these options depends on the drones themselves; not all options are supported by all drones.",
       "fenceActionLabel": "Primary geofence action",
+      "fenceGenerationMethodLabel": "Geofence generation method",
       "generateAutomatically": "Generate automatically",
       "geofencePolygon": "Geofence polygon",
       "horizontal": "Horizontal",

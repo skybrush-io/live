@@ -52,7 +52,12 @@ import {
   required,
 } from '~/utils/validation';
 
-import { describeGeofenceAction, GeofenceAction } from './model';
+import { 
+  describeGeofenceAction, 
+  describeGeofenceGenerationMethod, 
+  GeofenceAction, 
+  GeofenceGenerationMethod 
+} from './model';
 import {
   getBoundaryPolygonBasedOnMissionItems,
   getGeofenceSettings,
@@ -97,7 +102,7 @@ const calculator = createDecorator(
   },
   {
     field: new RegExp(
-      ['horizontalMargin', 'generate', 'simplify', 'maxVertexCount'].join('|')
+      ['horizontalMargin', 'generationMethod', 'simplify', 'maxVertexCount'].join('|')
     ),
     updates: {
       // TODO: This is currently highly sub-optimal in terms of performance
@@ -106,7 +111,7 @@ const calculator = createDecorator(
         _margin,
         {
           boundaryPolygonBasedOnMissionItems,
-          generate,
+          generationMethod,
           homePositions,
           horizontalMargin,
           maxDistance,
@@ -122,8 +127,9 @@ const calculator = createDecorator(
               return { maxValue: maxDistance, margin: horizontalMargin };
 
             case MissionType.WAYPOINT: {
-              const maxPendingGeofence = generate
-                ? (() => {
+              const maxPendingGeofence = (
+                // TODO: separate convex and concave generation methods
+                generationMethod === GeofenceGenerationMethod.MANUAL ? maxGeofence : (() => {
                     const wouldBeGeofenceSettingsApplicator =
                       makeGeofenceGenerationSettingsApplicator({
                         horizontalMargin,
@@ -150,8 +156,7 @@ const calculator = createDecorator(
                         )
                       );
                     }
-                  })()
-                : maxGeofence;
+                  })());
 
               return maxPendingGeofence === undefined
                 ? { maxValue: maxDistance, margin: horizontalMargin }
@@ -169,6 +174,13 @@ const calculator = createDecorator(
   }
 );
 
+const GEOFENCE_GENERATION_METHODS = [
+  GeofenceGenerationMethod.MANUAL,
+  GeofenceGenerationMethod.CONVEX,
+  GeofenceGenerationMethod.CONCAVE,
+];
+
+
 const SUPPORTED_GEOFENCE_ACTIONS = [
   GeofenceAction.KEEP_CURRENT,
   GeofenceAction.REPORT,
@@ -182,7 +194,10 @@ const GeofenceSettingsFormPresentation = ({ onSubmit, t }) => {
     //       thus a redundant default is provided here.
     //       Maybe we should create a migration if it gets used in more than
     //       one place, but it felt like overkill for now.
-    generate: initialState.geofence.generate,
+    //generate: initialState.geofence.generate,
+    // TODO: comment above refers to `generationMethod` as well, that 
+    // replaces previous `generation` property
+    generationMethod: initialState.geofence.generationMethod,
     ...getGeofenceSettings(state),
     action: getGeofenceAction(state),
     boundaryPolygonBasedOnMissionItems:
@@ -331,12 +346,17 @@ const GeofenceSettingsFormPresentation = ({ onSubmit, t }) => {
             {t('safetyDialog.geofenceTab.geofencePolygon')}
           </FormHeader>
           <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-            <Checkboxes
-              name='generate'
-              data={{
-                label: t('safetyDialog.geofenceTab.generateAutomatically'),
-              }}
-            />
+            <Select
+              name='generationMethod'
+              label={t('safetyDialog.geofenceTab.fenceGenerationMethodLabel')}
+              variant='filled'
+            >
+              {GEOFENCE_GENERATION_METHODS.map((method) => (
+                <MenuItem key={method} value={method}>
+                  {describeGeofenceGenerationMethod(method)?.(t)}
+                </MenuItem>
+              ))}
+            </Select>
             <Box
               sx={{
                 display: 'flex',
@@ -397,12 +417,13 @@ const GeofenceSettingsForm = connect(
         updateGeofenceSettings({
           horizontalMargin: data.horizontalMargin,
           verticalMargin: data.verticalMargin,
-          generate: data.generate,
+          generationMethod: data.generationMethod,
           simplify: data.simplify,
           maxVertexCount: data.maxVertexCount,
         })
       );
-      if (data.generate) {
+      if (!(data.generationMethod === GeofenceGenerationMethod.MANUAL)) {
+        // TODO: differentiate between convex and concave methods
         dispatch(updateGeofencePolygon());
       }
     },
