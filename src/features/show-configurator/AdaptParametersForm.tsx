@@ -155,7 +155,7 @@ const AdaptParametersForm = (props: Props): JSX.Element => {
     onVerticalVelocityChanged,
   } = props;
   const { t } = useTranslation(undefined, {
-    keyPrefix: 'siteSurveyDialog.adaptParameters',
+    keyPrefix: 'showConfiguratorDialog.adaptParameters',
   });
   const styles = useStyles();
   return (

@@ -49,7 +49,7 @@ import type { AppSelector, RootState } from '~/store/reducers';
 type Stage =
   | 'selectShowFile'
   | 'setupEnvironment'
-  | 'siteSurvey'
+  | 'showConfigurator'
   | 'setupTakeoffArea'
   | 'setupGeofence'
   | 'uploadShow'
@@ -99,7 +99,7 @@ const stages: Record<Stage, StageSpecification> = {
     requires: ['selectShowFile'],
   },
 
-  siteSurvey: {
+  showConfigurator: {
     evaluate: () => Status.OFF, // TODO(ntamas): add logic here!
     requires: ['selectShowFile'],
   },
@@ -195,7 +195,7 @@ const stages: Record<Stage, StageSpecification> = {
 const stageOrder: Stage[] = [
   'selectShowFile',
   'setupEnvironment',
-  'siteSurvey',
+  'showConfigurator',
   'setupTakeoffArea',
   'setupGeofence',
   'uploadShow',

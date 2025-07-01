@@ -61,7 +61,7 @@ type AdaptReviewFormProps = Readonly<{
 const AdaptReviewForm = (props: AdaptReviewFormProps): JSX.Element => {
   const { adaptResult, error, isShowAdaptInProgress, reviewInViewer } = props;
   const { t } = useTranslation(undefined, {
-    keyPrefix: 'siteSurveyDialog.adaptReview',
+    keyPrefix: 'showConfiguratorDialog.adaptReview',
   });
   const styles = useStyles();
   let content: ReactNode;

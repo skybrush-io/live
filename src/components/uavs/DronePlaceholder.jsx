@@ -11,7 +11,6 @@ const useStyles = makeStyles(
   (theme) => ({
     root: {
       position: 'relative',
-      marginBottom: theme.spacing(0.5),
     },
 
     avatar: {

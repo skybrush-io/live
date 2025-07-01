@@ -60,7 +60,7 @@ import ActiveUAVsLayerSource from '~/views/map/sources/ActiveUAVsLayerSource';
 import { type FeatureUpdateOptions, updateModifiedFeatures } from './actions';
 import {
   type ConvexHullMarkerData,
-  getCenterOfSiteSurveyHomePositionsInWorldCoordinates,
+  getCenterOfShowConfiguratorHomePositionsInWorldCoordinates,
   getConvexHullOfShowInWorldCoordinates,
   getFutureHistoryLength,
   getHomePositionsInWorldCoordinates,
@@ -163,7 +163,7 @@ const mapControlSettings: Partial<MapControlDisplaySettings> = {
   showScaleLine: false,
 };
 
-type SiteSurveyMapProps = Readonly<{
+type MapProps = Readonly<{
   defaultPosition?: ViewProperties['position'];
   futureHistoryLength: number;
   historyJump: ActionCreatorWithPayload<number>;
@@ -181,7 +181,7 @@ type SiteSurveyMapProps = Readonly<{
 }>;
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-const useOwnState = (props: SiteSurveyMapProps) => {
+const useOwnState = (props: MapProps) => {
   const { selection, updateModifiedFeatures, updateSelection } = props;
 
   const getSelectedTransformableFeatures = useCallback(
@@ -312,7 +312,7 @@ const useOwnState = (props: SiteSurveyMapProps) => {
   };
 };
 
-const SiteSurveyMap = (props: SiteSurveyMapProps): JSX.Element => {
+const ShowConfiguratorMap = (props: MapProps): JSX.Element => {
   const {
     defaultPosition,
     futureHistoryLength,
@@ -367,12 +367,12 @@ const SiteSurveyMap = (props: SiteSurveyMapProps): JSX.Element => {
   );
 };
 
-const ConnectedSiteSurveyMap = connect(
+const ConnectedShowConfiguratorMap = connect(
   // mapStateToProps
   (state: RootState) => ({
     defaultPosition: ((center): LonLat | undefined =>
       center && ([center.lon, center.lat] satisfies LonLat))(
-      getCenterOfSiteSurveyHomePositionsInWorldCoordinates(state)
+      getCenterOfShowConfiguratorHomePositionsInWorldCoordinates(state)
     ),
     futureHistoryLength: getFutureHistoryLength(state),
     layers: getVisibleLayersInOrder(state),
@@ -388,6 +388,6 @@ const ConnectedSiteSurveyMap = connect(
     updateModifiedFeatures,
     updateSelection,
   }
-)(SiteSurveyMap);
+)(ShowConfiguratorMap);
 
-export default ConnectedSiteSurveyMap;
+export default ConnectedShowConfiguratorMap;

@@ -31,7 +31,7 @@ import AdaptParametersForm, {
 } from './AdaptParametersForm';
 import AdaptReviewForm from './AdaptReviewForm';
 import InteractionHints from './InteractionHints';
-import Map from './SiteSurveyMap';
+import Map from './ShowConfiguratorMap';
 import {
   adaptShow,
   adjustHomePositionsToDronePositions,
@@ -39,7 +39,7 @@ import {
   type ShowAdaptParameters,
 } from './actions';
 import {
-  isSiteSurveyDialogOpen,
+  isShowConfiguratorDialogOpen,
   selectAdaptedShowAsBase64String,
   selectAdjustHomePositionsToDronePositionsEnabled,
   selectCoordinateSystem,
@@ -228,7 +228,7 @@ function useOwnState(props: Props) {
   };
 }
 
-const SiteSurveyDialog = (props: Props): JSX.Element => {
+const ShowConfiguratorDialog = (props: Props): JSX.Element => {
   const {
     adjustHomePositionsToDronePositionsEnabled,
     adjustHomePositionsToDronePositions,
@@ -249,7 +249,7 @@ const SiteSurveyDialog = (props: Props): JSX.Element => {
       disableEscapeKeyDown
       className={styles.root}
       maxWidth='xl'
-      title={t('siteSurveyDialog.title')}
+      title={t('showConfiguratorDialog.title')}
       open={open}
       sidebarComponents={
         <Box className={styles.sidebarContent}>
@@ -266,7 +266,7 @@ const SiteSurveyDialog = (props: Props): JSX.Element => {
                 }}
               />
             }
-            label={t('siteSurveyDialog.settings.dronesVisible')}
+            label={t('showConfiguratorDialog.settings.dronesVisible')}
           />
           <Button
             color='primary'
@@ -277,7 +277,9 @@ const SiteSurveyDialog = (props: Props): JSX.Element => {
               adjustHomePositionsToDronePositions();
             }}
           >
-            {t('siteSurveyDialog.action.adjustHomePositionsToDronePositions')}
+            {t(
+              'showConfiguratorDialog.action.adjustHomePositionsToDronePositions'
+            )}
           </Button>
         </Box>
       }
@@ -294,7 +296,7 @@ const SiteSurveyDialog = (props: Props): JSX.Element => {
       </Box>
       <DialogActions>
         <DialogHelpIcon
-          content={t(`siteSurveyDialog.help.${stage}`)
+          content={t(`showConfiguratorDialog.help.${stage}`)
             .split('\n')
             .map((item, idx) => (
               // eslint-disable-next-line react/no-array-index-key
@@ -321,7 +323,7 @@ const SiteSurveyDialog = (props: Props): JSX.Element => {
         <Button color='primary' disabled={submitDisabled} onClick={submit}>
           {stage === 'review'
             ? t('general.action.approve')
-            : t('siteSurveyDialog.action.adapt')}
+            : t('showConfiguratorDialog.action.adapt')}
         </Button>
       </DialogActions>
     </DraggableDialog>
@@ -335,12 +337,12 @@ const SiteSurveyDialog = (props: Props): JSX.Element => {
  * when it is opened.
  */
 // eslint-disable-next-line @typescript-eslint/ban-types
-const SiteSurveyDialogWrapper = (props: Props): JSX.Element | null => {
+const ShowConfiguratorDialogWrapper = (props: Props): JSX.Element | null => {
   const { open, ...rest } = props;
-  return open ? <SiteSurveyDialog open {...rest} /> : null;
+  return open ? <ShowConfiguratorDialog open {...rest} /> : null;
 };
 
-const ConnectedSiteSurveyDialogWrapper = connect(
+const ConnectedShowConfiguratorDialogWrapper = connect(
   // -- map state to props
   (state: RootState) => ({
     adaptedBase64Show: selectAdaptedShowAsBase64String(state),
@@ -349,7 +351,7 @@ const ConnectedSiteSurveyDialogWrapper = connect(
     backDisabled: selectIsShowAdaptInProgress(state),
     coordinateSystem: selectCoordinateSystem(state),
     dronesVisible: selectDronesVisible(state),
-    open: isSiteSurveyDialogOpen(state),
+    open: isShowConfiguratorDialogOpen(state),
     // Take validation settings directly from the loaded show.
     // We'll copy that to the dialog's state when necessary.
     validationSettings: getShowValidationSettings(state),
@@ -387,6 +389,6 @@ const ConnectedSiteSurveyDialogWrapper = connect(
       dispatch(setDronesVisible(value));
     },
   })
-)(withTranslation()(SiteSurveyDialogWrapper));
+)(withTranslation()(ShowConfiguratorDialogWrapper));
 
-export default ConnectedSiteSurveyDialogWrapper;
+export default ConnectedShowConfiguratorDialogWrapper;

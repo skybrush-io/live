@@ -14,6 +14,9 @@ import {
   isConnected,
   supportsStudioInterop,
 } from '~/features/servers/selectors';
+import { showDialogAndClearUndoHistory } from '~/features/show-configurator/actions';
+import { selectShowConfiguratorDataFromShow } from '~/features/show-configurator/selectors';
+import { type ShowData } from '~/features/show-configurator/state';
 import {
   getEnvironmentFromLoadedShowData,
   getOutdoorShowOrigin,
@@ -21,9 +24,6 @@ import {
   hasLoadedShowFile,
 } from '~/features/show/selectors';
 import { getSetupStageStatuses } from '~/features/show/stages';
-import { showDialogAndClearUndoHistory } from '~/features/site-survey/actions';
-import { selectSiteSurveyDataFromShow } from '~/features/site-survey/selectors';
-import { type ShowData } from '~/features/site-survey/state';
 import { showError } from '~/features/snackbar/actions';
 import { type PreparedI18nKey, tt } from '~/i18n';
 import Pro from '~/icons/Pro';
@@ -42,19 +42,19 @@ const PREREQUISITES: ReadonlyArray<
 > = Object.freeze([
   {
     selector: hasLoadedShowFile,
-    message: tt('show.siteSurvey.prerequisites.loaded'),
+    message: tt('show.showConfigurator.prerequisites.loaded'),
   },
   {
     selector: (state: RootState) => getShowSegments(state)?.show !== undefined,
-    message: tt('show.siteSurvey.prerequisites.segments'),
+    message: tt('show.showConfigurator.prerequisites.segments'),
   },
   {
     selector: isConnected,
-    message: tt('show.siteSurvey.prerequisites.server'),
+    message: tt('show.showConfigurator.prerequisites.server'),
   },
   {
     selector: supportsStudioInterop,
-    message: tt('show.siteSurvey.prerequisites.extension'),
+    message: tt('show.showConfigurator.prerequisites.extension'),
   },
   {
     selector: (state: RootState) =>
@@ -62,7 +62,7 @@ const PREREQUISITES: ReadonlyArray<
         getOutdoorShowOrigin(state),
         getEnvironmentFromLoadedShowData(state)?.location?.origin,
       ].some((v) => v !== undefined),
-    message: tt('show.siteSurvey.prerequisites.origin'),
+    message: tt('show.showConfigurator.prerequisites.origin'),
   },
 ]);
 
@@ -76,7 +76,7 @@ type Props = Readonly<{
   status: Status;
 }>;
 
-const SiteSurveyButton = (props: Props): JSX.Element => {
+const ShowConfiguratorButton = (props: Props): JSX.Element => {
   const { show, showDialogAndClearUndoHistory, status } = props;
 
   const dispatch = useDispatch<AppDispatch>();
@@ -103,7 +103,7 @@ const SiteSurveyButton = (props: Props): JSX.Element => {
     if (show) {
       showDialogAndClearUndoHistory(show);
     } else {
-      dispatch(showError(t('show.siteSurvey.noShowData')));
+      dispatch(showError(t('show.showConfigurator.noShowData')));
     }
   }, [dispatch, show, showDialogAndClearUndoHistory, t]);
 
@@ -141,26 +141,26 @@ const SiteSurveyButton = (props: Props): JSX.Element => {
               triggerTarget={tooltipTriggerTarget}
             >
               <span>
-                {t('show.siteSurvey.button')}
+                {t('show.showConfigurator.button')}
                 <Pro style={{ verticalAlign: 'middle', marginLeft: 8 }} />
               </span>
             </Tooltip>
           }
-          secondary={t('show.siteSurvey.description')}
+          secondary={t('show.showConfigurator.description')}
         />
       </ListItemButton>
     </div>
   );
 };
 
-const ConnectedSiteSurveyButton = connect(
+const ConnectedShowConfiguratorButton = connect(
   (state: RootState) => ({
-    show: selectSiteSurveyDataFromShow(state),
-    status: getSetupStageStatuses(state).siteSurvey,
+    show: selectShowConfiguratorDataFromShow(state),
+    status: getSetupStageStatuses(state).showConfigurator,
   }),
   {
     showDialogAndClearUndoHistory,
   }
-)(SiteSurveyButton);
+)(ShowConfiguratorButton);
 
-export default ConnectedSiteSurveyButton;
+export default ConnectedShowConfiguratorButton;

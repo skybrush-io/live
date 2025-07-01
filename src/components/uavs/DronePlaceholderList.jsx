@@ -15,6 +15,7 @@ import DronePlaceholder from './DronePlaceholder';
  */
 const DronePlaceholderList = ({
   actions,
+  children,
   emptyMessage,
   items = [],
   maxCount,
@@ -75,10 +76,11 @@ const DronePlaceholderList = ({
             </Box>
           )
         ) : null}
-        {actions && (
+        {(actions || children) && (
           <>
             <Box key='padding' flex={1} />
             <Box key='actions' ml={1}>
+              {children}
               {actions}
             </Box>
           </>
@@ -93,6 +95,7 @@ DronePlaceholderList.propTypes = {
     PropTypes.node,
     PropTypes.arrayOf(PropTypes.node),
   ]),
+  children: PropTypes.node,
   emptyMessage: PropTypes.node,
   items: PropTypes.arrayOf(
     PropTypes.oneOfType([PropTypes.number, PropTypes.string])

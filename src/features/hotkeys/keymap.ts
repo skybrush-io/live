@@ -1,4 +1,4 @@
-import { keyMap as siteSurveyKeyMap } from '~/features/site-survey/hotkeys';
+import { keyMap as showConfiguratorKeyMap } from '~/features/show-configurator/hotkeys';
 import { isRunningOnMac } from '~/utils/platform';
 
 import { HotkeyGroup, HotkeyScope } from './types';
@@ -170,6 +170,13 @@ const uavIdOverlayKeyMap: KeyMap = {
     scopes: [HotkeyScope.GLOBAL],
   },
 
+  TYPE_MINUS: {
+    name: 'Define a range of pending UAV IDs',
+    sequence: '-',
+    group: HotkeyGroup.HIDDEN,
+    scopes: [HotkeyScope.GLOBAL],
+  },
+
   DELETE_LAST_CHARACTER: {
     name: 'Delete last character of pending UAV ID',
     sequence: 'backspace',
@@ -195,7 +202,7 @@ const keyMap: KeyMap = {
   ...toggleOptionKeyMap,
   ...sendCommandKeyMap,
   ...uavIdOverlayKeyMap,
-  ...siteSurveyKeyMap,
+  ...showConfiguratorKeyMap,
 
   CLEAR_STORED_SETTINGS: {
     name: 'Clear stored settings and reload',
@@ -213,7 +220,7 @@ const keyMap: KeyMap = {
     name: 'Show hotkeys',
     sequence: '?',
     group: HotkeyGroup.HIDDEN,
-    scopes: [HotkeyScope.GLOBAL, HotkeyScope.SITE_SURVEY],
+    scopes: [HotkeyScope.GLOBAL, HotkeyScope.SHOW_CONFIGURATOR],
   },
 };
 
