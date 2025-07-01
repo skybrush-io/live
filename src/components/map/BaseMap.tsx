@@ -1,5 +1,5 @@
 import { defaults as defaultOLInteractions } from 'ol/interaction/defaults';
-import React, { forwardRef } from 'react';
+import React, { forwardRef, useMemo } from 'react';
 
 // @ts-expect-error
 import { Map as OLMap } from '@collmot/ol-react';
@@ -7,10 +7,6 @@ import { Map as OLMap } from '@collmot/ol-react';
 import 'ol/ol.css';
 
 type BaseMapProps = React.ComponentProps<typeof OLMap>;
-
-const _defaultInteractions = defaultOLInteractions({
-  keyboard: false,
-});
 
 /**
  * Base map component that overides some OpenLayers map defaults.
@@ -21,9 +17,15 @@ const _defaultInteractions = defaultOLInteractions({
  */
 const BaseMap = forwardRef(
   (props: BaseMapProps, ref: React.Ref<HTMLElement>) => {
-    const { interactions = _defaultInteractions, ...rest } = props;
+    const { interactions, ...rest } = props;
 
-    return <OLMap interactions={interactions} ref={ref} {...rest} />;
+    // Every map must have its own interaction object instances!
+    const effectiveInteractions = useMemo(
+      () => interactions ?? defaultOLInteractions({ keyboard: false }),
+      [interactions]
+    );
+
+    return <OLMap interactions={effectiveInteractions} ref={ref} {...rest} />;
   }
 );
 
