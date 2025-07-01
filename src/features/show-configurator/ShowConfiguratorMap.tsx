@@ -9,7 +9,7 @@ import type { DragBoxEvent } from 'ol/interaction/DragBox';
 import type { ModifyEvent } from 'ol/interaction/Modify';
 import VectorLayer from 'ol/layer/Vector';
 import type VectorSource from 'ol/source/Vector';
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { connect } from 'react-redux';
 
 import Colors from '~/components/colors';
@@ -60,7 +60,7 @@ import ActiveUAVsLayerSource from '~/views/map/sources/ActiveUAVsLayerSource';
 import { type FeatureUpdateOptions, updateModifiedFeatures } from './actions';
 import {
   type ConvexHullMarkerData,
-  getCenterOfShowConfiguratorHomePositionsInWorldCoordinates,
+  getCenterOfShowConfiguratorHomePositionsAsLonLat,
   getConvexHullOfShowInWorldCoordinates,
   getFutureHistoryLength,
   getHomePositionsInWorldCoordinates,
@@ -330,12 +330,15 @@ const ShowConfiguratorMap = (props: MapProps): JSX.Element => {
     onSingleFeatureSelected,
     updateModifiedFeatures,
   } = useOwnState(props);
+
+  const mapLayers = useMemo(() => ({ layers, layerComponents }), []);
+
   return (
     <Map
       id='adapt-map-view'
       position={defaultPosition}
       selectedTool={selectedTool}
-      layers={{ layers, layerComponents }}
+      layers={mapLayers}
       controlSettings={mapControlSettings}
       onFeaturesModified={onFeaturesModified}
     >
@@ -370,10 +373,7 @@ const ShowConfiguratorMap = (props: MapProps): JSX.Element => {
 const ConnectedShowConfiguratorMap = connect(
   // mapStateToProps
   (state: RootState) => ({
-    defaultPosition: ((center): LonLat | undefined =>
-      center && ([center.lon, center.lat] satisfies LonLat))(
-      getCenterOfShowConfiguratorHomePositionsInWorldCoordinates(state)
-    ),
+    defaultPosition: getCenterOfShowConfiguratorHomePositionsAsLonLat(state),
     futureHistoryLength: getFutureHistoryLength(state),
     layers: getVisibleLayersInOrder(state),
     pastHistoryLength: getPastHistoryLength(state),

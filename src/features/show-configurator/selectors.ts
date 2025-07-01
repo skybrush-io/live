@@ -241,7 +241,15 @@ export const getCenterOfShowConfiguratorHomePositionsInWorldCoordinates: AppSele
     const [lon, lat] = getCentroid(homePositions.map((p) => [p.lon, p.lat]));
     return { lon, lat };
   }
+  return undefined;
 });
+
+export const getCenterOfShowConfiguratorHomePositionsAsLonLat: AppSelector<
+  LonLat | undefined
+> = createSelector(
+  getCenterOfShowConfiguratorHomePositionsInWorldCoordinates,
+  (coords) => (coords === undefined ? undefined : [coords.lon, coords.lat])
+);
 
 const selectApproximateConvexHullOfFullShow = createSelector(
   getConvexHullOfShow,
