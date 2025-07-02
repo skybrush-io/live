@@ -52,11 +52,11 @@ import {
   required,
 } from '~/utils/validation';
 
-import { 
-  describeGeofenceAction, 
-  describeGeofenceGenerationMethod, 
-  GeofenceAction, 
-  GeofenceGenerationMethod 
+import {
+  describeGeofenceAction,
+  describeGeofenceGenerationMethod,
+  GeofenceAction,
+  GeofenceGenerationMethod,
 } from './model';
 import {
   getBoundaryPolygonBasedOnMissionItems,
@@ -102,7 +102,12 @@ const calculator = createDecorator(
   },
   {
     field: new RegExp(
-      ['horizontalMargin', 'generationMethod', 'simplify', 'maxVertexCount'].join('|')
+      [
+        'horizontalMargin',
+        'generationMethod',
+        'simplify',
+        'maxVertexCount',
+      ].join('|')
     ),
     updates: {
       // TODO: This is currently highly sub-optimal in terms of performance
@@ -127,36 +132,40 @@ const calculator = createDecorator(
               return { maxValue: maxDistance, margin: horizontalMargin };
 
             case MissionType.WAYPOINT: {
-              const maxPendingGeofence = (
+              const maxPendingGeofence =
                 // TODO: separate convex and concave generation methods
-                generationMethod === GeofenceGenerationMethod.MANUAL ? maxGeofence : (() => {
-                    const wouldBeGeofenceSettingsApplicator =
-                      makeGeofenceGenerationSettingsApplicator({
-                        horizontalMargin,
-                        maxVertexCount,
-                        simplify,
-                      });
-                    const wouldBeGeofence = boundaryPolygonBasedOnMissionItems
-                      .map((cs) => cs.map(unary(mapViewCoordinateFromLonLat)))
-                      .andThen(wouldBeGeofenceSettingsApplicator)
-                      .map((cs) => cs.map(unary(lonLatFromMapViewCoordinate)));
+                generationMethod === GeofenceGenerationMethod.MANUAL
+                  ? maxGeofence
+                  : (() => {
+                      const wouldBeGeofenceSettingsApplicator =
+                        makeGeofenceGenerationSettingsApplicator({
+                          horizontalMargin,
+                          maxVertexCount,
+                          simplify,
+                        });
+                      const wouldBeGeofence = boundaryPolygonBasedOnMissionItems
+                        .map((cs) => cs.map(unary(mapViewCoordinateFromLonLat)))
+                        .andThen(wouldBeGeofenceSettingsApplicator)
+                        .map((cs) =>
+                          cs.map(unary(lonLatFromMapViewCoordinate))
+                        );
 
-                    if (wouldBeGeofence.isOk()) {
-                      const homePoints = rejectNullish(homePositions).map(
-                        ({ lon, lat }) => TurfHelpers.point([lon, lat])
-                      );
-                      const wouldBeGeofencePoints = wouldBeGeofence.value.map(
-                        ([lon, lat]) => TurfHelpers.point([lon, lat])
-                      );
-                      return max(
-                        homePoints.flatMap((hp) =>
-                          wouldBeGeofencePoints.map((gp) =>
-                            turfDistanceInMeters(hp, gp)
+                      if (wouldBeGeofence.isOk()) {
+                        const homePoints = rejectNullish(homePositions).map(
+                          ({ lon, lat }) => TurfHelpers.point([lon, lat])
+                        );
+                        const wouldBeGeofencePoints = wouldBeGeofence.value.map(
+                          ([lon, lat]) => TurfHelpers.point([lon, lat])
+                        );
+                        return max(
+                          homePoints.flatMap((hp) =>
+                            wouldBeGeofencePoints.map((gp) =>
+                              turfDistanceInMeters(hp, gp)
+                            )
                           )
-                        )
-                      );
-                    }
-                  })());
+                        );
+                      }
+                    })();
 
               return maxPendingGeofence === undefined
                 ? { maxValue: maxDistance, margin: horizontalMargin }
@@ -180,7 +189,6 @@ const GEOFENCE_GENERATION_METHODS = [
   GeofenceGenerationMethod.CONCAVE,
 ];
 
-
 const SUPPORTED_GEOFENCE_ACTIONS = [
   GeofenceAction.KEEP_CURRENT,
   GeofenceAction.REPORT,
@@ -194,8 +202,8 @@ const GeofenceSettingsFormPresentation = ({ onSubmit, t }) => {
     //       thus a redundant default is provided here.
     //       Maybe we should create a migration if it gets used in more than
     //       one place, but it felt like overkill for now.
-    //generate: initialState.geofence.generate,
-    // TODO: comment above refers to `generationMethod` as well, that 
+    // generate: initialState.geofence.generate,
+    // TODO: comment above refers to `generationMethod` as well, that
     // replaces previous `generation` property
     generationMethod: initialState.geofence.generationMethod,
     ...getGeofenceSettings(state),
@@ -219,7 +227,7 @@ const GeofenceSettingsFormPresentation = ({ onSubmit, t }) => {
       {({
         handleSubmit,
         values: {
-          generate,
+          generationMethod,
           maxDistance,
           maxGeofence,
           maxHeight,
@@ -345,7 +353,7 @@ const GeofenceSettingsFormPresentation = ({ onSubmit, t }) => {
           <FormHeader>
             {t('safetyDialog.geofenceTab.geofencePolygon')}
           </FormHeader>
-          <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
             <Select
               name='generationMethod'
               label={t('safetyDialog.geofenceTab.fenceGenerationMethodLabel')}
@@ -366,7 +374,7 @@ const GeofenceSettingsFormPresentation = ({ onSubmit, t }) => {
             >
               <Checkboxes
                 name='simplify'
-                disabled={!generate}
+                disabled={generationMethod === GeofenceGenerationMethod.MANUAL}
                 data={{
                   label: t('safetyDialog.geofenceTab.simplifyGeometry'),
                 }}
@@ -377,7 +385,10 @@ const GeofenceSettingsFormPresentation = ({ onSubmit, t }) => {
                 size='small'
                 name='maxVertexCount'
                 label={t('safetyDialog.geofenceTab.maxVertexCount')}
-                disabled={!generate || !simplify}
+                disabled={
+                  generationMethod === GeofenceGenerationMethod.MANUAL ||
+                  !simplify
+                }
                 type='number'
                 slotProps={{
                   htmlInput: {
