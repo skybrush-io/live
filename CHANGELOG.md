@@ -31,7 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- The show adaptation tool has benne added to Live, with which one can reconfigure 
+- The show adaptation tool has been added to Live, with which one can reconfigure 
   the show layout (takeoff positions and net show positions, independently) on the 
   spot, without the need for involving show designers into the process.
 
