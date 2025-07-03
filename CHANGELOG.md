@@ -5,9 +5,35 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## main
+
+### Added
+
+- Added support for testing pyro triggering. It can be reached from the 
+  Tests tab of the Properties dialog. Requires Skybrush Server 2.28.0 or higher
+  and compatible ArduCopter firmware (CMCopter-4.6 branch or higher).
+
+- Drone selection with typing its physical ID or show ID and pressing Enter got 
+  extended to work for ranges of IDs as well. Ranges of UAVs can now be selected 
+  with typing e.g. 100-200 (which will select drones with physical ID between 
+  100 and 200, including both ends).
+
+- You can now select missing, misplaced or misaligned drones in the Takeoff
+  Area Setup dialog with the proper "Select all" buttons on the right of each row
+
+## [2.10.0] - 2025-06-03
+
+### Changed
+
+- Updated `aframe-component-environment` dependency to version 1.4.0
+
 ## [2.9.1] - 2025-06-02
 
 ### Added
+
+- The show adaptation tool has benne added to Live, with which one can reconfigure 
+  the show layout (takeoff positions and net show positions, independently) on the 
+  spot, without the need for involving show designers into the process.
 
 - The minimum allowed distance between takeoff and landing positions in a
   show file can now be adjusted from the settings.
