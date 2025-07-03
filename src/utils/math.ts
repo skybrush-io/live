@@ -4,6 +4,8 @@ import minBy from 'lodash-es/minBy';
 import range from 'lodash-es/range';
 
 import * as TurfHelpers from '@turf/helpers';
+
+import concaveman from 'concaveman';
 import monotoneConvexHull2D from 'monotone-convex-hull-2d';
 import { err, ok, type Result } from 'neverthrow';
 
@@ -295,8 +297,12 @@ export function closePolygon(poly: Coordinate2D[]): void {
 export const convexHull2D = <C extends Coordinate2D | EasNor | LonLat>(
   coordinates: C[]
 ): C[] =>
-  // NOTE: Bang justified by `monotoneConvexHull2D` returning an index subset
-  monotoneConvexHull2D(coordinates).map((index) => coordinates[index]!);
+  true
+    ? monotoneConvexHull2D(coordinates).map((index) => coordinates[index]!)
+    : coordinates.length > 2
+      ? // NOTE: Bang justified by `monotoneConvexHull2D` returning an index subset
+        (concaveman(coordinates) as any)
+      : coordinates;
 
 /**
  * Creates an appropriate Turf.js geometry from the given list of coordinates.
