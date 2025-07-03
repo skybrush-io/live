@@ -1,20 +1,16 @@
+import Edit from '@mui/icons-material/Edit';
+import ViewList from '@mui/icons-material/ViewList';
+import ViewModule from '@mui/icons-material/ViewModule';
+import IconButton from '@mui/material/IconButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import IconButton from '@material-ui/core/IconButton';
-import Edit from '@material-ui/icons/Edit';
-import ViewList from '@material-ui/icons/ViewList';
-import ViewModule from '@material-ui/icons/ViewModule';
-import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
-
-import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
-
-import MappingToggleButton from './MappingToggleButton';
-
 import ToggleButton from '~/components/ToggleButton';
 import ToolbarDivider from '~/components/ToolbarDivider';
+import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
 import { isMappingEditable } from '~/features/mission/selectors';
 import {
   clearMapping,
@@ -27,6 +23,8 @@ import {
 } from '~/features/settings/selectors';
 import { updateAppSettings } from '~/features/settings/slice';
 import MissingSlot from '~/icons/MissingSlot';
+
+import MappingToggleButton from './MappingToggleButton';
 
 /**
  * Button on the UAV toolbar that allows the user to toggle whether the mission
@@ -48,6 +46,7 @@ const MappingButtonGroup = ({
       <Tooltip content={t('mappingButtonGroup.editMapping')}>
         <IconButton
           disabled={mappingEditable || !showMissionIds}
+          size='large'
           onClick={startMappingEditorSession}
         >
           <Edit />

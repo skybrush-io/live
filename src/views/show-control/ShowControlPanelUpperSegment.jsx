@@ -1,9 +1,8 @@
+import Divider from '@mui/material/Divider';
+import List from '@mui/material/List';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
-
-import Divider from '@material-ui/core/Divider';
-import List from '@material-ui/core/List';
 
 import MultiPagePanel, { Page } from '~/components/MultiPagePanel';
 import {

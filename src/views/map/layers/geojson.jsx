@@ -1,3 +1,6 @@
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
 import createColor from 'color';
 import toNumber from 'lodash-es/toNumber';
 import GeoJSON from 'ol/format/GeoJSON';
@@ -7,10 +10,6 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 import { layer as olLayer, source } from '@collmot/ol-react';
-
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
 
 import Colors from '~/components/colors';
 import PopupColorPicker from '~/components/PopupColorPicker';

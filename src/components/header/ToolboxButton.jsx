@@ -1,9 +1,8 @@
+import BusinessCenter from '@mui/icons-material/BusinessCenter';
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
-
-import BusinessCenter from '@material-ui/icons/BusinessCenter';
 
 import GenericHeaderButton from '@skybrush/mui-components/lib/GenericHeaderButton';
 import SidebarBadge from '@skybrush/mui-components/lib/SidebarBadge';

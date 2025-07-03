@@ -3,12 +3,12 @@
  * that we use on the map.
  */
 
-import FiberManualRecord from '@material-ui/icons/FiberManualRecord';
-import ShowChart from '@material-ui/icons/ShowChart';
-import PanoramaFishEye from '@material-ui/icons/PanoramaFishEye';
-import PanoramaFishEyeTwoTone from '@material-ui/icons/PanoramaFishEyeTwoTone';
-import StarBorder from '@material-ui/icons/StarBorder';
-import StarTwoTone from '@material-ui/icons/StarTwoTone';
+import FiberManualRecord from '@mui/icons-material/FiberManualRecord';
+import ShowChart from '@mui/icons-material/ShowChart';
+import PanoramaFishEye from '@mui/icons-material/PanoramaFishEye';
+import PanoramaFishEyeTwoTone from '@mui/icons-material/PanoramaFishEyeTwoTone';
+import StarBorder from '@mui/icons-material/StarBorder';
+import StarTwoTone from '@mui/icons-material/StarTwoTone';
 
 import { type LonLat } from '~/utils/geography';
 

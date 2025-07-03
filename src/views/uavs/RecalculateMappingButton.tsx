@@ -1,8 +1,7 @@
+import Button, { type ButtonProps } from '@mui/material/Button';
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
-
-import Button, { type ButtonProps } from '@material-ui/core/Button';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { recalculateMapping } from '~/features/mission/actions';
 import { hasNonemptyMappingSlot } from '~/features/mission/selectors';

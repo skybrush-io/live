@@ -1,14 +1,12 @@
+import FolderOpen from '@mui/icons-material/FolderOpen';
+import Paper from '@mui/material/Paper';
+import Toolbar from '@mui/material/Toolbar';
+import makeStyles from '@mui/styles/makeStyles';
 import GeoJSON from 'ol/format/GeoJSON';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { batch, connect } from 'react-redux';
 import readShapeFile from 'shpjs';
-
-import Paper from '@material-ui/core/Paper';
-import Toolbar from '@material-ui/core/Toolbar';
-import { makeStyles } from '@material-ui/core/styles';
-
-import FolderOpen from '@material-ui/icons/FolderOpen';
 
 import FileButton from '~/components/FileButton';
 import { addFeatureWithName } from '~/features/map-features/actions';
