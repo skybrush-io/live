@@ -1,7 +1,7 @@
 import net from 'node:net';
 
 class TCPSocket {
-  #buffer = '';
+  #buffer = [];
   #connected = false;
   #connectedHandler;
   #disconnectionReason;
@@ -32,12 +32,17 @@ class TCPSocket {
       this._clearTimeout();
       this.#connected = true;
     });
+    this.#socket.setEncoding('utf8');
     this.#socket.on('data', (data) => {
-      this.#buffer += data.toString();
-      const messages = this.#buffer.split('\n');
-      this.#buffer = messages.pop();
-      for (const message of messages) {
-        onMessage(JSON.parse(message));
+      this.#buffer.push(data);
+      if (data.includes('\n')) {
+        // If the data contains a newline, we can parse the messages
+        const messages = this.#buffer.join('').split('\n');
+        this.#buffer.length = 0;
+        this.#buffer.push(messages.pop());
+        for (const message of messages) {
+          onMessage(JSON.parse(message));
+        }
       }
     });
     this.#socket.on('error', (error) => {
