@@ -131,6 +131,7 @@ class ReconnectingTCPSocket {
   #handlers;
   #socket;
   #connectingHandlerCalled = false;
+  #reconnectionActive = true;
   #reconnectionTimerId;
 
   constructor(address, options = {}, handlers = {}) {
@@ -142,11 +143,17 @@ class ReconnectingTCPSocket {
     this._startNewConnectionAttempt();
   }
 
+  detach() {
+    this.#reconnectionActive = false;
+    this._setSocket(undefined);
+  }
+
   emit(...args) {
     return this.#socket.emit(...args);
   }
 
   end() {
+    this.#reconnectionActive = false;
     this._cancelReconnectionAttempt();
     return this.#socket.end();
   }
@@ -156,15 +163,15 @@ class ReconnectingTCPSocket {
   }
 
   _getRandomReconnectionDelayMsec() {
-    return Math.random() * 2000 + 1000;
+    return Math.random() * 1000 + 500;
   }
 
   _setSocket(factory) {
+    this._cancelReconnectionAttempt();
     if (this.#socket) {
-      this._cancelReconnectionAttempt();
       this.#socket.detach();
     }
-    this.#socket = factory();
+    this.#socket = factory ? factory() : undefined;
   }
 
   _cancelReconnectionAttempt() {
@@ -190,11 +197,13 @@ class ReconnectingTCPSocket {
       () =>
         new TCPSocket(this.#address, this.#options, {
           onConnected(...args) {
+            console.log('onConnected', args);
             if (self.#handlers.onConnected) {
               self.#handlers.onConnected(...args);
             }
           },
           onConnecting() {
+            console.log('onConnecting');
             if (!self.#connectingHandlerCalled) {
               if (self.#handlers.onConnecting) {
                 self.#handlers.onConnecting();
@@ -204,25 +213,42 @@ class ReconnectingTCPSocket {
             }
           },
           onConnectionError(context) {
+            console.log('onConnectionError', context);
+
+            self.#connectingHandlerCalled = false;
+
+            context.willReconnect = self.#reconnectionActive;
+
             if (self.#handlers.onConnectionError) {
-              context.willReconnect = true;
               self.#handlers.onConnectionError(context);
             }
 
-            self._scheduleNewReconnectionAttempt();
+            if (context.willReconnect) {
+              self._scheduleNewReconnectionAttempt();
+            }
           },
           onConnectionTimeout(context) {
+            console.log('onConnectionTimeout', context);
+
+            self.#connectingHandlerCalled = false;
+
             if (self.#handlers.onConnectionTimeout) {
-              context.willReconnect = true;
               self.#handlers.onConnectionTimeout(context);
             }
 
-            self._scheduleNewReconnectionAttempt();
+            context.willReconnect = self.#reconnectionActive;
+            if (context.willReconnect) {
+              self._scheduleNewReconnectionAttempt();
+            }
           },
           onDisconnected(context) {
+            console.log('onDisconnected', context);
             const { reason } = context;
             const willReconnect = reason !== 'io client disconnect';
-            context.willReconnect = willReconnect;
+            context.willReconnect = willReconnect && self.#reconnectionActive;
+
+            self.#connectingHandlerCalled = false;
+
             if (self.#handlers.onDisconnected) {
               self.#handlers.onDisconnected(context);
             }
