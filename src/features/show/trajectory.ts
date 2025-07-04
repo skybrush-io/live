@@ -23,7 +23,11 @@ const vector3Dto2D: (c: Coordinate3D) => Coordinate2D = ([x, y, _z]) => [x, y];
 export const getConvexHullOfTrajectory = (
   trajectory: Trajectory
 ): Coordinate2D[] =>
-  convexHull2D(getPointsOfTrajectory(trajectory).map(vector3Dto2D));
+  convexHull2D(
+    getPointsOfTrajectory(trajectory, { includeControlPoints: true }).map(
+      vector3Dto2D
+    )
+  );
 
 /**
  * Returns the first point of a single drone trajectory.
