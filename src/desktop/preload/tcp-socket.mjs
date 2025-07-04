@@ -197,13 +197,11 @@ class ReconnectingTCPSocket {
       () =>
         new TCPSocket(this.#address, this.#options, {
           onConnected(...args) {
-            console.log('onConnected', args);
             if (self.#handlers.onConnected) {
               self.#handlers.onConnected(...args);
             }
           },
           onConnecting() {
-            console.log('onConnecting');
             if (!self.#connectingHandlerCalled) {
               if (self.#handlers.onConnecting) {
                 self.#handlers.onConnecting();
@@ -213,8 +211,6 @@ class ReconnectingTCPSocket {
             }
           },
           onConnectionError(context) {
-            console.log('onConnectionError', context);
-
             self.#connectingHandlerCalled = false;
 
             context.willReconnect = self.#reconnectionActive;
@@ -228,8 +224,6 @@ class ReconnectingTCPSocket {
             }
           },
           onConnectionTimeout(context) {
-            console.log('onConnectionTimeout', context);
-
             self.#connectingHandlerCalled = false;
 
             if (self.#handlers.onConnectionTimeout) {
@@ -242,7 +236,6 @@ class ReconnectingTCPSocket {
             }
           },
           onDisconnected(context) {
-            console.log('onDisconnected', context);
             const { reason } = context;
             const willReconnect = reason !== 'io client disconnect';
             context.willReconnect = willReconnect && self.#reconnectionActive;
