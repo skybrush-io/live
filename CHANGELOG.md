@@ -27,6 +27,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   indicator in the header should not go out of sync with the actual connection
   attempts any more.
 
+- Fixed convex geofence generation for cases where intermediate segments of
+  Bézier curves extended outside the convex hull defined by their endpoints
+  (from now on Bézier control points are also included in the calculation).
+
 ## [2.10.0] - 2025-06-03
 
 ### Changed
