@@ -45,6 +45,7 @@ import {
   getConvexHullOfTrajectory,
   getDurationOfTrajectory,
   getFirstPointOfTrajectory,
+  getInterpolatedPointsOfTrajectory,
   getLastPointOfTrajectory,
   getMaximumHeightOfTrajectory,
   getMaximumHorizontalDistanceFromTakeoffPositionInTrajectory,
@@ -501,9 +502,11 @@ export const getTrajectoryPointsInWorldCoordinatesByMissionIndex =
 
       const trajectory = trajectories[missionIndex];
       if (isValidTrajectory(trajectory)) {
-        return getPointsOfTrajectory(trajectory, {
-          includeControlPoints: true,
-        }).map(transform);
+        return true
+          ? getInterpolatedPointsOfTrajectory(trajectory, 1, 1).map(transform)
+          : getPointsOfTrajectory(trajectory, {
+              includeControlPoints: true,
+            }).map(transform);
       }
 
       return undefined;

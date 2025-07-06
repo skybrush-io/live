@@ -2,10 +2,12 @@ import isObject from 'lodash-es/isObject';
 import max from 'lodash-es/max';
 
 import {
+  createTrajectoryPlayer,
   type TimeWindow,
   type Trajectory,
   type TrajectorySegment,
   trajectorySegmentsInTimeWindow,
+  Vector3,
 } from '@skybrush/show-format';
 
 import {
@@ -24,9 +26,11 @@ export const getConvexHullOfTrajectory = (
   trajectory: Trajectory
 ): Coordinate2D[] =>
   convexHull2D(
-    getPointsOfTrajectory(trajectory, { includeControlPoints: true }).map(
-      vector3Dto2D
-    )
+    true
+      ? getInterpolatedPointsOfTrajectory(trajectory, 1, 1).map(vector3Dto2D)
+      : getPointsOfTrajectory(trajectory, { includeControlPoints: true }).map(
+          vector3Dto2D
+        )
   );
 
 /**
@@ -91,6 +95,55 @@ export const getMaximumHeightOfTrajectory = (
     trajectory.points.map(([_timestamp, coordinates]) => coordinates[2])
   );
 };
+
+(window as any).trajectoryInterpolationStatistics = {
+  time: [],
+  count: [],
+};
+
+/**
+ * Returns the raw points of a trajectory objects, without their timestamps,
+ * but optionally including control points in the right order.
+ */
+export const getInterpolatedPointsOfTrajectory = (
+  trajectory: Trajectory,
+  temporalResolution = 1,
+  spatialResolution = 0
+): Coordinate3D[] => {
+  const start = performance.now();
+  // console.time('interpolate-trajectory');
+  if (!isValidTrajectory(trajectory)) {
+    return [];
+  }
+
+  const duration = getDurationOfTrajectory(trajectory) ?? 0;
+  const trajectoryPlayer = createTrajectoryPlayer(trajectory);
+  const position: Vector3 = { x: 0, y: 0, z: 0 };
+
+  const result: Coordinate3D[] = [];
+
+  for (let i = 0; i < duration; i += temporalResolution) {
+    trajectoryPlayer.getPositionAt(i, position);
+    if (
+      result.length === 0 ||
+      // NOTE: Bang justified by `result.length !== 0`
+      euclideanDistance2D(result.at(-1)!, [position.x, position.y]) >
+        spatialResolution
+    ) {
+      result.push([position.x, position.y, position.z]);
+    }
+  }
+
+  const end = performance.now();
+  (window as any).trajectoryInterpolationStatistics.time.push(end - start);
+  (window as any).trajectoryInterpolationStatistics.count.push(result.length);
+
+  // console.timeEnd('interpolate-trajectory');
+  return result;
+};
+
+// Object.groupBy(window.hullStatistics.count.toSorted(), ([i, o]) => Math.floor(o / 5) * 5)
+// Object.groupBy(window.trajectoryInterpolationStatistics.time.toSorted(), (t) => t)
 
 /**
  * Returns the raw points of a trajectory objects, without their timestamps,

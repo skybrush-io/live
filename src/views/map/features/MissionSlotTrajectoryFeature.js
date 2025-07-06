@@ -12,6 +12,7 @@ import {
   createStyleForTrajectoryFeature,
   mapTrajectoryToView,
 } from './UAVTrajectoryFeature';
+import { Circle, Fill, Style } from 'ol/style';
 
 export const MissionSlotTrajectoryFeature = ({
   source,
@@ -19,13 +20,24 @@ export const MissionSlotTrajectoryFeature = ({
   missionIndex,
 }) => {
   const points = useMemo(() => mapTrajectoryToView(trajectory), [trajectory]);
+  console.log({ l: points?.length });
   return points ? (
     <Feature
       id={plannedTrajectoryIdToGlobalId(missionIndex)}
       source={source}
-      style={createStyleForTrajectoryFeature}
+      style={
+        false
+          ? createStyleForTrajectoryFeature
+          : new Style({
+              image: new Circle({
+                radius: 2,
+                fill: new Fill({ color: 'blue' }),
+              }),
+            })
+      }
     >
-      <geom.LineString coordinates={points} />
+      <geom.MultiPoint coordinates={points} />
+      {/* <geom.LineString coordinates={points} /> */}
     </Feature>
   ) : null;
 };

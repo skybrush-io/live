@@ -300,18 +300,32 @@ export function closePolygon(poly: Coordinate2D[]): void {
   }
 }
 
+(window as any).hullStatistics = {
+  time: [],
+  count: [],
+};
+
 /**
  * Returns the 2D convex hull of a set of coordinates.
  */
 export const convexHull2D = <C extends Coordinate2D | EasNor | LonLat>(
   coordinates: C[]
-): C[] =>
-  true
+): C[] => {
+  const start = performance.now();
+  const result = false
     ? monotoneConvexHull2D(coordinates).map((index) => coordinates[index]!)
     : coordinates.length > 2
       ? // NOTE: Bang justified by `monotoneConvexHull2D` returning an index subset
         (concaveman(coordinates) as any)
       : coordinates;
+  const end = performance.now();
+  (window as any).hullStatistics.time.push(end - start);
+  (window as any).hullStatistics.count.push([
+    coordinates.length,
+    result.length,
+  ]);
+  return result as any;
+};
 
 /**
  * Creates an appropriate Turf.js geometry from the given list of coordinates.

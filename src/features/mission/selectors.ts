@@ -277,7 +277,7 @@ export const getSelectedMissionSlotIds = selectionForSubset(
 export const getSelectedMissionIndicesForTrajectoryDisplay: AppSelector<
   MissionIndex[]
 > = createSelector(getSelectedMissionSlotIds, (selectedMissionSlotIds) =>
-  selectedMissionSlotIds.length <= 5
+  selectedMissionSlotIds.length <= 500
     ? selectedMissionSlotIds.map(Number)
     : EMPTY_ARRAY
 );
