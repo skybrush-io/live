@@ -14,13 +14,14 @@ export const makeGeofenceGenerationSettingsApplicator =
     simplify: boolean;
   }) =>
   (coordinates: EasNor[]): Result<EasNor[], string> =>
-    ok(coordinates);
-// bufferPolygon(coordinates, horizontalMargin).andThen(
-//   (bufferedCoordinates) =>
-//     simplify
-//       ? simplifyPolygon(bufferedCoordinates, maxVertexCount)
-//       : ok(bufferedCoordinates)
-// );
+    false
+      ? ok(coordinates)
+      : bufferPolygon(coordinates, horizontalMargin).andThen(
+          (bufferedCoordinates) =>
+            simplify
+              ? simplifyPolygon(bufferedCoordinates, maxVertexCount)
+              : ok(bufferedCoordinates)
+        );
 
 /**
  * Common implementation of height and distance limits.
