@@ -6,13 +6,15 @@
 import formatCoords from 'formatcoords';
 import { createSelector } from '@reduxjs/toolkit';
 
+import { isDeveloperModeEnabled } from '~/features/session/selectors';
 import { CoordinateFormat } from '~/model/settings';
-import type { AppSelector, RootState } from '~/store/reducers';
+import type { AppSelector } from '~/store/reducers';
 import { DISTANCE_UNITS } from '~/utils/formatting';
 import {
   type LonLat,
   makeDecimalCoordinateFormatter,
   makePolarCoordinateFormatter,
+  mapViewCoordinateFromLonLat,
   toPolar,
 } from '~/utils/geography';
 
@@ -23,6 +25,10 @@ const trailingZeroRegExp = /\.?0+([°′″'"]?)$/;
 const cartesianFormatter = makeDecimalCoordinateFormatter({
   digits: 2,
   unit: DISTANCE_UNITS,
+});
+
+const mapViewFormatter = makeDecimalCoordinateFormatter({
+  digits: 2,
 });
 
 const polarFormatter = makePolarCoordinateFormatter({
@@ -166,9 +172,9 @@ export const getLongitudeFormatterForCoordinateFormat = (
 /**
  * Selector that returns the preferred coordinate format.
  */
-export const getPreferredCoordinateFormat = (
-  state: RootState
-): CoordinateFormat => state.settings.display.coordinateFormat;
+export const getPreferredCoordinateFormat: AppSelector<CoordinateFormat> = (
+  state
+) => state.settings.display.coordinateFormat;
 
 /**
  * Selector that returns a function that can be called with longitude-latitude
@@ -264,14 +270,14 @@ export const getExtendedCoordinateFormatter: AppSelector<CoordinatePairFormatter
   createSelector(
     getPreferredCoordinateFormatter,
     getFlatEarthCombinedCoordinateFormatter,
-    (geographicFormatter, flatEarthFormatter) =>
-      (coords: LonLat): string => {
-        const geoCoords = geographicFormatter(coords);
-
-        if (flatEarthFormatter === undefined) {
-          return geoCoords;
-        }
-
-        return geoCoords + '<br/>' + flatEarthFormatter(coords);
-      }
+    isDeveloperModeEnabled,
+    (geographicFormatter, flatEarthFormatter, devMode) =>
+      (coords: LonLat): string =>
+        [
+          ...(devMode
+            ? [mapViewFormatter(mapViewCoordinateFromLonLat(coords))]
+            : []),
+          geographicFormatter(coords),
+          ...(flatEarthFormatter ? [flatEarthFormatter(coords)] : []),
+        ].join('<br/>')
   );
