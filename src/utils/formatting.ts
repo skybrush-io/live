@@ -85,23 +85,6 @@ export function formatMissionId(index: number): string {
   return `s${index + 1}`;
 }
 
-/**
- * Formats a mission-specific ID range in a consistent manner
- * that is to be used everywhere throughout the UI.
- *
- * Indices as input arguments are zero-based, but they are formatted as 1-based
- * on the UI. The start index is inclusive and the end index is exclusive.
- */
-export function formatMissionIdRange(start: number, end: number): string {
-  if (end <= start) {
-    return '';
-  } else if (end === start + 1) {
-    return formatMissionId(start);
-  } else {
-    return `${formatMissionId(start)}–${end}`;
-  }
-}
-
 export type UnitDescriptor = {
   multiplier: number;
   unit: string;

@@ -756,6 +756,9 @@
     "tooltip": "Toolbox",
     "uploadInProgress": "Upload in progress"
   },
+  "uploadDialog": {
+    "restrictToGlobalSelection": "Global selection only"
+  },
   "uploadPanel": {
     "cancelUpload": "Cancel upload",
     "flashLightsWhereFailed": "Flash lights of UAVs where the upload failed",
