@@ -10,15 +10,14 @@ import { makeStyles } from '@material-ui/core/styles';
 
 import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
 
-import { getMissionMapping } from '~/features/mission/selectors';
-import { getUAVIdList } from '~/features/uavs/selectors';
-import { formatMissionIdRange } from '~/utils/formatting';
-
 import { toggleUavsInWaitingQueue } from './actions';
 import { JobScope } from './jobs';
 import {
+  getMissionIdFormatter,
+  getMissionMapping,
   getObjectIdsCompatibleWithSelectedJobInUploadDialog,
   getScopeOfSelectedJobInUploadDialog,
+  getUAVIdList,
 } from './selectors';
 import UploadStatusPill from './UploadStatusPill';
 import UploadStatusRowHeader from './UploadStatusRowHeader';
@@ -50,17 +49,21 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const formatId = (id) => String(id);
+
 /**
- * Default formatter used to create the row headings when the user specified
- * no formatter.
+ * Returns the row header text for the given items.
+ *
+ * @param {Array} items  The array of items in the row.
+ * @param {function} idFormatter  Function that formats IDs for the row header.
  */
-const defaultRowHeaderFormatter = (_start, _end, items) => {
+const rowHeaderForItems = (items, idFormatter = formatId) => {
   if (items.length === 0) {
     return '—';
   } else if (items.length === 1) {
-    return items[0];
+    return idFormatter(items[0]);
   } else {
-    return `${String(items[0])}-${String(items.at(-1))}`;
+    return `${idFormatter(items[0])}-${idFormatter(items.at(-1))}`;
   }
 };
 
@@ -70,7 +73,7 @@ const defaultRowHeaderFormatter = (_start, _end, items) => {
  */
 const createRowsFromIds = (
   mapping,
-  { columnCount, itemFormatter, rowHeaderFormatter } = {}
+  { columnCount, itemFormatter, idFormatter } = {}
 ) => {
   const rows = [];
   const numberOfItems = mapping.length;
@@ -78,11 +81,7 @@ const createRowsFromIds = (
   for (let index = 0; index < numberOfItems; index += columnCount) {
     const items = mapping.slice(index, index + columnCount);
     const labels = items.map(itemFormatter);
-    const header = `${rowHeaderFormatter(
-      index,
-      index + items.length,
-      items
-    )} ▸`;
+    const header = `${rowHeaderForItems(items, idFormatter)} ▸`;
     rows.push({ header, items, labels });
   }
 
@@ -92,9 +91,9 @@ const createRowsFromIds = (
 /* eslint-disable react/no-array-index-key */
 const UploadStatusLights = ({
   columnCount = NUMBER_OF_ITEMS_PER_ROW,
+  idFormatter,
   ids,
   itemFormatter = identity,
-  rowHeaderFormatter = defaultRowHeaderFormatter,
   onHeaderClick,
   t,
 }) => {
@@ -104,9 +103,9 @@ const UploadStatusLights = ({
       createRowsFromIds(ids, {
         columnCount,
         itemFormatter,
-        rowHeaderFormatter,
+        idFormatter,
       }),
-    [ids, columnCount, itemFormatter, rowHeaderFormatter]
+    [ids, columnCount, itemFormatter, idFormatter]
   );
 
   if (rows.length === 0) {
@@ -145,9 +144,9 @@ const UploadStatusLights = ({
 UploadStatusLights.propTypes = {
   columnCount: PropTypes.number,
   itemFormatter: PropTypes.func,
+  idFormatter: PropTypes.func,
   ids: PropTypes.arrayOf(PropTypes.string),
   onHeaderClick: PropTypes.func,
-  rowHeaderFormatter: PropTypes.func,
   t: PropTypes.func,
 };
 
@@ -155,6 +154,7 @@ export default connect(
   // mapStateToProps
   (state) => {
     const scope = getScopeOfSelectedJobInUploadDialog(state);
+    const formatMissionId = getMissionIdFormatter(state);
     const scopedToCompatible = scope === JobScope.COMPATIBLE;
     const scopedToMission = scope === JobScope.MISSION;
 
@@ -166,9 +166,7 @@ export default connect(
 
     return {
       ids: idListSelector(state),
-      rowHeaderFormatter: scopedToMission
-        ? formatMissionIdRange
-        : defaultRowHeaderFormatter,
+      idFormatter: scopedToMission ? formatMissionId : formatId,
     };
   },
   // mapDispatchToProps
