@@ -1,9 +1,9 @@
+import Button from '@mui/material/Button';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 import { connect } from 'react-redux';
 
-import Button from '@material-ui/core/Button';
 import RestoreWindow from '~/icons/RestoreWindow';
 
 import { isDetached } from './selectors';
@@ -50,7 +50,11 @@ const DetachButtonPortal = ({ glContainer, label, onClick }) => {
           GoldenLayout has a built-in popout feature, which is not suitable for
           our purposes, but we can reuse the icon that would be on the stack.
         */}
-        <li className='lm_popout' title={`Detach ${label} panel`} onClick={onClick} />
+        <li
+          className='lm_popout'
+          title={`Detach ${label} panel`}
+          onClick={onClick}
+        />
       </ul>
     </div>
   );

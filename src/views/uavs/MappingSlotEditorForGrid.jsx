@@ -1,11 +1,10 @@
+import Box from '@mui/material/Box';
+import InputBase from '@mui/material/InputBase';
+import makeStyles from '@mui/styles/makeStyles';
 import Color from 'color';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
-
-import Box from '@material-ui/core/Box';
-import InputBase from '@material-ui/core/InputBase';
-import { makeStyles } from '@material-ui/core/styles';
 
 import Colors from '~/components/colors';
 import { getUAVIdForMappingSlotBeingEdited } from '~/features/mission/selectors';

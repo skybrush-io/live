@@ -2,19 +2,17 @@
  * @file Component for viewing, editing and exporting markdown notes.
  */
 
+import Save from '@mui/icons-material/Save';
+import IconButton from '@mui/material/IconButton';
+import makeStyles from '@mui/styles/makeStyles';
 import formatDate from 'date-fns/format';
+import 'easymde/dist/easymde.min.css';
 import debounce from 'lodash-es/debounce';
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
-import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
-
+import { connect } from 'react-redux';
 import SimpleMDE from 'react-simplemde-editor';
-import 'easymde/dist/easymde.min.css';
-
-import IconButton from '@material-ui/core/IconButton';
-import { makeStyles } from '@material-ui/core/styles';
-import Save from '@material-ui/icons/Save';
 
 import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
 import { updateFieldNotes } from '~/features/field-notes/slice';
@@ -105,7 +103,11 @@ const FieldNotesPanel = ({ contents, t, updateFieldNotes }) => {
         content={t('fieldNotesPanel.exportNotesAsFile')}
         placement='left'
       >
-        <IconButton className={classes.saveIcon} onClick={exportNotes}>
+        <IconButton
+          className={classes.saveIcon}
+          size='large'
+          onClick={exportNotes}
+        >
           <Save />
         </IconButton>
       </Tooltip>

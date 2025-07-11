@@ -1,8 +1,8 @@
-import Divider from '@material-ui/core/Divider';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import MenuItem from '@material-ui/core/MenuItem';
-import Pause from '@material-ui/icons/Pause';
+import Pause from '@mui/icons-material/Pause';
+import Divider from '@mui/material/Divider';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import MenuItem from '@mui/material/MenuItem';
 import React from 'react';
 
 type ToolboxDevMenuItemsProps = Readonly<{

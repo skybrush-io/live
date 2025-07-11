@@ -1,6 +1,5 @@
+import Box from '@mui/material/Box';
 import React from 'react';
-
-import Box from '@material-ui/core/Box';
 
 import Widget from '~/components/Widget';
 

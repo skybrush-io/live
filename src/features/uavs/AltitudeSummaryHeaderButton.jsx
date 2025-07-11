@@ -1,10 +1,9 @@
+import Terrain from '@mui/icons-material/Terrain';
 import isNil from 'lodash-es/isNil';
 import PropTypes from 'prop-types';
 import React, { useMemo } from 'react';
 import { Translation } from 'react-i18next';
 import { connect } from 'react-redux';
-
-import Terrain from '@material-ui/icons/Terrain';
 
 import GenericHeaderButton from '@skybrush/mui-components/lib/GenericHeaderButton';
 

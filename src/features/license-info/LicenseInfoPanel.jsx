@@ -1,19 +1,18 @@
+import Gift from '@mui/icons-material/CardGiftcard';
+import Error from '@mui/icons-material/Error';
+import Event from '@mui/icons-material/Event';
+import Lock from '@mui/icons-material/Lock';
+import Person from '@mui/icons-material/Person';
+import VpnKey from '@mui/icons-material/VpnKey';
+import Button from '@mui/material/Button';
+import Divider from '@mui/material/Divider';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { useAsyncRetry } from 'react-use';
-
-import Button from '@material-ui/core/Button';
-import Divider from '@material-ui/core/Divider';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import Gift from '@material-ui/icons/CardGiftcard';
-import Error from '@material-ui/icons/Error';
-import Event from '@material-ui/icons/Event';
-import Lock from '@material-ui/icons/Lock';
-import Person from '@material-ui/icons/Person';
-import VpnKey from '@material-ui/icons/VpnKey';
 
 import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
 import LargeProgressIndicator from '@skybrush/mui-components/lib/LargeProgressIndicator';

@@ -1,9 +1,8 @@
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { withTranslation } from 'react-i18next';
-
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
 
 import LabeledStatusLight from '@skybrush/mui-components/lib/LabeledStatusLight';
 
