@@ -930,6 +930,11 @@ export const bufferPolygon = (
   coordinates: EasNor[],
   margin: number
 ): Result<EasNor[], string> => {
+  // HACK: Skip buffering
+  // return ok(coordinates.slice(0, -1));
+  // return ok(coordinates);
+  // return ok([...coordinates, coordinates[0]!]);
+
   const geoCoordinates = coordinates.map(
     unary<EasNor, LonLat>(lonLatFromMapViewCoordinate)
   );

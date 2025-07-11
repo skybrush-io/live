@@ -1,12 +1,11 @@
 import identity from 'lodash-es/identity';
 import min from 'lodash-es/min';
-import minBy from 'lodash-es/minBy';
-import range from 'lodash-es/range';
 
 import type { Point, LineString, Polygon } from 'geojson';
 import * as TurfHelpers from '@turf/helpers';
 
 import concaveman from 'concaveman';
+// import simpliwhy from 'simpliwhy';
 import monotoneConvexHull2D from 'monotone-convex-hull-2d';
 import { err, ok, type Result } from 'neverthrow';
 
@@ -244,6 +243,19 @@ export function calculateMinimumDistanceBetweenPairs<T, U = Coordinate2D>(
 }
 
 /**
+ * Calculates the length of a two dimensional vector.
+ */
+export const length2D = ([x, y]: Coordinate2D): number => Math.hypot(x, y);
+
+/**
+ * Calculates a normal vector for a segment defined by two points.
+ */
+export const getNormal2D = (p: Coordinate2D, q: Coordinate2D): Coordinate2D => [
+  p[1] - q[1],
+  q[0] - p[0],
+];
+
+/**
  * Calculates the dot product of two 2D vectors given by their coordinate pairs.
  */
 export const dotProduct2D = (a: Coordinate2D, b: Coordinate2D): number =>
@@ -264,6 +276,15 @@ export const squaredEuclideanDistance2D = (
   a: Coordinate2DPlus,
   b: Coordinate2DPlus
 ): number => Math.pow(a[0] - b[0], 2) + Math.pow(a[1] - b[1], 2);
+
+/**
+ * Calculates the area of a 2D triangle given the coordinates of its vertices.
+ */
+export const areaOfTriangle2D = (
+  [ax, ay]: Coordinate2D,
+  [bx, by]: Coordinate2D,
+  [cx, cy]: Coordinate2D
+): number => Math.abs(0.5 * (ax * (cy - by) + bx * (ay - cy) + cx * (by - ay)));
 
 /**
  * Takes a polygon (i.e. an array of [x, y] coordinate pairs) and ensures that
@@ -357,155 +378,10 @@ export function createGeometryFromPoints(
 }
 
 /**
- * Given five vertices, remove the middle one (c) and move the second (b) and
- * fourth (d) in a way that the original area is still covered.
- * The transformation essentially slides (b) along the (ab) line and (d) along
- * the (ed) line extending them until the new (bd) line "touches" (c).
- */
-export const adjustAndRemoveMiddleVertex = ([a, b, c, d, e]: [
-  Coordinate2D,
-  Coordinate2D,
-  Coordinate2D,
-  Coordinate2D,
-  Coordinate2D,
-]): [Coordinate2D, Coordinate2D, Coordinate2D, Coordinate2D] => {
-  const getNormal = (p: Coordinate2D, q: Coordinate2D): Coordinate2D => [
-    p[1] - q[1],
-    q[0] - p[0],
-  ];
-
-  const leftNormal = getNormal(a, b);
-  const centerNormal = getNormal(b, d);
-  const rightNormal = getNormal(d, e);
-
-  const leftConstant = dotProduct2D(leftNormal, a);
-  const centerConstant = dotProduct2D(centerNormal, c);
-  const rightConstant = dotProduct2D(rightNormal, e);
-
-  // lNx lNy [ nBx ] = lC
-  // cNx cNy [ nBy ] = cC
-
-  const determinantLeft =
-    leftNormal[0] * centerNormal[1] - leftNormal[1] * centerNormal[0];
-
-  const determinantRight =
-    rightNormal[0] * centerNormal[1] - rightNormal[1] * centerNormal[0];
-
-  // nBx =  cNy -lNy [ lC ]
-  // nBy = -cNx  lNx [ cC ]
-
-  const newB: Coordinate2D = [
-    (centerNormal[1] * leftConstant - leftNormal[1] * centerConstant) /
-      determinantLeft,
-    (-centerNormal[0] * leftConstant + leftNormal[0] * centerConstant) /
-      determinantLeft,
-  ];
-
-  const newD: Coordinate2D = [
-    (centerNormal[1] * rightConstant - rightNormal[1] * centerConstant) /
-      determinantRight,
-    (-centerNormal[0] * rightConstant + rightNormal[0] * centerConstant) /
-      determinantRight,
-  ];
-
-  return [a, newB, newD, e];
-};
-
-/**
- * Calculate the length of a two dimensional vector.
- */
-const length2D = ([x, y]: Coordinate2D): number => Math.hypot(x, y);
-
-/**
- * Calculate the amount of rotation at the corner formed by the three points.
- */
-const turnAngle = (
-  a: Coordinate2D,
-  b: Coordinate2D,
-  c: Coordinate2D
-): number => {
-  const u: Coordinate2D = [b[0] - a[0], b[1] - a[1]];
-  const v: Coordinate2D = [c[0] - b[0], c[1] - b[1]];
-
-  return Math.acos(dotProduct2D(u, v) / (length2D(u) * length2D(v)));
-};
-
-/**
  * Calculate the bearing from one point to another.
  */
 export const bearing = (p: Coordinate2D, q: Coordinate2D): number =>
   Math.PI / 2 - Math.atan2(q[1] - p[1], q[0] - p[0]);
-
-/**
- * Simplify a polygon given by its list of coordinates by continously removing
- * the vertices with the lowest surrounding turning rotations (equivalently, the
- * highest surrounding internal angles) and adjusting their neighbors until a
- * desired limit is reached.
- */
-export const simplifyPolygonUntilLimit = (
-  coordinates: Coordinate2D[],
-  limit: number
-): Coordinate2D[] => {
-  if (limit < 3) {
-    console.error('Limit cannot be less than 3.');
-    return coordinates;
-  }
-
-  if (coordinates.length <= limit) {
-    return coordinates;
-  }
-
-  const getCoordinate = (i: number): Coordinate2D =>
-    // NOTE: Bang justified by remainder operation and `coordinates.length >= 3`
-    coordinates.at(i % coordinates.length)!;
-
-  const setCoordinate = (i: number, v: Coordinate2D): void => {
-    coordinates[(i + coordinates.length) % coordinates.length] = v;
-  };
-
-  const getAngleAt = (i: number): number =>
-    turnAngle(getCoordinate(i - 1), getCoordinate(i), getCoordinate(i + 1));
-
-  // NOTE: Bang justified by return if `coordinates.length <= 3`
-  const minAnglePosition = minBy(range(coordinates.length), getAngleAt)!;
-  const updated = adjustAndRemoveMiddleVertex(
-    [-2, -1, 0, 1, 2].map((i) => getCoordinate(minAnglePosition + i)) as [
-      Coordinate2D,
-      Coordinate2D,
-      Coordinate2D,
-      Coordinate2D,
-      Coordinate2D,
-    ]
-  );
-  setCoordinate(minAnglePosition - 2, updated[0]);
-  setCoordinate(minAnglePosition - 1, updated[1]);
-  setCoordinate(minAnglePosition + 1, updated[2]);
-  setCoordinate(minAnglePosition + 2, updated[3]);
-
-  coordinates.splice(minAnglePosition, 1);
-
-  return simplifyPolygonUntilLimit(coordinates, limit);
-};
-
-/**
- * Auxiliary wrapper function for simplifyPolygonUntilLimit that makes it
- * compatible with the OpenLayers style coordinate lists where the first and
- * last vertices are duplicates of each other.
- */
-export const simplifyPolygon = <C extends Coordinate2D | EasNor | LonLat>(
-  [_, ...coordinates]: C[],
-  target: number
-): Result<C[], string> => {
-  const result = simplifyPolygonUntilLimit(coordinates, target);
-
-  if (!isCoordinate2D(result[0])) {
-    return err('polygons need to have at least three 2D vertices');
-  }
-
-  // NOTE: Type assertion justified by `simplifyPolygonUntilLimit`
-  //       returning coordinates of the same type as were passed.
-  return ok([...result, result[0]] as C[]);
-};
 
 /**
  * Estimate the amount of time it takes to travel a path with a given target

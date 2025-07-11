@@ -69,6 +69,7 @@ import {
   signOffOnOnboardPreflightChecksAt,
   synchronizeShowSettings,
 } from './slice';
+import { writeBlobToFile } from '~/utils/filesystem';
 
 /**
  * Thunk that approves the takeoff area arrangement with the current timestamp.
@@ -335,9 +336,18 @@ export const loadShowFromUrl = createShowLoaderThunkFactory(
       },
     }).arrayBuffer();
 
+    console.log('loading show...');
+    console.time('load-show');
     const { showSpec, zip } = await processFile(response);
-    const base64Blob = await zip.generateAsync({ type: 'base64' });
+    console.timeEnd('load-show');
 
+    console.log({ showSpec });
+    console.log('generating blob...');
+    console.time('gen-blob');
+    const base64Blob = await zip.generateAsync({ type: 'base64' });
+    console.timeEnd('gen-blob');
+
+    // await writeBlobToFile(base64Blob, 'adapted-show.skyc');
     // Pre-freeze the show data shallowly to give a hint to Redux Toolkit that
     // the show content won't change
     return { spec: freeze(showSpec), url, base64Blob };

@@ -7,6 +7,19 @@
 export type NestedRecord<T> = { [key: string]: NestedRecordField<T> };
 export type NestedRecordField<T> = T | NestedRecord<T>;
 
+// TODO: Use `NonEmptyTuple` from 'type-fest' instead?
+export type NonEmptyArray<T> = [T, ...T[]];
+
 // NOTE: TypeScript makes it more convenient to work with `undefined`,
 //       but in certain situations `null` is still useful / necessary.
 export type Nullable<T> = T | null;
+
+// NOTE: While `ReadonlyTuple` from 'type-fest' looks similar, using it results
+//       in the following error: "This overload signature is not compatible with
+//       its implementation signature. [2394]"
+export type Tuple<
+  T,
+  N extends number,
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  R extends T[] = [],
+> = R['length'] extends N ? R : Tuple<T, N, [T, ...R]>;
