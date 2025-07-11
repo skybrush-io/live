@@ -1,7 +1,7 @@
 import { ok, type Result } from 'neverthrow';
 
 import { bufferPolygon, type EasNor } from '~/utils/geography';
-import { simplifyPolygon } from '~/utils/math';
+import { simplifyPolygon } from '~/utils/simplification';
 
 export const makeGeofenceGenerationSettingsApplicator =
   ({
@@ -19,7 +19,8 @@ export const makeGeofenceGenerationSettingsApplicator =
       : bufferPolygon(coordinates, horizontalMargin).andThen(
           (bufferedCoordinates) =>
             simplify
-              ? simplifyPolygon(bufferedCoordinates, maxVertexCount)
+              ? (console.log('simplify', { bufferedCoordinates }) ??
+                simplifyPolygon(bufferedCoordinates, maxVertexCount))
               : ok(bufferedCoordinates)
         );
 

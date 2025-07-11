@@ -102,7 +102,7 @@ const labelStrokes = {
 const extractPointsFromLineString = (feature) =>
   new MultiPoint(feature.getGeometry().getCoordinates());
 const extractPointsFromPolygon = (feature) =>
-  new MultiPoint(feature.getGeometry().getCoordinates().flat());
+  new MultiPoint(feature.getGeometry().getCoordinates().flat().slice(0, 3));
 
 export const styleForPointsOfLineString = (selected, color) =>
   new Style({

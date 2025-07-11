@@ -5,10 +5,11 @@ import { hasPendingAudibleAlerts } from '~/features/alert/selectors';
 import { dismissAlerts } from '~/features/alert/slice';
 import { clearSelection } from '~/features/map/selection';
 import {
+  getGeofencePolygon,
   getMissionMapping,
   isMappingEditable,
 } from '~/features/mission/selectors';
-import { showNotification } from '~/features/snackbar/actions';
+import { showError, showNotification } from '~/features/snackbar/actions';
 import { setSelectedUAVIds } from '~/features/uavs/actions';
 import { getUAVById } from '~/features/uavs/selectors';
 import { scrollUAVListItemIntoView } from '~/utils/navigation';
@@ -16,6 +17,13 @@ import { scrollUAVListItemIntoView } from '~/utils/navigation';
 import { finishMappingEditorSession } from '../mission/slice';
 import { getPendingUAVId, isPendingUAVIdOverlayVisible } from './selectors';
 import { setPendingUAVId, startPendingUAVIdTimeout } from './slice';
+import {
+  lonLatFromMapViewCoordinate,
+  mapViewCoordinateFromLonLat,
+} from '~/utils/geography';
+import { addFeatureById, removeFeaturesByIds } from '../map-features/slice';
+import { FeatureType } from '~/model/features';
+import { simplifyPolygon } from '~/utils/simplification';
 
 /* Prefixes to try in front of a UAV ID in case the "real" UAV ID has leading
  * zeros */
@@ -98,11 +106,55 @@ function handleAndClearPendingUAVId(dispatch, getState) {
   const state = getState();
   let pendingUAVId = getPendingUAVId(state);
 
+  dispatch(clearPendingUAVId());
+
   if (
     pendingUAVId &&
     typeof pendingUAVId === 'string' &&
     pendingUAVId.length > 0
   ) {
+    if (pendingUAVId === '0') {
+      dispatch(removeFeaturesByIds(['output']));
+      return true;
+    }
+
+    const gfp = getGeofencePolygon(getState());
+    if (!gfp) {
+      dispatch(showError('please define a test geofence polygon to simplify'));
+      return true;
+    }
+
+    const gfpEasNor = gfp.points.map((c) => mapViewCoordinateFromLonLat(c));
+
+    const simplified = simplifyPolygon(
+      [...gfpEasNor, gfpEasNor[0]],
+      Number(pendingUAVId)
+    );
+
+    if (simplified.isOk()) {
+      const outputFeature = {
+        type: FeatureType.POLYGON,
+        points: simplified.value.map((c) => lonLatFromMapViewCoordinate(c)),
+      };
+
+      console.log({ gfp, pendingUAVId, gfpEasNor, outputFeature });
+
+      dispatch(removeFeaturesByIds(['output']));
+      dispatch(
+        addFeatureById({
+          id: 'output',
+          feature: outputFeature,
+          properties: {
+            color: '#00ff00',
+          },
+        })
+      );
+      return true;
+    } else {
+      dispatch(showError(simplified.error));
+      return true;
+    }
+
     const newSelection = [];
     const mapping = getMissionMapping(state);
 
