@@ -159,7 +159,13 @@ export function getTrajectoryInTimeWindow(
 ): Trajectory {
   return {
     ...trajectory,
-    points: trajectorySegmentsInTimeWindow(trajectory.points, timeWindow),
+    points: trajectorySegmentsInTimeWindow(
+      trajectory.points,
+      timeWindow
+      // TODO: Get rid of this type assertion! It only holds if the given
+      //       `timeWindow` is guaranteed to contain segments, which is not
+      //       actually enforced by the schema.
+    ) as Trajectory['points'],
   };
 }
 

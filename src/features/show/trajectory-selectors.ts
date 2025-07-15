@@ -294,6 +294,8 @@ export function makeSegmentSelectors(
 
         const drones = swarm.drones.map((drone): DroneSpecification => {
           const settings = drone.settings;
+
+          // TODO: The `settings` key is now required by the schema
           if (settings === undefined) {
             return drone;
           }
@@ -304,7 +306,9 @@ export function makeSegmentSelectors(
             timeWindow
           );
           return { ...drone, settings: { ...drone.settings, trajectory } };
-        });
+
+          // NOTE: Type assertion justified by `swarm.drones` not being empty
+        }) as SwarmSpecification['drones'];
 
         return { ...swarm, drones };
       }
