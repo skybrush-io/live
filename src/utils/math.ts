@@ -321,10 +321,10 @@ export function closePolygon(poly: Coordinate2D[]): void {
   }
 }
 
-(window as any).hullStatistics = {
-  time: [],
-  count: [],
-};
+// (window as any).hullStatistics = {
+//   time: [],
+//   count: [],
+// };
 
 /**
  * Returns the 2D convex hull of a set of coordinates.
@@ -340,11 +340,11 @@ export const convexHull2D = <C extends Coordinate2D | EasNor | LonLat>(
         (concaveman(coordinates) as any)
       : coordinates;
   const end = performance.now();
-  (window as any).hullStatistics.time.push(end - start);
-  (window as any).hullStatistics.count.push([
-    coordinates.length,
-    result.length,
-  ]);
+  // (window as any).hullStatistics.time.push(end - start);
+  // (window as any).hullStatistics.count.push([
+  //   coordinates.length,
+  //   result.length,
+  // ]);
   return result as any;
 };
 
