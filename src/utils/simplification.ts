@@ -1,10 +1,9 @@
 import minBy from 'lodash-es/minBy';
-import range from 'lodash-es/range';
 import hash from 'hash.js';
 
 import { err, ok, type Result } from 'neverthrow';
 
-import { circularGet, circularSet, maxWith, minWith } from './arrays';
+import { circularGet, circularSet, minWith } from './arrays';
 import { bufferPolygon, type EasNor, type LonLat } from './geography';
 import {
   areaOfTriangle2D,
@@ -12,6 +11,7 @@ import {
   dotProduct2D,
   getNormal2D,
   isCoordinate2D,
+  length2D,
   toDegrees,
 } from './math';
 import { type Tuple } from './types';
@@ -55,25 +55,13 @@ class MutablePolygon {
   #orientation: Orientation;
 
   constructor(coordinates: PolygonCoordinates) {
-    // if (coordinates.length < 3) {
-    //   throw new Error('polygons need to have at least three 2D vertices');
-    // }
-    // const curvatures =
-
-    // this.coordinates = structuredClone(coordinates);
     this.vertices = coordinates.map((position) => ({
       position,
-      // curvature: getCurvature(),
-      // removalCost: getRemovalCost(),
-      // curvature: undefined,
-      // removalCost: undefined,
     }));
 
     this.#orientation = getPolygonOrientation(this);
     this.recalculateCurvatures();
     this.recalculateRemovalCosts();
-
-    // console.log(this.#orientation);
   }
 
   get coordinates(): Coordinate2D[] {
@@ -177,28 +165,23 @@ class MutablePolygon {
   }
 }
 
-// /**
-//  * Calculate the amount of rotation at the corner formed by the three points.
-//  *
-//  * @returns Signed angle in the (-180°, 180°] range
-//  */
-// const turnAngle = (
-//   a: Coordinate2D,
-//   b: Coordinate2D,
-//   c: Coordinate2D
-// ): number => {
-//   // const u: Coordinate2D = [b[0] - a[0], b[1] - a[1]];
-//   // const v: Coordinate2D = [c[0] - b[0], c[1] - b[1]];
-//   //
-//   // return Math.acos(dotProduct2D(u, v) / (length2D(u) * length2D(v)));
-//
-//   const u: Coordinate2D = [b[0] - a[0], b[1] - a[1]];
-//   const v: Coordinate2D = [c[0] - b[0], c[1] - b[1]];
-//
-//   const r = Math.atan2(v[1], v[0]) - Math.atan2(u[1], u[0]);
-//   return r <= -Math.PI ? r + 2 * Math.PI : r > Math.PI ? r - 2 * Math.PI : r;
-//   // console.log({ a, b, c, u, v, r, d: toDegrees(r) });
-// };
+/**
+ * Calculate the amount of rotation at the corner formed by the three points.
+ *
+ * // TODO: Rename to `turnAmount`?
+ * // @returns Unsigned angle in the (0°, 180°] range
+ * @returns Unsigned angle in the [0, π] range
+ */
+export const unsignedTurnAngle = (
+  a: Coordinate2D,
+  b: Coordinate2D,
+  c: Coordinate2D
+): number => {
+  const u: Coordinate2D = [b[0] - a[0], b[1] - a[1]];
+  const v: Coordinate2D = [c[0] - b[0], c[1] - b[1]];
+
+  return Math.acos(dotProduct2D(u, v) / (length2D(u) * length2D(v)));
+};
 
 /**
  * Calculate the amount of rotation at the corner formed by the three points.
@@ -210,18 +193,10 @@ const turnAngle = (
   [bx, by]: Coordinate2D,
   [cx, cy]: Coordinate2D
 ): number => {
-  // const u: Coordinate2D = [b[0] - a[0], b[1] - a[1]];
-  // const v: Coordinate2D = [c[0] - b[0], c[1] - b[1]];
-  //
-  // return Math.acos(dotProduct2D(u, v) / (length2D(u) * length2D(v)));
-
   const [ux, uy]: Coordinate2D = [bx - ax, by - ay];
   const [vx, vy]: Coordinate2D = [cx - bx, cy - by];
 
   const r = Math.atan2(vy, vx) - Math.atan2(uy, ux);
-  // console.log(
-  //   `DegAB=${toDegrees(Math.atan2(uy, ux))}|DegBC=${toDegrees(Math.atan2(vy, vx))}`
-  // );
   return r <= -Math.PI ? r + 2 * Math.PI : r > Math.PI ? r - 2 * Math.PI : r;
 };
 
@@ -236,22 +211,6 @@ const getPolygonOrientation = (polygon: MutablePolygon): Orientation => {
     ([ax, ay], [bx, by]) => (ax === ay ? ay - by : ax - bx)
   );
   const extremeCoordinateIndex = polygon.coordinates.indexOf(extremeCoordinate);
-
-  // turnAngle(
-  //   polygon.getVertex(extremeCoordinateIndex - 1),
-  //   polygon.getVertex(extremeCoordinateIndex),
-  //   polygon.getVertex(extremeCoordinateIndex + 1)
-  // );
-
-  // console.log(
-  //   'turnAngle',
-  //   { extremeCoordinateIndex, extremeCoordinate },
-  //   toDegrees(
-  //     turnAngle(
-  //       ...polygon.getVertexPositions(extremeCoordinateIndex, [-1, 0, 1])
-  //     )
-  //   )
-  // );
 
   return Math.sign(
     turnAngle(...polygon.getVertexPositions(extremeCoordinateIndex, [-1, 0, 1]))
@@ -371,9 +330,6 @@ export const simplifyPolygonUntilLimit = (
     return;
   }
 
-  // console.log({ mutablePolygon });
-  // console.log(structuredClone(mutablePolygon.vertices));
-
   while (mutablePolygon.vertices.length > limit) {
     // TODO: Justify bang?
     const minCostVertex = minBy(mutablePolygon.vertices, (v) => v.removalCost)!;
@@ -401,12 +357,6 @@ export const simplifyPolygonUntilLimit = (
         structuredClone(mutablePolygon.coordinates);
     }
   }
-
-  // if (limit % 2 === 0) {
-  //   applyConvexVertexRemoval(mutablePolygon, 0);
-  // } else {
-  //   applyConcaveVertexRemoval(mutablePolygon, 0);
-  // }
 };
 
 /**
@@ -473,7 +423,6 @@ export const simplifyPolygon = <C extends Coordinate2D | EasNor | LonLat>(
   }
 
   const mutablePolygon = new MutablePolygon(coordinates);
-  // const original = structuredClone(coordinates);
   simplifyPolygonUntilLimit(mutablePolygon, target);
   const result = mutablePolygon.coordinates;
 
@@ -485,18 +434,12 @@ export const simplifyPolygon = <C extends Coordinate2D | EasNor | LonLat>(
     return err(cleanResult.error);
   }
 
-  // const result = simplifyPolygonUntilLimit(mutablePolygon, target);
-  // const [result, meta] = simpliwhy(coordinates);
-
-  // console.log({ result });
   // if (
   //   !isCoordinate2D(result[0]) ||
   //   result.some((c) => !isCoordinate2D(c) || c.some(Number.isNaN))
   // ) {
   //   return err('polygons need to have at least three 2D vertices');
   // }
-
-  // return ok([original.at(-1), ...original] as C[]);
 
   // NOTE: Type assertion justified by `simplifyPolygonUntilLimit`
   //       returning coordinates of the same type as were passed.
