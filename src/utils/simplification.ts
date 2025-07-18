@@ -208,7 +208,7 @@ const turnAngle = (
 const getPolygonOrientation = (polygon: MutablePolygon): Orientation => {
   const extremeCoordinate = minWith(
     polygon.coordinates,
-    ([ax, ay], [bx, by]) => (ax === ay ? ay - by : ax - bx)
+    ([ax, ay], [bx, by]) => (ax === bx ? ay - by : ax - bx)
   );
   const extremeCoordinateIndex = polygon.coordinates.indexOf(extremeCoordinate);
 
