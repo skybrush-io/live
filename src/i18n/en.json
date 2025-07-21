@@ -757,7 +757,7 @@
     "uploadInProgress": "Upload in progress"
   },
   "uploadDialog": {
-    "restrictToGlobalSelection": "Global selection only"
+    "restrictToGlobalSelection": "Filter for global selection"
   },
   "uploadPanel": {
     "cancelUpload": "Cancel upload",
