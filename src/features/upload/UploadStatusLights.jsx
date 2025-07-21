@@ -10,14 +10,15 @@ import { makeStyles } from '@material-ui/core/styles';
 
 import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
 
+import { formatItemInterval } from '~/utils/formatting';
 import { toggleUavsInWaitingQueue } from './actions';
 import { JobScope } from './jobs';
 import {
-  getMissionIdFormatter,
-  getMissionMapping,
-  getObjectIdsCompatibleWithSelectedJobInUploadDialog,
-  getScopeOfSelectedJobInUploadDialog,
-  getUAVIdList,
+    getMissionIdFormatter,
+    getMissionMapping,
+    getObjectIdsCompatibleWithSelectedJobInUploadDialog,
+    getScopeOfSelectedJobInUploadDialog,
+    getUAVIdList,
 } from './selectors';
 import UploadStatusPill from './UploadStatusPill';
 import UploadStatusRowHeader from './UploadStatusRowHeader';
@@ -49,24 +50,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const formatId = (id) => String(id);
-
-/**
- * Returns the row header text for the given items.
- *
- * @param {Array} items  The array of items in the row.
- * @param {function} idFormatter  Function that formats IDs for the row header.
- */
-const rowHeaderForItems = (items, idFormatter = formatId) => {
-  if (items.length === 0) {
-    return '—';
-  } else if (items.length === 1) {
-    return idFormatter(items[0]);
-  } else {
-    return `${idFormatter(items[0])}-${idFormatter(items.at(-1))}`;
-  }
-};
-
 /**
  * Given a list of IDs to show in the upload status light grid, returns an
  * arrangement of IDs into rows.
@@ -81,7 +64,7 @@ const createRowsFromIds = (
   for (let index = 0; index < numberOfItems; index += columnCount) {
     const items = mapping.slice(index, index + columnCount);
     const labels = items.map(itemFormatter);
-    const header = `${rowHeaderForItems(items, idFormatter)} ▸`;
+    const header = `${formatItemInterval(items, idFormatter)} ▸`;
     rows.push({ header, items, labels });
   }
 

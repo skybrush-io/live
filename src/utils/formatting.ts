@@ -209,6 +209,26 @@ export const formatSpeed = (number: number, digits = 2): string =>
   formatNumberAndUnit(number, SPEED_UNITS, digits);
 
 /**
+ * Helper function that formats an interval of items.
+ *
+ * @param items  The array of items to format.
+ * @param formatter  The function to use to convert items to
+ *        their string representation.
+ */
+export const formatItemInterval = <TItem>(
+  items: Array<TItem>,
+  formatter: (item: TItem) => string = String
+) => {
+  if (items.length === 0) {
+    return '—';
+  } else if (items.length === 1) {
+    return formatter(items[0]!);
+  } else {
+    return `${formatter(items[0]!)}-${formatter(items.at(-1)!)}`;
+  }
+};
+
+/**
  * Formats a list of IDs in a manner that is suitable for cases when we
  * expect the list to contain only a few items, and we are not interested in
  * all of them if there are too many.
