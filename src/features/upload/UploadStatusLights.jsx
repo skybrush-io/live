@@ -11,6 +11,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
 
 import { formatItemInterval } from '~/utils/formatting';
+
 import { toggleUavsInWaitingQueue } from './actions';
 import { JobScope } from './jobs';
 import {
