@@ -1,30 +1,23 @@
 import delay from 'delay';
 import isNil from 'lodash-es/isNil';
 
-import { getSingleSelectedUAVIdAsArray } from '~/features/uavs/selectors';
-
-import { getScopeForJobType, JobScope } from './jobs';
 import {
-  areItemsInUploadBacklog,
-  getObjectIdsCompatibleWithSelectedJobInUploadDialog,
   getFailedUploadItems,
-  getItemsInUploadBacklog,
-  getMissionUAVIdsForUploadJob,
   getSelectedJobInUploadDialog,
   getSuccessfulUploadItems,
-  getUAVIdList,
   getUploadDialogState,
+  getUploadTargets,
   isItemInUploadBacklog,
   isUploadInProgress,
 } from './selectors';
 import {
+  _enqueueFailedUploads,
+  _enqueueSuccessfulUploads,
   closeUploadDialog,
   putUavsInWaitingQueue,
   removeUavsFromWaitingQueue,
   setupNextUploadJob,
   startUpload,
-  _enqueueFailedUploads,
-  _enqueueSuccessfulUploads,
 } from './slice';
 
 /**
@@ -132,36 +125,7 @@ export function startUploadJobFromUploadDialog() {
     // and create the payload depending on the job type and the current state
     const state = getState();
     const { type, payload } = getSelectedJobInUploadDialog(state);
-    const scope = getScopeForJobType(type);
-    let selector;
-
-    switch (scope) {
-      case JobScope.ALL:
-        selector = getUAVIdList;
-        break;
-
-      case JobScope.COMPATIBLE:
-        selector = getObjectIdsCompatibleWithSelectedJobInUploadDialog;
-        break;
-
-      case JobScope.MISSION:
-        selector = getMissionUAVIdsForUploadJob;
-        break;
-
-      case JobScope.SINGLE:
-        selector = getSingleSelectedUAVIdAsArray;
-        break;
-
-      default:
-        selector = getUAVIdList;
-        break;
-    }
-
-    const targets = areItemsInUploadBacklog(state)
-      ? getItemsInUploadBacklog(state)
-      : selector
-        ? selector(state)
-        : null;
+    const targets = getUploadTargets(state);
 
     // Set up the next upload job and start it if at least one target was
     // selected

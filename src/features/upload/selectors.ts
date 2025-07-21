@@ -8,7 +8,10 @@ import { Status } from '~/components/semantics';
 import { JOB_TYPE as FIRMWARE_UPDATE_JOB_TYPE } from '~/features/firmware-update/constants';
 import { getSupportingObjectIdsForTargetId } from '~/features/firmware-update/selectors';
 import { getMissionMapping as _getFullMissionMapping } from '~/features/mission/selectors';
-import { getUAVIdList as _getAllKnownUAVIds } from '~/features/uavs/selectors';
+import {
+  getSingleSelectedUAVIdAsArray,
+  getUAVIdList as _getAllKnownUAVIds,
+} from '~/features/uavs/selectors';
 import { uavIdToGlobalId } from '~/model/identifiers';
 import type UAV from '~/model/uav';
 import { getSelection } from '~/selectors/selection';
@@ -385,4 +388,40 @@ export const getUAVIdList = createSelector(
 export const getMissionUAVIdsForUploadJob = createSelector(
   getMissionMapping,
   (mapping) => rejectNullish(mapping).toSorted()
+);
+
+export const getUploadTargets = createSelector(
+  (state: RootState) => state,
+  getScopeOfSelectedJobInUploadDialog,
+  (state, scope) => {
+    let selector;
+
+    switch (scope) {
+      case JobScope.ALL:
+        selector = getUAVIdList;
+        break;
+
+      case JobScope.COMPATIBLE:
+        selector = getObjectIdsCompatibleWithSelectedJobInUploadDialog;
+        break;
+
+      case JobScope.MISSION:
+        selector = getMissionUAVIdsForUploadJob;
+        break;
+
+      case JobScope.SINGLE:
+        selector = getSingleSelectedUAVIdAsArray;
+        break;
+
+      default:
+        selector = getUAVIdList;
+        break;
+    }
+
+    return areItemsInUploadBacklog(state)
+      ? getItemsInUploadBacklog(state)
+      : selector
+        ? selector(state)
+        : null;
+  }
 );
