@@ -133,7 +133,7 @@ const DetectedServersListPresentation = ({
                 primary: item.label,
                 secondary: [
                   addressForServerItem(item),
-                  securityWarningForServerItem(item)(t),
+                  // securityWarningForServerItem(item)(t),
                 ]
                   .filter(Boolean)
                   .join(' '),

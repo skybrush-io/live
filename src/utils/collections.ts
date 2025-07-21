@@ -10,6 +10,7 @@ import { orderBy } from 'natural-orderby';
 import { rejectNullish } from './arrays';
 import { chooseUniqueIdFromName } from './naming';
 import { EMPTY_ARRAY, EMPTY_OBJECT } from './redux';
+import isEmpty from 'lodash-es/isEmpty';
 
 export type Identifier = string;
 export type ItemLike = { id: Identifier };
@@ -413,7 +414,12 @@ export const deleteItemsByIds = <T extends ItemLike>(
     delete collection.byId[id];
   }
 
-  pull(collection.order, ...idsToRemove);
+  // Optimize the case when all items were removed
+  if (isEmpty(collection.byId)) {
+    collection.order.length = 0;
+  } else {
+    pull(collection.order, ...idsToRemove);
+  }
 };
 
 /**
