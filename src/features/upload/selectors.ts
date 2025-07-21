@@ -227,7 +227,7 @@ export const getObjectIdsCompatibleWithSelectedJobInUploadDialog = (
 
   if (restrictToGlobalSelection) {
     const allowedIds = new Set(selection);
-    result = result.filter((id) => allowedIds.has(id));
+    result = result.filter((id) => allowedIds.has(uavIdToGlobalId(id)));
   }
 
   return result;
@@ -365,7 +365,7 @@ export const getUAVIdList = createSelector(
     }
 
     const allowedIds = new Set(selection);
-    return allUAVIds.filter((id) => allowedIds.has(id));
+    return allUAVIds.filter((id) => allowedIds.has(uavIdToGlobalId(id)));
   }
 );
 
@@ -374,9 +374,6 @@ export const getUAVIdList = createSelector(
  * which the upload job can be executed.
  *
  * Null entries are ignored.
- *
- * UAVs that are not in the global selection may be ignored, depending on
- * the upload dialog's state.
  *
  * The result is sorted in ascending order by mission indices. (In other words,
  * UAV IDs that correspond to earlier slots in the mission mapping are
@@ -390,10 +387,13 @@ export const getMissionUAVIdsForUploadJob = createSelector(
   (mapping) => rejectNullish(mapping).toSorted()
 );
 
-export const getUploadTargets = createSelector(
+/**
+ * Returns the list of UAV IDs that should be shown in the upload dialog.
+ */
+export const getUploadDialogIdList = createSelector(
   (state: RootState) => state,
   getScopeOfSelectedJobInUploadDialog,
-  (state, scope) => {
+  (state, scope): string[] => {
     let selector;
 
     switch (scope) {
@@ -418,10 +418,36 @@ export const getUploadTargets = createSelector(
         break;
     }
 
-    return areItemsInUploadBacklog(state)
-      ? getItemsInUploadBacklog(state)
-      : selector
-        ? selector(state)
-        : null;
+    return selector(state);
+  }
+);
+
+/**
+ * Returns the list of UAV IDs for which the upload job should be executed.
+ *
+ * UAVs that are not in the global selection may be ignored, depending on
+ * the upload dialog's state.
+ */
+export const getUploadTargets = createSelector(
+  areItemsInUploadBacklog,
+  getItemsInUploadBacklog,
+  getUploadDialogIdList,
+  (hasBacklog, backlog, dialogIds) => (hasBacklog ? backlog : dialogIds)
+);
+
+/**
+ * Returns whether there are upload targets that may not be visible to
+ * the user.
+ */
+export const hasHiddenTargets = createSelector(
+  getUploadTargets,
+  getUploadDialogIdList,
+  (targets, visibleArray): boolean => {
+    if (targets === null) {
+      return false;
+    }
+
+    const visible = new Set(visibleArray);
+    return targets.some((id) => !visible.has(id));
   }
 );

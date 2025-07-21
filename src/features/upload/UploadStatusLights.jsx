@@ -15,11 +15,9 @@ import { formatItemInterval } from '~/utils/formatting';
 import { toggleUavsInWaitingQueue } from './actions';
 import { JobScope } from './jobs';
 import {
-    getMissionIdFormatter,
-    getMissionMapping,
-    getObjectIdsCompatibleWithSelectedJobInUploadDialog,
-    getScopeOfSelectedJobInUploadDialog,
-    getUAVIdList,
+  getMissionIdFormatter,
+  getScopeOfSelectedJobInUploadDialog,
+  getUploadDialogIdList,
 } from './selectors';
 import UploadStatusPill from './UploadStatusPill';
 import UploadStatusRowHeader from './UploadStatusRowHeader';
@@ -139,18 +137,11 @@ export default connect(
   (state) => {
     const scope = getScopeOfSelectedJobInUploadDialog(state);
     const formatMissionId = getMissionIdFormatter(state);
-    const scopedToCompatible = scope === JobScope.COMPATIBLE;
     const scopedToMission = scope === JobScope.MISSION;
 
-    // prettier-ignore
-    const idListSelector =
-      scopedToCompatible ? getObjectIdsCompatibleWithSelectedJobInUploadDialog :
-      scopedToMission ? getMissionMapping :
-      getUAVIdList;
-
     return {
-      ids: idListSelector(state),
-      idFormatter: scopedToMission ? formatMissionId : formatId,
+      ids: getUploadDialogIdList(state),
+      idFormatter: scopedToMission ? formatMissionId : String,
     };
   },
   // mapDispatchToProps
