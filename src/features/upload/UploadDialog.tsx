@@ -68,7 +68,10 @@ const UploadDialog = ({
           {t('uploadDialog.restrictToGlobalSelection')}
           <Switch
             checked={restrictToGlobalSelection}
-            onChange={() => toggleRestrictToGlobalSelection()}
+            onChange={(evt) => {
+              toggleRestrictToGlobalSelection();
+              evt.target.blur();
+            }}
           />
         </>
       }
