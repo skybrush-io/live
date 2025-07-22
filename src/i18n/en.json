@@ -756,9 +756,13 @@
     "tooltip": "Toolbox",
     "uploadInProgress": "Upload in progress"
   },
+  "uploadDialog": {
+    "restrictToGlobalSelection": "Filter for global selection"
+  },
   "uploadPanel": {
     "cancelUpload": "Cancel upload",
     "flashLightsWhereFailed": "Flash lights of UAVs where the upload failed",
+    "hasHiddenTargets": "Some of the waiting UAVs may be hidden!",
     "retryFailedAttempts": "Retry failed attempts automatically",
     "uploadAttemptFailed": "Upload attempt failed.",
     "uploadCancelled": "Upload cancelled by user.",

@@ -294,19 +294,6 @@ export const getUAVIdsParticipatingInMission: AppSelector<Array<UAV['id']>> =
   );
 
 /**
- * Returns a list of all the UAV IDs that participate in the mission, without
- * the null entries, sorted in ascending order by their mission indices.
- * (In other words, UAV IDs that correspond to earlier slots in the mission
- * mapping are returned first).
- *
- * Note that this also includes the IDs of UAVs that are currently not seen
- * by the server but are nevertheless in the mapping.
- */
-export const getUAVIdsParticipatingInMissionSortedByMissionIndex: AppSelector<
-  Array<UAV['id']>
-> = createSelector(getMissionMapping, (mapping) => rejectNullish(mapping));
-
-/**
  * Returns whether there is at least one non-empty mapping slot in the mapping.
  */
 export const hasNonemptyMappingSlot: AppSelector<boolean> = createSelector(

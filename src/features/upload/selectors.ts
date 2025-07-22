@@ -7,12 +7,21 @@ import { createSelector } from '@reduxjs/toolkit';
 import { Status } from '~/components/semantics';
 import { JOB_TYPE as FIRMWARE_UPDATE_JOB_TYPE } from '~/features/firmware-update/constants';
 import { getSupportingObjectIdsForTargetId } from '~/features/firmware-update/selectors';
+import { getMissionMapping as _getFullMissionMapping } from '~/features/mission/selectors';
+import {
+  getSingleSelectedUAVIdAsArray,
+  getUAVIdList as _getAllKnownUAVIds,
+} from '~/features/uavs/selectors';
+import { uavIdToGlobalId } from '~/model/identifiers';
+import type UAV from '~/model/uav';
+import { getSelection } from '~/selectors/selection';
+import type { RootState } from '~/store/reducers';
+import { rejectNullish } from '~/utils/arrays';
+import { formatMissionId } from '~/utils/formatting';
 
 import { getScopeForJobType, JobScope } from './jobs';
-import type { RootState } from '~/store/reducers';
 import type { JobPayload, UploadJob } from './types';
 import type { UploadSliceState } from './slice';
-import type UAV from '~/model/uav';
 
 /**
  * Returns the current upload job. The returned object is guaranteed to have
@@ -125,6 +134,23 @@ export const getUploadDialogState = (
 ): UploadSliceState['dialog'] => state.upload.dialog;
 
 /**
+ * Returns whether failed uploads should be retried automatically.
+ */
+export const shouldRetryFailedUploadsAutomatically = (
+  state: RootState
+): boolean => Boolean(state.upload.settings?.autoRetry);
+
+/**
+ * Returns whether the UAVs that failed the upload should be instructed to
+ * flash their lights.
+ */
+export const shouldFlashLightsOfFailedUploads = (state: RootState): boolean =>
+  Boolean(state.upload.settings?.flashFailed);
+
+export const shouldRestrictToGlobalSelection = (state: RootState): boolean =>
+  Boolean(state.upload.settings.restrictToGlobalSelection);
+
+/**
  * Returns the selected job in the upload dialog.
  */
 export const getSelectedJobInUploadDialog = (
@@ -140,23 +166,71 @@ export const getScopeOfSelectedJobInUploadDialog = createSelector(
   ({ type }) => (type ? getScopeForJobType(type) : JobScope.ALL)
 );
 
+export const getMissionIdFormatter = createSelector(
+  _getFullMissionMapping,
+  (missionMapping) => {
+    const idMap = missionMapping.reduce(
+      (res, id, index) => {
+        if (id === null) {
+          return res;
+        }
+
+        res[id] = formatMissionId(index);
+        return res;
+      },
+      {} as Record<string, string>
+    );
+
+    return (id: string): string => idMap[id] ?? 'N/A';
+  }
+);
+
+export const getMissionMapping = createSelector(
+  _getFullMissionMapping,
+  getSelection,
+  shouldRestrictToGlobalSelection,
+  (missionMapping, selection, restrictToGlobalSelection) => {
+    if (!restrictToGlobalSelection) {
+      return missionMapping;
+    }
+
+    const allowedIds = new Set(selection);
+    return missionMapping.filter(
+      (id) => id !== null && allowedIds.has(uavIdToGlobalId(id))
+    );
+  }
+);
+
 export const getObjectIdsCompatibleWithSelectedJobInUploadDialog = (
   state: RootState
 ): string[] => {
   const job = getSelectedJobInUploadDialog(state);
+  const selection = getSelection(state);
+  const restrictToGlobalSelection = shouldRestrictToGlobalSelection(state);
+
+  let result: string[];
 
   switch (job.type) {
-    case FIRMWARE_UPDATE_JOB_TYPE:
-      return (
+    case FIRMWARE_UPDATE_JOB_TYPE: {
+      result =
         getSupportingObjectIdsForTargetId(
           state,
           (job.payload as any as { target: string }).target
-        ) ?? []
-      );
+        ) ?? [];
+
+      break;
+    }
 
     default:
       return [];
   }
+
+  if (restrictToGlobalSelection) {
+    const allowedIds = new Set(selection);
+    result = result.filter((id) => allowedIds.has(uavIdToGlobalId(id)));
+  }
+
+  return result;
 };
 
 /**
@@ -281,16 +355,99 @@ export const hasQueuedItems = (state: RootState): boolean =>
 export const isUploadInProgress = (state: RootState): boolean =>
   state.upload.currentJob.running;
 
-/**
- * Returns whether failed uploads should be retried automatically.
- */
-export const shouldRetryFailedUploadsAutomatically = (
-  state: RootState
-): boolean => Boolean(state.upload.settings?.autoRetry);
+export const getUAVIdList = createSelector(
+  _getAllKnownUAVIds,
+  getSelection,
+  shouldRestrictToGlobalSelection,
+  (allUAVIds, selection, restrictToGlobalSelection) => {
+    if (!restrictToGlobalSelection) {
+      return allUAVIds;
+    }
+
+    const allowedIds = new Set(selection);
+    return allUAVIds.filter((id) => allowedIds.has(uavIdToGlobalId(id)));
+  }
+);
 
 /**
- * Returns whether the UAVs that failed the upload should be instructed to
- * flash their lights.
+ * Returns a list of all the UAV IDs that participate in the mission and for
+ * which the upload job can be executed.
+ *
+ * Null entries are ignored.
+ *
+ * The result is sorted in ascending order by mission indices. (In other words,
+ * UAV IDs that correspond to earlier slots in the mission mapping are
+ * returned first).
+ *
+ * Note that this also includes the IDs of UAVs that are currently not seen
+ * by the server but are nevertheless in the mapping.
  */
-export const shouldFlashLightsOfFailedUploads = (state: RootState): boolean =>
-  Boolean(state.upload.settings?.flashFailed);
+export const getMissionUAVIdsForUploadJob = createSelector(
+  getMissionMapping,
+  (mapping) => rejectNullish(mapping).toSorted()
+);
+
+/**
+ * Returns the list of UAV IDs that should be shown in the upload dialog.
+ */
+export const getUploadDialogIdList = createSelector(
+  (state: RootState) => state,
+  getScopeOfSelectedJobInUploadDialog,
+  (state, scope): string[] => {
+    let selector;
+
+    switch (scope) {
+      case JobScope.ALL:
+        selector = getUAVIdList;
+        break;
+
+      case JobScope.COMPATIBLE:
+        selector = getObjectIdsCompatibleWithSelectedJobInUploadDialog;
+        break;
+
+      case JobScope.MISSION:
+        selector = getMissionUAVIdsForUploadJob;
+        break;
+
+      case JobScope.SINGLE:
+        selector = getSingleSelectedUAVIdAsArray;
+        break;
+
+      default:
+        selector = getUAVIdList;
+        break;
+    }
+
+    return selector(state);
+  }
+);
+
+/**
+ * Returns the list of UAV IDs for which the upload job should be executed.
+ *
+ * UAVs that are not in the global selection may be ignored, depending on
+ * the upload dialog's state.
+ */
+export const getUploadTargets = createSelector(
+  areItemsInUploadBacklog,
+  getItemsInUploadBacklog,
+  getUploadDialogIdList,
+  (hasBacklog, backlog, dialogIds) => (hasBacklog ? backlog : dialogIds)
+);
+
+/**
+ * Returns whether there are upload targets that may not be visible to
+ * the user.
+ */
+export const hasHiddenTargets = createSelector(
+  getUploadTargets,
+  getUploadDialogIdList,
+  (targets, visibleArray): boolean => {
+    if (targets === null) {
+      return false;
+    }
+
+    const visible = new Set(visibleArray);
+    return targets.some((id) => !visible.has(id));
+  }
+);

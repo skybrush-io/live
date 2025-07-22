@@ -22,6 +22,7 @@ import { Status } from '~/components/semantics';
 import {
   getLastUploadResultByJobType,
   getUploadDialogState,
+  hasHiddenTargets,
   hasQueuedItems,
   isUploadInProgress,
   shouldRetryFailedUploadsAutomatically,
@@ -39,6 +40,8 @@ import UploadProgressBar from '~/features/upload/UploadProgressBar';
 import UploadStatusLegend from '~/features/upload/UploadStatusLegend';
 import UploadStatusLights from '~/features/upload/UploadStatusLights';
 import type { AppThunk, RootState } from '~/store/reducers';
+import { Colors } from '@skybrush/app-theme-material-ui';
+import { Typography } from '@material-ui/core';
 
 type UploadResultIndicatorProps = Omit<LabeledStatusLightProps, 'children'> &
   Readonly<{
@@ -102,11 +105,15 @@ const useStyles = makeStyles((theme) => ({
     flex: 1,
     cursor: 'pointer',
   },
+  warningText: {
+    color: Colors.warning,
+  },
 }));
 
 type UploadPanelProps = Readonly<{
   autoRetry: boolean;
   flashFailed: boolean;
+  hasHiddenTargets: boolean;
   hasQueuedItems: boolean;
   jobType: string;
   lastUploadResult?: 'success' | 'error' | 'cancelled';
@@ -127,6 +134,7 @@ type UploadPanelProps = Readonly<{
 const UploadPanel = ({
   autoRetry,
   flashFailed,
+  hasHiddenTargets,
   hasQueuedItems,
   lastUploadResult,
   onCancelUpload,
@@ -163,6 +171,13 @@ const UploadPanel = ({
             label={t('uploadPanel.flashLightsWhereFailed')}
           />
         </Box>
+        <Box mt={1}>
+          {hasHiddenTargets && (
+            <Typography className={classes.warningText}>
+              {t('uploadPanel.hasHiddenTargets')}
+            </Typography>
+          )}
+        </Box>
       </DialogContent>
       <DialogActions className={classes.actions}>
         {onStepBack && (
@@ -191,6 +206,7 @@ const UploadPanel = ({
           </Button>
         ) : (
           <StartUploadButton
+            className={hasHiddenTargets ? classes.warningText : undefined}
             disabled={!onStartUpload}
             hasQueuedItems={hasQueuedItems}
             onClick={onStartUpload}
@@ -210,6 +226,7 @@ export default connect(
     ...getUploadDialogState(state),
     autoRetry: shouldRetryFailedUploadsAutomatically(state),
     flashFailed: shouldFlashLightsOfFailedUploads(state),
+    hasHiddenTargets: hasHiddenTargets(state),
     hasQueuedItems: hasQueuedItems(state),
     lastUploadResult: getLastUploadResultByJobType(state, ownProps.jobType),
     running: isUploadInProgress(state),
