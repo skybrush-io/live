@@ -23,7 +23,11 @@ const vector3Dto2D: (c: Coordinate3D) => Coordinate2D = ([x, y, _z]) => [x, y];
 export const getConvexHullOfTrajectory = (
   trajectory: Trajectory
 ): Coordinate2D[] =>
-  convexHull2D(getPointsOfTrajectory(trajectory).map(vector3Dto2D));
+  convexHull2D(
+    getPointsOfTrajectory(trajectory, { includeControlPoints: true }).map(
+      vector3Dto2D
+    )
+  );
 
 /**
  * Returns the first point of a single drone trajectory.
@@ -155,7 +159,13 @@ export function getTrajectoryInTimeWindow(
 ): Trajectory {
   return {
     ...trajectory,
-    points: trajectorySegmentsInTimeWindow(trajectory.points, timeWindow),
+    points: trajectorySegmentsInTimeWindow(
+      trajectory.points,
+      timeWindow
+      // TODO: Get rid of this type assertion! It only holds if the given
+      //       `timeWindow` is guaranteed to contain segments, which is not
+      //       actually enforced by the schema.
+    ) as Trajectory['points'],
   };
 }
 

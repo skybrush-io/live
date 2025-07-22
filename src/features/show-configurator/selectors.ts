@@ -2,6 +2,8 @@ import { Base64 } from 'js-base64';
 import { boundingExtent } from 'ol/extent';
 import { createSelector } from 'reselect';
 
+import { type DroneSpecification } from '@skybrush/show-format';
+
 import {
   getEnvironmentFromLoadedShowData,
   getOutdoorShowCoordinateSystem as getOutdoorShowCoordinateSystemFromShow,
@@ -34,6 +36,10 @@ const _defaultCoordinateSystem: ShowData['coordinateSystem'] = {
   orientation: '0',
 };
 
+const _placeholderDrone: DroneSpecification = {
+  settings: { trajectory: { version: 1, points: [[0, [0, 0, 0], []]] } },
+};
+
 export const getPastHistoryLength: AppSelector<number> = (state) =>
   state.dialogs.showConfigurator.past.length;
 
@@ -62,7 +68,7 @@ const selectShowData = createSelector(
   (state): ShowData =>
     state.showData ?? {
       // Provide a default instead of doing a ton of dealing with undefined everywhere.
-      swarm: { drones: EMPTY_ARRAY },
+      swarm: { drones: [_placeholderDrone] },
       homePositions: EMPTY_ARRAY,
       coordinateSystem: _defaultCoordinateSystem,
     }
