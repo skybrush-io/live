@@ -1,7 +1,7 @@
 import net from 'node:net';
 
 class TCPSocket {
-  #buffer = '';
+  #buffer = [];
   #connected = false;
   #connectedHandler;
   #disconnectionReason;
@@ -32,12 +32,17 @@ class TCPSocket {
       this._clearTimeout();
       this.#connected = true;
     });
+    this.#socket.setEncoding('utf8');
     this.#socket.on('data', (data) => {
-      this.#buffer += data.toString();
-      const messages = this.#buffer.split('\n');
-      this.#buffer = messages.pop();
-      for (const message of messages) {
-        onMessage(JSON.parse(message));
+      this.#buffer.push(data);
+      if (data.includes('\n')) {
+        // If the data contains a newline, we can parse the messages
+        const messages = this.#buffer.join('').split('\n');
+        this.#buffer.length = 0;
+        this.#buffer.push(messages.pop());
+        for (const message of messages) {
+          onMessage(JSON.parse(message));
+        }
       }
     });
     this.#socket.on('error', (error) => {
@@ -126,6 +131,7 @@ class ReconnectingTCPSocket {
   #handlers;
   #socket;
   #connectingHandlerCalled = false;
+  #reconnectionActive = true;
   #reconnectionTimerId;
 
   constructor(address, options = {}, handlers = {}) {
@@ -137,11 +143,17 @@ class ReconnectingTCPSocket {
     this._startNewConnectionAttempt();
   }
 
+  detach() {
+    this.#reconnectionActive = false;
+    this._setSocket(undefined);
+  }
+
   emit(...args) {
     return this.#socket.emit(...args);
   }
 
   end() {
+    this.#reconnectionActive = false;
     this._cancelReconnectionAttempt();
     return this.#socket.end();
   }
@@ -151,15 +163,15 @@ class ReconnectingTCPSocket {
   }
 
   _getRandomReconnectionDelayMsec() {
-    return Math.random() * 2000 + 1000;
+    return Math.random() * 1000 + 500;
   }
 
   _setSocket(factory) {
+    this._cancelReconnectionAttempt();
     if (this.#socket) {
-      this._cancelReconnectionAttempt();
       this.#socket.detach();
     }
-    this.#socket = factory();
+    this.#socket = factory ? factory() : undefined;
   }
 
   _cancelReconnectionAttempt() {
@@ -199,25 +211,37 @@ class ReconnectingTCPSocket {
             }
           },
           onConnectionError(context) {
+            self.#connectingHandlerCalled = false;
+
+            context.willReconnect = self.#reconnectionActive;
+
             if (self.#handlers.onConnectionError) {
-              context.willReconnect = true;
               self.#handlers.onConnectionError(context);
             }
 
-            self._scheduleNewReconnectionAttempt();
+            if (context.willReconnect) {
+              self._scheduleNewReconnectionAttempt();
+            }
           },
           onConnectionTimeout(context) {
+            self.#connectingHandlerCalled = false;
+
             if (self.#handlers.onConnectionTimeout) {
-              context.willReconnect = true;
               self.#handlers.onConnectionTimeout(context);
             }
 
-            self._scheduleNewReconnectionAttempt();
+            context.willReconnect = self.#reconnectionActive;
+            if (context.willReconnect) {
+              self._scheduleNewReconnectionAttempt();
+            }
           },
           onDisconnected(context) {
             const { reason } = context;
             const willReconnect = reason !== 'io client disconnect';
-            context.willReconnect = willReconnect;
+            context.willReconnect = willReconnect && self.#reconnectionActive;
+
+            self.#connectingHandlerCalled = false;
+
             if (self.#handlers.onDisconnected) {
               self.#handlers.onDisconnected(context);
             }

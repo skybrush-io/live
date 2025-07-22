@@ -75,15 +75,17 @@ const MissingDronesIndicator = ({
         successMessage={t('takeoffAreaSetupDialog.allDroneOnline')}
         emptyMessage={t('takeoffAreaSetupDialog.noDrones')}
         preferEmptyMessage={!hasNonemptyMappingSlot}
-      >
-        {uavIds && uavIds.length > 0 && (
-          <SelectAll
-            style={_cursorPointerStyle}
-            fontSize='large'
-            onClick={() => selectDrones(uavIds)}
-          />
-        )}
-      </DronePlaceholderList>
+        actions={
+          uavIds &&
+          uavIds.length > 0 && (
+            <SelectAll
+              style={_cursorPointerStyle}
+              fontSize='large'
+              onClick={() => selectDrones(uavIds)}
+            />
+          )
+        }
+      />
     )}
   </Translation>
 );
@@ -111,15 +113,17 @@ const MisplacedDronesIndicator = ({
         successMessage={t('takeoffAreaSetupDialog.allDronesAtTakeoffPositions')}
         emptyMessage={t('takeoffAreaSetupDialog.noDrones')}
         preferEmptyMessage={!hasNonemptyMappingSlot}
-      >
-        {uavIds && uavIds.length > 0 && (
-          <SelectAll
-            style={_cursorPointerStyle}
-            fontSize='large'
-            onClick={() => selectDrones(uavIds)}
-          />
-        )}
-      </DronePlaceholderList>
+        actions={
+          uavIds &&
+          uavIds.length > 0 && (
+            <SelectAll
+              style={_cursorPointerStyle}
+              fontSize='large'
+              onClick={() => selectDrones(uavIds)}
+            />
+          )
+        }
+      />
     )}
   </Translation>
 );
@@ -149,15 +153,17 @@ const MisalignedDronesIndicator = ({
         )}
         emptyMessage={t('takeoffAreaSetupDialog.noDrones')}
         preferEmptyMessage={!hasNonemptyMappingSlot}
-      >
-        {uavIds && uavIds.length > 0 && (
-          <SelectAll
-            style={_cursorPointerStyle}
-            fontSize='large'
-            onClick={() => selectDrones(uavIds)}
-          />
-        )}
-      </DronePlaceholderList>
+        actions={
+          uavIds &&
+          uavIds.length > 0 && (
+            <SelectAll
+              style={_cursorPointerStyle}
+              fontSize='large'
+              onClick={() => selectDrones(uavIds)}
+            />
+          )
+        }
+      />
     )}
   </Translation>
 );
