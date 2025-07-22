@@ -25,6 +25,7 @@ type ShowValidationResult =
 export const areManualPreflightChecksSignedOff: (state: RootState) => boolean;
 export const areOnboardPreflightChecksSignedOff: (state: RootState) => boolean;
 export const areStartConditionsSyncedWithServer: (state: RootState) => boolean;
+export const countUAVsTakingOffAutomatically: (state: RootState) => number;
 export const didLastLoadingAttemptFail: (state: RootState) => boolean;
 export const didStartConditionSyncFail: (state: RootState) => boolean;
 export const getConvexHullOfShow: (state: RootState) => Coordinate2D[];

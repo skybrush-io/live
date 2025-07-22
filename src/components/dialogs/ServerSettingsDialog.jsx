@@ -318,7 +318,7 @@ class ServerSettingsDialogPresentation extends React.Component {
         if (manualSetupAllowed) {
           if (!isServerDetectionSupported) {
             content.push(
-              <Translation>
+              <Translation key='content'>
                 {(t) => (
                   <Typography variant='body2' color='textSecondary'>
                     {t('serverSettingsDialog.autodiscoveryIsNotAvailable')}
@@ -329,7 +329,7 @@ class ServerSettingsDialogPresentation extends React.Component {
           }
         } else {
           content.push(
-            <Translation>
+            <Translation key='content'>
               {(t) => (
                 <Typography variant='body2' color='textSecondary'>
                   {t('serverSettingsDialog.serverSelectionRestricted')}
@@ -345,6 +345,7 @@ class ServerSettingsDialogPresentation extends React.Component {
         if (manualSetupAllowed) {
           content.push(
             <ServerSettingsForm
+              key='content'
               onSubmit={onSubmit}
               onKeyPress={this._handleKeyPress}
             />
