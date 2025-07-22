@@ -318,28 +318,24 @@ class ServerSettingsDialogPresentation extends React.Component {
         if (manualSetupAllowed) {
           if (!isServerDetectionSupported) {
             content.push(
-              <DialogContent key='contents'>
-                <Translation>
-                  {(t) => (
-                    <Typography variant='body2' color='textSecondary'>
-                      {t('serverSettingsDialog.autodiscoveryIsNotAvailable')}
-                    </Typography>
-                  )}
-                </Translation>
-              </DialogContent>
+              <Translation>
+                {(t) => (
+                  <Typography variant='body2' color='textSecondary'>
+                    {t('serverSettingsDialog.autodiscoveryIsNotAvailable')}
+                  </Typography>
+                )}
+              </Translation>
             );
           }
         } else {
           content.push(
-            <DialogContent key='contents'>
-              <Translation>
-                {(t) => (
-                  <Typography variant='body2' color='textSecondary'>
-                    {t('serverSettingsDialog.serverSelectionRestricted')}
-                  </Typography>
-                )}
-              </Translation>
-            </DialogContent>
+            <Translation>
+              {(t) => (
+                <Typography variant='body2' color='textSecondary'>
+                  {t('serverSettingsDialog.serverSelectionRestricted')}
+                </Typography>
+              )}
+            </Translation>
           );
         }
 
@@ -348,12 +344,10 @@ class ServerSettingsDialogPresentation extends React.Component {
       case 'manual':
         if (manualSetupAllowed) {
           content.push(
-            <DialogContent key='contents'>
-              <ServerSettingsForm
-                onSubmit={onSubmit}
-                onKeyPress={this._handleKeyPress}
-              />
-            </DialogContent>
+            <ServerSettingsForm
+              onSubmit={onSubmit}
+              onKeyPress={this._handleKeyPress}
+            />
           );
           actions.push(
             <Translation key='connect'>
@@ -412,7 +406,7 @@ class ServerSettingsDialogPresentation extends React.Component {
             </DialogTabs>
 
             <ServerDetectionManager />
-            {content}
+            <DialogContent key='contents'>{content}</DialogContent>
             <DialogActions>{actions}</DialogActions>
           </Dialog>
         )}
