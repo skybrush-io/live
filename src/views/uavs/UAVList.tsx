@@ -89,7 +89,7 @@ const useListStyles = makeStyles(
 
     toolbar: {
       position: 'absolute',
-      gap: theme.spacing(1),
+      gap: theme.spacing(0.75),
       left: 0,
       right: 0,
       top: 0,
