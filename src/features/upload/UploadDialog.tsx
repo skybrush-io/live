@@ -1,13 +1,13 @@
+import Box from '@mui/material/Box';
 import isNil from 'lodash-es/isNil';
 import React from 'react';
 import { connect } from 'react-redux';
-
-import Box from '@material-ui/core/Box';
 
 import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
 
 import { JOB_TYPE as FIRMWARE_UPDATE_JOB_TYPE } from '~/features/firmware-update/constants';
 import FirmwareUpdateSupportFetcher from '~/features/firmware-update/FirmwareUpdateSupportFetcher';
+import type { RootState } from '~/store/reducers';
 
 import {
   closeUploadDialogAndStepBack,
@@ -22,7 +22,6 @@ import {
 } from './selectors';
 import { closeUploadDialog } from './slice';
 import UploadPanel from './UploadPanel';
-import type { RootState } from '~/store/reducers';
 
 type UploadDialogProps = Readonly<{
   canGoBack: boolean;

@@ -1,20 +1,18 @@
+import Button from '@mui/material/Button';
+import FormHelperText from '@mui/material/FormHelperText';
+import InputAdornment from '@mui/material/InputAdornment';
 import { Checkboxes, TextField } from 'mui-rff';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Form, FormSpy } from 'react-final-form';
 import { connect } from 'react-redux';
 
-import Button from '@material-ui/core/Button';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import InputAdornment from '@material-ui/core/InputAdornment';
-
 import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
-
-import Fence from '~/icons/PlacesFence';
 
 import { updateFeatureAttributes } from '~/features/map-features/slice';
 import { getGeofencePolygonId } from '~/features/mission/selectors';
 import { clearGeofencePolygonId } from '~/features/mission/slice';
+import Fence from '~/icons/PlacesFence';
 import { FeatureType } from '~/model/features';
 import { createValidator, optional, positive } from '~/utils/validation';
 

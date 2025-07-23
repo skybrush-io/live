@@ -1,11 +1,10 @@
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemText from '@mui/material/ListItemText';
+import { createSelector } from '@reduxjs/toolkit';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
-import { createSelector } from '@reduxjs/toolkit';
-
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
 
 import StatusLight from '@skybrush/mui-components/lib/StatusLight';
 
@@ -68,8 +67,7 @@ const EnvironmentButton = ({
   const { t } = useTranslation();
 
   return (
-    <ListItem
-      button
+    <ListItemButton
       disabled={status === Status.OFF}
       onClick={onEditEnvironment}
       {...rest}
@@ -79,7 +77,7 @@ const EnvironmentButton = ({
         primary={t('show.setupEnvironment')}
         secondary={secondaryText(t)}
       />
-    </ListItem>
+    </ListItemButton>
   );
 };
 

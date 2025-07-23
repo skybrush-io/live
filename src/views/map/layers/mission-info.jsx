@@ -1,22 +1,22 @@
+import Checkbox from '@mui/material/Checkbox';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormGroup from '@mui/material/FormGroup';
 import dropWhile from 'lodash-es/dropWhile';
 import takeWhile from 'lodash-es/takeWhile';
 import unary from 'lodash-es/unary';
 import memoize from 'memoizee';
-import PropTypes from 'prop-types';
-import React from 'react';
-import { connect } from 'react-redux';
-
 import * as Coordinate from 'ol/coordinate';
 import Point from 'ol/geom/Point';
 import { getPointResolution } from 'ol/proj';
 import { Circle, Icon, Style, Text } from 'ol/style';
+import PropTypes from 'prop-types';
+import React from 'react';
+import { connect } from 'react-redux';
 
 import { Feature, geom, layer as olLayer, source } from '@collmot/ol-react';
 
-import Checkbox from '@material-ui/core/Checkbox';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormGroup from '@material-ui/core/FormGroup';
-
+import mapMarkerOutline from '~/../assets/img/map-marker-outline.svg';
+import mapMarker from '~/../assets/img/map-marker.svg';
 import Colors from '~/components/colors';
 import { styleForPointsOfPolygon } from '~/components/map/layers/features';
 import {
@@ -77,9 +77,6 @@ import {
 } from '~/utils/styles';
 import MissionSlotTrajectoryFeature from '~/views/map/features/MissionSlotTrajectoryFeature';
 import UAVTrajectoryFeature from '~/views/map/features/UAVTrajectoryFeature';
-
-import mapMarkerOutline from '~/../assets/img/map-marker-outline.svg';
-import mapMarker from '~/../assets/img/map-marker.svg';
 
 // === Settings for this particular layer type ===
 

@@ -1,11 +1,9 @@
+import Delete from '@mui/icons-material/Delete';
+import Redo from '@mui/icons-material/Redo';
+import Undo from '@mui/icons-material/Undo';
+import IconButton from '@mui/material/IconButton';
 import React from 'react';
 import { withTranslation, type WithTranslation } from 'react-i18next';
-
-import IconButton from '@material-ui/core/IconButton';
-
-import Delete from '@material-ui/icons/Delete';
-import Redo from '@material-ui/icons/Redo';
-import Undo from '@material-ui/icons/Undo';
 
 import { type TooltipProps } from '@skybrush/mui-components/lib/Tooltip';
 
@@ -34,17 +32,17 @@ const UndoRedoButtons: React.FC<UndoRedoButtonsProps> = ({
 }) => (
   <>
     <Tooltip content={t('general.action.discard')} placement={tooltipPlacement}>
-      <IconButton disabled={!canDiscard} onClick={discard}>
+      <IconButton disabled={!canDiscard} size='large' onClick={discard}>
         <Delete />
       </IconButton>
     </Tooltip>
     <Tooltip content={t('general.action.undo')} placement={tooltipPlacement}>
-      <IconButton disabled={!canUndo} onClick={undo}>
+      <IconButton disabled={!canUndo} size='large' onClick={undo}>
         <Undo />
       </IconButton>
     </Tooltip>
     <Tooltip content={t('general.action.redo')} placement={tooltipPlacement}>
-      <IconButton disabled={!canRedo} onClick={redo}>
+      <IconButton disabled={!canRedo} size='large' onClick={redo}>
         <Redo />
       </IconButton>
     </Tooltip>

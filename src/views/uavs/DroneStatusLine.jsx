@@ -1,3 +1,4 @@
+import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import isNil from 'lodash-es/isNil';
 import padEnd from 'lodash-es/padEnd';
@@ -6,9 +7,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
-import { makeStyles } from '@material-ui/core/styles';
-
-import { monospacedFont } from '@skybrush/app-theme-material-ui';
+import { monospacedFont } from '@skybrush/app-theme-mui';
 import StatusText from '@skybrush/mui-components/lib/StatusText';
 
 import { BatteryFormatter } from '~/components/battery';

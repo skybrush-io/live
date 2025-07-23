@@ -8,7 +8,7 @@ import isFunction from 'lodash-es/isFunction';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import AlertWarning from '@material-ui/icons/Warning';
+import AlertWarning from '@mui/icons-material/Warning';
 
 import makeLogger from './utils/logging';
 

@@ -3,11 +3,10 @@
  * currently selected UAVs.
  */
 
+import MenuList from '@mui/material/MenuList';
 import isFunction from 'lodash-es/isFunction';
 import PropTypes from 'prop-types';
 import React from 'react';
-
-import MenuList from '@material-ui/core/MenuList';
 
 import {
   ContainerContext,
