@@ -66,7 +66,7 @@ const ThreeDViewTab = (props) => (
     {(t) => (
       <Box>
         <FormGroup>
-          <Header>{t('settings.threeDView.environment')}</Header>
+          <Header disablePadding>{t('settings.threeDView.environment')}</Header>
           <Box display='flex'>
             <FormControl fullWidth variant='filled'>
               <InputLabel id='threed-scenery-label'>

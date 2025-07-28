@@ -59,6 +59,15 @@ import {
   required,
 } from '~/utils/validation';
 
+const styles = {
+  dialogContent: { paddingBottom: 0 },
+  flexColumn: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '16px',
+  },
+};
+
 const iconForServerItem = ({ hostName, type }) =>
   type === 'inferred' ? (
     <SignalWifi0Bar />
@@ -193,6 +202,7 @@ const ServerSettingsFormPresentation = ({ onKeyPress, onSubmit, t }) => {
       {({ handleSubmit }) => (
         <form
           id='serverSettings'
+          style={styles.flexColumn}
           onSubmit={handleSubmit}
           onKeyPress={onKeyPress}
         >
@@ -201,14 +211,12 @@ const ServerSettingsFormPresentation = ({ onKeyPress, onSubmit, t }) => {
             name='hostName'
             label={t('serverSettingsDialog.hostname')}
             variant='filled'
-            margin='normal'
           />
           <TextField
             fullWidth
             name='port'
             label={t('serverSettingsDialog.port')}
             variant='filled'
-            margin='normal'
           />
           <Switches
             name='isSecure'
@@ -407,7 +415,9 @@ class ServerSettingsDialogPresentation extends React.Component {
             </DialogTabs>
 
             <ServerDetectionManager />
-            <DialogContent key='contents'>{content}</DialogContent>
+            <DialogContent key='contents' sx={styles.dialogContent}>
+              {content}
+            </DialogContent>
             <DialogActions>{actions}</DialogActions>
           </Dialog>
         )}

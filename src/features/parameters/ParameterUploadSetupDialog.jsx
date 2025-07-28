@@ -23,6 +23,9 @@ const useStyles = makeStyles(
         boxShadow: '2px 0 6px -2px inset rgba(0, 0, 0, 0.54)',
       },
     },
+    dialogContent: {
+      paddingBottom: 0,
+    },
   },
   {
     name: 'ParameterUploadSetupDialog',
@@ -46,12 +49,12 @@ const ParameterUploadSetupDialog = ({ onClose, open, t }) => {
       title={t('parameterUploadSetupDialog.uploadParameters')}
       onClose={onClose}
     >
-      <DialogContent>
+      <DialogContent className={classes.dialogContent}>
         <ParameterUploadMainPanel />
+        <DialogActions>
+          <Button onClick={onClose}>{t('general.action.close')}</Button>
+        </DialogActions>
       </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose}>{t('general.action.close')}</Button>
-      </DialogActions>
     </DraggableDialog>
   );
 };

@@ -95,12 +95,10 @@ const TimeSyncDialogBodyWhenClocksAreInSync = ({ clockSkew }) => {
   const classes = useStyles();
   return (
     <DialogContent className={classes.content}>
-      <Box my={2}>
-        <DialogContentText>
-          The internal clock of your device and the clock of the Skybrush server
-          are now in sync:
-        </DialogContentText>
-      </Box>
+      <DialogContentText>
+        The internal clock of your device and the clock of the Skybrush server
+        are now in sync:
+      </DialogContentText>
       <ServerAndClientClockComparison clockSkew={clockSkew} />
     </DialogContent>
   );
