@@ -41,6 +41,9 @@ const useStyles = makeStyles(
         marginBottom: theme.spacing(1),
       },
     },
+    dialogContent: {
+      paddingBottom: 0,
+    },
   }),
   { name: 'AuthenticationForm' }
 );
@@ -64,7 +67,7 @@ const AuthenticationForm = ({
       <Form initialValues={initialValues} onSubmit={onSubmit}>
         {({ handleSubmit }) => (
           <form className={classes.root} onSubmit={handleSubmit}>
-            <DialogContent>
+            <DialogContent className={classes.dialogContent}>
               <TextField
                 fullWidth
                 autoFocus={!optimizeUIForTouch}

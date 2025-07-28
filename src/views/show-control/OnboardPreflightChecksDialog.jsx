@@ -1,6 +1,5 @@
 import CheckCircle from '@mui/icons-material/CheckCircle';
 import Box from '@mui/material/Box';
-import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import List from '@mui/material/List';
@@ -157,7 +156,6 @@ const OnboardPreflightChecksDialog = ({
           />
         </Box>
       </DialogContent>
-      <DialogActions />
     </DraggableDialog>
   );
 };

@@ -2,7 +2,6 @@ import SelectAll from '@mui/icons-material/SelectAll';
 import VerticalAlignBottom from '@mui/icons-material/VerticalAlignBottom';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
@@ -280,7 +279,6 @@ const TakeoffAreaSetupDialog = ({
           />
         </Box>
       </DialogContent>
-      <DialogActions />
     </DraggableDialog>
   );
 };

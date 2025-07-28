@@ -1,7 +1,6 @@
 import Box from '@mui/material/Box';
 import Checkbox from '@mui/material/Checkbox';
 import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import List from '@mui/material/List';
@@ -140,7 +139,6 @@ const ManualPreflightChecksDialog = ({
           />
         </Box>
       </DialogContent>
-      <DialogActions />
     </Dialog>
   );
 };

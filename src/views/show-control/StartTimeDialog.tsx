@@ -161,7 +161,7 @@ const StartTimeForm = ({
     >
       {({ dirty, form, handleSubmit, invalid, values }) => (
         <form id='start-time-form' onSubmit={handleSubmit}>
-          <DialogContent sx={{ paddingTop: 2 }}>
+          <DialogContent sx={{ paddingBottom: 0, paddingTop: 2 }}>
             <StartTimeDisplay />
 
             <Box mt={2}>

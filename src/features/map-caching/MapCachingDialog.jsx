@@ -9,7 +9,7 @@ import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
 import MapCachingPanel from './MapCachingPanel';
 import { closeMapCachingDialog } from './slice';
 
-const noPaddingStyle = { paddingTop: 0, paddingLeft: 0, paddingRight: 0 };
+const noPaddingStyle = { padding: 0 };
 
 /**
  * Presentation component for the dialog that allows the user to adjust the
