@@ -70,6 +70,8 @@ import {
 const VERTEX_COUNT_REDUCTION_LOWER_LIMIT = 3;
 const VERTEX_COUNT_REDUCTION_UPPER_LIMIT = 50;
 
+const dialogContentStyle = { paddingBottom: 0 };
+
 const validator = createValidator({
   horizontalMargin: [required, finite, atLeast(1)],
   verticalMargin: [required, finite, atLeast(1)],
@@ -211,7 +213,9 @@ const GeofenceSettingsFormPresentation = ({ onSubmit, t }) => {
         },
       }) => (
         <form id='geofenceSettings' onSubmit={handleSubmit}>
-          <FormHeader>{t('safetyDialog.geofenceTab.fenceAction')}</FormHeader>
+          <FormHeader disablePadding>
+            {t('safetyDialog.geofenceTab.fenceAction')}
+          </FormHeader>
           <Box display='flex' flexDirection='column'>
             <Select
               name='action'
@@ -390,7 +394,7 @@ const GeofenceSettingsTabPresentation = ({
   t,
 }) => (
   <>
-    <DialogContent>
+    <DialogContent sx={dialogContentStyle}>
       <GeofenceSettingsForm />
     </DialogContent>
     <DialogActions>

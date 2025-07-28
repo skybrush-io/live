@@ -29,6 +29,8 @@ import { BatteryThresholdType, unitForBatteryThresholdType } from './model';
 import { getSafetySettings } from './selectors';
 import { updateSafetySettings } from './slice';
 
+const dialogContentStyle = { paddingBottom: 0 };
+
 const toNumberIfDefined = (value) => value && Number(value);
 
 // TODO: Move this to `~/components/forms/fields.jsx`
@@ -203,7 +205,7 @@ const SafetySettingsForm = connect(
  */
 const SafetySettingsTabPresentation = ({ onClose, t }) => (
   <>
-    <DialogContent>
+    <DialogContent sx={dialogContentStyle}>
       <SafetySettingsForm />
     </DialogContent>
     <DialogActions>
