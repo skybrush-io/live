@@ -1,3 +1,4 @@
+import type { SxProps } from '@mui/material';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
@@ -18,6 +19,12 @@ import {
 } from '~/features/show/slice';
 import { getSetupStageStatuses } from '~/features/show/stages';
 import type { AppDispatch, RootState } from '~/store/reducers';
+
+const buttonStyle: SxProps<typeof ListItemButton> = {
+  '&.Mui-selected': {
+    backgroundColor: 'rgba(255, 255, 255, 0.16)',
+  },
+};
 
 type Props = Readonly<{
   isAuthorized: boolean;
@@ -42,6 +49,7 @@ const AuthorizationButton = ({
     <ListItemButton
       /* disabled={!isAuthorized && status === Status.OFF} */
       selected={isAuthorized}
+      sx={buttonStyle}
       {...rest}
     >
       <StatusLight
