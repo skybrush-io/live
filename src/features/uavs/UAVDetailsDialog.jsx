@@ -10,6 +10,8 @@ import { clearPendingUAVId } from '~/features/hotkeys/actions';
 import { isPendingUAVIdOverlayVisible } from '~/features/hotkeys/selectors';
 
 import {
+  UAV_DETAILS_DIALOG_BODY_HEIGHT as BODY_HEIGHT,
+  UAV_DETAILS_DIALOG_BODY_MIN_WIDTH as BODY_MIN_WIDTH,
   UAV_DETAILS_DIALOG_HEIGHT as HEIGHT,
   UAV_DETAILS_DIALOG_SIDEBAR_WIDTH as SIDEBAR_WIDTH,
 } from './constants';
@@ -19,7 +21,6 @@ import {
   getUAVDetailsDialogWidth,
   isUAVDetailsDialogOpen,
   setUAVDetailsDialogPosition,
-  setUAVDetailsDialogWidth,
 } from './details';
 import UAVDetailsDialogBody from './UAVDetailsDialogBody';
 import UAVDetailsDialogSidebar from './UAVDetailsDialogSidebar';
@@ -34,7 +35,6 @@ const UAVDetailsDialog = ({
   initialWidth,
   onClose,
   onDragStop,
-  onResizeStop,
   open,
 }) => {
   const horizontalBound = (window.innerWidth - initialWidth) / 2;
@@ -56,7 +56,15 @@ const UAVDetailsDialog = ({
       )}
       onClose={onClose}
     >
-      <Box height='100%' overflow='auto'>
+      <Box
+        id='uav-details-dialog-box'
+        width={initialWidth - SIDEBAR_WIDTH}
+        height={BODY_HEIGHT}
+        minWidth={BODY_MIN_WIDTH}
+        minHeight={BODY_HEIGHT}
+        maxWidth='100%'
+        overflow='auto'
+      >
         <UAVDetailsDialogBody />
       </Box>
     </DraggableDialog>
@@ -71,7 +79,6 @@ UAVDetailsDialog.propTypes = {
   initialWidth: PropTypes.number,
   onClose: PropTypes.func,
   onDragStop: PropTypes.func,
-  onResizeStop: PropTypes.func,
   open: PropTypes.bool,
 };
 
@@ -96,11 +103,6 @@ export default connect(
       (_event, { x, y }) =>
       (dispatch) => {
         dispatch(setUAVDetailsDialogPosition({ x, y }));
-      },
-    onResizeStop:
-      (_event, { size }) =>
-      (dispatch) => {
-        dispatch(setUAVDetailsDialogWidth(size.width + SIDEBAR_WIDTH));
       },
   }
 )(UAVDetailsDialog);
