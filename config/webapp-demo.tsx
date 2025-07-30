@@ -45,7 +45,7 @@ const overrides: ConfigOverrides = {
   // hostname and port from the dialog.
   server: {
     connectAutomatically: true,
-    hostName: undefined, // unset to allow the substitution of the hostname and port from the URL
+    hostName: '', // empty string to allow the substitution of the hostname and port from the URL
     preventManualSetup: true,
   },
 
