@@ -11,33 +11,27 @@ import type UAV from '~/model/uav';
 import { type Collection, replaceItemOrAddToFront } from '~/utils/collections';
 import { noPayload } from '~/utils/redux';
 
-import { type JobPayload, type UploadJob } from './types';
+import type { JobData, JobPayload, UploadJob } from './types';
 import {
   clearLastUploadResultForJobTypeHelper,
   clearQueues,
   ensureItemsInQueue,
   moveItemsBetweenQueues,
 } from './utils';
-import type { Nullable } from '~/utils/types';
 
 export type UploadSliceState = {
-  currentJob: {
-    /**
-     * Type of current job being executed by the uploader. Value is kept after
-     * the job finishes so we can restart it if needed.
-     */
-
-    // TODO: Maybe create a unique symbol for job types?
-    type?: string;
-
-    /**
-     * Payload of current job; can be an arbitrary object and it is the
-     * task of the upload saga to interpret it. Its semantics primarily
-     * depends on the type of the current job. Value is kept after
-     * the job finishes so we can restart it if needed.
-     */
-    payload?: JobPayload;
-
+  /**
+   * The full description of the current job.
+   *
+   * `type`: Type of current job being executed by the uploader. Value is kept
+   * after the job finishes so we can restart it if needed.
+   *
+   * `payload`: Payload of current job; can be an arbitrary object and it is
+   * the task of the upload saga to interpret it. Its semantics primarily
+   * depends on the type of the current job. Value is kept after
+   * the job finishes so we can restart it if needed.
+   */
+  currentJob: JobData & {
     /** Whether the job is running or not */
     running: boolean;
   };
@@ -84,6 +78,13 @@ export type UploadSliceState = {
 
     /** Whether the lights of the drones with failed uploads should be flashed */
     flashFailed: boolean;
+
+    /**
+     * Whether the upload jobs should be restricted to drones
+     * that are in the global selection, unless explicitly
+     * queued by the user.
+     */
+    restrictToGlobalSelection: boolean;
   };
 };
 
@@ -119,6 +120,7 @@ const initialState: UploadSliceState = {
   settings: {
     autoRetry: false,
     flashFailed: false,
+    restrictToGlobalSelection: false,
   },
 };
 
@@ -316,14 +318,14 @@ const { actions, reducer } = createSlice({
     openUploadDialogForJob(
       state,
       action: PayloadAction<{
-        job?: { type?: Nullable<string>; payload?: JobPayload };
-        options?: { backAction?: Action };
+        job?: JobData;
+        options?: { backAction?: Action; restrictToGlobalSelection?: boolean };
       }>
     ) {
       const { payload } = action;
       const { job, options } = payload ?? {};
       const { type: newJobType, payload: newJobPayload } = job ?? {};
-      const { backAction } = options ?? {};
+      const { backAction, restrictToGlobalSelection } = options ?? {};
 
       // Do not do anything without a job type
       if (!newJobType) {
@@ -346,6 +348,18 @@ const { actions, reducer } = createSlice({
       };
       state.dialog.showLastUploadResult = false;
       state.dialog.open = true;
+      if (restrictToGlobalSelection !== undefined) {
+        state.settings.restrictToGlobalSelection = restrictToGlobalSelection;
+      }
+    },
+
+    setRestrictToGlobalSelection(state, action: PayloadAction<boolean>) {
+      state.settings.restrictToGlobalSelection = action.payload;
+    },
+
+    toggleRestrictToGlobalSelection(state) {
+      state.settings.restrictToGlobalSelection =
+        !state.settings.restrictToGlobalSelection;
     },
 
     // Trigger actions for the upload saga
@@ -392,7 +406,9 @@ export const {
   removeUavsFromWaitingQueue,
   setUploadAutoRetry,
   setFlashFailed,
+  setRestrictToGlobalSelection,
   startUpload,
+  toggleRestrictToGlobalSelection,
 } = actions;
 
 export default reducer;
