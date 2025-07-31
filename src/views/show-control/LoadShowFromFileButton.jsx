@@ -98,6 +98,7 @@ const LoadShowFromFileButton = ({
   <FileButton
     accepts={isFile}
     component={ListItemButton}
+    componentProps={{ sx: { paddingRight: 6 } }}
     filter={EXTENSIONS}
     id='show-file-upload'
     onSelected={onShowFileSelected}
