@@ -6,6 +6,7 @@ import { connect } from 'react-redux';
 
 import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
 
+import ResizableBox from '~/components/ResizableBox';
 import { clearPendingUAVId } from '~/features/hotkeys/actions';
 import { isPendingUAVIdOverlayVisible } from '~/features/hotkeys/selectors';
 
@@ -21,6 +22,7 @@ import {
   getUAVDetailsDialogWidth,
   isUAVDetailsDialogOpen,
   setUAVDetailsDialogPosition,
+  setUAVDetailsDialogWidth,
 } from './details';
 import UAVDetailsDialogBody from './UAVDetailsDialogBody';
 import UAVDetailsDialogSidebar from './UAVDetailsDialogSidebar';
@@ -35,6 +37,7 @@ const UAVDetailsDialog = ({
   initialWidth,
   onClose,
   onDragStop,
+  onResizeStop,
   open,
 }) => {
   const horizontalBound = (window.innerWidth - initialWidth) / 2;
@@ -56,17 +59,21 @@ const UAVDetailsDialog = ({
       )}
       onClose={onClose}
     >
-      <Box
-        id='uav-details-dialog-box'
-        width={initialWidth - SIDEBAR_WIDTH}
-        height={BODY_HEIGHT}
-        minWidth={BODY_MIN_WIDTH}
-        minHeight={BODY_HEIGHT}
-        maxWidth='100%'
-        overflow='auto'
+      <ResizableBox
+        axis='x'
+        resizeHandles={['e']}
+        initialSize={{
+          width: initialWidth - SIDEBAR_WIDTH,
+          height: BODY_HEIGHT,
+        }}
+        minConstraints={[BODY_MIN_WIDTH, BODY_HEIGHT]}
+        boxProps={{ maxWidth: '100%' }}
+        onResizeStop={onResizeStop}
       >
-        <UAVDetailsDialogBody />
-      </Box>
+        <Box height='100%' overflow='auto'>
+          <UAVDetailsDialogBody />
+        </Box>
+      </ResizableBox>
     </DraggableDialog>
   );
 };
@@ -79,6 +86,7 @@ UAVDetailsDialog.propTypes = {
   initialWidth: PropTypes.number,
   onClose: PropTypes.func,
   onDragStop: PropTypes.func,
+  onResizeStop: PropTypes.func,
   open: PropTypes.bool,
 };
 
@@ -103,6 +111,11 @@ export default connect(
       (_event, { x, y }) =>
       (dispatch) => {
         dispatch(setUAVDetailsDialogPosition({ x, y }));
+      },
+    onResizeStop:
+      (_event, { size }) =>
+      (dispatch) => {
+        dispatch(setUAVDetailsDialogWidth(size.width + SIDEBAR_WIDTH));
       },
   }
 )(UAVDetailsDialog);
