@@ -85,23 +85,6 @@ export function formatMissionId(index: number): string {
   return `s${index + 1}`;
 }
 
-/**
- * Formats a mission-specific ID range in a consistent manner
- * that is to be used everywhere throughout the UI.
- *
- * Indices as input arguments are zero-based, but they are formatted as 1-based
- * on the UI. The start index is inclusive and the end index is exclusive.
- */
-export function formatMissionIdRange(start: number, end: number): string {
-  if (end <= start) {
-    return '';
-  } else if (end === start + 1) {
-    return formatMissionId(start);
-  } else {
-    return `${formatMissionId(start)}–${end}`;
-  }
-}
-
 export type UnitDescriptor = {
   multiplier: number;
   unit: string;
@@ -224,6 +207,26 @@ export const formatArea = (number: number, digits = 2): string =>
  */
 export const formatSpeed = (number: number, digits = 2): string =>
   formatNumberAndUnit(number, SPEED_UNITS, digits);
+
+/**
+ * Helper function that formats an interval of items.
+ *
+ * @param items  The array of items to format.
+ * @param formatter  The function to use to convert items to
+ *        their string representation.
+ */
+export const formatItemInterval = <TItem>(
+  items: Array<TItem>,
+  formatter: (item: TItem) => string = String
+) => {
+  if (items.length === 0) {
+    return '—';
+  } else if (items.length === 1) {
+    return formatter(items[0]!);
+  } else {
+    return `${formatter(items[0]!)}-${formatter(items.at(-1)!)}`;
+  }
+};
 
 /**
  * Formats a list of IDs in a manner that is suitable for cases when we

@@ -1,6 +1,8 @@
 import Box from '@mui/material/Box';
+import Switch from '@mui/material/Switch';
 import isNil from 'lodash-es/isNil';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
@@ -19,8 +21,9 @@ import {
   getRunningUploadJobType,
   getSelectedJobInUploadDialog,
   getUploadDialogState,
+  shouldRestrictToGlobalSelection,
 } from './selectors';
-import { closeUploadDialog } from './slice';
+import { closeUploadDialog, toggleRestrictToGlobalSelection } from './slice';
 import UploadPanel from './UploadPanel';
 
 type UploadDialogProps = Readonly<{
@@ -30,28 +33,47 @@ type UploadDialogProps = Readonly<{
   onStartUpload: () => void;
   onStepBack: () => void;
   open: boolean;
+  restrictToGlobalSelection: boolean;
   runningJobType?: string;
   selectedJobType?: string;
+  toggleRestrictToGlobalSelection: () => void;
 }>;
 
 const UploadDialog = ({
   canGoBack,
   canStartUpload,
+  restrictToGlobalSelection,
   onClose,
   onStartUpload,
   onStepBack,
   open,
   runningJobType,
   selectedJobType,
+  toggleRestrictToGlobalSelection,
 }: UploadDialogProps): JSX.Element => {
+  const { t } = useTranslation();
   const isRunningJobTypeMatching =
     !runningJobType || runningJobType === selectedJobType;
+
   return (
     <DraggableDialog
       fullWidth
       open={Boolean(open)}
       maxWidth='md'
+      minHeight='md'
       title={getDialogTitleForJobType(selectedJobType ?? '')}
+      titleComponents={
+        <>
+          {t('uploadDialog.restrictToGlobalSelection')}
+          <Switch
+            checked={restrictToGlobalSelection}
+            onChange={(evt) => {
+              toggleRestrictToGlobalSelection();
+              evt.target.blur();
+            }}
+          />
+        </>
+      }
       onClose={onClose}
     >
       {selectedJobType === FIRMWARE_UPDATE_JOB_TYPE && (
@@ -80,6 +102,7 @@ export default connect(
       open,
       canGoBack: !isNil(backAction),
       canStartUpload: true,
+      restrictToGlobalSelection: shouldRestrictToGlobalSelection(state),
       runningJobType: getRunningUploadJobType(state),
       selectedJobType: getSelectedJobInUploadDialog(state)?.type,
     };
@@ -89,5 +112,6 @@ export default connect(
     onClose: closeUploadDialog,
     onStartUpload: startUploadJobFromUploadDialog,
     onStepBack: closeUploadDialogAndStepBack,
+    toggleRestrictToGlobalSelection,
   }
 )(UploadDialog);
