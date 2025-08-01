@@ -2,18 +2,17 @@
  * @file React Component for handling hotkeys.
  */
 
+import Button from '@mui/material/Button';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableRow from '@mui/material/TableRow';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { getApplicationKeyMap } from 'react-hotkeys';
 import { connect } from 'react-redux';
-
-import Button from '@material-ui/core/Button';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableRow from '@material-ui/core/TableRow';
 
 import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
 

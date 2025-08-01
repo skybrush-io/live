@@ -1,11 +1,10 @@
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Switch from '@material-ui/core/Switch';
-import SelectAll from '@material-ui/icons/SelectAll';
-import VerticalAlignBottom from '@material-ui/icons/VerticalAlignBottom';
+import SelectAll from '@mui/icons-material/SelectAll';
+import VerticalAlignBottom from '@mui/icons-material/VerticalAlignBottom';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import DialogContent from '@mui/material/DialogContent';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Switch from '@mui/material/Switch';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Translation, withTranslation } from 'react-i18next';
@@ -280,7 +279,6 @@ const TakeoffAreaSetupDialog = ({
           />
         </Box>
       </DialogContent>
-      <DialogActions />
     </DraggableDialog>
   );
 };

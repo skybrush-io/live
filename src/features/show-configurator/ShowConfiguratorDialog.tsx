@@ -1,10 +1,11 @@
-import Backdrop from '@material-ui/core/Backdrop';
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import DialogActions from '@material-ui/core/DialogActions';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Switch from '@material-ui/core/Switch';
-import { makeStyles } from '@material-ui/core/styles';
+import Backdrop from '@mui/material/Backdrop';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import DialogActions from '@mui/material/DialogActions';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Switch from '@mui/material/Switch';
+import type { Theme } from '@mui/material/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import type { TFunction } from 'i18next';
 import React, { useCallback, useState } from 'react';
 import { withTranslation } from 'react-i18next';
@@ -47,7 +48,7 @@ import {
 } from './selectors';
 import { closeDialog, setAdaptResult, setDronesVisible } from './state';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   /* Ugly hack to move the sidebar to the right */
   root: {
     // eslint-disable-next-line @typescript-eslint/naming-convention

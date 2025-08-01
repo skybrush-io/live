@@ -2,6 +2,14 @@
  * @file Tab that shows the geofence settings and allows the user to edit them.
  */
 
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import FormHelperText from '@mui/material/FormHelperText';
+import InputAdornment from '@mui/material/InputAdornment';
+import MenuItem from '@mui/material/MenuItem';
+import * as TurfHelpers from '@turf/helpers';
 import createDecorator from 'final-form-calculate';
 import max from 'lodash-es/max';
 import unary from 'lodash-es/unary';
@@ -12,17 +20,7 @@ import { Form } from 'react-final-form';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import MenuItem from '@material-ui/core/MenuItem';
-
 import FormHeader from '@skybrush/mui-components/lib/FormHeader';
-
-import * as TurfHelpers from '@turf/helpers';
 
 import { removeFeaturesByIds } from '~/features/map-features/slice';
 import {
@@ -71,6 +69,8 @@ import {
 
 const VERTEX_COUNT_REDUCTION_LOWER_LIMIT = 3;
 const VERTEX_COUNT_REDUCTION_UPPER_LIMIT = 50;
+
+const dialogContentStyle = { paddingBottom: 0 };
 
 const validator = createValidator({
   horizontalMargin: [required, finite, atLeast(1)],
@@ -213,7 +213,9 @@ const GeofenceSettingsFormPresentation = ({ onSubmit, t }) => {
         },
       }) => (
         <form id='geofenceSettings' onSubmit={handleSubmit}>
-          <FormHeader>{t('safetyDialog.geofenceTab.fenceAction')}</FormHeader>
+          <FormHeader disablePadding>
+            {t('safetyDialog.geofenceTab.fenceAction')}
+          </FormHeader>
           <Box display='flex' flexDirection='column'>
             <Select
               name='action'
@@ -392,7 +394,7 @@ const GeofenceSettingsTabPresentation = ({
   t,
 }) => (
   <>
-    <DialogContent>
+    <DialogContent sx={dialogContentStyle}>
       <GeofenceSettingsForm />
     </DialogContent>
     <DialogActions>

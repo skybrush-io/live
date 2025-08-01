@@ -1,6 +1,8 @@
-import Box from '@material-ui/core/Box';
-import { makeStyles } from '@material-ui/core/styles';
+import Box from '@mui/material/Box';
+import type { Theme } from '@mui/material/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import React from 'react';
+
 import { UAVListLayout } from '~/features/settings/types';
 
 import UAVListSubheader, {
@@ -9,7 +11,7 @@ import UAVListSubheader, {
 import type { Item } from './types';
 
 const useStyles = makeStyles(
-  (theme) => ({
+  (theme: Theme) => ({
     grid: {
       display: 'flex',
       flexDirection: 'row',

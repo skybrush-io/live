@@ -1,8 +1,8 @@
+import Box from '@mui/material/Box';
+import makeStyles from '@mui/styles/makeStyles';
 import React from 'react';
 import { connect } from 'react-redux';
 import { Virtuoso, VirtuosoGrid } from 'react-virtuoso';
-import Box from '@material-ui/core/Box';
-import { makeStyles } from '@material-ui/core/styles';
 
 import { UAVListLayout } from '~/features/settings/types';
 import type { RootState } from '~/store/reducers';

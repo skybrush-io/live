@@ -1,21 +1,20 @@
+import Sync from '@mui/icons-material/Sync';
+import Divider from '@mui/material/Divider';
+import IconButton from '@mui/material/IconButton';
+import List from '@mui/material/List';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import ListItemText from '@mui/material/ListItemText';
+import ListSubheader from '@mui/material/ListSubheader';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
-import IconButton from '@material-ui/core/IconButton';
-import Divider from '@material-ui/core/Divider';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
-import ListSubheader from '@material-ui/core/ListSubheader';
-import Sync from '@material-ui/icons/Sync';
-
 import StatusLight from '@skybrush/mui-components/lib/StatusLight';
 
 import {
-  getSelectedTabInDockDetailsDialog,
   getSelectedDockIdInDockDetailsDialog,
+  getSelectedTabInDockDetailsDialog,
 } from './details';
 
 const DockDetailsDialogBody = ({ dockId, selectedTab }) => {
@@ -23,31 +22,31 @@ const DockDetailsDialogBody = ({ dockId, selectedTab }) => {
     case 'status':
       return (
         <List>
-          <ListItem button>
+          <ListItemButton>
             <StatusLight status='success' />
             <ListItemText primary='Door closed' />
-          </ListItem>
-          <ListItem button>
+          </ListItemButton>
+          <ListItemButton>
             <StatusLight status='success' />
             <ListItemText primary='Tilt angle: 0.7°' />
-          </ListItem>
+          </ListItemButton>
 
           <ListSubheader>Landing pad 1</ListSubheader>
-          <ListItem button>
+          <ListItemButton>
             <StatusLight status='success' />
             <ListItemText primary='Landing pad is at the bottom' />
-          </ListItem>
-          <ListItem button>
+          </ListItemButton>
+          <ListItemButton>
             <StatusLight status='success' />
             <ListItemText primary='Tweezers touching drone leg (left, right)' />
-          </ListItem>
-          <ListItem button>
+          </ListItemButton>
+          <ListItemButton>
             <StatusLight status='info' />
             <ListItemText
               primary='Drone is charging'
               secondary='11.6V • Time until full: 17m 12s'
             />
-          </ListItem>
+          </ListItemButton>
         </List>
       );
 
@@ -112,7 +111,7 @@ const DockDetailsDialogBody = ({ dockId, selectedTab }) => {
                 secondary='0.5 GB used • 63.1 GB free • 0.8%'
               />
               <ListItemSecondaryAction>
-                <IconButton>
+                <IconButton size='large'>
                   <Sync />
                 </IconButton>
               </ListItemSecondaryAction>

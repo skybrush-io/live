@@ -1,20 +1,18 @@
+import Navigation from '@mui/icons-material/Navigation';
+import VerticalAlignCenter from '@mui/icons-material/VerticalAlignCenter';
+import Warning from '@mui/icons-material/Warning';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import FormControl from '@mui/material/FormControl';
+import IconButton from '@mui/material/IconButton';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import Typography from '@mui/material/Typography';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Trans, withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
-
-import AutoFix from '~/icons/AutoFix';
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import FormControl from '@material-ui/core/FormControl';
-import IconButton from '@material-ui/core/IconButton';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
-import Typography from '@material-ui/core/Typography';
-import Navigation from '@material-ui/icons/Navigation';
-import VerticalAlignCenter from '@material-ui/icons/VerticalAlignCenter';
-import Warning from '@material-ui/icons/Warning';
 
 import FormHeader from '@skybrush/mui-components/lib/FormHeader';
 import Tooltip from '@skybrush/mui-components/lib/Tooltip';
@@ -47,6 +45,7 @@ import { showNotification } from '~/features/snackbar/actions';
 import { MessageSemantics } from '~/features/snackbar/types';
 import { getAverageHeadingOfActiveUAVs } from '~/features/uavs/selectors';
 import i18n from '~/i18n';
+import AutoFix from '~/icons/AutoFix';
 import { scrollToMapLocation } from '~/signals';
 import { normalizeAngle, toLonLatFromScaledJSON } from '~/utils/geography';
 
@@ -133,6 +132,7 @@ const OutdoorEnvironmentEditor = ({
             <IconButton
               disabled={!canEstimateShowCoordinateSystem}
               edge='end'
+              size='large'
               onClick={onEstimateShowCoordinateSystem}
             >
               <AutoFix />
@@ -199,6 +199,7 @@ const OutdoorEnvironmentEditor = ({
             <IconButton
               disabled={!usingAMSLReference}
               edge='end'
+              size='large'
               onClick={onSetAltitudeReferenceToAverageAMSL}
             >
               <VerticalAlignCenter />

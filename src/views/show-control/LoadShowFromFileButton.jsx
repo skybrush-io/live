@@ -1,25 +1,24 @@
 /* eslint-disable unicorn/no-negated-condition */
+import Clear from '@mui/icons-material/Clear';
+import CloudDownload from '@mui/icons-material/CloudDownload';
+import Refresh from '@mui/icons-material/Refresh';
+import IconButton from '@mui/material/IconButton';
+import LinearProgress from '@mui/material/LinearProgress';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import isNil from 'lodash-es/isNil';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import IconButton from '@material-ui/core/IconButton';
-import LinearProgress from '@material-ui/core/LinearProgress';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import Clear from '@material-ui/icons/Clear';
-import CloudDownload from '@material-ui/icons/CloudDownload';
-import Refresh from '@material-ui/icons/Refresh';
-
 import StatusLight from '@skybrush/mui-components/lib/StatusLight';
-import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
 
 import Colors from '~/components/colors';
 import FileButton from '~/components/FileButton';
 import ListItemTextWithProgress from '~/components/ListItemTextWithProgress';
 import { Status } from '~/components/semantics';
+import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
 import {
   clearLoadedShow,
   loadShowFromFile,
@@ -98,8 +97,8 @@ const LoadShowFromFileButton = ({
 }) => (
   <FileButton
     accepts={isFile}
-    component={ListItem}
-    componentProps={{ button: true }}
+    component={ListItemButton}
+    componentProps={{ sx: { paddingRight: 6 } }}
     filter={EXTENSIONS}
     id='show-file-upload'
     onSelected={onShowFileSelected}
@@ -137,19 +136,19 @@ const LoadShowFromFileButton = ({
     <ListItemSecondaryAction>
       {changedSinceLoaded ? (
         <Tooltip content={t('show.reload', 'Reload show')}>
-          <IconButton edge='end' onClick={onReloadShowFile}>
+          <IconButton edge='end' size='large' onClick={onReloadShowFile}>
             <Refresh />
           </IconButton>
         </Tooltip>
       ) : hasLoadedShowFile ? (
         <Tooltip content={t('show.clear', 'Clear loaded show')}>
-          <IconButton edge='end' onClick={onClearLoadedShow}>
+          <IconButton edge='end' size='large' onClick={onClearLoadedShow}>
             <Clear />
           </IconButton>
         </Tooltip>
       ) : hasFeature('loadShowFromCloud') ? (
         <Tooltip content={t('show.fromCloud', 'Load show from cloud')}>
-          <IconButton edge='end' onClick={onLoadShowFromCloud}>
+          <IconButton edge='end' size='large' onClick={onLoadShowFromCloud}>
             <CloudDownload />
           </IconButton>
         </Tooltip>

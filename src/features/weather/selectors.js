@@ -1,9 +1,9 @@
+import { createSelector } from '@reduxjs/toolkit';
 import addDays from 'date-fns/addDays';
 import isAfter from 'date-fns/isAfter';
-import { createSelector } from '@reduxjs/toolkit';
 import SunCalc from 'suncalc';
 
-import { Status } from '@skybrush/app-theme-material-ui';
+import { Status } from '@skybrush/app-theme-mui';
 
 import { getMapViewCenterPosition } from '~/selectors/map';
 import { toDegrees } from '~/utils/math';

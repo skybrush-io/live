@@ -1,17 +1,17 @@
 /* eslint-disable @typescript-eslint/naming-convention */
+import ButtonBase, { type ButtonBaseProps } from '@mui/material/ButtonBase';
+import type { Theme } from '@mui/material/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import React from 'react';
 
-import ButtonBase, { type ButtonBaseProps } from '@material-ui/core/ButtonBase';
-import { makeStyles } from '@material-ui/core/styles';
-
+import type { Status } from '@skybrush/app-theme-mui';
 import StatusLight from '@skybrush/mui-components/lib/StatusLight';
 import Tooltip from '@skybrush/mui-components/lib/Tooltip';
-import type { Status } from '@skybrush/app-theme-material-ui';
 import type { Nullable } from '~/utils/types';
 
 const useStyles = makeStyles(
-  (theme) => ({
+  (theme: Theme) => ({
     root: {
       display: 'flex',
       alignItems: 'center',

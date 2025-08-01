@@ -1,11 +1,10 @@
+import CircularProgress from '@mui/material/CircularProgress';
+import makeStyles from '@mui/styles/makeStyles';
+import { Colors, Status } from '@skybrush/app-theme-mui';
+import SemanticAvatar from '@skybrush/mui-components/lib/SemanticAvatar';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import React from 'react';
-
-import CircularProgress from '@material-ui/core/CircularProgress';
-import { makeStyles } from '@material-ui/core/styles';
-import { Colors, Status } from '@skybrush/app-theme-material-ui';
-import SemanticAvatar from '@skybrush/mui-components/lib/SemanticAvatar';
 
 import { BatteryFormatter } from '~/components/battery';
 import BatteryIndicator from '~/components/BatteryIndicator';
@@ -130,7 +129,7 @@ const ComplexAvatar = ({
             className={classes.progress}
             size={44}
             value={progress}
-            variant='static'
+            variant='determinate'
           />
         )}
         {secondaryStatus && <SecondaryStatusLight status={secondaryStatus} />}

@@ -1,3 +1,5 @@
+import { Status } from '@skybrush/app-theme-mui';
+
 import {
   DEFAULT_BATTERY_CELL_COUNT,
   LIPO_CRITICAL_VOLTAGE_THRESHOLD,
@@ -5,8 +7,6 @@ import {
   LIPO_FULL_CHARGE_VOLTAGE,
   LIPO_LOW_VOLTAGE_THRESHOLD,
 } from './constants';
-
-import { Status } from '@skybrush/app-theme-material-ui';
 
 export enum BatteryStatus {
   FULL = 'Full',
@@ -163,24 +163,24 @@ export class BatterySettings {
       return percentage > percentageThresholds[BatteryStatus.FULL]
         ? BatteryStatus.FULL
         : percentage > percentageThresholds[BatteryStatus.NEAR_FULL]
-        ? BatteryStatus.NEAR_FULL
-        : percentage > percentageThresholds[BatteryStatus.OK]
-        ? BatteryStatus.OK
-        : percentage > percentageThresholds[BatteryStatus.WARNING]
-        ? BatteryStatus.WARNING
-        : BatteryStatus.ERROR;
+          ? BatteryStatus.NEAR_FULL
+          : percentage > percentageThresholds[BatteryStatus.OK]
+            ? BatteryStatus.OK
+            : percentage > percentageThresholds[BatteryStatus.WARNING]
+              ? BatteryStatus.WARNING
+              : BatteryStatus.ERROR;
     }
 
     const voltagePerCell = this.getVoltagePerCell(voltage, cellCount);
     return voltagePerCell > this.nearFullChargeVoltage
       ? BatteryStatus.FULL
       : voltagePerCell >= this.okVoltageThreshold
-      ? BatteryStatus.NEAR_FULL
-      : voltagePerCell >= this.lowVoltageThreshold
-      ? BatteryStatus.OK
-      : voltagePerCell >= this.criticalVoltageThreshold
-      ? BatteryStatus.WARNING
-      : BatteryStatus.ERROR;
+        ? BatteryStatus.NEAR_FULL
+        : voltagePerCell >= this.lowVoltageThreshold
+          ? BatteryStatus.OK
+          : voltagePerCell >= this.criticalVoltageThreshold
+            ? BatteryStatus.WARNING
+            : BatteryStatus.ERROR;
   };
 
   /**

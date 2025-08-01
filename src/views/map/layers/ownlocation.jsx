@@ -1,19 +1,17 @@
+import Checkbox from '@mui/material/Checkbox';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormGroup from '@mui/material/FormGroup';
+import { Circle, Fill, RegularShape, Stroke, Style } from 'ol/style';
 import PropTypes from 'prop-types';
 import React, { useCallback, useMemo, useState } from 'react';
 import { connect } from 'react-redux';
 
-import { Circle, Fill, RegularShape, Stroke, Style } from 'ol/style';
-
 import { Feature, Geolocation, geom, layer, source } from '@collmot/ol-react';
 
-import Checkbox from '@material-ui/core/Checkbox';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormGroup from '@material-ui/core/FormGroup';
-
-import useDeviceOrientation from '~/hooks/useDeviceOrientation';
 import { setLayerParametersById } from '~/features/map/layers';
-import { toRadians } from '~/utils/math';
+import useDeviceOrientation from '~/hooks/useDeviceOrientation';
 import makeLogger from '~/utils/logging';
+import { toRadians } from '~/utils/math';
 
 const logger = makeLogger('OwnLocationLayer');
 

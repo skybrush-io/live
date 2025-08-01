@@ -4,10 +4,11 @@
  * flock.
  */
 
-import AppBar from '@material-ui/core/AppBar';
-import Box from '@material-ui/core/Box';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import Delete from '@material-ui/icons/Delete';
+import Delete from '@mui/icons-material/Delete';
+import AppBar from '@mui/material/AppBar';
+import Box from '@mui/material/Box';
+import type { Theme } from '@mui/material/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import {
   bindActionCreators,
   type AnyAction,
@@ -26,7 +27,7 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { connect, useStore } from 'react-redux';
 
-import { isThemeDark } from '@skybrush/app-theme-material-ui';
+import { isThemeDark } from '@skybrush/app-theme-mui';
 
 import { createSelectionHandlerThunk } from '~/components/helpers/lists';
 import FadeAndSlide from '~/components/transitions/FadeAndSlide';
@@ -78,7 +79,7 @@ import type { Item } from './types';
 import { getSelectedUAVIdsAndMissionSlotIds, itemToGlobalId } from './utils';
 
 const useListStyles = makeStyles(
-  (theme) => ({
+  (theme: Theme) => ({
     appBar: {
       backgroundColor: isThemeDark(theme)
         ? '#424242'
@@ -88,6 +89,7 @@ const useListStyles = makeStyles(
 
     toolbar: {
       position: 'absolute',
+      gap: theme.spacing(0.75),
       left: 0,
       right: 0,
       top: 0,

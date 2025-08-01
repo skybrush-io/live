@@ -2,15 +2,13 @@
  * @file React component showing a single chat bubble in a chat session.
  */
 
+import { blue, grey } from '@mui/material/colors';
+import makeStyles from '@mui/styles/makeStyles';
+import { isThemeDark } from '@skybrush/app-theme-mui';
 import clsx from 'clsx';
 import { Markup } from 'interweave';
 import PropTypes from 'prop-types';
 import React from 'react';
-
-import { blue, grey } from '@material-ui/core/colors';
-import { makeStyles } from '@material-ui/core/styles';
-
-import { isThemeDark } from '@skybrush/app-theme-material-ui';
 
 import { colorForSeverity } from '~/components/colors';
 import { Severity } from '~/model/enums';

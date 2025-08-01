@@ -1,22 +1,22 @@
+import { layer, source } from '@collmot/ol-react';
+import Image from '@mui/icons-material/Image';
+import Box from '@mui/material/Box';
+import InputAdornment from '@mui/material/InputAdornment';
+import Skeleton from '@mui/material/Skeleton';
+import { getPointResolution } from 'ol/proj';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useRef } from 'react';
 import { Form, FormSpy } from 'react-final-form';
 import { connect } from 'react-redux';
 import { usePrevious } from 'react-use';
-import { getPointResolution } from 'ol/proj';
-import { layer, source } from '@collmot/ol-react';
-import Box from '@material-ui/core/Box';
-import Image from '@material-ui/icons/Image';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import Skeleton from '@material-ui/lab/Skeleton';
 
 import FileButton from '~/components/FileButton';
 import {
-  LatitudeField,
-  LongitudeField,
-  HeadingField,
-  TextField,
-  forceFormSubmission,
+    HeadingField,
+    LatitudeField,
+    LongitudeField,
+    TextField,
+    forceFormSubmission,
 } from '~/components/forms';
 import { setLayerParametersById } from '~/features/map/layers';
 import { getMapViewCenterPosition } from '~/selectors/map';
@@ -102,7 +102,7 @@ const ImageLayerSettingsPresentation = ({
               />
             ) : (
               <Skeleton
-                variant='rect'
+                variant="rectangular"
                 width='100%'
                 height='10em'
                 onClick={handleClick}
@@ -137,20 +137,20 @@ const ImageLayerSettingsPresentation = ({
           <Box display='flex' flexDirection='row'>
             <LatitudeField
               fullWidth
-              margin='dense'
+              size='small'
               name='position.lat'
               label='Latitude of center'
             />
             <Box p={0.75} />
             <LongitudeField
               fullWidth
-              margin='dense'
+              size='small'
               name='position.lon'
               label='Longitude of center'
             />
           </Box>
           <Box display='flex' flexDirection='row'>
-            <HeadingField fullWidth margin='dense' name='angle' label='Angle' />
+            <HeadingField fullWidth size='small' name='angle' label='Angle' />
             <Box p={0.75} />
             <TextField
               fullWidth
@@ -162,7 +162,7 @@ const ImageLayerSettingsPresentation = ({
                   <InputAdornment position='end'>cm/px</InputAdornment>
                 ),
               }}
-              margin='dense'
+              size='small'
               name='scale'
               label='Scale'
               variant='filled'

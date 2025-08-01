@@ -1,13 +1,12 @@
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 import config from 'config';
 import { TextField } from 'mui-rff';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Form } from 'react-final-form';
-import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
-
-import Box from '@material-ui/core/Box';
-import Typography from '@material-ui/core/Typography';
+import { connect } from 'react-redux';
 
 import FormSubmissionButtonRow from '~/components/forms/FormSubmissionButtonRow';
 import { updateAppSettings } from '~/features/settings/slice';
@@ -26,7 +25,7 @@ const providers = [
 const APIKeysTabPresentation = ({ apiKeys, onSubmit, t }) => (
   <Form initialValues={apiKeys} onSubmit={onSubmit}>
     {({ dirty, form, handleSubmit }) => (
-      <Box pt={1} pb={2}>
+      <Box>
         {providers.map((provider) => (
           <Box key={provider.key} py={1}>
             <TextField

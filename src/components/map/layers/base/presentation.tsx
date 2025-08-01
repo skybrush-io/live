@@ -1,6 +1,6 @@
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Radio from '@material-ui/core/Radio';
-import RadioGroup from '@material-ui/core/RadioGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
 import MVTFormat from 'ol/format/MVT';
 import type ImageTile from 'ol/ImageTile';
 import React, { type ChangeEvent } from 'react';

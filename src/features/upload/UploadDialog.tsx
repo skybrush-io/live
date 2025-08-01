@@ -1,10 +1,9 @@
+import Box from '@mui/material/Box';
+import Switch from '@mui/material/Switch';
 import isNil from 'lodash-es/isNil';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
-
-import Box from '@material-ui/core/Box';
-import Switch from '@material-ui/core/Switch';
 
 import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
 

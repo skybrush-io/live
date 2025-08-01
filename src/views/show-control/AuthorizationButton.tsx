@@ -1,24 +1,36 @@
-import PropTypes from 'prop-types';
+import type { SxProps } from '@mui/material';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemText from '@mui/material/ListItemText';
+import Typography from '@mui/material/Typography';
+import StatusLight from '@skybrush/mui-components/lib/StatusLight';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import Typography from '@material-ui/core/Typography';
-import StatusLight from '@skybrush/mui-components/lib/StatusLight';
-
 import { Status } from '~/components/semantics';
 import { setCommandsAreBroadcast } from '~/features/mission/slice';
-import {
-  setShowAuthorization,
-  synchronizeShowSettings,
-} from '~/features/show/slice';
 import {
   countUAVsTakingOffAutomatically,
   isShowAuthorizedToStartLocally,
 } from '~/features/show/selectors';
+import {
+  setShowAuthorization,
+  synchronizeShowSettings,
+} from '~/features/show/slice';
 import { getSetupStageStatuses } from '~/features/show/stages';
+import type { AppDispatch, RootState } from '~/store/reducers';
+
+const buttonStyle: SxProps<typeof ListItemButton> = {
+  '&.Mui-selected': {
+    backgroundColor: 'rgba(255, 255, 255, 0.16)',
+  },
+};
+
+type Props = Readonly<{
+  isAuthorized: boolean;
+  numUAVsTakingOffAutomatically: number;
+  status: Status;
+}>;
 
 /**
  * Button that allows the user to express her explicit consent to starting the
@@ -30,14 +42,14 @@ const AuthorizationButton = ({
   numUAVsTakingOffAutomatically,
   status,
   ...rest
-}) => {
+}: Props) => {
   const { t } = useTranslation();
 
   return (
-    <ListItem
-      button
+    <ListItemButton
       /* disabled={!isAuthorized && status === Status.OFF} */
       selected={isAuthorized}
+      sx={buttonStyle}
       {...rest}
     >
       <StatusLight
@@ -64,26 +76,20 @@ const AuthorizationButton = ({
           </Typography>
         }
       />
-    </ListItem>
+    </ListItemButton>
   );
-};
-
-AuthorizationButton.propTypes = {
-  isAuthorized: PropTypes.bool,
-  numUAVsTakingOffAutomatically: PropTypes.number,
-  status: PropTypes.oneOf(Object.values(Status)),
 };
 
 export default connect(
   // mapStateToProps
-  (state) => ({
+  (state: RootState) => ({
     isAuthorized: isShowAuthorizedToStartLocally(state),
     numUAVsTakingOffAutomatically: countUAVsTakingOffAutomatically(state),
     status: getSetupStageStatuses(state).authorization,
   }),
   // mapDispatchToProps
   {
-    onClick: () => (dispatch, getState) => {
+    onClick: () => (dispatch: AppDispatch, getState: () => RootState) => {
       const state = getState();
       const newAuthorizationState = !isShowAuthorizedToStartLocally(state);
       dispatch(setShowAuthorization(newAuthorizationState));

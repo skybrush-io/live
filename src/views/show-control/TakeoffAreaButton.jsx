@@ -1,10 +1,9 @@
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemText from '@mui/material/ListItemText';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
-
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
 
 import StatusLight from '@skybrush/mui-components/lib/StatusLight';
 
@@ -12,9 +11,8 @@ import { Status } from '~/components/semantics';
 import { openTakeoffAreaSetupDialog } from '~/features/show/slice';
 import { getSetupStageStatuses } from '~/features/show/stages';
 import { getFarthestDistanceFromHome } from '~/features/uavs/selectors';
-import { formatDistance } from '~/utils/formatting';
-
 import { tt } from '~/i18n';
+import { formatDistance } from '~/utils/formatting';
 
 const formatStatusText = (status, maxDistance) => {
   if (typeof maxDistance === 'number') {
@@ -58,8 +56,7 @@ const TakeoffAreaButton = ({ maxDistance, onClick, status, ...rest }) => {
   const { t } = useTranslation();
 
   return (
-    <ListItem
-      button
+    <ListItemButton
       disabled={status === Status.OFF}
       onClick={onClick}
       {...rest}
@@ -69,7 +66,7 @@ const TakeoffAreaButton = ({ maxDistance, onClick, status, ...rest }) => {
         primary={t('show.setupTakeoffArea', 'Setup takeoff area')}
         secondary={formatStatusText(status, maxDistance)(t)}
       />
-    </ListItem>
+    </ListItemButton>
   );
 };
 

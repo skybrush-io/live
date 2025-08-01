@@ -2,6 +2,8 @@
  * @file React Component to display and adjust the rotation of the map view.
  */
 
+import ActionAllOut from '@mui/icons-material/AllOut';
+import IconButton from '@mui/material/IconButton';
 import flatten from 'lodash-es/flatten';
 import { easeOut } from 'ol/easing';
 import VectorLayer from 'ol/layer/Vector';
@@ -9,9 +11,6 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Translation } from 'react-i18next';
 import { connect } from 'react-redux';
-
-import IconButton from '@material-ui/core/IconButton';
-import ActionAllOut from '@material-ui/icons/AllOut';
 
 import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
 import { showError } from '~/features/snackbar/actions';
@@ -70,7 +69,7 @@ class FitAllFeaturesButton extends React.Component {
                 : t('fitAllFeaturesButton.fitAllFeatures')
             }
           >
-            <IconButton onClick={this._handleClick}>
+            <IconButton size='large' onClick={this._handleClick}>
               <ActionAllOut />
             </IconButton>
           </Tooltip>

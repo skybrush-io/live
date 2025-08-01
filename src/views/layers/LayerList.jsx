@@ -2,19 +2,18 @@
  * @file Component that shows the list of layers on the current map.
  */
 
+import AddCircleOutline from '@mui/icons-material/AddCircleOutline';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import AddCircleOutline from '@material-ui/icons/AddCircleOutline';
-
 import { selectableListOf } from '~/components/helpers/lists';
 import { showLayerSettingsDialog } from '~/features/map/layer-settings-dialog';
 import { addLayer } from '~/features/map/layers';
-import { labelForLayerType, iconForLayerType } from '~/model/layers';
+import { iconForLayerType, labelForLayerType } from '~/model/layers';
 import { getLayersInTopmostFirstOrder } from '~/selectors/ordered';
 
 /**
@@ -27,9 +26,8 @@ import { getLayersInTopmostFirstOrder } from '~/selectors/ordered';
 const createListItemForLayer = (layer, props) => {
   const icon = iconForLayerType(layer.type);
   return (
-    <ListItem
+    <ListItemButton
       key={layer.id}
-      button
       style={layer.visible ? undefined : { opacity: 0.3 }}
       onClick={props.onItemSelected}
     >
@@ -38,7 +36,7 @@ const createListItemForLayer = (layer, props) => {
         primary={layer.label}
         secondary={labelForLayerType(layer.type)}
       />
-    </ListItem>
+    </ListItemButton>
   );
 };
 
@@ -50,12 +48,12 @@ const createListItemForLayer = (layer, props) => {
  */
 const createNewItemEntry = (props) => {
   return (
-    <ListItem key='__newItem__' button onClick={props.onNewItem}>
+    <ListItemButton key='__newItem__' onClick={props.onNewItem}>
       <ListItemIcon>
         <AddCircleOutline />
       </ListItemIcon>
       <ListItemText primary='Add new layer' />
-    </ListItem>
+    </ListItemButton>
   );
 };
 

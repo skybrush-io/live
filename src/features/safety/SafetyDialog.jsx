@@ -2,13 +2,12 @@
  * @file Dialog for managing safety related preferences.
  */
 
+import DialogContent from '@mui/material/DialogContent';
+import Tab from '@mui/material/Tab';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
-
-import DialogContent from '@material-ui/core/DialogContent';
-import Tab from '@material-ui/core/Tab';
 
 import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
 import DialogTabs from '@skybrush/mui-components/lib/DialogTabs';

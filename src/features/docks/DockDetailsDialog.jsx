@@ -1,8 +1,7 @@
+import Box from '@mui/material/Box';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
-
-import Box from '@material-ui/core/Box';
 
 import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
 
@@ -10,7 +9,6 @@ import {
   closeDockDetailsDialog,
   getSelectedTabInDockDetailsDialog,
 } from './details';
-
 import DockDetailsDialogBody from './DockDetailsDialogBody';
 import DockDetailsDialogSidebar from './DockDetailsDialogSidebar';
 import DockDetailsDialogTabs from './DockDetailsDialogTabs';

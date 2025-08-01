@@ -1,13 +1,12 @@
+import Sum from '@mui/icons-material/Functions';
+import Box from '@mui/material/Box';
+import makeStyles from '@mui/styles/makeStyles';
+import { createSelector } from '@reduxjs/toolkit';
 import clsx from 'clsx';
 import identity from 'lodash-es/identity';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
-import { createSelector } from '@reduxjs/toolkit';
-
-import Box from '@material-ui/core/Box';
-import { makeStyles } from '@material-ui/core/styles';
-import Sum from '@material-ui/icons/Functions';
 
 import LazyTooltip from '@skybrush/mui-components/lib/LazyTooltip';
 import StatusLight from '@skybrush/mui-components/lib/StatusLight';
@@ -16,9 +15,9 @@ import { Status } from '~/components/semantics';
 import { showNotification } from '~/features/snackbar/actions';
 import { MessageSemantics } from '~/features/snackbar/types';
 import {
-  getUAVIdToStateMapping,
-  getUAVIdList,
   getSingleUAVStatusLevel,
+  getUAVIdList,
+  getUAVIdToStateMapping,
 } from '~/features/uavs/selectors';
 import { createShallowSelector } from '~/utils/selectors';
 import { Workbench } from '~/workbench';

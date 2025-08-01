@@ -1,12 +1,11 @@
+import Button from '@mui/material/Button';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
-
-import Button from '@material-ui/core/Button';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import { makeStyles } from '@material-ui/core/styles';
 
 import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
 
@@ -23,6 +22,9 @@ const useStyles = makeStyles(
         order: 100,
         boxShadow: '2px 0 6px -2px inset rgba(0, 0, 0, 0.54)',
       },
+    },
+    dialogContent: {
+      paddingBottom: 0,
     },
   },
   {
@@ -47,12 +49,12 @@ const ParameterUploadSetupDialog = ({ onClose, open, t }) => {
       title={t('parameterUploadSetupDialog.uploadParameters')}
       onClose={onClose}
     >
-      <DialogContent>
+      <DialogContent className={classes.dialogContent}>
         <ParameterUploadMainPanel />
+        <DialogActions>
+          <Button onClick={onClose}>{t('general.action.close')}</Button>
+        </DialogActions>
       </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose}>{t('general.action.close')}</Button>
-      </DialogActions>
     </DraggableDialog>
   );
 };

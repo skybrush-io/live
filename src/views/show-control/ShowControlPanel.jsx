@@ -1,7 +1,8 @@
+import Box from '@mui/material/Box';
+import List from '@mui/material/List';
 import React from 'react';
 
-import Box from '@material-ui/core/Box';
-import List from '@material-ui/core/List';
+import { hasFeature } from '~/utils/configuration';
 
 import AuthorizationButton from './AuthorizationButton';
 import EnvironmentEditorDialog from './EnvironmentEditorDialog';
@@ -11,8 +12,6 @@ import OnboardPreflightChecksDialog from './OnboardPreflightChecksDialog';
 import ShowControlPanelUpperSegment from './ShowControlPanelUpperSegment';
 import StartTimeDialog from './StartTimeDialog';
 import TakeoffAreaSetupDialog from './TakeoffAreaSetupDialog';
-
-import { hasFeature } from '~/utils/configuration';
 
 /**
  * Panel that shows the widgets that are needed to load and configure a drone
