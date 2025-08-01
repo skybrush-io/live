@@ -111,6 +111,12 @@ const Sidebar = ({
           label={t('view.uav-list')}
           component='uav-list'
         />
+        <Module
+          id='uavStatuses'
+          icon={<ConnectingAirports />}
+          label={t('view.uav-statuses')}
+          component='uav-statuses'
+        />
         {hasFeature('beacons') && (
           <Module
             id='beacons'
