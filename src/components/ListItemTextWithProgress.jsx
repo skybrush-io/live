@@ -12,6 +12,7 @@ import React from 'react';
 const ListItemTextWithProgress = ({ secondary, ...rest }) => (
   <ListItemText
     {...rest}
+    disableTypography
     secondary={
       <Box
         minHeight={20.1}
