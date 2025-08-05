@@ -107,7 +107,7 @@ const LoadShowFromFileButton = ({
     <ListItemTextWithProgress
       primary={
         loading
-          ? t('show.loading', 'Please wait, loading show file…')
+          ? t('show.loading')
           : hasLoadedShowFile
             ? truncate(title, 60)
             : t('show.noFileLoaded')
@@ -120,7 +120,7 @@ const LoadShowFromFileButton = ({
           />
         ) : changedSinceLoaded ? (
           <span style={{ color: Colors.warning }}>
-            Show changed since it was loaded
+            {t('show.changedSinceLoaded')}
           </span>
         ) : !isValidationResultAcceptable(validationResult) ? (
           <span style={{ color: Colors.warning }}>
@@ -129,25 +129,25 @@ const LoadShowFromFileButton = ({
         ) : hasLoadedShowFile ? (
           description
         ) : (
-          t('show.selectFile', 'Select or drop a show file here')
+          t('show.selectFile')
         )
       }
     />
     <ListItemSecondaryAction>
       {changedSinceLoaded ? (
-        <Tooltip content={t('show.reload', 'Reload show')}>
+        <Tooltip content={t('show.reload')}>
           <IconButton edge='end' size='large' onClick={onReloadShowFile}>
             <Refresh />
           </IconButton>
         </Tooltip>
       ) : hasLoadedShowFile ? (
-        <Tooltip content={t('show.clear', 'Clear loaded show')}>
+        <Tooltip content={t('show.clear')}>
           <IconButton edge='end' size='large' onClick={onClearLoadedShow}>
             <Clear />
           </IconButton>
         </Tooltip>
       ) : hasFeature('loadShowFromCloud') ? (
-        <Tooltip content={t('show.fromCloud', 'Load show from cloud')}>
+        <Tooltip content={t('show.fromCloud')}>
           <IconButton edge='end' size='large' onClick={onLoadShowFromCloud}>
             <CloudDownload />
           </IconButton>

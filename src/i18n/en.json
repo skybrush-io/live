@@ -527,6 +527,7 @@
     "authorizationReq": "Authorization required before takeoff",
     "authorizeTheStart": "Authorize start of show",
     "authorized": "Show authorized to start",
+    "changedSinceLoaded": "Show changed since it was loaded",
     "chooseStartTime": "Choose start time",
     "chooseStartTimeNotSet": "Not set yet",
     "clear": "Clear loaded show",
