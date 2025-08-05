@@ -277,9 +277,7 @@ export const adjustHomePositionsToDronePositions =
         item ? [item.lon, item.lat] : ([Number.NaN, Number.NaN] as LonLat),
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const assignment: Array<[number, number]> =
-      findAssignmentInDistanceMatrix(distances);
+    const assignment = findAssignmentInDistanceMatrix(distances);
 
     const newPositions = assignment.map(
       ([homePositionIndex, dronePositionIndex]): [

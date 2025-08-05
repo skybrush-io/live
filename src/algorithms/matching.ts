@@ -1,5 +1,23 @@
-import hungarianAlgorithm from 'hungarian-on3';
+import hungarianAlgorithm, { type Assignment } from 'hungarian-on3';
 import sortBy from 'lodash-es/sortBy';
+
+type GreedyMatchingOptions = {
+  /**
+   * The threshold for the greedy algorithm. If a distance is larger than this
+   * value, it will not be considered for assignment.
+   *
+   * @default Number.POSITIVE_INFINITY
+   */
+  threshold?: number;
+};
+
+type MatchingOptions =
+  | {
+      algorithm: 'hungarian';
+    }
+  | ({
+      algorithm: 'greedy';
+    } & GreedyMatchingOptions);
 
 /**
  * Finds an assignment in a distance matrix such that each row of the matrix is
@@ -12,16 +30,19 @@ import sortBy from 'lodash-es/sortBy';
  * UAVs. The greedy algorithm provides a simpler variant that nevertheless
  * yields more intutive results.
  *
- * @param {number[][]} matrix the input matrix
- * @param {object} parameters additional parameters to forward to the algorithm
- * @param {string} algorithm the algorithm to run; `hungarian` or `greedy`
+ * @param matrix the input matrix
+ * @param options specifies the algorithm to use and its parameters. Must have
+ *        `algorithm` set to either `hungarian` or `greedy`.
+ * @param parameters additional parameters to forward to the algorithm
+ * @param algorithm the algorithm to run; `hungarian` or `greedy`
  * @returns the assignment in a matrix with N rows and 2 columns, representing
  *          the row and column indices of the matrix cells that were chosen
  */
 export function findAssignmentInDistanceMatrix(
-  matrix,
-  { algorithm = 'greedy', ...parameters } = {}
-) {
+  matrix: Array<number[]>,
+  options?: MatchingOptions
+): Assignment {
+  const { algorithm, ...parameters } = options ?? { algorithm: 'greedy' };
   switch (algorithm) {
     case 'hungarian':
       return hungarianAlgorithm(matrix);
@@ -39,12 +60,15 @@ export function findAssignmentInDistanceMatrix(
  * matrix and then excludes the row and the column from further consideration,
  * until all entries are selected.
  */
-export function greedyMatchingAlgorithm(matrix, parameters = {}) {
+function greedyMatchingAlgorithm(
+  matrix: Array<number[]>,
+  parameters: GreedyMatchingOptions = {}
+): Assignment {
   const numberOfRows = matrix.length;
   const numberOfColumns =
     numberOfRows > 0 ? Math.min(...matrix.map((row) => row.length)) : 0;
-  const pairs = [];
-  const result = [];
+  const pairs: Array<[number, number, number]> = [];
+  const result: Assignment = [];
   let { threshold } = parameters;
 
   if (numberOfRows === 0 || numberOfColumns === 0) {
