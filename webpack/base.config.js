@@ -8,6 +8,7 @@ const Dotenv = require('dotenv-webpack');
 
 const { GitRevisionPlugin } = require('git-revision-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
+const WorkerUrlPlugin = require('worker-url/plugin');
 
 const {
   isDevelopment,
@@ -49,6 +50,10 @@ module.exports = {
       ReactDOM: 'react-dom',
       React: 'react',
     }),
+
+    // Add support for retrieving worker URLs directly from the code.
+    // This is needed to use the 'workerpool' package.
+    new WorkerUrlPlugin(),
 
     // Resolve process.env in the code; the object below provides the default
     // values

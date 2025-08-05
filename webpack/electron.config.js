@@ -57,4 +57,12 @@ module.exports = merge(baseConfig, {
   },
   optimization,
   plugins,
+  resolve: {
+    alias: {
+      // These are needed for WorkerUrlPlugin to work correctly, but only in the
+      // browser context
+      child_process: false,
+      worker_threads: false,
+    },
+  },
 });
