@@ -1,4 +1,5 @@
 import isNil from 'lodash-es/isNil';
+
 import { TakeoffHeadingMode } from '~/features/show/constants';
 import {
   getFirstPointsOfTrajectories,
@@ -12,12 +13,19 @@ import {
   getCurrentGPSPositionByUavId,
   getCurrentHeadingByUavId,
 } from '~/features/uavs/selectors';
+import { type RootState } from '~/store/reducers';
+
+import type { CoordinateSystemFittingProblem } from './types';
+import type { LonLat } from '~/utils/geography';
+import type { Coordinate2D, Coordinate2DPlus } from '~/utils/math';
 
 /**
  * Returns whether the system can estimate the show coordinate system based on
  * the current positions of the drones.
  */
-export function canEstimateShowCoordinateSystemFromActiveUAVs(state) {
+export function canEstimateShowCoordinateSystemFromActiveUAVs(
+  state: RootState
+): boolean {
   return (
     isShowOutdoor(state) &&
     getActiveUAVIds(state).length > 0 &&
@@ -41,9 +49,11 @@ export function canEstimateShowCoordinateSystemFromActiveUAVs(state) {
  *         and `takeoffCoordinates` (the takeoff coordinates in a local XY
  *         coordinate system, in an array of X-Y pairs)
  */
-export function getShowCoordinateSystemFittingProblemFromState(state) {
+export function getShowCoordinateSystemFittingProblemFromState(
+  state: RootState
+): CoordinateSystemFittingProblem {
   const uavIds = getActiveUAVIds(state);
-  const uavGPSCoordinates = uavIds.map((uavId) => {
+  const uavGPSCoordinates: Array<LonLat | undefined> = uavIds.map((uavId) => {
     const position = getCurrentGPSPositionByUavId(state, uavId);
     // position may be undefined if the UAV has no GPS fix yet
     return position ? [position.lon, position.lat] : undefined;
@@ -57,34 +67,56 @@ export function getShowCoordinateSystemFittingProblemFromState(state) {
   const undefinedIndices = [];
   let n = uavGPSCoordinates.length;
   for (let i = 0; i < n; i++) {
-    if (isNil(uavGPSCoordinates[i]) || isNil(uavHeadings[i])) {
+    if (isNil(uavGPSCoordinates[i])) {
       undefinedIndices.push(i);
     }
   }
 
   // undefinedIndices is now in ascending order, so we process it from backwards
-  // and remove the unneeded entries from uavGPSCoordinates and uavHeadings
+  // and remove the unneeded entries from uavGPSCoordinates. We allow some of
+  // the headings to remain unspecified to prepare for compass-less operation
   n = undefinedIndices.length;
   for (let i = n - 1; i >= 0; i--) {
-    uavIds.splice(i, 1);
-    uavGPSCoordinates.splice(i, 1);
-    uavHeadings.splice(i, 1);
+    const index = undefinedIndices[i]!;
+    uavIds.splice(index, 1);
+    uavGPSCoordinates.splice(index, 1);
+    uavHeadings.splice(index, 1);
   }
+
+  // At this point, uavGPSCoordinates and uavHeadings should not contain any
+  // undefined values
 
   // For the remaining UAV headings, we need to correct them if we know in
   // advance that they are offset from the X axis of the show coordinate system
   const takeoffHeadingSpec = getTakeoffHeadingSpecification(state);
   if (takeoffHeadingSpec?.type === TakeoffHeadingMode.RELATIVE) {
     const delta = getTakeoffHeadingSpecificationValueAsNumber(state);
-    for (let i = 0; i < uavHeadings.length; i++) {
-      uavHeadings[i] = (uavHeadings[i] - delta) % 360;
+    if (typeof delta === 'number') {
+      for (let i = 0; i < uavHeadings.length; i++) {
+        const heading = uavHeadings[i];
+        if (typeof heading === 'number') {
+          uavHeadings[i] = (heading - delta) % 360;
+        }
+      }
     }
   }
 
-  const takeoffCoordinates = getFirstPointsOfTrajectories(state);
+  const takeoffCoordinates = getFirstPointsOfTrajectories(state)
+    .filter(Boolean)
+    .map((coord: Coordinate2DPlus | undefined): Coordinate2D | undefined =>
+      coord ? [coord[0], coord[1]] : undefined
+    )
+    .filter(
+      (coord: Coordinate2D | undefined): coord is Coordinate2D =>
+        coord !== undefined
+    );
+
+  // At this point, uavGPSCoordinates and uavHeadings should not contain any
+  // undefined values, so we can safely cast them to the correct types
+
   return {
     uavIds,
-    uavGPSCoordinates,
+    uavGPSCoordinates: uavGPSCoordinates as LonLat[],
     uavHeadings,
     takeoffCoordinates,
   };

@@ -9,7 +9,7 @@ import { SVD as computeSVD } from 'svd-js';
 import { COORDINATE_SYSTEM_TYPE } from '@skybrush/show-format';
 
 import { findAssignmentInDistanceMatrix } from '~/algorithms/matching';
-import { FlatEarthCoordinateSystem } from '~/utils/geography';
+import { FlatEarthCoordinateSystem, type LonLat } from '~/utils/geography';
 import {
   calculateDistanceMatrix,
   euclideanDistance2D,
@@ -17,7 +17,16 @@ import {
   getMeanAngle,
   toDegrees,
   toRadians,
+  type Coordinate2D,
 } from '~/utils/math';
+
+import type {
+  CoordinateSystemEstimate,
+  CoordinateSystemFittingProblem,
+} from './types';
+import type { Assignment } from 'hungarian-on3';
+
+type Matrix2by2 = [[number, number], [number, number]];
 
 /**
  * Runs the estimation process for the origin and orientation of the show, given
@@ -34,7 +43,9 @@ import {
  * An object of this shape can be retrieved from the current state with the
  * `getShowCoordinateSystemFittingProblemFromState()` selector.
  */
-export function estimateShowCoordinateSystem(problem) {
+export function estimateShowCoordinateSystem(
+  problem: CoordinateSystemFittingProblem
+): CoordinateSystemEstimate {
   return refineEstimate(calculateInitialEstimate(problem), problem);
 }
 
@@ -51,15 +62,22 @@ export function estimateShowCoordinateSystem(problem) {
  *        and the takeoff coordinates in an XYZ coordinate system
  * @return an object containing keys named `origin` and `orientation`
  */
-function calculateInitialEstimate(problem) {
+function calculateInitialEstimate(
+  problem: CoordinateSystemFittingProblem
+): CoordinateSystemEstimate {
   const { uavGPSCoordinates, uavHeadings, takeoffCoordinates } = problem;
+  const filteredHeadings = uavHeadings.filter(
+    (heading): heading is number => typeof heading === 'number'
+  );
 
   if (uavGPSCoordinates.length === 0) {
-    throw new Error('There are no UAVs with GPS coordinates to work with');
+    throw new Error(
+      'There are no UAVs with known GPS coordinates to work with'
+    );
   }
 
   const uavGPSCentroid = getCentroid(uavGPSCoordinates);
-  const orientation = getMeanAngle(uavHeadings);
+  const orientation = getMeanAngle(filteredHeadings);
   const gpsToLocal = new FlatEarthCoordinateSystem({
     origin: uavGPSCentroid,
     orientation: 0,
@@ -76,6 +94,10 @@ function calculateInitialEstimate(problem) {
   };
 }
 
+type RefineOptions = {
+  maxIterations?: number; // Maximum number of iterations to perform with the ICP algorithm
+};
+
 /**
  * Refines an initial estimate of the show origin and orientation and returns
  * an improved estimate.
@@ -90,18 +112,21 @@ function calculateInitialEstimate(problem) {
  * @param {object} estimate  the estimate to improve on
  * @param {object} problem   the problem description
  * @param {object} options   additional options for the refinement algorithm.
- *        Currently the following options are supported: `threshold` specifies
- *        the maximum distance in meters between a UAV and its corresponding
- *        takeoff coordinate, and `maxIterations` specifies the maximum number
- *        of iterations to perform with the ICP algorithm
+ *        Currently the following options are supported: `maxIterations`
+ *        specifies the maximum number of iterations to perform with the ICP
+ *        algorithm
  * @returns {object} an improved estimate
  */
-function refineEstimate(estimate, problem, options = {}) {
+function refineEstimate(
+  estimate: CoordinateSystemEstimate,
+  problem: CoordinateSystemFittingProblem,
+  options: RefineOptions = {}
+) {
   const { takeoffCoordinates, uavGPSCoordinates } = problem;
-  const { threshold = 3 /* meters */, maxIterations = 20 } = options;
+  const { maxIterations = 20 } = options;
 
-  let matching;
-  let previousMatching;
+  let matching: Assignment;
+  let previousMatching: Assignment | undefined = undefined;
   let converged = false;
 
   for (
@@ -124,7 +149,6 @@ function refineEstimate(estimate, problem, options = {}) {
     /* Figure out which UAVs to include in the refinement attempt */
     matching = findAssignmentInDistanceMatrix(distances, {
       algorithm: 'hungarian',
-      threshold,
     });
     matching.sort((a, b) => a[1] - b[1]);
     if (isEqual(matching, previousMatching)) {
@@ -169,10 +193,10 @@ function refineEstimate(estimate, problem, options = {}) {
     /* Filter the coordinates and calculate the centroids */
     const numMatched = matching.length;
     let selectedUAVCoordinates = matching.map(
-      ([index, _]) => uavCoordinates[index]
+      ([index, _]) => uavCoordinates[index]!
     );
     let selectedTakeoffCoordinates = matching.map(
-      ([_, index]) => takeoffCoordinates[index]
+      ([_, index]) => takeoffCoordinates[index]!
     );
     const uavCenter = getCentroid(selectedUAVCoordinates);
     const takeoffCenter = getCentroid(selectedTakeoffCoordinates);
@@ -186,13 +210,13 @@ function refineEstimate(estimate, problem, options = {}) {
 
     /* Calculate the dot product of the centered UAV and takeoff coordinate
      * matrices to obtain a 2x2 matrix on which the SVD will be performed */
-    const dotProduct = [
+    const dotProduct: Matrix2by2 = [
       [0, 0],
       [0, 0],
     ];
     for (let i = 0; i < numMatched; i++) {
-      const uavCoordinate = selectedUAVCoordinates[i];
-      const takeoffCoordinate = selectedTakeoffCoordinates[i];
+      const uavCoordinate = selectedUAVCoordinates[i]!;
+      const takeoffCoordinate = selectedTakeoffCoordinates[i]!;
       dotProduct[0][0] += uavCoordinate[0] * takeoffCoordinate[0];
       dotProduct[0][1] += uavCoordinate[0] * takeoffCoordinate[1];
       dotProduct[1][0] += uavCoordinate[1] * takeoffCoordinate[0];
@@ -200,8 +224,8 @@ function refineEstimate(estimate, problem, options = {}) {
     }
 
     /* Calculate the SVD, figure out the angle to rotate the coordinate system with */
-    const svd = computeSVD(dotProduct);
-    const rotationMatrix = [
+    const svd: { u: Matrix2by2; v: Matrix2by2 } = computeSVD(dotProduct) as any;
+    const rotationMatrix: Matrix2by2 = [
       [
         svd.u[0][0] * svd.v[0][0] + svd.u[0][1] * svd.v[0][1],
         svd.u[0][0] * svd.v[1][0] + svd.u[0][1] * svd.v[1][1],
@@ -234,11 +258,11 @@ function refineEstimate(estimate, problem, options = {}) {
   return estimate;
 }
 
-function subtract(foo, bar) {
+function subtract(foo: Coordinate2D, bar: Coordinate2D): Coordinate2D {
   return [foo[0] - bar[0], foo[1] - bar[1]];
 }
 
-function rotate(vec, angle) {
+function rotate(vec: Coordinate2D, angle: number): Coordinate2D {
   const angleRad = toRadians(angle);
   const ca = Math.cos(angleRad);
   const sa = Math.sin(angleRad);
@@ -246,7 +270,10 @@ function rotate(vec, angle) {
   return [vec[0] * ca + vec[1] * sa, vec[0] * -sa + vec[1] * ca];
 }
 
-function makeCentered(points, centerHint) {
+function makeCentered(
+  points: Coordinate2D[],
+  centerHint: Coordinate2D | undefined
+): Coordinate2D[] {
   if (centerHint === undefined) {
     centerHint = getCentroid(points);
   }
@@ -254,6 +281,9 @@ function makeCentered(points, centerHint) {
   return points.map((point) => subtract(point, centerHint));
 }
 
-function convertToFlatEarth(coords, transformation) {
+function convertToFlatEarth(
+  coords: LonLat[],
+  transformation: FlatEarthCoordinateSystem
+): Coordinate2D[] {
   return coords.map((coord) => transformation.fromLonLat(coord));
 }

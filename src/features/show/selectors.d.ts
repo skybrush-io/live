@@ -10,9 +10,10 @@ import type {
 import type { GPSPosition } from '~/model/geography';
 import type { AppSelector, RootState } from '~/store/reducers';
 import type { FlatEarthCoordinateSystem } from '~/utils/geography';
-import type { Coordinate2D } from '~/utils/math';
+import type { Coordinate2D, Coordinate3D } from '~/utils/math';
 
 import type { EnvironmentState, OutdoorCoordinateSystem } from './types';
+import type { TakeoffHeadingSpecification } from './constants';
 
 type ShowValidationResult =
   | 'loadingFailed'
@@ -33,12 +34,16 @@ export const getEnvironmentFromLoadedShowData: AppSelector<
   Environment | undefined
 >;
 export const getEnvironmentState: AppSelector<EnvironmentState>;
+export const getFirstPointsOfTrajectories: AppSelector<
+  Array<Coordinate3D | undefined>
+>;
 export const getMaximumHeightInTrajectories: (
   state: RootState
 ) => number | undefined;
 export const getMaximumHorizontalDistanceFromTakeoffPositionInTrajectories: (
   state: RootState
 ) => number | undefined;
+export const getNumberOfDronesInShow: (state: RootState) => number;
 export const getOutdoorShowOrigin: AppSelector<
   OutdoorCoordinateSystem['origin']
 >;
@@ -56,6 +61,12 @@ export const getShowValidationSettings: AppSelector<
   ValidationSettings | undefined
 >;
 export const getSwarmSpecification: AppSelector<SwarmSpecification | undefined>;
+export const getTakeoffHeadingSpecification: AppSelector<
+  TakeoffHeadingSpecification | undefined
+>;
+export const getTakeoffHeadingSpecificationValueAsNumber: (
+  state: RootState
+) => number | undefined;
 export const hasLoadedShowFile: (state: RootState) => boolean;
 export const hasScheduledStartTime: (state: RootState) => boolean;
 export const hasShowChangedExternallySinceLoaded: (state: RootState) => boolean;
