@@ -9,6 +9,7 @@ import Computer from '@mui/icons-material/Computer';
 import EditIcon from '@mui/icons-material/Edit';
 import SignalWifi0Bar from '@mui/icons-material/SignalWifi0Bar';
 import WifiIcon from '@mui/icons-material/Wifi';
+import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import Dialog from '@mui/material/Dialog';
@@ -60,11 +61,23 @@ import {
 } from '~/utils/validation';
 
 const styles = {
-  dialogContent: { paddingBottom: 0 },
+  dialogContent: { paddingBottom: 0, paddingLeft: 0, paddingRight: 0 },
   flexColumn: {
     display: 'flex',
     flexDirection: 'column',
     gap: '16px',
+  },
+  paddedBox: {
+    paddingLeft: 3,
+    paddingRight: 3,
+  },
+  serverList: {
+    height: '160px',
+    overflow: 'auto',
+    '& .MuiListItemButton-gutters': {
+      paddingLeft: 3,
+      paddingRight: 3,
+    },
   },
 };
 
@@ -119,7 +132,7 @@ const DetectedServersListPresentation = ({
   onItemSelected,
   t,
 }) => (
-  <List disablePadding style={{ height: 160, overflow: 'auto' }}>
+  <List disablePadding sx={styles.serverList}>
     {isScanning && (!items || items.length === 0) ? (
       <ListItem key='__scanning'>
         <ListItemIcon>
@@ -328,7 +341,11 @@ class ServerSettingsDialogPresentation extends React.Component {
             content.push(
               <Translation key='content'>
                 {(t) => (
-                  <Typography variant='body2' color='textSecondary'>
+                  <Typography
+                    variant='body2'
+                    color='textSecondary'
+                    sx={styles.paddedBox}
+                  >
                     {t('serverSettingsDialog.autodiscoveryIsNotAvailable')}
                   </Typography>
                 )}
@@ -339,7 +356,11 @@ class ServerSettingsDialogPresentation extends React.Component {
           content.push(
             <Translation key='content'>
               {(t) => (
-                <Typography variant='body2' color='textSecondary'>
+                <Typography
+                  variant='body2'
+                  color='textSecondary'
+                  sx={styles.paddedBox}
+                >
                   {t('serverSettingsDialog.serverSelectionRestricted')}
                 </Typography>
               )}
@@ -352,11 +373,12 @@ class ServerSettingsDialogPresentation extends React.Component {
       case 'manual':
         if (manualSetupAllowed) {
           content.push(
-            <ServerSettingsForm
-              key='content'
-              onSubmit={onSubmit}
-              onKeyPress={this._handleKeyPress}
-            />
+            <Box key='content' sx={styles.paddedBox}>
+              <ServerSettingsForm
+                onSubmit={onSubmit}
+                onKeyPress={this._handleKeyPress}
+              />
+            </Box>
           );
           actions.push(
             <Translation key='connect'>
