@@ -25,6 +25,13 @@ import type {
   CoordinateSystemFittingProblem,
 } from './types';
 import type { Assignment } from 'hungarian-on3';
+import { OriginType } from '../map/types';
+
+if (COORDINATE_SYSTEM_TYPE !== OriginType.NWU) {
+  throw new Error(
+    `The coordinate system type ${COORDINATE_SYSTEM_TYPE} is not supported by the auto-fit algorithm`
+  );
+}
 
 type Matrix2by2 = [[number, number], [number, number]];
 
@@ -81,7 +88,7 @@ function calculateInitialEstimate(
   const gpsToLocal = new FlatEarthCoordinateSystem({
     origin: uavGPSCentroid,
     orientation: 0,
-    type: COORDINATE_SYSTEM_TYPE,
+    type: OriginType.NWU,
   });
   const uavCoordinates = convertToFlatEarth(uavGPSCoordinates, gpsToLocal);
   const uavCenter = getCentroid(uavCoordinates);
@@ -90,7 +97,7 @@ function calculateInitialEstimate(
   return {
     origin: gpsToLocal.toLonLat(origin),
     orientation,
-    type: COORDINATE_SYSTEM_TYPE,
+    type: OriginType.NWU,
   };
 }
 
@@ -247,7 +254,7 @@ function refineEstimate(
     estimate = {
       origin: gpsToLocal.toLonLat([originOffset[0], originOffset[1]]),
       orientation: estimate.orientation + orientationOffset,
-      type: COORDINATE_SYSTEM_TYPE,
+      type: OriginType.NWU,
     };
   }
 

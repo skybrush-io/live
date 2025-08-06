@@ -6,6 +6,8 @@ import { pool } from './pool';
 import type { WorkerApi } from './types';
 
 const workers: WorkerApi = {
+  estimateShowCoordinateSystem: (...args) =>
+    pool.exec('estimateShowCoordinateSystem', args),
   fibonacci: (...args) => pool.exec('fibonacci', args),
   loadShow: async (...args) => {
     const { spec, ...rest } = await pool.exec('loadShow', args);

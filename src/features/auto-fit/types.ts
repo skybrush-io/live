@@ -2,6 +2,7 @@ import { COORDINATE_SYSTEM_TYPE } from '@skybrush/show-format';
 
 import type { LonLat } from '~/utils/geography';
 import type { Coordinate2D } from '~/utils/math';
+import type { OriginType } from '../map/types';
 
 export type CoordinateSystemFittingProblem = {
   uavIds: string[];
@@ -13,5 +14,5 @@ export type CoordinateSystemFittingProblem = {
 export type CoordinateSystemEstimate = {
   origin: LonLat;
   orientation: number;
-  type: typeof COORDINATE_SYSTEM_TYPE;
+  type: OriginType;
 };

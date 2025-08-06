@@ -50,6 +50,8 @@ import { scrollToMapLocation } from '~/signals';
 import { normalizeAngle, toLonLatFromScaledJSON } from '~/utils/geography';
 
 import { TakeoffHeadingSpecEditor } from './TakeoffHeadingSpecEditor';
+import { CircularProgress } from '@mui/material';
+import { SmallProgressIndicator } from '@skybrush/mui-components';
 
 /**
  * Presentation component for the form that allows the user to edit the
@@ -59,6 +61,7 @@ const OutdoorEnvironmentEditor = ({
   altitudeReference,
   canEstimateShowCoordinateSystem,
   environmentFromLoadedShowData,
+  estimatingCoordinateSystem,
   onAltitudeReferenceTypeChanged,
   onAltitudeReferenceValueChanged,
   onCopyCoordinateSystemToMap,
@@ -130,7 +133,9 @@ const OutdoorEnvironmentEditor = ({
             )}
           >
             <IconButton
-              disabled={!canEstimateShowCoordinateSystem}
+              disabled={
+                !canEstimateShowCoordinateSystem || estimatingCoordinateSystem
+              }
               edge='end'
               size='large'
               onClick={onEstimateShowCoordinateSystem}
@@ -209,6 +214,13 @@ const OutdoorEnvironmentEditor = ({
       </Box>
 
       <RTKCorrectionSourceSelector />
+
+      <Box pt={1} mb={-1}>
+        <SmallProgressIndicator
+          label='Fitting coordinate system...'
+          visible={estimatingCoordinateSystem}
+        />
+      </Box>
     </>
   );
 };
@@ -220,6 +232,7 @@ OutdoorEnvironmentEditor.propTypes = {
   }),
   canEstimateShowCoordinateSystem: PropTypes.bool,
   environmentFromLoadedShowData: PropTypes.object,
+  estimatingCoordinateSystem: PropTypes.bool,
   onAltitudeReferenceTypeChanged: PropTypes.func,
   onAltitudeReferenceValueChanged: PropTypes.func,
   onCopyCoordinateSystemToMap: PropTypes.func,
@@ -249,6 +262,9 @@ export default connect(
     canEstimateShowCoordinateSystem:
       canEstimateShowCoordinateSystemFromActiveUAVs(state),
     environmentFromLoadedShowData: getEnvironmentFromLoadedShowData(state),
+    estimatingCoordinateSystem: Boolean(
+      state.show.environment.estimatingCoordinateSystem
+    ),
     showCoordinateSystem: state.show.environment.outdoor.coordinateSystem,
     mapCoordinateSystem: state.map.origin,
     takeoffHeading: getOutdoorShowTakeoffHeadingSpecification(state),

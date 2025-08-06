@@ -46,6 +46,7 @@ export type IndoorEnvironment = {
 
 export type EnvironmentState = {
   editing: boolean;
+  estimatingCoordinateSystem: boolean;
   outdoor: OutdoorEnvironment;
   indoor: IndoorEnvironment;
   type: EnvironmentType;
