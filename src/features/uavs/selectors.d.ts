@@ -14,6 +14,7 @@ export function getCurrentHeadingByUavId(
   state: RootState,
   uavId: string
 ): number | undefined;
+export function getInactiveUAVIds(state: RootState): string[];
 export function getMissingUAVIdsInMapping(state: RootState): string[];
 export function getSelectedUAVIds(state: RootState): string[];
 export function getSingleSelectedUAVIdAsArray(): string[];
