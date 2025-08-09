@@ -177,10 +177,10 @@ const DroneStatusLine = ({
           {!isNil(ahl) ? (
             padStart(position.ahl.toFixed(1), 6) + 'm'
           ) : (
-            <span className={classes.muted}>{'   ———'}</span>
+            <span className={classes.muted}>{'    ———'}</span>
           )}
           {!isNil(agl) ? (
-            padStart(position.agl.toFixed(1), 6) + 'm'
+            padStart(position.agl.toFixed(1), 5) + 'm'
           ) : (
             <span className={classes.muted}>{'   ———'}</span>
           )}
