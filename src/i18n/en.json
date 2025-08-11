@@ -719,7 +719,7 @@
   },
   "startUploadButton": {
     "startSelected": "Start selected",
-    "tooltip": "Select individual targets by clicking their ids to prepare a partial upload!"
+    "tooltip": "Select individual targets by clicking their IDs to prepare a partial upload"
   },
   "surveyStatusIndicator": {
     "noSurveyInformation": "No survey information"
