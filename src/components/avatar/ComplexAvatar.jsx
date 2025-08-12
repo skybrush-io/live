@@ -2,13 +2,13 @@ import CircularProgress from '@mui/material/CircularProgress';
 import makeStyles from '@mui/styles/makeStyles';
 import { Colors, Status } from '@skybrush/app-theme-mui';
 import SemanticAvatar from '@skybrush/mui-components/lib/SemanticAvatar';
+import StatusPill from '@skybrush/mui-components/lib/StatusPill';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import React from 'react';
 
 import { BatteryFormatter } from '~/components/battery';
 import BatteryIndicator from '~/components/BatteryIndicator';
-import StatusPill from '~/components/StatusPill';
 
 import SecondaryStatusLight from './SecondaryStatusLight';
 

@@ -1,5 +1,6 @@
 import Box from '@mui/material/Box';
 import makeStyles from '@mui/styles/makeStyles';
+import StatusPill from '@skybrush/mui-components/lib/StatusPill';
 import Tooltip from '@skybrush/mui-components/lib/Tooltip';
 import clsx from 'clsx';
 import isNil from 'lodash-es/isNil';
@@ -8,7 +9,6 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 import { Status } from '~/components/semantics';
-import StatusPill from '~/components/StatusPill';
 
 import { toggleUavInWaitingQueue } from './actions';
 import {

@@ -1,4 +1,5 @@
 import makeStyles from '@mui/styles/makeStyles';
+import StatusPill from '@skybrush/mui-components/lib/StatusPill';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -6,7 +7,6 @@ import { connect } from 'react-redux';
 
 import { BatteryFormatter } from '~/components/battery';
 import BatteryIndicator from '~/components/BatteryIndicator';
-import StatusPill from '~/components/StatusPill';
 import { getBatteryFormatter } from '~/features/settings/selectors';
 import {
   abbreviateFlightMode,

@@ -189,7 +189,7 @@ export const selectAdaptedShowAsUint8Array: AppSelector<
 
 export const selectAdaptedShowAsBlob: AppSelector<Blob | undefined> =
   createSelector(selectAdaptedShowAsUint8Array, (result) =>
-    result ? new Blob([result]) : undefined
+    result ? new Blob([result as any]) : undefined
   );
 
 export const {

@@ -8,12 +8,12 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 import { monospacedFont } from '@skybrush/app-theme-mui';
+import StatusPill from '@skybrush/mui-components/lib/StatusPill';
 import StatusText from '@skybrush/mui-components/lib/StatusText';
 
 import { BatteryFormatter } from '~/components/battery';
 import BatteryIndicator from '~/components/BatteryIndicator';
 import ColoredLight from '~/components/ColoredLight';
-import StatusPill from '~/components/StatusPill';
 import { getBatteryFormatter } from '~/features/settings/selectors';
 import {
   createSingleUAVStatusSummarySelector,
@@ -236,6 +236,7 @@ DroneStatusLine.propTypes = {
     'rth',
     'error',
     'critical',
+    'missing',
   ]),
 };
 
