@@ -1,5 +1,6 @@
 import Clear from '@mui/icons-material/Clear';
 import NavigateBack from '@mui/icons-material/NavigateBefore';
+import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
@@ -9,7 +10,6 @@ import Fade from '@mui/material/Fade';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import IconButton from '@mui/material/IconButton';
 import type { Theme } from '@mui/material/styles';
-import Typography from '@mui/material/Typography';
 import makeStyles from '@mui/styles/makeStyles';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -171,13 +171,11 @@ const UploadPanel = ({
             label={t('uploadPanel.flashLightsWhereFailed')}
           />
         </Box>
-        <Box mt={1}>
-          {hasHiddenTargets && (
-            <Typography className={classes.warningText}>
-              {t('uploadPanel.hasHiddenTargets')}
-            </Typography>
-          )}
-        </Box>
+        {hasHiddenTargets && (
+          <Alert severity='warning' variant='filled'>
+            <Box>{t('uploadPanel.hasHiddenTargets')}</Box>
+          </Alert>
+        )}
       </DialogContent>
       <DialogActions className={classes.actions}>
         {onStepBack && (
