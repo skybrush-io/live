@@ -22,6 +22,7 @@ import LabeledStatusLight, {
 
 import { Status } from '~/components/semantics';
 import {
+  getEstimatedCompletionTime,
   getLastUploadResultByJobType,
   getUploadDialogState,
   hasHiddenTargets,
@@ -42,18 +43,22 @@ import UploadProgressBar from '~/features/upload/UploadProgressBar';
 import UploadStatusLegend from '~/features/upload/UploadStatusLegend';
 import UploadStatusLights from '~/features/upload/UploadStatusLights';
 import type { AppThunk, RootState } from '~/store/reducers';
+import { formatDurationAsText } from '~/utils/formatting';
+import { usePeriodicRefresh } from '~/hooks';
 
 type UploadResultIndicatorProps = Omit<LabeledStatusLightProps, 'children'> &
   Readonly<{
+    completionTime?: number;
     result?: 'success' | 'error' | 'cancelled';
     running?: boolean;
   }>;
 
 /**
- * Helper componeht that shows an alert summarizing the result of the last
+ * Helper component that shows an alert summarizing the result of the last
  * upload attempt.
  */
 const UploadResultIndicator = ({
+  completionTime,
   result,
   running,
   ...rest
@@ -63,10 +68,13 @@ const UploadResultIndicator = ({
   let status;
   let message;
 
-  if (running) {
-    status = Status.NEXT;
-    message = t('uploadPanel.uploadInProgress');
-  }
+  const now = Date.now();
+  const timeRemaining = completionTime
+    ? completionTime > now
+      ? (completionTime - now) / 1000
+      : undefined
+    : undefined;
+  usePeriodicRefresh(timeRemaining ? 500 : null);
 
   switch (result) {
     case 'success':
@@ -90,8 +98,24 @@ const UploadResultIndicator = ({
       break;
   }
 
+  if (running) {
+    status = Status.NEXT;
+    if (typeof timeRemaining === 'number' && timeRemaining > 0) {
+      message = t('uploadPanel.uploadInProgressWithEstimate', {
+        time: formatDurationAsText(timeRemaining, t),
+      });
+    } else {
+      message = t('uploadPanel.uploadInProgress');
+    }
+  }
+
   return (
-    <LabeledStatusLight status={status} size='small' {...rest}>
+    <LabeledStatusLight
+      color='textSecondary'
+      status={status}
+      size='small'
+      {...rest}
+    >
       {message}
     </LabeledStatusLight>
   );
@@ -112,6 +136,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 type UploadPanelProps = Readonly<{
   autoRetry: boolean;
+  completionTime?: number;
   flashFailed: boolean;
   hasHiddenTargets: boolean;
   hasQueuedItems: boolean;
@@ -133,6 +158,7 @@ type UploadPanelProps = Readonly<{
  */
 const UploadPanel = ({
   autoRetry,
+  completionTime,
   flashFailed,
   hasHiddenTargets,
   hasQueuedItems,
@@ -183,12 +209,13 @@ const UploadPanel = ({
             <NavigateBack />
           </IconButton>
         )}
-        <Fade in={lastUploadResult && showLastUploadResult}>
+        <Fade in={(lastUploadResult && showLastUploadResult) || running}>
           <Box
             className={classes.uploadResultIndicator}
             onClick={onDismissLastUploadResult}
           >
             <UploadResultIndicator
+              completionTime={completionTime}
               result={lastUploadResult}
               running={running}
             />
@@ -223,6 +250,7 @@ export default connect(
   ) => ({
     ...getUploadDialogState(state),
     autoRetry: shouldRetryFailedUploadsAutomatically(state),
+    completionTime: getEstimatedCompletionTime(state),
     flashFailed: shouldFlashLightsOfFailedUploads(state),
     hasHiddenTargets: hasHiddenTargets(state),
     hasQueuedItems: hasQueuedItems(state),

@@ -179,6 +179,14 @@
       "inProgress": "in progress",
       "successful": "successful",
       "waiting": "waiting"
+    },
+    "time": {
+      "hours_one": "{{count}} hour",
+      "hours_other": "{{count}} hours",
+      "minutes_one": "{{count}} minute",
+      "minutes_other": "{{count}} minutes",
+      "seconds_one": "{{count}} second",
+      "seconds_other": "{{count}} seconds"
     }
   },
   "geofence": {
@@ -769,6 +777,7 @@
     "uploadCancelled": "Upload cancelled by user.",
     "uploadFinishedSuccessfully": "Upload finished successfully.",
     "uploadInProgress": "Upload in progress…",
+    "uploadInProgressWithEstimate": "Estimated time remaining: {{time}}",
     "uploadNotFinishedYet": "Upload not finished yet."
   },
   "uploadStatusLegend": {

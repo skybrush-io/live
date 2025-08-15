@@ -451,3 +451,10 @@ export const hasHiddenTargets = createSelector(
     return targets.some((id) => !visible.has(id));
   }
 );
+
+/**
+ * Returns the estimated completion time of the current upload job, or
+ * undefined if no such time can be estimated.
+ */
+export const getEstimatedCompletionTime = (state: RootState) =>
+  state.upload.timing?.estimatedEndAt;

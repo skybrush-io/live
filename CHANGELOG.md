@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [main]
 
+### Added
+
+- Added estimated completion time for the upload dialogs.
+
 ### Changed
 
 - Show files are now parsed and loaded in a separate worker thread so the

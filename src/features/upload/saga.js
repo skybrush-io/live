@@ -34,12 +34,13 @@ import {
   _notifyUploadOnUavStarted,
   _notifyUploadOnUavSucceeded,
   _notifyUploadFinished,
-  _notifyUploadStarted,
+  _notifyUploadStartedAt,
   _setErrorMessageForUAV,
   _setProgressInfoForUAV,
   startUpload,
 } from './slice';
 import { getMaximumConcurrentUploadTaskCount } from '../settings/selectors';
+import { recalculateEstimatedCompletionTime } from './actions';
 
 /* ----- Progress handling -------------------------------------------------- */
 
@@ -122,6 +123,8 @@ function* runUploadWorker(chan, failed) {
         console.warn('Unknown outcome: ' + outcome);
         break;
     }
+
+    yield put(recalculateEstimatedCompletionTime());
   }
 }
 
@@ -232,7 +235,9 @@ function* uploaderSagaWithCancellation() {
     return;
   }
 
-  yield put(_notifyUploadStarted());
+  yield put(_notifyUploadStartedAt(Date.now()));
+
+  // yield put(recalculateEstimatedCompletionTime());
 
   try {
     const { workerManager = forkingWorkerManagementSaga } = spec;

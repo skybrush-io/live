@@ -1,6 +1,8 @@
 import delay from 'delay';
 import isNil from 'lodash-es/isNil';
 
+import type { AppThunk, RootState } from '~/store/reducers';
+
 import {
   getFailedUploadItems,
   getSelectedJobInUploadDialog,
@@ -13,18 +15,20 @@ import {
 import {
   _enqueueFailedUploads,
   _enqueueSuccessfulUploads,
+  _setEstimatedCompletionTime,
   closeUploadDialog,
   putUavsInWaitingQueue,
   removeUavsFromWaitingQueue,
   setupNextUploadJob,
   startUpload,
 } from './slice';
+import type UAV from '~/model/uav';
 
 /**
  * Thunk that closes the upload dialog and performs the "back" action currently
  * associated to the dialog.
  */
-export function closeUploadDialogAndStepBack() {
+export function closeUploadDialogAndStepBack(): AppThunk<Promise<void>> {
   return async (dispatch, getState) => {
     const { backAction } = getUploadDialogState(getState());
     dispatch(closeUploadDialog());
@@ -35,11 +39,44 @@ export function closeUploadDialogAndStepBack() {
   };
 }
 
+function estimateCompletionTime(state: RootState): number | undefined {
+  const startedAt = state.upload.timing?.startedAt;
+  if (!startedAt) {
+    return undefined;
+  }
+
+  const totalProgress = Object.values(state.upload.progresses).reduce(
+    (acc, progress) => acc + progress,
+    0
+  );
+  const totalItems = Object.values(state.upload.queues).reduce(
+    (acc, queue) => acc + queue.length,
+    0
+  );
+  const ratio = totalItems > 0 ? totalProgress / totalItems : 0;
+
+  // TODO(ntamas): maybe a better estimation process that estimates download
+  // speed from the recent events only?
+  const elapsed = Date.now() - startedAt;
+  return ratio > 0 ? startedAt + elapsed / ratio : undefined;
+}
+
+/**
+ * Thunk that recalculates the estimated completion time of the current upload
+ * process.
+ */
+export function recalculateEstimatedCompletionTime(): AppThunk<void> {
+  return (dispatch, getState) => {
+    const completionTime = estimateCompletionTime(getState());
+    return dispatch(_setEstimatedCompletionTime(completionTime));
+  };
+}
+
 /**
  * Thunk that restarts the upload process on all UAVs that are currently
  * marked as successful.
  */
-export function restartSuccessfulUploads() {
+export function restartSuccessfulUploads(): AppThunk<void> {
   return (dispatch, getState) => {
     const successfulItems = getSuccessfulUploadItems(getState());
     dispatch(_enqueueSuccessfulUploads(successfulItems));
@@ -53,7 +90,7 @@ export function restartSuccessfulUploads() {
  * Thunk that retrieves all failed upload items from the state, places all of
  * them in the upload queue and then restarts the upload process if needed.
  */
-export function retryFailedUploads() {
+export function retryFailedUploads(): AppThunk<void> {
   return (dispatch, getState) => {
     const failedItems = getFailedUploadItems(getState());
     dispatch(_enqueueFailedUploads(failedItems));
@@ -67,7 +104,7 @@ export function retryFailedUploads() {
  * Toggles a single UAV into our out of the upload queue, assuming that it is
  * in a state where such modification is allowed.
  */
-export function toggleUavInWaitingQueue(uavId) {
+export function toggleUavInWaitingQueue(uavId: UAV['id']) {
   return toggleUavsInWaitingQueue([uavId]);
 }
 
@@ -87,11 +124,13 @@ export function toggleUavInWaitingQueue(uavId) {
  * UAV IDs contain either UAVs that are all in the waiting queue, or a mixture
  * of UAVs that are either in the waiting queue or are being processed.
  */
-export function toggleUavsInWaitingQueue(uavIds) {
+export function toggleUavsInWaitingQueue(
+  uavIds: Array<UAV['id']>
+): AppThunk<void> {
   return (dispatch, getState) => {
     const state = getState();
-    const toRemove = [];
-    const toAdd = [];
+    const toRemove: Array<UAV['id']> = [];
+    const toAdd: Array<UAV['id']> = [];
 
     for (const uavId of uavIds) {
       if (!isNil(uavId)) {
@@ -119,7 +158,7 @@ export function toggleUavsInWaitingQueue(uavIds) {
  * action is invoked, the selector is ignored and the items in the backlog will
  * be processed instead.
  */
-export function startUploadJobFromUploadDialog() {
+export function startUploadJobFromUploadDialog(): AppThunk<void> {
   return (dispatch, getState) => {
     // Process the state, extract the type of the job that the user selected,
     // and create the payload depending on the job type and the current state
@@ -129,7 +168,7 @@ export function startUploadJobFromUploadDialog() {
 
     // Set up the next upload job and start it if at least one target was
     // selected
-    if (targets && targets.length > 0) {
+    if (targets && targets.length > 0 && type) {
       dispatch(setupNextUploadJob({ targets, type, payload }));
       dispatch(startUpload());
     }
