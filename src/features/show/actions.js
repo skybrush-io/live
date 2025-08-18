@@ -284,7 +284,9 @@ export const loadShowFromFile = createShowLoaderThunkFactory(
   async (file) => {
     const url = file && file.path ? `file://${file.path}` : undefined;
     const { spec, base64Blob } = await workers.loadShow(file);
-    return { spec, url, base64Blob };
+    // Pre-freeze the show data shallowly to give a hint to Redux Toolkit that
+    // the show content won't change
+    return { spec: Object.freeze(spec), url, base64Blob };
   },
   {
     errorMessage: 'Failed to load show from the given file.',
@@ -294,7 +296,9 @@ export const loadShowFromFile = createShowLoaderThunkFactory(
 export const loadBase64EncodedShow = createShowLoaderThunkFactory(
   async (base64Blob) => {
     const { spec } = await workers.loadShow(Base64.toUint8Array(base64Blob));
-    return { spec, base64Blob };
+    // Pre-freeze the show data shallowly to give a hint to Redux Toolkit that
+    // the show content won't change
+    return { spec: Object.freeze(spec), base64Blob };
   },
   {
     errorMessage: 'Failed to load show from the given base64-encoded data.',
