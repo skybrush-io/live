@@ -13,6 +13,7 @@ import {
   abbreviateGPSFixType,
   getSemanticsForGPSFixType,
 } from '~/model/enums';
+import { UAVAge } from '~/model/uav';
 import { formatCoordinateArray, formatNumberSafely } from '~/utils/formatting';
 
 import { createSingleUAVStatusSummarySelector, getUAVById } from './selectors';
@@ -50,6 +51,10 @@ const useStyles = makeStyles(
       flex: 1,
     },
     gpsPill: {
+      // display and textAlign props are needed here because it is not a StatusPill
+      // (unlike the rest) but a StatusText
+      display: 'inline-block',
+      textAlign: 'center',
       minWidth: 40,
       flex: 1,
     },
@@ -85,6 +90,7 @@ const naText = <span className='muted'>—</span>;
  * drone, displaying the most important details about the status of the drone.
  */
 const DroneInfoTooltipContent = ({
+  age,
   batteryFormatter,
   batteryStatus,
   details,
@@ -112,6 +118,7 @@ const DroneInfoTooltipContent = ({
       <div className={classes.row}>
         <StatusPill
           inline
+          hollow={age === UAVAge.GONE}
           className={clsx(classes.pill, classes.statusPill)}
           status={textSemantics}
         >
@@ -126,14 +133,12 @@ const DroneInfoTooltipContent = ({
         >
           {mode ? abbreviateFlightMode(mode) : '----'}
         </StatusPill>
-        <StatusPill
-          inline
-          hollow
+        <StatusText
           className={clsx(classes.pill, classes.gpsPill)}
           status={getSemanticsForGPSFixType(gpsFixType)}
         >
           {gpsFixType ? abbreviateGPSFixType(gpsFixType) : dash}
-        </StatusPill>
+        </StatusText>
       </div>
       <div className={classes.row}>
         {hasLocalPosition ? (
@@ -156,6 +161,7 @@ const DroneInfoTooltipContent = ({
 };
 
 DroneInfoTooltipContent.propTypes = {
+  age: PropTypes.oneOf(['active', 'inactive', 'gone']),
   batteryFormatter: PropTypes.instanceOf(BatteryFormatter),
   batteryStatus: PropTypes.shape({
     cellCount: PropTypes.number,

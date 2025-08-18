@@ -36,7 +36,7 @@ const getStatusSummaryInner = createSelector(
   getUAVIdToStateMapping,
   getUAVIdList,
   (byId, order) => {
-    const result = [0, 0, 0, 0, 0];
+    const result = [0, 0, 0, 0, 0, 0];
 
     for (const uavId of order) {
       const uav = byId[uavId];
@@ -45,10 +45,11 @@ const getStatusSummaryInner = createSelector(
         switch (level) {
           case Status.CRITICAL:
           case Status.ERROR:
-            result[3] += 1;
+            result[4] += 1;
             break;
 
           case Status.GONE:
+          case Status.OFF:
             /* excluded from counts */
             break;
 
@@ -60,13 +61,17 @@ const getStatusSummaryInner = createSelector(
             result[1] += 1;
             break;
 
+          case Status.MISSING:
+            result[3] += 1;
+            break;
+
           default:
             result[2] += 1;
         }
       }
     }
 
-    result[4] = result[0] + result[1] + result[2] + result[3];
+    result[5] = result[0] + result[1] + result[2] + result[3] + result[4];
 
     return result;
   }
@@ -113,6 +118,7 @@ const statusOrder = [
   Status.SUCCESS,
   Status.INFO,
   Status.WARNING,
+  Status.MISSING,
   Status.ERROR,
   null,
 ];

@@ -26,6 +26,7 @@ import {
   abbreviateGPSFixType,
   getSemanticsForGPSFixType,
 } from '~/model/enums';
+import { UAVAge } from '~/model/uav';
 import { getPreferredCoordinateFormatter } from '~/selectors/formatting';
 import { formatCoordinateArray } from '~/utils/formatting';
 
@@ -81,6 +82,10 @@ const useStyles = makeStyles(
       width: 48,
     },
     gpsPill: {
+      // display and textAlign props are needed here because it is not a StatusPill
+      // (unlike the rest) but a StatusText
+      display: 'inline-block',
+      textAlign: 'center',
       width: 40,
     },
     rssiPills: {
@@ -103,6 +108,7 @@ const useStyles = makeStyles(
  * Status line in the drone list view that represents a single drone.
  */
 const DroneStatusLine = ({
+  age,
   batteryFormatter,
   batteryStatus,
   color,
@@ -134,6 +140,7 @@ const DroneStatusLine = ({
           inline
           className={clsx(classes.pill, classes.statusPill)}
           status={textSemantics}
+          hollow={age === UAVAge.GONE}
         >
           {details || text}
         </StatusPill>
@@ -154,14 +161,12 @@ const DroneStatusLine = ({
           />
           <ColoredLight inline color={color} />
           <RSSIIndicator className={classes.rssiPills} rssi={rssi} />
-          <StatusPill
-            inline
-            hollow
+          <StatusText
             className={clsx(classes.pill, classes.gpsPill)}
             status={getSemanticsForGPSFixType(gpsFixType)}
           >
             {abbreviateGPSFixType(gpsFixType)}
-          </StatusPill>
+          </StatusText>
           {localPosition ? (
             padEnd(localCoordinateFormatter(localPosition), 25)
           ) : position ? (
@@ -197,6 +202,7 @@ const DroneStatusLine = ({
 };
 
 DroneStatusLine.propTypes = {
+  age: PropTypes.oneOf(['active', 'inactive', 'gone']),
   batteryFormatter: PropTypes.instanceOf(BatteryFormatter),
   batteryStatus: PropTypes.shape({
     cellCount: PropTypes.number,
