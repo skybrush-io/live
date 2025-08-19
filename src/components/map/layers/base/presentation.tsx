@@ -89,7 +89,7 @@ export const LayerType = ({ children, type, zIndex }: LayerTypeProps) => {
     */
 
     default:
-      return <olLayer.Tile zIndex={zIndex}>{children}</olLayer.Tile>;
+      return <olLayer.WebGLTile zIndex={zIndex}>{children}</olLayer.WebGLTile>;
   }
 };
 
