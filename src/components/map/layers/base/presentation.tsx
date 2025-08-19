@@ -239,13 +239,14 @@ export const LayerSource = ({
           : type === Source.GOOGLE.DEFAULT
             ? 'terrain'
             : 'roadmap';
+      const layerTypes = type === Source.GOOGLE.DEFAULT ? ['layerRoadmap'] : [];
       return (
         <source.Google
           highDpi
           apiKey={apiKeys.GOOGLE}
           tileLoadFunction={tileLoadFunction}
           mapType={mapType}
-          layerTypes={['layerRoadmap']}
+          layerTypes={layerTypes}
           scale='scaleFactor2x'
         />
       );
