@@ -628,6 +628,10 @@
           "help": "between drones during takeoff & RTH",
           "label": "Minimum distance"
         },
+        "takeoffDuration": {
+          "help": "ensuring exact start of show phase (if nonzero)",
+          "label": "Takeoff duration"
+        },
         "verticalVelocity": {
           "help": "during takeoff & RTH phases",
           "label": "Vertical velocity"

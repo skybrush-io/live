@@ -9,6 +9,7 @@ import FormHeader from '@skybrush/mui-components/lib/FormHeader';
 
 import {
   SimpleDistanceField,
+  SimpleDurationField,
   SimpleVelocityField,
 } from '~/components/forms/fields';
 
@@ -22,6 +23,7 @@ const defaultAdaptParameters: ShowAdaptParameters = {
   altitude: 5,
   horizontalVelocity: 5,
   verticalVelocity: 1.5,
+  takeoffDuration: 0,
 };
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -40,7 +42,8 @@ function adaptParametersValid(parameters: ShowAdaptParameters): boolean {
     parameters.minDistance > 0 &&
     parameters.altitude > 0 &&
     parameters.verticalVelocity > 0 &&
-    parameters.horizontalVelocity > 0
+    parameters.horizontalVelocity > 0 && 
+    parameters.takeoffDuration >= 0
   );
 }
 
@@ -48,6 +51,13 @@ function adaptParametersValid(parameters: ShowAdaptParameters): boolean {
  * Parses a distance (string) as meters, rounded to 3 digits.
  */
 function parseDistanceAsMeters(value: string): number {
+  return Math.round(Number.parseFloat(value) * 1000) * 0.001;
+}
+
+/**
+ * Parses a duration (string) as seconds, rounded to 3 digits.
+ */
+function parseDurationAsSeconds(value: string): number {
   return Math.round(Number.parseFloat(value) * 1000) * 0.001;
 }
 
@@ -73,6 +83,9 @@ export function useAdaptParametersFormState(
     verticalVelocity:
       defaultParameters?.verticalVelocity ??
       defaultAdaptParameters.verticalVelocity,
+    takeoffDuration:
+      defaultParameters?.takeoffDuration ??
+      defaultAdaptParameters.takeoffDuration,
   });
   const [isValid, setIsValid] = useState(adaptParametersValid(parameters));
 
@@ -128,6 +141,19 @@ export function useAdaptParametersFormState(
     },
     [onChange, parameters]
   );
+  const onTakeoffDurationChanged = useCallback(
+    (evt: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      const value = parseDurationAsSeconds(evt.target.value);
+      const newParameters: ShowAdaptParameters = {
+        ...parameters,
+        takeoffDuration: value,
+      };
+      setParameters(newParameters);
+      setIsValid(adaptParametersValid(newParameters));
+      onChange?.();
+    },
+    [onChange, parameters]
+  );
 
   return {
     parameters,
@@ -136,6 +162,7 @@ export function useAdaptParametersFormState(
     onAltitudeChanged,
     onHorizontalVelocityChanged,
     onVerticalVelocityChanged,
+    onTakeoffDurationChanged,
   };
 }
 
@@ -153,6 +180,7 @@ const AdaptParametersForm = (props: Props): JSX.Element => {
     onAltitudeChanged,
     onHorizontalVelocityChanged,
     onVerticalVelocityChanged,
+    onTakeoffDurationChanged,
   } = props;
   const { t } = useTranslation(undefined, {
     keyPrefix: 'showConfiguratorDialog.adaptParameters',
@@ -197,6 +225,15 @@ const AdaptParametersForm = (props: Props): JSX.Element => {
           disabled={disabled}
           helperText={t('form.verticalVelocity.help')}
           onChange={onVerticalVelocityChanged}
+        />
+        <SimpleDurationField
+          label={t('form.takeoffDuration.label')}
+          min={0}
+          max={300}
+          value={parameters.takeoffDuration}
+          disabled={disabled}
+          helperText={t('form.takeoffDuration.help')}
+          onChange={onTakeoffDurationChanged}
         />
       </FormGroup>
     </Box>
