@@ -28,7 +28,7 @@ export default async function loadShow(
   spec: ShowSpecification;
   base64Blob?: string;
 }> {
-  const { returnBlob = false } = options;
+  const { returnBlob = true } = options;
   const { showSpec, zip } = await loadShowSpecificationAndZip(file);
   const base64Blob = returnBlob
     ? await zip.generateAsync({ type: 'base64' })
