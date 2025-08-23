@@ -8,7 +8,7 @@ import get from 'lodash-es/get';
 /**
  * Converts a color in RGB565 format to a hex value.
  */
-export function convertRGB565ToHex(value) {
+export function convertRGB565ToHex(value: number): number {
   const red5 = (value & 0xf800) >> 11;
   const green6 = (value & 0x7e0) >> 5;
   const blue5 = value & 0x1f;
@@ -22,11 +22,11 @@ export function convertRGB565ToHex(value) {
 /**
  * Converts a color in RGB565 format to CSS notation.
  */
-export function convertRGB565ToCSSNotation(value) {
+export function convertRGB565ToCSSNotation(value: number): string {
   return color(convertRGB565ToHex(value || 0)).string();
 }
 
-const MESSAGES_WITH_RECEIPTS = {
+const MESSAGES_WITH_RECEIPTS: Record<string, boolean> = {
   'FW-UPLOAD': true,
   'LOG-DATA': true,
   'LOG-INF': true,
@@ -52,7 +52,8 @@ const MESSAGES_WITH_RECEIPTS = {
  * Helper function that throws an error if the received message was an
  * ACK-NAK message or a message without a type, and returns the message intact otherwise.
  */
-export function ensureNotNAK(message) {
+export function ensureNotNAK<T>(message: T): T {
+  /* @ts-ignore */
   const { body } = message || {};
   const { type } = body || {};
 
@@ -77,19 +78,26 @@ export function ensureNotNAK(message) {
  * @throws Error  if the receipt or result cannot be extracted; the message of the
  *         error provides a human-readable reason
  */
-export function extractResultOrReceiptFromMaybeAsyncResponse(message, uavId) {
+export function extractResultOrReceiptFromMaybeAsyncResponse(
+  message: Record<string, unknown>,
+  objectId: string
+) {
   const { body } = ensureNotNAK(message);
+
+  /* @ts-ignore */
   const { type } = body;
 
   if (MESSAGES_WITH_RECEIPTS[type]) {
     // We may still have a rejection here
+    /* @ts-ignore */
     const { error, receipt, result } = body;
-    if (error && error[uavId] !== undefined) {
-      throw new Error(body.error[uavId] || 'Failed to execute command');
-    } else if (result && result[uavId] !== undefined) {
-      return { result: result[uavId] };
-    } else if (receipt && receipt[uavId] !== undefined) {
-      return { receipt: receipt[uavId] };
+    if (error && error[objectId] !== undefined) {
+      /* @ts-ignore */
+      throw new Error(body.error[objectId] || 'Failed to execute command');
+    } else if (result && result[objectId] !== undefined) {
+      return { result: result[objectId] };
+    } else if (receipt && receipt[objectId] !== undefined) {
+      return { receipt: receipt[objectId] };
     } else {
       throw new Error(
         'Server did not provide a response or receipt for the command'
@@ -105,8 +113,13 @@ export function extractResultOrReceiptFromMaybeAsyncResponse(message, uavId) {
  * object having keys named `status` and `error` (which is the
  * case for many Flockwave messages.)
  */
-export function extractResponseForId(message, id, options = {}) {
-  const errors = get(message, 'body.error');
+export function extractResponseForId(
+  message: Record<string, unknown>,
+  id: string,
+  options: { error?: string; key?: string } = {}
+) {
+  /* @ts-ignore */
+  const errors: Record<string, unknown> = get(message, 'body.error');
 
   if (typeof errors === 'object' && errors[id] !== undefined) {
     // Response indicates an error for the given ID
@@ -121,7 +134,10 @@ export function extractResponseForId(message, id, options = {}) {
   }
 
   const { key = 'status' } = options;
-  const results = get(message, 'body.' + key);
+
+  /* @ts-ignore */
+  const results: Record<string, unknown> = get(message, 'body.' + key);
+
   if (typeof results === 'object' && typeof results[id] !== 'undefined') {
     return results[id];
   }

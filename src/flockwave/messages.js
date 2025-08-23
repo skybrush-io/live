@@ -12,7 +12,7 @@ import pTimeout from 'p-timeout';
 import {
   createCancellationRequest,
   createCommandRequest,
-  createMessageWithType,
+  createMessageBodyWithType,
   createResumeRequest,
 } from './builders';
 import { OperationExecutor } from './operations';
@@ -55,7 +55,7 @@ export function parseCommandFromString(string) {
  */
 function createMessage(body = {}) {
   if (!isObject(body)) {
-    body = createMessageWithType(body);
+    body = createMessageBodyWithType(body);
   }
 
   return {

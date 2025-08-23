@@ -48,7 +48,7 @@
     "@skybrush/aframe-components": "^1.12.1",
     "@skybrush/app-theme-mui": "^2.3.5",
     "@skybrush/electron-app-framework": "^2.5.1",
-    "@skybrush/flockwave-spec": "^2.1.0",
+    "@skybrush/flockwave-spec": "^2.4.1",
     "@skybrush/mui-components": "^3.7.0",
     "@skybrush/show-format": "^3.4.0",
     "@tippyjs/react": "^4.2.6",
