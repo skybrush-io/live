@@ -108,7 +108,7 @@ export async function setParameters(hub, { uavId, parameters }) {
  */
 export async function setRTKCorrectionsSource(hub, presetId) {
   const response = await hub.sendMessage({
-    type: 'X-RTK-SOURCE',
+    type: 'RTK-SOURCE',
     id: presetId,
   });
 
@@ -152,7 +152,7 @@ export async function setShowLightConfiguration(hub, config) {
  */
 export async function startRTKSurvey(hub, { accuracy, duration }) {
   const response = await hub.sendMessage({
-    type: 'X-RTK-SURVEY',
+    type: 'RTK-SURVEY',
     settings: {
       accuracy,
       duration,
