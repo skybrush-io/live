@@ -4,6 +4,7 @@
  */
 
 import {
+  createBulkParameterUploadRequest,
   createFirmwareUploadRequest,
   createParameterSettingRequest,
 } from './builders';
@@ -83,6 +84,21 @@ export async function setParameter(hub, { uavId, name, value }) {
     throw new Error(
       `Failed to set parameter ${name} on UAV ${uavId}: ${errorString}`
     );
+  }
+}
+
+/**
+ * Sets the value of multiple parameters on a single UAV.
+ *
+ * Supported only by server version 2.34.1 or later.
+ */
+export async function setParameters(hub, { uavId, parameters }) {
+  const command = createBulkParameterUploadRequest(uavId, parameters);
+  try {
+    await hub.startAsyncOperationForSingleId(uavId, command);
+  } catch (error) {
+    const errorString = errorToString(error);
+    throw new Error(`Failed to set parameters on UAV ${uavId}: ${errorString}`);
   }
 }
 
