@@ -297,12 +297,14 @@ export const adjustHomePositionsToDronePositions =
 
 type Meters = number;
 type MetersPerSecond = number;
+type Seconds = number;
 
 export type OptionalShowAdaptParameters = {
   altitude?: Meters | undefined;
   minDistance?: Meters | undefined;
   horizontalVelocity?: MetersPerSecond | undefined;
   verticalVelocity?: MetersPerSecond | undefined;
+  takeoffDuration?: Seconds | undefined;
 };
 
 export type ShowAdaptParameters = Required<OptionalShowAdaptParameters>;
@@ -334,6 +336,7 @@ export const adaptShow =
         type: 'takeoff',
         parameters: {
           positions,
+          duration: params.takeoffDuration || undefined,
           ...common,
         },
       },

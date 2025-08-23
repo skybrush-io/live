@@ -150,6 +150,8 @@ function useOwnState(props: Props) {
           minDistance: validationSettings.minDistance,
           horizontalVelocity: validationSettings.maxVelocityXY,
           verticalVelocity: validationSettings.maxVelocityZ,
+          // TODO: get takeoffDuration as the start of the show segment of the show
+          // in case user wants to keep original takeoff length
         },
     resetAdaptResult
   );
