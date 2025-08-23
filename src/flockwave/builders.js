@@ -113,3 +113,17 @@ export function createParameterSettingRequest(uavIds, name, value) {
   result.value = value;
   return result;
 }
+
+/**
+ * Creates a PRM-SET-MANY (bulk parameter upload request) message
+ *
+ * @param  {Object[]}  uavIds  IDs of the UAVs to send the request to
+ * @param  {Object}    params  mapping of parameter names to their values
+ * @return {Object}  the message
+ */
+export function createBulkParameterUploadRequest(uavIds, params) {
+  const result = createMessageWithType('PRM-SET-MANY');
+  result.ids = arrify(uavIds);
+  result.params = params;
+  return result;
+}
