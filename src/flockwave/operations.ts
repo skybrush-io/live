@@ -3,24 +3,44 @@
  * promises.
  */
 
+import type {
+  DroneLightsConfiguration,
+  DroneShowConfiguration,
+  Response_EXTRELOAD,
+  Response_EXTSETCFG,
+  RTKSurveySettings,
+} from '@skybrush/flockwave-spec';
+
+import { errorToString } from '~/error-handling';
+
 import {
   createBulkParameterUploadRequest,
   createFirmwareUploadRequest,
   createParameterSettingRequest,
 } from './builders';
+import type MessageHub from './messages';
 import { extractResponseForId } from './parsing';
 import { validateExtensionName, validateObjectId } from './validation';
-
-import { errorToString } from '~/error-handling';
+import type { Message } from './types';
+import type {
+  AsyncOperationOptions,
+  AsyncResponseHandlerOptions,
+} from './messages';
 
 /**
  * Asks the server to set a new configuration object for the extension with the
  * given name.
+ *
+ * Returns whether the operation was successful.
  */
-export async function configureExtension(hub, name, configuration) {
+export async function configureExtension(
+  hub: MessageHub,
+  name: string,
+  configuration: unknown
+): Promise<boolean> {
   validateExtensionName(name);
 
-  const response = await hub.sendMessage({
+  const response: Message<Response_EXTSETCFG> = await hub.sendMessage({
     type: 'EXT-SETCFG',
     ids: { [name]: configuration },
   });
@@ -34,11 +54,16 @@ export async function configureExtension(hub, name, configuration) {
 
 /**
  * Asks the server to reload the extension with the given name.
+ *
+ * Returns whether the operation was successful.
  */
-export async function reloadExtension(hub, name) {
+export async function reloadExtension(
+  hub: MessageHub,
+  name: string
+): Promise<boolean> {
   validateExtensionName(name);
 
-  const response = await hub.sendMessage({
+  const response: Message<Response_EXTRELOAD> = await hub.sendMessage({
     type: 'EXT-RELOAD',
     ids: [name],
   });
@@ -53,7 +78,7 @@ export async function reloadExtension(hub, name) {
 /**
  * Asks the server to reset the UAV with the given ID.
  */
-export async function resetUAV(hub, uavId) {
+export async function resetUAV(hub: MessageHub, uavId: string): Promise<void> {
   try {
     await hub.startAsyncOperationForSingleId(uavId, { type: 'UAV-RST' });
   } catch (error) {
@@ -65,7 +90,10 @@ export async function resetUAV(hub, uavId) {
 /**
  * Sends some debugging information to the server.
  */
-export async function sendDebugMessage(hub, message) {
+export async function sendDebugMessage(
+  hub: MessageHub,
+  message: string
+): Promise<void> {
   await hub.sendMessage({
     type: 'X-DBG-RESP',
     data: message,
@@ -75,7 +103,10 @@ export async function sendDebugMessage(hub, message) {
 /**
  * Sets the value of a parameter on a single UAV.
  */
-export async function setParameter(hub, { uavId, name, value }) {
+export async function setParameter(
+  hub: MessageHub,
+  { uavId, name, value }: { uavId: string; name: string; value: unknown }
+) {
   const command = createParameterSettingRequest(uavId, name, value);
   try {
     await hub.startAsyncOperationForSingleId(uavId, command);
@@ -92,7 +123,10 @@ export async function setParameter(hub, { uavId, name, value }) {
  *
  * Supported only by server version 2.34.1 or later.
  */
-export async function setParameters(hub, { uavId, parameters }) {
+export async function setParameters(
+  hub: MessageHub,
+  { uavId, parameters }: { uavId: string; parameters: Record<string, unknown> }
+) {
   const command = createBulkParameterUploadRequest(uavId, parameters);
   try {
     await hub.startAsyncOperationForSingleId(uavId, command);
@@ -106,7 +140,10 @@ export async function setParameters(hub, { uavId, parameters }) {
  * Sets the source of the RTK corrections that the server broadcasts to the
  * connected drones.
  */
-export async function setRTKCorrectionsSource(hub, presetId) {
+export async function setRTKCorrectionsSource(
+  hub: MessageHub,
+  presetId: string
+) {
   const response = await hub.sendMessage({
     type: 'RTK-SOURCE',
     id: presetId,
@@ -120,7 +157,10 @@ export async function setRTKCorrectionsSource(hub, presetId) {
 /**
  * Sets the configuration of the current drone show on the server.
  */
-export async function setShowConfiguration(hub, config) {
+export async function setShowConfiguration(
+  hub: MessageHub,
+  config: DroneShowConfiguration
+) {
   const response = await hub.sendMessage({
     type: 'SHOW-SETCFG',
     configuration: config,
@@ -135,7 +175,10 @@ export async function setShowConfiguration(hub, config) {
  * Takes control of the LED lights of the drones managed by the server, or
  * gives up control, depending on the submitted configuration object.
  */
-export async function setShowLightConfiguration(hub, config) {
+export async function setShowLightConfiguration(
+  hub: MessageHub,
+  config: DroneLightsConfiguration
+) {
   const response = await hub.sendMessage({
     type: 'SHOW-SETLIGHTS',
     configuration: config,
@@ -150,13 +193,13 @@ export async function setShowLightConfiguration(hub, config) {
  * Asks the RTK framework on the server to start a new survey on the current
  * RTK connection.
  */
-export async function startRTKSurvey(hub, { accuracy, duration }) {
+export async function startRTKSurvey(
+  hub: MessageHub,
+  settings: RTKSurveySettings
+) {
   const response = await hub.sendMessage({
     type: 'RTK-SURVEY',
-    settings: {
-      accuracy,
-      duration,
-    },
+    settings,
   });
 
   if (response.body.type !== 'ACK-ACK') {
@@ -167,7 +210,11 @@ export async function startRTKSurvey(hub, { accuracy, duration }) {
 /**
  * Asks the server to upload a drone show specification to a given UAV.
  */
-export async function uploadDroneShow(hub, { uavId, data }, options) {
+export async function uploadDroneShow(
+  hub: MessageHub,
+  { uavId, data }: { uavId: string; data: string },
+  options: AsyncResponseHandlerOptions
+) {
   validateObjectId(uavId);
 
   // HACK: we are (ab)using the command execution mechanism. This is probably
@@ -190,7 +237,7 @@ export async function uploadDroneShow(hub, { uavId, data }, options) {
   } catch (error) {
     throw new Error(
       errorToString(
-        error.message || error,
+        (error as any).message || error,
         `Failed to upload show data to UAV ${uavId}`
       )
     );
@@ -200,7 +247,15 @@ export async function uploadDroneShow(hub, { uavId, data }, options) {
 /**
  * Ask the server to update the firmware of a given component.
  */
-export async function uploadFirmware(hub, { objectId, target, blob }, options) {
+export async function uploadFirmware(
+  hub: MessageHub,
+  {
+    objectId,
+    target,
+    blob,
+  }: { objectId: string; target: string; blob: string },
+  options: Pick<AsyncOperationOptions, 'onProgress'>
+) {
   const command = createFirmwareUploadRequest(objectId, target, blob);
   try {
     await hub.startAsyncOperationForSingleId(objectId, command, options);
@@ -217,7 +272,11 @@ export async function uploadFirmware(hub, { objectId, target, blob }, options) {
 /**
  * Asks the server to upload a mission in some mission format to a given UAV.
  */
-export async function uploadMission(hub, { uavId, data, format }, options) {
+export async function uploadMission(
+  hub: MessageHub,
+  { uavId, data, format }: { uavId: string; data: string; format: string },
+  options: AsyncResponseHandlerOptions
+) {
   validateObjectId(uavId);
 
   // HACK HACK HACK we are (ab)using the command execution mechanism. This is
@@ -238,7 +297,7 @@ export async function uploadMission(hub, { uavId, data, format }, options) {
   } catch (error) {
     throw new Error(
       errorToString(
-        error.message || error,
+        (error as any).message || error,
         `Failed to upload mission to UAV ${uavId}`
       )
     );
@@ -249,7 +308,7 @@ export async function uploadMission(hub, { uavId, data, format }, options) {
  * Custom class of errors representing server side plan generation problems.
  */
 export class ServerPlanError extends Error {
-  constructor(message) {
+  constructor(message: string) {
     super(message);
     this.name = 'ServerPlanError';
   }
@@ -258,16 +317,19 @@ export class ServerPlanError extends Error {
 /**
  * Sends a request to the server to plan a mission with the given parameters.
  */
-export async function planMission(hub, { id, parameters }) {
+export async function planMission(
+  hub: MessageHub,
+  { id, parameters }: { id: string; parameters: Record<string, unknown> }
+) {
   const response = await hub.sendMessage({
     type: 'X-MSN-PLAN',
     id,
     parameters,
   });
 
-  const { type, result } = response.body;
+  const { type, result } = response.body as any;
   if (type !== 'X-MSN-PLAN') {
-    throw new ServerPlanError(response.body.reason);
+    throw new ServerPlanError((response.body as any).reason);
   }
 
   if (result?.format !== 'skybrush-live/mission-items') {
@@ -282,35 +344,38 @@ export async function planMission(hub, { id, parameters }) {
   return payload;
 }
 
+const _operations = {
+  configureExtension,
+  planMission,
+  reloadExtension,
+  resetUAV,
+  sendDebugMessage,
+  setParameter,
+  setRTKCorrectionsSource,
+  setShowConfiguration,
+  setShowLightConfiguration,
+  startRTKSurvey,
+  uploadDroneShow,
+  uploadFirmware,
+  uploadMission,
+};
+
+type RemoveHubArg<F> = F extends (hub: MessageHub, ...args: infer A) => infer R
+  ? (...args: A) => R
+  : never;
+export type OperationExecutor = {
+  [K in keyof typeof _operations]: RemoveHubArg<(typeof _operations)[K]>;
+};
+
 /**
  * Query handler object that can be used to perform common operations on a
  * Flockwave server using a given message hub.
  */
-export class OperationExecutor {
-  _operations = {
-    configureExtension,
-    planMission,
-    reloadExtension,
-    resetUAV,
-    sendDebugMessage,
-    setParameter,
-    setRTKCorrectionsSource,
-    setShowConfiguration,
-    setShowLightConfiguration,
-    startRTKSurvey,
-    uploadDroneShow,
-    uploadFirmware,
-    uploadMission,
-  };
-
-  /**
-   * Constructor.
-   *
-   * @param {MessageHub} hub  the message hub to use for communication
-   */
-  constructor(hub) {
-    for (const [name, func] of Object.entries(this._operations)) {
-      this[name] = (...args) => func(hub, ...args);
-    }
+export function createOperationExecutor(hub: MessageHub): OperationExecutor {
+  const result: Record<string, any> = {};
+  for (const [name, func] of Object.entries(_operations)) {
+    // @ts-ignore
+    result[name] = (...args) => func(hub, ...args);
   }
+  return result as any as OperationExecutor;
 }

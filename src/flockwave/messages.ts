@@ -26,7 +26,7 @@ import {
   createCommandRequest,
   createResumeRequest,
 } from './builders';
-import { OperationExecutor } from './operations';
+import { createOperationExecutor, type OperationExecutor } from './operations';
 import {
   ensureNotNAK,
   extractResultOrReceiptFromMaybeAsyncResponse,
@@ -600,7 +600,7 @@ class MessageHubRelatedComponent {
   }
 }
 
-type AsyncResponseHandlerOptions = {
+export type AsyncResponseHandlerOptions = {
   cancelToken?: CancelToken;
   onProgress?: (status: ProgressStatus) => void;
   timeout?: number;
@@ -1151,6 +1151,12 @@ class DeviceTreeSubscriptionManager extends MessageHubRelatedComponent {
 type Emitter = (event: string, message: unknown) => void;
 type NotificationHandler<T = any> = (message: T) => void;
 
+export type AsyncOperationOptions = {
+  single?: boolean;
+  idProp?: string;
+  onProgress?: (id: string, progress: ProgressStatus) => void;
+};
+
 /**
  * Message hub class that can be used to send Flockwave messages and get
  * promises that will resolve when the server responds to them.
@@ -1236,7 +1242,7 @@ export default class MessageHub {
    */
   get execute(): OperationExecutor {
     if (!this._executor) {
-      this._executor = new OperationExecutor(this);
+      this._executor = createOperationExecutor(this);
     }
 
     return this._executor;
@@ -1563,11 +1569,7 @@ export default class MessageHub {
   async startAsyncOperationForSingleId(
     id: string,
     message: Body & { [k: string]: unknown },
-    options: {
-      single?: boolean;
-      idProp?: string;
-      onProgress?: (id: string, progress: ProgressStatus) => void;
-    } = {}
+    options: AsyncOperationOptions = {}
   ): Promise<unknown> {
     const { ids, type: expectedType } = message;
     const { idProp, onProgress, single = false } = options;

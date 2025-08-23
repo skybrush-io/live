@@ -2,7 +2,7 @@
  * @file Utility functions to parse data out of Flockwave messages.
  */
 
-import type { Response_ACKNAK } from '@skybrush/flockwave-spec';
+import type { ErrorMap, Response_ACKNAK } from '@skybrush/flockwave-spec';
 import color from 'color';
 import get from 'lodash-es/get';
 import type { Message, MultiAsyncOperationResponseBody } from './types';
@@ -115,13 +115,15 @@ export function extractResultOrReceiptFromMaybeAsyncResponse<T>(
  * object having keys named `status` and `error` (which is the
  * case for many Flockwave messages.)
  */
-export function extractResponseForId(
-  message: Record<string, unknown>,
+export function extractResponseForId<T>(
+  message: Message<{
+    error?: ErrorMap;
+    [k: string]: any;
+  }>,
   id: string,
   options: { error?: string; key?: string } = {}
 ) {
-  /* @ts-ignore */
-  const errors: Record<string, unknown> = get(message, 'body.error');
+  const errors = message?.body?.error;
 
   if (typeof errors === 'object' && errors[id] !== undefined) {
     // Response indicates an error for the given ID
@@ -136,12 +138,14 @@ export function extractResponseForId(
   }
 
   const { key = 'status' } = options;
+  const results = message?.body?.[key];
 
-  /* @ts-ignore */
-  const results: Record<string, unknown> = get(message, 'body.' + key);
-
-  if (typeof results === 'object' && typeof results[id] !== 'undefined') {
-    return results[id];
+  if (
+    typeof results === 'object' &&
+    results !== null &&
+    typeof results[id] !== 'undefined'
+  ) {
+    return results[id] as T;
   }
 
   throw new Error(

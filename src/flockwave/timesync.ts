@@ -4,6 +4,21 @@ import sortBy from 'lodash-es/sortBy';
 import sumBy from 'lodash-es/sumBy';
 
 import { MAX_ROUNDTRIP_TIME } from '~/features/servers/constants';
+import type MessageHub from './messages';
+import type {
+  Response_ACKNAK,
+  Response_SYSTIME,
+} from '@skybrush/flockwave-spec';
+import type { Message } from './types';
+
+type ClockSkewEstimationOptions = {
+  method?: 'single' | 'threshold' | 'accurate';
+};
+
+export type ClockSkewEstimate = {
+  clockSkew: number | null;
+  roundTripTime: number;
+};
 
 /**
  * Estimates the clock skew between the local computer and the remote server
@@ -13,15 +28,15 @@ import { MAX_ROUNDTRIP_TIME } from '~/features/servers/constants';
  * @param {object} messageHub  the message hub that will send the SYS-TIME message
  * @param {string} method  the estimation method to use; "single" uses a single
  *        measurement only
- * @return {Promise} a promose that resolves to an object with two keys:
+ * @return promose that resolves to an object with two keys:
  *         `clockSkew` and `roundTripTime`, both of them are represented as
  *         milliseconds. The clock skew will be positive if the server is
  *         "ahead" of us and negative if it is "behind" us.
  */
 export async function estimateClockSkewAndRoundTripTime(
-  messageHub,
-  options = {}
-) {
+  messageHub: MessageHub,
+  options: ClockSkewEstimationOptions = {}
+): Promise<ClockSkewEstimate> {
   const { method = 'single' } = options;
 
   if (method === 'threshold') {
@@ -116,7 +131,8 @@ export async function estimateClockSkewAndRoundTripTime(
 
   // This is basically Cristian's algorithm below
   const sentAt = performance.now();
-  const response = await messageHub.sendMessage('SYS-TIME');
+  const response: Message<Response_SYSTIME> =
+    await messageHub.sendMessage('SYS-TIME');
   const receivedAt = performance.now();
   const localClockAtArrival = Date.now();
   const roundTripTime = receivedAt - sentAt;
@@ -145,8 +161,11 @@ export async function estimateClockSkewAndRoundTripTime(
  * Sends a message to the server that will adjust its clock by the currently
  * calculated clock skew to match the local time.
  */
-export async function adjustServerTimeToMatchLocalTime(messageHub, clockSkew) {
-  let response;
+export async function adjustServerTimeToMatchLocalTime(
+  messageHub: MessageHub,
+  clockSkew: number
+) {
+  let response: Message<Response_SYSTIME | Response_ACKNAK> | undefined;
 
   try {
     response = await messageHub.sendMessage({
@@ -160,9 +179,10 @@ export async function adjustServerTimeToMatchLocalTime(messageHub, clockSkew) {
   const { body } = response || {};
 
   if (!body || body.type !== 'SYS-TIME') {
+    const { reason } = body as Response_ACKNAK;
     throw new Error(
-      body && body.type === 'ACK-NAK' && response.reason
-        ? `Failed to adjust server time: ${response.reason}`
+      body && body.type === 'ACK-NAK' && reason
+        ? `Failed to adjust server time: ${reason}`
         : 'Failed to adjust server time'
     );
   }
