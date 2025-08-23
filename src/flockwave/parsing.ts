@@ -2,8 +2,10 @@
  * @file Utility functions to parse data out of Flockwave messages.
  */
 
+import type { Response_ACKNAK } from '@skybrush/flockwave-spec';
 import color from 'color';
 import get from 'lodash-es/get';
+import type { Message, MultiAsyncOperationResponseBody } from './types';
 
 /**
  * Converts a color in RGB565 format to a hex value.
@@ -52,15 +54,18 @@ const MESSAGES_WITH_RECEIPTS: Record<string, boolean> = {
  * Helper function that throws an error if the received message was an
  * ACK-NAK message or a message without a type, and returns the message intact otherwise.
  */
-export function ensureNotNAK<T>(message: T): T {
-  /* @ts-ignore */
+export function ensureNotNAK<T>(message: Message<T>): Message<T> {
   const { body } = message || {};
+
+  /* @ts-ignore */
   const { type } = body || {};
 
   if (!type) {
     throw new Error('Received message has no type');
   } else if (type === 'ACK-NAK') {
-    throw new Error(body.reason || 'ACK-NAK received; no reason given');
+    throw new Error(
+      (body as Response_ACKNAK).reason ?? 'ACK-NAK received; no reason given'
+    );
   }
 
   return message;
@@ -78,22 +83,19 @@ export function ensureNotNAK<T>(message: T): T {
  * @throws Error  if the receipt or result cannot be extracted; the message of the
  *         error provides a human-readable reason
  */
-export function extractResultOrReceiptFromMaybeAsyncResponse(
-  message: Record<string, unknown>,
+export function extractResultOrReceiptFromMaybeAsyncResponse<T>(
+  message: Message<Response_ACKNAK | MultiAsyncOperationResponseBody<T>>,
   objectId: string
-) {
+): { result?: T; receipt?: string } {
   const { body } = ensureNotNAK(message);
-
-  /* @ts-ignore */
-  const { type } = body;
+  const checkedBody = body as MultiAsyncOperationResponseBody<T>;
+  const { type } = checkedBody;
 
   if (MESSAGES_WITH_RECEIPTS[type]) {
     // We may still have a rejection here
-    /* @ts-ignore */
-    const { error, receipt, result } = body;
+    const { error, receipt, result } = checkedBody;
     if (error && error[objectId] !== undefined) {
-      /* @ts-ignore */
-      throw new Error(body.error[objectId] || 'Failed to execute command');
+      throw new Error(error[objectId] ?? 'Failed to execute command');
     } else if (result && result[objectId] !== undefined) {
       return { result: result[objectId] };
     } else if (receipt && receipt[objectId] !== undefined) {

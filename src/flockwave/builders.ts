@@ -26,15 +26,6 @@ export type MessageBody = {
 };
 
 /**
- * Creates a blank, partial message body with the given type.
- *
- * @param  type  the type of the message
- */
-export const createMessageBodyWithType = (type: string): MessageBody => ({
-  type,
-});
-
-/**
  * Creates an ASYNC-CANCEL (cancellation request) message.
  *
  * @param  receiptIds  IDs of the asynchronous operation receipts that should be cancelled

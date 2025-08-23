@@ -5,14 +5,25 @@
 import has from 'lodash-es/has';
 import isObject from 'lodash-es/isObject';
 import { nanoid } from 'nanoid';
-import pDefer from 'p-defer';
+import pDefer, { type DeferredPromise } from 'p-defer';
 import pProps from 'p-props';
 import pTimeout from 'p-timeout';
+import {
+  Response_ASYNCCANCEL,
+  type Notification_ASYNCRESP,
+  type Notification_ASYNCST,
+  type Notification_ASYNCTIMEOUT,
+  type Response_ACKNAK,
+  type Response_ASYNCRESUME,
+  type Response_DEVINF,
+  type Response_DEVLISTSUB,
+  type Response_DEVSUB,
+  type Response_DEVUNSUB,
+} from '@skybrush/flockwave-spec';
 
 import {
   createCancellationRequest,
   createCommandRequest,
-  createMessageBodyWithType,
   createResumeRequest,
 } from './builders';
 import { OperationExecutor } from './operations';
@@ -23,6 +34,7 @@ import {
 import { QueryHandler } from './queries';
 import { validateObjectId } from './validation';
 import version from './version';
+import type { Body, Message, MultiAsyncOperationResponseBody } from './types';
 
 /**
  * Creates a new Flockwave message ID.
@@ -36,10 +48,14 @@ const createMessageId = () => nanoid(8);
  * parses it to an object consisting of the command itself, the positional
  * and the keyword arguments.
  */
-export function parseCommandFromString(string) {
+export function parseCommandFromString(string: string): {
+  command: string;
+  args: string[];
+  kwds: Record<string, unknown>;
+} {
   const parts = string && string.length > 0 ? string.split(/\s+/) : [''];
   return {
-    command: parts[0],
+    command: parts[0] ?? '',
     args: parts.slice(1),
     kwds: {},
   };
@@ -48,14 +64,14 @@ export function parseCommandFromString(string) {
 /**
  * Creates a new Flockwave message with the given body.
  *
- * @param {Object} body  the body of the message to send, or the type of
+ * @param body  the body of the message to send, or the type of
  *        the message to send (in which case an appropriate body with
  *        only the given type is created)
  * @return {Object}  the Flockwave message with the given body
  */
 function createMessage(body = {}) {
   if (!isObject(body)) {
-    body = createMessageBodyWithType(body);
+    body = { type: body };
   }
 
   return {
@@ -70,9 +86,9 @@ function createMessage(body = {}) {
  * hub changes while waiting for a response from the server.
  */
 export class EmitterChangedError extends Error {
-  constructor(message) {
+  constructor(message?: string) {
     super(
-      message || 'Message hub emitter changed while waiting for a response'
+      message ?? 'Message hub emitter changed while waiting for a response'
     );
   }
 }
@@ -82,8 +98,8 @@ export class EmitterChangedError extends Error {
  * emitter being associated to the hub.
  */
 export class NoEmitterError extends Error {
-  constructor(message) {
-    super(message || 'No emitter was associated to the message hub');
+  constructor(message?: string) {
+    super(message ?? 'No emitter was associated to the message hub');
   }
 }
 
@@ -93,7 +109,12 @@ export class NoEmitterError extends Error {
  * <code>MessageHub.Timeout</code>.
  */
 export class MessageTimeout extends Error {
-  constructor(messageId) {
+  public messageId: string;
+  public userMessage: string;
+  public hideStackTrace: boolean;
+  public isTimeout: boolean;
+
+  constructor(messageId: string) {
     super(`Response to message ${messageId} timed out`);
     this.messageId = messageId;
     this.userMessage = 'Response timed out';
@@ -108,7 +129,11 @@ export class MessageTimeout extends Error {
  * ASYNC-TIMEOUT message.
  */
 export class CommandExecutionTimeout extends Error {
-  constructor(receipt) {
+  public receipt: string;
+  public userMessage: string;
+  public hideStackTrace: boolean;
+
+  constructor(receipt: string) {
     super();
     this.receipt = receipt;
     this.message = `Response to command ${receipt} timed out`;
@@ -122,7 +147,7 @@ export class CommandExecutionTimeout extends Error {
  * an ASYNC-TIMEOUT message.
  */
 export class ServerSideCommandExecutionTimeout extends CommandExecutionTimeout {
-  constructor(receipt) {
+  constructor(receipt: string) {
     super(receipt);
     this.message += ' (no response from target)';
     this.userMessage += ' (no response from target)';
@@ -135,7 +160,7 @@ export class ServerSideCommandExecutionTimeout extends CommandExecutionTimeout {
  * command execution request in time.
  */
 export class ClientSideCommandExecutionTimeout extends CommandExecutionTimeout {
-  constructor(receipt) {
+  constructor(receipt: string) {
     super(receipt);
     this.message += ' (no response from server)';
     this.userMessage += ' (no response from server)';
@@ -148,8 +173,10 @@ export class ClientSideCommandExecutionTimeout extends CommandExecutionTimeout {
  * operation on the server.
  */
 export class CancellationFailedError extends Error {
-  constructor(receipt, message) {
-    super(message || `Cancellation of operation ${receipt} failed`);
+  public receipt: string;
+
+  constructor(receipt: string, message?: string) {
+    super(message ?? `Cancellation of operation ${receipt} failed`);
     this.receipt = receipt;
   }
 }
@@ -159,7 +186,10 @@ export class CancellationFailedError extends Error {
  * a previously submitted asynchronous operation.
  */
 class CancelToken {
-  constructor(hub) {
+  private _hub: MessageHub;
+  private _receipt: string | undefined;
+
+  constructor(hub: MessageHub) {
     this._hub = hub;
     this._receipt = undefined;
   }
@@ -171,9 +201,9 @@ class CancelToken {
    * the token if you submit one along with a command request and the command is
    * executed on the server asynchronously.
    *
-   * @param {string} receipt  the receipt ID of the asynchronous operation
+   * @param receipt  the receipt ID of the asynchronous operation
    */
-  _activate(hub, receipt) {
+  _activate(hub: MessageHub, receipt: string) {
     if (this._hub !== hub) {
       throw new Error('Cancel token is owned by a different hub');
     }
@@ -193,7 +223,7 @@ class CancelToken {
    * Dispatches a message via the message hub of this cancel token that will
    * cancel the operation associated to this cancel token.
    */
-  cancel = async ({ allowFailure } = {}) => {
+  cancel = async ({ allowFailure }: { allowFailure?: boolean } = {}) => {
     if (!this._hub) {
       throw new Error('This token is not activated yet');
     }
@@ -224,19 +254,32 @@ class CancelToken {
   };
 }
 
+type PendingResponseOptions = {
+  timeout?: number;
+  onTimeout?: (receipt: string) => void;
+};
+
 /**
  * Lightweight class that stores the information necessary to resolve or
  * fail the promise that we return when the user sends a message via the
  * message hub.
  */
-class PendingResponse {
+class PendingResponse<T = unknown> {
+  private _messageId: string;
+  private _deferred: DeferredPromise<T>;
+  private _timeoutId?: ReturnType<typeof setTimeout>;
+  private _timeoutCallback?: (receipt: string) => void;
+
   /**
    * Constructor.
    *
    * @param {string} messageId  the identifier of the Skybrush message
    *        to which this pending response belongs
    */
-  constructor(messageId, { timeout = 5, onTimeout = undefined } = {}) {
+  constructor(
+    messageId: string,
+    { timeout = 5, onTimeout = undefined }: PendingResponseOptions = {}
+  ) {
     this._messageId = messageId;
     this._deferred = pDefer();
 
@@ -252,16 +295,16 @@ class PendingResponse {
   /**
    * The ID of the message associated to this pending response.
    */
-  get messageId() {
+  get messageId(): string {
     return this._messageId;
   }
 
   /**
    * Function to call when the response to the message has arrived.
    *
-   * @param  {Object} result the response to the message
+   * @param result  the response to the message
    */
-  resolve(result) {
+  resolve(result: T): void {
     this._clearTimeoutIfNeeded();
     this._deferred.resolve(result);
   }
@@ -270,9 +313,9 @@ class PendingResponse {
    * Function to call when we are explicitly rejecting the promise for the
    * response, even if the response has not timed out yet.
    *
-   * @param {Error} error  the error to reject the promise with
+   * @param error  the error to reject the promise with
    */
-  reject(error) {
+  reject(error: Error): void {
     this._clearTimeoutIfNeeded();
     this._deferred.reject(error);
   }
@@ -281,14 +324,14 @@ class PendingResponse {
    * Waits until the response is resolved, either with a result or with an
    * error.
    */
-  async wait() {
+  async wait(): Promise<T> {
     return this._deferred.promise;
   }
 
   /**
    * Clears the timeout associated to the pending response if needed.
    */
-  _clearTimeoutIfNeeded() {
+  _clearTimeoutIfNeeded(): void {
     if (this._timeoutId) {
       clearTimeout(this._timeoutId);
       this._timeoutId = undefined;
@@ -301,14 +344,27 @@ class PendingResponse {
    * client side, i.e. the client decided that it does not wait for the
    * response from the server any more.
    */
-  _onTimeout = () => {
+  _onTimeout = (): void => {
     this.reject(new MessageTimeout(this.messageId));
 
     if (this._timeoutCallback) {
-      this._timeoutCallback(this.receipt);
+      this._timeoutCallback(this.messageId);
     }
   };
 }
+
+type ProgressStatus = {
+  progress: { percentage?: number; message?: string };
+  suspended: boolean;
+  resume?: (value: unknown) => Promise<void>;
+};
+
+type PendingCommandExecutionOptions = {
+  timeout?: number;
+  onProgress?: (status: ProgressStatus) => void;
+  onResume?: (value: unknown) => Promise<void>;
+  onTimeout?: (receipt: string) => void;
+};
 
 /**
  * Lightweight class that stores the information necessary to resolve or
@@ -316,7 +372,16 @@ class PendingResponse {
  * (OBJ-CMD) via the message hub and we are waiting for the corresponding
  * ASYNC-RESP or ASYNC-TIMEOUT message.
  */
-class PendingCommandExecution {
+class PendingCommandExecution<T = unknown> {
+  private _receipt: string;
+  private _deferred: DeferredPromise<T>;
+  private _timeoutInMsec?: number;
+  private _timeoutId?: ReturnType<typeof setTimeout>;
+
+  private _progressCallback?: (status: ProgressStatus) => void;
+  private _resumeCallback?: (value: unknown) => Promise<void>;
+  private _timeoutCallback?: (receipt: string) => void;
+
   /**
    * Constructor.
    *
@@ -339,7 +404,15 @@ class PendingCommandExecution {
    * @param {function}  onTimeout  an optional function to call when the
    *        result of the command did not arrive in time
    */
-  constructor(receipt, { timeout = 5, onProgress, onResume, onTimeout } = {}) {
+  constructor(
+    receipt: string,
+    {
+      timeout = 5,
+      onProgress,
+      onResume,
+      onTimeout,
+    }: PendingCommandExecutionOptions = {}
+  ) {
     this._receipt = receipt;
     this._deferred = pDefer();
     this._progressCallback = onProgress;
@@ -356,20 +429,26 @@ class PendingCommandExecution {
     }
   }
 
+  notifyCancelled(error: Error): void {
+    this._clearTimeoutIfNeeded();
+    this._deferred.reject(error);
+  }
+
   /**
    * Function to call when the response to the command execution request has
    * arrived.
    *
-   * @param  {Object} body the body of the response to the command execution request
+   * @param body  the body of the response to the command execution request
    */
-  processResponseMessageBody = (body) => {
+  processResponseMessageBody = (body: Notification_ASYNCRESP) => {
     const { error, result } = body;
 
     this._clearTimeoutIfNeeded();
     if (error !== undefined) {
       this._deferred.reject(new Error(error));
     } else if (result !== undefined) {
-      this._deferred.resolve(result);
+      // TODO(ntamas): maybe add a type guard here?
+      this._deferred.resolve(result as T);
     } else {
       this._deferred.reject(
         new Error('Malformed response was provided by the server')
@@ -381,9 +460,9 @@ class PendingCommandExecution {
    * Function to call when a status update of the command execution request was
    * received.
    *
-   * @param  {Object} body the body of the status update message
+   * @param body  the body of the status update message
    */
-  processStatusUpdateMessageBody = (body) => {
+  processStatusUpdateMessageBody = (body: Notification_ASYNCST) => {
     const { progress, suspended = false } = body;
 
     this._restartTimeoutIfNeeded();
@@ -399,7 +478,7 @@ class PendingCommandExecution {
   /**
    * The receipt associated to this pending command execution.
    */
-  get receipt() {
+  get receipt(): string {
     return this._receipt;
   }
 
@@ -408,23 +487,22 @@ class PendingCommandExecution {
    * server side, i.e. the server has signalled that it is not waiting for
    * the execution of the command on the target any more.
    */
-  serverSideTimeout() {
-    this._clearTimeoutIfNeeded();
-    this._deferred.reject(new ServerSideCommandExecutionTimeout(this.receipt));
+  serverSideTimeout(): void {
+    this.notifyCancelled(new ServerSideCommandExecutionTimeout(this.receipt));
   }
 
   /**
    * Waits until the response is resolved, either with a result or with an
    * error.
    */
-  async wait() {
+  async wait(): Promise<T> {
     return this._deferred.promise;
   }
 
   /**
    * Clears the timeout associated to the pending response if needed.
    */
-  _clearTimeoutIfNeeded() {
+  _clearTimeoutIfNeeded(): void {
     if (this._timeoutId !== undefined) {
       clearTimeout(this._timeoutId);
       this._timeoutId = undefined;
@@ -437,7 +515,7 @@ class PendingCommandExecution {
    * client side, i.e. the client decided that it does not wait for the
    * response from the server any more.
    */
-  _onTimeout = () => {
+  _onTimeout = (): void => {
     /* Call the callback first and then reject because the callback
      * might enqueue a cancellation request first to the server */
     if (this._timeoutCallback) {
@@ -450,7 +528,7 @@ class PendingCommandExecution {
   /**
    * Restarts the timeout associated to the pending response if needed.
    */
-  _restartTimeoutIfNeeded() {
+  _restartTimeoutIfNeeded(): void {
     this._clearTimeoutIfNeeded();
     if (this._timeoutInMsec !== undefined) {
       this._timeoutId = setTimeout(this._onTimeout, this._timeoutInMsec);
@@ -462,12 +540,14 @@ class PendingCommandExecution {
  * Abstract superclass for components related to a message hub.
  */
 class MessageHubRelatedComponent {
+  protected _hub?: MessageHub;
+
   /**
    * Constructor.
    *
-   * @param {MessageHub} hub  the message hub that the object will attach to
+   * @param hub  the message hub that the object will attach to
    */
-  constructor(hub) {
+  constructor(hub: MessageHub) {
     this._hub = undefined;
     this._setHub(hub);
   }
@@ -475,7 +555,7 @@ class MessageHubRelatedComponent {
   /**
    * Returns the message hub that the object is attached to.
    */
-  get hub() {
+  get hub(): MessageHub | undefined {
     return this._hub;
   }
 
@@ -483,14 +563,14 @@ class MessageHubRelatedComponent {
    * Callback function that is called when the object is attached to a new
    * message hub. Must be overridden in subclasses.
    */
-  _onAttachedToHub() {}
+  _onAttachedToHub(): void {}
 
   /**
    * Callback function that is called when the object is detached from a
    * message hub. Must be overridden in subclasses. The default implementation
    * throws an exception to prevent detachment.
    */
-  _onDetachingFromHub() {
+  _onDetachingFromHub(): void {
     throw new Error('You may not detach this object from its message hub');
   }
 
@@ -501,9 +581,9 @@ class MessageHubRelatedComponent {
    * object. Once the object is attached to a hub, there is currently no
    * way to detach it.
    *
-   * @param {MessageHub} value  the new message hub to attach to
+   * @param value  the new message hub to attach to
    */
-  _setHub(value) {
+  _setHub(value: MessageHub): void {
     if (value === this._hub) {
       return;
     }
@@ -520,18 +600,29 @@ class MessageHubRelatedComponent {
   }
 }
 
+type AsyncResponseHandlerOptions = {
+  cancelToken?: CancelToken;
+  onProgress?: (status: ProgressStatus) => void;
+  timeout?: number;
+};
+
 /**
  * Manager class that keeps track of async operations that are happening on
  * the server and watches the incoming ASYNC-RESP and ASYNC-TIMEOUT messages so
  * it gets notified whenever a pending async operation has finished.
  */
 class AsyncOperationManager extends MessageHubRelatedComponent {
+  timeout: number;
+
+  private _pendingOperations: Record<string, PendingCommandExecution>;
+  private _earlyResponses: Record<string, Notification_ASYNCRESP>;
+
   /**
    * Constructor. Creates a new manager that will attach to the given
    * message hub to inspect the incoming ASYNC-RESP and ASYNC-TIMEOUT messages.
    *
-   * @param {MessageHub} hub  the message hub that the manager will attach to
-   * @param {number} timeout  number of seconds to wait for an ASYNC-RESP or
+   * @param hub  the message hub that the manager will attach to
+   * @param timeout  number of seconds to wait for an ASYNC-RESP or
    *        ASYNC-TIMEOUT message after having received a receipt in a response
    *        object instead of the actual result (indicating that the operation
    *        is being executed asynchronously on the server). The reference
@@ -539,7 +630,7 @@ class AsyncOperationManager extends MessageHubRelatedComponent {
    *        timeout, but the vast majority of cases should finish in less than
    *        a minute. The timeout can be overridden on a per-command basis.
    */
-  constructor(hub, timeout = 60) {
+  constructor(hub: MessageHub, { timeout = 60 }: { timeout?: number } = {}) {
     super(hub);
 
     this.timeout = timeout;
@@ -548,7 +639,7 @@ class AsyncOperationManager extends MessageHubRelatedComponent {
   }
 
   _onAttachedToHub() {
-    this._hub.registerNotificationHandlers({
+    this._hub!.registerNotificationHandlers({
       'ASYNC-RESP': this._onResponseReceived.bind(this),
       'ASYNC-ST': this._onStatusUpdateReceived.bind(this),
       'ASYNC-TIMEOUT': this._onTimeoutReceived.bind(this),
@@ -563,13 +654,9 @@ class AsyncOperationManager extends MessageHubRelatedComponent {
    *
    * @param {Error} error  the error to reject the promises with
    */
-  cancelAll(error) {
-    const pendingOperations = this._pendingOperations;
-    for (const receipt of Object.keys(pendingOperations)) {
-      const pendingOperation = pendingOperations[receipt];
-      if (pendingOperation) {
-        pendingOperation.reject(error);
-      }
+  cancelAll(error: Error) {
+    for (const pendingOperation of Object.values(this._pendingOperations)) {
+      pendingOperation.notifyCancelled(error);
     }
 
     this._pendingOperations = {};
@@ -607,16 +694,16 @@ class AsyncOperationManager extends MessageHubRelatedComponent {
    * appropriate human-readable message.</li>
    * </ul>
    *
-   * @param  {object}  response  the response received from the server that
+   * @param  response  the response received from the server that
    *         contains the keys mentioned above
-   * @param  {string}  objectId  the ID of the single object whose result we are
+   * @param  objectId  the ID of the single object whose result we are
    *         interested in
-   * @param  {CancelToken} cancelToken  when specified, and the response contains
+   * @param  options.cancelToken  when specified, and the response contains
    *         a receipt ID, the cancel token will be activated with this receipt
    *         ID such that calling its `cancel()` method later on will send
    *         a request to cancel the asynchronous operation corresponding to the
    *         given receipt ID.
-   * @param  {function} onProgress  when specified, this function will be called
+   * @param  options.onProgress  when specified, this function will be called
    *         whenever we receive a status update from the server regarding the
    *         execution of the command this object belongs to. The function will
    *         be called with an object having at most three keys: `progress`
@@ -624,35 +711,48 @@ class AsyncOperationManager extends MessageHubRelatedComponent {
    *         (a number between 0 and 100) and `message` (a human-readable
    *         text message)), `suspended` (whether the execution is suspended)
    *         and `resume` (a callback function to resume execution).
-   * @param  {boolean} noThrow   when set to true, ensures that the function
+   * @param  options.noThrow   when set to true, ensures that the function
    *         does not throw an exception when the async response indicated an
    *         error; returns the error object instead as if it was the result
-   * @param  {number?} timeout   when specified and positive, the number of
+   * @param  options.timeout   when specified and positive, the number of
    *         seconds to wait for a response. When omitted or negative, uses the
    *         default timeout from the async operation manager object
    * @return {Promise} a promise that resolves to the result of the operation
    *         or errors out in case of execution errors and timeouts
    */
-  async handleMultiAsyncResponseForSingleId(
-    response,
-    objectId,
-    { cancelToken, noThrow, onProgress, timeout } = {}
+  async handleMultiAsyncResponseForSingleId<T>(
+    response: Message<Response_ACKNAK | MultiAsyncOperationResponseBody<T>>,
+    objectId: string,
+    options: AsyncResponseHandlerOptions
+  ): Promise<T>;
+  async handleMultiAsyncResponseForSingleId<T>(
+    response: Message<Response_ACKNAK | MultiAsyncOperationResponseBody<T>>,
+    objectId: string,
+    options: AsyncResponseHandlerOptions & { noThrow: boolean }
+  ): Promise<T | Error>;
+  async handleMultiAsyncResponseForSingleId<T>(
+    response: Message<Response_ACKNAK | MultiAsyncOperationResponseBody<T>>,
+    objectId: string,
+    options: AsyncResponseHandlerOptions & { noThrow?: boolean } = {}
   ) {
+    const { cancelToken, noThrow, onProgress, timeout } = options;
     const { receipt, result } = extractResultOrReceiptFromMaybeAsyncResponse(
       response,
       objectId
     );
 
     if (receipt) {
-      const execution = new PendingCommandExecution(receipt, {
+      const execution = new PendingCommandExecution<T>(receipt, {
         timeout:
           typeof timeout === 'number' && timeout > 0 ? timeout : this.timeout,
         onProgress,
-        onResume: (value) => this._sendSingleResumeRequest(receipt, value),
+        onResume: async (value) => {
+          await this._sendSingleResumeRequest(receipt, value);
+        },
         onTimeout: this._onResponseTimedOut,
       });
 
-      if (cancelToken) {
+      if (cancelToken && this._hub) {
         cancelToken._activate(this._hub, receipt);
       }
 
@@ -675,7 +775,7 @@ class AsyncOperationManager extends MessageHubRelatedComponent {
         delete this._pendingOperations[receipt];
       }
     } else {
-      return result;
+      return result!;
     }
   }
 
@@ -685,7 +785,7 @@ class AsyncOperationManager extends MessageHubRelatedComponent {
    *
    * @param {string} message  the message sent by the server
    */
-  _onResponseReceived(message) {
+  _onResponseReceived(message: Message<Notification_ASYNCRESP>) {
     const { id } = message.body;
     const pendingOperation = this._pendingOperations[id];
     if (pendingOperation) {
@@ -709,7 +809,7 @@ class AsyncOperationManager extends MessageHubRelatedComponent {
    *
    * @param {string} message  the message sent by the server
    */
-  _onStatusUpdateReceived(message) {
+  _onStatusUpdateReceived(message: Message<Notification_ASYNCST>) {
     const { id } = message.body;
     const pendingOperation = this._pendingOperations[id];
     if (pendingOperation) {
@@ -724,11 +824,18 @@ class AsyncOperationManager extends MessageHubRelatedComponent {
    * Sends a message to the server to cancel the operation, just in case the
    * server is busy chasing its own tail when it shouldn't.
    *
-   * @param {string} receipt  the receipt ID for which the server failed
-   *        to respond
+   * @param receipt  the receipt ID for which the server failed to respond
    */
-  _onResponseTimedOut = async (receipt) => {
+  _onResponseTimedOut = async (receipt: string) => {
+    if (!this._hub) {
+      console.warn(
+        `Response to operation with receipt=${receipt} timed out and we have no message hub`
+      );
+      return;
+    }
+
     console.warn(`Response to operation with receipt=${receipt} timed out`);
+
     try {
       await this._hub._sendCancellationRequest([receipt]);
     } catch {
@@ -741,10 +848,8 @@ class AsyncOperationManager extends MessageHubRelatedComponent {
   /**
    * Handler called when the server signals a timeout for an asynchronous
    * operation in the form of an ASYNC-TIMEOUT notification.
-   *
-   * @param {string} message  the message sent by the server
    */
-  _onTimeoutReceived(message) {
+  _onTimeoutReceived(message: Message<Notification_ASYNCTIMEOUT>) {
     const { ids } = message.body;
     for (const id of ids) {
       const pendingOperation = this._pendingOperations[id];
@@ -756,14 +861,21 @@ class AsyncOperationManager extends MessageHubRelatedComponent {
     }
   }
 
-  _sendSingleResumeRequest(receiptId, value) {
+  _sendSingleResumeRequest(receiptId: string, value?: unknown) {
+    if (!this._hub) {
+      console.warn('Cannot send resume request without a message hub attached');
+      return;
+    }
+
     if (value !== undefined) {
-      return this.hub._sendResumeRequest([receiptId], { [receiptId]: value });
+      return this._hub._sendResumeRequest([receiptId], { [receiptId]: value });
     } else {
-      return this.hub._sendResumeRequest([receiptId]);
+      return this._hub._sendResumeRequest([receiptId]);
     }
   }
 }
+
+type SubscriptionCallback<T = unknown> = (value: T) => void;
 
 /**
  * Manager class that keeps track of all device tree subscriptions that other
@@ -774,20 +886,27 @@ class AsyncOperationManager extends MessageHubRelatedComponent {
  * server and reconnects to it later.
  */
 class DeviceTreeSubscriptionManager extends MessageHubRelatedComponent {
-  constructor(hub) {
+  /**
+   * Mapping from device tree paths to list of callback functions that must
+   * be called when the device tree changes under the subtree described by
+   * the path.
+   */
+  _subscriptions: Map<string, Array<SubscriptionCallback>>;
+
+  /**
+   * Set of device tree paths we are currently subscribed to on the server;
+   * `null` means not known yet.
+   */
+  _subscriptionsOnServer: Set<string> | null = null;
+
+  /**
+   * Field for storing a promise while a subscription update is in progress.
+   */
+  _subscriptionUpdateInProgress: DeferredPromise<void> | null = null;
+
+  constructor(hub: MessageHub) {
     super(hub);
-
-    // Mapping from device tree paths to list of callback functions that must
-    // be called when the device tree changes under the subtree described by
-    // the path.
     this._subscriptions = new Map();
-
-    // Array of device tree paths we are currently subscribed to on the server;
-    // `null` means not known yet
-    this._subscriptionsOnServer = null;
-
-    // Field for storing a promise while a subscription update is in progress.
-    this._subscriptionUpdateInProgress = null;
   }
 
   /**
@@ -810,7 +929,7 @@ class DeviceTreeSubscriptionManager extends MessageHubRelatedComponent {
       return;
     }
 
-    let response;
+    let response: Message<Response_DEVLISTSUB>;
 
     try {
       response = await this._hub.sendMessage('DEV-LISTSUB');
@@ -835,14 +954,17 @@ class DeviceTreeSubscriptionManager extends MessageHubRelatedComponent {
    * called whenever the part of the device tree denoted by the given path
    * is updated.
    */
-  async subscribe(path, callback) {
+  async subscribe(
+    path: string,
+    callback: SubscriptionCallback
+  ): Promise<() => void> {
     const newlyAdded = !this._subscriptions.has(path);
 
     if (newlyAdded) {
       this._subscriptions.set(path, []);
     }
 
-    const callbacks = this._subscriptions.get(path);
+    const callbacks = this._subscriptions.get(path)!;
     callbacks.push(callback);
 
     try {
@@ -872,12 +994,12 @@ class DeviceTreeSubscriptionManager extends MessageHubRelatedComponent {
    * Unsubscribes from the given path of the device tree with the given callback.
    * No-op if the callback is not subscribed.
    */
-  async unsubscribe(path, callback) {
-    if (!this._subscriptions.has(path)) {
+  async unsubscribe(path: string, callback: SubscriptionCallback) {
+    const callbacks = this._subscriptions.get(path);
+    if (!callbacks) {
       return;
     }
 
-    const callbacks = this._subscriptions.get(path);
     const index = callbacks.indexOf(callback);
 
     if (index >= 0) {
@@ -890,7 +1012,7 @@ class DeviceTreeSubscriptionManager extends MessageHubRelatedComponent {
     }
   }
 
-  _onAttachedToHub() {
+  _onAttachedToHub(): void {
     if (this._hub) {
       this._hub.registerNotificationHandlers({
         'DEV-INF': this._onDeviceTreeNodeValuesChanged.bind(this),
@@ -900,13 +1022,13 @@ class DeviceTreeSubscriptionManager extends MessageHubRelatedComponent {
     }
   }
 
-  _onDeviceTreeNodeValuesChanged(message) {
-    for (const [path, value] of Object.entries(message.body.values)) {
+  _onDeviceTreeNodeValuesChanged(message: Message<Response_DEVINF>): void {
+    for (const [path, value] of Object.entries(message.body.values!)) {
       this._handleUpdatedValueOfDeviceTreeNode(path, value);
     }
   }
 
-  _handleUpdatedValueOfDeviceTreeNode(path, value) {
+  _handleUpdatedValueOfDeviceTreeNode(path: string, value: unknown): void {
     const callbacks = this._subscriptions.get(path);
     if (callbacks) {
       for (const callback of callbacks) {
@@ -918,7 +1040,7 @@ class DeviceTreeSubscriptionManager extends MessageHubRelatedComponent {
   /**
    * Updates the list of subscriptions on the server if needed.
    */
-  async _updateSubscriptions() {
+  async _updateSubscriptions(): Promise<void> {
     if (this._subscriptionUpdateInProgress) {
       await this._subscriptionUpdateInProgress.promise;
       // PERF: This could be optimized by only allowing one pending update,
@@ -945,7 +1067,7 @@ class DeviceTreeSubscriptionManager extends MessageHubRelatedComponent {
       }
     }
 
-    for (const path of this._subscriptionsOnServer.values(path)) {
+    for (const path of this._subscriptionsOnServer) {
       if (!this._subscriptions.has(path)) {
         toUnsubscribe.push(path);
       }
@@ -963,7 +1085,7 @@ class DeviceTreeSubscriptionManager extends MessageHubRelatedComponent {
     this._subscriptionUpdateInProgress = pDefer();
 
     if (toUnsubscribe.length > 0) {
-      const response = await this._hub.sendMessage({
+      const response = await this._hub.sendMessage<Response_DEVUNSUB>({
         type: 'DEV-UNSUB',
         paths: toUnsubscribe,
       });
@@ -977,12 +1099,14 @@ class DeviceTreeSubscriptionManager extends MessageHubRelatedComponent {
       }
 
       if (response?.body?.success) {
-        this._subscriptionsOnServer.deleteAll(...response.body.success);
+        for (const path of response?.body?.success) {
+          this._subscriptionsOnServer.delete(path);
+        }
       }
     }
 
     if (toSubscribe.length > 0) {
-      let response = await this._hub.sendMessage({
+      let response: Message<Response_DEVSUB> = await this._hub.sendMessage({
         type: 'DEV-SUB',
         paths: toSubscribe,
         lazy: true,
@@ -997,15 +1121,19 @@ class DeviceTreeSubscriptionManager extends MessageHubRelatedComponent {
       }
 
       if (response?.body?.success) {
-        this._subscriptionsOnServer.addAll(...response.body.success);
+        for (const path of response?.body?.success) {
+          this._subscriptionsOnServer.add(path);
+        }
 
         // Get the initial values
-        response = await this._hub.sendMessage({
-          type: 'DEV-INF',
-          paths: response?.body?.success,
-        });
+        let infResponse: Message<Response_DEVINF> = await this._hub.sendMessage(
+          {
+            type: 'DEV-INF',
+            paths: response?.body?.success,
+          }
+        );
 
-        for (const [path, value] of Object.entries(response.body.values)) {
+        for (const [path, value] of Object.entries(infResponse.body.values!)) {
           this._handleUpdatedValueOfDeviceTreeNode(path, value);
         }
       }
@@ -1020,20 +1148,38 @@ class DeviceTreeSubscriptionManager extends MessageHubRelatedComponent {
   }
 }
 
+type Emitter = (event: string, message: unknown) => void;
+type NotificationHandler<T = any> = (message: T) => void;
+
 /**
  * Message hub class that can be used to send Flockwave messages and get
  * promises that will resolve when the server responds to them.
  */
 export default class MessageHub {
+  _emitter: Emitter | undefined;
+  timeout: number;
+
+  _asyncOperationManager: AsyncOperationManager;
+  _deviceTreeSubscriptionManager: DeviceTreeSubscriptionManager;
+  _executor: OperationExecutor | undefined;
+  _query: QueryHandler | undefined;
+
+  _pendingResponses: Record<string, PendingResponse<unknown>>;
+  _notificationHandlers: Record<string, NotificationHandler[]>;
+
+  _waitUntilReadyDeferred: DeferredPromise<void> | undefined;
+
   /**
    * Constructor.
    *
-   * @param {function} emitter  a function to call when the hub wants to
-   *        emit a new message
-   * @param {number}   timeout  number of seconds to wait for a response for
-   *        a message from the server before we consider it as a timeout
+   * @param emitter  a function to call when the hub wants to emit a new message
+   * @param timeout  number of seconds to wait for a response for a message from
+   *        the server before we consider it as a timeout
    */
-  constructor(emitter, timeout = 5) {
+  constructor(
+    emitter: Emitter | undefined,
+    { timeout = 5 }: { timeout?: number } = {}
+  ) {
     this.emitter = emitter;
     this.timeout = timeout;
 
@@ -1056,7 +1202,7 @@ export default class MessageHub {
    * Returns the emitter function that the hub uses.
    * @type {function}
    */
-  get emitter() {
+  get emitter(): Emitter | undefined {
     return this._emitter;
   }
 
@@ -1065,9 +1211,9 @@ export default class MessageHub {
    * called with the name of the event to send (typically @code{fw}) and
    * the message itself
    *
-   * @param {function} value  the new emitter function
+   * @param value  the new emitter function
    */
-  set emitter(value) {
+  set emitter(value: Emitter | undefined) {
     if (this._emitter === value) {
       return;
     }
@@ -1088,7 +1234,7 @@ export default class MessageHub {
    * Returns an object that can be used to execute commonly used operations on
    * the server via the message hub.
    */
-  get execute() {
+  get execute(): OperationExecutor {
     if (!this._executor) {
       this._executor = new OperationExecutor(this);
     }
@@ -1100,7 +1246,7 @@ export default class MessageHub {
    * Returns an object that can be used to send commonly used queries to the
    * server via the message hub.
    */
-  get query() {
+  get query(): QueryHandler {
     if (!this._query) {
       this._query = new QueryHandler(this);
     }
@@ -1112,21 +1258,19 @@ export default class MessageHub {
    * Cancels all pending responses by rejecting the corresponding promises
    * with an error.
    */
-  cancelAllPendingResponses() {
-    const pendingResponses = this._pendingResponses;
-    for (const messageId of Object.keys(pendingResponses)) {
-      const pendingResponse = pendingResponses[messageId];
-      if (pendingResponse) {
-        pendingResponse.reject(new EmitterChangedError());
-      }
+  cancelAllPendingResponses(): void {
+    for (const pendingResponse of Object.values(this._pendingResponses)) {
+      pendingResponse.reject(new EmitterChangedError());
     }
+
+    this._pendingResponses = {};
   }
 
   /**
    * Returns whether the message hub can send messages now (i.e. has a
    * message emitter).
    */
-  canSend() {
+  canSend(): boolean {
     return Boolean(this._emitter);
   }
 
@@ -1135,16 +1279,16 @@ export default class MessageHub {
    * cancel asynchronous operations that were dispatched through this message
    * hub to the server.
    */
-  createCancelToken() {
+  createCancelToken(): CancelToken {
     return new CancelToken(this);
   }
 
   /**
    * Feeds the message hub with an incoming message to process.
    *
-   * @param {Object} message  the message to process
+   * @param message  the message to process
    */
-  processIncomingMessage(message) {
+  processIncomingMessage(message: Message): void {
     const { refs } = message;
 
     // If this message is a response to something else, call the associated
@@ -1157,8 +1301,7 @@ export default class MessageHub {
     } else {
       // This message is simply a notification, so let's check whether there
       // is an associated notification handler and call that
-      const type = message.body ? message.body.type : undefined;
-      const handlers = this._notificationHandlers[type];
+      const handlers = this._notificationHandlers[message?.body?.type];
       if (handlers) {
         for (const handler of handlers) {
           handler(message);
@@ -1175,16 +1318,16 @@ export default class MessageHub {
    * server with the given type. It will <em>not</em> be called for
    * responses or requests.
    *
-   * @param {string} type  the type to register the handler for
-   * @param {function} handler  the handler that will be called whenever a
+   * @param type  the type to register the handler for
+   * @param handler  the handler that will be called whenever a
    *        notification of the given type is received
    */
-  registerNotificationHandler(type, handler) {
+  registerNotificationHandler(type: string, handler: NotificationHandler) {
     if (!has(this._notificationHandlers, type)) {
       this._notificationHandlers[type] = [];
     }
 
-    this._notificationHandlers[type].push(handler);
+    this._notificationHandlers[type]!.push(handler);
   }
 
   /**
@@ -1192,12 +1335,14 @@ export default class MessageHub {
    *
    * See {@link registerNotificationHandler} for more details.
    *
-   * @param {Object} typesAndHandlers  object mapping Flockwave message
+   * @param typesAndHandlers  object mapping Flockwave message
    *        types to the corresponding handlers to register
    */
-  registerNotificationHandlers(typesAndHandlers) {
-    for (const type of Object.keys(typesAndHandlers)) {
-      this.registerNotificationHandler(type, typesAndHandlers[type]);
+  registerNotificationHandlers(
+    typesAndHandlers: Record<string, NotificationHandler>
+  ) {
+    for (const [type, handler] of Object.entries(typesAndHandlers)) {
+      this.registerNotificationHandler(type, handler);
     }
   }
 
@@ -1206,22 +1351,18 @@ export default class MessageHub {
    *
    * The function won't be called for further notification received.
    *
-   * @param {string} type  the type to unregister the handler from
-   * @param {function} handler  the handler to unregister
+   * @param type  the type to unregister the handler from
+   * @param handler  the handler to unregister
    */
-  unregisterNotificationHandler(type, handler) {
-    if (
-      !has(this._notificationHandlers, type) ||
-      !this._notificationHandlers[type].includes(handler)
-    ) {
+  unregisterNotificationHandler(type: string, handler: NotificationHandler) {
+    const handlers = this._notificationHandlers[type];
+    if (!handlers || !handlers.includes(handler)) {
       throw new Error(
-        `Unable to unregister handler from ${type}. Handler doesn’t exist.`
+        `Unable to unregister handler from ${type}. Handler doesn't exist.`
       );
     }
 
-    this._notificationHandlers[type].splice(
-      this._notificationHandlers[type].indexOf(handler)
-    );
+    handlers.splice(handlers.indexOf(handler));
   }
 
   /**
@@ -1229,12 +1370,14 @@ export default class MessageHub {
    *
    * See {@link unregisterNotificationHandler} for more details.
    *
-   * @param {Object} typesAndHandlers  object mapping Flockwave message
-   *        types to the corresponding handlers to unregister
+   * @param typesAndHandlers  object mapping Flockwave message types to the
+   *        corresponding handlers to unregister
    */
-  unregisterNotificationHandlers(typesAndHandlers) {
-    for (const type of Object.keys(typesAndHandlers)) {
-      this.unregisterNotificationHandler(type, typesAndHandlers[type]);
+  unregisterNotificationHandlers(
+    typesAndHandlers: Record<string, NotificationHandler>
+  ) {
+    for (const [type, handler] of Object.entries(typesAndHandlers)) {
+      this.unregisterNotificationHandler(type, handler);
     }
   }
 
@@ -1260,24 +1403,33 @@ export default class MessageHub {
    * ASYNC-CANCEL response.</li>
    * </ul>
    *
-   * @param  {string}    uavId   ID of the UAV to send the request to
-   * @param  {string}    command the command to send to a UAV
-   * @param  {Object[]}  args    array of positional arguments to pass along
+   * @param  request.uavId   ID of the UAV to send the request to
+   * @param  request.command the command to send to a UAV
+   * @param  request.args    array of positional arguments to pass along
    *         with the command. May be undefined.
-   * @param  {Object}    kwds    mapping of keyword argument names to their
+   * @param  request.kwds    mapping of keyword argument names to their
    *         values; these are also passed with the command. May be
    *         undefined.
-   * @param  {Object}    options additional options to forward to the
+   * @param  options additional options to forward to the
    *         `handleMultiAsyncResponseForSingleId()` method of the
    *         AsyncOperationManager. Typical keys to use are `cancelToken`,
    *         `onProgress`, `timeout` and `noThrow`.
-   * @return {Promise} a promise that resolves to the response of the UAV
+   * @return a promise that resolves to the response of the UAV
    *         to the command or errors out in case of execution errors and
    *         timeouts.
    */
-  async sendCommandRequest({ uavId, command, args, kwds }, options) {
-    const request = createCommandRequest([uavId], command, args, kwds);
-    const response = await this.sendMessage(request);
+  async sendCommandRequest(
+    request: {
+      uavId: string;
+      command: string;
+      args?: unknown[];
+      kwds?: Record<string, unknown>;
+    },
+    options: AsyncResponseHandlerOptions
+  ): Promise<unknown> {
+    const { uavId, command, args, kwds } = request;
+    const message = createCommandRequest([uavId], command, args, kwds);
+    const response = await this.sendMessage(message);
     return this._asyncOperationManager.handleMultiAsyncResponseForSingleId(
       response,
       uavId,
@@ -1293,15 +1445,18 @@ export default class MessageHub {
    * a message within the time specified by the {@link MessageHub#timeout}
    * property.
    *
-   * @param {Object} body  the body of the message to send, or the type of
+   * @param body  the body of the message to send, or the type of
    *        the message to send (in which case an appropriate body with
    *        only the given type is created)
-   * @oaram {number|undefined} options.timeout  number of seconds to wait
+   * @param timeout  number of seconds to wait
    *        for a response. If `undefined`, then the default timeout of the
    *        message hub is used.
-   * @return {Promise} a promise that resolves to the response of the server
+   * @return a promise that resolves to the response of the server
    */
-  async sendMessage(body = {}, { timeout = undefined } = {}) {
+  async sendMessage<T = Body>(
+    body = {},
+    { timeout = undefined }: { timeout?: number } = {}
+  ): Promise<Message<T>> {
     if (!this._emitter) {
       console.warn(
         'sendMessage() was called before associating an emitter ' +
@@ -1322,7 +1477,8 @@ export default class MessageHub {
 
     this._pendingResponses[messageId] = pendingResponse;
     try {
-      return await pendingResponse.wait();
+      // TODO(ntamas): allow the user to pass in a type guard!
+      return (await pendingResponse.wait()) as Message<T>;
     } finally {
       delete this._pendingResponses[message.id];
     }
@@ -1333,30 +1489,32 @@ export default class MessageHub {
    * expected to be provided by the server, and therefore no promise will
    * be returned.
    *
-   * @param {Object} body  the body of the message to send
+   * @param body  the body of the message to send
    */
-  sendNotification(body = {}) {
+  sendNotification(body = {}): void {
     if (!this._emitter) {
       console.warn(
         'sendNotification() was called before associating a ' +
           'socket to the message hub. Message was discarded.'
       );
-      return;
+    } else {
+      this._emitter('fw', createMessage(body));
     }
-
-    this._emitter('fw', createMessage(body));
   }
 
   /**
    * Subscribes to a device tree path with the given callback function.
    *
-   * @param {string} path  the path to subscribe to
-   * @param {func}   callback  the function to call when the value of the given
+   * @param path  the path to subscribe to
+   * @param callback  the function to call when the value of the given
    *        device tree path changed
-   * @return {func}  a function that can be called with no arguments to unsubscribe
-   *        from the given path
+   * @return  a function that can be called with no arguments to unsubscribe
+   *          from the given path
    */
-  async subscribe(path, callback) {
+  async subscribe(
+    path: string,
+    callback: SubscriptionCallback
+  ): Promise<() => void> {
     return this._deviceTreeSubscriptionManager.subscribe(path, callback);
   }
 
@@ -1371,13 +1529,13 @@ export default class MessageHub {
    * The promise resolves to a mapping from object IDs to their corresponding
    * results or errors (represented as Error objects).
    */
-  async startAsyncOperation(message) {
-    const { type: expectedType } = message;
+  async startAsyncOperation(body: Body) {
+    const { type: expectedType } = body;
     if (!expectedType) {
       throw new Error('Message must have a type');
     }
 
-    const response = await this.sendMessage(message);
+    const response = await this.sendMessage(body);
     return this._processMultiAsyncOperationResponse(response, expectedType);
   }
 
@@ -1402,7 +1560,15 @@ export default class MessageHub {
    * Setting `idProp` to `null` means that the ID will not be added by this
    * function and it is already assumed to be part of the `message`.
    */
-  async startAsyncOperationForSingleId(id, message, options = {}) {
+  async startAsyncOperationForSingleId(
+    id: string,
+    message: Body & { [k: string]: unknown },
+    options: {
+      single?: boolean;
+      idProp?: string;
+      onProgress?: (id: string, progress: ProgressStatus) => void;
+    } = {}
+  ): Promise<unknown> {
     const { ids, type: expectedType } = message;
     const { idProp, onProgress, single = false } = options;
 
@@ -1416,11 +1582,12 @@ export default class MessageHub {
 
     validateObjectId(id);
 
-    if (idProp !== null) {
-      message[idProp || (single ? 'id' : 'ids')] = [id];
+    if (idProp) {
+      message[idProp ?? (single ? 'id' : 'ids')] = [id];
     }
 
-    let response = await this.sendMessage(message);
+    let response: Message<Body & { [k: string]: unknown }> =
+      await this.sendMessage(message);
 
     if (single) {
       // Object takes a single ID and returns a single result, error or
@@ -1437,14 +1604,15 @@ export default class MessageHub {
       response = responseWithMaps;
     }
 
-    const progressHandler = onProgress
+    const progressHandler = (onProgress
       ? single
-        ? (_id, ...args) => onProgress(...args)
+        ? (_id: string, ...args: Parameters<typeof onProgress>) =>
+            onProgress(...args)
         : onProgress
-      : undefined;
+      : undefined) as any as typeof onProgress;
 
     const parsedResponse = await this._processMultiAsyncOperationResponse(
-      response,
+      response as Message<MultiAsyncOperationResponseBody<unknown>>,
       expectedType,
       { onProgress: progressHandler }
     );
@@ -1465,12 +1633,10 @@ export default class MessageHub {
    * Returns a promise that resolves when the message hub received an emitter
    * function that it may use for sending messages.
    *
-   * @param {number?} timeout  number of seconds to wait for the promise to
-   *        resolve
-   * @return {Promise<void>} a promise that resolves when the hub is ready to
-   *         send messages
+   * @param timeout  number of seconds to wait for the promise to resolve
+   * @return a promise that resolves when the hub is ready to send messages
    */
-  waitUntilReady(timeout) {
+  waitUntilReady(timeout?: number): Promise<void> {
     if (this._emitter !== undefined) {
       return Promise.resolve();
     }
@@ -1481,7 +1647,7 @@ export default class MessageHub {
 
     if (timeout && timeout > 0) {
       return pTimeout(this._waitUntilReadyDeferred.promise, {
-        milliseconds: timeout,
+        milliseconds: timeout * 1000,
       });
     }
 
@@ -1492,9 +1658,9 @@ export default class MessageHub {
    * Handler called when the server failed to provide a response to a
    * message with a given ID within the allowed timeframe.
    *
-   * @param {string} messageId  the ID of the message
+   * @param messageId  the ID of the message
    */
-  _onMessageTimedOut(messageId) {
+  _onMessageTimedOut(messageId: string) {
     console.warn(`Response to message with ID=${messageId} timed out`);
   }
 
@@ -1502,11 +1668,13 @@ export default class MessageHub {
    * Helper function to process the response to a multi-object async operation.
    * See <code>startAsyncOperation()</code> for more details.
    */
-  async _processMultiAsyncOperationResponse(
-    response,
-    expectedType,
-    { onProgress } = {}
-  ) {
+  async _processMultiAsyncOperationResponse<T>(
+    response: Message<Response_ACKNAK | MultiAsyncOperationResponseBody<T>>,
+    expectedType: string,
+    {
+      onProgress,
+    }: { onProgress?: (id: string, status: ProgressStatus) => void } = {}
+  ): Promise<{ [x: string]: T | Error }> {
     if (!response) {
       throw new Error('Response should not be empty');
     } else if (!response.body) {
@@ -1514,7 +1682,7 @@ export default class MessageHub {
     } else if (response.body.type === 'ACK-NAK') {
       throw new Error(
         `Execution rejected by server; reason: ${
-          response.body.reason || 'unknown'
+          (response.body as Response_ACKNAK).reason || 'unknown'
         }`
       );
     } else if (response.body.type !== expectedType) {
@@ -1523,26 +1691,30 @@ export default class MessageHub {
       );
     } else {
       const { body } = response;
-      const { error, result, receipt } = body;
-      const results = { ...result };
+      const { error, result, receipt } =
+        body as MultiAsyncOperationResponseBody<T>; // because of the checks above
+      const results: Record<string, T | Error | Promise<T | Error>> = {
+        ...result,
+      };
 
-      for (const erroredId of Object.keys(error || [])) {
-        results[erroredId] = new Error(String(error[erroredId]));
+      for (const erroredId of Object.keys(error ?? [])) {
+        results[erroredId] = new Error(String(error![erroredId]));
       }
 
       for (const idWithReceipt of Object.keys(receipt || [])) {
         try {
           results[idWithReceipt] =
-            this._asyncOperationManager.handleMultiAsyncResponseForSingleId(
+            this._asyncOperationManager.handleMultiAsyncResponseForSingleId<T>(
               response,
               idWithReceipt,
               {
-                onProgress: (...args) => onProgress?.(idWithReceipt, ...args),
+                onProgress: (status) => onProgress?.(idWithReceipt, status),
                 noThrow: true,
               }
             );
         } catch (error) {
-          results[idWithReceipt] = error;
+          results[idWithReceipt] =
+            error instanceof Error ? error : new Error(String(error));
         }
       }
 
@@ -1554,17 +1726,21 @@ export default class MessageHub {
    * Sends a Flockwave ASYNC-CANCEL request to cancel the execution of the
    * asynchronous operations with the given receipt IDs.
    *
-   * @param  {string[]}  receipts  the receipt IDs of the asynchronous
+   * @param  receipts  the receipt IDs of the asynchronous
    *         operations to cancel
-   * @return {Promise}  a promise that resolves to an object mapping receipt
+   * @return a promise that resolves to an object mapping receipt
    *         IDs to error messages, for all receipt IDs that were _not_
    *         cancelled successfully
    */
-  async _sendCancellationRequest(receipts) {
+  async _sendCancellationRequest(
+    receipts: string[]
+  ): Promise<Record<string, string>> {
     const request = createCancellationRequest(receipts);
-    const response = await this.sendMessage(request);
+    const response = await this.sendMessage<
+      Response_ASYNCCANCEL | Response_ACKNAK
+    >(request);
     const { body } = ensureNotNAK(response);
-    const { error } = body;
+    const { error } = body as Response_ASYNCCANCEL; // because of ensureNotNAK
 
     if (error && Object.keys(error).length > 0) {
       return error;
@@ -1585,11 +1761,16 @@ export default class MessageHub {
    *         IDs to error messages, for all receipt IDs that were _not_
    *         resumed successfully
    */
-  async _sendResumeRequest(receipts, values) {
+  async _sendResumeRequest(
+    receipts: string[],
+    values: Record<string, unknown> = {}
+  ): Promise<Record<string, string>> {
     const request = createResumeRequest(receipts, values);
-    const response = await this.sendMessage(request);
+    const response = await this.sendMessage<
+      Response_ASYNCRESUME | Response_ACKNAK
+    >(request);
     const { body } = ensureNotNAK(response);
-    const { error } = body;
+    const { error } = body as Response_ASYNCRESUME; // because of ensureNotNAK
 
     if (error && Object.keys(error).length > 0) {
       return error;
