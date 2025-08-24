@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added estimated completion time for the upload dialogs.
 
+- Parameters are now uploaded with a more efficient bulk upload protocol if the
+  server supports it (requires a server with version 2.34.1 or later).
+
+- The show adaptation dialog now allows you to specify the desired duration of
+  the transition from takeoff to the first formation of the show.
+
 ### Changed
 
 - Show files are now parsed and loaded in a separate worker thread so the
@@ -18,6 +24,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - The coordinate system of a show is now fitted on a separate worker thread so
   the calculation does not block the UI any more.
+
+### Fixed
+
+- Fixed a bug in the Google Maps layer (used only in special configurations)
+  where the terrain disappeared when zooming in too close.
 
 ## [2.11.0] - 2025-07-23
 
