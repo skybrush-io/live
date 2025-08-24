@@ -158,6 +158,7 @@
     "redux-watch": "^1.2.0",
     "reselect": "^4.1.8",
     "screenfull": "^6.0.1",
+    "semver": "^7.7.2",
     "shallowequal": "^1.1.0",
     "shell-quote": "^1.8.2",
     "shpjs": "^4.0.4",

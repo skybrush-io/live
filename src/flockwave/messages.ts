@@ -353,7 +353,7 @@ class PendingResponse<T = unknown> {
   };
 }
 
-type ProgressStatus = {
+export type ProgressStatus = {
   progress: { percentage?: number; message?: string };
   suspended: boolean;
   resume?: (value: unknown) => Promise<void>;
@@ -1551,10 +1551,7 @@ export default class MessageHub {
    * `result`, `error` and `receipt`. (The response to many messages in the
    * protocol specification follow this template). Returns a promise that
    * resolves when the spawned async operation on the server has resolved to
-   * its result or has terminated with an error or a tiemout.
-   *
-   * The promise resolves to the result if the operation was successful, or
-   * rejects if the operation returned an error.
+   * its result, or rejects if the operation returned an error or timed out.
    *
    * The `single` key of the `options` argument may be set to `true` if the
    * server-side handler of the message returns a _single-object_ async
@@ -1566,11 +1563,11 @@ export default class MessageHub {
    * Setting `idProp` to `null` means that the ID will not be added by this
    * function and it is already assumed to be part of the `message`.
    */
-  async startAsyncOperationForSingleId(
+  async startAsyncOperationForSingleId<T>(
     id: string,
     message: Body & { [k: string]: unknown },
     options: AsyncOperationOptions = {}
-  ): Promise<unknown> {
+  ): Promise<T> {
     const { ids, type: expectedType } = message;
     const { idProp, onProgress, single = false } = options;
 
@@ -1624,7 +1621,8 @@ export default class MessageHub {
       if (responseForSingleId instanceof Error) {
         throw responseForSingleId;
       } else {
-        return responseForSingleId;
+        // TODO(ntamas): type guard here?
+        return responseForSingleId as T;
       }
     } else {
       throw new Error(`Server did not return a response for ID ${id}`);

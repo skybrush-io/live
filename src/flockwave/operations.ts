@@ -125,14 +125,32 @@ export async function setParameter(
  */
 export async function setParameters(
   hub: MessageHub,
-  { uavId, parameters }: { uavId: string; parameters: Record<string, unknown> }
+  { uavId, parameters }: { uavId: string; parameters: Record<string, unknown> },
+  options: AsyncOperationOptions
 ) {
   const command = createBulkParameterUploadRequest(uavId, parameters);
+  let response;
+
   try {
-    await hub.startAsyncOperationForSingleId(uavId, command);
+    response = await hub.startAsyncOperationForSingleId(
+      uavId,
+      command,
+      options
+    );
   } catch (error) {
     const errorString = errorToString(error);
     throw new Error(`Failed to set parameters on UAV ${uavId}: ${errorString}`);
+  }
+
+  const { failed = [], success = false } = response as any;
+  if (!success) {
+    if (Array.isArray(failed) && failed.length > 0) {
+      throw new Error(
+        `Failed to set parameters on UAV ${uavId}: ${failed.slice(0, 5).join(', ')}`
+      );
+    } else {
+      throw new Error(`Failed to set parameters on UAV ${uavId}`);
+    }
   }
 }
 
@@ -351,6 +369,7 @@ const _operations = {
   resetUAV,
   sendDebugMessage,
   setParameter,
+  setParameters,
   setRTKCorrectionsSource,
   setShowConfiguration,
   setShowLightConfiguration,
