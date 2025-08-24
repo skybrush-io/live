@@ -60,7 +60,6 @@ const UploadDialog = ({
       fullWidth
       open={Boolean(open)}
       maxWidth='md'
-      minHeight='md'
       title={getDialogTitleForJobType(selectedJobType ?? '')}
       titleComponents={
         <>
