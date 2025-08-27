@@ -336,10 +336,10 @@
     "coordinateSystem": "Coordinate system",
     "copyMapOriginToShow": "Copy map origin to show origin",
     "copyShowOriginToMap": "Copy show origin to map origin",
-    "fileToShow": "FILE ➜ SHOW",
+    "fileToShow": "File ➜ Show",
     "fileToShowTooltip": "Requires show file with embedded location data",
     "fitCoordinateSysToCurrentDrone": "Fit coordinate system to current drone positions",
-    "mapToShow": "MAP ➜ SHOW",
+    "mapToShow": "Map ➜ Show",
     "setToAverageAMSL": "Set to average AMSL of active drones",
     "showCoordinateSystemAppliedToMap": "Show coordinate system applied to map.",
     "showCoordinateSystemUpdatedFromFile": "Show coordinate system updated from file.",
@@ -347,7 +347,7 @@
     "showIsControlledBasedOn": "Show is controlled based on…",
     "showOrientation": "Show orientation",
     "showOrigin": "Show origin",
-    "showToMap": "SHOW ➜ MAP",
+    "showToMap": "Show ➜ Map",
     "warningText": "Automatic show origin and orientation calculation assumes that all drones point towards the X axis of the show <underline>or</underline> that you specified their offset relative the X axis with the setting above. Absolute takeoff headings are not supported."
   },
   "parameterListSidebar": {
