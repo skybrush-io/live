@@ -255,6 +255,14 @@ export const euclideanDistance2D = (
 ): number => Math.hypot(a[0] - b[0], a[1] - b[1]);
 
 /**
+ * Calculates the squared Euclidean distance between two points, restricted to two dimensions.
+ */
+export const squaredEuclideanDistance2D = (
+  a: Coordinate2DPlus,
+  b: Coordinate2DPlus
+): number => Math.pow(a[0] - b[0], 2) + Math.pow(a[1] - b[1], 2);
+
+/**
  * Takes a polygon (i.e. an array of [x, y] coordinate pairs) and ensures that
  * it is closed in a way OpenLayers likes it, i.e. the last element is equal to
  * the first.

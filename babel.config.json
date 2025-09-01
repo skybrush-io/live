@@ -12,7 +12,8 @@
         "corejs": "3.18"
       }
     ],
-    "@babel/preset-react"
+    "@babel/preset-react",
+    "@babel/preset-typescript"
   ],
   "plugins": [
     ["@babel/plugin-proposal-decorators", { "legacy": true }],
@@ -26,5 +27,10 @@
         "outputPath": "src/i18n/{{locale}}.json"
       }
     ]
-  ]
+  ],
+  "env": {
+    "test": {
+      "plugins": ["@babel/plugin-transform-modules-commonjs"]
+    }
+  }
 }
