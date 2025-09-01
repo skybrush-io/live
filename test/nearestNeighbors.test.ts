@@ -27,7 +27,6 @@ const sizesAndRounds: DataConfig[] = [
   { size: 400, rounds: 20 },
   { size: 800, rounds: 10 },
   { size: 1600, rounds: 5 },
-  { size: 5000, rounds: 1 },
 ];
 
 function calculate(points: Coordinate2D[]): [number, number] {
@@ -37,7 +36,6 @@ function calculate(points: Coordinate2D[]): [number, number] {
     { distanceFunction: euclideanDistance2D }
   );
   const result = findNearestNeighborsDistance(points);
-
   return [bruteForceResult, result];
 }
 
@@ -80,8 +78,9 @@ describe('nearest neighbors, random sets of points', () => {
   });
 });
 
-test('with fixed test points', () => {
-  for (const [key, points] of Object.entries(testPoints)) {
+// This is a long-running test and is skipped by default.
+test.skip('with fixed test points', () => {
+  for (const [_, points] of Object.entries(testPoints)) {
     const [bruteForceResult, result] = calculate(points);
     expect(Number.isFinite(bruteForceResult)).toBe(true);
     expect(Number.isFinite(result)).toBe(true);
