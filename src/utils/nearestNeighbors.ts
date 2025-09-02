@@ -128,7 +128,11 @@ function findClosestPairInStrip(
     return undefined;
   }
 
-  // There is a bit of room for optimization here.
+  // There is a bit of room for optimization here: the points
+  // could be sorted by the secondary axis, and then we could
+  // simply roll a window of height `dist` along the secondary
+  // axis and check only those point pairs that fall in the
+  // rolling window.
 
   let minSqDist = Infinity;
   let result: [Coordinate2D, Coordinate2D] | undefined = undefined;
