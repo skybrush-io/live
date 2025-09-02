@@ -25,6 +25,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The coordinate system of a show is now fitted on a separate worker thread so
   the calculation does not block the UI any more.
 
+- Optimized the calculation of the minimum distance between takeoff and landing
+  positions, shaving off several seconds from the time needed to load a show with
+  several thousands of drones.
+
 ### Fixed
 
 - Fixed a bug in the Google Maps layer (used only in special configurations)
