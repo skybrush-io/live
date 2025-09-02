@@ -1,6 +1,7 @@
 import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormGroup from '@mui/material/FormGroup';
+import { createSelector } from '@reduxjs/toolkit';
 import dropWhile from 'lodash-es/dropWhile';
 import takeWhile from 'lodash-es/takeWhile';
 import unary from 'lodash-es/unary';
@@ -35,15 +36,18 @@ import {
   getCurrentMissionItemRatio,
   getGPSBasedHomePositionsInMission,
   getGPSBasedLandingPositionsInMission,
-  getMinimumDistanceBetweenHomePositions,
-  getMinimumDistanceBetweenLandingPositions,
+  getMinimumDistanceBetweenHomePositions as getMinimumDistanceBetweenHomePositionsInMission,
+  getMinimumDistanceBetweenLandingPositions as getMinimumDistanceBetweenLandingPositionsInMission,
   getMissionItemsOfTypeWithIndices,
   getMissionItemsWithAreasInOrder,
   getMissionItemsWithCoordinatesInOrder,
+  getMissionType,
   getSelectedMissionIndicesForTrajectoryDisplay,
 } from '~/features/mission/selectors';
 import {
   getConvexHullOfShowInWorldCoordinates,
+  getMinimumDistanceBetweenTakeoffPositions as getMinimumDistanceBetweenTakeoffPositionsInShow,
+  getMinimumDistanceBetweenLandingPositions as getMinimumDistanceBetweenLandingPositionsInShow,
   getOutdoorShowOrientation,
   getOutdoorShowOrigin,
 } from '~/features/show/selectors';
@@ -56,7 +60,7 @@ import {
   originIdToGlobalId,
   plannedTrajectoryIdToGlobalId,
 } from '~/model/identifiers';
-import { MissionItemType } from '~/model/missions';
+import { MissionItemType, MissionType } from '~/model/missions';
 import { getMapOriginRotationAngle } from '~/selectors/map';
 import { getSelection } from '~/selectors/selection';
 import { hasFeature } from '~/utils/configuration';
@@ -77,6 +81,36 @@ import {
 } from '~/utils/styles';
 import MissionSlotTrajectoryFeature from '~/views/map/features/MissionSlotTrajectoryFeature';
 import UAVTrajectoryFeature from '~/views/map/features/UAVTrajectoryFeature';
+
+// -- Custom selectors
+
+const getMinimumHomePositionDistanceSelector = createSelector(
+  getMissionType,
+  (type) =>
+    type === MissionType.SHOW
+      ? getMinimumDistanceBetweenTakeoffPositionsInShow
+      : getMinimumDistanceBetweenHomePositionsInMission
+);
+
+const getMinimumDistanceBetweenHomePositions = createSelector(
+  (state) => state,
+  getMinimumHomePositionDistanceSelector,
+  (state, selector) => selector(state)
+);
+
+const getMinimumLandingPositionDistanceSelector = createSelector(
+  getMissionType,
+  (type) =>
+    type === MissionType.SHOW
+      ? getMinimumDistanceBetweenLandingPositionsInShow
+      : getMinimumDistanceBetweenLandingPositionsInMission
+);
+
+const getMinimumDistanceBetweenLandingPositions = createSelector(
+  (state) => state,
+  getMinimumLandingPositionDistanceSelector,
+  (state, selector) => selector(state)
+);
 
 // === Settings for this particular layer type ===
 
