@@ -429,7 +429,7 @@
     "hostname": "ホスト名",
     "localConnection": "ローカル接続",
     "manual": "手動",
-    "pleaseWait": "お待ちください…",
+    "pleaseWait": "しばらくお待ちください…",
     "port": "ポート",
     "preconfiguredServer": "設定済みサーバー",
     "scanningNetwork": "サーバーを検索中…",
