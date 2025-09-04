@@ -343,9 +343,9 @@ export async function getRTKStatus(hub) {
  * Returns the currently selected RTK data source ID.
  */
 export async function getSelectedRTKPresetId(hub) {
-  const response = await hub.sendMessage({ type: 'RTK-SOURCE' });
+  const response = await hub.sendMessage({ type: 'X-RTK-SOURCE' });
 
-  if (response.body && response.body.type === 'RTK-SOURCE') {
+  if (response.body && response.body.type === 'X-RTK-SOURCE') {
     return get(response, 'body.id');
   }
 

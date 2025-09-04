@@ -163,7 +163,7 @@ export async function setRTKCorrectionsSource(
   presetId: string
 ) {
   const response = await hub.sendMessage({
-    type: 'RTK-SOURCE',
+    type: 'X-RTK-SOURCE',
     id: presetId,
   });
 
