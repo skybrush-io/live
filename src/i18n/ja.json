@@ -150,7 +150,7 @@
     },
     "commands": {
       "land": "着陸",
-      "positionHold": "位置維持",
+      "positionHold": "ポジションホールド",
       "powerOff": "電源オフ",
       "powerOn": "電源オン",
       "reboot": "再起動",
