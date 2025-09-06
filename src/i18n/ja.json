@@ -14,7 +14,7 @@
     "drawPath": "線を描画",
     "drawPolygon": "ポリゴンを描画",
     "drawRectangle": "四角形を描画",
-    "editFeature": "編集機能"
+    "editFeature": "編集"
   },
   "OnboardPreflightChecksDialog": {
     "noError": "エラーが発生しているUAVはありません。",
@@ -121,7 +121,7 @@
     }
   },
   "fitAllFeaturesButton": {
-    "fitAllDrones": "全ドローンに適合",
+    "fitAllDrones": "全ドローンを画面に収める",
     "fitAllFeatures": "全機能に適合"
   },
   "fullScreen": {
@@ -299,14 +299,14 @@
     "walk": "移動"
   },
   "navigationInstructions": {
-    "altitude": "高度",
+    "altitude": "上下移動",
     "arrows": "矢印",
     "flyForwardBackward": "前進/後進",
-    "lookAround": "見て回る",
+    "lookAround": "視点操作",
     "moveSideways": "横に動く",
     "noInstruction": "このナビゲーションモードに関する説明はありません",
-    "run": "早く移動",
-    "walkAround": "歩き回る"
+    "run": "高速移動",
+    "walkAround": "水平移動"
   },
   "notifications": {
     "connectedToSkybrushServer": "Skybrushサーバーに接続しました"
@@ -396,12 +396,12 @@
     "returnToHomeSpeedLabel": "RTH速度"
   },
   "savedLocation": {
-    "addNew": "新たな意味を追加",
+    "addNew": "新しい座標を追加",
     "edit": "位置を編集"
   },
   "savedLocationEditor": {
     "copyFromMapView": "マップビューからコピー",
-    "createNew": "新しい位置を削除",
+    "createNew": "新たな座標を追加",
     "editSaved": "保存した位置を編集",
     "name": "名前",
     "notes": "メモ",
@@ -507,7 +507,7 @@
     "authorized": "ドローンショーの開始が許可されました",
     "chooseStartTime": "開始時間の設定",
     "chooseStartTimeNotSet": "未設定",
-    "clear": "読み込み済みのショー設定をクリア",
+    "clear": "読み込み済みのショーをクリア",
     "clock": "時計を表示:",
     "dronePlacementApproved": "ドローンの配置を承認",
     "dronePlacementCheck": "ドローンの配置を確認中…",
@@ -515,9 +515,9 @@
     "dronePlacementPartial": "一部のドローンの配置を承認",
     "fromCloud": "ドローンショーの設定ファイルをクラウドから読み込み",
     "indoor": "屋内",
-    "loading": "ショー設定ファイルを読み込んでいます。しばらくお待ちください…",
+    "loading": "ショーファイルを読み込んでいます。しばらくお待ちください…",
     "manualPreflightChecks": "手動飛行前チェック",
-    "noFileLoaded": "ショー設定ファイルが読み込まれていません",
+    "noFileLoaded": "ショーファイルが読み込まれていません",
     "onboardPreflightChecks": "機体の飛行前チェック",
     "outdoor": {
       "invalidAltitudeReference": "屋外の無効な高度基準",
@@ -528,7 +528,7 @@
     "placementAccuracy": "配置精度≤ {{distance}}",
     "reload": "ドローンショーを再読み込み",
     "revokeAuthorization": "クリックして許可を取り消す",
-    "selectFile": "ショー設定ファイル(.skyc)を選択またはドロップしてください",
+    "selectFile": "ショーファイル(.skyc)を選択またはドロップしてください",
     "setupEnvironment": "環境を設定",
     "setupGeofence": "ジオフェンスの設定",
     "setupTakeoffArea": "離陸エリアの設定",
