@@ -396,12 +396,12 @@
     "returnToHomeSpeedLabel": "RTH速度"
   },
   "savedLocation": {
-    "addNew": "新しい座標を追加",
+    "addNew": "ロケーションをを追加",
     "edit": "位置を編集"
   },
   "savedLocationEditor": {
     "copyFromMapView": "マップビューからコピー",
-    "createNew": "新たな座標を追加",
+    "createNew": "ロケーションを作成",
     "editSaved": "保存した位置を編集",
     "name": "名前",
     "notes": "メモ",
