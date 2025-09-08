@@ -8,6 +8,7 @@
 
 import isNil from 'lodash-es/isNil';
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import { MAX_DRONE_COUNT } from '@skybrush/show-format';
 
 import { removeFeaturesByIds } from '~/features/map-features/slice';
 import { type FeatureProperties } from '~/features/map-features/types';
@@ -226,7 +227,10 @@ const { actions, reducer } = createSlice({
 
     adjustMissionMapping(
       state,
-      action: PayloadAction<{ uavId: UAV['id']; to: MissionIndex }>
+      action: PayloadAction<{
+        uavId: UAV['id'];
+        to: Nullable<MissionIndex>;
+      }>
     ) {
       const { uavId, to } = action.payload;
       const from = state.mapping.indexOf(uavId);
@@ -433,7 +437,7 @@ const { actions, reducer } = createSlice({
       if (
         Number.isNaN(desiredLength) ||
         desiredLength < 0 ||
-        desiredLength > 1000
+        desiredLength > MAX_DRONE_COUNT
       ) {
         return;
       }

@@ -29,7 +29,8 @@ import { type Coordinate3D } from '~/utils/math';
  *     },
  *     localPosition: [1, 2, 3],
  *     age: "active" // one of 'active', 'inactive', 'gone'
- *     velocityNED: [0, 0, 1000],
+ *     velocity: [0, 0, 1000],
+ *     rssi: [100],
  * }
  */
 export type StoredUAV = {
@@ -47,6 +48,7 @@ export type StoredUAV = {
   mode?: string;
   position?: GPSPosition;
   velocity?: VelocityNED;
+  rssi: number[];
 };
 
 export enum UAVDetailsDialogTab {

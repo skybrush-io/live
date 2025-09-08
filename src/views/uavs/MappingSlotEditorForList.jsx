@@ -1,13 +1,12 @@
+import Box from '@mui/material/Box';
+import InputBase from '@mui/material/InputBase';
+import makeStyles from '@mui/styles/makeStyles';
 import Color from 'color';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
-import Box from '@material-ui/core/Box';
-import InputBase from '@material-ui/core/InputBase';
-import { makeStyles } from '@material-ui/core/styles';
-
-import { monospacedFont } from '@skybrush/app-theme-material-ui';
+import { monospacedFont } from '@skybrush/app-theme-mui';
 
 import Colors from '~/components/colors';
 import { getUAVIdForMappingSlotBeingEdited } from '~/features/mission/selectors';
@@ -17,7 +16,7 @@ import {
 } from '~/features/mission/slice';
 import { shouldOptimizeUIForTouch } from '~/features/settings/selectors';
 
-const WIDTH = 64;
+const WIDTH = 80;
 
 const useStyles = makeStyles(
   (theme) => ({

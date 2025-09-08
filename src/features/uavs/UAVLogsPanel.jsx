@@ -1,20 +1,19 @@
+import Error from '@mui/icons-material/Error';
+import GetApp from '@mui/icons-material/GetApp';
+import Save from '@mui/icons-material/Save';
+import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import ListItemText from '@mui/material/ListItemText';
+import Typography from '@mui/material/Typography';
+import makeStyles from '@mui/styles/makeStyles';
 import isNil from 'lodash-es/isNil';
 import prettyBytes from 'pretty-bytes';
 import PropTypes from 'prop-types';
 import React, { memo, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useAsyncRetry } from 'react-use';
-
-import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
-import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import Error from '@material-ui/icons/Error';
-import GetApp from '@material-ui/icons/GetApp';
-import Save from '@material-ui/icons/Save';
 
 import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
 import LargeProgressIndicator from '@skybrush/mui-components/lib/LargeProgressIndicator';
@@ -92,7 +91,7 @@ const UAVLogListItem = ({ id, kind, size, timestamp, uavId }) => {
       .catch(({ message }) => {
         dispatch(
           showNotification({
-            message: `Couldn't donwload log ${id} of UAV ${uavId}: ${message}`,
+            message: `Couldn't download log ${id} of UAV ${uavId}: ${message}`,
             semantics: MessageSemantics.ERROR,
             buttons: [{ label: 'Retry', action: download }],
             timeout: 20000,
@@ -139,11 +138,11 @@ const UAVLogListItem = ({ id, kind, size, timestamp, uavId }) => {
       </Typography>
     );
 
-  const disabled = downloadState?.status === LogDownloadStatus.LOADING;
-  const onClick = log ? save : download;
+  const isLoading = downloadState?.status === LogDownloadStatus.LOADING;
+  const onClick = isLoading ? undefined : log ? save : download;
 
   return (
-    <ListItem button disabled={disabled} onClick={onClick}>
+    <ListItemButton onClick={onClick}>
       <StatusLight
         status={
           {
@@ -163,7 +162,12 @@ const UAVLogListItem = ({ id, kind, size, timestamp, uavId }) => {
         secondary={secondaryComponent}
       />
       <ListItemSecondaryAction>
-        <IconButton edge='end' disabled={disabled} onClick={onClick}>
+        <IconButton
+          edge='end'
+          disabled={isLoading}
+          size='large'
+          onClick={onClick}
+        >
           {downloadState?.status === LogDownloadStatus.SUCCESS ? (
             <Save />
           ) : (
@@ -171,7 +175,7 @@ const UAVLogListItem = ({ id, kind, size, timestamp, uavId }) => {
           )}
         </IconButton>
       </ListItemSecondaryAction>
-    </ListItem>
+    </ListItemButton>
   );
 };
 
@@ -189,7 +193,7 @@ const UAVLogList = listOf(
   ),
   {
     dataProvider: 'items',
-    backgroundHint: <BackgroundHint text='No logs found' />,
+    backgroundHint: 'No logs found',
   }
 );
 

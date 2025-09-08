@@ -110,12 +110,14 @@
       "all": "All",
       "errors": "Errors only",
       "noTelemetry": "No telemetry only",
+      "sleeping": "Low-power mode",
       "warningsAndErrors": "Warnings and errors"
     },
     "shortLabel": {
       "all": "All",
       "errors": "Errors",
       "noTelemetry": "No telem",
+      "sleeping": "Low-power",
       "warningsAndErrors": "Warn/Err"
     }
   },
@@ -130,22 +132,29 @@
   "general": {
     "action": {
       "apply": "Apply",
+      "approve": "Approve",
+      "back": "Back",
       "cancel": "Cancel",
       "clear": "Clear",
+      "click": "Click",
       "close": "Close",
       "delete": "Delete",
       "discard": "Discard",
+      "drag": "Drag",
       "edit": "Edit",
       "export": "Export",
       "import": "Import",
+      "navigate": "Navigate",
       "open": "Open",
+      "redo": "Redo",
       "remove": "Remove",
       "reset": "Reset",
       "retry": "Retry",
       "save": "Save",
       "select": "Select",
       "start": "Start",
-      "stop": "Stop"
+      "stop": "Stop",
+      "undo": "Undo"
     },
     "commands": {
       "land": "Land",
@@ -170,6 +179,14 @@
       "inProgress": "in progress",
       "successful": "successful",
       "waiting": "waiting"
+    },
+    "time": {
+      "hours_one": "{{count}} hour",
+      "hours_other": "{{count}} hours",
+      "minutes_one": "{{count}} minute",
+      "minutes_other": "{{count}} minutes",
+      "seconds_one": "{{count}} second",
+      "seconds_other": "{{count}} seconds"
     }
   },
   "geofence": {
@@ -264,6 +281,7 @@
     "clickToEdit": "Click to edit a single slot.",
     "dragNodes": "Drag nodes to rearrange the mapping.",
     "exportMapping": "Export mapping…",
+    "generateRandomMapping": "Randomize mapping",
     "importMapping": "Import mapping…"
   },
   "mappingSlotEditorToolbar": {
@@ -318,13 +336,18 @@
     "coordinateSystem": "Coordinate system",
     "copyMapOriginToShow": "Copy map origin to show origin",
     "copyShowOriginToMap": "Copy show origin to map origin",
+    "fileToShow": "File ➜ Show",
+    "fileToShowTooltip": "Requires show file with embedded location data",
     "fitCoordinateSysToCurrentDrone": "Fit coordinate system to current drone positions",
+    "mapToShow": "Map ➜ Show",
     "setToAverageAMSL": "Set to average AMSL of active drones",
     "showCoordinateSystemAppliedToMap": "Show coordinate system applied to map.",
+    "showCoordinateSystemUpdatedFromFile": "Show coordinate system updated from file.",
     "showCoordinateSystemUpdatedFromMap": "Show coordinate system updated from map.",
     "showIsControlledBasedOn": "Show is controlled based on…",
     "showOrientation": "Show orientation",
     "showOrigin": "Show origin",
+    "showToMap": "Show ➜ Map",
     "warningText": "Automatic show origin and orientation calculation assumes that all drones point towards the X axis of the show <underline>or</underline> that you specified their offset relative the X axis with the setting above. Absolute takeoff headings are not supported."
   },
   "parameterListSidebar": {
@@ -363,13 +386,16 @@
       "fenceAction": "Geofence action",
       "fenceActionHelperText": "Support for these options depends on the drones themselves; not all options are supported by all drones.",
       "fenceActionLabel": "Primary geofence action",
+      "generateAutomatically": "Generate automatically",
+      "geofencePolygon": "Geofence polygon",
       "horizontal": "Horizontal",
       "maxAltitude": "Max altitude",
       "maxDistance": "Max distance",
       "maxVertexCount": "Maximum vertex count",
       "proposedLimits": "Proposed limits for current mission",
       "safetyMargins": "Safety margins",
-      "simplifyPolygon": "Simplify polygon",
+      "simplifyGeometry": "Simplify geometry",
+      "simplifyPolygon": "Simplify polygon",
       "vertexCountReduction": "Vertex count reduction",
       "vertical": "Vertical"
     },
@@ -379,7 +405,7 @@
   "safetySettingsTab": {
     "criticalBatteryVoltageHelperText": "Critically low battery voltage in [V] under which a critical battery failsafe action is triggered.",
     "criticalBatteryVoltageLabel": "Critical battery voltage",
-    "emptyValues": "Empty values result in the respective safety values not being overridden.",
+    "emptyValues": "Leaving a field empty will keep the existing settings on the UAV after the upload.",
     "lowBatteryThresholdHelperText": "Low battery threshold type and value under which a low battery failsafe action is triggered.",
     "lowBatteryThresholdType": {
       "disabled": "Disabled",
@@ -495,8 +521,13 @@
       "fullCharge": "Full charge",
       "gone": "Mark drones as gone after",
       "lowTreshold": "Low threshold",
+      "maxConcurrency": "Maximum number of concurrent uploads",
+      "maxUploadConcurrency": "Maximum number of concurrent uploads",
+      "minIndoorTakeoffSpacing": "Minimum takeoff spacing (indoor)",
+      "minOutdoorTakeoffSpacing": "Minimum takeoff spacing (outdoor)",
       "missionSetup": "Mission setup",
       "missionSetupDescription": "Used before multi-drone missions to check whether each drone is at its prescribed takeoff position and is facing the right direction.",
+      "operationSettings": "Operations",
       "warn": "Warn about drones not seen for at least"
     }
   },
@@ -504,6 +535,7 @@
     "authorizationReq": "Authorization required before takeoff",
     "authorizeTheStart": "Authorize start of show",
     "authorized": "Show authorized to start",
+    "changedSinceLoaded": "Show changed since it was loaded",
     "chooseStartTime": "Choose start time",
     "chooseStartTimeNotSet": "Not set yet",
     "clear": "Clear loaded show",
@@ -530,7 +562,37 @@
     "selectFile": "Select or drop a show file here",
     "setupEnvironment": "Setup environment",
     "setupGeofence": "Setup geofence",
-    "setupTakeoffArea": "Setup takeoff area",
+    "setupTakeoffArea": "Assign drones to show",
+    "showConfigurator": {
+      "button": "Adapt show to venue",
+      "description": "Adjust takeoff grid and show layout if needed",
+      "interactionHints": {
+        "action": {
+          "boxSelect": "Box select",
+          "boxUnselect": "Box unselect",
+          "moveSelection": "Move selection",
+          "pan": "Pan",
+          "rotate": "Rotate",
+          "rotateSelection": "Rotate selection",
+          "select": "Select",
+          "toggleSelect": "Toggle select",
+          "zoom": "Zoom"
+        },
+        "category": {
+          "manipulation": "Manipulation",
+          "navigation": "Navigation",
+          "selection": "Selection"
+        }
+      },
+      "noShowData": "Show segment data is missing",
+      "prerequisites": {
+        "extension": "The studio extension must be enabled on the server",
+        "loaded": "A show file must be loaded",
+        "origin": "A show origin must be included or set manually",
+        "segments": "The show must be annotated with segment markers",
+        "server": "Connection must be established to the server"
+      }
+    },
     "startMethod": {
       "AUTO": "Show will start automatically",
       "RC": "Use the switch on your RC to start"
@@ -547,6 +609,66 @@
     "uploadShowDataLoading": "Please wait, uploading…",
     "uploadShowDataStart": "Click here to start the upload process"
   },
+  "showConfiguratorDialog": {
+    "action": {
+      "adapt": "Adapt",
+      "adjustHomePositionsToDronePositions": "Fit takeoff to drones"
+    },
+    "adaptParameters": {
+      "form": {
+        "altitude": {
+          "help": "of vertical motion at takeoff & land",
+          "label": "Altitude"
+        },
+        "horizontalVelocity": {
+          "help": "during takeoff & RTH phases",
+          "label": "Horizontal velocity"
+        },
+        "minDistance": {
+          "help": "between drones during takeoff & RTH",
+          "label": "Minimum distance"
+        },
+        "takeoffDuration": {
+          "help": "ensuring exact start of show phase (if nonzero)",
+          "label": "Takeoff duration"
+        },
+        "verticalVelocity": {
+          "help": "during takeoff & RTH phases",
+          "label": "Vertical velocity"
+        }
+      },
+      "section": {
+        "parameters": "Parameters"
+      }
+    },
+    "adaptReview": {
+      "button": {
+        "reviewInViewer": "Review in Skybrush Viewer"
+      },
+      "error": {
+        "invalidState": "Invalid state, please try again."
+      },
+      "form": {
+        "rth": {
+          "lengthChange": "RTH length change:",
+          "lengthChangeValue": "{{value}} seconds"
+        },
+        "takeoff": {
+          "lengthChange": "Takeoff length change:",
+          "lengthChangeValue": "{{value}} seconds"
+        }
+      },
+      "showAdaptInProgress": "Adapting the show, please wait. It may take some time."
+    },
+    "help": {
+      "config": "This tool lets you adjust takeoff positions and net show layout independently.\nSelect takeoff positions (yellow triangles), the net show (purple convex hull) or both (yellow convex hull) and move or rotate them as you need.\nWhen done, setup transformation parameters on the right side and press ADAPT to recalculate trajectories, keeping the original net show content, yet aligned to your new arrangement.\nThe new show layout should be validated thoroughly and saved to a production ready .skyc file on exit.",
+      "review": "Review the changes before applying them to the show."
+    },
+    "settings": {
+      "dronesVisible": "Show drones"
+    },
+    "title": "Adapt show to venue"
+  },
   "sidebar": {
     "missionType": "Mission type: ({{missionType}})"
   },
@@ -562,6 +684,7 @@
       "flightMode": "Flight mode",
       "gpsFix": "GPS fix",
       "heading": "Heading",
+      "rssi": "Signal strength (RSSI)",
       "status": "Status"
     },
     "shortLabel": {
@@ -573,12 +696,15 @@
       "flightMode": "Mode",
       "gpsFix": "GPS fix",
       "heading": "Heading",
+      "rssi": "RSSI",
       "status": "Status"
     },
     "sortBy": "Sort by"
   },
   "startTimeDialog": {
     "SMPTETimecode": "SMPTE timecode",
+    "additionalSettings": "Additional settings",
+    "authorizeWhenSettingStartTime": "Authorize show start when setting start time",
     "errors": {
       "invalidDate": "Invalid date",
       "invalidTime": "Invalid time",
@@ -586,13 +712,14 @@
       "pastTime": "Time cannot be in the past"
     },
     "localTime": "Local time",
+    "localTimeRelative": "Fixed delay",
     "reference": "Reference",
     "resetForm": "Reset form",
     "setNewStartTime": "Set new start time",
     "setTheStartTime": "Set the start time of the show below",
     "startDate": "Start date",
     "startShowAuto": "Start show automatically",
-    "startShowWithRC": "Start show with remote controller only (safer)",
+    "startShowWithRC": "Start show with remote controller only",
     "startSignal": "Start signal",
     "startTime": "Start time",
     "startTimeHms": "Start time (hours:minutes:seconds)",
@@ -603,7 +730,8 @@
     "startTimeIsSetTo": "Start time is set to <strong>{{formattedStartTime}}</strong>"
   },
   "startUploadButton": {
-    "startSelected": "Start selected"
+    "startSelected": "Start selected",
+    "tooltip": "Select individual targets by clicking their IDs to prepare a partial upload"
   },
   "surveyStatusIndicator": {
     "noSurveyInformation": "No survey information"
@@ -634,20 +762,26 @@
   "toolbox": {
     "averagingInProgress": "{{number}} in progress",
     "coordinateAveraging": "Coordinate averaging",
+    "firmwareUpdate": "Firmware update",
     "licenseInfo": "License info",
     "offlineMaps": "Offline maps",
     "paramUpload": "Parameter upload",
     "tooltip": "Toolbox",
     "uploadInProgress": "Upload in progress"
   },
+  "uploadDialog": {
+    "restrictToGlobalSelection": "Show global selection only"
+  },
   "uploadPanel": {
     "cancelUpload": "Cancel upload",
     "flashLightsWhereFailed": "Flash lights of UAVs where the upload failed",
+    "hasHiddenTargets": "Some of the waiting UAVs may be filtered.",
     "retryFailedAttempts": "Retry failed attempts automatically",
     "uploadAttemptFailed": "Upload attempt failed.",
     "uploadCancelled": "Upload cancelled by user.",
     "uploadFinishedSuccessfully": "Upload finished successfully.",
     "uploadInProgress": "Upload in progress…",
+    "uploadInProgressWithEstimate": "Estimated time remaining: {{time}}",
     "uploadNotFinishedYet": "Upload not finished yet."
   },
   "uploadStatusLegend": {

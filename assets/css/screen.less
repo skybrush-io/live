@@ -192,7 +192,8 @@ mark {
 /* Add OpenLayers styling to the main map view. These selectors need to be more
  * specific than the ones in ol.css because ol.css is lazy-loaded when the
  * map is mounted, and we don't want it to override any of our styles */
-#main-map-view {
+#main-map-view,
+#adapt-map-view {
   /* Styling for OpenLayers controls */
   .ol-control {
     .drop-shadow-box();
@@ -225,6 +226,11 @@ mark {
       top: 4em;
       right: auto;
       left: 2.5em;
+    }
+
+    &.ol-zoom {
+      top: 8px;
+      left: 8px;
     }
 
     &.ol-zoomslider {

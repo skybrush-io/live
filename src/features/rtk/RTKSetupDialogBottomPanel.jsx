@@ -1,17 +1,13 @@
+import Place from '@mui/icons-material/Place';
+import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
+import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 
-import Box from '@material-ui/core/Box';
-import IconButton from '@material-ui/core/IconButton';
-import { makeStyles } from '@material-ui/core/styles';
-import Place from '@material-ui/icons/Place';
-
-import {
-  createSecondaryAreaStyle,
-  isThemeDark,
-} from '@skybrush/app-theme-material-ui';
+import { createSecondaryAreaStyle, isThemeDark } from '@skybrush/app-theme-mui';
 import Tooltip from '@skybrush/mui-components/lib/Tooltip';
 
 import FadeAndSlide from '~/components/transitions/FadeAndSlide';
@@ -30,6 +26,8 @@ const useStyles = makeStyles(
   (theme) => ({
     root: {
       ...createSecondaryAreaStyle(theme),
+      display: 'flex',
+      flexDirection: 'column',
     },
 
     inset: {
@@ -60,6 +58,12 @@ const RTKSetupDialogBottomPanel = ({
 }) => {
   const classes = useStyles();
 
+  useEffect(() => {
+    if (surveySettingsVisible && !surveyStatus?.supported) {
+      onToggleSurveySettings();
+    }
+  }, [onToggleSurveySettings, surveySettingsVisible, surveyStatus?.supported]);
+
   return (
     <Box
       className={clsx(classes.root, inset ? classes.inset : classes.nonInset)}
@@ -81,6 +85,7 @@ const RTKSetupDialogBottomPanel = ({
               <Tooltip content='Start new survey'>
                 <IconButton
                   disabled={!surveyStatus || !surveyStatus.supported}
+                  size='large'
                   onClick={onToggleSurveySettings}
                 >
                   <Place />

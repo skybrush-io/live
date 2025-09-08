@@ -108,6 +108,7 @@ export default connect(
     onSelectItem: createSelectionHandlerThunk({
       getSelection: getSelectedMissionItemIds,
       setSelection: setSelectedMissionItemIds,
+      getListItems: getMissionItemIds,
     }),
   }
 )(MissionOverviewList);

@@ -42,6 +42,13 @@ export const getFeaturesById: AppSelector<
 > = (state) => state.features.byId;
 
 /**
+ * Returns the list of all map feature IDs, in the
+ * order preferred by the state of the application.
+ */
+export const getFeatureIds: AppSelector<Identifier[]> = (state) =>
+  state.features.order;
+
+/**
  * Selector that calculates and caches the list of all the features in the
  * state object, in exactly the same order as they should appear on the UI.
  */
@@ -68,7 +75,7 @@ export const getFeatureById: AppSelector<
  */
 export const getProposedIdForNewFeature: AppSelector<
   string,
-  [Feature, string | undefined]
+  [Feature, string?]
 > = (state, feature, name) => {
   const { type } = feature;
 

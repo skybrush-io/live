@@ -1,13 +1,12 @@
+import Box from '@mui/material/Box';
 import React from 'react';
-
-import Box from '@material-ui/core/Box';
 
 import UAVDetailsPanelBody from './UAVDetailsPanelBody';
 import UAVDetailsPanelHeader from './UAVDetailsPanelHeader';
 
 /**
  * Panel that shows the widgets that are needed to monitor and control one
- * specific drone and it's devices.
+ * specific drone and its devices.
  */
 const UAVDetailsPanel = () => (
   <Box display='flex' flexDirection='column' height='100%'>

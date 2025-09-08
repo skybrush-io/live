@@ -1,5 +1,6 @@
 import formatISO9075 from 'date-fns/formatISO9075';
 import fromUnixTime from 'date-fns/fromUnixTime';
+import type { TFunction } from 'i18next';
 import isNil from 'lodash-es/isNil';
 
 /**
@@ -12,9 +13,12 @@ export function formatCoordinateArray(coords: number[]): string {
 /**
  * Formats a short (less than an hour) duration as minutes:seconds or
  * a long (not less than an hour) duration as hours:minutes:seconds.
+ * A placeholder is returned in case of missing input data.
  */
-export function formatDuration(duration: number): string {
-  return (duration < 60 * 60 ? formatDurationMS : formatDurationHMS)(duration);
+export function formatDuration(duration?: number): string {
+  return duration === undefined
+    ? '--:--:--'
+    : (duration < 60 * 60 ? formatDurationMS : formatDurationHMS)(duration);
 }
 
 /**
@@ -71,6 +75,41 @@ export function formatDurationHMS(
   return `${hours}:${minutes}:${seconds}`;
 }
 
+export function formatDurationAsText(duration: number, t: TFunction): string {
+  if (duration < 0) {
+    return formatDurationAsText(-duration, t);
+  }
+
+  if (duration < 1) {
+    // Avoid displaying "0 seconds"
+    duration = 1;
+  }
+
+  const hours = Math.floor(duration / 3600);
+  duration %= 3600;
+
+  const minutes = Math.floor(duration / 60);
+  duration %= 60;
+
+  const seconds = Math.floor(duration);
+
+  const parts = [];
+
+  if (hours > 0) {
+    parts.push(t('general.time.hours', { count: hours }));
+  }
+
+  if (minutes > 0) {
+    parts.push(t('general.time.minutes', { count: minutes }));
+  }
+
+  if (seconds > 0) {
+    parts.push(t('general.time.seconds', { count: seconds }));
+  }
+
+  return parts.join(' ');
+}
+
 /**
  * Formats a mission-specific ID in a consistent manner
  * that is to be used everywhere throughout the UI.
@@ -82,29 +121,23 @@ export function formatMissionId(index: number): string {
   return `s${index + 1}`;
 }
 
-/**
- * Formats a mission-specific ID range in a consistent manner
- * that is to be used everywhere throughout the UI.
- *
- * Indices as input arguments are zero-based, but they are formatted as 1-based
- * on the UI. The start index is inclusive and the end index is exclusive.
- */
-export function formatMissionIdRange(start: number, end: number): string {
-  if (end <= start) {
-    return '';
-  } else if (end === start + 1) {
-    return formatMissionId(start);
-  } else {
-    return `${formatMissionId(start)}–${end}`;
-  }
-}
-
 export type UnitDescriptor = {
   multiplier: number;
   unit: string;
   digits?: number;
   breakpoint?: number;
 };
+
+/**
+ * Data amount unit array suitable to be used with `formatNumberAndUnit`
+ * in order to format byte based file sizes nicely.
+ */
+export const DATA_UNITS: UnitDescriptor[] = [
+  { multiplier: 1e9, unit: 'GB' },
+  { multiplier: 1e6, unit: 'MB' },
+  { multiplier: 1e3, unit: 'KB' },
+  { multiplier: 1, unit: 'B' },
+];
 
 /**
  * Distance unit array suitable to be used with `formatNumberAndUnit`
@@ -184,6 +217,13 @@ export const formatNumberAndUnit = (
 };
 
 /**
+ * Helper function that formats a data amount expressed in bytes in a nice
+ * human-readable manner.
+ */
+export const formatData = (number: number, digits = 2): string =>
+  formatNumberAndUnit(number, DATA_UNITS, digits);
+
+/**
  * Helper function that formats a distance expressed in meters in a nice
  * human-readable manner.
  */
@@ -203,6 +243,26 @@ export const formatArea = (number: number, digits = 2): string =>
  */
 export const formatSpeed = (number: number, digits = 2): string =>
   formatNumberAndUnit(number, SPEED_UNITS, digits);
+
+/**
+ * Helper function that formats an interval of items.
+ *
+ * @param items  The array of items to format.
+ * @param formatter  The function to use to convert items to
+ *        their string representation.
+ */
+export const formatItemInterval = <TItem>(
+  items: Array<TItem>,
+  formatter: (item: TItem) => string = String
+) => {
+  if (items.length === 0) {
+    return '—';
+  } else if (items.length === 1) {
+    return formatter(items[0]!);
+  } else {
+    return `${formatter(items[0]!)}-${formatter(items.at(-1)!)}`;
+  }
+};
 
 /**
  * Formats a list of IDs in a manner that is suitable for cases when we
@@ -314,4 +374,23 @@ export function truncate(
   }
 
   return value;
+}
+
+/**
+ * Formats a single RSSI percentage as a string.
+ *
+ * Note that negative RSSI values in Skybrush mean "unknown" so we treat them
+ * as such.
+ */
+export function formatRSSI(rssi?: number): string {
+  if (
+    rssi === undefined ||
+    rssi === null ||
+    rssi < 0 ||
+    !Number.isFinite(rssi)
+  ) {
+    return '—';
+  } else {
+    return rssi.toFixed(0) + '%';
+  }
 }

@@ -1,9 +1,8 @@
+import Box from '@mui/material/Box';
+import ListItemText from '@mui/material/ListItemText';
+import Typography from '@mui/material/Typography';
 import PropTypes from 'prop-types';
 import React from 'react';
-
-import Box from '@material-ui/core/Box';
-import ListItemText from '@material-ui/core/ListItemText';
-import Typography from '@material-ui/core/Typography';
 
 /**
  * Variant on the Material-UI list item component that is styled in a way that
@@ -12,8 +11,8 @@ import Typography from '@material-ui/core/Typography';
  */
 const ListItemTextWithProgress = ({ secondary, ...rest }) => (
   <ListItemText
-    disableTypography
     {...rest}
+    disableTypography
     secondary={
       <Box
         minHeight={20.1}

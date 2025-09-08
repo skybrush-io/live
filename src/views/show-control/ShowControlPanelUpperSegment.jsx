@@ -1,9 +1,8 @@
+import Divider from '@mui/material/Divider';
+import List from '@mui/material/List';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
-
-import Divider from '@material-ui/core/Divider';
-import List from '@material-ui/core/List';
 
 import MultiPagePanel, { Page } from '~/components/MultiPagePanel';
 import {
@@ -18,6 +17,7 @@ import LoadShowFromFileButton from './LoadShowFromFileButton';
 import ManualPreflightChecksButton from './ManualPreflightChecksButton';
 import OnboardPreflightChecksButton from './OnboardPreflightChecksButton';
 import ShowUploadDialogButton from './ShowUploadDialogButton';
+import ShowConfiguratorButton from './ShowConfiguratorButton';
 import StartTimeButton from './StartTimeButton';
 import TakeoffAreaButton from './TakeoffAreaButton';
 
@@ -34,6 +34,7 @@ const ShowControlPanelUpperSegment = ({ environmentType, isAuthorized }) => (
         <Divider />
 
         <EnvironmentButton />
+        {environmentType === 'outdoor' && <ShowConfiguratorButton />}
         <TakeoffAreaButton />
         {environmentType === 'outdoor' && <GeofenceButton />}
         <ShowUploadDialogButton />

@@ -7,37 +7,41 @@ import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import { connect } from 'react-redux';
 
-import { Map, View, control, interaction, withMap } from '@collmot/ol-react';
+import { interaction, View, withMap } from '@collmot/ol-react';
 
-import * as Condition from './conditions';
+import { BaseMap, MapControls, MapToolbars } from '~/components/map';
+import ConnectedFitAllFeaturesButton from '~/components/map/buttons/FitAllFeaturesButton';
+import * as Condition from '~/components/map/conditions';
 import {
   SelectNearestFeature,
   ShowContextMenu,
   TrackNearestFeature,
   TransformFeatures,
-} from './interactions';
-import { Layers, stateObjectToLayer } from './layers';
-
-import DrawingToolbar from './DrawingToolbar';
-import MapContextMenu from './MapContextMenu';
-import MapReferenceRequestHandler from './MapReferenceRequestHandler';
-import MapToolbar from './MapToolbar';
-import { isDrawingTool, Tool, toolToDrawInteractionProps } from './tools';
-
-import Widget from '~/components/Widget';
-import { handleError } from '~/error-handling';
+} from '~/components/map/interactions';
+import { snapEndToStart } from '~/components/map/interactions/utils';
+import { MapLayers as MapLayersPresentation } from '~/components/map/layers';
+import { styles as mapStyles, toolClasses } from '~/components/map/Map';
+import MapRotationTextBox from '~/components/map/MapRotationTextBox';
 import {
-  addToSelection,
-  removeFromSelection,
-  setSelection,
-} from '~/features/map/selection';
-import { getSelectedTool } from '~/features/map/tools';
-import { updateMapViewSettings } from '~/features/map/view';
+  isDrawingTool,
+  Tool,
+  toolToDrawInteractionProps,
+} from '~/components/map/tools';
+import ToolbarDivider from '~/components/ToolbarDivider';
+import { handleError } from '~/error-handling';
 import {
   addFeature,
   showDetailsForFeatureInTooltipOrGivenFeature,
 } from '~/features/map-features/actions';
 import { getSelectedFeatureIds } from '~/features/map-features/selectors';
+import {
+  addToSelection,
+  removeFromSelection,
+  setSelection,
+  toggleInSelection,
+} from '~/features/map/selection';
+import { getSelectedTool } from '~/features/map/tools';
+import { updateMapViewSettings } from '~/features/map/view';
 import { addNewMissionItem } from '~/features/mission/actions';
 import { getGeofencePolygonId } from '~/features/mission/selectors';
 import NearestItemTooltip from '~/features/session/NearestItemTooltip';
@@ -58,14 +62,13 @@ import {
   isFeatureModifiable,
   isFeatureTransformable,
 } from '~/model/openlayers';
-import { getExtendedCoordinateFormatter } from '~/selectors/formatting';
 import {
   getMapViewCenterPosition,
   getMapViewRotationAngle,
+  getMapViewZoom,
 } from '~/selectors/map';
 import { getVisibleLayersInOrder } from '~/selectors/ordered';
 import { getSelection } from '~/selectors/selection';
-import { hasFeature } from '~/utils/configuration';
 import {
   findFeaturesById,
   lonLatFromMapViewCoordinate,
@@ -74,46 +77,14 @@ import {
 import { toDegrees } from '~/utils/math';
 import { forwardCollectionChanges } from '~/utils/openlayers';
 
-import { snapEndToStart } from './interactions/utils';
+import DrawingToolbar from './DrawingToolbar';
+import { Layers } from './layers';
+import MapContextMenu from './MapContextMenu';
+import MapReferenceRequestHandler from './MapReferenceRequestHandler';
 
 import 'ol/ol.css';
 
 /* ********************************************************************** */
-
-/**
- * React component that renders the layers of the map in the main window.
- *
- * @returns {JSX.Node[]}  the layers of the map
- */
-const MapViewLayersPresentation = ({
-  layers,
-  onFeaturesModified,
-  selectedTool,
-}) => {
-  let zIndex = 0;
-  const renderedLayers = [];
-
-  for (const layer of layers) {
-    if (layer.type in Layers) {
-      renderedLayers.push(
-        stateObjectToLayer(layer, {
-          onFeaturesModified,
-          selectedTool,
-          zIndex,
-        })
-      );
-      zIndex++;
-    }
-  }
-
-  return renderedLayers;
-};
-
-MapViewLayersPresentation.propTypes = {
-  layers: PropTypes.arrayOf(PropTypes.object),
-  onFeaturesModified: PropTypes.func,
-  selectedTool: PropTypes.string.isRequired,
-};
 
 /**
  * Connects the map view layers to the Redux store.
@@ -123,85 +94,9 @@ const MapViewLayers = connect(
   (state) => ({
     layers: getVisibleLayersInOrder(state),
     selectedTool: getSelectedTool(state),
+    layerComponents: Layers,
   })
-)(MapViewLayersPresentation);
-
-/* ********************************************************************** */
-
-const MapViewControlsPresentation = ({
-  formatCoordinate,
-  showMouseCoordinates,
-  showScaleLine,
-}) => (
-  <>
-    <control.Zoom />
-    <control.Attribution collapsed collapsible collapseLabel='&laquo;' />
-    {showMouseCoordinates && (
-      <control.MousePosition
-        key='control.MousePosition'
-        hideWhenOut
-        projection='EPSG:4326'
-        coordinateFormat={formatCoordinate}
-      />
-    )}
-    {showScaleLine && (
-      <control.ScaleLine key='control.ScaleLine' minWidth={128} />
-    )}
-  </>
-);
-
-MapViewControlsPresentation.propTypes = {
-  formatCoordinate: PropTypes.func,
-  showMouseCoordinates: PropTypes.bool,
-  showScaleLine: PropTypes.bool,
-};
-
-/**
- * React component that renders the standard OpenLayers controls that we
- * use on the map in the main window
- */
-const MapViewControls = connect(
-  // mapStateToProps
-  (state) => ({
-    formatCoordinate: getExtendedCoordinateFormatter(state),
-    ...state.settings.display,
-  })
-)(MapViewControlsPresentation);
-
-/* ********************************************************************** */
-
-/**
- * React component that renders the toolbar of the map in the main window.
- *
- * @returns {JSX.Node[]}  the toolbars on the map
- */
-const MapViewToolbars = () => {
-  const toolbars = [];
-
-  toolbars.push(
-    <Widget
-      key='Widget.MapToolbar'
-      style={{ top: 8, left: 8 + 24 + 8 }}
-      showControls={false}
-    >
-      <MapToolbar />
-    </Widget>
-  );
-
-  if (hasFeature('mapFeatures')) {
-    toolbars.push(
-      <Widget
-        key='Widget.DrawingToolbar'
-        style={{ top: 8 + 48 + 8, left: 8 }}
-        showControls={false}
-      >
-        <DrawingToolbar />
-      </Widget>
-    );
-  }
-
-  return toolbars;
-};
+)(MapLayersPresentation);
 
 /* ********************************************************************** */
 
@@ -429,25 +324,6 @@ MapViewInteractions.propTypes = {
 
 /* ********************************************************************** */
 
-const MAP_STYLE = {
-  // Vector tile based maps assume that there is a light background
-  background: '#f8f4f0',
-  height: '100%',
-};
-
-const toolClasses = {
-  [Tool.SELECT]: 'tool-select',
-  [Tool.ZOOM]: 'tool-zoom',
-  [Tool.PAN]: 'tool-pan',
-  [Tool.DRAW_POINT]: 'tool-draw tool-draw-point',
-  [Tool.DRAW_CIRCLE]: 'tool-draw tool-draw-circle',
-  [Tool.DRAW_RECTANGLE]: 'tool-draw tool-draw-rectangle',
-  [Tool.DRAW_PATH]: 'tool-draw tool-draw-path',
-  [Tool.DRAW_POLYGON]: 'tool-draw tool-draw-polygon',
-  [Tool.CUT_HOLE]: 'tool-edit tool-cut-hole',
-  [Tool.EDIT_FEATURE]: 'tool-edit tool-edit-feature',
-};
-
 /**
  * React component for the map of the main window.
  */
@@ -455,19 +331,17 @@ class MapViewPresentation extends React.Component {
   static propTypes = {
     dispatch: PropTypes.func.isRequired,
 
-    center: PropTypes.arrayOf(PropTypes.number),
-    rotation: PropTypes.number,
-    selection: PropTypes.arrayOf(PropTypes.string).isRequired,
+    angle: PropTypes.number,
+    geofencePolygonId: PropTypes.string,
+    position: PropTypes.arrayOf(PropTypes.number),
     selectedTool: PropTypes.string,
+    selection: PropTypes.arrayOf(PropTypes.string).isRequired,
     zoom: PropTypes.number,
 
     glContainer: PropTypes.object,
   };
 
-  static defaultProps = {
-    center: [19.061951, 47.47334],
-    zoom: 17,
-  };
+  static defaultProps = { ...config.map.view };
 
   constructor(props) {
     super(props);
@@ -526,12 +400,12 @@ class MapViewPresentation extends React.Component {
   }
 
   render() {
-    const { center, geofencePolygonId, rotation, selectedTool, zoom } =
+    const { angle, geofencePolygonId, position, selectedTool, zoom } =
       this.props;
     const view = (
       <View
-        center={mapViewCoordinateFromLonLat(center)}
-        rotation={(-rotation * Math.PI) / 180}
+        center={mapViewCoordinateFromLonLat(position)}
+        rotation={(-angle * Math.PI) / 180}
         zoom={zoom}
         maxZoom={24}
         constrainRotation={false}
@@ -543,22 +417,33 @@ class MapViewPresentation extends React.Component {
     // give access to the underlying OpenLayers Map object instead.
     return (
       <NearestItemTooltip>
-        <div style={{ height: '100%' }}>
-          <Map
+        <div style={mapStyles.mapWrapper}>
+          <BaseMap
             ref={this._map}
             loadTilesWhileInteracting
             id='main-map-view'
             view={view}
             useDefaultControls={false}
             className={toolClasses[selectedTool]}
-            style={MAP_STYLE}
+            style={mapStyles.map}
             onMoveEnd={this._onMapMoved}
           >
             <MapReferenceRequestHandler />
 
-            <MapViewToolbars />
+            <MapToolbars
+              left={<DrawingToolbar drawingTools={config.map.drawingTools} />}
+              top={
+                <>
+                  <MapRotationTextBox resetDuration={500} fieldWidth='75px' />
+                  <ToolbarDivider orientation='vertical' />
+                  {/* NOTE: Margin is calibrated such that the vertical      */}
+                  {/*       drawing toolbar will not cover any of the drones */}
+                  <ConnectedFitAllFeaturesButton duration={500} margin={80} />
+                </>
+              }
+            />
             <MapViewLayers onFeaturesModified={this._onFeaturesModified} />
-            <MapViewControls />
+            <MapControls />
             <MapViewInteractions
               geofencePolygonId={geofencePolygonId}
               selectedTool={selectedTool}
@@ -587,7 +472,7 @@ class MapViewPresentation extends React.Component {
               {/* The context menu that appears on the map when the user right-clicks */}
               <MapContextMenu />
             </ShowContextMenu>
-          </Map>
+          </BaseMap>
         </div>
       </NearestItemTooltip>
     );
@@ -599,7 +484,7 @@ class MapViewPresentation extends React.Component {
    * only user-defined features but anything that can be transformed (e.g.,
    * home position objects).
    *
-   * @param  {Map} map  the map
+   * @param  {BaseMap} map  the map
    * @return {ol.Feature[]} the selected OpenLayers features
    */
   _getSelectedTransformableFeatures = (map) => {
@@ -733,10 +618,6 @@ class MapViewPresentation extends React.Component {
         this._onFeatureActivated(feature);
         break;
 
-      case 'toggle':
-        mode = this.props.selection.includes(id) ? 'remove' : 'add';
-        break;
-
       case 'clear':
         mode = 'set';
         feature = undefined;
@@ -762,6 +643,7 @@ class MapViewPresentation extends React.Component {
       add: addToSelection,
       remove: removeFromSelection,
       set: setSelection,
+      toggle: toggleInSelection,
     };
     const action = actionMapping[mode] || setSelection;
     const ids = features ? features.map((feature) => feature.getId()) : [];
@@ -841,9 +723,9 @@ class MapViewPresentation extends React.Component {
 const MapView = connect(
   // mapStateToProps
   (state) => ({
-    center: getMapViewCenterPosition(state),
-    rotation: getMapViewRotationAngle(state),
-    zoom: state.map.view.zoom,
+    angle: getMapViewRotationAngle(state),
+    position: getMapViewCenterPosition(state),
+    zoom: getMapViewZoom(state),
 
     geofencePolygonId: getGeofencePolygonId(state),
 

@@ -1,14 +1,13 @@
+import Button from '@mui/material/Button';
+import List from '@mui/material/List';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import ListItemText from '@mui/material/ListItemText';
+import Zoom from '@mui/material/Zoom';
 import isNil from 'lodash-es/isNil';
 import PropTypes from 'prop-types';
 import React, { useCallback, useRef, useState } from 'react';
 import { useAsyncFn } from 'react-use';
-
-import Button from '@material-ui/core/Button';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import Zoom from '@material-ui/core/Zoom';
 
 import StatusLight from '@skybrush/mui-components/lib/StatusLight';
 
@@ -52,6 +51,12 @@ const tests = [
   {
     component: 'led',
     label: 'Execute LED test',
+    type: 'test',
+  },
+  {
+    component: 'pyro',
+    label: 'Execute pyro test',
+    needsConfirmation: true,
     type: 'test',
   },
   {
@@ -128,8 +133,7 @@ const UAVTestButton = ({
   }, []);
 
   return (
-    <ListItem
-      button
+    <ListItemButton
       onClick={needsConfirmation ? askForConfirmation : giveConfirmation}
     >
       <StatusLight
@@ -137,14 +141,14 @@ const UAVTestButton = ({
           suspended
             ? 'warning'
             : executionState.loading
-            ? 'next'
-            : executionState.error
-            ? 'error'
-            : isNil(executionState.value)
-            ? 'off'
-            : executionState.value
-            ? 'success'
-            : 'error'
+              ? 'next'
+              : executionState.error
+                ? 'error'
+                : isNil(executionState.value)
+                  ? 'off'
+                  : executionState.value
+                    ? 'success'
+                    : 'error'
         }
       />
       <ListItemText
@@ -152,8 +156,8 @@ const UAVTestButton = ({
           suspended
             ? `${progress.message || 'Operation suspended'}. Click to resume.`
             : progress && (!executionState.error || executionState.loading)
-            ? `${progress.message || label}`
-            : label
+              ? `${progress.message || label}`
+              : label
         }
         secondary={
           !executionState.loading && executionState.error ? (
@@ -179,7 +183,7 @@ const UAVTestButton = ({
           </Button>
         </Zoom>
       </ListItemSecondaryAction>
-    </ListItem>
+    </ListItemButton>
   );
 };
 

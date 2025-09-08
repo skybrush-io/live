@@ -1,6 +1,6 @@
+import Box from '@mui/material/Box';
 import React from 'react';
 
-import Box from '@material-ui/core/Box';
 import FeatureList from './FeatureList';
 import FeaturePanelToolbar from './FeaturePanelToolbar';
 
@@ -10,7 +10,7 @@ import FeaturePanelToolbar from './FeaturePanelToolbar';
 const FeaturePanel = () => (
   <Box display='flex' flexDirection='column' height='100%'>
     <Box height='100%' style={{ overflowY: 'auto' }}>
-      <FeatureList />
+      <FeatureList dense />
     </Box>
     <FeaturePanelToolbar />
   </Box>

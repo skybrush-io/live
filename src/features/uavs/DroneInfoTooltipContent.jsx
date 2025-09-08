@@ -1,13 +1,12 @@
+import makeStyles from '@mui/styles/makeStyles';
+import StatusPill from '@skybrush/mui-components/lib/StatusPill';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
-import { makeStyles } from '@material-ui/core/styles';
-
 import { BatteryFormatter } from '~/components/battery';
 import BatteryIndicator from '~/components/BatteryIndicator';
-import StatusPill from '~/components/StatusPill';
 import { getBatteryFormatter } from '~/features/settings/selectors';
 import {
   abbreviateFlightMode,
@@ -39,12 +38,11 @@ const useStyles = makeStyles(
       overflow: 'hidden',
     },
     pill: {
-      display: 'inline-block',
       margin: theme.spacing(0, 0.5, 0, 0),
       verticalAlign: 'text-top',
     },
     statusPill: {
-      minWidth: 88 + theme.spacing(0.5),
+      minWidth: 88 + Number.parseInt(theme.spacing(0.5)),
       flex: 1,
     },
     modePill: {

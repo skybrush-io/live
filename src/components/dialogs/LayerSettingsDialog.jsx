@@ -2,37 +2,35 @@
  * @file React component for the layer settings dialog.
  */
 
+import ArrowDown from '@mui/icons-material/ArrowDropDown';
+import ArrowUp from '@mui/icons-material/ArrowDropUp';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import IconButton from '@mui/material/IconButton';
+import Switch from '@mui/material/Switch';
 import { TextField } from 'mui-rff';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Form } from 'react-final-form';
 import { connect } from 'react-redux';
 
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import IconButton from '@material-ui/core/IconButton';
-import Switch from '@material-ui/core/Switch';
-import ArrowDown from '@material-ui/icons/ArrowDropDown';
-import ArrowUp from '@material-ui/icons/ArrowDropUp';
-
 import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
 import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
 
-import { forceFormSubmission } from '../forms';
-
+import { forceFormSubmission } from '~/components/forms';
 import { closeLayerSettingsDialog } from '~/features/map/layer-settings-dialog';
 import {
   adjustLayerZIndex,
+  removeLayer,
   renameLayer,
   toggleLayerVisibility,
-  removeLayer,
 } from '~/features/map/layers';
 import { LayerType } from '~/model/layers';
+import { getLayers, getLicensedLayerById } from '~/selectors/layers';
 import { createValidator, required } from '~/utils/validation';
 import { LayerSettings, stateObjectToLayerSettings } from '~/views/map/layers';
-import { getLayers, getLicensedLayerById } from '~/selectors/layers';
 
 const validator = createValidator({
   label: required,
@@ -43,7 +41,6 @@ const validator = createValidator({
  * regardless of its type.
  */
 const BasicLayerSettingsFormPresentation = ({
-  initialValues,
   layer,
   onSubmit,
   onToggleLayerVisibility,
@@ -51,7 +48,7 @@ const BasicLayerSettingsFormPresentation = ({
 }) => (
   <Form
     validateOnBlur
-    initialValues={initialValues}
+    initialValues={{ label: layer.label }}
     validate={validate}
     onSubmit={onSubmit}
   >
@@ -68,7 +65,6 @@ const BasicLayerSettingsFormPresentation = ({
           <div>&nbsp;</div>
           <Switch
             checked={layer.visible}
-            color='primary'
             disabled={
               layer.type === LayerType.UNAVAILABLE ||
               layer.type === LayerType.UNTYPED
@@ -84,10 +80,10 @@ const BasicLayerSettingsFormPresentation = ({
 
 BasicLayerSettingsFormPresentation.propTypes = {
   layer: PropTypes.shape({
+    label: PropTypes.string,
     visible: PropTypes.bool,
     type: PropTypes.string,
   }),
-  initialValues: PropTypes.object,
   validate: PropTypes.func,
   onSubmit: PropTypes.func,
   onToggleLayerVisibility: PropTypes.func,
@@ -99,11 +95,7 @@ BasicLayerSettingsFormPresentation.propTypes = {
  */
 const BasicLayerSettingsForm = connect(
   // mapStateToProps
-  (state, ownProps) => ({
-    initialValues: {
-      label: ownProps.layer.label,
-    },
-  }),
+  null,
   // mapDispatchToProps
   (dispatch, ownProps) => ({
     onSubmit(values) {
@@ -243,6 +235,7 @@ class LayerSettingsDialogPresentation extends React.Component {
         <IconButton
           key='moveUp'
           disabled={!canMoveUp}
+          size='large'
           onClick={this._moveSelectedLayerUp}
         >
           <ArrowUp />
@@ -250,6 +243,7 @@ class LayerSettingsDialogPresentation extends React.Component {
         <IconButton
           key='moveDown'
           disabled={!canMoveDown}
+          size='large'
           onClick={this._moveSelectedLayerDown}
         >
           <ArrowDown />

@@ -24,7 +24,6 @@ export type Clock = {
 
 export enum CommonClockId {
   SYSTEM = 'system',
-  LOCAL = '__local__',
   MISSION = 'mission',
   MTC = 'mtc',
   SHOW = 'show',

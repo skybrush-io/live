@@ -63,8 +63,16 @@ export default connect(
   // mapDispatchToProps
   (dispatch) => ({
     onStatusChanged(status) {
-      const { antenna = {}, messages = {}, cnr = {}, survey = {} } = status;
+      const {
+        antenna = {},
+        messages = {},
+        messagesTx,
+        cnr = {},
+        survey = {},
+      } = status;
       const now = Date.now();
+      const messageStats = {};
+      const hasTxBandwidthInfo = messagesTx !== undefined;
 
       let position;
       let positionECEF;
@@ -73,15 +81,45 @@ export default connect(
       if (antenna.position) {
         position = [antenna.position[1] / 1e7, antenna.position[0] / 1e7];
         height =
-          antenna.position[2] !== undefined
-            ? antenna.position[2] / 1e3
-            : undefined;
+          antenna.position[2] === undefined
+            ? undefined
+            : antenna.position[2] / 1e3;
       }
 
       if (antenna.positionECEF) {
         positionECEF = Array.isArray(antenna.positionECEF)
           ? antenna.positionECEF.slice(0, 3).map((x) => Math.round(x))
           : undefined;
+      }
+
+      /* Process bit rates of inbound messages */
+      for (const [key, messageStat] of Object.entries(messages)) {
+        const [timestamp, bitsPerSecond] = messageStat;
+        const lastUpdatedAt = now - timestamp;
+        messageStats[key] = {
+          lastUpdatedAt,
+          bitsPerSecondReceived: bitsPerSecond,
+          bitsPerSecondTransferred: hasTxBandwidthInfo ? 0 : undefined,
+        };
+      }
+
+      /* Process bit rates of outbound messages */
+      for (const [key, messageStat] of Object.entries(messagesTx || {})) {
+        const [timestamp, bitsPerSecond] = messageStat;
+        const lastUpdatedAt = now - timestamp;
+        let entry = messageStats[key];
+
+        if (!entry) {
+          entry = {
+            lastUpdatedAt: now - timestamp,
+            bitsPerSecondReceived: 0,
+            bitsPerSecondTransferred: 0,
+          };
+          messageStats[key] = entry;
+        }
+
+        entry.lastUpdatedAt = Math.min(entry.lastUpdatedAt, lastUpdatedAt);
+        entry.bitsPerSecondTransferred = bitsPerSecond;
       }
 
       dispatch(
@@ -96,10 +134,7 @@ export default connect(
             positionECEF,
             height,
           },
-          messages: mapValues(messages, (messageStat) => ({
-            lastUpdatedAt: now - messageStat[0],
-            bitsPerSecond: messageStat[1],
-          })),
+          messages: messageStats,
           satellites: mapValues(cnr, (cnrValue) => ({
             lastUpdatedAt: now,
             cnr: cnrValue,

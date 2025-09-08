@@ -1,29 +1,29 @@
+import { Base64 } from 'js-base64';
 import ky from 'ky';
 import get from 'lodash-es/get';
 import sum from 'lodash-es/sum';
 import throttle from 'lodash-es/throttle';
-import unary from 'lodash-es/unary';
 import Point from 'ol/geom/Point';
 
 import { freeze } from '@reduxjs/toolkit';
 
-import { loadCompiledShow as processFile } from '@skybrush/show-format';
+import { loadShowSpecificationAndZip as processFile } from '@skybrush/show-format';
 
-import { removeFeaturesByIds } from '~/features/map-features/slice';
 import { getFeaturesInOrder } from '~/features/map-features/selectors';
-import { addGeofencePolygon } from '~/features/mission/actions';
+import { removeFeaturesByIds } from '~/features/map-features/slice';
 import {
+  setCommandsAreBroadcast,
+  setMappingLength,
+  setMissionType,
   updateHomePositions,
   updateLandingPositions,
   updateTakeoffHeadings,
-  setMappingLength,
-  setMissionType,
 } from '~/features/mission/slice';
 import { showNotification } from '~/features/snackbar/actions';
 import { MessageSemantics } from '~/features/snackbar/types';
 import {
-  getCurrentGPSPositionByUavId,
   getActiveUAVIds,
+  getCurrentGPSPositionByUavId,
 } from '~/features/uavs/selectors';
 import { clearLastUploadResultForJobType } from '~/features/upload/slice';
 import { MissionType } from '~/model/missions';
@@ -34,36 +34,40 @@ import {
 } from '~/utils/geography';
 import { toRadians } from '~/utils/math';
 import { createAsyncAction } from '~/utils/redux';
+import workers from '~/workers';
 
 import { JOB_TYPE } from './constants';
 import { StartMethod } from './enums';
 import {
   getAbsolutePathOfShowFile,
-  getConvexHullOfShow,
+  getCommonTakeoffHeading,
   getFirstPointsOfTrajectoriesInWorldCoordinates,
   getLastPointsOfTrajectoriesInWorldCoordinates,
+  getOutdoorShowAltitudeReference,
+  getOutdoorShowOrientation,
   getOutdoorShowOrigin,
   getRoomCorners,
-  getOutdoorShowAltitudeReference,
-  getOutdoorShowToWorldCoordinateSystemTransformationObject,
-  getOutdoorShowOrientation,
-  getCommonTakeoffHeading,
+  getShowClockReference,
+  hasScheduledStartTime,
 } from './selectors';
 import {
+  _clearLoadedShow,
+  _setOutdoorShowAltitudeReference,
   approveTakeoffAreaAt,
   loadingProgress,
   revokeTakeoffAreaApproval,
   setEnvironmentType,
   setLastLoadingAttemptFailed,
-  setOutdoorShowOrigin,
   setOutdoorShowOrientation,
+  setOutdoorShowOrigin,
   setOutdoorShowTakeoffHeadingSpecification,
   setRoomCorners,
+  setShowAuthorization,
   setStartMethod,
+  setStartTime,
   signOffOnManualPreflightChecksAt,
   signOffOnOnboardPreflightChecksAt,
-  _setOutdoorShowAltitudeReference,
-  _clearLoadedShow,
+  synchronizeShowSettings,
 } from './slice';
 
 /**
@@ -71,6 +75,18 @@ import {
  */
 export const approveTakeoffArea = () => (dispatch) => {
   dispatch(approveTakeoffAreaAt(Date.now()));
+};
+
+/**
+ * Thunk that authorizes the start of the show if it has a scheduled start time
+ * and deauthorizes it if it does not have a scheduled start time.
+ */
+export const authorizeIfAndOnlyIfHasStartTime = () => (dispatch, getState) => {
+  const shouldAuthorize = hasScheduledStartTime(getState());
+  dispatch(setShowAuthorization(shouldAuthorize));
+  if (shouldAuthorize) {
+    dispatch(setCommandsAreBroadcast(true));
+  }
 };
 
 /**
@@ -87,6 +103,15 @@ export const clearLastUploadResult = () =>
 export const clearLoadedShow = () => (dispatch) => {
   dispatch(_clearLoadedShow());
   dispatch(setMissionType(MissionType.UNKNOWN));
+};
+
+/**
+ * Think that clears the start time of the show, keeping its start method.
+ */
+export const clearStartTime = () => (dispatch, getState) => {
+  const clock = getShowClockReference(getState());
+  dispatch(setStartTime({ clock, time: undefined }));
+  dispatch(synchronizeShowSettings('toServer'));
 };
 
 /**
@@ -116,41 +141,6 @@ export const removeShowFeatures = () => (dispatch, getState) => {
 
   dispatch(removeFeaturesByIds(showFeatureIds));
 };
-
-/**
- * Thunk that adds a geofence polygon based on the currently loaded show.
- */
-export const addGeofencePolygonBasedOnShowTrajectories =
-  () => (dispatch, getState) => {
-    const state = getState();
-
-    const coordinates = getConvexHullOfShow(state);
-    if (coordinates.length === 0) {
-      dispatch(
-        showNotification({
-          message: `Could not calculate geofence coordinates.
-                    Did you load a show file?`,
-          semantics: MessageSemantics.ERROR,
-          permanent: true,
-        })
-      );
-      return;
-    }
-
-    const transformation =
-      getOutdoorShowToWorldCoordinateSystemTransformationObject(state);
-    if (!transformation) {
-      throw new Error('Outdoor coordinate system not set up yet');
-    }
-
-    dispatch(
-      addGeofencePolygon(
-        coordinates,
-        MissionType.SHOW,
-        unary(transformation.toLonLat.bind(transformation))
-      )
-    );
-  };
 
 /**
  * Moves the show origin relative to its current position such that the delta
@@ -293,13 +283,29 @@ const createShowLoaderThunkFactory = (
 export const loadShowFromFile = createShowLoaderThunkFactory(
   async (file) => {
     const url = file && file.path ? `file://${file.path}` : undefined;
-    const spec = await processFile(file);
+    const { spec, base64Blob } = await workers.loadShow(file, {
+      returnBlob: true,
+    });
     // Pre-freeze the show data shallowly to give a hint to Redux Toolkit that
     // the show content won't change
-    return { spec: freeze(spec), url };
+    return { spec: Object.freeze(spec), url, base64Blob };
   },
   {
     errorMessage: 'Failed to load show from the given file.',
+  }
+);
+
+export const loadBase64EncodedShow = createShowLoaderThunkFactory(
+  async (base64Blob) => {
+    const { spec } = await workers.loadShow(Base64.toUint8Array(base64Blob), {
+      returnBlob: false,
+    });
+    // Pre-freeze the show data shallowly to give a hint to Redux Toolkit that
+    // the show content won't change
+    return { spec: Object.freeze(spec), base64Blob };
+  },
+  {
+    errorMessage: 'Failed to load show from the given base64-encoded data.',
   }
 );
 
@@ -320,14 +326,12 @@ export const loadShowFromUrl = createShowLoaderThunkFactory(
       },
     }).arrayBuffer();
 
-    const spec = await processFile(response);
+    const { showSpec, zip } = await processFile(response);
+    const base64Blob = await zip.generateAsync({ type: 'base64' });
 
     // Pre-freeze the show data shallowly to give a hint to Redux Toolkit that
     // the show content won't change
-    return {
-      spec: freeze(spec),
-      url,
-    };
+    return { spec: freeze(showSpec), url, base64Blob };
   },
   {
     errorMessage: 'Failed to load show from the given URL.',

@@ -19,6 +19,7 @@ export type SafetySliceState = {
   geofence: {
     horizontalMargin: number;
     verticalMargin: number;
+    generate: boolean;
     simplify: boolean;
     maxVertexCount: number;
   };
@@ -30,7 +31,7 @@ export type SafetySliceState = {
   };
 };
 
-const initialState: SafetySliceState = {
+export const initialState: SafetySliceState = {
   dialog: {
     open: false,
     selectedTab: SafetyDialogTab.GEOFENCE,
@@ -38,6 +39,7 @@ const initialState: SafetySliceState = {
   geofence: {
     horizontalMargin: 20,
     verticalMargin: 10,
+    generate: true,
     simplify: true,
     maxVertexCount: 10,
   },

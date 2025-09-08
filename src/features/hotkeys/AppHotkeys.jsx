@@ -8,13 +8,18 @@ import React from 'react';
 import { configure as configureHotkeys, GlobalHotKeys } from 'react-hotkeys';
 import { connect } from 'react-redux';
 
-import { selectAllUAVs } from '~/features/map/selection';
 import { removeSelectedFeatures } from '~/features/map-features/actions';
+import { selectAllUAVs } from '~/features/map/selection';
 import { removeSelectedMissionItems } from '~/features/mission/actions';
 import { getPreferredCommunicationChannelIndex } from '~/features/mission/selectors';
-import { toggleBroadcast } from '~/features/session/actions';
+import { togglePreferredChannel } from '~/features/mission/slice';
+import {
+  toggleBroadcast,
+  toggleDeveloperMode,
+} from '~/features/session/actions';
 import { isBroadcast } from '~/features/session/selectors';
 import { toggleMissionIds } from '~/features/settings/slice';
+import { handlers as showConfiguratorHandlers } from '~/features/show-configurator/hotkeys';
 import { requestRemovalOfSelectedUAVs } from '~/features/uavs/actions';
 import { openUAVDetailsDialog } from '~/features/uavs/details';
 import { getSelectedUAVIds, getUAVIdList } from '~/features/uavs/selectors';
@@ -29,11 +34,13 @@ import {
   handlePendingUAVIdThenDispatch,
 } from './actions';
 import keyMap from './keymap';
+import { getActiveHotkeyScope } from './selectors';
 import {
   isKeyboardNavigationActive,
   sendKeyboardNavigationSignal,
 } from './signal';
 import { showHotkeyDialog } from './slice';
+import { HotkeyScope } from './types';
 
 configureHotkeys({
   // This is necessary to ensure that the appropriate handlers are triggered
@@ -61,19 +68,31 @@ configureHotkeys({
 // Luckily it is not a problem if we use GlobalHotKeys "outside" the workbench
 // and normal <HotKeys> "inside" the workbench.
 
-const AppHotkeys = ({ handlers }) => (
-  <GlobalHotKeys keyMap={keyMap} handlers={handlers} />
-);
+const AppHotkeys = ({ activeHotkeyScope, handlers }) => {
+  const filteredKeyMap = Object.fromEntries(
+    Object.entries(keyMap).filter(([, { scopes }]) =>
+      scopes.includes(activeHotkeyScope)
+    )
+  );
+  return (
+    <GlobalHotKeys allowChanges keyMap={filteredKeyMap} handlers={handlers} />
+  );
+};
 
 const bindHotkeyHandlers = (reduxHandlers, nonReduxHandlers, dispatch) => ({
   ...nonReduxHandlers,
   ...mapValues(reduxHandlers, (handler) => (event) => {
+    if (event.defaultPrevented) {
+      return;
+    }
+    // Prevent the default action of the event (e.g. scrolling the page
     event.preventDefault();
     dispatch(handler());
   }),
 });
 
 AppHotkeys.propTypes = {
+  activeHotkeyScope: PropTypes.oneOf(Object.values(HotkeyScope)),
   handlers: PropTypes.object,
 };
 
@@ -105,7 +124,9 @@ const callUAVActionOnSelection = (actionName) => () => {
 
 export default connect(
   // mapStateToProps
-  null,
+  (state) => ({
+    activeHotkeyScope: getActiveHotkeyScope(state),
+  }),
   // mapDispatchToProps
   (dispatch) => ({
     handlers: bindHotkeyHandlers(
@@ -142,6 +163,9 @@ export default connect(
         SEND_RTH_COMMAND: callUAVActionOnSelection('returnToHome'),
         SHOW_HOTKEY_DIALOG: showHotkeyDialog,
         TOGGLE_BROADCAST_MODE: toggleBroadcast,
+        TOGGLE_BROADCAST_MODE_LEGACY: toggleBroadcast,
+        TOGGLE_PREFERRED_CHANNEL: togglePreferredChannel,
+        TOGGLE_DEVELOPER_MODE: toggleDeveloperMode,
         TOGGLE_SORT_BY_MISSION_ID: toggleMissionIds,
         TYPE_0: () => appendToPendingUAVId(0),
         TYPE_1: () => appendToPendingUAVId(1),
@@ -154,6 +178,8 @@ export default connect(
         TYPE_8: () => appendToPendingUAVId(8),
         TYPE_9: () => appendToPendingUAVId(9),
         TYPE_S: () => appendToPendingUAVId('s'),
+        TYPE_MINUS: () => appendToPendingUAVId('-'),
+        ...showConfiguratorHandlers,
       },
       // Plain callable functions bound to hotkeys
       {

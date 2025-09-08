@@ -1,4 +1,5 @@
 import isEqualWith from 'lodash-es/isEqualWith';
+import isNil from 'lodash-es/isNil';
 import reject from 'lodash-es/reject';
 import turfDifference from '@turf/difference';
 
@@ -26,6 +27,7 @@ import {
   addFeatureById,
   removeFeaturesByIds,
   updateFeaturePropertiesByIds,
+  updateFeatureVisibility,
 } from './slice';
 
 import { actions as editorActions } from './editor';
@@ -185,3 +187,33 @@ export const selectSingleFeatureOfTypeUnlessAmbiguous =
       );
     }
   };
+
+/**
+ * Action factory that creates an action that sets the set of selected
+ * feature IDs on the map.
+ *
+ * @param {Array.<string>} ids - The IDs of the selected features.
+ *        Any feature whose ID is not in this set will be deselected,
+ *        and so will be anything else that is not a map feature.
+ * @return {Object} An appropriately constructed action
+ */
+export const setSelectedFeatureIds = (ids) =>
+  setSelection(
+    (Array.isArray(ids) ? ids : [])
+      .filter((id) => !isNil(id))
+      .map((id) => featureIdToGlobalId(id))
+  );
+
+/**
+ * Thunk factory for toggling the visibility of a map feature with the given ID.
+ */
+export const toggleFeatureVisibility = (id) => (dispatch, getState) => {
+  const state = getState();
+  const feature = getFeatureById(state, id);
+  if (feature) {
+    dispatch(
+      // TODO: Add `prepare` functions to `updateFeature...` action creators!
+      updateFeatureVisibility({ id: feature.id, visible: !feature.visible })
+    );
+  }
+};

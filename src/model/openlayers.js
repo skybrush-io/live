@@ -3,15 +3,14 @@
  * model objects and converting between the two.
  */
 
-import { produce } from 'immer';
 import isEmpty from 'lodash-es/isEmpty';
 import isNil from 'lodash-es/isNil';
 import unary from 'lodash-es/unary';
 import { batch } from 'react-redux';
 
-import { updateFlatEarthCoordinateSystem } from '~/features/map/origin';
 import { cloneFeatureById } from '~/features/map-features/actions';
 import { updateFeaturePropertiesByIds } from '~/features/map-features/slice';
+import { updateFlatEarthCoordinateSystem } from '~/features/map/origin';
 import { updateMissionItemFromFeature } from '~/features/mission/actions';
 import {
   moveOutdoorShowOriginByMapCoordinateDelta,
@@ -25,11 +24,11 @@ import { toDegrees } from '~/utils/math';
 
 import { FeatureType } from './features';
 import {
-  CONVEX_HULL_AREA_ID,
   globalIdToAreaId,
   globalIdToFeatureId,
   globalIdToMissionItemId,
   globalIdToOriginId,
+  GROSS_CONVEX_HULL_AREA_ID,
   isAreaId,
   isFeatureId,
   isMissionItemId,
@@ -239,7 +238,7 @@ function _handleFeatureUpdatesInOpenLayers(
 
     // Is this feature an area such as the convex hull of the show?
     const areaId = globalIdToAreaId(globalId);
-    if (areaId === CONVEX_HULL_AREA_ID) {
+    if (areaId === GROSS_CONVEX_HULL_AREA_ID) {
       if (type === 'transform') {
         if (event.subType === 'move' && event.delta) {
           dispatch(moveOutdoorShowOriginByMapCoordinateDelta(event.delta));
@@ -250,7 +249,7 @@ function _handleFeatureUpdatesInOpenLayers(
         ) {
           dispatch(
             rotateOutdoorShowOrientationByAngleAroundPoint(
-              toDegrees(-event.angleDelta),
+              toDegrees(event.angleDelta),
               event.origin
             )
           );

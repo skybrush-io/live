@@ -89,6 +89,27 @@ export const getLightingConditionsForThreeDView = (state) => {
 };
 
 /**
+ * Returns the maximum number of concurrent upload tasks that the client should
+ * attempt to start on the server during upload jobs.
+ */
+export const getMaximumConcurrentUploadTaskCount = (state) =>
+  state.settings.uavs.maxUploadConcurrency ?? 8;
+
+/**
+ * Returns the minimum allowed distance between two UAVs in an indoor show at
+ * takeoff.
+ */
+export const getMinimumIndoorTakeoffSpacing = (state) =>
+  (state.settings.uavs.minIndoorTakeoffSpacing ?? 200) / 1000;
+
+/**
+ * Returns the minimum allowed distance between two UAVs in an indoor show at
+ * takeoff.
+ */
+export const getMinimumOutdoorTakeoffSpacing = (state) =>
+  (state.settings.uavs.minOutdoorTakeoffSpacing ?? 400) / 1000;
+
+/**
  * Returns the currently selected preferred battery display style.
  */
 export const getPreferredBatteryDisplayStyle = (state) =>

@@ -1,19 +1,17 @@
+import Box from '@mui/material/Box';
+import Checkbox from '@mui/material/Checkbox';
+import FormControl from '@mui/material/FormControl';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormGroup from '@mui/material/FormGroup';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import Typography from '@mui/material/Typography';
+import { useTheme } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
-
-import Box from '@material-ui/core/Box';
-import Checkbox from '@material-ui/core/Checkbox';
-import Divider from '@material-ui/core/Divider';
-import FormControl from '@material-ui/core/FormControl';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormGroup from '@material-ui/core/FormGroup';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
-import Typography from '@material-ui/core/Typography';
-import { useTheme } from '@material-ui/core/styles';
 
 import Header from '@skybrush/mui-components/lib/FormHeader';
 
@@ -25,16 +23,19 @@ import {
   SimpleVoltageField,
 } from '~/components/forms';
 import { updateUAVVoltageThreshold } from '~/features/settings/actions';
-import { updateAppSettings } from '~/features/settings/slice';
 import {
   getDesiredPlacementAccuracyInMeters,
   getDesiredTakeoffHeadingAccuracy,
+  getMaximumConcurrentUploadTaskCount,
+  getMinimumIndoorTakeoffSpacing,
+  getMinimumOutdoorTakeoffSpacing,
 } from '~/features/settings/selectors';
+import { updateAppSettings } from '~/features/settings/slice';
 import {
   BatteryDisplayStyle,
   describeBatteryDisplayStyle,
-  UAVOperationConfirmationStyle,
   describeUAVOperationConfirmationStyle,
+  UAVOperationConfirmationStyle,
 } from '~/model/settings';
 
 const batteryDisplayStyleOrder = [
@@ -57,6 +58,9 @@ const UAVsTabPresentation = ({
   fullChargeVoltage,
   goneThreshold,
   lowVoltageThreshold,
+  maxUploadConcurrency,
+  minIndoorTakeoffSpacing,
+  minOutdoorTakeoffSpacing,
   onCheckboxToggled,
   onDistanceFieldUpdated,
   onEnumFieldUpdated,
@@ -126,27 +130,44 @@ const UAVsTabPresentation = ({
         </FormControl>
       </FormGroup>
 
-      <Box display='flex' flexDirection='row' mb={1}>
-        <FormControl fullWidth variant='filled'>
-          <InputLabel id='uav-operation-confirmation-style'>
-            UAV operation confirmations
-          </InputLabel>
-          <Select
-            labelId='uav-operation-confirmation-style'
-            name='uavOperationConfirmationStyle'
-            value={
-              uavOperationConfirmationStyle ||
-              UAVOperationConfirmationStyle.NEVER
-            }
-            onChange={onEnumFieldUpdated}
-          >
-            {uavOperationConfirmationStyleOrder.map((value) => (
-              <MenuItem key={value} value={value}>
-                {describeUAVOperationConfirmationStyle(value)}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+      <Box my={2}>
+        <Header>{t('settings.uavs.operationSettings')}</Header>
+
+        <Box display='flex' flexDirection='row' mb={1}>
+          <FormControl fullWidth variant='filled'>
+            <InputLabel id='uav-operation-confirmation-style'>
+              UAV operation confirmations
+            </InputLabel>
+            <Select
+              labelId='uav-operation-confirmation-style'
+              name='uavOperationConfirmationStyle'
+              value={
+                uavOperationConfirmationStyle ||
+                UAVOperationConfirmationStyle.NEVER
+              }
+              onChange={onEnumFieldUpdated}
+            >
+              {uavOperationConfirmationStyleOrder.map((value) => (
+                <MenuItem key={value} value={value}>
+                  {describeUAVOperationConfirmationStyle(value)}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Box>
+
+        <Box display='flex' flexDirection='row' mb={1}>
+          <SimpleNumericField
+            fullWidth
+            label={t('settings.uavs.maxUploadConcurrency')}
+            name='maxUploadConcurrency'
+            min={1}
+            max={250}
+            step={1}
+            value={maxUploadConcurrency}
+            onChange={onIntegerFieldUpdated}
+          />
+        </Box>
       </Box>
 
       <Box my={2}>
@@ -219,8 +240,32 @@ const UAVsTabPresentation = ({
         </Box>
       </Box>
 
-      <Box my={2}>
+      <Box>
         <Header>{t('settings.uavs.missionSetup')}</Header>
+
+        <Box display='flex' flexDirection='row' mb={1}>
+          <SimpleDistanceField
+            fullWidth
+            name='minOutdoorTakeoffSpacing'
+            label={t('settings.uavs.minOutdoorTakeoffSpacing')}
+            min={0.1}
+            max={10}
+            step={0.1}
+            value={minOutdoorTakeoffSpacing}
+            onChange={onDistanceFieldUpdated}
+          />
+          <Box width={theme.spacing(2)} />
+          <SimpleDistanceField
+            fullWidth
+            name='minIndoorTakeoffSpacing'
+            label={t('settings.uavs.minIndoorTakeoffSpacing')}
+            min={0.1}
+            max={10}
+            step={0.1}
+            value={minIndoorTakeoffSpacing}
+            onChange={onDistanceFieldUpdated}
+          />
+        </Box>
 
         <Box display='flex' flexDirection='row' mb={1}>
           <SimpleDistanceField
@@ -262,6 +307,9 @@ UAVsTabPresentation.propTypes = {
   fullChargeVoltage: PropTypes.number,
   goneThreshold: PropTypes.number,
   lowVoltageThreshold: PropTypes.number,
+  maxUploadConcurrency: PropTypes.number,
+  minIndoorTakeoffSpacing: PropTypes.number,
+  minOutdoorTakeoffSpacing: PropTypes.number,
   onCheckboxToggled: PropTypes.func,
   onDistanceFieldUpdated: PropTypes.func,
   onEnumFieldUpdated: PropTypes.func,
@@ -287,6 +335,9 @@ export default connect(
     ...state.settings.uavs,
     placementAccuracy: getDesiredPlacementAccuracyInMeters(state),
     takeoffHeadingAccuracy: getDesiredTakeoffHeadingAccuracy(state),
+    maxUploadConcurrency: getMaximumConcurrentUploadTaskCount(state),
+    minIndoorTakeoffSpacing: getMinimumIndoorTakeoffSpacing(state),
+    minOutdoorTakeoffSpacing: getMinimumOutdoorTakeoffSpacing(state),
   }),
   // mapDispatchToProps
   (dispatch) => ({

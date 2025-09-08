@@ -8,7 +8,7 @@
  * error, the previous last result is still kept in the state object.
  */
 
-import { type WeatherInfo } from 'flockwave-spec';
+import { type WeatherInfo } from '@skybrush/flockwave-spec';
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
 type WeatherSliceState = {

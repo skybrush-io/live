@@ -1,30 +1,42 @@
+import Checkbox from '@mui/material/Checkbox';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormGroup from '@mui/material/FormGroup';
 import dropWhile from 'lodash-es/dropWhile';
 import takeWhile from 'lodash-es/takeWhile';
 import unary from 'lodash-es/unary';
-import memoizeOne from 'memoize-one';
 import memoize from 'memoizee';
+import * as Coordinate from 'ol/coordinate';
+import Point from 'ol/geom/Point';
+import { getPointResolution } from 'ol/proj';
+import { Circle, Icon, Style, Text } from 'ol/style';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
-import * as Coordinate from 'ol/coordinate';
-import Point from 'ol/geom/Point';
-import { getPointResolution } from 'ol/proj';
-import { Circle, Icon, RegularShape, Style, Text } from 'ol/style';
-
 import { Feature, geom, layer as olLayer, source } from '@collmot/ol-react';
 
-import Checkbox from '@material-ui/core/Checkbox';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormGroup from '@material-ui/core/FormGroup';
-
+import mapMarkerOutline from '~/../assets/img/map-marker-outline.svg';
+import mapMarker from '~/../assets/img/map-marker.svg';
 import Colors from '~/components/colors';
+import { styleForPointsOfPolygon } from '~/components/map/layers/features';
+import {
+  convexHullPolygon,
+  ConvexHullVariant,
+  homePositionPoints,
+  landingPositionPoints,
+  orientationMarker,
+  TAKEOFF_LANDING_POSITION_CHARACTER_WIDTH,
+} from '~/components/map/layers/ShowInfoLayer';
+import { markAsSelectableAndEditable } from '~/components/map/layers/utils';
+import { Tool } from '~/components/map/tools';
 import { setLayerParametersById } from '~/features/map/layers';
 import {
   getCurrentMissionItemIndex,
   getCurrentMissionItemRatio,
   getGPSBasedHomePositionsInMission,
   getGPSBasedLandingPositionsInMission,
+  getMinimumDistanceBetweenHomePositions,
+  getMinimumDistanceBetweenLandingPositions,
   getMissionItemsOfTypeWithIndices,
   getMissionItemsWithAreasInOrder,
   getMissionItemsWithCoordinatesInOrder,
@@ -37,12 +49,6 @@ import {
 } from '~/features/show/selectors';
 import { getSelectedUAVIdsForTrajectoryDisplay } from '~/features/uavs/selectors';
 import {
-  areaIdToGlobalId,
-  CONVEX_HULL_AREA_ID,
-  globalIdToHomePositionId,
-  globalIdToLandingPositionId,
-  homePositionIdToGlobalId,
-  landingPositionIdToGlobalId,
   MAP_ORIGIN_ID,
   MISSION_ITEM_LINE_STRING_ID,
   MISSION_ORIGIN_ID,
@@ -50,7 +56,6 @@ import {
   originIdToGlobalId,
   plannedTrajectoryIdToGlobalId,
 } from '~/model/identifiers';
-import { setLayerEditable, setLayerSelectable } from '~/model/layers';
 import { MissionItemType } from '~/model/missions';
 import { getMapOriginRotationAngle } from '~/selectors/map';
 import { getSelection } from '~/selectors/selection';
@@ -60,7 +65,6 @@ import { mapViewCoordinateFromLonLat } from '~/utils/geography';
 import { closePolygon, toRadians } from '~/utils/math';
 import CustomPropTypes from '~/utils/prop-types';
 import {
-  blackVeryThinOutline,
   dashedThinOutline,
   dottedThickOutline,
   fill,
@@ -73,14 +77,6 @@ import {
 } from '~/utils/styles';
 import MissionSlotTrajectoryFeature from '~/views/map/features/MissionSlotTrajectoryFeature';
 import UAVTrajectoryFeature from '~/views/map/features/UAVTrajectoryFeature';
-
-import { Tool } from '../tools';
-
-import { styleForPointsOfPolygon } from './features';
-
-import mapMarker from '~/../assets/img/map-marker.svg';
-import mapMarkerOutline from '~/../assets/img/map-marker-outline.svg';
-import missionOriginMarkerIcon from '~/../assets/img/mission-origin-marker.svg';
 
 // === Settings for this particular layer type ===
 
@@ -202,13 +198,6 @@ export const MissionInfoLayerSettings = connect(
 
 // === The actual layer to be rendered ===
 
-function markAsSelectableAndEditable(layer) {
-  if (layer) {
-    setLayerEditable(layer.layer);
-    setLayerSelectable(layer.layer);
-  }
-}
-
 /**
  * Styling for stroke of the X axis of the coordinate system.
  */
@@ -223,27 +212,6 @@ const greenLine = stroke(Colors.axes.y, 2);
  * Fill color to use for the origin marker.
  */
 const originMarkerFill = fill(Colors.markers.origin);
-
-/**
- * Shape to use for takeoff markers.
- */
-const takeoffTriangle = new RegularShape({
-  fill: fill(Colors.markers.takeoff),
-  points: 3,
-  radius: 6,
-  stroke: blackVeryThinOutline,
-});
-
-/**
- * Shape to use for landing markers.
- */
-const landingMarker = new RegularShape({
-  fill: fill(Colors.markers.landing),
-  points: 3,
-  radius: 6,
-  rotation: Math.PI,
-  stroke: blackVeryThinOutline,
-});
 
 /**
  * Styling function for the marker representing the origin of the map
@@ -281,50 +249,6 @@ const originStyles = (selected, axis) => [
 ];
 
 /**
- * Style for the marker representing the takeoff positions of the drones in
- * the current mission.
- */
-const takeoffPositionStyle = (feature, resolution) => {
-  const index = globalIdToHomePositionId(feature.getId());
-  const style = {
-    image: takeoffTriangle,
-  };
-
-  if (resolution < 0.4) {
-    style.text = new Text({
-      font: '12px sans-serif',
-      offsetY: 12,
-      text: formatMissionId(Number.parseInt(index, 10)),
-      textAlign: 'center',
-    });
-  }
-
-  return new Style(style);
-};
-
-/**
- * Style for the marker representing the landing positions of the drones in
- * the current mission.
- */
-const landingPositionStyle = (feature, resolution) => {
-  const index = globalIdToLandingPositionId(feature.getId());
-  const style = {
-    image: landingMarker,
-  };
-
-  if (resolution < 0.4) {
-    style.text = new Text({
-      font: '12px sans-serif',
-      offsetY: -12,
-      text: formatMissionId(Number.parseInt(index, 10)),
-      textAlign: 'center',
-    });
-  }
-
-  return new Style(style);
-};
-
-/**
  * Style for the marker representing the individual items in a waypoint mission.
  */
 const createMissionItemBaseStyle = memoize(
@@ -337,10 +261,10 @@ const createMissionItemBaseStyle = memoize(
         color: selected
           ? Colors.selectedMissionItem
           : done
-          ? Colors.doneMissionItem
-          : current
-          ? Colors.currentMissionItem
-          : Colors.missionItem,
+            ? Colors.doneMissionItem
+            : current
+              ? Colors.currentMissionItem
+              : Colors.missionItem,
         rotateWithView: false,
         snapToPixel: false,
       }),
@@ -367,32 +291,6 @@ const createMissionItemBaseStyle = memoize(
     }
   }
 );
-
-/**
- * Style for the marker representing the origin of the mission-specific
- * coordinate system.
- */
-const createMissionOriginStyle = memoizeOne(
-  (heading) =>
-    new Style({
-      image: new Icon({
-        src: missionOriginMarkerIcon,
-        rotateWithView: true,
-        rotation: toRadians(heading),
-        snapToPixel: false,
-      }),
-    })
-);
-
-/**
- * Style for the convex hull of the mission.
- */
-const missionConvexHullBaseStyle = new Style({
-  stroke: thinOutline(Colors.convexHull),
-});
-const missionConvexHullSelectionStyle = new Style({
-  stroke: whiteThickOutline,
-});
 
 /**
  * Style for the flight area of the mission.
@@ -427,70 +325,11 @@ const auxiliaryMissionItemLineStringStyle = (feature) => [
 /**
  * Global identifiers for certain mission-specific features.
  */
-const CONVEX_HULL_GLOBAL_ID = areaIdToGlobalId(CONVEX_HULL_AREA_ID);
 const MAP_ORIGIN_GLOBAL_ID = originIdToGlobalId(MAP_ORIGIN_ID);
 const MISSION_ITEM_LINE_STRING_GLOBAL_ID = plannedTrajectoryIdToGlobalId(
   MISSION_ITEM_LINE_STRING_ID
 );
 const MISSION_ORIGIN_GLOBAL_ID = originIdToGlobalId(MISSION_ORIGIN_ID);
-
-const landingPositionPoints = (landingPositions) =>
-  Array.isArray(landingPositions)
-    ? landingPositions
-        .map((landingPosition, index) => {
-          const featureKey = `land.${index}`;
-
-          if (!landingPosition) {
-            return null;
-          }
-
-          const globalIdOfFeature = landingPositionIdToGlobalId(index);
-          const center = mapViewCoordinateFromLonLat([
-            landingPosition.lon,
-            landingPosition.lat,
-          ]);
-
-          return (
-            <Feature
-              key={featureKey}
-              id={globalIdOfFeature}
-              style={landingPositionStyle}
-            >
-              <geom.Point coordinates={center} />
-            </Feature>
-          );
-        })
-        .filter(Boolean)
-    : [];
-
-const homePositionPoints = (homePositions) =>
-  Array.isArray(homePositions)
-    ? homePositions
-        .map((homePosition, index) => {
-          const featureKey = `home.${index}`;
-
-          if (!homePosition) {
-            return null;
-          }
-
-          const globalIdOfFeature = homePositionIdToGlobalId(index);
-          const center = mapViewCoordinateFromLonLat([
-            homePosition.lon,
-            homePosition.lat,
-          ]);
-
-          return (
-            <Feature
-              key={featureKey}
-              id={globalIdOfFeature}
-              style={takeoffPositionStyle}
-            >
-              <geom.Point coordinates={center} />
-            </Feature>
-          );
-        })
-        .filter(Boolean)
-    : [];
 
 const mapOriginMarker = (
   coordinateSystemType,
@@ -728,44 +567,14 @@ const auxiliaryMissionLines = (
 const missionOriginMarker = (missionOrientation, missionOrigin) =>
   missionOrigin
     ? [
-        <Feature
-          key='missionOrigin'
-          id={MISSION_ORIGIN_GLOBAL_ID}
-          properties={{ skipSelection: true }}
-          style={createMissionOriginStyle(missionOrientation)}
-        >
-          <geom.Point
-            coordinates={mapViewCoordinateFromLonLat(missionOrigin)}
-          />
-        </Feature>,
+        orientationMarker(
+          missionOrientation,
+          missionOrigin,
+          MISSION_ORIGIN_GLOBAL_ID,
+          Colors.grossShowConvexHull
+        ),
       ]
     : [];
-
-const convexHullPolygon = (convexHull, selection) => {
-  if (convexHull) {
-    const convexHullInMapCoordinates = convexHull.map((coord) =>
-      mapViewCoordinateFromLonLat([coord.lon, coord.lat])
-    );
-    closePolygon(convexHullInMapCoordinates);
-
-    const selected = selection.includes(CONVEX_HULL_GLOBAL_ID);
-
-    return [
-      <Feature
-        key='missionConvexHull'
-        id={CONVEX_HULL_GLOBAL_ID}
-        style={[
-          ...(selected ? [missionConvexHullSelectionStyle] : []),
-          missionConvexHullBaseStyle,
-        ]}
-      >
-        <geom.Polygon coordinates={convexHullInMapCoordinates} />
-      </Feature>,
-    ];
-  } else {
-    return [];
-  }
-};
 
 const selectionTrajectoryFeatures = (
   missionIndicesForTrajectories,
@@ -809,6 +618,8 @@ const MissionInfoVectorSource = ({
   homePositions,
   landingPositions,
   mapOrigin,
+  minimumDistanceBetweenHomePositions,
+  minimumDistanceBetweenLandingPositions,
   missionItemsWithAreas,
   missionItemsWithCoordinates,
   missionOrientation,
@@ -822,8 +633,20 @@ const MissionInfoVectorSource = ({
 }) => (
   <source.Vector>
     {[].concat(
-      landingPositionPoints(landingPositions),
-      homePositionPoints(homePositions),
+      homePositionPoints(homePositions, {
+        minimumDistanceBetweenPositions: minimumDistanceBetweenHomePositions,
+        estimatedLabelWidth: homePositions
+          ? formatMissionId(homePositions.length - 1).length *
+            TAKEOFF_LANDING_POSITION_CHARACTER_WIDTH
+          : 0,
+      }),
+      landingPositionPoints(landingPositions, {
+        minimumDistanceBetweenPositions: minimumDistanceBetweenLandingPositions,
+        estimatedLabelWidth: landingPositions
+          ? formatMissionId(landingPositions.length - 1).length *
+            TAKEOFF_LANDING_POSITION_CHARACTER_WIDTH
+          : 0,
+      }),
       mapOriginMarker(coordinateSystemType, mapOrigin, orientation, selection),
       missionAreaBoundaries(missionItemsWithAreas, selection, selectedTool),
       missionWaypointMarkers(
@@ -843,7 +666,7 @@ const MissionInfoVectorSource = ({
         returnToHomeItems
       ),
       missionOriginMarker(missionOrientation, missionOrigin),
-      convexHullPolygon(convexHull, selection),
+      convexHullPolygon(convexHull, selection, ConvexHullVariant.GROSS),
       selectionTrajectoryFeatures(
         missionIndicesForTrajectories,
         uavIdsForTrajectories
@@ -860,13 +683,16 @@ MissionInfoVectorSource.propTypes = {
   homePositions: PropTypes.arrayOf(CustomPropTypes.coordinate),
   landingPositions: PropTypes.arrayOf(CustomPropTypes.coordinate),
   mapOrigin: PropTypes.arrayOf(PropTypes.number),
+  minimumDistanceBetweenLandingPositions: PropTypes.number,
+  minimumDistanceBetweenHomePositions: PropTypes.number,
   missionItemsWithAreas: PropTypes.arrayOf(PropTypes.object),
   missionItemsWithCoordinates: PropTypes.arrayOf(PropTypes.object),
   missionOrientation: CustomPropTypes.angle,
   missionOrigin: PropTypes.arrayOf(PropTypes.number),
-  missionIndicesForTrajectories: PropTypes.arrayOf(PropTypes.string),
+  missionIndicesForTrajectories: PropTypes.arrayOf(PropTypes.number),
   orientation: CustomPropTypes.angle,
   returnToHomeItems: PropTypes.arrayOf(PropTypes.object),
+  selectedTool: PropTypes.string,
   selection: PropTypes.arrayOf(PropTypes.string),
   uavIdsForTrajectories: PropTypes.arrayOf(PropTypes.string),
 };
@@ -907,6 +733,10 @@ export const MissionInfoLayer = connect(
       ? getGPSBasedLandingPositionsInMission(state)
       : undefined,
     mapOrigin: layer?.parameters?.showOrigin && state.map.origin.position,
+    minimumDistanceBetweenLandingPositions:
+      getMinimumDistanceBetweenLandingPositions(state),
+    minimumDistanceBetweenHomePositions:
+      getMinimumDistanceBetweenHomePositions(state),
     missionItemsWithAreas: layer?.parameters?.showMissionItems
       ? getMissionItemsWithAreasInOrder(state)
       : undefined,

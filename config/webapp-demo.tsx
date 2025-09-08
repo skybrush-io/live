@@ -7,6 +7,8 @@ import demoShowUrl from '~/../assets/shows/demo.skyc';
 
 import { type ConfigOverrides } from 'config-overrides';
 
+import { type Latitude, type Longitude } from '~/utils/geography';
+
 const overrides: ConfigOverrides = {
   // We bundle an example show with the webapp demo but not with the "real" one
   examples: {
@@ -27,12 +29,12 @@ const overrides: ConfigOverrides = {
   // Set the origin and the view to Farkashegy Airfield to match the guided tour
   map: {
     origin: {
-      position: [18.915125, 47.486305],
+      position: [18.915125 as Longitude, 47.486305 as Latitude],
       angle: '59',
     },
 
     view: {
-      position: [18.915125, 47.486305],
+      position: [18.915125 as Longitude, 47.486305 as Latitude],
       angle: '0',
       zoom: 17,
     },
@@ -43,6 +45,7 @@ const overrides: ConfigOverrides = {
   // hostname and port from the dialog.
   server: {
     connectAutomatically: true,
+    hostName: '', // empty string to allow the substitution of the hostname and port from the URL
     preventManualSetup: true,
   },
 

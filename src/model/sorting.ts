@@ -22,6 +22,7 @@ export enum UAVSortKey {
   ALTITUDE_HOME = 'ahl',
   ALTITUDE_GROUND = 'agl',
   HEADING = 'heading',
+  RSSI = 'rssi',
 }
 
 /**
@@ -32,6 +33,7 @@ export const UAVSortKeys = [
   UAVSortKey.STATUS,
   UAVSortKey.FLIGHT_MODE,
   UAVSortKey.BATTERY,
+  UAVSortKey.RSSI,
   UAVSortKey.GPS_FIX,
   UAVSortKey.ALTITUDE_MSL,
   UAVSortKey.ALTITUDE_HOME,
@@ -48,6 +50,7 @@ export const labelsForUAVSortKey: Record<UAVSortKey, PreparedI18nKey> = {
   [UAVSortKey.STATUS]: tt('sorting.label.status'),
   [UAVSortKey.FLIGHT_MODE]: tt('sorting.label.flightMode'),
   [UAVSortKey.BATTERY]: tt('sorting.label.battery'),
+  [UAVSortKey.RSSI]: tt('sorting.label.rssi'),
   [UAVSortKey.GPS_FIX]: tt('sorting.label.gpsFix'),
   [UAVSortKey.ALTITUDE_MSL]: tt('sorting.label.amsl'),
   [UAVSortKey.ALTITUDE_HOME]: tt('sorting.label.ahl'),
@@ -64,6 +67,7 @@ export const shortLabelsForUAVSortKey: Record<UAVSortKey, PreparedI18nKey> = {
   [UAVSortKey.STATUS]: tt('sorting.shortLabel.status'),
   [UAVSortKey.FLIGHT_MODE]: tt('sorting.shortLabel.flightMode'),
   [UAVSortKey.BATTERY]: tt('sorting.shortLabel.battery'),
+  [UAVSortKey.RSSI]: tt('sorting.shortLabel.rssi'),
   [UAVSortKey.GPS_FIX]: tt('sorting.shortLabel.gpsFix'),
   [UAVSortKey.ALTITUDE_MSL]: tt('sorting.shortLabel.amsl'),
   [UAVSortKey.ALTITUDE_HOME]: tt('sorting.shortLabel.ahl'),
@@ -136,32 +140,26 @@ export const getKeyFunctionForUAVSortKey = memoize(
 
       case UAVSortKey.ALTITUDE_MSL:
         // Sort UAVs based on altitude above mean sea level
-        return (uav) => {
-          const result = uav?.position?.amsl;
-          return isNil(result) ? -10000 : result;
-        };
+        return (uav) => uav?.position?.amsl ?? -10000;
 
       case UAVSortKey.ALTITUDE_HOME:
         // Sort UAVs based on altitude above home
         // TODO(ntamas): fall back to Z coordinate if no AHL is given
-        return (uav) => {
-          const result = uav?.position?.ahl;
-          return isNil(result) ? -10000 : result;
-        };
+        return (uav) => uav?.position?.ahl ?? -10000;
 
       case UAVSortKey.ALTITUDE_GROUND:
         // Sort UAVs based on altitude above ground
         // TODO(ntamas): fall back to Z coordinate if no AGL is given
-        return (uav) => {
-          const result = uav?.position?.agl;
-          return isNil(result) ? -10000 : result;
-        };
+        return (uav) => uav?.position?.agl ?? -10000;
 
       case UAVSortKey.HEADING:
-        return (uav) => {
-          const result = uav?.heading;
-          return isNil(result) ? 720 : result;
-        };
+        return (uav) => uav?.heading ?? 720;
+
+      case UAVSortKey.RSSI:
+        // Sort on the RSSI of the first channel only. We can make this more
+        // sophisticated if needed; 99% of the case the first channel should be
+        // enough. We make use of the fact that -1 means unknown RSSI.
+        return (uav) => uav?.rssi?.[0] ?? -1;
 
       case UAVSortKey.DEFAULT:
         return undefined;

@@ -9,6 +9,7 @@ import mapValues from 'lodash-es/mapValues';
 import values from 'lodash-es/values';
 
 import { showConfirmationDialog } from '~/features/prompt/actions';
+import { UAV_SIGNAL_DURATION } from '~/features/settings/constants';
 import { shouldConfirmUAVOperation } from '~/features/settings/selectors';
 import { showNotification } from '~/features/snackbar/actions';
 import { MessageSemantics } from '~/features/snackbar/types';
@@ -148,7 +149,7 @@ export const flashLightOnUAVsAndHideFailures = performMassOperation({
   name: 'Light signal command',
   mapper: (options) => ({
     signals: ['light'],
-    duration: 5000,
+    duration: UAV_SIGNAL_DURATION * 1000,
     ...options,
   }),
   reportSuccess: false,

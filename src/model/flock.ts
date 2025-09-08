@@ -3,7 +3,7 @@
  * a collection (flock) of UAVs.
  */
 
-import { type Response_UAVINF } from 'flockwave-spec';
+import { type Response_UAVINF } from '@skybrush/flockwave-spec';
 import isEmpty from 'lodash-es/isEmpty';
 import transform from 'lodash-es/transform';
 import { MiniSignal } from 'mini-signals';

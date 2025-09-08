@@ -1,23 +1,34 @@
 import {
-  type AnyAction,
-  type Dispatch,
   combineReducers,
+  type Action,
+  type ThunkAction,
+  type ThunkDispatch,
 } from '@reduxjs/toolkit';
+import undoable, { includeAction } from 'redux-undo';
 
 /**
  * Reducer functions for handling the part of the state object that stores the
  * state of the various dialogs.
  */
-import appSettingsReducer from '~/features/settings/dialog';
-import authenticationReducer from '~/features/servers/authentication-dialog';
-import deauthenticationReducer from '~/features/servers/deauthentication-dialog';
 import dockDetailsDialogReducer from '~/features/docks/details';
 import errorHandlingReducer from '~/features/error-handling/slice';
 import featureEditorReducer from '~/features/map-features/editor';
 import layerSettingsReducer from '~/features/map/layer-settings-dialog';
 import promptReducer from '~/features/prompt/slice';
 import savedLocationEditorReducer from '~/features/saved-locations/editor';
+import authenticationReducer from '~/features/servers/authentication-dialog';
+import deauthenticationReducer from '~/features/servers/deauthentication-dialog';
 import serverSettingsReducer from '~/features/servers/server-settings-dialog';
+import appSettingsReducer from '~/features/settings/dialog';
+import showConfiguratorReducer, {
+  historyInit,
+  historyJump,
+  historyRedo,
+  historySnap,
+  historyUndo,
+  type ShowData,
+  type ShowConfiguratorState,
+} from '~/features/show-configurator/state';
 import uavDetailsDialogReducer from '~/features/uavs/details';
 
 /**
@@ -31,11 +42,12 @@ import datasetsReducer from '~/features/datasets/slice';
 import detachablePanelsReducer from '~/features/detachable-panels/slice';
 import docksReducer from '~/features/docks/slice';
 import fieldNotesReducer from '~/features/field-notes/slice';
+import firmwareUpdateReducer from '~/features/firmware-update/slice';
 import hotkeysReducer from '~/features/hotkeys/slice';
 import lcdClockReducer from '~/features/lcd-clock/slice';
-import localServerReducer from '~/features/local-server/slice';
 import licenseInfoReducer from '~/features/license-info/slice';
 import lightControlReducer from '~/features/light-control/slice';
+import localServerReducer from '~/features/local-server/slice';
 import logReducer from '~/features/log/slice';
 import mapCachingReducer from '~/features/map-caching/slice';
 import featuresReducer from '~/features/map-features/slice';
@@ -51,14 +63,14 @@ import savedLocationsReducer from '~/features/saved-locations/slice';
 import serversReducer from '~/features/servers/slice';
 import sessionReducer from '~/features/session/slice';
 import settingsReducer from '~/features/settings/slice';
-import sidebarReducer from '~/features/sidebar/slice';
 import showReducer from '~/features/show/slice';
+import sidebarReducer from '~/features/sidebar/slice';
 import threeDReducer from '~/features/three-d/slice';
 import tourReducer from '~/features/tour/slice';
+import uavControlReducer from '~/features/uav-control/slice';
 import logDownloadReducer from '~/features/uavs/log-download';
 import uavReducer from '~/features/uavs/slice';
 import uploadReducer from '~/features/upload/slice';
-import uavControlReducer from '~/features/uav-control/slice';
 import versionCheckReducer from '~/features/version-check/slice';
 import weatherReducer from '~/features/weather/slice';
 import workbenchReducer from '~/features/workbench/slice';
@@ -78,6 +90,18 @@ const dialogsReducer = combineReducers({
   prompt: promptReducer,
   savedLocationEditor: savedLocationEditorReducer,
   serverSettings: serverSettingsReducer,
+  showConfigurator: undoable<ShowConfiguratorState, { showData?: ShowData }>(
+    showConfiguratorReducer,
+    {
+      clearHistoryType: historyInit.type,
+      filter: includeAction([historySnap.type]),
+      capture: ({ showData }) => ({ showData }),
+      restore: ({ showData }, current) => ({ ...current, showData }),
+      jumpType: historyJump.type,
+      redoType: historyRedo.type,
+      undoType: historyUndo.type,
+    }
+  ),
   uavDetails: uavDetailsDialogReducer,
 });
 
@@ -95,6 +119,7 @@ const reducer = combineReducers({
   docks: docksReducer,
   features: featuresReducer,
   fieldNotes: fieldNotesReducer,
+  firmwareUpdate: firmwareUpdateReducer,
   hotkeys: hotkeysReducer,
   lcdClock: lcdClockReducer,
   licenseInfo: licenseInfoReducer,
@@ -133,9 +158,15 @@ export default reducer;
 // respectively, when `~/store/index` gets annotated, according to:
 // https://redux.js.org/usage/usage-with-typescript#define-root-state-and-dispatch-types
 export type RootState = ReturnType<typeof reducer>;
-export type AppDispatch = Dispatch;
+export type AppDispatch = ThunkDispatch<RootState, unknown, Action<unknown>>;
 // eslint-disable-next-line @typescript-eslint/ban-types
 export type AppSelector<T, ExtraArgs extends unknown[] = []> = (
   state: RootState,
   ...args: ExtraArgs
 ) => T;
+export type AppThunk<ReturnType = void> = ThunkAction<
+  ReturnType,
+  RootState,
+  unknown,
+  Action<unknown>
+>;

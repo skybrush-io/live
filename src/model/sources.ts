@@ -3,6 +3,7 @@
  * can use on the map.
  */
 
+import config from 'config';
 import APIKeys from '~/APIKeys';
 
 /**
@@ -59,7 +60,7 @@ export namespace Source {
 /**
  * Constant containing all the sources in the order preferred on the UI.
  */
-export const Sources = [Source.OSM, Source.STAMEN.TERRAIN];
+export const Sources: Source.Source[] = [Source.OSM, Source.STAMEN.TERRAIN];
 
 // We add Mapbox, Maptiler, Bing Maps and Google Maps map sources only if we
 // have at least a default API key for them. This might change in the future.
@@ -81,19 +82,20 @@ if (APIKeys.MAPTILER) {
 // don't have a styling function for them.
 
 // Google and Bing Maps cannot be used in commercial apps without
-// licensing, so these branches are currently disabled.
+// licensing, so these branches are currently disabled by default,
+// unless explicitly enabled from the configuration.
 
-// if (APIKeys.BING) {
-//   Sources.push(Source.BING.AERIAL_WITH_LABELS, Source.BING.ROAD);
-// }
+if (config.map.tileProviders.bingMaps && APIKeys.BING) {
+  Sources.push(Source.BING.AERIAL_WITH_LABELS, Source.BING.ROAD);
+}
 
-// if (APIKeys.GOOGLE) {
-//   Sources.push(
-//     Source.GOOGLE.DEFAULT,
-//     Source.GOOGLE.SATELLITE,
-//     Source.GOOGLE.ROADS
-//   );
-// }
+if (config.map.tileProviders.googleMaps && APIKeys.GOOGLE) {
+  Sources.push(
+    Source.GOOGLE.DEFAULT,
+    Source.GOOGLE.SATELLITE,
+    Source.GOOGLE.ROADS
+  );
+}
 
 const attributions = {
   mapbox: [

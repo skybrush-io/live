@@ -1,3 +1,5 @@
+import Box from '@mui/material/Box';
+import makeStyles from '@mui/styles/makeStyles';
 import identity from 'lodash-es/identity';
 import isNil from 'lodash-es/isNil';
 import PropTypes from 'prop-types';
@@ -5,53 +7,46 @@ import React, { useMemo } from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import Box from '@material-ui/core/Box';
-import { makeStyles } from '@material-ui/core/styles';
-
 import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
 
-import { getMissionMapping } from '~/features/mission/selectors';
-import { getUAVIdList } from '~/features/uavs/selectors';
-import { isSelectedJobInUploadDialogScopedToMission } from '~/features/upload/selectors';
-import { formatMissionIdRange } from '~/utils/formatting';
+import { formatItemInterval } from '~/utils/formatting';
 
 import { toggleUavsInWaitingQueue } from './actions';
+import { JobScope } from './jobs';
+import {
+  getMissionIdFormatter,
+  getScopeOfSelectedJobInUploadDialog,
+  getUploadDialogIdList,
+} from './selectors';
 import UploadStatusPill from './UploadStatusPill';
 import UploadStatusRowHeader from './UploadStatusRowHeader';
 
-const NUMBER_OF_ITEMS_PER_ROW = 10;
+const HEADER_WIDTH = 92;
+const NUMBER_OF_ITEMS_PER_ROW = 20;
 
 const useStyles = makeStyles((theme) => ({
   root: {
     display: 'grid',
-    gridTemplateColumns: `64px repeat(${NUMBER_OF_ITEMS_PER_ROW}, 1fr)`,
-    padding: theme.spacing(1, 0),
+    gridTemplateColumns: `${HEADER_WIDTH}px repeat(${NUMBER_OF_ITEMS_PER_ROW}, 1fr)`,
+    margin: theme.spacing(1, 0),
 
     '& div': {
       whiteSpace: 'nowrap',
       overflow: 'hidden',
     },
+
+    // Make sure that the lights container itself becomes scrollable when
+    // there are lots of drones instead of relying on the _dialog_ to become
+    // scrollable.
+    overflowY: 'auto',
+    maxHeight: 'calc(100vh - 320px)',
   },
 
   empty: {
-    padding: theme.spacing(1, 0),
+    margin: theme.spacing(1, 0),
     height: 64,
   },
 }));
-
-/**
- * Default formatter used to create the row headings when the user specified
- * no formatter.
- */
-const defaultRowHeaderFormatter = (_start, _end, items) => {
-  if (items.length === 0) {
-    return '—';
-  } else if (items.length === 1) {
-    return items[0];
-  } else {
-    return `${String(items[0])}-${String(items[items.length - 1])}`;
-  }
-};
 
 /**
  * Given a list of IDs to show in the upload status light grid, returns an
@@ -59,7 +54,7 @@ const defaultRowHeaderFormatter = (_start, _end, items) => {
  */
 const createRowsFromIds = (
   mapping,
-  { columnCount, itemFormatter, rowHeaderFormatter } = {}
+  { columnCount, itemFormatter, idFormatter } = {}
 ) => {
   const rows = [];
   const numberOfItems = mapping.length;
@@ -67,11 +62,7 @@ const createRowsFromIds = (
   for (let index = 0; index < numberOfItems; index += columnCount) {
     const items = mapping.slice(index, index + columnCount);
     const labels = items.map(itemFormatter);
-    const header = `${rowHeaderFormatter(
-      index,
-      index + items.length,
-      items
-    )} ▸`;
+    const header = `${formatItemInterval(items, idFormatter)} ▸`;
     rows.push({ header, items, labels });
   }
 
@@ -81,9 +72,9 @@ const createRowsFromIds = (
 /* eslint-disable react/no-array-index-key */
 const UploadStatusLights = ({
   columnCount = NUMBER_OF_ITEMS_PER_ROW,
+  idFormatter,
   ids,
   itemFormatter = identity,
-  rowHeaderFormatter = defaultRowHeaderFormatter,
   onHeaderClick,
   t,
 }) => {
@@ -93,9 +84,9 @@ const UploadStatusLights = ({
       createRowsFromIds(ids, {
         columnCount,
         itemFormatter,
-        rowHeaderFormatter,
+        idFormatter,
       }),
-    [ids, columnCount, itemFormatter, rowHeaderFormatter]
+    [ids, columnCount, itemFormatter, idFormatter]
   );
 
   if (rows.length === 0) {
@@ -117,7 +108,7 @@ const UploadStatusLights = ({
           />
           {items.map((itemId, index) =>
             isNil(itemId) ? (
-              <UploadStatusPill key={`__cell${index}`}>{'—'}</UploadStatusPill>
+              <UploadStatusPill key={`__cell${index}`}>—</UploadStatusPill>
             ) : (
               <UploadStatusPill key={itemId} uavId={itemId}>
                 {labels[index]}
@@ -134,21 +125,22 @@ const UploadStatusLights = ({
 UploadStatusLights.propTypes = {
   columnCount: PropTypes.number,
   itemFormatter: PropTypes.func,
+  idFormatter: PropTypes.func,
   ids: PropTypes.arrayOf(PropTypes.string),
   onHeaderClick: PropTypes.func,
-  rowHeaderFormatter: PropTypes.func,
   t: PropTypes.func,
 };
 
 export default connect(
   // mapStateToProps
   (state) => {
-    const scopedToMission = isSelectedJobInUploadDialogScopedToMission(state);
+    const scope = getScopeOfSelectedJobInUploadDialog(state);
+    const formatMissionId = getMissionIdFormatter(state);
+    const scopedToMission = scope === JobScope.MISSION;
+
     return {
-      ids: scopedToMission ? getMissionMapping(state) : getUAVIdList(state),
-      rowHeaderFormatter: scopedToMission
-        ? formatMissionIdRange
-        : defaultRowHeaderFormatter,
+      ids: getUploadDialogIdList(state),
+      idFormatter: scopedToMission ? formatMissionId : String,
     };
   },
   // mapDispatchToProps

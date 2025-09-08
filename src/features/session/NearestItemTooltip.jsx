@@ -9,7 +9,7 @@ import { isUavId, globalIdToUavId } from '~/model/identifiers';
 
 import { getNearestFeatureIdForTooltip } from './selectors';
 
-const supportsTooltip = (featureId) => featureId && isUavId(featureId);
+const supportsTooltip = (featureId) => Boolean(featureId) && isUavId(featureId);
 
 const NearestItemTooltipContent = React.memo(({ featureId }) => {
   if (isUavId(featureId)) {

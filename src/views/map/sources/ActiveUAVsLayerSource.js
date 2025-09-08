@@ -3,20 +3,20 @@
  * currently known to the server.
  */
 
+import { source, withLayer } from '@collmot/ol-react';
 import difference from 'lodash-es/difference';
 import includes from 'lodash-es/includes';
 import Layer from 'ol/layer/Layer';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { source, withLayer } from '@collmot/ol-react';
-
-import FeatureManager from '../FeatureManager';
-import UAVFeature from '../features/UAVFeature';
 
 import { getSingleUAVStatusLevel } from '~/features/uavs/selectors';
 import Flock from '~/model/flock';
-import { setLayerSelectable, setLayerTriggersTooltip } from '~/model/layers';
 import { uavIdToGlobalId } from '~/model/identifiers';
+import { setLayerSelectable, setLayerTriggersTooltip } from '~/model/layers';
+
+import FeatureManager from '../FeatureManager';
+import UAVFeature from '../features/UAVFeature';
 
 /**
  * OpenLayers vector layer source that contains all the active UAVs
@@ -32,6 +32,7 @@ class ActiveUAVsLayerSource extends React.Component {
     layer: PropTypes.instanceOf(Layer),
     projection: PropTypes.func,
     selection: PropTypes.arrayOf(PropTypes.string).isRequired,
+    labelHidden: PropTypes.bool,
   };
 
   constructor(props) {
@@ -40,8 +41,7 @@ class ActiveUAVsLayerSource extends React.Component {
     this._sourceRef = undefined;
 
     this._featureManager = new FeatureManager();
-    this._featureManager.featureFactory = (id, geom) =>
-      new UAVFeature(id, geom);
+    this._featureManager.featureFactory = this._createFeatureFactory();
     this._featureManager.featureIdFunction = uavIdToGlobalId;
     this._featureManager.featureAdded.add(this._onFeatureAdded);
 
@@ -59,6 +59,9 @@ class ActiveUAVsLayerSource extends React.Component {
       this.props.labelColor
     );
     this._featureManager.projection = this.props.projection;
+    if (this.props.labelHidden !== previousProps.labelHidden) {
+      this._featureManager.featureFactory = this._createFeatureFactory();
+    }
   }
 
   componentDidMount() {
@@ -102,6 +105,12 @@ class ActiveUAVsLayerSource extends React.Component {
       this._featureManager.vectorSource = value.source;
     }
   };
+
+  /**
+   * Creates the feature factory for the feature manager.
+   */
+  _createFeatureFactory = () => (id, geom) =>
+    new UAVFeature(id, geom, this.props.labelHidden);
 
   /**
    * Event handler that is called when a new feature was added by the feature

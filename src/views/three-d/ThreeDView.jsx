@@ -24,12 +24,6 @@ import {
 import { isShowIndoor } from '~/features/show/selectors';
 import { isMapCoordinateSystemLeftHanded } from '~/selectors/map';
 
-import glowImage from '~/../assets/img/sphere-glow-hollow.png';
-
-const images = {
-  glow: glowImage,
-};
-
 /**
  * Selector that returns the "effective' scenery to use in the 3D view,
  * potentially based on whether the show is indoor or outdoor.
@@ -92,15 +86,14 @@ const ThreeDView = React.forwardRef((props, ref) => {
       embedded='true'
       keyboard-shortcuts='enterVR: false'
       loading-screen='backgroundColor: #424242; dotsColor: #888'
-      renderer='antialias: false'
-      vr-mode-ui='enabled: false'
+      renderer='antialias: false; colorManagement: true; physicallyCorrectLights: true'
+      xr-mode-ui='enabled: false'
       device-orientation-permission-ui='enabled: false'
       tabIndex={-1}
       class='react-hotkeys-ignore'
       {...extraSceneProps}
     >
       <a-assets>
-        <img crossOrigin='anonymous' id='glow-texture' src={images.glow} />
         <a-mixin
           id='takeoff-marker'
           geometry='primitive: triangle; vertexA: 1 0 0; vertexB: -0.5 0.866 0; vertexC: -0.5 -0.866 0'

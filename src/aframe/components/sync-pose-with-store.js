@@ -3,7 +3,7 @@
  * object with the Redux store.
  */
 
-import AFrame from '../aframe';
+import AFrame from '@skybrush/aframe-components';
 
 import { getCameraPose } from '~/features/three-d/selectors';
 import { setCameraPose } from '~/features/three-d/slice';

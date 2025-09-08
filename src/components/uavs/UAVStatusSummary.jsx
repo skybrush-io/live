@@ -1,12 +1,12 @@
+import Sum from '@mui/icons-material/Functions';
+import Box from '@mui/material/Box';
+import makeStyles from '@mui/styles/makeStyles';
+import { createSelector } from '@reduxjs/toolkit';
 import clsx from 'clsx';
 import identity from 'lodash-es/identity';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
-import { createSelector } from '@reduxjs/toolkit';
-
-import Box from '@material-ui/core/Box';
-import { makeStyles } from '@material-ui/core/styles';
 
 import LazyTooltip from '@skybrush/mui-components/lib/LazyTooltip';
 import StatusLight from '@skybrush/mui-components/lib/StatusLight';
@@ -15,9 +15,9 @@ import { Status } from '~/components/semantics';
 import { showNotification } from '~/features/snackbar/actions';
 import { MessageSemantics } from '~/features/snackbar/types';
 import {
-  getUAVIdToStateMapping,
-  getUAVIdList,
   getSingleUAVStatusLevel,
+  getUAVIdList,
+  getUAVIdToStateMapping,
 } from '~/features/uavs/selectors';
 import { createShallowSelector } from '~/utils/selectors';
 import { Workbench } from '~/workbench';
@@ -36,7 +36,7 @@ const getStatusSummaryInner = createSelector(
   getUAVIdToStateMapping,
   getUAVIdList,
   (byId, order) => {
-    const result = [0, 0, 0, 0];
+    const result = [0, 0, 0, 0, 0];
 
     for (const uavId of order) {
       const uav = byId[uavId];
@@ -65,6 +65,8 @@ const getStatusSummaryInner = createSelector(
         }
       }
     }
+
+    result[4] = result[0] + result[1] + result[2] + result[3];
 
     return result;
   }
@@ -95,6 +97,7 @@ const useStyles = makeStyles(
     counter: {
       padding: theme.spacing(0, 1.5, 0, 0.5),
       userSelect: 'none',
+      fontVariantNumeric: 'tabular-nums',
     },
 
     off: {
@@ -106,7 +109,13 @@ const useStyles = makeStyles(
   }
 );
 
-const statusOrder = [Status.SUCCESS, Status.INFO, Status.WARNING, Status.ERROR];
+const statusOrder = [
+  Status.SUCCESS,
+  Status.INFO,
+  Status.WARNING,
+  Status.ERROR,
+  null,
+];
 
 const UAVStatusSummary = ({ counts, ...rest }) => {
   const classes = useStyles();
@@ -117,10 +126,14 @@ const UAVStatusSummary = ({ counts, ...rest }) => {
         <div className={classes.inner}>
           {statusOrder.map((statusCode, index) => (
             <React.Fragment key={statusCode}>
-              <StatusLight
-                inline
-                status={counts[index] > 0 ? statusCode : Status.OFF}
-              />
+              {statusCode ? (
+                <StatusLight
+                  inline
+                  status={counts[index] > 0 ? statusCode : Status.OFF}
+                />
+              ) : (
+                <Sum />
+              )}
               <div
                 className={clsx(
                   classes.counter,
@@ -146,7 +159,7 @@ const showUAVsList = (workbench, dispatch) => () => {
     return;
   }
 
-  if (!workbench.bringToFront('uavs')) {
+  if (!workbench.bringToFront('uavList')) {
     dispatch(
       showNotification({
         message: 'UAVs panel is not added to the workbench yet',

@@ -1,3 +1,4 @@
+import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import isNil from 'lodash-es/isNil';
 import padEnd from 'lodash-es/padEnd';
@@ -6,15 +7,13 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
-import { makeStyles } from '@material-ui/core/styles';
-
-import { monospacedFont } from '@skybrush/app-theme-material-ui';
+import { monospacedFont } from '@skybrush/app-theme-mui';
+import StatusPill from '@skybrush/mui-components/lib/StatusPill';
 import StatusText from '@skybrush/mui-components/lib/StatusText';
 
 import { BatteryFormatter } from '~/components/battery';
 import BatteryIndicator from '~/components/BatteryIndicator';
 import ColoredLight from '~/components/ColoredLight';
-import StatusPill from '~/components/StatusPill';
 import { getBatteryFormatter } from '~/features/settings/selectors';
 import {
   createSingleUAVStatusSummarySelector,
@@ -29,6 +28,8 @@ import {
 } from '~/model/enums';
 import { getPreferredCoordinateFormatter } from '~/selectors/formatting';
 import { formatCoordinateArray } from '~/utils/formatting';
+
+import { RSSIIndicator } from './RSSIIndicator';
 
 /**
  * Converts the absolute value of a heading deviation, in degrees, to the
@@ -59,6 +60,7 @@ const useStyles = makeStyles(
       fontVariantNumeric: 'lining-nums tabular-nums',
       marginTop: [-2, '!important'],
       marginBottom: [-4, '!important'],
+      userSelect: 'none',
       whiteSpace: 'pre',
     },
     gone: {
@@ -68,7 +70,6 @@ const useStyles = makeStyles(
       color: theme.palette.text.disabled,
     },
     pill: {
-      display: 'inline-block',
       margin: theme.spacing(0, 0.5),
       verticalAlign: 'text-top',
       transform: 'translateY(-1px)',
@@ -82,13 +83,17 @@ const useStyles = makeStyles(
     gpsPill: {
       width: 40,
     },
+    rssiPills: {
+      width: 72,
+      paddingLeft: 2,
+    },
     batteryIndicator: {
       display: 'inline-block',
       fontFamily: theme.typography.fontFamily,
       textAlign: 'left',
-      padding: theme.spacing(0, 0.75),
+      padding: theme.spacing(0, 0.5),
       margin: theme.spacing(0, 0.5),
-      width: 48,
+      width: 56,
     },
   }),
   { name: 'DroneStatusLine' }
@@ -113,6 +118,7 @@ const DroneStatusLine = ({
   missing,
   mode,
   position,
+  rssi,
   secondaryLabel,
   text,
   textSemantics,
@@ -121,8 +127,8 @@ const DroneStatusLine = ({
   const { amsl, ahl, agl } = position || {};
   return (
     <div className={clsx(classes.root, gone && classes.gone)}>
-      {padStart(label, 4)}
-      <span className={classes.muted}>{padStart(secondaryLabel, 4)}</span>
+      {padStart(label, 5)}
+      <span className={classes.muted}>{padStart(secondaryLabel, 5)}</span>
       {(details || text) && (
         <StatusPill
           inline
@@ -147,6 +153,7 @@ const DroneStatusLine = ({
             {...batteryStatus}
           />
           <ColoredLight inline color={color} />
+          <RSSIIndicator className={classes.rssiPills} rssi={rssi} />
           <StatusPill
             inline
             hollow
@@ -170,10 +177,10 @@ const DroneStatusLine = ({
           {!isNil(ahl) ? (
             padStart(position.ahl.toFixed(1), 6) + 'm'
           ) : (
-            <span className={classes.muted}>{'   ———'}</span>
+            <span className={classes.muted}>{'    ———'}</span>
           )}
           {!isNil(agl) ? (
-            padStart(position.agl.toFixed(1), 6) + 'm'
+            padStart(position.agl.toFixed(1), 5) + 'm'
           ) : (
             <span className={classes.muted}>{'   ———'}</span>
           )}
@@ -206,6 +213,7 @@ DroneStatusLine.propTypes = {
   gpsFixType: PropTypes.number,
   heading: PropTypes.number,
   headingDeviation: PropTypes.number,
+  id: PropTypes.string,
   label: PropTypes.string,
   localPosition: PropTypes.arrayOf(PropTypes.number),
   missing: PropTypes.bool,
@@ -217,6 +225,7 @@ DroneStatusLine.propTypes = {
     ahl: PropTypes.number,
     agl: PropTypes.number,
   }),
+  rssi: PropTypes.arrayOf(PropTypes.number),
   secondaryLabel: PropTypes.string,
   text: PropTypes.string,
   textSemantics: PropTypes.oneOf([
@@ -227,6 +236,7 @@ DroneStatusLine.propTypes = {
     'rth',
     'error',
     'critical',
+    'missing',
   ]),
 };
 
@@ -259,6 +269,7 @@ export default connect(
         missing: !uav,
         mode: uav ? uav.mode : undefined,
         position: uav ? uav.position : undefined,
+        rssi: uav ? uav.rssi : undefined,
         ...statusSummarySelector(state, ownProps.id),
       };
     };

@@ -1,27 +1,26 @@
+import SetPayloadIcon from '@mui/icons-material/Camera';
+import MarkerIcon from '@mui/icons-material/Flag';
+import ChangeFlightModeIcon from '@mui/icons-material/Flight';
+import LandIcon from '@mui/icons-material/FlightLand';
+import TakeoffIcon from '@mui/icons-material/FlightTakeoff';
+import UpdateFlightAreaIcon from '@mui/icons-material/FormatShapes';
+import ChangeAltitudeIcon from '@mui/icons-material/Height';
+import HomeIcon from '@mui/icons-material/Home';
+import HoverIcon from '@mui/icons-material/HourglassEmpty';
+import ChangeHeadingIcon from '@mui/icons-material/RotateLeft';
+import UpdateSafetyIcon from '@mui/icons-material/Security';
+import SetParameterIcon from '@mui/icons-material/Settings';
+import ChangeSpeedIcon from '@mui/icons-material/Speed';
 import isObject from 'lodash-es/isObject';
 import * as React from 'react';
-
-import ChangeAltitudeIcon from '@material-ui/icons/Height';
-import ChangeFlightModeIcon from '@material-ui/icons/Flight';
-import ChangeHeadingIcon from '@material-ui/icons/RotateLeft';
-import ChangeSpeedIcon from '@material-ui/icons/Speed';
-import MarkerIcon from '@material-ui/icons/Flag';
-import SetPayloadIcon from '@material-ui/icons/Camera';
-import SetParameterIcon from '@material-ui/icons/Settings';
-import TakeoffIcon from '@material-ui/icons/FlightTakeoff';
-import UpdateFlightAreaIcon from '@material-ui/icons/FormatShapes';
 import UpdateGeofenceIcon from '~/icons/PlacesFence';
-import UpdateSafetyIcon from '@material-ui/icons/Security';
-import LandIcon from '@material-ui/icons/FlightLand';
-import HomeIcon from '@material-ui/icons/Home';
 
 import {
   type GeofenceConfiguration,
   type SafetyConfiguration,
 } from '~/features/safety/model';
-import { type Coordinate2D } from '~/utils/math';
+import { type Latitude, type Longitude, type LonLat } from '~/utils/geography';
 
-import { isFlightMode } from './enums';
 import {
   type Altitude,
   AltitudeReference,
@@ -68,6 +67,7 @@ export enum MissionItemType {
   CHANGE_HEADING = 'changeHeading',
   CHANGE_SPEED = 'changeSpeed',
   GO_TO = 'goTo',
+  HOVER = 'hover',
   LAND = 'land',
   MARKER = 'marker',
   RETURN_TO_HOME = 'returnToHome',
@@ -102,7 +102,7 @@ export const isPayloadAction = (action: unknown): action is PayloadAction =>
 
 export type FlightAreaPolygon = {
   isInclusion: boolean;
-  points: Coordinate2D[];
+  points: LonLat[];
 };
 
 export type FlightAreaConfiguration = {
@@ -156,12 +156,16 @@ export type MissionItem = MissionItemLike &
     | {
         type: MissionItemType.GO_TO;
         parameters: {
-          lat: number;
-          lon: number;
+          lat: Latitude;
+          lon: Longitude;
           alt?: Altitude;
           velocityXY?: number;
           velocityZ?: number;
         };
+      }
+    | {
+        type: MissionItemType.HOVER;
+        parameters: { duration: number };
       }
     | {
         type: MissionItemType.LAND;
@@ -209,6 +213,7 @@ export const iconForMissionItemType: Record<MissionItemType, React.ReactNode> =
     [MissionItemType.CHANGE_HEADING]: <ChangeHeadingIcon />,
     [MissionItemType.CHANGE_SPEED]: <ChangeSpeedIcon />,
     [MissionItemType.GO_TO]: '#',
+    [MissionItemType.HOVER]: <HoverIcon />,
     [MissionItemType.LAND]: <LandIcon />,
     [MissionItemType.MARKER]: <MarkerIcon />,
     [MissionItemType.RETURN_TO_HOME]: <HomeIcon />,
@@ -227,6 +232,7 @@ export const titleForMissionItemType: Record<MissionItemType, string> = {
   [MissionItemType.CHANGE_HEADING]: 'Change heading',
   [MissionItemType.CHANGE_SPEED]: 'Change speed',
   [MissionItemType.GO_TO]: 'Go to waypoint',
+  [MissionItemType.HOVER]: 'Hover at position',
   [MissionItemType.LAND]: 'Land',
   [MissionItemType.MARKER]: 'Marker',
   [MissionItemType.RETURN_TO_HOME]: 'Return to home',
@@ -334,6 +340,17 @@ export const schemaForMissionItemType: Record<
     },
     required: ['lat', 'lon'],
   },
+  [MissionItemType.HOVER]: {
+    properties: {
+      duration: {
+        title: 'Duration',
+        description: 'Duration of the hover in [s]',
+        type: 'number',
+        minimum: 0,
+      },
+    },
+    required: ['duration'],
+  },
   [MissionItemType.LAND]: { properties: {}, required: [] },
   [MissionItemType.MARKER]: { properties: {}, required: [] },
   [MissionItemType.RETURN_TO_HOME]: { properties: {}, required: [] },
@@ -372,7 +389,7 @@ export const isMissionItemValid = (item: unknown): item is MissionItem => {
     case MissionItemType.CHANGE_FLIGHT_MODE: {
       const { mode }: { mode?: unknown } = item.parameters;
 
-      return isFlightMode(mode);
+      return typeof mode === 'string';
     }
 
     case MissionItemType.CHANGE_HEADING: {
@@ -418,6 +435,12 @@ export const isMissionItemValid = (item: unknown): item is MissionItem => {
         (velocityXY === undefined || Number.isFinite(velocityXY)) &&
         (velocityZ === undefined || Number.isFinite(velocityZ))
       );
+    }
+
+    case MissionItemType.HOVER: {
+      const { duration }: { duration?: unknown } = item.parameters;
+
+      return Number.isFinite(duration);
     }
 
     case MissionItemType.LAND: {
@@ -521,7 +544,7 @@ export const isMissionItemValid = (item: unknown): item is MissionItem => {
  */
 export function getAreaFromMissionItem(
   item: MissionItem
-): { points: Coordinate2D[] } | undefined {
+): { points: LonLat[] } | undefined {
   if (!isMissionItemValid(item)) {
     return undefined;
   }

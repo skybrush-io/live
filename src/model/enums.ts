@@ -394,6 +394,24 @@ export function getSemanticsForGPSFixType(fixType: GPSFixType): Status {
 /* ************************************************************************* */
 
 /**
+ * Returns the semantic status code of the given RSSI value.
+ */
+export function getSemanticsForRSSI(rssi?: number): Status {
+  if (rssi === undefined || rssi === null || rssi < 0) {
+    /* RSSI = -1 means "unknown" */
+    return Status.OFF;
+  } else if (rssi > 75) {
+    return Status.SUCCESS;
+  } else if (rssi > 50) {
+    return Status.WARNING;
+  } else {
+    return Status.ERROR;
+  }
+}
+
+/* ************************************************************************* */
+
+/**
  * Enum representing the possible preflight check results on a UAV.
  */
 export enum PreflightCheckResult {

@@ -3,6 +3,8 @@
  * platform-specific stuff.
  */
 
+import { eventHasCtrlKey, eventHasMetaKey } from './events';
+
 /**
  * Constant that evaluates to true if we are running on a Mac, false
  * otherwise.
@@ -26,8 +28,8 @@ export const isRunningOnWindows =
  *          was pressed during the event, false otherwise
  */
 export const eventHasPlatformModifierKey = isRunningOnMac
-  ? (event: KeyboardEvent | MouseEvent): boolean => Boolean(event.metaKey)
-  : (event: KeyboardEvent | MouseEvent): boolean => Boolean(event.ctrlKey);
+  ? eventHasMetaKey
+  : eventHasCtrlKey;
 
 /**
  * Constant that evaluates to the name of the platform-specific hotkey

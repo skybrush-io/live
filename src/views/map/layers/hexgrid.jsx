@@ -1,3 +1,5 @@
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
 import sum from 'lodash-es/sum';
 import toNumber from 'lodash-es/toNumber';
 import values from 'lodash-es/values';
@@ -8,9 +10,6 @@ import { Fill, Style } from 'ol/style';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
-
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
 
 import { layer as olLayer, source } from '@collmot/ol-react';
 

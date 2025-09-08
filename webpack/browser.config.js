@@ -1,5 +1,5 @@
-// Webpack configuration for the output that is directly usable on
-// https://live.skybrush.io
+// Webpack configuration for dynamic bundling
+// and serving to browsers during development
 
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
@@ -42,6 +42,14 @@ if (useHotModuleReloading) {
 module.exports = merge(baseConfig, {
   entry: {
     app: './src/index',
+  },
+  resolve: {
+    alias: {
+      // These are needed for WorkerUrlPlugin to work correctly, but only in the
+      // browser context
+      child_process: false,
+      worker_threads: false,
+    },
   },
   optimization,
   plugins,

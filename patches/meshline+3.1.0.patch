@@ -1,0 +1,24 @@
+diff --git a/node_modules/meshline/dist/index.cjs b/node_modules/meshline/dist/index.cjs
+index 3f6321f..213f46d 100644
+--- a/node_modules/meshline/dist/index.cjs
++++ b/node_modules/meshline/dist/index.cjs
+@@ -104,5 +104,5 @@
+     gl_FragColor.a *= step(vCounters, visibility);
+     ${r.ShaderChunk.fog_fragment}
+     #include <tonemapping_fragment>
+-    #include <encodings_fragment>
++    #include <colorspace_fragment>
+   }`;class U extends r.ShaderMaterial{constructor(t){super({uniforms:Object.assign({},r.UniformsLib.fog,{lineWidth:{value:1},map:{value:null},useMap:{value:0},alphaMap:{value:null},useAlphaMap:{value:0},color:{value:new r.Color(16777215)},opacity:{value:1},resolution:{value:new r.Vector2(1,1)},sizeAttenuation:{value:1},dashArray:{value:0},dashOffset:{value:0},dashRatio:{value:.5},useDash:{value:0},visibility:{value:1},alphaTest:{value:0},repeat:{value:new r.Vector2(1,1)}}),vertexShader:r.ShaderChunk.meshline_vert,fragmentShader:r.ShaderChunk.meshline_frag}),this.type="MeshLineMaterial",Object.defineProperties(this,{lineWidth:{enumerable:!0,get(){return this.uniforms.lineWidth.value},set(e){this.uniforms.lineWidth.value=e}},map:{enumerable:!0,get(){return this.uniforms.map.value},set(e){this.uniforms.map.value=e}},useMap:{enumerable:!0,get(){return this.uniforms.useMap.value},set(e){this.uniforms.useMap.value=e}},alphaMap:{enumerable:!0,get(){return this.uniforms.alphaMap.value},set(e){this.uniforms.alphaMap.value=e}},useAlphaMap:{enumerable:!0,get(){return this.uniforms.useAlphaMap.value},set(e){this.uniforms.useAlphaMap.value=e}},color:{enumerable:!0,get(){return this.uniforms.color.value},set(e){this.uniforms.color.value=e}},opacity:{enumerable:!0,get(){return this.uniforms.opacity.value},set(e){this.uniforms.opacity.value=e}},resolution:{enumerable:!0,get(){return this.uniforms.resolution.value},set(e){this.uniforms.resolution.value.copy(e)}},sizeAttenuation:{enumerable:!0,get(){return this.uniforms.sizeAttenuation.value},set(e){this.uniforms.sizeAttenuation.value=e}},dashArray:{enumerable:!0,get(){return this.uniforms.dashArray.value},set(e){this.uniforms.dashArray.value=e,this.useDash=e!==0?1:0}},dashOffset:{enumerable:!0,get(){return this.uniforms.dashOffset.value},set(e){this.uniforms.dashOffset.value=e}},dashRatio:{enumerable:!0,get(){return this.uniforms.dashRatio.value},set(e){this.uniforms.dashRatio.value=e}},useDash:{enumerable:!0,get(){return this.uniforms.useDash.value},set(e){this.uniforms.useDash.value=e}},visibility:{enumerable:!0,get(){return this.uniforms.visibility.value},set(e){this.uniforms.visibility.value=e}},alphaTest:{enumerable:!0,get(){return this.uniforms.alphaTest.value},set(e){this.uniforms.alphaTest.value=e}},repeat:{enumerable:!0,get(){return this.uniforms.repeat.value},set(e){this.uniforms.repeat.value.copy(e)}}}),this.setValues(t)}copy(t){return super.copy(t),this.lineWidth=t.lineWidth,this.map=t.map,this.useMap=t.useMap,this.alphaMap=t.alphaMap,this.useAlphaMap=t.useAlphaMap,this.color.copy(t.color),this.opacity=t.opacity,this.resolution.copy(t.resolution),this.sizeAttenuation=t.sizeAttenuation,this.dashArray.copy(t.dashArray),this.dashOffset.copy(t.dashOffset),this.dashRatio.copy(t.dashRatio),this.useDash=t.useDash,this.visibility=t.visibility,this.alphaTest=t.alphaTest,this.repeat.copy(t.repeat),this}}function F(a,t){const e=new r.Matrix4,i=new r.Ray,s=new r.Sphere,n=new r.Vector3,u=this.geometry;if(s.copy(u.boundingSphere),s.applyMatrix4(this.matrixWorld),a.ray.intersectSphere(s,n)===!1)return;e.copy(this.matrixWorld).invert(),i.copy(a.ray).applyMatrix4(e);const o=new r.Vector3,f=new r.Vector3,d=new r.Vector3,A=this instanceof r.LineSegments?2:1,v=u.index,m=u.attributes;if(v!==null){const l=v.array,y=m.position.array,b=m.width.array;for(let h=0,x=l.length-1;h<x;h+=A){const _=l[h],w=l[h+1];o.fromArray(y,_*3),f.fromArray(y,w*3);const M=b[Math.floor(h/3)]!=null?b[Math.floor(h/3)]:1,g=a.params.Line.threshold+this.material.lineWidth*M/2,P=g*g;if(i.distanceSqToSegment(o,f,n,d)>P)continue;n.applyMatrix4(this.matrixWorld);const p=a.ray.origin.distanceTo(n);p<a.near||p>a.far||(t.push({distance:p,point:d.clone().applyMatrix4(this.matrixWorld),index:h,face:null,faceIndex:null,object:this}),h=x)}}}exports.MeshLineGeometry=k;exports.MeshLineMaterial=U;exports.raycast=F;
+diff --git a/node_modules/meshline/dist/index.js b/node_modules/meshline/dist/index.js
+index 94b6b39..456320a 100644
+--- a/node_modules/meshline/dist/index.js
++++ b/node_modules/meshline/dist/index.js
+@@ -204,7 +204,7 @@ r.ShaderChunk.meshline_frag = `
+     gl_FragColor.a *= step(vCounters, visibility);
+     ${r.ShaderChunk.fog_fragment}
+     #include <tonemapping_fragment>
+-    #include <encodings_fragment>
++    #include <colorspace_fragment>
+   }`;
+ class k extends r.ShaderMaterial {
+   constructor(t) {

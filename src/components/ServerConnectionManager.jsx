@@ -38,10 +38,12 @@ import {
   clearTimeSyncStatistics,
   clearServerFeatures,
   clearServerLicense,
+  clearServerPortMapping,
   openTimeSyncWarningDialog,
   setCurrentServerConnectionState,
   setServerLicense,
   setServerVersion,
+  setServerPortMapping,
 } from '~/features/servers/slice';
 import { Protocol } from '~/features/servers/types';
 import {
@@ -293,7 +295,6 @@ class WebSocketConnection extends React.Component {
 class TCPSocketConnection extends React.Component {
   static propTypes = connectionPropTypes;
   static defaultProps = defaultConnectionProps;
-
   #heartbeatIntervalId = undefined;
   #socket;
 
@@ -556,18 +557,27 @@ async function executeTasksAfterConnection(dispatch, getState) {
       handleBeaconPropertiesMessage(response.body, dispatch);
     }
 
-    // Check whether the server supports virtual drones and map caching
-    const features = [];
-    for (const feature of ['virtual_uavs', 'map_cache']) {
-      // eslint-disable-next-line no-await-in-loop
-      const supported = await messageHub.query.isExtensionLoaded(feature);
-      if (supported) {
-        features.push(feature);
-      }
-    }
+    // Check whether the server supports the following optional features
+    const OPTIONAL_FEATURES = ['virtual_uavs', 'map_cache', 'studio'];
+    dispatch(
+      addServerFeatures(
+        await Promise.all(
+          OPTIONAL_FEATURES.map(async (name) => ({
+            name,
+            data: await messageHub.query.isExtensionLoaded(name),
+          }))
+        )
+      )
+    );
 
-    if (features.length > 0) {
-      dispatch(addServerFeatures(features));
+    // Retrieve the mapping of services to ports on the server -- used by the
+    // offline maps feature when it needs to connect back to the server via
+    // HTTP even if the primary connection protocol is different
+    try {
+      const portMapping = await messageHub.query.getServerPortMapping();
+      dispatch(setServerPortMapping(portMapping ?? {}));
+    } catch {
+      /* Not supported, server is too old */
     }
 
     // Set the license received in the response from the server.
@@ -644,6 +654,7 @@ async function executeTasksAfterDisconnection(dispatch) {
   dispatch(clearDockList());
   dispatch(clearServerFeatures());
   dispatch(clearServerLicense());
+  dispatch(clearServerPortMapping());
   dispatch(clearStartTimeAndMethod());
   dispatch(clearTimeSyncStatistics());
   dispatch(clearWeatherData());

@@ -1,3 +1,5 @@
+import type { ThemeType } from '@skybrush/app-theme-mui';
+
 import { type UAVFilter } from '~/model/filtering';
 import {
   type AltitudeSummaryType,
@@ -16,16 +18,20 @@ export enum AppSettingsDialogTab {
   UAVS = 'uavs',
 }
 
-export enum Theme {
-  AUTO = 'auto',
-  DARK = 'dark',
-  LIGHT = 'light',
-}
-
 export enum UAVListLayout {
   GRID = 'grid',
   LIST = 'list',
 }
+
+export enum UAVListOrientation {
+  HORIZONTAL = 'horizontal',
+  VERTICAL = 'vertical',
+}
+
+export type UAVSortKeyAndOrder = {
+  key: UAVSortKey;
+  reverse: boolean;
+};
 
 // Set of application settings.
 // This is a two-level key-value store; the first level is the
@@ -63,7 +69,7 @@ export type SettingsState = {
     showScaleLine: boolean;
 
     /** Which UI theme to use (choose from OS, use light mode or use dark mode) */
-    theme: Theme;
+    theme: ThemeType;
 
     /** Whether to hide inactive segments on dark mode LCD clocks */
     hideInactiveSegmentsOnDarkLCD: boolean;
@@ -75,10 +81,7 @@ export type SettingsState = {
     uavListLayout: UAVListLayout;
 
     /** Sort preference of the UAV list */
-    uavListSortPreference: {
-      key: UAVSortKey;
-      reverse: boolean;
-    };
+    uavListSortPreference: UAVSortKeyAndOrder;
   };
 
   // TODO: Find / create proper enums from AFrame for some of these.
@@ -181,16 +184,30 @@ export type SettingsState = {
     criticalVoltageThreshold: number;
 
     /**
-     * Whether to prefer percentages or voltages
-     * when showing the battery status
+     * Whether to prefer percentages or voltages when showing the battery status
      */
     preferredBatteryDisplayStyle: BatteryDisplayStyle;
 
     /**
-     * Wheter to ask for confirmation when performing
-     * certain UAV-related operations
+     * Whether to ask for confirmation when performing certain UAV-related operations
      */
     uavOperationConfirmationStyle: UAVOperationConfirmationStyle;
+
+    /**
+     * Maximum number of concurrent upload tasks for UAVs. May be undefined
+     * for older versions of the application (2.8.1 or earlier).
+     */
+    maxUploadConcurrency?: number;
+
+    /**
+     * Minimum distance allowed between two UAVs for indoor shows, in meters.
+     */
+    minIndoorTakeoffSpacing?: number;
+
+    /**
+     * Minimum distance allowed between two UAVs for outdoor shows, in meters.
+     */
+    minOutdoorTakeoffSpacing?: number;
   };
 
   apiKeys: Record<string, string>;

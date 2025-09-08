@@ -7,7 +7,7 @@ import {
   type License,
   type Response_AUTHINF,
   type Response_AUTHWHOAMI,
-} from 'flockwave-spec';
+} from '@skybrush/flockwave-spec';
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
 import { ConnectionState } from '~/model/enums';
@@ -30,7 +30,10 @@ export type ServersSliceState = {
     authentication: ServerAuthenticationInformation;
     features: Record<string, boolean>;
     license?: License;
+    ports: Record<string, number>;
     state: ConnectionState;
+    // TODO: Do `adjusting` and `calculating` really need to be optional?
+    //       (Get rid of `... | undefined` in selectors as well if possible!)
     timeSync: {
       adjusting?: boolean;
       adjustmentResult?: boolean;
@@ -66,6 +69,7 @@ const initialState: ServersSliceState = {
     authentication: INVALID,
     features: {},
     license: undefined,
+    ports: {},
     state: ConnectionState.DISCONNECTED,
     timeSync: {
       adjusting: false,
@@ -212,6 +216,14 @@ const { actions, reducer } = createSlice({
     },
 
     /**
+     * Clears the information about the current mapping of services to ports on
+     * the server.
+     */
+    clearServerPortMapping(state) {
+      state.current.ports = {};
+    },
+
+    /**
      * Clears the time synchronization related statistics of the current server.
      */
     clearTimeSyncStatistics(state) {
@@ -315,6 +327,16 @@ const { actions, reducer } = createSlice({
     },
 
     /**
+     * Sets the mapping of services to ports in the server.
+     */
+    setServerPortMapping(
+      state,
+      { payload: ports }: PayloadAction<Record<string, number>>
+    ) {
+      state.current.ports = ports;
+    },
+
+    /**
      * Sets version information about the currently active server.
      */
     setServerVersion(state, { payload: version }: PayloadAction<string>) {
@@ -412,6 +434,7 @@ export const {
   clearAuthenticationToken,
   clearServerFeatures,
   clearServerLicense,
+  clearServerPortMapping,
   clearTimeSyncStatistics,
   closeTimeSyncWarningDialog,
   openTimeSyncWarningDialog,
@@ -419,6 +442,7 @@ export const {
   setAuthenticatedUser,
   setCurrentServerConnectionState,
   setServerLicense,
+  setServerPortMapping,
   setServerVersion,
   startScanning,
   stopScanning,

@@ -11,7 +11,7 @@ import type UAV from '~/model/uav';
 import { type Collection, replaceItemOrAddToFront } from '~/utils/collections';
 import { noPayload } from '~/utils/redux';
 
-import { type JobPayload, type UploadJob } from './types';
+import type { JobData, JobPayload, UploadJob } from './types';
 import {
   clearLastUploadResultForJobTypeHelper,
   clearQueues,
@@ -20,23 +20,18 @@ import {
 } from './utils';
 
 export type UploadSliceState = {
-  currentJob: {
-    /**
-     * Type of current job being executed by the uploader. Value is kept after
-     * the job finishes so we can restart it if needed.
-     */
-
-    // TODO: Maybe create a unique symbol for job types?
-    type?: string;
-
-    /**
-     * Payload of current job; can be an arbitrary object and it is the
-     * task of the upload saga to interpret it. Its semantics primarily
-     * depends on the type of the current job. Value is kept after
-     * the job finishes so we can restart it if needed.
-     */
-    payload?: JobPayload;
-
+  /**
+   * The full description of the current job.
+   *
+   * `type`: Type of current job being executed by the uploader. Value is kept
+   * after the job finishes so we can restart it if needed.
+   *
+   * `payload`: Payload of current job; can be an arbitrary object and it is
+   * the task of the upload saga to interpret it. Its semantics primarily
+   * depends on the type of the current job. Value is kept after
+   * the job finishes so we can restart it if needed.
+   */
+  currentJob: JobData & {
     /** Whether the job is running or not */
     running: boolean;
   };
@@ -63,7 +58,22 @@ export type UploadSliceState = {
   // If you add a new queue above, make sure that the ALL_QUEUES array
   // is updated in features/upload/utils.js
 
+  /** Errors corresponding to the individual UAVs in the current upload job */
   errors: Record<UAV['id'], unknown>;
+
+  /** Progress information corresponding to the individual UAVs in the
+   * current upload job.
+   */
+  progresses: Record<UAV['id'], number>;
+
+  /**
+   * Timing information related to the current upload job, required to
+   * estimate the time the jobs will finish at the current pace.
+   */
+  timing: {
+    startedAt?: number;
+    estimatedEndAt?: number;
+  };
 
   dialog: {
     open: boolean;
@@ -82,6 +92,13 @@ export type UploadSliceState = {
 
     /** Whether the lights of the drones with failed uploads should be flashed */
     flashFailed: boolean;
+
+    /**
+     * Whether the upload jobs should be restricted to drones
+     * that are in the global selection, unless explicitly
+     * queued by the user.
+     */
+    restrictToGlobalSelection: boolean;
   };
 };
 
@@ -104,6 +121,11 @@ const initialState: UploadSliceState = {
     failedItems: [],
   },
   errors: {},
+  progresses: {},
+  timing: {
+    startedAt: undefined,
+    estimatedEndAt: undefined,
+  },
   dialog: {
     open: false,
     showLastUploadResult: false,
@@ -116,6 +138,7 @@ const initialState: UploadSliceState = {
   settings: {
     autoRetry: false,
     flashFailed: false,
+    restrictToGlobalSelection: false,
   },
 };
 
@@ -226,12 +249,15 @@ const { actions, reducer } = createSlice({
       state.dialog.showLastUploadResult = true;
     },
 
-    _notifyUploadStarted(state) {
+    _notifyUploadStartedAt(state, action: PayloadAction<number>) {
       // Start the upload
       state.currentJob.running = true;
 
       // Hide the result of the last upload task in the dialog box
       state.dialog.showLastUploadResult = false;
+
+      // Record the time when the upload started
+      state.timing.startedAt = action.payload;
     },
 
     _notifyUploadOnUavCancelled: moveItemsBetweenQueues({
@@ -277,6 +303,33 @@ const { actions, reducer } = createSlice({
       }),
     },
 
+    _setEstimatedCompletionTime(
+      state,
+      action: PayloadAction<number | undefined>
+    ) {
+      state.timing.estimatedEndAt = Number.isFinite(action.payload)
+        ? action.payload
+        : undefined;
+    },
+
+    _setProgressInfoForUAV: {
+      reducer(
+        state,
+        action: PayloadAction<{ uavId: UAV['id']; progress: number }>
+      ) {
+        const { uavId, progress } = action.payload;
+        if (progress >= 0 && progress <= 1) {
+          state.progresses[uavId] = progress;
+        } else {
+          delete state.progresses[uavId];
+        }
+      },
+
+      prepare: (uavId: UAV['id'], progress: number) => ({
+        payload: { uavId, progress },
+      }),
+    },
+
     openUploadDialogKeepingCurrentJob(
       state,
       action: PayloadAction<{ backAction?: Action }>
@@ -295,14 +348,14 @@ const { actions, reducer } = createSlice({
     openUploadDialogForJob(
       state,
       action: PayloadAction<{
-        job?: { type?: string; payload?: JobPayload };
-        options?: { backAction?: Action };
+        job?: JobData;
+        options?: { backAction?: Action; restrictToGlobalSelection?: boolean };
       }>
     ) {
       const { payload } = action;
       const { job, options } = payload ?? {};
       const { type: newJobType, payload: newJobPayload } = job ?? {};
-      const { backAction } = options ?? {};
+      const { backAction, restrictToGlobalSelection } = options ?? {};
 
       // Do not do anything without a job type
       if (!newJobType) {
@@ -325,6 +378,18 @@ const { actions, reducer } = createSlice({
       };
       state.dialog.showLastUploadResult = false;
       state.dialog.open = true;
+      if (restrictToGlobalSelection !== undefined) {
+        state.settings.restrictToGlobalSelection = restrictToGlobalSelection;
+      }
+    },
+
+    setRestrictToGlobalSelection(state, action: PayloadAction<boolean>) {
+      state.settings.restrictToGlobalSelection = action.payload;
+    },
+
+    toggleRestrictToGlobalSelection(state) {
+      state.settings.restrictToGlobalSelection =
+        !state.settings.restrictToGlobalSelection;
     },
 
     // Trigger actions for the upload saga
@@ -356,13 +421,15 @@ export const {
   _enqueueFailedUploads,
   _enqueueSuccessfulUploads,
   _notifyUploadFinished,
-  _notifyUploadStarted,
+  _notifyUploadStartedAt,
   _notifyUploadOnUavCancelled,
   _notifyUploadOnUavFailed,
   _notifyUploadOnUavQueued,
   _notifyUploadOnUavStarted,
   _notifyUploadOnUavSucceeded,
+  _setEstimatedCompletionTime,
   _setErrorMessageForUAV,
+  _setProgressInfoForUAV,
   openUploadDialogForJob,
   openUploadDialogKeepingCurrentJob,
   setupNextUploadJob,
@@ -370,7 +437,9 @@ export const {
   removeUavsFromWaitingQueue,
   setUploadAutoRetry,
   setFlashFailed,
+  setRestrictToGlobalSelection,
   startUpload,
+  toggleRestrictToGlobalSelection,
 } = actions;
 
 export default reducer;

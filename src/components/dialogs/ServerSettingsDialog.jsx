@@ -5,6 +5,23 @@
 
 import config from 'config';
 
+import Computer from '@mui/icons-material/Computer';
+import EditIcon from '@mui/icons-material/Edit';
+import SignalWifi0Bar from '@mui/icons-material/SignalWifi0Bar';
+import WifiIcon from '@mui/icons-material/Wifi';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import CircularProgress from '@mui/material/CircularProgress';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import Tab from '@mui/material/Tab';
+import Typography from '@mui/material/Typography';
 import partial from 'lodash-es/partial';
 import { Switches, TextField } from 'mui-rff';
 import PropTypes from 'prop-types';
@@ -13,31 +30,13 @@ import { Form } from 'react-final-form';
 import { Translation, useTranslation, withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import Tab from '@material-ui/core/Tab';
-import Typography from '@material-ui/core/Typography';
-
-import Computer from '@material-ui/icons/Computer';
-import EditIcon from '@material-ui/icons/Edit';
-import SignalWifi0Bar from '@material-ui/icons/SignalWifi0Bar';
-import WifiIcon from '@material-ui/icons/Wifi';
-
 import DialogTabs from '@skybrush/mui-components/lib/DialogTabs';
 import SmallProgressIndicator from '@skybrush/mui-components/lib/SmallProgressIndicator';
 
 import {
   ServerDetectionManager,
   isServerDetectionSupported,
-} from '../ServerDetectionManager';
-
+} from '~/components/ServerDetectionManager';
 import { forceFormSubmission } from '~/components/forms';
 import {
   closeServerSettingsDialog,
@@ -52,13 +51,35 @@ import {
 } from '~/features/servers/selectors';
 import { isTCPConnectionSupported } from '~/features/servers/server-settings-dialog';
 import { Protocol } from '~/features/servers/types';
+import useSelectorOnce from '~/hooks/useSelectorOnce';
 import { tt } from '~/i18n';
 import {
-  createValidator,
   between,
+  createValidator,
   integer,
   required,
 } from '~/utils/validation';
+
+const styles = {
+  dialogContent: { paddingBottom: 0, paddingLeft: 0, paddingRight: 0 },
+  flexColumn: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '16px',
+  },
+  paddedBox: {
+    paddingLeft: 3,
+    paddingRight: 3,
+  },
+  serverList: {
+    height: '160px',
+    overflow: 'auto',
+    '& .MuiListItemButton-gutters': {
+      paddingLeft: 3,
+      paddingRight: 3,
+    },
+  },
+};
 
 const iconForServerItem = ({ hostName, type }) =>
   type === 'inferred' ? (
@@ -111,7 +132,7 @@ const DetectedServersListPresentation = ({
   onItemSelected,
   t,
 }) => (
-  <List disablePadding style={{ height: 160, overflow: 'auto' }}>
+  <List disablePadding sx={styles.serverList}>
     {isScanning && (!items || items.length === 0) ? (
       <ListItem key='__scanning'>
         <ListItemIcon>
@@ -124,7 +145,7 @@ const DetectedServersListPresentation = ({
       </ListItem>
     ) : null}
     {items.map((item) => (
-      <ListItem key={item.id} button onClick={partial(onItemSelected, item)}>
+      <ListItemButton key={item.id} onClick={partial(onItemSelected, item)}>
         <ListItemIcon>{iconForServerItem(item)}</ListItemIcon>
         <ListItemText
           {...(item.label
@@ -132,7 +153,7 @@ const DetectedServersListPresentation = ({
                 primary: item.label,
                 secondary: [
                   addressForServerItem(item),
-                  securityWarningForServerItem(item)(t),
+                  // securityWarningForServerItem(item)(t),
                 ]
                   .filter(Boolean)
                   .join(' '),
@@ -142,15 +163,15 @@ const DetectedServersListPresentation = ({
                 secondary: protocolForServerItem(item)(t),
               })}
         />
-      </ListItem>
+      </ListItemButton>
     ))}
     {manualSetupAllowed && (
-      <ListItem key='__manual' button onClick={partial(onItemSelected, null)}>
+      <ListItemButton key='__manual' onClick={partial(onItemSelected, null)}>
         <ListItemIcon>
           <EditIcon />
         </ListItemIcon>
         <ListItemText primary={t('serverSettingsDialog.enterManually')} />
-      </ListItem>
+      </ListItemButton>
     )}
   </List>
 );
@@ -179,49 +200,57 @@ const validator = createValidator({
   port: [required, integer, between(1, 65535)],
 });
 
-const ServerSettingsFormPresentation = ({
-  initialValues,
-  onKeyPress,
-  onSubmit,
-  t,
-}) => (
-  <Form initialValues={initialValues} validate={validator} onSubmit={onSubmit}>
-    {({ handleSubmit }) => (
-      <form id='serverSettings' onSubmit={handleSubmit} onKeyPress={onKeyPress}>
-        <TextField
-          fullWidth
-          name='hostName'
-          label={t('serverSettingsDialog.hostname')}
-          variant='filled'
-          margin='normal'
-        />
-        <TextField
-          fullWidth
-          name='port'
-          label={t('serverSettingsDialog.port')}
-          variant='filled'
-          margin='normal'
-        />
-        <Switches
-          name='isSecure'
-          data={{ label: t('serverSettingsDialog.useSecureConnection') }}
-        />
-        {isTCPConnectionSupported ? (
-          <Switches
-            name='isWebSocket'
-            data={{
-              label: t('serverSettingsDialog.useWebSocketLabel'),
-            }}
-            helperText={t('serverSettingsDialog.useWebSocketHelperText')}
+const ServerSettingsFormPresentation = ({ onKeyPress, onSubmit, t }) => {
+  const initialValues = useSelectorOnce((state) => ({
+    ...state.dialogs.serverSettings,
+    isWebSocket: getServerProtocolWithDefaultWS(state) === Protocol.WS,
+  }));
+
+  return (
+    <Form
+      initialValues={initialValues}
+      validate={validator}
+      onSubmit={onSubmit}
+    >
+      {({ handleSubmit }) => (
+        <form
+          id='serverSettings'
+          style={styles.flexColumn}
+          onSubmit={handleSubmit}
+          onKeyPress={onKeyPress}
+        >
+          <TextField
+            fullWidth
+            name='hostName'
+            label={t('serverSettingsDialog.hostname')}
+            variant='filled'
           />
-        ) : null}
-      </form>
-    )}
-  </Form>
-);
+          <TextField
+            fullWidth
+            name='port'
+            label={t('serverSettingsDialog.port')}
+            variant='filled'
+          />
+          <Switches
+            name='isSecure'
+            data={{ label: t('serverSettingsDialog.useSecureConnection') }}
+          />
+          {isTCPConnectionSupported ? (
+            <Switches
+              name='isWebSocket'
+              data={{
+                label: t('serverSettingsDialog.useWebSocketLabel'),
+              }}
+              helperText={t('serverSettingsDialog.useWebSocketHelperText')}
+            />
+          ) : null}
+        </form>
+      )}
+    </Form>
+  );
+};
 
 ServerSettingsFormPresentation.propTypes = {
-  initialValues: PropTypes.object,
   onKeyPress: PropTypes.func,
   onSubmit: PropTypes.func,
   t: PropTypes.func,
@@ -231,15 +260,7 @@ ServerSettingsFormPresentation.propTypes = {
  * Container of the form that shows the fields that the user can use to
  * edit the server settings.
  */
-const ServerSettingsForm = connect(
-  // mapStateToProps
-  (state) => ({
-    initialValues: {
-      ...state.dialogs.serverSettings,
-      isWebSocket: getServerProtocolWithDefaultWS(state) === Protocol.WS,
-    },
-  })
-)(withTranslation()(ServerSettingsFormPresentation));
+const ServerSettingsForm = withTranslation()(ServerSettingsFormPresentation);
 
 /**
  * Presentation component for the dialog that shows the form that the user
@@ -318,28 +339,32 @@ class ServerSettingsDialogPresentation extends React.Component {
         if (manualSetupAllowed) {
           if (!isServerDetectionSupported) {
             content.push(
-              <DialogContent key='contents'>
-                <Translation>
-                  {(t) => (
-                    <Typography variant='body2' color='textSecondary'>
-                      {t('serverSettingsDialog.autodiscoveryIsNotAvailable')}
-                    </Typography>
-                  )}
-                </Translation>
-              </DialogContent>
+              <Translation key='content'>
+                {(t) => (
+                  <Typography
+                    variant='body2'
+                    color='textSecondary'
+                    sx={styles.paddedBox}
+                  >
+                    {t('serverSettingsDialog.autodiscoveryIsNotAvailable')}
+                  </Typography>
+                )}
+              </Translation>
             );
           }
         } else {
           content.push(
-            <DialogContent key='contents'>
-              <Translation>
-                {(t) => (
-                  <Typography variant='body2' color='textSecondary'>
-                    {t('serverSettingsDialog.serverSelectionRestricted')}
-                  </Typography>
-                )}
-              </Translation>
-            </DialogContent>
+            <Translation key='content'>
+              {(t) => (
+                <Typography
+                  variant='body2'
+                  color='textSecondary'
+                  sx={styles.paddedBox}
+                >
+                  {t('serverSettingsDialog.serverSelectionRestricted')}
+                </Typography>
+              )}
+            </Translation>
           );
         }
 
@@ -348,21 +373,17 @@ class ServerSettingsDialogPresentation extends React.Component {
       case 'manual':
         if (manualSetupAllowed) {
           content.push(
-            <DialogContent key='contents'>
+            <Box key='content' sx={styles.paddedBox}>
               <ServerSettingsForm
                 onSubmit={onSubmit}
                 onKeyPress={this._handleKeyPress}
               />
-            </DialogContent>
+            </Box>
           );
           actions.push(
-            <Translation>
+            <Translation key='connect'>
               {(t) => (
-                <Button
-                  key='connect'
-                  color='primary'
-                  onClick={forceFormSubmission}
-                >
+                <Button color='primary' onClick={forceFormSubmission}>
                   {t('serverSettingsDialog.connect')}
                 </Button>
               )}
@@ -378,10 +399,9 @@ class ServerSettingsDialogPresentation extends React.Component {
 
     if (manualSetupAllowed) {
       actions.push(
-        <Translation>
+        <Translation key='disconnect'>
           {(t) => (
             <Button
-              key='disconnect'
               disabled={!active}
               onClick={active ? onDisconnect : undefined}
             >
@@ -393,12 +413,8 @@ class ServerSettingsDialogPresentation extends React.Component {
     }
 
     actions.push(
-      <Translation>
-        {(t) => (
-          <Button key='close' onClick={onClose}>
-            {t('general.action.close')}
-          </Button>
-        )}
+      <Translation key='close'>
+        {(t) => <Button onClick={onClose}>{t('general.action.close')}</Button>}
       </Translation>
     );
 
@@ -421,7 +437,9 @@ class ServerSettingsDialogPresentation extends React.Component {
             </DialogTabs>
 
             <ServerDetectionManager />
-            {content}
+            <DialogContent key='contents' sx={styles.dialogContent}>
+              {content}
+            </DialogContent>
             <DialogActions>{actions}</DialogActions>
           </Dialog>
         )}

@@ -1,12 +1,24 @@
 import identity from 'lodash-es/identity';
+import min from 'lodash-es/min';
 import minBy from 'lodash-es/minBy';
-import property, { type PropertyPath } from 'lodash-es/property';
 import range from 'lodash-es/range';
 
-import monotoneConvexHull2D from 'monotone-convex-hull-2d';
 import * as TurfHelpers from '@turf/helpers';
+import monotoneConvexHull2D from 'monotone-convex-hull-2d';
+import { err, ok, type Result } from 'neverthrow';
 
+import type { EasNor, LonLat } from './geography';
+
+// TODO: Rename `Coordinate{2,3}D` to `Vector{2,3}Tuple` for
+//       consistency with Three.js and `@skybrush/show-format`
 export type Coordinate2D = [number, number];
+/**
+ * Utility type for 2D coordinates with an arbitrary number of additional
+ * dimensions. It is useful when a function ignores additional dimenstions
+ * and we want to allow for example 3D coordinates as input without data
+ * conversion or type errors.
+ */
+export type Coordinate2DPlus = [number, number, ...number[]];
 export type Coordinate3D = [number, number, number];
 export type Coordinate2DObject = { x: number; y: number };
 export type PolarCoordinate2DObject = { angle: number; radius: number };
@@ -143,6 +155,7 @@ export const toPolar = ({
 /**
  * Returns the centroid of an array of points.
  */
+export function getCentroid(points: LonLat[], dim?: 2): LonLat;
 export function getCentroid(points: Coordinate2D[], dim?: 2): Coordinate2D;
 export function getCentroid(points: number[][], dim = 2): number[] {
   const result: number[] = Array.from({ length: dim }, () => 0);
@@ -180,29 +193,51 @@ export function getMeanAngle(angles: number[]): number {
   return result < 0 ? result + 360 : result;
 }
 
+type DistanceCalculationOptions<T, U = Coordinate2D> = {
+  distanceFunction: (a: U, b: U) => number;
+  getter?: (item: T) => U;
+};
+
 /**
  * Create a distance matrix between two arrays.
  */
-export function calculateDistanceMatrix<T>(
+export function calculateDistanceMatrix<T, U = Coordinate2D>(
   sources: T[],
   targets: T[],
-  {
-    distanceFunction = euclideanDistance2D,
-    getter = identity,
-  }: {
-    distanceFunction?: (a: Coordinate2D, b: Coordinate2D) => number;
-    getter?: ((item: T) => Coordinate2D) | PropertyPath;
-  } = {}
+  { distanceFunction, getter = identity }: DistanceCalculationOptions<T, U>
 ): number[][] {
-  const getterFunction: (item: T) => Coordinate2D =
-    typeof getter === 'function' ? getter : property(getter);
-
-  const sourcePositions = sources.map(getterFunction);
-  const targetPositions = targets.map(getterFunction);
+  const sourcePositions = sources.map(getter);
+  const targetPositions = targets.map(getter);
 
   return sourcePositions.map((source) =>
     targetPositions.map((target) => distanceFunction(source, target))
   );
+}
+
+/**
+ * Calculates the minimum distance between all pairs formed from the given
+ * source and target points. The diagonal items of the distance matrix are
+ * ignored if the same set of points is provided as sources and targets.
+ */
+export function calculateMinimumDistanceBetweenPairs<T, U = Coordinate2D>(
+  sources: T[],
+  targets: T[],
+  options: DistanceCalculationOptions<T, U>
+): number {
+  // PERF: This is probably not the most efficient algorithm as it is O(n*m)
+  // but since we are not going to do this multiple times it's probably okay.
+  // Improve this when the time comes.
+
+  const distanceMatrix = calculateDistanceMatrix(sources, targets, options);
+
+  const distances =
+    sources === targets
+      ? distanceMatrix.flatMap((row, i) => row.filter((_, j) => i !== j))
+      : distanceMatrix.flat();
+
+  // Do not use Math.min() here -- it fails if the distance matrix is large,
+  // which may happen for thousands of drones.
+  return min(distances) ?? Number.POSITIVE_INFINITY;
 }
 
 /**
@@ -214,8 +249,18 @@ export const dotProduct2D = (a: Coordinate2D, b: Coordinate2D): number =>
 /**
  * Euclidean distance function between two points, restricted to two dimensions.
  */
-export const euclideanDistance2D = (a: Coordinate2D, b: Coordinate2D): number =>
-  Math.hypot(a[0] - b[0], a[1] - b[1]);
+export const euclideanDistance2D = (
+  a: Coordinate2DPlus,
+  b: Coordinate2DPlus
+): number => Math.hypot(a[0] - b[0], a[1] - b[1]);
+
+/**
+ * Calculates the squared Euclidean distance between two points, restricted to two dimensions.
+ */
+export const squaredEuclideanDistance2D = (
+  a: Coordinate2DPlus,
+  b: Coordinate2DPlus
+): number => Math.pow(a[0] - b[0], 2) + Math.pow(a[1] - b[1], 2);
 
 /**
  * Takes a polygon (i.e. an array of [x, y] coordinate pairs) and ensures that
@@ -255,12 +300,11 @@ export function closePolygon(poly: Coordinate2D[]): void {
 /**
  * Returns the 2D convex hull of a set of coordinates.
  */
-export const convexHull = (coordinates: Coordinate2D[]): Coordinate2D[] => {
-  const indices = monotoneConvexHull2D(coordinates);
-  return coordinates
-    .filter((_c, i) => indices.includes(i))
-    .map((c) => (c.length > 2 ? [c[0], c[1]] : c));
-};
+export const convexHull2D = <C extends Coordinate2D | EasNor | LonLat>(
+  coordinates: C[]
+): C[] =>
+  // NOTE: Bang justified by `monotoneConvexHull2D` returning an index subset
+  monotoneConvexHull2D(coordinates).map((index) => coordinates[index]!);
 
 /**
  * Creates an appropriate Turf.js geometry from the given list of coordinates.
@@ -269,29 +313,29 @@ export const convexHull = (coordinates: Coordinate2D[]): Coordinate2D[] => {
  * coordinate is provided, a point geometry is returned. When two coordinates
  * are provided, a linestring geometry is returned with two points. When three
  * or more coordinates are provided, the result will be a Turf.js polygon.
- *
- * NOTE: This currently seems to only be used for polygons, maybe a separate
- * function is unnecessary?
  */
 export function createGeometryFromPoints(
-  coordinates: Coordinate2D[]
-): TurfHelpers.Geometry | undefined {
+  coordinates: LonLat[]
+): Result<
+  TurfHelpers.Point | TurfHelpers.LineString | TurfHelpers.Polygon,
+  string
+> {
   if (coordinates.length === 0) {
-    return undefined;
+    return err('at least one point is required to create a geometry');
   }
 
   if (coordinates.length === 1 && isCoordinate2D(coordinates[0])) {
-    return TurfHelpers.point(coordinates[0]).geometry;
+    return ok(TurfHelpers.point(coordinates[0]).geometry);
   }
 
   if (coordinates.length === 2) {
-    return TurfHelpers.lineString(coordinates).geometry;
+    return ok(TurfHelpers.lineString(coordinates).geometry);
   }
 
   const closedPoly = [...coordinates];
   closePolygon(closedPoly);
 
-  return TurfHelpers.polygon([closedPoly]).geometry;
+  return ok(TurfHelpers.polygon([closedPoly]).geometry);
 }
 
 /**
@@ -430,17 +474,19 @@ export const simplifyPolygonUntilLimit = (
  * compatible with the OpenLayers style coordinate lists where the first and
  * last vertices are duplicates of each other.
  */
-export const simplifyPolygon = (
-  [_, ...coordinates]: Coordinate2D[],
+export const simplifyPolygon = <C extends Coordinate2D | EasNor | LonLat>(
+  [_, ...coordinates]: C[],
   target: number
-): Coordinate2D[] => {
+): Result<C[], string> => {
   const result = simplifyPolygonUntilLimit(coordinates, target);
 
   if (!isCoordinate2D(result[0])) {
-    throw new Error('polygons need to have at least three 2D vertices');
+    return err('polygons need to have at least three 2D vertices');
   }
 
-  return [...result, result[0]];
+  // NOTE: Type assertion justified by `simplifyPolygonUntilLimit`
+  //       returning coordinates of the same type as were passed.
+  return ok([...result, result[0]] as C[]);
 };
 
 /**

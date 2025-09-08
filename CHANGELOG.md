@@ -5,16 +5,182 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [main]
 
 ### Added
+
+- Added estimated completion time for the upload dialogs.
+
+- Parameters are now uploaded with a more efficient bulk upload protocol if the
+  server supports it (requires a server with version 2.34.1 or later).
+
+- The show adaptation dialog now allows you to specify the desired duration of
+  the transition from takeoff to the first formation of the show.
+
+- Upload dialogs can now be restricted to only showing and acting on the global
+  drone selection. The feature works in combination with the drone selection
+  hotkeys.
+
+### Changed
+
+- Show files are now parsed and loaded in a separate worker thread so the
+  loading process does not block the UI any more.
+
+- The coordinate system of a show is now fitted on a separate worker thread so
+  the calculation does not block the UI any more.
+
+- Optimized the calculation of the minimum distance between takeoff and landing
+  positions, shaving off several seconds from the time needed to load a show with
+  several thousands of drones.
+
+### Fixed
+
+- Fixed a bug in the Google Maps layer (used only in special configurations)
+  where the terrain disappeared when zooming in too close.
+
+## [2.11.0] - 2025-07-23
+
+### Added
+
+- Added support for testing pyro triggering. It can be reached from the
+  Tests tab of the Properties dialog. Requires Skybrush Server 2.28.0 or higher
+  and compatible ArduCopter firmware (CMCopter-4.6 branch or higher).
+
+- Drone selection with typing its physical ID or show ID and pressing Enter got
+  extended to work for ranges of IDs as well. Ranges of UAVs can now be selected
+  with typing e.g. 100-200 (which will select drones with physical ID between
+  100 and 200, including both ends).
+
+- You can now select missing, misplaced or misaligned drones in the Takeoff
+  Area Setup dialog with the proper "Select all" buttons on the right of each row
+
+### Fixed
+
+- More robust reconnection logic for TCP connections to a server. The connection
+  indicator in the header should not go out of sync with the actual connection
+  attempts any more.
+
+- Fixed convex geofence generation for cases where intermediate segments of
+  Bézier curves extended outside the convex hull defined by their endpoints
+  (from now on Bézier control points are also included in the calculation).
+
+## [2.10.0] - 2025-06-03
+
+### Changed
+
+- Updated `aframe-component-environment` dependency to version 1.4.0
+
+## [2.9.1] - 2025-06-02
+
+### Added
+
+- The show adaptation tool has been added to Live, with which one can reconfigure
+  the show layout (takeoff positions and net show positions, independently) on the
+  spot, without the need for involving show designers into the process.
+
+- The minimum allowed distance between takeoff and landing positions in a
+  show file can now be adjusted from the settings.
+
+- Added `C` as a hotkey for toggling between sending commands via the primary
+  or the secondary channel if the server is configured to use two channels.
+
+- The "Connection" icon in the header now shows whether the communication
+  with the drones happens on the primary or the secondary channel.
+
+### Changed
+
+- The primary hotkey of the "Toggle broadcast mode" button is now `B` instead
+  of `Ctrl-B` or `Cmd-B`. The old hotkeys will keep on working nevertheless
+  so you do not need to re-train your muscle memory.
+
+## [2.9.0] - 2025-04-07
+
+### Added
+
+- Added the total number of UAVs in the UAV status summary header widget.
 
 - Added a new panel for monitoring and controlling one specific drone and its
   devices.
 
+- The RTK corrections dialog now shows which of the RTK messages are being
+  forwarded to the drones, assuming that the server sends this information.
+
+- Show start can now be authorized automatically when setting the start time.
+
+- The UAV list and the UAV details dialog now show the RSSI (signal strength) of
+  each drone if the server provides this information. Thanks to @mwls-sean for
+  implementing the first version of this feature!
+
+- The UAV list can now be filtered to show drones in low-power mode only.
+
+- When loading a show, we now validate the minimum distance between takeoff
+  positions and the minimum distance between landing positions. An error will
+  be shown if any pair of takeoff positions or any pair of landing positions are
+  too close to each other.
+
+- The minimum distance between takeoff positions is now shown in the button
+  that is used to load a show so you can quickly see what the spacing of the
+  takeoff grid is (assuming uniform spacing).
+
+- Make the "Flash lights" button latchable by holding Shift while activating it.
+
+- Implemented range selection in list views. Click on one item and then hold
+  Shift while clicking on another one to select everything between them.
+
+- Maximum number of concurrent show upload tasks can now be changed from the
+  settings.
+
+- Made it possible to import geospatial information from shapefiles.
+
+- Enabled over-the-air firmware updates. (Requires compatible / supported UAVs.)
+
+- Added new header widgets for displaying summarized distance and velocity data.
+
+- Added a new panel for displaying detailed information about a single UAV.
+  (Similarly to the UAV details dialog, but docked on the layout.)
+
+- Added a component for visualizing measurement values from rangefinder sensors.
+
+- Introduced support for multiple UI languages via community translations.
+
+### Changed
+
+- When setting the start time based on a time offset from the current time,
+  the offset is now taken into account when the "Set start time" button is
+  pressed. For instance, selecting "+30s" in the suggestions box will now
+  start the show 30 seconds after the time when the "Set start time" button
+  was pressed, not 30 seconds after the time when the "+30s" button was
+  pressed.
+
+- Filtering for drones with "No telemetry" now also includes drones in the
+  "GONE" state.
+
+- The width of the show upload dialog is now tailored towards larger shows
+  as it now includes 20 drones per row.
+
+- The labeling and styling of certain special features are now based on
+  automatic suggestions unless manually overridden by the user.
+
+- Improved the log download workflow and user experience.
+
 ### Fixed
 
 - Fixed an issue with degenerate geofences consisting of one or two points only.
+
+- Fixed a bug in handling `UAV-SLEEP` messages targeting multiple drones.
+
+- Fixed a bug in the automatic coordinate system fitting algorithm when some
+  UAVs did not have a GPS fix yet.
+
+- The rotation interaction now performs transformations predictably and
+  consistently when multiple features are selected.
+
+- Eliminated performance issues with the map and UAV list views that caused
+  sluggish framerates in certain conditions with several hundred active drones.
+
+### Miscellaneous
+
+- Performance optimizations.
 
 ## [2.8.0] - 2023-10-30
 
@@ -256,7 +422,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 The source code of Skybrush Live is now licensed under the GNU General Public
 License, version 3 or later. You can find the source code on our Github account
-at https://github.com/skybrush-io
+at <https://github.com/skybrush-io>
 
 The version number was bumped to 2.0.0 to clearly indicate which versions are
 licensed under the GNU GPLv3. There are no breaking changes in this version.

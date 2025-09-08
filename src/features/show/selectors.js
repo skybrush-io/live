@@ -1,5 +1,7 @@
 /* eslint unicorn/no-array-callback-reference: 0 */
 
+import { createSelector } from '@reduxjs/toolkit';
+import turfContains from '@turf/boolean-contains';
 import formatDate from 'date-fns/format';
 import formatISO9075 from 'date-fns/formatISO9075';
 import fromUnixTime from 'date-fns/fromUnixTime';
@@ -7,26 +9,31 @@ import get from 'lodash-es/get';
 import identity from 'lodash-es/identity';
 import isNil from 'lodash-es/isNil';
 import max from 'lodash-es/max';
-import maxBy from 'lodash-es/maxBy';
-
-import { createSelector } from '@reduxjs/toolkit';
 import createCachedSelector from 're-reselect';
-import turfContains from '@turf/boolean-contains';
 
 import { CommonClockId } from '~/features/clocks/types';
 import {
   getGeofencePolygonInWorldCoordinates,
   selectMissionIndex,
 } from '~/features/mission/selectors';
-import { formatDuration, formatDurationHMS } from '~/utils/formatting';
+import {
+  formatDistance,
+  formatDuration,
+  formatDurationHMS,
+} from '~/utils/formatting';
 import { FlatEarthCoordinateSystem } from '~/utils/geography';
 import {
-  convexHull,
+  convexHull2D,
   createGeometryFromPoints,
   getCentroid,
 } from '~/utils/math';
+import { findNearestNeighborsDistance } from '~/utils/nearestNeighbors';
 import { EMPTY_ARRAY, EMPTY_OBJECT } from '~/utils/redux';
 
+import {
+  getMinimumIndoorTakeoffSpacing,
+  getMinimumOutdoorTakeoffSpacing,
+} from '../settings/selectors';
 import {
   AltitudeReference,
   DEFAULT_ALTITUDE_REFERENCE,
@@ -36,14 +43,15 @@ import {
 } from './constants';
 import {
   getConvexHullOfTrajectory,
+  getDurationOfTrajectory,
   getFirstPointOfTrajectory,
   getLastPointOfTrajectory,
   getMaximumHeightOfTrajectory,
   getMaximumHorizontalDistanceFromTakeoffPositionInTrajectory,
   getPointsOfTrajectory,
-  getTrajectoryDuration,
   isValidTrajectory,
 } from './trajectory';
+import { makeSegmentSelectors, transformPoints } from './trajectory-selectors';
 import { isYawActivelyControlled } from './yaw';
 
 /**
@@ -137,6 +145,15 @@ export const isTakeoffAreaApproved = (state) =>
   Boolean(state.show.preflight.takeoffAreaApprovedAt);
 
 /**
+ * Returns the environment specification from the currently loaded show data.
+ *
+ * @param state {import('~/store/reducers').RootState}
+ * @returns {import('@skybrush/show-format').Environment | undefined}
+ */
+export const getEnvironmentFromLoadedShowData = (state) =>
+  state.show.data?.environment;
+
+/**
  * Returns the common show settings that apply to all drones in the currently
  * loaded show.
  */
@@ -146,12 +163,25 @@ export const getCommonShowSettings = (state) => {
 };
 
 /**
+ * Returns the validation settings of the currently loaded show.
+ */
+export const getShowValidationSettings = createSelector(
+  getCommonShowSettings,
+  (settings) => settings.validation
+);
+
+/**
+ * Returns the entire swarm specification if it exists.
+ */
+export const getSwarmSpecification = (state) => state.show.data?.swarm;
+
+/**
  * Returns the specification of the drone swarm in the currently loaded show.
  */
-export const getDroneSwarmSpecification = (state) => {
-  const result = get(state, 'show.data.swarm.drones');
-  return Array.isArray(result) ? result : EMPTY_ARRAY;
-};
+export const getDroneSwarmSpecification = createSelector(
+  getSwarmSpecification,
+  (swarm) => (Array.isArray(swarm?.drones) ? swarm.drones : EMPTY_ARRAY)
+);
 
 /**
  * Selector that returns the type of the show (indoor or outdoor).
@@ -181,6 +211,11 @@ export const isShowUsingYawControl = createSelector(
       return isYawActivelyControlled(yawControl);
     })
 );
+
+/**
+ * Selector that returns the `environment` part of the `show` state.
+ */
+export const getEnvironmentState = (state) => state.show.environment;
 
 /**
  * Selector that returns the part of the state object that is related to the
@@ -495,11 +530,8 @@ export const getConvexHullsOfTrajectories = createSelector(
  */
 export const getConvexHullOfShow = createSelector(
   getConvexHullsOfTrajectories,
-  (convexHulls) => convexHull(convexHulls.flat())
+  (convexHulls) => convexHull2D(convexHulls.flat())
 );
-
-const transformPoints = (points, transform) =>
-  transform ? points.map(transform) : [];
 
 const transformPointsOrFillWithUndefined = (points, transform) =>
   transform
@@ -596,14 +628,12 @@ export const getLastPointsOfTrajectoriesInWorldCoordinates = createSelector(
  * starting point of that trajectory.
  */
 export const getMaximumHorizontalDistanceFromTakeoffPositionInTrajectories =
-  createSelector(
-    getTrajectories,
-    (trajectories) =>
-      max(
-        trajectories.map(
-          getMaximumHorizontalDistanceFromTakeoffPositionInTrajectory
-        )
-      ) || 0
+  createSelector(getTrajectories, (trajectories) =>
+    max(
+      trajectories.map(
+        getMaximumHorizontalDistanceFromTakeoffPositionInTrajectory
+      )
+    )
   );
 
 /**
@@ -612,18 +642,14 @@ export const getMaximumHorizontalDistanceFromTakeoffPositionInTrajectories =
  */
 export const getMaximumHeightInTrajectories = createSelector(
   getTrajectories,
-  (trajectories) => max(trajectories.map(getMaximumHeightOfTrajectory)) || 0
+  (trajectories) => max(trajectories.map(getMaximumHeightOfTrajectory))
 );
 
 /**
  * Returns the total duration of the show, in seconds.
  */
-export const getShowDuration = createSelector(
-  getTrajectories,
-  (trajectories) => {
-    const longest = maxBy(trajectories, getTrajectoryDuration);
-    return longest ? getTrajectoryDuration(longest) : 0;
-  }
+export const getShowDuration = createSelector(getTrajectories, (trajectories) =>
+  max(trajectories.map(getDurationOfTrajectory))
 );
 
 /**
@@ -632,19 +658,6 @@ export const getShowDuration = createSelector(
 export const getShowDurationAsString = createSelector(
   getShowDuration,
   formatDuration
-);
-
-/**
- * Returns a suitable short one-line description for the current show file.
- */
-export const getShowDescription = createSelector(
-  getNumberOfDronesInShow,
-  getShowDurationAsString,
-  getMaximumHeightInTrajectories,
-  isShowUsingYawControl,
-  (numberDrones, duration, maxHeight, hasYawControl) =>
-    `${numberDrones} drones, ${duration}, max AHL ${maxHeight.toFixed(1)}m` +
-    (hasYawControl ? ', yaw controlled' : '')
 );
 
 /**
@@ -668,6 +681,12 @@ export const getShowMetadata = createSelector(
   (state) => state.show.data,
   (data) => (data && typeof data.meta === 'object' ? data.meta : null) || {}
 );
+
+/**
+ * Selector that returns the base64-encoded blob of the currently loaded show
+ * if it exists.
+ */
+export const getBase64ShowBlob = (state) => state.show.base64Blob;
 
 /**
  * Returns the start method of the show.
@@ -753,7 +772,11 @@ export const isShowConvexHullInsideGeofence = createSelector(
     ) {
       geofence = createGeometryFromPoints(geofence);
       convexHull = createGeometryFromPoints(convexHull);
-      return turfContains(geofence, convexHull);
+      return (
+        geofence.isOk() &&
+        convexHull.isOk() &&
+        turfContains(geofence.value, convexHull.value)
+      );
     }
 
     return false;
@@ -782,3 +805,130 @@ export function proposeMappingFileName(state) {
     return `mapping_${date}.txt`;
   }
 }
+
+/**
+ * Returns the minimum distance between any two points at the beginning of the
+ * trajectories. This can be used to ensure that takeoff positions are not too
+ * close to each other.
+ *
+ * The result of this selector is infinite if there are less than two
+ * trajectories.
+ */
+export const getMinimumDistanceBetweenTakeoffPositions = createSelector(
+  getFirstPointsOfTrajectories,
+  findNearestNeighborsDistance
+);
+
+/**
+ * Returns the minimum distance between any two points at the end of the
+ * trajectories. This can be used to ensure that landing positions are not too
+ * close to each other.
+ *
+ * The result of this selector is infinite if there are less than two
+ * trajectories.
+ */
+export const getMinimumDistanceBetweenLandingPositions = createSelector(
+  getLastPointsOfTrajectories,
+  findNearestNeighborsDistance
+);
+
+/**
+ * Returns the preferred minimum spacing between takeoff positions, in meters.
+ */
+export const getMinimumTakeoffSpacing = createSelector(
+  getMinimumOutdoorTakeoffSpacing,
+  getMinimumIndoorTakeoffSpacing,
+  isShowIndoor,
+  (minDistOutdoor, minDistIndoor, isIndoor) =>
+    isIndoor ? minDistIndoor : minDistOutdoor
+);
+
+const getMinimumLandingSpacing = getMinimumTakeoffSpacing;
+
+/**
+ * Returns whether the takeoff positions are far enough to be considered safe.
+ */
+export const areTakeoffPositionsFarEnough = createSelector(
+  getMinimumDistanceBetweenTakeoffPositions,
+  getMinimumTakeoffSpacing,
+  (minDist, threshold) => minDist >= threshold
+);
+
+/**
+ * Returns whether the landing positions are far enough to be considered safe.
+ */
+export const areLandingPositionsFarEnough = createSelector(
+  getMinimumDistanceBetweenLandingPositions,
+  getMinimumLandingSpacing,
+  (minDist, threshold) => minDist >= threshold
+);
+
+/**
+ * Returns a string that encodes whether the show is currently loaded and has
+ * passed some basic validation checks.
+ */
+export const getShowValidationResult = (state) => {
+  if (didLastLoadingAttemptFail(state)) {
+    return 'loadingFailed';
+  }
+
+  if (isLoadingShowFile(state)) {
+    return 'loading';
+  }
+
+  if (!hasLoadedShowFile(state)) {
+    return 'notLoaded';
+  }
+
+  if (!areTakeoffPositionsFarEnough(state)) {
+    return 'takeoffPositionsTooClose';
+  }
+
+  if (!areLandingPositionsFarEnough(state)) {
+    return 'landingPositionsTooClose';
+  }
+
+  return 'ok';
+};
+
+/**
+ * Returns a suitable short one-line description for the current show file.
+ */
+export const getShowDescription = createSelector(
+  getNumberOfDronesInShow,
+  getShowDuration,
+  getMaximumHeightInTrajectories,
+  getMinimumDistanceBetweenTakeoffPositions,
+  isShowUsingYawControl,
+  // eslint-disable-next-line max-params
+  (numberDrones, duration, maxHeight, spacing, hasYawControl) =>
+    [
+      `${numberDrones} drones`,
+      ...(isNil(duration) ? [] : [formatDuration(duration)]),
+      ...(isNil(maxHeight) ? [] : [`max AHL ${formatDistance(maxHeight, 1)}`]),
+      ...(spacing > 0 && Number.isFinite(spacing)
+        ? [`spacing ${formatDistance(Math.round(spacing, 2), 1)}`]
+        : []),
+      ...(hasYawControl ? ['yaw controlled'] : []),
+    ].join(', ')
+);
+
+/**
+ * Selector that returns the segments of the show.
+ *
+ * @param state {import('~/store/reducers').RootState}
+ */
+export const getShowSegments = (state) => state.show.data?.meta?.segments;
+
+export const {
+  getShowSegment,
+  getSwarmSpecificationForShowSegment,
+  getShowSegmentTrajectories,
+  getConvexHullsOfShowSegmentTrajectories,
+  getConvexHullOfShowSegment,
+  getConvexHullOfShowSegmentInWorldCoordinates,
+} = makeSegmentSelectors(
+  getSwarmSpecification,
+  getShowSegments,
+  getOutdoorShowToWorldCoordinateSystemTransformation
+);

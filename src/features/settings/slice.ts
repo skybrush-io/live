@@ -7,11 +7,13 @@ import config from 'config';
 
 import { createSlice, type Draft, type PayloadAction } from '@reduxjs/toolkit';
 
+import { ThemeType } from '@skybrush/app-theme-mui';
+
 import {
   DEFAULT_BATTERY_CELL_COUNT,
+  LIPO_CRITICAL_VOLTAGE_THRESHOLD,
   LIPO_FULL_CHARGE_VOLTAGE,
   LIPO_LOW_VOLTAGE_THRESHOLD,
-  LIPO_CRITICAL_VOLTAGE_THRESHOLD,
 } from '~/model/constants';
 import {
   AltitudeSummaryType,
@@ -23,7 +25,7 @@ import { UAVSortKey } from '~/model/sorting';
 import { isRunningOnTouch } from '~/utils/platform';
 import { noPayload } from '~/utils/redux';
 
-import { type SettingsState, Theme, UAVListLayout } from './types';
+import { type SettingsState, UAVListLayout } from './types';
 
 type SettingsSliceState = SettingsState;
 
@@ -39,7 +41,7 @@ const initialState: SettingsSliceState = {
     showMissionIds: false,
     showMouseCoordinates: true,
     showScaleLine: true,
-    theme: Theme.AUTO,
+    theme: ThemeType.AUTO,
     hideInactiveSegmentsOnDarkLCD: false,
     uavListFilters: [
       /* Each item in this array is currently a string from the UAVFilter
@@ -82,6 +84,9 @@ const initialState: SettingsSliceState = {
     criticalVoltageThreshold: LIPO_CRITICAL_VOLTAGE_THRESHOLD,
     preferredBatteryDisplayStyle: BatteryDisplayStyle.VOLTAGE,
     uavOperationConfirmationStyle: UAVOperationConfirmationStyle.NEVER,
+    maxUploadConcurrency: 8,
+    minIndoorTakeoffSpacing: 200,
+    minOutdoorTakeoffSpacing: 400,
   },
 
   apiKeys: {},

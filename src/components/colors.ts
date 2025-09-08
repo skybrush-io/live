@@ -1,14 +1,12 @@
+import { blue, red, yellow } from '@mui/material/colors';
 import * as createColor from 'color';
 import mapValues from 'lodash-es/mapValues';
 
-import { blue, yellow, red } from '@material-ui/core/colors';
-
-import { Colors as ColorsBase } from '@skybrush/app-theme-material-ui';
+import { Colors as ColorsBase } from '@skybrush/app-theme-mui';
+export { colorForStatus } from '@skybrush/app-theme-mui';
 
 import { Severity } from '~/model/enums';
 import type { NestedRecordField } from '~/utils/types';
-
-export { colorForStatus } from '@skybrush/app-theme-material-ui';
 
 type Color = string;
 
@@ -18,7 +16,8 @@ export const Colors = {
   main: blue['500'],
 
   geofence: red['700'],
-  convexHull: '#fc0',
+  grossShowConvexHull: '#fc0',
+  netShowConvexHull: '#fc0fc0',
   flightArea: '#0c4',
   plannedTrajectory: '#08f',
   missionItem: '#0cf',

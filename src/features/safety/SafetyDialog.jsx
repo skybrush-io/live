@@ -2,21 +2,18 @@
  * @file Dialog for managing safety related preferences.
  */
 
+import DialogContent from '@mui/material/DialogContent';
+import Tab from '@mui/material/Tab';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
-
-import DialogContent from '@material-ui/core/DialogContent';
-import Security from '@material-ui/icons/Security';
-import Tab from '@material-ui/core/Tab';
 
 import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
 import DialogTabs from '@skybrush/mui-components/lib/DialogTabs';
 import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
 
 import { tt } from '~/i18n';
-import Fence from '~/icons/PlacesFence';
 import { hasFeature } from '~/utils/configuration';
 
 import { SafetyDialogTab } from './constants';
@@ -26,23 +23,17 @@ import { getSelectedTabInSafetyDialog, isSafetyDialogOpen } from './selectors';
 import { closeSafetyDialog, setSafetyDialogTab } from './slice';
 
 const tabs = [
-  ...(hasFeature('geofence')
-    ? [
-        {
-          id: SafetyDialogTab.GEOFENCE,
-          icon: <Fence />,
-          name: tt('safetyDialog.geofence'),
-          component: GeofenceSettingsTab,
-        },
-      ]
-    : []),
-  {
+  hasFeature('geofence') && {
+    id: SafetyDialogTab.GEOFENCE,
+    name: tt('safetyDialog.geofence'),
+    component: GeofenceSettingsTab,
+  },
+  hasFeature('safetySettings') && {
     id: SafetyDialogTab.SETTINGS,
-    icon: <Security />,
     name: tt('safetyDialog.settings'),
     component: SafetySettingsTab,
   },
-];
+].filter(Boolean);
 
 /**
  * Dialog for configuring safety related settings, including the geofence.
@@ -71,15 +62,8 @@ const SafetyDialog = ({ onClose, onTabSelected, open, selectedTab, t }) => {
           value={selectedTab}
           onChange={onTabSelected}
         >
-          {tabs.map(({ id, icon, name }) => (
-            <Tab
-              key={id}
-              icon={icon}
-              // Only available from MUI v5
-              // iconPosition='start'
-              label={name(t)}
-              value={id}
-            />
+          {tabs.map(({ id, name }) => (
+            <Tab key={id} label={name(t)} value={id} />
           ))}
         </DialogTabs>
       )}

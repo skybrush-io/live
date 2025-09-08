@@ -9,7 +9,6 @@ import { mapViewCoordinateFromLonLat } from '~/utils/geography';
 
 export const mapReferenceRequestSignal = new MiniSignal();
 
-export const mapRotationResetSignal = new MiniSignal();
 export const fitAllFeaturesSignal = new MiniSignal();
 
 export const mapViewToLocationSignal = new MiniSignal();
@@ -89,7 +88,6 @@ export function scrollToMapLocation(coordinate, options = {}) {
 const signals = {
   mapReferenceRequestSignal,
 
-  mapRotationResetSignal,
   fitAllFeaturesSignal,
 
   mapViewToLocationSignal,

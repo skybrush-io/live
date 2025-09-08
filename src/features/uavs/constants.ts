@@ -16,7 +16,7 @@ export const UAV_DETAILS_DIALOG_BODY_MIN_WIDTH = 414;
 /**
  * Height of the UAV details dialog's body.
  */
-export const UAV_DETAILS_DIALOG_BODY_HEIGHT = 448;
+export const UAV_DETAILS_DIALOG_BODY_HEIGHT = 472;
 
 /**
  * Minimum width of the UAV details dialog.

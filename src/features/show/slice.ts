@@ -3,18 +3,19 @@
  * show being executed.
  */
 
-import getUnixTime from 'date-fns/getUnixTime';
-import isNil from 'lodash-es/isNil';
-import set from 'lodash-es/set';
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import {
   COORDINATE_SYSTEM_TYPE,
   type ShowSpecification,
 } from '@skybrush/show-format';
+import getUnixTime from 'date-fns/getUnixTime';
+import isNil from 'lodash-es/isNil';
+import set from 'lodash-es/set';
 
 import { type Clock } from '~/features/clocks/types';
 import type UAV from '~/model/uav';
-import { type Coordinate2D, type Coordinate3D } from '~/utils/math';
+import { type LonLat } from '~/utils/geography';
+import { type Coordinate3D } from '~/utils/math';
 import { noPayload } from '~/utils/redux';
 
 import {
@@ -29,9 +30,12 @@ import {
   SettingsSynchronizationStatus,
   StartMethod,
 } from './enums';
+import type { EnvironmentState } from './types';
 
 type ShowSliceState = {
   data?: ShowSpecification;
+  base64Blob?: string;
+  environment: EnvironmentState;
 
   loading: boolean;
   progress?: number;
@@ -39,31 +43,6 @@ type ShowSliceState = {
   sourceUrl?: string;
   changedSinceLoaded: boolean;
   lastLoadAttemptFailed: boolean;
-
-  environment: {
-    editing: boolean;
-    outdoor: {
-      coordinateSystem: {
-        orientation: string; // stored as a string to avoid rounding errors
-        origin?: Coordinate2D;
-        type: 'neu' | 'nwu';
-      };
-      altitudeReference: AltitudeReferenceSpecification;
-      takeoffHeading: TakeoffHeadingSpecification;
-    };
-    indoor: {
-      coordinateSystem: {
-        orientation: string; // stored as a string to avoid rounding errors
-      };
-      room: {
-        visible: false;
-        firstCorner: Coordinate3D;
-        secondCorner: Coordinate3D;
-      };
-      takeoffHeading: TakeoffHeadingSpecification;
-    };
-    type: EnvironmentType;
-  };
 
   loadShowFromCloudDialog: {
     open: boolean;
@@ -122,6 +101,7 @@ type ShowSliceState = {
 
   startTimeDialog: {
     open: boolean;
+    authorizeWhenSettingStartTime?: boolean;
   };
 
   takeoffAreaSetupDialog: {
@@ -131,6 +111,7 @@ type ShowSliceState = {
 
 const initialState: ShowSliceState = {
   data: undefined,
+  base64Blob: undefined,
 
   loading: false,
   progress: 0,
@@ -141,6 +122,7 @@ const initialState: ShowSliceState = {
 
   environment: {
     editing: false,
+    estimatingCoordinateSystem: false,
     outdoor: {
       coordinateSystem: {
         orientation: '0',
@@ -267,9 +249,20 @@ const { actions, reducer } = createSlice({
       state.onboardPreflightChecksDialog.open = false;
     }),
 
-    closeStartTimeDialog: noPayload<ShowSliceState>((state) => {
+    closeStartTimeDialog(
+      state,
+      action: PayloadAction<
+        { authorizeWhenSettingStartTime: boolean } | undefined
+      >
+    ) {
       state.startTimeDialog.open = false;
-    }),
+
+      if (action.payload) {
+        state.startTimeDialog.authorizeWhenSettingStartTime = Boolean(
+          action.payload.authorizeWhenSettingStartTime
+        );
+      }
+    },
 
     closeTakeoffAreaSetupDialog: noPayload<ShowSliceState>((state) => {
       state.takeoffAreaSetupDialog.open = false;
@@ -297,11 +290,16 @@ const { actions, reducer } = createSlice({
 
     loadingPromiseFulfilled(
       state,
-      action: PayloadAction<{ spec: ShowSpecification; url?: string }>
+      action: PayloadAction<{
+        spec: ShowSpecification;
+        url?: string;
+        base64Blob?: string;
+      }>
     ) {
-      const { spec, url } = action.payload;
+      const { spec, url, base64Blob } = action.payload;
 
       state.data = spec;
+      state.base64Blob = base64Blob;
       state.sourceUrl = url;
       state.loading = false;
       state.progress = undefined;
@@ -316,6 +314,18 @@ const { actions, reducer } = createSlice({
       state.progress = undefined;
 
       state.changedSinceLoaded = false;
+    },
+
+    coordinateSystemEstimationPromisePending(state) {
+      state.environment.estimatingCoordinateSystem = true;
+    },
+
+    coordinateSystemEstimationPromiseFulfilled(state) {
+      state.environment.estimatingCoordinateSystem = false;
+    },
+
+    coordinateSystemEstimationPromiseRejected(state) {
+      state.environment.estimatingCoordinateSystem = false;
     },
 
     notifyShowFileChangedSinceLoaded(state) {
@@ -393,7 +403,7 @@ const { actions, reducer } = createSlice({
       );
     },
 
-    setOutdoorShowOrigin(state, action: PayloadAction<Coordinate2D>) {
+    setOutdoorShowOrigin(state, action: PayloadAction<LonLat>) {
       state.environment.outdoor.coordinateSystem.origin = action.payload;
     },
 
@@ -465,8 +475,8 @@ const { actions, reducer } = createSlice({
     setStartTime(
       state,
       action: PayloadAction<
-        | { clock: Clock['id']; time: number }
-        | { clock: undefined; time: Date | number }
+        | { clock: Clock['id']; time: number | undefined }
+        | { clock: undefined; time: Date | number | undefined }
       >
     ) {
       const { payload } = action;
@@ -512,7 +522,12 @@ const { actions, reducer } = createSlice({
       state.preflight.onboardChecksSignedOffAt = action.payload;
     },
 
-    synchronizeShowSettings() {
+    synchronizeShowSettings(
+      _state,
+      _action: PayloadAction<
+        'fromServer' | 'toServer' | 'fromClient' | 'toClient'
+      >
+    ) {
       // Nothing to do, this action simply triggers a saga that will do the
       // hard work.
     },

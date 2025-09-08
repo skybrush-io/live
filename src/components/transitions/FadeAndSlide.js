@@ -5,16 +5,12 @@
  * style tweaks.
  */
 
-import React from 'react';
+import useTheme from '@mui/material/styles/useTheme';
+import { getTransitionProps, reflow } from '@mui/material/transitions/utils';
+import useForkRef from '@mui/material/utils/useForkRef';
 import PropTypes from 'prop-types';
+import React from 'react';
 import { Transition } from 'react-transition-group';
-import { duration } from '@material-ui/core/styles/transitions';
-import useTheme from '@material-ui/core/styles/useTheme';
-import {
-  reflow,
-  getTransitionProps,
-} from '@material-ui/core/transitions/utils';
-import useForkRef from '@material-ui/core/utils/useForkRef';
 
 const transitionStyles = {
   up: {
@@ -57,8 +53,8 @@ const transitionStyles = {
 };
 
 const defaultTimeout = {
-  enter: duration.enteringScreen,
-  exit: duration.leavingScreen,
+  enter: 225, // TODO: this is the value from v4, upgrade
+  exit: 195, // TODO: this is the value from v4, upgrade
 };
 
 const FadeAndSlide = React.forwardRef((props, ref) => {

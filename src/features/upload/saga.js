@@ -1,6 +1,7 @@
 import isNil from 'lodash-es/isNil';
 import { buffers, channel } from 'redux-saga';
 import {
+  all,
   call,
   cancelled,
   delay,
@@ -33,10 +34,29 @@ import {
   _notifyUploadOnUavStarted,
   _notifyUploadOnUavSucceeded,
   _notifyUploadFinished,
-  _notifyUploadStarted,
+  _notifyUploadStartedAt,
   _setErrorMessageForUAV,
+  _setProgressInfoForUAV,
   startUpload,
 } from './slice';
+import { getMaximumConcurrentUploadTaskCount } from '../settings/selectors';
+import { recalculateEstimatedCompletionTime } from './actions';
+
+/* ----- Progress handling -------------------------------------------------- */
+
+const uploadProgressChannel = channel(buffers.fixed(1));
+
+function* uploadProgressHandlerSaga() {
+  while (true) {
+    const { uavId, progress } = yield take(uploadProgressChannel);
+    yield put(_setProgressInfoForUAV(uavId, progress.percentage / 100));
+  }
+}
+
+const uploadProgressCallback = (uavId, { progress }) =>
+  uploadProgressChannel.put({ uavId, progress });
+
+/* ----- Worker management -------------------------------------------------- */
 
 /**
  * Special symbol used to make a worker task quit.
@@ -64,7 +84,11 @@ function* runUploadWorker(chan, failed) {
     try {
       yield put(_notifyUploadOnUavStarted(uavId));
       const data = selector ? yield select(selector, uavId) : undefined;
-      yield call(executor, { uavId, payload, data });
+      yield call(
+        executor,
+        { uavId, payload, data },
+        { onProgress: uploadProgressCallback }
+      );
       outcome = 'success';
     } catch (error) {
       outcome = 'failure';
@@ -99,6 +123,8 @@ function* runUploadWorker(chan, failed) {
         console.warn('Unknown outcome: ' + outcome);
         break;
     }
+
+    yield put(recalculateEstimatedCompletionTime());
   }
 }
 
@@ -106,7 +132,7 @@ function* runUploadWorker(chan, failed) {
  * Saga that manages the execution of an upload operation to multiple drones
  * with a set of worker sagas forked off from the main uploader saga.
  */
-function* forkingWorkerManagementSaga(spec, job, { workerCount = 8 } = {}) {
+function* forkingWorkerManagementSaga(spec, job) {
   const { executor, selector } = spec;
   if (!executor) {
     console.warn(
@@ -116,6 +142,7 @@ function* forkingWorkerManagementSaga(spec, job, { workerCount = 8 } = {}) {
   }
 
   const chan = yield call(channel, buffers.fixed(1));
+  const workerCount = yield select(getMaximumConcurrentUploadTaskCount);
   const failed = [];
   const workers = [];
 
@@ -132,10 +159,11 @@ function* forkingWorkerManagementSaga(spec, job, { workerCount = 8 } = {}) {
   // feed the workers with upload jobs
   while (!finished) {
     const uavId = yield select(getNextDroneFromUploadQueue);
+    const hasMore = !isNil(uavId);
 
     // First we check whether there is any job in the upload queue that we
     // can start straight away
-    if (!isNil(uavId)) {
+    if (hasMore) {
       yield put(_notifyUploadOnUavQueued(uavId));
       yield putWithRetry(chan, {
         executor,
@@ -207,7 +235,9 @@ function* uploaderSagaWithCancellation() {
     return;
   }
 
-  yield put(_notifyUploadStarted());
+  yield put(_notifyUploadStartedAt(Date.now()));
+
+  // yield put(recalculateEstimatedCompletionTime());
 
   try {
     const { workerManager = forkingWorkerManagementSaga } = spec;
@@ -227,10 +257,13 @@ function* uploaderSagaWithCancellation() {
   }
 }
 
-/**
- * Compound saga related to the management of the background processes related
- * to drone shows; e.g., the uploading of a show to the drones.
- */
-export default createActionListenerSaga({
+const startUploadActionListenerSaga = createActionListenerSaga({
   [startUpload]: uploaderSagaWithCancellation,
 });
+
+/**
+ * Compound saga related to the management of upload procedures.
+ */
+export default function* uploadManagementSaga() {
+  yield all([startUploadActionListenerSaga(), uploadProgressHandlerSaga()]);
+}

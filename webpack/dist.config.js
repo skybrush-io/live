@@ -1,5 +1,5 @@
-// Webpack configuration for the output that is directly usable on
-// https://live.skybrush.io
+// Webpack configuration for creating a static bundle,
+// which can then be deployed and served for browsers
 
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
@@ -11,7 +11,6 @@ const {
   htmlMetaTags: baseHtmlMetaTags,
   outputDir,
   projectRoot,
-  useAppConfiguration,
 } = require('./helpers');
 
 const htmlMetaTags = { ...baseHtmlMetaTags };
@@ -19,10 +18,6 @@ const htmlMetaTags = { ...baseHtmlMetaTags };
 delete htmlMetaTags['Content-Security-Policy'];
 
 module.exports = merge(baseConfig, {
-  /* eslint-disable react-hooks/rules-of-hooks */
-  ...useAppConfiguration('webapp-demo'),
-  /* eslint-enable react-hooks/rules-of-hooks */
-
   entry: {
     app: './src/index',
   },

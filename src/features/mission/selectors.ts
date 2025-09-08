@@ -2,6 +2,7 @@ import { produce } from 'immer';
 import isNil from 'lodash-es/isNil';
 import max from 'lodash-es/max';
 import range from 'lodash-es/range';
+import unary from 'lodash-es/unary';
 import { createSelector } from '@reduxjs/toolkit';
 import turfContains from '@turf/boolean-contains';
 import * as TurfHelpers from '@turf/helpers';
@@ -41,15 +42,18 @@ import {
   selectOrdered,
 } from '~/utils/collections';
 import {
+  type EasNor,
+  FlatEarthCoordinateSystem,
+  type LonLat,
   mapViewCoordinateFromLonLat,
   turfDistanceInMeters,
 } from '~/utils/geography';
 import {
-  convexHull,
-  type Coordinate2D,
+  convexHull2D,
   createGeometryFromPoints,
   estimatePathDuration,
 } from '~/utils/math';
+import { findNearestNeighborsDistance } from '~/utils/nearestNeighbors';
 import { EMPTY_ARRAY } from '~/utils/redux';
 import { type Nullable } from '~/utils/types';
 
@@ -157,11 +161,25 @@ export const getGPSBasedHomePositionsInMission: AppSelector<
 > = (state) => state.mission.homePositions;
 
 /**
+ * Returns the current list of non-null home positions in the mission.
+ */
+export const getNonNullGPSBasedHomePositionsInMission: AppSelector<
+  GPSPosition[]
+> = createSelector(getGPSBasedHomePositionsInMission, rejectNullish);
+
+/**
  * Returns the current list of landing positions in the mission.
  */
 export const getGPSBasedLandingPositionsInMission: AppSelector<
   MissionSliceState['landingPositions']
 > = (state) => state.mission.landingPositions;
+
+/**
+ * Returns the current list of non-null landing positions in the mission.
+ */
+export const getNonNullGPSBasedLandingPositionsInMission: AppSelector<
+  GPSPosition[]
+> = createSelector(getGPSBasedLandingPositionsInMission, rejectNullish);
 
 /**
  * Returns the current list of takeoff headings in the mission.
@@ -277,19 +295,6 @@ export const getUAVIdsParticipatingInMission: AppSelector<Array<UAV['id']>> =
   );
 
 /**
- * Returns a list of all the UAV IDs that participate in the mission, without
- * the null entries, sorted in ascending order by their mission indices.
- * (In other words, UAV IDs that correspond to earlier slots in the mission
- * mapping are returned first).
- *
- * Note that this also includes the IDs of UAVs that are currently not seen
- * by the server but are nevertheless in the mapping.
- */
-export const getUAVIdsParticipatingInMissionSortedByMissionIndex: AppSelector<
-  Array<UAV['id']>
-> = createSelector(getMissionMapping, (mapping) => rejectNullish(mapping));
-
-/**
  * Returns whether there is at least one non-empty mapping slot in the mapping.
  */
 export const hasNonemptyMappingSlot: AppSelector<boolean> = createSelector(
@@ -383,7 +388,7 @@ export const getGeofencePolygon: AppSelector<
  * world coordinates, or undefined if no geofence polygon is defined.
  */
 export const getGeofencePolygonInWorldCoordinates: AppSelector<
-  Coordinate2D[] | undefined
+  LonLat[] | undefined
 > = createSelector(
   getGeofencePolygon,
   (geofencePolygon) => geofencePolygon?.points
@@ -514,7 +519,7 @@ const getMissionItemsWithExtraFieldInOrder = <Field extends PropertyKey, Type>(
  * geofence calculation.
  */
 export const getMissionItemsWithAreasInOrder: AppSelector<
-  Array<MissionItemWithExtraField<'area', { points: Coordinate2D[] }>>
+  Array<MissionItemWithExtraField<'area', { points: LonLat[] }>>
 > = getMissionItemsWithExtraFieldInOrder('area', getAreaFromMissionItem);
 
 /**
@@ -566,37 +571,35 @@ export const getMissionItemsWithAltitudesInOrder: AppSelector<
  * Returns the coordinates of the convex hull of the currently loaded mission
  * in world coordinates.
  */
-export const getConvexHullOfMissionInWorldCoordinates: AppSelector<
-  Coordinate2D[]
-> = createSelector(
-  getGPSBasedHomePositionsInMission,
-  getMissionItemsWithCoordinatesInOrder,
-  getMissionItemsWithAreasInOrder,
-  (homePositions, missionItemsWithCoorinates, missionItemsWithAreas) =>
-    convexHull([
-      ...rejectNullish(homePositions).map(
-        ({ lon, lat }): Coordinate2D => [lon, lat]
-      ),
-      ...missionItemsWithCoorinates.map(
-        ({ coordinate: { lon, lat } }): Coordinate2D => [lon, lat]
-      ),
-      ...missionItemsWithAreas.flatMap(({ area: { points } }) => points),
-    ])
-);
+export const getConvexHullOfMissionInWorldCoordinates: AppSelector<LonLat[]> =
+  createSelector(
+    getGPSBasedHomePositionsInMission,
+    getMissionItemsWithCoordinatesInOrder,
+    getMissionItemsWithAreasInOrder,
+    (homePositions, missionItemsWithCoorinates, missionItemsWithAreas) =>
+      convexHull2D([
+        ...rejectNullish(homePositions).map(
+          ({ lon, lat }): LonLat => [lon, lat]
+        ),
+        ...missionItemsWithCoorinates.map(
+          ({ coordinate: { lon, lat } }): LonLat => [lon, lat]
+        ),
+        ...missionItemsWithAreas.flatMap(({ area: { points } }) => points),
+      ])
+  );
 
 /**
  * Returns the coordinates of the convex hull of the currently loaded mission
  * in the coordinate system of the map view.
  */
-export const getConvexHullOfMissionInMapViewCoordinates: AppSelector<
-  Coordinate2D[]
-> = createSelector(
-  getConvexHullOfMissionInWorldCoordinates,
-  (convexHullOfHomePositionsAndMissionItemsInWorldCoordinates) =>
-    convexHullOfHomePositionsAndMissionItemsInWorldCoordinates.map(
-      (worldCoordinate) => mapViewCoordinateFromLonLat(worldCoordinate)
-    )
-);
+export const getConvexHullOfMissionInMapViewCoordinates: AppSelector<EasNor[]> =
+  createSelector(
+    getConvexHullOfMissionInWorldCoordinates,
+    (convexHullOfHomePositionsAndMissionItemsInWorldCoordinates) =>
+      convexHullOfHomePositionsAndMissionItemsInWorldCoordinates.map(
+        unary<LonLat, EasNor>(mapViewCoordinateFromLonLat)
+      )
+  );
 
 /**
  * Returns whether the convex hull of the waypoint mission (home positions and
@@ -616,7 +619,11 @@ export const isWaypointMissionConvexHullInsideGeofence: AppSelector<
     ) {
       const geofence = createGeometryFromPoints(geofencePoints);
       const convexHull = createGeometryFromPoints(convexHullPoints);
-      return geofence && convexHull && turfContains(geofence, convexHull);
+      return (
+        geofence.isOk() &&
+        convexHull.isOk() &&
+        turfContains(geofence.value, convexHull.value)
+      );
     } else {
       return false;
     }
@@ -624,69 +631,148 @@ export const isWaypointMissionConvexHullInsideGeofence: AppSelector<
 );
 
 /**
- * Returns the maximum distance of any geofence vertex from any home position.
+ * Returns the maximum distance of any waypoint or flight area vertex in the
+ * mission from the first home position in the UAV mapping.
  */
-export const getMaximumDistanceBetweenHomePositionsAndGeofence: AppSelector<number> =
-  createSelector(
-    getGPSBasedHomePositionsInMission,
-    getGeofencePolygonInWorldCoordinates,
-    (homePositions, geofencePolygon) => {
-      if (!geofencePolygon) {
-        return 0;
-      }
-
-      const homePoints = rejectNullish(homePositions).map(({ lon, lat }) =>
-        TurfHelpers.point([lon, lat])
-      );
-      const geofencePoints = geofencePolygon.map(([lon, lat]) =>
-        TurfHelpers.point([lon, lat])
-      );
-      const distances = homePoints.flatMap((hp) =>
-        geofencePoints.map((gp) => turfDistanceInMeters(hp, gp))
-      );
-
-      return max(distances) ?? 0;
+export const getMaximumHorizontalDistanceFromHomePositionInWaypointMission: AppSelector<
+  number | undefined
+> = createSelector(
+  getGPSBasedHomePositionsInMission,
+  getMissionItemsWithCoordinatesInOrder,
+  getMissionItemsWithAreasInOrder,
+  ([homePosition], missionItemsWithCoorinates, missionItemsWithAreas) => {
+    if (!homePosition) {
+      return;
     }
-  );
 
-/**
- * Returns the maximum distance of any waypoint in the mission from the first
- * home position in the UAV mapping.
- */
-export const getMaximumHorizontalDistanceFromHomePositionInWaypointMission: AppSelector<number> =
-  createSelector(
-    getGPSBasedHomePositionsInMission,
-    getMissionItemsWithCoordinatesInOrder,
-    getMissionItemsWithAreasInOrder,
-    ([homePosition], missionItemsWithCoorinates, missionItemsWithAreas) => {
-      if (!homePosition) {
-        return 0;
-      }
-
-      const homePoint = TurfHelpers.point([homePosition.lon, homePosition.lat]);
-      return (
-        max(
-          [
-            ...missionItemsWithCoorinates.map<[number, number]>(
-              ({ coordinate: { lon, lat } }) => [lon, lat]
-            ),
-            ...missionItemsWithAreas.flatMap(({ area: { points } }) => points),
-          ].map((point) =>
-            turfDistanceInMeters(homePoint, TurfHelpers.point(point))
-          )
-        ) ?? 0
-      );
-    }
-  );
+    const homePoint = TurfHelpers.point([homePosition.lon, homePosition.lat]);
+    return max(
+      [
+        ...missionItemsWithCoorinates.map<[number, number]>(
+          ({ coordinate: { lon, lat } }) => [lon, lat]
+        ),
+        ...missionItemsWithAreas.flatMap(({ area: { points } }) => points),
+      ].map((point) =>
+        turfDistanceInMeters(homePoint, TurfHelpers.point(point))
+      )
+    );
+  }
+);
 
 /**
  * Returns the maximum target altitude that appears among the waypoints.
  */
-export const getMaximumHeightOfWaypoints: AppSelector<number> = createSelector(
-  getMissionItemsWithAltitudesInOrder,
-  (missionItemsWithAltitude) =>
-    // TODO: Handle different altitude references?
-    max(missionItemsWithAltitude.map((mi) => mi.altitude.value)) ?? 0
+export const getMaximumHeightOfWaypoints: AppSelector<number | undefined> =
+  createSelector(
+    getMissionItemsWithAltitudesInOrder,
+    (missionItemsWithAltitude) =>
+      // TODO: Handle different altitude references?
+      max(missionItemsWithAltitude.map((mi) => mi.altitude.value))
+  );
+
+const getApproximateCenterOfGPSPositions = (
+  points: GPSPosition[]
+): LonLat | undefined => {
+  const numPoints = points.length;
+
+  if (numPoints > 0) {
+    let lonSum = 0,
+      latSum = 0;
+    for (const { lon, lat } of points) {
+      lonSum += lon;
+      latSum += lat;
+    }
+
+    return [lonSum / numPoints, latSum / numPoints] as LonLat;
+  }
+};
+
+/**
+ * Returns an "approximate center" of the home positions of the mission.
+ * This can be used as the origin of a flat Earth transformation that can
+ * convert mission items from geodetic coordinates to Cartesian coordinates.
+ */
+const getApproximateCenterOfHomePositionsInMission: AppSelector<
+  LonLat | undefined
+> = createSelector(
+  getNonNullGPSBasedHomePositionsInMission,
+  getApproximateCenterOfGPSPositions
+);
+
+/**
+ * Returns an "approximate center" of the landing positions of the mission.
+ * This can be used as the origin of a flat Earth transformation that can
+ * convert mission items from geodetic coordinates to Cartesian coordinates.
+ */
+const getApproximateCenterOfLandingPositionsInMission: AppSelector<
+  LonLat | undefined
+> = createSelector(
+  getNonNullGPSBasedLandingPositionsInMission,
+  getApproximateCenterOfGPSPositions
+);
+
+/**
+ * Returns a flat Earth coordinate system that can be used to transform
+ * GPS coordinates into a 2D Cartesian coordinate system, assuming that they
+ * are sufficiently close to the home points in the mission (such that the
+ * distortions of the transformation are negligible).
+ */
+const getFlatEarthCoordinateSystemForHomePositions: AppSelector<
+  FlatEarthCoordinateSystem | undefined
+> = createSelector(getApproximateCenterOfHomePositionsInMission, (origin) => {
+  return origin ? new FlatEarthCoordinateSystem({ origin }) : undefined;
+});
+
+/**
+ * Returns a flat Earth coordinate system that can be used to transform
+ * GPS coordinates into a 2D Cartesian coordinate system, assuming that they
+ * are sufficiently close to the landing points in the mission (such that the
+ * distortions of the transformation are negligible).
+ */
+const getFlatEarthCoordinateSystemForLandingPositions: AppSelector<
+  FlatEarthCoordinateSystem | undefined
+> = createSelector(
+  getApproximateCenterOfLandingPositionsInMission,
+  (origin) => {
+    return origin ? new FlatEarthCoordinateSystem({ origin }) : undefined;
+  }
+);
+
+const mapGPSPositionToLonLat = (point: GPSPosition) => {
+  const { lon, lat } = point;
+  return [lon, lat] as LonLat;
+};
+
+const getMinimumDistanceBetweenGPSPositions = (
+  points: GPSPosition[],
+  flatEarth: FlatEarthCoordinateSystem | undefined
+) =>
+  flatEarth
+    ? findNearestNeighborsDistance(
+        points
+          .map(mapGPSPositionToLonLat)
+          .map((point) => flatEarth.fromLonLat(point))
+      )
+    : Infinity;
+
+/**
+ * Returns the minimum distance between any two home positions. The result of
+ * this selector is `Infinity` if there are less than two home positions.
+ */
+export const getMinimumDistanceBetweenHomePositions = createSelector(
+  getNonNullGPSBasedHomePositionsInMission,
+  getFlatEarthCoordinateSystemForHomePositions,
+  getMinimumDistanceBetweenGPSPositions
+);
+
+/**
+ * Returns the minimum distance between any two landing positions. The result of
+ * this selector is `Infinity` if there are less than two landing positions.
+ */
+export const getMinimumDistanceBetweenLandingPositions = createSelector(
+  getNonNullGPSBasedLandingPositionsInMission,
+  getFlatEarthCoordinateSystemForLandingPositions,
+  getMinimumDistanceBetweenGPSPositions
 );
 
 /**

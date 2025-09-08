@@ -9,16 +9,16 @@ import { ToastProvider } from 'react-toast-notifications';
 import { PersistGate } from 'redux-persist/es/integration/react';
 
 import loadable from '@loadable/component';
-import CssBaseline from '@material-ui/core/CssBaseline';
+import { StyledEngineProvider } from '@mui/material';
+import CssBaseline from '@mui/material/CssBaseline';
 
+import CornerRibbon from './components/CornerRibbon';
 import dialogs from './components/dialogs';
 import Header from './components/header';
-import CornerRibbon from './components/CornerRibbon';
 import ServerConnectionManager from './components/ServerConnectionManager';
-import ShowFileWatcher from './views/show-control/ShowFileWatcher';
-
 import DetachedPanelManager from './features/detachable-panels/DetachedPanelManager';
 import DockDetailsDialog from './features/docks/DockDetailsDialog';
+import FirmwareUpdateSetupDialog from './features/firmware-update/FirmwareUpdateSetupDialog';
 import AppHotkeys from './features/hotkeys/AppHotkeys';
 import HotkeyDialog from './features/hotkeys/HotkeyDialog';
 import PendingUAVIdOverlay from './features/hotkeys/PendingUAVIdOverlay';
@@ -29,20 +29,21 @@ import MissionPlannerDialog from './features/mission/MissionPlannerDialog';
 import MissionProgressObserver from './features/mission/MissionProgressObserver';
 import ParameterUploadSetupDialog from './features/parameters/ParameterUploadSetupDialog';
 import PromptDialog from './features/prompt/PromptDialog';
+import RTKSetupDialog from './features/rtk/RTKSetupDialog';
 import SafetyDialog from './features/safety/SafetyDialog';
 import SavedLocationEditorDialog from './features/saved-locations/SavedLocationEditorDialog';
-import RTKSetupDialog from './features/rtk/RTKSetupDialog';
+import ShowConfiguratorDialog from './features/show-configurator/ShowConfiguratorDialog';
 import Sidebar from './features/sidebar/Sidebar';
+import { SNACKBAR_TRANSITION_DURATION } from './features/snackbar/constants';
 import ToastNotificationManager from './features/snackbar/ToastNotificationManager';
 import UAVDetailsDialog from './features/uavs/UAVDetailsDialog';
 import UploadDialog from './features/upload/UploadDialog';
 import VersionCheckDialog from './features/version-check/VersionCheckDialog';
-
-import { SNACKBAR_TRANSITION_DURATION } from './features/snackbar/constants';
 import {
   isWorkbenchLayoutFixed,
   shouldSidebarBeShown,
 } from './features/workbench/selectors';
+import ShowFileWatcher from './views/show-control/ShowFileWatcher';
 
 import { ErrorHandler } from './error-handling';
 import flock, { Flock } from './flock';
@@ -176,6 +177,7 @@ const App = ({ onFirstRender }) => (
 
       <CoordinateAveragingDialog />
       <DockDetailsDialog />
+      <FirmwareUpdateSetupDialog />
       <HotkeyDialog />
       <LicenseInfoDialog />
       <MapCachingDialog />
@@ -185,6 +187,7 @@ const App = ({ onFirstRender }) => (
       <RTKSetupDialog />
       <SafetyDialog />
       <SavedLocationEditorDialog />
+      <ShowConfiguratorDialog />
       <UAVDetailsDialog />
       <UploadDialog />
       <VersionCheckDialog />
@@ -221,7 +224,6 @@ const DragProxy = () => <div className='drag-proxy' />;
 const enhancer = (Component) =>
   class extends React.Component {
     static displayName = 'WorkbenchRoot';
-
     static propTypes = {
       glDragging: PropTypes.bool,
     };
@@ -244,11 +246,13 @@ const enhancer = (Component) =>
           onReset={clearStoreAfterConfirmation}
         >
           <StoreProvider store={store}>
-            <ThemeProvider>
-              <Flock.Provider value={flock}>
-                <Component {...this.props} />
-              </Flock.Provider>
-            </ThemeProvider>
+            <StyledEngineProvider injectFirst>
+              <ThemeProvider>
+                <Flock.Provider value={flock}>
+                  <Component {...this.props} />
+                </Flock.Provider>
+              </ThemeProvider>
+            </StyledEngineProvider>
           </StoreProvider>
         </ErrorBoundary>
       );

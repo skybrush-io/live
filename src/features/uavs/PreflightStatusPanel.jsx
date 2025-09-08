@@ -1,14 +1,13 @@
+import Error from '@mui/icons-material/Error';
+import Button from '@mui/material/Button';
+import Divider from '@mui/material/Divider';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
 import PropTypes from 'prop-types';
 import React, { memo, useEffect, useRef } from 'react';
 import { connect } from 'react-redux';
 import { useAsyncRetry, useUnmount } from 'react-use';
-
-import Button from '@material-ui/core/Button';
-import Divider from '@material-ui/core/Divider';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import Error from '@material-ui/icons/Error';
 
 import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
 import Header from '@skybrush/mui-components/lib/FormHeader';

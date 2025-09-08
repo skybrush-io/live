@@ -1,15 +1,14 @@
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import DialogActions from '@mui/material/DialogActions';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import Switch from '@mui/material/Switch';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
-
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import DialogActions from '@material-ui/core/DialogActions';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import Switch from '@material-ui/core/Switch';
+import { connect } from 'react-redux';
 
 import DialogHeaderListItem, {
   ICON_PRESETS,
@@ -42,8 +41,7 @@ const MapCachingPanel = ({
           }
         />
       </DialogHeaderListItem>
-      <ListItem
-        button
+      <ListItemButton
         disableRipple
         onClick={() => setMapCachingEnabled(!isMapCachingEnabled)}
       >
@@ -51,7 +49,7 @@ const MapCachingPanel = ({
           <Switch checked={isMapCachingEnabled} />
         </ListItemIcon>
         <ListItemText primary={t('mapCachingPanel.useCachedMapTiles')} />
-      </ListItem>
+      </ListItemButton>
       <DialogActions>
         <Button
           disabled={!isMapCachingSupported || !onClearCache}

@@ -15,6 +15,35 @@ import { extractResponseForId } from './parsing';
 import { validateExtensionName } from './validation';
 
 /**
+ * Adapts the given base64-encoded show using the given transformation
+ * definitions and coordinate system.
+ */
+export async function adaptShow(hub, show, transformations, coordinateSystem) {
+  const response = await hub.sendMessage(
+    {
+      type: 'X-SHOW-ADAPT',
+      show,
+      transformations,
+      environment: {
+        location: {
+          origin: toScaledJSONFromLonLat(coordinateSystem.origin),
+          orientation: coordinateSystem.orientation,
+        },
+      },
+    },
+    // Use a very long timeout for this message as the transformations
+    // require a lot of computation.
+    { timeout: 60 }
+  );
+
+  if (response?.body?.type === 'X-SHOW-ADAPT') {
+    return response.body;
+  } else {
+    throw new Error(response?.body?.reason ?? 'Unknown error.');
+  }
+}
+
+/**
  * Returns the basic properties of the beacons with the given IDs.
  */
 export async function getBasicBeaconProperties(hub, ids) {
@@ -62,15 +91,49 @@ export async function getConfigurationOfExtension(hub, name) {
 }
 
 /**
- * Returns the current license object from the server.
+ * Returns the list of firmware updatable objects from the server.
  */
-export async function getLicenseInformation(hub) {
-  const response = await hub.sendMessage({ type: 'LCN-INF' });
-  return response.body &&
-    response.body.type === 'LCN-INF' &&
-    typeof response.body.license === 'object'
-    ? response.body.license
-    : undefined;
+export async function getFirmwareUpdateObjects(hub, options = {}) {
+  const { supports } = options;
+
+  const listResponse = await hub.sendMessage({
+    type: 'FW-OBJECT-LIST',
+    supports,
+  });
+
+  if (listResponse?.body?.type === 'FW-OBJECT-LIST') {
+    return listResponse.body.ids ?? [];
+  } else {
+    return [];
+  }
+}
+
+/**
+ * Returns the list of registered firmware update targets from the server.
+ */
+export async function getFirmwareUpdateTargets(hub, options = {}) {
+  const { supportedBy } = options;
+
+  const listResponse = await hub.sendMessage({
+    type: 'FW-TARGET-LIST',
+    supportedBy,
+  });
+
+  if (listResponse?.body?.type === 'FW-TARGET-LIST') {
+    const firmwareUpdateTargetIds = listResponse.body.ids ?? [];
+    if (firmwareUpdateTargetIds.length > 0) {
+      const infResponse = await hub.sendMessage({
+        type: 'FW-TARGET-INF',
+        ids: firmwareUpdateTargetIds,
+      });
+      const firmwareUpdateTargetsById = infResponse?.body?.result ?? {};
+      return sortBy(firmwareUpdateTargetsById, ['name', 'id']);
+    } else {
+      return [];
+    }
+  } else {
+    return [];
+  }
 }
 
 /**
@@ -129,6 +192,18 @@ export async function getFlightLogList(hub, uavId) {
   }
 
   return response;
+}
+
+/**
+ * Returns the current license object from the server.
+ */
+export async function getLicenseInformation(hub) {
+  const response = await hub.sendMessage({ type: 'LCN-INF' });
+  return response.body &&
+    response.body.type === 'LCN-INF' &&
+    typeof response.body.license === 'object'
+    ? response.body.license
+    : undefined;
 }
 
 /**
@@ -213,12 +288,12 @@ export async function getPreflightStatus(hub, uavId) {
 export async function getRTKPresets(hub) {
   let response;
 
-  response = await hub.sendMessage({ type: 'X-RTK-LIST' });
-  if (response.body && response.body.type === 'X-RTK-LIST') {
+  response = await hub.sendMessage({ type: 'RTK-LIST' });
+  if (response.body && response.body.type === 'RTK-LIST') {
     const rtkSourceIds = get(response, 'body.ids') || [];
     if (rtkSourceIds.length > 0) {
       response = await hub.sendMessage({
-        type: 'X-RTK-INF',
+        type: 'RTK-INF',
         ids: rtkSourceIds,
       });
 
@@ -238,9 +313,9 @@ export async function getRTKPresets(hub) {
  * Returns the RTK surveying settings from the server.
  */
 export async function getRTKSurveySettings(hub) {
-  const response = await hub.sendMessage({ type: 'X-RTK-SURVEY' });
+  const response = await hub.sendMessage({ type: 'RTK-SURVEY' });
   return response.body &&
-    response.body.type === 'X-RTK-SURVEY' &&
+    response.body.type === 'RTK-SURVEY' &&
     response.body.settings
     ? pick(response.body.settings, ['accuracy', 'duration'])
     : {};
@@ -250,11 +325,12 @@ export async function getRTKSurveySettings(hub) {
  * Returns the status of the RTK subsystem.
  */
 export async function getRTKStatus(hub) {
-  const response = await hub.sendMessage({ type: 'X-RTK-STAT' });
-  if (response.body && response.body.type === 'X-RTK-STAT') {
+  const response = await hub.sendMessage({ type: 'RTK-STAT' });
+  if (response.body && response.body.type === 'RTK-STAT') {
     return {
       antenna: response.body.antenna,
       messages: response.body.messages,
+      messagesTx: response.body.messages_tx,
       cnr: response.body.cnr,
       survey: response.body.survey,
     };
@@ -274,6 +350,18 @@ export async function getSelectedRTKPresetId(hub) {
   }
 
   return null;
+}
+
+/**
+ * Returns the current mapping of services to ports on the server.
+ */
+export async function getServerPortMapping(hub) {
+  const response = await hub.sendMessage({ type: 'SYS-PORTS' });
+  return response.body &&
+    response.body.type === 'SYS-PORTS' &&
+    typeof response.body.ports === 'object'
+    ? response.body.ports
+    : undefined;
 }
 
 /**
@@ -355,8 +443,11 @@ export async function isExtensionLoaded(hub, name) {
  */
 export class QueryHandler {
   _queries = {
+    adaptShow,
     getBasicBeaconProperties,
     getConfigurationOfExtension,
+    getFirmwareUpdateObjects,
+    getFirmwareUpdateTargets,
     getFlightLog,
     getFlightLogList,
     getLicenseInformation,
@@ -367,6 +458,7 @@ export class QueryHandler {
     getRTKStatus,
     getRTKSurveySettings,
     getSelectedRTKPresetId,
+    getServerPortMapping,
     getShowConfiguration,
     getWeatherInformation,
     isExtensionLoaded,

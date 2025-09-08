@@ -1,4 +1,4 @@
-import AFrame from '~/aframe/aframe';
+import AFrame from '@skybrush/aframe-components';
 import { showError } from '~/features/snackbar/actions';
 import { getActiveUAVIds } from '~/features/uavs/selectors';
 

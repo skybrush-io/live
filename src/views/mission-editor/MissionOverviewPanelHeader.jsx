@@ -1,25 +1,20 @@
+import Clear from '@mui/icons-material/Clear';
+import DeleteForever from '@mui/icons-material/DeleteForever';
+import PlayArrow from '@mui/icons-material/PlayArrow';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
+import Paper from '@mui/material/Paper';
+import Toolbar from '@mui/material/Toolbar';
+import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import { connect } from 'react-redux';
 
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
-import Paper from '@material-ui/core/Paper';
-import Toolbar from '@material-ui/core/Toolbar';
-import { makeStyles } from '@material-ui/core/styles';
-
-import Clear from '@material-ui/icons/Clear';
-import DeleteForever from '@material-ui/icons/DeleteForever';
-import PlayArrow from '@material-ui/icons/PlayArrow';
-
-import Export from '~/icons/Download';
-import Import from '~/icons/Upload';
-
 import FileButton from '~/components/FileButton';
 import {
-  TooltipWithContainerFromContext as Tooltip,
   PopoverWithContainerFromContext as Popover,
+  TooltipWithContainerFromContext as Tooltip,
 } from '~/containerContext';
 import {
   clearMission,
@@ -30,9 +25,12 @@ import {
 } from '~/features/mission/actions';
 import { isMissionPartiallyCompleted } from '~/features/mission/selectors';
 import { showMissionPlannerDialog } from '~/features/mission/slice';
-import { getSingleSelectedUAVId } from '~/features/uavs/selectors';
 import { isConnected as isConnectedToServer } from '~/features/servers/selectors';
+import { getSingleSelectedUAVId, getUAVById } from '~/features/uavs/selectors';
+import UAVErrorCode from '~/flockwave/UAVErrorCode';
 import usePopover from '~/hooks/usePopover';
+import Export from '~/icons/Download';
+import Import from '~/icons/Upload';
 
 const useStyles = makeStyles(
   (theme) => ({
@@ -165,8 +163,12 @@ export default connect(
   (state) => ({
     canPlan: isConnectedToServer(state),
     canResume: isMissionPartiallyCompleted(state),
-    canUpload:
-      isConnectedToServer(state) && getSingleSelectedUAVId(state) !== undefined,
+    canUpload: (({ singleSelectedUAVId }) =>
+      isConnectedToServer(state) &&
+      singleSelectedUAVId !== undefined &&
+      getUAVById(state, singleSelectedUAVId)?.errors?.includes(
+        UAVErrorCode.ON_GROUND
+      ))({ singleSelectedUAVId: getSingleSelectedUAVId(state) }),
   }),
   // mapDispatchToProps
   {

@@ -1,15 +1,22 @@
+/* eslint-disable import/no-duplicates */
 /**
  * @file Geography-related utility functions and variables.
  */
 
+import turfBuffer from '@turf/buffer';
+import turfDifference from '@turf/difference';
+import turfDistance from '@turf/distance';
+import * as TurfHelpers from '@turf/helpers';
 import * as CoordinateParser from 'coordinate-parser';
 import curry from 'lodash-es/curry';
 import isNil from 'lodash-es/isNil';
 import minBy from 'lodash-es/minBy';
 import unary from 'lodash-es/unary';
+import { err, ok, type Result } from 'neverthrow';
 import * as Coordinate from 'ol/coordinate';
 import * as Extent from 'ol/extent';
 import type OLFeature from 'ol/Feature';
+import type { FeatureLike } from 'ol/Feature';
 import {
   type Geometry,
   LineString,
@@ -25,11 +32,8 @@ import * as Projection from 'ol/proj';
 import type RenderFeature from 'ol/render/Feature';
 import VectorSource from 'ol/source/Vector';
 import { getArea, getLength } from 'ol/sphere';
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { type Vector3 } from 'three';
-import turfBuffer from '@turf/buffer';
-import turfDifference from '@turf/difference';
-import turfDistance from '@turf/distance';
-import * as TurfHelpers from '@turf/helpers';
 
 import { type Feature, FeatureType } from '~/model/features';
 import {
@@ -46,19 +50,19 @@ import {
   type UnitDescriptor,
 } from './formatting';
 import {
-  closePolygon,
-  convexHull,
   type Coordinate2D,
   type Coordinate3D,
+  createGeometryFromPoints,
   euclideanDistance2D,
-  getCentroid,
   isCoordinate2D,
   toDegrees,
   toRadians,
 } from './math';
 import { isRunningOnMac } from './platform';
 
-// TODO: Define better types for coordinates? (Partially solved on 2023-08-12.)
+// TODO: Define better types for coordinates?
+// (Partially solved on 2023-08-12.)
+// (Further improved on 2025-02-18.)
 //
 // The one provided by OpenLayers is too generic (`Array<number>` instead
 // of [number, number]), while their docs do specify _"an `xy` coordinate"_.
@@ -72,6 +76,24 @@ import { isRunningOnMac } from './platform';
 // While we're at it, perhaps even `AHL`, `AGL` and other distinct measures
 // with the `unique symbol` trick?
 // https://github.com/Microsoft/TypeScript/issues/364#issuecomment-719046161
+
+const _Longitude: unique symbol = Symbol('Longitude');
+export type Longitude = number & { [_Longitude]: void };
+
+const _Latitude: unique symbol = Symbol('Latitude');
+export type Latitude = number & { [_Latitude]: void };
+
+export type LonLat = [Longitude, Latitude];
+export type LatLon = [Latitude, Longitude];
+
+const _Easting: unique symbol = Symbol('Easting');
+export type Easting = number & { [_Easting]: void };
+
+const _Northing: unique symbol = Symbol('Northing');
+export type Northing = number & { [_Northing]: void };
+
+export type EasNor = [Easting, Northing];
+export type NorEas = [Northing, Easting];
 
 // The angle sign spams lots of CoreText-related warnings in the console when
 // running under Electron on macOS, so we use the @ sign there as a replacement.
@@ -89,7 +111,7 @@ const ANGLE_SIGN = isRunningOnMac ? '@' : '∠';
  * @param second - The second point
  * @returns Bearing, in degrees, in the [0; 360) range
  */
-export function bearing(first: Coordinate2D, second: Coordinate2D): number {
+export function bearing(first: LonLat, second: LonLat): number {
   const lonDiff = toRadians(second[0] - first[0]);
   const firstLatRadians = toRadians(first[1]);
   const secondLatRadians = toRadians(second[1]);
@@ -112,10 +134,7 @@ export function bearing(first: Coordinate2D, second: Coordinate2D): number {
  * @param second - The second point
  * @returns Bearing, in degrees, in the [0; 360) range
  */
-export function finalBearing(
-  first: Coordinate2D,
-  second: Coordinate2D
-): number {
+export function finalBearing(first: LonLat, second: LonLat): number {
   const angle = bearing(second, first);
   return (angle + 180) % 360;
 }
@@ -193,7 +212,9 @@ export const findFeatureById = curry(
   }
 );
 
-const isVectorLayer = (layer: unknown): layer is VectorLayer<VectorSource> =>
+const isVectorLayer = (
+  layer: unknown
+): layer is VectorLayer<VectorSource, FeatureLike> =>
   layer instanceof VectorLayer && layer.getSource() instanceof VectorSource;
 
 /**
@@ -227,7 +248,8 @@ export const findFeaturesById = curry(
         if (!features[i]) {
           const feature = source.getFeatureById(featureId);
           if (feature) {
-            features[i] = feature;
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            features[i] = feature as any;
           }
         }
       }
@@ -346,7 +368,7 @@ export const makeDecimalCoordinateFormatter = ({
  * @returns The constructed function
  */
 export const makePolarCoordinateFormatter =
-  ({ digits, unit }: { digits?: number; unit?: string }) =>
+  ({ digits, unit }: { digits?: number; unit?: string | UnitDescriptor[] }) =>
   (coordinate: Coordinate2D): string => {
     if (coordinate) {
       return (
@@ -380,7 +402,7 @@ export const measureFeature = (feature: Feature): string => {
       // NOTE: `polygon.getArea()` doesn't include correction for the projection
       const area = getArea(
         new Polygon(
-          [feature.points, ...feature.holes].map((coordinates) =>
+          [feature.points, ...(feature.holes ?? [])].map((coordinates) =>
             coordinates.map(unary(mapViewCoordinateFromLonLat))
           )
         )
@@ -461,14 +483,23 @@ export const formatAltitudeWithReference = (altitude: Altitude): string => {
   const { reference, value } = altitude;
   const formattedValue = formatDistance(value);
 
-  if (reference === AltitudeReference.MSL) {
-    return formattedValue + ' AMSL';
-  } else if (reference === AltitudeReference.HOME) {
-    return formattedValue + ' above home';
-  } else if (reference === AltitudeReference.GROUND) {
-    return formattedValue + ' above ground';
-  } else {
-    return `${formattedValue} above unknown reference: ${String(reference)}`;
+  switch (reference) {
+    case AltitudeReference.MSL: {
+      return formattedValue + ' AMSL';
+    }
+
+    case AltitudeReference.HOME: {
+      return formattedValue + ' above home';
+    }
+
+    case AltitudeReference.GROUND: {
+      return formattedValue + ' above ground';
+    }
+
+    // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
+    default: {
+      return `${formattedValue} above unknown reference: ${String(reference)}`;
+    }
   }
 };
 
@@ -535,10 +566,13 @@ export const safelyFormatCoordinate = (coordinate?: Coordinate2D): string => {
  * @returns The parsed coordinates in OpenLayers format
  *          or undefined in case of a parsing error
  */
-export const parseCoordinate = (text: string): Coordinate2D | undefined => {
+export const parseCoordinate = (text: string): LonLat | undefined => {
   try {
     const parsed = new CoordinateParser(text);
-    return [parsed.getLongitude(), parsed.getLatitude()];
+    return (
+      // NOTE: Type assertions justified by the `coordinate-parser` library
+      [parsed.getLongitude() as Longitude, parsed.getLatitude() as Latitude]
+    );
   } catch {
     return undefined;
   }
@@ -602,13 +636,13 @@ export const WGS84 = makeEllipsoidModel(6378137, 298.257223563);
  * to [180.0 85.06] as seen here. @see https://epsg.io/3857
  */
 
-type CoordinateTransformationFunction = {
-  // Special case for two dimensions
+export type CoordinateTransformationFunction = {
+  // Special case for two dimensions, generic in terms of coordinate types
   (
     coordinates: Coordinate2D,
     projection?: Projection.ProjectionLike
   ): Coordinate2D;
-  // Original type
+  // Original type, generic in terms of dimensions and coordinate types
   (
     coordinates: Coordinate.Coordinate,
     projection?: Projection.ProjectionLike
@@ -621,13 +655,19 @@ type CoordinateTransformationFunction = {
  *
  * Longitudes and latitudes are assumed to be given in WGS 84.
  *
+ * TODO: Maybe we should establish a fixed projection with `unary` right
+ *       here instead of every time this is used to `map` over an array?
+ *
  * @param coordinate - The longitude and latitude, in this order
  * @param projection - The projection to use for the conversion
  * @returns The OpenLayers coordinates corresponding
  *          to the given longitude-latitude pair
  */
-export const mapViewCoordinateFromLonLat =
-  Projection.fromLonLat as CoordinateTransformationFunction;
+// prettier-ignore
+export const mapViewCoordinateFromLonLat = Projection.fromLonLat as
+  // Precisely typed case, specific for exact coordinate types
+  ((coordinates: LonLat, projection?: Projection.ProjectionLike) => EasNor)
+  & CoordinateTransformationFunction;
 
 /**
  * Helper function to convert a coordinate from the map view into a
@@ -635,27 +675,34 @@ export const mapViewCoordinateFromLonLat =
  *
  * Coordinates are assumed to be given in EPSG:3857.
  *
+ * TODO: Maybe we should establish a fixed projection with `unary` right
+ *       here instead of every time this is used to `map` over an array?
+ *
  * @param coordinate - The OpenLayers coordinate
  * @param projection - The projection to use for the conversion
  * @returns The longtitude-latitude pair corresponding
  *          to the given OpenLayers coordinates
  */
-export const lonLatFromMapViewCoordinate =
-  Projection.toLonLat as CoordinateTransformationFunction;
+// prettier-ignore
+export const lonLatFromMapViewCoordinate = Projection.toLonLat as
+  // Precisely typed case, specific for exact coordinate types
+  ((coordinates: EasNor, projection?: Projection.ProjectionLike) => LonLat)
+  & CoordinateTransformationFunction;
 
 /**
  * Helper function to move a longitude-latitude coordinate pair by a vector
  * expressed in map view coordinates.
  */
 export const translateLonLatWithMapViewDelta = (
-  origin: Coordinate2D,
-  delta: Coordinate2D
-): Coordinate2D => {
+  origin: LonLat,
+  delta: EasNor
+): LonLat => {
   const originInMapView = mapViewCoordinateFromLonLat(origin);
 
   return lonLatFromMapViewCoordinate([
-    originInMapView[0] + delta[0],
-    originInMapView[1] + delta[1],
+    // NOTE: Type assertion justfied by the summing of homogeneous coordinates
+    (originInMapView[0] + delta[0]) as Easting,
+    (originInMapView[1] + delta[1]) as Northing,
   ]);
 };
 
@@ -668,7 +715,7 @@ export const translateLonLatWithMapViewDelta = (
  */
 export class FlatEarthCoordinateSystem {
   _vec: Coordinate3D = [0, 0, 0]; // dummy vector used to avoid allocations
-  _origin: Coordinate2D;
+  _origin: LonLat;
   _orientation: number;
   _ellipsoid: EllipsoidModel;
   _type: string;
@@ -704,8 +751,8 @@ export class FlatEarthCoordinateSystem {
     type = 'neu',
     ellipsoid = WGS84,
   }: {
-    origin: Coordinate2D;
-    orientation?: number;
+    origin: LonLat;
+    orientation?: number | string;
     type?: string;
     ellipsoid?: EllipsoidModel;
   }) {
@@ -735,8 +782,8 @@ export class FlatEarthCoordinateSystem {
    * @param coords - A longitude-latitude pair to convert
    * @returns The converted coordinates
    */
-  fromLonLat(coords: [number, number]): [number, number] {
-    const result: [number, number] = [0, 0];
+  fromLonLat(coords: LonLat): Coordinate2D {
+    const result: Coordinate2D = [0, 0];
     this._updateArrayFromLonLat(result, coords[0], coords[1]);
     return result;
   }
@@ -766,13 +813,14 @@ export class FlatEarthCoordinateSystem {
    * @param coords - A flat Earth coordinate pair to convert
    * @returns The converted coordinates
    */
-  toLonLat(coords: [number, number]): [number, number] {
+  toLonLat(coords: Coordinate2D): LonLat {
     const result: Coordinate2D = [coords[0], coords[1] * this._yMul];
     Coordinate.rotate(result, this._orientation);
+    // NOTE: Type assertions justified by the nature of the calculation
     return [
-      result[1] / this._r2OverCosOriginLatInRadians / this._piOver180 +
-        this._origin[0],
-      result[0] / this._r1 / this._piOver180 + this._origin[1],
+      (result[1] / this._r2OverCosOriginLatInRadians / this._piOver180 +
+        this._origin[0]) as Longitude,
+      (result[0] / this._r1 / this._piOver180 + this._origin[1]) as Latitude,
     ];
   }
 
@@ -874,64 +922,44 @@ export function toPolar(coords: [number, number]): [number, number] {
 /**
  * Buffer a polygon by inserting a padding around it, so its new edge is at
  * least as far from the old one, as given in the margin parameter.
+ *
+ * TODO: Make `bufferPolygon` simply operate with `LonLat` as input
+ *       and output to avoid a bunch of back and forth conversions!
  */
 export const bufferPolygon = (
-  coordinates: Coordinate2D[],
+  coordinates: EasNor[],
   margin: number
-): Coordinate2D[] => {
-  if (coordinates.length === 0) {
-    return [];
-  }
-
-  let geometry;
-
-  // Shift 'coordinates' in a way that it is centered around the origin. This
-  // is needed because otherwise we would get incorrect results if the
-  // coordinate magnitudes are very large (e.g., when working in Australia)
-  const centroid = getCentroid(coordinates);
-  const shiftedCoordinates = coordinates.map<Coordinate2D>((coordinate) => [
-    coordinate[0] - centroid[0],
-    coordinate[1] - centroid[1],
-  ]);
-  const transform = new FlatEarthCoordinateSystem({
-    origin: [0, 0],
-  });
-  const geoCoordinates = shiftedCoordinates.map((coordinate) =>
-    transform.toLonLat(coordinate)
+): Result<EasNor[], string> => {
+  const geoCoordinates = coordinates.map(
+    unary<EasNor, LonLat>(lonLatFromMapViewCoordinate)
   );
 
-  // Create a Turf.js geometry to buffer. Watch out for degenerate cases.
-  if (coordinates.length === 1) {
-    geometry = TurfHelpers.point(geoCoordinates[0]!);
-  } else if (coordinates.length === 2) {
-    geometry = TurfHelpers.lineString([geoCoordinates[0]!, geoCoordinates[1]!]);
-  } else {
-    closePolygon(geoCoordinates);
-    geometry = TurfHelpers.polygon([geoCoordinates]);
+  const geometry = createGeometryFromPoints(geoCoordinates);
+  if (geometry.isErr()) {
+    return err(geometry.error);
   }
 
+  // NOTE: The types declared for `turfBuffer` seem to be wrong, it can
+  //       possibly return `undefined` (and radius isn't optional either)
   const bufferedPoly = turfBuffer(
-    geometry,
+    geometry.value,
     margin / 1000 /* Turf.js needs kilometers */
   );
 
-  if (!Array.isArray(bufferedPoly.geometry.coordinates[0])) {
-    throw new TypeError(
+  if (!Array.isArray(bufferedPoly?.geometry?.coordinates[0])) {
+    return err(
       'a coordinate array is expected as the first linear ring of the polygon'
     );
   }
 
-  // Take the outer ring of the buffered polygon and transform it back to
-  // flat Earth. Also undo the shift that we did in the beginning.
   const outerLinearRing =
-    bufferedPoly.geometry.coordinates[0].map<Coordinate2D>((coordinate) => {
-      // NOTE: Type assertion justified by the documentation of `Position` in
-      // `TurfHelpers`: "Array should contain between two and three elements."
-      const flatEarthCoord = transform.fromLonLat(coordinate as Coordinate2D);
-      return [flatEarthCoord[0] + centroid[0], flatEarthCoord[1] + centroid[1]];
-    });
+    // NOTE: Type assertion justified by the documentation of `Position` in
+    // `TurfHelpers`: "Array should contain between two and three elements."
+    (bufferedPoly.geometry.coordinates[0] as LonLat[])?.map(
+      unary<LonLat, EasNor>(mapViewCoordinateFromLonLat)
+    );
 
-  return convexHull(outerLinearRing);
+  return ok(outerLinearRing);
 };
 
 /**
@@ -949,8 +977,11 @@ export function normalizePolygon([points, ...holes]: any): any {
   // Start with the boundary ring and subtract every hole from it with Turf
   // TODO: This can be simplified when Turf 7.0.0 gets released, as
   //       difference will support multiple subtrahend features
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
   const { geometry } = holes.reduce(
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     (poly: any, hole: any) => turfDifference(poly, TurfHelpers.polygon([hole])),
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     TurfHelpers.polygon([points])
   );
 
@@ -981,12 +1012,13 @@ type ScaledJSONGPSCoordinate = [number, number];
  * @return the JSON representation, scaled up to 1e7 degrees. Note
  *         that it returns the <em>latitude</em> first
  */
-export function toScaledJSONFromObject(coords: {
-  lat: number;
-  lon: number;
-}): ScaledJSONGPSCoordinate {
-  return [Math.round(coords.lat * 1e7), Math.round(coords.lon * 1e7)];
-}
+export const toScaledJSONFromObject = (coords: {
+  lat: Latitude;
+  lon: Longitude;
+}): ScaledJSONGPSCoordinate => [
+  Math.round(coords.lat * 1e7),
+  Math.round(coords.lon * 1e7),
+];
 
 /**
  * Converts a longitude-latitude pair to a representation that is safe to be
@@ -999,11 +1031,12 @@ export function toScaledJSONFromObject(coords: {
  * @return the JSON representation, scaled up to 1e7 degrees. Note
  *         that it returns the <em>latitude</em> first
  */
-export function toScaledJSONFromLonLat(
-  coords: [number, number]
-): ScaledJSONGPSCoordinate {
-  return [Math.round(coords[1] * 1e7), Math.round(coords[0] * 1e7)];
-}
+export const toScaledJSONFromLonLat = (
+  coords: LonLat
+): ScaledJSONGPSCoordinate => [
+  Math.round(coords[1] * 1e7),
+  Math.round(coords[0] * 1e7),
+];
 
 /**
  * Reverts a "JSON-safe" multiplier offset coordinate representation to a
@@ -1015,11 +1048,11 @@ export function toScaledJSONFromLonLat(
  *         as an array in lon-lat order (<em>longitude</em> first, OpenLayers
  *         convention)
  */
-export function toLonLatFromScaledJSON(
+export const toLonLatFromScaledJSON = (
   coords: ScaledJSONGPSCoordinate
-): [number, number] {
-  return [coords[1] / 1e7, coords[0] / 1e7];
-}
+): LonLat =>
+  // TODO: Eliminate or justify this type assertion
+  [(coords[1] / 1e7) as Longitude, (coords[0] / 1e7) as Latitude];
 
 /**
  * Calculates the distance in meters between two GeoJSON point features.
@@ -1030,9 +1063,7 @@ export function toLonLatFromScaledJSON(
  * @param second  the second point
  * @return the distance between the two points in meters
  */
-export function turfDistanceInMeters(
+export const turfDistanceInMeters = (
   first: TurfHelpers.Coord,
   second: TurfHelpers.Coord
-): number {
-  return turfDistance(first, second) * 1000;
-}
+): number => turfDistance(first, second) * 1000;

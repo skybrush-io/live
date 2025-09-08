@@ -3,7 +3,7 @@
  * stores the state of the authentication dialog.
  */
 
-import { type Response_AUTHRESP_SingleStep } from 'flockwave-spec';
+import { type Response_AUTHRESP_SingleStep } from '@skybrush/flockwave-spec';
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
 type AuthenticationDialogSliceState = {

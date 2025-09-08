@@ -15,8 +15,7 @@ import config from 'config';
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
-import { normalizeAngle } from '~/utils/geography';
-import { type Coordinate2D } from '~/utils/math';
+import { type LonLat, normalizeAngle } from '~/utils/geography';
 
 import { type View } from './types';
 
@@ -38,7 +37,7 @@ const { actions, reducer } = createSlice({
     updateMapViewSettings(
       state,
       action: PayloadAction<{
-        position: Coordinate2D;
+        position: LonLat;
         angle: number;
         zoom: number;
       }>
