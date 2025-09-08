@@ -21,6 +21,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   drone selection. The feature works in combination with the drone selection
   hotkeys.
 
+- Added Polish translation, thanks to our translator community!
+
 ### Changed
 
 - Show files are now parsed and loaded in a separate worker thread so the
