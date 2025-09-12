@@ -25,6 +25,7 @@ import {
 import merge from 'lodash-es/merge';
 import React from 'react';
 import { SwatchesPicker, type SwatchesPickerProps } from 'react-color';
+export type { ColorResult } from 'react-color';
 
 const hues = [
   red,
@@ -62,7 +63,7 @@ const pickerStyles = {
   },
 };
 
-type SwatchesColorPickerProps = Omit<SwatchesPickerProps, 'className'>;
+export type SwatchesColorPickerProps = Omit<SwatchesPickerProps, 'className'>;
 
 const SwatchesColorPicker = ({ styles, ...rest }: SwatchesColorPickerProps) => (
   <SwatchesPicker
