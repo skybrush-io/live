@@ -39,9 +39,9 @@ const NumericFieldWithUnit = ({ unit, ...rest }) => (
     // Not `number`, because that would make distinguishing whether
     // a field is empty or contains invalid input impossible
     type='text'
-    InputProps={{
-      endAdornment: <InputAdornment position='end'>{unit}</InputAdornment>,
-      inputProps: {
+    slotProps={{
+      input: {
+        endAdornment: <InputAdornment position='end'>{unit}</InputAdornment>,
         inputMode: 'numeric',
       },
     }}

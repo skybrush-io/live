@@ -211,8 +211,10 @@ class HeatmapLayerSettingsPresentation extends React.Component {
             inputRef={this._refs.minDistance}
             label='Min distance'
             style={textFieldStyle}
-            InputProps={{
-              endAdornment: <InputAdornment position='end'>m</InputAdornment>,
+            slotProps={{
+              input: {
+                endAdornment: <InputAdornment position='end'>m</InputAdornment>,
+              },
             }}
             type='number'
             defaultValue={formatNumber(parameters.minDistance)}

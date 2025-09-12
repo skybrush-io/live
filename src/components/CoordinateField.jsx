@@ -61,7 +61,7 @@ export default class CoordinateField extends React.Component {
       <TextField
         value={shownText}
         error={Boolean(error)}
-        InputProps={{ endAdornment }}
+        slotProps={{ input: { endAdornment } }}
         onBlur={this._onBlur}
         onChange={this._onChange}
         onKeyDown={this._onKeyDown}

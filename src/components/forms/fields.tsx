@@ -83,7 +83,7 @@ export const Switch = ({ input, meta, ...rest }: SwitchProps): JSX.Element => {
     <MaterialUISwitch
       {...rest}
       name={name}
-      inputProps={restInput}
+      slotProps={{ input: restInput }}
       checked={checked}
       onChange={onChange}
     />
@@ -128,24 +128,26 @@ const PasswordFieldFormBinding = ({
       }
       error={showError}
       value={value}
-      inputProps={{
-        autoComplete: 'current-password',
-        ...restInput,
-        type: passwordIsMasked ? 'password' : 'text',
-      }}
-      InputProps={{
-        endAdornment: (
-          <InputAdornment position='end'>
-            <IconButton
-              aria-label='toggle password visibility'
-              size='large'
-              onClick={togglePasswordMask}
-              onMouseDown={preventDefault}
-            >
-              {passwordIsMasked ? <Visibility /> : <VisibilityOff />}
-            </IconButton>
-          </InputAdornment>
-        ),
+      slotProps={{
+        htmlInput: {
+          autoComplete: 'current-password',
+          ...restInput,
+          type: passwordIsMasked ? 'password' : 'text',
+        },
+        input: {
+          endAdornment: (
+            <InputAdornment position='end'>
+              <IconButton
+                aria-label='toggle password visibility'
+                size='large'
+                onClick={togglePasswordMask}
+                onMouseDown={preventDefault}
+              >
+                {passwordIsMasked ? <Visibility /> : <VisibilityOff />}
+              </IconButton>
+            </InputAdornment>
+          ),
+        },
       }}
       onChange={onChange}
     />
@@ -168,7 +170,7 @@ type AngleFieldProps = RFFTextFieldProps;
  * angles in degrees.
  */
 export const AngleField = ({
-  InputProps,
+  InputProps, // TODOnow
   ...rest
 }: AngleFieldProps): JSX.Element => (
   <TextField
@@ -309,8 +311,8 @@ type DistanceFieldProps = Readonly<{
  * distances.
  */
 export const DistanceField = ({
-  InputProps,
-  inputProps,
+  InputProps, // TODOnow
+  inputProps, // TODOnow
   max,
   min = 0,
   step,
@@ -342,8 +344,8 @@ type DurationFieldProps = Readonly<{
  * durations in seconds.
  */
 export const DurationField = ({
-  InputProps,
-  inputProps,
+  InputProps, // TODOnow
+  inputProps, // TODOnow
   max,
   min = 0,
   step,
@@ -440,7 +442,7 @@ const createNumericField = ({
 }: CreateNumericFieldOptions = {}): ((
   props: NumericFieldProps
 ) => JSX.Element) => {
-  const InputProps = unit
+  const inputProps = unit
     ? {
         endAdornment: <InputAdornment position='end'>{unit}</InputAdornment>,
       }
@@ -541,12 +543,14 @@ const createNumericField = ({
 
     return (
       <MaterialUITextField
-        InputProps={InputProps}
-        inputProps={{
-          size,
-          type: 'text',
-          inputMode: 'decimal',
-          pattern: '[\\-0-9+.,]*',
+        slotProps={{
+          input: { inputProps },
+          htmlInput: {
+            size,
+            type: 'text',
+            inputMode: 'decimal',
+            pattern: '[\\-0-9+.,]*',
+          },
         }}
         variant='filled'
         value={displayedValue}

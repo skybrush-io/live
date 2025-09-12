@@ -148,10 +148,12 @@ export class AutoComplete extends React.Component {
     const { inputRef, ref, ...restInputProps } = inputProps;
     return (
       <TextField
-        InputProps={{
-          inputRef(node) {
-            ref(node);
-            inputRef(node);
+        slotProps={{
+          input: {
+            inputRef(node) {
+              ref(node);
+              inputRef(node);
+            },
           },
         }}
         {...restInputProps}

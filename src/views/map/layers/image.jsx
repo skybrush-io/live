@@ -12,11 +12,11 @@ import { usePrevious } from 'react-use';
 
 import FileButton from '~/components/FileButton';
 import {
-    HeadingField,
-    LatitudeField,
-    LongitudeField,
-    TextField,
-    forceFormSubmission,
+  HeadingField,
+  LatitudeField,
+  LongitudeField,
+  TextField,
+  forceFormSubmission,
 } from '~/components/forms';
 import { setLayerParametersById } from '~/features/map/layers';
 import { getMapViewCenterPosition } from '~/selectors/map';
@@ -102,7 +102,7 @@ const ImageLayerSettingsPresentation = ({
               />
             ) : (
               <Skeleton
-                variant="rectangular"
+                variant='rectangular'
                 width='100%'
                 height='10em'
                 onClick={handleClick}
@@ -155,12 +155,16 @@ const ImageLayerSettingsPresentation = ({
             <TextField
               fullWidth
               type='number'
-              inputProps={{ step: 0.1 }}
               fieldProps={{ validate: join([required, finite, positive]) }}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position='end'>cm/px</InputAdornment>
-                ),
+              slotProps={{
+                htmlInput: {
+                  step: 0.1,
+                },
+                input: {
+                  endAdornment: (
+                    <InputAdornment position='end'>cm/px</InputAdornment>
+                  ),
+                },
               }}
               size='small'
               name='scale'

@@ -241,9 +241,15 @@ const GeofenceSettingsFormPresentation = ({ onSubmit, t }) => {
               type='number'
               variant='filled'
               fieldProps={{ parse: (v) => v.length > 0 && Number(v) }}
-              InputProps={{
-                endAdornment: <InputAdornment position='end'>m</InputAdornment>,
-                inputProps: { min: 1 },
+              slotProps={{
+                input: {
+                  endAdornment: (
+                    <InputAdornment position='end'>m</InputAdornment>
+                  ),
+                },
+                htmlInput: {
+                  min: 1,
+                },
               }}
             />
             <Box p={1} />
@@ -253,9 +259,15 @@ const GeofenceSettingsFormPresentation = ({ onSubmit, t }) => {
               type='number'
               variant='filled'
               fieldProps={{ parse: (v) => v.length > 0 && Number(v) }}
-              InputProps={{
-                endAdornment: <InputAdornment position='end'>m</InputAdornment>,
-                inputProps: { min: 1 },
+              slotProps={{
+                input: {
+                  endAdornment: (
+                    <InputAdornment position='end'>m</InputAdornment>
+                  ),
+                },
+                htmlInput: {
+                  min: 1,
+                },
               }}
             />
           </Box>
@@ -285,8 +297,12 @@ const GeofenceSettingsFormPresentation = ({ onSubmit, t }) => {
                   missionType === MissionType.UNKNOWN) &&
                 t('safetyDialog.geofenceTab.errors.distance')
               }
-              InputProps={{
-                endAdornment: <InputAdornment position='end'>m</InputAdornment>,
+              slotProps={{
+                input: {
+                  endAdornment: (
+                    <InputAdornment position='end'>m</InputAdornment>
+                  ),
+                },
               }}
               variant='standard'
             />
@@ -300,8 +316,12 @@ const GeofenceSettingsFormPresentation = ({ onSubmit, t }) => {
                 maxHeight === undefined &&
                 t('safetyDialog.geofenceTab.errors.height')
               }
-              InputProps={{
-                endAdornment: <InputAdornment position='end'>m</InputAdornment>,
+              slotProps={{
+                input: {
+                  endAdornment: (
+                    <InputAdornment position='end'>m</InputAdornment>
+                  ),
+                },
               }}
               variant='standard'
             />
@@ -333,8 +353,8 @@ const GeofenceSettingsFormPresentation = ({ onSubmit, t }) => {
                 label={t('safetyDialog.geofenceTab.maxVertexCount')}
                 disabled={!generate || !simplify}
                 type='number'
-                InputProps={{
-                  inputProps: {
+                slotProps={{
+                  htmlInput: {
                     min: VERTEX_COUNT_REDUCTION_LOWER_LIMIT,
                     max: VERTEX_COUNT_REDUCTION_UPPER_LIMIT,
                   },

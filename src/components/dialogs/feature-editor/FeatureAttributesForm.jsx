@@ -66,12 +66,14 @@ const FeatureAttributesForm = ({
                 name='minAltitude'
                 label='Min AGL altitude'
                 disabled={!values.isExclusionZone}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position='end'>m</InputAdornment>
-                  ),
-                  inputProps: {
-                    inputMode: 'numeric',
+                slotProps={{
+                  input: {
+                    endAdornment: (
+                      <InputAdornment position='end'>m</InputAdornment>
+                    ),
+                    inputProps: {
+                      inputMode: 'numeric',
+                    },
                   },
                 }}
               />
@@ -84,12 +86,14 @@ const FeatureAttributesForm = ({
                 name='maxAltitude'
                 label='Max AGL altitude'
                 disabled={!values.isExclusionZone}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position='end'>m</InputAdornment>
-                  ),
-                  inputProps: {
-                    inputMode: 'numeric',
+                slotProps={{
+                  input: {
+                    endAdornment: (
+                      <InputAdornment position='end'>m</InputAdornment>
+                    ),
+                    inputProps: {
+                      inputMode: 'numeric',
+                    },
                   },
                 }}
               />

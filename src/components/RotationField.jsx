@@ -69,7 +69,7 @@ export default class RotationField extends React.Component {
       <TextField
         error={Boolean(error)}
         value={shownText}
-        InputProps={{ endAdornment }}
+        slotProps={{ input: { endAdornment } }}
         onBlur={this._onBlur}
         onChange={this._onChange}
         onKeyDown={this._onKeyDown}
