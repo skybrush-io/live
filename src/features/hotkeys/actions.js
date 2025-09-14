@@ -8,7 +8,7 @@ import {
   getMissionMapping,
   isMappingEditable,
 } from '~/features/mission/selectors';
-import { showNotification } from '~/features/snackbar/actions';
+import { showNotification } from '~/features/snackbar/ToastNotificationManager';
 import { setSelectedUAVIds } from '~/features/uavs/actions';
 import { getUAVById } from '~/features/uavs/selectors';
 import { scrollUAVListItemIntoView } from '~/utils/navigation';

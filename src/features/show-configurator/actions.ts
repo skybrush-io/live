@@ -8,7 +8,7 @@ import { findAssignmentInDistanceMatrix } from '~/algorithms/matching';
 import type { TransformFeaturesInteractionEvent } from '~/components/map/interactions/TransformFeatures';
 import { errorToString } from '~/error-handling';
 import { getBase64ShowBlob } from '~/features/show/selectors';
-import { showError } from '~/features/snackbar/actions';
+import { showError } from '~/features/snackbar/ToastNotificationManager';
 import { getAllValidUAVPositions } from '~/features/uavs/selectors';
 import messageHub from '~/message-hub';
 import { type GPSPosition } from '~/model/geography';

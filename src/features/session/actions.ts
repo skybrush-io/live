@@ -1,4 +1,4 @@
-import { showNotification } from '~/features/snackbar/actions';
+import { showNotification } from '~/features/snackbar/ToastNotificationManager';
 import type { AppDispatch, RootState } from '~/store/reducers';
 
 import { setBroadcast, setDeveloperMode } from './slice';

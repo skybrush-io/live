@@ -15,7 +15,7 @@ import TextField from '@material-ui/core/TextField';
 import Colors from '~/components/colors';
 import PopupColorPicker from '~/components/PopupColorPicker';
 import { setLayerParametersById } from '~/features/map/layers';
-import { showNotification } from '~/features/snackbar/actions';
+import { showNotification } from '~/features/snackbar/ToastNotificationManager';
 import { parseColor } from '~/utils/coloring';
 import { convertSimpleStyleToOLStyle } from '~/utils/simplestyle';
 

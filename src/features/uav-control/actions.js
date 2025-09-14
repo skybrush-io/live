@@ -1,6 +1,6 @@
 import meanBy from 'lodash-es/meanBy';
 
-import { showError } from '~/features/snackbar/actions';
+import { showError } from '~/features/snackbar/ToastNotificationManager';
 import {
   getCurrentGPSPositionByUavId,
   getSelectedUAVIds,

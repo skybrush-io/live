@@ -19,7 +19,7 @@ import {
   updateLandingPositions,
   updateTakeoffHeadings,
 } from '~/features/mission/slice';
-import { showNotification } from '~/features/snackbar/actions';
+import { showNotification } from '~/features/snackbar/ToastNotificationManager';
 import { MessageSemantics } from '~/features/snackbar/types';
 import {
   getActiveUAVIds,

@@ -25,7 +25,7 @@ import {
   hasLoadedShowFile,
 } from '~/features/show/selectors';
 import { getSetupStageStatuses } from '~/features/show/stages';
-import { showError } from '~/features/snackbar/actions';
+import { showError } from '~/features/snackbar/ToastNotificationManager';
 import { type PreparedI18nKey, tt } from '~/i18n';
 import Pro from '~/icons/Pro';
 import {

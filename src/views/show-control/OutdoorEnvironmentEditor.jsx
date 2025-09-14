@@ -43,7 +43,7 @@ import {
   getOutdoorShowOrientation,
   getOutdoorShowTakeoffHeadingSpecification,
 } from '~/features/show/selectors';
-import { showNotification } from '~/features/snackbar/actions';
+import { showNotification } from '~/features/snackbar/ToastNotificationManager';
 import { MessageSemantics } from '~/features/snackbar/types';
 import { getAverageHeadingOfActiveUAVs } from '~/features/uavs/selectors';
 import i18n from '~/i18n';

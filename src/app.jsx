@@ -5,7 +5,8 @@ import React from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { WorkbenchView } from 'react-flexible-workbench';
 import { connect, Provider as StoreProvider } from 'react-redux';
-import { ToastProvider } from 'react-toast-notifications';
+// import { ToastProvider } from 'react-toast-notifications';
+import { Toaster } from 'react-hot-toast';
 import { PersistGate } from 'redux-persist/es/integration/react';
 
 import loadable from '@loadable/component';
@@ -35,12 +36,11 @@ import SafetyDialog from './features/safety/SafetyDialog';
 import SavedLocationEditorDialog from './features/saved-locations/SavedLocationEditorDialog';
 import ShowConfiguratorDialog from './features/show-configurator/ShowConfiguratorDialog';
 import Sidebar from './features/sidebar/Sidebar';
-import ToastNotificationManager from './features/snackbar/ToastNotificationManager';
+// import ToastNotificationManager from './features/snackbar/ToastNotificationManager';
 import UAVDetailsDialog from './features/uavs/UAVDetailsDialog';
 import UploadDialog from './features/upload/UploadDialog';
 import VersionCheckDialog from './features/version-check/VersionCheckDialog';
 
-import { SNACKBAR_TRANSITION_DURATION } from './features/snackbar/constants';
 import {
   isWorkbenchLayoutFixed,
   shouldSidebarBeShown,
@@ -193,13 +193,24 @@ const App = ({ onFirstRender }) => (
       <UploadDialog />
       <VersionCheckDialog />
 
-      <ToastProvider
+      {/* <ToastProvider
         placement={config.toastPlacement}
         transitionDuration={SNACKBAR_TRANSITION_DURATION}
       >
         <ToastNotificationManager />
-      </ToastProvider>
+      </ToastProvider> */}
 
+      <Toaster
+        position={config.toastPlacement}
+        toastOptions={{
+          duration: 1000,
+          style: {
+            borderRadius: '8px',
+            background: '#333',
+            color: '#fff',
+          },
+        }}
+        />
       {config.tour && <Tour />}
     </>
   </PersistGate>
