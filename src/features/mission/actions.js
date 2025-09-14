@@ -33,7 +33,7 @@ import {
   showError,
   showNotification,
   showSuccess,
-} from '~/features/snackbar/actions';
+} from '~/features/snackbar/ToastNotificationManager';
 import { MessageSemantics } from '~/features/snackbar/types';
 import { selectSingleUAVUnlessAmbiguous } from '~/features/uavs/actions';
 import {

@@ -133,6 +133,7 @@
     "react-error-overlay": "^6.1.0",
     "react-final-form": "^6.5.9",
     "react-flexible-workbench": "^5.6.1",
+    "react-hot-toast": "^2.6.0",
     "react-hotkeys": "^2.0.0",
     "react-i18next": "^12.2.0",
     "react-is": "^18.3.1",

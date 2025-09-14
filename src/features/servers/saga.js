@@ -25,7 +25,7 @@ import {
 } from './slice';
 
 import { showAuthenticationDialog } from '~/features/servers/actions';
-import { showError, showNotification } from '~/features/snackbar/actions';
+import { showError, showNotification } from '~/features/snackbar/ToastNotificationManager';
 import messageHub from '~/message-hub';
 import { isAuthenticationDialogOpen } from '~/selectors/dialogs';
 

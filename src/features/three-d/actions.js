@@ -1,5 +1,5 @@
 import AFrame from '@skybrush/aframe-components';
-import { showError } from '~/features/snackbar/actions';
+import { showError } from '~/features/snackbar/ToastNotificationManager';
 import { getActiveUAVIds } from '~/features/uavs/selectors';
 
 import { getDroneFlockDOMNode } from './refs';

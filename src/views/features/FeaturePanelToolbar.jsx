@@ -12,7 +12,7 @@ import FolderOpen from '@material-ui/icons/FolderOpen';
 
 import FileButton from '~/components/FileButton';
 import { addFeatureWithName } from '~/features/map-features/actions';
-import { showError, showSuccess } from '~/features/snackbar/actions';
+import { showError, showSuccess } from '~/features/snackbar/ToastNotificationManager';
 import { createFeaturesFromOpenLayers } from '~/model/openlayers';
 import { readFileAsArrayBuffer } from '~/utils/files';
 

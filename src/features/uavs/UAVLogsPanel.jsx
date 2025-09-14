@@ -21,7 +21,7 @@ import LargeProgressIndicator from '@skybrush/mui-components/lib/LargeProgressIn
 import StatusLight from '@skybrush/mui-components/lib/StatusLight';
 
 import { listOf } from '~/components/helpers/lists';
-import { showNotification } from '~/features/snackbar/actions';
+import { showNotification } from '~/features/snackbar/ToastNotificationManager';
 import { MessageSemantics } from '~/features/snackbar/types';
 import {
   getLogDownloadState,

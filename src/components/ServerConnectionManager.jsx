@@ -50,7 +50,7 @@ import {
   clearStartTimeAndMethod,
   synchronizeShowSettings,
 } from '~/features/show/slice';
-import { showError, showNotification } from '~/features/snackbar/actions';
+import { showError, showNotification } from '~/features/snackbar/ToastNotificationManager';
 import { MessageSemantics } from '~/features/snackbar/types';
 import { clearWeatherData } from '~/features/weather/slice';
 import i18n from '~/i18n';

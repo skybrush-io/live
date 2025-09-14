@@ -21,7 +21,7 @@ import {
 import { handleObjectDeletionMessage } from './model/objects';
 
 import { batchAddInboundMessages } from './features/messages/slice';
-import { showError, showNotification } from './features/snackbar/actions';
+import { showError, showNotification } from './features/snackbar/ToastNotificationManager';
 import { semanticsFromSeverity } from './features/snackbar/utils';
 
 import flock from './flock';

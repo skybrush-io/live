@@ -11,7 +11,7 @@ import values from 'lodash-es/values';
 import { showConfirmationDialog } from '~/features/prompt/actions';
 import { UAV_SIGNAL_DURATION } from '~/features/settings/constants';
 import { shouldConfirmUAVOperation } from '~/features/settings/selectors';
-import { showNotification } from '~/features/snackbar/actions';
+import { showNotification } from '~/features/snackbar/ToastNotificationManager';
 import { MessageSemantics } from '~/features/snackbar/types';
 import messageHub from '~/message-hub';
 import store from '~/store';

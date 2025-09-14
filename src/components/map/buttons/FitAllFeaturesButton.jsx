@@ -14,7 +14,7 @@ import IconButton from '@material-ui/core/IconButton';
 import ActionAllOut from '@material-ui/icons/AllOut';
 
 import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
-import { showError } from '~/features/snackbar/actions';
+import { showError } from '~/features/snackbar/ToastNotificationManager';
 import { isUavId } from '~/model/identifiers';
 import {
   fitAllFeaturesSignal,

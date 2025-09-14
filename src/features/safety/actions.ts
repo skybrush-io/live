@@ -8,7 +8,7 @@ import {
   getMissionType,
 } from '~/features/mission/selectors';
 import { setGeofencePolygonId } from '~/features/mission/slice';
-import { showNotification } from '~/features/snackbar/actions';
+import { showNotification } from '~/features/snackbar/ToastNotificationManager';
 import { MessageSemantics } from '~/features/snackbar/types';
 import { type Feature, FeatureType } from '~/model/features';
 import { type AppThunk } from '~/store/reducers';

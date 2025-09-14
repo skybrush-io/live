@@ -28,7 +28,7 @@ import {
   suggestedColorForFeature,
 } from '~/features/map-features/selectors-style-suggestions';
 import { getGeofencePolygonId } from '~/features/mission/selectors';
-import { showError } from '~/features/snackbar/actions';
+import { showError } from '~/features/snackbar/ToastNotificationManager';
 import { FeatureType, LabelStyle } from '~/model/features';
 import { featureIdToGlobalId } from '~/model/identifiers';
 import { mapViewCoordinateFromLonLat, measureFeature } from '~/utils/geography';
