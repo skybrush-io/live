@@ -93,7 +93,12 @@ const SavedLocationEditorFormPresentation = React.forwardRef(
                     fieldProps={{
                       validate: join([required, integer, between(1, 30)]),
                     }}
-                    inputProps={{ min: 1, max: 30 }}
+                    slotProps={{
+                      htmlInput: {
+                        min: 1,
+                        max: 30,
+                      },
+                    }}
                   />
                 </Box>
                 <TextField

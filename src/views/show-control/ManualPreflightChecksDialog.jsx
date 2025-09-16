@@ -57,7 +57,7 @@ const PreflightCheckListPresentation = ({
             <Checkbox
               checked={checkedItemIds.includes(item.id)}
               edge='start'
-              inputProps={{ 'aria-labelledby': itemId }}
+              slotProps={{ input: { 'aria-labelledby': itemId } }}
               value={item.id}
             />
           </ListItemIcon>
