@@ -47,7 +47,7 @@ export const TakeoffHeadingSpecEditor = ({
   return (
     <Translation>
       {(t) => (
-        <Box display='flex' flexDirection='row'>
+        <Box sx={{ display: 'flex', flexDirection: 'row' }}>
           <FormControl fullWidth variant='filled'>
             <InputLabel htmlFor='takeoff-heading-type'>
               {t('takeoffHeadingSpecEditor.UAVheadings')}
@@ -72,7 +72,7 @@ export const TakeoffHeadingSpecEditor = ({
               </MenuItem>
             </Select>
           </FormControl>
-          <Box p={1} />
+          <Box sx={{ p: 1 }} />
           <RotationField
             disabled={type === TakeoffHeadingMode.NONE}
             style={{ minWidth: 160 }}
@@ -86,7 +86,7 @@ export const TakeoffHeadingSpecEditor = ({
             onChange={onValueChanged}
           />
           {onSetToAverageHeading && (
-            <Box alignSelf='bottom' pt={1}>
+            <Box sx={{ alignSelf: 'bottom', pt: 1 }}>
               <Tooltip
                 content={t('takeoffHeadingSpecEditor.setToAvergaeHeading')}
               >

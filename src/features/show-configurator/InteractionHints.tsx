@@ -138,7 +138,7 @@ const InteractionHints = (): JSX.Element => {
   const [active, setActive] = useState(0);
 
   return (
-    <Box height='50px'>
+    <Box sx={{ height: '50px' }}>
       <MiniTabs value={active} style={{ marginBottom: 2 }}>
         {/* eslint-disable-next-line @typescript-eslint/naming-convention */}
         {CATEGORIES.map(({ icon: Icon, title }, i) => (
@@ -155,7 +155,7 @@ const InteractionHints = (): JSX.Element => {
 
       {CATEGORIES.map((c, i) => (
         <Fade key={c.title(t)} in={active === i}>
-          <Box position='absolute' display='flex' style={{ gap: 16 }}>
+          <Box sx={{ position: 'absolute', display: 'flex', gap: 2 }}>
             {c.hints.map((h) => (
               <InteractionHint
                 key={h.keys.join('+')}

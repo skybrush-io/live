@@ -84,7 +84,7 @@ const OutdoorEnvironmentEditor = ({
     <>
       <FormHeader>{t('outdoorEnvironmentEditor.coordinateSystem')}</FormHeader>
 
-      <Box display='flex' flexDirection='row'>
+      <Box sx={{ display: 'flex', flexDirection: 'row' }}>
         <Box>
           <CoordinateSystemFields
             type={COORDINATE_SYSTEM_TYPE}
@@ -96,10 +96,12 @@ const OutdoorEnvironmentEditor = ({
           />
 
           <Box
-            display='flex'
-            justifyContent='space-evenly'
-            alignItems='center'
-            py={1}
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-evenly',
+              alignItems: 'center',
+              py: 1,
+            }}
           >
             <Typography variant='button' color='textSecondary'>
               Copy coordinate system:
@@ -126,7 +128,7 @@ const OutdoorEnvironmentEditor = ({
             </Button>
           </Box>
         </Box>
-        <Box alignSelf='bottom' pt={1}>
+        <Box sx={{ alignSelf: 'bottom', pt: 1 }}>
           <Tooltip
             content={t(
               'outdoorEnvironmentEditor.fitCoordinateSysToCurrentDrone'
@@ -152,11 +154,11 @@ const OutdoorEnvironmentEditor = ({
         onSetToAverageHeading={onSetTakeoffHeadingToAverageActiveUAVHeading}
       />
 
-      <Box pt={1} display='flex' flexDirection='row'>
+      <Box sx={{ pt: 1, display: 'flex', flexDirection: 'row' }}>
         <Box style={{ color: Colors.warning }}>
           <Warning />
         </Box>
-        <Box flex={1} pl={1}>
+        <Box sx={{ flex: 1, pl: 1 }}>
           <Typography color='textSecondary' variant='body2'>
             <Trans
               i18nKey='outdoorEnvironmentEditor.warningText'
@@ -168,7 +170,7 @@ const OutdoorEnvironmentEditor = ({
 
       <FormHeader>{t('outdoorEnvironmentEditor.altitudeControl')}</FormHeader>
 
-      <Box display='flex' flexDirection='row' pb={2}>
+      <Box sx={{ display: 'flex', flexDirection: 'row', pb: 2 }}>
         <FormControl fullWidth variant='filled'>
           <InputLabel htmlFor='altitude-reference-type'>
             {t('outdoorEnvironmentEditor.showIsControlledBasedOn')}
@@ -189,7 +191,7 @@ const OutdoorEnvironmentEditor = ({
             </MenuItem>
           </Select>
         </FormControl>
-        <Box p={1} />
+        <Box sx={{ p: 1 }} />
         <SimpleDistanceField
           disabled={!usingAMSLReference}
           label={t('outdoorEnvironmentEditor.AMSLReference')}
@@ -199,7 +201,7 @@ const OutdoorEnvironmentEditor = ({
           max={10000}
           onChange={onAltitudeReferenceValueChanged}
         />
-        <Box alignSelf='bottom' pt={1}>
+        <Box sx={{ alignSelf: 'bottom', pt: 1 }}>
           <Tooltip content={t('outdoorEnvironmentEditor.setToAverageAMSL')}>
             <IconButton
               disabled={!usingAMSLReference}
@@ -215,7 +217,7 @@ const OutdoorEnvironmentEditor = ({
 
       <RTKCorrectionSourceSelector />
 
-      <Box pt={1} mb={-1}>
+      <Box sx={{ pt: 1, mb: -1 }}>
         <SmallProgressIndicator
           label='Fitting coordinate system...'
           visible={estimatingCoordinateSystem}

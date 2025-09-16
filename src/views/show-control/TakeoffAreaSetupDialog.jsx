@@ -262,11 +262,18 @@ const TakeoffAreaSetupDialog = ({
     >
       <DialogContent>
         <TakeoffAreaSetupDialogIndicators />
-        <Box py={2} display='flex' flexDirection='row' justifyContent='center'>
+        <Box
+          sx={{
+            py: 2,
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'center',
+          }}
+        >
           <RecalculateMappingButton />
           <AugmentMappingButton />
         </Box>
-        <Box className='bottom-bar' textAlign='center' pt={2}>
+        <Box className='bottom-bar' sx={{ textAlign: 'center', pt: 2 }}>
           <FormControlLabel
             control={
               <Switch

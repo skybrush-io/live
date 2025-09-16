@@ -192,9 +192,8 @@ const Sidebar = ({
     </div>
     {isOpen && (
       <Box
-        py={0.5}
-        px={1}
         style={{ color: '#fff', opacity: 0.3, width: SIDEBAR_OPEN_WIDTH }}
+        sx={{ py: 0.5, px: 1 }}
       >
         {missionType && (
           <Typography align='center' variant='caption' component='footer'>

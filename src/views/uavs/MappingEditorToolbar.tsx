@@ -90,7 +90,7 @@ const MappingEditorToolbar = React.forwardRef<
             <Box style={instructionsStyle}>
               {t('mappingEditorToolbar.dragNodes')}
             </Box>
-            <Box flex={1} />
+            <Box sx={{ flex: 1 }} />
             <IconButton size='large' onClick={finishMappingEditorSession}>
               <Check htmlColor={Colors.success} />
             </IconButton>

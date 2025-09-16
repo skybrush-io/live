@@ -19,10 +19,8 @@ import TakeoffAreaSetupDialog from './TakeoffAreaSetupDialog';
  */
 const ShowControlPanel = () => (
   <Box
-    display='flex'
-    flexDirection='column'
-    height='100%'
     id='tour-show-control'
+    sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}
   >
     <ShowControlPanelUpperSegment />
 

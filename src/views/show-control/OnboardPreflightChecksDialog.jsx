@@ -134,16 +134,18 @@ const OnboardPreflightChecksDialog = ({
         }}
       >
         <Box
-          display='flex'
-          flexDirection='column'
-          justifyContent='center'
-          flex={1}
-          overflow='auto'
-          minHeight={240}
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            flex: 1,
+            overflow: 'auto',
+            minHeight: '240px',
+          }}
         >
           <PreflightCheckList />
         </Box>
-        <Box className='bottom-bar' textAlign='center' pt={2}>
+        <Box className='bottom-bar' sx={{ textAlign: 'center', pt: 2 }}>
           <FormControlLabel
             control={
               <Switch

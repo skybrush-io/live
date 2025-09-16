@@ -307,7 +307,7 @@ const ShowConfiguratorDialog = (props: Props): JSX.Element => {
         />
         <ToolbarDivider orientation='vertical' />
         <InteractionHints />
-        <Box flex={1} />
+        <Box sx={{ flex: 1 }} />
         <Button disabled={backDisabled} onClick={back}>
           {stage === 'review'
             ? t('general.action.back')

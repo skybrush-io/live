@@ -83,7 +83,7 @@ const ThreeDTopLevelView = ({
 
   return (
     <IgnoreKeys style={{ height: '100%' }}>
-      <Box display='flex' flexDirection='column' height='100%'>
+      <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
         <AppBar color='default' position='static' className={classes.appBar}>
           <Toolbar disableGutters variant='dense' className={classes.toolbar}>
             <NavigationButtonGroup
@@ -101,7 +101,7 @@ const ThreeDTopLevelView = ({
             />
           </Toolbar>
         </AppBar>
-        <Box ref={ref} position='relative' flex={1}>
+        <Box ref={ref} sx={{ position: 'relative', flex: 1 }}>
           <NearestItemTooltip>
             <ThreeDView ref={threeDViewRef} cameraRef={cameraRef} />
           </NearestItemTooltip>

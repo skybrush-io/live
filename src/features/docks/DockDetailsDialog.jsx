@@ -28,7 +28,7 @@ const DockDetailsDialog = ({ onClose, open }) => (
     )}
     onClose={onClose}
   >
-    <Box position='relative' height={448} overflow='auto'>
+    <Box sx={{ position: 'relative', height: 448, overflow: 'auto' }}>
       <DockDetailsDialogBody />
     </Box>
   </DraggableDialog>

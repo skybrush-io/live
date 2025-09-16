@@ -178,7 +178,7 @@ const RTKSatelliteObservations = ({ height, items }) => {
   }, [chartRef.current, items]);
 
   return (
-    <Box height={height}>
+    <Box sx={{ height }}>
       <BarChart
         ref={chartRef}
         data={chartData}

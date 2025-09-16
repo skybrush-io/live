@@ -33,14 +33,14 @@ const UAVToolbar = React.forwardRef<HTMLDivElement, UAVToolbarProps>(
 
     return (
       <Toolbar ref={ref} disableGutters variant='dense' {...rest}>
-        <Box width={4} />
+        <Box sx={{ width: '4px' }} />
 
         <UAVOperationsButtonGroup
           broadcast={isBroadcast}
           selectedUAVIds={selectedUAVIds}
         />
 
-        <Box flex={1} />
+        <Box sx={{ flex: 1 }} />
 
         {fitSelectedUAVs && (
           <Tooltip

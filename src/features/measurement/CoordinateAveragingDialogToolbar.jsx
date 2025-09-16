@@ -49,7 +49,7 @@ const CoordinateAveragingDialogToolbar = ({
 }) => {
   return (
     <DialogToolbar disableGutters>
-      <Box position='absolute' display='flex'>
+      <Box sx={{ position: 'absolute', display: 'flex' }}>
         <UAVSelectorWrapper filterable onSelect={onUAVIdAdded}>
           {(handleClick) => (
             <Tooltip

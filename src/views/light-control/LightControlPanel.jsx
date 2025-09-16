@@ -12,11 +12,13 @@ import LightControlMainSwitch from './LightControlMainSwitch';
  */
 const LightControlPanel = () => (
   <Box
-    display='flex'
-    flexDirection='column'
-    height='100%'
     id='tour-light-control'
-    overflow='hidden'
+    sx={{
+      display: 'flex',
+      flexDirection: 'column',
+      height: '100%',
+      overflow: 'hidden',
+    }}
   >
     <List dense>
       <LightControlMainSwitch />

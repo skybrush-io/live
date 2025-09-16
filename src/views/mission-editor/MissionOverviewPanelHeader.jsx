@@ -95,7 +95,7 @@ const MissionOverviewPanelHeader = ({
             <Export fontSize='small' />
           </IconButton>
         </Tooltip>
-        <Box component='div' flex={1} />
+        <Box component='div' sx={{ flex: 1 }} />
         <Button
           disabled={!canPlan}
           size='small'

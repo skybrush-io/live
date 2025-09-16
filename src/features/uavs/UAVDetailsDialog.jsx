@@ -70,7 +70,7 @@ const UAVDetailsDialog = ({
         boxProps={{ maxWidth: '100%' }}
         onResizeStop={onResizeStop}
       >
-        <Box height='100%' overflow='auto'>
+        <Box sx={{ height: '100%', overflow: 'auto' }}>
           <UAVDetailsDialogBody />
         </Box>
       </ResizableBox>

@@ -92,7 +92,7 @@ const SafetySettingsFormPresentation = ({ initialValues, onSubmit, t }) => (
             </FormHelperText>
           </Box>
           <Box>
-            <Box display='flex'>
+            <Box sx={{ display: 'flex' }}>
               {/* TODO: Use `Select` from `~/components/forms/fields.jsx` */}
               <Select
                 name='lowBatteryThreshold.type'
@@ -119,7 +119,7 @@ const SafetySettingsFormPresentation = ({ initialValues, onSubmit, t }) => (
                 BatteryThresholdType.PERCENTAGE,
               ].includes(values.lowBatteryThreshold?.type) && (
                 <>
-                  <Box p={1} />
+                  <Box sx={{ p: 1 }} />
                   <NumericFieldWithUnit
                     name='lowBatteryThreshold.value'
                     label={t('safetySettingsTab.lowBatteryThresholdValueLabel')}

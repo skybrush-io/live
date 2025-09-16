@@ -123,10 +123,10 @@ const ManualPreflightChecksDialog = ({
           paddingRight: '1em',
         }}
       >
-        <Box flex={1} overflow='auto' minHeight={0}>
+        <Box sx={{ flex: 1, overflow: 'auto', minHeight: 0 }}>
           <PreflightCheckList />
         </Box>
-        <Box className='bottom-bar' textAlign='center' pt={2}>
+        <Box className='bottom-bar' sx={{ textAlign: 'center', pt: 2 }}>
           <FormControlLabel
             control={
               <Switch

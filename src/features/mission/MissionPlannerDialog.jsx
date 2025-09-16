@@ -144,7 +144,7 @@ const MissionPlannerDialog = ({
           />
         </Tooltip>
 
-        <Box flex={1} />
+        <Box sx={{ flex: 1 }} />
 
         <Button onClick={onClose}>Close</Button>
         <Button

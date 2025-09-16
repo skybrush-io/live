@@ -35,9 +35,9 @@ const IndoorEnvironmentEditor = ({
       {t('indoorEnvironmentEditor.coordinatesOfTheCorners')}
     </FormHeader>
     <XYZFields value={firstCorner} onChange={onFirstCornerChanged} />
-    <Box p={1} />
+    <Box sx={{ p: 1 }} />
     <XYZFields value={secondCorner} onChange={onSecondCornerChanged} />
-    <Box p={1} />
+    <Box sx={{ p: 1 }} />
     <FormControlLabel
       label={t('indoorEnvironmentEditor.roomVisibleIn3D')}
       control={

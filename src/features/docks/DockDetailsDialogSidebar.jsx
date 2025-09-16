@@ -69,7 +69,7 @@ const DockDetailsDialogSidebar = ({ dockId }) => {
   const classes = useStyles();
   return (
     <Box className={classes.root}>
-      <Box display='flex' flexDirection='row' alignItems='center'>
+      <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
         <Box className={classes.avatar}>
           <ComplexAvatar label='OK' status='success' />
         </Box>
@@ -123,7 +123,7 @@ const DockDetailsDialogSidebar = ({ dockId }) => {
           ['Landing pad 1', <StatusText status='next'>charging</StatusText>],
         ]}
       />
-      <Box flex={1} />
+      <Box sx={{ flex: 1 }} />
       <FormControlLabel
         control={<Switch />}
         label='Automatic mode'

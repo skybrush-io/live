@@ -405,7 +405,7 @@ const UAVListPresentation = ({
   // Finally, render time!
   return (
     <DndProvider backend={HTML5Backend}>
-      <Box display='flex' flexDirection='column' height='100%'>
+      <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
         <AppBar color='default' position='static' className={classes.appBar}>
           <FadeAndSlide mountOnEnter unmountOnExit in={!editingMapping}>
             <UAVToolbar className={classes.toolbar} />
@@ -425,7 +425,7 @@ const UAVListPresentation = ({
             <MappingSlotEditorToolbar className={classes.toolbar} />
           </FadeAndSlide>
         </AppBar>
-        <Box flex={1} position='relative'>
+        <Box sx={{ flex: 1, position: 'relative' }}>
           <SortAndFilterHeader floating />
           {/* We assume that each grid item is a <div> in the <Box> when we
            * calculate how many columns there are in the grid. Revise the
@@ -439,7 +439,9 @@ const UAVListPresentation = ({
         </Box>
         {editingMapping && layout === UAVListLayout.GRID ? (
           <Box className='bottom-bar'>
-            <Box display='flex' flexDirection='row' flexWrap='wrap'>
+            <Box
+              sx={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}
+            >
               {itemRenderer(deletionMarker)}
             </Box>
           </Box>

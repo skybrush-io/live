@@ -52,7 +52,15 @@ const MultiPagePanel = ({
   const classes = useStyles();
 
   return (
-    <Box position='relative' {...rest}>
+    <Box
+      {...rest}
+      sx={[
+        {
+          position: 'relative',
+        },
+        ...(Array.isArray(rest.sx) ? rest.sx : [rest.sx]),
+      ]}
+    >
       {React.Children.map(children, (child) => {
         const { className, id, keepMounted, scrollable, ...boxProps } =
           child.props;

@@ -62,7 +62,7 @@ const useStyles = makeStyles((theme) => ({
 const ServerAndClientClockComparison = ({ clockSkew }) => {
   const classes = useStyles();
   return (
-    <Box display='flex' flexDirection='row' mx={-2} mb={2}>
+    <Box sx={{ display: 'flex', flexDirection: 'row', mx: -2, mb: 2 }}>
       <Box className={clsx(classes.card, classes.cardLeft)}>
         <Typography gutterBottom color='textPrimary'>
           Time on this device
@@ -112,7 +112,7 @@ const TimeSyncDialogBodyWhenClocksAreNotInSync = ({ clockSkew }) => {
   const classes = useStyles();
   return (
     <DialogContent className={classes.content}>
-      <Box my={2}>
+      <Box sx={{ my: 2 }}>
         <Typography variant='h6'>Why am I seeing this warning?</Typography>
       </Box>
       <DialogContentText>
@@ -130,7 +130,7 @@ const TimeSyncDialogBodyWhenClocksAreNotInSync = ({ clockSkew }) => {
           synchronized to UTC.
         </strong>
       </DialogContentText>
-      <Box my={2}>
+      <Box sx={{ my: 2 }}>
         <Typography variant='h6'>What should I do now?</Typography>
       </Box>
       <DialogContentText>
@@ -178,7 +178,7 @@ const TimeSyncDialog = ({
   >
     {isCalculatingClockSkew && isNil(clockSkew) ? (
       <DialogContent>
-        <Box align='center' my={4}>
+        <Box align='center' sx={{ my: 4 }}>
           <Box>
             <CircularProgress />
           </Box>

@@ -89,7 +89,7 @@ const MissionOverviewPanelStatusBar = ({
                 />
               </Tooltip>
             )}
-            <Box py={0.25}>
+            <Box sx={{ py: 0.25 }}>
               <Tooltip content='Estimated route'>
                 <Chip
                   icon={<Timeline style={{ marginLeft: 6 }} />}
@@ -132,7 +132,7 @@ const MissionOverviewPanelStatusBar = ({
             variant='outlined'
           />
         )}
-        <Box component='div' flex={1} />
+        <Box component='div' sx={{ flex: 1 }} />
         <Tooltip content='Follow the active mission item'>
           <ToggleButton
             size='small'

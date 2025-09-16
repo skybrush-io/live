@@ -47,8 +47,8 @@ const GeneralPropertiesForm = ({
   suggestedColor,
 }) => (
   <div>
-    <Box display='flex' alignItems='center' py='1em'>
-      <Box flex='auto'>
+    <Box sx={{ display: 'flex', alignItems: 'center', py: '1em' }}>
+      <Box sx={{ flex: 'auto' }}>
         <TextField
           fullWidth
           autoFocus={!optimizeUIForTouch}
@@ -60,7 +60,7 @@ const GeneralPropertiesForm = ({
       </Box>
       <Switch checked={feature.visible} onChange={onToggleFeatureVisibility} />
     </Box>
-    <Box display='flex'>
+    <Box sx={{ display: 'flex' }}>
       <SwatchesColorPicker
         styles={{ default: { picker: { flexShrink: 0 } } }}
         color={feature.color ?? suggestedColor}

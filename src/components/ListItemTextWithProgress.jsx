@@ -15,11 +15,12 @@ const ListItemTextWithProgress = ({ secondary, ...rest }) => (
     disableTypography
     secondary={
       <Box
-        minHeight={20.1}
-        display='flex'
-        flexDirection='column'
-        justifyContent='center'
-      >
+        sx={{
+          minHeight: 20.1,
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center'
+        }}>
         <Typography component='div' variant='body2' color='textSecondary'>
           {secondary}
         </Typography>

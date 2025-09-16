@@ -69,8 +69,8 @@ const BeaconList = ({
   selectedIds,
   ...rest
 }) => (
-  <Box display='flex' flexDirection='column' height='100%'>
-    <Box height='100%' overflow='auto'>
+  <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+    <Box sx={{ height: '100%', overflow: 'auto' }}>
       <BeaconListPresentation
         dense
         value={selectedIds || []}

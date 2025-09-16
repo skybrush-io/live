@@ -16,7 +16,7 @@ const PreflightTabPresentation = ({ items, onSubmit, t }) => (
     {({ dirty, form, handleSubmit }) => (
       <Box>
         <Typography>{t('preflightTab.enterCheckItems')}</Typography>
-        <Box py={1}>
+        <Box sx={{ py: 1 }}>
           <TextField
             fullWidth
             multiline

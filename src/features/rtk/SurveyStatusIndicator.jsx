@@ -41,11 +41,16 @@ const SurveyStatusIndicator = ({
   return (
     <Fade in={supported || true}>
       <Box
-        alignItems='center'
-        flex={1}
-        display='flex'
-        flexDirection='row'
         {...rest}
+        sx={[
+          {
+            alignItems: 'center',
+            flex: 1,
+            display: 'flex',
+            flexDirection: 'row',
+          },
+          ...(Array.isArray(rest.sx) ? rest.sx : [rest.sx]),
+        ]}
       >
         <LabeledStatusLight
           size='small'

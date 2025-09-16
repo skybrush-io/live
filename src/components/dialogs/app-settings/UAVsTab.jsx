@@ -130,10 +130,10 @@ const UAVsTabPresentation = ({
         </FormControl>
       </FormGroup>
 
-      <Box my={2}>
+      <Box sx={{ my: 2 }}>
         <Header>{t('settings.uavs.operationSettings')}</Header>
 
-        <Box display='flex' flexDirection='row' mb={1}>
+        <Box sx={{ display: 'flex', flexDirection: 'row', mb: 1 }}>
           <FormControl fullWidth variant='filled'>
             <InputLabel id='uav-operation-confirmation-style'>
               UAV operation confirmations
@@ -156,7 +156,7 @@ const UAVsTabPresentation = ({
           </FormControl>
         </Box>
 
-        <Box display='flex' flexDirection='row' mb={1}>
+        <Box sx={{ display: 'flex', flexDirection: 'row', mb: 1 }}>
           <SimpleNumericField
             fullWidth
             label={t('settings.uavs.maxUploadConcurrency')}
@@ -170,10 +170,10 @@ const UAVsTabPresentation = ({
         </Box>
       </Box>
 
-      <Box my={2}>
+      <Box sx={{ my: 2 }}>
         <Header>{t('settings.uavs.defaultBatterySettings')}</Header>
 
-        <Box display='flex' flexDirection='row' mb={1}>
+        <Box sx={{ display: 'flex', flexDirection: 'row', mb: 1 }}>
           <SimpleNumericField
             fullWidth
             label={t('settings.uavs.cellCount')}
@@ -184,7 +184,7 @@ const UAVsTabPresentation = ({
             value={defaultBatteryCellCount}
             onChange={onIntegerFieldUpdated}
           />
-          <Box width={theme.spacing(2)} />
+          <Box sx={{ width: theme.spacing(2) }} />
           <SimpleVoltageField
             fullWidth
             name='fullChargeVoltage'
@@ -195,7 +195,7 @@ const UAVsTabPresentation = ({
             value={fullChargeVoltage}
             onChange={onVoltageFieldUpdated}
           />
-          <Box width={theme.spacing(2)} />
+          <Box sx={{ width: theme.spacing(2) }} />
           <SimpleVoltageField
             fullWidth
             name='lowVoltageThreshold'
@@ -206,7 +206,7 @@ const UAVsTabPresentation = ({
             value={lowVoltageThreshold}
             onChange={onVoltageFieldUpdated}
           />
-          <Box width={theme.spacing(2)} />
+          <Box sx={{ width: theme.spacing(2) }} />
           <SimpleVoltageField
             fullWidth
             name='criticalVoltageThreshold'
@@ -219,7 +219,7 @@ const UAVsTabPresentation = ({
           />
         </Box>
 
-        <Box display='flex' flexDirection='row' mb={1}>
+        <Box sx={{ display: 'flex', flexDirection: 'row', mb: 1 }}>
           <FormControl fullWidth variant='filled'>
             <InputLabel id='uav-battery-display-style'>
               {t('settings.uavs.batteryDisplayStyle')}
@@ -243,7 +243,7 @@ const UAVsTabPresentation = ({
       <Box>
         <Header>{t('settings.uavs.missionSetup')}</Header>
 
-        <Box display='flex' flexDirection='row' mb={1}>
+        <Box sx={{ display: 'flex', flexDirection: 'row', mb: 1 }}>
           <SimpleDistanceField
             fullWidth
             name='minOutdoorTakeoffSpacing'
@@ -254,7 +254,7 @@ const UAVsTabPresentation = ({
             value={minOutdoorTakeoffSpacing}
             onChange={onDistanceFieldUpdated}
           />
-          <Box width={theme.spacing(2)} />
+          <Box sx={{ width: theme.spacing(2) }} />
           <SimpleDistanceField
             fullWidth
             name='minIndoorTakeoffSpacing'
@@ -267,7 +267,7 @@ const UAVsTabPresentation = ({
           />
         </Box>
 
-        <Box display='flex' flexDirection='row' mb={1}>
+        <Box sx={{ display: 'flex', flexDirection: 'row', mb: 1 }}>
           <SimpleDistanceField
             fullWidth
             name='placementAccuracy'
@@ -278,7 +278,7 @@ const UAVsTabPresentation = ({
             value={placementAccuracy}
             onChange={onDistanceFieldUpdated}
           />
-          <Box width={theme.spacing(2)} />
+          <Box sx={{ width: theme.spacing(2) }} />
           <SimpleAngleField
             fullWidth
             name='takeoffHeadingAccuracy'

@@ -18,9 +18,16 @@ const RTKSetupDialog = ({ onClose, open }) => (
   <Dialog fullWidth open={open} maxWidth='sm' onClose={onClose}>
     <RTKStatusUpdater />
     <Box>
-      <Box mx={3} mt={3}>
+      <Box sx={{ mx: 3, mt: 3 }}>
         <RTKCorrectionSourceSelector />
-        <Box height={100} my={2} boxSizing='content-box' overflow='auto'>
+        <Box
+          sx={{
+            height: 100,
+            my: 2,
+            boxSizing: 'content-box',
+            overflow: 'auto',
+          }}
+        >
           <RTKMessageStatistics />
         </Box>
       </Box>

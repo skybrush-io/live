@@ -27,7 +27,7 @@ const APIKeysTabPresentation = ({ apiKeys, onSubmit, t }) => (
     {({ dirty, form, handleSubmit }) => (
       <Box>
         {providers.map((provider) => (
-          <Box key={provider.key} py={1}>
+          <Box key={provider.key} sx={{ py: 1 }}>
             <TextField
               fullWidth
               name={provider.key}
@@ -39,7 +39,7 @@ const APIKeysTabPresentation = ({ apiKeys, onSubmit, t }) => (
         <Typography variant='body2' color='textSecondary'>
           {t('APIKeysTab.description')}
         </Typography>
-        <Box pb={2} />
+        <Box sx={{ pb: 2 }} />
         <FormSubmissionButtonRow
           dirty={dirty}
           form={form}

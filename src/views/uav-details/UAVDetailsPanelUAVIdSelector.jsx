@@ -28,7 +28,7 @@ const UAVDetailsPanelUAVIdSelector = ({
   setSelectedUAVId,
   toggleFollowMapSelection,
 }) => (
-  <Box display='flex' alignItems='center' mx={0.5}>
+  <Box sx={{ display: 'flex', alignItems: 'center', mx: 0.5 }}>
     <UAVSelectorWrapper sortedByError onSelect={setSelectedUAVId}>
       {(handleClick) => (
         // NOTE: `DroneAvatar` renders a fragment, so we wrap it with a `div`

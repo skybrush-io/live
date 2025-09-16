@@ -69,16 +69,14 @@ const UntypedLayerSettingsPresentation = ({
     );
   });
   return (
-    <Box display='flex' flexDirection='column'>
+    <Box sx={{ display: 'flex', flexDirection: 'column' }}>
       <Typography gutterBottom variant='subtitle1' component='p'>
         Pick a layer type
       </Typography>
       <Grid
         container
-        flex='1'
-        alignItems='stretch'
-        justifyContent='flex-start'
         spacing={2}
+        sx={{ flex: 1, alignItems: 'stretch', justifyContent: 'flex-start' }}
       >
         {items}
       </Grid>

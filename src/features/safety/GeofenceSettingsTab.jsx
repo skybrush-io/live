@@ -216,7 +216,7 @@ const GeofenceSettingsFormPresentation = ({ onSubmit, t }) => {
           <FormHeader disablePadding>
             {t('safetyDialog.geofenceTab.fenceAction')}
           </FormHeader>
-          <Box display='flex' flexDirection='column'>
+          <Box sx={{ display: 'flex', flexDirection: 'column' }}>
             <Select
               name='action'
               label={t('safetyDialog.geofenceTab.fenceActionLabel')}
@@ -234,7 +234,7 @@ const GeofenceSettingsFormPresentation = ({ onSubmit, t }) => {
           </Box>
 
           <FormHeader>{t('safetyDialog.geofenceTab.safetyMargins')}</FormHeader>
-          <Box display='flex' flexDirection='row'>
+          <Box sx={{ display: 'flex', flexDirection: 'row' }}>
             <TextField
               name='horizontalMargin'
               label={t('safetyDialog.geofenceTab.horizontal')}
@@ -252,7 +252,7 @@ const GeofenceSettingsFormPresentation = ({ onSubmit, t }) => {
                 },
               }}
             />
-            <Box p={1} />
+            <Box sx={{ p: 1 }} />
             <TextField
               name='verticalMargin'
               label={t('safetyDialog.geofenceTab.vertical')}
@@ -275,7 +275,7 @@ const GeofenceSettingsFormPresentation = ({ onSubmit, t }) => {
           <FormHeader>
             {t('safetyDialog.geofenceTab.proposedLimits')}
           </FormHeader>
-          <Box display='flex' flexDirection='row'>
+          <Box sx={{ display: 'flex', flexDirection: 'row' }}>
             <TextField
               disabled
               name='distanceLimit'
@@ -306,7 +306,7 @@ const GeofenceSettingsFormPresentation = ({ onSubmit, t }) => {
               }}
               variant='standard'
             />
-            <Box p={1} />
+            <Box sx={{ p: 1 }} />
             <TextField
               disabled
               name='heightLimit'
@@ -330,14 +330,20 @@ const GeofenceSettingsFormPresentation = ({ onSubmit, t }) => {
           <FormHeader>
             {t('safetyDialog.geofenceTab.geofencePolygon')}
           </FormHeader>
-          <Box display='flex' flexDirection='column'>
+          <Box sx={{ display: 'flex', flexDirection: 'column' }}>
             <Checkboxes
               name='generate'
               data={{
                 label: t('safetyDialog.geofenceTab.generateAutomatically'),
               }}
             />
-            <Box display='flex' flexDirection='row' alignItems='baseline'>
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'baseline',
+              }}
+            >
               <Checkboxes
                 name='simplify'
                 disabled={!generate}
@@ -346,7 +352,7 @@ const GeofenceSettingsFormPresentation = ({ onSubmit, t }) => {
                 }}
                 formControlProps={{ style: { flex: 1 } }}
               />
-              <Box p={1} />
+              <Box sx={{ p: 1 }} />
               <TextField
                 size='small'
                 name='maxVertexCount'
