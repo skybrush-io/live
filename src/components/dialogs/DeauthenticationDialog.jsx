@@ -36,7 +36,7 @@ const DeauthenticationDialogPresentation = ({
   <DraggableDialog maxWidth='xs' open={open} title={title}>
     <DialogContent>
       <Box>
-        <Typography paragraph>
+        <Typography sx={{ marginBottom: '16px' }}>
           {user ? (
             <>
               You are currently authenticated as <code>{user}</code>. Are you
