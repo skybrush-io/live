@@ -544,7 +544,7 @@ const createNumericField = ({
     return (
       <MaterialUITextField
         slotProps={{
-          input: { inputProps },
+          input: inputProps,
           htmlInput: {
             size,
             type: 'text',
