@@ -201,18 +201,18 @@ const StartTimeForm = ({
                     <DatePicker
                       disablePast
                       format='yyyy-MM-dd'
-                      slotProps={{ textField: { variant: 'filled' } }}
                       label={t('startTimeDialog.startDate')}
                       name='utcDate'
+                      textFieldProps={{ variant: 'filled' }}
                     />
                   </Box>
                   <Box sx={{ alignContent: 'center', flex: 1 }}>
                     <TimePicker
                       ampm={false}
                       format='HH:mm:ss'
-                      slotProps={{ textField: { variant: 'filled' } }}
                       label={t('startTimeDialog.startTime')}
                       name='utcTime'
+                      textFieldProps={{ variant: 'filled' }}
                     />
                   </Box>
                 </>
