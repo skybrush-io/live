@@ -178,6 +178,11 @@ export const componentRegistry = {
     label: 'UAV Statuses',
     detachable: true,
   },
+  'rtk-statuses': {
+    component: views.RTKStatusPanel,
+    label: 'RTK Statuses',
+    detachable: true,
+  },
 };
 
 function constructDefaultWorkbench(store) {
