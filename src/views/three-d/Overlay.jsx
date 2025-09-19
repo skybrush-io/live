@@ -7,7 +7,16 @@ import React from 'react';
  * HTML components.
  */
 const Overlay = ({ children, ...rest }) => (
-  <Box position='absolute' zIndex={1} {...rest}>
+  <Box
+    {...rest}
+    sx={[
+      {
+        position: 'absolute',
+        zIndex: 1,
+      },
+      ...(Array.isArray(rest.sx) ? rest.sx : [rest.sx]),
+    ]}
+  >
     {children}
   </Box>
 );

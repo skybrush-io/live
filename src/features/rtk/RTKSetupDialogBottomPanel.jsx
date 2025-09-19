@@ -69,17 +69,18 @@ const RTKSetupDialogBottomPanel = ({
       className={clsx(classes.root, inset ? classes.inset : classes.nonInset)}
     >
       <RTKSatelliteObservations height={chartHeight} />
-
-      <Box position='relative' height={48}>
+      <Box sx={{ position: 'relative', height: 48 }}>
         <FadeAndSlide in={!surveySettingsVisible}>
           <Box
-            display='flex'
-            flexDirection='row'
-            alignItems='center'
-            left={0}
-            top={0}
-            right={0}
-            bottom={0}
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              left: 0,
+              top: 0,
+              right: 0,
+              bottom: 0,
+            }}
           >
             {onToggleSurveySettings && (
               <Tooltip content='Start new survey'>
@@ -93,7 +94,7 @@ const RTKSetupDialogBottomPanel = ({
               </Tooltip>
             )}
             <SurveyStatusIndicator {...surveyStatus} />
-            <Box flex='1' />
+            <Box sx={{ flex: '1' }} />
             <AntennaPositionIndicator />
           </Box>
         </FadeAndSlide>

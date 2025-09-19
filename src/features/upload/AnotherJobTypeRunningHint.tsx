@@ -37,7 +37,7 @@ const AnotherJobTypeRunningHint = (
           >
             Cancel upload
           </Button>
-          <Box display='inline-block' mx={1} />
+          <Box sx={{ display: 'inline-block', mx: 1 }} />
           <Button
             startIcon={<Visibility />}
             onClick={() => {

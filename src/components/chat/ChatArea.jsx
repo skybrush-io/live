@@ -50,10 +50,15 @@ export default class ChatArea extends React.Component {
     return (
       <Box
         ref={this._domNode}
-        position='relative'
-        overflow='auto'
-        flex='1 1 100%'
         {...rest}
+        sx={[
+          {
+            position: 'relative',
+            overflow: 'auto',
+            flex: '1 1 100%',
+          },
+          ...(Array.isArray(rest.sx) ? rest.sx : [rest.sx]),
+        ]}
       >
         {children}
         <div ref={this._endNode} />

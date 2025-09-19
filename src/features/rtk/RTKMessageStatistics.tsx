@@ -34,12 +34,12 @@ const RTKMessageStatisticsListEntry = ({
   const hasRx = bitsPerSecondReceived > 0;
   const bps = hasTx ? bitsPerSecondTransferred! : bitsPerSecondReceived;
   return (
-    <Box key={id} display='flex'>
-      <Box width={80} color='text.secondary'>
-        {id}
-      </Box>
-      <Box flex={1}>{describeMessageType(id)}</Box>
-      <Box width={112} ml={1} color='text.secondary' textAlign='right'>
+    <Box key={id} sx={{ display: 'flex' }}>
+      <Box sx={{ width: 80, color: 'text.secondary' }}>{id}</Box>
+      <Box sx={{ flex: 1 }}>{describeMessageType(id)}</Box>
+      <Box
+        sx={{ width: 112, ml: 1, color: 'text.secondary', textAlign: 'right' }}
+      >
         {`${bps.toFixed(1)} bps `}
         <span
           style={{ color: colorForStatus(hasRx ? Status.INFO : Status.OFF) }}
@@ -56,7 +56,7 @@ const RTKMessageStatisticsListEntry = ({
           </span>
         )}
       </Box>
-      <Box color='text.secondary' width={32} textAlign='right'>
+      <Box sx={{ color: 'text.secondary', width: 32, textAlign: 'right' }}>
         <TimeAgo formatter={shortTimeAgoFormatter} date={lastUpdatedAt} />
       </Box>
     </Box>

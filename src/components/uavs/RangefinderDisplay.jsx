@@ -77,7 +77,7 @@ const RangefinderDisplay = ({
                             SectorStatus.OFF,
   });
   return (
-    <Box height='100%' widht='100%' overflow='hidden'>
+    <Box widht='100%' sx={{ height: '100%', overflow: 'hidden' }}>
       <div className={classes.container}>
         <RangefinderDisplayCenter {...getDistanceAndStatus(values[0])} />
         <div className={classes.circle} />

@@ -257,17 +257,19 @@ class MessagesPanel extends React.Component {
       <Box
         ref={this._messageFieldContainerRef}
         key='textFieldContainer'
-        display='flex'
-        alignItems='baseline'
         className={clsx('bottom-bar', classes.noFocusOutline)}
-        pb={2}
-        pl={2}
-        pr={isClearButtonVisible ? 0 : 2}
         tabIndex='-1'
         onKeyDown={(e) => {
           if (e.code === 'Enter') {
             this._messageFieldRef.current.focus();
           }
+        }}
+        sx={{
+          display: 'flex',
+          alignItems: 'baseline',
+          pb: 2,
+          pl: 2,
+          pr: isClearButtonVisible ? 0 : 2,
         }}
       >
         <MessageField

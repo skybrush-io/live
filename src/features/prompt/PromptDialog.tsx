@@ -47,7 +47,7 @@ const PromptDialogForm: React.FunctionComponent<PromptDialogFormProps> = ({
 }) => (
   <DialogContent>
     {message && (
-      <Box py={1}>
+      <Box sx={{ py: 1 }}>
         <DialogContentText>{message}</DialogContentText>
       </Box>
     )}

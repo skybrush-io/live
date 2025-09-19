@@ -74,17 +74,19 @@ const instructionsByMode = {
  * current navigation mode.
  */
 const NavigationInstructionsPresentation = ({ mode, t }) => (
-  <Box mx={1} flex={1} alignSelf='stretch' position='relative'>
+  <Box sx={{ mx: 1, flex: 1, alignSelf: 'stretch', position: 'relative' }}>
     <TransitionGroup>
       <FadeAndSlide key={mode}>
         <Box
-          position='absolute'
-          left={0}
-          top={0}
-          bottom={0}
-          display='flex'
-          flexDirection='column'
-          justifyContent='center'
+          sx={{
+            position: 'absolute',
+            left: 0,
+            top: 0,
+            bottom: 0,
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+          }}
         >
           {instructionsByMode[mode] ||
             t('navigationInstructions.noInstruction')}

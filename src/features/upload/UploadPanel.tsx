@@ -180,10 +180,10 @@ const UploadPanel = ({
       <DialogContent>
         <UploadStatusLights />
         <UploadStatusLegend />
-        <Box mt={1}>
+        <Box sx={{ mt: 1 }}>
           <UploadProgressBar />
         </Box>
-        <Box mt={1}>
+        <Box sx={{ mt: 1 }}>
           <FormControlLabel
             control={
               <Checkbox checked={autoRetry} onChange={onToggleAutoRetry} />

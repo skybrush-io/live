@@ -82,7 +82,7 @@ const MissionOverviewPanelFooter = ({
           </Tooltip>
         ))}
 
-        <Box flex={1} />
+        <Box sx={{ flex: 1 }} />
 
         <ToolbarDivider orientation='vertical' />
         <Tooltip content='Move selected mission items up' placement='top'>

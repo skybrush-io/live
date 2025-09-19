@@ -104,10 +104,15 @@ const ResizableBox = ({ boxProps, children, initialSize, ...rest }) => {
       {...rest}
     >
       <Box
-        width={size.width}
-        height={size.height}
-        position='relative'
         {...boxProps}
+        sx={[
+          {
+            width: size.width,
+            height: size.height,
+            position: 'relative',
+          },
+          ...(Array.isArray(boxProps.sx) ? boxProps.sx : [boxProps.sx]),
+        ]}
       >
         {children}
       </Box>

@@ -23,7 +23,7 @@ const CoordinateSystemFields = ({
   onOriginChanged,
   onTypeChanged,
 }) => (
-  <Box display='flex' flexDirection='row'>
+  <Box sx={{ display: 'flex', flexDirection: 'row' }}>
     <FormControl style={{ minWidth: 90 }} variant='filled'>
       <InputLabel htmlFor='coordinate-system-type'>Type</InputLabel>
       <Select
@@ -36,7 +36,7 @@ const CoordinateSystemFields = ({
         <MenuItem value='nwu'>NWU</MenuItem>
       </Select>
     </FormControl>
-    <Box p={1} />
+    <Box sx={{ p: 1 }} />
     <CoordinateField
       fullWidth
       label={originLabel}
@@ -44,7 +44,7 @@ const CoordinateSystemFields = ({
       variant='filled'
       onChange={onOriginChanged}
     />
-    <Box p={1} />
+    <Box sx={{ p: 1 }} />
     <RotationField
       style={{ minWidth: 160 }}
       label={orientationLabel}

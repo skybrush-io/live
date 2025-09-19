@@ -41,10 +41,12 @@ class GeoJSONLayerSettingsPresentation extends React.Component {
     return (
       <Box>
         <Box
-          display='flex'
-          flexDirection='row'
-          alignItems='center'
-          justifyContent='space-between'
+          sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          }}
         >
           <Box>
             <span>Stroke color: </span>
@@ -72,8 +74,7 @@ class GeoJSONLayerSettingsPresentation extends React.Component {
             onChange={this._handleStrokeWidthChange}
           />
         </Box>
-
-        <Box pt={2}>
+        <Box sx={{ pt: 2 }}>
           <TextField
             multiline
             fullWidth
@@ -85,8 +86,7 @@ class GeoJSONLayerSettingsPresentation extends React.Component {
             onChange={this._handleDataChange}
           />
         </Box>
-
-        <Box textAlign='center' pt={2}>
+        <Box sx={{ textAlign: 'center', pt: 2 }}>
           <Button
             variant='contained'
             color='primary'

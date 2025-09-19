@@ -58,7 +58,7 @@ const DisplayTabPresentation = ({ t, ...props }) => (
       </FormControl>
     </Box>
 
-    <Box my={2}>
+    <Box sx={{ my: 2 }}>
       {/* TODO(vp): gap should be used on the parent component instead... */}
       <ThemeSelector value={props.theme} onChange={props.onFieldChanged} />
     </Box>

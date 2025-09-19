@@ -67,7 +67,7 @@ const ThreeDViewTab = (props) => (
       <Box>
         <FormGroup>
           <Header disablePadding>{t('settings.threeDView.environment')}</Header>
-          <Box display='flex'>
+          <Box sx={{ display: 'flex' }}>
             <FormControl fullWidth variant='filled'>
               <InputLabel id='threed-scenery-label'>
                 {t('settings.threeDView.scenery')}
@@ -85,7 +85,7 @@ const ThreeDViewTab = (props) => (
                 ))}
               </Select>
             </FormControl>
-            <Box px={1} />
+            <Box sx={{ px: 1 }} />
             <FormControl fullWidth variant='filled'>
               <InputLabel id='threed-lighting-label'>
                 {t('settings.threeDView.lighting')}
@@ -103,7 +103,7 @@ const ThreeDViewTab = (props) => (
                 ))}
               </Select>
             </FormControl>
-            <Box px={1} />
+            <Box sx={{ px: 1 }} />
             <FormControl fullWidth variant='filled'>
               <InputLabel id='threed-grid-label'>
                 {t('settings.threeDView.grid')}

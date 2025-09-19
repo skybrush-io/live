@@ -164,12 +164,12 @@ const StartTimeForm = ({
           <DialogContent sx={{ paddingBottom: 0, paddingTop: 2 }}>
             <StartTimeDisplay />
 
-            <Box mt={2}>
+            <Box sx={{ mt: 2 }}>
               <Header>{t('startTimeDialog.setTheStartTime')}</Header>
             </Box>
 
             <FormGroup row sx={{ gap: 1 }}>
-              <Box alignContent='center' minWidth={180}>
+              <Box sx={{ alignContent: 'center', minWidth: '180px' }}>
                 <Select
                   labelId='reference-clock-label'
                   name='clock'
@@ -197,27 +197,27 @@ const StartTimeForm = ({
                    * because in most cases the date should default to the current
                    * day, but the time needs to be adjusted by the user */}
 
-                  <Box alignContent='center' flex={1}>
+                  <Box sx={{ alignContent: 'center', flex: 1 }}>
                     <DatePicker
                       disablePast
-                      inputFormat='yyyy-MM-dd'
-                      TextFieldProps={{ variant: 'filled' }}
+                      format='yyyy-MM-dd'
                       label={t('startTimeDialog.startDate')}
                       name='utcDate'
+                      textFieldProps={{ variant: 'filled' }}
                     />
                   </Box>
-                  <Box alignContent='center' flex={1}>
+                  <Box sx={{ alignContent: 'center', flex: 1 }}>
                     <TimePicker
                       ampm={false}
-                      inputFormat='HH:mm:ss'
-                      TextFieldProps={{ variant: 'filled' }}
+                      format='HH:mm:ss'
                       label={t('startTimeDialog.startTime')}
                       name='utcTime'
+                      textFieldProps={{ variant: 'filled' }}
                     />
                   </Box>
                 </>
               ) : (
-                <Box alignContent='center' flex={1}>
+                <Box sx={{ alignContent: 'center', flex: 1 }}>
                   <HMSDurationField
                     label={t('startTimeDialog.startTimeHms')}
                     size='small'
@@ -238,7 +238,7 @@ const StartTimeForm = ({
               />
             )}
 
-            <Box mt={2}>
+            <Box sx={{ mt: 2 }}>
               <Header>
                 {invalid ? 'invalid' : t('startTimeDialog.additionalSettings')}
               </Header>

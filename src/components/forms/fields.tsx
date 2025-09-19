@@ -36,6 +36,34 @@ import { isCoordinate2D, type Coordinate2D } from '~/utils/math';
 import { parseDurationHMS } from '~/utils/parsing';
 import { between, finite, join, required } from '~/utils/validation';
 
+/* ************************************************************************* */
+
+const textFieldSlotPropsWithHTMLInputProps = (
+  props: RFFTextFieldProps['slotProps'],
+  htmlInputProps: React.InputHTMLAttributes<HTMLInputElement>
+) => {
+  props = props ?? {};
+  props.htmlInput = {
+    ...(htmlInputProps ?? {}),
+    ...(props.htmlInput ?? {}),
+  };
+  return props;
+};
+
+const textFieldSlotPropsWithUnitAdornment = (
+  props: RFFTextFieldProps['slotProps'],
+  unit: React.ReactNode
+) => {
+  props = props ?? {};
+  props.input = {
+    endAdornment: <InputAdornment position='end'>{unit}</InputAdornment>,
+    ...(props.input ?? {}),
+  };
+  return props;
+};
+
+/* ************************************************************************* */
+
 type SelectProps = RFFSelectProps &
   Readonly<{
     margin: 'normal' | 'dense';
@@ -83,7 +111,7 @@ export const Switch = ({ input, meta, ...rest }: SwitchProps): JSX.Element => {
     <MaterialUISwitch
       {...rest}
       name={name}
-      inputProps={restInput}
+      slotProps={{ input: restInput }}
       checked={checked}
       onChange={onChange}
     />
@@ -128,24 +156,26 @@ const PasswordFieldFormBinding = ({
       }
       error={showError}
       value={value}
-      inputProps={{
-        autoComplete: 'current-password',
-        ...restInput,
-        type: passwordIsMasked ? 'password' : 'text',
-      }}
-      InputProps={{
-        endAdornment: (
-          <InputAdornment position='end'>
-            <IconButton
-              aria-label='toggle password visibility'
-              size='large'
-              onClick={togglePasswordMask}
-              onMouseDown={preventDefault}
-            >
-              {passwordIsMasked ? <Visibility /> : <VisibilityOff />}
-            </IconButton>
-          </InputAdornment>
-        ),
+      slotProps={{
+        htmlInput: {
+          autoComplete: 'current-password',
+          ...restInput,
+          type: passwordIsMasked ? 'password' : 'text',
+        },
+        input: {
+          endAdornment: (
+            <InputAdornment position='end'>
+              <IconButton
+                aria-label='toggle password visibility'
+                size='large'
+                onClick={togglePasswordMask}
+                onMouseDown={preventDefault}
+              >
+                {passwordIsMasked ? <Visibility /> : <VisibilityOff />}
+              </IconButton>
+            </InputAdornment>
+          ),
+        },
       }}
       onChange={onChange}
     />
@@ -168,15 +198,12 @@ type AngleFieldProps = RFFTextFieldProps;
  * angles in degrees.
  */
 export const AngleField = ({
-  InputProps,
+  slotProps,
   ...rest
 }: AngleFieldProps): JSX.Element => (
   <TextField
     type='number'
-    InputProps={{
-      endAdornment: <InputAdornment position='end'>°</InputAdornment>,
-      ...InputProps,
-    }}
+    slotProps={textFieldSlotPropsWithUnitAdornment(slotProps, '°')}
     {...rest}
   />
 );
@@ -189,11 +216,10 @@ export const AngleField = ({
  */
 export const HeadingField = ({
   fieldProps,
-  inputProps,
+  slotProps,
   ...rest
 }: AngleFieldProps): JSX.Element => (
   <AngleField
-    inputProps={{ step: 0.1, ...inputProps }}
     fieldProps={{
       format: normalizeAngle,
       formatOnBlur: true,
@@ -203,6 +229,7 @@ export const HeadingField = ({
       validate: join([required, finite]),
       ...fieldProps,
     }}
+    slotProps={textFieldSlotPropsWithHTMLInputProps(slotProps, { step: 0.1 })}
     {...rest}
   />
 );
@@ -216,15 +243,15 @@ export const HeadingField = ({
 
 export const LatitudeField = ({
   fieldProps,
-  inputProps,
+  slotProps,
   ...rest
 }: AngleFieldProps): JSX.Element => (
   <AngleField
-    inputProps={{ step: 0.001, ...inputProps }}
     fieldProps={{
       validate: join([required, finite, between(-90, 90)]),
       ...fieldProps,
     }}
+    slotProps={textFieldSlotPropsWithHTMLInputProps(slotProps, { step: 0.001 })}
     {...rest}
   />
 );
@@ -238,15 +265,15 @@ export const LatitudeField = ({
 
 export const LongitudeField = ({
   fieldProps,
-  inputProps,
+  slotProps,
   ...rest
 }: AngleFieldProps): JSX.Element => (
   <AngleField
-    inputProps={{ step: 0.001, ...inputProps }}
     fieldProps={{
       validate: join([required, finite, between(-180, 180)]),
       ...fieldProps,
     }}
+    slotProps={textFieldSlotPropsWithHTMLInputProps(slotProps, { step: 0.001 })}
     {...rest}
   />
 );
@@ -309,8 +336,7 @@ type DistanceFieldProps = Readonly<{
  * distances.
  */
 export const DistanceField = ({
-  InputProps,
-  inputProps,
+  slotProps,
   max,
   min = 0,
   step,
@@ -319,11 +345,10 @@ export const DistanceField = ({
 }: DistanceFieldProps): JSX.Element => (
   <TextField
     type='number'
-    inputProps={{ max, min, step, ...inputProps }}
-    InputProps={{
-      endAdornment: <InputAdornment position='end'>{unit}</InputAdornment>,
-      ...InputProps,
-    }}
+    slotProps={textFieldSlotPropsWithUnitAdornment(
+      textFieldSlotPropsWithHTMLInputProps(slotProps, { max, min, step }),
+      unit
+    )}
     {...rest}
   />
 );
@@ -342,8 +367,7 @@ type DurationFieldProps = Readonly<{
  * durations in seconds.
  */
 export const DurationField = ({
-  InputProps,
-  inputProps,
+  slotProps,
   max,
   min = 0,
   step,
@@ -351,11 +375,10 @@ export const DurationField = ({
 }: DurationFieldProps): JSX.Element => (
   <TextField
     type='number'
-    inputProps={{ max, min, step, ...inputProps }}
-    InputProps={{
-      endAdornment: <InputAdornment position='end'>s</InputAdornment>,
-      ...InputProps,
-    }}
+    slotProps={textFieldSlotPropsWithUnitAdornment(
+      textFieldSlotPropsWithHTMLInputProps(slotProps, { max, min, step }),
+      's'
+    )}
     {...rest}
   />
 );
@@ -440,7 +463,7 @@ const createNumericField = ({
 }: CreateNumericFieldOptions = {}): ((
   props: NumericFieldProps
 ) => JSX.Element) => {
-  const InputProps = unit
+  const inputProps = unit
     ? {
         endAdornment: <InputAdornment position='end'>{unit}</InputAdornment>,
       }
@@ -541,12 +564,14 @@ const createNumericField = ({
 
     return (
       <MaterialUITextField
-        InputProps={InputProps}
-        inputProps={{
-          size,
-          type: 'text',
-          inputMode: 'decimal',
-          pattern: '[\\-0-9+.,]*',
+        slotProps={{
+          input: inputProps,
+          htmlInput: {
+            size,
+            type: 'text',
+            inputMode: 'decimal',
+            pattern: '[\\-0-9+.,]*',
+          },
         }}
         variant='filled'
         value={displayedValue}

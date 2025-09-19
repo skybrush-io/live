@@ -106,7 +106,7 @@ const MissionPlannerMainPanel = ({
             )}
           </DialogHeaderListItem>
         </List>
-        <Box px={2} position='relative' flex={1} overflow='auto'>
+        <Box sx={{ px: 2, position: 'relative', flex: 1, overflow: 'auto' }}>
           <MissionParameterEditor
             getSchema={missionPlannerInfoCache.getSchema}
             parameters={parameters}

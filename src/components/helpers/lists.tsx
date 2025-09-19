@@ -120,8 +120,8 @@ const createBackgroundHint = (
  * @return {React.Component}  the constructed React component
  */
 export function listOf<T extends ItemWithId, P>(
-  itemRenderer: ItemRenderer<T, P>,
-  options: ListOfOptions<T, P> = {}
+  itemRenderer: ItemRenderer<T, PropsWithoutRef<P>>,
+  options: ListOfOptions<T, PropsWithoutRef<P>> = {}
 ): React.ForwardRefExoticComponent<
   PropsWithoutRef<P> & RefAttributes<unknown>
 > {
@@ -135,7 +135,7 @@ export function listOf<T extends ItemWithId, P>(
   itemRenderer = validateItemRenderer(itemRenderer);
 
   // A separate variable is needed here to make ESLint happy
-  const ListView = React.forwardRef((props: P, ref) => {
+  const ListView = React.forwardRef<unknown, P>((props, ref) => {
     const items = dataProvider(props);
     const children = postprocess(
       items.map((item) => itemRenderer(item, props)),
@@ -348,8 +348,8 @@ export function selectableListOf<
   T extends ItemWithId,
   P extends SelectableListProps<T>,
 >(
-  itemRenderer: ItemRenderer<T, P>,
-  options: Partial<ValidatedListOfOptions<T, P>> = {}
+  itemRenderer: ItemRenderer<T, PropsWithoutRef<P>>,
+  options: Partial<ValidatedListOfOptions<T, PropsWithoutRef<P>>> = {}
 ): React.ForwardRefExoticComponent<
   PropsWithoutRef<P> & React.RefAttributes<unknown>
 > {
@@ -363,7 +363,7 @@ export function selectableListOf<
   itemRenderer = validateItemRenderer(itemRenderer);
 
   // A separate variable is needed here to make ESLint happy
-  const SelectableListView = React.forwardRef((props: P, ref) => {
+  const SelectableListView = React.forwardRef<unknown, P>((props, ref) => {
     const items = dataProvider(props);
     const children = postprocess(
       items.map((item) =>
@@ -461,7 +461,7 @@ export function multiSelectableListOf<
   P extends MultiSelectableListProps,
 >(
   itemRenderer: ItemRenderer<T, P>,
-  options: Partial<ValidatedListOfOptions<T, P>> = {}
+  options: Partial<ValidatedListOfOptions<T, React.PropsWithoutRef<P>>> = {}
 ): React.ForwardRefExoticComponent<
   PropsWithoutRef<P> & React.RefAttributes<unknown>
 > {
@@ -475,7 +475,7 @@ export function multiSelectableListOf<
   itemRenderer = validateItemRenderer(itemRenderer);
 
   // A separate variable is needed here to make ESLint happy
-  const MultiSelectableListView = React.forwardRef((props: P, ref) => {
+  const MultiSelectableListView = React.forwardRef<unknown, P>((props, ref) => {
     const items = dataProvider(props);
     const onItemSelected = createSelectionHandlerFactory({
       activateItem: props.onActivate,
@@ -490,7 +490,7 @@ export function multiSelectableListOf<
             ...props,
             onChange: undefined,
             onItemSelected: onItemSelected(item.id),
-          },
+          } as P,
           includes(props.value, item.id)
         )
       ),

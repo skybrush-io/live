@@ -110,11 +110,9 @@ const ParameterListSidebar = ({
             }}
           >
             <ListItemButton onClick={() => onRemoveItem(name)}>
-              <Box display='flex' flexDirection='row' flexGrow={1}>
-                <Box flexGrow={1}>{name}</Box>
-                <Box color='text.secondary' ml={1}>
-                  {value}
-                </Box>
+              <Box sx={{ display: 'flex', flexDirection: 'row', flexGrow: 1 }}>
+                <Box sx={{ flexGrow: 1 }}>{name}</Box>
+                <Box sx={{ color: 'text.secondary', ml: 1 }}>{value}</Box>
               </Box>
             </ListItemButton>
           </animated.div>

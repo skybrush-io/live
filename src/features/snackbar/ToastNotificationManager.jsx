@@ -53,10 +53,12 @@ const createContentNode = ({ buttons, message, header }, dispatch) => {
 
     result = (
       <Box
-        display='flex'
-        flexDirection='row'
-        justifyContent='space-between'
-        alignItems='center'
+        sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}
       >
         {result}
         {buttonComponents}

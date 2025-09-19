@@ -18,7 +18,7 @@ const FormSubmissionButtonRowPresentation = ({
   onSubmit,
   t,
 }) => (
-  <Box display='flex' flexDirection='row'>
+  <Box sx={{ display: 'flex', flexDirection: 'row' }}>
     <LabeledStatusLight status={dirty ? 'warning' : 'success'}>
       {dirty
         ? `${label || 'Form'} changed; do not forget to save.`

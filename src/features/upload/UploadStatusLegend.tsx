@@ -32,7 +32,7 @@ const UploadStatusLegend = ({
   t,
   waiting,
 }: UploadStatusLegendProps): JSX.Element => (
-  <Box display='flex' justifyContent='space-around'>
+  <Box sx={{ display: 'flex', justifyContent: 'space-around' }}>
     <UploadStatusLegendButton
       counter={waiting}
       label={t('general.status.waiting')}

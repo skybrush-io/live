@@ -106,9 +106,9 @@ const ParameterUploadMainPanel = () => {
   };
 
   return (
-    <Box pt={1}>
+    <Box sx={{ pt: 1 }}>
       <ParametersTextField onChange={handleManifestChange} />
-      <Box pt={1}>
+      <Box sx={{ pt: 1 }}>
         <Typography variant='body1'>
           <Trans
             i18nKey='parameterUploadMainPanel.parameterUploadHint'
@@ -116,7 +116,7 @@ const ParameterUploadMainPanel = () => {
           />
         </Typography>
       </Box>
-      <Box pt={1}>
+      <Box sx={{ pt: 1 }}>
         <FormControlLabel
           style={{ margin: '0' }}
           control={

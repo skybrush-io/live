@@ -58,7 +58,7 @@ const BatteryIndicator = ({
   const rootClass = clsx(className, classes.root, classes[`battery${status}`]);
 
   return (
-    <Box fontSize='small' className={rootClass}>
+    <Box className={rootClass} sx={{ fontSize: 'small' }}>
       {batteryIcon}
       {label}
     </Box>

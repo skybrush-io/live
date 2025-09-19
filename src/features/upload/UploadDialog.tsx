@@ -85,7 +85,7 @@ const UploadDialog = ({
           onStartUpload={canStartUpload ? onStartUpload : undefined}
         />
       ) : (
-        <Box height={240}>
+        <Box sx={{ height: '240px' }}>
           <AnotherJobTypeRunningHint type={runningJobType} />
         </Box>
       )}

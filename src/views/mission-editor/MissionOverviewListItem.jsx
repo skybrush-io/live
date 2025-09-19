@@ -222,7 +222,7 @@ const MissionOverviewListItem = ({
   }
 
   return (
-    <Box position='relative'>
+    <Box sx={{ position: 'relative' }}>
       <div
         style={{
           position: 'absolute',

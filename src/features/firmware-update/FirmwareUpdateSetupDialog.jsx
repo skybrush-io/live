@@ -110,7 +110,7 @@ const FirmwareUpdateSetupDialog = ({ onClose, onNext, open }) => {
           </Collapse>
           <Collapse in={target !== undefined}>
             <FileButton style={{ width: '100%' }} onSelected={setFile}>
-              <Box textAlign='center'>
+              <Box sx={{ textAlign: 'center' }}>
                 <SaveAlt style={{ fontSize: 128 }} />
                 <br />
                 {file === undefined
@@ -125,7 +125,7 @@ const FirmwareUpdateSetupDialog = ({ onClose, onNext, open }) => {
             <Button startIcon={<NavigateBefore />} onClick={onBack}>
               Back
             </Button>
-            <Box flex={1} />
+            <Box sx={{ flex: 1 }} />
             <Button
               disabled={file === undefined}
               endIcon={<NavigateNext />}

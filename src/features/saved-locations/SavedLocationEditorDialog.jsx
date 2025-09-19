@@ -63,7 +63,7 @@ const SavedLocationEditorFormPresentation = React.forwardRef(
                   label={t('savedLocationEditor.name')}
                   fieldProps={{ validate: required }}
                 />
-                <Box display='flex' flexDirection='row' gap={1}>
+                <Box sx={{ display: 'flex', flexDirection: 'row', gap: 1 }}>
                   <LatitudeField
                     fullWidth
                     size='small'
@@ -77,7 +77,7 @@ const SavedLocationEditorFormPresentation = React.forwardRef(
                     label={t('general.geography.longitude')}
                   />
                 </Box>
-                <Box display='flex' flexDirection='row' gap={1}>
+                <Box sx={{ display: 'flex', flexDirection: 'row', gap: 1 }}>
                   <HeadingField
                     fullWidth
                     size='small'
@@ -93,7 +93,12 @@ const SavedLocationEditorFormPresentation = React.forwardRef(
                     fieldProps={{
                       validate: join([required, integer, between(1, 30)]),
                     }}
-                    inputProps={{ min: 1, max: 30 }}
+                    slotProps={{
+                      htmlInput: {
+                        min: 1,
+                        max: 30,
+                      },
+                    }}
                   />
                 </Box>
                 <TextField

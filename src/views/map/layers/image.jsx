@@ -12,11 +12,11 @@ import { usePrevious } from 'react-use';
 
 import FileButton from '~/components/FileButton';
 import {
-    HeadingField,
-    LatitudeField,
-    LongitudeField,
-    TextField,
-    forceFormSubmission,
+  HeadingField,
+  LatitudeField,
+  LongitudeField,
+  TextField,
+  forceFormSubmission,
 } from '~/components/forms';
 import { setLayerParametersById } from '~/features/map/layers';
 import { getMapViewCenterPosition } from '~/selectors/map';
@@ -89,7 +89,7 @@ const ImageLayerSettingsPresentation = ({
             component={AutoSaveOnBlur}
             save={_forceFormSubmission}
           />
-          <Box display='flex' flexDirection='row'>
+          <Box sx={{ display: 'flex', flexDirection: 'row' }}>
             {parameters.image.name ? (
               <img
                 src={parameters.image.data}
@@ -102,14 +102,14 @@ const ImageLayerSettingsPresentation = ({
               />
             ) : (
               <Skeleton
-                variant="rectangular"
+                variant='rectangular'
                 width='100%'
                 height='10em'
                 onClick={handleClick}
               />
             )}
-            <Box p={0.75} />
-            <Box textAlign='center' margin='auto' width='100%'>
+            <Box sx={{ p: 0.75 }} />
+            <Box sx={{ textAlign: 'center', margin: 'auto', width: '100%' }}>
               <FileButton
                 ref={inputRef}
                 filter={['image/*']}
@@ -119,7 +119,7 @@ const ImageLayerSettingsPresentation = ({
               >
                 Select
               </FileButton>
-              <Box p={0.75} />
+              <Box sx={{ p: 0.75 }} />
               {parameters.image.name ? (
                 <>
                   <span>{parameters.image.name}</span>
@@ -134,14 +134,14 @@ const ImageLayerSettingsPresentation = ({
               )}
             </Box>
           </Box>
-          <Box display='flex' flexDirection='row'>
+          <Box sx={{ display: 'flex', flexDirection: 'row' }}>
             <LatitudeField
               fullWidth
               size='small'
               name='position.lat'
               label='Latitude of center'
             />
-            <Box p={0.75} />
+            <Box sx={{ p: 0.75 }} />
             <LongitudeField
               fullWidth
               size='small'
@@ -149,18 +149,22 @@ const ImageLayerSettingsPresentation = ({
               label='Longitude of center'
             />
           </Box>
-          <Box display='flex' flexDirection='row'>
+          <Box sx={{ display: 'flex', flexDirection: 'row' }}>
             <HeadingField fullWidth size='small' name='angle' label='Angle' />
-            <Box p={0.75} />
+            <Box sx={{ p: 0.75 }} />
             <TextField
               fullWidth
               type='number'
-              inputProps={{ step: 0.1 }}
               fieldProps={{ validate: join([required, finite, positive]) }}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position='end'>cm/px</InputAdornment>
-                ),
+              slotProps={{
+                htmlInput: {
+                  step: 0.1,
+                },
+                input: {
+                  endAdornment: (
+                    <InputAdornment position='end'>cm/px</InputAdornment>
+                  ),
+                },
               }}
               size='small'
               name='scale'

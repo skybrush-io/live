@@ -9,7 +9,7 @@ import UAVDetailsPanelHeader from './UAVDetailsPanelHeader';
  * specific drone and its devices.
  */
 const UAVDetailsPanel = () => (
-  <Box display='flex' flexDirection='column' height='100%'>
+  <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
     <UAVDetailsPanelHeader />
     <UAVDetailsPanelBody />
   </Box>

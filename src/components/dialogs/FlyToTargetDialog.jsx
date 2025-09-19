@@ -61,11 +61,11 @@ const FlyToTargetForm = ({
             label='Target coordinate'
             formatter={coordinateFormatter}
           />
-          <Box display='flex' flexDirection='row'>
-            <Box flex={1}>
+          <Box sx={{ display: 'flex', flexDirection: 'row' }}>
+            <Box sx={{ flex: 1 }}>
               <DistanceField name='altitude' label='Altitude' margin='normal' />
             </Box>
-            <Box flex={2}>
+            <Box sx={{ flex: 2 }}>
               <Select name='mode' label='Alt mode' margin='normal'>
                 <MenuItem value='relative'>above current altitude</MenuItem>
                 <MenuItem value='amsl'>above mean sea level</MenuItem>

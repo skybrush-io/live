@@ -63,7 +63,7 @@ const AuthenticationForm = ({
   const classes = useStyles();
 
   return (
-    <Box pt={4}>
+    <Box sx={{ pt: 4 }}>
       <Form initialValues={initialValues} onSubmit={onSubmit}>
         {({ handleSubmit }) => (
           <form className={classes.root} onSubmit={handleSubmit}>

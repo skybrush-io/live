@@ -91,10 +91,15 @@ const LCDText = ({
 
   return (
     <Box
-      position='relative'
-      display='inline-block'
-      fontFamily={variants[variant].fontFamily}
       {...rest}
+      sx={[
+        {
+          position: 'relative',
+          display: 'inline-block',
+          fontFamily: variants[variant].fontFamily,
+        },
+        ...(Array.isArray(rest.sx) ? rest.sx : [rest.sx]),
+      ]}
     >
       {offSegments && variant !== 'default' && (
         <div style={offSegmentStyle}>

@@ -15,8 +15,10 @@ const StartTimeSuggestionsBox = ({
   label,
   ...rest
 }: StartTimeSuggestionsBoxProps): JSX.Element => (
-  <Box mt={1} flexDirection='row' display='flex' alignItems='center'>
-    <Box mr={2}>
+  <Box
+    sx={{ mt: 1, flexDirection: 'row', display: 'flex', alignItems: 'center' }}
+  >
+    <Box sx={{ mr: 2 }}>
       <Typography variant='body2' color='textSecondary'>
         {label}
       </Typography>

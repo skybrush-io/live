@@ -136,10 +136,12 @@ const LCDClockDisplay = ({
   return (
     <Box className={clsx(classes.root)} style={finalStyle} {...rest}>
       <Box
-        display='flex'
-        flexDirection='row'
-        alignItems='center'
-        justifyContent='center'
+        sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
       >
         {onAdd && (
           <Box className={clsx(classes.button)} onClick={onAdd}>
@@ -151,14 +153,14 @@ const LCDClockDisplay = ({
             <LCDText {...lcdStyle}>X</LCDText>
           </Box>
         )}
-        <Box flex={1} />
+        <Box sx={{ flex: 1 }} />
         <ClockSelector
           clocks={clocks}
           lcdStyle={lcdStyle}
           selectedClockId={selectedClockId}
           onClick={onClockSelected}
         />
-        <Box flex={1} />
+        <Box sx={{ flex: 1 }} />
         <Box className={clsx(classes.button)} onClick={onNextPreset}>
           <LCDText {...lcdStyle}>
             <Lens style={{ fontSize: 12 }} />
@@ -167,11 +169,13 @@ const LCDClockDisplay = ({
       </Box>
       <Box
         ref={ref}
-        flex={1}
-        overflow='hidden'
-        display='flex'
-        alignItems='center'
-        justifyContent='center'
+        sx={{
+          flex: 1,
+          overflow: 'hidden',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
       >
         <LCDClockDisplayLabel
           clockId={selectedClockId}

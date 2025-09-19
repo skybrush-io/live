@@ -10,9 +10,8 @@ const headingFormatter = (_value, _unit, suffix) =>
 const SessionExpiryBox = ({ expiresAt }) =>
   expiresAt ? (
     <Box
-      alignSelf='center'
-      px={1}
       style={{ color: 'white', fontSize: '0.875rem', textAlign: 'right' }}
+      sx={{ alignSelf: 'center', px: 1 }}
     >
       <div style={{ color: 'rgba(255, 255, 255, 0.54)' }}>
         <TimeAgo date={expiresAt} formatter={headingFormatter} />

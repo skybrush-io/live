@@ -51,7 +51,7 @@ const ConnectionStatusMiniListAndButtons = ({
     <MiniListDivider />
     <FormControlLabel
       control={
-        <Box pl={1}>
+        <Box sx={{ pl: 1 }}>
           <Switch
             size='small'
             checked={useSecondaryChannel}

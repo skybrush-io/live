@@ -45,7 +45,7 @@ const ServerTabPresentation = ({
       </ListItemButton>
     </List>
     <FormGroup>
-      <Box mt={1}>
+      <Box sx={{ mt: 1 }}>
         <TextField
           fullWidth
           id='cliArguments'
@@ -59,7 +59,14 @@ const ServerTabPresentation = ({
           onChange={onTextFieldChanged}
         />
       </Box>
-      <Box mt={1} display='flex' flexDirection='row' alignItems='baseline'>
+      <Box
+        sx={{
+          mt: 1,
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'baseline',
+        }}
+      >
         <TextField
           fullWidth
           multiline

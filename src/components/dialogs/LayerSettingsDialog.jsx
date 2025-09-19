@@ -54,7 +54,7 @@ const BasicLayerSettingsFormPresentation = ({
   >
     {({ handleSubmit }) => (
       <form id='basicLayerSettings' onSubmit={handleSubmit}>
-        <Box display='flex' alignItems='center' pb={2}>
+        <Box sx={{ display: 'flex', alignItems: 'center', pb: 2 }}>
           <TextField
             name='label'
             variant='filled'
@@ -184,7 +184,12 @@ class LayerSettingsContainerPresentation extends React.Component {
     // in-place by React, which could cause dirty values to stay in
     // the form fields even if the layer selection changes
     return (
-      <Box key={'settings_' + layerId} pt={2}>
+      <Box
+        key={'settings_' + layerId}
+        sx={{
+          pt: 2,
+        }}
+      >
         {layer.type === LayerType.UNTYPED ? null : (
           <BasicLayerSettingsForm layer={layer} layerId={layerId} />
         )}

@@ -11,7 +11,7 @@ import MissionOverviewPanelStatusBar from './MissionOverviewPanelStatusBar';
  * for one or more drones.
  */
 const MissionOverviewPanel = () => (
-  <Box display='flex' flexDirection='column' height='100%'>
+  <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
     <MissionOverviewPanelHeader />
     <MissionOverviewList />
     <MissionOverviewPanelStatusBar />

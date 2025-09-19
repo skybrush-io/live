@@ -90,7 +90,7 @@ const Header = ({ isSidebarOpen, showSidebar, toggleSidebar }) => (
       )}
 
       <PerspectiveBar />
-      <Box pr={0.5} />
+      <Box sx={{ pr: 0.5 }} />
 
       {config.headerComponents
         .flatMap((group) => [

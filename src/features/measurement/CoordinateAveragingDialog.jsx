@@ -17,12 +17,14 @@ const CoordinateAveragingDialog = ({ onClose, open }) => (
   <Dialog fullWidth open={open} maxWidth='sm' onClose={onClose}>
     <CoordinateAveragingDialogToolbar />
     <Box
-      display='flex'
-      flexDirection='row'
-      alignItems='stretch'
-      minHeight={240}
+      sx={{
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'stretch',
+        minHeight: 240,
+      }}
     >
-      <Box flex={1}>
+      <Box sx={{ flex: 1 }}>
         <MeasurementList />
       </Box>
       {/*
@@ -34,7 +36,7 @@ const CoordinateAveragingDialog = ({ onClose, open }) => (
       </Box>
       */}
     </Box>
-    <Box className='bottom-bar' textAlign='center' py={1}>
+    <Box className='bottom-bar' sx={{ textAlign: 'center', py: 1 }}>
       <BearingCalculator />
     </Box>
   </Dialog>

@@ -31,7 +31,17 @@ const SurveySettingsEditor = ({ onClose, onSubmit, ...rest }) => {
   }, []);
 
   return (
-    <Box display='flex' flexDirection='row' alignItems='center' {...rest}>
+    <Box
+      {...rest}
+      sx={[
+        {
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+        },
+        ...(Array.isArray(rest.sx) ? rest.sx : [rest.sx]),
+      ]}
+    >
       <IconButton size='large' onClick={onClose}>
         <ArrowBack />
       </IconButton>
@@ -43,7 +53,7 @@ const SurveySettingsEditor = ({ onClose, onSubmit, ...rest }) => {
         <Form initialValues={settings.value} onSubmit={onSubmit}>
           {({ handleSubmit }) => (
             <>
-              <Box p={0.5} />
+              <Box sx={{ p: 0.5 }} />
               <DistanceField
                 name='accuracy'
                 label='Desired accuracy'
@@ -54,7 +64,7 @@ const SurveySettingsEditor = ({ onClose, onSubmit, ...rest }) => {
                 unit='m'
                 style={{ flex: 1 }}
               />
-              <Box p={1} />
+              <Box sx={{ p: 1 }} />
               <DurationField
                 name='duration'
                 label='Minimum duration'
@@ -64,7 +74,7 @@ const SurveySettingsEditor = ({ onClose, onSubmit, ...rest }) => {
                 size='small'
                 style={{ flex: 1 }}
               />
-              <Box p={0.5} />
+              <Box sx={{ p: 0.5 }} />
               <Button onClick={handleSubmit}>Start survey</Button>
             </>
           )}
