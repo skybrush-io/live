@@ -66,7 +66,6 @@ import settingsReducer from '~/features/settings/slice';
 import showReducer from '~/features/show/slice';
 import sidebarReducer from '~/features/sidebar/slice';
 import threeDReducer from '~/features/three-d/slice';
-import tourReducer from '~/features/tour/slice';
 import uavControlReducer from '~/features/uav-control/slice';
 import logDownloadReducer from '~/features/uavs/log-download';
 import uavReducer from '~/features/uavs/slice';
@@ -143,7 +142,6 @@ const reducer = combineReducers({
   show: showReducer,
   sidebar: sidebarReducer,
   threeD: threeDReducer,
-  tour: tourReducer,
   uavs: uavReducer,
   uavControl: uavControlReducer,
   upload: uploadReducer,

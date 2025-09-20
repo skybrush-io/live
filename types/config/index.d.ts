@@ -43,7 +43,6 @@ declare module 'perspective' {
 
 declare module 'config' {
   import { type Perspective } from 'perspective';
-  import { type ReactourProps } from 'reactour';
 
   import { type Origin, type View } from '~/features/map/types';
   import { type SavedLocation } from '~/features/saved-locations/types';
@@ -326,23 +325,6 @@ declare module 'config' {
       | 'top-left'
       | 'top-center'
       | 'top-right';
-
-    /**
-     * An optional array of steps to guide through the initial user experience on
-     * the first run of the application.
-     *
-     * It is implemented using `elrumordelaluz/reactour`, for the exact API see
-     * the documentation at https://www.npmjs.com/package/reactour
-     *
-     * @example
-     * tour: {
-     *   steps: [
-     *     { selector: '#header', content: 'This is the header.' },
-     *     { selector: '#sidebar', content: 'This is the sidebar.' },
-     *   ],
-     * }
-     */
-    tour: Nullable<ReactourProps>;
 
     urls: {
       /**

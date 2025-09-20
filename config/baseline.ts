@@ -164,7 +164,6 @@ const baseline: Config = {
   },
 
   toastPlacement: 'top-center',
-  tour: null,
 
   urls: {
     help: 'https://doc.collmot.com/public/skybrush-live-doc/latest',
