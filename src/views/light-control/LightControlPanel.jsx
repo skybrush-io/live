@@ -12,7 +12,6 @@ import LightControlMainSwitch from './LightControlMainSwitch';
  */
 const LightControlPanel = () => (
   <Box
-    id='light-control-panel'
     sx={{
       display: 'flex',
       flexDirection: 'column',
