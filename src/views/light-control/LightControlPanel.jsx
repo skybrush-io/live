@@ -12,7 +12,6 @@ import LightControlMainSwitch from './LightControlMainSwitch';
  */
 const LightControlPanel = () => (
   <Box
-    id='tour-light-control'
     sx={{
       display: 'flex',
       flexDirection: 'column',

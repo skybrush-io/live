@@ -14,11 +14,7 @@ const showHelp = () => {
 const HelpButton = () => (
   <Translation>
     {(t) => (
-      <GenericHeaderButton
-        id='tour-help-button'
-        tooltip={t('help')}
-        onClick={showHelp}
-      >
+      <GenericHeaderButton tooltip={t('help')} onClick={showHelp}>
         <Help />
       </GenericHeaderButton>
     )}
