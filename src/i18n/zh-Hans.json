@@ -111,12 +111,14 @@
       "all": "所有",
       "errors": "仅显示错误的",
       "noTelemetry": "仅显示无遥测数据的",
+      "sleeping": "低功耗模式",
       "warningsAndErrors": "警告和错误"
     },
     "shortLabel": {
       "all": "全部",
       "errors": "错误",
       "noTelemetry": "无遥测数据",
+      "sleeping": "低功耗",
       "warningsAndErrors": "警告/错误"
     }
   },
@@ -131,11 +133,15 @@
   "general": {
     "action": {
       "apply": "应用",
+      "approve": "核准",
+      "back": "后退",
       "cancel": "取消",
       "clear": "清除",
+      "click": "点击",
       "close": "关闭",
       "delete": "删除",
       "discard": "丢弃",
+      "drag": "拖",
       "edit": "编辑",
       "export": "导出",
       "import": "导入",
