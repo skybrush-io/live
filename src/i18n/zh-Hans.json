@@ -145,14 +145,17 @@
       "edit": "编辑",
       "export": "导出",
       "import": "导入",
+      "navigate": "导航",
       "open": "打开",
+      "redo": "重做",
       "remove": "移除",
       "reset": "重置",
       "retry": "重试",
       "save": "保存",
       "select": "选择",
       "start": "开始",
-      "stop": "停止"
+      "stop": "停止",
+      "undo": "撤消"
     },
     "commands": {
       "land": "降落",
@@ -177,6 +180,11 @@
       "inProgress": "进行中",
       "successful": "成功",
       "waiting": "等待中"
+    },
+    "time": {
+      "hours_other": "{{count}} 小时",
+      "minutes_other": "{{count}} 分钟",
+      "seconds_other": "{{count}} 秒"
     }
   },
   "geofence": {
@@ -271,6 +279,7 @@
     "clickToEdit": "点击以编辑单个槽位。",
     "dragNodes": "拖动节点以重新排列映射。",
     "exportMapping": "导出映射…",
+    "generateRandomMapping": "随机化映射",
     "importMapping": "导入映射…"
   },
   "mappingSlotEditorToolbar": {
@@ -325,13 +334,18 @@
     "coordinateSystem": "坐标系统",
     "copyMapOriginToShow": "将地图原点复制到展示原点",
     "copyShowOriginToMap": "将展示原点复制到地图原点",
+    "fileToShow": "文件➜显示",
+    "fileToShowTooltip": "需要显示嵌入位置数据的文件",
     "fitCoordinateSysToCurrentDrone": "将坐标系统调整到当前无人机的位置",
+    "mapToShow": "地图 ➜ 显示",
     "setToAverageAMSL": "设置为活跃无人机的平均海拔高度",
     "showCoordinateSystemAppliedToMap": "显示应用于地图的坐标系统。",
+    "showCoordinateSystemUpdatedFromFile": "显示从文件更新的坐标系。",
     "showCoordinateSystemUpdatedFromMap": "显示从地图更新的坐标系统。",
     "showIsControlledBasedOn": "表演的控制基于…",
     "showOrientation": "表演方向",
     "showOrigin": "表演原点",
+    "showToMap": "显示 ➜ 地图",
     "warningText": "自动展示原点和方向计算假设所有无人机都指向展示的 X 轴 <underline>或者</underline> 你已经通过上述设置指定了它们相对于 X 轴的偏移。绝对起飞航向不受支持。"
   },
   "parameterListSidebar": {
@@ -370,12 +384,15 @@
       "fenceAction": "地理围栏行为",
       "fenceActionHelperText": "对这些选项的支持取决于无人机本身；并非所有无人机都支持所有选项。",
       "fenceActionLabel": "地理围栏第一行为",
+      "generateAutomatically": "自动生成",
+      "geofencePolygon": "地理围栏多边形",
       "horizontal": "水平方向",
       "maxAltitude": "最大高度",
       "maxDistance": "最大距离",
       "maxVertexCount": "最大顶点数量",
       "proposedLimits": "当前任务的设定限制",
       "safetyMargins": "安全边界裕度",
+      "simplifyGeometry": "简化几何",
       "simplifyPolygon": "简化多边形",
       "vertexCountReduction": "定点数量简化",
       "vertical": "垂直方向"
@@ -386,7 +403,7 @@
   "safetySettingsTab": {
     "criticalBatteryVoltageHelperText": "电池电压低于 [V] 时触发紧急电池故障保护措施。",
     "criticalBatteryVoltageLabel": "紧急电池电压",
-    "emptyValues": "空值将导致相应的安全值不被覆盖。",
+    "emptyValues": "将字段留空将在上传后保留无人机上的现有设置。",
     "lowBatteryThresholdHelperText": "低电池阈值类型和数值，当电池电量低于此值时触发低电池故障保护措施。",
     "lowBatteryThresholdType": {
       "disabled": "禁用",
@@ -502,8 +519,13 @@
       "fullCharge": "充满",
       "gone": "此后把无人机标记为离线",
       "lowTreshold": "低电压阈值",
+      "maxConcurrency": "最大并发上传数",
+      "maxUploadConcurrency": "最大并发上传数",
+      "minIndoorTakeoffSpacing": "最小起飞间距（室内）",
+      "minOutdoorTakeoffSpacing": "最小起飞间距（室外）",
       "missionSetup": "任务设置",
       "missionSetupDescription": "在多机任务之前使用，用来检查每架无人机是否处于预定的起飞位置并且朝向正确的方向。",
+      "operationSettings": "操作",
       "warn": "警告一段时间（至少）内未出现的无人机"
     }
   },
@@ -511,6 +533,7 @@
     "authorizationReq": "起飞前需要授权",
     "authorizeTheStart": "授权表演开始",
     "authorized": "表演已授权开始",
+    "changedSinceLoaded": "自加载以来显示已更改",
     "chooseStartTime": "选择开始时间",
     "chooseStartTimeNotSet": "未设定",
     "clear": "清除已加载的表演",
@@ -537,7 +560,37 @@
     "selectFile": "在此处选择或拖放表演文件",
     "setupEnvironment": "设置环境",
     "setupGeofence": "设置地理围栏",
-    "setupTakeoffArea": "设置起飞区域",
+    "setupTakeoffArea": "分配无人机表演舞步",
+    "showConfigurator": {
+      "button": "根据场地调整演出",
+      "description": "如果需要，调整起飞网格并显示布局",
+      "interactionHints": {
+        "action": {
+          "boxSelect": "框选",
+          "boxUnselect": "取消选择框",
+          "moveSelection": "移动选择",
+          "pan": "锅",
+          "rotate": "旋转",
+          "rotateSelection": "旋转选择",
+          "select": "选择",
+          "toggleSelect": "切换选择",
+          "zoom": "缩放"
+        },
+        "category": {
+          "manipulation": "操纵",
+          "navigation": "导航",
+          "selection": "选择"
+        }
+      },
+      "noShowData": "显示片段数据缺失",
+      "prerequisites": {
+        "extension": "必须在服务器上启用 Studio 扩展",
+        "loaded": "必须加载演出文件",
+        "origin": "必须包含或手动设置演出原点",
+        "segments": "节目必须用片段标记进行注释",
+        "server": "必须与服务器建立连接"
+      }
+    },
     "startMethod": {
       "AUTO": "表演将自动开始",
       "RC": "使用遥控器上的开关来启动"
@@ -554,6 +607,66 @@
     "uploadShowDataLoading": "正在上传，请稍后…",
     "uploadShowDataStart": "点击此处开始上传"
   },
+  "showConfiguratorDialog": {
+    "action": {
+      "adapt": "适应",
+      "adjustHomePositionsToDronePositions": "将无人机适配起飞"
+    },
+    "adaptParameters": {
+      "form": {
+        "altitude": {
+          "help": "起飞和降落时的垂直运动",
+          "label": "高度"
+        },
+        "horizontalVelocity": {
+          "help": "在起飞和返航阶段",
+          "label": "水平速度"
+        },
+        "minDistance": {
+          "help": "无人机起飞和返航期间",
+          "label": "最小间距"
+        },
+        "takeoffDuration": {
+          "help": "确保演出阶段在设定时间点准时开始（当设定值非零时）",
+          "label": "起飞时间"
+        },
+        "verticalVelocity": {
+          "help": "在起飞和返航阶段",
+          "label": "垂直速度"
+        }
+      },
+      "section": {
+        "parameters": "参数"
+      }
+    },
+    "adaptReview": {
+      "button": {
+        "reviewInViewer": "在Skybrush Viewer中回顾"
+      },
+      "error": {
+        "invalidState": "状态无效，请再试一次。"
+      },
+      "form": {
+        "rth": {
+          "lengthChange": "返航距离变化：",
+          "lengthChangeValue": "{{value}} 秒"
+        },
+        "takeoff": {
+          "lengthChange": "起飞距离变化：",
+          "lengthChangeValue": "{{value}}秒"
+        }
+      },
+      "showAdaptInProgress": "正在调整节目，请稍候。这可能需要一些时间。"
+    },
+    "help": {
+      "config": "此工具可让您独立调整起飞位置和净表演布局。\n选择起飞位置（黄色三角形）、净表演（紫色凸包）或两者（黄色凸包），并根据需要移动或旋转它们。\n完成后，在右侧设置变换参数，然后按“调整”重新计算轨迹，保留原始净表演内容，但要与新的布局保持一致。\n新的表演布局应经过全面验证，并在退出时保存为可用于正式飞行的 .skyc 文件。",
+      "review": "在将更改应用到展会之前，请检查更改。"
+    },
+    "settings": {
+      "dronesVisible": "表演无人机"
+    },
+    "title": "调整演出场地"
+  },
   "sidebar": {
     "missionType": "任务类型：（{{missionType}}）"
   },
@@ -569,6 +682,7 @@
       "flightMode": "飞行模式",
       "gpsFix": "GPS 定位",
       "heading": "航向",
+      "rssi": "信号强度（RSSI）",
       "status": "状态"
     },
     "shortLabel": {
@@ -580,12 +694,15 @@
       "flightMode": "模式",
       "gpsFix": "GPS 定位",
       "heading": "航向",
+      "rssi": "接收信号强度",
       "status": "状态"
     },
     "sortBy": "按...排序"
   },
   "startTimeDialog": {
     "SMPTETimecode": "SMPTE 时间码",
+    "additionalSettings": "其他设置",
+    "authorizeWhenSettingStartTime": "设置开始时间时授权节目开始",
     "errors": {
       "invalidDate": "无效日期",
       "invalidTime": "无效时间",
@@ -593,13 +710,14 @@
       "pastTime": "时间不能为过去的时间"
     },
     "localTime": "本地时间",
+    "localTimeRelative": "固定延迟",
     "reference": "参考",
     "resetForm": "重置表单",
     "setNewStartTime": "设置新的开始时间",
     "setTheStartTime": "设置下面节目的开始时间",
     "startDate": "开始日期",
     "startShowAuto": "自动开始节目",
-    "startShowWithRC": "仅通过遥控器开始节目（更安全）",
+    "startShowWithRC": "仅使用遥控器开关启动表演",
     "startSignal": "启动信号",
     "startTime": "开始时间",
     "startTimeHms": "开始时间（小时:分钟:秒钟）",
@@ -610,7 +728,8 @@
     "startTimeIsSetTo": "开始时间设置为 <strong>{{formattedStartTime}}</strong>"
   },
   "startUploadButton": {
-    "startSelected": "启动所选项"
+    "startSelected": "启动所选项",
+    "tooltip": "通过点击 ID 选择各个目标，以准备部分上传"
   },
   "surveyStatusIndicator": {
     "noSurveyInformation": "没有调查信息"
@@ -641,20 +760,26 @@
   "toolbox": {
     "averagingInProgress": "{{number}} 进行中",
     "coordinateAveraging": "坐标平均",
+    "firmwareUpdate": "固件更新",
     "licenseInfo": "许可证信息",
     "offlineMaps": "离线地图",
     "paramUpload": "参数上传",
     "tooltip": "工具箱",
     "uploadInProgress": "上传进行中"
   },
+  "uploadDialog": {
+    "restrictToGlobalSelection": "仅显示全局选择"
+  },
   "uploadPanel": {
     "cancelUpload": "取消上传",
     "flashLightsWhereFailed": "上传失败的无人机闪灯",
+    "hasHiddenTargets": "一些等待的无人机可能会被过滤掉。",
     "retryFailedAttempts": "自动重试失败的尝试",
     "uploadAttemptFailed": "上传尝试失败。",
     "uploadCancelled": "上传已被用户取消。",
     "uploadFinishedSuccessfully": "上传成功完成。",
     "uploadInProgress": "上传中…",
+    "uploadInProgressWithEstimate": "预计剩余时间：{{time}}",
     "uploadNotFinishedYet": "上传尚未完成。"
   },
   "uploadStatusLegend": {
