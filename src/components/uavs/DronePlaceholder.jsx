@@ -1,7 +1,7 @@
 import Avatar from '@mui/material/Avatar';
 import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
-import * as color from 'color';
+import createColor from 'color';
 import PropTypes from 'prop-types';
 import React from 'react';
 
@@ -46,7 +46,7 @@ const useStyles = makeStyles(
 
     '@keyframes pulse': {
       '0%': {
-        boxShadow: `0 0 8px 2px ${color(Colors.info).alpha(0)}`,
+        boxShadow: `0 0 8px 2px ${createColor(Colors.info).alpha(0)}`,
       },
       '100%': {
         boxShadow: `0 0 8px 2px ${Colors.info}`,
