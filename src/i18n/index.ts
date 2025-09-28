@@ -1,6 +1,6 @@
 import config from 'config';
 
-import i18next, { type TFuncKey, type TOptions, type TFunction } from 'i18next';
+import i18next, { type TOptions, type TFunction } from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
 import { type NestedRecord } from '~/utils/types';
@@ -69,6 +69,6 @@ export type PreparedI18nKey = (t: TFunction) => string;
 // https://www.typescriptlang.org/docs/handbook/utility-types.html#parameterstype
 // "For overloaded functions, this will be the parameters of the last signature;"
 export const tt =
-  (key: TFuncKey, options?: TOptions): PreparedI18nKey =>
+  (key: string, options?: TOptions): PreparedI18nKey =>
   (t: TFunction) =>
     options ? t(key, options) : t(key);
