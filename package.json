@@ -39,7 +39,7 @@
     "@mui/material": "^6.5.0",
     "@mui/styles": "^6.5.0",
     "@mui/x-date-pickers": "^7.29.4",
-    "@react-spring/web": "^9.7.5",
+    "@react-spring/web": "^10.0.3",
     "@reduxjs/toolkit": "^1.9.5",
     "@rjsf/core": "^5.24.13",
     "@rjsf/mui": "^5.24.13",
