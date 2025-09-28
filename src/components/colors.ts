@@ -1,5 +1,5 @@
 import { blue, red, yellow } from '@mui/material/colors';
-import * as createColor from 'color';
+import createColor from 'color';
 import mapValues from 'lodash-es/mapValues';
 
 import { Colors as ColorsBase } from '@skybrush/app-theme-mui';
