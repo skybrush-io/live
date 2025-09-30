@@ -3,7 +3,7 @@ import isNil from 'lodash-es/isNil';
 import orderBy from 'lodash-es/orderBy';
 import sortBy from 'lodash-es/sortBy';
 import { getDistance as haversineDistance } from 'ol/sphere';
-import createCachedSelector from 're-reselect';
+import { createCachedSelector } from 're-reselect';
 
 import { createSelector } from '@reduxjs/toolkit';
 

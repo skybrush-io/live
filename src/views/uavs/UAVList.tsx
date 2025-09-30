@@ -315,7 +315,7 @@ const UAVListPresentation = ({
 
   // Create a callback that can be used to retrun the index of the item showing
   // the given UAV. This is used to focus the list to a specific UAV.
-  const store: Store<RootState> = useStore();
+  const store = useStore<RootState>();
   const getIndexOfUavId = useCallback(
     (uavId: string): number => {
       const items = getDisplayedItems(store.getState());

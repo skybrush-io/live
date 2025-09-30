@@ -9,7 +9,7 @@ import get from 'lodash-es/get';
 import identity from 'lodash-es/identity';
 import isNil from 'lodash-es/isNil';
 import max from 'lodash-es/max';
-import createCachedSelector from 're-reselect';
+import { createCachedSelector } from 're-reselect';
 
 import { CommonClockId } from '~/features/clocks/types';
 import {
