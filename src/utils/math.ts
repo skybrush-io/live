@@ -3,6 +3,7 @@ import min from 'lodash-es/min';
 import minBy from 'lodash-es/minBy';
 import range from 'lodash-es/range';
 
+import type { Point, LineString, Polygon } from 'geojson';
 import * as TurfHelpers from '@turf/helpers';
 import monotoneConvexHull2D from 'monotone-convex-hull-2d';
 import { err, ok, type Result } from 'neverthrow';
@@ -316,10 +317,7 @@ export const convexHull2D = <C extends Coordinate2D | EasNor | LonLat>(
  */
 export function createGeometryFromPoints(
   coordinates: LonLat[]
-): Result<
-  TurfHelpers.Point | TurfHelpers.LineString | TurfHelpers.Polygon,
-  string
-> {
+): Result<Point | LineString | Polygon, string> {
   if (coordinates.length === 0) {
     return err('at least one point is required to create a geometry');
   }

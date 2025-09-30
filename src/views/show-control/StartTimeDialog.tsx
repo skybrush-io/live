@@ -191,7 +191,7 @@ const StartTimeForm = ({
                 </Select>
               </Box>
 
-              {values.clock === LocalClockId.ABSOLUTE ? (
+              {values?.clock === LocalClockId.ABSOLUTE ? (
                 <>
                   {/* we use separate pickers for the date and the time; this is
                    * because in most cases the date should default to the current
@@ -228,8 +228,8 @@ const StartTimeForm = ({
               )}
             </FormGroup>
 
-            {(values.clock === LocalClockId.ABSOLUTE ||
-              values.clock === LocalClockId.RELATIVE) && (
+            {(values?.clock === LocalClockId.ABSOLUTE ||
+              values?.clock === LocalClockId.RELATIVE) && (
               <StartTimeSuggestionsBox
                 label={t('startTimeDialog.suggestions')}
                 onChange={(suggestion) => {

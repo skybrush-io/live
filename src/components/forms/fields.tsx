@@ -185,9 +185,9 @@ const PasswordFieldFormBinding = ({
 /**
  * Password field that can be placed in a `react-final-form` form.
  */
-export const PasswordField = (
-  props: FieldProps<string, FieldRenderProps<string>>
-): JSX.Element => <Field component={PasswordFieldFormBinding} {...props} />;
+export const PasswordField = (props: FieldProps<string>): JSX.Element => (
+  <Field component={PasswordFieldFormBinding} {...props} />
+);
 
 /* ************************************************************************* */
 
@@ -286,7 +286,7 @@ type CoordinateFieldProps = {
 
 const createCoordinateFieldProps = (
   formatter: CoordinateFieldProps['formatter']
-): Partial<FieldProps<string, FieldRenderProps<string>>> => ({
+): Partial<FieldProps<string>> => ({
   formatOnBlur: true,
   format(value: string | Coordinate2D): string {
     const parsedValue = isCoordinate2D(value) ? value : parseCoordinate(value);
@@ -391,7 +391,7 @@ const createHMSDurationFieldProps = ({
 }: {
   min?: number;
   max?: number;
-}): Partial<FieldProps<string, FieldRenderProps<string>>> => ({
+}): Partial<FieldProps<string>> => ({
   formatOnBlur: true,
   format(value: string | number): string {
     const parsedValue =
