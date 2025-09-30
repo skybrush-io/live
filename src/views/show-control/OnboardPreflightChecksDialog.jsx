@@ -109,11 +109,11 @@ const PreflightCheckList = connect(
  * the fleet in general).
  */
 const OnboardPreflightChecksDialog = ({
-  open,
+  open = false,
   onClear,
   onClose,
   onSignOff,
-  signedOff,
+  signedOff = false,
   t,
 }) => {
   return (
@@ -169,11 +169,6 @@ OnboardPreflightChecksDialog.propTypes = {
   open: PropTypes.bool,
   signedOff: PropTypes.bool,
   t: PropTypes.func,
-};
-
-OnboardPreflightChecksDialog.defaultProps = {
-  open: false,
-  signedOff: false,
 };
 
 export default connect(

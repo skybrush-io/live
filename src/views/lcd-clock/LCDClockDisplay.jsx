@@ -94,7 +94,7 @@ const LCDClockDisplay = ({
   onClockSelected,
   onNextPreset,
   onRemove,
-  preset,
+  preset = 0,
   selectedClockId,
   hideInactiveSegmentsOnDarkLCD,
   style,
@@ -204,10 +204,6 @@ LCDClockDisplay.propTypes = {
   selectedClockId: PropTypes.string,
   hideInactiveSegmentsOnDarkLCD: PropTypes.bool,
   style: PropTypes.object,
-};
-
-LCDClockDisplay.defaultProps = {
-  preset: 0,
 };
 
 export default connect(

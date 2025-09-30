@@ -43,7 +43,13 @@ const useStyles = makeStyles(
  * to ensure a uniform visual representation of the message semantics throughout
  * the app.
  */
-const ColoredLight = ({ color, inline, size, style, ...rest }) => {
+const ColoredLight = ({
+  color = '#000000',
+  inline,
+  size = 'normal',
+  style,
+  ...rest
+}) => {
   const classes = useStyles();
 
   return (
@@ -68,11 +74,6 @@ ColoredLight.propTypes = {
   inline: PropTypes.bool,
   size: PropTypes.oneOf(['small', 'normal', 'large']),
   style: PropTypes.object,
-};
-
-ColoredLight.defaultProps = {
-  color: '#000000',
-  size: 'normal',
 };
 
 export default ColoredLight;

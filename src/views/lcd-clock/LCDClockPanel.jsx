@@ -50,8 +50,6 @@ LCDClockPanel.propTypes = {
   removeClockDisplay: PropTypes.func,
 };
 
-LCDClockPanel.defaultProps = {};
-
 export default connect(
   // mapStateToProps
   (state) => ({

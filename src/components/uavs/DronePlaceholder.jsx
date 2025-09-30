@@ -61,7 +61,7 @@ const useStyles = makeStyles(
  * don't want to display a drone avatar but want to show a placeholder
  * instead that is of the same size as the avatar.
  */
-const DronePlaceholder = ({ editing, label, status }) => {
+const DronePlaceholder = ({ editing, label, status = 'off' }) => {
   const classes = useStyles();
   return (
     <div className={classes.root}>
@@ -81,10 +81,6 @@ DronePlaceholder.propTypes = {
   editing: PropTypes.bool,
   label: PropTypes.node,
   status: PropTypes.oneOf(['off', 'editing', 'error', 'success']),
-};
-
-DronePlaceholder.defaultProps = {
-  status: 'off',
 };
 
 export default DronePlaceholder;

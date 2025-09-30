@@ -17,7 +17,7 @@ const DronePlaceholderList = ({
   actions,
   emptyMessage,
   items = [],
-  maxCount,
+  maxCount = 8,
   preferEmptyMessage,
   successMessage,
   title,
@@ -110,10 +110,6 @@ DronePlaceholderList.propTypes = {
   preferEmptyMessage: PropTypes.bool,
   successMessage: PropTypes.node,
   title: PropTypes.string,
-};
-
-DronePlaceholderList.defaultProps = {
-  maxCount: 8,
 };
 
 export default DronePlaceholderList;

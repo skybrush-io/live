@@ -76,8 +76,6 @@ TakeoffAreaButton.propTypes = {
   status: PropTypes.oneOf(Object.values(Status)),
 };
 
-TakeoffAreaButton.defaultProps = {};
-
 export default connect(
   // mapStateToProps
   (state) => ({

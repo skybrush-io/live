@@ -32,11 +32,11 @@ const offSegmentStyleBase = {
 const LCDText = ({
   children,
   color,
-  decoration,
+  decoration = 'plain',
   height,
   off,
   offSegments,
-  variant,
+  variant = 'default',
   ...rest
 }) => {
   const textStyle = useMemo(() => {
@@ -119,11 +119,6 @@ LCDText.propTypes = {
   off: PropTypes.bool,
   offSegments: PropTypes.bool,
   variant: PropTypes.oneOf(['default', '7segment', '14segment']),
-};
-
-LCDText.defaultProps = {
-  decoration: 'plain',
-  variant: 'default',
 };
 
 export default LCDText;

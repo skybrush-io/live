@@ -24,9 +24,4 @@ Widget.propTypes = {
   style: PropTypes.object,
 };
 
-Widget.defaultProps = {
-  children: [],
-  style: {},
-};
-
 export default Widget;

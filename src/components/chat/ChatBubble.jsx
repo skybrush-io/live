@@ -97,11 +97,11 @@ const useStyles = makeStyles(
  * session.
  */
 const ChatBubble = ({
-  author,
-  body,
+  author = 'Anonymous',
+  body = '',
   date,
   leftComponent,
-  own,
+  own = true,
   raw,
   rightComponent,
   severity,
@@ -159,12 +159,6 @@ ChatBubble.propTypes = {
   ]),
   severity: CustomPropTypes.severity,
   showMeta: PropTypes.bool,
-};
-
-ChatBubble.defaultProps = {
-  author: 'Anonymous',
-  body: '',
-  own: true,
 };
 
 export default ChatBubble;

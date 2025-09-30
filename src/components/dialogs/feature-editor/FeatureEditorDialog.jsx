@@ -39,7 +39,7 @@ const FeatureEditorDialogPresentation = (props) => {
     onRemoveFeature,
     onTabSelected,
     open,
-    selectedTab,
+    selectedTab = FeatureEditorDialogTab.GENERAL,
   } = props;
 
   const SelectedTab = {
@@ -100,10 +100,6 @@ FeatureEditorDialogPresentation.propTypes = {
   onTabSelected: PropTypes.func,
   open: PropTypes.bool.isRequired,
   selectedTab: PropTypes.oneOf(Object.values(FeatureEditorDialogTab)),
-};
-
-FeatureEditorDialogPresentation.defaultProps = {
-  selectedTab: FeatureEditorDialogTab.GENERAL,
 };
 
 /**

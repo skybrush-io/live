@@ -16,12 +16,12 @@ import { startLocalServerExecutableSearch } from '~/features/local-server/slice'
 
 const PathScannerPresentation = ({
   error,
-  notFoundMessage,
+  notFoundMessage = 'Server executable not found.',
   onRequestReload,
   result,
   scanning,
-  scanningMessage,
-  successMessage,
+  scanningMessage = 'Please wait…',
+  successMessage = 'Server executable found successfully.',
 }) => (
   <DialogHeaderListItem button onClick={onRequestReload}>
     {scanning
@@ -51,12 +51,6 @@ PathScannerPresentation.propTypes = {
   scanning: PropTypes.bool,
   scanningMessage: PropTypes.string,
   successMessage: PropTypes.string,
-};
-
-PathScannerPresentation.defaultProps = {
-  notFoundMessage: 'Server executable not found.',
-  scanningMessage: 'Please wait…',
-  successMessage: 'Server executable found successfully.',
 };
 
 export default connect(

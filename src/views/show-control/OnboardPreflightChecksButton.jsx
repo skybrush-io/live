@@ -56,8 +56,6 @@ OnboardPreflightChecksButton.propTypes = {
   status: PropTypes.oneOf(Object.values(Status)),
 };
 
-OnboardPreflightChecksButton.defaultProps = {};
-
 export default connect(
   // mapStateToProps
   (state) => ({

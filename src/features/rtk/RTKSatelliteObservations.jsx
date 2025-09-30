@@ -154,7 +154,7 @@ const options = {
   light: createOptions(false),
 };
 
-const RTKSatelliteObservations = ({ height, items }) => {
+const RTKSatelliteObservations = ({ height = 160, items }) => {
   const theme = useTheme();
   const update = useUpdate();
   const chartRef = useRef(null);
@@ -196,10 +196,6 @@ RTKSatelliteObservations.propTypes = {
       lastUpdatedAt: PropTypes.number,
     })
   ),
-};
-
-RTKSatelliteObservations.defaultProps = {
-  height: 160,
 };
 
 export default connect(

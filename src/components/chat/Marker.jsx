@@ -35,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
 /**
  * Stateless React component showing a marker line in a chat session.
  */
-export const Marker = ({ date, level, message }) => {
+export const Marker = ({ date, level = 'info', message = '' }) => {
   const classes = useStyles();
   const className = clsx(
     classes.root,
@@ -57,11 +57,6 @@ Marker.propTypes = {
   level: PropTypes.string,
   message: PropTypes.string,
   date: PropTypes.instanceOf(Date),
-};
-
-Marker.defaultProps = {
-  level: 'info',
-  message: '',
 };
 
 export default Marker;

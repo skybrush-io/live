@@ -26,7 +26,7 @@ const DroneAvatar = connect(
         batteryFormatter,
         reverseMissionMapping,
         statusSummary,
-        { hint, id, label, variant }
+        { hint, id, label, variant = 'full' }
       ) => {
         const props = {
           batteryFormatter,
@@ -52,10 +52,6 @@ const DroneAvatar = connect(
 DroneAvatar.propTypes = {
   id: PropTypes.string,
   variant: PropTypes.oneOf(['full', 'minimal']),
-};
-
-DroneAvatar.defaultProps = {
-  variant: 'full',
 };
 
 export default DroneAvatar;

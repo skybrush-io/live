@@ -93,9 +93,9 @@ const ComplexAvatar = ({
   label,
   progress,
   secondaryStatus,
-  status,
+  status = 'off',
   text,
-  textSemantics,
+  textSemantics = 'info',
 }) => {
   const classes = useStyles();
 
@@ -189,11 +189,6 @@ ComplexAvatar.propTypes = {
     'error',
     'critical',
   ]),
-};
-
-ComplexAvatar.defaultProps = {
-  status: 'off',
-  textSemantics: 'info',
 };
 
 export default ComplexAvatar;

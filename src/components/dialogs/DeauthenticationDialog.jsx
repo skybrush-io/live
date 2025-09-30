@@ -29,7 +29,7 @@ import { clearAuthenticationToken } from '~/features/servers/slice';
 const DeauthenticationDialogPresentation = ({
   onCancel,
   onDisconnect,
-  open,
+  open = false,
   title,
   user,
 }) => (
@@ -66,10 +66,6 @@ DeauthenticationDialogPresentation.propTypes = {
   open: PropTypes.bool,
   title: PropTypes.string.isRequired,
   user: PropTypes.string,
-};
-
-DeauthenticationDialogPresentation.defaultProps = {
-  open: false,
 };
 
 /**

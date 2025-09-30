@@ -13,7 +13,7 @@ const UAVStatusMiniListEntry = ({
   id,
   label,
   onClick,
-  pillWidth,
+  pillWidth = 80,
   status,
   uavIds,
 }) => (
@@ -35,10 +35,6 @@ UAVStatusMiniListEntry.propTypes = {
   pillWidth: PropTypes.number,
   status: PropTypes.oneOf(Object.values(Status)),
   uavIds: PropTypes.arrayOf(PropTypes.string),
-};
-
-UAVStatusMiniListEntry.defaultProps = {
-  pillWidth: 80,
 };
 
 export default UAVStatusMiniListEntry;

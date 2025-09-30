@@ -20,7 +20,11 @@ import { closeLoadShowFromCloudDialog } from '~/features/show/slice';
  * file from a remote data source such as his/her Skybrush Account or a git
  * repository
  */
-const LoadShowFromCloudDialog = ({ open, onClose, onLoadShowFromUrl }) => {
+const LoadShowFromCloudDialog = ({
+  open = false,
+  onClose,
+  onLoadShowFromUrl,
+}) => {
   return (
     <Dialog fullWidth open={open} onClose={onClose}>
       <DialogTabs value='skybrushAccount'>
@@ -44,10 +48,6 @@ LoadShowFromCloudDialog.propTypes = {
   onClose: PropTypes.func,
   onLoadShowFromUrl: PropTypes.func,
   open: PropTypes.bool,
-};
-
-LoadShowFromCloudDialog.defaultProps = {
-  open: false,
 };
 
 export default connect(

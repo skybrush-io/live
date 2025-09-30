@@ -60,8 +60,6 @@ ManualPreflightChecksButton.propTypes = {
   status: PropTypes.oneOf(Object.values(Status)),
 };
 
-ManualPreflightChecksButton.defaultProps = {};
-
 export default connect(
   // mapStateToProps
   (state) => ({

@@ -36,7 +36,10 @@ const coordinateFormatOrder = [
   CoordinateFormat.SIGNED_DEGREES_MINUTES_SECONDS,
 ];
 
-const DisplayTabPresentation = ({ t, ...props }) => (
+// default value for 'language' ensures that updating from a non-localized
+// version does not leave the "Language" dropdown empty
+
+const DisplayTabPresentation = ({ language = 'en', t, ...props }) => (
   <>
     <Box>
       <FormControl fullWidth variant='filled'>
@@ -46,7 +49,7 @@ const DisplayTabPresentation = ({ t, ...props }) => (
         <Select
           labelId='language-selector-label'
           name='language'
-          value={props.language}
+          value={language}
           onChange={props.onFieldChanged}
         >
           {enabledLanguages.map(({ code, label }) => (
@@ -191,11 +194,6 @@ DisplayTabPresentation.propTypes = {
   showScaleLine: PropTypes.bool,
   t: PropTypes.func,
   theme: PropTypes.oneOf(['auto', 'dark', 'light']),
-};
-
-DisplayTabPresentation.defaultProps = {
-  // ensure that updating from a non-localized version does not leave the "Language" dropdown empty
-  language: 'en',
 };
 
 export default connect(

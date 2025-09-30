@@ -70,7 +70,7 @@ const tests = [
 const UAVTestButton = ({
   component,
   label,
-  needsConfirmation,
+  needsConfirmation = false,
   timeout,
   type,
   uavId,
@@ -194,10 +194,6 @@ UAVTestButton.propTypes = {
   uavId: PropTypes.string,
   timeout: PropTypes.number,
   type: PropTypes.oneOf(['calib', 'test']),
-};
-
-UAVTestButton.defaultProps = {
-  needsConfirmation: false,
 };
 
 const UAVTestsPanel = ({ uavId }) => {

@@ -107,11 +107,11 @@ const PreflightCheckList = connect(
  * the fleet in general).
  */
 const ManualPreflightChecksDialog = ({
-  open,
+  open = false,
   onClear,
   onClose,
   onSignOff,
-  signedOff,
+  signedOff = false,
 }) => {
   return (
     <Dialog fullWidth open={open} maxWidth='xs' onClose={onClose}>
@@ -149,11 +149,6 @@ ManualPreflightChecksDialog.propTypes = {
   onSignOff: PropTypes.func,
   open: PropTypes.bool,
   signedOff: PropTypes.bool,
-};
-
-ManualPreflightChecksDialog.defaultProps = {
-  open: false,
-  signedOff: false,
 };
 
 export default connect(

@@ -60,7 +60,7 @@ const defaultTimeout = {
 const FadeAndSlide = React.forwardRef((props, ref) => {
   const {
     children,
-    direction,
+    direction = 'up',
     in: inProp,
     onEnter,
     onExit,
@@ -173,10 +173,6 @@ FadeAndSlide.propTypes = {
     PropTypes.number,
     PropTypes.shape({ enter: PropTypes.number, exit: PropTypes.number }),
   ]),
-};
-
-FadeAndSlide.defaultProps = {
-  direction: 'up',
 };
 
 export default FadeAndSlide;

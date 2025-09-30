@@ -50,7 +50,7 @@ const useStyles = makeStyles(
 );
 
 const RTKSetupDialogBottomPanel = ({
-  chartHeight,
+  chartHeight = 160,
   inset,
   onToggleSurveySettings,
   surveySettingsVisible,
@@ -118,10 +118,6 @@ RTKSetupDialogBottomPanel.propTypes = {
   onToggleSurveySettings: PropTypes.func,
   surveySettingsVisible: PropTypes.bool,
   surveyStatus: PropTypes.object,
-};
-
-RTKSetupDialogBottomPanel.defaultProps = {
-  chartHeight: 160,
 };
 
 export default connect(

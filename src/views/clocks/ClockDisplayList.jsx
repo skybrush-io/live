@@ -39,10 +39,10 @@ const avatars = [
  * Presentation component for showing the state of a single Skybrush clock.
  */
 const ClockDisplayListEntry = ({
-  affectedByClockSkew,
+  affectedByClockSkew = false,
   clock,
-  clockSkew,
-  format,
+  clockSkew = 0,
+  format = 'yyyy-MM-dd HH:mm:ss xx',
 }) => {
   const { running, updateInterval } = clock;
   const avatar = avatars[running ? 1 : 0];
@@ -109,12 +109,6 @@ ClockDisplayListEntry.propTypes = {
 
   /** The format to use for displaying the clock value */
   format: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
-};
-
-ClockDisplayListEntry.defaultProps = {
-  affectedByClockSkew: false,
-  clockSkew: 0,
-  format: 'yyyy-MM-dd HH:mm:ss xx',
 };
 
 /**

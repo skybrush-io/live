@@ -233,9 +233,9 @@ const TakeoffAreaSetupDialogIndicators = connect(
  * all drones are properly placed in their takeoff positions.
  */
 const TakeoffAreaSetupDialog = ({
-  approved,
+  approved = false,
   hasVirtualDrones,
-  open,
+  open = false,
   onAddVirtualDrones,
   onApprove,
   onClose,
@@ -299,11 +299,6 @@ TakeoffAreaSetupDialog.propTypes = {
   onRevoke: PropTypes.func,
   open: PropTypes.bool,
   t: PropTypes.func,
-};
-
-TakeoffAreaSetupDialog.defaultProps = {
-  approved: false,
-  open: false,
 };
 
 // TODO(ntamas): most selectors should return a combination of show and

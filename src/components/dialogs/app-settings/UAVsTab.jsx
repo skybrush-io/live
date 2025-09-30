@@ -82,7 +82,7 @@ const UAVsTabPresentation = ({
   onIntegerFieldUpdated,
   onVoltageFieldUpdated,
   placementAccuracy,
-  preferredBatteryDisplayStyle,
+  preferredBatteryDisplayStyle = BatteryDisplayStyle.VOLTAGE,
   t,
   takeoffHeadingAccuracy,
   uavOperationConfirmationStyle,
@@ -341,10 +341,6 @@ UAVsTabPresentation.propTypes = {
     uavOperationConfirmationStyleOrder
   ),
   warnThreshold: PropTypes.number,
-};
-
-UAVsTabPresentation.defaultProps = {
-  preferredBatteryDisplayStyle: BatteryDisplayStyle.VOLTAGE,
 };
 
 export default connect(

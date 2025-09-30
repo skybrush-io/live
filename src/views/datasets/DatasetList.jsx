@@ -28,8 +28,6 @@ DatasetListEntry.propTypes = {
   id: PropTypes.string.isRequired,
 };
 
-DatasetListEntry.defaultProps = {};
-
 /**
  * Presentation component for showing a list of datasets.
  *

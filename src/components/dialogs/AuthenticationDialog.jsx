@@ -109,7 +109,7 @@ AuthenticationForm.propTypes = {
  *
  * @returns  {Object}  the rendered component
  */
-const AuthenticationDialogPresentation = ({ open, title, ...rest }) => (
+const AuthenticationDialogPresentation = ({ open = false, title, ...rest }) => (
   <DraggableDialog maxWidth='xs' open={open} title={title}>
     <AuthenticationForm {...rest} />
   </DraggableDialog>
@@ -123,10 +123,6 @@ AuthenticationDialogPresentation.propTypes = {
   open: PropTypes.bool,
   optimizeUIForTouch: PropTypes.bool,
   title: PropTypes.string.isRequired,
-};
-
-AuthenticationDialogPresentation.defaultProps = {
-  open: false,
 };
 
 /**

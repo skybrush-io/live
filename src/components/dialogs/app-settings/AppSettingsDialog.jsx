@@ -38,8 +38,8 @@ const tabNameToComponent = {
 const AppSettingsDialogPresentation = ({
   onClose,
   onTabSelected,
-  open,
-  selectedTab,
+  open = false,
+  selectedTab = 'display',
   t,
 }) => (
   <Dialog fullWidth open={open} maxWidth='sm' onClose={onClose}>
@@ -65,11 +65,6 @@ AppSettingsDialogPresentation.propTypes = {
   open: PropTypes.bool,
   selectedTab: PropTypes.string,
   t: PropTypes.func,
-};
-
-AppSettingsDialogPresentation.defaultProps = {
-  open: false,
-  selectedTab: 'auto',
 };
 
 /**

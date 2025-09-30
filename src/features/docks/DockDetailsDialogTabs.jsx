@@ -14,8 +14,13 @@ import {
  * Presentation component for the dialog that allows the user to inspect the
  * details of a specific docking station.
  */
-const DockDetailsDialogTabs = ({ dragHandleId, ...rest }) => (
-  <DialogTabs alignment='left' dragHandle={dragHandleId} {...rest}>
+const DockDetailsDialogTabs = ({ dragHandleId, value = 'status', ...rest }) => (
+  <DialogTabs
+    alignment='left'
+    dragHandle={dragHandleId}
+    value={value}
+    {...rest}
+  >
     <Tab label='Status' value='status' />
     <Tab label='Schedule' value='schedule' />
     <Tab label='Storage' value='storage' />
@@ -26,10 +31,6 @@ const DockDetailsDialogTabs = ({ dragHandleId, ...rest }) => (
 DockDetailsDialogTabs.propTypes = {
   dragHandleId: PropTypes.string,
   value: PropTypes.string,
-};
-
-DockDetailsDialogTabs.defaultProps = {
-  value: 'status',
 };
 
 export default connect(

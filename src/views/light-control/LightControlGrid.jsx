@@ -13,7 +13,7 @@ import {
 } from '~/features/light-control/actions';
 import { getCurrentColorInLightControlPanel } from '~/features/light-control/selectors';
 
-const LightButton = ({ color, label, onClick, ...rest }) => (
+const LightButton = ({ color, label = '\u00A0', onClick, ...rest }) => (
   <ColoredButton
     dense
     color={color}
@@ -28,10 +28,6 @@ LightButton.propTypes = {
   color: PropTypes.string,
   label: PropTypes.string,
   onClick: PropTypes.func,
-};
-
-LightButton.defaultProps = {
-  label: '\u00A0',
 };
 
 const useStyles = makeStyles(

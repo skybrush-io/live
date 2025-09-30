@@ -625,7 +625,7 @@ const MissionInfoVectorSource = ({
   missionOrientation,
   missionOrigin,
   missionIndicesForTrajectories,
-  orientation,
+  orientation = 0,
   returnToHomeItems,
   selectedTool,
   selection,
@@ -695,10 +695,6 @@ MissionInfoVectorSource.propTypes = {
   selectedTool: PropTypes.string,
   selection: PropTypes.arrayOf(PropTypes.string),
   uavIdsForTrajectories: PropTypes.arrayOf(PropTypes.string),
-};
-
-MissionInfoVectorSource.defaultProps = {
-  orientation: 0,
 };
 
 const MissionInfoLayerPresentation = ({ layer, zIndex, ...rest }) => (

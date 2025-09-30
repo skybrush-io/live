@@ -31,7 +31,7 @@ Instructions.propTypes = {
  * Presentation component for the dialog that shows the form that the user
  * can use to edit the environment settings of a drone show.
  */
-const EnvironmentEditorDialog = ({ editing, onClose, type, t }) => (
+const EnvironmentEditorDialog = ({ editing = false, onClose, type, t }) => (
   <DraggableDialog
     fullWidth
     open={editing}
@@ -54,10 +54,6 @@ EnvironmentEditorDialog.propTypes = {
   onClose: PropTypes.func,
   type: PropTypes.oneOf(['indoor', 'outdoor']),
   t: PropTypes.func,
-};
-
-EnvironmentEditorDialog.defaultProps = {
-  editing: false,
 };
 
 export default connect(

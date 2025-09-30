@@ -46,7 +46,7 @@ const BatteryIndicator = ({
   charging,
   className,
   cellCount,
-  formatter,
+  formatter = DEFAULT_BATTERY_FORMATTER,
   percentage,
   voltage,
 }) => {
@@ -72,10 +72,6 @@ BatteryIndicator.propTypes = {
   formatter: PropTypes.instanceOf(BatteryFormatter),
   percentage: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   voltage: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-};
-
-BatteryIndicator.defaultProps = {
-  formatter: DEFAULT_BATTERY_FORMATTER,
 };
 
 export default BatteryIndicator;

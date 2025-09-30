@@ -62,8 +62,6 @@ GeofenceButton.propTypes = {
   status: PropTypes.oneOf(Object.values(Status)),
 };
 
-GeofenceButton.defaultProps = {};
-
 export default connect(
   // mapStateToProps
   (state) => ({

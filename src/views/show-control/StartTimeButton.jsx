@@ -40,8 +40,6 @@ StartTimeButton.propTypes = {
   status: PropTypes.oneOf(Object.values(Status)),
 };
 
-StartTimeButton.defaultProps = {};
-
 export default connect(
   // mapStateToProps
   (state) => ({

@@ -14,8 +14,17 @@ import {
  * Presentation component for the dialog that allows the user to inspect the
  * details of a specific UAV.
  */
-const UAVDetailsDialogTabs = ({ dragHandleId, ...rest }) => (
-  <DialogTabs alignment='left' dragHandle={dragHandleId} {...rest}>
+const UAVDetailsDialogTabs = ({
+  dragHandleId,
+  value = 'preflight',
+  ...rest
+}) => (
+  <DialogTabs
+    alignment='left'
+    dragHandle={dragHandleId}
+    value={value}
+    {...rest}
+  >
     <Tab label='Preflight' value='preflight' />
     <Tab label='Tests' value='tests' />
     <Tab label='Messages' value='messages' />
@@ -26,10 +35,6 @@ const UAVDetailsDialogTabs = ({ dragHandleId, ...rest }) => (
 UAVDetailsDialogTabs.propTypes = {
   dragHandleId: PropTypes.string,
   value: PropTypes.string,
-};
-
-UAVDetailsDialogTabs.defaultProps = {
-  value: 'preflight',
 };
 
 export default connect(

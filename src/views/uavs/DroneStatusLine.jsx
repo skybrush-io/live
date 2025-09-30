@@ -121,7 +121,7 @@ const DroneStatusLine = ({
   rssi,
   secondaryLabel,
   text,
-  textSemantics,
+  textSemantics = 'info',
 }) => {
   const classes = useStyles();
   const { amsl, ahl, agl } = position || {};
@@ -238,10 +238,6 @@ DroneStatusLine.propTypes = {
     'critical',
     'missing',
   ]),
-};
-
-DroneStatusLine.defaultProps = {
-  textSemantics: 'info',
 };
 
 export default connect(
