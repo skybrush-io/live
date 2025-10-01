@@ -69,3 +69,5 @@ export const RSSIIndicator = ({
     );
   }
 };
+
+export default RSSIIndicator;

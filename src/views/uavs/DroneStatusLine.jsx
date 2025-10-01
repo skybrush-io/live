@@ -21,15 +21,12 @@ import {
   getLightColorByUavIdInCSSNotation,
   getUAVById,
 } from '~/features/uavs/selectors';
-import {
-  abbreviateFlightMode,
-  abbreviateGPSFixType,
-  getSemanticsForGPSFixType,
-} from '~/model/enums';
+import { abbreviateFlightMode } from '~/model/enums';
 import { getPreferredCoordinateFormatter } from '~/selectors/formatting';
 import { formatCoordinateArray } from '~/utils/formatting';
 
-import { RSSIIndicator } from './RSSIIndicator';
+import GPSStatusPill from './GPSStatusPill';
+import RSSIIndicator from './RSSIIndicator';
 
 /**
  * Converts the absolute value of a heading deviation, in degrees, to the
@@ -154,14 +151,10 @@ const DroneStatusLine = ({
           />
           <ColoredLight inline color={color} />
           <RSSIIndicator className={classes.rssiPills} rssi={rssi} />
-          <StatusPill
-            inline
-            hollow
+          <GPSStatusPill
             className={clsx(classes.pill, classes.gpsPill)}
-            status={getSemanticsForGPSFixType(gpsFixType)}
-          >
-            {abbreviateGPSFixType(gpsFixType)}
-          </StatusPill>
+            fixType={gpsFixType}
+          />
           {localPosition ? (
             padEnd(localCoordinateFormatter(localPosition), 25)
           ) : position ? (
