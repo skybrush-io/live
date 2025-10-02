@@ -1581,7 +1581,7 @@ export default class MessageHub {
 
     validateObjectId(id);
 
-    if (idProp) {
+    if (idProp !== null) {
       message[idProp ?? (single ? 'id' : 'ids')] = [id];
     }
 
