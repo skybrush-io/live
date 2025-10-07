@@ -1,3 +1,5 @@
+import { err, ok, type Result } from 'neverthrow';
+
 import { bufferPolygon } from '~/utils/geography';
 import { type Coordinate2D, simplifyPolygon } from '~/utils/math';
 
@@ -11,11 +13,17 @@ export const makeGeofenceGenerationSettingsApplicator =
     maxVertexCount: number;
     simplify: boolean;
   }) =>
-  (coordinates: Coordinate2D[]): Coordinate2D[] => {
-    const bufferedCoordinates = bufferPolygon(coordinates, horizontalMargin);
-    return simplify
-      ? simplifyPolygon(bufferedCoordinates, maxVertexCount)
-      : bufferedCoordinates;
+  (coordinates: Coordinate2D[]): Result<Coordinate2D[], string> => {
+    try {
+      const bufferedCoordinates = bufferPolygon(coordinates, horizontalMargin);
+      return ok(
+        simplify
+          ? simplifyPolygon(bufferedCoordinates, maxVertexCount)
+          : bufferedCoordinates
+      );
+    } catch (error) {
+      return err(error instanceof Error ? error.message : 'Unknown error');
+    }
   };
 
 /**

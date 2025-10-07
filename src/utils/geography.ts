@@ -928,7 +928,7 @@ export const bufferPolygon = (
     margin / 1000 /* Turf.js needs kilometers */
   );
 
-  if (!Array.isArray(bufferedPoly.geometry.coordinates[0])) {
+  if (!Array.isArray(bufferedPoly?.geometry?.coordinates[0])) {
     throw new TypeError(
       'a coordinate array is expected as the first linear ring of the polygon'
     );
