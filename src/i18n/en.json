@@ -21,6 +21,13 @@
     "passed": "Onboard preflight checks passed.",
     "signOffOn": "Sign off on onboard preflight checks"
   },
+  "RTKCoordinateRestorationDialog": {
+    "cancel": "Cancel",
+    "message": "A saved coordinate exists for this RTK preset: Position: {{position}}, Accuracy: {{accuracy}}m, Saved: {{date}}, Do you want to use this saved coordinate or start a new survey?",
+    "startNew": "Start new survey",
+    "title": "Use saved coordinate?",
+    "useSaved": "Use saved coordinate"
+  },
   "RTKCorrectionSourceSelector": {
     "RTKCorrections": "RTK corrections",
     "error": "Error while loading RTK sources from server",

@@ -3,10 +3,11 @@ import isNil from 'lodash-es/isNil';
 import mapValues from 'lodash-es/mapValues';
 import PropTypes from 'prop-types';
 import { useEffect } from 'react';
-import { connect } from 'react-redux';
+import { connect, useDispatch, useSelector } from 'react-redux';
 
 import handleError from '~/error-handling';
 import { updateRTKStatistics } from '~/features/rtk/slice';
+import { saveCurrentCoordinateForPreset } from '~/features/rtk/actions';
 import useMessageHub from '~/hooks/useMessageHub';
 
 /**
@@ -15,6 +16,8 @@ import useMessageHub from '~/hooks/useMessageHub';
  */
 const RTKStatusUpdater = ({ onStatusChanged, period }) => {
   const messageHub = useMessageHub();
+  const dispatch = useDispatch();
+  const savedCoordinates = useSelector((state) => state.rtk.savedCoordinates);
 
   useEffect(() => {
     const valueHolder = {
@@ -28,6 +31,36 @@ const RTKStatusUpdater = ({ onStatusChanged, period }) => {
           // eslint-disable-next-line no-await-in-loop
           const status = await messageHub.query.getRTKStatus();
           onStatusChanged(status);
+
+          // Autosave base station coordinate on first valid fix per preset
+          const hasECEF = Array.isArray(status?.antenna?.positionECEF);
+          const accuracy = status?.survey?.accuracy;
+          const flags = status?.survey?.flags;
+          const surveyedCoordinateValid = typeof flags === 'number' ? (flags & 0b100) !== 0 : false;
+          const hasValidFix = hasECEF && (surveyedCoordinateValid || typeof accuracy === 'number');
+
+          if (hasValidFix) {
+            // eslint-disable-next-line no-await-in-loop
+            const selectedPresetId = await messageHub.query.getSelectedRTKPresetId();
+            if (selectedPresetId) {
+              const incomingECEF = Array.isArray(status?.antenna?.positionECEF)
+                ? status.antenna.positionECEF.slice(0, 3).map((x) => Math.round(x))
+                : undefined;
+              const saved = savedCoordinates && savedCoordinates[selectedPresetId];
+              const savedECEF = saved && Array.isArray(saved.positionECEF)
+                ? saved.positionECEF.slice(0, 3)
+                : undefined;
+
+              const isSameECEF =
+                incomingECEF && savedECEF
+                  ? incomingECEF.length === savedECEF.length && incomingECEF.every((v, i) => v === savedECEF[i])
+                  : false;
+
+              if (!isSameECEF) {
+                dispatch(saveCurrentCoordinateForPreset(selectedPresetId));
+              }
+            }
+          }
         } catch (error) {
           handleError(error, 'RTK status query');
         }
@@ -43,7 +76,7 @@ const RTKStatusUpdater = ({ onStatusChanged, period }) => {
       valueHolder.finished = true;
       valueHolder.promise = null;
     };
-  }, [messageHub, onStatusChanged, period]);
+  }, [messageHub, onStatusChanged, period, dispatch, savedCoordinates]);
 
   return null;
 };

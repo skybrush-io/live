@@ -10,7 +10,8 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 
-import { resetRTKStatistics } from '~/features/rtk/slice';
+import { resetRTKStatistics, showCoordinateRestorationDialog } from '~/features/rtk/slice';
+import { hasSavedCoordinateForPreset, getSavedCoordinateForPreset } from '~/features/rtk/selectors';
 import messageHub from '~/message-hub';
 
 const NULL_ID = '__null__';
@@ -20,7 +21,7 @@ const nullPreset = {
   title: 'RTK disabled',
 };
 
-const RTKCorrectionSourceSelector = ({ onSourceChanged, t }) => {
+const RTKCorrectionSourceSelector = ({ onSourceChanged, t, hasSavedCoordinateForPreset, getSavedCoordinateForPreset, showCoordinateRestorationDialog }) => {
   const [selectedByUser, setSelectedByUser] = useState();
   const [selectionState, getSelectionFromServer] = useAsyncFn(async () =>
     messageHub.query.getSelectedRTKPresetId()
@@ -45,10 +46,20 @@ const RTKCorrectionSourceSelector = ({ onSourceChanged, t }) => {
   const hasPresets = presets && presets.length > 0;
 
   const handleChange = async (event) => {
+    const newPresetId = event.target.value;
+    
+    // Check if there's a saved coordinate for this preset
+    if (newPresetId !== NULL_ID && hasSavedCoordinateForPreset(newPresetId)) {
+      const savedCoordinate = getSavedCoordinateForPreset(newPresetId);
+      showCoordinateRestorationDialog({ presetId: newPresetId, savedCoordinate });
+      // Don't proceed with the selection yet - wait for user decision in dialog
+      // return;
+    }
+
     // We assume that the request will succeed so we eagerly select the new
     // value. If changing the RTK source fails, it will be changed back in the
     // response handler triggered by the effect that we set up below.
-    setSelectedByUser(event.target.value);
+    setSelectedByUser(newPresetId);
 
     if (onSourceChanged) {
       onSourceChanged();
@@ -145,13 +156,20 @@ const RTKCorrectionSourceSelector = ({ onSourceChanged, t }) => {
 RTKCorrectionSourceSelector.propTypes = {
   onSourceChanged: PropTypes.func,
   t: PropTypes.func,
+  hasSavedCoordinateForPreset: PropTypes.func,
+  getSavedCoordinateForPreset: PropTypes.func,
+  showCoordinateRestorationDialog: PropTypes.func,
 };
 
 export default connect(
   // mapStateToProps
-  null,
+  (state) => ({
+    hasSavedCoordinateForPreset: (presetId) => hasSavedCoordinateForPreset(state, presetId),
+    getSavedCoordinateForPreset: (presetId) => getSavedCoordinateForPreset(state, presetId),
+  }),
   // mapDispatchToProps
   {
     onSourceChanged: resetRTKStatistics,
+    showCoordinateRestorationDialog,
   }
 )(withTranslation()(RTKCorrectionSourceSelector));
