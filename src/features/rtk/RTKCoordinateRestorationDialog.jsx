@@ -11,16 +11,22 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 
 import { closeCoordinateRestorationDialog } from '~/features/rtk/slice';
-import { getCoordinateRestorationDialog, getFormattedSavedCoordinatePosition } from '~/features/rtk/selectors';
-import { setSelectedPresetAsSource, useSavedCoordinateForPreset } from '~/features/rtk/actions';
+import {
+  getCoordinateRestorationDialog,
+  getFormattedSavedCoordinatePosition,
+} from '~/features/rtk/selectors';
+import {
+  setSelectedPresetAsSource,
+  useSavedCoordinateForPreset,
+} from '~/features/rtk/actions';
 
-const RTKCoordinateRestorationDialog = ({ 
-  t, 
-  dialog, 
-  formattedPosition, 
-  onClose, 
-  onUseSaved, 
-  onStartNew 
+const RTKCoordinateRestorationDialog = ({
+  t,
+  dialog,
+  formattedPosition,
+  onClose,
+  onUseSaved,
+  onStartNew,
 }) => {
   if (!dialog.open || !dialog.savedCoordinate) {
     return null;
@@ -42,13 +48,13 @@ const RTKCoordinateRestorationDialog = ({
 
   return (
     <Dialog
-      open={dialog.open}
-      onClose={onClose}
-      aria-labelledby="coordinate-restoration-dialog-title"
-      maxWidth="sm"
       fullWidth
+      open={dialog.open}
+      aria-labelledby='coordinate-restoration-dialog-title'
+      maxWidth='sm'
+      onClose={onClose}
     >
-      <DialogTitle id="coordinate-restoration-dialog-title">
+      <DialogTitle id='coordinate-restoration-dialog-title'>
         {t('RTKCoordinateRestorationDialog.title')}
       </DialogTitle>
       <DialogContent>
@@ -61,13 +67,13 @@ const RTKCoordinateRestorationDialog = ({
         </DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} color="primary">
+        <Button color='primary' onClick={onClose}>
           {t('RTKCoordinateRestorationDialog.cancel')}
         </Button>
-        <Button onClick={handleStartNew} color="primary">
+        <Button color='primary' onClick={handleStartNew}>
           {t('RTKCoordinateRestorationDialog.startNew')}
         </Button>
-        <Button onClick={handleUseSaved} color="primary" variant="contained">
+        <Button color='primary' variant='contained' onClick={handleUseSaved}>
           {t('RTKCoordinateRestorationDialog.useSaved')}
         </Button>
       </DialogActions>
@@ -87,8 +93,11 @@ RTKCoordinateRestorationDialog.propTypes = {
 export default connect(
   (state) => ({
     dialog: getCoordinateRestorationDialog(state),
-    formattedPosition: getCoordinateRestorationDialog(state).savedCoordinate 
-      ? getFormattedSavedCoordinatePosition(state, getCoordinateRestorationDialog(state).presetId)
+    formattedPosition: getCoordinateRestorationDialog(state).savedCoordinate
+      ? getFormattedSavedCoordinatePosition(
+          state,
+          getCoordinateRestorationDialog(state).presetId
+        )
       : undefined,
   }),
   {

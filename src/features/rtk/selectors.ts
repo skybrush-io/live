@@ -163,14 +163,18 @@ export const shouldShowSurveySettings = (state: RootState): boolean =>
 /**
  * Returns whether there is a saved coordinate for the given RTK preset ID.
  */
-export const hasSavedCoordinateForPreset = (state: RootState, presetId: string): boolean =>
-  Boolean(state.rtk.savedCoordinates[presetId]);
+export const hasSavedCoordinateForPreset = (
+  state: RootState,
+  presetId: string
+): boolean => Boolean(state.rtk.savedCoordinates[presetId]);
 
 /**
  * Returns the saved coordinate for the given RTK preset ID, or undefined if none exists.
  */
-export const getSavedCoordinateForPreset = (state: RootState, presetId: string): RTKSavedCoordinate | undefined =>
-  state.rtk.savedCoordinates[presetId];
+export const getSavedCoordinateForPreset = (
+  state: RootState,
+  presetId: string
+): RTKSavedCoordinate | undefined => state.rtk.savedCoordinates[presetId];
 
 /**
  * Returns all saved coordinates as an array of { presetId, coordinate } objects.
@@ -188,7 +192,8 @@ export const getAllSavedCoordinates = createSelector(
  * Returns the formatted saved coordinate position for a given preset ID.
  */
 export const getFormattedSavedCoordinatePosition = createSelector(
-  (state: RootState, presetId: string) => getSavedCoordinateForPreset(state, presetId),
+  (state: RootState, presetId: string) =>
+    getSavedCoordinateForPreset(state, presetId),
   getPreferredCoordinateFormatter,
   isShowingAntennaPositionInECEF,
   (savedCoordinate, formatter, isECEF) => {
@@ -213,11 +218,14 @@ export const getFormattedSavedCoordinatePosition = createSelector(
 /**
  * Returns whether the coordinate restoration dialog should be visible.
  */
-export const shouldShowCoordinateRestorationDialog = (state: RootState): boolean =>
-  state.rtk.dialog.coordinateRestorationDialog.open;
+export const shouldShowCoordinateRestorationDialog = (
+  state: RootState
+): boolean => state.rtk.dialog.coordinateRestorationDialog.open;
 
 /**
  * Returns the coordinate restoration dialog state.
  */
-export const getCoordinateRestorationDialog = (state: RootState) =>
+export const getCoordinateRestorationDialog = (
+  state: RootState
+): RootState['rtk']['dialog']['coordinateRestorationDialog'] =>
   state.rtk.dialog.coordinateRestorationDialog;

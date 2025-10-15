@@ -175,7 +175,7 @@ const RTKSatelliteObservations = ({ height, items }) => {
         items ? createDataFromItemsAndDrawingContext(items, chart.ctx) : NO_DATA
       );
     }
-  }, [chartRef.current, items]);
+  }, [items]);
 
   return (
     <Box height={height}>

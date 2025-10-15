@@ -36,29 +36,40 @@ const RTKStatusUpdater = ({ onStatusChanged, period }) => {
           const hasECEF = Array.isArray(status?.antenna?.positionECEF);
           const accuracy = status?.survey?.accuracy;
           const flags = status?.survey?.flags;
-          const surveyedCoordinateValid = typeof flags === 'number' ? (flags & 0b100) !== 0 : false;
-          const hasValidFix = hasECEF && (surveyedCoordinateValid || typeof accuracy === 'number');
+          const surveyedCoordinateValid =
+            typeof flags === 'number' ? (flags & 0b100) !== 0 : false;
+          const hasValidFix =
+            hasECEF &&
+            (surveyedCoordinateValid || typeof accuracy === 'number');
 
           if (hasValidFix) {
-            // eslint-disable-next-line no-await-in-loop
-            const selectedPresetId = await messageHub.query.getSelectedRTKPresetId();
-            if (selectedPresetId) {
-              const incomingECEF = Array.isArray(status?.antenna?.positionECEF)
-                ? status.antenna.positionECEF.slice(0, 3).map((x) => Math.round(x))
-                : undefined;
-              const saved = savedCoordinates && savedCoordinates[selectedPresetId];
-              const savedECEF = saved && Array.isArray(saved.positionECEF)
+            const selectedPresetId =
+              // eslint-disable-next-line no-await-in-loop
+              await messageHub.query.getSelectedRTKPresetId();
+            if (!selectedPresetId) {
+              continue;
+            }
+
+            const incomingECEF = Array.isArray(status?.antenna?.positionECEF)
+              ? status.antenna.positionECEF
+                  .slice(0, 3)
+                  .map((x) => Math.round(x))
+              : undefined;
+            const saved =
+              savedCoordinates && savedCoordinates[selectedPresetId];
+            const savedECEF =
+              saved && Array.isArray(saved.positionECEF)
                 ? saved.positionECEF.slice(0, 3)
                 : undefined;
 
-              const isSameECEF =
-                incomingECEF && savedECEF
-                  ? incomingECEF.length === savedECEF.length && incomingECEF.every((v, i) => v === savedECEF[i])
-                  : false;
+            const isSameECEF =
+              incomingECEF && savedECEF
+                ? incomingECEF.length === savedECEF.length &&
+                  incomingECEF.every((v, i) => v === savedECEF[i])
+                : false;
 
-              if (!isSameECEF) {
-                dispatch(saveCurrentCoordinateForPreset(selectedPresetId));
-              }
+            if (!isSameECEF) {
+              dispatch(saveCurrentCoordinateForPreset(selectedPresetId));
             }
           }
         } catch (error) {

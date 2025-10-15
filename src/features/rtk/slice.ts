@@ -8,7 +8,11 @@ import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
 import { noPayload } from '~/utils/redux';
 
-import { RTKAntennaPositionFormat, type RTKStatistics, type RTKSavedCoordinate } from './types';
+import {
+  RTKAntennaPositionFormat,
+  type RTKStatistics,
+  type RTKSavedCoordinate,
+} from './types';
 
 type RTKSliceState = {
   stats: RTKStatistics;
@@ -23,8 +27,8 @@ type RTKSliceState = {
     /** Dialog for asking user if they want to use saved coordinates */
     coordinateRestorationDialog: {
       open: boolean;
-      presetId: string | null;
-      savedCoordinate: RTKSavedCoordinate | null;
+      presetId: string | undefined;
+      savedCoordinate: RTKSavedCoordinate | undefined;
     };
   };
 };
@@ -141,16 +145,16 @@ const { actions, reducer } = createSlice({
     // Saved coordinates management
     saveCoordinateForPreset(
       state,
-      action: PayloadAction<{ presetId: string; coordinate: RTKSavedCoordinate }>
+      action: PayloadAction<{
+        presetId: string;
+        coordinate: RTKSavedCoordinate;
+      }>
     ) {
       const { presetId, coordinate } = action.payload;
       state.savedCoordinates[presetId] = coordinate;
     },
 
-    removeSavedCoordinateForPreset(
-      state,
-      action: PayloadAction<string>
-    ) {
+    removeSavedCoordinateForPreset(state, action: PayloadAction<string>) {
       const presetId = action.payload;
       delete state.savedCoordinates[presetId];
     },
@@ -158,7 +162,10 @@ const { actions, reducer } = createSlice({
     // Coordinate restoration dialog management
     showCoordinateRestorationDialog(
       state,
-      action: PayloadAction<{ presetId: string; savedCoordinate: RTKSavedCoordinate }>
+      action: PayloadAction<{
+        presetId: string;
+        savedCoordinate: RTKSavedCoordinate;
+      }>
     ) {
       const { presetId, savedCoordinate } = action.payload;
       state.dialog.coordinateRestorationDialog = {
