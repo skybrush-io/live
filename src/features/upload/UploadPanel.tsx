@@ -10,12 +10,11 @@ import Fade from '@mui/material/Fade';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import IconButton from '@mui/material/IconButton';
 import type { Theme } from '@mui/material/styles';
-import makeStyles from '@mui/styles/makeStyles';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import { Colors } from '@skybrush/app-theme-mui';
+import { Colors, makeStyles } from '@skybrush/app-theme-mui';
 import LabeledStatusLight, {
   type LabeledStatusLightProps,
 } from '@skybrush/mui-components/lib/LabeledStatusLight';

@@ -1,9 +1,10 @@
 import ButtonBase from '@mui/material/ButtonBase';
-import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import createColor from 'color';
 import PropTypes from 'prop-types';
 import React from 'react';
+
+import { makeStyles } from '@skybrush/app-theme-mui';
 
 const useStyles = makeStyles(
   (theme) => ({
@@ -39,9 +40,6 @@ const useStyles = makeStyles(
       };
     },
   }),
-  {
-    name: 'ColoredButton',
-  }
 );
 
 const ColoredButton = ({

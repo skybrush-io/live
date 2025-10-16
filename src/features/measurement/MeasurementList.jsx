@@ -3,7 +3,6 @@ import ListItemAvatar from '@mui/material/ListItemAvatar';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import ListItemText from '@mui/material/ListItemText';
-import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import identity from 'lodash-es/identity';
 import isNil from 'lodash-es/isNil';
@@ -13,6 +12,7 @@ import React from 'react';
 import { Translation, useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
+import { makeStyles } from '@skybrush/app-theme-mui';
 import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
 import Tooltip from '@skybrush/mui-components/lib/Tooltip';
 
@@ -65,55 +65,52 @@ const formatDurationOfSampling = (startedAt, lastSampleAt, extraSamplingTime) =>
       1000
   );
 
-const useStyles = makeStyles(
-  (theme) => ({
-    root: {
-      fontVariantNumeric: 'lining-nums tabular-nums',
+const useStyles = makeStyles((theme) => ({
+  root: {
+    fontVariantNumeric: 'lining-nums tabular-nums',
 
-      '&>div:first-child>div:first-child': {
-        maxWidth: 44 /* used to ensure that the cross looks nice when not sampling */,
-      },
+    '&>div:first-child>div:first-child': {
+      maxWidth: 44 /* used to ensure that the cross looks nice when not sampling */,
     },
+  },
 
-    dim: {
-      color: theme.palette.text.secondary,
-    },
+  dim: {
+    color: theme.palette.text.secondary,
+  },
 
-    avatar: {
-      transition: theme.transitions.create(['background-color', 'color'], {
-        duration: theme.transitions.duration.short,
-      }),
-    },
+  avatar: {
+    transition: theme.transitions.create(['background-color', 'color'], {
+      duration: theme.transitions.duration.short,
+    }),
+  },
 
-    sampling: {
-      backgroundColor: Colors.success,
-      color: theme.palette.getContrastText(Colors.success),
-      position: 'relative',
-    },
+  sampling: {
+    backgroundColor: Colors.success,
+    color: theme.palette.getContrastText(Colors.success),
+    position: 'relative',
+  },
 
-    primaryContainer: {
-      display: 'flex',
-    },
+  primaryContainer: {
+    display: 'flex',
+  },
 
-    secondaryContainer: {
-      display: 'flex',
-    },
+  secondaryContainer: {
+    display: 'flex',
+  },
 
-    latLonCoordinatesColumn: {
-      minWidth: 180,
-    },
+  latLonCoordinatesColumn: {
+    minWidth: 180,
+  },
 
-    amslColumn: {
-      minWidth: 140,
-    },
+  amslColumn: {
+    minWidth: 140,
+  },
 
-    ahlColumn: {
-      minWidth: 80,
-      flex: 1,
-    },
-  }),
-  { name: 'MeasurementListItem' }
-);
+  ahlColumn: {
+    minWidth: 80,
+    flex: 1,
+  },
+}));
 
 const MeasurementListItem = ({
   coordinateFormatter,

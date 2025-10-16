@@ -5,12 +5,13 @@
  * style tweaks.
  */
 
-import useTheme from '@mui/material/styles/useTheme';
-import { getTransitionProps, reflow } from '@mui/material/transitions/utils';
-import useForkRef from '@mui/material/utils/useForkRef';
+import { useTheme } from '@mui/material/styles';
+import { useForkRef } from '@mui/material/utils';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Transition } from 'react-transition-group';
+
+import { getTransitionProps, reflow } from './utils';
 
 const transitionStyles = {
   up: {

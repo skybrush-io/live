@@ -3,94 +3,91 @@
  */
 
 import { blue, grey } from '@mui/material/colors';
-import makeStyles from '@mui/styles/makeStyles';
-import { isThemeDark } from '@skybrush/app-theme-mui';
 import clsx from 'clsx';
 import { Markup } from 'interweave';
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import { isThemeDark, makeStyles } from '@skybrush/app-theme-mui';
+
 import { colorForSeverity } from '~/components/colors';
 import { Severity } from '~/model/enums';
 import CustomPropTypes from '~/utils/prop-types';
 
-const useStyles = makeStyles(
-  (theme) => ({
-    root: {
-      margin: theme.spacing(0.25, 0, 0, 0),
-      display: 'flex',
-      alignItems: 'flex-start',
-      width: '100%',
+const useStyles = makeStyles((theme) => ({
+  root: {
+    margin: theme.spacing(0.25, 0, 0, 0),
+    display: 'flex',
+    alignItems: 'flex-start',
+    width: '100%',
+  },
+
+  bubble: {
+    position: 'relative',
+    borderRadius: 5,
+    padding: theme.spacing(0.5, 1),
+    margin: theme.spacing(0.25, 0, 0, 0),
+    minHeight: theme.spacing(1),
+    overflowX: 'auto',
+    '& pre': {
+      margin: theme.spacing(0.5),
+    },
+  },
+
+  ownBubble: {
+    background: isThemeDark(theme) ? blue[400] : blue[600],
+    color: theme.palette.getContrastText(
+      isThemeDark(theme) ? blue[400] : blue[600]
+    ),
+  },
+
+  otherBubble: {
+    background: isThemeDark(theme) ? grey[900] : grey[100],
+    color: theme.palette.getContrastText(
+      isThemeDark(theme) ? grey[900] : grey[100]
+    ),
+
+    '& .chat-meta': {
+      textAlign: 'right',
     },
 
-    bubble: {
-      position: 'relative',
-      borderRadius: 5,
-      padding: theme.spacing(0.5, 1),
-      margin: theme.spacing(0.25, 0, 0, 0),
-      minHeight: theme.spacing(1),
-      overflowX: 'auto',
-      '& pre': {
-        margin: theme.spacing(0.5),
-      },
+    '&.severity-critical': {
+      borderLeft: `3px solid ${colorForSeverity(Severity.CRITICAL)}`,
     },
 
-    ownBubble: {
-      background: isThemeDark(theme) ? blue[400] : blue[600],
-      color: theme.palette.getContrastText(
-        isThemeDark(theme) ? blue[400] : blue[600]
-      ),
+    '&.severity-debug': {
+      borderLeft: `3px solid ${colorForSeverity(Severity.DEBUG)}`,
     },
 
-    otherBubble: {
-      background: isThemeDark(theme) ? grey[900] : grey[100],
-      color: theme.palette.getContrastText(
-        isThemeDark(theme) ? grey[900] : grey[100]
-      ),
-
-      '& .chat-meta': {
-        textAlign: 'right',
-      },
-
-      '&.severity-critical': {
-        borderLeft: `3px solid ${colorForSeverity(Severity.CRITICAL)}`,
-      },
-
-      '&.severity-debug': {
-        borderLeft: `3px solid ${colorForSeverity(Severity.DEBUG)}`,
-      },
-
-      '&.severity-error': {
-        borderLeft: `3px solid ${colorForSeverity(Severity.ERROR)}`,
-      },
-
-      '&.severity-info': {
-        borderLeft: `3px solid ${colorForSeverity(Severity.INFO)}`,
-      },
-
-      '&.severity-warning': {
-        borderLeft: `3px solid ${colorForSeverity(Severity.WARNING)}`,
-      },
+    '&.severity-error': {
+      borderLeft: `3px solid ${colorForSeverity(Severity.ERROR)}`,
     },
 
-    meta: {
-      fontSize: 'smaller',
-      margin: theme.spacing(0.5, 0, 0, 0),
-      textAlign: 'left',
-
-      '& .author': {
-        fontWeight: 'bold',
-        color: theme.palette.text.secondary,
-      },
-
-      '& .date': {
-        color: theme.palette.text.hint,
-        float: 'right',
-      },
+    '&.severity-info': {
+      borderLeft: `3px solid ${colorForSeverity(Severity.INFO)}`,
     },
-  }),
-  { name: 'ChatBubble' }
-);
+
+    '&.severity-warning': {
+      borderLeft: `3px solid ${colorForSeverity(Severity.WARNING)}`,
+    },
+  },
+
+  meta: {
+    fontSize: 'smaller',
+    margin: theme.spacing(0.5, 0, 0, 0),
+    textAlign: 'left',
+
+    '& .author': {
+      fontWeight: 'bold',
+      color: theme.palette.text.secondary,
+    },
+
+    '& .date': {
+      color: theme.palette.text.hint,
+      float: 'right',
+    },
+  },
+}));
 
 /**
  * Stateless React component showing a single chat bubble in a chat

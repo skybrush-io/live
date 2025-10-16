@@ -1,7 +1,8 @@
-import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import React from 'react';
+
+import { makeStyles } from '@skybrush/app-theme-mui';
 
 import Colors from '~/components/colors';
 
@@ -67,7 +68,6 @@ const useStyles = makeStyles(
       },
     },
   }),
-  { name: 'SecondaryStatusLight' }
 );
 
 /**

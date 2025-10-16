@@ -7,13 +7,13 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import makeStyles from '@mui/styles/makeStyles';
 import { TextField } from 'mui-rff';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Form } from 'react-final-form';
 import { connect } from 'react-redux';
 
+import { makeStyles } from '@skybrush/app-theme-mui';
 import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
 
 import { PasswordField } from '~/components/forms';
@@ -28,25 +28,22 @@ import {
 import { shouldOptimizeUIForTouch } from '~/features/settings/selectors';
 import messageHub from '~/message-hub';
 
-const useStyles = makeStyles(
-  (theme) => ({
-    root: {
-      marginBottom: 0,
+const useStyles = makeStyles((theme) => ({
+  root: {
+    marginBottom: 0,
 
-      '& .MuiDialogContent-root': {
-        paddingTop: 0,
-      },
+    '& .MuiDialogContent-root': {
+      paddingTop: 0,
+    },
 
-      '& .MuiTextField-root': {
-        marginBottom: theme.spacing(1),
-      },
+    '& .MuiTextField-root': {
+      marginBottom: theme.spacing(1),
     },
-    dialogContent: {
-      paddingBottom: 0,
-    },
-  }),
-  { name: 'AuthenticationForm' }
-);
+  },
+  dialogContent: {
+    paddingBottom: 0,
+  },
+}));
 
 /**
  * Presentation component for the authentication form.

@@ -1,16 +1,17 @@
 import Box from '@mui/material/Box';
 import InputBase from '@mui/material/InputBase';
-import makeStyles from '@mui/styles/makeStyles';
 import Color from 'color';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
+import { makeStyles } from '@skybrush/app-theme-mui';
+
 import Colors from '~/components/colors';
 import { getUAVIdForMappingSlotBeingEdited } from '~/features/mission/selectors';
 import {
-  cancelMappingEditorSessionAtCurrentSlot,
-  commitMappingEditorSessionAtCurrentSlot,
+    cancelMappingEditorSessionAtCurrentSlot,
+    commitMappingEditorSessionAtCurrentSlot,
 } from '~/features/mission/slice';
 import { shouldOptimizeUIForTouch } from '~/features/settings/selectors';
 
@@ -39,7 +40,6 @@ const useStyles = makeStyles(
       },
     },
   }),
-  { name: 'MappingSlotEditorForGrid' }
 );
 
 /**

@@ -17,8 +17,8 @@ import Sunset from '~/icons/Sunset';
 import { shortRelativeTimeFormatter } from '~/utils/formatting';
 
 import {
-    getSunriseSunsetTimesForMapViewCenterPosition,
-    getWeatherBadgeStatus,
+  getSunriseSunsetTimesForMapViewCenterPosition,
+  getWeatherBadgeStatus,
 } from './selectors';
 import WeatherDetailsMiniList from './WeatherDetailsMiniList';
 

@@ -5,12 +5,12 @@ import DialogActions from '@mui/material/DialogActions';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import type { Theme } from '@mui/material/styles';
-import makeStyles from '@mui/styles/makeStyles';
 import type { TFunction } from 'i18next';
 import React, { useCallback, useState } from 'react';
 import { withTranslation } from 'react-i18next';
 import { batch, connect } from 'react-redux';
 
+import { makeStyles } from '@skybrush/app-theme-mui';
 import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
 import type { ValidationSettings } from '@skybrush/show-format';
 

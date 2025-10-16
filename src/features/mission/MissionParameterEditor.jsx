@@ -1,6 +1,5 @@
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
-import makeStyles from '@mui/styles/makeStyles';
 import { getDefaultRegistry } from '@rjsf/core';
 import { Form } from '@rjsf/mui';
 import { getDefaultFormState } from '@rjsf/utils';
@@ -12,36 +11,32 @@ import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { makeStyles } from '@skybrush/app-theme-mui';
 import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
 
 import AsyncGuard from '~/components/AsyncGuard';
 
 import { filterSchemaByUIContext } from './schema';
 
-const useStyles = makeStyles(
-  (theme) => ({
-    tabs: {
-      minHeight: 36,
+const useStyles = makeStyles((theme) => ({
+  tabs: {
+    minHeight: 36,
 
-      position: 'sticky',
-      top: 0,
+    position: 'sticky',
+    top: 0,
 
-      backgroundColor: theme.palette.background.paper,
+    backgroundColor: theme.palette.background.paper,
 
-      // Use the z-index of AppBars (https://mui.com/material-ui/customization/z-index/)
-      zIndex: 1100,
-    },
+    // Use the z-index of AppBars (https://mui.com/material-ui/customization/z-index/)
+    zIndex: 1100,
+  },
 
-    tab: {
-      minHeight: 36,
+  tab: {
+    minHeight: 36,
 
-      textTransform: 'capitalize',
-    },
-  }),
-  {
-    name: 'MissionParameterEditorPresentation',
-  }
-);
+    textTransform: 'capitalize',
+  },
+}));
 
 const FORM_UI_SCHEMA_DEFAULTS = {
   'ui:options': {

@@ -8,12 +8,13 @@ import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import Switch from '@mui/material/Switch';
 import Typography from '@mui/material/Typography';
-import makeStyles from '@mui/styles/makeStyles';
 import { bindActionCreators } from '@reduxjs/toolkit';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
+
+import { makeStyles } from '@skybrush/app-theme-mui';
 
 import ColoredButton from '~/components/ColoredButton';
 import Colors from '~/components/colors';
@@ -28,30 +29,25 @@ import { createUAVOperationThunks } from '~/utils/messaging';
 
 import StartMethodExplanation from './StartMethodExplanation';
 
-const useStyles = makeStyles(
-  (theme) => ({
-    root: {
-      position: 'absolute',
-      left: 0,
-      top: 0,
-      right: 0,
-      bottom: 0,
-    },
+const useStyles = makeStyles((theme) => ({
+  root: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    right: 0,
+    bottom: 0,
+  },
 
-    scrollable: {
-      overflow: 'auto',
-    },
+  scrollable: {
+    overflow: 'auto',
+  },
 
-    button: {
-      flex: 1,
-      margin: theme.spacing(0.5),
-      lineHeight: 1,
-    },
-  }),
-  {
-    name: 'LargeControlButtonGroup',
-  }
-);
+  button: {
+    flex: 1,
+    margin: theme.spacing(0.5),
+    lineHeight: 1,
+  },
+}));
 
 const LargeControlButtonGroup = ({
   broadcast,

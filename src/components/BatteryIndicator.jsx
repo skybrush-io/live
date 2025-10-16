@@ -1,8 +1,9 @@
 import Box from '@mui/material/Box';
-import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import React from 'react';
+
+import { makeStyles } from '@skybrush/app-theme-mui';
 
 import Colors from '~/components/colors';
 
@@ -36,7 +37,6 @@ const useStyles = makeStyles(
       fontWeight: 'bold',
     },
   }),
-  { name: 'BatteryIndicator' }
 );
 
 /**

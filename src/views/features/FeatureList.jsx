@@ -15,11 +15,12 @@ import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import ListItemText from '@mui/material/ListItemText';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import makeStyles from '@mui/styles/makeStyles';
 import { bindActionCreators } from '@reduxjs/toolkit';
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import { connect } from 'react-redux';
+
+import { makeStyles } from '@skybrush/app-theme-mui';
 
 import {
   createSelectionHandlerThunk,
@@ -49,33 +50,28 @@ import { fitCoordinatesIntoMapView } from '~/signals';
 const ICON_SIZE = 24;
 const GAP_SIZE = 12;
 
-const useStyles = makeStyles(
-  {
-    container: {
-      containerType: 'inline-size',
-    },
-    item: {
-      '@container (min-width: 351px)': {
-        paddingRight: (props) =>
-          ICON_SIZE * props.actions.length +
-          GAP_SIZE * (props.actions.length + 1),
-      },
-    },
-    button: {
-      '@container (max-width: 350px)': {
-        display: 'none',
-      },
-    },
-    menu: {
-      '@container (min-width: 351px)': {
-        display: 'none',
-      },
+const useStyles = makeStyles({
+  container: {
+    containerType: 'inline-size',
+  },
+  item: {
+    '@container (min-width: 351px)': {
+      paddingRight: (props) =>
+        ICON_SIZE * props.actions.length +
+        GAP_SIZE * (props.actions.length + 1),
     },
   },
-  {
-    name: 'FeatureList',
-  }
-);
+  button: {
+    '@container (max-width: 350px)': {
+      display: 'none',
+    },
+  },
+  menu: {
+    '@container (min-width: 351px)': {
+      display: 'none',
+    },
+  },
+});
 
 /**
  * Presentation component for a single entry in the feature list.

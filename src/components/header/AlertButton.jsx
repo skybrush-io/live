@@ -1,12 +1,12 @@
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import NotificationsOffIcon from '@mui/icons-material/NotificationsOff';
-import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { useAudio, useInterval, useMount } from 'react-use';
 
+import { makeStyles } from '@skybrush/app-theme-mui';
 import GenericHeaderButton from '@skybrush/mui-components/lib/GenericHeaderButton';
 import SidebarBadge from '@skybrush/mui-components/lib/SidebarBadge';
 

@@ -8,12 +8,12 @@ import IconButton from '@mui/material/IconButton';
 import Switch from '@mui/material/Switch';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 import { useToggle } from 'react-use';
 
+import { makeStyles } from '@skybrush/app-theme-mui';
 import StatusText from '@skybrush/mui-components/lib/StatusText';
 import Tooltip from '@skybrush/mui-components/lib/Tooltip';
 
@@ -23,43 +23,38 @@ import MiniTable from '~/components/MiniTable';
 
 import { getSelectedDockIdInDockDetailsDialog } from './details';
 
-const useStyles = makeStyles(
-  (theme) => ({
-    root: {
-      padding: theme.spacing(2),
-      minWidth: 185,
-      flex: 1,
-      display: 'flex',
-      flexDirection: 'column',
-    },
+const useStyles = makeStyles((theme) => ({
+  root: {
+    padding: theme.spacing(2),
+    minWidth: 185,
+    flex: 1,
+    display: 'flex',
+    flexDirection: 'column',
+  },
 
-    avatar: {
-      display: 'flex',
-      flexDirection: 'column',
-    },
+  avatar: {
+    display: 'flex',
+    flexDirection: 'column',
+  },
 
-    summary: {
-      paddingLeft: theme.spacing(2),
-    },
+  summary: {
+    paddingLeft: theme.spacing(2),
+  },
 
-    toolbar: {
-      justifyContent: 'center',
-      padding: theme.spacing(1, 0),
+  toolbar: {
+    justifyContent: 'center',
+    padding: theme.spacing(1, 0),
+  },
+  toolbarInner: {
+    display: 'flex',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    maxWidth: 144 /* 20px for the icon, 8px for the padding around the icons, four icons per row */,
+    '& > button': {
+      padding: 8,
     },
-    toolbarInner: {
-      display: 'flex',
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-      maxWidth: 144 /* 20px for the icon, 8px for the padding around the icons, four icons per row */,
-      '& > button': {
-        padding: 8,
-      },
-    },
-  }),
-  {
-    name: 'DockDetailsDialogSidebar',
-  }
-);
+  },
+}));
 
 /**
  * Sidebar of the UAV details dialog.

@@ -1,60 +1,58 @@
 import Avatar from '@mui/material/Avatar';
-import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import createColor from 'color';
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import { makeStyles } from '@skybrush/app-theme-mui';
+
 import Colors from '~/components/colors';
 
-const useStyles = makeStyles(
-  (theme) => ({
-    root: {
-      position: 'relative',
-    },
+const useStyles = makeStyles((theme) => ({
+  root: {
+    position: 'relative',
+  },
 
-    avatar: {
-      backgroundColor: Colors.off,
-      color: theme.palette.getContrastText(Colors.off),
+  avatar: {
+    backgroundColor: Colors.off,
+    color: theme.palette.getContrastText(Colors.off),
 
-      // Alternatively we could use `variant="rounded"` and
-      // set the amount through `theme.shape.borderRadius`.
-      borderRadius: '25%',
-    },
+    // Alternatively we could use `variant="rounded"` and
+    // set the amount through `theme.shape.borderRadius`.
+    borderRadius: '25%',
+  },
 
-    'avatar-off': {
-      opacity: 0.5,
-    },
+  'avatar-off': {
+    opacity: 0.5,
+  },
 
-    'avatar-editing': {
-      backgroundColor: Colors.info,
-      color: theme.palette.getContrastText(Colors.info),
-      animation: '$pulse 0.5s infinite',
-      animationDirection: 'alternate',
-    },
+  'avatar-editing': {
+    backgroundColor: Colors.info,
+    color: theme.palette.getContrastText(Colors.info),
+    animation: '$pulse 0.5s infinite',
+    animationDirection: 'alternate',
+  },
 
-    'avatar-error': {
-      backgroundColor: Colors.error,
-      boxShadow: `0 0 8px 2px ${Colors.error}`,
-      color: theme.palette.getContrastText(Colors.error),
-    },
+  'avatar-error': {
+    backgroundColor: Colors.error,
+    boxShadow: `0 0 8px 2px ${Colors.error}`,
+    color: theme.palette.getContrastText(Colors.error),
+  },
 
-    'avatar-success': {
-      backgroundColor: Colors.success,
-      color: theme.palette.getContrastText(Colors.success),
-    },
+  'avatar-success': {
+    backgroundColor: Colors.success,
+    color: theme.palette.getContrastText(Colors.success),
+  },
 
-    '@keyframes pulse': {
-      '0%': {
-        boxShadow: `0 0 8px 2px ${createColor(Colors.info).alpha(0)}`,
-      },
-      '100%': {
-        boxShadow: `0 0 8px 2px ${Colors.info}`,
-      },
+  '@keyframes pulse': {
+    '0%': {
+      boxShadow: `0 0 8px 2px ${createColor(Colors.info).alpha(0)}`,
     },
-  }),
-  { name: 'DronePlaceholder' }
-);
+    '100%': {
+      boxShadow: `0 0 8px 2px ${Colors.info}`,
+    },
+  },
+}));
 
 /**
  * Placeholder component that can be used in the UAV list for slots where we

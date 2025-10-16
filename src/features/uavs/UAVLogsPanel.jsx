@@ -7,7 +7,6 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
-import makeStyles from '@mui/styles/makeStyles';
 import isNil from 'lodash-es/isNil';
 import prettyBytes from 'pretty-bytes';
 import PropTypes from 'prop-types';
@@ -15,6 +14,7 @@ import React, { memo, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useAsyncRetry } from 'react-use';
 
+import { makeStyles } from '@skybrush/app-theme-mui';
 import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
 import LargeProgressIndicator from '@skybrush/mui-components/lib/LargeProgressIndicator';
 import StatusLight from '@skybrush/mui-components/lib/StatusLight';
@@ -41,18 +41,13 @@ import ListItemProgressBar from './ListItemProgressBar';
 
 const SEPARATOR = ' · ';
 
-const useStyles = makeStyles(
-  (theme) => ({
-    progress: {
-      // Make sure that the progress bar (if any) has exactly the same height
-      // as the secondary text
-      padding: theme.spacing(1, 0),
-    },
-  }),
-  {
-    name: 'UAVLogListItem',
-  }
-);
+const useStyles = makeStyles((theme) => ({
+  progress: {
+    // Make sure that the progress bar (if any) has exactly the same height
+    // as the secondary text
+    padding: theme.spacing(1, 0),
+  },
+}));
 
 const saveLogToFile = (log) => {
   const { filename, blob } = convertFlightLogToBlob(log);

@@ -1,6 +1,5 @@
 import Sum from '@mui/icons-material/Functions';
 import Box from '@mui/material/Box';
-import makeStyles from '@mui/styles/makeStyles';
 import { createSelector } from '@reduxjs/toolkit';
 import clsx from 'clsx';
 import identity from 'lodash-es/identity';
@@ -8,6 +7,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
+import { makeStyles } from '@skybrush/app-theme-mui';
 import LazyTooltip from '@skybrush/mui-components/lib/LazyTooltip';
 import StatusLight from '@skybrush/mui-components/lib/StatusLight';
 
@@ -80,34 +80,29 @@ const getStatusSummary = createShallowSelector(getStatusSummaryInner, identity);
 
 /* ************************************************************************ */
 
-const useStyles = makeStyles(
-  (theme) => ({
-    root: {
-      fontSize: '1rem',
-    },
+const useStyles = makeStyles((theme) => ({
+  root: {
+    fontSize: '1rem',
+  },
 
-    inner: {
-      alignItems: 'center',
-      display: 'flex',
-      height: '100%',
-      marginRight: theme.spacing(-1.5),
-      padding: theme.spacing(1),
-    },
+  inner: {
+    alignItems: 'center',
+    display: 'flex',
+    height: '100%',
+    marginRight: theme.spacing(-1.5),
+    padding: theme.spacing(1),
+  },
 
-    counter: {
-      padding: theme.spacing(0, 1.5, 0, 0.5),
-      userSelect: 'none',
-      fontVariantNumeric: 'tabular-nums',
-    },
+  counter: {
+    padding: theme.spacing(0, 1.5, 0, 0.5),
+    userSelect: 'none',
+    fontVariantNumeric: 'tabular-nums',
+  },
 
-    off: {
-      opacity: 0.5,
-    },
-  }),
-  {
-    name: 'UAVStatusSummary',
-  }
-);
+  off: {
+    opacity: 0.5,
+  },
+}));
 
 const statusOrder = [
   Status.SUCCESS,

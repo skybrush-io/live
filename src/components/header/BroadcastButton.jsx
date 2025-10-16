@@ -1,10 +1,10 @@
-import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import React, { useEffect, useRef } from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
+import { makeStyles } from '@skybrush/app-theme-mui';
 import GenericHeaderButton from '@skybrush/mui-components/lib/GenericHeaderButton';
 import SidebarBadge from '@skybrush/mui-components/lib/SidebarBadge';
 import Tooltip from '@skybrush/mui-components/lib/Tooltip';
