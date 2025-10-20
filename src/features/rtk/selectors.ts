@@ -216,13 +216,6 @@ export const getFormattedSavedCoordinatePosition = createSelector(
 );
 
 /**
- * Returns whether the coordinate restoration dialog should be visible.
- */
-export const shouldShowCoordinateRestorationDialog = (
-  state: RootState
-): boolean => state.rtk.dialog.coordinateRestorationDialog.open;
-
-/**
  * Returns the coordinate restoration dialog state.
  */
 export const getCoordinateRestorationDialog = (
