@@ -1,3 +1,4 @@
+import formatDate from 'date-fns/format';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { withTranslation } from 'react-i18next';
@@ -34,7 +35,7 @@ const RTKCoordinateRestorationDialog = ({
 
   const { presetId, savedCoordinate } = dialog;
   const { accuracy, savedAt } = savedCoordinate;
-  const savedDate = new Date(savedAt).toLocaleDateString();
+  const savedDate = formatDate(new Date(savedAt), 'yyyy-MM-dd');
 
   const handleUseSaved = () => {
     onClose(); // Close dialog first
@@ -91,15 +92,15 @@ RTKCoordinateRestorationDialog.propTypes = {
 };
 
 export default connect(
-  (state) => ({
-    dialog: getCoordinateRestorationDialog(state),
-    formattedPosition: getCoordinateRestorationDialog(state).savedCoordinate
-      ? getFormattedSavedCoordinatePosition(
-          state,
-          getCoordinateRestorationDialog(state).presetId
-        )
-      : undefined,
-  }),
+  (state) => {
+    const dialog = getCoordinateRestorationDialog(state);
+    return {
+      dialog,
+      formattedPosition: dialog.savedCoordinate && dialog.presetId
+        ? getFormattedSavedCoordinatePosition(state, dialog.presetId)
+        : undefined,
+    };
+  },
   {
     onClose: closeCoordinateRestorationDialog,
     onUseSaved: useSavedCoordinateForPreset,
