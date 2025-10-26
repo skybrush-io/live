@@ -202,7 +202,7 @@ export const LayerSource = ({
       return (
         <source.OSM
           tileLoadFunction={tileLoadFunction}
-          url='https://{a-c}.tile.skybrush.io/osm/{z}/{x}/{y}.png'
+          url='https://tile.skybrush.io/osm/{z}/{x}/{y}.png'
         />
       );
 
