@@ -14,7 +14,7 @@ import { Form } from 'react-final-form';
 import { connect } from 'react-redux';
 
 import { makeStyles } from '@skybrush/app-theme-mui';
-import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
+import { DraggableDialog } from '@skybrush/mui-components';
 
 import { PasswordField } from '~/components/forms';
 import {

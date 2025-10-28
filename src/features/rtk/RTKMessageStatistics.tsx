@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import TimeAgo from 'react-timeago';
 
 import { colorForStatus, Status } from '@skybrush/app-theme-mui';
-import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
+import { BackgroundHint } from '@skybrush/mui-components';
 
 import { listOf } from '~/components/helpers/lists';
 import type { RootState } from '~/store/reducers';

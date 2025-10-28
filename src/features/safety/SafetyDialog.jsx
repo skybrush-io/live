@@ -9,9 +9,11 @@ import React from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
-import DialogTabs from '@skybrush/mui-components/lib/DialogTabs';
-import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
+import {
+  BackgroundHint,
+  DialogTabs,
+  DraggableDialog,
+} from '@skybrush/mui-components';
 
 import { tt } from '~/i18n';
 import { hasFeature } from '~/utils/configuration';

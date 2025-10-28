@@ -14,8 +14,7 @@ import { connect } from 'react-redux';
 import { useToggle } from 'react-use';
 
 import { makeStyles } from '@skybrush/app-theme-mui';
-import StatusText from '@skybrush/mui-components/lib/StatusText';
-import Tooltip from '@skybrush/mui-components/lib/Tooltip';
+import { StatusText, Tooltip } from '@skybrush/mui-components';
 
 import { ComplexAvatar } from '~/components/avatar';
 import Colors from '~/components/colors';

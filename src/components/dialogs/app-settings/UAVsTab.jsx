@@ -13,7 +13,7 @@ import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import { makeStyles } from '@skybrush/app-theme-mui';
-import Header from '@skybrush/mui-components/lib/FormHeader';
+import { FormHeader as Header } from '@skybrush/mui-components';
 
 import {
   SimpleAngleField,

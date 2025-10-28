@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import { Status, makeStyles } from '@skybrush/app-theme-mui';
-import StatusLight from '@skybrush/mui-components/lib/StatusLight';
+import { StatusLight } from '@skybrush/mui-components';
 
 import { LogLevel } from '~/utils/logging';
 

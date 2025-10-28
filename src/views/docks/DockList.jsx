@@ -12,7 +12,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
-import Tooltip from '@skybrush/mui-components/lib/Tooltip';
+import { Tooltip } from '@skybrush/mui-components';
 
 import { multiSelectableListOf } from '~/components/helpers/lists';
 import { setSelectedDockIds } from '~/features/docks/actions';

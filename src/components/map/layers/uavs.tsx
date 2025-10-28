@@ -2,7 +2,7 @@ import React, { useCallback } from 'react';
 // @ts-expect-error
 import { layer as olLayer } from '@collmot/ol-react';
 
-import Header from '@skybrush/mui-components/lib/FormHeader';
+import { FormHeader as Header } from '@skybrush/mui-components';
 
 import SwatchesColorPicker, {
   type ColorResult,

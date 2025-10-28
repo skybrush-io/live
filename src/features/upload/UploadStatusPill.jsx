@@ -6,8 +6,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 import { makeStyles } from '@skybrush/app-theme-mui';
-import StatusPill from '@skybrush/mui-components/lib/StatusPill';
-import Tooltip from '@skybrush/mui-components/lib/Tooltip';
+import { StatusPill, Tooltip } from '@skybrush/mui-components';
 
 import { Status } from '~/components/semantics';
 

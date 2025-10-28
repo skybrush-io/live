@@ -14,11 +14,13 @@ import {
   shortRelativeTimeFormatter,
 } from '~/utils/formatting';
 
-import MiniList from '@skybrush/mui-components/lib/MiniList';
-import MiniListItem from '@skybrush/mui-components/lib/MiniListItem';
-import MiniListDivider from '@skybrush/mui-components/lib/MiniListDivider';
-import SmallProgressIndicator from '@skybrush/mui-components/lib/SmallProgressIndicator';
-import StatusText from '@skybrush/mui-components/lib/StatusText';
+import {
+  MiniList,
+  MiniListItem,
+  MiniListDivider,
+  SmallProgressIndicator,
+  StatusText,
+} from '@skybrush/mui-components';
 
 import {
   getDeclinationFromMagneticVector,

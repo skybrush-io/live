@@ -11,7 +11,7 @@ import {
   isThemeDark,
   makeStyles,
 } from '@skybrush/app-theme-mui';
-import Tooltip from '@skybrush/mui-components/lib/Tooltip';
+import { Tooltip } from '@skybrush/mui-components';
 
 import FadeAndSlide from '~/components/transitions/FadeAndSlide';
 

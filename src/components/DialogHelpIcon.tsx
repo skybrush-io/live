@@ -3,7 +3,7 @@ import type { Theme } from '@mui/material/styles';
 import React from 'react';
 
 import { makeStyles } from '@skybrush/app-theme-mui';
-import Tooltip from '@skybrush/mui-components/lib/Tooltip';
+import { Tooltip } from '@skybrush/mui-components';
 
 const useStyles = makeStyles((theme: Theme) => ({
   iconContainer: {

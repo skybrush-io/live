@@ -6,7 +6,7 @@ import { Translation } from 'react-i18next';
 import { useEvent, useUpdate } from 'react-use';
 import ScreenFull from 'screenfull';
 
-import GenericHeaderButton from '@skybrush/mui-components/lib/GenericHeaderButton';
+import { GenericHeaderButton } from '@skybrush/mui-components';
 
 const FullScreenButtonPresentation = ({ isFullscreen, ...rest }) => (
   <Translation>

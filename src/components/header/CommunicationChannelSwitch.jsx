@@ -4,8 +4,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
-import GenericHeaderButton from '@skybrush/mui-components/lib/GenericHeaderButton';
-import SidebarBadge from '@skybrush/mui-components/lib/SidebarBadge';
+import { GenericHeaderButton, SidebarBadge } from '@skybrush/mui-components';
 
 import Colors from '~/components/colors';
 import { getPreferredCommunicationChannelIndex } from '~/features/mission/selectors';

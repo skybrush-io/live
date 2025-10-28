@@ -7,7 +7,7 @@ import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import { makeStyles } from '@skybrush/app-theme-mui';
-import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
+import { DraggableDialog } from '@skybrush/mui-components';
 
 import ParameterListSidebar from './ParameterListSidebar';
 import ParameterUploadMainPanel from './ParameterUploadMainPanel';

@@ -12,8 +12,10 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 import { makeStyles } from '@skybrush/app-theme-mui';
-import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
-import SmallProgressIndicator from '@skybrush/mui-components/lib/SmallProgressIndicator';
+import {
+  DraggableDialog,
+  SmallProgressIndicator,
+} from '@skybrush/mui-components';
 
 import AutoUpdatingTimestamp from '~/components/AutoUpdatingTimestamp';
 import Colors from '~/components/colors';

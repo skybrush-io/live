@@ -26,7 +26,7 @@ import { Form, type FormProps } from 'react-final-form';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import Header from '@skybrush/mui-components/lib/FormHeader';
+import { FormHeader as Header } from '@skybrush/mui-components';
 
 import { HMSDurationField } from '~/components/forms/fields';
 import { CommonClockId } from '~/features/clocks/types';

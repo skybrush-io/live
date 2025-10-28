@@ -7,8 +7,7 @@ import { Translation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { createSelector } from '@reduxjs/toolkit';
 
-import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
-import MiniList from '@skybrush/mui-components/lib/MiniList';
+import { BackgroundHint, MiniList } from '@skybrush/mui-components';
 
 import { listOf } from '~/components/helpers/lists';
 import { Status, statusToPriority } from '~/components/semantics';

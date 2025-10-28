@@ -5,9 +5,11 @@ import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import { makeStyles } from '@skybrush/app-theme-mui';
-import GenericHeaderButton from '@skybrush/mui-components/lib/GenericHeaderButton';
-import SidebarBadge from '@skybrush/mui-components/lib/SidebarBadge';
-import Tooltip from '@skybrush/mui-components/lib/Tooltip';
+import {
+  GenericHeaderButton,
+  SidebarBadge,
+  Tooltip,
+} from '@skybrush/mui-components';
 
 import Colors from '~/components/colors';
 import { isBroadcast } from '~/features/session/selectors';

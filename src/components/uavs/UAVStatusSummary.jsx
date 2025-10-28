@@ -8,8 +8,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 import { makeStyles } from '@skybrush/app-theme-mui';
-import LazyTooltip from '@skybrush/mui-components/lib/LazyTooltip';
-import StatusLight from '@skybrush/mui-components/lib/StatusLight';
+import { LazyTooltip, StatusLight } from '@skybrush/mui-components';
 
 import { Status } from '~/components/semantics';
 import { showNotification } from '~/features/snackbar/actions';

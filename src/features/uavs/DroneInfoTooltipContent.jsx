@@ -1,10 +1,10 @@
-import StatusPill from '@skybrush/mui-components/lib/StatusPill';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
 import { makeStyles } from '@skybrush/app-theme-mui';
+import { StatusPill } from '@skybrush/mui-components';
 
 import { BatteryFormatter } from '~/components/battery';
 import BatteryIndicator from '~/components/BatteryIndicator';

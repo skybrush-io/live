@@ -13,8 +13,7 @@ import { Translation, useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import { makeStyles } from '@skybrush/app-theme-mui';
-import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
-import Tooltip from '@skybrush/mui-components/lib/Tooltip';
+import { BackgroundHint, Tooltip } from '@skybrush/mui-components';
 
 import Colors from '~/components/colors';
 import { multiSelectableListOf } from '~/components/helpers/lists';

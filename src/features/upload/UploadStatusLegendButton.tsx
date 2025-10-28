@@ -5,8 +5,7 @@ import clsx from 'clsx';
 import React from 'react';
 
 import { type Status, makeStyles } from '@skybrush/app-theme-mui';
-import StatusLight from '@skybrush/mui-components/lib/StatusLight';
-import Tooltip from '@skybrush/mui-components/lib/Tooltip';
+import { StatusLight, Tooltip } from '@skybrush/mui-components';
 
 import type { Nullable } from '~/utils/types';
 

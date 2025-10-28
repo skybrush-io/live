@@ -5,7 +5,7 @@ import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { makeStyles } from '@skybrush/app-theme-mui';
-import FormHeader from '@skybrush/mui-components/lib/FormHeader';
+import { FormHeader } from '@skybrush/mui-components';
 
 import {
   SimpleDistanceField,

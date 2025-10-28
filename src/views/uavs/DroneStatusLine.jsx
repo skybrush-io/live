@@ -7,8 +7,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 import { makeStyles, monospacedFont } from '@skybrush/app-theme-mui';
-import StatusPill from '@skybrush/mui-components/lib/StatusPill';
-import StatusText from '@skybrush/mui-components/lib/StatusText';
+import { StatusPill, StatusText } from '@skybrush/mui-components';
 
 import { BatteryFormatter } from '~/components/battery';
 import BatteryIndicator from '~/components/BatteryIndicator';

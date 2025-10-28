@@ -12,8 +12,7 @@ import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import { makeStyles } from '@skybrush/app-theme-mui';
-import MiniList from '@skybrush/mui-components/lib/MiniList';
-import Tooltip from '@skybrush/mui-components/lib/Tooltip';
+import { MiniList, Tooltip } from '@skybrush/mui-components';
 
 import FileButton from '~/components/FileButton';
 

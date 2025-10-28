@@ -17,7 +17,7 @@ import xor from 'lodash-es/xor';
 import PropTypes from 'prop-types';
 import React, { type PropsWithoutRef, type RefAttributes } from 'react';
 
-import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
+import { BackgroundHint } from '@skybrush/mui-components';
 
 import type { AppDispatch, RootState } from '~/store/reducers';
 import { eventHasShiftKey } from '~/utils/events';

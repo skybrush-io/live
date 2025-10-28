@@ -3,7 +3,7 @@ import clsx from 'clsx';
 import React from 'react';
 
 import { makeStyles } from '@skybrush/app-theme-mui';
-import StatusPill from '@skybrush/mui-components/lib/StatusPill';
+import { StatusPill } from '@skybrush/mui-components';
 
 import { getSemanticsForRSSI } from '~/model/enums';
 import { formatRSSI } from '~/utils/formatting';

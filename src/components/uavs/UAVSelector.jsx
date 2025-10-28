@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { shallowEqual, useSelector } from 'react-redux';
 
 import { makeStyles } from '@skybrush/app-theme-mui';
-import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
+import { BackgroundHint } from '@skybrush/mui-components';
 
 import { PopoverWithContainerFromContext as Popover } from '~/containerContext';
 import { getReverseMissionMapping } from '~/features/mission/selectors';

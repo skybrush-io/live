@@ -4,8 +4,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import { Colors, Status, makeStyles } from '@skybrush/app-theme-mui';
-import SemanticAvatar from '@skybrush/mui-components/lib/SemanticAvatar';
-import StatusPill from '@skybrush/mui-components/lib/StatusPill';
+import { SemanticAvatar, StatusPill } from '@skybrush/mui-components';
 
 import { BatteryFormatter } from '~/components/battery';
 import BatteryIndicator from '~/components/BatteryIndicator';

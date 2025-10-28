@@ -4,7 +4,7 @@ import React from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import GenericHeaderButton from '@skybrush/mui-components/lib/GenericHeaderButton';
+import { GenericHeaderButton } from '@skybrush/mui-components';
 
 import AuthenticationStatusBadge from '~/components/badges/AuthenticationStatusBadge';
 import {

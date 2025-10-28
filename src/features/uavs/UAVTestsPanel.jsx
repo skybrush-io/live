@@ -9,7 +9,7 @@ import PropTypes from 'prop-types';
 import React, { useCallback, useRef, useState } from 'react';
 import { useAsyncFn } from 'react-use';
 
-import StatusLight from '@skybrush/mui-components/lib/StatusLight';
+import { StatusLight } from '@skybrush/mui-components';
 
 import Colors from '~/components/colors';
 import { errorToString } from '~/error-handling';

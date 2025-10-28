@@ -5,7 +5,7 @@
 
 import { connect } from 'react-redux';
 
-import SidebarBadge from '@skybrush/mui-components/lib/SidebarBadge';
+import { SidebarBadge } from '@skybrush/mui-components';
 
 import Colors from '~/components/colors';
 import {
@@ -31,10 +31,10 @@ export default connect(
     const authState = isAuthenticated(state)
       ? 'authenticated'
       : isAuthenticating(state)
-      ? 'authenticating'
-      : requiresAuthentication(state)
-      ? 'notAuthenticated'
-      : 'authenticationNotRequired';
+        ? 'authenticating'
+        : requiresAuthentication(state)
+          ? 'notAuthenticated'
+          : 'authenticationNotRequired';
     const color = colorForState[authState];
     return {
       color,

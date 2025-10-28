@@ -15,9 +15,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useAsyncRetry } from 'react-use';
 
 import { makeStyles } from '@skybrush/app-theme-mui';
-import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
-import LargeProgressIndicator from '@skybrush/mui-components/lib/LargeProgressIndicator';
-import StatusLight from '@skybrush/mui-components/lib/StatusLight';
+import {
+  BackgroundHint,
+  LargeProgressIndicator,
+  StatusLight,
+} from '@skybrush/mui-components';
 
 import { listOf } from '~/components/helpers/lists';
 import { showNotification } from '~/features/snackbar/actions';

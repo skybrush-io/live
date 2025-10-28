@@ -15,9 +15,8 @@ import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import { Colors, makeStyles } from '@skybrush/app-theme-mui';
-import LabeledStatusLight, {
-  type LabeledStatusLightProps,
-} from '@skybrush/mui-components/lib/LabeledStatusLight';
+import { LabeledStatusLight } from '@skybrush/mui-components';
+import type { LabeledStatusLightProps } from '@skybrush/mui-components/lib/LabeledStatusLight';
 
 import { Status } from '~/components/semantics';
 import {

@@ -1,8 +1,9 @@
 import Box from '@mui/material/Box';
 import ListItemButton from '@mui/material/ListItemButton';
-import StatusPill from '@skybrush/mui-components/lib/StatusPill';
 import PropTypes from 'prop-types';
 import React from 'react';
+
+import { StatusPill } from '@skybrush/mui-components';
 
 import { Status } from '~/components/semantics';
 import { formatIdsAndTruncateTrailingItems as formatUAVIds } from '~/utils/formatting';
