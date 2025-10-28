@@ -11,7 +11,7 @@ const getGitBranch = async () => {
   const { stdout, stderr, code } = await command.output();
   if (code === 0) {
     const decoder = new TextDecoder('utf-8');
-    return decoder.decode(stdout);
+    return decoder.decode(stdout).replaceAll('/', '_'); // Remove / characters.
   }
   throw new Error({ code, error: stderr });
 };
@@ -91,23 +91,35 @@ console.log('01-show-loaded done');
 
 // --- Dialogs ---
 
-console.log('02-time-sync-dialog waiting...');
-await page.evaluate(dispatch, { type: 'servers/openTimeSyncWarningDialog' });
-await sleep(250);
-await snap('02-time-sync-dialog');
-await page.evaluate(dispatch, { type: 'servers/closeTimeSyncWarningDialog' });
-console.log('02-time-sync-dialog done');
-
-console.log('03-server-settings-dialog waiting...');
+console.log('02-server-settings-dialog waiting...');
 await page.evaluate(dispatch, {
   type: 'server-settings-dialog/showServerSettingsDialog',
 });
 await sleep(250);
-await snap('03-server-settings-dialog');
+await snap('02a-server-settings-dialog');
+await page.evaluate(dispatch, {
+  type: 'server-settings-dialog/updateServerSettings',
+  payload: { selectedTab: 'manual' },
+});
+await sleep(250);
+await snap('02b-server-settings-dialog');
+await page.evaluate(dispatch, {
+  type: 'server-settings-dialog/updateServerSettings',
+  payload: { hostname: 'locahost', port: 5000 },
+});
+await sleep(250);
+await snap('02c-server-settings-dialog');
 await page.evaluate(dispatch, {
   type: 'server-settings-dialog/closeServerSettingsDialog',
 });
-console.log('03-server-settings-dialog done');
+console.log('02-server-settings-dialog done');
+
+console.log('03-time-sync-dialog waiting...');
+await page.evaluate(dispatch, { type: 'servers/openTimeSyncWarningDialog' });
+await sleep(250);
+await snap('03-time-sync-dialog');
+await page.evaluate(dispatch, { type: 'servers/closeTimeSyncWarningDialog' });
+console.log('03-time-sync-dialog done');
 
 console.log('04-safety-dialog waiting...');
 await page.evaluate(dispatch, { type: 'safety/openSafetyDialog' });
