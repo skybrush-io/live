@@ -169,7 +169,7 @@ const StartTimeForm = ({
             </Box>
 
             <FormGroup row sx={{ gap: 1 }}>
-              <Box sx={{ alignContent: 'center', minWidth: '180px' }}>
+              <Box sx={{ alignContent: 'center', minWidth: '160px' }}>
                 <Select
                   labelId='reference-clock-label'
                   name='clock'
@@ -197,7 +197,9 @@ const StartTimeForm = ({
                    * because in most cases the date should default to the current
                    * day, but the time needs to be adjusted by the user */}
 
-                  <Box sx={{ alignContent: 'center', flex: 1 }}>
+                  <Box
+                    sx={{ alignContent: 'center', minWidth: '160px', flex: 1 }}
+                  >
                     <DatePicker
                       disablePast
                       format='yyyy-MM-dd'
@@ -206,7 +208,9 @@ const StartTimeForm = ({
                       textFieldProps={{ variant: 'filled' }}
                     />
                   </Box>
-                  <Box sx={{ alignContent: 'center', flex: 1 }}>
+                  <Box
+                    sx={{ alignContent: 'center', minWidth: '160px', flex: 1 }}
+                  >
                     <TimePicker
                       ampm={false}
                       format='HH:mm:ss'
