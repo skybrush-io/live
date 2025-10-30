@@ -45,7 +45,7 @@ const useStyles = makeStyles((theme) => ({
   button: {
     flex: 1,
     margin: theme.spacing(0.5),
-    lineHeight: 1,
+    lineHeight: '1 !important',
   },
 }));
 
