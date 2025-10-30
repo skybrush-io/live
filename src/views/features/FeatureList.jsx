@@ -51,16 +51,6 @@ const ICON_SIZE = 24;
 const GAP_SIZE = 12;
 
 const useStyles = makeStyles({
-  container: {
-    containerType: 'inline-size',
-  },
-  item: {
-    '@container (min-width: 351px)': {
-      paddingRight: (props) =>
-        ICON_SIZE * props.actions.length +
-        GAP_SIZE * (props.actions.length + 1),
-    },
-  },
   button: {
     '@container (max-width: 350px)': {
       display: 'none',
@@ -135,7 +125,7 @@ const FeatureListEntryPresentation = (props) => {
     },
   ];
 
-  const classes = useStyles({ actions });
+  const classes = useStyles();
 
   const actionButtons = (
     <>
@@ -183,8 +173,13 @@ const FeatureListEntryPresentation = (props) => {
 
   return (
     <ListItemButton
-      ContainerProps={{ className: classes.container }}
-      className={classes.item}
+      sx={{
+        containerType: 'inline-size',
+        '@container (min-width: 351px)': {
+          paddingRight:
+            ICON_SIZE * actions.length + GAP_SIZE * (actions.length + 1),
+        },
+      }}
       selected={selected}
       onClick={onSelect}
     >
