@@ -256,9 +256,9 @@
       "react": true,
       "rules": {
         "capitalized-comments": 0,
-        "import/extensions": 0,
+        "import-x/extensions": 0,
         "import/no-unassigned-import": 0,
-        "import/order": 0,
+        "import-x/order": 0,
         "n/file-extension-in-import": 0,
         "no-bitwise": 0,
         "no-else-return": 0,
