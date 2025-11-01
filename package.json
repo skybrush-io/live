@@ -249,128 +249,124 @@
     "singleQuote": true,
     "trailingComma": "es5"
   },
-  "xo": {
-    "extends": "xo-react",
-    "parser": "@babel/eslint-parser",
-    "space": true,
-    "prettier": true,
-    "env": [
-      "browser"
-    ],
-    "rules": {
-      "capitalized-comments": 0,
-      "import/extensions": 0,
-      "import/no-unassigned-import": 0,
-      "import/order": 0,
-      "n/file-extension-in-import": 0,
-      "no-bitwise": 0,
-      "no-else-return": 0,
-      "no-lonely-if": 0,
-      "no-negated-condition": 0,
-      "no-warning-comments": 0,
-      "object-curly-spacing": [
-        "error",
-        "always"
-      ],
-      "object-shorthand": [
-        "error",
-        "always",
-        {
-          "avoidExplicitReturnArrows": false
-        }
-      ],
-      "react/boolean-prop-naming": 0,
-      "react/function-component-definition": 0,
-      "react/jsx-no-duplicate-props": 0,
-      "react/require-default-props": 0,
-      "unicorn/filename-case": 0,
-      "unicorn/no-array-callback-reference": 0,
-      "unicorn/no-array-reduce": 0,
-      "unicorn/no-fn-reference-in-iterator": 0,
-      "unicorn/numeric-separators-style": 0,
-      "unicorn/prefer-module": 0,
-      "unicorn/prefer-node-protocol": 0,
-      "unicorn/prefer-ternary": 0,
-      "unicorn/prevent-abbreviations": 0,
-      "unicorn/switch-case-braces": 0
-    },
-    "overrides": [
-      {
-        "files": [
-          "**/*.ts",
-          "**/*.tsx"
+  "xo": [
+    {
+      "space": true,
+      "prettier": true,
+      "react": true,
+      "rules": {
+        "capitalized-comments": 0,
+        "import/extensions": 0,
+        "import/no-unassigned-import": 0,
+        "import/order": 0,
+        "n/file-extension-in-import": 0,
+        "no-bitwise": 0,
+        "no-else-return": 0,
+        "no-lonely-if": 0,
+        "no-negated-condition": 0,
+        "no-warning-comments": 0,
+        "object-curly-spacing": [
+          "error",
+          "always"
         ],
-        "rules": {
-          "@typescript-eslint/consistent-type-assertions": [
-            "error",
-            {
-              "assertionStyle": "as",
-              "objectLiteralTypeAssertions": "allow"
-            }
-          ],
-          "@typescript-eslint/explicit-function-return-type": "warn",
-          "@typescript-eslint/naming-convention": [
-            "error",
-            {
-              "selector": "default",
-              "format": [
-                "camelCase"
-              ],
-              "leadingUnderscore": "allow"
-            },
-            {
-              "selector": "enumMember",
-              "format": [
-                "UPPER_CASE"
-              ]
-            },
-            {
-              "selector": "import",
-              "format": [
-                "camelCase",
-                "PascalCase"
-              ]
-            },
-            {
-              "selector": "objectLiteralProperty",
-              "format": [
-                "camelCase",
-                "UPPER_CASE"
-              ],
-              "leadingUnderscore": "allow"
-            },
-            {
-              "selector": "parameter",
-              "modifiers": [
-                "unused"
-              ],
-              "format": [
-                "camelCase",
-                "PascalCase"
-              ],
-              "leadingUnderscore": "require"
-            },
-            {
-              "selector": "typeLike",
-              "format": [
-                "PascalCase"
-              ]
-            },
-            {
-              "selector": "variable",
-              "format": [
-                "camelCase",
-                "PascalCase",
-                "UPPER_CASE"
-              ],
-              "leadingUnderscore": "allow"
-            }
-          ],
-          "@typescript-eslint/no-dynamic-delete": "off",
-          "@typescript-eslint/no-namespace": "off",
-          "@typescript-eslint/prefer-regexp-exec": "off"
-        }
+        "object-shorthand": [
+          "error",
+          "always",
+          {
+            "avoidExplicitReturnArrows": false
+          }
+        ],
+        "react/boolean-prop-naming": 0,
+        "react/function-component-definition": 0,
+        "react/jsx-no-duplicate-props": 0,
+        "react/require-default-props": 0,
+        "unicorn/filename-case": 0,
+        "unicorn/no-array-callback-reference": 0,
+        "unicorn/no-array-reduce": 0,
+        "unicorn/no-fn-reference-in-iterator": 0,
+        "unicorn/numeric-separators-style": 0,
+        "unicorn/prefer-module": 0,
+        "unicorn/prefer-node-protocol": 0,
+        "unicorn/prefer-ternary": 0,
+        "unicorn/prevent-abbreviations": 0,
+        "unicorn/switch-case-braces": 0
       }
-    ]
-  }
+    },
+    {
+      "files": [
+        "**/*.ts",
+        "**/*.tsx"
+      ],
+      "rules": {
+        "@typescript-eslint/consistent-type-assertions": [
+          "error",
+          {
+            "assertionStyle": "as",
+            "objectLiteralTypeAssertions": "allow"
+          }
+        ],
+        "@typescript-eslint/explicit-function-return-type": "warn",
+        "@typescript-eslint/naming-convention": [
+          "error",
+          {
+            "selector": "default",
+            "format": [
+              "camelCase"
+            ],
+            "leadingUnderscore": "allow"
+          },
+          {
+            "selector": "enumMember",
+            "format": [
+              "UPPER_CASE"
+            ]
+          },
+          {
+            "selector": "import",
+            "format": [
+              "camelCase",
+              "PascalCase"
+            ]
+          },
+          {
+            "selector": "objectLiteralProperty",
+            "format": [
+              "camelCase",
+              "UPPER_CASE"
+            ],
+            "leadingUnderscore": "allow"
+          },
+          {
+            "selector": "parameter",
+            "modifiers": [
+              "unused"
+            ],
+            "format": [
+              "camelCase",
+              "PascalCase"
+            ],
+            "leadingUnderscore": "require"
+          },
+          {
+            "selector": "typeLike",
+            "format": [
+              "PascalCase"
+            ]
+          },
+          {
+            "selector": "variable",
+            "format": [
+              "camelCase",
+              "PascalCase",
+              "UPPER_CASE"
+            ],
+            "leadingUnderscore": "allow"
+          }
+        ],
+        "@typescript-eslint/no-dynamic-delete": "off",
+        "@typescript-eslint/no-namespace": "off",
+        "@typescript-eslint/prefer-regexp-exec": "off"
+      }
+    }
+  ]
 }
