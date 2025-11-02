@@ -1,11 +1,10 @@
+import { styled } from '@mui/material/styles';
 import { keyframes } from '@mui/styled-engine';
-import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import React, { useEffect, useRef } from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import { makeStyles } from '@skybrush/app-theme-mui';
 import {
   GenericHeaderButton,
   SidebarBadge,
@@ -28,32 +27,27 @@ const cooldownKeyframes = keyframes({
   },
 });
 
-const useStyles = makeStyles({
-  underlay: {
-    position: 'absolute',
-    right: '0px',
-    bottom: '0px',
-    left: '0px',
+const Underlay = styled('div')(({ active, timeoutLength }) => ({
+  position: 'absolute',
+  right: '0px',
+  bottom: '0px',
+  left: '0px',
 
-    height: '0%',
+  height: '0%',
 
-    backgroundColor: Colors.warning,
-    opacity: 0.5,
-  },
+  backgroundColor: Colors.warning,
+  opacity: 0.5,
 
-  underlayActive: {
-    animationName: cooldownKeyframes,
-    animationDuration: ({ timeoutLength }) =>
-      isValidTimeoutLength(timeoutLength) && Number.isFinite(timeoutLength)
-        ? `${timeoutLength}s`
-        : '100000s',
-    animationTimingFunction: 'linear',
-    animationIterationCount: '1',
-  },
-});
+  animationName: active ? cooldownKeyframes : null,
+  animationDuration:
+    isValidTimeoutLength(timeoutLength) && Number.isFinite(timeoutLength)
+      ? `${timeoutLength}s`
+      : '100000s',
+  animationTimingFunction: 'linear',
+  animationIterationCount: '1',
+}));
 
 const BroadcastButton = ({ isBroadcast, setBroadcast, t, timeoutLength }) => {
-  const classes = useStyles({ timeoutLength });
   const timeout = useRef(undefined);
 
   useEffect(() => {
@@ -76,12 +70,7 @@ const BroadcastButton = ({ isBroadcast, setBroadcast, t, timeoutLength }) => {
       }
     >
       <GenericHeaderButton onClick={() => setBroadcast(!isBroadcast)}>
-        <div
-          className={clsx(
-            classes.underlay,
-            isBroadcast && classes.underlayActive
-          )}
-        />
+        <Underlay active={isBroadcast} timeoutLength={timeoutLength} />
         <SidebarBadge color={Colors.warning} visible={isBroadcast} />
         <div style={{ position: 'relative' }}>
           <Campaign />
