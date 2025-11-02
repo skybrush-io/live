@@ -1,8 +1,7 @@
 import React from 'react';
 
 import Popover, { type PopoverProps } from '@mui/material/Popover';
-import { Tooltip } from '@skybrush/mui-components';
-import type { TooltipProps } from '@skybrush/mui-components/lib/Tooltip';
+import { Tooltip, type TooltipProps } from '@skybrush/mui-components';
 
 export const ContainerContext = React.createContext(window.document.body);
 

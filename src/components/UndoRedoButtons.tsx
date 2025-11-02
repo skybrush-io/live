@@ -5,7 +5,7 @@ import IconButton from '@mui/material/IconButton';
 import React from 'react';
 import { withTranslation, type WithTranslation } from 'react-i18next';
 
-import type { TooltipProps } from '@skybrush/mui-components/lib/Tooltip';
+import type { TooltipProps } from '@skybrush/mui-components';
 
 import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
 
