@@ -1,5 +1,6 @@
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import NotificationsOffIcon from '@mui/icons-material/NotificationsOff';
+import { keyframes } from '@mui/styled-engine';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -16,37 +17,37 @@ import alertSoundResource from '~/../assets/sounds/alert.mp3';
 
 const AUDIO_REPEAT_INTERVAL_SEC = 5;
 
+const ringAnimation = keyframes({
+  '0%': { transform: 'rotate(0)' },
+  '2%': { transform: 'rotate(30deg)' },
+  '5%': { transform: 'rotate(-28deg)' },
+  '8%': { transform: 'rotate(34deg)' },
+  '11%': { transform: 'rotate(-32deg)' },
+  '14%': { transform: 'rotate(30deg)' },
+  '17%': { transform: 'rotate(-28deg)' },
+  '20%': { transform: 'rotate(26deg)' },
+  '23%': { transform: 'rotate(-24deg)' },
+  '26%': { transform: 'rotate(22deg)' },
+  '29%': { transform: 'rotate(-20deg)' },
+  '32%': { transform: 'rotate(18deg)' },
+  '35%': { transform: 'rotate(-16deg)' },
+  '38%': { transform: 'rotate(14deg)' },
+  '41%': { transform: 'rotate(-12deg)' },
+  '44%': { transform: 'rotate(10deg)' },
+  '47%': { transform: 'rotate(-8deg)' },
+  '50%': { transform: 'rotate(6deg)' },
+  '53%': { transform: 'rotate(-4deg)' },
+  '56%': { transform: 'rotate(2deg)' },
+  '59%': { transform: 'rotate(-1deg)' },
+  '62%': { transform: 'rotate(1deg)' },
+  '65%': { transform: 'rotate(0)' },
+  '100%': { transform: 'rotate(0)' },
+});
+
 const useStyles = makeStyles({
   bell: {
-    animation: `$ring ${AUDIO_REPEAT_INTERVAL_SEC}s ease-in-out infinite`,
+    animation: `${ringAnimation} ${AUDIO_REPEAT_INTERVAL_SEC}s ease-in-out infinite`,
     transformOrigin: '50% 4px',
-  },
-
-  '@keyframes ring': {
-    '0%': { transform: 'rotate(0)' },
-    '2%': { transform: 'rotate(30deg)' },
-    '5%': { transform: 'rotate(-28deg)' },
-    '8%': { transform: 'rotate(34deg)' },
-    '11%': { transform: 'rotate(-32deg)' },
-    '14%': { transform: 'rotate(30deg)' },
-    '17%': { transform: 'rotate(-28deg)' },
-    '20%': { transform: 'rotate(26deg)' },
-    '23%': { transform: 'rotate(-24deg)' },
-    '26%': { transform: 'rotate(22deg)' },
-    '29%': { transform: 'rotate(-20deg)' },
-    '32%': { transform: 'rotate(18deg)' },
-    '35%': { transform: 'rotate(-16deg)' },
-    '38%': { transform: 'rotate(14deg)' },
-    '41%': { transform: 'rotate(-12deg)' },
-    '44%': { transform: 'rotate(10deg)' },
-    '47%': { transform: 'rotate(-8deg)' },
-    '50%': { transform: 'rotate(6deg)' },
-    '53%': { transform: 'rotate(-4deg)' },
-    '56%': { transform: 'rotate(2deg)' },
-    '59%': { transform: 'rotate(-1deg)' },
-    '62%': { transform: 'rotate(1deg)' },
-    '65%': { transform: 'rotate(0)' },
-    '100%': { transform: 'rotate(0)' },
   },
 });
 

@@ -1,4 +1,5 @@
 import Avatar from '@mui/material/Avatar';
+import { keyframes } from '@mui/styled-engine';
 import clsx from 'clsx';
 import createColor from 'color';
 import PropTypes from 'prop-types';
@@ -7,6 +8,15 @@ import React from 'react';
 import { makeStyles } from '@skybrush/app-theme-mui';
 
 import Colors from '~/components/colors';
+
+const pulse = keyframes({
+  '0%': {
+    boxShadow: `0 0 8px 2px ${createColor(Colors.info).alpha(0)}`,
+  },
+  '100%': {
+    boxShadow: `0 0 8px 2px ${Colors.info}`,
+  },
+});
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -29,7 +39,7 @@ const useStyles = makeStyles((theme) => ({
   'avatar-editing': {
     backgroundColor: Colors.info,
     color: theme.palette.getContrastText(Colors.info),
-    animation: '$pulse 0.5s infinite',
+    animation: `${pulse} 0.5s infinite`,
     animationDirection: 'alternate',
   },
 
@@ -42,15 +52,6 @@ const useStyles = makeStyles((theme) => ({
   'avatar-success': {
     backgroundColor: Colors.success,
     color: theme.palette.getContrastText(Colors.success),
-  },
-
-  '@keyframes pulse': {
-    '0%': {
-      boxShadow: `0 0 8px 2px ${createColor(Colors.info).alpha(0)}`,
-    },
-    '100%': {
-      boxShadow: `0 0 8px 2px ${Colors.info}`,
-    },
   },
 }));
 

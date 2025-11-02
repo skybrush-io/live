@@ -1,3 +1,4 @@
+import { keyframes } from '@mui/styled-engine';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import React, { useEffect, useRef } from 'react';
@@ -18,6 +19,15 @@ import Campaign from '~/icons/Campaign';
 
 const isValidTimeoutLength = (value) => typeof value === 'number' && value > 0;
 
+const cooldownKeyframes = keyframes({
+  from: {
+    height: '100%',
+  },
+  to: {
+    height: '0%',
+  },
+});
+
 const useStyles = makeStyles({
   underlay: {
     position: 'absolute',
@@ -32,22 +42,13 @@ const useStyles = makeStyles({
   },
 
   underlayActive: {
-    animationName: '$cooldown',
+    animationName: cooldownKeyframes,
     animationDuration: ({ timeoutLength }) =>
       isValidTimeoutLength(timeoutLength) && Number.isFinite(timeoutLength)
         ? `${timeoutLength}s`
         : '100000s',
     animationTimingFunction: 'linear',
     animationIterationCount: '1',
-  },
-
-  '@keyframes cooldown': {
-    '0%': {
-      height: '100%',
-    },
-    '100%': {
-      height: '0%',
-    },
   },
 });
 
