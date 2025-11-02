@@ -44,7 +44,7 @@ const showFilePath =
 
 console.log('Preparing...');
 
-const folder = `dev/screenshots/${new Date().toISOString()}`;
+const folder = `etc/dev/screenshots/${new Date().toISOString()}`;
 Deno.mkdir(folder, { recursive: true });
 
 const browser = await puppeteer.launch({ headless: true });
