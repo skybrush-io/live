@@ -2,26 +2,24 @@
  * @file React component for the layer settings dialog.
  */
 
+import ArrowDown from '@mui/icons-material/ArrowDropDown';
+import ArrowUp from '@mui/icons-material/ArrowDropUp';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import IconButton from '@mui/material/IconButton';
+import Switch from '@mui/material/Switch';
 import { TextField } from 'mui-rff';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Form } from 'react-final-form';
 import { connect } from 'react-redux';
 
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import IconButton from '@material-ui/core/IconButton';
-import Switch from '@material-ui/core/Switch';
-import ArrowDown from '@material-ui/icons/ArrowDropDown';
-import ArrowUp from '@material-ui/icons/ArrowDropUp';
-
 import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
 import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
 
-import { forceFormSubmission } from '../forms';
-
+import { forceFormSubmission } from '~/components/forms';
 import { closeLayerSettingsDialog } from '~/features/map/layer-settings-dialog';
 import {
   adjustLayerZIndex,
@@ -56,7 +54,7 @@ const BasicLayerSettingsFormPresentation = ({
   >
     {({ handleSubmit }) => (
       <form id='basicLayerSettings' onSubmit={handleSubmit}>
-        <Box display='flex' alignItems='center' pb={2}>
+        <Box sx={{ display: 'flex', alignItems: 'center', pb: 2 }}>
           <TextField
             name='label'
             variant='filled'
@@ -67,7 +65,6 @@ const BasicLayerSettingsFormPresentation = ({
           <div>&nbsp;</div>
           <Switch
             checked={layer.visible}
-            color='primary'
             disabled={
               layer.type === LayerType.UNAVAILABLE ||
               layer.type === LayerType.UNTYPED
@@ -187,7 +184,12 @@ class LayerSettingsContainerPresentation extends React.Component {
     // in-place by React, which could cause dirty values to stay in
     // the form fields even if the layer selection changes
     return (
-      <Box key={'settings_' + layerId} pt={2}>
+      <Box
+        key={'settings_' + layerId}
+        sx={{
+          pt: 2,
+        }}
+      >
         {layer.type === LayerType.UNTYPED ? null : (
           <BasicLayerSettingsForm layer={layer} layerId={layerId} />
         )}
@@ -238,6 +240,7 @@ class LayerSettingsDialogPresentation extends React.Component {
         <IconButton
           key='moveUp'
           disabled={!canMoveUp}
+          size='large'
           onClick={this._moveSelectedLayerUp}
         >
           <ArrowUp />
@@ -245,6 +248,7 @@ class LayerSettingsDialogPresentation extends React.Component {
         <IconButton
           key='moveDown'
           disabled={!canMoveDown}
+          size='large'
           onClick={this._moveSelectedLayerDown}
         >
           <ArrowDown />

@@ -1,3 +1,4 @@
+import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import isNil from 'lodash-es/isNil';
 import padEnd from 'lodash-es/padEnd';
@@ -6,15 +7,13 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
-import { makeStyles } from '@material-ui/core/styles';
-
-import { monospacedFont } from '@skybrush/app-theme-material-ui';
+import { monospacedFont } from '@skybrush/app-theme-mui';
+import StatusPill from '@skybrush/mui-components/lib/StatusPill';
 import StatusText from '@skybrush/mui-components/lib/StatusText';
 
 import { BatteryFormatter } from '~/components/battery';
 import BatteryIndicator from '~/components/BatteryIndicator';
 import ColoredLight from '~/components/ColoredLight';
-import StatusPill from '~/components/StatusPill';
 import { getBatteryFormatter } from '~/features/settings/selectors';
 import {
   createSingleUAVStatusSummarySelector,
@@ -22,15 +21,12 @@ import {
   getLightColorByUavIdInCSSNotation,
   getUAVById,
 } from '~/features/uavs/selectors';
-import {
-  abbreviateFlightMode,
-  abbreviateGPSFixType,
-  getSemanticsForGPSFixType,
-} from '~/model/enums';
+import { abbreviateFlightMode } from '~/model/enums';
 import { getPreferredCoordinateFormatter } from '~/selectors/formatting';
 import { formatCoordinateArray } from '~/utils/formatting';
 
-import { RSSIIndicator } from './RSSIIndicator';
+import GPSStatusPill from './GPSStatusPill';
+import RSSIIndicator from './RSSIIndicator';
 
 /**
  * Converts the absolute value of a heading deviation, in degrees, to the
@@ -122,7 +118,7 @@ const DroneStatusLine = ({
   rssi,
   secondaryLabel,
   text,
-  textSemantics,
+  textSemantics = 'info',
 }) => {
   const classes = useStyles();
   const { amsl, ahl, agl } = position || {};
@@ -155,14 +151,10 @@ const DroneStatusLine = ({
           />
           <ColoredLight inline color={color} />
           <RSSIIndicator className={classes.rssiPills} rssi={rssi} />
-          <StatusPill
-            inline
-            hollow
+          <GPSStatusPill
             className={clsx(classes.pill, classes.gpsPill)}
-            status={getSemanticsForGPSFixType(gpsFixType)}
-          >
-            {abbreviateGPSFixType(gpsFixType)}
-          </StatusPill>
+            fixType={gpsFixType}
+          />
           {localPosition ? (
             padEnd(localCoordinateFormatter(localPosition), 25)
           ) : position ? (
@@ -178,10 +170,10 @@ const DroneStatusLine = ({
           {!isNil(ahl) ? (
             padStart(position.ahl.toFixed(1), 6) + 'm'
           ) : (
-            <span className={classes.muted}>{'   ———'}</span>
+            <span className={classes.muted}>{'    ———'}</span>
           )}
           {!isNil(agl) ? (
-            padStart(position.agl.toFixed(1), 6) + 'm'
+            padStart(position.agl.toFixed(1), 5) + 'm'
           ) : (
             <span className={classes.muted}>{'   ———'}</span>
           )}
@@ -237,11 +229,8 @@ DroneStatusLine.propTypes = {
     'rth',
     'error',
     'critical',
+    'missing',
   ]),
-};
-
-DroneStatusLine.defaultProps = {
-  textSemantics: 'info',
 };
 
 export default connect(

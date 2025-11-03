@@ -1,9 +1,8 @@
+import Box from '@mui/material/Box';
+import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import React from 'react';
-
-import { makeStyles } from '@material-ui/core/styles';
-import Box from '@material-ui/core/Box';
 
 import Colors from '~/components/colors';
 
@@ -47,7 +46,7 @@ const BatteryIndicator = ({
   charging,
   className,
   cellCount,
-  formatter,
+  formatter = DEFAULT_BATTERY_FORMATTER,
   percentage,
   voltage,
 }) => {
@@ -59,7 +58,7 @@ const BatteryIndicator = ({
   const rootClass = clsx(className, classes.root, classes[`battery${status}`]);
 
   return (
-    <Box fontSize='small' className={rootClass}>
+    <Box className={rootClass} sx={{ fontSize: 'small' }}>
       {batteryIcon}
       {label}
     </Box>
@@ -73,10 +72,6 @@ BatteryIndicator.propTypes = {
   formatter: PropTypes.instanceOf(BatteryFormatter),
   percentage: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   voltage: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-};
-
-BatteryIndicator.defaultProps = {
-  formatter: DEFAULT_BATTERY_FORMATTER,
 };
 
 export default BatteryIndicator;

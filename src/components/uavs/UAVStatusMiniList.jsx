@@ -11,12 +11,14 @@ import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
 import MiniList from '@skybrush/mui-components/lib/MiniList';
 
 import { listOf } from '~/components/helpers/lists';
-import { statusToPriority } from '~/components/semantics';
+import { Status, statusToPriority } from '~/components/semantics';
 import { setSelectedUAVIds } from '~/features/uavs/actions';
 import {
+  getInactiveUAVIds,
   getUAVIdToStateMapping,
   getUAVIdList,
   getSingleUAVStatusSummary,
+  getUAVIdsMarkedAsGone,
 } from '~/features/uavs/selectors';
 
 import UAVStatusMiniListEntry from './UAVStatusMiniListEntry';
@@ -28,9 +30,12 @@ import UAVStatusMiniListEntry from './UAVStatusMiniListEntry';
 const getListItems = createSelector(
   getUAVIdToStateMapping,
   getUAVIdList,
-  (byId, order) => {
+  getInactiveUAVIds,
+  getUAVIdsMarkedAsGone,
+  (byId, order, inactiveIds, goneIds) => {
     const items = {};
 
+    // Add UAV IDs grouped by their status
     for (const uavId of order) {
       const uav = byId[uavId];
       if (uav) {
@@ -50,10 +55,42 @@ const getListItems = createSelector(
       }
     }
 
+    // Add UAV IDs that are in the GONE state because a UAV may be GONE and
+    // have an error code at the same time. If it has a warning or an error,
+    // it won't appear as GONE in the status summary so far because warnings
+    // and errors are not overridden by "GONE".
+    if (goneIds.length > 0) {
+      const text = 'gone';
+      const textSemantics = Status.OFF;
+      const key = `${textSemantics}:${text}`;
+      items[key] = {
+        id: key,
+        label: text,
+        priority: -statusToPriority(textSemantics),
+        status: textSemantics,
+        uavIds: goneIds,
+      };
+    }
+
+    if (inactiveIds.length > 0) {
+      const text = 'no telem';
+      const textSemantics = Status.WARNING;
+      const key = `${textSemantics}:${text}`;
+      items[key] = {
+        id: key,
+        label: text,
+        priority: -statusToPriority(textSemantics),
+        status: textSemantics,
+        uavIds: inactiveIds,
+      };
+    }
+
+    // Sort UAV IDs in each category
     for (const item of Object.values(items)) {
       item.uavIds = orderBy(item.uavIds);
     }
 
+    // Sort categories by priority
     return sortBy(items, ['priority', 'label']);
   }
 );

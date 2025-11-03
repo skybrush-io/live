@@ -1,10 +1,9 @@
+import Avatar from '@mui/material/Avatar';
+import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
-import * as color from 'color';
+import createColor from 'color';
 import PropTypes from 'prop-types';
 import React from 'react';
-
-import Avatar from '@material-ui/core/Avatar';
-import { makeStyles } from '@material-ui/core/styles';
 
 import Colors from '~/components/colors';
 
@@ -47,7 +46,7 @@ const useStyles = makeStyles(
 
     '@keyframes pulse': {
       '0%': {
-        boxShadow: `0 0 8px 2px ${color(Colors.info).alpha(0)}`,
+        boxShadow: `0 0 8px 2px ${createColor(Colors.info).alpha(0)}`,
       },
       '100%': {
         boxShadow: `0 0 8px 2px ${Colors.info}`,
@@ -62,7 +61,7 @@ const useStyles = makeStyles(
  * don't want to display a drone avatar but want to show a placeholder
  * instead that is of the same size as the avatar.
  */
-const DronePlaceholder = ({ editing, label, status }) => {
+const DronePlaceholder = ({ editing, label, status = 'off' }) => {
   const classes = useStyles();
   return (
     <div className={classes.root}>
@@ -82,10 +81,6 @@ DronePlaceholder.propTypes = {
   editing: PropTypes.bool,
   label: PropTypes.node,
   status: PropTypes.oneOf(['off', 'editing', 'error', 'success']),
-};
-
-DronePlaceholder.defaultProps = {
-  status: 'off',
 };
 
 export default DronePlaceholder;

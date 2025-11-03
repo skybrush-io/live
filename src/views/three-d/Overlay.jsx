@@ -1,14 +1,22 @@
+import Box from '@mui/material/Box';
 import PropTypes from 'prop-types';
 import React from 'react';
-
-import Box from '@material-ui/core/Box';
 
 /**
  * Overlay that can be placed on top of the 3D view in order to show some
  * HTML components.
  */
 const Overlay = ({ children, ...rest }) => (
-  <Box position='absolute' zIndex={1} {...rest}>
+  <Box
+    {...rest}
+    sx={[
+      {
+        position: 'absolute',
+        zIndex: 1,
+      },
+      ...(Array.isArray(rest.sx) ? rest.sx : [rest.sx]),
+    ]}
+  >
     {children}
   </Box>
 );

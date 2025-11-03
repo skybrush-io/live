@@ -66,7 +66,6 @@ import settingsReducer from '~/features/settings/slice';
 import showReducer from '~/features/show/slice';
 import sidebarReducer from '~/features/sidebar/slice';
 import threeDReducer from '~/features/three-d/slice';
-import tourReducer from '~/features/tour/slice';
 import uavControlReducer from '~/features/uav-control/slice';
 import logDownloadReducer from '~/features/uavs/log-download';
 import uavReducer from '~/features/uavs/slice';
@@ -143,7 +142,6 @@ const reducer = combineReducers({
   show: showReducer,
   sidebar: sidebarReducer,
   threeD: threeDReducer,
-  tour: tourReducer,
   uavs: uavReducer,
   uavControl: uavControlReducer,
   upload: uploadReducer,
@@ -158,7 +156,7 @@ export default reducer;
 // respectively, when `~/store/index` gets annotated, according to:
 // https://redux.js.org/usage/usage-with-typescript#define-root-state-and-dispatch-types
 export type RootState = ReturnType<typeof reducer>;
-export type AppDispatch = ThunkDispatch<RootState, unknown, Action<unknown>>;
+export type AppDispatch = ThunkDispatch<RootState, unknown, Action<string>>;
 // eslint-disable-next-line @typescript-eslint/ban-types
 export type AppSelector<T, ExtraArgs extends unknown[] = []> = (
   state: RootState,
@@ -168,5 +166,5 @@ export type AppThunk<ReturnType = void> = ThunkAction<
   ReturnType,
   RootState,
   unknown,
-  Action<unknown>
+  Action<string>
 >;

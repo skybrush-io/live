@@ -20,7 +20,7 @@ const ClockDisplayLabel = ({
   clockId,
   clockSkew,
   emptyText,
-  format,
+  format = 'HH:mm:ss',
   signed,
   updateInterval,
   ...rest
@@ -48,10 +48,6 @@ ClockDisplayLabel.propTypes = {
   format: PropTypes.string,
   signed: PropTypes.bool,
   updateInterval: PropTypes.number,
-};
-
-ClockDisplayLabel.defaultProps = {
-  format: 'HH:mm:ss',
 };
 
 export default connect(

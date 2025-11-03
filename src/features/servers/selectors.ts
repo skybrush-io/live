@@ -131,6 +131,13 @@ export const getServerHttpUrl: AppSelector<string | undefined> = createSelector(
 );
 
 /**
+ * Selector that returns the version number of the server that we are
+ * connected to, or undefined if we are not connected to the server yet.
+ */
+export const getServerVersion = (state: RootState) =>
+  state.servers.current.version;
+
+/**
  * Returns all the information that we know about the current Skybrush server.
  *
  * @param state - The state of the application

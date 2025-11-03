@@ -1,9 +1,8 @@
+import Box from '@mui/material/Box';
+import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import React from 'react';
-
-import Box from '@material-ui/core/Box';
-import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles(
   (theme) => ({
@@ -44,7 +43,13 @@ const useStyles = makeStyles(
  * to ensure a uniform visual representation of the message semantics throughout
  * the app.
  */
-const ColoredLight = ({ color, inline, size, style, ...rest }) => {
+const ColoredLight = ({
+  color = '#000000',
+  inline,
+  size = 'normal',
+  style,
+  ...rest
+}) => {
   const classes = useStyles();
 
   return (
@@ -69,11 +74,6 @@ ColoredLight.propTypes = {
   inline: PropTypes.bool,
   size: PropTypes.oneOf(['small', 'normal', 'large']),
   style: PropTypes.object,
-};
-
-ColoredLight.defaultProps = {
-  color: '#000000',
-  size: 'normal',
 };
 
 export default ColoredLight;

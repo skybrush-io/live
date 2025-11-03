@@ -1,8 +1,7 @@
+import Box from '@mui/material/Box';
+import Divider from '@mui/material/Divider';
+import List from '@mui/material/List';
 import React from 'react';
-
-import Box from '@material-ui/core/Box';
-import Divider from '@material-ui/core/Divider';
-import List from '@material-ui/core/List';
 
 import LightControlGrid from './LightControlGrid';
 import LightControlMainSwitch from './LightControlMainSwitch';
@@ -13,11 +12,12 @@ import LightControlMainSwitch from './LightControlMainSwitch';
  */
 const LightControlPanel = () => (
   <Box
-    display='flex'
-    flexDirection='column'
-    height='100%'
-    id='tour-light-control'
-    overflow='hidden'
+    sx={{
+      display: 'flex',
+      flexDirection: 'column',
+      height: '100%',
+      overflow: 'hidden',
+    }}
   >
     <List dense>
       <LightControlMainSwitch />

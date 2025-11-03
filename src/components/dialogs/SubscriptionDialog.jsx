@@ -1,25 +1,23 @@
+import ContentRemoveCircleOutline from '@mui/icons-material/RemoveCircleOutline';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import FormControl from '@mui/material/FormControl';
+import FormGroup from '@mui/material/FormGroup';
+import IconButton from '@mui/material/IconButton';
+import InputLabel from '@mui/material/InputLabel';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import ListItemText from '@mui/material/ListItemText';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
 import omit from 'lodash-es/omit';
 import partial from 'lodash-es/partial';
 import without from 'lodash-es/without';
 import PropTypes from 'prop-types';
 import React from 'react';
-
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import FormControl from '@material-ui/core/FormControl';
-import FormGroup from '@material-ui/core/FormGroup';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
-
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
-import IconButton from '@material-ui/core/IconButton';
-import ContentRemoveCircleOutline from '@material-ui/icons/RemoveCircleOutline';
 
 import flock from '~/flock';
 import messageHub from '~/message-hub';
@@ -114,6 +112,7 @@ export default class SubscriptionDialog extends React.Component {
           <IconButton
             edge='end'
             aria-label='Unsubscribe'
+            size='large'
             onClick={partial(this._removeSubscription, subscription)}
           >
             <ContentRemoveCircleOutline />

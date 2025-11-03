@@ -3,7 +3,7 @@
  */
 
 import isEqual from 'lodash-es/isEqual';
-import { defaultMemoize, createSelectorCreator } from 'reselect';
+import { createSelectorCreator, lruMemoize } from 'reselect';
 import * as shallowEqual from 'shallowequal';
 
 /**
@@ -11,10 +11,10 @@ import * as shallowEqual from 'shallowequal';
  * checks on the input arguments.
  */
 export const createShallowSelector = createSelectorCreator(
-  defaultMemoize,
+  lruMemoize,
   shallowEqual
 );
 
-export const createDeepResultSelector = createSelectorCreator(defaultMemoize, {
+export const createDeepResultSelector = createSelectorCreator(lruMemoize, {
   resultEqualityCheck: isEqual,
 });

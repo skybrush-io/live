@@ -11,7 +11,7 @@ const positionMap = {
   bottomRight: 'right-bottom',
 };
 
-const CornerRibbon = ({ label, position }) => (
+const CornerRibbon = ({ label, position = 'topRight' }) => (
   <div
     className={clsx('corner-ribbon', positionMap[position])}
     data-ribbon={label}
@@ -21,10 +21,6 @@ const CornerRibbon = ({ label, position }) => (
 CornerRibbon.propTypes = {
   label: PropTypes.string,
   position: PropTypes.oneOf(Object.keys(positionMap)),
-};
-
-CornerRibbon.defaultProps = {
-  position: 'topRight',
 };
 
 export default CornerRibbon;

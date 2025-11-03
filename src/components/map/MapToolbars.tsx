@@ -1,6 +1,5 @@
+import Box from '@mui/material/Box';
 import React from 'react';
-
-import Box from '@material-ui/core/Box';
 
 import Widget from '~/components/Widget';
 
@@ -16,16 +15,12 @@ const MapToolbars = ({ left, top }: MapToolbarsProps) => (
   <>
     {left && (
       <Widget key='Widget.LeftToolbar' style={{ top: 8 + 48 + 8, left: 8 }}>
-        <Box display='flex' flexDirection='column'>
-          {left}
-        </Box>
+        <Box sx={{ display: 'flex', flexDirection: 'column' }}>{left}</Box>
       </Widget>
     )}
     {top && (
       <Widget key='Widget.TopToolbar' style={{ top: 8, left: 8 + 24 + 8 }}>
-        <Box display='flex' flexDirection='row'>
-          {top}
-        </Box>
+        <Box sx={{ display: 'flex', flexDirection: 'row' }}>{top}</Box>
       </Widget>
     )}
   </>

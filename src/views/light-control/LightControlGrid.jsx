@@ -1,11 +1,10 @@
+import Box from '@mui/material/Box';
+import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { withTranslation } from 'react-i18next';
 import { HexColorInput, HexColorPicker } from 'react-colorful';
+import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
-
-import Box from '@material-ui/core/Box';
-import { makeStyles } from '@material-ui/core/styles';
 
 import ColoredButton from '~/components/ColoredButton';
 import {
@@ -14,7 +13,7 @@ import {
 } from '~/features/light-control/actions';
 import { getCurrentColorInLightControlPanel } from '~/features/light-control/selectors';
 
-const LightButton = ({ color, label, onClick, ...rest }) => (
+const LightButton = ({ color, label = '\u00A0', onClick, ...rest }) => (
   <ColoredButton
     dense
     color={color}
@@ -29,10 +28,6 @@ LightButton.propTypes = {
   color: PropTypes.string,
   label: PropTypes.string,
   onClick: PropTypes.func,
-};
-
-LightButton.defaultProps = {
-  label: '\u00A0',
 };
 
 const useStyles = makeStyles(
@@ -61,7 +56,7 @@ const useStyles = makeStyles(
     grid: {
       display: 'grid',
       gridTemplateColumns: 'repeat(6, 1fr)',
-      gridGap: theme.spacing(0.5),
+      gap: theme.spacing(0.5),
     },
 
     picker: {

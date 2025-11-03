@@ -1,8 +1,7 @@
+import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import React from 'react';
-
-import { makeStyles } from '@material-ui/core/styles';
 
 import Colors from '~/components/colors';
 
@@ -75,7 +74,7 @@ const useStyles = makeStyles(
  * Secondary status light that can be placed in one of the corners of the
  * drone avatar.
  */
-const SecondaryStatusLight = ({ status }) => {
+const SecondaryStatusLight = ({ status = 'off' }) => {
   const classes = useStyles();
   return (
     <div className={clsx(classes.root)}>
@@ -93,10 +92,6 @@ SecondaryStatusLight.propTypes = {
     'error',
     'critical',
   ]),
-};
-
-SecondaryStatusLight.defaultProps = {
-  status: 'off',
 };
 
 export default SecondaryStatusLight;

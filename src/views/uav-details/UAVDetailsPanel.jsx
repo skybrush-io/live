@@ -1,6 +1,5 @@
+import Box from '@mui/material/Box';
 import React from 'react';
-
-import Box from '@material-ui/core/Box';
 
 import UAVDetailsPanelBody from './UAVDetailsPanelBody';
 import UAVDetailsPanelHeader from './UAVDetailsPanelHeader';
@@ -10,7 +9,7 @@ import UAVDetailsPanelHeader from './UAVDetailsPanelHeader';
  * specific drone and its devices.
  */
 const UAVDetailsPanel = () => (
-  <Box display='flex' flexDirection='column' height='100%'>
+  <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
     <UAVDetailsPanelHeader />
     <UAVDetailsPanelBody />
   </Box>

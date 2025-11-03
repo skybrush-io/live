@@ -1,8 +1,7 @@
+import AppBar from '@mui/material/AppBar';
+import makeStyles from '@mui/styles/makeStyles';
+import { isThemeDark } from '@skybrush/app-theme-mui';
 import React from 'react';
-
-import AppBar from '@material-ui/core/AppBar';
-import { makeStyles } from '@material-ui/core/styles';
-import { isThemeDark } from '@skybrush/app-theme-material-ui';
 
 import UAVDetailsPanelSelect from './UAVDetailsPanelSelect';
 import UAVDetailsPanelTabs from './UAVDetailsPanelTabs';

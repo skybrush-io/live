@@ -1,17 +1,15 @@
+import CheckCircle from '@mui/icons-material/CheckCircle';
+import Box from '@mui/material/Box';
+import DialogContent from '@mui/material/DialogContent';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import List from '@mui/material/List';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemText from '@mui/material/ListItemText';
+import Switch from '@mui/material/Switch';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { useTranslation, withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
-
-import Box from '@material-ui/core/Box';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import Switch from '@material-ui/core/Switch';
-import CheckCircle from '@material-ui/icons/CheckCircle';
 
 import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
 import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
@@ -19,7 +17,6 @@ import StatusLight from '@skybrush/mui-components/lib/StatusLight';
 
 import { Colors } from '~/components/colors';
 import { Status } from '~/components/semantics';
-
 import { isShowingMissionIds } from '~/features/settings/selectors';
 import { signOffOnOnboardPreflightChecks } from '~/features/show/actions';
 import { areOnboardPreflightChecksSignedOff } from '~/features/show/selectors';
@@ -31,8 +28,8 @@ import { getErrorCodeSummaryForUAVsInMission } from '~/features/uavs/selectors';
 import { getSeverityOfErrorCode } from '~/flockwave/errors';
 import UAVErrorCode from '~/flockwave/UAVErrorCode';
 import {
-  formatIdsAndTruncateTrailingItems as formatUAVIds,
   formatMissionId,
+  formatIdsAndTruncateTrailingItems as formatUAVIds,
 } from '~/utils/formatting';
 import MappingToggleButton from '~/views/uavs/MappingToggleButton';
 
@@ -57,7 +54,7 @@ const PreflightCheckListPresentation = ({ items, showMissionIds, ...rest }) => {
         const itemId = `preflight-item-${item.code}`;
         const status = severityToStatus[getSeverityOfErrorCode(item.code)];
         return (
-          <ListItem key={itemId} button disableRipple>
+          <ListItemButton key={itemId} button disableRipple>
             <StatusLight status={status} />
             <ListItemText
               id={itemId}
@@ -70,7 +67,7 @@ const PreflightCheckListPresentation = ({ items, showMissionIds, ...rest }) => {
                 )
               )}
             />
-          </ListItem>
+          </ListItemButton>
         );
       })}
     </List>
@@ -112,11 +109,11 @@ const PreflightCheckList = connect(
  * the fleet in general).
  */
 const OnboardPreflightChecksDialog = ({
-  open,
+  open = false,
   onClear,
   onClose,
   onSignOff,
-  signedOff,
+  signedOff = false,
   t,
 }) => {
   return (
@@ -137,16 +134,18 @@ const OnboardPreflightChecksDialog = ({
         }}
       >
         <Box
-          display='flex'
-          flexDirection='column'
-          justifyContent='center'
-          flex={1}
-          overflow='auto'
-          minHeight={240}
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            flex: 1,
+            overflow: 'auto',
+            minHeight: '240px',
+          }}
         >
           <PreflightCheckList />
         </Box>
-        <Box className='bottom-bar' textAlign='center' pt={2}>
+        <Box className='bottom-bar' sx={{ textAlign: 'center', pt: 2 }}>
           <FormControlLabel
             control={
               <Switch
@@ -159,7 +158,6 @@ const OnboardPreflightChecksDialog = ({
           />
         </Box>
       </DialogContent>
-      <DialogActions />
     </DraggableDialog>
   );
 };
@@ -171,11 +169,6 @@ OnboardPreflightChecksDialog.propTypes = {
   open: PropTypes.bool,
   signedOff: PropTypes.bool,
   t: PropTypes.func,
-};
-
-OnboardPreflightChecksDialog.defaultProps = {
-  open: false,
-  signedOff: false,
 };
 
 export default connect(

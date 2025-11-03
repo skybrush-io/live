@@ -1,12 +1,10 @@
+import Box from '@mui/material/Box';
+import ListItemButton from '@mui/material/ListItemButton';
+import StatusPill from '@skybrush/mui-components/lib/StatusPill';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import Box from '@material-ui/core/Box';
-import ListItem from '@material-ui/core/ListItem';
-
 import { Status } from '~/components/semantics';
-import StatusPill from '~/components/StatusPill';
-
 import { formatIdsAndTruncateTrailingItems as formatUAVIds } from '~/utils/formatting';
 
 /* ************************************************************************ */
@@ -15,19 +13,19 @@ const UAVStatusMiniListEntry = ({
   id,
   label,
   onClick,
-  pillWidth,
+  pillWidth = 80,
   status,
   uavIds,
 }) => (
-  <ListItem key={id} button disableGutters onClick={onClick}>
-    <Box width={pillWidth}>
+  <ListItemButton key={id} disableGutters onClick={onClick}>
+    <Box sx={{ width: pillWidth }}>
       <StatusPill status={status}>{label}</StatusPill>
     </Box>
-    <Box width={36} mx={1}>
+    <Box sx={{ width: 36, mx: 1 }}>
       <StatusPill status={Status.OFF}>{uavIds.length}</StatusPill>
     </Box>
     {formatUAVIds(uavIds, { maxCount: 5 })}
-  </ListItem>
+  </ListItemButton>
 );
 
 UAVStatusMiniListEntry.propTypes = {
@@ -37,10 +35,6 @@ UAVStatusMiniListEntry.propTypes = {
   pillWidth: PropTypes.number,
   status: PropTypes.oneOf(Object.values(Status)),
   uavIds: PropTypes.arrayOf(PropTypes.string),
-};
-
-UAVStatusMiniListEntry.defaultProps = {
-  pillWidth: 80,
 };
 
 export default UAVStatusMiniListEntry;

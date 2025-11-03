@@ -4,11 +4,10 @@
  * the scan.
  */
 
+import ListItemText from '@mui/material/ListItemText';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
-
-import ListItemText from '@material-ui/core/ListItemText';
 
 import DialogHeaderListItem, {
   ICON_PRESETS,
@@ -17,21 +16,21 @@ import { startLocalServerExecutableSearch } from '~/features/local-server/slice'
 
 const PathScannerPresentation = ({
   error,
-  notFoundMessage,
+  notFoundMessage = 'Server executable not found.',
   onRequestReload,
   result,
   scanning,
-  scanningMessage,
-  successMessage,
+  scanningMessage = 'Please wait…',
+  successMessage = 'Server executable found successfully.',
 }) => (
   <DialogHeaderListItem button onClick={onRequestReload}>
     {scanning
       ? ICON_PRESETS.inProgress
       : error
-      ? ICON_PRESETS.error
-      : result
-      ? ICON_PRESETS.success
-      : ICON_PRESETS.warning}
+        ? ICON_PRESETS.error
+        : result
+          ? ICON_PRESETS.success
+          : ICON_PRESETS.warning}
     <ListItemText
       primary={
         error ||
@@ -52,12 +51,6 @@ PathScannerPresentation.propTypes = {
   scanning: PropTypes.bool,
   scanningMessage: PropTypes.string,
   successMessage: PropTypes.string,
-};
-
-PathScannerPresentation.defaultProps = {
-  notFoundMessage: 'Server executable not found.',
-  scanningMessage: 'Please wait…',
-  successMessage: 'Server executable found successfully.',
 };
 
 export default connect(

@@ -9,7 +9,7 @@ import get from 'lodash-es/get';
 import identity from 'lodash-es/identity';
 import isNil from 'lodash-es/isNil';
 import max from 'lodash-es/max';
-import createCachedSelector from 're-reselect';
+import { createCachedSelector } from 're-reselect';
 
 import { CommonClockId } from '~/features/clocks/types';
 import {
@@ -23,12 +23,11 @@ import {
 } from '~/utils/formatting';
 import { FlatEarthCoordinateSystem } from '~/utils/geography';
 import {
-  calculateMinimumDistanceBetweenPairs,
   convexHull2D,
   createGeometryFromPoints,
-  euclideanDistance2D,
   getCentroid,
 } from '~/utils/math';
+import { findNearestNeighborsDistance } from '~/utils/nearestNeighbors';
 import { EMPTY_ARRAY, EMPTY_OBJECT } from '~/utils/redux';
 
 import {
@@ -817,10 +816,7 @@ export function proposeMappingFileName(state) {
  */
 export const getMinimumDistanceBetweenTakeoffPositions = createSelector(
   getFirstPointsOfTrajectories,
-  (points) =>
-    calculateMinimumDistanceBetweenPairs(points, points, {
-      distanceFunction: euclideanDistance2D,
-    })
+  findNearestNeighborsDistance
 );
 
 /**
@@ -833,10 +829,7 @@ export const getMinimumDistanceBetweenTakeoffPositions = createSelector(
  */
 export const getMinimumDistanceBetweenLandingPositions = createSelector(
   getLastPointsOfTrajectories,
-  (points) =>
-    calculateMinimumDistanceBetweenPairs(points, points, {
-      distanceFunction: euclideanDistance2D,
-    })
+  findNearestNeighborsDistance
 );
 
 /**
@@ -914,7 +907,7 @@ export const getShowDescription = createSelector(
       ...(isNil(duration) ? [] : [formatDuration(duration)]),
       ...(isNil(maxHeight) ? [] : [`max AHL ${formatDistance(maxHeight, 1)}`]),
       ...(spacing > 0 && Number.isFinite(spacing)
-        ? [`spacing ${formatDistance(spacing, 1)}`]
+        ? [`spacing ${formatDistance(Math.round(spacing, 2), 1)}`]
         : []),
       ...(hasYawControl ? ['yaw controlled'] : []),
     ].join(', ')

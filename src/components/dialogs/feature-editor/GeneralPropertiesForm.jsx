@@ -1,18 +1,15 @@
+import CheckBox from '@mui/icons-material/CheckBox';
+import CheckBoxOutlineBlank from '@mui/icons-material/CheckBoxOutlineBlank';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Checkbox from '@mui/material/Checkbox';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormHelperText from '@mui/material/FormHelperText';
+import Switch from '@mui/material/Switch';
+import TextField from '@mui/material/TextField';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
-
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import Checkbox from '@material-ui/core/Checkbox';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import Switch from '@material-ui/core/Switch';
-import TextField from '@material-ui/core/TextField';
-
-import AutoCheckBox from '~/icons/AutoCheckBox';
-import CheckBox from '@material-ui/icons/CheckBox';
-import CheckBoxOutlineBlank from '@material-ui/icons/CheckBoxOutlineBlank';
 
 import SwatchesColorPicker from '~/components/SwatchesColorPicker';
 import {
@@ -29,6 +26,7 @@ import {
   updateFeatureVisibility,
 } from '~/features/map-features/slice';
 import { shouldOptimizeUIForTouch } from '~/features/settings/selectors';
+import AutoCheckBox from '~/icons/AutoCheckBox';
 import {
   featureTypeCanBeMeasured,
   featureTypeHasInterior,
@@ -49,8 +47,8 @@ const GeneralPropertiesForm = ({
   suggestedColor,
 }) => (
   <div>
-    <Box display='flex' alignItems='center' py='1em'>
-      <Box flex='auto'>
+    <Box sx={{ display: 'flex', alignItems: 'center', py: '1em' }}>
+      <Box sx={{ flex: 'auto' }}>
         <TextField
           fullWidth
           autoFocus={!optimizeUIForTouch}
@@ -60,13 +58,9 @@ const GeneralPropertiesForm = ({
           onChange={onSetFeatureLabel}
         />
       </Box>
-      <Switch
-        checked={feature.visible}
-        color='primary'
-        onChange={onToggleFeatureVisibility}
-      />
+      <Switch checked={feature.visible} onChange={onToggleFeatureVisibility} />
     </Box>
-    <Box display='flex'>
+    <Box sx={{ display: 'flex' }}>
       <SwatchesColorPicker
         styles={{ default: { picker: { flexShrink: 0 } } }}
         color={feature.color ?? suggestedColor}
@@ -90,7 +84,6 @@ const GeneralPropertiesForm = ({
               checked={feature.filled ?? shouldFill}
               indeterminate={feature.filled === undefined}
               indeterminateIcon={<AutoCheckBox />}
-              color='primary'
               onChange={onToggleFeatureFillVisible}
             />
           }
@@ -104,7 +97,6 @@ const GeneralPropertiesForm = ({
               checked={feature.showPoints ?? shouldShowPoints}
               indeterminate={feature.showPoints === undefined}
               indeterminateIcon={<AutoCheckBox />}
-              color='primary'
               onChange={onToggleFeaturePointsVisible}
             />
           }
@@ -118,7 +110,6 @@ const GeneralPropertiesForm = ({
               checked={feature.measure ?? false}
               indeterminate={feature.measure === undefined}
               indeterminateIcon={<AutoCheckBox />}
-              color='primary'
               onChange={onToggleFeatureMeasurementVisible}
             />
           }
@@ -183,8 +174,13 @@ export default connect(
     onToggleFeaturePointsVisible() {
       dispatch(toggleFeaturePointsVisible({ id: featureId }));
     },
-    onToggleFeatureVisibility(_event, checked) {
-      dispatch(updateFeatureVisibility({ id: featureId, visible: checked }));
+    onToggleFeatureVisibility(event) {
+      dispatch(
+        updateFeatureVisibility({
+          id: featureId,
+          visible: event.target.checked,
+        })
+      );
     },
   })
 )(GeneralPropertiesForm);

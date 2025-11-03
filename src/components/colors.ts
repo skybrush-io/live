@@ -1,14 +1,12 @@
-import * as createColor from 'color';
+import { blue, red, yellow } from '@mui/material/colors';
+import createColor from 'color';
 import mapValues from 'lodash-es/mapValues';
 
-import { blue, red, yellow } from '@material-ui/core/colors';
-
-import { Colors as ColorsBase } from '@skybrush/app-theme-material-ui';
+import { Colors as ColorsBase } from '@skybrush/app-theme-mui';
+export { colorForStatus } from '@skybrush/app-theme-mui';
 
 import { Severity } from '~/model/enums';
 import type { NestedRecordField } from '~/utils/types';
-
-export { colorForStatus } from '@skybrush/app-theme-material-ui';
 
 type Color = string;
 

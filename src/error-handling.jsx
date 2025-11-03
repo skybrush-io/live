@@ -8,7 +8,7 @@ import isFunction from 'lodash-es/isFunction';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import AlertWarning from '@material-ui/icons/Warning';
+import AlertWarning from '@mui/icons-material/Warning';
 
 import makeLogger from './utils/logging';
 
@@ -56,7 +56,7 @@ export const ErrorHandler = ProductionErrorHandler;
  *        message, separated by a colon
  * @return {string} the error object converted into a string
  */
-export function errorToString(error, prefix) {
+export function errorToString(error, prefix = undefined) {
   if (error.toString && isFunction(error.toString)) {
     return prefix ? `${prefix}: ${error.toString()}` : error.toString();
   } else {

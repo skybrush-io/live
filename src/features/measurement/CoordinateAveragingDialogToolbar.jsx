@@ -1,37 +1,34 @@
+import Add from '@mui/icons-material/Add';
+import Pause from '@mui/icons-material/Pause';
+import Place from '@mui/icons-material/Place';
+import PlayArrow from '@mui/icons-material/PlayArrow';
+import Remove from '@mui/icons-material/Remove';
+import Replay from '@mui/icons-material/Replay';
+import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
-
-import Box from '@material-ui/core/Box';
-import IconButton from '@material-ui/core/IconButton';
-import Add from '@material-ui/icons/Add';
-import Pause from '@material-ui/icons/Pause';
-import Place from '@material-ui/icons/Place';
-import PlayArrow from '@material-ui/icons/PlayArrow';
-import Remove from '@material-ui/icons/Remove';
-import Replay from '@material-ui/icons/Replay';
 
 import DialogToolbar from '@skybrush/mui-components/lib/DialogToolbar';
 import Tooltip from '@skybrush/mui-components/lib/Tooltip';
 
 import ToolbarDivider from '~/components/ToolbarDivider';
 import { UAVSelectorWrapper } from '~/components/uavs/UAVSelector';
-
 import {
   copyAveragedCentroidOfSelectedUAVsToClipboard,
   pauseAveragingSelectedUAVs,
-  resumeAveragingSelectedUAVs,
   restartAveragingSelectedUAVs,
+  resumeAveragingSelectedUAVs,
   setAveragedCentroidOfSelectedUAVsAsMapOrigin,
   stopAveragingSelectedUAVs,
 } from '~/features/measurement/actions';
-import { startAveragingUAVCoordinateById } from '~/features/measurement/slice';
 import {
   hasActiveOrPausedAveragingMeasurements,
   hasSelectionInAveragingMeasurementDialogBox,
 } from '~/features/measurement/selectors';
-
+import { startAveragingUAVCoordinateById } from '~/features/measurement/slice';
 import ContentCopy from '~/icons/ContentCopy';
 
 /**
@@ -52,13 +49,13 @@ const CoordinateAveragingDialogToolbar = ({
 }) => {
   return (
     <DialogToolbar disableGutters>
-      <Box position='absolute' display='flex'>
+      <Box sx={{ position: 'absolute', display: 'flex' }}>
         <UAVSelectorWrapper filterable onSelect={onUAVIdAdded}>
           {(handleClick) => (
             <Tooltip
               content={t('coordinateAveragingDialogToolbar.addNewDrone')}
             >
-              <IconButton color='inherit' onClick={handleClick}>
+              <IconButton color='inherit' size='large' onClick={handleClick}>
                 <Add />
               </IconButton>
             </Tooltip>
@@ -68,6 +65,7 @@ const CoordinateAveragingDialogToolbar = ({
           <IconButton
             disabled={!hasSelection}
             color='inherit'
+            size='large'
             onClick={onRemoveSelected}
           >
             <Remove />
@@ -80,6 +78,7 @@ const CoordinateAveragingDialogToolbar = ({
           <IconButton
             disabled={!hasMeasurements}
             color='inherit'
+            size='large'
             onClick={onPauseSelected}
           >
             <Pause />
@@ -91,6 +90,7 @@ const CoordinateAveragingDialogToolbar = ({
           <IconButton
             disabled={!hasMeasurements}
             color='inherit'
+            size='large'
             onClick={onResumeSelected}
           >
             <PlayArrow />
@@ -102,6 +102,7 @@ const CoordinateAveragingDialogToolbar = ({
           <IconButton
             disabled={!hasMeasurements || !hasSelection}
             color='inherit'
+            size='large'
             onClick={onRestartSelected}
           >
             <Replay />
@@ -112,6 +113,7 @@ const CoordinateAveragingDialogToolbar = ({
           <IconButton
             disabled={!hasMeasurements}
             color='inherit'
+            size='large'
             onClick={onCopyCentroidOfSelection}
           >
             <ContentCopy />
@@ -123,6 +125,7 @@ const CoordinateAveragingDialogToolbar = ({
           <IconButton
             disabled={!hasMeasurements}
             color='inherit'
+            size='large'
             onClick={onSetCentroidOfSelectionAsMapOrigin}
           >
             <Place />

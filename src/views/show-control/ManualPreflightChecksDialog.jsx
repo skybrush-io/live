@@ -1,23 +1,22 @@
+import Box from '@mui/material/Box';
+import Checkbox from '@mui/material/Checkbox';
+import Dialog from '@mui/material/Dialog';
+import DialogContent from '@mui/material/DialogContent';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import ListSubheader from '@mui/material/ListSubheader';
+import Switch from '@mui/material/Switch';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
-import Box from '@material-ui/core/Box';
-import Checkbox from '@material-ui/core/Checkbox';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import ListSubheader from '@material-ui/core/ListSubheader';
-import Switch from '@material-ui/core/Switch';
-
 import {
-  getTickedPreflightCheckItems,
   getHeadersAndItems,
+  getTickedPreflightCheckItems,
 } from '~/features/preflight/selectors';
 import { togglePreflightCheckStatus } from '~/features/preflight/slice';
 import { signOffOnManualPreflightChecks } from '~/features/show/actions';
@@ -49,9 +48,8 @@ const PreflightCheckListPresentation = ({
 
       const itemId = `preflight-item-${item.id}`;
       return (
-        <ListItem
+        <ListItemButton
           key={itemId}
-          button
           disableRipple
           onClick={() => onToggle(item.id)}
         >
@@ -59,12 +57,12 @@ const PreflightCheckListPresentation = ({
             <Checkbox
               checked={checkedItemIds.includes(item.id)}
               edge='start'
-              inputProps={{ 'aria-labelledby': itemId }}
+              slotProps={{ input: { 'aria-labelledby': itemId } }}
               value={item.id}
             />
           </ListItemIcon>
           <ListItemText id={itemId} primary={item.label} />
-        </ListItem>
+        </ListItemButton>
       );
     })}
     {items.length === 0 && (
@@ -109,11 +107,11 @@ const PreflightCheckList = connect(
  * the fleet in general).
  */
 const ManualPreflightChecksDialog = ({
-  open,
+  open = false,
   onClear,
   onClose,
   onSignOff,
-  signedOff,
+  signedOff = false,
 }) => {
   return (
     <Dialog fullWidth open={open} maxWidth='xs' onClose={onClose}>
@@ -125,10 +123,10 @@ const ManualPreflightChecksDialog = ({
           paddingRight: '1em',
         }}
       >
-        <Box flex={1} overflow='auto' minHeight={0}>
+        <Box sx={{ flex: 1, overflow: 'auto', minHeight: 0 }}>
           <PreflightCheckList />
         </Box>
-        <Box className='bottom-bar' textAlign='center' pt={2}>
+        <Box className='bottom-bar' sx={{ textAlign: 'center', pt: 2 }}>
           <FormControlLabel
             control={
               <Switch
@@ -141,7 +139,6 @@ const ManualPreflightChecksDialog = ({
           />
         </Box>
       </DialogContent>
-      <DialogActions />
     </Dialog>
   );
 };
@@ -152,11 +149,6 @@ ManualPreflightChecksDialog.propTypes = {
   onSignOff: PropTypes.func,
   open: PropTypes.bool,
   signedOff: PropTypes.bool,
-};
-
-ManualPreflightChecksDialog.defaultProps = {
-  open: false,
-  signedOff: false,
 };
 
 export default connect(
