@@ -23,6 +23,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added Polish translation, thanks to our translator community!
 
+- Updated Chinese translation, thanks to our translator community!
+
 ### Changed
 
 - Show files are now parsed and loaded in a separate worker thread so the
