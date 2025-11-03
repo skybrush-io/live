@@ -10,7 +10,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
-import DialogTabs from '@skybrush/mui-components/lib/DialogTabs';
+import { DialogTabs } from '@skybrush/mui-components';
 
 import { loadShowFromUrl } from '~/features/show/actions';
 import { closeLoadShowFromCloudDialog } from '~/features/show/slice';

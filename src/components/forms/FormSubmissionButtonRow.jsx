@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { withTranslation } from 'react-i18next';
 
-import LabeledStatusLight from '@skybrush/mui-components/lib/LabeledStatusLight';
+import { LabeledStatusLight } from '@skybrush/mui-components';
 
 /**
  * Helper component that provides an indicator at the bottom of react-final-form

@@ -7,12 +7,12 @@
  * workbench view and the sidebar.
  */
 
+import loadable from '@loadable/component';
 import debounce from 'lodash-es/debounce';
 import React from 'react';
 import { WorkbenchBuilder } from 'react-flexible-workbench';
 
-import loadable from '@loadable/component';
-import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
+import { BackgroundHint } from '@skybrush/mui-components';
 
 import { makeDetachable } from './features/detachable-panels/DetachablePanel';
 import { createPerspectiveBuilder } from './features/perspectives/utils';

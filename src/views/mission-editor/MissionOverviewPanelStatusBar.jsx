@@ -7,10 +7,11 @@ import Box from '@mui/material/Box';
 import Chip from '@mui/material/Chip';
 import Paper from '@mui/material/Paper';
 import Toolbar from '@mui/material/Toolbar';
-import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import { connect } from 'react-redux';
+
+import { makeStyles } from '@skybrush/app-theme-mui';
 
 import Colors from '~/components/colors';
 import ToggleButton from '~/components/ToggleButton';
@@ -25,17 +26,12 @@ import FollowScroll from '~/icons/FollowScroll';
 import { formatDistance, formatDuration } from '~/utils/formatting';
 import CustomPropTypes from '~/utils/prop-types';
 
-const useStyles = makeStyles(
-  (theme) => ({
-    root: {
-      background: theme.palette.action.hover,
-      padding: theme.spacing(0.5, 1),
-    },
-  }),
-  {
-    name: 'MissionOverviewPanelStatusBar',
-  }
-);
+const useStyles = makeStyles((theme) => ({
+  root: {
+    background: theme.palette.action.hover,
+    padding: theme.spacing(0.5, 1),
+  },
+}));
 
 const makeWarningList = (warnings) => (
   <ul style={{ paddingLeft: 28 }}>

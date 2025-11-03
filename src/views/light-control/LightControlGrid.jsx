@@ -1,10 +1,11 @@
 import Box from '@mui/material/Box';
-import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { HexColorInput, HexColorPicker } from 'react-colorful';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
+
+import { makeStyles } from '@skybrush/app-theme-mui';
 
 import ColoredButton from '~/components/ColoredButton';
 import {
@@ -30,56 +31,53 @@ LightButton.propTypes = {
   onClick: PropTypes.func,
 };
 
-const useStyles = makeStyles(
-  (theme) => ({
-    root: {
-      display: 'flex',
-      flex: 1,
-      flexDirection: 'column',
-      height: '100%',
-      padding: theme.spacing(1),
+const useStyles = makeStyles((theme) => ({
+  root: {
+    display: 'flex',
+    flex: 1,
+    flexDirection: 'column',
+    height: '100%',
+    padding: theme.spacing(1),
 
-      '& .react-colorful': {
-        borderRadius: theme.shape.borderRadius,
-        width: '100%',
-      },
-
-      '& .react-colorful__saturation': {
-        borderRadius: `${theme.shape.borderRadius}px ${theme.shape.borderRadius}px 0 0`,
-      },
-
-      '& .react-colorful__last_control': {
-        borderRadius: `0 0 ${theme.shape.borderRadius}px ${theme.shape.borderRadius}px`,
-      },
-    },
-
-    grid: {
-      display: 'grid',
-      gridTemplateColumns: 'repeat(6, 1fr)',
-      gap: theme.spacing(0.5),
-    },
-
-    picker: {
-      flex: 1,
-      padding: theme.spacing(1, 0),
-    },
-
-    textField: {
-      background: theme.palette.action.hover,
-      border: 'none',
+    '& .react-colorful': {
       borderRadius: theme.shape.borderRadius,
-      color: theme.palette.text.primary,
-      padding: theme.spacing(1),
-      textAlign: 'center',
-      textTransform: 'uppercase',
-
-      '&:focus': {
-        outline: 'none',
-      },
+      width: '100%',
     },
-  }),
-  { name: 'LightControlGrid' }
-);
+
+    '& .react-colorful__saturation': {
+      borderRadius: `${theme.shape.borderRadius}px ${theme.shape.borderRadius}px 0 0`,
+    },
+
+    '& .react-colorful__last_control': {
+      borderRadius: `0 0 ${theme.shape.borderRadius}px ${theme.shape.borderRadius}px`,
+    },
+  },
+
+  grid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(6, 1fr)',
+    gap: theme.spacing(0.5),
+  },
+
+  picker: {
+    flex: 1,
+    padding: theme.spacing(1, 0),
+  },
+
+  textField: {
+    background: theme.palette.action.hover,
+    border: 'none',
+    borderRadius: theme.shape.borderRadius,
+    color: theme.palette.text.primary,
+    padding: theme.spacing(1),
+    textAlign: 'center',
+    textTransform: 'uppercase',
+
+    '&:focus': {
+      outline: 'none',
+    },
+  },
+}));
 
 /**
  * Panel that shows the widgets that are needed to control the LED lights on

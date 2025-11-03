@@ -14,8 +14,7 @@ import PropTypes from 'prop-types';
 import React, { useCallback, useMemo, useState } from 'react';
 import { connect } from 'react-redux';
 
-import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
-import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
+import { BackgroundHint, DraggableDialog } from '@skybrush/mui-components';
 
 import AsyncGuard from '~/components/AsyncGuard';
 import FileButton from '~/components/FileButton';

@@ -1,80 +1,76 @@
 import CircularProgress from '@mui/material/CircularProgress';
-import makeStyles from '@mui/styles/makeStyles';
-import { Colors, Status } from '@skybrush/app-theme-mui';
-import SemanticAvatar from '@skybrush/mui-components/lib/SemanticAvatar';
-import StatusPill from '@skybrush/mui-components/lib/StatusPill';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import React from 'react';
+
+import { Colors, Status, makeStyles } from '@skybrush/app-theme-mui';
+import { SemanticAvatar, StatusPill } from '@skybrush/mui-components';
 
 import { BatteryFormatter } from '~/components/battery';
 import BatteryIndicator from '~/components/BatteryIndicator';
 
 import SecondaryStatusLight from './SecondaryStatusLight';
 
-const useStyles = makeStyles(
-  (theme) => ({
-    avatarWrapper: {
-      position: 'relative',
-      '&:not(:last-child)': {
-        marginBottom: theme.spacing(0.5),
-      },
-
-      '&::after': {
-        background: Colors.error,
-        boxShadow:
-          '1px 1px 4px rgba(0, 0, 0, 0.6), 1px 1px 2px rgba(255, 255, 255, 0.3) inset',
-        content: '""',
-        height: 4,
-        left: '50%',
-        position: 'absolute',
-        top: 'calc(50% - 2px)',
-        transform: 'rotate(-45deg)',
-        transition: 'left 300ms, width 300ms',
-        width: '0%',
-      },
-
-      '&.crossed::after': {
-        left: '-20%',
-        width: '140%',
-      },
+const useStyles = makeStyles((theme) => ({
+  avatarWrapper: {
+    position: 'relative',
+    '&:not(:last-child)': {
+      marginBottom: theme.spacing(0.5),
     },
 
-    avatarContent: {
-      width: '100%',
-      textAlign: 'center',
-    },
-
-    gone: {
-      opacity: 0.7,
-    },
-
-    hint: {
-      fontSize: '0.75rem',
-    },
-
-    hintSeparator: {
-      width: '75%',
-
-      marginTop: 0,
-      marginBottom: 2,
-
-      border: '1px solid',
-      borderBottomWidth: 0,
-
-      opacity: 0.6,
-
-      color: 'inherit',
-    },
-
-    progress: {
+    '&::after': {
+      background: Colors.error,
+      boxShadow:
+        '1px 1px 4px rgba(0, 0, 0, 0.6), 1px 1px 2px rgba(255, 255, 255, 0.3) inset',
+      content: '""',
+      height: 4,
+      left: '50%',
       position: 'absolute',
-      top: -2,
-      left: -2,
+      top: 'calc(50% - 2px)',
+      transform: 'rotate(-45deg)',
+      transition: 'left 300ms, width 300ms',
+      width: '0%',
     },
-  }),
-  { name: 'ComplexAvatar' }
-);
+
+    '&.crossed::after': {
+      left: '-20%',
+      width: '140%',
+    },
+  },
+
+  avatarContent: {
+    width: '100%',
+    textAlign: 'center',
+  },
+
+  gone: {
+    opacity: 0.7,
+  },
+
+  hint: {
+    fontSize: '0.75rem',
+  },
+
+  hintSeparator: {
+    width: '75%',
+
+    marginTop: 0,
+    marginBottom: 2,
+
+    border: '1px solid',
+    borderBottomWidth: 0,
+
+    opacity: 0.6,
+
+    color: 'inherit',
+  },
+
+  progress: {
+    position: 'absolute',
+    top: -2,
+    left: -2,
+  },
+}));
 
 /**
  * Avatar that represents a single drone, docking station or some other object

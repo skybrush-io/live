@@ -1,8 +1,9 @@
 import Box from '@mui/material/Box';
-import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import React from 'react';
+
+import { makeStyles } from '@skybrush/app-theme-mui';
 
 const useStyles = makeStyles(
   (theme) => ({
@@ -32,7 +33,6 @@ const useStyles = makeStyles(
       fontSize: '1.25em',
     },
   }),
-  { name: 'ColoredLight' }
 );
 
 /**

@@ -1,9 +1,10 @@
-import makeStyles from '@mui/styles/makeStyles';
-import StatusPill from '@skybrush/mui-components/lib/StatusPill';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
+
+import { makeStyles } from '@skybrush/app-theme-mui';
+import { StatusPill } from '@skybrush/mui-components';
 
 import { BatteryFormatter } from '~/components/battery';
 import BatteryIndicator from '~/components/BatteryIndicator';
@@ -19,63 +20,60 @@ import { createSingleUAVStatusSummarySelector, getUAVById } from './selectors';
 
 const localCoordinateFormatter = formatCoordinateArray;
 
-const useStyles = makeStyles(
-  (theme) => ({
-    row: {
-      display: 'flex',
-      flexDirction: 'row',
-      flexWrap: 'no-wrap',
-      alignItems: 'baseline',
-      margin: theme.spacing(0, -0.5, 0.5, 0),
+const useStyles = makeStyles((theme) => ({
+  row: {
+    display: 'flex',
+    flexDirction: 'row',
+    flexWrap: 'no-wrap',
+    alignItems: 'baseline',
+    margin: theme.spacing(0, -0.5, 0.5, 0),
 
-      '& .muted': {
-        color: theme.palette.text.disabled,
-      },
+    '& .muted': {
+      color: theme.palette.text.disabled,
     },
-    uavIdCell: {
-      display: 'inline-block',
-      fontWeight: 'bold',
-      overflow: 'hidden',
-    },
-    pill: {
-      margin: theme.spacing(0, 0.5, 0, 0),
-      verticalAlign: 'text-top',
-    },
-    statusPill: {
-      minWidth: 88 + Number.parseInt(theme.spacing(0.5)),
-      flex: 1,
-    },
-    modePill: {
-      minWidth: 48,
-      flex: 1,
-    },
-    gpsPill: {
-      minWidth: 40,
-      flex: 1,
-    },
-    batteryIndicator: {
-      display: 'inline-block',
-      flex: 1,
-      fontFamily: theme.typography.fontFamily,
-      minWidth: 48,
-      textAlign: 'left',
-      padding: theme.spacing(0, 0.75),
-      whiteSpace: 'noWrap',
-    },
-    altitudeLabel: {
-      flex: 1,
-      textAlign: 'center',
-      whiteSpace: 'noWrap',
-      margin: theme.spacing(0, 1, 0, 0),
-    },
-    numSatellitesLabel: {
-      flex: 1,
-      textAlign: 'center',
-      whiteSpace: 'noWrap',
-    },
-  }),
-  { name: 'DroneInfoTooltipContent' }
-);
+  },
+  uavIdCell: {
+    display: 'inline-block',
+    fontWeight: 'bold',
+    overflow: 'hidden',
+  },
+  pill: {
+    margin: theme.spacing(0, 0.5, 0, 0),
+    verticalAlign: 'text-top',
+  },
+  statusPill: {
+    minWidth: 88 + Number.parseInt(theme.spacing(0.5)),
+    flex: 1,
+  },
+  modePill: {
+    minWidth: 48,
+    flex: 1,
+  },
+  gpsPill: {
+    minWidth: 40,
+    flex: 1,
+  },
+  batteryIndicator: {
+    display: 'inline-block',
+    flex: 1,
+    fontFamily: theme.typography.fontFamily,
+    minWidth: 48,
+    textAlign: 'left',
+    padding: theme.spacing(0, 0.75),
+    whiteSpace: 'noWrap',
+  },
+  altitudeLabel: {
+    flex: 1,
+    textAlign: 'center',
+    whiteSpace: 'noWrap',
+    margin: theme.spacing(0, 1, 0, 0),
+  },
+  numSatellitesLabel: {
+    flex: 1,
+    textAlign: 'center',
+    whiteSpace: 'noWrap',
+  },
+}));
 
 const dash = '—';
 const naText = <span className='muted'>—</span>;

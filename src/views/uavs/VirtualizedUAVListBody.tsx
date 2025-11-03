@@ -1,8 +1,9 @@
 import Box from '@mui/material/Box';
-import makeStyles from '@mui/styles/makeStyles';
 import React from 'react';
 import { connect } from 'react-redux';
 import { Virtuoso, VirtuosoGrid } from 'react-virtuoso';
+
+import { makeStyles } from '@skybrush/app-theme-mui';
 
 import { UAVListLayout } from '~/features/settings/types';
 import type { RootState } from '~/store/reducers';
@@ -13,24 +14,21 @@ import { GRID_ITEM_WIDTH, GRID_ROW_HEIGHT, HEADER_HEIGHT } from './constants';
 import { getDisplayedItems } from './selectors';
 import type { Item } from './types';
 
-const useStyles = makeStyles(
-  {
-    grid: {
-      display: 'grid',
-      gridTemplateColumns: `repeat(auto-fill, ${GRID_ITEM_WIDTH}px)`,
-      gridTemplateRows: GRID_ROW_HEIGHT,
-      gridAutoRows: GRID_ROW_HEIGHT,
-    },
-
-    gridItem: {},
-
-    list: {
-      alignItems: 'stretch',
-      fontSize: '12px',
-    },
+const useStyles = makeStyles({
+  grid: {
+    display: 'grid',
+    gridTemplateColumns: `repeat(auto-fill, ${GRID_ITEM_WIDTH}px)`,
+    gridTemplateRows: GRID_ROW_HEIGHT,
+    gridAutoRows: GRID_ROW_HEIGHT,
   },
-  { name: 'UAVListSection' }
-);
+
+  gridItem: {},
+
+  list: {
+    alignItems: 'stretch',
+    fontSize: '12px',
+  },
+});
 
 type VirtualizedUAVListBodyProps = Readonly<{
   id?: string;

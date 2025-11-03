@@ -1,8 +1,9 @@
 import type { Theme } from '@mui/material/styles';
-import makeStyles from '@mui/styles/makeStyles';
-import StatusPill from '@skybrush/mui-components/lib/StatusPill';
 import clsx from 'clsx';
 import React from 'react';
+
+import { makeStyles } from '@skybrush/app-theme-mui';
+import { StatusPill } from '@skybrush/mui-components';
 
 import { getSemanticsForRSSI } from '~/model/enums';
 import { formatRSSI } from '~/utils/formatting';

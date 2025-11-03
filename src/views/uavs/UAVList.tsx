@@ -8,12 +8,7 @@ import Delete from '@mui/icons-material/Delete';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import type { Theme } from '@mui/material/styles';
-import makeStyles from '@mui/styles/makeStyles';
-import {
-  bindActionCreators,
-  type AnyAction,
-  type Store,
-} from '@reduxjs/toolkit';
+import { bindActionCreators, type AnyAction } from '@reduxjs/toolkit';
 import isNil from 'lodash-es/isNil';
 import { nanoid } from 'nanoid';
 import React, {
@@ -27,7 +22,7 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { connect, useStore } from 'react-redux';
 
-import { isThemeDark } from '@skybrush/app-theme-mui';
+import { isThemeDark, makeStyles } from '@skybrush/app-theme-mui';
 
 import { createSelectionHandlerThunk } from '~/components/helpers/lists';
 import FadeAndSlide from '~/components/transitions/FadeAndSlide';
@@ -78,40 +73,37 @@ import { getDisplayedItems, getGlobalIdsOfDisplayedItems } from './selectors';
 import type { Item } from './types';
 import { getSelectedUAVIdsAndMissionSlotIds, itemToGlobalId } from './utils';
 
-const useListStyles = makeStyles(
-  (theme: Theme) => ({
-    appBar: {
-      backgroundColor: isThemeDark(theme)
-        ? '#424242'
-        : theme.palette.background.paper,
-      height: 48,
-    },
+const useListStyles = makeStyles((theme: Theme) => ({
+  appBar: {
+    backgroundColor: isThemeDark(theme)
+      ? '#424242'
+      : theme.palette.background.paper,
+    height: 48,
+  },
 
-    toolbar: {
-      position: 'absolute',
-      gap: theme.spacing(0.75),
-      left: 0,
-      right: 0,
-      top: 0,
-    },
+  toolbar: {
+    position: 'absolute',
+    gap: theme.spacing(0.75),
+    left: 0,
+    right: 0,
+    top: 0,
+  },
 
-    gridItem: {
-      padding: theme.spacing(1),
-      height: '100%',
-    },
+  gridItem: {
+    padding: theme.spacing(1),
+    height: '100%',
+  },
 
-    listItem: {
-      padding: theme.spacing(0.5),
-      borderBottom: `1px solid ${theme.palette.divider}`,
+  listItem: {
+    padding: theme.spacing(0.5),
+    borderBottom: `1px solid ${theme.palette.divider}`,
 
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      '&:first-child': {
-        borderTop: `1px solid ${theme.palette.divider}`,
-      },
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    '&:first-child': {
+      borderTop: `1px solid ${theme.palette.divider}`,
     },
-  }),
-  { name: 'UAVList' }
-);
+  },
+}));
 
 type ItemRendererOptions = {
   className?: string;

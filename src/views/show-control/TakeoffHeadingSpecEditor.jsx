@@ -9,7 +9,7 @@ import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import { Translation } from 'react-i18next';
 
-import Tooltip from '@skybrush/mui-components/lib/Tooltip';
+import { Tooltip } from '@skybrush/mui-components';
 
 import RotationField from '~/components/RotationField';
 import {

@@ -10,7 +10,7 @@ import React from 'react';
 import { Translation, withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
+import { DraggableDialog } from '@skybrush/mui-components';
 
 import DronePlaceholderList from '~/components/uavs/DronePlaceholderList';
 import { addVirtualDronesForMission } from '~/features/mission/actions';

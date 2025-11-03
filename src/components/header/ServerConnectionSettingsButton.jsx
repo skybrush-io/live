@@ -3,8 +3,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
-import GenericHeaderButton from '@skybrush/mui-components/lib/GenericHeaderButton';
-import LazyTooltip from '@skybrush/mui-components/lib/LazyTooltip';
+import { GenericHeaderButton, LazyTooltip } from '@skybrush/mui-components';
 
 import ServerConnectionStatusMiniList from '~/components/ServerConnectionStatusMiniList';
 import ServerConnectionStatusBadge from '~/components/badges/ServerConnectionStatusBadge';

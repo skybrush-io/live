@@ -5,15 +5,14 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import ListItemButton from '@mui/material/ListItemButton';
-import makeStyles from '@mui/styles/makeStyles';
 import { animated, useTransition } from '@react-spring/web';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import MiniList from '@skybrush/mui-components/lib/MiniList';
-import Tooltip from '@skybrush/mui-components/lib/Tooltip';
+import { makeStyles } from '@skybrush/app-theme-mui';
+import { MiniList, Tooltip } from '@skybrush/mui-components';
 
 import FileButton from '~/components/FileButton';
 
@@ -21,44 +20,39 @@ import { importParametersFromFile, proceedToUpload } from './actions';
 import { getParameterManifest, isManifestEmpty } from './selectors';
 import { clearManifest, removeParameterFromManifest } from './slice';
 
-const useStyles = makeStyles(
-  (theme) => ({
-    root: {
-      display: 'flex',
-      flexDirection: 'column',
-      minWidth: 240,
-    },
+const useStyles = makeStyles((theme) => ({
+  root: {
+    display: 'flex',
+    flexDirection: 'column',
+    minWidth: 240,
+  },
 
-    header: {
-      display: 'flex',
-      minHeight: theme.spacing(6),
-      alignItems: 'center',
-      padding: theme.spacing(0, 0, 0, 2),
-    },
+  header: {
+    display: 'flex',
+    minHeight: theme.spacing(6),
+    alignItems: 'center',
+    padding: theme.spacing(0, 0, 0, 2),
+  },
 
-    title: {
-      textTransform: 'uppercase',
-      flex: 1,
-    },
+  title: {
+    textTransform: 'uppercase',
+    flex: 1,
+  },
 
-    list: {
-      position: 'relative',
-      flex: 1,
-      overflow: 'auto',
-    },
+  list: {
+    position: 'relative',
+    flex: 1,
+    overflow: 'auto',
+  },
 
-    footer: {
-      display: 'flex',
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      padding: theme.spacing(1),
-      textAlign: 'center',
-    },
-  }),
-  {
-    name: 'ParameterListSidebar',
-  }
-);
+  footer: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    padding: theme.spacing(1),
+    textAlign: 'center',
+  },
+}));
 
 /**
  * Sidebar of the parameter upload setup dialog.

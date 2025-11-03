@@ -14,8 +14,10 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { useAsyncRetry } from 'react-use';
 
-import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
-import LargeProgressIndicator from '@skybrush/mui-components/lib/LargeProgressIndicator';
+import {
+  BackgroundHint,
+  LargeProgressIndicator,
+} from '@skybrush/mui-components';
 
 import useMessageHub from '~/hooks/useMessageHub';
 

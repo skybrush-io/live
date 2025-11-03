@@ -9,10 +9,12 @@ import React, { memo, useEffect, useRef } from 'react';
 import { connect } from 'react-redux';
 import { useAsyncRetry, useUnmount } from 'react-use';
 
-import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
-import Header from '@skybrush/mui-components/lib/FormHeader';
-import LargeProgressIndicator from '@skybrush/mui-components/lib/LargeProgressIndicator';
-import StatusLight from '@skybrush/mui-components/lib/StatusLight';
+import {
+  BackgroundHint,
+  FormHeader as Header,
+  LargeProgressIndicator,
+  StatusLight,
+} from '@skybrush/mui-components';
 
 import { errorCodeToSemantics } from '~/flockwave/errors';
 import UAVErrorCode from '~/flockwave/UAVErrorCode';

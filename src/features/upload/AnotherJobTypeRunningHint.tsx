@@ -6,7 +6,7 @@ import Button from '@mui/material/Button';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
+import { BackgroundHint } from '@skybrush/mui-components';
 
 import { getCurrentUploadJob, getSelectedJobInUploadDialog } from './selectors';
 import { cancelUpload, openUploadDialogForJob } from './slice';

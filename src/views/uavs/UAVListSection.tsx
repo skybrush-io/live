@@ -1,7 +1,8 @@
 import Box from '@mui/material/Box';
 import type { Theme } from '@mui/material/styles';
-import makeStyles from '@mui/styles/makeStyles';
 import React from 'react';
+
+import { makeStyles } from '@skybrush/app-theme-mui';
 
 import { UAVListLayout } from '~/features/settings/types';
 
@@ -10,28 +11,25 @@ import UAVListSubheader, {
 } from './UAVListSubheader';
 import type { Item } from './types';
 
-const useStyles = makeStyles(
-  (theme: Theme) => ({
-    grid: {
-      display: 'flex',
-      flexDirection: 'row',
-      flexWrap: 'wrap',
+const useStyles = makeStyles((theme: Theme) => ({
+  grid: {
+    display: 'flex',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
 
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      '&>div': {
-        padding: theme.spacing(1),
-      },
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    '&>div': {
+      padding: theme.spacing(1),
     },
+  },
 
-    list: {
-      display: 'flex',
-      alignItems: 'stretch',
-      flexDirection: 'column',
-      fontSize: '12px',
-    },
-  }),
-  { name: 'UAVListSection' }
-);
+  list: {
+    display: 'flex',
+    alignItems: 'stretch',
+    flexDirection: 'column',
+    fontSize: '12px',
+  },
+}));
 
 export type UAVListSectionProps = UAVListSubheaderProps &
   Readonly<{

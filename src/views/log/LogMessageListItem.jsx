@@ -1,10 +1,9 @@
-import makeStyles from '@mui/styles/makeStyles';
 import format from 'date-fns/format';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import { Status } from '@skybrush/app-theme-mui';
-import StatusLight from '@skybrush/mui-components/lib/StatusLight';
+import { Status, makeStyles } from '@skybrush/app-theme-mui';
+import { StatusLight } from '@skybrush/mui-components';
 
 import { LogLevel } from '~/utils/logging';
 
