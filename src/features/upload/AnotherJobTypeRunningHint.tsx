@@ -17,7 +17,7 @@ type AnotherJobTypeRunningHintProps = Readonly<{
 
 const AnotherJobTypeRunningHint = (
   _props: AnotherJobTypeRunningHintProps
-): JSX.Element => {
+): React.JSX.Element => {
   const dispatch = useDispatch();
   const currentJob = useSelector(getCurrentUploadJob);
   const selectedJob = useSelector(getSelectedJobInUploadDialog);

@@ -28,7 +28,7 @@ const RTKMessageStatisticsListEntry = ({
   bitsPerSecondTransferred,
   id,
   lastUpdatedAt,
-}: RTKMessageStatisticsListEntryProps): JSX.Element => {
+}: RTKMessageStatisticsListEntryProps): React.JSX.Element => {
   const txKnown = bitsPerSecondTransferred !== undefined;
   const hasTx = (bitsPerSecondTransferred ?? 0) > 0;
   const hasRx = bitsPerSecondReceived > 0;

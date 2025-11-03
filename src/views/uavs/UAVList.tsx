@@ -141,7 +141,7 @@ const createGridItemRenderer =
     selection,
     showMissionIds,
   }: ItemRendererOptions) =>
-  (item: Item): JSX.Element => {
+  (item: Item): React.JSX.Element => {
     const [uavId, missionIndex, proposedLabel] = item;
     const itemId = itemToGlobalId(item);
     const editingThisItem =
@@ -227,7 +227,7 @@ const createListItemRenderer =
     selection,
     showMissionIds,
   }: ItemRendererOptions) =>
-  (item: Item): JSX.Element | null => {
+  (item: Item): React.JSX.Element | null => {
     if (item === deletionMarker) {
       return null;
     }
@@ -301,7 +301,7 @@ const UAVListPresentation = ({
   onSelectItem,
   selection,
   showMissionIds,
-}: UAVListPresentationProps): JSX.Element => {
+}: UAVListPresentationProps): React.JSX.Element => {
   // Regular styling stuff
   const classes = useListStyles();
 

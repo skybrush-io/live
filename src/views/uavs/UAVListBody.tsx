@@ -24,7 +24,7 @@ const UAVListBody = ({
   layout,
   onSelectSection,
   selectionInfo,
-}: UAVListBodyProps): JSX.Element => {
+}: UAVListBodyProps): React.JSX.Element => {
   const { t } = useTranslation();
   return (
     <>

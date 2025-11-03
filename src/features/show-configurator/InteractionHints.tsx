@@ -122,7 +122,7 @@ const useTabStyles = makeStyles({
 const InteractionHint = ({
   keys,
   action,
-}: Readonly<{ keys: string[]; action: string }>): JSX.Element => (
+}: Readonly<{ keys: string[]; action: string }>): React.JSX.Element => (
   <span>
     {keys.map((k) => (
       <kbd key={k}>{k}</kbd>
@@ -133,7 +133,7 @@ const InteractionHint = ({
   </span>
 );
 
-const InteractionHints = (): JSX.Element => {
+const InteractionHints = (): React.JSX.Element => {
   const { t } = useTranslation();
   const [active, setActive] = useState(0);
   const tabStyles = useTabStyles();

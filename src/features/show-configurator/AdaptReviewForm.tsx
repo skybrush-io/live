@@ -59,7 +59,7 @@ type AdaptReviewFormProps = Readonly<{
   reviewInViewer: () => void;
 }>;
 
-const AdaptReviewForm = (props: AdaptReviewFormProps): JSX.Element => {
+const AdaptReviewForm = (props: AdaptReviewFormProps): React.JSX.Element => {
   const { adaptResult, error, isShowAdaptInProgress, reviewInViewer } = props;
   const { t } = useTranslation(undefined, {
     keyPrefix: 'showConfiguratorDialog.adaptReview',

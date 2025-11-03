@@ -35,7 +35,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 export const RSSIIndicator = ({
   className,
   rssi,
-}: RSSIIndicatorProps): JSX.Element => {
+}: RSSIIndicatorProps): React.JSX.Element => {
   const classes = useStyles();
   if (rssi.length < 2) {
     // Show only one RSSI value in a full pill

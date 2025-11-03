@@ -78,7 +78,7 @@ type Props = Readonly<{
   status: Status;
 }>;
 
-const ShowConfiguratorButton = (props: Props): JSX.Element => {
+const ShowConfiguratorButton = (props: Props): React.JSX.Element => {
   const { show, showDialogAndClearUndoHistory, status } = props;
 
   const dispatch = useDispatch<AppDispatch>();

@@ -50,7 +50,7 @@ const UploadDialog = ({
   runningJobType,
   selectedJobType,
   toggleRestrictToGlobalSelection,
-}: UploadDialogProps): JSX.Element => {
+}: UploadDialogProps): React.JSX.Element => {
   const { t } = useTranslation();
   const isRunningJobTypeMatching =
     !runningJobType || runningJobType === selectedJobType;

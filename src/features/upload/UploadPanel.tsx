@@ -62,7 +62,7 @@ const UploadResultIndicator = ({
   result,
   running,
   ...rest
-}: UploadResultIndicatorProps): JSX.Element => {
+}: UploadResultIndicatorProps): React.JSX.Element => {
   const { t } = useTranslation();
 
   let status;
@@ -171,7 +171,7 @@ const UploadPanel = ({
   onToggleFlashFailed,
   running = false,
   showLastUploadResult = false,
-}: UploadPanelProps): JSX.Element => {
+}: UploadPanelProps): React.JSX.Element => {
   const classes = useStyles();
   const { t } = useTranslation();
 

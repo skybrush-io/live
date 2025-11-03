@@ -149,7 +149,7 @@ const StartTimeForm = ({
   initialValues,
   onClose,
   onSubmit,
-}: StartTimeFormPresentationProps): JSX.Element => {
+}: StartTimeFormPresentationProps): React.JSX.Element => {
   const { t } = useTranslation();
   const validateForm = useMemo(() => makeFormValidator(t), [t]);
 
@@ -326,7 +326,7 @@ const StartTimeDialog = ({
   onUpdateSettings,
   timeOnClock,
   utcTime,
-}: StartTimeDialogProps): JSX.Element => {
+}: StartTimeDialogProps): React.JSX.Element => {
   const hasUtcStartTime = typeof utcTime === 'number';
   const hasStartTimeOnClock = typeof timeOnClock === 'number';
   const startDateTimeInUtc = hasUtcStartTime

@@ -44,7 +44,7 @@ const UAVListSection = ({
   layout,
   ...rest
   // eslint-disable-next-line @typescript-eslint/ban-types
-}: UAVListSectionProps): JSX.Element | null => {
+}: UAVListSectionProps): React.JSX.Element | null => {
   const classes = useStyles();
   return (
     <>

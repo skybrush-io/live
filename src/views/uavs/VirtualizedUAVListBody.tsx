@@ -42,7 +42,7 @@ type VirtualizedUAVListBodyProps = Readonly<{
  * ensure that the real grid starts "below" the SortAndFilterHeader component
  * that is supposed to float above the grid.
  */
-const GridHeaderPadding = (): JSX.Element => (
+const GridHeaderPadding = (): React.JSX.Element => (
   <Box sx={{ height: HEADER_HEIGHT }} />
 );
 
@@ -52,7 +52,7 @@ const GridHeaderPadding = (): JSX.Element => (
 const VirtualizedUAVListBody = React.forwardRef<
   VirtualizedScrollFunctions | undefined,
   VirtualizedUAVListBodyProps
->((props, ref): JSX.Element => {
+>((props, ref): React.JSX.Element => {
   const { items, itemRenderer, layout, ...rest } = props;
   const classes = useStyles();
 

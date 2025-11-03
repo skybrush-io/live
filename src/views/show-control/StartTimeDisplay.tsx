@@ -10,7 +10,7 @@ import { clearStartTime } from '~/features/show/actions';
 import { getShowStartTimeAsString } from '~/features/show/selectors';
 import type { AppDispatch } from '~/store/reducers';
 
-const StartTimeDisplay = (): JSX.Element => {
+const StartTimeDisplay = (): React.JSX.Element => {
   const dispatch: AppDispatch = useDispatch();
   const formattedStartTime = useSelector(getShowStartTimeAsString);
   const { t } = useTranslation();

@@ -80,7 +80,7 @@ const DragDropArea = ({
   id,
   onDrop,
   ...rest
-}: DragDropAreaProps): JSX.Element => {
+}: DragDropAreaProps): React.JSX.Element => {
   const [collectedDragProps, drag] = useDrag({
     item: { id },
     type: 'uav',
@@ -143,7 +143,7 @@ const DroneListItem = ({
   selected,
   stretch,
   uavId,
-}: DroneListItemProps): JSX.Element => {
+}: DroneListItemProps): React.JSX.Element => {
   const classes = useStyles();
   const mergedClassNames = clsx(
     classes.root,

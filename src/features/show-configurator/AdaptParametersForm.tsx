@@ -172,7 +172,7 @@ type Props = Readonly<
   }
 >;
 
-const AdaptParametersForm = (props: Props): JSX.Element => {
+const AdaptParametersForm = (props: Props): React.JSX.Element => {
   const {
     disabled,
     parameters,

@@ -446,7 +446,7 @@ const SortAndFilterHeader = ({
   showMissionIds,
   sortBy,
   t,
-}: SortAndFilterHeaderProps): JSX.Element => {
+}: SortAndFilterHeaderProps): React.JSX.Element => {
   const classes = useStyles();
   const sortChipRef = useRef<HTMLDivElement>();
   const sortPopupState = usePopupState({

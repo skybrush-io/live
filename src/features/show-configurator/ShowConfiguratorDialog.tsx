@@ -230,7 +230,7 @@ function useOwnState(props: Props) {
   };
 }
 
-const ShowConfiguratorDialog = (props: Props): JSX.Element => {
+const ShowConfiguratorDialog = (props: Props): React.JSX.Element => {
   const {
     adjustHomePositionsToDronePositionsEnabled,
     adjustHomePositionsToDronePositions,
@@ -339,7 +339,9 @@ const ShowConfiguratorDialog = (props: Props): JSX.Element => {
  * when it is opened.
  */
 // eslint-disable-next-line @typescript-eslint/ban-types
-const ShowConfiguratorDialogWrapper = (props: Props): JSX.Element | null => {
+const ShowConfiguratorDialogWrapper = (
+  props: Props
+): React.JSX.Element | null => {
   const { open, ...rest } = props;
   return open ? <ShowConfiguratorDialog open {...rest} /> : null;
 };

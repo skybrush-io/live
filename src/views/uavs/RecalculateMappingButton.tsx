@@ -16,7 +16,7 @@ type RecalculateMappingButtonProps = Omit<ButtonProps, 'onClick'>;
  */
 const RecalculateMappingButton = (
   props: RecalculateMappingButtonProps
-): JSX.Element => {
+): React.JSX.Element => {
   const { t } = useTranslation();
   const hasNonempty = useSelector(hasNonemptyMappingSlot);
   const dispatch: AppDispatch = useDispatch();

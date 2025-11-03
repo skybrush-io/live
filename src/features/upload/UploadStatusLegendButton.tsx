@@ -51,7 +51,7 @@ const UploadStatusLegendButton = ({
   status,
   tooltip,
   ...rest
-}: UploadStatusLegendButtonProps): JSX.Element => {
+}: UploadStatusLegendButtonProps): React.JSX.Element => {
   const classes = useStyles();
   const enabled = onClick && counter > 0;
   const button = (

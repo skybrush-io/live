@@ -33,7 +33,7 @@ type ListFactory<P> = (
   props: P,
   children: React.ReactElement[],
   ref: React.ForwardedRef<unknown>
-) => JSX.Element;
+) => React.JSX.Element;
 
 type ValidatedListOfOptions<T, P> = {
   backgroundHint?: string | React.ReactElement;
@@ -77,7 +77,7 @@ type SelectionHandlerReduxFunctions<T = string> = {
 const createBackgroundHint = (
   backgroundHint: string | React.ReactElement | undefined,
   ref: React.ForwardedRef<unknown>
-): JSX.Element | null => {
+): React.JSX.Element | null => {
   switch (typeof backgroundHint) {
     case 'string':
       return <BackgroundHint ref={ref} text={backgroundHint} />;
