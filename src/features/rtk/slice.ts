@@ -74,8 +74,8 @@ const initialState: RTKSliceState = {
     surveySettingsEditorVisible: false,
     coordinateRestorationDialog: {
       open: false,
-      presetId: null,
-      savedCoordinate: null,
+      presetId: undefined,
+      savedCoordinate: undefined,
     },
   },
 };
@@ -178,8 +178,8 @@ const { actions, reducer } = createSlice({
     closeCoordinateRestorationDialog: noPayload<RTKSliceState>((state) => {
       state.dialog.coordinateRestorationDialog = {
         open: false,
-        presetId: null,
-        savedCoordinate: null,
+        presetId: undefined,
+        savedCoordinate: undefined,
       };
     }),
   },
