@@ -2,6 +2,7 @@ import {
   loadShowSpecificationAndZip,
   type ShowSpecification,
 } from '@skybrush/show-format';
+import { Transfer } from 'workerpool';
 
 type LoadShowOptions = {
   /**
@@ -9,6 +10,11 @@ type LoadShowOptions = {
    * also be returned.
    */
   returnBlob?: boolean;
+};
+
+type Response = {
+  spec: ShowSpecification;
+  blob?: Uint8Array;
 };
 
 /**
@@ -24,14 +30,19 @@ type LoadShowOptions = {
 export default async function loadShow(
   file: string | number[] | Uint8Array | ArrayBuffer | Blob,
   options: LoadShowOptions = {}
-): Promise<{
-  spec: ShowSpecification;
-  base64Blob?: string;
-}> {
+): Promise<Response> {
   const { returnBlob = true } = options;
   const { showSpec, zip } = await loadShowSpecificationAndZip(file);
-  const base64Blob = returnBlob
-    ? await zip.generateAsync({ type: 'base64' })
+  const blob = returnBlob
+    ? await zip.generateAsync({ type: 'uint8array' })
     : undefined;
-  return { spec: showSpec, base64Blob };
+
+  // We need to return a Transfer object to indicate to workerpool that the
+  // underlying ArrayBuffer should be transferred instead of copied. However,
+  // we still want to provide the right typing for the return value, so we
+  // need to cast
+  return new Transfer(
+    { spec: showSpec, blob },
+    blob ? [blob.buffer] : []
+  ) as any as Response;
 }

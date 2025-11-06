@@ -283,9 +283,14 @@ const createShowLoaderThunkFactory = (
 export const loadShowFromFile = createShowLoaderThunkFactory(
   async (file) => {
     const url = file && file.path ? `file://${file.path}` : undefined;
-    const { spec, base64Blob } = await workers.loadShow(file, {
+    const { spec, blob } = await workers.loadShow(file, {
       returnBlob: true,
     });
+
+    // Base64-encode the blob so we can store it in the Redux store without
+    // the serializable middleware yelling at us
+    const base64Blob = blob ? Base64.fromUint8Array(blob) : undefined;
+
     // Pre-freeze the show data shallowly to give a hint to Redux Toolkit that
     // the show content won't change
     return { spec: Object.freeze(spec), url, base64Blob };
