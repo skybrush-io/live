@@ -302,6 +302,10 @@ export const loadShowFromFile = createShowLoaderThunkFactory(
 
 export const loadBase64EncodedShow = createShowLoaderThunkFactory(
   async (base64Blob) => {
+    // TODO(ntamas): The input is an Uint8Array; it would be more efficient to
+    // use a transferable to send it to the web worker instead of copying it.
+    // This will require modifications in workers.loadShow() in the future so
+    // it wraps Uint8Array inputs in a transferable
     const { spec } = await workers.loadShow(Base64.toUint8Array(base64Blob), {
       returnBlob: false,
     });
