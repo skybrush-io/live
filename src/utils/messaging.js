@@ -268,7 +268,7 @@ export const turnMotorsOnForUAVs = performMassOperation({
 
 export const calibrateCompassOnUAVs = performMassOperation(
   {
-    type: 'OBJ-CMD',
+    type: 'UAV-CALIB',
     name: 'Calibrate compass',
     mapper: (options) => ({
       ...options,
