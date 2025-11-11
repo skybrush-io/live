@@ -273,13 +273,17 @@ const UAVOperationsButtonGroup = ({
         <>
           {!hideSeparators && <ToolbarDivider orientation='vertical' />}
 
-          <IconButton
-            size={iconSize}
-            disabled={selectedUAVIds.length == 0 || selectedUAVIds.length > 40}
-            onClick={() => calibrateCompass()}
-          >
-            <CompassCalibration />
-          </IconButton>
+          <Tooltip content={t('general.commands.calibrateCompass')}>
+            <IconButton
+              size={iconSize}
+              disabled={
+                selectedUAVIds.length == 0 || selectedUAVIds.length > 20
+              }
+              onClick={() => calibrateCompass()}
+            >
+              <CompassCalibration />
+            </IconButton>
+          </Tooltip>
 
           {!hideSeparators && <ToolbarDivider orientation='vertical' />}
 
