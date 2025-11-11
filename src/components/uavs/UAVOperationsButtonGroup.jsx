@@ -1,7 +1,7 @@
 import Assignment from '@mui/icons-material/Assignment';
 import Clear from '@mui/icons-material/Clear';
-import CompassCalibration from '@mui/icons-material/CompassCalibration';
 import Delete from '@mui/icons-material/Delete';
+import Explore from '@mui/icons-material/Explore';
 import PositionHold from '@mui/icons-material/Flag';
 import FlightLand from '@mui/icons-material/FlightLand';
 import FlightTakeoff from '@mui/icons-material/FlightTakeoff';
@@ -198,7 +198,7 @@ const UAVOperationsButtonGroup = ({
               }
               onClick={() => calibrateCompass()}
             >
-              <CompassCalibration />
+              <Explore />
             </IconButton>
           </Tooltip>
         </>
