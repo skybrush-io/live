@@ -190,6 +190,17 @@ const UAVOperationsButtonGroup = ({
             </IconButton>
           </Tooltip>
           {flashLightsButton}
+          <Tooltip content={t('general.commands.calibrateCompass')}>
+            <IconButton
+              size={iconSize}
+              disabled={
+                selectedUAVIds.length == 0 || selectedUAVIds.length > 20
+              }
+              onClick={() => calibrateCompass()}
+            >
+              <CompassCalibration />
+            </IconButton>
+          </Tooltip>
         </>
       )}
 
@@ -271,20 +282,6 @@ const UAVOperationsButtonGroup = ({
 
       {size !== 'small' && (
         <>
-          {!hideSeparators && <ToolbarDivider orientation='vertical' />}
-
-          <Tooltip content={t('general.commands.calibrateCompass')}>
-            <IconButton
-              size={iconSize}
-              disabled={
-                selectedUAVIds.length == 0 || selectedUAVIds.length > 20
-              }
-              onClick={() => calibrateCompass()}
-            >
-              <CompassCalibration />
-            </IconButton>
-          </Tooltip>
-
           {!hideSeparators && <ToolbarDivider orientation='vertical' />}
 
           <Tooltip
