@@ -1,5 +1,6 @@
 import Assignment from '@mui/icons-material/Assignment';
 import Clear from '@mui/icons-material/Clear';
+import CompassCalibration from '@mui/icons-material/CompassCalibration';
 import Delete from '@mui/icons-material/Delete';
 import PositionHold from '@mui/icons-material/Flag';
 import FlightLand from '@mui/icons-material/FlightLand';
@@ -54,6 +55,7 @@ const UAVOperationsButtonGroup = ({
   const isSelectionSingle = selectedUAVIds.length === 1 && !broadcast;
 
   const {
+    calibrateCompass,
     flashLight,
     holdPosition,
     land,
@@ -269,6 +271,16 @@ const UAVOperationsButtonGroup = ({
 
       {size !== 'small' && (
         <>
+          {!hideSeparators && <ToolbarDivider orientation='vertical' />}
+
+          <IconButton
+            size={iconSize}
+            disabled={selectedUAVIds.length == 0 || selectedUAVIds.length > 40}
+            onClick={() => calibrateCompass()}
+          >
+            <CompassCalibration />
+          </IconButton>
+
           {!hideSeparators && <ToolbarDivider orientation='vertical' />}
 
           <Tooltip

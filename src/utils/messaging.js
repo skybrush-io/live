@@ -84,14 +84,17 @@ const createConfirmationMessage = (operation, uavs, broadcast) => {
 };
 
 const performMassOperation =
-  ({
-    type,
-    name,
-    mapper = undefined,
-    reportFailure = true,
-    reportSuccess = true,
-    skipConfirmation = false,
-  }) =>
+  (
+    {
+      type,
+      name,
+      mapper = undefined,
+      reportFailure = true,
+      reportSuccess = true,
+      skipConfirmation = false,
+    },
+    responseHandlerOptions = undefined
+  ) =>
   async (uavs, args) => {
     // Do not bail out early if uavs is empty because in the args there might be
     // an option that intructs the server to do a broadcast to all UAVs.
@@ -118,11 +121,14 @@ const performMassOperation =
         }
       }
 
-      const responses = await messageHub.startAsyncOperation({
-        type,
-        ids: uavs,
-        ...finalArgs,
-      });
+      const responses = await messageHub.startAsyncOperation(
+        {
+          type,
+          ids: uavs,
+          ...finalArgs,
+        },
+        responseHandlerOptions
+      );
       processResponses(name, responses, { reportFailure, reportSuccess });
     } catch (error) {
       console.error(error);
@@ -260,8 +266,22 @@ export const turnMotorsOnForUAVs = performMassOperation({
   }),
 });
 
+export const calibrateCompassOnUAVs = performMassOperation(
+  {
+    type: 'OBJ-CMD',
+    name: 'Calibrate compass',
+    mapper: (options) => ({
+      ...options,
+      command: 'calib',
+      args: ['compass'],
+    }),
+  },
+  { timeout: 90 }
+);
+
 // moveUAVs() not in this map because it requires extra args
 const OPERATION_MAP = {
+  calibrateCompass: calibrateCompassOnUAVs,
   flashLight: flashLightOnUAVs,
   shutdown: shutdownUAVs,
   land: landUAVs,
