@@ -52,8 +52,8 @@ const useStyles = makeStyles((theme) => ({
     fontFamily: monospacedFont,
     fontSize: 'small',
     fontVariantNumeric: 'lining-nums tabular-nums',
-    marginTop: [-2, '!important'],
-    marginBottom: [-4, '!important'],
+    marginTop: '-2px, !important',
+    marginBottom: '-4px !important',
     userSelect: 'none',
     whiteSpace: 'pre',
   },
@@ -87,7 +87,7 @@ const useStyles = makeStyles((theme) => ({
     textAlign: 'left',
     padding: theme.spacing(0, 0.5),
     margin: theme.spacing(0, 0.5),
-    width: 56,
+    width: '56px !important',
   },
 }));
 
