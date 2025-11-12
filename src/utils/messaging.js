@@ -13,6 +13,7 @@ import { UAV_SIGNAL_DURATION } from '~/features/settings/constants';
 import { shouldConfirmUAVOperation } from '~/features/settings/selectors';
 import { showNotification } from '~/features/snackbar/actions';
 import { MessageSemantics } from '~/features/snackbar/types';
+import { COMPASS_CALIB_TIMEOUT } from '~/features/uavs/constants';
 import messageHub from '~/message-hub';
 import store from '~/store';
 
@@ -270,13 +271,13 @@ export const calibrateCompassOnUAVs = performMassOperation(
   {
     type: 'UAV-CALIB',
     name: 'Calibrate compass',
-    mapper: (options) => ({
+    mapper: ({ transport, ...options }) => ({
+      // Ignore transport, it's not a valid argument.
       ...options,
-      command: 'calib',
-      args: ['compass'],
+      component: 'compass',
     }),
   },
-  { timeout: 90 }
+  { timeout: COMPASS_CALIB_TIMEOUT }
 );
 
 // moveUAVs() not in this map because it requires extra args

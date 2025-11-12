@@ -30,6 +30,7 @@ import {
   requestRemovalOfUAVsByIds,
   requestRemovalOfUAVsMarkedAsGone,
 } from '~/features/uavs/actions';
+import { COMPASS_CALIB_UAV_LIMIT } from '~/features/uavs/constants';
 import { openUAVDetailsDialog } from '~/features/uavs/details';
 import { getUAVIdList } from '~/features/uavs/selectors';
 import Bolt from '~/icons/Bolt';
@@ -194,7 +195,8 @@ const UAVOperationsButtonGroup = ({
             <IconButton
               size={iconSize}
               disabled={
-                selectedUAVIds.length == 0 || selectedUAVIds.length > 20
+                selectedUAVIds.length === 0 ||
+                selectedUAVIds.length > COMPASS_CALIB_UAV_LIMIT
               }
               onClick={() => calibrateCompass()}
             >

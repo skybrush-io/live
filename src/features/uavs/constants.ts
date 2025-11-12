@@ -29,3 +29,14 @@ export const UAV_DETAILS_DIALOG_MIN_WIDTH =
  */
 export const UAV_DETAILS_DIALOG_HEIGHT =
   UAV_DETAILS_DIALOG_HEADER_HEIGHT + UAV_DETAILS_DIALOG_BODY_HEIGHT;
+
+/**
+ * The maximum number of drones compass calibration should be
+ * executed on in a single operation.
+ */
+export const COMPASS_CALIB_UAV_LIMIT = 20;
+
+/**
+ * Timout for the async compass calibration operation.
+ */
+export const COMPASS_CALIB_TIMEOUT = 90;
