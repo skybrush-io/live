@@ -54,7 +54,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 
   stretch: {
-    alignItems: ['stretch', '!important'] as any as string,
+    alignItems: 'stretch !important',
   },
 }));
 

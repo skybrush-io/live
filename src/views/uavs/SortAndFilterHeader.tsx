@@ -80,14 +80,14 @@ const createChipStyle = (
     result['boxShadow'] = `0 0 4px 2px ${color}`;
     result['&:focus'] = {
       color: theme.palette.getContrastText(color),
-      backgroundColor: [lighter, '!important'],
+      backgroundColor: `${lighter} !important`,
     };
     result['&:hover'] = {
       color: theme.palette.getContrastText(color),
-      backgroundColor: [lighter, '!important'],
+      backgroundColor: `${lighter} !important`,
     };
     result['& svg'] = {
-      color: [theme.palette.getContrastText(color), '!important'],
+      color: `${theme.palette.getContrastText(color)} '!important'`,
     };
   }
 
