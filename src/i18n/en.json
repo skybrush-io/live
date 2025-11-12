@@ -22,11 +22,12 @@
     "signOffOn": "Sign off on onboard preflight checks"
   },
   "RTKCoordinateRestorationDialog": {
+    "accuracyLabel": "Accuracy",
     "cancel": "Cancel",
-    "message": "A saved coordinate exists for this RTK preset: Position: {{position}}, Accuracy: {{accuracy}}m, Saved: {{date}}, Do you want to use this saved coordinate or start a new survey?",
-    "startNew": "Start new survey",
-    "title": "Use saved coordinate?",
-    "useSaved": "Use saved coordinate"
+    "dateLabel": "Saved",
+    "positionLabel": "Position",
+    "title": "Use last known coordinate?",
+    "useSaved": "Use coordinate"
   },
   "RTKCorrectionSourceSelector": {
     "RTKCorrections": "RTK corrections",

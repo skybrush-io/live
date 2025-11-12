@@ -34,30 +34,6 @@ export const startNewSurveyOnServer = (settings) => async (dispatch) => {
   dispatch(closeSurveySettingsPanel());
 };
 
-/**
- * Sets the server-side RTK correction source to the given preset.
- */
-export const setSelectedPresetAsSource = (presetId) => async (dispatch) => {
-  try {
-    await messageHub.execute.setRTKCorrectionsSource(presetId);
-  } catch {
-    dispatch(
-      showNotification({
-        message: 'Failed to set RTK correction source.',
-        semantics: MessageSemantics.ERROR,
-      })
-    );
-    return;
-  }
-
-  dispatch(
-    showNotification({
-      message: `RTK correction source set to preset ${presetId}`,
-      semantics: MessageSemantics.SUCCESS,
-    })
-  );
-};
-
 export const toggleAntennaPositionFormat = () => (dispatch, getState) => {
   dispatch(
     setAntennaPositionFormat(
@@ -70,9 +46,10 @@ export const useSavedCoordinateForPreset =
   (presetId, savedCoordinate) => async (dispatch, getState) => {
     try {
       // Set the saved coordinate as the current antenna position
-      await messageHub.execute.setRTKAntennaPosition(
-        savedCoordinate.positionECEF
-      );
+      await messageHub.execute.setRTKAntennaPosition({
+        position: savedCoordinate.positionECEF,
+        accuracy: savedCoordinate.accuracy,
+      });
 
       // Check if the component is still mounted by checking if the dialog is still open
       const currentState = getState();

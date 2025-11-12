@@ -28,11 +28,12 @@
     "pleaseWait": "Kérem várjon, RTK források betöltése…"
   },
   "RTKCoordinateRestorationDialog": {
-    "title": "Használod a mentett koordinátát?",
-    "message": "Ehhez az RTK beállításhoz mentett koordináta áll rendelkezésre: Pozíció: {{position}}, Pontosság: {{accuracy}} m, Mentve: {{date}}, A mentett koordinátát szeretnéd használni, vagy indítsunk új felmérést?",
+    "title": "Használod a legutóbbi ismert koordinátát?",
+    "positionLabel": "Pozíció",
+    "accuracyLabel": "Pontosság",
+    "dateLabel": "Mentve",
     "cancel": "Mégse",
-    "startNew": "Új felmérés",
-    "useSaved": "Mentett használata"
+    "useSaved": "Koordináta használata"
   },
   "RTKMessage": {
     "noRTKMessagesYet": "Még nem érkezett RTK üzenet"

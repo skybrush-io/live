@@ -4,22 +4,21 @@ import React from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
+import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import Typography from '@material-ui/core/Typography';
 
 import { closeCoordinateRestorationDialog } from '~/features/rtk/slice';
 import {
   getCoordinateRestorationDialog,
   getFormattedSavedCoordinatePosition,
 } from '~/features/rtk/selectors';
-import {
-  setSelectedPresetAsSource,
-  useSavedCoordinateForPreset,
-} from '~/features/rtk/actions';
+import { useSavedCoordinateForPreset } from '~/features/rtk/actions';
 
 const RTKCoordinateRestorationDialog = ({
   t,
@@ -27,7 +26,6 @@ const RTKCoordinateRestorationDialog = ({
   formattedPosition,
   onClose,
   onUseSaved,
-  onStartNew,
 }) => {
   if (!dialog.open || !dialog.savedCoordinate) {
     return null;
@@ -35,16 +33,11 @@ const RTKCoordinateRestorationDialog = ({
 
   const { presetId, savedCoordinate } = dialog;
   const { accuracy, savedAt } = savedCoordinate;
-  const savedDate = formatDate(new Date(savedAt), 'yyyy-MM-dd');
+  const savedDateTime = formatDate(new Date(savedAt), 'yyyy-MM-dd HH:mm:ss');
 
   const handleUseSaved = () => {
     onClose(); // Close dialog first
     onUseSaved(presetId, savedCoordinate); // Then start async operation
-  };
-
-  const handleStartNew = () => {
-    onStartNew(presetId);
-    onClose();
   };
 
   return (
@@ -59,20 +52,26 @@ const RTKCoordinateRestorationDialog = ({
         {t('RTKCoordinateRestorationDialog.title')}
       </DialogTitle>
       <DialogContent>
-        <DialogContentText>
-          {t('RTKCoordinateRestorationDialog.message', {
-            position: formattedPosition,
-            accuracy: accuracy.toFixed(3),
-            date: savedDate,
-          })}
-        </DialogContentText>
+        <Box mt={2} mb={2}>
+          <Typography variant="body2" component="div">
+            <Box component="div" mb={1}>
+              <strong>{t('RTKCoordinateRestorationDialog.positionLabel')}:</strong>{' '}
+              {formattedPosition}
+            </Box>
+            <Box component="div" mb={1}>
+              <strong>{t('RTKCoordinateRestorationDialog.accuracyLabel')}:</strong>{' '}
+              {accuracy.toFixed(3)} m
+            </Box>
+            <Box component="div" mb={1}>
+              <strong>{t('RTKCoordinateRestorationDialog.dateLabel')}:</strong>{' '}
+              {savedDateTime}
+            </Box>
+          </Typography>
+        </Box>
       </DialogContent>
       <DialogActions>
         <Button color='primary' onClick={onClose}>
           {t('RTKCoordinateRestorationDialog.cancel')}
-        </Button>
-        <Button color='primary' onClick={handleStartNew}>
-          {t('RTKCoordinateRestorationDialog.startNew')}
         </Button>
         <Button color='primary' variant='contained' onClick={handleUseSaved}>
           {t('RTKCoordinateRestorationDialog.useSaved')}
@@ -88,7 +87,6 @@ RTKCoordinateRestorationDialog.propTypes = {
   formattedPosition: PropTypes.string,
   onClose: PropTypes.func,
   onUseSaved: PropTypes.func,
-  onStartNew: PropTypes.func,
 };
 
 export default connect(
@@ -104,6 +102,5 @@ export default connect(
   {
     onClose: closeCoordinateRestorationDialog,
     onUseSaved: useSavedCoordinateForPreset,
-    onStartNew: setSelectedPresetAsSource,
   }
 )(withTranslation()(RTKCoordinateRestorationDialog));
