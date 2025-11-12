@@ -15,6 +15,7 @@ import Colors from '~/components/colors';
 import { errorToString } from '~/error-handling';
 import { useMessageHub } from '~/hooks';
 
+import { COMPASS_CALIB_TIMEOUT } from './constants';
 import ListItemProgressBar from './ListItemProgressBar';
 
 const tests = [
@@ -22,7 +23,7 @@ const tests = [
     component: 'compass',
     label: 'Calibrate compass',
     type: 'calib',
-    timeout: 90 /* compass calibration may take longer */,
+    timeout: COMPASS_CALIB_TIMEOUT,
   },
   {
     component: 'accel',

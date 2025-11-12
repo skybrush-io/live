@@ -157,6 +157,7 @@
       "undo": "Undo"
     },
     "commands": {
+      "calibrateCompass": "Calibrate compass",
       "land": "Land",
       "positionHold": "Position hold",
       "powerOff": "Power off",
