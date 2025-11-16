@@ -52,8 +52,6 @@ const useStyles = makeStyles((theme) => ({
     fontFamily: monospacedFont,
     fontSize: 'small',
     fontVariantNumeric: 'lining-nums tabular-nums',
-    marginTop: '-2px, !important',
-    marginBottom: '-4px !important',
     userSelect: 'none',
     whiteSpace: 'pre',
   },

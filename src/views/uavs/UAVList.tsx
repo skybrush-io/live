@@ -95,13 +95,7 @@ const useListStyles = makeStyles((theme: Theme) => ({
   },
 
   listItem: {
-    padding: theme.spacing(0.5),
     borderBottom: `1px solid ${theme.palette.divider}`,
-
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    '&:first-child': {
-      borderTop: `1px solid ${theme.palette.divider}`,
-    },
   },
 }));
 
