@@ -4,7 +4,7 @@ import {
 } from '@skybrush/show-format';
 import { Transfer } from 'workerpool';
 
-type LoadShowOptions = {
+export type LoadShowOptions = {
   /**
    * Specifies whether a base64-encoded ZIP representation of the show should
    * also be returned.
@@ -28,7 +28,7 @@ type Response = {
  *        representing the show file.
  */
 export default async function loadShow(
-  file: string | number[] | Uint8Array | ArrayBuffer | Blob,
+  file: string | number[] | Uint8Array,
   options: LoadShowOptions = {}
 ): Promise<Response> {
   const { returnBlob = true } = options;
