@@ -18,6 +18,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     display: 'flex',
     flexDirection: 'column',
     minWidth: GRID_ITEM_WIDTH,
+    padding: theme.spacing(0, 0.5),
     position: 'relative',
 
     scrollMarginTop:
