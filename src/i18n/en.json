@@ -278,6 +278,7 @@
   },
   "mappingEditorToolbar": {
     "assignSpares": "Assign spares",
+    "calculatingMapping": "Calculating mapping…",
     "clearMissing": "Clear missing",
     "clickToEdit": "Click to edit a single slot.",
     "dragNodes": "Drag nodes to rearrange the mapping.",

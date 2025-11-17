@@ -5,9 +5,7 @@ import { produce } from 'immer';
 import isNil from 'lodash-es/isNil';
 import pickBy from 'lodash-es/pickBy';
 import shuffle from 'lodash-es/shuffle';
-import { getDistance as haversineDistance } from 'ol/sphere';
 
-import { findAssignmentBetweenPoints } from '~/algorithms/matching';
 import { showErrorMessage } from '~/features/error-handling/actions';
 import { setSelection } from '~/features/map/selection';
 import {
@@ -62,8 +60,9 @@ import {
 import { readFileAsText } from '~/utils/files';
 import { readTextFromFile, writeTextToFile } from '~/utils/filesystem';
 import { toLonLatFromScaledJSON } from '~/utils/geography';
-import { calculateDistanceMatrix, euclideanDistance2D } from '~/utils/math';
 import { chooseUniqueId } from '~/utils/naming';
+import { createAsyncAction } from '~/utils/redux';
+import workers from '~/workers';
 
 import { JOB_TYPE } from './constants';
 import {
@@ -115,11 +114,30 @@ import {
 import { getMissionItemUploadJobPayload } from './upload';
 
 /**
+ * Internal action that finds an optimal assignment between two point sets
+ * and updates the store accordingly to indicate that a calculation is in
+ * progress.
+ *
+ * Note that we need to use a holder argument where we can retrieve the result.
+ * This is because dispatching an async action wouldn't _return_ the return
+ * value but dispatch it to the final "resolved" action instead.
+ */
+const doFindGreedyAssignmentBetweenPoints = createAsyncAction(
+  'mission/calculateMapping',
+  async (resultHolder, ...args) => {
+    const result = await workers.findGreedyAssignment(...args);
+    console.log(result);
+    resultHolder.result = result;
+  },
+  { minDelay: 500 }
+);
+
+/**
  * Thunk that fills the empty slots in the current mapping from the spare drones
  * that are not assigned to a mapping slot yet.
  */
 export const augmentMappingAutomaticallyFromSpareDrones =
-  () => (dispatch, getState) => {
+  () => async (dispatch, getState) => {
     const state = getState();
     const isIndoor = isShowIndoor(state);
 
@@ -156,7 +174,7 @@ export const augmentMappingAutomaticallyFromSpareDrones =
     const getter = isIndoor
       ? (item) => [item.position[0], item.position[1]]
       : (item) => [item.position.lon, item.position.lat];
-    const distanceFunction = isIndoor ? euclideanDistance2D : haversineDistance;
+    const distanceMetric = isIndoor ? 'euclidean' : 'geodetic';
     const threshold = isIndoor ? 1 : 3; /* meters */
 
     // Sources are the drones; targets are the takeoff positions.
@@ -172,11 +190,20 @@ export const augmentMappingAutomaticallyFromSpareDrones =
     // the smallest distance, perform the assignment, exclude all distance pairs
     // belonging to the chosen drone and takeoff position, and continue until
     // we have no drones or no takeoff positions left.
-    const matching = findAssignmentBetweenPoints(sources, targets, {
-      distanceFunction,
-      getter,
-      matching: { algorithm: 'greedy', threshold },
-    });
+    const resultHolder = { result: undefined };
+    await dispatch(
+      doFindGreedyAssignmentBetweenPoints(
+        resultHolder,
+        sources.map(getter),
+        targets.map(getter),
+        {
+          distanceMetric,
+          threshold,
+        }
+      )
+    );
+    const matching = resultHolder.result;
+
     const newMapping = [...getMissionMapping(state)];
     for (const [sourceIndex, targetIndex] of matching) {
       newMapping[targets[targetIndex].index] = sources[sourceIndex].uavId;

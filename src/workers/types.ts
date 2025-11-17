@@ -1,6 +1,7 @@
 import type { SetReturnType } from 'type-fest';
 import type { Promise } from 'workerpool';
 
+import type findGreedyAssignment from './functions/assignment';
 import type estimateShowCoordinateSystem from './functions/estimate-coords';
 import type loadShow from './functions/load-show';
 
@@ -14,5 +15,6 @@ export type Asyncify<Function_ extends (...arguments_: any[]) => any> =
  */
 export type WorkerApi = {
   estimateShowCoordinateSystem: Asyncify<typeof estimateShowCoordinateSystem>;
+  findGreedyAssignment: Asyncify<typeof findGreedyAssignment>;
   loadShow: Asyncify<typeof loadShow>;
 };

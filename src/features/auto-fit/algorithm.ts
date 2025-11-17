@@ -8,10 +8,13 @@ import { SVD as computeSVD } from 'svd-js';
 
 import { COORDINATE_SYSTEM_TYPE } from '@skybrush/show-format';
 
-import { findAssignmentBetweenPoints } from '~/algorithms/matching';
+import {
+  findAssignmentBetweenPoints,
+  type Assignment,
+} from '~/algorithms/matching';
+import { OriginType } from '~/features/map/types';
 import { FlatEarthCoordinateSystem, type LonLat } from '~/utils/geography';
 import {
-  calculateDistanceMatrix,
   euclideanDistance2D,
   getCentroid,
   getMeanAngle,
@@ -24,8 +27,6 @@ import type {
   CoordinateSystemEstimate,
   CoordinateSystemFittingProblem,
 } from './types';
-import type { Assignment } from 'hungarian-on3';
-import { OriginType } from '../map/types';
 
 if (COORDINATE_SYSTEM_TYPE !== OriginType.NWU) {
   throw new Error(
@@ -143,15 +144,6 @@ function refineEstimate(
   ) {
     const gpsToLocal = new FlatEarthCoordinateSystem(estimate);
     const uavCoordinates = convertToFlatEarth(uavGPSCoordinates, gpsToLocal);
-    /* TODO(ntamas): calculate distances for only those pairs that are closer
-     * than the given threshold */
-    const distances = calculateDistanceMatrix(
-      uavCoordinates,
-      takeoffCoordinates,
-      {
-        distanceFunction: euclideanDistance2D,
-      }
-    );
 
     /* Figure out which UAVs to include in the refinement attempt */
     matching = findAssignmentBetweenPoints(uavCoordinates, takeoffCoordinates, {

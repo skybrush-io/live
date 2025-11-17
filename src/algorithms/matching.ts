@@ -6,7 +6,9 @@ import {
   type DistanceCalculationOptions,
 } from '~/utils/math';
 
-type GreedyMatchingOptions = {
+export { type Assignment } from 'hungarian-on3';
+
+export type GreedyMatchingOptions = {
   /**
    * The threshold for the greedy algorithm. If a distance is larger than this
    * value, it will not be considered for assignment.
@@ -148,6 +150,9 @@ export function findAssignmentBetweenPoints<T, U = Coordinate2D>(
     matching?: MatchingOptions;
   }
 ): Assignment {
+  /* TODO(ntamas): calculate distances for only those pairs that are closer
+   * than the given threshold */
+
   const { matching, ...distanceCalculationOptions } = options;
   const matchingOptions = options?.matching;
   const distances = calculateDistanceMatrix(
@@ -155,5 +160,6 @@ export function findAssignmentBetweenPoints<T, U = Coordinate2D>(
     targets,
     distanceCalculationOptions
   );
+  console.log(distances);
   return findAssignmentInDistanceMatrix(distances, matchingOptions);
 }

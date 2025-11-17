@@ -46,7 +46,7 @@ const SurveySettingsEditor = ({ onClose, onSubmit, ...rest }) => {
         <ArrowBack />
       </IconButton>
       {settings.loading ? (
-        <SmallProgressIndicator text='Loading...' />
+        <SmallProgressIndicator label='Loading...' />
       ) : settings.error ? (
         <div>Failed to load survey settings from server.</div>
       ) : (

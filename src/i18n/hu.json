@@ -262,6 +262,7 @@
   },
   "mappingEditorToolbar": {
     "assignSpares": "Tartalékok hozzárendelése",
+    "calculatingMapping": "Hozzárendelés folyamatban…",
     "clearMissing": "Hiányzó törlése",
     "clickToEdit": "Kattintson egy hely szerkesztéséhez.",
     "dragNodes": "Húzza az ikonokat a hozzárendelés átrendezéséhez.",
