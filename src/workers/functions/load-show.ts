@@ -28,14 +28,22 @@ type Response = {
  *        representing the show file.
  */
 export default async function loadShow(
-  file: string | number[] | Uint8Array,
+  file: string | number[] | Uint8Array | File,
   options: LoadShowOptions = {}
 ): Promise<Response> {
   const { returnBlob = true } = options;
   const { showSpec, zip } = await loadShowSpecificationAndZip(file);
-  const blob = returnBlob
-    ? await zip.generateAsync({ type: 'uint8array' })
-    : undefined;
+
+  let blob: Uint8Array | undefined;
+  if (returnBlob) {
+    if (file instanceof File) {
+      blob = new Uint8Array(await file.arrayBuffer());
+    } else if (file instanceof Uint8Array) {
+      blob = file;
+    } else {
+      blob = await zip.generateAsync({ type: 'uint8array' });
+    }
+  }
 
   // We need to return a Transfer object to indicate to workerpool that the
   // underlying ArrayBuffer should be transferred instead of copied. However,
