@@ -2,7 +2,6 @@
  * Main entry point for workers used by the application.
  */
 
-import { Transfer } from 'workerpool';
 import type { LoadShowOptions } from './functions/load-show';
 import { pool } from './pool';
 import type { WorkerApi } from './types';
@@ -14,13 +13,13 @@ const workers: WorkerApi = {
     file: string | number[] | Uint8Array | File,
     options: LoadShowOptions = {}
   ) => {
-    let fileOrTransfer;
+    const params: any[] = [file, options];
+    let execOptions: Record<string, any> | undefined;
     if (file instanceof Uint8Array) {
-      fileOrTransfer = new Transfer(file, [file.buffer]);
-    } else {
-      fileOrTransfer = file;
+      execOptions = { transfer: [file.buffer] };
     }
-    return pool.exec('loadShow', [fileOrTransfer, options]);
+
+    return pool.exec('loadShow', params, execOptions);
   },
 };
 
