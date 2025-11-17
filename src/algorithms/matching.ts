@@ -1,5 +1,10 @@
 import hungarianAlgorithm, { type Assignment } from 'hungarian-on3';
 import sortBy from 'lodash-es/sortBy';
+import {
+  calculateDistanceMatrix,
+  type Coordinate2D,
+  type DistanceCalculationOptions,
+} from '~/utils/math';
 
 type GreedyMatchingOptions = {
   /**
@@ -31,10 +36,9 @@ type MatchingOptions =
  * yields more intutive results.
  *
  * @param matrix the input matrix
- * @param options specifies the algorithm to use and its parameters. Must have
- *        `algorithm` set to either `hungarian` or `greedy`.
- * @param parameters additional parameters to forward to the algorithm
- * @param algorithm the algorithm to run; `hungarian` or `greedy`
+ * @param options specifies the algorithm to use and its parameters
+ * @param options.parameters additional parameters to forward to the algorithm
+ * @param options.algorithm the algorithm to run; `hungarian` or `greedy`
  * @returns the assignment in a matrix with N rows and 2 columns, representing
  *          the row and column indices of the matrix cells that were chosen
  */
@@ -112,4 +116,44 @@ function greedyMatchingAlgorithm(
   }
 
   return result;
+}
+
+/**
+ * Finds an assignment between a set of source and target points such that each
+ * source point is assigned to at most one target point and vice versa.
+ *
+ * The assignment is not necessarily optimal; it depends on the algorithm
+ * being applied. The Hungarian algorithm yields an optimal assignment in the
+ * sense that the total distance of the selected pairs is minimal, but it is not
+ * always what we want in the case of assigning mission takeoff positions to
+ * UAVs. The greedy algorithm provides a simpler variant that nevertheless
+ * yields more intutive results.
+ *
+ * This function is roughly a combination of `calculateDistanceMatrix()`
+ * followed by `findAssignmentInDistanceMatrix()`, but may use optimizations
+ * that are used to reduce the number of distance calculations required.
+ *
+ * @param sources the source points
+ * @param targets the target points
+ * @param options specifies the algorithms to use and their parameters. See
+ *        more details in the `DistanceCalculationOptions` and `MatchingOptions`
+ *        types.
+ * @returns the assignment in a matrix with N rows and 2 columns, representing
+ *          indices of the source and target points that were paired
+ */
+export function findAssignmentBetweenPoints<T, U = Coordinate2D>(
+  sources: T[],
+  targets: T[],
+  options: DistanceCalculationOptions<T, U> & {
+    matching?: MatchingOptions;
+  }
+): Assignment {
+  const { matching, ...distanceCalculationOptions } = options;
+  const matchingOptions = options?.matching;
+  const distances = calculateDistanceMatrix(
+    sources,
+    targets,
+    distanceCalculationOptions
+  );
+  return findAssignmentInDistanceMatrix(distances, matchingOptions);
 }

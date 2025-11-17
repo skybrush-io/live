@@ -194,7 +194,7 @@ export function getMeanAngle(angles: number[]): number {
   return result < 0 ? result + 360 : result;
 }
 
-type DistanceCalculationOptions<T, U = Coordinate2D> = {
+export type DistanceCalculationOptions<T, U = Coordinate2D> = {
   distanceFunction: (a: U, b: U) => number;
   getter?: (item: T) => U;
 };
