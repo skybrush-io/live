@@ -37,7 +37,7 @@ export default async function loadShow(
   let blob: Uint8Array | undefined;
   if (returnBlob) {
     if (file instanceof File) {
-      blob = await file.bytes();
+      blob = new Uint8Array(await file.arrayBuffer());
     } else if (file instanceof Uint8Array) {
       blob = file;
     } else {
