@@ -33,9 +33,6 @@ export default async function loadShow(
 ): Promise<Response> {
   const { returnBlob = true } = options;
   const { showSpec, zip } = await loadShowSpecificationAndZip(file);
-  if (file instanceof File) {
-    await file.bytes();
-  }
 
   let blob: Uint8Array | undefined;
   if (returnBlob) {
