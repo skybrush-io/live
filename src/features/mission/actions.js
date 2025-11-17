@@ -7,7 +7,7 @@ import pickBy from 'lodash-es/pickBy';
 import shuffle from 'lodash-es/shuffle';
 import { getDistance as haversineDistance } from 'ol/sphere';
 
-import { findAssignmentInDistanceMatrix } from '~/algorithms/matching';
+import { findAssignmentBetweenPoints } from '~/algorithms/matching';
 import { showErrorMessage } from '~/features/error-handling/actions';
 import { setSelection } from '~/features/map/selection';
 import {
@@ -119,8 +119,7 @@ import { getMissionItemUploadJobPayload } from './upload';
  * that are not assigned to a mapping slot yet.
  */
 export const augmentMappingAutomaticallyFromSpareDrones =
-  ({ algorithm = 'greedy' } = {}) =>
-  (dispatch, getState) => {
+  () => (dispatch, getState) => {
     const state = getState();
     const isIndoor = isShowIndoor(state);
 
@@ -173,17 +172,11 @@ export const augmentMappingAutomaticallyFromSpareDrones =
     // the smallest distance, perform the assignment, exclude all distance pairs
     // belonging to the chosen drone and takeoff position, and continue until
     // we have no drones or no takeoff positions left.
-
-    const distances = calculateDistanceMatrix(sources, targets, {
+    const matching = findAssignmentBetweenPoints(sources, targets, {
       distanceFunction,
       getter,
+      matching: { algorithm: 'greedy', threshold },
     });
-
-    const matching = findAssignmentInDistanceMatrix(distances, {
-      algorithm,
-      threshold,
-    });
-
     const newMapping = [...getMissionMapping(state)];
     for (const [sourceIndex, targetIndex] of matching) {
       newMapping[targets[targetIndex].index] = sources[sourceIndex].uavId;

@@ -8,7 +8,7 @@ import { SVD as computeSVD } from 'svd-js';
 
 import { COORDINATE_SYSTEM_TYPE } from '@skybrush/show-format';
 
-import { findAssignmentInDistanceMatrix } from '~/algorithms/matching';
+import { findAssignmentBetweenPoints } from '~/algorithms/matching';
 import { FlatEarthCoordinateSystem, type LonLat } from '~/utils/geography';
 import {
   calculateDistanceMatrix,
@@ -154,9 +154,14 @@ function refineEstimate(
     );
 
     /* Figure out which UAVs to include in the refinement attempt */
-    matching = findAssignmentInDistanceMatrix(distances, {
-      algorithm: 'hungarian',
+    matching = findAssignmentBetweenPoints(uavCoordinates, takeoffCoordinates, {
+      distanceFunction: euclideanDistance2D,
+      matching: {
+        algorithm: 'hungarian',
+      },
     });
+
+    /* Sort the matching by takeoff index to ensure consistent ordering */
     matching.sort((a, b) => a[1] - b[1]);
     if (isEqual(matching, previousMatching)) {
       /* Matching did not change, we can run one last alignment and then exit */
