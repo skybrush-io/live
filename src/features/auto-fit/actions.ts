@@ -19,7 +19,6 @@ import type {
   CoordinateSystemEstimate,
   CoordinateSystemFittingProblem,
 } from './types';
-import delay from 'delay';
 
 type DoEsimateArgs = {
   problem: CoordinateSystemFittingProblem;
