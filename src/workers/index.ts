@@ -10,6 +10,7 @@ import type { WorkerApi } from './types';
 const workers: WorkerApi = {
   estimateShowCoordinateSystem: (...args) =>
     pool.exec('estimateShowCoordinateSystem', args),
+  findGreedyAssignment: (...args) => pool.exec('findGreedyAssignment', args),
   loadShow: (
     file: string | number[] | Uint8Array,
     options: LoadShowOptions = {}
