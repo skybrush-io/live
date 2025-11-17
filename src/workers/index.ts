@@ -11,7 +11,7 @@ const workers: WorkerApi = {
   estimateShowCoordinateSystem: (...args) =>
     pool.exec('estimateShowCoordinateSystem', args),
   loadShow: (
-    file: string | number[] | Uint8Array,
+    file: string | number[] | Uint8Array | File,
     options: LoadShowOptions = {}
   ) => {
     let fileOrTransfer;
