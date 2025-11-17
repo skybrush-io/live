@@ -17,6 +17,7 @@ import messageHub from '~/message-hub';
 import store from '~/store';
 
 import makeLogger from './logging';
+import { getUAVById } from '~/features/uavs/selectors';
 
 const logger = makeLogger('messaging');
 
@@ -199,23 +200,6 @@ export const wakeUpUAVs = performMassOperation({
   name: 'Resume from low-power mode command',
 });
 
-const moveUAVsLowLevel = performMassOperation({
-  type: 'UAV-FLY',
-  name: 'Fly to target command',
-  mapper: ({ target }) => ({
-    target: [
-      Math.round(target.lat * 1e7),
-      Math.round(target.lon * 1e7),
-      isNil(target.amsl) ? null : Math.round(target.amsl * 1e3),
-      isNil(target.ahl) ? null : Math.round(target.ahl * 1e3),
-      isNil(target.agl) ? null : Math.round(target.agl * 1e3),
-    ],
-  }),
-
-  // Moving UAVs is such a common feature that we skip any confirmation dialogs
-  skipConfirmation: true,
-});
-
 export const moveUAVs = (uavIds, { target, ...rest }) => {
   if (isNil(target)) {
     throw new Error('No target given in arguments');
@@ -239,7 +223,26 @@ export const moveUAVs = (uavIds, { target, ...rest }) => {
     args.target = { lat, lon };
   }
 
-  return moveUAVsLowLevel(uavIds, args);
+  // Only skip confirmation if all UAVs are already in guided mode (normally due to a previous move command)
+  const skipConfirmation = uavIds
+    .map((id) => getUAVById(store.getState(), id))
+    .every((uav) => uav.mode === 'guided');
+
+  return performMassOperation({
+    type: 'UAV-FLY',
+    name: 'Fly to target command',
+    mapper: ({ target }) => ({
+      target: [
+        Math.round(target.lat * 1e7),
+        Math.round(target.lon * 1e7),
+        isNil(target.amsl) ? null : Math.round(target.amsl * 1e3),
+        isNil(target.ahl) ? null : Math.round(target.ahl * 1e3),
+        isNil(target.agl) ? null : Math.round(target.agl * 1e3),
+      ],
+    }),
+
+    skipConfirmation,
+  })(uavIds, args);
 };
 
 export const turnMotorsOffForUAVs = performMassOperation({
