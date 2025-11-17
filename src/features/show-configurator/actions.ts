@@ -273,6 +273,7 @@ export const adjustHomePositionsToDronePositions =
       return;
     }
 
+    // TODO: move this calculation to a web worker to avoid blocking the UI
     const assignment = findAssignmentBetweenPoints(
       homePositions,
       dronePositions,
