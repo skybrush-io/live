@@ -43,6 +43,10 @@ const useStyles = makeStyles((theme) => ({
     textAlign: 'center',
   },
 
+  batteryStatus: {
+    marginTop: theme.spacing(0.25),
+  },
+
   gone: {
     opacity: 0.7,
   },
@@ -134,7 +138,11 @@ const ComplexAvatar = ({
         <StatusPill status={textSemantics}>{details || text}</StatusPill>
       )}
       {batteryStatus && (
-        <BatteryIndicator formatter={batteryFormatter} {...batteryStatus} />
+        <BatteryIndicator
+          className={classes.batteryStatus}
+          formatter={batteryFormatter}
+          {...batteryStatus}
+        />
       )}
     </>
   );

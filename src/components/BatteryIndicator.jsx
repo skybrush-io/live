@@ -11,7 +11,7 @@ import { BatteryFormatter, DEFAULT_BATTERY_FORMATTER } from './battery';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    marginTop: theme.spacing(0.5),
+    // marginTop: theme.spacing(0.5),
     padding: '0 2px',
     textAlign: 'center',
     userSelect: 'none',

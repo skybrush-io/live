@@ -74,6 +74,7 @@ const useStyles = makeStyles((theme) => ({
   },
   gpsPill: {
     width: 40,
+    outline: 'none !important',
   },
   rssiPills: {
     width: 72,
