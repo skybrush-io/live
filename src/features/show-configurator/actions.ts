@@ -4,10 +4,7 @@ import { ModifyEvent } from 'ol/interaction/Modify';
 import { getDistance as haversineDistance } from 'ol/sphere';
 import { batch } from 'react-redux';
 
-import {
-  findAssignmentBetweenPoints,
-  findAssignmentInDistanceMatrix,
-} from '~/algorithms/matching';
+import { findAssignmentBetweenPoints } from '~/algorithms/matching';
 import type { TransformFeaturesInteractionEvent } from '~/components/map/interactions/TransformFeatures';
 import { errorToString } from '~/error-handling';
 import { getBase64ShowBlob } from '~/features/show/selectors';
@@ -28,7 +25,7 @@ import type { AppThunk } from '~/store/reducers';
 import type { Identifier } from '~/utils/collections';
 import { writeBlobToFile } from '~/utils/filesystem';
 import type { EasNor, Easting, LonLat, Northing } from '~/utils/geography';
-import { calculateDistanceMatrix, toDegrees } from '~/utils/math';
+import { toDegrees } from '~/utils/math';
 
 import {
   getHomePositions,
@@ -315,8 +312,65 @@ export type OptionalShowAdaptParameters = {
 
 export type ShowAdaptParameters = Required<OptionalShowAdaptParameters>;
 
+/**
+ * "Off" configuration, no lights.
+ */
+type OffConfiguration = {
+  type: 'off';
+};
+
+/**
+ * Default light configuration.
+ */
+type DefaultConfiguration = {
+  type: 'default';
+
+  /**
+   * Brightness in the [0,1] interval.
+   */
+  brightness: number;
+};
+
+/**
+ * Solid colored lights configuration.
+ */
+type SolidConfiguration = {
+  type: 'solid';
+
+  /**
+   * RGB color code.
+   */
+  color: string;
+};
+
+/**
+ * Sparks with an off duration between them.
+ */
+type SparksConfiguration = {
+  type: 'sparks';
+  off_duration: number;
+};
+
+/**
+ * Light effect types.
+ */
+export type LightEffectType =
+  | OffConfiguration['type']
+  | DefaultConfiguration['type']
+  | SolidConfiguration['type']
+  | SparksConfiguration['type'];
+
+/**
+ * Light effect configurations.
+ */
+export type LightEffectConfiguration =
+  | OffConfiguration
+  | DefaultConfiguration
+  | SolidConfiguration
+  | SparksConfiguration;
+
 export const adaptShow =
-  (params: ShowAdaptParameters): AppThunk =>
+  (params: ShowAdaptParameters, lights: LightEffectConfiguration): AppThunk =>
   async (dispatch, getState) => {
     const state = getState();
 
@@ -343,12 +397,14 @@ export const adaptShow =
         parameters: {
           positions,
           duration: params.takeoffDuration || undefined,
+          lights,
           ...common,
         },
       },
       {
         type: 'rth',
         parameters: {
+          lights,
           ...common,
         },
       },

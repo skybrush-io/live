@@ -17,6 +17,9 @@ import type {
   OptionalShowAdaptParameters,
   ShowAdaptParameters,
 } from './actions';
+import LightConfigurationForm, {
+  type LightConfigurationProps,
+} from './LightConfigurationForm';
 
 const defaultAdaptParameters: ShowAdaptParameters = {
   minDistance: 2,
@@ -30,6 +33,10 @@ const useStyles = makeStyles((theme: Theme) => ({
   formGroup: {
     gap: theme.spacing(2),
     marginTop: theme.spacing(-2),
+    '& .react-colorful': {
+      height: '120px',
+      width: '100%',
+    },
   },
 }));
 
@@ -169,12 +176,13 @@ export function useAdaptParametersFormState(
 type Props = Readonly<
   ReturnType<typeof useAdaptParametersFormState> & {
     disabled: boolean;
-  }
+  } & { lights: LightConfigurationProps }
 >;
 
 const AdaptParametersForm = (props: Props): React.JSX.Element => {
   const {
     disabled,
+    lights,
     parameters,
     onMinDistanceChanged,
     onAltitudeChanged,
@@ -235,6 +243,7 @@ const AdaptParametersForm = (props: Props): React.JSX.Element => {
           helperText={t('form.takeoffDuration.help')}
           onChange={onTakeoffDurationChanged}
         />
+        <LightConfigurationForm {...lights} />
       </FormGroup>
     </Box>
   );

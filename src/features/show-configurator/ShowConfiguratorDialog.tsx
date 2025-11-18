@@ -31,10 +31,12 @@ import AdaptParametersForm, {
 } from './AdaptParametersForm';
 import AdaptReviewForm from './AdaptReviewForm';
 import InteractionHints from './InteractionHints';
+import { useLightConfigurationFormState } from './LightConfigurationForm';
 import Map from './ShowConfiguratorMap';
 import {
   adaptShow,
   adjustHomePositionsToDronePositions,
+  type LightEffectConfiguration,
   saveAdaptedShow,
   type ShowAdaptParameters,
 } from './actions';
@@ -99,7 +101,10 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 type DispatchProps = Readonly<{
-  adaptShow: (parameters: ShowAdaptParameters) => void;
+  adaptShow: (
+    parameters: ShowAdaptParameters,
+    lights: LightEffectConfiguration
+  ) => void;
   adjustHomePositionsToDronePositions: () => void;
   approveAdaptedShow: (
     base64Blob: string,
@@ -155,6 +160,8 @@ function useOwnState(props: Props) {
         },
     resetAdaptResult
   );
+  const { configuration: lightConfig, ...lights } =
+    useLightConfigurationFormState(resetAdaptResult);
 
   const back = useCallback(() => {
     if (backDisabled) {
@@ -189,7 +196,7 @@ function useOwnState(props: Props) {
       setStage('review');
 
       if (adaptedBase64Show === undefined) {
-        adaptShow(adaptParameters.parameters);
+        adaptShow(adaptParameters.parameters, lightConfig);
       }
     } else if (stage === 'review') {
       if (adaptedBase64Show === undefined) {
@@ -213,6 +220,7 @@ function useOwnState(props: Props) {
     approveAdaptedShow,
     closeDialog,
     coordinateSystem,
+    lightConfig,
     stage,
     submitDisabled,
   ]);
@@ -224,6 +232,7 @@ function useOwnState(props: Props) {
     approveAdaptedShow,
     back,
     coordinateSystem,
+    lights,
     stage,
     submit,
     submitDisabled,
@@ -242,7 +251,7 @@ const ShowConfiguratorDialog = (props: Props): React.JSX.Element => {
     t,
   } = props;
   const styles = useStyles();
-  const { adaptParameters, back, stage, submit, submitDisabled } =
+  const { adaptParameters, back, lights, stage, submit, submitDisabled } =
     useOwnState(props);
 
   return (
@@ -257,6 +266,7 @@ const ShowConfiguratorDialog = (props: Props): React.JSX.Element => {
         <Box className={styles.sidebarContent}>
           <AdaptParametersForm
             {...adaptParameters}
+            lights={lights}
             disabled={stage !== 'config'}
           />
           <FormControlLabel
@@ -362,8 +372,11 @@ const ConnectedShowConfiguratorDialogWrapper = connect(
   }),
   // -- map dispatch to props
   (dispatch: AppDispatch) => ({
-    adaptShow: (params: ShowAdaptParameters): void => {
-      dispatch(adaptShow(params));
+    adaptShow: (
+      params: ShowAdaptParameters,
+      lights: LightEffectConfiguration
+    ): void => {
+      dispatch(adaptShow(params, lights));
     },
     adjustHomePositionsToDronePositions: (): void => {
       dispatch(adjustHomePositionsToDronePositions());
