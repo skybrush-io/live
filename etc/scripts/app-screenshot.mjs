@@ -1,8 +1,26 @@
 #!/usr/bin/env -S deno run --allow-all
 
-import puppeteer from 'npm:puppeteer';
+import puppeteer from 'npm:puppeteer-core';
 
 // --- Utilities ---
+
+const getBrowserExecutablePath = async () => {
+  for (const browser of ['chromium', 'chrome']) {
+    const { stdout, stderr, code } = await new Deno.Command('which', {
+      args: [browser],
+    }).output();
+    if (code === 0) {
+      return new TextDecoder().decode(stdout).trim();
+    }
+  }
+
+  throw new Error(
+    [
+      'Automatic search found no suitable browser executable path.',
+      'Please provide one manually using `BROWSER_EXECUTABLE_PATH`!',
+    ].join('\n')
+  );
+};
 
 const getGitBranch = async () => {
   const command = new Deno.Command('git', {
@@ -47,7 +65,12 @@ console.log('Preparing...');
 const folder = `etc/dev/screenshots/${new Date().toISOString()}`;
 Deno.mkdir(folder, { recursive: true });
 
-const browser = await puppeteer.launch({ headless: true });
+const browser = await puppeteer.launch({
+  headless: true,
+  executablePath:
+    Deno.env.get('BROWSER_EXECUTABLE_PATH') ??
+    (await getBrowserExecutablePath()),
+});
 const page = await browser.newPage();
 
 const snap = (label) =>
