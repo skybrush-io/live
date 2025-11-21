@@ -146,7 +146,12 @@ export const useLightConfigurationFormState = (onChange?: () => void) => {
     } else {
       return { type: 'off' };
     }
-  }, []);
+  }, [
+    lightEffectType,
+    defaultConfigBrightness,
+    solidConfigColor,
+    sparksConfigOffDuration,
+  ]);
 
   return {
     lightEffectType,
