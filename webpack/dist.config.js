@@ -32,8 +32,7 @@ module.exports = merge(baseConfig, {
   },
 
   output: {
-    publicPath: '_/',
-    path: path.resolve(outputDir, '_'),
+    path: outputDir,
   },
 
   plugins: [
