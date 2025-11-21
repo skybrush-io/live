@@ -639,8 +639,9 @@
           "label": "Vertical velocity"
         }
       },
-      "section": {
-        "parameters": "Parameters"
+      "panel": {
+        "lights": "Lights",
+        "trajectories": "Trajectories"
       }
     },
     "adaptReview": {
