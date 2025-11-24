@@ -274,7 +274,7 @@ const AdaptParametersForm = (props: Props): React.JSX.Element => {
             {t('panel.lights')}
           </AccordionSummary>
           <AccordionDetails className={styles.accordionDetails}>
-            <LightConfigurationForm {...lights} />
+            <LightConfigurationForm disabled={disabled} {...lights} />
           </AccordionDetails>
         </Accordion>
       </FormGroup>

@@ -21,11 +21,13 @@ const lightEffectTypes: LightEffectType[] = [
 
 type DefaultConfigurationFormProps = {
   brightness: number;
+  disabled?: boolean;
   onChange: (event: Event, value: number) => void;
 };
 
 const DefaultConfigurationForm = ({
   brightness,
+  disabled,
   onChange,
 }: DefaultConfigurationFormProps) => {
   const { t } = useTranslation(undefined, {
@@ -36,6 +38,7 @@ const DefaultConfigurationForm = ({
       <FormHelperText>{t('default.brightness')}</FormHelperText>
       <Slider
         marks
+        disabled={disabled}
         min={0}
         max={1}
         step={0.05}
@@ -49,22 +52,29 @@ const DefaultConfigurationForm = ({
 
 type SolidConfigurationFormProps = {
   color: string;
+  disabled?: boolean;
   onChange: (color: string) => void;
 };
 
 const SolidConfigurationForm = ({
   color,
+  disabled,
   onChange,
 }: SolidConfigurationFormProps) => {
   const { t } = useTranslation(undefined, {
     keyPrefix: 'showConfiguratorDialog.lights',
   });
+  // TODO: update when upgrading to React 19 which recognizes the
+  // inert as a boolean attribute. Hopefully TS also won't complain
+  // if we set the attribute directly on the picker...
+  const extraProps = disabled ? { inert: '' } : {};
   return (
     <>
       <FormHelperText>{t('solid.color')}</FormHelperText>
-      <HexColorPicker color={color} onChange={onChange} />
+      <HexColorPicker color={color} {...extraProps} onChange={onChange} />
       <HexColorInput
         color={color}
+        disabled={disabled}
         style={{ alignSelf: 'center' }}
         onChange={onChange}
       />
@@ -73,11 +83,13 @@ const SolidConfigurationForm = ({
 };
 
 type SparksConfigurationFormProps = {
+  disabled?: boolean;
   offDuration: number;
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
 const SparksConfigurationForm = ({
+  disabled,
   offDuration,
   onChange,
 }: SparksConfigurationFormProps) => {
@@ -86,6 +98,7 @@ const SparksConfigurationForm = ({
   });
   return (
     <SimpleDurationField
+      disabled={disabled}
       label={t('sparks.offDuration')}
       min={0}
       value={offDuration}
@@ -169,10 +182,10 @@ export const useLightConfigurationFormState = (onChange?: () => void) => {
 export type LightConfigurationProps = Omit<
   ReturnType<typeof useLightConfigurationFormState>,
   'configuration'
->;
+> & { disabled?: boolean };
 
 const LightConfigurationForm = (props: LightConfigurationProps) => {
-  const { lightEffectType, onLightEffectTypeChanged } = props;
+  const { disabled, lightEffectType, onLightEffectTypeChanged } = props;
   const { t } = useTranslation(undefined, {
     keyPrefix: 'showConfiguratorDialog.lights',
   });
@@ -182,6 +195,7 @@ const LightConfigurationForm = (props: LightConfigurationProps) => {
       <FormControl fullWidth variant='filled'>
         <InputLabel id={labelId}>{t('selectLabel')}</InputLabel>
         <Select
+          disabled={disabled}
           labelId={labelId}
           value={lightEffectType}
           onChange={onLightEffectTypeChanged}
@@ -196,17 +210,20 @@ const LightConfigurationForm = (props: LightConfigurationProps) => {
       {lightEffectType === 'default' && (
         <DefaultConfigurationForm
           brightness={props.defaultConfigBrightness}
+          disabled={disabled}
           onChange={props.onDefaultConfigBrightnessChanged}
         />
       )}
       {lightEffectType === 'solid' && (
         <SolidConfigurationForm
           color={props.solidConfigColor}
+          disabled={disabled}
           onChange={props.onSolidConfigColorChanged}
         />
       )}
       {lightEffectType === 'sparks' && (
         <SparksConfigurationForm
+          disabled={disabled}
           offDuration={props.sparksConfigOffDuration}
           onChange={props.onSparksConfigOffDurationChanged}
         />
