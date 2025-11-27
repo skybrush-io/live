@@ -20,7 +20,6 @@ import type UAV from '~/model/uav';
 
 import FeatureManager from '../FeatureManager';
 import UAVFeature from '../features/UAVFeature';
-import type Feature from 'ol/Feature';
 
 export type ActiveUAVsLayerSourceProps = {
   flock?: Flock;
@@ -29,6 +28,7 @@ export type ActiveUAVsLayerSourceProps = {
   projection?: (coords: number[]) => number[];
   selection: string[];
   labelHidden?: boolean;
+  scale: number;
 };
 
 type EventBindings = {
@@ -75,6 +75,7 @@ class ActiveUAVsLayerSource extends React.Component<ActiveUAVsLayerSourceProps> 
       previousProps.labelColor,
       this.props.labelColor
     );
+    this._onScaleMaybeChanged(previousProps.scale, this.props.scale);
     this._featureManager.projection = this.props.projection;
     if (this.props.labelHidden !== previousProps.labelHidden) {
       this._featureManager.featureFactory = this._createFeatureFactory();
@@ -94,6 +95,7 @@ class ActiveUAVsLayerSource extends React.Component<ActiveUAVsLayerSourceProps> 
 
     this._onFlockMaybeChanged(undefined, this.props.flock);
     this._onSelectionMaybeChanged([], this.props.selection);
+    this._onScaleMaybeChanged(0, this.props.scale);
   }
 
   componentWillUnmount() {
@@ -241,6 +243,24 @@ class ActiveUAVsLayerSource extends React.Component<ActiveUAVsLayerSourceProps> 
   };
 
   /**
+   * Function that checks whether the scale of the UAV icons has changed and
+   * updates the features accordingly.
+   *
+   * @param oldScale The old scale.
+   * @param newScale The new scale.
+   */
+  _onScaleMaybeChanged = (oldScale: number, newScale: number) => {
+    if (oldScale === newScale) {
+      return;
+    }
+
+    const features = this._featureManager.getFeatureArray();
+    for (const feature of features) {
+      feature.scale = newScale;
+    }
+  };
+
+  /**
    * Event handler that is called when some UAVs were removed from the flock and
    * the layer should be re-drawn without these UAVs.
    *
@@ -282,6 +302,7 @@ class ActiveUAVsLayerSource extends React.Component<ActiveUAVsLayerSourceProps> 
 
       feature.status = getSingleUAVStatusLevel(uav);
       feature.labelColor = this.props.labelColor;
+      feature.scale = this.props.scale;
     }
   };
 }

@@ -32,6 +32,7 @@ export default class UAVFeature extends Feature<Point> {
   _color: string;
   _labelColor: string;
   _heading: number;
+  _scale: number;
   _status: Status | null;
   _hideLabel: boolean;
   _iconImage: Icon | null;
@@ -57,6 +58,7 @@ export default class UAVFeature extends Feature<Point> {
     this._color = '';
     this._labelColor = '';
     this._heading = 0;
+    this._scale = 1;
     this._status = null;
     this._hideLabel = Boolean(hideLabel ?? false);
     this._iconImage = null;
@@ -146,7 +148,7 @@ export default class UAVFeature extends Feature<Point> {
   /**
    * Sets the label color of the UAV.
    *
-   * @param {string} value The new color to be used.
+   * @param value The new color to be used.
    */
   set labelColor(value) {
     if (this._labelColor === value) {
@@ -154,6 +156,27 @@ export default class UAVFeature extends Feature<Point> {
     }
 
     this._labelColor = value;
+    this._setupStyle();
+  }
+
+  /**
+   * Returns the current scale of the UAV.
+   */
+  get scale() {
+    return this._scale;
+  }
+
+  /**
+   * Sets the scale of the UAV.
+   *
+   * @param value The new scale to be used.
+   */
+  set scale(value) {
+    if (this._scale === value) {
+      return;
+    }
+
+    this._scale = value;
     this._setupStyle();
   }
 
@@ -187,6 +210,7 @@ export default class UAVFeature extends Feature<Point> {
     const iconImage = new Icon({
       rotateWithView: true,
       rotation: this._headingToRotation(),
+      scale: this._scale,
       src: droneImages[this._status ?? ''] ?? DroneImage,
     });
     this._iconImage = iconImage;
@@ -199,6 +223,7 @@ export default class UAVFeature extends Feature<Point> {
     const selectionImage = new Icon({
       rotateWithView: true,
       rotation: this._headingToRotation(),
+      scale: this._scale,
       src: SelectionGlow,
     });
     this._selectionImage = selectionImage;
@@ -220,7 +245,7 @@ export default class UAVFeature extends Feature<Point> {
                 : 'black',
           }),
           font: '12px sans-serif',
-          offsetY: 24,
+          offsetY: 4 + 20 * this._scale,
           text: this.uavId || 'undefined',
           textAlign: 'center',
         }),
