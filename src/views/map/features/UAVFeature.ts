@@ -2,7 +2,8 @@
  * @file OpenLayers feature that represents an UAV on the map.
  */
 
-import Feature from 'ol/Feature';
+import Feature, { type ObjectWithGeometry } from 'ol/Feature';
+import type Point from 'ol/geom/Point';
 import { Fill, Icon, Style, Text } from 'ol/style';
 
 import SelectionGlow from '~/../assets/img/drone-selection-glow.png';
@@ -10,30 +11,46 @@ import DroneImage from '~/../assets/img/drone-x-black-32x32.png';
 import DroneImageError from '~/../assets/img/drone-x-black-error-32x32.png';
 import DroneImageInfo from '~/../assets/img/drone-x-black-info-32x32.png';
 import DroneImageWarning from '~/../assets/img/drone-x-black-warning-32x32.png';
-import { Severity } from '~/model/enums';
+import { Status } from '~/components/semantics';
 import { toRadians } from '~/utils/math';
 
-const droneImages = {
-  [Severity.INFO]: DroneImageInfo,
-  [Severity.WARNING]: DroneImageWarning,
-  [Severity.ERROR]: DroneImageError,
-  [Severity.CRITICAL]: DroneImageError,
+const droneImages: Record<string, string> = {
+  // Non-exhaustive mapping so we cannot type they key as Status
+  [Status.INFO]: DroneImageInfo,
+  [Status.WARNING]: DroneImageWarning,
+  [Status.ERROR]: DroneImageError,
+  [Status.CRITICAL]: DroneImageError,
 };
 
 /**
  * Feature that represents an UAV on an OpenLayers map.
  */
-export default class UAVFeature extends Feature {
+export default class UAVFeature extends Feature<Point> {
+  uavId: string;
+
+  _selected: boolean;
+  _color: string;
+  _labelColor: string;
+  _heading: number;
+  _status: Status | null;
+  _hideLabel: boolean;
+  _iconImage: Icon | null;
+  _selectionImage: Icon | null;
+
   /**
    * Constructor.
    *
-   * @param  {string}  uavId  the identifier of the UAV to which this feature belongs
+   * @param  uavId  the identifier of the UAV to which this feature belongs
    * @param  {Object}  geometryOrProperties  the geometry that the feature represents
    *         or a properties object for the feature. This is passed on intact
    *         to the superclass but the style will be overwritten.
    * @param  {boolean|undefined} hideLabel  whether to hide the label of the UAV
    */
-  constructor(uavId, geometryOrProperties, hideLabel = undefined) {
+  constructor(
+    uavId: string,
+    geometryOrProperties: Point | ObjectWithGeometry<Point>,
+    hideLabel?: boolean
+  ) {
     super(geometryOrProperties);
 
     this._selected = false;
@@ -41,7 +58,9 @@ export default class UAVFeature extends Feature {
     this._labelColor = '';
     this._heading = 0;
     this._status = null;
-    this._hideLabel = hideLabel ?? false;
+    this._hideLabel = Boolean(hideLabel ?? false);
+    this._iconImage = null;
+    this._selectionImage = null;
 
     this.uavId = uavId;
     this._setupStyle();
@@ -69,7 +88,9 @@ export default class UAVFeature extends Feature {
     if (this._iconImage) {
       const rotation = this._headingToRotation();
       this._iconImage.setRotation(rotation);
-      this._selectionImage.setRotation(rotation);
+      if (this._selectionImage) {
+        this._selectionImage.setRotation(rotation);
+      }
     }
   }
 
@@ -166,8 +187,7 @@ export default class UAVFeature extends Feature {
     const iconImage = new Icon({
       rotateWithView: true,
       rotation: this._headingToRotation(),
-      snapToPixel: false,
-      src: droneImages[this._status] || DroneImage,
+      src: droneImages[this._status ?? ''] ?? DroneImage,
     });
     this._iconImage = iconImage;
 
@@ -179,7 +199,6 @@ export default class UAVFeature extends Feature {
     const selectionImage = new Icon({
       rotateWithView: true,
       rotation: this._headingToRotation(),
-      snapToPixel: false,
       src: SelectionGlow,
     });
     this._selectionImage = selectionImage;
@@ -216,7 +235,7 @@ export default class UAVFeature extends Feature {
    * Converts the heading from the status information into the rotation
    * value to use in the OpenLayers feature style.
    */
-  _headingToRotation(heading) {
+  _headingToRotation(heading?: number) {
     if (heading === undefined) {
       heading = this._heading;
     }
