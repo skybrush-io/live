@@ -338,7 +338,6 @@ const ShowConfiguratorDialog = (props: Props): React.JSX.Element => {
  * The reason for this is to correctly initialize the dialog's state
  * when it is opened.
  */
-// eslint-disable-next-line @typescript-eslint/ban-types
 const ShowConfiguratorDialogWrapper = (
   props: Props
 ): React.JSX.Element | null => {

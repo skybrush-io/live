@@ -48,9 +48,6 @@ declare module 'config' {
   import { type SavedLocation } from '~/features/saved-locations/types';
   import { type LayerType } from '~/model/layers';
 
-  // NOTE: We do need to allow `null` here in order to enable the
-  //       "unsetting" of default values in configuration overrides.
-  // eslint-disable-next-line @typescript-eslint/ban-types
   type Nullable<T> = T | null;
 
   export type Config = {
