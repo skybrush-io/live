@@ -20,7 +20,7 @@
     "url": "git@github.com:skybrush-io/live.git"
   },
   "keywords": [],
-  "author": "CollMot Robotics Ltd",
+  "author": "CollMot Robotics Ltd <hello@skybrush.io>",
   "license": "GPL-3.0-or-later",
   "private": true,
   "dependencies": {
