@@ -204,6 +204,46 @@ const RTKPresetDialogFormPresentation = ({
     [sources]
   );
 
+  const handleDelete = useCallback(async () => {
+    // eslint-disable-next-line no-alert
+    if (
+      !window.confirm(
+        t(
+          'rtkPresetDialog.deleteConfirmation',
+          'Are you sure you want to delete this preset?'
+        )
+      )
+    ) {
+      return;
+    }
+
+    setSubmitting(true);
+    setError(null);
+
+    try {
+      await messageHub.execute.deleteRTKPreset(presetId);
+
+      // Persist changes to disk
+      await messageHub.execute.saveRTKPresets();
+
+      // The deleted preset was the active one, so switch to "RTK Disabled" (null)
+      await messageHub.execute.setRTKCorrectionsSource(null);
+
+      // Trigger refresh of preset list in selector
+      if (onRefreshPresets) {
+        onRefreshPresets();
+      }
+
+      onSubmit();
+    } catch (error_) {
+      const errorMessage =
+        error_?.message || error_?.reason || 'Failed to delete preset';
+      setError(errorMessage);
+    } finally {
+      setSubmitting(false);
+    }
+  }, [presetId, onSubmit, onRefreshPresets, t]);
+
   const handleSourceChange = useCallback(
     (index, value) => {
       const newSources = [...sources];
@@ -266,6 +306,9 @@ const RTKPresetDialogFormPresentation = ({
         } else {
           await messageHub.execute.updateRTKPreset(presetId, presetData);
         }
+
+        // Persist changes to disk
+        await messageHub.execute.saveRTKPresets();
 
         // Trigger refresh of preset list in selector
         if (onRefreshPresets) {
@@ -576,6 +619,16 @@ const RTKPresetDialogFormPresentation = ({
               )}
             </DialogContent>
             <DialogActions>
+              {!isNew && !isReadOnly && (
+                <Button
+                  color='secondary'
+                  disabled={submitting}
+                  style={{ marginRight: 'auto' }}
+                  onClick={handleDelete}
+                >
+                  {t('general.action.delete', 'Delete')}
+                </Button>
+              )}
               <Button disabled={submitting} onClick={onCancel}>
                 {t('general.action.cancel', 'Cancel')}
               </Button>
