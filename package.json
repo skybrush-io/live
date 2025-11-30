@@ -199,7 +199,7 @@
     "cross-env": "^10.1.0",
     "css-loader": "^7.1.2",
     "dotenv-webpack": "^8.1.1",
-    "electron": "^38.2.0",
+    "electron": "^39.2.4",
     "eslint": "^9.33.0",
     "eslint-config-xo": "^0.49.0",
     "eslint-config-xo-react": "^0.28.0",
