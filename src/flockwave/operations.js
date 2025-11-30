@@ -102,6 +102,43 @@ export async function setRTKCorrectionsSource(hub, presetId) {
 }
 
 /**
+ * Creates a new RTK preset on the server.
+ */
+export async function createRTKPreset(hub, preset) {
+  const response = await hub.sendMessage({
+    type: 'X-RTK-NEW',
+    preset,
+  });
+
+  if (response.body.type !== 'ACK-ACK' && response.body.type !== 'X-RTK-NEW') {
+    const errorMessage =
+      response.body.reason ||
+      response.body.error ||
+      'Failed to create RTK preset';
+    throw new Error(errorMessage);
+  }
+}
+
+/**
+ * Updates an existing RTK preset on the server.
+ */
+export async function updateRTKPreset(hub, presetId, preset) {
+  const response = await hub.sendMessage({
+    type: 'X-RTK-UPDATE',
+    ids: [presetId],
+    preset,
+  });
+
+  if (response.body.type !== 'ACK-ACK' && response.body.type !== 'X-RTK-UPDATE') {
+    const errorMessage =
+      response.body.reason ||
+      response.body.error ||
+      'Failed to update RTK preset';
+    throw new Error(errorMessage);
+  }
+}
+
+/**
  * Sets the configuration of the current drone show on the server.
  */
 export async function setShowConfiguration(hub, config) {
@@ -291,6 +328,7 @@ export async function planMission(hub, { id, parameters }) {
 export class OperationExecutor {
   _operations = {
     configureExtension,
+    createRTKPreset,
     planMission,
     reloadExtension,
     resetUAV,
@@ -300,6 +338,7 @@ export class OperationExecutor {
     setShowConfiguration,
     setShowLightConfiguration,
     startRTKSurvey,
+    updateRTKPreset,
     setRTKAntennaPosition,
     uploadDroneShow,
     uploadFirmware,

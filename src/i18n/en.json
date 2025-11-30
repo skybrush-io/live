@@ -31,9 +31,14 @@
   },
   "RTKCorrectionSourceSelector": {
     "RTKCorrections": "RTK corrections",
+    "createPreset": "Create new RTK preset",
+    "edit": "Edit",
+    "editPreset": "Edit preset",
     "error": "Error while loading RTK sources from server",
+    "new": "New",
     "noRTKData": "No RTK data sources on server",
-    "pleaseWait": "Please wait, loading RTK sources…"
+    "pleaseWait": "Please wait, loading RTK sources…",
+    "refresh": "Refresh sources"
   },
   "RTKMessage": {
     "noRTKMessagesYet": "No RTK messages have been received yet"

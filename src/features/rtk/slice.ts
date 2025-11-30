@@ -14,6 +14,13 @@ import {
   type RTKSavedCoordinate,
 } from './types';
 
+type RTKPresetDialogState = {
+  open: boolean;
+  mode: 'create' | 'edit' | undefined;
+  presetId: string | undefined;
+  presetType: 'User' | 'Built-in' | 'Dynamic' | undefined;
+};
+
 type RTKSliceState = {
   stats: RTKStatistics;
 
@@ -31,6 +38,9 @@ type RTKSliceState = {
       savedCoordinate: RTKSavedCoordinate | undefined;
     };
   };
+
+  presetDialog: RTKPresetDialogState;
+  presetsRefreshTrigger: number;
 };
 
 const initialState: RTKSliceState = {
@@ -52,21 +62,7 @@ const initialState: RTKSliceState = {
     },
   },
 
-  savedCoordinates: {
-    // TODO: Fake data for testing - remove in production
-    // '-dev-cu.usbmodem101-0': {
-    //   position: [19.0402, 47.4979] as any, // Budapest coordinates
-    //   positionECEF: [4080855000, 1408354000, 4679340000] as [number, number, number], // Approximate ECEF for Budapest
-    //   accuracy: 0.02,
-    //   savedAt: Date.now() - 86400000, // 1 day ago
-    // },
-    // '-dev-cu.usbmodem101-1': {
-    //   position: [21.6254, 47.5289] as any, // Debrecen coordinates
-    //   positionECEF: [4010557000, 1590103000, 4681871000] as [number, number, number], // Approximate ECEF for Debrecen
-    //   accuracy: 0.015,
-    //   savedAt: Date.now() - 172800000, // 2 days ago
-    // },
-  },
+  savedCoordinates: {},
 
   dialog: {
     open: false,
@@ -78,6 +74,14 @@ const initialState: RTKSliceState = {
       savedCoordinate: undefined,
     },
   },
+
+  presetDialog: {
+    open: false,
+    mode: undefined,
+    presetId: undefined,
+    presetType: undefined,
+  },
+  presetsRefreshTrigger: 0,
 };
 
 const { actions, reducer } = createSlice({
@@ -182,14 +186,42 @@ const { actions, reducer } = createSlice({
         savedCoordinate: undefined,
       };
     }),
+
+    openRTKPresetDialog(
+      state,
+      action: PayloadAction<{
+        mode: 'create' | 'edit';
+        presetId?: string;
+        presetType?: 'User' | 'Built-in' | 'Dynamic';
+      }>
+    ) {
+      state.presetDialog.open = true;
+      state.presetDialog.mode = action.payload.mode;
+      state.presetDialog.presetId = action.payload.presetId;
+      state.presetDialog.presetType = action.payload.presetType ?? 'User';
+    },
+
+    closeRTKPresetDialog: noPayload<RTKSliceState>((state) => {
+      state.presetDialog.open = false;
+      state.presetDialog.mode = undefined;
+      state.presetDialog.presetId = undefined;
+      state.presetDialog.presetType = undefined;
+    }),
+
+    refreshRTKPresets: noPayload<RTKSliceState>((state) => {
+      state.presetsRefreshTrigger += 1;
+    }),
   },
 });
 
 export const {
+  closeRTKPresetDialog,
   closeRTKSetupDialog,
   closeSurveySettingsPanel,
   closeCoordinateRestorationDialog,
   removeSavedCoordinateForPreset,
+  openRTKPresetDialog,
+  refreshRTKPresets,
   resetRTKStatistics,
   saveCoordinateForPreset,
   setAntennaPositionFormat,

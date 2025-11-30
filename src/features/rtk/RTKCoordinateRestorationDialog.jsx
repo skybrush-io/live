@@ -9,7 +9,6 @@ import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Typography from '@material-ui/core/Typography';
 
@@ -53,16 +52,20 @@ const RTKCoordinateRestorationDialog = ({
       </DialogTitle>
       <DialogContent>
         <Box mt={2} mb={2}>
-          <Typography variant="body2" component="div">
-            <Box component="div" mb={1}>
-              <strong>{t('RTKCoordinateRestorationDialog.positionLabel')}:</strong>{' '}
+          <Typography variant='body2' component='div'>
+            <Box component='div' mb={1}>
+              <strong>
+                {t('RTKCoordinateRestorationDialog.positionLabel')}:
+              </strong>{' '}
               {formattedPosition}
             </Box>
-            <Box component="div" mb={1}>
-              <strong>{t('RTKCoordinateRestorationDialog.accuracyLabel')}:</strong>{' '}
+            <Box component='div' mb={1}>
+              <strong>
+                {t('RTKCoordinateRestorationDialog.accuracyLabel')}:
+              </strong>{' '}
               {accuracy.toFixed(3)} m
             </Box>
-            <Box component="div" mb={1}>
+            <Box component='div' mb={1}>
               <strong>{t('RTKCoordinateRestorationDialog.dateLabel')}:</strong>{' '}
               {savedDateTime}
             </Box>
@@ -94,9 +97,10 @@ export default connect(
     const dialog = getCoordinateRestorationDialog(state);
     return {
       dialog,
-      formattedPosition: dialog.savedCoordinate && dialog.presetId
-        ? getFormattedSavedCoordinatePosition(state, dialog.presetId)
-        : undefined,
+      formattedPosition:
+        dialog.savedCoordinate && dialog.presetId
+          ? getFormattedSavedCoordinatePosition(state, dialog.presetId)
+          : undefined,
     };
   },
   {
