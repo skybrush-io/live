@@ -12,6 +12,7 @@ import { formatIdsAndTruncateTrailingItems as formatUAVIds } from '~/utils/forma
 
 const UAVStatusMiniListEntry = ({
   id,
+  gone,
   label,
   onClick,
   pillWidth = 80,
@@ -20,7 +21,9 @@ const UAVStatusMiniListEntry = ({
 }) => (
   <ListItemButton key={id} disableGutters onClick={onClick}>
     <Box sx={{ width: pillWidth }}>
-      <StatusPill status={status}>{label}</StatusPill>
+      <StatusPill hollow={gone} status={status}>
+        {label}
+      </StatusPill>
     </Box>
     <Box sx={{ width: 36, mx: 1 }}>
       <StatusPill status={Status.OFF}>{uavIds.length}</StatusPill>
@@ -31,6 +34,7 @@ const UAVStatusMiniListEntry = ({
 
 UAVStatusMiniListEntry.propTypes = {
   id: PropTypes.string,
+  gone: PropTypes.bool,
   label: PropTypes.string,
   onClick: PropTypes.func,
   pillWidth: PropTypes.number,

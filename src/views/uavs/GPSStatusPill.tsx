@@ -7,10 +7,10 @@ import {
   type GPSFixType,
 } from '~/model/enums';
 
-export type GPSStatusPillProps = {
+export type GPSStatusPillProps = Readonly<{
   className?: string;
   fixType: GPSFixType;
-};
+}>;
 
 export const GPSStatusPill = ({ fixType, ...rest }: GPSStatusPillProps) => {
   const abbreviation = abbreviateGPSFixType(fixType);

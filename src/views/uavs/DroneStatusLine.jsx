@@ -20,6 +20,7 @@ import {
   getUAVById,
 } from '~/features/uavs/selectors';
 import { abbreviateFlightMode } from '~/model/enums';
+import { UAVAge } from '~/model/uav';
 import { getPreferredCoordinateFormatter } from '~/selectors/formatting';
 import { formatCoordinateArray } from '~/utils/formatting';
 
@@ -94,6 +95,7 @@ const useStyles = makeStyles((theme) => ({
  * Status line in the drone list view that represents a single drone.
  */
 const DroneStatusLine = ({
+  age,
   batteryFormatter,
   batteryStatus,
   color,
@@ -125,6 +127,7 @@ const DroneStatusLine = ({
           inline
           className={clsx(classes.pill, classes.statusPill)}
           status={textSemantics}
+          hollow={age === UAVAge.GONE}
         >
           {details || text}
         </StatusPill>
@@ -184,6 +187,7 @@ const DroneStatusLine = ({
 };
 
 DroneStatusLine.propTypes = {
+  age: PropTypes.oneOf(Object.values(UAVAge)),
   batteryFormatter: PropTypes.instanceOf(BatteryFormatter),
   batteryStatus: PropTypes.shape({
     cellCount: PropTypes.number,
