@@ -19,7 +19,6 @@ import {
   getLightColorByUavIdInCSSNotation,
   getUAVById,
 } from '~/features/uavs/selectors';
-import { abbreviateFlightMode } from '~/model/enums';
 import { UAVAge } from '~/model/uav';
 import { getPreferredCoordinateFormatter } from '~/selectors/formatting';
 import { formatCoordinateArray } from '~/utils/formatting';
