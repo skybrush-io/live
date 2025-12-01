@@ -26,6 +26,7 @@ import { formatCoordinateArray } from '~/utils/formatting';
 
 import GPSStatusPill from './GPSStatusPill';
 import RSSIIndicator from './RSSIIndicator';
+import FlightModeStatusPill from './FlightModeStatusPill';
 
 /**
  * Converts the absolute value of a heading deviation, in degrees, to the
@@ -134,13 +135,10 @@ const DroneStatusLine = ({
       )}
       {!missing && (
         <>
-          <StatusPill
-            inline
+          <FlightModeStatusPill
+            mode={mode}
             className={clsx(classes.pill, classes.modePill)}
-            status='off'
-          >
-            {mode ? abbreviateFlightMode(mode) : '----'}
-          </StatusPill>
+          />
           <BatteryIndicator
             className={classes.batteryIndicator}
             formatter={batteryFormatter}
