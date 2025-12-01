@@ -50,6 +50,7 @@ const useStyles = makeStyles((theme) => ({
   gpsPill: {
     minWidth: 40,
     flex: 1,
+    outline: 'none !important',
   },
   batteryIndicator: {
     display: 'inline-block',
