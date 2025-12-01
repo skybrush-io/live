@@ -1,7 +1,7 @@
 {
   "name": "@skybrush/live",
   "version": "2.11.0",
-  "description": "Web frontend for a Skybrush server",
+  "description": "Ground control station of a Skybrush drone swarm",
   "main": "launcher.bundle.js",
   "scripts": {
     "bundle": "rimraf build && cross-env NODE_ENV=production webpack --mode=production --progress --config webpack/dist.config.js",
