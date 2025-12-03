@@ -6,7 +6,6 @@ import { connect } from 'react-redux';
 import Box from '@material-ui/core/Box';
 import IconButton from '@material-ui/core/IconButton';
 import { makeStyles } from '@material-ui/core/styles';
-import Delete from '@material-ui/icons/Delete';
 import Place from '@material-ui/icons/Place';
 import Restore from '@material-ui/icons/Restore';
 
@@ -25,7 +24,6 @@ import {
   getCurrentRTKPresetId,
 } from './selectors';
 import {
-  clearAllSavedCoordinates,
   toggleSurveySettingsPanel,
   showCoordinateRestorationDialog,
 } from './slice';
@@ -67,7 +65,6 @@ const RTKSetupDialogBottomPanel = ({
   currentPresetId,
   hasSavedCoordinates,
   inset,
-  onClearAllSavedCoordinates,
   onShowSavedCoordinates,
   onToggleSurveySettings,
   surveySettingsVisible,
@@ -128,16 +125,6 @@ const RTKSetupDialogBottomPanel = ({
                 </span>
               </Tooltip>
             )}
-            {onClearAllSavedCoordinates && (
-              <Tooltip content='Delete all saved coordinates'>
-                <IconButton
-                  disabled={false /* TODO: maybe we should check if there are saved coordinates? */}
-                  onClick={onClearAllSavedCoordinates}
-                >
-                  <Delete />
-                </IconButton>
-              </Tooltip>
-            )}
             <AntennaPositionIndicator />
           </Box>
         </FadeAndSlide>
@@ -160,7 +147,6 @@ RTKSetupDialogBottomPanel.propTypes = {
   currentPresetId: PropTypes.string,
   hasSavedCoordinates: PropTypes.bool,
   inset: PropTypes.bool,
-  onClearAllSavedCoordinates: PropTypes.func,
   onShowSavedCoordinates: PropTypes.func,
   onToggleSurveySettings: PropTypes.func,
   surveySettingsVisible: PropTypes.bool,
@@ -186,7 +172,6 @@ export default connect(
   },
   // mapDispatchToProps
   {
-    onClearAllSavedCoordinates: clearAllSavedCoordinates,
     onShowSavedCoordinates: showCoordinateRestorationDialog,
     onToggleSurveySettings: toggleSurveySettingsPanel,
   }
