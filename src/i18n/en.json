@@ -94,6 +94,30 @@
     "resumeMeasurement": "Resume measurement",
     "setCentroidAsMapOrigin": "Set centroid as map origin"
   },
+  "emergencyRTHDialog": {
+    "action": {
+      "addEmergencyRTH": "Calculate RTH plans"
+    },
+    "error": "An error occurred while calculating RTH plans. Please try again.",
+    "loading": "RTH plans are being calculated, please wait. It may take some time.",
+    "summary": {
+      "firstTime": {
+        "message": "Earliest RTH time: {{firstTime}}s",
+        "unknown": "Earliest RTH time: unknown"
+      },
+      "lastTime": {
+        "message": "Last RTH time: {{lastTime}}s",
+        "unknown": "Last RTH time: unknown"
+      },
+      "maxShowLength": {
+        "message": "Maximum show length: {{maxShowLength}}s",
+        "unknown": "Maximum show length: unknown"
+      }
+    },
+    "title": "Plan emergency RTH",
+    "description": "Calculate emergency RTH plans for all drones in the show. The RTH plans will be designed to bring the drones home as quickly as possible while avoiding collisions with each other.",
+    "existingRTHPlans": "{{ withRTHPlan }} of {{ total }} drones have an RTH plan in the loaded show."
+  },
   "environmentEditorDialog": {
     "environmentSettings": "Environment settings",
     "indoor": "This show is an indoor show. You may specify the corners of the room in which the show is taking place (for visualisation purposes).",
@@ -593,6 +617,9 @@
         "origin": "A show origin must be included or set manually",
         "segments": "The show must be annotated with segment markers",
         "server": "Connection must be established to the server"
+      },
+      "tooltip": {
+        "rthPlanStats": "{{ withRTHPlan }} of {{ total }} drones have an RTH plan"
       }
     },
     "startMethod": {

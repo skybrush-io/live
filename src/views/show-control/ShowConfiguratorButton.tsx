@@ -1,3 +1,5 @@
+import Home from '@mui/icons-material/Home';
+import IconButton from '@mui/material/IconButton';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import React, { useCallback, useState } from 'react';
@@ -12,6 +14,7 @@ import {
 } from '@skybrush/mui-components';
 
 import { Status } from '~/components/semantics';
+import { showDialog as showEmergencyRTHDialog } from '~/features/emergency-rth/state';
 import {
   isConnected,
   supportsStudioInterop,
@@ -24,16 +27,14 @@ import {
   getOutdoorShowOrigin,
   getShowSegments,
   hasLoadedShowFile,
+  selectSwarmEmergencyRTHStats,
+  type SwarmEmergencyRTHStats,
 } from '~/features/show/selectors';
 import { getSetupStageStatuses } from '~/features/show/stages';
 import { showError } from '~/features/snackbar/actions';
 import { type PreparedI18nKey, tt } from '~/i18n';
 import Pro from '~/icons/Pro';
-import {
-  type AppDispatch,
-  type AppSelector,
-  type RootState,
-} from '~/store/reducers';
+import type { AppDispatch, AppSelector, RootState } from '~/store/reducers';
 import { type Nullable } from '~/utils/types';
 
 const PREREQUISITES: ReadonlyArray<
@@ -75,11 +76,19 @@ type Props = Readonly<{
   // TODO: This should probably be a `ThunkActionDispatch`, but that doesn't
   //       seem to be reexported from `redux-thunk` via `@reduxjs/toolkit`...
   showDialogAndClearUndoHistory: (data?: ShowData) => void;
+  showEmergencyRTHDialog: () => void;
   status: Status;
+  swarmRTHStats: SwarmEmergencyRTHStats;
 }>;
 
 const ShowConfiguratorButton = (props: Props): React.JSX.Element => {
-  const { show, showDialogAndClearUndoHistory, status } = props;
+  const {
+    show,
+    showDialogAndClearUndoHistory,
+    showEmergencyRTHDialog,
+    status,
+    swarmRTHStats,
+  } = props;
 
   const dispatch = useDispatch<AppDispatch>();
   const { t } = useTranslation();
@@ -150,6 +159,31 @@ const ShowConfiguratorButton = (props: Props): React.JSX.Element => {
           }
           secondary={t('show.showConfigurator.description')}
         />
+        <Tooltip
+          content={t('show.showConfigurator.tooltip.rthPlanStats', {
+            total: swarmRTHStats.total,
+            withRTHPlan: swarmRTHStats.withRTHPlan,
+          })}
+          placement='left'
+        >
+          <IconButton
+            edge='end'
+            size='large'
+            color={
+              swarmRTHStats.total === 0
+                ? 'default'
+                : swarmRTHStats.total === swarmRTHStats.withRTHPlan
+                  ? 'success'
+                  : 'warning'
+            }
+            onClick={(evt) => {
+              evt.stopPropagation();
+              showEmergencyRTHDialog();
+            }}
+          >
+            <Home />
+          </IconButton>
+        </Tooltip>
       </ListItemButton>
     </div>
   );
@@ -159,9 +193,11 @@ const ConnectedShowConfiguratorButton = connect(
   (state: RootState) => ({
     show: selectShowConfiguratorDataFromShow(state),
     status: getSetupStageStatuses(state).showConfigurator,
+    swarmRTHStats: selectSwarmEmergencyRTHStats(state),
   }),
   {
     showDialogAndClearUndoHistory,
+    showEmergencyRTHDialog,
   }
 )(ShowConfiguratorButton);
 

@@ -7,7 +7,6 @@ import pickBy from 'lodash-es/pickBy';
 import shuffle from 'lodash-es/shuffle';
 
 import { showErrorMessage } from '~/features/error-handling/actions';
-import { setSelection } from '~/features/map/selection';
 import {
   addFeatureIfMissing,
   selectSingleFeatureOfTypeUnlessAmbiguous,
@@ -16,6 +15,7 @@ import {
   getFeatureById,
   getSingleSelectedFeatureIdOfType,
 } from '~/features/map-features/selectors';
+import { setSelection } from '~/features/map/selection';
 import { showPromptDialog } from '~/features/prompt/actions';
 import { updateGeofencePolygon } from '~/features/safety/actions';
 import {
@@ -91,6 +91,7 @@ import {
   shouldMissionPlannerDialogApplyGeofence,
 } from './selectors';
 import {
+  _setMissionItemsFromValidatedArray,
   addMissionItem,
   clearMapping,
   closeMissionPlannerDialog,
@@ -109,7 +110,6 @@ import {
   updateCurrentMissionItemRatio,
   updateHomePositions,
   updateMissionItemParameters,
-  _setMissionItemsFromValidatedArray,
 } from './slice';
 import { getMissionItemUploadJobPayload } from './upload';
 
@@ -126,7 +126,6 @@ const doFindGreedyAssignmentBetweenPoints = createAsyncAction(
   'mission/calculateMapping',
   async (resultHolder, ...args) => {
     const result = await workers.findGreedyAssignment(...args);
-    console.log(result);
     resultHolder.result = result;
   },
   { minDelay: 500 }

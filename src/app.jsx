@@ -17,6 +17,7 @@ import Header from './components/header';
 import ServerConnectionManager from './components/ServerConnectionManager';
 import DetachedPanelManager from './features/detachable-panels/DetachedPanelManager';
 import DockDetailsDialog from './features/docks/DockDetailsDialog';
+import EmergencyRTHDialog from './features/emergency-rth/EmergencyRTHDialog';
 import FirmwareUpdateSetupDialog from './features/firmware-update/FirmwareUpdateSetupDialog';
 import AppHotkeys from './features/hotkeys/AppHotkeys';
 import HotkeyDialog from './features/hotkeys/HotkeyDialog';
@@ -183,6 +184,7 @@ const App = ({ onFirstRender }) => (
       <SafetyDialog />
       <SavedLocationEditorDialog />
       <ShowConfiguratorDialog />
+      <EmergencyRTHDialog />
       <UAVDetailsDialog />
       <UploadDialog />
       <VersionCheckDialog />

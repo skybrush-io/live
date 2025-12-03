@@ -44,6 +44,26 @@ export async function adaptShow(hub, show, transformations, coordinateSystem) {
 }
 
 /**
+ * Adds emergency RTH plans to drones using the given configuration.
+ */
+export async function addEmergencyRTH(hub, show, config) {
+  const response = await hub.sendMessage(
+    {
+      type: 'X-SHOW-ERTH',
+      show,
+      config,
+    },
+    { timeout: 3600 }
+  );
+
+  if (response?.body?.type === 'X-SHOW-ERTH') {
+    return response.body;
+  } else {
+    throw new Error(response?.body?.reason ?? 'Unknown error.');
+  }
+}
+
+/**
  * Returns the basic properties of the beacons with the given IDs.
  */
 export async function getBasicBeaconProperties(hub, ids) {
@@ -444,6 +464,7 @@ export async function isExtensionLoaded(hub, name) {
 export class QueryHandler {
   _queries = {
     adaptShow,
+    addEmergencyRTH,
     getBasicBeaconProperties,
     getConfigurationOfExtension,
     getFirmwareUpdateObjects,

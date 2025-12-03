@@ -12,8 +12,8 @@ import type { AppSelector, RootState } from '~/store/reducers';
 import type { FlatEarthCoordinateSystem } from '~/utils/geography';
 import type { Coordinate2D, Coordinate3D } from '~/utils/math';
 
-import type { EnvironmentState, OutdoorCoordinateSystem } from './types';
 import type { TakeoffHeadingSpecification } from './constants';
+import type { EnvironmentState, OutdoorCoordinateSystem } from './types';
 
 type ShowValidationResult =
   | 'loadingFailed'
@@ -95,3 +95,10 @@ export const getConvexHullOfShowSegmentInWorldCoordinates: AppSelector<
   GPSPosition[]
 >;
 export const getOutdoorShowCoordinateSystem: AppSelector<OutdoorCoordinateSystem>;
+
+export type SwarmEmergencyRTHStats = {
+  total: number;
+  withRTHPlan: number;
+  withoutRTHPlan: number;
+};
+export const selectSwarmEmergencyRTHStats: AppSelector<SwarmEmergencyRTHStats>;

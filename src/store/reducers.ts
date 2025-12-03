@@ -11,6 +11,7 @@ import undoable, { includeAction } from 'redux-undo';
  * state of the various dialogs.
  */
 import dockDetailsDialogReducer from '~/features/docks/details';
+import emergencyRTHReducer from '~/features/emergency-rth/state';
 import errorHandlingReducer from '~/features/error-handling/slice';
 import featureEditorReducer from '~/features/map-features/editor';
 import layerSettingsReducer from '~/features/map/layer-settings-dialog';
@@ -83,6 +84,7 @@ const dialogsReducer = combineReducers({
   authentication: authenticationReducer,
   deauthentication: deauthenticationReducer,
   dockDetails: dockDetailsDialogReducer,
+  emergencyRTH: emergencyRTHReducer,
   error: errorHandlingReducer,
   featureEditor: featureEditorReducer,
   layerSettings: layerSettingsReducer,
