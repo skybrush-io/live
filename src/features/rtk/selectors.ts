@@ -4,7 +4,7 @@ import { createSelector } from '@reduxjs/toolkit';
 
 import { getPreferredCoordinateFormatter } from '~/selectors/formatting';
 import type { RootState } from '~/store/reducers';
-import { RTKAntennaPositionFormat, type RTKSavedCoordinate } from './types';
+import { RTKAntennaPositionFormat } from './types';
 
 /**
  * Returns whether the antenna position should be shown in ECEF coordinates.
@@ -160,65 +160,3 @@ export const getSurveyStatus = createSelector(
 export const shouldShowSurveySettings = (state: RootState): boolean =>
   state.rtk.dialog.surveySettingsEditorVisible;
 
-/**
- * Returns whether there is a saved coordinate for the given RTK preset ID.
- */
-export const hasSavedCoordinateForPreset = (
-  state: RootState,
-  presetId: string
-): boolean => Boolean(state.rtk.savedCoordinates[presetId]);
-
-/**
- * Returns the saved coordinate for the given RTK preset ID, or undefined if none exists.
- */
-export const getSavedCoordinateForPreset = (
-  state: RootState,
-  presetId: string
-): RTKSavedCoordinate | undefined => state.rtk.savedCoordinates[presetId];
-
-/**
- * Returns all saved coordinates as an array of { presetId, coordinate } objects.
- */
-export const getAllSavedCoordinates = createSelector(
-  (state: RootState) => state.rtk.savedCoordinates,
-  (savedCoordinates) =>
-    Object.entries(savedCoordinates).map(([presetId, coordinate]) => ({
-      presetId,
-      coordinate,
-    }))
-);
-
-/**
- * Returns the formatted saved coordinate position for a given preset ID.
- */
-export const getFormattedSavedCoordinatePosition = createSelector(
-  (state: RootState, presetId: string) =>
-    getSavedCoordinateForPreset(state, presetId),
-  getPreferredCoordinateFormatter,
-  isShowingAntennaPositionInECEF,
-  (savedCoordinate, formatter, isECEF) => {
-    if (!savedCoordinate) {
-      return undefined;
-    }
-
-    if (isECEF) {
-      const { positionECEF } = savedCoordinate;
-      return positionECEF && Array.isArray(positionECEF)
-        ? `[${(positionECEF[0] / 1e3).toFixed(3)}, ${(
-            positionECEF[1] / 1e3
-          ).toFixed(3)}, ${(positionECEF[2] / 1e3).toFixed(3)}]`
-        : undefined;
-    } else {
-      const { position } = savedCoordinate;
-      return position ? formatter(position) : undefined;
-    }
-  }
-);
-
-/**
- * Returns the coordinate restoration dialog state.
- */
-export const getCoordinateRestorationDialog = (
-  state: RootState
-): RootState['rtk']['dialog']['coordinateRestorationDialog'] =>
-  state.rtk.dialog.coordinateRestorationDialog;

@@ -11,7 +11,6 @@ import { noPayload } from '~/utils/redux';
 import {
   RTKAntennaPositionFormat,
   type RTKStatistics,
-  type RTKSavedCoordinate,
 } from './types';
 
 type RTKPresetDialogState = {
@@ -24,19 +23,10 @@ type RTKPresetDialogState = {
 type RTKSliceState = {
   stats: RTKStatistics;
 
-  /** Saved coordinates per RTK preset ID */
-  savedCoordinates: Record<string, RTKSavedCoordinate>;
-
   dialog: {
     open: boolean;
     antennaPositionFormat: RTKAntennaPositionFormat;
     surveySettingsEditorVisible: boolean;
-    /** Dialog for asking user if they want to use saved coordinates */
-    coordinateRestorationDialog: {
-      open: boolean;
-      presetId: string | undefined;
-      savedCoordinate: RTKSavedCoordinate | undefined;
-    };
   };
 
   presetDialog: RTKPresetDialogState;
@@ -62,17 +52,10 @@ const initialState: RTKSliceState = {
     },
   },
 
-  savedCoordinates: {},
-
   dialog: {
     open: false,
     antennaPositionFormat: RTKAntennaPositionFormat.LON_LAT,
     surveySettingsEditorVisible: false,
-    coordinateRestorationDialog: {
-      open: false,
-      presetId: undefined,
-      savedCoordinate: undefined,
-    },
   },
 
   presetDialog: {
@@ -146,47 +129,6 @@ const { actions, reducer } = createSlice({
       }
     },
 
-    // Saved coordinates management
-    saveCoordinateForPreset(
-      state,
-      action: PayloadAction<{
-        presetId: string;
-        coordinate: RTKSavedCoordinate;
-      }>
-    ) {
-      const { presetId, coordinate } = action.payload;
-      state.savedCoordinates[presetId] = coordinate;
-    },
-
-    removeSavedCoordinateForPreset(state, action: PayloadAction<string>) {
-      const presetId = action.payload;
-      delete state.savedCoordinates[presetId];
-    },
-
-    // Coordinate restoration dialog management
-    showCoordinateRestorationDialog(
-      state,
-      action: PayloadAction<{
-        presetId: string;
-        savedCoordinate: RTKSavedCoordinate;
-      }>
-    ) {
-      const { presetId, savedCoordinate } = action.payload;
-      state.dialog.coordinateRestorationDialog = {
-        open: true,
-        presetId,
-        savedCoordinate,
-      };
-    },
-
-    closeCoordinateRestorationDialog: noPayload<RTKSliceState>((state) => {
-      state.dialog.coordinateRestorationDialog = {
-        open: false,
-        presetId: undefined,
-        savedCoordinate: undefined,
-      };
-    }),
-
     openRTKPresetDialog(
       state,
       action: PayloadAction<{
@@ -218,15 +160,11 @@ export const {
   closeRTKPresetDialog,
   closeRTKSetupDialog,
   closeSurveySettingsPanel,
-  closeCoordinateRestorationDialog,
-  removeSavedCoordinateForPreset,
   openRTKPresetDialog,
   refreshRTKPresets,
   resetRTKStatistics,
-  saveCoordinateForPreset,
   setAntennaPositionFormat,
   showRTKSetupDialog,
-  showCoordinateRestorationDialog,
   toggleSurveySettingsPanel,
   updateRTKStatistics,
 } = actions;

@@ -6,7 +6,6 @@ import Box from '@material-ui/core/Box';
 import Dialog from '@material-ui/core/Dialog';
 
 import RTKCorrectionSourceSelector from './RTKCorrectionSourceSelector';
-import RTKCoordinateRestorationDialog from './RTKCoordinateRestorationDialog';
 import RTKMessageStatistics from './RTKMessageStatistics';
 import RTKSetupDialogBottomPanel from './RTKSetupDialogBottomPanel';
 import RTKStatusUpdater from './RTKStatusUpdater';
@@ -30,7 +29,6 @@ const RTKSetupDialog = ({ onClose, open }) => (
         <RTKSetupDialogBottomPanel />
       </Box>
     </Dialog>
-    <RTKCoordinateRestorationDialog />
   </>
 );
 

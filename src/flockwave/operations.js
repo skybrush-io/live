@@ -134,7 +134,9 @@ export async function updateRTKPreset(hub, presetId, preset) {
   const response = await hub.sendMessage({
     type: 'X-RTK-UPDATE',
     ids: [presetId],
-    preset,
+    updates: {
+      [presetId]: preset,
+    },
   });
 
   if (

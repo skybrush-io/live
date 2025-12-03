@@ -17,13 +17,8 @@ import { useAsyncRetry } from 'react-use';
 
 import {
   resetRTKStatistics,
-  showCoordinateRestorationDialog,
   openRTKPresetDialog,
 } from '~/features/rtk/slice';
-import {
-  hasSavedCoordinateForPreset,
-  getSavedCoordinateForPreset,
-} from '~/features/rtk/selectors';
 import messageHub from '~/message-hub';
 
 const NULL_ID = '__null__';
@@ -39,9 +34,6 @@ const RTKCorrectionSourceSelector = ({
   onSourceChanged,
   presetsRefreshTrigger,
   t,
-  hasSavedCoordinateForPreset,
-  getSavedCoordinateForPreset,
-  showCoordinateRestorationDialog,
 }) => {
   const [selectedByUser, setSelectedByUser] = useState();
 
@@ -66,15 +58,6 @@ const RTKCorrectionSourceSelector = ({
 
   const handleChange = async (event) => {
     const newPresetId = event.target.value;
-
-    // Check if there's a saved coordinate for this preset
-    if (newPresetId !== NULL_ID && hasSavedCoordinateForPreset(newPresetId)) {
-      const savedCoordinate = getSavedCoordinateForPreset(newPresetId);
-      showCoordinateRestorationDialog({
-        presetId: newPresetId,
-        savedCoordinate,
-      });
-    }
 
     // We assume that the request will succeed so we eagerly select the new
     // value. If changing the RTK source fails, it will be changed back in the
@@ -259,18 +242,11 @@ RTKCorrectionSourceSelector.propTypes = {
   onSourceChanged: PropTypes.func,
   presetsRefreshTrigger: PropTypes.number,
   t: PropTypes.func,
-  hasSavedCoordinateForPreset: PropTypes.func,
-  getSavedCoordinateForPreset: PropTypes.func,
-  showCoordinateRestorationDialog: PropTypes.func,
 };
 
 export default connect(
   // mapStateToProps
   (state) => ({
-    hasSavedCoordinateForPreset: (presetId) =>
-      hasSavedCoordinateForPreset(state, presetId),
-    getSavedCoordinateForPreset: (presetId) =>
-      getSavedCoordinateForPreset(state, presetId),
     presetsRefreshTrigger: state.rtk.presetsRefreshTrigger,
   }),
   // mapDispatchToProps
@@ -282,7 +258,5 @@ export default connect(
       dispatch(openRTKPresetDialog({ mode: 'edit', presetId, presetType }));
     },
     onSourceChanged: () => dispatch(resetRTKStatistics()),
-    showCoordinateRestorationDialog: (payload) =>
-      dispatch(showCoordinateRestorationDialog(payload)),
   })
 )(withTranslation()(RTKCorrectionSourceSelector));

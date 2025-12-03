@@ -9,12 +9,8 @@ import Button from '@material-ui/core/Button';
 import Chip from '@material-ui/core/Chip';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormHelperText from '@material-ui/core/FormHelperText';
 import IconButton from '@material-ui/core/IconButton';
 import MenuItem from '@material-ui/core/MenuItem';
-import Tab from '@material-ui/core/Tab';
-import Tabs from '@material-ui/core/Tabs';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import Alert from '@material-ui/lab/Alert';
@@ -26,7 +22,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Field, Form } from 'react-final-form';
+import { Form } from 'react-final-form';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { nanoid } from 'nanoid';
@@ -35,50 +31,11 @@ import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
 
 import {
   Select as FormSelect,
-  Switch as FormSwitch,
   TextField as FormTextField,
 } from '~/components/forms';
 import messageHub from '~/message-hub';
 import { closeRTKPresetDialog, refreshRTKPresets } from './slice';
 import { required } from '~/utils/validation';
-
-/**
- * Validates a filter message ID format (rtcm2/X or rtcm3/X).
- */
-const validateFilterMessage = (value) => {
-  if (!value || value.trim() === '') {
-    return undefined;
-  }
-
-  const pattern = /^(rtcm2|rtcm3)\/\d+$/;
-  if (!pattern.test(value.trim())) {
-    return 'Format must be rtcm2/X or rtcm3/X where X is the packet ID';
-  }
-
-  return undefined;
-};
-
-/**
- * Validates an array of filter messages (comma-separated string).
- */
-const validateFilterMessages = (value) => {
-  if (!value || value.trim() === '') {
-    return undefined;
-  }
-
-  const messages = value
-    .split(',')
-    .map((s) => s.trim())
-    .filter((s) => s !== '');
-  for (const msg of messages) {
-    const error = validateFilterMessage(msg);
-    if (error) {
-      return error;
-    }
-  }
-
-  return undefined;
-};
 
 /**
  * Source input field with add/remove buttons.
@@ -125,38 +82,6 @@ SourceInputField.propTypes = {
 };
 
 /**
- * Filter message input field (comma-separated list).
- */
-const FilterMessagesField = ({
-  label,
-  name,
-  placeholder,
-  helperText,
-  validate,
-  disabled,
-}) => (
-  <FormTextField
-    fullWidth
-    size='small'
-    name={name}
-    label={label}
-    placeholder={placeholder}
-    helperText={helperText}
-    fieldProps={{ validate }}
-    disabled={disabled}
-  />
-);
-
-FilterMessagesField.propTypes = {
-  label: PropTypes.string.isRequired,
-  name: PropTypes.string.isRequired,
-  placeholder: PropTypes.string,
-  helperText: PropTypes.string,
-  validate: PropTypes.func,
-  disabled: PropTypes.bool,
-};
-
-/**
  * Presentation component for the RTK preset dialog form.
  */
 const RTKPresetDialogFormPresentation = ({
@@ -181,7 +106,6 @@ const RTKPresetDialogFormPresentation = ({
       ? initialValues.sources.map((s) => ({ id: nanoid(), value: s }))
       : [{ id: nanoid(), value: '' }]
   );
-  const [tabValue, setTabValue] = useState(0);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
   const formRef = useRef(null);
@@ -269,36 +193,6 @@ const RTKPresetDialogFormPresentation = ({
           ...(filteredSources.length > 0 && { sources: filteredSources }),
           ...(values.format &&
             values.format !== 'auto' && { format: values.format }),
-          ...(values.autoSurvey !== undefined && {
-            auto_survey: values.autoSurvey,
-          }),
-          ...(values.autoSelect !== undefined && {
-            auto_select: values.autoSelect,
-          }),
-          ...(values.initData &&
-            values.initData.trim() !== '' && {
-              init_data: values.initData,
-            }),
-          ...(values.acceptMessages || values.rejectMessages
-            ? {
-                filter: {
-                  ...(values.acceptMessages &&
-                    values.acceptMessages.trim() !== '' && {
-                      accept: values.acceptMessages
-                        .split(',')
-                        .map((s) => s.trim())
-                        .filter((s) => s !== ''),
-                    }),
-                  ...(values.rejectMessages &&
-                    values.rejectMessages.trim() !== '' && {
-                      reject: values.rejectMessages
-                        .split(',')
-                        .map((s) => s.trim())
-                        .filter((s) => s !== ''),
-                    }),
-                },
-              }
-            : {}),
         };
 
         if (isNew) {
@@ -329,34 +223,12 @@ const RTKPresetDialogFormPresentation = ({
     [sources, isNew, presetId, onSubmit, onRefreshPresets]
   );
 
-  // Parse filter messages from initial values
-  const initialFilterAccept = useMemo(() => {
-    if (initialValues?.filter?.accept) {
-      return initialValues.filter.accept.join(', ');
-    }
-
-    return '';
-  }, [initialValues]);
-
-  const initialFilterReject = useMemo(() => {
-    if (initialValues?.filter?.reject) {
-      return initialValues.filter.reject.join(', ');
-    }
-
-    return '';
-  }, [initialValues]);
-
   const formInitialValues = useMemo(
     () => ({
       title: initialValues?.title || '',
       format: initialValues?.format || 'auto',
-      autoSurvey: initialValues?.auto_survey || false,
-      autoSelect: initialValues?.auto_select || false,
-      initData: initialValues?.init_data || '',
-      acceptMessages: initialFilterAccept,
-      rejectMessages: initialFilterReject,
     }),
-    [initialValues, initialFilterAccept, initialFilterReject]
+    [initialValues]
   );
 
   // Update sources when initialValues change (for edit mode)
@@ -417,208 +289,83 @@ const RTKPresetDialogFormPresentation = ({
                 )}
               </Box>
 
-              {/* Tabs */}
-              <Tabs
-                value={tabValue}
-                style={{
-                  marginBottom: 16,
-                  borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
-                }}
-                onChange={(_, newValue) => setTabValue(newValue)}
-              >
-                <Tab
-                  label={t('rtkPresetDialog.basicSettings', 'Basic Settings')}
-                />
-                <Tab
-                  label={t(
-                    'rtkPresetDialog.advancedSettings',
-                    'Advanced Settings'
+              {/* Basic Settings */}
+              <Box display='flex' flexDirection='column' style={{ gap: 16 }}>
+                <FormTextField
+                  fullWidth
+                  autoFocus
+                  size='small'
+                  name='title'
+                  label={t('rtkPresetDialog.presetName', 'Preset Name')}
+                  placeholder={t(
+                    'rtkPresetDialog.presetNamePlaceholder',
+                    'My RTK Base Station'
                   )}
+                  fieldProps={{ validate: required }}
+                  helperText={t(
+                    'rtkPresetDialog.presetNameHelp',
+                    'A descriptive name for this RTK preset'
+                  )}
+                  disabled={isReadOnly}
                 />
-              </Tabs>
 
-              {/* Basic Settings Tab */}
-              {tabValue === 0 && (
-                <Box display='flex' flexDirection='column' style={{ gap: 16 }}>
-                  <FormTextField
-                    fullWidth
-                    autoFocus
-                    size='small'
-                    name='title'
-                    label={t('rtkPresetDialog.presetName', 'Preset Name')}
-                    placeholder={t(
-                      'rtkPresetDialog.presetNamePlaceholder',
-                      'My RTK Base Station'
-                    )}
-                    fieldProps={{ validate: required }}
-                    helperText={t(
-                      'rtkPresetDialog.presetNameHelp',
-                      'A descriptive name for this RTK preset'
-                    )}
-                    disabled={isReadOnly}
-                  />
-
-                  <Box>
-                    <Typography variant='body2' style={{ marginBottom: 8 }}>
-                      {t('rtkPresetDialog.dataSources', 'Data Sources')}
-                    </Typography>
-                    {sources.map((source, index) => (
-                      <SourceInputField
-                        key={source.id}
-                        value={source.value}
-                        error={false}
-                        helperText={
-                          index === 0 && sources.length === 1 && !source.value.trim()
-                            ? t(
-                                'rtkPresetDialog.sourcesHelp',
-                                'Connection URLs for RTK correction data. You can specify multiple sources.'
-                              )
-                            : undefined
-                        }
-                        disabled={isReadOnly}
-                        onChange={(value) => handleSourceChange(index, value)}
-                        onRemove={() => handleRemoveSource(index)}
-                      />
-                    ))}
-                    <Button
-                      size='small'
-                      startIcon={<AddIcon />}
+                <Box>
+                  <Typography variant='body2' style={{ marginBottom: 8 }}>
+                    {t('rtkPresetDialog.dataSources', 'Data Sources')}
+                  </Typography>
+                  {sources.map((source, index) => (
+                    <SourceInputField
+                      key={source.id}
+                      value={source.value}
+                      error={false}
+                      helperText={
+                        index === 0 && sources.length === 1 && !source.value.trim()
+                          ? t(
+                              'rtkPresetDialog.sourcesHelp',
+                              'Connection URLs for RTK correction data. You can specify multiple sources.'
+                            )
+                          : undefined
+                      }
                       disabled={isReadOnly}
-                      style={{ marginTop: 8 }}
-                      onClick={handleAddSource}
-                    >
-                      {t('rtkPresetDialog.addSource', 'Add Source')}
-                    </Button>
-                  </Box>
-
-                  <FormSelect
-                    fullWidth
+                      onChange={(value) => handleSourceChange(index, value)}
+                      onRemove={() => handleRemoveSource(index)}
+                    />
+                  ))}
+                  <Button
                     size='small'
-                    name='format'
-                    label={t('rtkPresetDialog.messageFormat', 'Message Format')}
+                    startIcon={<AddIcon />}
                     disabled={isReadOnly}
-                    formControlProps={{
-                      helperText: t(
-                        'rtkPresetDialog.formatHelp',
-                        'Format of the GPS messages arriving in this configuration (supported formats: "rtcm2", "rtcm3", "ubx", and "auto" for auto detection)'
-                      ),
-                    }}
+                    style={{ marginTop: 8 }}
+                    onClick={handleAddSource}
                   >
-                    <MenuItem value='auto'>
-                      {t('rtkPresetDialog.formatAuto', 'Detect automatically')}
-                    </MenuItem>
-                    <MenuItem value='rtcm2'>RTCM2</MenuItem>
-                    <MenuItem value='rtcm3'>RTCM3</MenuItem>
-                    <MenuItem value='ubx'>UBX</MenuItem>
-                  </FormSelect>
+                    {t('rtkPresetDialog.addSource', 'Add Source')}
+                  </Button>
                 </Box>
-              )}
 
-              {/* Advanced Settings Tab */}
-              {tabValue === 1 && (
-                <Box display='flex' flexDirection='column' style={{ gap: 16 }}>
-                  <Box>
-                    <FormControlLabel
-                      control={
-                        <Field
-                          name='autoSurvey'
-                          component={FormSwitch}
-                          type='checkbox'
-                          disabled={isReadOnly}
-                        />
-                      }
-                      label={t(
-                        'rtkPresetDialog.autoSurvey',
-                        'Start survey automatically when selected'
-                      )}
-                    />
-                    <FormHelperText style={{ marginLeft: 36, marginTop: -12 }}>
-                      {t(
-                        'rtkPresetDialog.autoSurveyHelp',
-                        'Automatically start a survey attempt when this preset is activated'
-                      )}
-                    </FormHelperText>
-                  </Box>
-
-                  <Box>
-                    <FormControlLabel
-                      control={
-                        <Field
-                          name='autoSelect'
-                          component={FormSwitch}
-                          type='checkbox'
-                          disabled={isReadOnly}
-                        />
-                      }
-                      label={t(
-                        'rtkPresetDialog.autoSelect',
-                        'Select automatically at startup'
-                      )}
-                    />
-                    <FormHelperText style={{ marginLeft: 36, marginTop: -12 }}>
-                      {t(
-                        'rtkPresetDialog.autoSelectHelp',
-                        'Automatically select this preset when the server starts'
-                      )}
-                    </FormHelperText>
-                  </Box>
-
-                  <FormTextField
-                    fullWidth
-                    multiline
-                    size='small'
-                    name='initData'
-                    label={t('rtkPresetDialog.initData', 'Initialization Data')}
-                    placeholder={t(
-                      'rtkPresetDialog.initDataPlaceholder',
-                      'Optional data to send before reading RTCM messages'
-                    )}
-                    minRows={2}
-                    maxRows={4}
-                    helperText={t(
-                      'rtkPresetDialog.initDataHelp',
-                      'Raw bytes or text to send on connection before starting to read RTK messages'
-                    )}
-                    disabled={isReadOnly}
-                  />
-
-                  <Box>
-                    <Typography variant='subtitle2' style={{ marginBottom: 8 }}>
-                      {t('rtkPresetDialog.packetFilter', 'Packet Filter')}
-                    </Typography>
-                    <FilterMessagesField
-                      label={t(
-                        'rtkPresetDialog.acceptMessages',
-                        'Accept only these message types'
-                      )}
-                      name='acceptMessages'
-                      placeholder='rtcm3/1020, rtcm3/1077'
-                      helperText={t(
-                        'rtkPresetDialog.acceptMessagesHelp',
-                        'If specified, only these RTCM packet types will be accepted'
-                      )}
-                      validate={validateFilterMessages}
-                      disabled={isReadOnly}
-                    />
-                    <FilterMessagesField
-                      label={t(
-                        'rtkPresetDialog.rejectMessages',
-                        'Reject these message types'
-                      )}
-                      name='rejectMessages'
-                      placeholder='rtcm3/1001'
-                      helperText={t(
-                        'rtkPresetDialog.rejectMessagesHelp',
-                        'These RTCM packet types will be rejected (processed before accept list)'
-                      )}
-                      validate={validateFilterMessages}
-                      disabled={isReadOnly}
-                    />
-                  </Box>
-                </Box>
-              )}
+                <FormSelect
+                  fullWidth
+                  size='small'
+                  name='format'
+                  label={t('rtkPresetDialog.messageFormat', 'Message Format')}
+                  disabled={isReadOnly}
+                  formControlProps={{
+                    helperText: t(
+                      'rtkPresetDialog.formatHelp',
+                      'Format of the GPS messages arriving in this configuration (supported formats: "rtcm2", "rtcm3", "ubx", and "auto" for auto detection)'
+                    ),
+                  }}
+                >
+                  <MenuItem value='auto'>
+                    {t('rtkPresetDialog.formatAuto', 'Detect automatically')}
+                  </MenuItem>
+                  <MenuItem value='rtcm2'>RTCM2</MenuItem>
+                  <MenuItem value='rtcm3'>RTCM3</MenuItem>
+                  <MenuItem value='ubx'>UBX</MenuItem>
+                </FormSelect>
+              </Box>
             </DialogContent>
             <DialogActions>
+
               {!isNew && !isReadOnly && (
                 <Button
                   color='secondary'
