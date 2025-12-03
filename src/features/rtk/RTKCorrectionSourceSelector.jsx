@@ -12,12 +12,8 @@ import Select from '@material-ui/core/Select';
 
 import {
   resetRTKStatistics,
-  showCoordinateRestorationDialog,
+  setCurrentRTKPresetId,
 } from '~/features/rtk/slice';
-import {
-  hasSavedCoordinateForPreset,
-  getSavedCoordinateForPreset,
-} from '~/features/rtk/selectors';
 import messageHub from '~/message-hub';
 
 const NULL_ID = '__null__';
@@ -30,9 +26,7 @@ const nullPreset = {
 const RTKCorrectionSourceSelector = ({
   onSourceChanged,
   t,
-  hasSavedCoordinateForPreset,
-  getSavedCoordinateForPreset,
-  showCoordinateRestorationDialog,
+  setCurrentRTKPresetId,
 }) => {
   const [selectedByUser, setSelectedByUser] = useState();
   const [selectionState, getSelectionFromServer] = useAsyncFn(async () =>
@@ -45,7 +39,11 @@ const RTKCorrectionSourceSelector = ({
   );
 
   const loading = presetsState.loading || selectionState.loading;
-  const hasError = presetsState.error || selectionState.error;
+  const hasError = presetsState.error;
+
+  if (selectionState.error) {
+    console.warn('Failed to load RTK selection state:', selectionState.error);
+  }
 
   const presets = presetsState.value || [];
   const hasSelectionFromServer = selectionState.value !== undefined;
@@ -58,17 +56,6 @@ const RTKCorrectionSourceSelector = ({
   const handleChange = async (event) => {
     const newPresetId = event.target.value;
 
-    // Check if there's a saved coordinate for this preset
-    if (newPresetId !== NULL_ID && hasSavedCoordinateForPreset(newPresetId)) {
-      const savedCoordinate = getSavedCoordinateForPreset(newPresetId);
-      showCoordinateRestorationDialog({
-        presetId: newPresetId,
-        savedCoordinate,
-      });
-      // Don't proceed with the selection yet - wait for user decision in dialog
-      // return;
-    }
-
     // We assume that the request will succeed so we eagerly select the new
     // value. If changing the RTK source fails, it will be changed back in the
     // response handler triggered by the effect that we set up below.
@@ -78,6 +65,16 @@ const RTKCorrectionSourceSelector = ({
       onSourceChanged();
     }
   };
+
+  // Update current preset ID in Redux
+  useEffect(() => {
+    const currentId =
+      selectedByUser || (hasSelectionFromServer ? selectedOnServer : undefined);
+    // Convert NULL_ID to undefined or keep as is? The selector uses 'undefined' for no selection usually.
+    // But presets have IDs.
+    const effectiveId = currentId === NULL_ID ? undefined : currentId;
+    setCurrentRTKPresetId(effectiveId);
+  }, [selectedByUser, selectedOnServer, hasSelectionFromServer, setCurrentRTKPresetId]);
 
   // If we have the preset list, but we don't have the current selection yet,
   // load the current selection
@@ -169,22 +166,14 @@ const RTKCorrectionSourceSelector = ({
 RTKCorrectionSourceSelector.propTypes = {
   onSourceChanged: PropTypes.func,
   t: PropTypes.func,
-  hasSavedCoordinateForPreset: PropTypes.func,
-  getSavedCoordinateForPreset: PropTypes.func,
-  showCoordinateRestorationDialog: PropTypes.func,
+  setCurrentRTKPresetId: PropTypes.func,
 };
 
 export default connect(
-  // mapStateToProps
-  (state) => ({
-    hasSavedCoordinateForPreset: (presetId) =>
-      hasSavedCoordinateForPreset(state, presetId),
-    getSavedCoordinateForPreset: (presetId) =>
-      getSavedCoordinateForPreset(state, presetId),
-  }),
+  null,
   // mapDispatchToProps
   {
     onSourceChanged: resetRTKStatistics,
-    showCoordinateRestorationDialog,
+    setCurrentRTKPresetId,
   }
 )(withTranslation()(RTKCorrectionSourceSelector));

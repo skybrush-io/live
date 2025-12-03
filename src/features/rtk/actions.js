@@ -103,6 +103,21 @@ export const saveCurrentCoordinateForPreset =
       savedAt: Date.now(),
     };
 
+    // Check if this exact coordinate is already the latest saved one
+    const savedCoordinates = state.rtk.savedCoordinates[presetId] || [];
+    if (savedCoordinates.length > 0) {
+      const latest = savedCoordinates[0];
+      if (
+        latest &&
+        latest.positionECEF[0] === savedCoordinate.positionECEF[0] &&
+        latest.positionECEF[1] === savedCoordinate.positionECEF[1] &&
+        latest.positionECEF[2] === savedCoordinate.positionECEF[2]
+      ) {
+        // Coordinate is already saved as the latest, do nothing
+        return;
+      }
+    }
+
     dispatch(
       saveCoordinateForPreset({ presetId, coordinate: savedCoordinate })
     );

@@ -18,7 +18,9 @@ type RTKSliceState = {
   stats: RTKStatistics;
 
   /** Saved coordinates per RTK preset ID */
-  savedCoordinates: Record<string, RTKSavedCoordinate>;
+  savedCoordinates: Record<string, RTKSavedCoordinate[]>;
+
+  currentPresetId: string | undefined;
 
   dialog: {
     open: boolean;
@@ -28,7 +30,6 @@ type RTKSliceState = {
     coordinateRestorationDialog: {
       open: boolean;
       presetId: string | undefined;
-      savedCoordinate: RTKSavedCoordinate | undefined;
     };
   };
 };
@@ -54,19 +55,21 @@ const initialState: RTKSliceState = {
 
   savedCoordinates: {
     // TODO: Fake data for testing - remove in production
-    // '-dev-cu.usbmodem101-0': {
+    // '-dev-cu.usbmodem101-0': [{
     //   position: [19.0402, 47.4979] as any, // Budapest coordinates
     //   positionECEF: [4080855000, 1408354000, 4679340000] as [number, number, number], // Approximate ECEF for Budapest
     //   accuracy: 0.02,
     //   savedAt: Date.now() - 86400000, // 1 day ago
-    // },
-    // '-dev-cu.usbmodem101-1': {
+    // }],
+    // '-dev-cu.usbmodem101-1': [{
     //   position: [21.6254, 47.5289] as any, // Debrecen coordinates
     //   positionECEF: [4010557000, 1590103000, 4681871000] as [number, number, number], // Approximate ECEF for Debrecen
     //   accuracy: 0.015,
     //   savedAt: Date.now() - 172800000, // 2 days ago
-    // },
+    // }],
   },
+
+  currentPresetId: undefined,
 
   dialog: {
     open: false,
@@ -75,7 +78,6 @@ const initialState: RTKSliceState = {
     coordinateRestorationDialog: {
       open: false,
       presetId: undefined,
-      savedCoordinate: undefined,
     },
   },
 };
@@ -151,7 +153,46 @@ const { actions, reducer } = createSlice({
       }>
     ) {
       const { presetId, coordinate } = action.payload;
-      state.savedCoordinates[presetId] = coordinate;
+
+      if (!state.savedCoordinates[presetId]) {
+        state.savedCoordinates[presetId] = [];
+      }
+
+      const existing = state.savedCoordinates[presetId];
+
+      // Check if the latest coordinate is the same as the one we are trying to save
+      if (existing.length > 0) {
+        const latest = existing[0];
+        if (
+          latest &&
+          latest.positionECEF[0] === coordinate.positionECEF[0] &&
+          latest.positionECEF[1] === coordinate.positionECEF[1] &&
+          latest.positionECEF[2] === coordinate.positionECEF[2]
+        ) {
+          return;
+        }
+      }
+
+      const duplicateIndex = existing.findIndex(
+        (c) =>
+          c.positionECEF[0] === coordinate.positionECEF[0] &&
+          c.positionECEF[1] === coordinate.positionECEF[1] &&
+          c.positionECEF[2] === coordinate.positionECEF[2]
+      );
+
+      if (duplicateIndex !== -1) {
+        existing.splice(duplicateIndex, 1);
+      }
+
+      existing.unshift(coordinate);
+
+      if (existing.length > 5) {
+        existing.pop();
+      }
+    },
+
+    setCurrentRTKPresetId(state, action: PayloadAction<string | undefined>) {
+      state.currentPresetId = action.payload;
     },
 
     removeSavedCoordinateForPreset(state, action: PayloadAction<string>) {
@@ -159,19 +200,16 @@ const { actions, reducer } = createSlice({
       delete state.savedCoordinates[presetId];
     },
 
+    clearAllSavedCoordinates(state) {
+      state.savedCoordinates = {};
+    },
+
     // Coordinate restoration dialog management
-    showCoordinateRestorationDialog(
-      state,
-      action: PayloadAction<{
-        presetId: string;
-        savedCoordinate: RTKSavedCoordinate;
-      }>
-    ) {
-      const { presetId, savedCoordinate } = action.payload;
+    showCoordinateRestorationDialog(state, action: PayloadAction<string>) {
+      const presetId = action.payload;
       state.dialog.coordinateRestorationDialog = {
         open: true,
         presetId,
-        savedCoordinate,
       };
     },
 
@@ -179,7 +217,6 @@ const { actions, reducer } = createSlice({
       state.dialog.coordinateRestorationDialog = {
         open: false,
         presetId: undefined,
-        savedCoordinate: undefined,
       };
     }),
   },
@@ -189,10 +226,12 @@ export const {
   closeRTKSetupDialog,
   closeSurveySettingsPanel,
   closeCoordinateRestorationDialog,
+  clearAllSavedCoordinates,
   removeSavedCoordinateForPreset,
   resetRTKStatistics,
   saveCoordinateForPreset,
   setAntennaPositionFormat,
+  setCurrentRTKPresetId,
   showRTKSetupDialog,
   showCoordinateRestorationDialog,
   toggleSurveySettingsPanel,

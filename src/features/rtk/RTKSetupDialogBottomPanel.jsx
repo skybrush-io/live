@@ -6,7 +6,9 @@ import { connect } from 'react-redux';
 import Box from '@material-ui/core/Box';
 import IconButton from '@material-ui/core/IconButton';
 import { makeStyles } from '@material-ui/core/styles';
+import Delete from '@material-ui/icons/Delete';
 import Place from '@material-ui/icons/Place';
+import Restore from '@material-ui/icons/Restore';
 
 import {
   createSecondaryAreaStyle,
@@ -16,8 +18,17 @@ import Tooltip from '@skybrush/mui-components/lib/Tooltip';
 
 import FadeAndSlide from '~/components/transitions/FadeAndSlide';
 
-import { getSurveyStatus, shouldShowSurveySettings } from './selectors';
-import { toggleSurveySettingsPanel } from './slice';
+import {
+  getSurveyStatus,
+  shouldShowSurveySettings,
+  hasSavedCoordinateForPreset,
+  getCurrentRTKPresetId,
+} from './selectors';
+import {
+  clearAllSavedCoordinates,
+  toggleSurveySettingsPanel,
+  showCoordinateRestorationDialog,
+} from './slice';
 
 import AntennaPositionIndicator from './AntennaPositionIndicator';
 import RTKSatelliteObservations from './RTKSatelliteObservations';
@@ -53,7 +64,11 @@ const useStyles = makeStyles(
 
 const RTKSetupDialogBottomPanel = ({
   chartHeight,
+  currentPresetId,
+  hasSavedCoordinates,
   inset,
+  onClearAllSavedCoordinates,
+  onShowSavedCoordinates,
   onToggleSurveySettings,
   surveySettingsVisible,
   surveyStatus,
@@ -65,6 +80,12 @@ const RTKSetupDialogBottomPanel = ({
       onToggleSurveySettings();
     }
   }, [onToggleSurveySettings, surveySettingsVisible, surveyStatus?.supported]);
+
+  const handleShowSavedCoordinates = () => {
+    if (currentPresetId) {
+      onShowSavedCoordinates(currentPresetId);
+    }
+  };
 
   return (
     <Box
@@ -95,6 +116,28 @@ const RTKSetupDialogBottomPanel = ({
             )}
             <SurveyStatusIndicator {...surveyStatus} />
             <Box flex='1' />
+            {onShowSavedCoordinates && (
+              <Tooltip content='Use saved coordinate'>
+                <span>
+                  <IconButton
+                    disabled={!hasSavedCoordinates}
+                    onClick={handleShowSavedCoordinates}
+                  >
+                    <Restore />
+                  </IconButton>
+                </span>
+              </Tooltip>
+            )}
+            {onClearAllSavedCoordinates && (
+              <Tooltip content='Delete all saved coordinates'>
+                <IconButton
+                  disabled={false /* TODO: maybe we should check if there are saved coordinates? */}
+                  onClick={onClearAllSavedCoordinates}
+                >
+                  <Delete />
+                </IconButton>
+              </Tooltip>
+            )}
             <AntennaPositionIndicator />
           </Box>
         </FadeAndSlide>
@@ -114,7 +157,11 @@ const RTKSetupDialogBottomPanel = ({
 
 RTKSetupDialogBottomPanel.propTypes = {
   chartHeight: PropTypes.number,
+  currentPresetId: PropTypes.string,
+  hasSavedCoordinates: PropTypes.bool,
   inset: PropTypes.bool,
+  onClearAllSavedCoordinates: PropTypes.func,
+  onShowSavedCoordinates: PropTypes.func,
   onToggleSurveySettings: PropTypes.func,
   surveySettingsVisible: PropTypes.bool,
   surveyStatus: PropTypes.object,
@@ -126,12 +173,21 @@ RTKSetupDialogBottomPanel.defaultProps = {
 
 export default connect(
   // mapStateToProps
-  (state) => ({
-    surveyStatus: getSurveyStatus(state),
-    surveySettingsVisible: shouldShowSurveySettings(state),
-  }),
+  (state) => {
+    const currentPresetId = getCurrentRTKPresetId(state);
+    return {
+      currentPresetId,
+      hasSavedCoordinates: currentPresetId
+        ? hasSavedCoordinateForPreset(state, currentPresetId)
+        : false,
+      surveyStatus: getSurveyStatus(state),
+      surveySettingsVisible: shouldShowSurveySettings(state),
+    };
+  },
   // mapDispatchToProps
   {
+    onClearAllSavedCoordinates: clearAllSavedCoordinates,
+    onShowSavedCoordinates: showCoordinateRestorationDialog,
     onToggleSurveySettings: toggleSurveySettingsPanel,
   }
 )(RTKSetupDialogBottomPanel);

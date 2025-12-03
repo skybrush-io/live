@@ -9,35 +9,51 @@ import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import Typography from '@material-ui/core/Typography';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
 
 import { closeCoordinateRestorationDialog } from '~/features/rtk/slice';
 import {
   getCoordinateRestorationDialog,
-  getFormattedSavedCoordinatePosition,
+  getFormattedCoordinatePosition,
+  getSavedCoordinatesForPreset,
 } from '~/features/rtk/selectors';
 import { useSavedCoordinateForPreset } from '~/features/rtk/actions';
+
+const SavedCoordinateItem = connect((state, { coordinate }) => ({
+  formattedPosition: getFormattedCoordinatePosition(state, coordinate),
+}))(({ coordinate, formattedPosition, onClick }) => {
+  const { accuracy, savedAt } = coordinate;
+  const savedDateTime = formatDate(new Date(savedAt), 'yyyy-MM-dd HH:mm:ss');
+
+  return (
+    <ListItem button onClick={() => onClick(coordinate)}>
+      <ListItemText
+        primary={formattedPosition}
+        secondary={`Accuracy: ${accuracy.toFixed(3)} m • ${savedDateTime}`}
+      />
+    </ListItem>
+  );
+});
 
 const RTKCoordinateRestorationDialog = ({
   t,
   dialog,
-  formattedPosition,
+  savedCoordinates,
   onClose,
   onUseSaved,
 }) => {
-  if (!dialog.open || !dialog.savedCoordinate) {
+  if (!dialog.open) {
     return null;
   }
 
-  const { presetId, savedCoordinate } = dialog;
-  const { accuracy, savedAt } = savedCoordinate;
-  const savedDateTime = formatDate(new Date(savedAt), 'yyyy-MM-dd HH:mm:ss');
+  const { presetId } = dialog;
 
-  const handleUseSaved = () => {
+  const handleUseSaved = (coordinate) => {
     onClose(); // Close dialog first
-    onUseSaved(presetId, savedCoordinate); // Then start async operation
+    onUseSaved(presetId, coordinate); // Then start async operation
   };
 
   return (
@@ -53,28 +69,26 @@ const RTKCoordinateRestorationDialog = ({
       </DialogTitle>
       <DialogContent>
         <Box mt={2} mb={2}>
-          <Typography variant="body2" component="div">
-            <Box component="div" mb={1}>
-              <strong>{t('RTKCoordinateRestorationDialog.positionLabel')}:</strong>{' '}
-              {formattedPosition}
+          {savedCoordinates.length === 0 ? (
+            <Box p={2} textAlign='center'>
+              {t('RTKCoordinateRestorationDialog.noSavedCoordinates')}
             </Box>
-            <Box component="div" mb={1}>
-              <strong>{t('RTKCoordinateRestorationDialog.accuracyLabel')}:</strong>{' '}
-              {accuracy.toFixed(3)} m
-            </Box>
-            <Box component="div" mb={1}>
-              <strong>{t('RTKCoordinateRestorationDialog.dateLabel')}:</strong>{' '}
-              {savedDateTime}
-            </Box>
-          </Typography>
+          ) : (
+            <List>
+              {savedCoordinates.map((coordinate, index) => (
+                <SavedCoordinateItem
+                  key={coordinate.savedAt}
+                  coordinate={coordinate}
+                  onClick={handleUseSaved}
+                />
+              ))}
+            </List>
+          )}
         </Box>
       </DialogContent>
       <DialogActions>
         <Button color='primary' onClick={onClose}>
           {t('RTKCoordinateRestorationDialog.cancel')}
-        </Button>
-        <Button color='primary' variant='contained' onClick={handleUseSaved}>
-          {t('RTKCoordinateRestorationDialog.useSaved')}
         </Button>
       </DialogActions>
     </Dialog>
@@ -84,7 +98,7 @@ const RTKCoordinateRestorationDialog = ({
 RTKCoordinateRestorationDialog.propTypes = {
   t: PropTypes.func,
   dialog: PropTypes.object,
-  formattedPosition: PropTypes.string,
+  savedCoordinates: PropTypes.array,
   onClose: PropTypes.func,
   onUseSaved: PropTypes.func,
 };
@@ -94,9 +108,9 @@ export default connect(
     const dialog = getCoordinateRestorationDialog(state);
     return {
       dialog,
-      formattedPosition: dialog.savedCoordinate && dialog.presetId
-        ? getFormattedSavedCoordinatePosition(state, dialog.presetId)
-        : undefined,
+      savedCoordinates: dialog.presetId
+        ? getSavedCoordinatesForPreset(state, dialog.presetId)
+        : [],
     };
   },
   {

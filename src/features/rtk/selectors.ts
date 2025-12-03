@@ -166,34 +166,36 @@ export const shouldShowSurveySettings = (state: RootState): boolean =>
 export const hasSavedCoordinateForPreset = (
   state: RootState,
   presetId: string
-): boolean => Boolean(state.rtk.savedCoordinates[presetId]);
+): boolean => {
+  const coords = state.rtk.savedCoordinates[presetId];
+  return Boolean(coords && coords.length > 0);
+};
 
 /**
- * Returns the saved coordinate for the given RTK preset ID, or undefined if none exists.
+ * Returns the saved coordinates for the given RTK preset ID, or empty array if none exists.
  */
-export const getSavedCoordinateForPreset = (
+export const getSavedCoordinatesForPreset = (
   state: RootState,
   presetId: string
-): RTKSavedCoordinate | undefined => state.rtk.savedCoordinates[presetId];
+): RTKSavedCoordinate[] => state.rtk.savedCoordinates[presetId] || [];
 
 /**
- * Returns all saved coordinates as an array of { presetId, coordinate } objects.
+ * Returns all saved coordinates as an array of { presetId, coordinates } objects.
  */
 export const getAllSavedCoordinates = createSelector(
   (state: RootState) => state.rtk.savedCoordinates,
   (savedCoordinates) =>
-    Object.entries(savedCoordinates).map(([presetId, coordinate]) => ({
+    Object.entries(savedCoordinates).map(([presetId, coordinates]) => ({
       presetId,
-      coordinate,
+      coordinates,
     }))
 );
 
 /**
- * Returns the formatted saved coordinate position for a given preset ID.
+ * Returns the formatted saved coordinate position for a given coordinate.
  */
-export const getFormattedSavedCoordinatePosition = createSelector(
-  (state: RootState, presetId: string) =>
-    getSavedCoordinateForPreset(state, presetId),
+export const getFormattedCoordinatePosition = createSelector(
+  (_state: RootState, coordinate: RTKSavedCoordinate) => coordinate,
   getPreferredCoordinateFormatter,
   isShowingAntennaPositionInECEF,
   (savedCoordinate, formatter, isECEF) => {
@@ -214,6 +216,13 @@ export const getFormattedSavedCoordinatePosition = createSelector(
     }
   }
 );
+
+/**
+ * Returns the current RTK preset ID.
+ */
+export const getCurrentRTKPresetId = (state: RootState): string | undefined =>
+  state.rtk.currentPresetId;
+
 
 /**
  * Returns the coordinate restoration dialog state.
