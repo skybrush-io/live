@@ -229,7 +229,10 @@ export async function startRTKSurvey(
  * Sets the RTK antenna position on the server by submitting explicit
  * survey settings that contain a fixed position instead of starting a survey.
  */
-export async function setRTKAntennaPosition(hub, { position, accuracy }) {
+export async function setRTKAntennaPosition(
+  hub: MessageHub,
+  { position, accuracy }: { position: [number, number, number]; accuracy: number }
+) {
   const response = await hub.sendMessage({
     type: 'X-RTK-SURVEY',
     settings: {

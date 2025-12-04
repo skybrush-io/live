@@ -4,15 +4,16 @@ import React from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemText from '@mui/material/ListItemText';
 
 import { closeCoordinateRestorationDialog } from '~/features/rtk/slice';
 import {
@@ -29,11 +30,13 @@ const SavedCoordinateItem = connect((state, { coordinate }) => ({
   const savedDateTime = formatDate(new Date(savedAt), 'yyyy-MM-dd HH:mm:ss');
 
   return (
-    <ListItem button onClick={() => onClick(coordinate)}>
-      <ListItemText
-        primary={formattedPosition}
-        secondary={`Accuracy: ${accuracy.toFixed(3)} m • ${savedDateTime}`}
-      />
+    <ListItem disablePadding>
+      <ListItemButton onClick={() => onClick(coordinate)}>
+        <ListItemText
+          primary={formattedPosition}
+          secondary={`Accuracy: ${accuracy.toFixed(3)} m • ${savedDateTime}`}
+        />
+      </ListItemButton>
     </ListItem>
   );
 });
