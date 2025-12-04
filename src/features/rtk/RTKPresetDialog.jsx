@@ -500,11 +500,9 @@ const RTKPresetDialogContainer = ({
   ...rest
 }) => {
   const [initialPreset, setInitialPreset] = useState(null);
-  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (open && mode === 'edit' && presetId) {
-      setLoading(true);
       messageHub.query
         .getRTKPresets()
         .then((presets) => {
@@ -513,30 +511,11 @@ const RTKPresetDialogContainer = ({
         })
         .catch(() => {
           setInitialPreset(null);
-        })
-        .finally(() => {
-          setLoading(false);
         });
     } else {
       setInitialPreset(null);
     }
   }, [open, mode, presetId]);
-
-  if (loading) {
-    return (
-      <DraggableDialog
-        fullWidth
-        maxWidth='sm'
-        open={open}
-        title='Loading...'
-        onClose={onClose}
-      >
-        <DialogContent>
-          <Typography>Loading preset data...</Typography>
-        </DialogContent>
-      </DraggableDialog>
-    );
-  }
 
   return (
     <RTKPresetDialogPresentation
