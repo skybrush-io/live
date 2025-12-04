@@ -75,7 +75,7 @@ const RTKCoordinateRestorationDialog = ({
             </Box>
           ) : (
             <List>
-              {savedCoordinates.map((coordinate, index) => (
+              {savedCoordinates.map((coordinate) => (
                 <SavedCoordinateItem
                   key={coordinate.savedAt}
                   coordinate={coordinate}

@@ -177,7 +177,7 @@ export const hasSavedCoordinateForPreset = (
 export const getSavedCoordinatesForPreset = (
   state: RootState,
   presetId: string
-): RTKSavedCoordinate[] => state.rtk.savedCoordinates[presetId] || [];
+): RTKSavedCoordinate[] => state.rtk.savedCoordinates[presetId] ?? [];
 
 /**
  * Returns all saved coordinates as an array of { presetId, coordinates } objects.
@@ -222,7 +222,6 @@ export const getFormattedCoordinatePosition = createSelector(
  */
 export const getCurrentRTKPresetId = (state: RootState): string | undefined =>
   state.rtk.currentPresetId;
-
 
 /**
  * Returns the coordinate restoration dialog state.

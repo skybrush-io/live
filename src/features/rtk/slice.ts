@@ -154,9 +154,7 @@ const { actions, reducer } = createSlice({
     ) {
       const { presetId, coordinate } = action.payload;
 
-      if (!state.savedCoordinates[presetId]) {
-        state.savedCoordinates[presetId] = [];
-      }
+      state.savedCoordinates[presetId] ||= [];
 
       const existing = state.savedCoordinates[presetId];
 

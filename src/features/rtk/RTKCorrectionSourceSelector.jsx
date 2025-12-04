@@ -74,7 +74,12 @@ const RTKCorrectionSourceSelector = ({
     // But presets have IDs.
     const effectiveId = currentId === NULL_ID ? undefined : currentId;
     setCurrentRTKPresetId(effectiveId);
-  }, [selectedByUser, selectedOnServer, hasSelectionFromServer, setCurrentRTKPresetId]);
+  }, [
+    selectedByUser,
+    selectedOnServer,
+    hasSelectionFromServer,
+    setCurrentRTKPresetId,
+  ]);
 
   // If we have the preset list, but we don't have the current selection yet,
   // load the current selection
