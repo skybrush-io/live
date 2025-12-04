@@ -53,6 +53,7 @@ const AntennaPositionIndicator = ({
       {onShowSavedCoordinates && (
         <Tooltip
           content={t('antennaPositionIndicator.useSavedCoordinate')}
+          trigger='mouseenter'
         >
           <IconButton
             disabled={!hasSavedCoordinates}
