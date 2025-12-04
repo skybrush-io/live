@@ -671,16 +671,16 @@
       "default": {
         "brightness": "Brightness"
       },
+      "selectLabel": "Light effect",
       "solid": {
         "color": "Color"
       },
-      "selectLabel": "Light effect",
       "sparks": {
         "offDuration": "Off duration"
       },
       "type": {
-        "off": "Off",
         "default": "Default",
+        "off": "Off",
         "solid": "Solid",
         "sparks": "Sparks"
       }

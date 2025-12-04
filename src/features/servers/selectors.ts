@@ -1,6 +1,6 @@
-import isNil from 'lodash-es/isNil';
 import { createSelector } from '@reduxjs/toolkit';
 import { type License } from '@skybrush/flockwave-spec';
+import isNil from 'lodash-es/isNil';
 
 import { ConnectionState } from '~/model/enums';
 import { type AppSelector, type RootState } from '~/store/reducers';
@@ -134,8 +134,41 @@ export const getServerHttpUrl: AppSelector<string | undefined> = createSelector(
  * Selector that returns the version number of the server that we are
  * connected to, or undefined if we are not connected to the server yet.
  */
-export const getServerVersion = (state: RootState) =>
+export const getServerVersion = (state: RootState): string | undefined =>
   state.servers.current.version;
+
+export const getServerVersionSupportValidator: AppSelector<
+  (minMajor: number, minMinor: number | undefined) => boolean
+> = createSelector(getServerVersion, (version) => {
+  if (version === undefined) {
+    return () => false;
+  }
+
+  const parts = version.split('.');
+  if (parts.length < 2) {
+    return () => false;
+  }
+
+  const [major, minor] = [
+    Number.parseInt(parts[0]!, 10),
+    Number.parseInt(parts[1]!, 10),
+  ];
+  if (!Number.isFinite(major) || !Number.isFinite(minor)) {
+    return () => false;
+  }
+
+  return (minMajor: number, minMinor: number | undefined) => {
+    if (major > minMajor) {
+      return true;
+    }
+
+    if (major < minMajor) {
+      return false;
+    }
+
+    return minMinor === undefined ? true : minor >= minMinor;
+  };
+});
 
 /**
  * Returns all the information that we know about the current Skybrush server.
@@ -180,16 +213,6 @@ const getCurrentServerLicense: AppSelector<License | undefined> = (state) =>
 export const getCurrentServerPortMapping: AppSelector<
   Record<string, number>
 > = (state) => state.servers.current.ports;
-
-/**
- * Returns the version number of the currently connected Skybrush server.
- *
- * @param state - The state of the application
- * @return Version number of the currently connected Skybrush server
- */
-export const getCurrentServerVersion: AppSelector<string | undefined> = (
-  state
-) => state.servers.current.version;
 
 /**
  * Selector that calculates and caches the list of all the servers detected

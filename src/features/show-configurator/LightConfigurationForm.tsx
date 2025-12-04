@@ -6,9 +6,11 @@ import Select from '@mui/material/Select';
 import Slider from '@mui/material/Slider';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSelector } from 'react-redux';
 
 import { SimpleDurationField } from '~/components/forms';
 import { HexColorInput, HexColorPicker } from '~/components/HexColorPicker';
+import { getServerVersionSupportValidator } from '~/features/servers/selectors';
 
 import type { LightEffectConfiguration, LightEffectType } from './actions';
 
@@ -185,10 +187,12 @@ export type LightConfigurationProps = Omit<
 > & { disabled?: boolean };
 
 const LightConfigurationForm = (props: LightConfigurationProps) => {
-  const { disabled, lightEffectType, onLightEffectTypeChanged } = props;
+  const { lightEffectType, onLightEffectTypeChanged } = props;
   const { t } = useTranslation(undefined, {
     keyPrefix: 'showConfiguratorDialog.lights',
   });
+  const checkServerVersion = useSelector(getServerVersionSupportValidator);
+  const disabled = (props.disabled ?? false) || !checkServerVersion(2, 40);
   const labelId = 'light-effect-type-label';
   return (
     <>
