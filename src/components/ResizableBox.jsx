@@ -1,9 +1,10 @@
+import Box from '@mui/material/Box';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import React, { useCallback, useState } from 'react';
 import { Resizable } from 'react-resizable';
-import Box from '@mui/material/Box';
-import makeStyles from '@mui/styles/makeStyles';
+
+import { makeStyles } from '@skybrush/app-theme-mui';
 
 const makeSideClass = (major, minor, edge, across, cursor, theme) => ({
   [major]: 50,
@@ -38,34 +39,31 @@ const makeCornerClass = (edge1, edge2, cursor, theme) => ({
   },
 });
 
-const useStyles = makeStyles(
-  (theme) => ({
-    handle: {
-      position: 'absolute',
+const useStyles = makeStyles((theme) => ({
+  handle: {
+    position: 'absolute',
 
-      '&:after': {
-        content: '""',
-        display: 'block',
+    '&:after': {
+      content: '""',
+      display: 'block',
 
-        width: '100%',
-        height: '100%',
+      width: '100%',
+      height: '100%',
 
-        position: 'relative',
-      },
+      position: 'relative',
     },
+  },
 
-    'handle-n': makeSideClass('width', 'height', 'top', 'left', 'ns', theme),
-    'handle-e': makeSideClass('height', 'width', 'right', 'top', 'ew', theme),
-    'handle-s': makeSideClass('width', 'height', 'bottom', 'left', 'ns', theme),
-    'handle-w': makeSideClass('height', 'width', 'left', 'top', 'ew', theme),
+  'handle-n': makeSideClass('width', 'height', 'top', 'left', 'ns', theme),
+  'handle-e': makeSideClass('height', 'width', 'right', 'top', 'ew', theme),
+  'handle-s': makeSideClass('width', 'height', 'bottom', 'left', 'ns', theme),
+  'handle-w': makeSideClass('height', 'width', 'left', 'top', 'ew', theme),
 
-    'handle-ne': makeCornerClass('top', 'right', 'nesw', theme),
-    'handle-se': makeCornerClass('bottom', 'right', 'nwse', theme),
-    'handle-sw': makeCornerClass('bottom', 'left', 'nesw', theme),
-    'handle-nw': makeCornerClass('top', 'left', 'nwse', theme),
-  }),
-  { name: 'ResizableBox' }
-);
+  'handle-ne': makeCornerClass('top', 'right', 'nesw', theme),
+  'handle-se': makeCornerClass('bottom', 'right', 'nwse', theme),
+  'handle-sw': makeCornerClass('bottom', 'left', 'nesw', theme),
+  'handle-nw': makeCornerClass('top', 'left', 'nwse', theme),
+}));
 
 const ResizeHandle = React.forwardRef(({ handleAxis, ...rest }, ref) => {
   const classes = useStyles();

@@ -9,12 +9,10 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import Header from '@skybrush/mui-components/lib/FormHeader';
-import ThemeSelector from '@skybrush/mui-components/lib/ThemeSelector';
+import { FormHeader as Header, ThemeSelector } from '@skybrush/mui-components';
 
 import CoordinateSystemFields from '~/components/CoordinateSystemFields';
 import {

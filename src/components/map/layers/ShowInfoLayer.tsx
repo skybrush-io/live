@@ -1,7 +1,7 @@
 import mapValues from 'lodash-es/mapValues';
 import memoizeOne from 'memoize-one';
 import memoize from 'memoizee';
-import React from 'react';
+import type React from 'react';
 
 import { Point } from 'ol/geom';
 import type OLLayer from 'ol/layer/Layer';
@@ -9,7 +9,6 @@ import { getPointResolution } from 'ol/proj';
 import { Icon, RegularShape, Style, Text } from 'ol/style';
 import { type StyleFunction } from 'ol/style/Style';
 
-// @ts-expect-error: untyped
 import { Feature, geom, layer as olLayer, source } from '@collmot/ol-react';
 
 import Colors from '~/components/colors';

@@ -9,11 +9,10 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import MenuItem from '@mui/material/MenuItem';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { Form } from 'react-final-form';
 import { connect } from 'react-redux';
 
-import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
+import { DraggableDialog } from '@skybrush/mui-components';
 
 import { CoordinateField, DistanceField, Select } from '~/components/forms';
 import DronePlaceholderList from '~/components/uavs/DronePlaceholderList';

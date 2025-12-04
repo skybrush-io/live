@@ -1,7 +1,6 @@
 import Divider from '@mui/material/Divider';
 import List from '@mui/material/List';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { connect } from 'react-redux';
 
 import MultiPagePanel, { Page } from '~/components/MultiPagePanel';
@@ -16,8 +15,8 @@ import LargeControlButtonGroup from './LargeControlButtonGroup';
 import LoadShowFromFileButton from './LoadShowFromFileButton';
 import ManualPreflightChecksButton from './ManualPreflightChecksButton';
 import OnboardPreflightChecksButton from './OnboardPreflightChecksButton';
-import ShowUploadDialogButton from './ShowUploadDialogButton';
 import ShowConfiguratorButton from './ShowConfiguratorButton';
+import ShowUploadDialogButton from './ShowUploadDialogButton';
 import StartTimeButton from './StartTimeButton';
 import TakeoffAreaButton from './TakeoffAreaButton';
 

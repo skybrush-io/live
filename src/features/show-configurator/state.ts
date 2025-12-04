@@ -130,17 +130,22 @@ const { reducer, actions } = createSlice({
         action: PayloadAction<{ mode: FeatureSelectionMode; ids: Identifier[] }>
       ) {
         const { mode, ids } = action.payload;
-        // eslint-disable-next-line unicorn/prefer-switch
-        if (mode === 'add') {
-          state.selection = updateSelectedIds(state.selection, ids);
-        } else if (mode === 'clear') {
-          state.selection = [];
-        } else if (mode === 'remove') {
-          state.selection = updateSelectedIds(state.selection, [], ids);
-        } else if (mode === 'set') {
-          state.selection = updateSelectedIds([], ids);
-        } else if (mode === 'toggle') {
-          state.selection = updateSelectedIds([], xor(state.selection, ids));
+        switch (mode) {
+          case 'add':
+            state.selection = updateSelectedIds(state.selection, ids);
+            break;
+          case 'clear':
+            state.selection = [];
+            break;
+          case 'remove':
+            state.selection = updateSelectedIds(state.selection, [], ids);
+            break;
+          case 'set':
+            state.selection = updateSelectedIds([], ids);
+            break;
+          case 'toggle':
+            state.selection = updateSelectedIds([], xor(state.selection, ids));
+            break;
         }
       },
     },

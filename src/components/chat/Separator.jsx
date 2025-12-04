@@ -2,9 +2,9 @@
  * @file React component showing a separator line in a chat session.
  */
 
-import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
-import React from 'react';
+
+import { makeStyles } from '@skybrush/app-theme-mui';
 
 const lineStyle = (theme) => ({
   content: '’’',

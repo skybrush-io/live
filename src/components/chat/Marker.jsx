@@ -2,11 +2,11 @@
  * @file React component showing a marker line in a chat session.
  */
 
-import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
-import React from 'react';
 import TimeAgo from 'react-timeago';
+
+import { makeStyles } from '@skybrush/app-theme-mui';
 
 const useStyles = makeStyles((theme) => ({
   root: {

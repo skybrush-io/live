@@ -6,17 +6,40 @@
 import { source, withLayer } from '@collmot/ol-react';
 import difference from 'lodash-es/difference';
 import includes from 'lodash-es/includes';
-import Layer from 'ol/layer/Layer';
-import PropTypes from 'prop-types';
+import type { MiniSignal } from 'mini-signals';
+import type Point from 'ol/geom/Point';
+import type Layer from 'ol/layer/Layer';
+import type VectorSource from 'ol/source/Vector';
 import React from 'react';
 
+import { type UAVsLayerProps } from '~/components/map/layers/uavs';
 import { getSingleUAVStatusLevel } from '~/features/uavs/selectors';
-import Flock from '~/model/flock';
+import type Flock from '~/model/flock';
 import { uavIdToGlobalId } from '~/model/identifiers';
 import { setLayerSelectable, setLayerTriggersTooltip } from '~/model/layers';
+import type UAV from '~/model/uav';
 
 import FeatureManager from '../FeatureManager';
 import UAVFeature from '../features/UAVFeature';
+
+export type ActiveUAVsLayerSourceProps = {
+  flock?: Flock;
+  labelColor: string;
+  layer?: Layer;
+  projection?: (coords: number[]) => number[];
+  selection: string[];
+  labelHidden?: boolean;
+  scale: number;
+};
+
+type EventBindings = {
+  uavsUpdated?: ReturnType<MiniSignal<[UAV[]]>['add']>;
+  uavsRemoved?: ReturnType<MiniSignal<[UAV[]]>['add']>;
+};
+
+type OLReactSource = {
+  source: VectorSource<UAVFeature>;
+};
 
 /**
  * OpenLayers vector layer source that contains all the active UAVs
@@ -25,20 +48,15 @@ import UAVFeature from '../features/UAVFeature';
  * This layer source can be passed to an OpenLayers layer as a source to
  * show all the active UAVs on top of the map.
  */
-class ActiveUAVsLayerSource extends React.Component {
-  static propTypes = {
-    flock: PropTypes.instanceOf(Flock),
-    labelColor: PropTypes.string,
-    layer: PropTypes.instanceOf(Layer),
-    projection: PropTypes.func,
-    selection: PropTypes.arrayOf(PropTypes.string).isRequired,
-    labelHidden: PropTypes.bool,
-  };
+class ActiveUAVsLayerSource extends React.Component<ActiveUAVsLayerSourceProps> {
+  eventBindings: EventBindings;
+  _featureManager: FeatureManager<UAVFeature>;
+  _sourceRef: OLReactSource | null;
 
-  constructor(props) {
+  constructor(props: ActiveUAVsLayerSourceProps) {
     super(props);
 
-    this._sourceRef = undefined;
+    this._sourceRef = null;
 
     this._featureManager = new FeatureManager();
     this._featureManager.featureFactory = this._createFeatureFactory();
@@ -48,7 +66,7 @@ class ActiveUAVsLayerSource extends React.Component {
     this.eventBindings = {};
   }
 
-  componentDidUpdate(previousProps) {
+  componentDidUpdate(previousProps: ActiveUAVsLayerSourceProps) {
     this._onFlockMaybeChanged(previousProps.flock, this.props.flock);
     this._onSelectionMaybeChanged(
       previousProps.selection,
@@ -58,6 +76,7 @@ class ActiveUAVsLayerSource extends React.Component {
       previousProps.labelColor,
       this.props.labelColor
     );
+    this._onScaleMaybeChanged(previousProps.scale, this.props.scale);
     this._featureManager.projection = this.props.projection;
     if (this.props.labelHidden !== previousProps.labelHidden) {
       this._featureManager.featureFactory = this._createFeatureFactory();
@@ -76,12 +95,13 @@ class ActiveUAVsLayerSource extends React.Component {
     this._featureManager.projection = this.props.projection;
 
     this._onFlockMaybeChanged(undefined, this.props.flock);
-    this._onSelectionMaybeChanged(undefined, this.props.selection);
+    this._onSelectionMaybeChanged([], this.props.selection);
+    this._onScaleMaybeChanged(0, this.props.scale);
   }
 
   componentWillUnmount() {
     this._onFlockMaybeChanged(this.props.flock, undefined);
-    this._onSelectionMaybeChanged(this.props.selection, undefined);
+    this._onSelectionMaybeChanged(this.props.selection, []);
 
     this._featureManager.projection = undefined;
   }
@@ -90,7 +110,7 @@ class ActiveUAVsLayerSource extends React.Component {
     return <source.Vector ref={this._assignSourceRef} />;
   }
 
-  _assignSourceRef = (value) => {
+  _assignSourceRef = (value: OLReactSource) => {
     if (value === this._sourceRef) {
       return;
     }
@@ -109,16 +129,16 @@ class ActiveUAVsLayerSource extends React.Component {
   /**
    * Creates the feature factory for the feature manager.
    */
-  _createFeatureFactory = () => (id, geom) =>
+  _createFeatureFactory = () => (id: string, geom: Point) =>
     new UAVFeature(id, geom, this.props.labelHidden);
 
   /**
    * Event handler that is called when a new feature was added by the feature
    * manager. This happens when we see a new UAV for the first time.
    *
-   * @param {UAVFeature}  feature  the feature that was added
+   * @param feature  the feature that was added
    */
-  _onFeatureAdded = (feature) => {
+  _onFeatureAdded = (feature: UAVFeature) => {
     // Ensure that the feature is selected automatically if it is part
     // of the current selection
     feature.selected = includes(this.props.selection, feature.getId());
@@ -132,20 +152,27 @@ class ActiveUAVsLayerSource extends React.Component {
    * unsubscribes from the events of the old flock. It also performs a
    * strict equality check on the two flocks because they may be equal.
    *
-   * @param {Flock} oldFlock  the old flock associated to the layer
-   * @param {Flock} newFlock  the new flock associated to the layer
+   * @param oldFlock  the old flock associated to the layer
+   * @param newFlock  the new flock associated to the layer
    */
-  _onFlockMaybeChanged = (oldFlock, newFlock) => {
+  _onFlockMaybeChanged = (
+    oldFlock: Flock | undefined,
+    newFlock: Flock | undefined
+  ) => {
     if (oldFlock === newFlock) {
       return;
     }
 
     if (oldFlock) {
-      oldFlock.uavsUpdated.detach(this.eventBindings.uavsUpdated);
-      delete this.eventBindings.uavsUpdated;
+      if (this.eventBindings.uavsUpdated !== undefined) {
+        oldFlock.uavsUpdated.detach(this.eventBindings.uavsUpdated);
+        delete this.eventBindings.uavsUpdated;
+      }
 
-      oldFlock.uavsRemoved.detach(this.eventBindings.uavsRemoved);
-      delete this.eventBindings.uavsRemoved;
+      if (this.eventBindings.uavsRemoved !== undefined) {
+        oldFlock.uavsRemoved.detach(this.eventBindings.uavsRemoved);
+        delete this.eventBindings.uavsRemoved;
+      }
 
       this._featureManager.removeAllFeatures();
     }
@@ -167,30 +194,35 @@ class ActiveUAVsLayerSource extends React.Component {
    * Function that is called when we suspect that the set of selected UAVs
    * may have changed.
    *
-   * @param {string[]}  oldSelection  the old selection of UAVs
-   * @param {string[]}  newSelection  the new selection of UAVs
+   * @param oldSelection  the old selection of UAVs
+   * @param newSelection  the new selection of UAVs
    */
-  _onSelectionMaybeChanged = (oldSelection, newSelection) => {
+  _onSelectionMaybeChanged = (
+    oldSelection: string[],
+    newSelection: string[]
+  ) => {
     if (!this._sourceRef) {
       return;
     }
 
     const { source } = this._sourceRef;
     const getFeatureById = source.getFeatureById.bind(source);
-    let features;
+    let features: Array<UAVFeature | null>;
 
     features = difference(newSelection, oldSelection)
       .map(getFeatureById)
       .filter(Boolean);
     for (const feature of features) {
-      feature.selected = true;
+      // We know it's not null because we filtered above
+      (feature as UAVFeature).selected = true;
     }
 
     features = difference(oldSelection, newSelection)
       .map(getFeatureById)
       .filter(Boolean);
     for (const feature of features) {
-      feature.selected = false;
+      // We know it's not null because we filtered above
+      (feature as UAVFeature).selected = false;
     }
   };
 
@@ -198,10 +230,13 @@ class ActiveUAVsLayerSource extends React.Component {
    * Function that checks whether the label color have changed and updates
    * the features accordingly.
    *
-   * @param {Object} oldLabelColor The old label color.
-   * @param {Object} newLabelColor The new label color.
+   * @param oldLabelColor The old label color.
+   * @param newLabelColor The new label color.
    */
-  _onLabelColorMaybeChanged = (oldLabelColor, newLabelColor) => {
+  _onLabelColorMaybeChanged = (
+    oldLabelColor: string,
+    newLabelColor: string
+  ) => {
     if (oldLabelColor === newLabelColor) {
       return;
     }
@@ -213,13 +248,31 @@ class ActiveUAVsLayerSource extends React.Component {
   };
 
   /**
+   * Function that checks whether the scale of the UAV icons has changed and
+   * updates the features accordingly.
+   *
+   * @param oldScale The old scale.
+   * @param newScale The new scale.
+   */
+  _onScaleMaybeChanged = (oldScale: number, newScale: number) => {
+    if (oldScale === newScale) {
+      return;
+    }
+
+    const features = this._featureManager.getFeatureArray();
+    for (const feature of features) {
+      feature.scale = newScale;
+    }
+  };
+
+  /**
    * Event handler that is called when some UAVs were removed from the flock and
    * the layer should be re-drawn without these UAVs.
    *
    * @listens Flock#uavsRemoved
-   * @param {UAV[]} uavs  the UAVs that should be removed
+   * @param uavs  the UAVs that should be removed
    */
-  _onUAVsRemoved = (uavs) => {
+  _onUAVsRemoved = (uavs: UAV[]) => {
     for (const uav of uavs) {
       this._featureManager.removeFeatureById(uav.id);
     }
@@ -230,11 +283,15 @@ class ActiveUAVsLayerSource extends React.Component {
    * changed in the flock and the layer should be re-drawn.
    *
    * @listens Flock#uavsUpdated
-   * @param {UAV[]} uavs  the UAVs that should be refreshed
+   * @param uavs  the UAVs that should be refreshed
    */
-  _onUAVsUpdated = (uavs) => {
+  _onUAVsUpdated = (uavs: UAV[]) => {
     for (const uav of uavs) {
       if (uav.lon === 0 && uav.lat === 0) {
+        continue;
+      }
+
+      if (uav.lon === undefined || uav.lat === undefined) {
         continue;
       }
 
@@ -250,8 +307,12 @@ class ActiveUAVsLayerSource extends React.Component {
 
       feature.status = getSingleUAVStatusLevel(uav);
       feature.labelColor = this.props.labelColor;
+      feature.scale = this.props.scale;
     }
   };
 }
 
-export default withLayer(ActiveUAVsLayerSource);
+// TODO: Harmonize `UAVsLayerSourceProps` with `UAVsLayerSourceProps`!
+export default withLayer(
+  ActiveUAVsLayerSource
+) as UAVsLayerProps['LayerSource'];

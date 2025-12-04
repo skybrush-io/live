@@ -10,7 +10,6 @@ import Point from 'ol/geom/Point';
 import { getPointResolution } from 'ol/proj';
 import { Circle, Icon, Style, Text } from 'ol/style';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { connect } from 'react-redux';
 
 import { Feature, geom, layer as olLayer, source } from '@collmot/ol-react';

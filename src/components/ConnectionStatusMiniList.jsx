@@ -3,14 +3,15 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import Typography from '@mui/material/Typography';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import TimeAgo from 'react-timeago';
 
-import MiniList from '@skybrush/mui-components/lib/MiniList';
-import MiniListDivider from '@skybrush/mui-components/lib/MiniListDivider';
-import MiniListItem from '@skybrush/mui-components/lib/MiniListItem';
+import {
+  MiniList,
+  MiniListDivider,
+  MiniListItem,
+} from '@skybrush/mui-components';
 
 import { getPreferredCommunicationChannelIndex } from '~/features/mission/selectors';
 import { togglePreferredChannel } from '~/features/mission/slice';

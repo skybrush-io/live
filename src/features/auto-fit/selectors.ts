@@ -15,9 +15,13 @@ import {
 } from '~/features/uavs/selectors';
 import { type RootState } from '~/store/reducers';
 
-import type { CoordinateSystemFittingProblem } from './types';
 import type { LonLat } from '~/utils/geography';
 import type { Coordinate2D, Coordinate2DPlus } from '~/utils/math';
+import type { CoordinateSystemFittingProblem } from './types';
+
+// This will include drones that are sleeping, but that's okay.
+// See discussion in https://github.com/skybrush-io/live/issues/80
+const getUAVIdsUsedForAutoFit = getActiveUAVIds;
 
 /**
  * Returns whether the system can estimate the show coordinate system based on
@@ -28,7 +32,7 @@ export function canEstimateShowCoordinateSystemFromActiveUAVs(
 ): boolean {
   return (
     isShowOutdoor(state) &&
-    getActiveUAVIds(state).length > 0 &&
+    getUAVIdsUsedForAutoFit(state).length > 0 &&
     getNumberOfDronesInShow(state) > 0
   );
 }
@@ -52,7 +56,7 @@ export function canEstimateShowCoordinateSystemFromActiveUAVs(
 export function getShowCoordinateSystemFittingProblemFromState(
   state: RootState
 ): CoordinateSystemFittingProblem {
-  const uavIds = getActiveUAVIds(state);
+  const uavIds = getUAVIdsUsedForAutoFit(state);
   const uavGPSCoordinates: Array<LonLat | undefined> = uavIds.map((uavId) => {
     const position = getCurrentGPSPositionByUavId(state, uavId);
     // position may be undefined if the UAV has no GPS fix yet
@@ -77,7 +81,7 @@ export function getShowCoordinateSystemFittingProblemFromState(
   // the headings to remain unspecified to prepare for compass-less operation
   n = undefinedIndices.length;
   for (let i = n - 1; i >= 0; i--) {
-    const index = undefinedIndices[i]!;
+    const index = undefinedIndices[i];
     uavIds.splice(index, 1);
     uavGPSCoordinates.splice(index, 1);
     uavHeadings.splice(index, 1);

@@ -1,43 +1,40 @@
 import Box from '@mui/material/Box';
-import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
-import React from 'react';
+
+import { makeStyles } from '@skybrush/app-theme-mui';
 
 import Colors from '~/components/colors';
 
 import { BatteryFormatter, DEFAULT_BATTERY_FORMATTER } from './battery';
 
-const useStyles = makeStyles(
-  (theme) => ({
-    root: {
-      marginTop: theme.spacing(0.5),
-      padding: '0 2px',
-      textAlign: 'center',
-      userSelect: 'none',
-      width: '100%',
-    },
+const useStyles = makeStyles((theme) => ({
+  root: {
+    // marginTop: theme.spacing(0.5),
+    padding: '0 2px',
+    textAlign: 'center',
+    userSelect: 'none',
+    width: '100%',
+  },
 
-    batteryFull: {
-      color: Colors.success,
-      fontWeight: 'bold',
-    },
+  batteryFull: {
+    color: Colors.success,
+    fontWeight: 'bold',
+  },
 
-    batteryWarning: {
-      backgroundColor: Colors.warning,
-      borderRadius: `${theme.shape.borderRadius * 2}px`,
-      color: theme.palette.getContrastText(Colors.warning),
-    },
+  batteryWarning: {
+    backgroundColor: Colors.warning,
+    borderRadius: `${theme.shape.borderRadius * 2}px`,
+    color: theme.palette.getContrastText(Colors.warning),
+  },
 
-    batteryError: {
-      backgroundColor: Colors.error,
-      borderRadius: `${theme.shape.borderRadius * 2}px`,
-      color: theme.palette.getContrastText(Colors.error),
-      fontWeight: 'bold',
-    },
-  }),
-  { name: 'BatteryIndicator' }
-);
+  batteryError: {
+    backgroundColor: Colors.error,
+    borderRadius: `${theme.shape.borderRadius * 2}px`,
+    color: theme.palette.getContrastText(Colors.error),
+    fontWeight: 'bold',
+  },
+}));
 
 /**
  * Presentational component for a battery charge indicator.

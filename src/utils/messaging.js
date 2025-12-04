@@ -13,6 +13,7 @@ import { UAV_SIGNAL_DURATION } from '~/features/settings/constants';
 import { shouldConfirmUAVOperation } from '~/features/settings/selectors';
 import { showNotification } from '~/features/snackbar/actions';
 import { MessageSemantics } from '~/features/snackbar/types';
+import { COMPASS_CALIB_TIMEOUT } from '~/features/uavs/constants';
 import messageHub from '~/message-hub';
 import store from '~/store';
 
@@ -84,14 +85,17 @@ const createConfirmationMessage = (operation, uavs, broadcast) => {
 };
 
 const performMassOperation =
-  ({
-    type,
-    name,
-    mapper = undefined,
-    reportFailure = true,
-    reportSuccess = true,
-    skipConfirmation = false,
-  }) =>
+  (
+    {
+      type,
+      name,
+      mapper = undefined,
+      reportFailure = true,
+      reportSuccess = true,
+      skipConfirmation = false,
+    },
+    responseHandlerOptions = undefined
+  ) =>
   async (uavs, args) => {
     // Do not bail out early if uavs is empty because in the args there might be
     // an option that intructs the server to do a broadcast to all UAVs.
@@ -118,11 +122,14 @@ const performMassOperation =
         }
       }
 
-      const responses = await messageHub.startAsyncOperation({
-        type,
-        ids: uavs,
-        ...finalArgs,
-      });
+      const responses = await messageHub.startAsyncOperation(
+        {
+          type,
+          ids: uavs,
+          ...finalArgs,
+        },
+        responseHandlerOptions
+      );
       processResponses(name, responses, { reportFailure, reportSuccess });
     } catch (error) {
       console.error(error);
@@ -260,8 +267,22 @@ export const turnMotorsOnForUAVs = performMassOperation({
   }),
 });
 
+export const calibrateCompassOnUAVs = performMassOperation(
+  {
+    type: 'UAV-CALIB',
+    name: 'Calibrate compass',
+    mapper: ({ transport, ...options }) => ({
+      // Ignore transport, it's not a valid argument.
+      ...options,
+      component: 'compass',
+    }),
+  },
+  { timeout: COMPASS_CALIB_TIMEOUT }
+);
+
 // moveUAVs() not in this map because it requires extra args
 const OPERATION_MAP = {
+  calibrateCompass: calibrateCompassOnUAVs,
   flashLight: flashLightOnUAVs,
   shutdown: shutdownUAVs,
   land: landUAVs,

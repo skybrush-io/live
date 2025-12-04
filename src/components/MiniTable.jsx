@@ -1,35 +1,30 @@
-import makeStyles from '@mui/styles/makeStyles';
 import isNil from 'lodash-es/isNil';
 import PropTypes from 'prop-types';
-import React from 'react';
 
-const useStyles = makeStyles(
-  (theme) => ({
-    root: {
-      lineHeight: 'normal',
-      fontSize: 'small',
-      width: '100%',
+import { makeStyles } from '@skybrush/app-theme-mui';
 
-      '& .muted': {
-        color: theme.palette.text.disabled,
-      },
+const useStyles = makeStyles((theme) => ({
+  root: {
+    lineHeight: 'normal',
+    fontSize: 'small',
+    width: '100%',
+
+    '& .muted': {
+      color: theme.palette.text.disabled,
     },
+  },
 
-    header: {
-      textTransform: 'uppercase',
-      color: theme.palette.text.secondary,
-    },
+  header: {
+    textTransform: 'uppercase',
+    color: theme.palette.text.secondary,
+  },
 
-    value: {
-      textAlign: 'right',
-    },
+  value: {
+    textAlign: 'right',
+  },
 
-    separator: {},
-  }),
-  {
-    name: 'MiniTable',
-  }
-);
+  separator: {},
+}));
 
 export const naText = <span className='muted'>—</span>;
 

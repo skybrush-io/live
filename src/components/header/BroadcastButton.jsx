@@ -1,13 +1,15 @@
-import makeStyles from '@mui/styles/makeStyles';
-import clsx from 'clsx';
+import { styled } from '@mui/material/styles';
+import { keyframes } from '@mui/styled-engine';
 import PropTypes from 'prop-types';
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import GenericHeaderButton from '@skybrush/mui-components/lib/GenericHeaderButton';
-import SidebarBadge from '@skybrush/mui-components/lib/SidebarBadge';
-import Tooltip from '@skybrush/mui-components/lib/Tooltip';
+import {
+  GenericHeaderButton,
+  SidebarBadge,
+  Tooltip,
+} from '@skybrush/mui-components';
 
 import Colors from '~/components/colors';
 import { isBroadcast } from '~/features/session/selectors';
@@ -16,41 +18,36 @@ import Campaign from '~/icons/Campaign';
 
 const isValidTimeoutLength = (value) => typeof value === 'number' && value > 0;
 
-const useStyles = makeStyles({
-  underlay: {
-    position: 'absolute',
-    right: '0px',
-    bottom: '0px',
-    left: '0px',
-
+const cooldownKeyframes = keyframes({
+  from: {
+    height: '100%',
+  },
+  to: {
     height: '0%',
-
-    backgroundColor: Colors.warning,
-    opacity: 0.5,
-  },
-
-  underlayActive: {
-    animationName: '$cooldown',
-    animationDuration: ({ timeoutLength }) =>
-      isValidTimeoutLength(timeoutLength) && Number.isFinite(timeoutLength)
-        ? `${timeoutLength}s`
-        : '100000s',
-    animationTimingFunction: 'linear',
-    animationIterationCount: '1',
-  },
-
-  '@keyframes cooldown': {
-    '0%': {
-      height: '100%',
-    },
-    '100%': {
-      height: '0%',
-    },
   },
 });
 
+const Underlay = styled('div')(({ active, timeoutLength }) => ({
+  position: 'absolute',
+  right: '0px',
+  bottom: '0px',
+  left: '0px',
+
+  height: '0%',
+
+  backgroundColor: Colors.warning,
+  opacity: 0.5,
+
+  animationName: active ? cooldownKeyframes : null,
+  animationDuration:
+    isValidTimeoutLength(timeoutLength) && Number.isFinite(timeoutLength)
+      ? `${timeoutLength}s`
+      : '100000s',
+  animationTimingFunction: 'linear',
+  animationIterationCount: '1',
+}));
+
 const BroadcastButton = ({ isBroadcast, setBroadcast, t, timeoutLength }) => {
-  const classes = useStyles({ timeoutLength });
   const timeout = useRef(undefined);
 
   useEffect(() => {
@@ -73,12 +70,7 @@ const BroadcastButton = ({ isBroadcast, setBroadcast, t, timeoutLength }) => {
       }
     >
       <GenericHeaderButton onClick={() => setBroadcast(!isBroadcast)}>
-        <div
-          className={clsx(
-            classes.underlay,
-            isBroadcast && classes.underlayActive
-          )}
-        />
+        <Underlay active={isBroadcast} timeoutLength={timeoutLength} />
         <SidebarBadge color={Colors.warning} visible={isBroadcast} />
         <div style={{ position: 'relative' }}>
           <Campaign />

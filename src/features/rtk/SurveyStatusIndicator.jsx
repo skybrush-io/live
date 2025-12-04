@@ -1,10 +1,9 @@
 import Box from '@mui/material/Box';
 import Fade from '@mui/material/Fade';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import LabeledStatusLight from '@skybrush/mui-components/lib/LabeledStatusLight';
+import { LabeledStatusLight } from '@skybrush/mui-components';
 
 import { formatSurveyAccuracy } from './utils';
 

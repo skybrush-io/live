@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import { bindActionCreators } from '@reduxjs/toolkit';
 import isNil from 'lodash-es/isNil';
 

@@ -1,11 +1,13 @@
+import ExpandMore from '@mui/icons-material/ExpandMore';
+import Accordion from '@mui/material/Accordion';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import AccordionSummary from '@mui/material/AccordionSummary';
 import Box from '@mui/material/Box';
 import FormGroup from '@mui/material/FormGroup';
-import type { Theme } from '@mui/material/styles';
-import makeStyles from '@mui/styles/makeStyles';
-import React, { useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import FormHeader from '@skybrush/mui-components/lib/FormHeader';
+import { makeStyles } from '@skybrush/app-theme-mui';
 
 import {
   SimpleDistanceField,
@@ -17,6 +19,9 @@ import type {
   OptionalShowAdaptParameters,
   ShowAdaptParameters,
 } from './actions';
+import LightConfigurationForm, {
+  type LightConfigurationProps,
+} from './LightConfigurationForm';
 
 const defaultAdaptParameters: ShowAdaptParameters = {
   minDistance: 2,
@@ -26,10 +31,15 @@ const defaultAdaptParameters: ShowAdaptParameters = {
   takeoffDuration: 0,
 };
 
-const useStyles = makeStyles((theme: Theme) => ({
-  formGroup: {
+const useStyles = makeStyles((theme) => ({
+  accordionDetails: {
+    display: 'flex',
+    flexDirection: 'column',
     gap: theme.spacing(2),
-    marginTop: theme.spacing(-2),
+    '& .react-colorful': {
+      height: '120px',
+      width: '100%',
+    },
   },
 }));
 
@@ -42,7 +52,7 @@ function adaptParametersValid(parameters: ShowAdaptParameters): boolean {
     parameters.minDistance > 0 &&
     parameters.altitude > 0 &&
     parameters.verticalVelocity > 0 &&
-    parameters.horizontalVelocity > 0 && 
+    parameters.horizontalVelocity > 0 &&
     parameters.takeoffDuration >= 0
   );
 }
@@ -68,7 +78,6 @@ function parseVelocityMpS(value: string): number {
   return Number.parseFloat(value);
 }
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export function useAdaptParametersFormState(
   defaultParameters?: OptionalShowAdaptParameters,
   onChange?: () => void
@@ -169,12 +178,13 @@ export function useAdaptParametersFormState(
 type Props = Readonly<
   ReturnType<typeof useAdaptParametersFormState> & {
     disabled: boolean;
-  }
+  } & { lights: LightConfigurationProps }
 >;
 
-const AdaptParametersForm = (props: Props): JSX.Element => {
+const AdaptParametersForm = (props: Props): React.JSX.Element => {
   const {
     disabled,
+    lights,
     parameters,
     onMinDistanceChanged,
     onAltitudeChanged,
@@ -186,55 +196,86 @@ const AdaptParametersForm = (props: Props): JSX.Element => {
     keyPrefix: 'showConfiguratorDialog.adaptParameters',
   });
   const styles = useStyles();
+  const [shownSection, setShownSection] = useState<
+    'none' | 'parameters' | 'lights'
+  >('parameters');
   return (
     <Box>
-      <FormGroup className={styles.formGroup}>
-        <FormHeader>{t('section.parameters')}</FormHeader>
-        <SimpleDistanceField
-          label={t('form.minDistance.label')}
-          min={0.1}
-          max={100}
-          value={parameters.minDistance}
-          disabled={disabled}
-          helperText={t('form.minDistance.help')}
-          onChange={onMinDistanceChanged}
-        />
-        <SimpleDistanceField
-          label={t('form.altitude.label')}
-          min={1}
-          max={100}
-          value={parameters.altitude}
-          disabled={disabled}
-          helperText={t('form.altitude.help')}
-          onChange={onAltitudeChanged}
-        />
-        <SimpleVelocityField
-          label={t('form.horizontalVelocity.label')}
-          min={0.1}
-          max={100}
-          value={parameters.horizontalVelocity}
-          disabled={disabled}
-          helperText={t('form.horizontalVelocity.help')}
-          onChange={onHorizontalVelocityChanged}
-        />
-        <SimpleVelocityField
-          label={t('form.verticalVelocity.label')}
-          min={0.1}
-          max={100}
-          value={parameters.verticalVelocity}
-          disabled={disabled}
-          helperText={t('form.verticalVelocity.help')}
-          onChange={onVerticalVelocityChanged}
-        />
-        <SimpleDurationField
-          label={t('form.takeoffDuration.label')}
-          min={0}
-          max={300}
-          value={parameters.takeoffDuration}
-          disabled={disabled}
-          helperText={t('form.takeoffDuration.help')}
-          onChange={onTakeoffDurationChanged}
-        />
+      <FormGroup>
+        <Accordion
+          expanded={shownSection === 'parameters'}
+          style={{ margin: 0 }}
+          onChange={() => {
+            setShownSection(
+              shownSection === 'parameters' ? 'none' : 'parameters'
+            );
+          }}
+        >
+          <AccordionSummary expandIcon={<ExpandMore />}>
+            {t('panel.trajectories')}
+          </AccordionSummary>
+          <AccordionDetails className={styles.accordionDetails}>
+            <SimpleDistanceField
+              label={t('form.minDistance.label')}
+              min={0.1}
+              max={100}
+              value={parameters.minDistance}
+              disabled={disabled}
+              helperText={t('form.minDistance.help')}
+              onChange={onMinDistanceChanged}
+            />
+            <SimpleDistanceField
+              label={t('form.altitude.label')}
+              min={1}
+              max={100}
+              value={parameters.altitude}
+              disabled={disabled}
+              helperText={t('form.altitude.help')}
+              onChange={onAltitudeChanged}
+            />
+            <SimpleVelocityField
+              label={t('form.horizontalVelocity.label')}
+              min={0.1}
+              max={100}
+              value={parameters.horizontalVelocity}
+              disabled={disabled}
+              helperText={t('form.horizontalVelocity.help')}
+              onChange={onHorizontalVelocityChanged}
+            />
+            <SimpleVelocityField
+              label={t('form.verticalVelocity.label')}
+              min={0.1}
+              max={100}
+              value={parameters.verticalVelocity}
+              disabled={disabled}
+              helperText={t('form.verticalVelocity.help')}
+              onChange={onVerticalVelocityChanged}
+            />
+            <SimpleDurationField
+              label={t('form.takeoffDuration.label')}
+              min={0}
+              max={300}
+              value={parameters.takeoffDuration}
+              disabled={disabled}
+              helperText={t('form.takeoffDuration.help')}
+              onChange={onTakeoffDurationChanged}
+            />
+          </AccordionDetails>
+        </Accordion>
+        <Accordion
+          expanded={shownSection === 'lights'}
+          style={{ margin: 0 }}
+          onChange={() => {
+            setShownSection(shownSection === 'lights' ? 'none' : 'lights');
+          }}
+        >
+          <AccordionSummary expandIcon={<ExpandMore />}>
+            {t('panel.lights')}
+          </AccordionSummary>
+          <AccordionDetails className={styles.accordionDetails}>
+            <LightConfigurationForm disabled={disabled} {...lights} />
+          </AccordionDetails>
+        </Accordion>
       </FormGroup>
     </Box>
   );

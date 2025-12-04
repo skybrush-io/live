@@ -2,11 +2,10 @@ import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import Tab from '@mui/material/Tab';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import DialogTabs from '@skybrush/mui-components/lib/DialogTabs';
+import { DialogTabs } from '@skybrush/mui-components';
 
 import {
   closeAppSettingsDialog,

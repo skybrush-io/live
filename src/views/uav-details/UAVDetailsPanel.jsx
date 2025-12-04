@@ -1,5 +1,4 @@
 import Box from '@mui/material/Box';
-import React from 'react';
 
 import UAVDetailsPanelBody from './UAVDetailsPanelBody';
 import UAVDetailsPanelHeader from './UAVDetailsPanelHeader';

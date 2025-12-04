@@ -1,12 +1,11 @@
 import Box from '@mui/material/Box';
-import makeStyles from '@mui/styles/makeStyles';
-import StatusPill from '@skybrush/mui-components/lib/StatusPill';
-import Tooltip from '@skybrush/mui-components/lib/Tooltip';
 import clsx from 'clsx';
 import isNil from 'lodash-es/isNil';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { connect } from 'react-redux';
+
+import { makeStyles } from '@skybrush/app-theme-mui';
+import { StatusPill, Tooltip } from '@skybrush/mui-components';
 
 import { Status } from '~/components/semantics';
 

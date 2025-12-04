@@ -5,13 +5,13 @@ import DialogActions from '@mui/material/DialogActions';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import type { Theme } from '@mui/material/styles';
-import makeStyles from '@mui/styles/makeStyles';
 import type { TFunction } from 'i18next';
-import React, { useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { withTranslation } from 'react-i18next';
-import { batch, connect } from 'react-redux';
+import { connect } from 'react-redux';
 
-import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
+import { makeStyles } from '@skybrush/app-theme-mui';
+import { DraggableDialog } from '@skybrush/mui-components';
 import type { ValidationSettings } from '@skybrush/show-format';
 
 import DialogHelpIcon from '~/components/DialogHelpIcon';
@@ -31,10 +31,12 @@ import AdaptParametersForm, {
 } from './AdaptParametersForm';
 import AdaptReviewForm from './AdaptReviewForm';
 import InteractionHints from './InteractionHints';
+import { useLightConfigurationFormState } from './LightConfigurationForm';
 import Map from './ShowConfiguratorMap';
 import {
   adaptShow,
   adjustHomePositionsToDronePositions,
+  type LightEffectConfiguration,
   saveAdaptedShow,
   type ShowAdaptParameters,
 } from './actions';
@@ -51,7 +53,6 @@ import { closeDialog, setAdaptResult, setDronesVisible } from './state';
 const useStyles = makeStyles((theme: Theme) => ({
   /* Ugly hack to move the sidebar to the right */
   root: {
-    // eslint-disable-next-line @typescript-eslint/naming-convention
     '& div.MuiDialog-paper > div > div:first-child': {
       order: 100,
       boxShadow: '2px 0 6px -2px inset rgba(0, 0, 0, 0.54)',
@@ -99,7 +100,10 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 type DispatchProps = Readonly<{
-  adaptShow: (parameters: ShowAdaptParameters) => void;
+  adaptShow: (
+    parameters: ShowAdaptParameters,
+    lights: LightEffectConfiguration
+  ) => void;
   adjustHomePositionsToDronePositions: () => void;
   approveAdaptedShow: (
     base64Blob: string,
@@ -130,7 +134,6 @@ type Props = StateProps &
 
 type AdaptStage = 'config' | 'review';
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 function useOwnState(props: Props) {
   const {
     adaptShow,
@@ -155,6 +158,8 @@ function useOwnState(props: Props) {
         },
     resetAdaptResult
   );
+  const { configuration: lightConfig, ...lights } =
+    useLightConfigurationFormState(resetAdaptResult);
 
   const back = useCallback(() => {
     if (backDisabled) {
@@ -189,7 +194,7 @@ function useOwnState(props: Props) {
       setStage('review');
 
       if (adaptedBase64Show === undefined) {
-        adaptShow(adaptParameters.parameters);
+        adaptShow(adaptParameters.parameters, lightConfig);
       }
     } else if (stage === 'review') {
       if (adaptedBase64Show === undefined) {
@@ -213,6 +218,7 @@ function useOwnState(props: Props) {
     approveAdaptedShow,
     closeDialog,
     coordinateSystem,
+    lightConfig,
     stage,
     submitDisabled,
   ]);
@@ -224,13 +230,14 @@ function useOwnState(props: Props) {
     approveAdaptedShow,
     back,
     coordinateSystem,
+    lights,
     stage,
     submit,
     submitDisabled,
   };
 }
 
-const ShowConfiguratorDialog = (props: Props): JSX.Element => {
+const ShowConfiguratorDialog = (props: Props): React.JSX.Element => {
   const {
     adjustHomePositionsToDronePositionsEnabled,
     adjustHomePositionsToDronePositions,
@@ -242,7 +249,7 @@ const ShowConfiguratorDialog = (props: Props): JSX.Element => {
     t,
   } = props;
   const styles = useStyles();
-  const { adaptParameters, back, stage, submit, submitDisabled } =
+  const { adaptParameters, back, lights, stage, submit, submitDisabled } =
     useOwnState(props);
 
   return (
@@ -257,6 +264,7 @@ const ShowConfiguratorDialog = (props: Props): JSX.Element => {
         <Box className={styles.sidebarContent}>
           <AdaptParametersForm
             {...adaptParameters}
+            lights={lights}
             disabled={stage !== 'config'}
           />
           <FormControlLabel
@@ -301,7 +309,6 @@ const ShowConfiguratorDialog = (props: Props): JSX.Element => {
           content={t(`showConfiguratorDialog.help.${stage}`)
             .split('\n')
             .map((item, idx) => (
-              // eslint-disable-next-line react/no-array-index-key
               <p key={idx}>{item}</p>
             ))}
         />
@@ -338,8 +345,9 @@ const ShowConfiguratorDialog = (props: Props): JSX.Element => {
  * The reason for this is to correctly initialize the dialog's state
  * when it is opened.
  */
-// eslint-disable-next-line @typescript-eslint/ban-types
-const ShowConfiguratorDialogWrapper = (props: Props): JSX.Element | null => {
+const ShowConfiguratorDialogWrapper = (
+  props: Props
+): React.JSX.Element | null => {
   const { open, ...rest } = props;
   return open ? <ShowConfiguratorDialog open {...rest} /> : null;
 };
@@ -360,8 +368,11 @@ const ConnectedShowConfiguratorDialogWrapper = connect(
   }),
   // -- map dispatch to props
   (dispatch: AppDispatch) => ({
-    adaptShow: (params: ShowAdaptParameters): void => {
-      dispatch(adaptShow(params));
+    adaptShow: (
+      params: ShowAdaptParameters,
+      lights: LightEffectConfiguration
+    ): void => {
+      dispatch(adaptShow(params, lights));
     },
     adjustHomePositionsToDronePositions: (): void => {
       dispatch(adjustHomePositionsToDronePositions());
@@ -371,12 +382,9 @@ const ConnectedShowConfiguratorDialogWrapper = connect(
       showOrigin: LonLat,
       showOrientation: string
     ): void => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-      batch((): void => {
-        dispatch(setOutdoorShowOrigin(showOrigin));
-        dispatch(setOutdoorShowOrientation(showOrientation));
-        dispatch(loadBase64EncodedShow(base64Blob));
-      });
+      dispatch(setOutdoorShowOrigin(showOrigin));
+      dispatch(setOutdoorShowOrientation(showOrientation));
+      dispatch(loadBase64EncodedShow(base64Blob));
     },
     closeDialog: (): void => {
       dispatch(closeDialog());

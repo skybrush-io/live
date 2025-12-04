@@ -7,7 +7,7 @@ import { MessageSemantics } from './types';
  * semantics value.
  */
 export function semanticsFromSeverity(severity: Severity): MessageSemantics {
-  switch ((severity || '').toLowerCase()) {
+  switch (severity) {
     case Severity.ERROR:
     case Severity.CRITICAL:
       return MessageSemantics.ERROR;

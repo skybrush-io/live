@@ -1,9 +1,8 @@
 import Tab from '@mui/material/Tab';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { connect } from 'react-redux';
 
-import DialogTabs from '@skybrush/mui-components/lib/DialogTabs';
+import { DialogTabs } from '@skybrush/mui-components';
 
 import {
   getSelectedTabInDockDetailsDialog,

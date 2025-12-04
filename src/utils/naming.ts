@@ -44,7 +44,6 @@ export function chooseUniqueId(
   let index = 0;
   let candidate: string;
 
-  /* eslint-disable no-constant-condition */
   while (true) {
     index++;
     candidate = `${idProposal}_${index}`;
@@ -57,7 +56,6 @@ export function chooseUniqueId(
       return candidate;
     }
   }
-  /* eslint-enable no-constant-condition */
 }
 
 /**
@@ -95,12 +93,11 @@ export function chooseUniqueName(
 
   const match = nameProposal.match(/^(.*)\s+(\d+)$/);
   // NOTE: Bang justified by the `(.*)` group being present if `match` exists
-  const nameBase = match ? match[1]! : nameProposal.trimEnd();
+  const nameBase = match ? match[1] : nameProposal.trimEnd();
   // NOTE: Bang justified by the `(\d+)` group being present if `match` exists
-  let index = match ? Number.parseInt(match[2]!, 10) : 0;
+  let index = match ? Number.parseInt(match[2], 10) : 0;
   let candidate: string;
 
-  /* eslint-disable no-constant-condition */
   while (true) {
     index++;
     candidate = `${nameBase} ${index}`;
@@ -108,7 +105,6 @@ export function chooseUniqueName(
       return candidate;
     }
   }
-  /* eslint-enable no-constant-condition */
 }
 
 /**

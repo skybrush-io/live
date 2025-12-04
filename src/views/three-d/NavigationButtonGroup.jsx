@@ -3,10 +3,9 @@ import ZoomOut from '@mui/icons-material/ZoomOut';
 import IconButton from '@mui/material/IconButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { withTranslation } from 'react-i18next';
 
-import Tooltip from '@skybrush/mui-components/lib/Tooltip';
+import { Tooltip } from '@skybrush/mui-components';
 
 import ToggleButton from '~/components/ToggleButton';
 import ToolbarDivider from '~/components/ToolbarDivider';

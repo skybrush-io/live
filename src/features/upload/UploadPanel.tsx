@@ -10,15 +10,15 @@ import Fade from '@mui/material/Fade';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import IconButton from '@mui/material/IconButton';
 import type { Theme } from '@mui/material/styles';
-import makeStyles from '@mui/styles/makeStyles';
-import React from 'react';
+import type React from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import { Colors } from '@skybrush/app-theme-mui';
-import LabeledStatusLight, {
+import { Colors, makeStyles } from '@skybrush/app-theme-mui';
+import {
+  LabeledStatusLight,
   type LabeledStatusLightProps,
-} from '@skybrush/mui-components/lib/LabeledStatusLight';
+} from '@skybrush/mui-components';
 
 import { Status } from '~/components/semantics';
 import {
@@ -42,9 +42,9 @@ import StartUploadButton from '~/features/upload/StartUploadButton';
 import UploadProgressBar from '~/features/upload/UploadProgressBar';
 import UploadStatusLegend from '~/features/upload/UploadStatusLegend';
 import UploadStatusLights from '~/features/upload/UploadStatusLights';
+import { usePeriodicRefresh } from '~/hooks';
 import type { AppThunk, RootState } from '~/store/reducers';
 import { formatDurationAsText } from '~/utils/formatting';
-import { usePeriodicRefresh } from '~/hooks';
 
 type UploadResultIndicatorProps = Omit<LabeledStatusLightProps, 'children'> &
   Readonly<{
@@ -62,7 +62,7 @@ const UploadResultIndicator = ({
   result,
   running,
   ...rest
-}: UploadResultIndicatorProps): JSX.Element => {
+}: UploadResultIndicatorProps): React.JSX.Element => {
   const { t } = useTranslation();
 
   let status;
@@ -171,7 +171,7 @@ const UploadPanel = ({
   onToggleFlashFailed,
   running = false,
   showLastUploadResult = false,
-}: UploadPanelProps): JSX.Element => {
+}: UploadPanelProps): React.JSX.Element => {
   const classes = useStyles();
   const { t } = useTranslation();
 

@@ -7,13 +7,13 @@ import flock from '~/flock';
 import { isUavId, uavIdToGlobalId } from '~/model/identifiers';
 import { getSelection } from '~/selectors/selection';
 
+import type { PayloadAction } from '@reduxjs/toolkit';
+import type { AppThunk } from '~/store/reducers';
 import {
   getSelectedUAVIds,
   getUAVIdList,
   getUAVIdsMarkedAsGone,
 } from './selectors';
-import type { AppThunk } from '~/store/reducers';
-import type { PayloadAction } from '@reduxjs/toolkit';
 
 /**
  * Action factory that returns a thunk that requests the global flock object
@@ -95,6 +95,6 @@ export const selectSingleUAVUnlessAmbiguous =
 
     if (Array.isArray(uavIds) && uavIds.length === 1) {
       const otherSelection = reject(getSelection(state), isUavId);
-      dispatch(setSelection([...otherSelection, uavIdToGlobalId(uavIds[0]!)]));
+      dispatch(setSelection([...otherSelection, uavIdToGlobalId(uavIds[0])]));
     }
   };

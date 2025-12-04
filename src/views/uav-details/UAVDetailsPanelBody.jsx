@@ -1,8 +1,7 @@
 import PropTypes from 'prop-types';
-import React from 'react';
 import { connect } from 'react-redux';
 
-import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
+import { BackgroundHint } from '@skybrush/mui-components';
 
 import MessagesPanel from '~/components/chat/MessagesPanel';
 import UAVLogsPanel from '~/features/uavs/UAVLogsPanel';

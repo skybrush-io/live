@@ -3,11 +3,10 @@ import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormGroup from '@mui/material/FormGroup';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import FormHeader from '@skybrush/mui-components/lib/FormHeader';
+import { FormHeader } from '@skybrush/mui-components';
 
 import XYZFields from '~/components/XYZFields';
 import {

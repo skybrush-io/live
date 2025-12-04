@@ -33,7 +33,7 @@ export async function adaptShow(hub, show, transformations, coordinateSystem) {
     },
     // Use a very long timeout for this message as the transformations
     // require a lot of computation.
-    { timeout: 60 }
+    { timeout: 600 }
   );
 
   if (response?.body?.type === 'X-SHOW-ADAPT') {
@@ -481,3 +481,20 @@ export class QueryHandler {
     }
   }
 }
+
+// TODO: Replace with the following (or something better)
+//       when moving to TypeScript:
+// export type ConstructedQueryHandler = Record<
+//   keyof QueryHandler['_queries'],
+//   (...args: any[]) => Promise<any>
+// >;
+/**
+ * @typedef {{
+ *   [Q in keyof QueryHandler['_queries']]: (...args: any[]) => Promise<any>
+ * }} ConstructedQueryHandler
+ */
+
+/**
+ * @type {new (hub: MessageHub) => ConstructedQueryHandler}
+ */
+export const ConstructedQueryHandler = QueryHandler;

@@ -20,11 +20,6 @@ import arrify from 'arrify';
  * if the Flockwave protocol changes.
  */
 
-export type MessageBody = {
-  type: string;
-  [k: string]: unknown;
-};
-
 /**
  * Creates an ASYNC-CANCEL (cancellation request) message.
  *

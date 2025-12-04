@@ -1,10 +1,9 @@
 import Security from '@mui/icons-material/Security';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { Translation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import GenericHeaderButton from '@skybrush/mui-components/lib/GenericHeaderButton';
+import { GenericHeaderButton } from '@skybrush/mui-components';
 
 import GeofenceStatusBadge from '~/components/badges/GeofenceStatusBadge';
 import { openSafetyDialog } from '~/features/safety/slice';

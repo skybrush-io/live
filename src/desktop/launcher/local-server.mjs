@@ -24,12 +24,16 @@ const events = makeEventProxy('localServer');
 
 /**
  * The local executable of the Skybrush server on this machine.
+ *
+ * @type {string | undefined}
  */
 let localServerPath;
 
 /**
  * Deferred that will resolve to the local executable of the Skybrush server
  * on this machine.
+ *
+ * @type {import("p-defer").DeferredPromise<string>}
  */
 let localServerPathDeferred = pDefer();
 
@@ -37,12 +41,16 @@ let localServerPathDeferred = pDefer();
  * The process representing the launched Skybrush server instance on this
  * machine. We only support one Skybrush server instance per Skybrush Live
  * process.
+ *
+ * @type {import("child_process").ChildProcess | undefined}
  */
 let localServerProcess;
 
 /**
  * Executable path and arguments for the server process that is currently
  * running, or null if no process is running now.
+ *
+ * @type {string[] | undefined}
  */
 let localServerProcessArgs;
 
@@ -129,7 +137,7 @@ const pathsRelatedToAppLocation = Object.freeze(
  * @param {string[]} options.args    additional arguments to pass to the server
  *        when launching
  * @param {number}   options.port    the port to launch the server on
- * @return a tuple consisting of the path and the arguments of the server to launch
+ * @return {[string, string[]]} a tuple consisting of the path and the arguments of the server to launch
  */
 const deriveServerPathAndArgumentsFromOptions = async (options) => {
   const { args, timeout } = {
@@ -152,12 +160,23 @@ const deriveServerPathAndArgumentsFromOptions = async (options) => {
 };
 
 /**
+ * @typedef {Object} LaunchOptions
+ * @param {string[]} args - additional arguments to pass to the server when launching
+ * @param {number} port - the port to launch the server on
+ * @param {number} timeout - number of milliseconds to wait for the server detection to
+ *        complete and the server to launch
+ */
+
+/**
  * Ensures that a Skybrush server executable with the given arguments is up and
  * running. Re-uses an already running instance if needed.
+ *
+ * @param {LaunchOptions} options - options to tweak how the server is launched
+ * @returns {Promise<void>} a promise that resolves when the server is running
  */
 export const ensureRunning = async (options) => {
   const [serverPath, realArgs] =
-    await deriveServerPathAndArgumentsFromOptions(options);
+    deriveServerPathAndArgumentsFromOptions(options);
   const value = [serverPath, ...realArgs];
 
   if (
@@ -178,7 +197,7 @@ export const ensureRunning = async (options) => {
 /**
  * Launches the local Skybrush server executable with the given arguments.
  *
- * @param {Object}   options         options to tweak how the server is launched
+ * @param {LaunchOptions} options - options to tweak how the server is launched
  * @param {string[]} options.args    additional arguments to pass to the server
  *        when launching
  * @param {number}   options.port    the port to launch the server on
@@ -192,7 +211,7 @@ const launch = async (options) => {
   }
 
   const [serverPath, realArgs] =
-    await deriveServerPathAndArgumentsFromOptions(options);
+    deriveServerPathAndArgumentsFromOptions(options);
 
   /* on Windows we might use batch files for launching, and those need a shell */
   const needsShell =
@@ -283,9 +302,10 @@ const launch = async (options) => {
  * can launch the executable later if needed.
  *
  * @param {string[]} paths    custom search folders to scan
- * @return {Promise<string>}  a promise that resolves to the full path of the
+ * @return {Promise<string | null>}  a promise that resolves to the full path of the
  *         server executable if found and `null` if it is not found
  */
+// eslint-disable-next-line @typescript-eslint/require-await
 export const search = async (paths) => {
   // Do _not_ use the async version of which here. It does not have a nothrow
   // option, and when it throws an exception, it will be caught by
@@ -316,6 +336,13 @@ export const search = async (paths) => {
 /**
  * Shows a dialog that allows the user to select a single directory that will be
  * scanned for the server executable.
+ *
+ * @param {string | null} defaultPath - the default path to open in the dialog,
+ *        or null to use the system default
+ * @param {import("electron").BrowserWindow} browserWindow - the browser window to
+ *        show the dialog for
+ * @return {Promise<string | null>} a promise that resolves to the selected path,
+ *         or null if the user cancelled the dialog
  */
 export const selectPath = async (defaultPath, browserWindow) => {
   const options = {

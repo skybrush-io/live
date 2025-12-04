@@ -4,7 +4,7 @@ import { useTheme } from '@mui/material/styles';
 import { createSelector } from '@reduxjs/toolkit';
 import isNil from 'lodash-es/isNil';
 import PropTypes from 'prop-types';
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { connect } from 'react-redux';
 import { useHarmonicIntervalFn, useUpdate } from 'react-use';
 

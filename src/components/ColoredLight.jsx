@@ -1,39 +1,36 @@
 import Box from '@mui/material/Box';
-import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
-import React from 'react';
 
-const useStyles = makeStyles(
-  (theme) => ({
-    root: {
-      border: '1px solid rgba(0, 0, 0, 0.3)',
-      borderRadius: '50%',
-      color: 'black',
-      height: '1em',
-      minWidth:
-        '1em' /* needed for narrow cases; setting width alone is not enough */,
-      marginRight: theme.spacing(2),
-      position: 'relative',
-      width: '1em',
-    },
+import { makeStyles } from '@skybrush/app-theme-mui';
 
-    inline: {
-      display: 'inline-block',
-      marginRight: [0, '!important'],
-      verticalAlign: 'sub',
-    },
+const useStyles = makeStyles((theme) => ({
+  root: {
+    border: '1px solid rgba(0, 0, 0, 0.3)',
+    borderRadius: '50%',
+    color: 'black',
+    height: '1em',
+    minWidth:
+      '1em' /* needed for narrow cases; setting width alone is not enough */,
+    marginRight: theme.spacing(2),
+    position: 'relative',
+    width: '1em',
+  },
 
-    'size-small': {
-      fontSize: '0.75em',
-    },
+  inline: {
+    display: 'inline-block',
+    marginRight: '0px !important',
+    verticalAlign: 'sub',
+  },
 
-    'size-large': {
-      fontSize: '1.25em',
-    },
-  }),
-  { name: 'ColoredLight' }
-);
+  'size-small': {
+    fontSize: '0.75em',
+  },
+
+  'size-large': {
+    fontSize: '1.25em',
+  },
+}));
 
 /**
  * Small component resembling an LED light that can be set to an arbitrary

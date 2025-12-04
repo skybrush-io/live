@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-types */
 /**
  * @file Component that displays the status of the known UAVs in a Skybrush
  * flock.
@@ -8,15 +7,11 @@ import Delete from '@mui/icons-material/Delete';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import type { Theme } from '@mui/material/styles';
-import makeStyles from '@mui/styles/makeStyles';
-import {
-  bindActionCreators,
-  type AnyAction,
-  type Store,
-} from '@reduxjs/toolkit';
+import { bindActionCreators, type AnyAction } from '@reduxjs/toolkit';
 import isNil from 'lodash-es/isNil';
 import { nanoid } from 'nanoid';
-import React, {
+import type React from 'react';
+import {
   useCallback,
   useEffect,
   useMemo,
@@ -27,7 +22,7 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { connect, useStore } from 'react-redux';
 
-import { isThemeDark } from '@skybrush/app-theme-mui';
+import { isThemeDark, makeStyles } from '@skybrush/app-theme-mui';
 
 import { createSelectionHandlerThunk } from '~/components/helpers/lists';
 import FadeAndSlide from '~/components/transitions/FadeAndSlide';
@@ -78,40 +73,31 @@ import { getDisplayedItems, getGlobalIdsOfDisplayedItems } from './selectors';
 import type { Item } from './types';
 import { getSelectedUAVIdsAndMissionSlotIds, itemToGlobalId } from './utils';
 
-const useListStyles = makeStyles(
-  (theme: Theme) => ({
-    appBar: {
-      backgroundColor: isThemeDark(theme)
-        ? '#424242'
-        : theme.palette.background.paper,
-      height: 48,
-    },
+const useListStyles = makeStyles((theme: Theme) => ({
+  appBar: {
+    backgroundColor: isThemeDark(theme)
+      ? '#424242'
+      : theme.palette.background.paper,
+    height: 48,
+  },
 
-    toolbar: {
-      position: 'absolute',
-      gap: theme.spacing(0.75),
-      left: 0,
-      right: 0,
-      top: 0,
-    },
+  toolbar: {
+    position: 'absolute',
+    gap: theme.spacing(0.75),
+    left: 0,
+    right: 0,
+    top: 0,
+  },
 
-    gridItem: {
-      padding: theme.spacing(1),
-      height: '100%',
-    },
+  gridItem: {
+    padding: theme.spacing(1),
+    height: '100%',
+  },
 
-    listItem: {
-      padding: theme.spacing(0.5),
-      borderBottom: `1px solid ${theme.palette.divider}`,
-
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      '&:first-child': {
-        borderTop: `1px solid ${theme.palette.divider}`,
-      },
-    },
-  }),
-  { name: 'UAVList' }
-);
+  listItem: {
+    borderBottom: `1px solid ${theme.palette.divider}`,
+  },
+}));
 
 type ItemRendererOptions = {
   className?: string;
@@ -133,23 +119,34 @@ type ItemRendererOptions = {
  */
 const deletionMarker: Item = [undefined, undefined, <Delete key='__delete' />];
 
+const keyForItem = ([
+  uavId,
+  missionIndex,
+  label,
+]: Item): React.Attributes['key'] =>
+  uavId ??
+  (missionIndex !== undefined
+    ? formatMissionId(missionIndex)
+    : typeof label === 'string'
+      ? label
+      : label?.key);
+
 /**
  * Helper function to create a single item in the grid view of drone avatars and
  * placeholders.
  */
-const createGridItemRenderer =
-  ({
-    className,
-    draggable,
-    isInEditMode,
-    mappingSlotBeingEdited,
-    onDropped,
-    onSelectedItem,
-    onStartEditing,
-    selection,
-    showMissionIds,
-  }: ItemRendererOptions) =>
-  (item: Item): JSX.Element => {
+const createGridItemRenderer = ({
+  className,
+  draggable,
+  isInEditMode,
+  mappingSlotBeingEdited,
+  onDropped,
+  onSelectedItem,
+  onStartEditing,
+  selection,
+  showMissionIds,
+}: ItemRendererOptions) =>
+  function GridItemRenderer(item: Item): React.JSX.Element {
     const [uavId, missionIndex, proposedLabel] = item;
     const itemId = itemToGlobalId(item);
     const editingThisItem =
@@ -185,11 +182,9 @@ const createGridItemRenderer =
           : uavId
         : uavId);
 
-    const key = uavId ?? `placeholder-${String(label) || 'null'}`;
-
     return uavId === undefined ? (
       <DroneListItem
-        key={key}
+        key={keyForItem(item)}
         className={className}
         onDrop={onDropped ? onDropped(missionIndex) : undefined}
         {...listItemProps}
@@ -203,7 +198,7 @@ const createGridItemRenderer =
       </DroneListItem>
     ) : (
       <DroneListItem
-        key={key}
+        key={keyForItem(item)}
         className={className}
         draggable={draggable}
         uavId={uavId}
@@ -224,18 +219,17 @@ const createGridItemRenderer =
  * Helper function to create a single item in the list view of drone avatars and
  * placeholders.
  */
-const createListItemRenderer =
-  ({
-    className,
-    isInEditMode,
-    mappingSlotBeingEdited,
-    onDropped,
-    onSelectedItem,
-    onStartEditing,
-    selection,
-    showMissionIds,
-  }: ItemRendererOptions) =>
-  (item: Item): JSX.Element | null => {
+const createListItemRenderer = ({
+  className,
+  isInEditMode,
+  mappingSlotBeingEdited,
+  onDropped,
+  onSelectedItem,
+  onStartEditing,
+  selection,
+  showMissionIds,
+}: ItemRendererOptions) =>
+  function ListItemRenderer(item: Item): React.JSX.Element | null {
     if (item === deletionMarker) {
       return null;
     }
@@ -267,14 +261,18 @@ const createListItemRenderer =
       : showMissionIds
         ? uavId
         : formattedMissionIndex;
-    const key = uavId ?? `placeholder-${String(label) || 'null'}`;
 
     return (
-      <DroneListItem key={key} stretch uavId={uavId} {...listItemProps}>
+      <DroneListItem
+        key={keyForItem(item)}
+        stretch
+        uavId={uavId}
+        {...listItemProps}
+      >
         {editingThisItem && <MappingSlotEditorForList />}
         <DroneStatusLine
           id={uavId}
-          label={String(label)}
+          label={typeof label === 'string' ? label : undefined}
           secondaryLabel={secondaryLabel}
         />
       </DroneListItem>
@@ -309,7 +307,7 @@ const UAVListPresentation = ({
   onSelectItem,
   selection,
   showMissionIds,
-}: UAVListPresentationProps): JSX.Element => {
+}: UAVListPresentationProps): React.JSX.Element => {
   // Regular styling stuff
   const classes = useListStyles();
 
@@ -467,7 +465,6 @@ const UAVList = connect(
   () => {
     const containerDOMNodeId = `__keyboardNav-${nanoid()}`;
 
-    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
     return (dispatch) => ({
       containerDOMNodeId,
       dispatch,

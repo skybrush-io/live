@@ -3,8 +3,8 @@
  * objects on the user interface.
  */
 
-import formatCoords from 'formatcoords';
 import { createSelector } from '@reduxjs/toolkit';
+import formatCoords from 'formatcoords';
 
 import { CoordinateFormat } from '~/model/settings';
 import type { AppSelector, RootState } from '~/store/reducers';
@@ -64,31 +64,31 @@ const _formattersForLongitudeOnlyFormat: Record<
   [CoordinateFormat.DEGREES]: (lon) =>
     formatCoords(0, lon)
       .format('Xdd', { decimalPlaces: 7, latLonSeparator: '|' })
-      .split('|')[1]!
+      .split('|')[1]
       .replace(trailingZeroRegExp, '$1'),
   [CoordinateFormat.DEGREES_MINUTES]: (lon) =>
     formatCoords(0, lon)
       .format('XDDmm', { decimalPlaces: 4, latLonSeparator: '|' })
-      .split('|')[1]!
+      .split('|')[1]
       .replace(trailingZeroRegExp, '$1'),
   [CoordinateFormat.DEGREES_MINUTES_SECONDS]: (lon) =>
     formatCoords(0, lon)
       .format('XDDMMss', { decimalPlaces: 3, latLonSeparator: '|' })
-      .split('|')[1]!
+      .split('|')[1]
       .replace(trailingZeroRegExp, '$1'),
   [CoordinateFormat.SIGNED_DEGREES]: (lon) =>
     signedGeographicFormatter([lon, 0])
-      .split(' ')[1]!
+      .split(' ')[1]
       .replace(trailingZeroRegExp, '$1'),
   [CoordinateFormat.SIGNED_DEGREES_MINUTES]: (lon) =>
     formatCoords(0, lon)
       .format('-DDmm', { decimalPlaces: 4, latLonSeparator: '|' })
-      .split('|')[1]!
+      .split('|')[1]
       .replace(trailingZeroRegExp, '$1'),
   [CoordinateFormat.SIGNED_DEGREES_MINUTES_SECONDS]: (lon) =>
     formatCoords(0, lon)
       .format('-DDMMss', { decimalPlaces: 3, latLonSeparator: '|' })
-      .split('|')[1]!
+      .split('|')[1]
       .replace(trailingZeroRegExp, '$1'),
 };
 
@@ -99,32 +99,32 @@ const _formattersForLatitudeOnlyFormat: Record<
   [CoordinateFormat.DEGREES]: (lat) =>
     formatCoords(lat, 0)
       .format('Xdd', { decimalPlaces: 7, latLonSeparator: '|' })
-      .split('|')[0]!
+      .split('|')[0]
       .replace(trailingZeroRegExp, '$1'),
   [CoordinateFormat.DEGREES_MINUTES]: (lat) =>
     formatCoords(lat, 0)
       .format('XDDmm', { decimalPlaces: 4, latLonSeparator: '|' })
-      .split('|')[0]!
+      .split('|')[0]
       .replace(trailingZeroRegExp, '$1'),
   [CoordinateFormat.DEGREES_MINUTES_SECONDS]: (lat) =>
     formatCoords(lat, 0)
       .format('XDDMMss', { decimalPlaces: 3, latLonSeparator: '|' })
-      .split('|')[0]!
+      .split('|')[0]
       .replace(trailingZeroRegExp, '$1'),
   [CoordinateFormat.SIGNED_DEGREES]: (lat) =>
     signedGeographicFormatter([0, lat])
-      .split(' ')[0]!
+      .split(' ')[0]
       .trim()
       .replace(trailingZeroRegExp, '$1'),
   [CoordinateFormat.SIGNED_DEGREES_MINUTES]: (lat) =>
     formatCoords(lat, 0)
       .format('-DDmm', { decimalPlaces: 4, latLonSeparator: '|' })
-      .split('|')[0]!
+      .split('|')[0]
       .replace(trailingZeroRegExp, '$1'),
   [CoordinateFormat.SIGNED_DEGREES_MINUTES_SECONDS]: (lat) =>
     formatCoords(lat, 0)
       .format('-DDMMss', { decimalPlaces: 3, latLonSeparator: '|' })
-      .split('|')[0]!
+      .split('|')[0]
       .replace(trailingZeroRegExp, '$1'),
 };
 

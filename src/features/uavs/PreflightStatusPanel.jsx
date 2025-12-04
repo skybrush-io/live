@@ -5,17 +5,19 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import PropTypes from 'prop-types';
-import React, { memo, useEffect, useRef } from 'react';
+import { memo, useEffect, useRef } from 'react';
 import { connect } from 'react-redux';
 import { useAsyncRetry, useUnmount } from 'react-use';
 
-import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
-import Header from '@skybrush/mui-components/lib/FormHeader';
-import LargeProgressIndicator from '@skybrush/mui-components/lib/LargeProgressIndicator';
-import StatusLight from '@skybrush/mui-components/lib/StatusLight';
+import {
+  BackgroundHint,
+  FormHeader as Header,
+  LargeProgressIndicator,
+  StatusLight,
+} from '@skybrush/mui-components';
 
 import { errorCodeToSemantics } from '~/flockwave/errors';
-import UAVErrorCode from '~/flockwave/UAVErrorCode';
+import UAVErrorCode, { describeUAVErrorCode } from '~/flockwave/UAVErrorCode';
 import useMessageHub from '~/hooks/useMessageHub';
 import {
   describeOverallPreflightCheckResult,
@@ -43,7 +45,7 @@ const ErrorList = ({ errorCodes }) => {
         {relevantErrorCodes.map((code) => (
           <ListItem key={code}>
             <StatusLight status={errorCodeToSemantics(code)} />
-            <ListItemText primary={UAVErrorCode.describe(code)} />
+            <ListItemText primary={describeUAVErrorCode(code)} />
           </ListItem>
         ))}
       </List>

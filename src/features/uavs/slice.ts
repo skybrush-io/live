@@ -12,11 +12,11 @@ import { globalIdToUavId, isUavId } from '~/model/identifiers';
 import {
   addItemSorted,
   clearOrderedCollection,
-  type Collection,
   deleteItemsByIds,
   EMPTY_COLLECTION,
   ensureNaturalSortOrder,
   replaceItemOrAddSorted,
+  type Collection,
 } from '~/utils/collections';
 
 import { UAVDetailsPanelTab, type StoredUAV } from './types';
@@ -115,7 +115,7 @@ const { actions, reducer } = createSlice({
       if (state.panel.followMapSelection) {
         const selectedUAVs = selection.filter(isUavId);
         if (selectedUAVs.length > 0) {
-          state.panel.selectedUAVId = globalIdToUavId(selectedUAVs[0]!);
+          state.panel.selectedUAVId = globalIdToUavId(selectedUAVs[0]);
         }
       }
     });

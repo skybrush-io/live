@@ -15,11 +15,12 @@ import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import ListItemText from '@mui/material/ListItemText';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import makeStyles from '@mui/styles/makeStyles';
 import { bindActionCreators } from '@reduxjs/toolkit';
 import PropTypes from 'prop-types';
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import { connect } from 'react-redux';
+
+import { makeStyles } from '@skybrush/app-theme-mui';
 
 import {
   createSelectionHandlerThunk,
@@ -49,33 +50,18 @@ import { fitCoordinatesIntoMapView } from '~/signals';
 const ICON_SIZE = 24;
 const GAP_SIZE = 12;
 
-const useStyles = makeStyles(
-  {
-    container: {
-      containerType: 'inline-size',
-    },
-    item: {
-      '@container (min-width: 351px)': {
-        paddingRight: (props) =>
-          ICON_SIZE * props.actions.length +
-          GAP_SIZE * (props.actions.length + 1),
-      },
-    },
-    button: {
-      '@container (max-width: 350px)': {
-        display: 'none',
-      },
-    },
-    menu: {
-      '@container (min-width: 351px)': {
-        display: 'none',
-      },
+const useStyles = makeStyles({
+  button: {
+    '@container (max-width: 350px)': {
+      display: 'none',
     },
   },
-  {
-    name: 'FeatureList',
-  }
-);
+  menu: {
+    '@container (min-width: 351px)': {
+      display: 'none',
+    },
+  },
+});
 
 /**
  * Presentation component for a single entry in the feature list.
@@ -139,7 +125,7 @@ const FeatureListEntryPresentation = (props) => {
     },
   ];
 
-  const classes = useStyles({ actions });
+  const classes = useStyles();
 
   const actionButtons = (
     <>
@@ -187,8 +173,13 @@ const FeatureListEntryPresentation = (props) => {
 
   return (
     <ListItemButton
-      ContainerProps={{ className: classes.container }}
-      className={classes.item}
+      sx={{
+        containerType: 'inline-size',
+        '@container (min-width: 351px)': {
+          paddingRight:
+            ICON_SIZE * actions.length + GAP_SIZE * (actions.length + 1),
+        },
+      }}
       selected={selected}
       onClick={onSelect}
     >

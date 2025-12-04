@@ -10,12 +10,14 @@ import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import Typography from '@mui/material/Typography';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { Trans, withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import FormHeader from '@skybrush/mui-components/lib/FormHeader';
-import Tooltip from '@skybrush/mui-components/lib/Tooltip';
+import {
+  FormHeader,
+  SmallProgressIndicator,
+  Tooltip,
+} from '@skybrush/mui-components';
 import { COORDINATE_SYSTEM_TYPE } from '@skybrush/show-format';
 
 import { Colors } from '~/components/colors';
@@ -50,8 +52,6 @@ import { scrollToMapLocation } from '~/signals';
 import { normalizeAngle, toLonLatFromScaledJSON } from '~/utils/geography';
 
 import { TakeoffHeadingSpecEditor } from './TakeoffHeadingSpecEditor';
-import { CircularProgress } from '@mui/material';
-import { SmallProgressIndicator } from '@skybrush/mui-components';
 
 /**
  * Presentation component for the form that allows the user to edit the

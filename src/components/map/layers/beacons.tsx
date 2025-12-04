@@ -1,12 +1,9 @@
 import { Circle, Icon, Style, Text } from 'ol/style';
 import React from 'react';
 
-// @ts-expect-error: untyped
 import { Feature, geom, layer, source } from '@collmot/ol-react';
 
-// @ts-expect-error: untyped
 import BeaconImage from '~/../assets/img/beacon-24x24.png';
-// @ts-expect-error: untyped
 import SelectionGlow from '~/../assets/img/beacon-selection-glow.png';
 
 import { RGBColors } from '~/components/colors';
@@ -60,7 +57,7 @@ const createBeaconStyle = (
 
   /* "Active" marker in upper left corner */
   if (active !== undefined && active !== null) {
-    styles.push(activeMarkerStyles[active ? 1 : 0] as Style);
+    styles.push(activeMarkerStyles[active ? 1 : 0]);
   }
 
   styles.push(
@@ -86,32 +83,31 @@ type BeaconFeatureProps = BaseFeatureProps & {
   value: Beacon;
 };
 
-const BeaconFeature = React.memo(
-  ({ selected, value, ...rest }: BeaconFeatureProps) => {
-    const { id, position, active } = value;
+const BeaconFeature = React.memo(function BeaconFeature({
+  selected,
+  value,
+  ...rest
+}: BeaconFeatureProps) {
+  const { id, position, active } = value;
 
-    if (!position) {
-      return null;
-    }
-
-    const style = createBeaconStyle(
-      getBeaconDisplayName(value),
-      selected,
-      active
-    );
-
-    return (
-      <Feature id={beaconIdToGlobalId(id)} style={style} {...rest}>
-        <geom.Point
-          coordinates={mapViewCoordinateFromLonLat([
-            position.lon,
-            position.lat,
-          ])}
-        />
-      </Feature>
-    );
+  if (!position) {
+    return null;
   }
-);
+
+  const style = createBeaconStyle(
+    getBeaconDisplayName(value),
+    selected,
+    active
+  );
+
+  return (
+    <Feature id={beaconIdToGlobalId(id)} style={style} {...rest}>
+      <geom.Point
+        coordinates={mapViewCoordinateFromLonLat([position.lon, position.lat])}
+      />
+    </Feature>
+  );
+});
 
 // === Beacons layer
 

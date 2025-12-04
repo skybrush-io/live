@@ -19,7 +19,6 @@ export const uavIdToDOMNodeId = (id: string | undefined): string | undefined =>
 export function itemToGlobalId(item: Item): string | undefined {
   if (!isNil(item[0])) {
     return uavIdToGlobalId(item[0]);
-    // eslint-disable-next-line unicorn/no-negated-condition
   } else if (!isNil(item[1])) {
     return missionSlotIdToGlobalId(String(item[1]));
   } else {
