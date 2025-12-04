@@ -82,7 +82,7 @@ export const useSavedCoordinateForPreset =
   };
 
 export const saveCurrentCoordinateForPreset =
-  (presetId) => (dispatch, getState) => {
+  (presetId) => async (dispatch, getState) => {
     const state = getState();
     const { antenna, survey } = state.rtk.stats;
 
@@ -122,9 +122,20 @@ export const saveCurrentCoordinateForPreset =
       saveCoordinateForPreset({ presetId, coordinate: savedCoordinate })
     );
 
+    let presetName = presetId;
+    try {
+      const presets = await messageHub.query.getRTKPresets();
+      const preset = presets.find((p) => p.id === presetId);
+      if (preset) {
+        presetName = preset.title;
+      }
+    } catch (error) {
+      console.warn('Failed to fetch RTK presets:', error);
+    }
+
     dispatch(
       showNotification({
-        message: `Coordinate saved for preset ${presetId}`,
+        message: `Coordinate saved for preset ${presetName}`,
         semantics: MessageSemantics.SUCCESS,
       })
     );
