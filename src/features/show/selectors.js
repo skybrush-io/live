@@ -947,7 +947,8 @@ export const selectSwarmEmergencyRTHStats = createSelector(
     };
 
     for (const drone of drones) {
-      if (get(drone, 'settings.rthPlan') === undefined) {
+      const planEntries = get(drone, 'settings.rthPlan.entries');
+      if (planEntries === undefined || planEntries.length === 0) {
         result.withoutRTHPlan += 1;
       } else {
         result.withRTHPlan += 1;
