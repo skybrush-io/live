@@ -1,6 +1,7 @@
 import Assignment from '@mui/icons-material/Assignment';
 import Clear from '@mui/icons-material/Clear';
 import Delete from '@mui/icons-material/Delete';
+import Explore from '@mui/icons-material/Explore';
 import PositionHold from '@mui/icons-material/Flag';
 import FlightLand from '@mui/icons-material/FlightLand';
 import FlightTakeoff from '@mui/icons-material/FlightTakeoff';
@@ -29,6 +30,7 @@ import {
   requestRemovalOfUAVsByIds,
   requestRemovalOfUAVsMarkedAsGone,
 } from '~/features/uavs/actions';
+import { COMPASS_CALIB_UAV_LIMIT } from '~/features/uavs/constants';
 import { openUAVDetailsDialog } from '~/features/uavs/details';
 import { getUAVIdList } from '~/features/uavs/selectors';
 import Bolt from '~/icons/Bolt';
@@ -54,6 +56,7 @@ const UAVOperationsButtonGroup = ({
   const isSelectionSingle = selectedUAVIds.length === 1 && !broadcast;
 
   const {
+    calibrateCompass,
     flashLight,
     holdPosition,
     land,
@@ -188,6 +191,18 @@ const UAVOperationsButtonGroup = ({
             </IconButton>
           </Tooltip>
           {flashLightsButton}
+          <Tooltip content={t('general.commands.calibrateCompass')}>
+            <IconButton
+              size={iconSize}
+              disabled={
+                selectedUAVIds.length === 0 ||
+                selectedUAVIds.length > COMPASS_CALIB_UAV_LIMIT
+              }
+              onClick={() => calibrateCompass()}
+            >
+              <Explore />
+            </IconButton>
+          </Tooltip>
         </>
       )}
 

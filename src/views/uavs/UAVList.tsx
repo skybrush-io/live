@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-types */
 /**
  * @file Component that displays the status of the known UAVs in a Skybrush
  * flock.
@@ -8,12 +7,7 @@ import Delete from '@mui/icons-material/Delete';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import type { Theme } from '@mui/material/styles';
-import makeStyles from '@mui/styles/makeStyles';
-import {
-  bindActionCreators,
-  type AnyAction,
-  type Store,
-} from '@reduxjs/toolkit';
+import { bindActionCreators, type AnyAction } from '@reduxjs/toolkit';
 import isNil from 'lodash-es/isNil';
 import { nanoid } from 'nanoid';
 import React, {
@@ -27,7 +21,7 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { connect, useStore } from 'react-redux';
 
-import { isThemeDark } from '@skybrush/app-theme-mui';
+import { isThemeDark, makeStyles } from '@skybrush/app-theme-mui';
 
 import { createSelectionHandlerThunk } from '~/components/helpers/lists';
 import FadeAndSlide from '~/components/transitions/FadeAndSlide';
@@ -78,40 +72,31 @@ import { getDisplayedItems, getGlobalIdsOfDisplayedItems } from './selectors';
 import type { Item } from './types';
 import { getSelectedUAVIdsAndMissionSlotIds, itemToGlobalId } from './utils';
 
-const useListStyles = makeStyles(
-  (theme: Theme) => ({
-    appBar: {
-      backgroundColor: isThemeDark(theme)
-        ? '#424242'
-        : theme.palette.background.paper,
-      height: 48,
-    },
+const useListStyles = makeStyles((theme: Theme) => ({
+  appBar: {
+    backgroundColor: isThemeDark(theme)
+      ? '#424242'
+      : theme.palette.background.paper,
+    height: 48,
+  },
 
-    toolbar: {
-      position: 'absolute',
-      gap: theme.spacing(0.75),
-      left: 0,
-      right: 0,
-      top: 0,
-    },
+  toolbar: {
+    position: 'absolute',
+    gap: theme.spacing(0.75),
+    left: 0,
+    right: 0,
+    top: 0,
+  },
 
-    gridItem: {
-      padding: theme.spacing(1),
-      height: '100%',
-    },
+  gridItem: {
+    padding: theme.spacing(1),
+    height: '100%',
+  },
 
-    listItem: {
-      padding: theme.spacing(0.5),
-      borderBottom: `1px solid ${theme.palette.divider}`,
-
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      '&:first-child': {
-        borderTop: `1px solid ${theme.palette.divider}`,
-      },
-    },
-  }),
-  { name: 'UAVList' }
-);
+  listItem: {
+    borderBottom: `1px solid ${theme.palette.divider}`,
+  },
+}));
 
 type ItemRendererOptions = {
   className?: string;
@@ -149,7 +134,7 @@ const createGridItemRenderer =
     selection,
     showMissionIds,
   }: ItemRendererOptions) =>
-  (item: Item): JSX.Element => {
+  (item: Item): React.JSX.Element => {
     const [uavId, missionIndex, proposedLabel] = item;
     const itemId = itemToGlobalId(item);
     const editingThisItem =
@@ -235,7 +220,7 @@ const createListItemRenderer =
     selection,
     showMissionIds,
   }: ItemRendererOptions) =>
-  (item: Item): JSX.Element | null => {
+  (item: Item): React.JSX.Element | null => {
     if (item === deletionMarker) {
       return null;
     }
@@ -309,7 +294,7 @@ const UAVListPresentation = ({
   onSelectItem,
   selection,
   showMissionIds,
-}: UAVListPresentationProps): JSX.Element => {
+}: UAVListPresentationProps): React.JSX.Element => {
   // Regular styling stuff
   const classes = useListStyles();
 

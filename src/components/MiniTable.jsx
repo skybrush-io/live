@@ -1,7 +1,8 @@
-import makeStyles from '@mui/styles/makeStyles';
 import isNil from 'lodash-es/isNil';
 import PropTypes from 'prop-types';
 import React from 'react';
+
+import { makeStyles } from '@skybrush/app-theme-mui';
 
 const useStyles = makeStyles(
   (theme) => ({
@@ -26,9 +27,6 @@ const useStyles = makeStyles(
 
     separator: {},
   }),
-  {
-    name: 'MiniTable',
-  }
 );
 
 export const naText = <span className='muted'>—</span>;

@@ -5,27 +5,25 @@ import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import Toolbar, { type ToolbarProps } from '@mui/material/Toolbar';
 import type { Theme } from '@mui/material/styles';
-import makeStyles from '@mui/styles/makeStyles';
 import React from 'react';
 import { Trans, Translation } from 'react-i18next';
 import { connect } from 'react-redux';
 
+import { makeStyles } from '@skybrush/app-theme-mui';
+
 import { cancelMappingEditorSessionAtCurrentSlot } from '~/features/mission/slice';
 
-const useStyles = makeStyles(
-  (theme: Theme) => ({
-    box: {
-      userSelect: 'none',
-      whiteSpace: 'nowrap',
-    },
-    divider: {
-      alignSelf: 'stretch',
-      height: 'auto',
-      margin: theme.spacing(1, 1),
-    },
-  }),
-  { name: 'MappingSlotEditorToolbar' }
-);
+const useStyles = makeStyles((theme: Theme) => ({
+  box: {
+    userSelect: 'none',
+    whiteSpace: 'nowrap',
+  },
+  divider: {
+    alignSelf: 'stretch',
+    height: 'auto',
+    margin: theme.spacing(1, 1),
+  },
+}));
 
 type MappingSlotEditorToolbarProps = ToolbarProps &
   Readonly<{

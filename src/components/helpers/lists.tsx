@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-/* eslint-disable @typescript-eslint/ban-types */
 /**
  * @file List-related component helper functions and higher order components.
  */
@@ -17,7 +16,7 @@ import xor from 'lodash-es/xor';
 import PropTypes from 'prop-types';
 import React, { type PropsWithoutRef, type RefAttributes } from 'react';
 
-import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
+import { BackgroundHint } from '@skybrush/mui-components';
 
 import type { AppDispatch, RootState } from '~/store/reducers';
 import { eventHasShiftKey } from '~/utils/events';
@@ -33,7 +32,7 @@ type ListFactory<P> = (
   props: P,
   children: React.ReactElement[],
   ref: React.ForwardedRef<unknown>
-) => JSX.Element;
+) => React.JSX.Element;
 
 type ValidatedListOfOptions<T, P> = {
   backgroundHint?: string | React.ReactElement;
@@ -77,7 +76,7 @@ type SelectionHandlerReduxFunctions<T = string> = {
 const createBackgroundHint = (
   backgroundHint: string | React.ReactElement | undefined,
   ref: React.ForwardedRef<unknown>
-): JSX.Element | null => {
+): React.JSX.Element | null => {
   switch (typeof backgroundHint) {
     case 'string':
       return <BackgroundHint ref={ref} text={backgroundHint} />;

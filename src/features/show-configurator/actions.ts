@@ -4,7 +4,10 @@ import { ModifyEvent } from 'ol/interaction/Modify';
 import { getDistance as haversineDistance } from 'ol/sphere';
 import { batch } from 'react-redux';
 
-import { findAssignmentInDistanceMatrix } from '~/algorithms/matching';
+import {
+  findAssignmentBetweenPoints,
+  findAssignmentInDistanceMatrix,
+} from '~/algorithms/matching';
 import type { TransformFeaturesInteractionEvent } from '~/components/map/interactions/TransformFeatures';
 import { errorToString } from '~/error-handling';
 import { getBase64ShowBlob } from '~/features/show/selectors';
@@ -261,7 +264,6 @@ export const adjustHomePositionsToDronePositions =
   (): AppThunk => (dispatch, getState) => {
     // Only outdoor shows are supported by the dialog.
 
-    const distanceFunction = haversineDistance;
     const homePositions = getHomePositionsInWorldCoordinates(getState());
     const dronePositions = getAllValidUAVPositions(getState());
     if (homePositions === undefined || dronePositions.length === 0) {
@@ -271,13 +273,17 @@ export const adjustHomePositionsToDronePositions =
       return;
     }
 
-    const distances = calculateDistanceMatrix(homePositions, dronePositions, {
-      distanceFunction,
-      getter: (item: GPSPosition): LonLat =>
-        item ? [item.lon, item.lat] : ([Number.NaN, Number.NaN] as LonLat),
-    });
-
-    const assignment = findAssignmentInDistanceMatrix(distances);
+    // TODO: move this calculation to a web worker to avoid blocking the UI
+    const assignment = findAssignmentBetweenPoints(
+      homePositions,
+      dronePositions,
+      {
+        distanceFunction: haversineDistance,
+        getter: (item: GPSPosition): LonLat =>
+          item ? [item.lon, item.lat] : ([Number.NaN, Number.NaN] as LonLat),
+        matching: { algorithm: 'greedy' },
+      }
+    );
 
     const newPositions = assignment.map(
       ([homePositionIndex, dronePositionIndex]): [

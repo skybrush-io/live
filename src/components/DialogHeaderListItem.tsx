@@ -6,20 +6,16 @@ import ListItem, { type ListItemProps } from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import { green, red, yellow } from '@mui/material/colors';
 import type { Theme } from '@mui/material/styles';
-import makeStyles from '@mui/styles/makeStyles';
 import React from 'react';
 
-import { isThemeDark } from '@skybrush/app-theme-mui';
+import { isThemeDark, makeStyles } from '@skybrush/app-theme-mui';
 
-const useStyles = makeStyles(
-  (theme: Theme) => ({
-    root: {
-      backgroundColor: isThemeDark(theme) ? '#303030' : theme.palette.grey[200],
-      paddingTop: 6,
-    },
-  }),
-  { name: 'DialogHeaderListItem' }
-);
+const useStyles = makeStyles((theme: Theme) => ({
+  root: {
+    backgroundColor: isThemeDark(theme) ? '#303030' : theme.palette.grey[200],
+    paddingTop: 6,
+  },
+}));
 
 /**
  * List item component that can be placed at the top of a dialog box, typically

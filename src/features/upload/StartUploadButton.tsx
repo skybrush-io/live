@@ -18,7 +18,7 @@ type StartUploadButtonProps = Readonly<{
 const StartUploadButton = ({
   hasQueuedItems,
   ...rest
-}: StartUploadButtonProps): JSX.Element => (
+}: StartUploadButtonProps): React.JSX.Element => (
   <Translation>
     {(t) => (
       <Tooltip content={t('startUploadButton.tooltip')}>

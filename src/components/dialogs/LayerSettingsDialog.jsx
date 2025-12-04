@@ -16,8 +16,7 @@ import React from 'react';
 import { Form } from 'react-final-form';
 import { connect } from 'react-redux';
 
-import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
-import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
+import { BackgroundHint, DraggableDialog } from '@skybrush/mui-components';
 
 import { forceFormSubmission } from '~/components/forms';
 import { closeLayerSettingsDialog } from '~/features/map/layer-settings-dialog';

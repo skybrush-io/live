@@ -14,7 +14,7 @@ export type UAVIdAndMissionIndexPair = [string | undefined, number | undefined];
  */
 export type Item =
   | UAVIdAndMissionIndexPair
-  | [...UAVIdAndMissionIndexPair, string | JSX.Element];
+  | [...UAVIdAndMissionIndexPair, string | React.JSX.Element];
 
 /**
  * Types of the UAV groups that can be shown in the UAV list or grid.

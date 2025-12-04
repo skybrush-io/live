@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 
-import QuickSelectionOverlay from '@skybrush/mui-components/lib/QuickSelectionOverlay';
+import { QuickSelectionOverlay } from '@skybrush/mui-components';
 
 import { getPendingUAVId } from '~/features/hotkeys/selectors';
 

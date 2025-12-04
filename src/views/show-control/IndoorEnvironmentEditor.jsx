@@ -7,7 +7,7 @@ import React from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import FormHeader from '@skybrush/mui-components/lib/FormHeader';
+import { FormHeader } from '@skybrush/mui-components';
 
 import XYZFields from '~/components/XYZFields';
 import {

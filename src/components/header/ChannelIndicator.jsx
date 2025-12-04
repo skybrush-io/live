@@ -1,7 +1,8 @@
-import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
+
+import { makeStyles } from '@skybrush/app-theme-mui';
 
 import { getPreferredCommunicationChannelIndex } from '~/features/mission/selectors';
 

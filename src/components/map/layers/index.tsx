@@ -1,5 +1,6 @@
-import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
 import React from 'react';
+
+import { BackgroundHint } from '@skybrush/mui-components';
 
 import { LayerType } from '~/model/layers';
 import { BaseLayer, BaseLayerSettings } from './base';

@@ -14,7 +14,7 @@ export type StartTimeSuggestionsBoxProps = Readonly<{
 const StartTimeSuggestionsBox = ({
   label,
   ...rest
-}: StartTimeSuggestionsBoxProps): JSX.Element => (
+}: StartTimeSuggestionsBoxProps): React.JSX.Element => (
   <Box
     sx={{ mt: 1, flexDirection: 'row', display: 'flex', alignItems: 'center' }}
   >

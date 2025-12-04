@@ -77,7 +77,7 @@ export const Select = ({
   formControlProps,
   margin = 'dense',
   ...rest
-}: SelectProps): JSX.Element => (
+}: SelectProps): React.JSX.Element => (
   <RFFSelect
     formControlProps={{
       variant: 'filled',
@@ -92,7 +92,7 @@ export const Select = ({
  * Text field component that can be placed in a `react-final-form` form and
  * that fits the general application style.
  */
-export const TextField = (props: RFFTextFieldProps): JSX.Element => (
+export const TextField = (props: RFFTextFieldProps): React.JSX.Element => (
   <RFFTextField variant='filled' {...props} />
 );
 
@@ -105,7 +105,11 @@ type SwitchProps = MaterialUISwitchProps & FieldRenderProps<string>;
  * @param  {Object} props  props provided by `react-final-form`
  * @return {Object} the rendered Material UI switch component
  */
-export const Switch = ({ input, meta, ...rest }: SwitchProps): JSX.Element => {
+export const Switch = ({
+  input,
+  meta,
+  ...rest
+}: SwitchProps): React.JSX.Element => {
   const { checked, name, onChange, ...restInput } = input;
   return (
     <MaterialUISwitch
@@ -137,7 +141,7 @@ const PasswordFieldFormBinding = ({
   input,
   meta,
   ...rest
-}: PasswordFieldFormBindingProps): JSX.Element => {
+}: PasswordFieldFormBindingProps): React.JSX.Element => {
   const [passwordIsMasked, togglePasswordMask] = useToggle(true);
 
   const { name, onChange, value, ...restInput } = input;
@@ -185,7 +189,7 @@ const PasswordFieldFormBinding = ({
 /**
  * Password field that can be placed in a `react-final-form` form.
  */
-export const PasswordField = (props: FieldProps<string>): JSX.Element => (
+export const PasswordField = (props: FieldProps<string>): React.JSX.Element => (
   <Field component={PasswordFieldFormBinding} {...props} />
 );
 
@@ -200,7 +204,7 @@ type AngleFieldProps = RFFTextFieldProps;
 export const AngleField = ({
   slotProps,
   ...rest
-}: AngleFieldProps): JSX.Element => (
+}: AngleFieldProps): React.JSX.Element => (
   <TextField
     type='number'
     slotProps={textFieldSlotPropsWithUnitAdornment(slotProps, '°')}
@@ -218,7 +222,7 @@ export const HeadingField = ({
   fieldProps,
   slotProps,
   ...rest
-}: AngleFieldProps): JSX.Element => (
+}: AngleFieldProps): React.JSX.Element => (
   <AngleField
     fieldProps={{
       format: normalizeAngle,
@@ -245,7 +249,7 @@ export const LatitudeField = ({
   fieldProps,
   slotProps,
   ...rest
-}: AngleFieldProps): JSX.Element => (
+}: AngleFieldProps): React.JSX.Element => (
   <AngleField
     fieldProps={{
       validate: join([required, finite, between(-90, 90)]),
@@ -267,7 +271,7 @@ export const LongitudeField = ({
   fieldProps,
   slotProps,
   ...rest
-}: AngleFieldProps): JSX.Element => (
+}: AngleFieldProps): React.JSX.Element => (
   <AngleField
     fieldProps={{
       validate: join([required, finite, between(-180, 180)]),
@@ -308,7 +312,7 @@ const createCoordinateFieldProps = (
 export const CoordinateField = ({
   formatter,
   ...props
-}: CoordinateFieldProps): JSX.Element => {
+}: CoordinateFieldProps): React.JSX.Element => {
   const coordinateFieldProps = useMemo(
     () => createCoordinateFieldProps(formatter),
     [formatter]
@@ -342,7 +346,7 @@ export const DistanceField = ({
   step,
   unit = 'm',
   ...rest
-}: DistanceFieldProps): JSX.Element => (
+}: DistanceFieldProps): React.JSX.Element => (
   <TextField
     type='number'
     slotProps={textFieldSlotPropsWithUnitAdornment(
@@ -372,7 +376,7 @@ export const DurationField = ({
   min = 0,
   step,
   ...rest
-}: DurationFieldProps): JSX.Element => (
+}: DurationFieldProps): React.JSX.Element => (
   <TextField
     type='number'
     slotProps={textFieldSlotPropsWithUnitAdornment(
@@ -430,7 +434,7 @@ export const HMSDurationField = ({
   min,
   max,
   ...props
-}: HMSDurationFieldProps): JSX.Element => {
+}: HMSDurationFieldProps): React.JSX.Element => {
   const fieldProps = useMemo(
     () => createHMSDurationFieldProps({ min, max }),
     [min, max]
@@ -462,7 +466,7 @@ const createNumericField = ({
   unit,
 }: CreateNumericFieldOptions = {}): ((
   props: NumericFieldProps
-) => JSX.Element) => {
+) => React.JSX.Element) => {
   const inputProps = unit
     ? {
         endAdornment: <InputAdornment position='end'>{unit}</InputAdornment>,
@@ -520,7 +524,7 @@ const createNumericField = ({
     onChange,
     onBlur,
     ...rest
-  }: NumericFieldProps): JSX.Element => {
+  }: NumericFieldProps): React.JSX.Element => {
     max ??= defaultProps.max;
     min ??= defaultProps.min;
     step ??= defaultProps.step;

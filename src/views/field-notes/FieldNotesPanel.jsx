@@ -4,7 +4,6 @@
 
 import Save from '@mui/icons-material/Save';
 import IconButton from '@mui/material/IconButton';
-import makeStyles from '@mui/styles/makeStyles';
 import formatDate from 'date-fns/format';
 import 'easymde/dist/easymde.min.css';
 import debounce from 'lodash-es/debounce';
@@ -13,6 +12,8 @@ import React, { useCallback } from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import SimpleMDE from 'react-simplemde-editor';
+
+import { makeStyles } from '@skybrush/app-theme-mui';
 
 import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
 import { updateFieldNotes } from '~/features/field-notes/slice';
@@ -48,37 +49,34 @@ const SIMPLE_MDE_OPTIONS = {
   },
 };
 
-const useStyles = makeStyles(
-  (theme) => ({
-    editorWrapper: {
-      height: '100%',
-      overflow: 'overlay',
+const useStyles = makeStyles((theme) => ({
+  editorWrapper: {
+    height: '100%',
+    overflow: 'overlay',
 
-      '&:hover': {
-        '& + $saveIcon': {
-          opacity: 1,
-        },
-      },
-    },
-
-    saveIcon: {
-      position: 'absolute',
-      top: 0,
-      right: 0,
-
-      opacity: 0,
-
-      '&:hover': {
+    '&:hover': {
+      '& + $saveIcon': {
         opacity: 1,
       },
-
-      transition: theme.transitions.create(['opacity'], {
-        duration: theme.transitions.duration.short,
-      }),
     },
-  }),
-  { name: 'FieldNotesPanel' }
-);
+  },
+
+  saveIcon: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+
+    opacity: 0,
+
+    '&:hover': {
+      opacity: 1,
+    },
+
+    transition: theme.transitions.create(['opacity'], {
+      duration: theme.transitions.duration.short,
+    }),
+  },
+}));
 
 const FieldNotesPanel = ({ contents, t, updateFieldNotes }) => {
   const classes = useStyles();

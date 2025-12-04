@@ -59,7 +59,6 @@ export const getFileFromUser = async (
  */
 const makeFileReaderForOutputType =
   (outputType: 'ArrayBuffer' | 'BinaryString' | 'DataURL' | 'Text') =>
-  // eslint-disable-next-line @typescript-eslint/ban-types
   async (file: File): Promise<string | ArrayBuffer | null> =>
     new Promise((resolve) => {
       const fileReader = new FileReader();

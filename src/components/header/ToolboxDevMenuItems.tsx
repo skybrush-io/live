@@ -18,7 +18,7 @@ const freezeUI = (seconds = 3): void => {
 
 const ToolboxDevMenuItems = ({
   createClickListener,
-}: ToolboxDevMenuItemsProps): JSX.Element => {
+}: ToolboxDevMenuItemsProps): React.JSX.Element => {
   return (
     <>
       <Divider />

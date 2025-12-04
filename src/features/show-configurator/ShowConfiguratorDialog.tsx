@@ -5,13 +5,13 @@ import DialogActions from '@mui/material/DialogActions';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import type { Theme } from '@mui/material/styles';
-import makeStyles from '@mui/styles/makeStyles';
 import type { TFunction } from 'i18next';
 import React, { useCallback, useState } from 'react';
 import { withTranslation } from 'react-i18next';
 import { batch, connect } from 'react-redux';
 
-import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
+import { makeStyles } from '@skybrush/app-theme-mui';
+import { DraggableDialog } from '@skybrush/mui-components';
 import type { ValidationSettings } from '@skybrush/show-format';
 
 import DialogHelpIcon from '~/components/DialogHelpIcon';
@@ -230,7 +230,7 @@ function useOwnState(props: Props) {
   };
 }
 
-const ShowConfiguratorDialog = (props: Props): JSX.Element => {
+const ShowConfiguratorDialog = (props: Props): React.JSX.Element => {
   const {
     adjustHomePositionsToDronePositionsEnabled,
     adjustHomePositionsToDronePositions,
@@ -338,8 +338,9 @@ const ShowConfiguratorDialog = (props: Props): JSX.Element => {
  * The reason for this is to correctly initialize the dialog's state
  * when it is opened.
  */
-// eslint-disable-next-line @typescript-eslint/ban-types
-const ShowConfiguratorDialogWrapper = (props: Props): JSX.Element | null => {
+const ShowConfiguratorDialogWrapper = (
+  props: Props
+): React.JSX.Element | null => {
   const { open, ...rest } = props;
   return open ? <ShowConfiguratorDialog open {...rest} /> : null;
 };

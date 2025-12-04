@@ -1,11 +1,11 @@
 import Box from '@mui/material/Box';
 import FormGroup from '@mui/material/FormGroup';
 import type { Theme } from '@mui/material/styles';
-import makeStyles from '@mui/styles/makeStyles';
 import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import FormHeader from '@skybrush/mui-components/lib/FormHeader';
+import { makeStyles } from '@skybrush/app-theme-mui';
+import { FormHeader } from '@skybrush/mui-components';
 
 import {
   SimpleDistanceField,
@@ -42,7 +42,7 @@ function adaptParametersValid(parameters: ShowAdaptParameters): boolean {
     parameters.minDistance > 0 &&
     parameters.altitude > 0 &&
     parameters.verticalVelocity > 0 &&
-    parameters.horizontalVelocity > 0 && 
+    parameters.horizontalVelocity > 0 &&
     parameters.takeoffDuration >= 0
   );
 }
@@ -172,7 +172,7 @@ type Props = Readonly<
   }
 >;
 
-const AdaptParametersForm = (props: Props): JSX.Element => {
+const AdaptParametersForm = (props: Props): React.JSX.Element => {
   const {
     disabled,
     parameters,

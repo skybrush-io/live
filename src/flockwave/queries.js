@@ -33,7 +33,7 @@ export async function adaptShow(hub, show, transformations, coordinateSystem) {
     },
     // Use a very long timeout for this message as the transformations
     // require a lot of computation.
-    { timeout: 60 }
+    { timeout: 600 }
   );
 
   if (response?.body?.type === 'X-SHOW-ADAPT') {

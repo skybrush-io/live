@@ -1,6 +1,7 @@
 import Divider from '@mui/material/Divider';
-import makeStyles from '@mui/styles/makeStyles';
 import React from 'react';
+
+import { makeStyles } from '@skybrush/app-theme-mui';
 
 const useStyles = makeStyles(
   (theme) => ({
@@ -10,7 +11,6 @@ const useStyles = makeStyles(
       margin: theme.spacing(1, 0.5),
     },
   }),
-  { name: 'StyledDivider' }
 );
 
 export const ToolbarDivider = (props) => {

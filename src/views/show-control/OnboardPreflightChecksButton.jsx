@@ -5,7 +5,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import StatusLight from '@skybrush/mui-components/lib/StatusLight';
+import { StatusLight } from '@skybrush/mui-components';
 
 import { Status } from '~/components/semantics';
 import { signOffOnOnboardPreflightChecks } from '~/features/show/actions';

@@ -9,5 +9,4 @@ export type NestedRecordField<T> = T | NestedRecord<T>;
 
 // NOTE: TypeScript makes it more convenient to work with `undefined`,
 //       but in certain situations `null` is still useful / necessary.
-// eslint-disable-next-line @typescript-eslint/ban-types
 export type Nullable<T> = T | null;

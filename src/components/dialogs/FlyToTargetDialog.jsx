@@ -13,7 +13,7 @@ import React from 'react';
 import { Form } from 'react-final-form';
 import { connect } from 'react-redux';
 
-import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
+import { DraggableDialog } from '@skybrush/mui-components';
 
 import { CoordinateField, DistanceField, Select } from '~/components/forms';
 import DronePlaceholderList from '~/components/uavs/DronePlaceholderList';

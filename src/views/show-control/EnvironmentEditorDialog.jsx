@@ -6,7 +6,7 @@ import React from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
+import { DraggableDialog } from '@skybrush/mui-components';
 
 import { getShowEnvironmentType } from '~/features/show/selectors';
 import { closeEnvironmentEditorDialog } from '~/features/show/slice';

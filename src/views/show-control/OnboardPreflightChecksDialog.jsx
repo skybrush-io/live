@@ -11,9 +11,11 @@ import React from 'react';
 import { useTranslation, withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
-import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
-import StatusLight from '@skybrush/mui-components/lib/StatusLight';
+import {
+  BackgroundHint,
+  DraggableDialog,
+  StatusLight,
+} from '@skybrush/mui-components';
 
 import { Colors } from '~/components/colors';
 import { Status } from '~/components/semantics';

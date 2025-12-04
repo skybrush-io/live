@@ -1,16 +1,16 @@
+import Edit from '@mui/icons-material/Edit';
+import Mouse from '@mui/icons-material/Mouse';
+import SelectAll from '@mui/icons-material/SelectAll';
 import Box from '@mui/material/Box';
 import Fade from '@mui/material/Fade';
 import type { Theme } from '@mui/material/styles';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import Typography from '@mui/material/Typography';
-import withStyles from '@mui/styles/withStyles';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import Edit from '@mui/icons-material/Edit';
-import Mouse from '@mui/icons-material/Mouse';
-import SelectAll from '@mui/icons-material/SelectAll';
+import { makeStyles } from '@skybrush/app-theme-mui';
 
 import { tt } from '~/i18n';
 
@@ -82,7 +82,7 @@ const CATEGORIES = [
 // HACK: Margin based alignment is just an overcomplicated hack,
 //       it should probably be replaced with something cleaner...
 
-const MiniTabs = withStyles((theme: Theme) => ({
+const useTabsStyles = makeStyles((theme: Theme) => ({
   root: {
     minHeight: 0,
     color: theme.palette.text.primary,
@@ -104,9 +104,9 @@ const MiniTabs = withStyles((theme: Theme) => ({
       borderBottom: `2px solid ${theme.palette.text.secondary}`,
     },
   },
-}))(Tabs);
+}));
 
-const MiniTab = withStyles({
+const useTabStyles = makeStyles({
   root: {
     minHeight: 0,
     padding: 0,
@@ -117,12 +117,12 @@ const MiniTab = withStyles({
   selected: {
     background: 'gradient(linear, 0deg, #0000 0%, #f000 100%)',
   },
-})(Tab);
+});
 
 const InteractionHint = ({
   keys,
   action,
-}: Readonly<{ keys: string[]; action: string }>): JSX.Element => (
+}: Readonly<{ keys: string[]; action: string }>): React.JSX.Element => (
   <span>
     {keys.map((k) => (
       <kbd key={k}>{k}</kbd>
@@ -133,25 +133,28 @@ const InteractionHint = ({
   </span>
 );
 
-const InteractionHints = (): JSX.Element => {
+const InteractionHints = (): React.JSX.Element => {
   const { t } = useTranslation();
   const [active, setActive] = useState(0);
+  const tabStyles = useTabStyles();
+  const tabsStyles = useTabsStyles();
 
   return (
     <Box sx={{ height: '50px' }}>
-      <MiniTabs value={active} style={{ marginBottom: 2 }}>
+      <Tabs value={active} classes={tabsStyles} style={{ marginBottom: 2 }}>
         {/* eslint-disable-next-line @typescript-eslint/naming-convention */}
         {CATEGORIES.map(({ icon: Icon, title }, i) => (
-          <MiniTab
+          <Tab
             key={title(t)}
             icon={<Icon fontSize='small' style={{ margin: 0 }} />}
             label={title(t)}
+            classes={tabStyles}
             onMouseOver={() => {
               setActive(i);
             }}
           />
         ))}
-      </MiniTabs>
+      </Tabs>
 
       {CATEGORIES.map((c, i) => (
         <Fade key={c.title(t)} in={active === i}>

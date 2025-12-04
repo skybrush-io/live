@@ -6,10 +6,11 @@ import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import Paper from '@mui/material/Paper';
 import Toolbar from '@mui/material/Toolbar';
-import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import { connect } from 'react-redux';
+
+import { makeStyles } from '@skybrush/app-theme-mui';
 
 import FileButton from '~/components/FileButton';
 import {
@@ -32,17 +33,12 @@ import usePopover from '~/hooks/usePopover';
 import Export from '~/icons/Download';
 import Import from '~/icons/Upload';
 
-const useStyles = makeStyles(
-  (theme) => ({
-    root: {
-      background: theme.palette.action.hover,
-      padding: theme.spacing(0, 1),
-    },
-  }),
-  {
-    name: 'MissionOverviewPanelHeader',
-  }
-);
+const useStyles = makeStyles((theme) => ({
+  root: {
+    background: theme.palette.action.hover,
+    padding: theme.spacing(0, 1),
+  },
+}));
 
 const MissionOverviewPanelHeader = ({
   canPlan,

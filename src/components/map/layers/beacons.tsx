@@ -4,9 +4,7 @@ import React from 'react';
 // @ts-expect-error: untyped
 import { Feature, geom, layer, source } from '@collmot/ol-react';
 
-// @ts-expect-error: untyped
 import BeaconImage from '~/../assets/img/beacon-24x24.png';
-// @ts-expect-error: untyped
 import SelectionGlow from '~/../assets/img/beacon-selection-glow.png';
 
 import { RGBColors } from '~/components/colors';

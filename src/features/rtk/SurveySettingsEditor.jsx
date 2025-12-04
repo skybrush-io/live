@@ -8,7 +8,7 @@ import { Form } from 'react-final-form';
 import { connect } from 'react-redux';
 import { useAsync } from 'react-use';
 
-import SmallProgressIndicator from '@skybrush/mui-components/lib/SmallProgressIndicator';
+import { SmallProgressIndicator } from '@skybrush/mui-components';
 
 import { DistanceField, DurationField } from '~/components/forms/fields';
 import messageHub from '~/message-hub';
@@ -46,7 +46,7 @@ const SurveySettingsEditor = ({ onClose, onSubmit, ...rest }) => {
         <ArrowBack />
       </IconButton>
       {settings.loading ? (
-        <SmallProgressIndicator text='Loading...' />
+        <SmallProgressIndicator label='Loading...' />
       ) : settings.error ? (
         <div>Failed to load survey settings from server.</div>
       ) : (

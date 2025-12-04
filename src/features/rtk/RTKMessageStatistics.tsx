@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import TimeAgo from 'react-timeago';
 
 import { colorForStatus, Status } from '@skybrush/app-theme-mui';
-import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
+import { BackgroundHint } from '@skybrush/mui-components';
 
 import { listOf } from '~/components/helpers/lists';
 import type { RootState } from '~/store/reducers';
@@ -28,7 +28,7 @@ const RTKMessageStatisticsListEntry = ({
   bitsPerSecondTransferred,
   id,
   lastUpdatedAt,
-}: RTKMessageStatisticsListEntryProps): JSX.Element => {
+}: RTKMessageStatisticsListEntryProps): React.JSX.Element => {
   const txKnown = bitsPerSecondTransferred !== undefined;
   const hasTx = (bitsPerSecondTransferred ?? 0) > 0;
   const hasRx = bitsPerSecondReceived > 0;

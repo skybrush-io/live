@@ -1,9 +1,10 @@
 import ArrowDownward from '@mui/icons-material/ArrowDownward';
 import { Fab } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Virtuoso } from 'react-virtuoso';
+
+import { makeStyles } from '@skybrush/app-theme-mui';
 
 import FadeAndSlide from '~/components/transitions/FadeAndSlide';
 

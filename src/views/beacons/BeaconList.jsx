@@ -12,8 +12,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
-import StatusLight from '@skybrush/mui-components/lib/StatusLight';
-import Tooltip from '@skybrush/mui-components/lib/Tooltip';
+import { StatusLight, Tooltip } from '@skybrush/mui-components';
 
 import { multiSelectableListOf } from '~/components/helpers/lists';
 import { setSelectedBeaconIds } from '~/features/beacons/actions';

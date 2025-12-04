@@ -1,9 +1,10 @@
+import Box from '@mui/material/Box';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import React, { useCallback, useState } from 'react';
 import { Resizable } from 'react-resizable';
-import Box from '@mui/material/Box';
-import makeStyles from '@mui/styles/makeStyles';
+
+import { makeStyles } from '@skybrush/app-theme-mui';
 
 const makeSideClass = (major, minor, edge, across, cursor, theme) => ({
   [major]: 50,
@@ -64,7 +65,6 @@ const useStyles = makeStyles(
     'handle-sw': makeCornerClass('bottom', 'left', 'nesw', theme),
     'handle-nw': makeCornerClass('top', 'left', 'nwse', theme),
   }),
-  { name: 'ResizableBox' }
 );
 
 const ResizeHandle = React.forwardRef(({ handleAxis, ...rest }, ref) => {

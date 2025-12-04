@@ -11,7 +11,7 @@ import React from 'react';
 import { Translation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import Header from '@skybrush/mui-components/lib/FormHeader';
+import { FormHeader as Header } from '@skybrush/mui-components';
 
 import {
   getLightingConditionsForThreeDView,

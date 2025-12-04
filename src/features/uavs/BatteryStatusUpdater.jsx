@@ -32,14 +32,18 @@ const BatteryStatusUpdater = ({ onSetStatus }) => {
       const battery = getUAVById(state, uavId)?.battery;
 
       if (battery) {
-        if (!isNil(battery.voltage)) {
+        // We only consider voltage values that are positive numbers. This is
+        // because drones with remote power on/off features may report 0V when
+        // powered off, which would skew the average voltage reading.
+        const canVoltageBeUsed = !isNil(battery.voltage) && battery.voltage > 0;
+        if (canVoltageBeUsed) {
           voltages.push(battery.voltage);
         }
 
         if (!isNil(battery.percentage)) {
           percentages.push(battery.percentage);
         } else if (
-          !isNil(battery.voltage) &&
+          canVoltageBeUsed &&
           preferredBatteryDisplayStyle === BatteryDisplayStyle.FORCED_PERCENTAGE
         ) {
           percentages.push(

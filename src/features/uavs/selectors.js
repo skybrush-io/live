@@ -680,6 +680,10 @@ export const areAllUAVsInMissionWithoutErrors = createSelector(
 export function getSingleUAVStatusLevel(uav) {
   let severity = -1;
 
+  if (uav.age === UAVAge.GONE) {
+    return Status.OFF;
+  }
+
   if (uav.errors && uav.errors.length > 0) {
     severity = getSeverityOfMostSevereErrorCode(uav.errors);
     if (severity >= Severity.WARNING) {
@@ -687,12 +691,8 @@ export function getSingleUAVStatusLevel(uav) {
     }
   }
 
-  if (uav.age === UAVAge.GONE) {
-    return Status.OFF;
-  }
-
   if (uav.age === UAVAge.INACTIVE) {
-    return Status.WARNING;
+    return Status.MISSING;
   }
 
   const maxError = Math.max(...uav.errors);
@@ -780,11 +780,16 @@ export function getSingleUAVStatusSummary(uav) {
     textSemantics = Status.SUCCESS;
   }
 
-  // We allow "normal" and "informational" messages to be overridden by the
-  // "gone" or "no telemetry" (inactive) warnings
-  if (textSemantics === Status.SUCCESS || textSemantics === Status.INFO) {
+  // We allow "normal", "informational" and "warning" messages to be overridden
+  // by the "gone" or "no telemetry" (inactive) warnings based on user feedback
+  if (
+    uav &&
+    (textSemantics === Status.SUCCESS ||
+      textSemantics === Status.INFO ||
+      textSemantics === Status.WARNING)
+  ) {
     if (uav.age === UAVAge.GONE) {
-      if (text === 'ready' || maxError === UAVErrorCode.ON_GROUND) {
+      if (text === 'ready') {
         text = 'gone';
       }
 
@@ -794,7 +799,7 @@ export function getSingleUAVStatusSummary(uav) {
         text = 'no telem'; // used to be 'inactive' in earlier versions
       }
 
-      textSemantics = Status.WARNING;
+      textSemantics = Status.MISSING;
     }
   }
 
@@ -803,12 +808,13 @@ export function getSingleUAVStatusSummary(uav) {
   }
 
   return {
+    age: uav?.age,
     status,
-    details: details || text,
+    details: details ?? text,
     gone: uav ? uav.age === UAVAge.GONE || uav.age === UAVAge.INACTIVE : false,
     text,
     textSemantics,
-    batteryStatus: uav ? uav.battery : undefined,
+    batteryStatus: uav?.battery,
   };
 }
 /* eslint-enable complexity */

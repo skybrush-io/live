@@ -89,7 +89,7 @@ type ShowInfoLayerProps = LayerProps &
     selection: Identifier[];
   }>;
 
-const ShowInfoLayer = (props: ShowInfoLayerProps): JSX.Element => {
+const ShowInfoLayer = (props: ShowInfoLayerProps): React.JSX.Element => {
   const {
     approximateConvexHullOfFullShow,
     convexHull,
@@ -312,7 +312,7 @@ const useOwnState = (props: MapProps) => {
   };
 };
 
-const ShowConfiguratorMap = (props: MapProps): JSX.Element => {
+const ShowConfiguratorMap = (props: MapProps): React.JSX.Element => {
   const {
     defaultPosition,
     futureHistoryLength,

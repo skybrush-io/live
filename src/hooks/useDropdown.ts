@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-types */
 import { useState } from 'react';
 
 type EventHandler = (event: React.SyntheticEvent<HTMLElement>) => void;

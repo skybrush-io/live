@@ -57,7 +57,7 @@ const ToolboxMenuPresentation = ({
   showVersionCheckDialog: _showVersionCheckDialog,
   requestClose,
   ...rest
-}: ToolboxMenuPresentationProps): JSX.Element => {
+}: ToolboxMenuPresentationProps): React.JSX.Element => {
   const { t } = useTranslation();
 
   const createClickListener = (func: () => void) => (): void => {

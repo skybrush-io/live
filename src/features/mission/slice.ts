@@ -96,6 +96,11 @@ export type MissionSliceState = {
      * -1 if no slot is being edited
      */
     indexBeingEdited: MissionIndex;
+
+    /**
+     * Whether the mapping is being recalculated in the background.
+     */
+    calculating?: boolean;
   };
 
   /**
@@ -164,6 +169,7 @@ const initialState: MissionSliceState = {
   mappingEditor: {
     enabled: false,
     indexBeingEdited: -1,
+    calculating: false,
   },
   preferredChannelIndex: 0,
   commandsAreBroadcast: false,
@@ -243,6 +249,31 @@ const { actions, reducer } = createSlice({
       if (!isNil(to)) {
         state.mapping[to] = uavId;
       }
+    },
+
+    /**
+     * Notifies the state store that we have started calculating, updating or
+     * augmenting the current mission mapping.
+     */
+    calculateMappingPromisePending(state) {
+      state.mappingEditor.calculating = true;
+    },
+
+    /**
+     * Notifies the state store that we have finished calculating, updating or
+     * augmenting the current mission mapping and that we have a result.
+     */
+    calculateMappingPromiseFulfilled(state) {
+      state.mappingEditor.calculating = false;
+    },
+
+    /**
+     * Notifies the state store that we have finished calculating, updating or
+     * augmenting the current mission mapping and that an error happened during
+     * the process.
+     */
+    calculateMappingPromiseRejected(state) {
+      state.mappingEditor.calculating = false;
     },
 
     /**

@@ -21,7 +21,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   drone selection. The feature works in combination with the drone selection
   hotkeys.
 
+- Added a compass calibration operation to the UAVs panel.
+
+- Added a slider to the properties of the UAV layer that can be used to change
+  the size of the UAV icons on the layer. Useful when flying larger fleets and
+  the UAVs are placed very close to each other in the takeoff grid.
+
 - Added Polish translation, thanks to our translator community!
+
+- Updated Chinese translation, thanks to our translator community!
 
 ### Changed
 

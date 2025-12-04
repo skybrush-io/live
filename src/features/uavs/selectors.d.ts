@@ -1,3 +1,4 @@
+import type { Status } from '~/components/semantics';
 import type { GPSPosition } from '~/model/geography';
 import type { RootState } from '~/store/reducers';
 
@@ -18,6 +19,7 @@ export function getInactiveUAVIds(state: RootState): string[];
 export function getMissingUAVIdsInMapping(state: RootState): string[];
 export function getSelectedUAVIds(state: RootState): string[];
 export function getSingleSelectedUAVIdAsArray(): string[];
+export function getSingleUAVStatusLevel(uav: StoredUAV): Status;
 export function getUAVIdList(state: RootState): string[];
 export function getUAVIdsMarkedAsGone(state: RootState): string[];
 export function getUAVIdToStateMapping(

@@ -5,7 +5,7 @@ import React, { useMemo } from 'react';
 import { Translation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import GenericHeaderButton from '@skybrush/mui-components/lib/GenericHeaderButton';
+import { GenericHeaderButton } from '@skybrush/mui-components';
 
 import { isConnected } from '~/features/servers/selectors';
 import { getAltitudeSummaryType } from '~/features/settings/selectors';

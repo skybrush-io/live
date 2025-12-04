@@ -29,7 +29,7 @@ const MapControlsPresentation = ({
   showMouseCoordinates,
   showScaleLine,
   showZoom,
-}: MapControlsPresentationProps): JSX.Element => (
+}: MapControlsPresentationProps): React.JSX.Element => (
   <>
     {(showZoom ?? true) && <control.Zoom />}
     {(showAttribution ?? true) && (

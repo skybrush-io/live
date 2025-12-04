@@ -31,7 +31,7 @@ const UploadStatusLegend = ({
   onRetryFailedUploads,
   t,
   waiting,
-}: UploadStatusLegendProps): JSX.Element => (
+}: UploadStatusLegendProps): React.JSX.Element => (
   <Box sx={{ display: 'flex', justifyContent: 'space-around' }}>
     <UploadStatusLegendButton
       counter={waiting}
