@@ -50,7 +50,6 @@ export const typeIndicatorStyle = {
  * (AMSL, AHL, AGL or local)
  */
 const altitudeGetters = {
-  /* eslint-disable object-shorthand */
   [AltitudeSummaryType.AMSL]: (uav) => uav?.position?.amsl,
   [AltitudeSummaryType.AHL]: (uav) => uav?.position?.ahl,
   [AltitudeSummaryType.AGL]: (uav) => uav?.position?.agl,
@@ -60,7 +59,6 @@ const altitudeGetters = {
     return Array.isArray(pos) ? pos[2] : null;
   },
   dummy: () => null,
-  /* eslint-enable object-shorthand */
 };
 
 const findAltitudeBounds = (type) => (state) => {
