@@ -4,6 +4,7 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import Slider from '@mui/material/Slider';
+import Typography from '@mui/material/Typography';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -186,15 +187,19 @@ export type LightConfigurationProps = Omit<
   'configuration'
 > & { disabled?: boolean };
 
+const requiredServerVersion: [number, number] = [2, 40] as const;
+
 const LightConfigurationForm = (props: LightConfigurationProps) => {
-  const { lightEffectType, onLightEffectTypeChanged } = props;
+  const { disabled, lightEffectType, onLightEffectTypeChanged } = props;
   const { t } = useTranslation(undefined, {
     keyPrefix: 'showConfiguratorDialog.lights',
   });
   const checkServerVersion = useSelector(getServerVersionSupportValidator);
-  const disabled = (props.disabled ?? false) || !checkServerVersion(2, 40);
   const labelId = 'light-effect-type-label';
-  return (
+  return checkServerVersion(
+    requiredServerVersion[0],
+    requiredServerVersion[1]
+  ) ? (
     <>
       <FormControl fullWidth variant='filled'>
         <InputLabel id={labelId}>{t('selectLabel')}</InputLabel>
@@ -233,6 +238,12 @@ const LightConfigurationForm = (props: LightConfigurationProps) => {
         />
       )}
     </>
+  ) : (
+    <Typography color='warning'>
+      {t('unsupportedVersion', {
+        minVersion: `${requiredServerVersion[0]}.${requiredServerVersion[1]}`,
+      })}
+    </Typography>
   );
 };
 

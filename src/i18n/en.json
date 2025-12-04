@@ -683,7 +683,8 @@
         "off": "Off",
         "solid": "Solid",
         "sparks": "Sparks"
-      }
+      },
+      "unsupportedVersion": "Light configuration requires server version {{minVersion}} or higher."
     },
     "settings": {
       "dronesVisible": "Show drones"
