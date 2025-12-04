@@ -21,6 +21,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   drone selection. The feature works in combination with the drone selection
   hotkeys.
 
+- Added a new dialog for planning emergency RTH trajectories.
+
 - Added a compass calibration operation to the UAVs panel.
 
 - Added Polish translation, thanks to our translator community!
