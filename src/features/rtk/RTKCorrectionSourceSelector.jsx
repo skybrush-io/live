@@ -9,6 +9,7 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { withTranslation } from 'react-i18next';
@@ -151,7 +152,7 @@ const RTKCorrectionSourceSelector = ({
       <Box display='flex' alignItems='center' style={{ gap: '8px' }}>
         <FormControl
           variant='filled'
-          error={hasError && !loading}
+          error={Boolean(hasError) && !loading}
           style={{ flex: 1 }}
         >
           <InputLabel htmlFor='rtk-corrections'>
@@ -159,8 +160,8 @@ const RTKCorrectionSourceSelector = ({
           </InputLabel>
           <Select
             displayEmpty
-            disabled={Boolean(hasError || loading || !hasPresets)}
-            value={currentValue}
+            disabled={loading}
+            value={hasError ? NULL_ID : currentValue}
             inputProps={{ id: 'rtk-corrections' }}
             onChange={handleChange}
           >
@@ -170,7 +171,9 @@ const RTKCorrectionSourceSelector = ({
               </MenuItem>
             ) : hasError ? (
               <MenuItem disabled value={NULL_ID}>
-                {t('RTKCorrectionSourceSelector.error')}
+                <Typography color='error'>
+                  {hasError.message || t('RTKCorrectionSourceSelector.error')}
+                </Typography>
               </MenuItem>
             ) : hasPresets ? (
               [nullPreset, ...presets].map((preset) => (
