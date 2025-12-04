@@ -199,8 +199,7 @@ const RTKPresetDialogFormPresentation = ({
         const presetData = {
           title: values.title,
           ...(filteredSources.length > 0 && { sources: filteredSources }),
-          ...(values.format &&
-            values.format !== 'auto' && { format: values.format }),
+          ...(values.format && { format: values.format }),
         };
 
         if (isNew) {
