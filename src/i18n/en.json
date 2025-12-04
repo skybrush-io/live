@@ -76,7 +76,8 @@
   "antennaPositionIndicator": {
     "antennaPositionNotKnown": "Antenna position not known",
     "clickToToggle": "Click to toggle between lon/lat and ECEF format",
-    "copyToClipboard": "Copy to clipboard"
+    "copyToClipboard": "Copy to clipboard",
+    "useSavedCoordinate": "Use saved coordinate"
   },
   "augmentMappingButton": {
     "assignSparesToEmptySlots": "Assign spares to empty slots"

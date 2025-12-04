@@ -1,5 +1,4 @@
 import Place from '@mui/icons-material/Place';
-import Restore from '@mui/icons-material/Restore';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import makeStyles from '@mui/styles/makeStyles';
@@ -113,19 +112,12 @@ const RTKSetupDialogBottomPanel = ({
             )}
             <SurveyStatusIndicator {...surveyStatus} />
             <Box sx={{ flex: '1' }} />
-            {onShowSavedCoordinates && (
-              <Tooltip content='Use saved coordinate'>
-                <span>
-                  <IconButton
-                    disabled={!hasSavedCoordinates}
-                    onClick={handleShowSavedCoordinates}
-                  >
-                    <Restore />
-                  </IconButton>
-                </span>
-              </Tooltip>
-            )}
-            <AntennaPositionIndicator />
+            <AntennaPositionIndicator
+              hasSavedCoordinates={hasSavedCoordinates}
+              onShowSavedCoordinates={
+                onShowSavedCoordinates ? handleShowSavedCoordinates : undefined
+              }
+            />
           </Box>
         </FadeAndSlide>
         <FadeAndSlide in={surveySettingsVisible}>
