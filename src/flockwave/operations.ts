@@ -160,7 +160,7 @@ export async function setParameters(
  */
 export async function setRTKCorrectionsSource(
   hub: MessageHub,
-  presetId: string
+  presetId: string | null
 ) {
   const response = await hub.sendMessage({
     type: 'X-RTK-SOURCE',
@@ -168,9 +168,10 @@ export async function setRTKCorrectionsSource(
   });
 
   if (response.body.type !== 'ACK-ACK') {
+    const body = response.body as any;
     const errorMessage =
-      response.body.reason ||
-      response.body.error ||
+      body.reason ||
+      body.error ||
       'Failed to set new RTK correction source';
     throw new Error(errorMessage);
   }
@@ -179,20 +180,24 @@ export async function setRTKCorrectionsSource(
 /**
  * Creates a new RTK preset on the server.
  */
-export async function createRTKPreset(hub, preset) {
+export async function createRTKPreset(
+  hub: MessageHub,
+  preset: Record<string, unknown>
+) {
   const response = await hub.sendMessage({
     type: 'X-RTK-NEW',
     preset,
   });
 
   if (response.body.type === 'X-RTK-NEW') {
-    return response.body.id;
+    return (response.body as any).id;
   }
 
   if (response.body.type !== 'ACK-ACK') {
+    const body = response.body as any;
     const errorMessage =
-      response.body.reason ||
-      response.body.error ||
+      body.reason ||
+      body.error ||
       'Failed to create RTK preset';
     throw new Error(errorMessage);
   }
@@ -201,7 +206,11 @@ export async function createRTKPreset(hub, preset) {
 /**
  * Updates an existing RTK preset on the server.
  */
-export async function updateRTKPreset(hub, presetId, preset) {
+export async function updateRTKPreset(
+  hub: MessageHub,
+  presetId: string,
+  preset: Record<string, unknown>
+) {
   const response = await hub.sendMessage({
     type: 'X-RTK-UPDATE',
     ids: [presetId],
@@ -214,9 +223,10 @@ export async function updateRTKPreset(hub, presetId, preset) {
     response.body.type !== 'ACK-ACK' &&
     response.body.type !== 'X-RTK-UPDATE'
   ) {
+    const body = response.body as any;
     const errorMessage =
-      response.body.reason ||
-      response.body.error ||
+      body.reason ||
+      body.error ||
       'Failed to update RTK preset';
     throw new Error(errorMessage);
   }
@@ -225,16 +235,17 @@ export async function updateRTKPreset(hub, presetId, preset) {
 /**
  * Deletes an existing RTK preset from the server.
  */
-export async function deleteRTKPreset(hub, presetId) {
+export async function deleteRTKPreset(hub: MessageHub, presetId: string) {
   const response = await hub.sendMessage({
     type: 'X-RTK-DEL',
     ids: [presetId],
   });
 
   if (response.body.type !== 'X-RTK-DEL') {
+    const body = response.body as any;
     const errorMessage =
-      response.body.reason ||
-      response.body.error ||
+      body.reason ||
+      body.error ||
       'Failed to delete RTK preset';
     throw new Error(errorMessage);
   }
@@ -245,15 +256,16 @@ export async function deleteRTKPreset(hub, presetId) {
 /**
  * Persists all current user presets to disk on the server.
  */
-export async function saveRTKPresets(hub) {
+export async function saveRTKPresets(hub: MessageHub) {
   const response = await hub.sendMessage({
     type: 'X-RTK-SAVE',
   });
 
   if (response.body.type !== 'ACK-ACK') {
+    const body = response.body as any;
     const errorMessage =
-      response.body.reason ||
-      response.body.error ||
+      body.reason ||
+      body.error ||
       'Failed to save RTK presets';
     throw new Error(errorMessage);
   }
@@ -308,9 +320,10 @@ export async function startRTKSurvey(
   });
 
   if (response.body.type !== 'ACK-ACK') {
+    const body = response.body as any;
     const errorMessage =
-      response.body.reason ||
-      response.body.error ||
+      body.reason ||
+      body.error ||
       'Failed to start RTK survey on the server';
     throw new Error(errorMessage);
   }
@@ -320,7 +333,10 @@ export async function startRTKSurvey(
  * Sets the RTK antenna position on the server by submitting explicit
  * survey settings that contain a fixed position instead of starting a survey.
  */
-export async function setRTKAntennaPosition(hub, { position, accuracy }) {
+export async function setRTKAntennaPosition(
+  hub: MessageHub,
+  { position, accuracy }: { position: [number, number, number]; accuracy: number }
+) {
   const response = await hub.sendMessage({
     type: 'X-RTK-SURVEY',
     settings: {
@@ -330,9 +346,10 @@ export async function setRTKAntennaPosition(hub, { position, accuracy }) {
   });
 
   if (response.body.type !== 'ACK-ACK') {
+    const body = response.body as any;
     const errorMessage =
-      response.body.reason ||
-      response.body.error ||
+      body.reason ||
+      body.error ||
       'Failed to set RTK antenna position on the server';
     throw new Error(errorMessage);
   }
