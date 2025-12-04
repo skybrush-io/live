@@ -1,8 +1,8 @@
+import Box from '@mui/material/Box';
+import type { TFunction } from 'i18next';
 import React from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
-
-import Box from '@material-ui/core/Box';
 
 import { Status } from '~/components/semantics';
 
@@ -10,7 +10,6 @@ import { restartSuccessfulUploads, retryFailedUploads } from './actions';
 import { getUploadStatusCodeCounters } from './selectors';
 import { clearUploadQueue } from './slice';
 import UploadStatusLegendButton from './UploadStatusLegendButton';
-import type { TFunction } from 'i18next';
 
 type UploadStatusLegendProps = Readonly<{
   failed: number;
@@ -33,7 +32,7 @@ const UploadStatusLegend = ({
   t,
   waiting,
 }: UploadStatusLegendProps): JSX.Element => (
-  <Box display='flex' justifyContent='space-around'>
+  <Box sx={{ display: 'flex', justifyContent: 'space-around' }}>
     <UploadStatusLegendButton
       counter={waiting}
       label={t('general.status.waiting')}

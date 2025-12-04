@@ -63,7 +63,7 @@ const environments = {
 /**
  * Component that renders a basic scenery in which the drones will be placed.
  */
-const Scenery = ({ grid, type }) => {
+const Scenery = ({ grid, type = 'outdoor-dark' }) => {
   const scale = type === 'indoor-light' || type === 'indoor-dark' ? 0.5 : 10;
   return (
     <a-entity position='0 -0.02 0' scale={`${scale} ${scale} ${scale}`}>
@@ -81,10 +81,6 @@ const Scenery = ({ grid, type }) => {
 Scenery.propTypes = {
   grid: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
   type: PropTypes.oneOf(Object.keys(environments)),
-};
-
-Scenery.defaultProps = {
-  type: 'outdoor-dark',
 };
 
 export default memo(Scenery);

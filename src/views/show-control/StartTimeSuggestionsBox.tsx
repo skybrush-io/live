@@ -1,6 +1,7 @@
-import Box from '@material-ui/core/Box';
-import Typography from '@material-ui/core/Typography';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 import React from 'react';
+
 import StartTimeSuggestions, {
   type StartTimeSuggestionsProps,
 } from './StartTimeSuggestions';
@@ -14,8 +15,10 @@ const StartTimeSuggestionsBox = ({
   label,
   ...rest
 }: StartTimeSuggestionsBoxProps): JSX.Element => (
-  <Box mt={1} flexDirection='row' display='flex' alignItems='center'>
-    <Box mr={2}>
+  <Box
+    sx={{ mt: 1, flexDirection: 'row', display: 'flex', alignItems: 'center' }}
+  >
+    <Box sx={{ mr: 2 }}>
       <Typography variant='body2' color='textSecondary'>
         {label}
       </Typography>

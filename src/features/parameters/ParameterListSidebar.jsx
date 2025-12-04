@@ -1,17 +1,16 @@
+import Delete from '@mui/icons-material/Delete';
+import FolderOpen from '@mui/icons-material/FolderOpen';
+import NavigateNext from '@mui/icons-material/NavigateNext';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
+import ListItemButton from '@mui/material/ListItemButton';
+import makeStyles from '@mui/styles/makeStyles';
+import { animated, useTransition } from '@react-spring/web';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
-import { animated, useTransition } from '@react-spring/web';
-
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
-import ListItem from '@material-ui/core/ListItem';
-import { makeStyles } from '@material-ui/core/styles';
-import Delete from '@material-ui/icons/Delete';
-import FolderOpen from '@material-ui/icons/FolderOpen';
-import NavigateNext from '@material-ui/icons/NavigateNext';
+import { connect } from 'react-redux';
 
 import MiniList from '@skybrush/mui-components/lib/MiniList';
 import Tooltip from '@skybrush/mui-components/lib/Tooltip';
@@ -94,6 +93,7 @@ const ParameterListSidebar = ({
         <Tooltip content={t('parameterListSidebar.removeAllItems')}>
           <IconButton
             disabled={!manifest || manifest.length === 0}
+            size='large'
             onClick={onRemoveAllItems}
           >
             <Delete />
@@ -109,14 +109,12 @@ const ParameterListSidebar = ({
               ...rest,
             }}
           >
-            <ListItem button onClick={() => onRemoveItem(name)}>
-              <Box display='flex' flexDirection='row' flexGrow={1}>
-                <Box flexGrow={1}>{name}</Box>
-                <Box color='text.secondary' ml={1}>
-                  {value}
-                </Box>
+            <ListItemButton onClick={() => onRemoveItem(name)}>
+              <Box sx={{ display: 'flex', flexDirection: 'row', flexGrow: 1 }}>
+                <Box sx={{ flexGrow: 1 }}>{name}</Box>
+                <Box sx={{ color: 'text.secondary', ml: 1 }}>{value}</Box>
               </Box>
-            </ListItem>
+            </ListItemButton>
           </animated.div>
         ))}
       </MiniList>

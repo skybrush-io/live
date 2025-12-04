@@ -1,18 +1,18 @@
+import NavigateBefore from '@mui/icons-material/NavigateBefore';
+import NavigateNext from '@mui/icons-material/NavigateNext';
+import SaveAlt from '@mui/icons-material/SaveAlt';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Collapse from '@mui/material/Collapse';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemText from '@mui/material/ListItemText';
 import { Base64 } from 'js-base64';
 import memoizee from 'memoizee';
 import PropTypes from 'prop-types';
 import React, { useCallback, useMemo, useState } from 'react';
 import { connect } from 'react-redux';
-
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import Collapse from '@material-ui/core/Collapse';
-import DialogActions from '@material-ui/core/DialogActions';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import NavigateBefore from '@material-ui/icons/NavigateBefore';
-import NavigateNext from '@material-ui/icons/NavigateNext';
-import SaveAlt from '@material-ui/icons/SaveAlt';
 
 import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
 import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
@@ -34,9 +34,9 @@ import {
 
 const FirmwareUpdateTargetSelectorPresentation = selectableListOf(
   ({ name, id }, { onItemSelected }) => (
-    <ListItem key={id} button onClick={onItemSelected}>
+    <ListItemButton key={id} onClick={onItemSelected}>
       <ListItemText primary={name} secondary={id} />
-    </ListItem>
+    </ListItemButton>
   ),
   {
     dataProvider: 'items',
@@ -100,40 +100,42 @@ const FirmwareUpdateSetupDialog = ({ onClose, onNext, open }) => {
       // TODO: Maybe call `getTargets.clear()` on close instead of `maxAge`
       onClose={onClose}
     >
-      <Box>
-        <Collapse in={target === undefined}>
-          <FirmwareUpdateTargetSelector
-            getTargets={getTargets}
-            onChange={(_event, value) => setTarget(value)}
-          />
-        </Collapse>
+      <DialogContent>
+        <Box>
+          <Collapse in={target === undefined}>
+            <FirmwareUpdateTargetSelector
+              getTargets={getTargets}
+              onChange={(_event, value) => setTarget(value)}
+            />
+          </Collapse>
+          <Collapse in={target !== undefined}>
+            <FileButton style={{ width: '100%' }} onSelected={setFile}>
+              <Box sx={{ textAlign: 'center' }}>
+                <SaveAlt style={{ fontSize: 128 }} />
+                <br />
+                {file === undefined
+                  ? 'Click or drag & drop to select file'
+                  : `${file.name} (${formatData(file.size)})`}
+              </Box>
+            </FileButton>
+          </Collapse>
+        </Box>
         <Collapse in={target !== undefined}>
-          <FileButton style={{ width: '100%' }} onSelected={setFile}>
-            <Box textAlign='center'>
-              <SaveAlt style={{ fontSize: 128 }} />
-              <br />
-              {file === undefined
-                ? 'Click or drag & drop to select file'
-                : `${file.name} (${formatData(file.size)})`}
-            </Box>
-          </FileButton>
+          <DialogActions>
+            <Button startIcon={<NavigateBefore />} onClick={onBack}>
+              Back
+            </Button>
+            <Box sx={{ flex: 1 }} />
+            <Button
+              disabled={file === undefined}
+              endIcon={<NavigateNext />}
+              onClick={() => onNext(target, file)}
+            >
+              Next
+            </Button>
+          </DialogActions>
         </Collapse>
-      </Box>
-      <Collapse in={target !== undefined}>
-        <DialogActions>
-          <Button startIcon={<NavigateBefore />} onClick={onBack}>
-            Back
-          </Button>
-          <Box flex={1} />
-          <Button
-            disabled={file === undefined}
-            endIcon={<NavigateNext />}
-            onClick={() => onNext(target, file)}
-          >
-            Next
-          </Button>
-        </DialogActions>
-      </Collapse>
+      </DialogContent>
     </DraggableDialog>
   );
 };

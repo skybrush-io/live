@@ -2,12 +2,11 @@
  * @file React component showing a marker line in a chat session.
  */
 
+import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import React from 'react';
 import TimeAgo from 'react-timeago';
-
-import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -36,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
 /**
  * Stateless React component showing a marker line in a chat session.
  */
-export const Marker = ({ date, level, message }) => {
+export const Marker = ({ date, level = 'info', message = '' }) => {
   const classes = useStyles();
   const className = clsx(
     classes.root,
@@ -58,11 +57,6 @@ Marker.propTypes = {
   level: PropTypes.string,
   message: PropTypes.string,
   date: PropTypes.instanceOf(Date),
-};
-
-Marker.defaultProps = {
-  level: 'info',
-  message: '',
 };
 
 export default Marker;

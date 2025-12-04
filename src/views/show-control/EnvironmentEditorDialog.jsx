@@ -1,11 +1,10 @@
+import Box from '@mui/material/Box';
+import DialogContent from '@mui/material/DialogContent';
+import Typography from '@mui/material/Typography';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
-
-import Box from '@material-ui/core/Box';
-import DialogContent from '@material-ui/core/DialogContent';
-import Typography from '@material-ui/core/Typography';
 
 import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
 
@@ -32,7 +31,7 @@ Instructions.propTypes = {
  * Presentation component for the dialog that shows the form that the user
  * can use to edit the environment settings of a drone show.
  */
-const EnvironmentEditorDialog = ({ editing, onClose, type, t }) => (
+const EnvironmentEditorDialog = ({ editing = false, onClose, type, t }) => (
   <DraggableDialog
     fullWidth
     open={editing}
@@ -41,7 +40,7 @@ const EnvironmentEditorDialog = ({ editing, onClose, type, t }) => (
     onClose={onClose}
   >
     <DialogContent>
-      <Box my={2}>
+      <Box>
         <Instructions type={type} />
         {type === 'outdoor' && <OutdoorEnvironmentEditor />}
         {type === 'indoor' && <IndoorEnvironmentEditor />}
@@ -55,10 +54,6 @@ EnvironmentEditorDialog.propTypes = {
   onClose: PropTypes.func,
   type: PropTypes.oneOf(['indoor', 'outdoor']),
   t: PropTypes.func,
-};
-
-EnvironmentEditorDialog.defaultProps = {
-  editing: false,
 };
 
 export default connect(

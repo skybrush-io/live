@@ -1,9 +1,8 @@
+import Error from '@mui/icons-material/Error';
+import Button from '@mui/material/Button';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { useAsyncRetry } from 'react-use';
-
-import Button from '@material-ui/core/Button';
-import Error from '@material-ui/icons/Error';
 
 import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
 import LargeProgressIndicator from '@skybrush/mui-components/lib/LargeProgressIndicator';

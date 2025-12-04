@@ -56,9 +56,9 @@ export const MapLayers = ({
         <CurrentLayer
           key={`${layer.id}_rendered`}
           layer={layer}
-          onFeaturesModified={onFeaturesModified}
           selectedTool={selectedTool}
           zIndex={zIndex}
+          onFeaturesModified={onFeaturesModified}
         />
       );
       zIndex++;

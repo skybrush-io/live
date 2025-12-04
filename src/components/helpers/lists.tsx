@@ -4,6 +4,10 @@
  * @file List-related component helper functions and higher order components.
  */
 
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
+import type { AnyAction } from '@reduxjs/toolkit';
 import get from 'lodash-es/get';
 import identity from 'lodash-es/identity';
 import includes from 'lodash-es/includes';
@@ -12,12 +16,6 @@ import partial from 'lodash-es/partial';
 import xor from 'lodash-es/xor';
 import PropTypes from 'prop-types';
 import React, { type PropsWithoutRef, type RefAttributes } from 'react';
-import { isElement } from 'react-is';
-
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-
-import type { AnyAction } from '@reduxjs/toolkit';
 
 import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
 
@@ -80,15 +78,14 @@ const createBackgroundHint = (
   backgroundHint: string | React.ReactElement | undefined,
   ref: React.ForwardedRef<unknown>
 ): JSX.Element | null => {
-  if (isElement(backgroundHint)) {
-    return <div>{backgroundHint}</div>;
+  switch (typeof backgroundHint) {
+    case 'string':
+      return <BackgroundHint ref={ref} text={backgroundHint} />;
+    case 'undefined':
+      return null;
+    default:
+      return backgroundHint ? <div>{backgroundHint}</div> : null;
   }
-
-  if (backgroundHint) {
-    return <BackgroundHint ref={ref} text={backgroundHint} />;
-  }
-
-  return null;
 };
 
 /**
@@ -123,8 +120,8 @@ const createBackgroundHint = (
  * @return {React.Component}  the constructed React component
  */
 export function listOf<T extends ItemWithId, P>(
-  itemRenderer: ItemRenderer<T, P>,
-  options: ListOfOptions<T, P> = {}
+  itemRenderer: ItemRenderer<T, PropsWithoutRef<P>>,
+  options: ListOfOptions<T, PropsWithoutRef<P>> = {}
 ): React.ForwardRefExoticComponent<
   PropsWithoutRef<P> & RefAttributes<unknown>
 > {
@@ -138,7 +135,7 @@ export function listOf<T extends ItemWithId, P>(
   itemRenderer = validateItemRenderer(itemRenderer);
 
   // A separate variable is needed here to make ESLint happy
-  const ListView = React.forwardRef((props: P, ref) => {
+  const ListView = React.forwardRef<unknown, P>((props, ref) => {
     const items = dataProvider(props);
     const children = postprocess(
       items.map((item) => itemRenderer(item, props)),
@@ -351,8 +348,8 @@ export function selectableListOf<
   T extends ItemWithId,
   P extends SelectableListProps<T>,
 >(
-  itemRenderer: ItemRenderer<T, P>,
-  options: Partial<ValidatedListOfOptions<T, P>> = {}
+  itemRenderer: ItemRenderer<T, PropsWithoutRef<P>>,
+  options: Partial<ValidatedListOfOptions<T, PropsWithoutRef<P>>> = {}
 ): React.ForwardRefExoticComponent<
   PropsWithoutRef<P> & React.RefAttributes<unknown>
 > {
@@ -366,7 +363,7 @@ export function selectableListOf<
   itemRenderer = validateItemRenderer(itemRenderer);
 
   // A separate variable is needed here to make ESLint happy
-  const SelectableListView = React.forwardRef((props: P, ref) => {
+  const SelectableListView = React.forwardRef<unknown, P>((props, ref) => {
     const items = dataProvider(props);
     const children = postprocess(
       items.map((item) =>
@@ -464,7 +461,7 @@ export function multiSelectableListOf<
   P extends MultiSelectableListProps,
 >(
   itemRenderer: ItemRenderer<T, P>,
-  options: Partial<ValidatedListOfOptions<T, P>> = {}
+  options: Partial<ValidatedListOfOptions<T, React.PropsWithoutRef<P>>> = {}
 ): React.ForwardRefExoticComponent<
   PropsWithoutRef<P> & React.RefAttributes<unknown>
 > {
@@ -478,7 +475,7 @@ export function multiSelectableListOf<
   itemRenderer = validateItemRenderer(itemRenderer);
 
   // A separate variable is needed here to make ESLint happy
-  const MultiSelectableListView = React.forwardRef((props: P, ref) => {
+  const MultiSelectableListView = React.forwardRef<unknown, P>((props, ref) => {
     const items = dataProvider(props);
     const onItemSelected = createSelectionHandlerFactory({
       activateItem: props.onActivate,
@@ -493,7 +490,7 @@ export function multiSelectableListOf<
             ...props,
             onChange: undefined,
             onItemSelected: onItemSelected(item.id),
-          },
+          } as P,
           includes(props.value, item.id)
         )
       ),
@@ -588,7 +585,10 @@ function validateItemRenderer<T extends ItemWithId, P>(
 ): ItemRenderer<T, P> {
   if (Object.prototype.isPrototypeOf.call(React.Component, itemRenderer)) {
     /* eslint-disable react/prop-types */
-    const clickHandler = itemRenderer === ListItem ? 'onTouchTap' : 'onClick';
+    const clickHandler =
+      itemRenderer === ListItem || itemRenderer == ListItemButton
+        ? 'onTouchTap'
+        : 'onClick';
     return (item: T, props: P, selected = false) => {
       return React.createElement(itemRenderer as any, {
         ...item,

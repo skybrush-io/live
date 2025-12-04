@@ -1,9 +1,8 @@
+import Box from '@mui/material/Box';
+import Fade from '@mui/material/Fade';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-
-import Box from '@material-ui/core/Box';
-import Fade from '@material-ui/core/Fade';
 
 import LabeledStatusLight from '@skybrush/mui-components/lib/LabeledStatusLight';
 
@@ -42,11 +41,16 @@ const SurveyStatusIndicator = ({
   return (
     <Fade in={supported || true}>
       <Box
-        alignItems='center'
-        flex={1}
-        display='flex'
-        flexDirection='row'
         {...rest}
+        sx={[
+          {
+            alignItems: 'center',
+            flex: 1,
+            display: 'flex',
+            flexDirection: 'row',
+          },
+          ...(Array.isArray(rest.sx) ? rest.sx : [rest.sx]),
+        ]}
       >
         <LabeledStatusLight
           size='small'

@@ -2,19 +2,17 @@
  * @file Generic input dialog to request data from the user based on a schema.
  */
 
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import { Form } from '@rjsf/mui';
+import validator from '@rjsf/validator-ajv8';
 import * as React from 'react';
 import { connect } from 'react-redux';
 
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-
 import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
-
-import Form from '@rjsf/material-ui';
-import validator from '@rjsf/validator-ajv8';
 
 import { cancelPromptDialog, submitPromptDialog } from './actions';
 import type { PromptSliceState } from './slice';
@@ -27,14 +25,15 @@ type FormValues = {
 type PromptDialogFormProps = Pick<
   PromptOptions,
   'cancelButtonLabel' | 'message' | 'submitButtonLabel'
-> & {
-  initialValues: FormValues;
-  onCancel: () => void;
-  onSubmit: (event: { formData?: Record<string, any> }) => void;
-  optimizeUIForTouch?: boolean;
-  schema: Record<string, any>;
-  type: PromptDialogType;
-};
+> &
+  Readonly<{
+    initialValues: FormValues;
+    onCancel: () => void;
+    onSubmit: (event: { formData?: Record<string, any> }) => void;
+    optimizeUIForTouch?: boolean;
+    schema: Record<string, any>;
+    type: PromptDialogType;
+  }>;
 
 const PromptDialogForm: React.FunctionComponent<PromptDialogFormProps> = ({
   cancelButtonLabel,
@@ -48,7 +47,7 @@ const PromptDialogForm: React.FunctionComponent<PromptDialogFormProps> = ({
 }) => (
   <DialogContent>
     {message && (
-      <Box py={1}>
+      <Box sx={{ py: 1 }}>
         <DialogContentText>{message}</DialogContentText>
       </Box>
     )}

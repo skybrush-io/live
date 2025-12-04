@@ -32,7 +32,7 @@ module.exports = merge(baseConfig, {
     // 1.1.0
     new webpack.ProvidePlugin({
       Buffer: ['buffer', 'Buffer'],
-      process: 'process/browser',
+      process: require.resolve('process/browser'),
     }),
 
     // Create index.html on-the-fly

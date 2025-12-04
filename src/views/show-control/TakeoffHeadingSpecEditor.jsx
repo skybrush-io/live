@@ -1,23 +1,21 @@
+import Explore from '@mui/icons-material/Explore';
+import Box from '@mui/material/Box';
+import FormControl from '@mui/material/FormControl';
+import IconButton from '@mui/material/IconButton';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import { Translation } from 'react-i18next';
 
-import Box from '@material-ui/core/Box';
-import FormControl from '@material-ui/core/FormControl';
-import IconButton from '@material-ui/core/IconButton';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
-import Explore from '@material-ui/icons/Explore';
-
 import Tooltip from '@skybrush/mui-components/lib/Tooltip';
 
+import RotationField from '~/components/RotationField';
 import {
   DEFAULT_TAKEOFF_HEADING,
   TakeoffHeadingMode,
 } from '~/features/show/constants';
-
-import RotationField from '~/components/RotationField';
 
 export const TakeoffHeadingSpecEditor = ({
   takeoffHeading,
@@ -49,7 +47,7 @@ export const TakeoffHeadingSpecEditor = ({
   return (
     <Translation>
       {(t) => (
-        <Box display='flex' flexDirection='row'>
+        <Box sx={{ display: 'flex', flexDirection: 'row' }}>
           <FormControl fullWidth variant='filled'>
             <InputLabel htmlFor='takeoff-heading-type'>
               {t('takeoffHeadingSpecEditor.UAVheadings')}
@@ -74,7 +72,7 @@ export const TakeoffHeadingSpecEditor = ({
               </MenuItem>
             </Select>
           </FormControl>
-          <Box p={1} />
+          <Box sx={{ p: 1 }} />
           <RotationField
             disabled={type === TakeoffHeadingMode.NONE}
             style={{ minWidth: 160 }}
@@ -88,11 +86,15 @@ export const TakeoffHeadingSpecEditor = ({
             onChange={onValueChanged}
           />
           {onSetToAverageHeading && (
-            <Box alignSelf='bottom' pt={1}>
+            <Box sx={{ alignSelf: 'bottom', pt: 1 }}>
               <Tooltip
                 content={t('takeoffHeadingSpecEditor.setToAvergaeHeading')}
               >
-                <IconButton edge='end' onClick={onSetToAverageHeading}>
+                <IconButton
+                  edge='end'
+                  size='large'
+                  onClick={onSetToAverageHeading}
+                >
                   <Explore />
                 </IconButton>
               </Tooltip>

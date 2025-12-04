@@ -9,8 +9,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Added a switch to the header of upload dialogs that allows the displayed list
-  of items to be filtered to the global selection.
+- Added estimated completion time for the upload dialogs.
+
+- Parameters are now uploaded with a more efficient bulk upload protocol if the
+  server supports it (requires a server with version 2.34.1 or later).
+
+- The show adaptation dialog now allows you to specify the desired duration of
+  the transition from takeoff to the first formation of the show.
+
+- Upload dialogs can now be restricted to only showing and acting on the global
+  drone selection. The feature works in combination with the drone selection
+  hotkeys.
+
+- Added Polish translation, thanks to our translator community!
+
+### Changed
+
+- Show files are now parsed and loaded in a separate worker thread so the
+  loading process does not block the UI any more.
+
+- The coordinate system of a show is now fitted on a separate worker thread so
+  the calculation does not block the UI any more.
+
+- Optimized the calculation of the minimum distance between takeoff and landing
+  positions, shaving off several seconds from the time needed to load a show with
+  several thousands of drones.
+
+### Fixed
+
+- Fixed a bug in the Google Maps layer (used only in special configurations)
+  where the terrain disappeared when zooming in too close.
 
 ## [2.11.0] - 2025-07-23
 

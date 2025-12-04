@@ -1,9 +1,8 @@
+import Box from '@mui/material/Box';
+import Dialog from '@mui/material/Dialog';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
-
-import Box from '@material-ui/core/Box';
-import Dialog from '@material-ui/core/Dialog';
 
 import BearingCalculator from './BearingCalculator';
 import CoordinateAveragingDialogToolbar from './CoordinateAveragingDialogToolbar';
@@ -18,12 +17,14 @@ const CoordinateAveragingDialog = ({ onClose, open }) => (
   <Dialog fullWidth open={open} maxWidth='sm' onClose={onClose}>
     <CoordinateAveragingDialogToolbar />
     <Box
-      display='flex'
-      flexDirection='row'
-      alignItems='stretch'
-      minHeight={240}
+      sx={{
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'stretch',
+        minHeight: 240,
+      }}
     >
-      <Box flex={1}>
+      <Box sx={{ flex: 1 }}>
         <MeasurementList />
       </Box>
       {/*
@@ -35,7 +36,7 @@ const CoordinateAveragingDialog = ({ onClose, open }) => (
       </Box>
       */}
     </Box>
-    <Box className='bottom-bar' textAlign='center' py={1}>
+    <Box className='bottom-bar' sx={{ textAlign: 'center', py: 1 }}>
       <BearingCalculator />
     </Box>
   </Dialog>

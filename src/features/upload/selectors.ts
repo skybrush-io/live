@@ -375,16 +375,16 @@ export const getUAVIdList = createSelector(
  *
  * Null entries are ignored.
  *
- * The result is sorted in ascending order by mission indices. (In other words,
- * UAV IDs that correspond to earlier slots in the mission mapping are
- * returned first).
+ * The result is sorted in ascending order by mission indices, and not by show
+ * IDs! In other words, UAV IDs that correspond to earlier slots in the mission
+ * mapping are returned first.
  *
  * Note that this also includes the IDs of UAVs that are currently not seen
  * by the server but are nevertheless in the mapping.
  */
-export const getMissionUAVIdsForUploadJob = createSelector(
+const getMissionUAVIdsForUploadJob = createSelector(
   getMissionMapping,
-  (mapping) => rejectNullish(mapping).toSorted()
+  (mapping) => rejectNullish(mapping)
 );
 
 /**
@@ -418,7 +418,9 @@ export const getUploadDialogIdList = createSelector(
         break;
     }
 
-    return selector(state);
+    const result = selector(state);
+
+    return result;
   }
 );
 
@@ -451,3 +453,10 @@ export const hasHiddenTargets = createSelector(
     return targets.some((id) => !visible.has(id));
   }
 );
+
+/**
+ * Returns the estimated completion time of the current upload job, or
+ * undefined if no such time can be estimated.
+ */
+export const getEstimatedCompletionTime = (state: RootState) =>
+  state.upload.timing?.estimatedEndAt;

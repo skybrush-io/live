@@ -12,6 +12,8 @@ import type VectorSource from 'ol/source/Vector';
 import React, { useCallback, useMemo } from 'react';
 import { connect } from 'react-redux';
 
+import ToolbarDivider from '~/components/ToolbarDivider';
+import UndoRedoButtons from '~/components/UndoRedoButtons';
 import Colors from '~/components/colors';
 import { Map, MapToolbars } from '~/components/map';
 import { type ViewProperties } from '~/components/map/Map';
@@ -39,8 +41,6 @@ import { FeaturesLayer } from '~/components/map/layers/features';
 import { UAVsLayer, type UAVsLayerProps } from '~/components/map/layers/uavs';
 import { noMark } from '~/components/map/layers/utils';
 import { Tool } from '~/components/map/tools';
-import ToolbarDivider from '~/components/ToolbarDivider';
-import UndoRedoButtons from '~/components/UndoRedoButtons';
 import { type GPSPosition } from '~/model/geography';
 import {
   globalIdToAreaId,

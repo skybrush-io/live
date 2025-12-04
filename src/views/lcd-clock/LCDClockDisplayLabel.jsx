@@ -21,7 +21,7 @@ const LCDClockDisplayLabel = ({
   clock,
   clockId,
   clockSkew,
-  format,
+  format = 'HH:mm:ss',
   signed,
   updateInterval,
   ...rest
@@ -54,10 +54,6 @@ LCDClockDisplayLabel.propTypes = {
   format: PropTypes.string,
   signed: PropTypes.bool,
   updateInterval: PropTypes.number,
-};
-
-LCDClockDisplayLabel.defaultProps = {
-  format: 'HH:mm:ss',
 };
 
 export default connect(

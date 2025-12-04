@@ -978,12 +978,22 @@ export function normalizePolygon([points, ...holes]: any): any {
   // TODO: This can be simplified when Turf 7.0.0 gets released, as
   //       difference will support multiple subtrahend features
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
-  const { geometry } = holes.reduce(
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    (poly: any, hole: any) => turfDifference(poly, TurfHelpers.polygon([hole])),
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    TurfHelpers.polygon([points])
-  );
+  const basePolygon = TurfHelpers.polygon([points]);
+  const difference =
+    holes.length > 0
+      ? turfDifference(
+          TurfHelpers.featureCollection([
+            basePolygon,
+            ...holes.map((hole: any) => TurfHelpers.polygon([hole])),
+          ])
+        )
+      : basePolygon;
+
+  if (!difference) {
+    return [];
+  }
+
+  const { geometry } = difference;
 
   switch (geometry.type) {
     case 'Polygon': {
@@ -995,7 +1005,7 @@ export function normalizePolygon([points, ...holes]: any): any {
     }
 
     default: {
-      throw new Error(`Unexpected geometry type: ${geometry.type}`);
+      throw new Error(`Unexpected geometry type: ${(geometry as any).type}`);
     }
   }
 }

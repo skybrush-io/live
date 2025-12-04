@@ -277,9 +277,7 @@ export const adjustHomePositionsToDronePositions =
         item ? [item.lon, item.lat] : ([Number.NaN, Number.NaN] as LonLat),
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const assignment: Array<[number, number]> =
-      findAssignmentInDistanceMatrix(distances);
+    const assignment = findAssignmentInDistanceMatrix(distances);
 
     const newPositions = assignment.map(
       ([homePositionIndex, dronePositionIndex]): [
@@ -299,12 +297,14 @@ export const adjustHomePositionsToDronePositions =
 
 type Meters = number;
 type MetersPerSecond = number;
+type Seconds = number;
 
 export type OptionalShowAdaptParameters = {
   altitude?: Meters | undefined;
   minDistance?: Meters | undefined;
   horizontalVelocity?: MetersPerSecond | undefined;
   verticalVelocity?: MetersPerSecond | undefined;
+  takeoffDuration?: Seconds | undefined;
 };
 
 export type ShowAdaptParameters = Required<OptionalShowAdaptParameters>;
@@ -336,6 +336,7 @@ export const adaptShow =
         type: 'takeoff',
         parameters: {
           positions,
+          duration: params.takeoffDuration || undefined,
           ...common,
         },
       },

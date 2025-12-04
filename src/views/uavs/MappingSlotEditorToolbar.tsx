@@ -1,20 +1,19 @@
-import PropTypes from 'prop-types';
+import Close from '@mui/icons-material/Close';
+import Keyboard from '@mui/icons-material/Keyboard';
+import Box from '@mui/material/Box';
+import Divider from '@mui/material/Divider';
+import IconButton from '@mui/material/IconButton';
+import Toolbar, { type ToolbarProps } from '@mui/material/Toolbar';
+import type { Theme } from '@mui/material/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import React from 'react';
 import { Trans, Translation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import Box from '@material-ui/core/Box';
-import Divider from '@material-ui/core/Divider';
-import IconButton from '@material-ui/core/IconButton';
-import Toolbar, { type ToolbarProps } from '@material-ui/core/Toolbar';
-import { makeStyles } from '@material-ui/core/styles';
-import Close from '@material-ui/icons/Close';
-import Keyboard from '@material-ui/icons/Keyboard';
-
 import { cancelMappingEditorSessionAtCurrentSlot } from '~/features/mission/slice';
 
 const useStyles = makeStyles(
-  (theme) => ({
+  (theme: Theme) => ({
     box: {
       userSelect: 'none',
       whiteSpace: 'nowrap',
@@ -42,7 +41,7 @@ const MappingSlotEditorToolbar = React.forwardRef<
     <Translation>
       {(t) => (
         <Toolbar ref={ref} disableGutters variant='dense' {...rest}>
-          <IconButton disabled>
+          <IconButton disabled size='large'>
             <Keyboard />
           </IconButton>
           <Box className={classes.box}>
@@ -59,8 +58,11 @@ const MappingSlotEditorToolbar = React.forwardRef<
               components={{ kbd: <kbd /> }}
             />
           </Box>
-          <Box flex={1} />
-          <IconButton onClick={cancelMappingEditorSessionAtCurrentSlot}>
+          <Box sx={{ flex: 1 }} />
+          <IconButton
+            size='large'
+            onClick={cancelMappingEditorSessionAtCurrentSlot}
+          >
             <Close />
           </IconButton>
         </Toolbar>

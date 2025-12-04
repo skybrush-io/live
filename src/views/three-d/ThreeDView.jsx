@@ -90,7 +90,7 @@ const ThreeDView = React.forwardRef((props, ref) => {
       xr-mode-ui='enabled: false'
       device-orientation-permission-ui='enabled: false'
       tabIndex={-1}
-      class='react-hotkeys-ignore'
+      class='react-hotkeys-ignore no-focus-ring'
       {...extraSceneProps}
     >
       <a-assets>

@@ -3,7 +3,7 @@ import isNil from 'lodash-es/isNil';
 import orderBy from 'lodash-es/orderBy';
 import sortBy from 'lodash-es/sortBy';
 import { getDistance as haversineDistance } from 'ol/sphere';
-import createCachedSelector from 're-reselect';
+import { createCachedSelector } from 're-reselect';
 
 import { createSelector } from '@reduxjs/toolkit';
 
@@ -498,6 +498,13 @@ const getUAVIdsByAge = (age) => (state) =>
  * (i.e. we have received status information from them in the last few seconds).
  */
 export const getActiveUAVIds = getUAVIdsByAge(UAVAge.ACTIVE);
+
+/**
+ * Selector that selects all UAVs that are currently considered as "inactive"
+ * (i.e. we have not received status information from them in the last few
+ * seconds but we hope that they will re-appear).
+ */
+export const getInactiveUAVIds = getUAVIdsByAge(UAVAge.INACTIVE);
 
 /**
  * Selector that selects all UAV IDs that are in the mission mapping and whose

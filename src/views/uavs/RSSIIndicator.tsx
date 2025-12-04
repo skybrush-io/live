@@ -1,8 +1,9 @@
-import { makeStyles, type Theme } from '@material-ui/core/styles';
+import type { Theme } from '@mui/material/styles';
+import makeStyles from '@mui/styles/makeStyles';
+import StatusPill from '@skybrush/mui-components/lib/StatusPill';
 import clsx from 'clsx';
 import React from 'react';
 
-import StatusPill from '~/components/StatusPill';
 import { getSemanticsForRSSI } from '~/model/enums';
 import { formatRSSI } from '~/utils/formatting';
 
@@ -68,3 +69,5 @@ export const RSSIIndicator = ({
     );
   }
 };
+
+export default RSSIIndicator;

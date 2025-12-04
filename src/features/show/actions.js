@@ -34,6 +34,7 @@ import {
 } from '~/utils/geography';
 import { toRadians } from '~/utils/math';
 import { createAsyncAction } from '~/utils/redux';
+import workers from '~/workers';
 
 import { JOB_TYPE } from './constants';
 import { StartMethod } from './enums';
@@ -282,11 +283,12 @@ const createShowLoaderThunkFactory = (
 export const loadShowFromFile = createShowLoaderThunkFactory(
   async (file) => {
     const url = file && file.path ? `file://${file.path}` : undefined;
-    const { showSpec, zip } = await processFile(file);
-    const base64Blob = await zip.generateAsync({ type: 'base64' });
+    const { spec, base64Blob } = await workers.loadShow(file, {
+      returnBlob: true,
+    });
     // Pre-freeze the show data shallowly to give a hint to Redux Toolkit that
     // the show content won't change
-    return { spec: freeze(showSpec), url, base64Blob };
+    return { spec: Object.freeze(spec), url, base64Blob };
   },
   {
     errorMessage: 'Failed to load show from the given file.',
@@ -295,10 +297,12 @@ export const loadShowFromFile = createShowLoaderThunkFactory(
 
 export const loadBase64EncodedShow = createShowLoaderThunkFactory(
   async (base64Blob) => {
-    const { showSpec } = await processFile(Base64.toUint8Array(base64Blob));
+    const { spec } = await workers.loadShow(Base64.toUint8Array(base64Blob), {
+      returnBlob: false,
+    });
     // Pre-freeze the show data shallowly to give a hint to Redux Toolkit that
     // the show content won't change
-    return { spec: freeze(showSpec), base64Blob };
+    return { spec: Object.freeze(spec), base64Blob };
   },
   {
     errorMessage: 'Failed to load show from the given base64-encoded data.',

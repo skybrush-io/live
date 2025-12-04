@@ -2,27 +2,24 @@
  * @file Component that shows the list of features created by the user.
  */
 
+import Delete from '@mui/icons-material/Delete';
+import Edit from '@mui/icons-material/Edit';
+import FilterCenterFocus from '@mui/icons-material/FilterCenterFocus';
+import MoreVert from '@mui/icons-material/MoreVert';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import IconButton from '@mui/material/IconButton';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import ListItemText from '@mui/material/ListItemText';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import makeStyles from '@mui/styles/makeStyles';
+import { bindActionCreators } from '@reduxjs/toolkit';
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import { connect } from 'react-redux';
-
-import IconButton from '@material-ui/core/IconButton';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import { makeStyles } from '@material-ui/core/styles';
-
-import Delete from '@material-ui/icons/Delete';
-import Edit from '@material-ui/icons/Edit';
-import FilterCenterFocus from '@material-ui/icons/FilterCenterFocus';
-import MoreVert from '@material-ui/icons/MoreVert';
-import Visibility from '@material-ui/icons/Visibility';
-import VisibilityOff from '@material-ui/icons/VisibilityOff';
-
-import { bindActionCreators } from '@reduxjs/toolkit';
 
 import {
   createSelectionHandlerThunk,
@@ -148,7 +145,12 @@ const FeatureListEntryPresentation = (props) => {
     <>
       {actions.map(({ action, icon, key, label }) => (
         <Tooltip key={key} content={label}>
-          <IconButton className={classes.button} edge='end' onClick={action}>
+          <IconButton
+            className={classes.button}
+            edge='end'
+            size='large'
+            onClick={action}
+          >
             {icon}
           </IconButton>
         </Tooltip>
@@ -159,7 +161,12 @@ const FeatureListEntryPresentation = (props) => {
   const [menuAnchorElement, openMenu, closeMenu, closeMenuWith] = useDropdown();
   const actionMenu = (
     <>
-      <IconButton className={classes.menu} edge='end' onClick={openMenu}>
+      <IconButton
+        className={classes.menu}
+        edge='end'
+        size='large'
+        onClick={openMenu}
+      >
         <MoreVert />
       </IconButton>
       <Menu
@@ -179,8 +186,7 @@ const FeatureListEntryPresentation = (props) => {
   );
 
   return (
-    <ListItem
-      button
+    <ListItemButton
       ContainerProps={{ className: classes.container }}
       className={classes.item}
       selected={selected}
@@ -200,7 +206,7 @@ const FeatureListEntryPresentation = (props) => {
         {actionButtons}
         {actionMenu}
       </ListItemSecondaryAction>
-    </ListItem>
+    </ListItemButton>
   );
 };
 

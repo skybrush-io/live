@@ -1,15 +1,13 @@
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemText from '@mui/material/ListItemText';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-
 import StatusLight from '@skybrush/mui-components/lib/StatusLight';
 
 import { Status } from '~/components/semantics';
-
 import { hasManualPreflightChecks } from '~/features/preflight/selectors';
 import { signOffOnManualPreflightChecks } from '~/features/show/actions';
 import { areManualPreflightChecksSignedOff } from '~/features/show/selectors';
@@ -34,7 +32,7 @@ const ManualPreflightChecksButton = ({
   const { t } = useTranslation();
 
   return hasManualChecks ? (
-    <ListItem button disabled={status === Status.OFF} {...rest}>
+    <ListItemButton disabled={status === Status.OFF} {...rest}>
       <StatusLight status={status} />
       <ListItemText
         primary={t('show.manualPreflightChecks', 'Manual preflight checks')}
@@ -49,7 +47,7 @@ const ManualPreflightChecksButton = ({
         />
       </ListItemSecondaryAction>
       */}
-    </ListItem>
+    </ListItemButton>
   ) : null;
 };
 
@@ -61,8 +59,6 @@ ManualPreflightChecksButton.propTypes = {
   onRevoke: PropTypes.func,
   status: PropTypes.oneOf(Object.values(Status)),
 };
-
-ManualPreflightChecksButton.defaultProps = {};
 
 export default connect(
   // mapStateToProps

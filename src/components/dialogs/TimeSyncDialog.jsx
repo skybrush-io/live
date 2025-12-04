@@ -1,17 +1,16 @@
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import CircularProgress from '@mui/material/CircularProgress';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import Typography from '@mui/material/Typography';
+import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import isNil from 'lodash-es/isNil';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
-
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
 
 import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
 import SmallProgressIndicator from '@skybrush/mui-components/lib/SmallProgressIndicator';
@@ -63,7 +62,7 @@ const useStyles = makeStyles((theme) => ({
 const ServerAndClientClockComparison = ({ clockSkew }) => {
   const classes = useStyles();
   return (
-    <Box display='flex' flexDirection='row' mx={-2} mb={2}>
+    <Box sx={{ display: 'flex', flexDirection: 'row', mx: -2, mb: 2 }}>
       <Box className={clsx(classes.card, classes.cardLeft)}>
         <Typography gutterBottom color='textPrimary'>
           Time on this device
@@ -96,12 +95,10 @@ const TimeSyncDialogBodyWhenClocksAreInSync = ({ clockSkew }) => {
   const classes = useStyles();
   return (
     <DialogContent className={classes.content}>
-      <Box my={2}>
-        <DialogContentText>
-          The internal clock of your device and the clock of the Skybrush server
-          are now in sync:
-        </DialogContentText>
-      </Box>
+      <DialogContentText>
+        The internal clock of your device and the clock of the Skybrush server
+        are now in sync:
+      </DialogContentText>
       <ServerAndClientClockComparison clockSkew={clockSkew} />
     </DialogContent>
   );
@@ -115,7 +112,7 @@ const TimeSyncDialogBodyWhenClocksAreNotInSync = ({ clockSkew }) => {
   const classes = useStyles();
   return (
     <DialogContent className={classes.content}>
-      <Box my={2}>
+      <Box sx={{ my: 2 }}>
         <Typography variant='h6'>Why am I seeing this warning?</Typography>
       </Box>
       <DialogContentText>
@@ -133,7 +130,7 @@ const TimeSyncDialogBodyWhenClocksAreNotInSync = ({ clockSkew }) => {
           synchronized to UTC.
         </strong>
       </DialogContentText>
-      <Box my={2}>
+      <Box sx={{ my: 2 }}>
         <Typography variant='h6'>What should I do now?</Typography>
       </Box>
       <DialogContentText>
@@ -181,7 +178,7 @@ const TimeSyncDialog = ({
   >
     {isCalculatingClockSkew && isNil(clockSkew) ? (
       <DialogContent>
-        <Box align='center' my={4}>
+        <Box align='center' sx={{ my: 4 }}>
           <Box>
             <CircularProgress />
           </Box>
