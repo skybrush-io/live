@@ -27,7 +27,7 @@
     "dateLabel": "Saved",
     "noSavedCoordinates": "",
     "positionLabel": "Position",
-    "title": "Use last known coordinate?",
+    "title": "Choose a saved coordinate",
     "useSaved": "Use coordinate"
   },
   "RTKCorrectionSourceSelector": {

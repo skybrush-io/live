@@ -71,7 +71,7 @@ const RTKCoordinateRestorationDialog = ({
         {t('RTKCoordinateRestorationDialog.title')}
       </DialogTitle>
       <DialogContent>
-        <Box mt={2} mb={2}>
+        <Box>
           {savedCoordinates.length === 0 ? (
             <Box p={2} textAlign='center'>
               {t('RTKCoordinateRestorationDialog.noSavedCoordinates')}
