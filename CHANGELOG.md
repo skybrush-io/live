@@ -17,6 +17,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The show adaptation dialog now allows you to specify the desired duration of
   the transition from takeoff to the first formation of the show.
 
+- The show adaptation dialog now allows you to set light configurations for the
+  recalculated takeoff and landing.
+
 - Upload dialogs can now be restricted to only showing and acting on the global
   drone selection. The feature works in combination with the drone selection
   hotkeys.
