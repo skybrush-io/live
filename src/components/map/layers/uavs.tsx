@@ -4,7 +4,9 @@ import { layer as olLayer } from '@collmot/ol-react';
 
 import Header from '@skybrush/mui-components/lib/FormHeader';
 
-import SwatchesColorPicker from '~/components/SwatchesColorPicker';
+import SwatchesColorPicker, {
+  type ColorResult,
+} from '~/components/SwatchesColorPicker';
 import flock from '~/flock';
 import type FlockModel from '~/model/flock';
 import { Layer } from '~/model/layers';
@@ -32,7 +34,7 @@ export const UAVsLayerSettings = ({
     typeof labelColorParam === 'string' ? labelColorParam : '#000000';
 
   const onColorChanged = useCallback(
-    (color) => {
+    (color: ColorResult) => {
       setLayerParameters({ labelColor: color.hex });
     },
     [setLayerParameters]

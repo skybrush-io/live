@@ -4,10 +4,11 @@
  * flock.
  */
 
-import AppBar from '@material-ui/core/AppBar';
-import Box from '@material-ui/core/Box';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import Delete from '@material-ui/icons/Delete';
+import Delete from '@mui/icons-material/Delete';
+import AppBar from '@mui/material/AppBar';
+import Box from '@mui/material/Box';
+import type { Theme } from '@mui/material/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import {
   bindActionCreators,
   type AnyAction,
@@ -26,7 +27,7 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { connect, useStore } from 'react-redux';
 
-import { isThemeDark } from '@skybrush/app-theme-material-ui';
+import { isThemeDark } from '@skybrush/app-theme-mui';
 
 import { createSelectionHandlerThunk } from '~/components/helpers/lists';
 import FadeAndSlide from '~/components/transitions/FadeAndSlide';
@@ -78,7 +79,7 @@ import type { Item } from './types';
 import { getSelectedUAVIdsAndMissionSlotIds, itemToGlobalId } from './utils';
 
 const useListStyles = makeStyles(
-  (theme) => ({
+  (theme: Theme) => ({
     appBar: {
       backgroundColor: isThemeDark(theme)
         ? '#424242'
@@ -88,6 +89,7 @@ const useListStyles = makeStyles(
 
     toolbar: {
       position: 'absolute',
+      gap: theme.spacing(0.75),
       left: 0,
       right: 0,
       top: 0,
@@ -313,7 +315,7 @@ const UAVListPresentation = ({
 
   // Create a callback that can be used to retrun the index of the item showing
   // the given UAV. This is used to focus the list to a specific UAV.
-  const store: Store<RootState> = useStore();
+  const store = useStore<RootState>();
   const getIndexOfUavId = useCallback(
     (uavId: string): number => {
       const items = getDisplayedItems(store.getState());
@@ -403,7 +405,7 @@ const UAVListPresentation = ({
   // Finally, render time!
   return (
     <DndProvider backend={HTML5Backend}>
-      <Box display='flex' flexDirection='column' height='100%'>
+      <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
         <AppBar color='default' position='static' className={classes.appBar}>
           <FadeAndSlide mountOnEnter unmountOnExit in={!editingMapping}>
             <UAVToolbar className={classes.toolbar} />
@@ -423,7 +425,7 @@ const UAVListPresentation = ({
             <MappingSlotEditorToolbar className={classes.toolbar} />
           </FadeAndSlide>
         </AppBar>
-        <Box flex={1} position='relative'>
+        <Box sx={{ flex: 1, position: 'relative' }}>
           <SortAndFilterHeader floating />
           {/* We assume that each grid item is a <div> in the <Box> when we
            * calculate how many columns there are in the grid. Revise the
@@ -437,7 +439,9 @@ const UAVListPresentation = ({
         </Box>
         {editingMapping && layout === UAVListLayout.GRID ? (
           <Box className='bottom-bar'>
-            <Box display='flex' flexDirection='row' flexWrap='wrap'>
+            <Box
+              sx={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}
+            >
               {itemRenderer(deletionMarker)}
             </Box>
           </Box>

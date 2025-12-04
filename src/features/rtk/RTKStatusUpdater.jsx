@@ -14,7 +14,7 @@ import useMessageHub from '~/hooks/useMessageHub';
  * Component that renders nothing but constantly queries the server for the
  * current RTK status and dispatches actions to update the local store.
  */
-const RTKStatusUpdater = ({ onStatusChanged, period }) => {
+const RTKStatusUpdater = ({ onStatusChanged, period = 1000 }) => {
   const messageHub = useMessageHub();
   const dispatch = useDispatch();
   const savedCoordinates = useSelector((state) => state.rtk.savedCoordinates);
@@ -95,10 +95,6 @@ const RTKStatusUpdater = ({ onStatusChanged, period }) => {
 RTKStatusUpdater.propTypes = {
   onStatusChanged: PropTypes.func,
   period: PropTypes.number,
-};
-
-RTKStatusUpdater.defaultProps = {
-  period: 1000,
 };
 
 export default connect(

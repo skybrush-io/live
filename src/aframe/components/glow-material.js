@@ -14,7 +14,6 @@ AFrame.registerComponent('glow-material', {
   init() {
     this.material = new GlowingMaterial(this._getMaterialProperties());
     this.el.addEventListener('loaded', () => {
-      console.log('Loaded');
       const mesh = this.el.getObject3D('mesh');
       if (mesh) {
         mesh.material = this.material;

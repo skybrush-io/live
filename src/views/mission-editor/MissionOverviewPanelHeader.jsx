@@ -1,20 +1,15 @@
+import Clear from '@mui/icons-material/Clear';
+import DeleteForever from '@mui/icons-material/DeleteForever';
+import PlayArrow from '@mui/icons-material/PlayArrow';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
+import Paper from '@mui/material/Paper';
+import Toolbar from '@mui/material/Toolbar';
+import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import { connect } from 'react-redux';
-
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
-import Paper from '@material-ui/core/Paper';
-import Toolbar from '@material-ui/core/Toolbar';
-import { makeStyles } from '@material-ui/core/styles';
-
-import Clear from '@material-ui/icons/Clear';
-import DeleteForever from '@material-ui/icons/DeleteForever';
-import PlayArrow from '@material-ui/icons/PlayArrow';
-
-import Export from '~/icons/Download';
-import Import from '~/icons/Upload';
 
 import FileButton from '~/components/FileButton';
 import {
@@ -34,6 +29,8 @@ import { isConnected as isConnectedToServer } from '~/features/servers/selectors
 import { getSingleSelectedUAVId, getUAVById } from '~/features/uavs/selectors';
 import UAVErrorCode from '~/flockwave/UAVErrorCode';
 import usePopover from '~/hooks/usePopover';
+import Export from '~/icons/Download';
+import Import from '~/icons/Upload';
 
 const useStyles = makeStyles(
   (theme) => ({
@@ -98,7 +95,7 @@ const MissionOverviewPanelHeader = ({
             <Export fontSize='small' />
           </IconButton>
         </Tooltip>
-        <Box component='div' flex={1} />
+        <Box component='div' sx={{ flex: 1 }} />
         <Button
           disabled={!canPlan}
           size='small'

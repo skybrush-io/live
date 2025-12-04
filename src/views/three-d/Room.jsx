@@ -40,7 +40,7 @@ const Room = ({ corners, visible }) => {
     return null;
   }
 
-  const { center, sizes } = processCorners(corners);
+  const { center, sizes } = processCorners(corners ?? []);
 
   /* Due to how our scene is rotated, depth goes 'up', height goes
    * 'horizontally', and width goes 'into the screen' */
@@ -56,10 +56,6 @@ const Room = ({ corners, visible }) => {
 Room.propTypes = {
   corners: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number)),
   visible: PropTypes.bool,
-};
-
-Room.defaultProps = {
-  corners: [],
 };
 
 export default connect(

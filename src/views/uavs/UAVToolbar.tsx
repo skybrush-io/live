@@ -1,23 +1,20 @@
+import ImageBlurCircular from '@mui/icons-material/BlurCircular';
+import ImageBlurOn from '@mui/icons-material/BlurOn';
+import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
+import Toolbar, { type ToolbarProps } from '@mui/material/Toolbar';
 import isEmpty from 'lodash-es/isEmpty';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import Box from '@material-ui/core/Box';
-import IconButton from '@material-ui/core/IconButton';
-import Toolbar, { type ToolbarProps } from '@material-ui/core/Toolbar';
-import ImageBlurCircular from '@material-ui/icons/BlurCircular';
-import ImageBlurOn from '@material-ui/icons/BlurOn';
-
-import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
-
 import UAVOperationsButtonGroup from '~/components/uavs/UAVOperationsButtonGroup';
+import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
+import { isBroadcast } from '~/features/session/selectors';
+import { getSelectedUAVIds } from '~/features/uavs/selectors';
+import type { RootState } from '~/store/reducers';
 
 import MappingButtonGroup from './MappingButtonGroup';
-
-import { isBroadcast } from '~/features/session/selectors';
-import type { RootState } from '~/store/reducers';
-import { useTranslation } from 'react-i18next';
-import { getSelectedUAVIds } from '~/features/uavs/selectors';
 
 type UAVToolbarProps = ToolbarProps &
   Readonly<{
@@ -36,14 +33,14 @@ const UAVToolbar = React.forwardRef<HTMLDivElement, UAVToolbarProps>(
 
     return (
       <Toolbar ref={ref} disableGutters variant='dense' {...rest}>
-        <Box width={4} />
+        <Box sx={{ width: '4px' }} />
 
         <UAVOperationsButtonGroup
           broadcast={isBroadcast}
           selectedUAVIds={selectedUAVIds}
         />
 
-        <Box flex={1} />
+        <Box sx={{ flex: 1 }} />
 
         {fitSelectedUAVs && (
           <Tooltip
@@ -53,7 +50,11 @@ const UAVToolbar = React.forwardRef<HTMLDivElement, UAVToolbarProps>(
                 : t('uavToolbar.fitSelectionIntoView')
             }
           >
-            <IconButton style={{ float: 'right' }} onClick={fitSelectedUAVs}>
+            <IconButton
+              style={{ float: 'right' }}
+              size='large'
+              onClick={fitSelectedUAVs}
+            >
               {isSelectionEmpty ? <ImageBlurOn /> : <ImageBlurCircular />}
             </IconButton>
           </Tooltip>

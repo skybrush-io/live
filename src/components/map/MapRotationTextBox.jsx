@@ -2,6 +2,9 @@
  * @file React Component to display and adjust the rotation of the map view.
  */
 
+import RotateLeft from '@mui/icons-material/RotateLeft';
+import IconButton from '@mui/material/IconButton';
+import TextField from '@mui/material/TextField';
 import throttle from 'lodash-es/throttle';
 import { easeOut } from 'ol/easing';
 import PropTypes from 'prop-types';
@@ -9,10 +12,6 @@ import React from 'react';
 import { Translation } from 'react-i18next';
 
 import { withMap } from '@collmot/ol-react';
-
-import IconButton from '@material-ui/core/IconButton';
-import TextField from '@material-ui/core/TextField';
-import RotateLeft from '@material-ui/icons/RotateLeft';
 
 import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
 import { normalizeAngle } from '~/utils/geography';
@@ -70,7 +69,7 @@ class MapRotationTextBox extends React.Component {
         <Translation>
           {(t) => (
             <Tooltip content={t('map.resetRotation')}>
-              <IconButton onClick={this._onButtonClick}>
+              <IconButton size='large' onClick={this._onButtonClick}>
                 <RotateLeft />
               </IconButton>
             </Tooltip>

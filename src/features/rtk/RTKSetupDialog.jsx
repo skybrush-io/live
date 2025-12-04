@@ -1,9 +1,8 @@
+import Box from '@mui/material/Box';
+import Dialog from '@mui/material/Dialog';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
-
-import Box from '@material-ui/core/Box';
-import Dialog from '@material-ui/core/Dialog';
 
 import RTKCorrectionSourceSelector from './RTKCorrectionSourceSelector';
 import RTKCoordinateRestorationDialog from './RTKCoordinateRestorationDialog';
@@ -21,9 +20,16 @@ const RTKSetupDialog = ({ onClose, open }) => (
     <Dialog fullWidth open={open} maxWidth='sm' onClose={onClose}>
       <RTKStatusUpdater />
       <Box>
-        <Box mx={3} mt={3}>
+        <Box sx={{ mx: 3, mt: 3 }}>
           <RTKCorrectionSourceSelector />
-          <Box height={100} my={2} boxSizing='content-box' overflow='auto'>
+          <Box
+            sx={{
+              height: 100,
+              my: 2,
+              boxSizing: 'content-box',
+              overflow: 'auto',
+            }}
+          >
             <RTKMessageStatistics />
           </Box>
         </Box>

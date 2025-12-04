@@ -1,20 +1,18 @@
+import Navigation from '@mui/icons-material/Navigation';
+import VerticalAlignCenter from '@mui/icons-material/VerticalAlignCenter';
+import Warning from '@mui/icons-material/Warning';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import FormControl from '@mui/material/FormControl';
+import IconButton from '@mui/material/IconButton';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import Typography from '@mui/material/Typography';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Trans, withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
-
-import AutoFix from '~/icons/AutoFix';
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import FormControl from '@material-ui/core/FormControl';
-import IconButton from '@material-ui/core/IconButton';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
-import Typography from '@material-ui/core/Typography';
-import Navigation from '@material-ui/icons/Navigation';
-import VerticalAlignCenter from '@material-ui/icons/VerticalAlignCenter';
-import Warning from '@material-ui/icons/Warning';
 
 import FormHeader from '@skybrush/mui-components/lib/FormHeader';
 import Tooltip from '@skybrush/mui-components/lib/Tooltip';
@@ -47,10 +45,13 @@ import { showNotification } from '~/features/snackbar/actions';
 import { MessageSemantics } from '~/features/snackbar/types';
 import { getAverageHeadingOfActiveUAVs } from '~/features/uavs/selectors';
 import i18n from '~/i18n';
+import AutoFix from '~/icons/AutoFix';
 import { scrollToMapLocation } from '~/signals';
 import { normalizeAngle, toLonLatFromScaledJSON } from '~/utils/geography';
 
 import { TakeoffHeadingSpecEditor } from './TakeoffHeadingSpecEditor';
+import { CircularProgress } from '@mui/material';
+import { SmallProgressIndicator } from '@skybrush/mui-components';
 
 /**
  * Presentation component for the form that allows the user to edit the
@@ -60,6 +61,7 @@ const OutdoorEnvironmentEditor = ({
   altitudeReference,
   canEstimateShowCoordinateSystem,
   environmentFromLoadedShowData,
+  estimatingCoordinateSystem,
   onAltitudeReferenceTypeChanged,
   onAltitudeReferenceValueChanged,
   onCopyCoordinateSystemToMap,
@@ -82,7 +84,7 @@ const OutdoorEnvironmentEditor = ({
     <>
       <FormHeader>{t('outdoorEnvironmentEditor.coordinateSystem')}</FormHeader>
 
-      <Box display='flex' flexDirection='row'>
+      <Box sx={{ display: 'flex', flexDirection: 'row' }}>
         <Box>
           <CoordinateSystemFields
             type={COORDINATE_SYSTEM_TYPE}
@@ -94,10 +96,12 @@ const OutdoorEnvironmentEditor = ({
           />
 
           <Box
-            display='flex'
-            justifyContent='space-evenly'
-            alignItems='center'
-            py={1}
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-evenly',
+              alignItems: 'center',
+              py: 1,
+            }}
           >
             <Typography variant='button' color='textSecondary'>
               Copy coordinate system:
@@ -124,15 +128,18 @@ const OutdoorEnvironmentEditor = ({
             </Button>
           </Box>
         </Box>
-        <Box alignSelf='bottom' pt={1}>
+        <Box sx={{ alignSelf: 'bottom', pt: 1 }}>
           <Tooltip
             content={t(
               'outdoorEnvironmentEditor.fitCoordinateSysToCurrentDrone'
             )}
           >
             <IconButton
-              disabled={!canEstimateShowCoordinateSystem}
+              disabled={
+                !canEstimateShowCoordinateSystem || estimatingCoordinateSystem
+              }
               edge='end'
+              size='large'
               onClick={onEstimateShowCoordinateSystem}
             >
               <AutoFix />
@@ -147,11 +154,11 @@ const OutdoorEnvironmentEditor = ({
         onSetToAverageHeading={onSetTakeoffHeadingToAverageActiveUAVHeading}
       />
 
-      <Box pt={1} display='flex' flexDirection='row'>
+      <Box sx={{ pt: 1, display: 'flex', flexDirection: 'row' }}>
         <Box style={{ color: Colors.warning }}>
           <Warning />
         </Box>
-        <Box flex={1} pl={1}>
+        <Box sx={{ flex: 1, pl: 1 }}>
           <Typography color='textSecondary' variant='body2'>
             <Trans
               i18nKey='outdoorEnvironmentEditor.warningText'
@@ -163,7 +170,7 @@ const OutdoorEnvironmentEditor = ({
 
       <FormHeader>{t('outdoorEnvironmentEditor.altitudeControl')}</FormHeader>
 
-      <Box display='flex' flexDirection='row' pb={2}>
+      <Box sx={{ display: 'flex', flexDirection: 'row', pb: 2 }}>
         <FormControl fullWidth variant='filled'>
           <InputLabel htmlFor='altitude-reference-type'>
             {t('outdoorEnvironmentEditor.showIsControlledBasedOn')}
@@ -184,7 +191,7 @@ const OutdoorEnvironmentEditor = ({
             </MenuItem>
           </Select>
         </FormControl>
-        <Box p={1} />
+        <Box sx={{ p: 1 }} />
         <SimpleDistanceField
           disabled={!usingAMSLReference}
           label={t('outdoorEnvironmentEditor.AMSLReference')}
@@ -194,11 +201,12 @@ const OutdoorEnvironmentEditor = ({
           max={10000}
           onChange={onAltitudeReferenceValueChanged}
         />
-        <Box alignSelf='bottom' pt={1}>
+        <Box sx={{ alignSelf: 'bottom', pt: 1 }}>
           <Tooltip content={t('outdoorEnvironmentEditor.setToAverageAMSL')}>
             <IconButton
               disabled={!usingAMSLReference}
               edge='end'
+              size='large'
               onClick={onSetAltitudeReferenceToAverageAMSL}
             >
               <VerticalAlignCenter />
@@ -208,6 +216,13 @@ const OutdoorEnvironmentEditor = ({
       </Box>
 
       <RTKCorrectionSourceSelector />
+
+      <Box sx={{ pt: 1, mb: -1 }}>
+        <SmallProgressIndicator
+          label='Fitting coordinate system...'
+          visible={estimatingCoordinateSystem}
+        />
+      </Box>
     </>
   );
 };
@@ -219,6 +234,7 @@ OutdoorEnvironmentEditor.propTypes = {
   }),
   canEstimateShowCoordinateSystem: PropTypes.bool,
   environmentFromLoadedShowData: PropTypes.object,
+  estimatingCoordinateSystem: PropTypes.bool,
   onAltitudeReferenceTypeChanged: PropTypes.func,
   onAltitudeReferenceValueChanged: PropTypes.func,
   onCopyCoordinateSystemToMap: PropTypes.func,
@@ -248,6 +264,9 @@ export default connect(
     canEstimateShowCoordinateSystem:
       canEstimateShowCoordinateSystemFromActiveUAVs(state),
     environmentFromLoadedShowData: getEnvironmentFromLoadedShowData(state),
+    estimatingCoordinateSystem: Boolean(
+      state.show.environment.estimatingCoordinateSystem
+    ),
     showCoordinateSystem: state.show.environment.outdoor.coordinateSystem,
     mapCoordinateSystem: state.map.origin,
     takeoffHeading: getOutdoorShowTakeoffHeadingSpecification(state),

@@ -1,11 +1,10 @@
+import Box from '@mui/material/Box';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
 import PropTypes from 'prop-types';
 import React from 'react';
-
-import Box from '@material-ui/core/Box';
-import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
 
 import CoordinateField from '~/components/CoordinateField';
 import RotationField from '~/components/RotationField';
@@ -16,15 +15,15 @@ import RotationField from '~/components/RotationField';
  */
 const CoordinateSystemFields = ({
   orientation,
-  orientationLabel,
+  orientationLabel = 'Orientation (X+ axis)',
   origin,
-  originLabel,
+  originLabel = 'Origin',
   type,
   onOrientationChanged,
   onOriginChanged,
   onTypeChanged,
 }) => (
-  <Box display='flex' flexDirection='row'>
+  <Box sx={{ display: 'flex', flexDirection: 'row' }}>
     <FormControl style={{ minWidth: 90 }} variant='filled'>
       <InputLabel htmlFor='coordinate-system-type'>Type</InputLabel>
       <Select
@@ -37,7 +36,7 @@ const CoordinateSystemFields = ({
         <MenuItem value='nwu'>NWU</MenuItem>
       </Select>
     </FormControl>
-    <Box p={1} />
+    <Box sx={{ p: 1 }} />
     <CoordinateField
       fullWidth
       label={originLabel}
@@ -45,7 +44,7 @@ const CoordinateSystemFields = ({
       variant='filled'
       onChange={onOriginChanged}
     />
-    <Box p={1} />
+    <Box sx={{ p: 1 }} />
     <RotationField
       style={{ minWidth: 160 }}
       label={orientationLabel}
@@ -65,11 +64,6 @@ CoordinateSystemFields.propTypes = {
   origin: PropTypes.arrayOf(PropTypes.number),
   originLabel: PropTypes.string,
   type: PropTypes.string.isRequired,
-};
-
-CoordinateSystemFields.defaultProps = {
-  originLabel: 'Origin',
-  orientationLabel: 'Orientation (X+ axis)',
 };
 
 export default CoordinateSystemFields;

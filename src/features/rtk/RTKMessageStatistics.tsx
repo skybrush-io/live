@@ -1,22 +1,18 @@
+import Box from '@mui/material/Box';
 import React from 'react';
 import { Translation } from 'react-i18next';
 import { connect } from 'react-redux';
 import TimeAgo from 'react-timeago';
 
-import Box from '@material-ui/core/Box';
-import ArrowDownward from '@material-ui/icons/ArrowDownward';
-import ArrowUpward from '@material-ui/icons/ArrowUpward';
-
+import { colorForStatus, Status } from '@skybrush/app-theme-mui';
 import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
 
 import { listOf } from '~/components/helpers/lists';
+import type { RootState } from '~/store/reducers';
 import { shortTimeAgoFormatter } from '~/utils/formatting';
 
 import { getDisplayedListOfMessages } from './selectors';
 import { describeMessageType } from './utils';
-import type { RootState } from '~/store/reducers';
-import { Typography } from '@material-ui/core';
-import { colorForStatus, Status } from '@skybrush/app-theme-material-ui';
 
 /* ************************************************************************ */
 
@@ -38,12 +34,12 @@ const RTKMessageStatisticsListEntry = ({
   const hasRx = bitsPerSecondReceived > 0;
   const bps = hasTx ? bitsPerSecondTransferred! : bitsPerSecondReceived;
   return (
-    <Box key={id} display='flex'>
-      <Box width={80} color='text.secondary'>
-        {id}
-      </Box>
-      <Box flex={1}>{describeMessageType(id)}</Box>
-      <Box width={112} ml={1} color='text.secondary' textAlign='right'>
+    <Box key={id} sx={{ display: 'flex' }}>
+      <Box sx={{ width: 80, color: 'text.secondary' }}>{id}</Box>
+      <Box sx={{ flex: 1 }}>{describeMessageType(id)}</Box>
+      <Box
+        sx={{ width: 112, ml: 1, color: 'text.secondary', textAlign: 'right' }}
+      >
         {`${bps.toFixed(1)} bps `}
         <span
           style={{ color: colorForStatus(hasRx ? Status.INFO : Status.OFF) }}
@@ -60,7 +56,7 @@ const RTKMessageStatisticsListEntry = ({
           </span>
         )}
       </Box>
-      <Box color='text.secondary' width={32} textAlign='right'>
+      <Box sx={{ color: 'text.secondary', width: 32, textAlign: 'right' }}>
         <TimeAgo formatter={shortTimeAgoFormatter} date={lastUpdatedAt} />
       </Box>
     </Box>
@@ -71,7 +67,12 @@ const RTKMessageStatistics = listOf(RTKMessageStatisticsListEntry, {
   dataProvider: 'items',
   backgroundHint: (
     <Translation>
-      {(t) => <BackgroundHint text={t('RTKMessage.noRTKMessagesYet')} />}
+      {(t) => (
+        <BackgroundHint
+          // TODO(vp): fix type coercion.
+          text={t('RTKMessage.noRTKMessagesYet') as string | undefined}
+        />
+      )}
     </Translation>
   ),
 });

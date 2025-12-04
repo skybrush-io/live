@@ -1,15 +1,13 @@
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemText from '@mui/material/ListItemText';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-
 import StatusLight from '@skybrush/mui-components/lib/StatusLight';
 
 import { Status } from '~/components/semantics';
-
 import { signOffOnOnboardPreflightChecks } from '~/features/show/actions';
 import { areOnboardPreflightChecksSignedOff } from '~/features/show/selectors';
 import {
@@ -32,7 +30,7 @@ const OnboardPreflightChecksButton = ({
   const { t } = useTranslation();
 
   return (
-    <ListItem button disabled={status === Status.OFF} {...rest}>
+    <ListItemButton disabled={status === Status.OFF} {...rest}>
       <StatusLight status={status} />
       <ListItemText
         primary={t('show.onboardPreflightChecks', 'Onboard preflight checks')}
@@ -47,7 +45,7 @@ const OnboardPreflightChecksButton = ({
         />
       </ListItemSecondaryAction>
       */}
-    </ListItem>
+    </ListItemButton>
   );
 };
 
@@ -57,8 +55,6 @@ OnboardPreflightChecksButton.propTypes = {
   onRevoke: PropTypes.func,
   status: PropTypes.oneOf(Object.values(Status)),
 };
-
-OnboardPreflightChecksButton.defaultProps = {};
 
 export default connect(
   // mapStateToProps

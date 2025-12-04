@@ -1,8 +1,7 @@
+import SettingsIcon from '@mui/icons-material/Settings';
 import React from 'react';
 import { Translation } from 'react-i18next';
 import { connect } from 'react-redux';
-
-import SettingsIcon from '@material-ui/icons/Settings';
 
 import GenericHeaderButton from '@skybrush/mui-components/lib/GenericHeaderButton';
 

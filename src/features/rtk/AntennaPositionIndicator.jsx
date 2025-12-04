@@ -1,10 +1,9 @@
+import IconButton from '@mui/material/IconButton';
+import Typography from '@mui/material/Typography';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
-
-import IconButton from '@material-ui/core/IconButton';
-import Typography from '@material-ui/core/Typography';
 
 import Tooltip from '@skybrush/mui-components/lib/Tooltip';
 
@@ -41,6 +40,7 @@ const AntennaPositionIndicator = ({
         <Tooltip content={t('antennaPositionIndicator.copyToClipboard')}>
           <IconButton
             disabled={!hasAntennaPosition}
+            size='large'
             onClick={onCopyAntennaPositionToClipboard}
           >
             <ContentCopy />

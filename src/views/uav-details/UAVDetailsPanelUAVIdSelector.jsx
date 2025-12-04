@@ -1,15 +1,13 @@
+import SelectAll from '@mui/icons-material/SelectAll';
+import Box from '@mui/material/Box';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
-import Box from '@material-ui/core/Box';
-import SelectAll from '@material-ui/icons/SelectAll';
-
-import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
-
 import ToggleButton from '~/components/ToggleButton';
 import DroneAvatar from '~/components/uavs/DroneAvatar';
 import { UAVSelectorWrapper } from '~/components/uavs/UAVSelector';
+import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
 import {
   getFollowMapSelectionInUAVDetailsPanel,
   getSelectedUAVIdInUAVDetailsPanel,
@@ -30,7 +28,7 @@ const UAVDetailsPanelUAVIdSelector = ({
   setSelectedUAVId,
   toggleFollowMapSelection,
 }) => (
-  <Box display='flex' alignItems='center' mx={0.5}>
+  <Box sx={{ display: 'flex', alignItems: 'center', mx: 0.5 }}>
     <UAVSelectorWrapper sortedByError onSelect={setSelectedUAVId}>
       {(handleClick) => (
         // NOTE: `DroneAvatar` renders a fragment, so we wrap it with a `div`

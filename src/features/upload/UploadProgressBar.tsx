@@ -1,8 +1,7 @@
+import LinearProgress from '@mui/material/LinearProgress';
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { useThrottle } from 'react-use';
-
-import LinearProgress from '@material-ui/core/LinearProgress';
 
 import { getUploadProgress, isUploadInProgress } from './selectors';
 

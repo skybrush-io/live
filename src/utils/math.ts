@@ -3,6 +3,7 @@ import min from 'lodash-es/min';
 import minBy from 'lodash-es/minBy';
 import range from 'lodash-es/range';
 
+import type { Point, LineString, Polygon } from 'geojson';
 import * as TurfHelpers from '@turf/helpers';
 import monotoneConvexHull2D from 'monotone-convex-hull-2d';
 import { err, ok, type Result } from 'neverthrow';
@@ -255,6 +256,14 @@ export const euclideanDistance2D = (
 ): number => Math.hypot(a[0] - b[0], a[1] - b[1]);
 
 /**
+ * Calculates the squared Euclidean distance between two points, restricted to two dimensions.
+ */
+export const squaredEuclideanDistance2D = (
+  a: Coordinate2DPlus,
+  b: Coordinate2DPlus
+): number => Math.pow(a[0] - b[0], 2) + Math.pow(a[1] - b[1], 2);
+
+/**
  * Takes a polygon (i.e. an array of [x, y] coordinate pairs) and ensures that
  * it is closed in a way OpenLayers likes it, i.e. the last element is equal to
  * the first.
@@ -308,10 +317,7 @@ export const convexHull2D = <C extends Coordinate2D | EasNor | LonLat>(
  */
 export function createGeometryFromPoints(
   coordinates: LonLat[]
-): Result<
-  TurfHelpers.Point | TurfHelpers.LineString | TurfHelpers.Polygon,
-  string
-> {
+): Result<Point | LineString | Polygon, string> {
   if (coordinates.length === 0) {
     return err('at least one point is required to create a geometry');
   }

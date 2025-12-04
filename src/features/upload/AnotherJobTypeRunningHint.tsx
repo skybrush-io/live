@@ -1,12 +1,10 @@
+import Clear from '@mui/icons-material/Clear';
+import LocalShipping from '@mui/icons-material/LocalShipping';
+import Visibility from '@mui/icons-material/Visibility';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-
-import Clear from '@material-ui/icons/Clear';
-import LocalShipping from '@material-ui/icons/LocalShipping';
-import Visibility from '@material-ui/icons/Visibility';
 
 import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
 
@@ -39,7 +37,7 @@ const AnotherJobTypeRunningHint = (
           >
             Cancel upload
           </Button>
-          <Box display='inline-block' mx={1} />
+          <Box sx={{ display: 'inline-block', mx: 1 }} />
           <Button
             startIcon={<Visibility />}
             onClick={() => {

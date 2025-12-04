@@ -1,18 +1,14 @@
+import Place from '@mui/icons-material/Place';
+import Restore from '@mui/icons-material/Restore';
+import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
+import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 
-import Box from '@material-ui/core/Box';
-import IconButton from '@material-ui/core/IconButton';
-import { makeStyles } from '@material-ui/core/styles';
-import Place from '@material-ui/icons/Place';
-import Restore from '@material-ui/icons/Restore';
-
-import {
-  createSecondaryAreaStyle,
-  isThemeDark,
-} from '@skybrush/app-theme-material-ui';
+import { createSecondaryAreaStyle, isThemeDark } from '@skybrush/app-theme-mui';
 import Tooltip from '@skybrush/mui-components/lib/Tooltip';
 
 import FadeAndSlide from '~/components/transitions/FadeAndSlide';
@@ -39,6 +35,8 @@ const useStyles = makeStyles(
   (theme) => ({
     root: {
       ...createSecondaryAreaStyle(theme),
+      display: 'flex',
+      flexDirection: 'column',
     },
 
     inset: {
@@ -61,7 +59,7 @@ const useStyles = makeStyles(
 );
 
 const RTKSetupDialogBottomPanel = ({
-  chartHeight,
+  chartHeight = 160,
   currentPresetId,
   hasSavedCoordinates,
   inset,
@@ -89,22 +87,24 @@ const RTKSetupDialogBottomPanel = ({
       className={clsx(classes.root, inset ? classes.inset : classes.nonInset)}
     >
       <RTKSatelliteObservations height={chartHeight} />
-
-      <Box position='relative' height={48}>
+      <Box sx={{ position: 'relative', height: 48 }}>
         <FadeAndSlide in={!surveySettingsVisible}>
           <Box
-            display='flex'
-            flexDirection='row'
-            alignItems='center'
-            left={0}
-            top={0}
-            right={0}
-            bottom={0}
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              left: 0,
+              top: 0,
+              right: 0,
+              bottom: 0,
+            }}
           >
             {onToggleSurveySettings && (
               <Tooltip content='Start new survey'>
                 <IconButton
                   disabled={!surveyStatus || !surveyStatus.supported}
+                  size='large'
                   onClick={onToggleSurveySettings}
                 >
                   <Place />
@@ -112,7 +112,7 @@ const RTKSetupDialogBottomPanel = ({
               </Tooltip>
             )}
             <SurveyStatusIndicator {...surveyStatus} />
-            <Box flex='1' />
+            <Box sx={{ flex: '1' }} />
             {onShowSavedCoordinates && (
               <Tooltip content='Use saved coordinate'>
                 <span>
@@ -151,10 +151,6 @@ RTKSetupDialogBottomPanel.propTypes = {
   onToggleSurveySettings: PropTypes.func,
   surveySettingsVisible: PropTypes.bool,
   surveyStatus: PropTypes.object,
-};
-
-RTKSetupDialogBottomPanel.defaultProps = {
-  chartHeight: 160,
 };
 
 export default connect(

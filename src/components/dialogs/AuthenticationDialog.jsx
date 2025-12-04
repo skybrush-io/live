@@ -3,17 +3,16 @@
  * the user needs to (or tries to) authenticate to the current server.
  */
 
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import makeStyles from '@mui/styles/makeStyles';
 import { TextField } from 'mui-rff';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Form } from 'react-final-form';
 import { connect } from 'react-redux';
-
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import { makeStyles } from '@material-ui/core/styles';
 
 import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
 
@@ -42,6 +41,9 @@ const useStyles = makeStyles(
         marginBottom: theme.spacing(1),
       },
     },
+    dialogContent: {
+      paddingBottom: 0,
+    },
   }),
   { name: 'AuthenticationForm' }
 );
@@ -61,11 +63,11 @@ const AuthenticationForm = ({
   const classes = useStyles();
 
   return (
-    <Box pt={4}>
+    <Box sx={{ pt: 4 }}>
       <Form initialValues={initialValues} onSubmit={onSubmit}>
         {({ handleSubmit }) => (
           <form className={classes.root} onSubmit={handleSubmit}>
-            <DialogContent>
+            <DialogContent className={classes.dialogContent}>
               <TextField
                 fullWidth
                 autoFocus={!optimizeUIForTouch}
@@ -107,7 +109,7 @@ AuthenticationForm.propTypes = {
  *
  * @returns  {Object}  the rendered component
  */
-const AuthenticationDialogPresentation = ({ open, title, ...rest }) => (
+const AuthenticationDialogPresentation = ({ open = false, title, ...rest }) => (
   <DraggableDialog maxWidth='xs' open={open} title={title}>
     <AuthenticationForm {...rest} />
   </DraggableDialog>
@@ -121,10 +123,6 @@ AuthenticationDialogPresentation.propTypes = {
   open: PropTypes.bool,
   optimizeUIForTouch: PropTypes.bool,
   title: PropTypes.string.isRequired,
-};
-
-AuthenticationDialogPresentation.defaultProps = {
-  open: false,
 };
 
 /**

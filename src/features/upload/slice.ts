@@ -58,8 +58,22 @@ export type UploadSliceState = {
   // If you add a new queue above, make sure that the ALL_QUEUES array
   // is updated in features/upload/utils.js
 
+  /** Errors corresponding to the individual UAVs in the current upload job */
   errors: Record<UAV['id'], unknown>;
+
+  /** Progress information corresponding to the individual UAVs in the
+   * current upload job.
+   */
   progresses: Record<UAV['id'], number>;
+
+  /**
+   * Timing information related to the current upload job, required to
+   * estimate the time the jobs will finish at the current pace.
+   */
+  timing: {
+    startedAt?: number;
+    estimatedEndAt?: number;
+  };
 
   dialog: {
     open: boolean;
@@ -108,6 +122,10 @@ const initialState: UploadSliceState = {
   },
   errors: {},
   progresses: {},
+  timing: {
+    startedAt: undefined,
+    estimatedEndAt: undefined,
+  },
   dialog: {
     open: false,
     showLastUploadResult: false,
@@ -231,12 +249,15 @@ const { actions, reducer } = createSlice({
       state.dialog.showLastUploadResult = true;
     },
 
-    _notifyUploadStarted(state) {
+    _notifyUploadStartedAt(state, action: PayloadAction<number>) {
       // Start the upload
       state.currentJob.running = true;
 
       // Hide the result of the last upload task in the dialog box
       state.dialog.showLastUploadResult = false;
+
+      // Record the time when the upload started
+      state.timing.startedAt = action.payload;
     },
 
     _notifyUploadOnUavCancelled: moveItemsBetweenQueues({
@@ -280,6 +301,15 @@ const { actions, reducer } = createSlice({
       prepare: (uavId: UAV['id'], message: string | Error) => ({
         payload: { uavId, message: String(message) },
       }),
+    },
+
+    _setEstimatedCompletionTime(
+      state,
+      action: PayloadAction<number | undefined>
+    ) {
+      state.timing.estimatedEndAt = Number.isFinite(action.payload)
+        ? action.payload
+        : undefined;
     },
 
     _setProgressInfoForUAV: {
@@ -391,12 +421,13 @@ export const {
   _enqueueFailedUploads,
   _enqueueSuccessfulUploads,
   _notifyUploadFinished,
-  _notifyUploadStarted,
+  _notifyUploadStartedAt,
   _notifyUploadOnUavCancelled,
   _notifyUploadOnUavFailed,
   _notifyUploadOnUavQueued,
   _notifyUploadOnUavStarted,
   _notifyUploadOnUavSucceeded,
+  _setEstimatedCompletionTime,
   _setErrorMessageForUAV,
   _setProgressInfoForUAV,
   openUploadDialogForJob,

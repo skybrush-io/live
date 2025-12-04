@@ -3,20 +3,17 @@
  * current server.
  */
 
-import IconButton from '@material-ui/core/IconButton';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
-
-import { green, grey, red, yellow } from '@material-ui/core/colors';
-
-import ActionDone from '@material-ui/icons/Done';
-import ActionHelpOutline from '@material-ui/icons/HelpOutline';
-import ActionSettings from '@material-ui/icons/Settings';
-import ActionSettingsEthernet from '@material-ui/icons/SettingsEthernet';
-import ContentClear from '@material-ui/icons/Clear';
-
+import ContentClear from '@mui/icons-material/Clear';
+import ActionDone from '@mui/icons-material/Done';
+import ActionHelpOutline from '@mui/icons-material/HelpOutline';
+import ActionSettings from '@mui/icons-material/Settings';
+import ActionSettingsEthernet from '@mui/icons-material/SettingsEthernet';
+import IconButton from '@mui/material/IconButton';
+import ListItem from '@mui/material/ListItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import ListItemText from '@mui/material/ListItemText';
+import { green, grey, red, yellow } from '@mui/material/colors';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
@@ -86,7 +83,7 @@ const ConnectionListEntry = (props) => {
     <TimeAgo date={stateChangedAt} />
   ) : null;
   const actionButton = action ? (
-    <IconButton edge='end' onClick={action}>
+    <IconButton edge='end' size='large' onClick={action}>
       <ActionSettings />
     </IconButton>
   ) : null;
