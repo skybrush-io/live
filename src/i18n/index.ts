@@ -51,7 +51,7 @@ export const enabledLanguages = availableLanguages.filter(({ code }) =>
 /* Instance */
 
 const i18n = i18next.createInstance();
-i18n.use(initReactI18next).init({
+await i18n.use(initReactI18next).init({
   fallbackLng: config.language.fallback,
   lng: config.language.default,
   resources: Object.fromEntries(

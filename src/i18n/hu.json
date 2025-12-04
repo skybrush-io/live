@@ -270,6 +270,7 @@
   },
   "mappingEditorToolbar": {
     "assignSpares": "Tartalékok hozzárendelése",
+    "calculatingMapping": "Hozzárendelés folyamatban…",
     "clearMissing": "Hiányzó törlése",
     "clickToEdit": "Kattintson egy hely szerkesztéséhez.",
     "dragNodes": "Húzza az ikonokat a hozzárendelés átrendezéséhez.",
@@ -636,7 +637,7 @@
     "UAVheadings": "Drónok irányai a felszállás előtt…",
     "compassDirection": "Iránytű iránya",
     "headingOffset": "Irány eltolás",
-    "setToAvergaeHeading": "Átlagos irány beállítása az aktív drónokra",
+    "setToAverageHeading": "Átlagos irány beállítása az aktív drónokra",
     "specifiedByAbsoluteCompassDirection": "Az abszolút iránytű irány határozza meg",
     "specifiedRelativeToShowOrientation": "A műsor irányához képest van megadva",
     "unspecified": "Nem meghatározott"

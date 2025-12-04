@@ -1,5 +1,7 @@
 import { Status } from '~/components/semantics';
 
+export { Status } from '~/components/semantics';
+
 /**
  * Enum containing constants for the various connection states.
  */

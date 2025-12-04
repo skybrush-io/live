@@ -47,6 +47,9 @@ export const getNumberOfDronesInShow: (state: RootState) => number;
 export const getOutdoorShowOrigin: AppSelector<
   OutdoorCoordinateSystem['origin']
 >;
+export const getOutdoorShowToWorldCoordinateSystemTransformation: AppSelector<
+  ((coords: Coordinate3D) => GPSPosition) | undefined
+>;
 export const getOutdoorShowToWorldCoordinateSystemTransformationObject: (
   state: RootState
 ) => FlatEarthCoordinateSystem | undefined;
@@ -54,6 +57,10 @@ export const getShowSegments: AppSelector<
   Partial<Record<ShowSegmentId, ShowSegment>> | undefined
 >;
 export const getShowStartTimeAsString: (state: RootState) => string;
+export const getShowToFlatEarthCoordinateSystemTransformation: AppSelector<
+  ((coords: Coordinate3D) => Coordinate3D) | undefined
+>;
+
 export const getShowValidationResult: (
   state: RootState
 ) => ShowValidationResult;
@@ -67,6 +74,7 @@ export const getTakeoffHeadingSpecification: AppSelector<
 export const getTakeoffHeadingSpecificationValueAsNumber: (
   state: RootState
 ) => number | undefined;
+export const getTrajectories: AppSelector<Array<Trajectory | undefined>>;
 export const hasLoadedShowFile: (state: RootState) => boolean;
 export const hasScheduledStartTime: (state: RootState) => boolean;
 export const hasShowChangedExternallySinceLoaded: (state: RootState) => boolean;

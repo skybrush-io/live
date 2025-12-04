@@ -1,15 +1,12 @@
-import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import isNil from 'lodash-es/isNil';
 import padEnd from 'lodash-es/padEnd';
 import padStart from 'lodash-es/padStart';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { connect } from 'react-redux';
 
-import { monospacedFont } from '@skybrush/app-theme-mui';
-import StatusPill from '@skybrush/mui-components/lib/StatusPill';
-import StatusText from '@skybrush/mui-components/lib/StatusText';
+import { makeStyles, monospacedFont } from '@skybrush/app-theme-mui';
+import { StatusPill, StatusText } from '@skybrush/mui-components';
 
 import { BatteryFormatter } from '~/components/battery';
 import BatteryIndicator from '~/components/BatteryIndicator';
@@ -21,10 +18,11 @@ import {
   getLightColorByUavIdInCSSNotation,
   getUAVById,
 } from '~/features/uavs/selectors';
-import { abbreviateFlightMode } from '~/model/enums';
+import { UAVAge } from '~/model/uav';
 import { getPreferredCoordinateFormatter } from '~/selectors/formatting';
 import { formatCoordinateArray } from '~/utils/formatting';
 
+import FlightModeStatusPill from './FlightModeStatusPill';
 import GPSStatusPill from './GPSStatusPill';
 import RSSIIndicator from './RSSIIndicator';
 
@@ -48,58 +46,55 @@ const headingDeviationToStatus = (deviation) => {
 
 const localCoordinateFormatter = formatCoordinateArray;
 
-const useStyles = makeStyles(
-  (theme) => ({
-    root: {
-      flexGrow: 1,
-      fontFamily: monospacedFont,
-      fontSize: 'small',
-      fontVariantNumeric: 'lining-nums tabular-nums',
-      marginTop: [-2, '!important'],
-      marginBottom: [-4, '!important'],
-      userSelect: 'none',
-      whiteSpace: 'pre',
-    },
-    gone: {
-      opacity: 0.7,
-    },
-    muted: {
-      color: theme.palette.text.disabled,
-    },
-    pill: {
-      margin: theme.spacing(0, 0.5),
-      verticalAlign: 'text-top',
-      transform: 'translateY(-1px)',
-    },
-    statusPill: {
-      width: 80,
-    },
-    modePill: {
-      width: 48,
-    },
-    gpsPill: {
-      width: 40,
-    },
-    rssiPills: {
-      width: 72,
-      paddingLeft: 2,
-    },
-    batteryIndicator: {
-      display: 'inline-block',
-      fontFamily: theme.typography.fontFamily,
-      textAlign: 'left',
-      padding: theme.spacing(0, 0.5),
-      margin: theme.spacing(0, 0.5),
-      width: 56,
-    },
-  }),
-  { name: 'DroneStatusLine' }
-);
+const useStyles = makeStyles((theme) => ({
+  root: {
+    flexGrow: 1,
+    fontFamily: monospacedFont,
+    fontSize: 'small',
+    fontVariantNumeric: 'lining-nums tabular-nums',
+    userSelect: 'none',
+    whiteSpace: 'pre',
+  },
+  gone: {
+    opacity: 0.7,
+  },
+  muted: {
+    color: theme.palette.text.disabled,
+  },
+  pill: {
+    margin: theme.spacing(0, 0.5),
+    verticalAlign: 'text-top',
+    transform: 'translateY(-1px)',
+  },
+  statusPill: {
+    width: 80,
+  },
+  modePill: {
+    width: 48,
+  },
+  gpsPill: {
+    width: 40,
+    outline: 'none !important',
+  },
+  rssiPills: {
+    width: 72,
+    paddingLeft: 2,
+  },
+  batteryIndicator: {
+    display: 'inline-block',
+    fontFamily: theme.typography.fontFamily,
+    textAlign: 'left',
+    padding: theme.spacing(0, 0.5),
+    margin: theme.spacing(0, 0.5),
+    width: '56px !important',
+  },
+}));
 
 /**
  * Status line in the drone list view that represents a single drone.
  */
 const DroneStatusLine = ({
+  age,
   batteryFormatter,
   batteryStatus,
   color,
@@ -131,19 +126,17 @@ const DroneStatusLine = ({
           inline
           className={clsx(classes.pill, classes.statusPill)}
           status={textSemantics}
+          hollow={age === UAVAge.GONE}
         >
           {details || text}
         </StatusPill>
       )}
       {!missing && (
         <>
-          <StatusPill
-            inline
+          <FlightModeStatusPill
+            mode={mode}
             className={clsx(classes.pill, classes.modePill)}
-            status='off'
-          >
-            {mode ? abbreviateFlightMode(mode) : '----'}
-          </StatusPill>
+          />
           <BatteryIndicator
             className={classes.batteryIndicator}
             formatter={batteryFormatter}
@@ -190,6 +183,7 @@ const DroneStatusLine = ({
 };
 
 DroneStatusLine.propTypes = {
+  age: PropTypes.oneOf(Object.values(UAVAge)),
   batteryFormatter: PropTypes.instanceOf(BatteryFormatter),
   batteryStatus: PropTypes.shape({
     cellCount: PropTypes.number,

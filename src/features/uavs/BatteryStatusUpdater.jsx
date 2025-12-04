@@ -11,7 +11,7 @@ import {
 } from '~/features/settings/selectors';
 import { BatteryDisplayStyle } from '~/model/settings';
 
-import { getActiveUAVIds, getUAVById } from './selectors';
+import { getActiveAndAwakeUAVIds, getUAVById } from './selectors';
 
 const BatteryStatusUpdater = ({ onSetStatus }) => {
   const store = useStore();
@@ -28,18 +28,24 @@ const BatteryStatusUpdater = ({ onSetStatus }) => {
     const voltages = [];
     const percentages = [];
 
-    for (const uavId of getActiveUAVIds(state)) {
+    // We want to exclude sleeping UAVs because they report their latest known
+    // battery status, which may be outdated.
+    for (const uavId of getActiveAndAwakeUAVIds(state)) {
       const battery = getUAVById(state, uavId)?.battery;
 
       if (battery) {
-        if (!isNil(battery.voltage)) {
+        // We only consider voltage values that are positive numbers. This is
+        // because drones with remote power on/off features may report 0V when
+        // powered off, which would skew the average voltage reading.
+        const canVoltageBeUsed = !isNil(battery.voltage) && battery.voltage > 0;
+        if (canVoltageBeUsed) {
           voltages.push(battery.voltage);
         }
 
         if (!isNil(battery.percentage)) {
           percentages.push(battery.percentage);
         } else if (
-          !isNil(battery.voltage) &&
+          canVoltageBeUsed &&
           preferredBatteryDisplayStyle === BatteryDisplayStyle.FORCED_PERCENTAGE
         ) {
           percentages.push(

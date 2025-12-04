@@ -66,7 +66,7 @@ export function parseDurationHMS(value: string): number {
  */
 export const parseEpochIdentifierOrISODate = (value: string): number => {
   if (isString(value) && has(knownEpochs, value)) {
-    return knownEpochs[value]!; // NOTE: Bang justified by `has`
+    return knownEpochs[value];
   }
 
   return parseISODate(value);

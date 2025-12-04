@@ -3,7 +3,7 @@ import Divider from '@mui/material/Divider';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import MenuItem from '@mui/material/MenuItem';
-import React from 'react';
+import type React from 'react';
 
 type ToolboxDevMenuItemsProps = Readonly<{
   createClickListener: (func: () => void) => () => void;
@@ -18,7 +18,7 @@ const freezeUI = (seconds = 3): void => {
 
 const ToolboxDevMenuItems = ({
   createClickListener,
-}: ToolboxDevMenuItemsProps): JSX.Element => {
+}: ToolboxDevMenuItemsProps): React.JSX.Element => {
   return (
     <>
       <Divider />

@@ -57,7 +57,7 @@ messageHub.registerNotificationHandlers({
     }
   },
   'SYS-MSG': (message) => {
-    if (message.body && Array.isArray(message.body.items)) {
+    if (Array.isArray(message?.body?.items)) {
       batch(() => {
         const fromUAV = [];
 
@@ -68,7 +68,9 @@ messageHub.registerNotificationHandlers({
             dispatch(
               showNotification({
                 message: item.message,
-                semantics: semanticsFromSeverity(item.severity),
+                semantics: semanticsFromSeverity(
+                  (item.severity ?? '').toLowerCase()
+                ),
               })
             );
           } else {

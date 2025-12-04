@@ -4,7 +4,6 @@ import ViewModule from '@mui/icons-material/ViewModule';
 import IconButton from '@mui/material/IconButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 

@@ -8,11 +8,10 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import isNil from 'lodash-es/isNil';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import StatusLight from '@skybrush/mui-components/lib/StatusLight';
+import { StatusLight } from '@skybrush/mui-components';
 
 import Colors from '~/components/colors';
 import FileButton from '~/components/FileButton';

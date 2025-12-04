@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
-/* eslint-disable @typescript-eslint/ban-types */
 /**
  * @file List-related component helper functions and higher order components.
  */
@@ -7,7 +5,7 @@
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
-import type { AnyAction } from '@reduxjs/toolkit';
+import type { Action, UnknownAction } from '@reduxjs/toolkit';
 import get from 'lodash-es/get';
 import identity from 'lodash-es/identity';
 import includes from 'lodash-es/includes';
@@ -17,7 +15,7 @@ import xor from 'lodash-es/xor';
 import PropTypes from 'prop-types';
 import React, { type PropsWithoutRef, type RefAttributes } from 'react';
 
-import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
+import { BackgroundHint } from '@skybrush/mui-components';
 
 import type { AppDispatch, RootState } from '~/store/reducers';
 import { eventHasShiftKey } from '~/utils/events';
@@ -33,7 +31,7 @@ type ListFactory<P> = (
   props: P,
   children: React.ReactElement[],
   ref: React.ForwardedRef<unknown>
-) => JSX.Element;
+) => React.JSX.Element;
 
 type ValidatedListOfOptions<T, P> = {
   backgroundHint?: string | React.ReactElement;
@@ -67,17 +65,20 @@ type SelectionHandlerFunctions<T = string> = {
   setSelection?: (value: T[]) => void;
 };
 
-type SelectionHandlerReduxFunctions<T = string> = {
-  activateItem?: (item: T) => AnyAction | undefined | void;
+type SelectionHandlerReduxFunctions<
+  T = string,
+  A extends Action = UnknownAction,
+> = {
+  activateItem?: (item: T) => A | undefined | void;
   getSelection: (state: RootState) => T[];
-  setSelection?: (value: T[]) => AnyAction | undefined | void;
+  setSelection?: (value: T[]) => A | undefined | void;
   getListItems?: (state: RootState) => T[];
 };
 
 const createBackgroundHint = (
   backgroundHint: string | React.ReactElement | undefined,
   ref: React.ForwardedRef<unknown>
-): JSX.Element | null => {
+): React.JSX.Element | null => {
   switch (typeof backgroundHint) {
     case 'string':
       return <BackgroundHint ref={ref} text={backgroundHint} />;
@@ -232,7 +233,6 @@ export function createSelectionHandlerThunk<T = string>({
   }
 
   return (id: T, event: React.UIEvent) =>
-    // eslint-disable-next-line complexity
     (dispatch: AppDispatch, getState: () => RootState) => {
       const state = getState();
       const selection = getSelection ? getSelection(state) : [];
@@ -390,7 +390,6 @@ export function selectableListOf<
     return createBackgroundHint(backgroundHint, ref);
   });
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   SelectableListView.propTypes = {
     onChange: PropTypes.func,
     value: PropTypes.string,
@@ -503,7 +502,6 @@ export function multiSelectableListOf<
     return createBackgroundHint(backgroundHint, ref);
   });
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   MultiSelectableListView.propTypes = {
     onActivate: PropTypes.func,
     onChange: PropTypes.func,
@@ -565,7 +563,6 @@ function validateDataProvider<T, P>(
 }
 
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 
 /**
  * Helper function that validates the incoming itemRenderer argument of the
@@ -589,6 +586,7 @@ function validateItemRenderer<T extends ItemWithId, P>(
       itemRenderer === ListItem || itemRenderer == ListItemButton
         ? 'onTouchTap'
         : 'onClick';
+    // eslint-disable-next-line react/display-name
     return (item: T, props: P, selected = false) => {
       return React.createElement(itemRenderer as any, {
         ...item,
@@ -618,6 +616,7 @@ function validateListFactory<P>(
   listFactory: undefined | React.ComponentType<P> | ListFactory<P>
 ): ListFactory<P> {
   if (listFactory === undefined) {
+    // eslint-disable-next-line react/display-name
     return (
       props: P,
       children: React.ReactElement[],
@@ -644,5 +643,4 @@ function validateListFactory<P>(
   return listFactory as ListFactory<P>;
 }
 
-/* eslint-enable @typescript-eslint/no-unsafe-assignment */
 /* eslint-enable @typescript-eslint/no-unsafe-argument */

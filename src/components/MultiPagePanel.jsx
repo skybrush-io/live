@@ -1,28 +1,24 @@
 import Box from '@mui/material/Box';
-import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import { makeStyles } from '@skybrush/app-theme-mui';
+
 import FadeAndSlide from './transitions/FadeAndSlide';
 
-const useStyles = makeStyles(
-  () => ({
-    page: {
-      position: 'absolute',
-      left: 0,
-      top: 0,
-      right: 0,
-      bottom: 0,
-    },
-    scrollable: {
-      overflow: 'auto',
-    },
-  }),
-  {
-    name: 'MultiPagePanel',
-  }
-);
+const useStyles = makeStyles(() => ({
+  page: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    right: 0,
+    bottom: 0,
+  },
+  scrollable: {
+    overflow: 'auto',
+  },
+}));
 
 /**
  * A single page in a multi-page panel component.

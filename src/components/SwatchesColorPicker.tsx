@@ -23,7 +23,6 @@ import {
   yellow,
 } from '@mui/material/colors';
 import merge from 'lodash-es/merge';
-import React from 'react';
 import { SwatchesPicker, type SwatchesPickerProps } from 'react-color';
 export type { ColorResult } from 'react-color';
 

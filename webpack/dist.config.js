@@ -22,9 +22,17 @@ module.exports = merge(baseConfig, {
     app: './src/index',
   },
 
+  resolve: {
+    alias: {
+      // These are needed for WorkerUrlPlugin to work correctly, but only in the
+      // browser context
+      child_process: false,
+      worker_threads: false,
+    },
+  },
+
   output: {
-    publicPath: '_/',
-    path: path.resolve(outputDir, '_'),
+    path: outputDir,
   },
 
   plugins: [

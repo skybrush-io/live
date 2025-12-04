@@ -1,9 +1,9 @@
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
-import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { connect } from 'react-redux';
+
+import { makeStyles } from '@skybrush/app-theme-mui';
 
 import DroneAvatar from '~/components/uavs/DroneAvatar';
 import UAVOperationsButtonGroup from '~/components/uavs/UAVOperationsButtonGroup';
@@ -16,31 +16,26 @@ import {
 } from './details';
 import StatusSummaryMiniTable from './StatusSummaryMiniTable';
 
-const useStyles = makeStyles(
-  (theme) => ({
-    root: {
-      padding: theme.spacing(2),
-      minWidth: WIDTH,
+const useStyles = makeStyles((theme) => ({
+  root: {
+    padding: theme.spacing(2),
+    minWidth: WIDTH,
+  },
+  toolbar: {
+    justifyContent: 'center',
+    padding: theme.spacing(1, 0),
+  },
+  toolbarInner: {
+    display: 'flex',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    maxWidth: 144 /* 20px for the icon, 8px for the padding around the icons, four icons per row */,
+    '& > button': {
+      padding: 8,
     },
-    toolbar: {
-      justifyContent: 'center',
-      padding: theme.spacing(1, 0),
-    },
-    toolbarInner: {
-      display: 'flex',
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-      justifyContent: 'center',
-      maxWidth: 144 /* 20px for the icon, 8px for the padding around the icons, four icons per row */,
-      '& > button': {
-        padding: 8,
-      },
-    },
-  }),
-  {
-    name: 'UAVDetailsDialogSidebar',
-  }
-);
+  },
+}));
 
 /**
  * Sidebar of the UAV details dialog.

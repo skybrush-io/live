@@ -9,10 +9,10 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import { Form } from '@rjsf/mui';
 import validator from '@rjsf/validator-ajv8';
-import * as React from 'react';
+import type React from 'react';
 import { connect } from 'react-redux';
 
-import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
+import { DraggableDialog } from '@skybrush/mui-components';
 
 import { cancelPromptDialog, submitPromptDialog } from './actions';
 import type { PromptSliceState } from './slice';

@@ -752,7 +752,7 @@
     "UAVheadings": "无人机起飞前的航向是…",
     "compassDirection": "指南针方向",
     "headingOffset": "航向偏移",
-    "setToAvergaeHeading": "设置为活跃无人机的平均航向",
+    "setToAverageHeading": "设置为活跃无人机的平均航向",
     "specifiedByAbsoluteCompassDirection": "由绝对指南针方向指定",
     "specifiedRelativeToShowOrientation": "相对于展示方向指定",
     "unspecified": "未指定"

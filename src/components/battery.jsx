@@ -15,7 +15,6 @@ import BatteryChargingFullIcon from '@mui/icons-material/BatteryChargingFull';
 import BatteryFullIcon from '@mui/icons-material/BatteryFull';
 import BatteryUnknownIcon from '@mui/icons-material/BatteryUnknown';
 import isNil from 'lodash-es/isNil';
-import React from 'react';
 
 import { Status } from '@skybrush/app-theme-mui';
 

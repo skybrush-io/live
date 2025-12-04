@@ -11,7 +11,6 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import isNil from 'lodash-es/isNil';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { connect } from 'react-redux';
 import { useHarmonicIntervalFn, useUpdate } from 'react-use';
 

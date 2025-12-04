@@ -333,7 +333,7 @@ export function getVisibleSelectableLayers(map: OLMap): BaseLayer[] {
  *                    constants from the {@link LayerType} enum
  * @returns The Material UI icon that represents the layer
  */
-export function iconForLayerType(layerType: LayerType): JSX.Element {
+export function iconForLayerType(layerType: LayerType): React.JSX.Element {
   return React.createElement(propertiesForLayerTypes[layerType].icon);
 }
 

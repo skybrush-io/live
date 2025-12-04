@@ -3,11 +3,10 @@ import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import Tooltip from '@skybrush/mui-components/lib/Tooltip';
+import { Tooltip } from '@skybrush/mui-components';
 
 import ContentCopy from '~/icons/ContentCopy';
 

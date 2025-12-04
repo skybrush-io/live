@@ -7,13 +7,14 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import Switch from '@mui/material/Switch';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { useTranslation, withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
-import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
-import StatusLight from '@skybrush/mui-components/lib/StatusLight';
+import {
+  BackgroundHint,
+  DraggableDialog,
+  StatusLight,
+} from '@skybrush/mui-components';
 
 import { Colors } from '~/components/colors';
 import { Status } from '~/components/semantics';
@@ -26,7 +27,7 @@ import {
 } from '~/features/show/slice';
 import { getErrorCodeSummaryForUAVsInMission } from '~/features/uavs/selectors';
 import { getSeverityOfErrorCode } from '~/flockwave/errors';
-import UAVErrorCode from '~/flockwave/UAVErrorCode';
+import { describeUAVErrorCode } from '~/flockwave/UAVErrorCode';
 import {
   formatMissionId,
   formatIdsAndTruncateTrailingItems as formatUAVIds,
@@ -58,7 +59,7 @@ const PreflightCheckListPresentation = ({ items, showMissionIds, ...rest }) => {
             <StatusLight status={status} />
             <ListItemText
               id={itemId}
-              primary={UAVErrorCode.describe(item.code)}
+              primary={describeUAVErrorCode(item.code)}
               secondary={formatUAVIds(
                 item.uavIdsAndIndices.map(
                   showMissionIds

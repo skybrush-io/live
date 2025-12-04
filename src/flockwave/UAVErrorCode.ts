@@ -212,22 +212,20 @@ const descriptions: Record<UAVErrorCode, string> = {
   [UAVErrorCode.UNSPECIFIED_CRITICAL_ERROR]: 'Unspecified critical error',
 };
 
-namespace UAVErrorCode {
-  /**
-   * Returns a short abbreviation of the error code that is more-or-less
-   * human-readable, but requires less space on the screen than the full
-   * description of the error.
-   */
-  export const abbreviate = (code: UAVErrorCode): string => {
-    return abbreviations[code] || `E${code}`;
-  };
+/**
+ * Returns a short abbreviation of the error code that is more-or-less
+ * human-readable, but requires less space on the screen than the full
+ * description of the error.
+ */
+export const abbreviateUAVErrorCode = (code: UAVErrorCode): string => {
+  return abbreviations[code] || `E${code}`;
+};
 
-  /**
-   * Returns a human-readable description of the error code.
-   */
-  export const describe = (code: UAVErrorCode): string => {
-    return descriptions[code] || `Error ${code}`;
-  };
-}
+/**
+ * Returns a human-readable description of the error code.
+ */
+export const describeUAVErrorCode = (code: UAVErrorCode): string => {
+  return descriptions[code] || `Error ${code}`;
+};
 
 export default UAVErrorCode;

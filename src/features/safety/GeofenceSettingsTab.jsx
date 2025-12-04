@@ -15,12 +15,11 @@ import max from 'lodash-es/max';
 import unary from 'lodash-es/unary';
 import { Checkboxes, Select, TextField } from 'mui-rff';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { Form } from 'react-final-form';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import FormHeader from '@skybrush/mui-components/lib/FormHeader';
+import { FormHeader } from '@skybrush/mui-components';
 
 import { removeFeaturesByIds } from '~/features/map-features/slice';
 import {

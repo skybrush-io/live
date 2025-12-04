@@ -8,7 +8,6 @@
 
 import Paper from '@mui/material/Paper';
 import PropTypes from 'prop-types';
-import React from 'react';
 
 const Widget = ({ children, style }) => (
   <Paper className='widget' style={style}>

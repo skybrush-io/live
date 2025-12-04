@@ -4,17 +4,25 @@
  * The mission index is undefined if the UAV is not part of the mission. The
  * UAV ID is undefined if the entry represents an empty mission slot. At least
  * one of the two items must be defined.
+ *
+ * TODO: This probably doesn't need to be its own separate type.
  */
-export type UAVIdAndMissionIndexPair = [string | undefined, number | undefined];
+export type UAVIdAndMissionIndexPair = [
+  uavId: string | undefined,
+  missionIndex: number | undefined,
+];
 
 /**
  * Represents a single item in a UAV list or grid.
  *
  * The item consists of a UAV ID, a mission index, and an optional label.
+ *
+ * TODO: Rename this to `UAVItem`!
  */
-export type Item =
-  | UAVIdAndMissionIndexPair
-  | [...UAVIdAndMissionIndexPair, string | JSX.Element];
+export type Item = [
+  ...UAVIdAndMissionIndexPair,
+  label?: string | React.JSX.Element,
+];
 
 /**
  * Types of the UAV groups that can be shown in the UAV list or grid.

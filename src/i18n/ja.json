@@ -111,12 +111,14 @@
       "all": "すべて",
       "errors": "エラーのみ",
       "noTelemetry": "テレメトリーなしのみ",
+      "sleeping": "低電力モード",
       "warningsAndErrors": "警告とエラー"
     },
     "shortLabel": {
       "all": "すべて",
       "errors": "エラー",
       "noTelemetry": "テレメトリーなし",
+      "sleeping": "低消費電力",
       "warningsAndErrors": "警告/エラー"
     }
   },
@@ -131,15 +133,21 @@
   "general": {
     "action": {
       "apply": "適用",
+      "approve": "承認する",
+      "back": "戻る",
       "cancel": "キャンセル",
       "clear": "クリア",
+      "click": "クリック",
       "close": "閉じる",
       "delete": "削除",
       "discard": "破棄",
+      "drag": "ドラッグ",
       "edit": "編集",
       "export": "エクスポート",
       "import": "インポート",
+      "navigate": "ナビゲート",
       "open": "開く",
+      "redo": "やり直す",
       "remove": "除く",
       "reset": "リセット",
       "retry": "リトライ",
@@ -627,7 +635,7 @@
     "UAVheadings": "離陸前のUAVの方向は…",
     "compassDirection": "コンパス方位",
     "headingOffset": "ヘディングオフセット",
-    "setToAvergaeHeading": "アクティブなドローンに対し平均方位を設定",
+    "setToAverageHeading": "アクティブなドローンに対し平均方位を設定",
     "specifiedByAbsoluteCompassDirection": "コンパスの絶対方位で指定",
     "specifiedRelativeToShowOrientation": "ショーの相対方位で指定",
     "unspecified": "未指定"

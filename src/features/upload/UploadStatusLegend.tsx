@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box';
 import type { TFunction } from 'i18next';
-import React from 'react';
+import type React from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
@@ -31,7 +31,7 @@ const UploadStatusLegend = ({
   onRetryFailedUploads,
   t,
   waiting,
-}: UploadStatusLegendProps): JSX.Element => (
+}: UploadStatusLegendProps): React.JSX.Element => (
   <Box sx={{ display: 'flex', justifyContent: 'space-around' }}>
     <UploadStatusLegendButton
       counter={waiting}

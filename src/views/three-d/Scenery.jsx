@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { memo } from 'react';
+import { memo } from 'react';
 
 import { objectToString } from '~/aframe/utils';
 

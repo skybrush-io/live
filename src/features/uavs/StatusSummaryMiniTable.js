@@ -1,9 +1,8 @@
 import PropTypes from 'prop-types';
-import React from 'react';
 import { connect } from 'react-redux';
 import TimeAgo from 'react-timeago';
 
-import StatusText from '@skybrush/mui-components/lib/StatusText';
+import { StatusText } from '@skybrush/mui-components';
 
 import MiniTable, { naText } from '~/components/MiniTable';
 import {

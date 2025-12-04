@@ -1,45 +1,38 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import ButtonBase, { type ButtonBaseProps } from '@mui/material/ButtonBase';
 import type { Theme } from '@mui/material/styles';
-import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
-import React from 'react';
+import type React from 'react';
 
-import type { Status } from '@skybrush/app-theme-mui';
-import StatusLight from '@skybrush/mui-components/lib/StatusLight';
-import Tooltip from '@skybrush/mui-components/lib/Tooltip';
+import { type Status, makeStyles } from '@skybrush/app-theme-mui';
+import { StatusLight, Tooltip } from '@skybrush/mui-components';
+
 import type { Nullable } from '~/utils/types';
 
-const useStyles = makeStyles(
-  (theme: Theme) => ({
-    root: {
-      display: 'flex',
-      alignItems: 'center',
-      padding: theme.spacing(1),
+const useStyles = makeStyles((theme: Theme) => ({
+  root: {
+    display: 'flex',
+    alignItems: 'center',
+    padding: theme.spacing(1),
 
-      fontFamily: theme.typography.fontFamily,
-      fontSize: theme.typography.fontSize,
+    fontFamily: theme.typography.fontFamily,
+    fontSize: theme.typography.fontSize,
 
-      '& span.counter': {
-        margin: theme.spacing(0, 0.5, 0, 1),
-      },
-
-      '& span.label': {
-        opacity: 0.5,
-      },
+    '& span.counter': {
+      margin: theme.spacing(0, 0.5, 0, 1),
     },
 
-    selectable: {
-      '&:hover': {
-        backgroundColor: theme.palette.action.hover,
-        borderRadius: theme.spacing(0.5),
-      },
+    '& span.label': {
+      opacity: 0.5,
     },
-  }),
-  {
-    name: 'UploadStatusLegendButton',
-  }
-);
+  },
+
+  selectable: {
+    '&:hover': {
+      backgroundColor: theme.palette.action.hover,
+      borderRadius: theme.spacing(0.5),
+    },
+  },
+}));
 
 type UploadStatusLegendButtonProps = Readonly<{
   counter: number;
@@ -57,7 +50,7 @@ const UploadStatusLegendButton = ({
   status,
   tooltip,
   ...rest
-}: UploadStatusLegendButtonProps): JSX.Element => {
+}: UploadStatusLegendButtonProps): React.JSX.Element => {
   const classes = useStyles();
   const enabled = onClick && counter > 0;
   const button = (

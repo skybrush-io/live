@@ -15,7 +15,6 @@ import {
 import type { RootState } from './store/reducers';
 
 // @ts-expect-error TS(2307)
-// eslint-disable-next-line import/no-webpack-loader-syntax
 import darkModeExtraCSS from '!!raw-loader!~/../assets/css/dark-mode.css';
 
 /**

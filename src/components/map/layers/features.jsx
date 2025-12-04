@@ -4,7 +4,6 @@ import FillPattern from 'ol-ext/style/FillPattern';
 import { MultiPoint, MultiPolygon, Polygon } from 'ol/geom';
 import { Circle, Style, Text } from 'ol/style';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { connect } from 'react-redux';
 
 import {

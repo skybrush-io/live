@@ -3,11 +3,10 @@ import FormHelperText from '@mui/material/FormHelperText';
 import InputAdornment from '@mui/material/InputAdornment';
 import { Checkboxes, TextField } from 'mui-rff';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { Form, FormSpy } from 'react-final-form';
 import { connect } from 'react-redux';
 
-import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
+import { BackgroundHint } from '@skybrush/mui-components';
 
 import { updateFeatureAttributes } from '~/features/map-features/slice';
 import { getGeofencePolygonId } from '~/features/mission/selectors';

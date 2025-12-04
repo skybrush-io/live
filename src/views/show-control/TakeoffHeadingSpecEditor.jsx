@@ -1,15 +1,15 @@
-import Explore from '@mui/icons-material/Explore';
 import Box from '@mui/material/Box';
 import FormControl from '@mui/material/FormControl';
 import IconButton from '@mui/material/IconButton';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
+import NearMe from '@mui/icons-material/NearMe';
 import Select from '@mui/material/Select';
 import PropTypes from 'prop-types';
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import { Translation } from 'react-i18next';
 
-import Tooltip from '@skybrush/mui-components/lib/Tooltip';
+import { Tooltip } from '@skybrush/mui-components';
 
 import RotationField from '~/components/RotationField';
 import {
@@ -88,14 +88,14 @@ export const TakeoffHeadingSpecEditor = ({
           {onSetToAverageHeading && (
             <Box sx={{ alignSelf: 'bottom', pt: 1 }}>
               <Tooltip
-                content={t('takeoffHeadingSpecEditor.setToAvergaeHeading')}
+                content={t('takeoffHeadingSpecEditor.setToAverageHeading')}
               >
                 <IconButton
                   edge='end'
                   size='large'
                   onClick={onSetToAverageHeading}
                 >
-                  <Explore />
+                  <NearMe />
                 </IconButton>
               </Tooltip>
             </Box>

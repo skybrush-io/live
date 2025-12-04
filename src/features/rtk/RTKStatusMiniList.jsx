@@ -3,9 +3,11 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 
-import MiniList from '@skybrush/mui-components/lib/MiniList';
-import MiniListDivider from '@skybrush/mui-components/lib/MiniListDivider';
-import MiniListItem from '@skybrush/mui-components/lib/MiniListItem';
+import {
+  MiniList,
+  MiniListDivider,
+  MiniListItem,
+} from '@skybrush/mui-components';
 
 import GPSFixStatusMiniList from '~/components/uavs/GPSFixStatusMiniList';
 

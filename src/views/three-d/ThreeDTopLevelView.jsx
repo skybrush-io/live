@@ -10,14 +10,13 @@ import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import Toolbar from '@mui/material/Toolbar';
-import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
-import React, { useRef } from 'react';
+import { useRef } from 'react';
 import { IgnoreKeys } from 'react-hotkeys';
 import { connect } from 'react-redux';
 import useResizeObserver from 'use-resize-observer';
 
-import { isThemeDark } from '@skybrush/app-theme-mui';
+import { isThemeDark, makeStyles } from '@skybrush/app-theme-mui';
 
 import DarkModeSwitch from '~/components/DarkModeSwitch';
 import ToolbarDivider from '~/components/ToolbarDivider';
@@ -41,24 +40,21 @@ const ThreeDView = loadable(
   () => import(/* webpackChunkName: "three-d" */ './ThreeDView')
 );
 
-const useStyles = makeStyles(
-  (theme) => ({
-    appBar: {
-      backgroundColor: isThemeDark(theme)
-        ? '#424242'
-        : theme.palette.background.paper,
-      height: 48,
-    },
+const useStyles = makeStyles((theme) => ({
+  appBar: {
+    backgroundColor: isThemeDark(theme)
+      ? '#424242'
+      : theme.palette.background.paper,
+    height: 48,
+  },
 
-    toolbar: {
-      position: 'absolute',
-      left: theme.spacing(1),
-      right: theme.spacing(1),
-      top: 0,
-    },
-  }),
-  { name: 'ThreeDTopLevelView' }
-);
+  toolbar: {
+    position: 'absolute',
+    left: theme.spacing(1),
+    right: theme.spacing(1),
+    top: 0,
+  },
+}));
 
 const ThreeDTopLevelView = ({
   hasMapCoordinateSystem,

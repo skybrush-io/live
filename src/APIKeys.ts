@@ -1,5 +1,3 @@
-/* eslint-disable n/prefer-global/process */
-
 /**
  * The default API keys that the app will use if the user did not specify their
  * own API keys.

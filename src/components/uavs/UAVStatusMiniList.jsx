@@ -7,8 +7,7 @@ import { Translation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { createSelector } from '@reduxjs/toolkit';
 
-import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
-import MiniList from '@skybrush/mui-components/lib/MiniList';
+import { BackgroundHint, MiniList } from '@skybrush/mui-components';
 
 import { listOf } from '~/components/helpers/lists';
 import { Status, statusToPriority } from '~/components/semantics';
@@ -56,9 +55,7 @@ const getListItems = createSelector(
     }
 
     // Add UAV IDs that are in the GONE state because a UAV may be GONE and
-    // have an error code at the same time. If it has a warning or an error,
-    // it won't appear as GONE in the status summary so far because warnings
-    // and errors are not overridden by "GONE".
+    // have an error code at the same time
     if (goneIds.length > 0) {
       const text = 'gone';
       const textSemantics = Status.OFF;
@@ -66,6 +63,7 @@ const getListItems = createSelector(
       items[key] = {
         id: key,
         label: text,
+        gone: true,
         priority: -statusToPriority(textSemantics),
         status: textSemantics,
         uavIds: goneIds,
@@ -74,7 +72,7 @@ const getListItems = createSelector(
 
     if (inactiveIds.length > 0) {
       const text = 'no telem';
-      const textSemantics = Status.WARNING;
+      const textSemantics = Status.MISSING;
       const key = `${textSemantics}:${text}`;
       items[key] = {
         id: key,

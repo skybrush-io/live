@@ -2,7 +2,6 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { TextField } from 'mui-rff';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { Form } from 'react-final-form';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';

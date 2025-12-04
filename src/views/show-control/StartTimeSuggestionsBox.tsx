@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import React from 'react';
+import type React from 'react';
 
 import StartTimeSuggestions, {
   type StartTimeSuggestionsProps,
@@ -14,7 +14,7 @@ export type StartTimeSuggestionsBoxProps = Readonly<{
 const StartTimeSuggestionsBox = ({
   label,
   ...rest
-}: StartTimeSuggestionsBoxProps): JSX.Element => (
+}: StartTimeSuggestionsBoxProps): React.JSX.Element => (
   <Box
     sx={{ mt: 1, flexDirection: 'row', display: 'flex', alignItems: 'center' }}
   >

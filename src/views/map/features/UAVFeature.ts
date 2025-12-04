@@ -2,7 +2,8 @@
  * @file OpenLayers feature that represents an UAV on the map.
  */
 
-import Feature from 'ol/Feature';
+import Feature, { type ObjectWithGeometry } from 'ol/Feature';
+import type Point from 'ol/geom/Point';
 import { Fill, Icon, Style, Text } from 'ol/style';
 
 import SelectionGlow from '~/../assets/img/drone-selection-glow.png';
@@ -10,38 +11,58 @@ import DroneImage from '~/../assets/img/drone-x-black-32x32.png';
 import DroneImageError from '~/../assets/img/drone-x-black-error-32x32.png';
 import DroneImageInfo from '~/../assets/img/drone-x-black-info-32x32.png';
 import DroneImageWarning from '~/../assets/img/drone-x-black-warning-32x32.png';
-import { Severity } from '~/model/enums';
+import { Status } from '~/components/semantics';
 import { toRadians } from '~/utils/math';
 
-const droneImages = {
-  [Severity.INFO]: DroneImageInfo,
-  [Severity.WARNING]: DroneImageWarning,
-  [Severity.ERROR]: DroneImageError,
-  [Severity.CRITICAL]: DroneImageError,
+const droneImages: Record<string, string> = {
+  // Non-exhaustive mapping so we cannot type they key as Status
+  [Status.INFO]: DroneImageInfo,
+  [Status.WARNING]: DroneImageWarning,
+  [Status.ERROR]: DroneImageError,
+  [Status.CRITICAL]: DroneImageError,
 };
 
 /**
  * Feature that represents an UAV on an OpenLayers map.
  */
-export default class UAVFeature extends Feature {
+export default class UAVFeature extends Feature<Point> {
+  uavId: string;
+
+  _selected: boolean;
+  _color: string;
+  _labelColor: string;
+  _heading: number;
+  _scale: number;
+  _status: Status | null;
+  _hideLabel: boolean;
+  _iconImage: Icon | null;
+  _selectionImage: Icon | null;
+
   /**
    * Constructor.
    *
-   * @param  {string}  uavId  the identifier of the UAV to which this feature belongs
+   * @param  uavId  the identifier of the UAV to which this feature belongs
    * @param  {Object}  geometryOrProperties  the geometry that the feature represents
    *         or a properties object for the feature. This is passed on intact
    *         to the superclass but the style will be overwritten.
    * @param  {boolean|undefined} hideLabel  whether to hide the label of the UAV
    */
-  constructor(uavId, geometryOrProperties, hideLabel = undefined) {
+  constructor(
+    uavId: string,
+    geometryOrProperties: Point | ObjectWithGeometry<Point>,
+    hideLabel?: boolean
+  ) {
     super(geometryOrProperties);
 
     this._selected = false;
     this._color = '';
     this._labelColor = '';
     this._heading = 0;
+    this._scale = 1;
     this._status = null;
-    this._hideLabel = hideLabel ?? false;
+    this._hideLabel = Boolean(hideLabel ?? false);
+    this._iconImage = null;
+    this._selectionImage = null;
 
     this.uavId = uavId;
     this._setupStyle();
@@ -69,7 +90,9 @@ export default class UAVFeature extends Feature {
     if (this._iconImage) {
       const rotation = this._headingToRotation();
       this._iconImage.setRotation(rotation);
-      this._selectionImage.setRotation(rotation);
+      if (this._selectionImage) {
+        this._selectionImage.setRotation(rotation);
+      }
     }
   }
 
@@ -125,7 +148,7 @@ export default class UAVFeature extends Feature {
   /**
    * Sets the label color of the UAV.
    *
-   * @param {string} value The new color to be used.
+   * @param value The new color to be used.
    */
   set labelColor(value) {
     if (this._labelColor === value) {
@@ -133,6 +156,27 @@ export default class UAVFeature extends Feature {
     }
 
     this._labelColor = value;
+    this._setupStyle();
+  }
+
+  /**
+   * Returns the current scale of the UAV.
+   */
+  get scale() {
+    return this._scale;
+  }
+
+  /**
+   * Sets the scale of the UAV.
+   *
+   * @param value The new scale to be used.
+   */
+  set scale(value) {
+    if (this._scale === value) {
+      return;
+    }
+
+    this._scale = value;
     this._setupStyle();
   }
 
@@ -166,8 +210,8 @@ export default class UAVFeature extends Feature {
     const iconImage = new Icon({
       rotateWithView: true,
       rotation: this._headingToRotation(),
-      snapToPixel: false,
-      src: droneImages[this._status] || DroneImage,
+      scale: this._scale,
+      src: droneImages[this._status ?? ''] ?? DroneImage,
     });
     this._iconImage = iconImage;
 
@@ -179,7 +223,7 @@ export default class UAVFeature extends Feature {
     const selectionImage = new Icon({
       rotateWithView: true,
       rotation: this._headingToRotation(),
-      snapToPixel: false,
+      scale: this._scale,
       src: SelectionGlow,
     });
     this._selectionImage = selectionImage;
@@ -201,7 +245,7 @@ export default class UAVFeature extends Feature {
                 : 'black',
           }),
           font: '12px sans-serif',
-          offsetY: 24,
+          offsetY: 4 + 20 * this._scale,
           text: this.uavId || 'undefined',
           textAlign: 'center',
         }),
@@ -216,7 +260,7 @@ export default class UAVFeature extends Feature {
    * Converts the heading from the status information into the rotation
    * value to use in the OpenLayers feature style.
    */
-  _headingToRotation(heading) {
+  _headingToRotation(heading?: number) {
     if (heading === undefined) {
       heading = this._heading;
     }

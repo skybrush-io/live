@@ -1,5 +1,4 @@
 import { createSelector } from '@reduxjs/toolkit';
-import React from 'react';
 import { connect } from 'react-redux';
 
 import { isMapCachingEnabled } from '~/features/map-caching/selectors';

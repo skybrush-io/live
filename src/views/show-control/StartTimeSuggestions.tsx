@@ -6,7 +6,7 @@ import format from 'date-fns/format';
 import getMinutes from 'date-fns/getMinutes';
 import getSeconds from 'date-fns/getSeconds';
 import startOfMinute from 'date-fns/startOfMinute';
-import React from 'react';
+import type React from 'react';
 
 import usePeriodicRefresh from '~/hooks/usePeriodicRefresh';
 
@@ -85,7 +85,7 @@ const StartTimeSuggestions = ({
   onChange,
   startTimes = defaultCreateStartTimeSuggestions,
   ...rest
-}: StartTimeSuggestionsProps): JSX.Element => {
+}: StartTimeSuggestionsProps): React.JSX.Element => {
   const items =
     typeof startTimes === 'function' ? startTimes(Date.now()) : startTimes;
 
@@ -95,7 +95,6 @@ const StartTimeSuggestions = ({
   return (
     <ButtonGroup variant='text' {...rest}>
       {items.map((suggestion, index) => (
-        /* eslint-disable react/no-array-index-key */
         <BorderlessButton
           key={`button${index}`}
           color='inherit'
@@ -109,7 +108,6 @@ const StartTimeSuggestions = ({
               ? format(suggestion.time, 'HH:mm')
               : format(suggestion.time, 'HH:mm:ss')}
         </BorderlessButton>
-        /* eslint-enable react/no-array-index-key */
       ))}
     </ButtonGroup>
   );

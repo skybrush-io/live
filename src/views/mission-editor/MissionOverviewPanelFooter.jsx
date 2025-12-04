@@ -5,11 +5,12 @@ import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import Paper from '@mui/material/Paper';
 import Toolbar from '@mui/material/Toolbar';
-import makeStyles from '@mui/styles/makeStyles';
 import isEmpty from 'lodash-es/isEmpty';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
+
+import { makeStyles } from '@skybrush/app-theme-mui';
 
 import ToolbarDivider from '~/components/ToolbarDivider';
 import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
@@ -31,17 +32,12 @@ import {
   titleForMissionItemType,
 } from '~/model/missions';
 
-const useStyles = makeStyles(
-  (theme) => ({
-    root: {
-      background: theme.palette.action.hover,
-      padding: theme.spacing(0, 1),
-    },
-  }),
-  {
-    name: 'MissionOverviewPanelFooter',
-  }
-);
+const useStyles = makeStyles((theme) => ({
+  root: {
+    background: theme.palette.action.hover,
+    padding: theme.spacing(0, 1),
+  },
+}));
 
 const availableMissionItemTypes = [
   MissionItemType.TAKEOFF,

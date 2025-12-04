@@ -16,7 +16,6 @@ import Place from '@mui/icons-material/Place';
 import ThreeDRotation from '@mui/icons-material/ThreeDRotation';
 import WbSunny from '@mui/icons-material/WbSunny';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { Module, ModuleTray, Workbench } from 'react-flexible-workbench';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';

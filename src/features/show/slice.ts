@@ -207,6 +207,7 @@ const { actions, reducer } = createSlice({
 
     _clearLoadedShow: noPayload<ShowSliceState>((state) => {
       state.data = undefined;
+      state.base64Blob = undefined;
 
       state.sourceUrl = undefined;
       state.changedSinceLoaded = false;

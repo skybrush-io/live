@@ -6,6 +6,7 @@
 import type {
   DroneLightsConfiguration,
   DroneShowConfiguration,
+  Response_ACKNAK,
   Response_EXTRELOAD,
   Response_EXTSETCFG,
   RTKSurveySettings,
@@ -21,7 +22,7 @@ import {
 import type MessageHub from './messages';
 import { extractResponseForId } from './parsing';
 import { validateExtensionName, validateObjectId } from './validation';
-import type { Message } from './types';
+import type { Message, MessageBody } from './types';
 import type {
   AsyncOperationOptions,
   AsyncResponseHandlerOptions,
@@ -347,7 +348,7 @@ export async function uploadMission(
  * Custom class of errors representing server side plan generation problems.
  */
 export class ServerPlanError extends Error {
-  constructor(message: string) {
+  constructor(message?: string) {
     super(message);
     this.name = 'ServerPlanError';
   }
@@ -360,23 +361,29 @@ export async function planMission(
   hub: MessageHub,
   { id, parameters }: { id: string; parameters: Record<string, unknown> }
 ) {
-  const response = await hub.sendMessage({
-    type: 'X-MSN-PLAN',
-    id,
-    parameters,
-  });
+  const response = await hub.sendMessage<
+    | (MessageBody<'X-MSN-PLAN'> & { result: Record<string, unknown> })
+    | Response_ACKNAK
+  >({ type: 'X-MSN-PLAN', id, parameters });
 
-  const { type, result } = response.body as any;
+  const { type } = response.body;
   if (type !== 'X-MSN-PLAN') {
-    throw new ServerPlanError((response.body as any).reason);
+    throw new ServerPlanError(response.body.reason);
   }
 
+  const { result } = response.body;
   if (result?.format !== 'skybrush-live/mission-items') {
-    throw new Error(`Mission plan has an unknown format: ${result?.format}`);
+    throw new Error(
+      `Mission plan has an unknown format: ${String(result?.format)}`
+    );
   }
 
   const { payload } = result;
-  if (payload?.version !== 1 || !Array.isArray(payload.items)) {
+  if (
+    !(typeof payload === 'object' && payload !== null) ||
+    !('version' in payload && payload?.version == 1) ||
+    !('items' in payload && Array.isArray(payload?.items))
+  ) {
     throw new Error('Mission plan response must be in version 1 format');
   }
 
@@ -412,11 +419,13 @@ export type OperationExecutor = {
  * Query handler object that can be used to perform common operations on a
  * Flockwave server using a given message hub.
  */
-export function createOperationExecutor(hub: MessageHub): OperationExecutor {
-  const result: Record<string, any> = {};
-  for (const [name, func] of Object.entries(_operations)) {
-    // @ts-ignore
-    result[name] = (...args) => func(hub, ...args);
-  }
-  return result as any as OperationExecutor;
-}
+export const createOperationExecutor = (hub: MessageHub): OperationExecutor =>
+  Object.fromEntries(
+    Object.entries(_operations).map(([name, func]) => [
+      name,
+      // @ts-expect-error Correctly annotating this would require dependent
+      //                  types, as each operation has different arguments
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      (...args) => func(hub, ...args),
+    ])
+  ) as OperationExecutor;

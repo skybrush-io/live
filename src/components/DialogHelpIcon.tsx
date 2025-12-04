@@ -1,9 +1,9 @@
 import HelpIcon from '@mui/icons-material/Help';
 import type { Theme } from '@mui/material/styles';
-import makeStyles from '@mui/styles/makeStyles';
-import React from 'react';
+import type React from 'react';
 
-import Tooltip from '@skybrush/mui-components/lib/Tooltip';
+import { makeStyles } from '@skybrush/app-theme-mui';
+import { Tooltip } from '@skybrush/mui-components';
 
 const useStyles = makeStyles((theme: Theme) => ({
   iconContainer: {

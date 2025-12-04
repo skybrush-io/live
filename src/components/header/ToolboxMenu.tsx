@@ -7,7 +7,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Menu, { type MenuProps } from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import React from 'react';
+import type React from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
@@ -57,7 +57,7 @@ const ToolboxMenuPresentation = ({
   showVersionCheckDialog: _showVersionCheckDialog,
   requestClose,
   ...rest
-}: ToolboxMenuPresentationProps): JSX.Element => {
+}: ToolboxMenuPresentationProps): React.JSX.Element => {
   const { t } = useTranslation();
 
   const createClickListener = (func: () => void) => (): void => {

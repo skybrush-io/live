@@ -1,3 +1,7 @@
+# Git worktree directories
+.wt
+.worktree
+
 # VSCode settings
 .vscode
 
@@ -56,3 +60,9 @@ jspm_packages
 # Show files used as examples during testing
 assets/shows/
 
+# Development stuff
+etc/dev/
+
+# AI
+.plan
+.prompt

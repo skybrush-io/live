@@ -7,11 +7,10 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { Translation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import Header from '@skybrush/mui-components/lib/FormHeader';
+import { FormHeader as Header } from '@skybrush/mui-components';
 
 import {
   getLightingConditionsForThreeDView,

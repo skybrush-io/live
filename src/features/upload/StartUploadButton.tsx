@@ -1,6 +1,6 @@
 import PlayArrow from '@mui/icons-material/PlayArrow';
 import Button, { type ButtonProps } from '@mui/material/Button';
-import React from 'react';
+import type React from 'react';
 import { Translation } from 'react-i18next';
 
 import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
@@ -18,7 +18,7 @@ type StartUploadButtonProps = Readonly<{
 const StartUploadButton = ({
   hasQueuedItems,
   ...rest
-}: StartUploadButtonProps): JSX.Element => (
+}: StartUploadButtonProps): React.JSX.Element => (
   <Translation>
     {(t) => (
       <Tooltip content={t('startUploadButton.tooltip')}>

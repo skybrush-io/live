@@ -4,7 +4,6 @@ import CardHeader from '@mui/material/CardHeader';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { connect } from 'react-redux';
 
 import { changeLayerType } from '~/features/map/layers';

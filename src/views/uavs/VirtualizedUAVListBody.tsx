@@ -1,8 +1,9 @@
 import Box from '@mui/material/Box';
-import makeStyles from '@mui/styles/makeStyles';
 import React from 'react';
 import { connect } from 'react-redux';
 import { Virtuoso, VirtuosoGrid } from 'react-virtuoso';
+
+import { makeStyles } from '@skybrush/app-theme-mui';
 
 import { UAVListLayout } from '~/features/settings/types';
 import type { RootState } from '~/store/reducers';
@@ -13,24 +14,21 @@ import { GRID_ITEM_WIDTH, GRID_ROW_HEIGHT, HEADER_HEIGHT } from './constants';
 import { getDisplayedItems } from './selectors';
 import type { Item } from './types';
 
-const useStyles = makeStyles(
-  {
-    grid: {
-      display: 'grid',
-      gridTemplateColumns: `repeat(auto-fill, ${GRID_ITEM_WIDTH}px)`,
-      gridTemplateRows: GRID_ROW_HEIGHT,
-      gridAutoRows: GRID_ROW_HEIGHT,
-    },
-
-    gridItem: {},
-
-    list: {
-      alignItems: 'stretch',
-      fontSize: '12px',
-    },
+const useStyles = makeStyles({
+  grid: {
+    display: 'grid',
+    gridTemplateColumns: `repeat(auto-fill, ${GRID_ITEM_WIDTH}px)`,
+    gridTemplateRows: GRID_ROW_HEIGHT,
+    gridAutoRows: GRID_ROW_HEIGHT,
   },
-  { name: 'UAVListSection' }
-);
+
+  gridItem: {},
+
+  list: {
+    alignItems: 'stretch',
+    fontSize: '12px',
+  },
+});
 
 type VirtualizedUAVListBodyProps = Readonly<{
   id?: string;
@@ -44,7 +42,7 @@ type VirtualizedUAVListBodyProps = Readonly<{
  * ensure that the real grid starts "below" the SortAndFilterHeader component
  * that is supposed to float above the grid.
  */
-const GridHeaderPadding = (): JSX.Element => (
+const GridHeaderPadding = (): React.JSX.Element => (
   <Box sx={{ height: HEADER_HEIGHT }} />
 );
 
@@ -54,7 +52,7 @@ const GridHeaderPadding = (): JSX.Element => (
 const VirtualizedUAVListBody = React.forwardRef<
   VirtualizedScrollFunctions | undefined,
   VirtualizedUAVListBodyProps
->((props, ref): JSX.Element => {
+>((props, ref): React.JSX.Element => {
   const { items, itemRenderer, layout, ...rest } = props;
   const classes = useStyles();
 
@@ -62,30 +60,28 @@ const VirtualizedUAVListBody = React.forwardRef<
     <VirtuosoGrid
       ref={ref}
       components={{
-        // eslint-disable-next-line @typescript-eslint/naming-convention
         Header: GridHeaderPadding,
       }}
       itemClassName={classes.gridItem}
-      itemContent={(index) => itemRenderer(items[index]!)}
+      itemContent={(index) => itemRenderer(items[index])}
       listClassName={classes.grid}
       totalCount={items.length}
       {...(rest as any)}
     />
   ) : (
     <Virtuoso
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       ref={ref as any}
       className={classes.list}
       components={{
-        // eslint-disable-next-line @typescript-eslint/naming-convention
         Header: GridHeaderPadding,
       }}
-      itemContent={(index) => itemRenderer(items[index]!)}
+      itemContent={(index) => itemRenderer(items[index])}
       totalCount={items.length}
       {...rest}
     />
   );
 });
+VirtualizedUAVListBody.displayName = 'VirtualizedUAVListBody';
 
 export default connect(
   // mapStateToProps

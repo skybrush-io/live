@@ -3,11 +3,13 @@ import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import Typography from '@mui/material/Typography';
 import type { Theme } from '@mui/material/styles';
-import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
-import React, { type ReactNode } from 'react';
+import type React from 'react';
+import { type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
+
+import { makeStyles } from '@skybrush/app-theme-mui';
 
 import type { RootState } from '~/store/reducers';
 
@@ -36,12 +38,10 @@ const useStyles = makeStyles((theme: Theme) => ({
 
     // TODO: Add a `filter` to the `eslint` rule to ignore these cases globally!
     //       https://typescript-eslint.io/rules/naming-convention/#filter
-    // eslint-disable-next-line @typescript-eslint/naming-convention
     '& > p': {
       fontWeight: theme.typography.fontWeightMedium,
     },
 
-    // eslint-disable-next-line @typescript-eslint/naming-convention
     '& > p:nth-child(odd)': {
       textAlign: 'right',
     },
@@ -58,7 +58,7 @@ type AdaptReviewFormProps = Readonly<{
   reviewInViewer: () => void;
 }>;
 
-const AdaptReviewForm = (props: AdaptReviewFormProps): JSX.Element => {
+const AdaptReviewForm = (props: AdaptReviewFormProps): React.JSX.Element => {
   const { adaptResult, error, isShowAdaptInProgress, reviewInViewer } = props;
   const { t } = useTranslation(undefined, {
     keyPrefix: 'showConfiguratorDialog.adaptReview',

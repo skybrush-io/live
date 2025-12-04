@@ -1,5 +1,5 @@
 import Mapping from '@mui/icons-material/FormatLineSpacing';
-import React from 'react';
+import type React from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 

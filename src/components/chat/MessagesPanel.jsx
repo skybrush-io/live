@@ -7,15 +7,13 @@ import DeleteSweep from '@mui/icons-material/DeleteSweep';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import IconButton from '@mui/material/IconButton';
-import withStyles from '@mui/styles/withStyles';
-import clsx from 'clsx';
 import formatDate from 'date-fns/format';
 import isNil from 'lodash-es/isNil';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
-import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
+import { BackgroundHint } from '@skybrush/mui-components';
 
 import {
   createMessageListSelector,
@@ -38,14 +36,6 @@ import ChatArea from './ChatArea';
 import ChatBubble from './ChatBubble';
 import Marker from './Marker';
 import MessageField from './MessageField';
-
-const styles = {
-  noFocusOutline: {
-    '&:focus': {
-      outline: 'none',
-    },
-  },
-};
 
 const dateFormatter = (x) => formatDate(x, 'H:mm');
 
@@ -178,7 +168,6 @@ ChatAreaBackgroundHint.propTypes = {
 class MessagesPanel extends React.Component {
   static propTypes = {
     chatEntries: PropTypes.arrayOf(PropTypes.object),
-    classes: PropTypes.object,
     commandHistory: PropTypes.arrayOf(PropTypes.string),
     hideClearButton: PropTypes.bool,
     onClearMessages: PropTypes.func,
@@ -219,7 +208,6 @@ class MessagesPanel extends React.Component {
   render() {
     const {
       chatEntries,
-      classes,
       commandHistory,
       hideClearButton,
       onClearMessages,
@@ -257,7 +245,7 @@ class MessagesPanel extends React.Component {
       <Box
         ref={this._messageFieldContainerRef}
         key='textFieldContainer'
-        className={clsx('bottom-bar', classes.noFocusOutline)}
+        className='bottom-bar'
         tabIndex='-1'
         onKeyDown={(e) => {
           if (e.code === 'Enter') {
@@ -270,6 +258,9 @@ class MessagesPanel extends React.Component {
           pb: 2,
           pl: 2,
           pr: isClearButtonVisible ? 0 : 2,
+          '&:focus': {
+            outline: 'none',
+          },
         }}
       >
         <MessageField
@@ -397,4 +388,4 @@ export default connect(
 
   // ref is needed because we want to access the scrollToBottom() method
   // from the outside
-)(withStyles(styles)(MessagesPanel));
+)(MessagesPanel);

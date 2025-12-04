@@ -24,7 +24,7 @@ export const getGeofenceValidatorBasedOnMissionType = createSelector(
     ({
       [MissionType.SHOW]: showInsideGeofence,
       [MissionType.WAYPOINT]: waypointMissionInsideGeofence,
-    }[missionType])
+    })[missionType]
 );
 
 export const getGeofenceStatus = createSelector(
@@ -36,9 +36,9 @@ export const getGeofenceStatus = createSelector(
     return !hasActiveGeofencePolygon
       ? Status.OFF
       : !validator
-      ? Status.ERROR
-      : geofencePolygon.owner === missionType
-      ? Status.SUCCESS
-      : Status.WARNING;
+        ? Status.ERROR
+        : geofencePolygon.owner === missionType
+          ? Status.SUCCESS
+          : Status.WARNING;
   }
 );

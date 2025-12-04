@@ -1,7 +1,6 @@
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { connect } from 'react-redux';
 
 import { getSelectedTabInUAVDetailsPanel } from '~/features/uavs/selectors';

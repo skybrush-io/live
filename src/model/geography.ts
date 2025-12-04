@@ -44,7 +44,6 @@ export const isGPSPosition = (position: unknown): position is GPSPosition =>
  * `undefined` or `null` and not the null island.
  */
 export const isGPSPositionValid = (
-  // eslint-disable-next-line @typescript-eslint/ban-types
   pos: GPSPosition | undefined | null
 ): pos is GPSPosition =>
   pos !== undefined && pos !== null && !isNullIsland(pos);

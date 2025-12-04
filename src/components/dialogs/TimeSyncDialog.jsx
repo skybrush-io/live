@@ -5,15 +5,16 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import Typography from '@mui/material/Typography';
-import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import isNil from 'lodash-es/isNil';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { connect } from 'react-redux';
 
-import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
-import SmallProgressIndicator from '@skybrush/mui-components/lib/SmallProgressIndicator';
+import { makeStyles } from '@skybrush/app-theme-mui';
+import {
+  DraggableDialog,
+  SmallProgressIndicator,
+} from '@skybrush/mui-components';
 
 import AutoUpdatingTimestamp from '~/components/AutoUpdatingTimestamp';
 import Colors from '~/components/colors';

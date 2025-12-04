@@ -8,10 +8,13 @@ import { SVD as computeSVD } from 'svd-js';
 
 import { COORDINATE_SYSTEM_TYPE } from '@skybrush/show-format';
 
-import { findAssignmentInDistanceMatrix } from '~/algorithms/matching';
+import {
+  findAssignmentBetweenPoints,
+  type Assignment,
+} from '~/algorithms/matching';
+import { OriginType } from '~/features/map/types';
 import { FlatEarthCoordinateSystem, type LonLat } from '~/utils/geography';
 import {
-  calculateDistanceMatrix,
   euclideanDistance2D,
   getCentroid,
   getMeanAngle,
@@ -24,10 +27,8 @@ import type {
   CoordinateSystemEstimate,
   CoordinateSystemFittingProblem,
 } from './types';
-import type { Assignment } from 'hungarian-on3';
-import { OriginType } from '../map/types';
 
-if (COORDINATE_SYSTEM_TYPE !== OriginType.NWU) {
+if ((COORDINATE_SYSTEM_TYPE as OriginType) !== OriginType.NWU) {
   throw new Error(
     `The coordinate system type ${COORDINATE_SYSTEM_TYPE} is not supported by the auto-fit algorithm`
   );
@@ -143,20 +144,16 @@ function refineEstimate(
   ) {
     const gpsToLocal = new FlatEarthCoordinateSystem(estimate);
     const uavCoordinates = convertToFlatEarth(uavGPSCoordinates, gpsToLocal);
-    /* TODO(ntamas): calculate distances for only those pairs that are closer
-     * than the given threshold */
-    const distances = calculateDistanceMatrix(
-      uavCoordinates,
-      takeoffCoordinates,
-      {
-        distanceFunction: euclideanDistance2D,
-      }
-    );
 
     /* Figure out which UAVs to include in the refinement attempt */
-    matching = findAssignmentInDistanceMatrix(distances, {
-      algorithm: 'hungarian',
+    matching = findAssignmentBetweenPoints(uavCoordinates, takeoffCoordinates, {
+      distanceFunction: euclideanDistance2D,
+      matching: {
+        algorithm: 'hungarian',
+      },
     });
+
+    /* Sort the matching by takeoff index to ensure consistent ordering */
     matching.sort((a, b) => a[1] - b[1]);
     if (isEqual(matching, previousMatching)) {
       /* Matching did not change, we can run one last alignment and then exit */
@@ -200,10 +197,10 @@ function refineEstimate(
     /* Filter the coordinates and calculate the centroids */
     const numMatched = matching.length;
     let selectedUAVCoordinates = matching.map(
-      ([index, _]) => uavCoordinates[index]!
+      ([index, _]) => uavCoordinates[index]
     );
     let selectedTakeoffCoordinates = matching.map(
-      ([_, index]) => takeoffCoordinates[index]!
+      ([_, index]) => takeoffCoordinates[index]
     );
     const uavCenter = getCentroid(selectedUAVCoordinates);
     const takeoffCenter = getCentroid(selectedTakeoffCoordinates);
@@ -222,8 +219,8 @@ function refineEstimate(
       [0, 0],
     ];
     for (let i = 0; i < numMatched; i++) {
-      const uavCoordinate = selectedUAVCoordinates[i]!;
-      const takeoffCoordinate = selectedTakeoffCoordinates[i]!;
+      const uavCoordinate = selectedUAVCoordinates[i];
+      const takeoffCoordinate = selectedTakeoffCoordinates[i];
       dotProduct[0][0] += uavCoordinate[0] * takeoffCoordinate[0];
       dotProduct[0][1] += uavCoordinate[0] * takeoffCoordinate[1];
       dotProduct[1][0] += uavCoordinate[1] * takeoffCoordinate[0];
