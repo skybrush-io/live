@@ -35,24 +35,6 @@
   "RTKMessage": {
     "noRTKMessagesYet": "No RTK messages have been received yet"
   },
-  "rtkPresetDialog": {
-    "addSource": "Add Source",
-    "createTitle": "Create RTK Preset",
-    "dataSources": "Data Sources",
-    "deleteConfirmation": "Are you sure you want to delete this preset?",
-    "deletePreset": "Delete Preset",
-    "editTitle": "Edit RTK Preset",
-    "formatAuto": "Detect automatically",
-    "formatHelp": "Format of the GPS messages arriving in this configuration (supported formats: \"rtcm2\", \"rtcm3\", \"ubx\", and \"auto\" for auto detection)",
-    "id": "ID",
-    "messageFormat": "Message Format",
-    "presetName": "Preset Name",
-    "presetNameHelp": "A descriptive name for this RTK preset",
-    "presetNamePlaceholder": "My RTK Base Station",
-    "readOnlyMessage": "Built-in/Dynamic presets cannot be edited",
-    "sourcesHelp": "Connection URLs for RTK correction data. You can specify multiple sources.",
-    "type": "Type"
-  },
   "RTKStatusMiniList": {
     "satelliteCount": "Satellite count",
     "surveyInProgress": "Survey in progress…",
@@ -390,6 +372,24 @@
   "recalculateMappingButton": {
     "findOptimalMapping": "Find optimal mapping",
     "recalculateMapping": "Recalculate mapping"
+  },
+  "rtkPresetDialog": {
+    "addSource": "Add Source",
+    "createTitle": "Create RTK Preset",
+    "dataSources": "Data Sources",
+    "deleteConfirmation": "Are you sure you want to delete this preset?",
+    "deletePreset": "Delete Preset",
+    "editTitle": "Edit RTK Preset",
+    "formatAuto": "Detect automatically",
+    "formatHelp": "Format of the GPS messages arriving in this configuration (supported formats: \"rtcm2\", \"rtcm3\", \"ubx\", and \"auto\" for auto detection)",
+    "id": "ID",
+    "messageFormat": "Message Format",
+    "presetName": "Preset Name",
+    "presetNameHelp": "A descriptive name for this RTK preset",
+    "presetNamePlaceholder": "My RTK Base Station",
+    "readOnlyMessage": "Built-in/Dynamic presets cannot be edited",
+    "sourcesHelp": "Connection URLs for RTK correction data. You can specify multiple sources.",
+    "type": "Type"
   },
   "safetyDialog": {
     "geofence": "Geofence",
