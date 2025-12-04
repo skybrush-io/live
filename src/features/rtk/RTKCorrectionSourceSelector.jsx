@@ -15,10 +15,7 @@ import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { useAsyncRetry } from 'react-use';
 
-import {
-  resetRTKStatistics,
-  openRTKPresetDialog,
-} from '~/features/rtk/slice';
+import { resetRTKStatistics, openRTKPresetDialog } from '~/features/rtk/slice';
 import messageHub from '~/message-hub';
 
 const NULL_ID = '__null__';
@@ -106,12 +103,7 @@ const RTKCorrectionSourceSelector = ({
     return () => {
       isMounted = false;
     };
-  }, [
-    selectionRetry,
-    selectedByUser,
-    selectedOnServer,
-    setSelectedByUser,
-  ]);
+  }, [selectionRetry, selectedByUser, selectedOnServer, setSelectedByUser]);
 
   // Cleanup optimistic state when server state catches up
   useEffect(() => {

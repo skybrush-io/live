@@ -159,4 +159,3 @@ export const getSurveyStatus = createSelector(
  */
 export const shouldShowSurveySettings = (state: RootState): boolean =>
   state.rtk.dialog.surveySettingsEditorVisible;
-

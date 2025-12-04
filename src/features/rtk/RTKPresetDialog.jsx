@@ -24,7 +24,7 @@ import React, {
 } from 'react';
 import { Form } from 'react-final-form';
 import { withTranslation } from 'react-i18next';
-import { connect } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
 import { nanoid } from 'nanoid';
 
 import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
@@ -35,6 +35,7 @@ import {
 } from '~/components/forms';
 import messageHub from '~/message-hub';
 import { closeRTKPresetDialog, refreshRTKPresets } from './slice';
+import { showConfirmationDialog } from '~/features/prompt/actions';
 import { required } from '~/utils/validation';
 
 /**
@@ -101,6 +102,7 @@ const RTKPresetDialogFormPresentation = ({
     ? presetType.charAt(0).toUpperCase() + presetType.slice(1)
     : 'User';
 
+  const dispatch = useDispatch();
   const [sources, setSources] = useState(
     initialValues?.sources && initialValues.sources.length > 0
       ? initialValues.sources.map((s) => ({ id: nanoid(), value: s }))
@@ -129,14 +131,20 @@ const RTKPresetDialogFormPresentation = ({
   );
 
   const handleDelete = useCallback(async () => {
-    // eslint-disable-next-line no-alert
     if (
-      !window.confirm(
-        t(
-          'rtkPresetDialog.deleteConfirmation',
-          'Are you sure you want to delete this preset?'
+      !(await dispatch(
+        showConfirmationDialog(
+          t(
+            'rtkPresetDialog.deleteConfirmation',
+            'Are you sure you want to delete this preset?'
+          ),
+          {
+            title: t('rtkPresetDialog.deletePreset', 'Delete Preset'),
+            submitButtonLabel: t('general.action.delete', 'Delete'),
+            cancelButtonLabel: t('general.action.cancel', 'Cancel'),
+          }
         )
-      )
+      ))
     ) {
       return;
     }
@@ -166,7 +174,7 @@ const RTKPresetDialogFormPresentation = ({
     } finally {
       setSubmitting(false);
     }
-  }, [presetId, onSubmit, onRefreshPresets, t]);
+  }, [presetId, onSubmit, onRefreshPresets, t, dispatch]);
 
   const handleSourceChange = useCallback(
     (index, value) => {
@@ -234,7 +242,9 @@ const RTKPresetDialogFormPresentation = ({
   // Update sources when initialValues change (for edit mode)
   useEffect(() => {
     if (initialValues?.sources && initialValues.sources.length > 0) {
-      setSources(initialValues.sources.map((s) => ({ id: nanoid(), value: s })));
+      setSources(
+        initialValues.sources.map((s) => ({ id: nanoid(), value: s }))
+      );
     }
   }, [initialValues]);
 
@@ -319,7 +329,9 @@ const RTKPresetDialogFormPresentation = ({
                       value={source.value}
                       error={false}
                       helperText={
-                        index === 0 && sources.length === 1 && !source.value.trim()
+                        index === 0 &&
+                        sources.length === 1 &&
+                        !source.value.trim()
                           ? t(
                               'rtkPresetDialog.sourcesHelp',
                               'Connection URLs for RTK correction data. You can specify multiple sources.'
@@ -365,7 +377,6 @@ const RTKPresetDialogFormPresentation = ({
               </Box>
             </DialogContent>
             <DialogActions>
-
               {!isNew && !isReadOnly && (
                 <Button
                   color='secondary'

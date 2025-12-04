@@ -16,20 +16,18 @@ import { closeRTKSetupDialog } from './slice';
  * monitor the RTK correction source for the UAVs.
  */
 const RTKSetupDialog = ({ onClose, open }) => (
-  <>
-    <Dialog fullWidth open={open} maxWidth='sm' onClose={onClose}>
-      <RTKStatusUpdater />
-      <Box>
-        <Box mx={3} mt={3}>
-          <RTKCorrectionSourceSelector />
-          <Box height={100} my={2} boxSizing='content-box' overflow='auto'>
-            <RTKMessageStatistics />
-          </Box>
+  <Dialog fullWidth open={open} maxWidth='sm' onClose={onClose}>
+    <RTKStatusUpdater />
+    <Box>
+      <Box mx={3} mt={3}>
+        <RTKCorrectionSourceSelector />
+        <Box height={100} my={2} boxSizing='content-box' overflow='auto'>
+          <RTKMessageStatistics />
         </Box>
-        <RTKSetupDialogBottomPanel />
       </Box>
-    </Dialog>
-  </>
+      <RTKSetupDialogBottomPanel />
+    </Box>
+  </Dialog>
 );
 
 RTKSetupDialog.propTypes = {

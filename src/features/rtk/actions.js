@@ -7,10 +7,7 @@ import {
   getFormattedAntennaPosition,
   isShowingAntennaPositionInECEF,
 } from './selectors';
-import {
-  closeSurveySettingsPanel,
-  setAntennaPositionFormat,
-} from './slice';
+import { closeSurveySettingsPanel, setAntennaPositionFormat } from './slice';
 
 export const copyAntennaPositionToClipboard = () => (dispatch, getState) => {
   copy(getFormattedAntennaPosition(getState()));

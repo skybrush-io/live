@@ -3,7 +3,7 @@ import isNil from 'lodash-es/isNil';
 import mapValues from 'lodash-es/mapValues';
 import PropTypes from 'prop-types';
 import { useEffect } from 'react';
-import { connect, useDispatch, useSelector } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
 
 import handleError from '~/error-handling';
 import { updateRTKStatistics } from '~/features/rtk/slice';

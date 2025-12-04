@@ -8,10 +8,7 @@ import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
 import { noPayload } from '~/utils/redux';
 
-import {
-  RTKAntennaPositionFormat,
-  type RTKStatistics,
-} from './types';
+import { RTKAntennaPositionFormat, type RTKStatistics } from './types';
 
 type RTKPresetDialogState = {
   open: boolean;
