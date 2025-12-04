@@ -113,11 +113,11 @@ const EmergencyRTHDialog = (props: Props) => {
             </Typography>
             <Typography>
               {t(
-                transformationResult.maxShowLength === undefined
-                  ? 'emergencyRTHDialog.summary.maxShowLength.unknown'
-                  : 'emergencyRTHDialog.summary.maxShowLength.message',
+                transformationResult.maxShowDuration === undefined
+                  ? 'emergencyRTHDialog.summary.maxShowDuration.unknown'
+                  : 'emergencyRTHDialog.summary.maxShowDuration.message',
                 {
-                  maxShowLength: transformationResult.maxShowLength,
+                  maxShowDuration: transformationResult.maxShowDuration,
                 }
               )}
             </Typography>

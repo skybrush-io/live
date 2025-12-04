@@ -109,9 +109,9 @@
         "message": "Last RTH time: {{lastTime}}s",
         "unknown": "Last RTH time: unknown"
       },
-      "maxShowLength": {
-        "message": "Maximum show length: {{maxShowLength}}s",
-        "unknown": "Maximum show length: unknown"
+      "maxShowDuration": {
+        "message": "Maximum show duration, assuming RTH is triggered: {{maxShowDuration}}s",
+        "unknown": "Maximum show duration, assuming RTH is triggered: unknown"
       }
     },
     "title": "Plan emergency RTH",

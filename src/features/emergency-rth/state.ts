@@ -17,9 +17,9 @@ export type TransformationResult = {
   lastTime?: number;
 
   /**
-   * The maximum show length including the emergency RTH plans, in seconds
+   * The maximum show duration assuming an emergency RTH plan got triggered, in seconds.
    */
-  maxShowLength?: number;
+  maxShowDuration?: number;
 };
 
 export type TransformationResultOrStatus =
