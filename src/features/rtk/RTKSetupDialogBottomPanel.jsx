@@ -1,14 +1,17 @@
 import Place from '@mui/icons-material/Place';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
-import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 
-import { createSecondaryAreaStyle, isThemeDark } from '@skybrush/app-theme-mui';
-import Tooltip from '@skybrush/mui-components/lib/Tooltip';
+import {
+  createSecondaryAreaStyle,
+  isThemeDark,
+  makeStyles,
+} from '@skybrush/app-theme-mui';
+import { Tooltip } from '@skybrush/mui-components';
 
 import FadeAndSlide from '~/components/transitions/FadeAndSlide';
 
@@ -22,32 +25,29 @@ import SurveyStatusIndicator from './SurveyStatusIndicator';
 
 /* ************************************************************************ */
 
-const useStyles = makeStyles(
-  (theme) => ({
-    root: {
-      ...createSecondaryAreaStyle(theme),
-      display: 'flex',
-      flexDirection: 'column',
-    },
+const useStyles = makeStyles((theme) => ({
+  root: {
+    ...createSecondaryAreaStyle(theme),
+    display: 'flex',
+    flexDirection: 'column',
+  },
 
-    inset: {
-      border: `1px solid ${
-        isThemeDark(theme) ? 'rgba(0, 0, 0, 0.54)' : 'rgba(255, 255, 255, 0.54)'
-      }`,
-      boxShadow: '0 0 4px 2px inset rgba(0, 0, 0, 0.54)',
-      padding: theme.spacing(1),
-    },
+  inset: {
+    border: `1px solid ${
+      isThemeDark(theme) ? 'rgba(0, 0, 0, 0.54)' : 'rgba(255, 255, 255, 0.54)'
+    }`,
+    boxShadow: '0 0 4px 2px inset rgba(0, 0, 0, 0.54)',
+    padding: theme.spacing(1),
+  },
 
-    nonInset: {
-      borderTop: `1px solid ${
-        isThemeDark(theme) ? 'rgba(0, 0, 0, 0.54)' : 'rgba(255, 255, 255, 0.54)'
-      }`,
-      boxShadow: '0 2px 6px -2px inset rgba(0, 0, 0, 0.54)',
-      padding: theme.spacing(2, 3),
-    },
-  }),
-  { name: 'ChartContainer' }
-);
+  nonInset: {
+    borderTop: `1px solid ${
+      isThemeDark(theme) ? 'rgba(0, 0, 0, 0.54)' : 'rgba(255, 255, 255, 0.54)'
+    }`,
+    boxShadow: '0 2px 6px -2px inset rgba(0, 0, 0, 0.54)',
+    padding: theme.spacing(2, 3),
+  },
+}));
 
 const RTKSetupDialogBottomPanel = ({
   chartHeight = 160,

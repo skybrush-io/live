@@ -2,10 +2,11 @@ import type { SxProps } from '@mui/material';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
-import StatusLight from '@skybrush/mui-components/lib/StatusLight';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
+
+import { StatusLight } from '@skybrush/mui-components';
 
 import { Status } from '~/components/semantics';
 import { setCommandsAreBroadcast } from '~/features/mission/slice';

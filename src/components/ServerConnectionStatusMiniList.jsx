@@ -4,9 +4,11 @@ import React from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import MiniList from '@skybrush/mui-components/lib/MiniList';
-import MiniListDivider from '@skybrush/mui-components/lib/MiniListDivider';
-import MiniListItem from '@skybrush/mui-components/lib/MiniListItem';
+import {
+  MiniList,
+  MiniListDivider,
+  MiniListItem,
+} from '@skybrush/mui-components';
 
 import { MAX_ROUNDTRIP_TIME } from '~/features/servers/constants';
 import {

@@ -4,10 +4,12 @@ import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect, useDispatch, useSelector } from 'react-redux';
 
-import MiniList from '@skybrush/mui-components/lib/MiniList';
-import MiniListItem from '@skybrush/mui-components/lib/MiniListItem';
-import StatusLight from '@skybrush/mui-components/lib/StatusLight';
-import Tooltip from '@skybrush/mui-components/lib/Tooltip';
+import {
+  MiniList,
+  MiniListItem,
+  StatusLight,
+  Tooltip,
+} from '@skybrush/mui-components';
 
 import { Status } from '~/components/semantics';
 import {
@@ -76,7 +78,7 @@ type Props = Readonly<{
   status: Status;
 }>;
 
-const ShowConfiguratorButton = (props: Props): JSX.Element => {
+const ShowConfiguratorButton = (props: Props): React.JSX.Element => {
   const { show, showDialogAndClearUndoHistory, status } = props;
 
   const dispatch = useDispatch<AppDispatch>();

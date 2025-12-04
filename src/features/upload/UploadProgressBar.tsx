@@ -8,7 +8,7 @@ import { getUploadProgress, isUploadInProgress } from './selectors';
 /**
  * Linear progress bar that shows the state of the current upload.
  */
-const UploadProgressBar = (): JSX.Element => {
+const UploadProgressBar = (): React.JSX.Element => {
   const progress = useSelector(getUploadProgress);
   const running = useSelector(isUploadInProgress);
 

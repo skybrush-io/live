@@ -1,7 +1,8 @@
 import Box from '@mui/material/Box';
-import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
 import React from 'react';
+
+import { makeStyles } from '@skybrush/app-theme-mui';
 
 import { formatNumberAndUnit } from '~/utils/formatting';
 

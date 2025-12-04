@@ -14,7 +14,7 @@ import React, { useEffect, useState } from 'react';
 import { getApplicationKeyMap } from 'react-hotkeys';
 import { connect } from 'react-redux';
 
-import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
+import { DraggableDialog } from '@skybrush/mui-components';
 
 import { isRunningOnMac, platformModifierKey } from '~/utils/platform';
 

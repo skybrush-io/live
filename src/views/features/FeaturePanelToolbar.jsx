@@ -1,12 +1,13 @@
 import FolderOpen from '@mui/icons-material/FolderOpen';
 import Paper from '@mui/material/Paper';
 import Toolbar from '@mui/material/Toolbar';
-import makeStyles from '@mui/styles/makeStyles';
 import GeoJSON from 'ol/format/GeoJSON';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { batch, connect } from 'react-redux';
 import readShapeFile from 'shpjs';
+
+import { makeStyles } from '@skybrush/app-theme-mui';
 
 import FileButton from '~/components/FileButton';
 import { addFeatureWithName } from '~/features/map-features/actions';
@@ -14,17 +15,12 @@ import { showError, showSuccess } from '~/features/snackbar/actions';
 import { createFeaturesFromOpenLayers } from '~/model/openlayers';
 import { readFileAsArrayBuffer } from '~/utils/files';
 
-const useStyles = makeStyles(
-  (theme) => ({
-    root: {
-      background: theme.palette.action.hover,
-      padding: theme.spacing(0, 1),
-    },
-  }),
-  {
-    name: 'FeaturePanelToolbar',
-  }
-);
+const useStyles = makeStyles((theme) => ({
+  root: {
+    background: theme.palette.action.hover,
+    padding: theme.spacing(0, 1),
+  },
+}));
 
 const FeaturePanelToolbar = ({ importShapeFile }) => {
   const classes = useStyles();

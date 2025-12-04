@@ -3,11 +3,12 @@ import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import Typography from '@mui/material/Typography';
 import type { Theme } from '@mui/material/styles';
-import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import React, { type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
+
+import { makeStyles } from '@skybrush/app-theme-mui';
 
 import type { RootState } from '~/store/reducers';
 
@@ -58,7 +59,7 @@ type AdaptReviewFormProps = Readonly<{
   reviewInViewer: () => void;
 }>;
 
-const AdaptReviewForm = (props: AdaptReviewFormProps): JSX.Element => {
+const AdaptReviewForm = (props: AdaptReviewFormProps): React.JSX.Element => {
   const { adaptResult, error, isShowAdaptInProgress, reviewInViewer } = props;
   const { t } = useTranslation(undefined, {
     keyPrefix: 'showConfiguratorDialog.adaptReview',

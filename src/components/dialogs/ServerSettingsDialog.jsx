@@ -30,8 +30,7 @@ import { Form } from 'react-final-form';
 import { Translation, useTranslation, withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import DialogTabs from '@skybrush/mui-components/lib/DialogTabs';
-import SmallProgressIndicator from '@skybrush/mui-components/lib/SmallProgressIndicator';
+import { DialogTabs, SmallProgressIndicator } from '@skybrush/mui-components';
 
 import {
   ServerDetectionManager,

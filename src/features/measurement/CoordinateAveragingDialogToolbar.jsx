@@ -11,8 +11,7 @@ import React from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import DialogToolbar from '@skybrush/mui-components/lib/DialogToolbar';
-import Tooltip from '@skybrush/mui-components/lib/Tooltip';
+import { DialogToolbar, Tooltip } from '@skybrush/mui-components';
 
 import ToolbarDivider from '~/components/ToolbarDivider';
 import { UAVSelectorWrapper } from '~/components/uavs/UAVSelector';

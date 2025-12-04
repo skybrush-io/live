@@ -15,7 +15,7 @@ const UAVListSubheader = ({
   label,
   onSelect,
   ...rest
-}: UAVListSubheaderProps): JSX.Element => (
+}: UAVListSubheaderProps): React.JSX.Element => (
   <ListSubheader disableSticky className={className}>
     <FormControlLabel
       control={<Checkbox size='small' onChange={onSelect} {...rest} />}

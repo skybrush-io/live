@@ -10,13 +10,17 @@ import React from 'react';
 import { Translation, withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
+import {
+  DraggableDialog,
+  SmallProgressIndicator,
+} from '@skybrush/mui-components';
 
 import DronePlaceholderList from '~/components/uavs/DronePlaceholderList';
 import { addVirtualDronesForMission } from '~/features/mission/actions';
 import {
   getEmptyMappingSlotIndices,
   hasNonemptyMappingSlot,
+  isMappingBeingCalculated,
 } from '~/features/mission/selectors';
 import { supportsVirtualDrones } from '~/features/servers/selectors';
 import { approveTakeoffArea } from '~/features/show/actions';
@@ -234,6 +238,7 @@ const TakeoffAreaSetupDialogIndicators = connect(
  */
 const TakeoffAreaSetupDialog = ({
   approved = false,
+  calculating,
   hasVirtualDrones,
   open = false,
   onAddVirtualDrones,
@@ -264,7 +269,7 @@ const TakeoffAreaSetupDialog = ({
         <TakeoffAreaSetupDialogIndicators />
         <Box
           sx={{
-            py: 2,
+            pt: 2,
             display: 'flex',
             flexDirection: 'row',
             justifyContent: 'center',
@@ -272,6 +277,19 @@ const TakeoffAreaSetupDialog = ({
         >
           <RecalculateMappingButton />
           <AugmentMappingButton />
+        </Box>
+        <Box
+          sx={{
+            pb: 1,
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'center',
+          }}
+        >
+          <SmallProgressIndicator
+            label={t('mappingEditorToolbar.calculatingMapping')}
+            visible={calculating}
+          />
         </Box>
         <Box className='bottom-bar' sx={{ textAlign: 'center', pt: 2 }}>
           <FormControlLabel
@@ -292,6 +310,7 @@ const TakeoffAreaSetupDialog = ({
 
 TakeoffAreaSetupDialog.propTypes = {
   approved: PropTypes.bool,
+  calculating: PropTypes.bool,
   hasVirtualDrones: PropTypes.bool,
   onAddVirtualDrones: PropTypes.func,
   onApprove: PropTypes.func,
@@ -309,6 +328,7 @@ export default connect(
   (state) => ({
     ...state.show.takeoffAreaSetupDialog,
     approved: isTakeoffAreaApproved(state),
+    calculating: isMappingBeingCalculated(state),
     hasVirtualDrones: supportsVirtualDrones(state),
   }),
 

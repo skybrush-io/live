@@ -12,7 +12,7 @@ import React from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import StatusLight from '@skybrush/mui-components/lib/StatusLight';
+import { StatusLight } from '@skybrush/mui-components';
 
 import Colors from '~/components/colors';
 import FileButton from '~/components/FileButton';

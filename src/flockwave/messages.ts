@@ -36,6 +36,12 @@ import { validateObjectId } from './validation';
 import version from './version';
 import type { Body, Message, MultiAsyncOperationResponseBody } from './types';
 
+type TimeoutOptions = { timeout?: number };
+
+type BoundProgressHandlerOptions = {
+  onProgress?: (id: string, status: ProgressStatus) => void;
+};
+
 /**
  * Creates a new Flockwave message ID.
  *
@@ -254,8 +260,7 @@ class CancelToken {
   };
 }
 
-type PendingResponseOptions = {
-  timeout?: number;
+type PendingResponseOptions = TimeoutOptions & {
   onTimeout?: (receipt: string) => void;
 };
 
@@ -359,8 +364,7 @@ export type ProgressStatus = {
   resume?: (value: unknown) => Promise<void>;
 };
 
-type PendingCommandExecutionOptions = {
-  timeout?: number;
+type PendingCommandExecutionOptions = TimeoutOptions & {
   onProgress?: (status: ProgressStatus) => void;
   onResume?: (value: unknown) => Promise<void>;
   onTimeout?: (receipt: string) => void;
@@ -600,10 +604,9 @@ class MessageHubRelatedComponent {
   }
 }
 
-export type AsyncResponseHandlerOptions = {
+export type AsyncResponseHandlerOptions = TimeoutOptions & {
   cancelToken?: CancelToken;
   onProgress?: (status: ProgressStatus) => void;
-  timeout?: number;
 };
 
 /**
@@ -630,7 +633,7 @@ class AsyncOperationManager extends MessageHubRelatedComponent {
    *        timeout, but the vast majority of cases should finish in less than
    *        a minute. The timeout can be overridden on a per-command basis.
    */
-  constructor(hub: MessageHub, { timeout = 60 }: { timeout?: number } = {}) {
+  constructor(hub: MessageHub, { timeout = 60 }: TimeoutOptions = {}) {
     super(hub);
 
     this.timeout = timeout;
@@ -1184,7 +1187,7 @@ export default class MessageHub {
    */
   constructor(
     emitter: Emitter | undefined,
-    { timeout = 5 }: { timeout?: number } = {}
+    { timeout = 5 }: TimeoutOptions = {}
   ) {
     this.emitter = emitter;
     this.timeout = timeout;
@@ -1461,7 +1464,7 @@ export default class MessageHub {
    */
   async sendMessage<T = Body>(
     body = {},
-    { timeout = undefined }: { timeout?: number } = {}
+    { timeout = undefined }: TimeoutOptions = {}
   ): Promise<Message<T>> {
     if (!this._emitter) {
       console.warn(
@@ -1535,14 +1538,21 @@ export default class MessageHub {
    * The promise resolves to a mapping from object IDs to their corresponding
    * results or errors (represented as Error objects).
    */
-  async startAsyncOperation(body: Body) {
+  async startAsyncOperation(
+    body: Body,
+    responseHandlerOptions: TimeoutOptions & BoundProgressHandlerOptions
+  ) {
     const { type: expectedType } = body;
     if (!expectedType) {
       throw new Error('Message must have a type');
     }
 
     const response = await this.sendMessage(body);
-    return this._processMultiAsyncOperationResponse(response, expectedType);
+    return this._processMultiAsyncOperationResponse(
+      response,
+      expectedType,
+      responseHandlerOptions
+    );
   }
 
   /**
@@ -1671,9 +1681,7 @@ export default class MessageHub {
   async _processMultiAsyncOperationResponse<T>(
     response: Message<Response_ACKNAK | MultiAsyncOperationResponseBody<T>>,
     expectedType: string,
-    {
-      onProgress,
-    }: { onProgress?: (id: string, status: ProgressStatus) => void } = {}
+    { timeout, onProgress }: TimeoutOptions & BoundProgressHandlerOptions = {}
   ): Promise<{ [x: string]: T | Error }> {
     if (!response) {
       throw new Error('Response should not be empty');
@@ -1710,6 +1718,7 @@ export default class MessageHub {
               {
                 onProgress: (status) => onProgress?.(idWithReceipt, status),
                 noThrow: true,
+                timeout,
               }
             );
         } catch (error) {

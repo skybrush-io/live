@@ -5,9 +5,11 @@ import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import { colorForStatus, Status } from '@skybrush/app-theme-mui';
-import GenericHeaderButton from '@skybrush/mui-components/lib/GenericHeaderButton';
-import SidebarBadge from '@skybrush/mui-components/lib/SidebarBadge';
-import Tooltip from '@skybrush/mui-components/lib/Tooltip';
+import {
+  GenericHeaderButton,
+  SidebarBadge,
+  Tooltip,
+} from '@skybrush/mui-components';
 
 import { BatteryFormatter } from '~/components/battery';
 import { isConnected } from '~/features/servers/selectors';

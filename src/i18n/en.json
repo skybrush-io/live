@@ -163,6 +163,7 @@
       "undo": "Undo"
     },
     "commands": {
+      "calibrateCompass": "Calibrate compass",
       "land": "Land",
       "positionHold": "Position hold",
       "powerOff": "Power off",
@@ -283,6 +284,7 @@
   },
   "mappingEditorToolbar": {
     "assignSpares": "Assign spares",
+    "calculatingMapping": "Calculating mapping…",
     "clearMissing": "Clear missing",
     "clickToEdit": "Click to edit a single slot.",
     "dragNodes": "Drag nodes to rearrange the mapping.",

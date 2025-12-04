@@ -85,7 +85,7 @@ const StartTimeSuggestions = ({
   onChange,
   startTimes = defaultCreateStartTimeSuggestions,
   ...rest
-}: StartTimeSuggestionsProps): JSX.Element => {
+}: StartTimeSuggestionsProps): React.JSX.Element => {
   const items =
     typeof startTimes === 'function' ? startTimes(Date.now()) : startTimes;
 
