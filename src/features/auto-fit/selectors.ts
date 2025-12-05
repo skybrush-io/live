@@ -19,6 +19,8 @@ import type { CoordinateSystemFittingProblem } from './types';
 import type { LonLat } from '~/utils/geography';
 import type { Coordinate2D, Coordinate2DPlus } from '~/utils/math';
 
+const getUAVIdsUsedForAutoFit = getActiveUAVIds;
+
 /**
  * Returns whether the system can estimate the show coordinate system based on
  * the current positions of the drones.
@@ -28,7 +30,7 @@ export function canEstimateShowCoordinateSystemFromActiveUAVs(
 ): boolean {
   return (
     isShowOutdoor(state) &&
-    getActiveUAVIds(state).length > 0 &&
+    getUAVIdsUsedForAutoFit(state).length > 0 &&
     getNumberOfDronesInShow(state) > 0
   );
 }
@@ -52,7 +54,7 @@ export function canEstimateShowCoordinateSystemFromActiveUAVs(
 export function getShowCoordinateSystemFittingProblemFromState(
   state: RootState
 ): CoordinateSystemFittingProblem {
-  const uavIds = getActiveUAVIds(state);
+  const uavIds = getUAVIdsUsedForAutoFit(state);
   const uavGPSCoordinates: Array<LonLat | undefined> = uavIds.map((uavId) => {
     const position = getCurrentGPSPositionByUavId(state, uavId);
     // position may be undefined if the UAV has no GPS fix yet

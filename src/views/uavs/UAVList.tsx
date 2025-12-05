@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-types */
 /**
  * @file Component that displays the status of the known UAVs in a Skybrush
  * flock.

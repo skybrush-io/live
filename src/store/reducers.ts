@@ -159,7 +159,6 @@ export default reducer;
 // https://redux.js.org/usage/usage-with-typescript#define-root-state-and-dispatch-types
 export type RootState = ReturnType<typeof reducer>;
 export type AppDispatch = ThunkDispatch<RootState, unknown, Action<string>>;
-// eslint-disable-next-line @typescript-eslint/ban-types
 export type AppSelector<T, ExtraArgs extends unknown[] = []> = (
   state: RootState,
   ...args: ExtraArgs

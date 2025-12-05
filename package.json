@@ -1,7 +1,7 @@
 {
   "name": "@skybrush/live",
   "version": "2.11.0",
-  "description": "Web frontend for a Skybrush server",
+  "description": "Ground control station of a Skybrush drone swarm",
   "main": "launcher.bundle.js",
   "scripts": {
     "bundle": "rimraf build && cross-env NODE_ENV=production webpack --mode=production --progress --config webpack/dist.config.js",
@@ -20,7 +20,7 @@
     "url": "git@github.com:skybrush-io/live.git"
   },
   "keywords": [],
-  "author": "CollMot Robotics Ltd",
+  "author": "CollMot Robotics Ltd <hello@skybrush.io>",
   "license": "GPL-3.0-or-later",
   "private": true,
   "dependencies": {
@@ -199,7 +199,7 @@
     "cross-env": "^10.1.0",
     "css-loader": "^7.1.2",
     "dotenv-webpack": "^8.1.1",
-    "electron": "^38.2.0",
+    "electron": "^39.2.4",
     "eslint": "^9.33.0",
     "eslint-config-xo": "^0.49.0",
     "eslint-config-xo-react": "^0.28.0",
@@ -262,6 +262,7 @@
       "prettier": true,
       "react": true,
       "rules": {
+        "@stylistic/lines-between-class-members": "off",
         "capitalized-comments": 0,
         "import-x/extensions": 0,
         "import/no-unassigned-import": 0,
@@ -269,6 +270,7 @@
         "n/file-extension-in-import": 0,
         "no-bitwise": 0,
         "no-else-return": 0,
+        "react/jsx-no-leaked-render": 0,
         "no-lonely-if": 0,
         "no-negated-condition": 0,
         "no-warning-comments": 0,
@@ -291,7 +293,9 @@
         "unicorn/no-array-callback-reference": 0,
         "unicorn/no-array-reduce": 0,
         "unicorn/no-fn-reference-in-iterator": 0,
+        "unicorn/no-negated-condition": 0,
         "unicorn/numeric-separators-style": 0,
+        "unicorn/prefer-global-this": 0,
         "unicorn/prefer-module": 0,
         "unicorn/prefer-node-protocol": 0,
         "unicorn/prefer-ternary": 0,
@@ -312,66 +316,11 @@
             "objectLiteralTypeAssertions": "allow"
           }
         ],
-        "@typescript-eslint/explicit-function-return-type": "warn",
-        "@typescript-eslint/naming-convention": [
-          "error",
-          {
-            "selector": "default",
-            "format": [
-              "camelCase"
-            ],
-            "leadingUnderscore": "allow"
-          },
-          {
-            "selector": "enumMember",
-            "format": [
-              "UPPER_CASE"
-            ]
-          },
-          {
-            "selector": "import",
-            "format": [
-              "camelCase",
-              "PascalCase"
-            ]
-          },
-          {
-            "selector": "objectLiteralProperty",
-            "format": [
-              "camelCase",
-              "UPPER_CASE"
-            ],
-            "leadingUnderscore": "allow"
-          },
-          {
-            "selector": "parameter",
-            "modifiers": [
-              "unused"
-            ],
-            "format": [
-              "camelCase",
-              "PascalCase"
-            ],
-            "leadingUnderscore": "require"
-          },
-          {
-            "selector": "typeLike",
-            "format": [
-              "PascalCase"
-            ]
-          },
-          {
-            "selector": "variable",
-            "format": [
-              "camelCase",
-              "PascalCase",
-              "UPPER_CASE"
-            ],
-            "leadingUnderscore": "allow"
-          }
-        ],
+        "@typescript-eslint/explicit-function-return-type": "off",
+        "@typescript-eslint/naming-convention": "off",
         "@typescript-eslint/no-dynamic-delete": "off",
         "@typescript-eslint/no-namespace": "off",
+        "@typescript-eslint/no-restricted-types": "off",
         "@typescript-eslint/prefer-regexp-exec": "off"
       }
     }

@@ -19,12 +19,13 @@ import {
   getLightColorByUavIdInCSSNotation,
   getUAVById,
 } from '~/features/uavs/selectors';
-import { abbreviateFlightMode } from '~/model/enums';
+import { UAVAge } from '~/model/uav';
 import { getPreferredCoordinateFormatter } from '~/selectors/formatting';
 import { formatCoordinateArray } from '~/utils/formatting';
 
 import GPSStatusPill from './GPSStatusPill';
 import RSSIIndicator from './RSSIIndicator';
+import FlightModeStatusPill from './FlightModeStatusPill';
 
 /**
  * Converts the absolute value of a heading deviation, in degrees, to the
@@ -94,6 +95,7 @@ const useStyles = makeStyles((theme) => ({
  * Status line in the drone list view that represents a single drone.
  */
 const DroneStatusLine = ({
+  age,
   batteryFormatter,
   batteryStatus,
   color,
@@ -125,19 +127,17 @@ const DroneStatusLine = ({
           inline
           className={clsx(classes.pill, classes.statusPill)}
           status={textSemantics}
+          hollow={age === UAVAge.GONE}
         >
           {details || text}
         </StatusPill>
       )}
       {!missing && (
         <>
-          <StatusPill
-            inline
+          <FlightModeStatusPill
+            mode={mode}
             className={clsx(classes.pill, classes.modePill)}
-            status='off'
-          >
-            {mode ? abbreviateFlightMode(mode) : '----'}
-          </StatusPill>
+          />
           <BatteryIndicator
             className={classes.batteryIndicator}
             formatter={batteryFormatter}
@@ -184,6 +184,7 @@ const DroneStatusLine = ({
 };
 
 DroneStatusLine.propTypes = {
+  age: PropTypes.oneOf(Object.values(UAVAge)),
   batteryFormatter: PropTypes.instanceOf(BatteryFormatter),
   batteryStatus: PropTypes.shape({
     cellCount: PropTypes.number,

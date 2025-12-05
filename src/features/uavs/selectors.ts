@@ -45,6 +45,8 @@ import { selectionForSubset } from '~/selectors/selection';
 import { euclideanDistance2D, getMeanAngle } from '~/utils/math';
 import { EMPTY_ARRAY } from '~/utils/redux';
 import { createDeepResultSelector } from '~/utils/selectors';
+import type { AppSelector, RootState } from '~/store/reducers';
+import type { StoredUAV } from './types';
 
 /**
  * Returns the list of UAV IDs that should be shown on the UI, in the
@@ -52,31 +54,30 @@ import { createDeepResultSelector } from '~/utils/selectors';
  *
  * @param  {Object}  state  the state of the application
  */
-export const getUAVIdList = (state) => state.uavs.order;
+export const getUAVIdList = (state: RootState) => state.uavs.order;
 
 /**
  * Key selector function for cached selectors that cache things by UAV ID.
  */
-const selectUAVId = (_state, uavId) => uavId;
+const selectUAVId = (_state: RootState, uavId: string) => uavId;
 
 /**
  * Returns all the UAVs in a mapping.
  */
-export const getUAVIdToStateMapping = (state) => state.uavs.byId;
+export const getUAVIdToStateMapping = (state: RootState) => state.uavs.byId;
 
 /**
  * Returns the UAV with the given ID, given the current state.
  */
-export const getUAVById = (state, uavId) => state.uavs.byId[uavId];
+export const getUAVById = (state: RootState, uavId: string) =>
+  state.uavs.byId[uavId];
 
 /**
  * Returns the current position of the UAV with the given ID, given the current
  * state.
  */
-export const getCurrentGPSPositionByUavId = (state, uavId) => {
-  const uav = getUAVById(state, uavId);
-  return uav ? uav.position : undefined;
-};
+export const getCurrentGPSPositionByUavId = (state: RootState, uavId: string) =>
+  getUAVById(state, uavId)?.position;
 
 /**
  * Returns all valid UAV positions, as defined by `isGPSPositionValid()`.
@@ -93,7 +94,10 @@ export const getAllValidUAVPositions = createSelector(
  * Returns the current local position of the UAV with the given ID, given the
  * current state.
  */
-export const getCurrentLocalPositionByUavId = (state, uavId) => {
+export const getCurrentLocalPositionByUavId = (
+  state: RootState,
+  uavId: string
+) => {
   const uav = getUAVById(state, uavId);
   return uav ? uav.localPosition : undefined;
 };
@@ -102,15 +106,13 @@ export const getCurrentLocalPositionByUavId = (state, uavId) => {
  * Returns the current heading of the UAV with the given ID, given the current
  * state.
  */
-export const getCurrentHeadingByUavId = (state, uavId) => {
-  const uav = getUAVById(state, uavId);
-  return uav ? uav.heading : undefined;
-};
+export const getCurrentHeadingByUavId = (state: RootState, uavId: string) =>
+  getUAVById(state, uavId)?.heading;
 
 /**
  * Returns the average heading of the active UAVs.
  */
-export const getAverageHeadingOfActiveUAVs = (state) => {
+export const getAverageHeadingOfActiveUAVs = (state: RootState) => {
   const activeUAVIds = getActiveUAVIds(state);
   const headings = activeUAVIds
     .map((uavId) => getCurrentHeadingByUavId(state, uavId))
@@ -372,16 +374,20 @@ export const getXYDistanceToFirstPointOfTrajectoryByUavId =
  * Returns the distances of the UAVs from their home positions, restricted to the
  * UAVs that are in the mapping.
  */
-export const getDistancesFromHome = (state) => {
+export const getDistancesFromHome = (
+  state: RootState
+): Record<string, number | undefined> => {
   const mapping = getMissionMapping(state);
-  const result = {};
+  const result: Record<string, number | undefined> = {};
 
   const distanceGetter = isShowIndoor(state)
     ? getXYDistanceToFirstPointOfTrajectoryByUavId
     : getXYDistanceToGPSBasedHomePositionByUavId;
 
   for (const uavId of mapping) {
-    if (isNil(uavId) || !getUAVById(state, uavId)) {
+    if (isNil(uavId)) {
+      /* nothing to do */
+    } else if (!getUAVById(state, uavId)) {
       result[uavId] = undefined;
     } else {
       result[uavId] = distanceGetter(state, uavId);
@@ -400,8 +406,8 @@ export const getMisplacedUAVIds = createSelector(
   getDistancesFromHome,
   getDesiredPlacementAccuracyInMeters,
   (distances, threshold) =>
-    Object.entries(distances).reduce((acc, [uavId, distance]) => {
-      if (distance > threshold) {
+    Object.entries(distances).reduce<string[]>((acc, [uavId, distance]) => {
+      if (typeof distance === 'number' && distance > threshold) {
         acc.push(uavId);
       }
 
@@ -413,7 +419,9 @@ export const getMisplacedUAVIds = createSelector(
  * Returns the farthest distance of an UAV from its home position, or undefined
  * if there are no UAVs with known current and home positions
  */
-export const getFarthestDistanceFromHome = (state) => {
+export const getFarthestDistanceFromHome: AppSelector<number | undefined> = (
+  state
+) => {
   const distancesByUavId = getDistancesFromHome(state);
   let maxDistance = -1;
 
@@ -434,7 +442,7 @@ export const getDeviationFromTakeoffHeadingByUavId = createCachedSelector(
   getTakeoffHeadingByUavId,
   getCurrentHeadingByUavId,
   (takeoffHeading, currentHeading) => {
-    if (takeoffHeading !== undefined && currentHeading !== undefined) {
+    if (!isNil(takeoffHeading) && !isNil(currentHeading)) {
       const diff = takeoffHeading - currentHeading;
 
       // Formula from https://stackoverflow.com/a/54820295/156771
@@ -453,14 +461,14 @@ export const getDeviationFromTakeoffHeadingByUavId = createCachedSelector(
  * Returns the deviations of the headings of the UAVs from their preferred
  * headings during the mission, restricted to the UAVs that are in the mapping.
  */
-export const getDeviationsFromTakeoffHeadings = (state) => {
+export const getDeviationsFromTakeoffHeadings: AppSelector<
+  Record<string, number | undefined>
+> = (state) => {
   const mapping = getMissionMapping(state);
-  const result = {};
+  const result: Record<string, number | undefined> = {};
 
   for (const uavId of mapping) {
-    if (isNil(uavId)) {
-      result[uavId] = undefined;
-    } else {
+    if (!isNil(uavId)) {
       result[uavId] = getDeviationFromTakeoffHeadingByUavId(state, uavId);
     }
   }
@@ -487,11 +495,13 @@ export const getLightColorByUavIdInCSSNotation = createCachedSelector(
  * Selector factory that returns a selector that selects all UAVs whose `age`
  * property is equal to the given value.
  */
-const getUAVIdsByAge = (age) => (state) =>
-  getUAVIdList(state).filter((uavId) => {
-    const uav = getUAVById(state, uavId);
-    return uav && uav.age === age;
-  });
+const getUAVIdsByAge =
+  (age: UAVAge): AppSelector<string[]> =>
+  (state) =>
+    getUAVIdList(state).filter((uavId) => {
+      const uav = getUAVById(state, uavId);
+      return uav?.age === age;
+    });
 
 /**
  * Selector that selects all UAVs that are currently considered as "active"
@@ -515,7 +525,7 @@ export const getMisalignedUAVIds = createSelector(
   getDeviationsFromTakeoffHeadings,
   getDesiredTakeoffHeadingAccuracy,
   (deviations, threshold) =>
-    Object.entries(deviations).reduce((acc, [uavId, deviation]) => {
+    Object.entries(deviations).reduce<string[]>((acc, [uavId, deviation]) => {
       if (!isNil(deviation) && Math.abs(deviation) > threshold) {
         acc.push(uavId);
       }
@@ -538,7 +548,7 @@ export const getMissingUAVIdsInMapping = createSelector(
       }
 
       const age = uavsById[uavId]?.age;
-      return isNil(age) || age === 'gone';
+      return isNil(age) || age === UAVAge.GONE;
     })
 );
 
@@ -569,7 +579,7 @@ export const getSingleSelectedUAVIdAsArray = createSelector(
 /**
  * Selector that calculates the number of selected UAVs.
  */
-export const getNumberOfSelectedUAVs = (state) => {
+export const getNumberOfSelectedUAVs: AppSelector<number> = (state) => {
   const selection = getSelectedUAVIds(state);
   return Array.isArray(selection) ? selection.length : 0;
 };
@@ -578,7 +588,9 @@ export const getNumberOfSelectedUAVs = (state) => {
  * Selector that returns at most five selected UAV IDs for sake of displaying
  * their trajectories.
  */
-export const getSelectedUAVIdsForTrajectoryDisplay = (state) =>
+export const getSelectedUAVIdsForTrajectoryDisplay: AppSelector<string[]> = (
+  state
+) =>
   getNumberOfSelectedUAVs(state) <= 5 ? getSelectedUAVIds(state) : EMPTY_ARRAY;
 
 /**
@@ -625,8 +637,9 @@ export const getErrorCodeSummaryForUAVsInMission = createSelector(
       const uavState = uavStatesById[uavId];
       if (uavState) {
         for (const code of uavState.errors) {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
           if (code !== UAVErrorCode.ON_GROUND) {
-            result.push([code, [uavId, reverseMapping[uavId] || null]]);
+            result.push([code, [uavId, reverseMapping[uavId] ?? null]]);
           }
         }
       }
@@ -646,8 +659,10 @@ export const getErrorCodeSummaryForUAVsInMission = createSelector(
  * Returns whether the given UAV state object contains an error code that is
  * worth reporting in the "Onboard preflight checks" dialog.
  */
-const uavStateContainsSignificantErrorCode = (uavState) => {
-  const { errors } = uavState || {};
+const uavStateContainsSignificantErrorCode = (
+  uavState?: StoredUAV
+): boolean => {
+  const { errors } = uavState ?? {};
   if (!Array.isArray(errors) || errors.length <= 0) {
     return false;
   }
@@ -677,8 +692,12 @@ export const areAllUAVsInMissionWithoutErrors = createSelector(
   }
 );
 
-export function getSingleUAVStatusLevel(uav) {
-  let severity = -1;
+export function getSingleUAVStatusLevel(uav: StoredUAV): Status {
+  let severity: Severity | undefined;
+
+  if (uav.age === UAVAge.GONE) {
+    return Status.OFF;
+  }
 
   if (uav.errors && uav.errors.length > 0) {
     severity = getSeverityOfMostSevereErrorCode(uav.errors);
@@ -687,15 +706,11 @@ export function getSingleUAVStatusLevel(uav) {
     }
   }
 
-  if (uav.age === UAVAge.GONE) {
-    return Status.OFF;
-  }
-
   if (uav.age === UAVAge.INACTIVE) {
-    return Status.WARNING;
+    return Status.MISSING;
   }
 
-  const maxError = Math.max(...uav.errors);
+  const maxError = Math.max(...uav.errors) as UAVErrorCode;
 
   if (maxError === UAVErrorCode.RETURN_TO_HOME) {
     return Status.RTH;
@@ -705,7 +720,7 @@ export function getSingleUAVStatusLevel(uav) {
     return Status.SUCCESS;
   }
 
-  if (severity >= Severity.INFO) {
+  if (severity && severity >= Severity.INFO) {
     return errorSeverityToSemantics(severity);
   }
 
@@ -740,8 +755,8 @@ export function getSingleUAVStatusLevel(uav) {
  *
  * - Otherwise, the status is "success".
  */
-export function getSingleUAVStatusSummary(uav) {
-  let maxError = 0;
+export function getSingleUAVStatusSummary(uav?: StoredUAV) {
+  let maxError: UAVErrorCode = UAVErrorCode.NO_ERROR;
   let status;
   let details;
   let text;
@@ -769,10 +784,10 @@ export function getSingleUAVStatusSummary(uav) {
     } else {
       textSemantics = errorSeverityToSemantics(severity);
     }
-  } else if (uav.position && Math.abs(uav.position.ahl) >= 0.3) {
+  } else if (uav.position && Math.abs(uav.position.ahl ?? 0) >= 0.3) {
     // UAV is in the air
     text = 'airborne';
-    details = `${uav.position.ahl.toFixed(2)}m`;
+    details = `${(uav.position.ahl ?? 0).toFixed(2)}m`;
     textSemantics = Status.SUCCESS;
   } else {
     // UAV is ready on the ground
@@ -780,11 +795,16 @@ export function getSingleUAVStatusSummary(uav) {
     textSemantics = Status.SUCCESS;
   }
 
-  // We allow "normal" and "informational" messages to be overridden by the
-  // "gone" or "no telemetry" (inactive) warnings
-  if (textSemantics === Status.SUCCESS || textSemantics === Status.INFO) {
+  // We allow "normal", "informational" and "warning" messages to be overridden
+  // by the "gone" or "no telemetry" (inactive) warnings based on user feedback
+  if (
+    uav &&
+    (textSemantics === Status.SUCCESS ||
+      textSemantics === Status.INFO ||
+      textSemantics === Status.WARNING)
+  ) {
     if (uav.age === UAVAge.GONE) {
-      if (text === 'ready' || maxError === UAVErrorCode.ON_GROUND) {
+      if (text === 'ready') {
         text = 'gone';
       }
 
@@ -794,7 +814,7 @@ export function getSingleUAVStatusSummary(uav) {
         text = 'no telem'; // used to be 'inactive' in earlier versions
       }
 
-      textSemantics = Status.WARNING;
+      textSemantics = Status.MISSING;
     }
   }
 
@@ -803,12 +823,13 @@ export function getSingleUAVStatusSummary(uav) {
   }
 
   return {
+    age: uav?.age,
     status,
-    details: details || text,
+    details: details ?? text,
     gone: uav ? uav.age === UAVAge.GONE || uav.age === UAVAge.INACTIVE : false,
     text,
     textSemantics,
-    batteryStatus: uav ? uav.battery : undefined,
+    batteryStatus: uav?.battery,
   };
 }
 /* eslint-enable complexity */
@@ -831,8 +852,8 @@ export const getUAVIdsSortedByErrorCode = createSelector(
       [
         (uavId) =>
           Math.max(
-            ...uavStatesById[uavId].errors.filter(
-              (e) => getSeverityOfErrorCode(e) > 0
+            ...uavStatesById[uavId]!.errors.filter(
+              (e) => getSeverityOfErrorCode(e) > Severity.INFO
             )
           ),
       ],
@@ -840,11 +861,13 @@ export const getUAVIdsSortedByErrorCode = createSelector(
     )
 );
 
-export const getFollowMapSelectionInUAVDetailsPanel = (state) =>
-  state.uavs.panel.followMapSelection;
+export const getFollowMapSelectionInUAVDetailsPanel: AppSelector<boolean> = (
+  state
+) => state.uavs.panel.followMapSelection;
 
-export const getSelectedTabInUAVDetailsPanel = (state) =>
+export const getSelectedTabInUAVDetailsPanel: AppSelector<string> = (state) =>
   state.uavs.panel.selectedTab;
 
-export const getSelectedUAVIdInUAVDetailsPanel = (state) =>
-  state.uavs.panel.selectedUAVId;
+export const getSelectedUAVIdInUAVDetailsPanel: AppSelector<
+  string | undefined
+> = (state) => state.uavs.panel.selectedUAVId;
