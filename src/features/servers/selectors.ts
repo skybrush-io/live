@@ -146,9 +146,16 @@ export const getServerVersion = (state: RootState): string | undefined =>
 export const getServerVersionValidator = (
   requirement: string
 ): AppSelector<boolean> =>
-  createSelector(getServerVersion, (serverVersion) =>
-    serverVersion ? semver.satisfies(serverVersion, requirement) : false
-  );
+  createSelector(getServerVersion, (serverVersion) => {
+    try {
+      return serverVersion
+        ? semver.satisfies(serverVersion, requirement, { loose: true })
+        : false;
+    } catch (error) {
+      console.warn('Failed to compare server version:', error);
+      return false;
+    }
+  });
 
 /**
  * Returns all the information that we know about the current Skybrush server.
