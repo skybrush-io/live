@@ -98,7 +98,9 @@
     "action": {
       "addEmergencyRTH": "Calculate RTH plans"
     },
+    "description": "Calculate emergency RTH plans for all drones in the show. The RTH plans will be designed to bring the drones home as quickly as possible while avoiding collisions with each other.",
     "error": "An error occurred while calculating RTH plans. Please try again.",
+    "existingRTHPlans": "{{ withRTHPlan }} of {{ total }} drones have an RTH plan in the loaded show.",
     "loading": "RTH plans are being calculated, please wait. It may take some time.",
     "summary": {
       "firstTime": {
@@ -114,9 +116,7 @@
         "unknown": "Maximum show duration, assuming RTH is triggered: unknown"
       }
     },
-    "title": "Plan emergency RTH",
-    "description": "Calculate emergency RTH plans for all drones in the show. The RTH plans will be designed to bring the drones home as quickly as possible while avoiding collisions with each other.",
-    "existingRTHPlans": "{{ withRTHPlan }} of {{ total }} drones have an RTH plan in the loaded show."
+    "title": "Plan emergency RTH"
   },
   "environmentEditorDialog": {
     "environmentSettings": "Environment settings",
