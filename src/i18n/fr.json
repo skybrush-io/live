@@ -464,7 +464,7 @@
     "UAVheadings": "Les caps des UAVs avant le décollage sont…",
     "compassDirection": "Direction du compas",
     "headingOffset": "Décalage de Cap",
-    "setToAvergaeHeading": "Régler le cap moyen des drones actifs",
+    "setToAverageHeading": "Régler le cap moyen des drones actifs",
     "specifiedByAbsoluteCompassDirection": "Spécifiée par la direction absolue du compas",
     "specifiedRelativeToShowOrientation": "Spécifié par rapport à l'orientation du spectacle",
     "unspecified": "Non spécifié"

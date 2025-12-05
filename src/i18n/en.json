@@ -756,6 +756,7 @@
     "UAVheadings": "UAV headings before takeoff are…",
     "compassDirection": "Compass direction",
     "headingOffset": "Heading offset",
+    "setToAverageHeading": "Set to average heading of active drones",
     "setToAvergaeHeading": "Set to average heading of active drones",
     "specifiedByAbsoluteCompassDirection": "Specified by absolute compass direction",
     "specifiedRelativeToShowOrientation": "Specified relative to show orientation",
