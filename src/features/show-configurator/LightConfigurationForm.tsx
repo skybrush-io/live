@@ -11,7 +11,7 @@ import { useSelector } from 'react-redux';
 
 import { SimpleDurationField } from '~/components/forms';
 import { HexColorInput, HexColorPicker } from '~/components/HexColorPicker';
-import { getServerVersionSupportValidator } from '~/features/servers/selectors';
+import { getServerVersionValidator } from '~/features/servers/selectors';
 
 import type { LightEffectConfiguration, LightEffectType } from './actions';
 
@@ -153,14 +153,18 @@ export const useLightConfigurationFormState = (onChange?: () => void) => {
   );
 
   const configuration: LightEffectConfiguration = useMemo(() => {
-    if (lightEffectType === 'default') {
-      return { type: 'default', brightness: defaultConfigBrightness };
-    } else if (lightEffectType === 'solid') {
-      return { type: 'solid', color: solidConfigColor };
-    } else if (lightEffectType === 'sparks') {
-      return { type: 'sparks', off_duration: sparksConfigOffDuration };
-    } else {
-      return { type: 'off' };
+    switch (lightEffectType) {
+      case 'default':
+        return { type: 'default', brightness: defaultConfigBrightness };
+
+      case 'solid':
+        return { type: 'solid', color: solidConfigColor };
+
+      case 'sparks':
+        return { type: 'sparks', off_duration: sparksConfigOffDuration };
+
+      default:
+        return { type: 'off' };
     }
   }, [
     lightEffectType,
@@ -182,24 +186,24 @@ export const useLightConfigurationFormState = (onChange?: () => void) => {
   };
 };
 
+const MIN_VERSION = '2.40';
+const supportsLightConfiguration = getServerVersionValidator(
+  `>=${MIN_VERSION}`
+);
+
 export type LightConfigurationProps = Omit<
   ReturnType<typeof useLightConfigurationFormState>,
   'configuration'
 > & { disabled?: boolean };
-
-const requiredServerVersion: [number, number] = [2, 40] as const;
 
 const LightConfigurationForm = (props: LightConfigurationProps) => {
   const { disabled, lightEffectType, onLightEffectTypeChanged } = props;
   const { t } = useTranslation(undefined, {
     keyPrefix: 'showConfiguratorDialog.lights',
   });
-  const checkServerVersion = useSelector(getServerVersionSupportValidator);
+  const isSupported = useSelector(supportsLightConfiguration);
   const labelId = 'light-effect-type-label';
-  return checkServerVersion(
-    requiredServerVersion[0],
-    requiredServerVersion[1]
-  ) ? (
+  return isSupported ? (
     <>
       <FormControl fullWidth variant='filled'>
         <InputLabel id={labelId}>{t('selectLabel')}</InputLabel>
@@ -240,9 +244,7 @@ const LightConfigurationForm = (props: LightConfigurationProps) => {
     </>
   ) : (
     <Typography color='warning'>
-      {t('unsupportedVersion', {
-        minVersion: `${requiredServerVersion[0]}.${requiredServerVersion[1]}`,
-      })}
+      {t('unsupportedVersion', { minVersion: MIN_VERSION })}
     </Typography>
   );
 };

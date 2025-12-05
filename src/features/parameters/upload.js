@@ -1,10 +1,11 @@
 import { call, select } from 'redux-saga/effects';
-import semver from 'semver';
 
-import { getServerVersion } from '~/features/servers/selectors';
+import { getServerVersionValidator } from '~/features/servers/selectors';
 import messageHub from '~/message-hub';
 
 import { JOB_TYPE } from './constants';
+
+const supportsBulkUpload = getServerVersionValidator('>=2.34.1');
 
 /**
  * Handles a parameter upload session to a single drone. Returns a promise that
@@ -21,8 +22,7 @@ function* runSingleParameterUpload({ uavId, payload }, options) {
     return;
   }
 
-  const version = yield select(getServerVersion);
-  const useBulkUpload = semver.gte(version, '2.34.1');
+  const useBulkUpload = yield select(supportsBulkUpload);
 
   if (useBulkUpload) {
     const parameters = Object.fromEntries(

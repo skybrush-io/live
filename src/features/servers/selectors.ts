@@ -1,6 +1,7 @@
 import { createSelector } from '@reduxjs/toolkit';
 import { type License } from '@skybrush/flockwave-spec';
 import isNil from 'lodash-es/isNil';
+import * as semver from 'semver';
 
 import { ConnectionState } from '~/model/enums';
 import { type AppSelector, type RootState } from '~/store/reducers';
@@ -23,7 +24,7 @@ import {
  */
 export const getAuthenticationToken: AppSelector<string | undefined> = (
   state
-) => state.servers.token || undefined;
+) => state.servers.token ?? undefined;
 
 /**
  * Returns the estimated clock skew between us and the server, in milliseconds.
@@ -137,38 +138,17 @@ export const getServerHttpUrl: AppSelector<string | undefined> = createSelector(
 export const getServerVersion = (state: RootState): string | undefined =>
   state.servers.current.version;
 
-export const getServerVersionSupportValidator: AppSelector<
-  (minMajor: number, minMinor: number | undefined) => boolean
-> = createSelector(getServerVersion, (version) => {
-  if (version === undefined) {
-    return () => false;
-  }
-
-  const parts = version.split('.');
-  if (parts.length < 2) {
-    return () => false;
-  }
-
-  const [major, minor] = [
-    Number.parseInt(parts[0]!, 10),
-    Number.parseInt(parts[1]!, 10),
-  ];
-  if (!Number.isFinite(major) || !Number.isFinite(minor)) {
-    return () => false;
-  }
-
-  return (minMajor: number, minMinor: number | undefined) => {
-    if (major > minMajor) {
-      return true;
-    }
-
-    if (major < minMajor) {
-      return false;
-    }
-
-    return minMinor === undefined ? true : minor >= minMinor;
-  };
-});
+/**
+ * Selector factory that takes a minimum version and returns a selector that
+ * indicates whether the connected server meets the minimum version requirement
+ * specified in standard `npm` conventions.
+ */
+export const getServerVersionValidator = (
+  requirement: string
+): AppSelector<boolean> =>
+  createSelector(getServerVersion, (serverVersion) =>
+    serverVersion ? semver.satisfies(serverVersion, requirement) : false
+  );
 
 /**
  * Returns all the information that we know about the current Skybrush server.
