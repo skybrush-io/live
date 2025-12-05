@@ -62,7 +62,6 @@ import type { Nullable } from '~/utils/types';
 import { HEADER_HEIGHT } from './constants';
 
 const createChipStyle = (
-  // eslint-disable-next-line @typescript-eslint/ban-types
   color: string | null,
   theme: Theme
 ): Record<string, any> => {

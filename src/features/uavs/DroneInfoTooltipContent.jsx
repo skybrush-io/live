@@ -9,12 +9,10 @@ import { StatusPill } from '@skybrush/mui-components';
 import { BatteryFormatter } from '~/components/battery';
 import BatteryIndicator from '~/components/BatteryIndicator';
 import { getBatteryFormatter } from '~/features/settings/selectors';
-import {
-  abbreviateFlightMode,
-  abbreviateGPSFixType,
-  getSemanticsForGPSFixType,
-} from '~/model/enums';
+import { UAVAge } from '~/model/uav';
 import { formatCoordinateArray, formatNumberSafely } from '~/utils/formatting';
+import FlightModeStatusPill from '~/views/uavs/FlightModeStatusPill';
+import GPSStatusPill from '~/views/uavs/GPSStatusPill';
 
 import { createSingleUAVStatusSummarySelector, getUAVById } from './selectors';
 
@@ -42,7 +40,7 @@ const useStyles = makeStyles((theme) => ({
     verticalAlign: 'text-top',
   },
   statusPill: {
-    minWidth: 88 + Number.parseInt(theme.spacing(0.5)),
+    minWidth: 88 + Number.parseInt(theme.spacing(0.5), 10),
     flex: 1,
   },
   modePill: {
@@ -52,6 +50,7 @@ const useStyles = makeStyles((theme) => ({
   gpsPill: {
     minWidth: 40,
     flex: 1,
+    outline: 'none !important',
   },
   batteryIndicator: {
     display: 'inline-block',
@@ -75,7 +74,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const dash = '—';
 const naText = <span className='muted'>—</span>;
 
 /**
@@ -83,6 +81,7 @@ const naText = <span className='muted'>—</span>;
  * drone, displaying the most important details about the status of the drone.
  */
 const DroneInfoTooltipContent = ({
+  age,
   batteryFormatter,
   batteryStatus,
   details,
@@ -110,6 +109,7 @@ const DroneInfoTooltipContent = ({
       <div className={classes.row}>
         <StatusPill
           inline
+          hollow={age === UAVAge.GONE}
           className={clsx(classes.pill, classes.statusPill)}
           status={textSemantics}
         >
@@ -117,21 +117,14 @@ const DroneInfoTooltipContent = ({
         </StatusPill>
       </div>
       <div className={classes.row}>
-        <StatusPill
-          inline
+        <FlightModeStatusPill
+          mode={mode}
           className={clsx(classes.pill, classes.modePill)}
-          status='off'
-        >
-          {mode ? abbreviateFlightMode(mode) : '----'}
-        </StatusPill>
-        <StatusPill
-          inline
-          hollow
+        />
+        <GPSStatusPill
           className={clsx(classes.pill, classes.gpsPill)}
-          status={getSemanticsForGPSFixType(gpsFixType)}
-        >
-          {gpsFixType ? abbreviateGPSFixType(gpsFixType) : dash}
-        </StatusPill>
+          fixType={gpsFixType}
+        />
       </div>
       <div className={classes.row}>
         {hasLocalPosition ? (
@@ -154,6 +147,7 @@ const DroneInfoTooltipContent = ({
 };
 
 DroneInfoTooltipContent.propTypes = {
+  age: PropTypes.oneOf(Object.values(UAVAge)),
   batteryFormatter: PropTypes.instanceOf(BatteryFormatter),
   batteryStatus: PropTypes.shape({
     cellCount: PropTypes.number,

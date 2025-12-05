@@ -8,8 +8,12 @@ import forOwn from 'lodash-es/forOwn';
 import identity from 'lodash-es/identity';
 import values from 'lodash-es/values';
 import { MiniSignal } from 'mini-signals';
+import type { Coordinate } from 'ol/coordinate';
 import Feature from 'ol/Feature';
 import Point from 'ol/geom/Point';
+import type VectorSource from 'ol/source/Vector';
+
+type ProjectionFunction = (coord: number[]) => number[];
 
 /**
  * Object responsible for constructing features on an OpenLayers
@@ -27,18 +31,26 @@ import Point from 'ol/geom/Point';
  *           that is used to map coordinates specified by the user to the
  *           coordinate system of the source layer
  */
-export default class FeatureManager {
+export default class FeatureManager<F extends Feature<Point> = Feature<Point>> {
+  public projection?: ProjectionFunction;
+  public featureAdded: MiniSignal<[F]>;
+  public featureRemoved: MiniSignal<[F]>;
+
+  private _featuresByObjectId: Record<string, F>;
+  private _featureFactory?: (id: string, geom: Point) => F;
+  private _featureIdFunction: (id: string) => string;
+  private _vectorSource?: VectorSource;
+
   /**
    * Constructor.
    *
-   * @param  {?ol.source.Vector} vectorSource  the OpenLayers vector layer
-   *         source to which the features of this feature manager will be
-   *         added automatically
-   * @param  {?function} projection  a projection function from OpenLayers
-   *           that is used to map coordinates specified by the user to the
-   *           coordinate system of the source layer
+   * @param  vectorSource  the OpenLayers vector layer source to which the
+   *         features of this feature manager will be added automatically
+   * @param  projection  a projection function from OpenLayers that is used to
+   *         map coordinates specified by the user to the coordinate system of
+   *         the source layer
    */
-  constructor(vectorSource, projection) {
+  constructor(vectorSource?: VectorSource, projection?: ProjectionFunction) {
     this._featuresByObjectId = {};
     this._featureFactory = undefined;
     this._featureIdFunction = identity;
@@ -53,18 +65,18 @@ export default class FeatureManager {
   /**
    * Creates or updates a feature with the given ID at the given coordinate.
    *
-   * @param {string} id  the identifier of the object for which the feature
+   * @param id  the identifier of the object for which the feature
    *        has to be created or updated
-   * @param {ol.Coordinate} coordinate  the coordinates of the feature
-   * @returns {ol.Feature}  the OpenLayers feature that represents the
-   *          object with the given ID on the map
+   * @param coordinate  the coordinates of the feature
+   * @returns the OpenLayers feature that represents the object with the
+   *          given ID on the map
    */
-  createOrUpdateFeatureById = (id, coordinate) => {
+  createOrUpdateFeatureById = (id: string, coordinate: Coordinate) => {
     coordinate = this.projection ? this.projection(coordinate) : coordinate;
 
     const feature =
-      this.getFeatureById(id) || this._createFeatureById(id, coordinate);
-    feature.getGeometry().setCoordinates(coordinate);
+      this.getFeatureById(id) ?? this._createFeatureById(id, coordinate);
+    feature.getGeometry()?.setCoordinates(coordinate);
 
     return feature;
   };
@@ -75,20 +87,19 @@ export default class FeatureManager {
    * If the given ID already had a feature, it will be overwritten with the
    * new feature.
    *
-   * @param {string} id  the identifier for which the feature has to be
-   *        created
-   * @param {ol.Coordinate} coordinate  the initial coordinates of the
-   *        feature, already transformed to the coordinate system of the
-   *        layer using the projection specified in this class
+   * @param id  the identifier for which the feature has to be created
+   * @param coordinate  the initial coordinates of the feature, already
+   *        transformed to the coordinate system of the layer using the
+   *        projection specified in this class
    *
-   * @returns {ol.Feature}  the OpenLayers feature that will represent the
-   *          object with the given ID on the map
+   * @returns the OpenLayers feature that will represent the object with the
+   *          given ID on the map
    */
-  _createFeatureById = (id, coordinate) => {
+  _createFeatureById = (id: string, coordinate: Coordinate) => {
     const point = new Point(coordinate);
-    const feature = this._featureFactory
+    const feature = (this._featureFactory
       ? this._featureFactory(id, point)
-      : new Feature(point);
+      : new Feature(point)) as any as F;
     const featureId = this._featureIdFunction(id);
 
     feature.setId(featureId);
@@ -106,13 +117,12 @@ export default class FeatureManager {
   /**
    * Returns the feature corresponding to the object with the given ID.
    *
-   * @param {string} id  the identifier for which the feature has to be
+   * @param id  the identifier for which the feature has to be
    *        returned
-   * @return {?ol.Feature}  the OpenLayers feature that represents the
-   *         object with the given ID on the map, or undefined if the given
-   *         object has no feature yet
+   * @return the OpenLayers feature that represents the object with the given ID
+   *         on the map, or undefined if the given object has no feature yet
    */
-  getFeatureById = (id) => {
+  getFeatureById = (id: string): F | undefined => {
     return this._featuresByObjectId[id];
   };
 
@@ -122,10 +132,9 @@ export default class FeatureManager {
    * The returned array is constructed on-the-fly; it will not be updated
    * when new features are added.
    *
-   * @return {Array<ol.Feature>}  an array containing all the features
-   *         managed by this manager
+   * @return an array containing all the features managed by this manager
    */
-  getFeatureArray = () => {
+  getFeatureArray = (): Array<F> => {
     return values(this._featuresByObjectId);
   };
 
@@ -133,7 +142,7 @@ export default class FeatureManager {
    * Removes all features from the feature manager (and the corresponding
    * vector source).
    */
-  removeAllFeatures = () => {
+  removeAllFeatures = (): void => {
     if (this._vectorSource) {
       this._vectorSource.clear();
     }
@@ -144,12 +153,11 @@ export default class FeatureManager {
   /**
    * Removes the feature corresponding to the object with the given ID.
    *
-   * @param {string} id  the identifier for which the feature has to be
-   *        removed
-   * @return {ol.Feature}  the feature that was removed or undefined if
-   *         there was no feature for the given ID
+   * @param id  the identifier for which the feature has to be removed
+   * @return the feature that was removed or undefined if there was no feature
+   *         for the given ID
    */
-  removeFeatureById = (id) => {
+  removeFeatureById = (id: string): F | undefined => {
     const feature = this.getFeatureById(id);
 
     if (feature && this._vectorSource) {
@@ -184,9 +192,7 @@ export default class FeatureManager {
    * object (typically a point) as its only argument and must
    * return an appropriately constructed {@link ol.Feature} object.
    *
-   * @param {function(id: string, geom: ol.geom.Geometry): Array<ol.style.Style>} value
-   *        the new feature factory function
-   * @return {undefined}
+   * @param value  the new feature factory function
    */
   set featureFactory(value) {
     this._featureFactory = value;
@@ -198,7 +204,7 @@ export default class FeatureManager {
    * The function should expect an object ID and return the corresponding
    * feature ID to be used in OpenLayers.
    *
-   * @return {function(id: string): string}  the feature ID mapping function
+   * @return  the feature ID mapping function
    */
   get featureIdFunction() {
     return this._featureIdFunction;
@@ -210,8 +216,7 @@ export default class FeatureManager {
    * The function should expect an object ID and return the corresponding
    * feature ID to be used in OpenLayers.
    *
-   * @param {function(id: string): string} value  the new feature ID mapping function
-   * @return {undefined}
+   * @param value  the new feature ID mapping function
    */
   set featureIdFunction(value) {
     this._featureIdFunction = value;
@@ -226,7 +231,7 @@ export default class FeatureManager {
    * whenever a feature is removed from the feature manager, it will
    * automatically be removed from this layer source.
    *
-   * @return {ol.source.Vector}  the OpenLayers vector layer source
+   * @return the OpenLayers vector layer source
    *         attached to this feature manager
    */
   get vectorSource() {
@@ -259,9 +264,8 @@ export default class FeatureManager {
     this._vectorSource = value;
 
     if (this._vectorSource) {
-      forOwn(this._featuresByObjectId, (feature) =>
-        this._vectorSource.addFeature(feature)
-      );
+      const source = this._vectorSource;
+      forOwn(this._featuresByObjectId, (feature) => source.addFeature(feature));
     }
   }
 }
