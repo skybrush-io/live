@@ -43,6 +43,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   positions, shaving off several seconds from the time needed to load a show with
   several thousands of drones.
 
+- Drones that are in sleep mode are excluded from the calculation of the
+  minimum and average battery charge, the maximum and minimum altitude, the
+  maximum horizontal and vertical velocity, and the average heading
+  when fitting the orientation of the show to the headings of the drones.
+  See https://github.com/skybrush-io/live/issues/80 for the reasoning behind
+  these decisions. Thanks to Jacob H on our Discord server for pointing out
+  this issue.
+
 ### Fixed
 
 - Fixed a bug in the Google Maps layer (used only in special configurations)
