@@ -51,7 +51,7 @@ import {
 import { getVisibleSelectableLayers, LayerType } from '~/model/layers';
 import type { RootState } from '~/store/reducers';
 import type { Identifier } from '~/utils/collections';
-import { findFeaturesById, type LonLat } from '~/utils/geography';
+import { findFeaturesById } from '~/utils/geography';
 import { EMPTY_ARRAY } from '~/utils/redux';
 // TODO(vp): try to move or generalize this component
 // to get rid of the `~/views` import.
@@ -331,7 +331,7 @@ const ShowConfiguratorMap = (props: MapProps): React.JSX.Element => {
     updateModifiedFeatures,
   } = useOwnState(props);
 
-  const mapLayers = useMemo(() => ({ layers, layerComponents }), []);
+  const mapLayers = useMemo(() => ({ layers, layerComponents }), [layers]);
 
   return (
     <Map

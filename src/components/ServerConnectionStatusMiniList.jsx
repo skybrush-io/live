@@ -13,10 +13,10 @@ import {
 import { MAX_ROUNDTRIP_TIME } from '~/features/servers/constants';
 import {
   getCurrentServerState,
-  getCurrentServerVersion,
   getRoundedClockSkewInMilliseconds,
   getRoundTripTimeInMilliseconds,
   getServerHostname,
+  getServerVersion,
 } from '~/features/servers/selectors';
 import { tt } from '~/i18n';
 import { ConnectionState } from '~/model/enums';
@@ -118,7 +118,7 @@ export default connect(
     clockSkew: getRoundedClockSkewInMilliseconds(state),
     roundTripTime: getRoundTripTimeInMilliseconds(state),
     serverHostname: getServerHostname(state),
-    serverVersion: getCurrentServerVersion(state),
+    serverVersion: getServerVersion(state),
   }),
   {}
 )(withTranslation()(ServerConnectionStatusMiniList));
