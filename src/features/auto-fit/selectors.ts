@@ -19,6 +19,8 @@ import type { CoordinateSystemFittingProblem } from './types';
 import type { LonLat } from '~/utils/geography';
 import type { Coordinate2D, Coordinate2DPlus } from '~/utils/math';
 
+// This will include drones that are sleeping, but that's okay.
+// See discussion in https://github.com/skybrush-io/live/issues/80
 const getUAVIdsUsedForAutoFit = getActiveUAVIds;
 
 /**

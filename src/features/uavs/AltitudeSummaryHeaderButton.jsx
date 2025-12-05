@@ -16,7 +16,7 @@ import {
   describeAltitudeSummaryType,
 } from '~/model/settings';
 
-import { getActiveUAVIds, getUAVById } from './selectors';
+import { getActiveAndAwakeUAVIds, getUAVById } from './selectors';
 
 // `makeStyles` from @material-ui cannot be used, as `GenericHeaderButton`
 // doesn't merge its own classes with the provided `className` from outside.
@@ -67,7 +67,8 @@ const findAltitudeBounds = (type) => (state) => {
   let minAltitude = Number.POSITIVE_INFINITY;
   let maxAltitude = Number.NEGATIVE_INFINITY;
 
-  for (const uavId of getActiveUAVIds(state)) {
+  // Exclude sleeping UAVs because they most likely do not report current velocity.
+  for (const uavId of getActiveAndAwakeUAVIds(state)) {
     const uav = getUAVById(state, uavId);
     const altitude = getter(uav);
 

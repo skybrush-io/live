@@ -13,13 +13,14 @@ import { usePeriodicSelector } from '~/hooks/usePeriodicSelector';
 import { formatSpeed } from '~/utils/formatting';
 
 import { buttonStyle } from './AltitudeSummaryHeaderButton';
-import { getActiveUAVIds, getUAVById } from './selectors';
+import { getActiveAndAwakeUAVIds, getUAVById } from './selectors';
 
 const findVelocities = (state) => {
   let maxHorizontal = 0;
   let maxVertical = 0;
 
-  for (const uavId of getActiveUAVIds(state)) {
+  // Exclude sleeping UAVs because they most likely do not report current velocity.
+  for (const uavId of getActiveAndAwakeUAVIds(state)) {
     const uav = getUAVById(state, uavId);
     const velocity = uav.velocity ?? uav.velocityXYZ;
 
