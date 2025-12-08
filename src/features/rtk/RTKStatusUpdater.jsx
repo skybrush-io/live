@@ -8,6 +8,7 @@ import { connect, useDispatch, useSelector } from 'react-redux';
 import handleError from '~/error-handling';
 import { updateRTKStatistics } from '~/features/rtk/slice';
 import { saveCurrentCoordinateForPreset } from '~/features/rtk/actions';
+import { hasValidFix, shouldSaveCoordinate } from '~/features/rtk/utils';
 import useMessageHub from '~/hooks/useMessageHub';
 
 /**
@@ -25,6 +26,22 @@ const RTKStatusUpdater = ({ onStatusChanged, period = 1000 }) => {
       promise: null,
     };
 
+    const checkAndAutosave = async (status) => {
+      // Autosave base station coordinate on first valid fix per preset
+      if (!hasValidFix(status)) {
+        return;
+      }
+
+      const selectedPresetId = await messageHub.query.getSelectedRTKPresetId();
+
+      if (
+        selectedPresetId &&
+        shouldSaveCoordinate(status, savedCoordinates, selectedPresetId)
+      ) {
+        dispatch(saveCurrentCoordinateForPreset(selectedPresetId));
+      }
+    };
+
     const updateStatus = async () => {
       while (!valueHolder.finished) {
         try {
@@ -32,48 +49,8 @@ const RTKStatusUpdater = ({ onStatusChanged, period = 1000 }) => {
           const status = await messageHub.query.getRTKStatus();
           onStatusChanged(status);
 
-          // Autosave base station coordinate on first valid fix per preset
-          const hasECEF = Array.isArray(status?.antenna?.positionECEF);
-          const accuracy = status?.survey?.accuracy;
-          const flags = status?.survey?.flags;
-          const surveyedCoordinateValid =
-            typeof flags === 'number' ? (flags & 0b100) !== 0 : false;
-          const hasValidFix =
-            hasECEF &&
-            (surveyedCoordinateValid || typeof accuracy === 'number');
-
-          if (hasValidFix) {
-            const selectedPresetId =
-              // eslint-disable-next-line no-await-in-loop
-              await messageHub.query.getSelectedRTKPresetId();
-            if (!selectedPresetId) {
-              continue;
-            }
-
-            const incomingECEF = Array.isArray(status?.antenna?.positionECEF)
-              ? status.antenna.positionECEF
-                  .slice(0, 3)
-                  .map((x) => Math.round(x))
-              : undefined;
-            const saved =
-              savedCoordinates && savedCoordinates[selectedPresetId];
-            const savedECEF =
-              saved &&
-              saved.length > 0 &&
-              Array.isArray(saved[0].positionECEF)
-                ? saved[0].positionECEF.slice(0, 3)
-                : undefined;
-
-            const isSameECEF =
-              incomingECEF && savedECEF
-                ? incomingECEF.length === savedECEF.length &&
-                  incomingECEF.every((v, i) => v === savedECEF[i])
-                : false;
-
-            if (!isSameECEF) {
-              dispatch(saveCurrentCoordinateForPreset(selectedPresetId));
-            }
-          }
+          // eslint-disable-next-line no-await-in-loop
+          await checkAndAutosave(status);
         } catch (error) {
           handleError(error, 'RTK status query');
         }
