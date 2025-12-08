@@ -1,3 +1,5 @@
+import type { RTKSavedCoordinate, RTKStatistics } from './types';
+
 const descriptions: Record<string, string> = {
   'rtcm2/1': 'Differential GPS Corrections',
   'rtcm2/2': 'Delta Differential GPS Corrections',
@@ -88,7 +90,7 @@ const descriptions: Record<string, string> = {
   'rtcm3/1121': 'BeiDou MSM1 (DGNSS pseudorange)',
   'rtcm3/1122': 'BeiDou MSM2 (RTK pseudorange)',
   'rtcm3/1123': 'BeiDou MSM3 (code, carrier)',
-  'rtcm3/1124': 'BeiDou MSM4 (code, carrier, CNR)',
+  'rtcm3/1124': 'BeiDou MSM3 (code, carrier, CNR)',
   'rtcm3/1125': 'BeiDou MSM5 (code, carrier, doppler, CNR)',
   'rtcm3/1126': 'BeiDou MSM6 (hi-res code, carrier, doppler)',
   'rtcm3/1127': 'BeiDou MSM7 (hi-res code, carrier, doppler, CNR)',
@@ -117,4 +119,51 @@ export function formatSurveyAccuracy(
       : value >= 0.1
         ? (value * 100).toFixed(short ? 0 : 1) + 'cm'
         : (value * 100).toFixed(1) + 'cm';
+}
+
+/**
+ * Checks if the RTK status indicates a valid fix.
+ *
+ * @param status - The RTK statistics object.
+ * @returns True if a valid fix is present, false otherwise.
+ */
+export function hasValidFix(status: Partial<RTKStatistics>): boolean {
+  const hasECEF = Array.isArray(status?.antenna?.positionECEF);
+  const accuracy = status?.survey?.accuracy;
+  const flags = status?.survey?.flags;
+  const surveyedCoordinateValid =
+    typeof flags === 'number' ? (flags & 0b100) !== 0 : false;
+
+  return hasECEF && (surveyedCoordinateValid || typeof accuracy === 'number');
+}
+
+/**
+ * Determines whether the current coordinate should be saved for a given preset.
+ *
+ * @param status - The RTK statistics object containing the current antenna position.
+ * @param savedCoordinates - The record of saved coordinates keyed by preset ID.
+ * @param presetId - The ID of the preset to check against.
+ * @returns True if the coordinate is new and should be saved, false otherwise.
+ */
+export function shouldSaveCoordinate(
+  status: Partial<RTKStatistics>,
+  savedCoordinates: Record<string, RTKSavedCoordinate[]> | undefined,
+  presetId: string
+): boolean {
+  const incomingECEF = Array.isArray(status?.antenna?.positionECEF)
+    ? status.antenna?.positionECEF?.slice(0, 3).map((x) => Math.round(x))
+    : undefined;
+  const saved = savedCoordinates?.[presetId];
+  const savedECEF =
+    saved && saved.length > 0 && Array.isArray(saved[0]?.positionECEF)
+      ? saved[0]?.positionECEF.slice(0, 3)
+      : undefined;
+
+  const isSameECEF =
+    incomingECEF && savedECEF
+      ? incomingECEF.length === savedECEF.length &&
+        incomingECEF.every((v, i) => v === savedECEF[i])
+      : false;
+
+  return !isSameECEF;
 }
