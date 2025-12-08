@@ -113,9 +113,7 @@ const { actions, reducer } = createSlice({
       // gone
       state.stats.satellites = satellites;
 
-      if (state.stats.survey === undefined) {
-        state.stats.survey = {};
-      }
+      state.stats.survey ??= {};
 
       if (!isNil(survey.accuracy)) {
         state.stats.survey.accuracy = survey.accuracy;

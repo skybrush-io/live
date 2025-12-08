@@ -505,16 +505,18 @@ const RTKPresetDialogContainer = ({
   const [initialPreset, setInitialPreset] = useState(null);
 
   useEffect(() => {
+    const fetchPresets = async () => {
+      try {
+        const presets = await messageHub.query.getRTKPresets();
+        const preset = presets.find((p) => p.id === presetId);
+        setInitialPreset(preset || null);
+      } catch {
+        setInitialPreset(null);
+      }
+    };
+
     if (open && mode === 'edit' && presetId) {
-      messageHub.query
-        .getRTKPresets()
-        .then((presets) => {
-          const preset = presets.find((p) => p.id === presetId);
-          setInitialPreset(preset || null);
-        })
-        .catch(() => {
-          setInitialPreset(null);
-        });
+      fetchPresets();
     } else {
       setInitialPreset(null);
     }
