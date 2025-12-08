@@ -53,21 +53,7 @@ const initialState: RTKSliceState = {
     },
   },
 
-  savedCoordinates: {
-    // TODO: Fake data for testing - remove in production
-    // '-dev-cu.usbmodem101-0': [{
-    //   position: [19.0402, 47.4979] as any, // Budapest coordinates
-    //   positionECEF: [4080855000, 1408354000, 4679340000] as [number, number, number], // Approximate ECEF for Budapest
-    //   accuracy: 0.02,
-    //   savedAt: Date.now() - 86400000, // 1 day ago
-    // }],
-    // '-dev-cu.usbmodem101-1': [{
-    //   position: [21.6254, 47.5289] as any, // Debrecen coordinates
-    //   positionECEF: [4010557000, 1590103000, 4681871000] as [number, number, number], // Approximate ECEF for Debrecen
-    //   accuracy: 0.015,
-    //   savedAt: Date.now() - 172800000, // 2 days ago
-    // }],
-  },
+  savedCoordinates: {},
 
   currentPresetId: undefined,
 
