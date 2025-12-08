@@ -58,8 +58,10 @@ const RTKStatusUpdater = ({ onStatusChanged, period = 1000 }) => {
             const saved =
               savedCoordinates && savedCoordinates[selectedPresetId];
             const savedECEF =
-              saved && Array.isArray(saved.positionECEF)
-                ? saved.positionECEF.slice(0, 3)
+              saved &&
+              saved.length > 0 &&
+              Array.isArray(saved[0].positionECEF)
+                ? saved[0].positionECEF.slice(0, 3)
                 : undefined;
 
             const isSameECEF =

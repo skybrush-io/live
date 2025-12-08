@@ -25,7 +25,7 @@
     "accuracyLabel": "Accuracy",
     "cancel": "Cancel",
     "dateLabel": "Saved",
-    "noSavedCoordinates": "",
+    "noSavedCoordinates": "No saved coordinates found.",
     "positionLabel": "Position",
     "title": "Choose a saved coordinate",
     "useSaved": "Use coordinate"
