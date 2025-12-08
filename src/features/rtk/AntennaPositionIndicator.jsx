@@ -58,8 +58,8 @@ const AntennaPositionIndicator = ({
           <IconButton
             disabled={!hasSavedCoordinates}
             size='large'
-            onClick={onShowSavedCoordinates}
             sx={{ ml: -1.5 }}
+            onClick={onShowSavedCoordinates}
           >
             <Restore />
           </IconButton>
