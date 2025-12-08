@@ -52,6 +52,7 @@ const SourceInputField = ({
   <Box display='flex' alignItems='flex-start' mb={1} style={{ gap: 8 }}>
     <TextField
       fullWidth
+      hiddenLabel
       size='small'
       variant='filled'
       value={value}
@@ -342,15 +343,17 @@ const RTKPresetDialogFormPresentation = ({
                       onRemove={() => handleRemoveSource(index)}
                     />
                   ))}
-                  <Button
-                    size='small'
-                    startIcon={<AddIcon />}
-                    disabled={isReadOnly}
-                    style={{ marginTop: 8 }}
-                    onClick={handleAddSource}
-                  >
-                    {t('rtkPresetDialog.addSource', 'Add Source')}
-                  </Button>
+                  {!isReadOnly && (
+                    <Button
+                      size='small'
+                      startIcon={<AddIcon />}
+                      disabled={isReadOnly}
+                      style={{ marginTop: 8 }}
+                      onClick={handleAddSource}
+                    >
+                      {t('rtkPresetDialog.addSource', 'Add Source')}
+                    </Button>
+                  )}
                 </Box>
 
                 <FormSelect

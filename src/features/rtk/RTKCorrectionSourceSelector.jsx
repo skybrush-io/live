@@ -1,6 +1,5 @@
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
-import RefreshIcon from '@mui/icons-material/Refresh';
 import Box from '@mui/material/Box';
 import FormControl from '@mui/material/FormControl';
 import FormGroup from '@mui/material/FormGroup';
@@ -65,11 +64,6 @@ const RTKCorrectionSourceSelector = ({
     if (onSourceChanged) {
       onSourceChanged();
     }
-  };
-
-  const handleRefresh = () => {
-    presetsState.retry();
-    selectionState.retry();
   };
 
   const selectionRetry = selectionState.retry;
@@ -198,15 +192,6 @@ const RTKCorrectionSourceSelector = ({
               onClick={handleEditCurrentPreset}
             >
               <EditIcon />
-            </IconButton>
-          </span>
-        </Tooltip>
-        <Tooltip
-          title={t('RTKCorrectionSourceSelector.refresh', 'Refresh sources')}
-        >
-          <span>
-            <IconButton disabled={loading} size='small' onClick={handleRefresh}>
-              <RefreshIcon />
             </IconButton>
           </span>
         </Tooltip>
