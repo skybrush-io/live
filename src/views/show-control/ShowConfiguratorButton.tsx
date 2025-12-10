@@ -14,7 +14,7 @@ import {
 } from '@skybrush/mui-components';
 
 import { Status } from '~/components/semantics';
-import { showDialog as showEmergencyRTHDialog } from '~/features/emergency-rth/state';
+import { showDialog as showCollectiveRTHDialog } from '~/features/collective-rth/state';
 import {
   isConnected,
   supportsStudioInterop,
@@ -27,8 +27,8 @@ import {
   getOutdoorShowOrigin,
   getShowSegments,
   hasLoadedShowFile,
-  selectSwarmEmergencyRTHStats,
-  type SwarmEmergencyRTHStats,
+  selectSwarmCollectiveRTHStats,
+  type SwarmCollectiveRTHStats,
 } from '~/features/show/selectors';
 import { getSetupStageStatuses } from '~/features/show/stages';
 import { showError } from '~/features/snackbar/actions';
@@ -76,16 +76,16 @@ type Props = Readonly<{
   // TODO: This should probably be a `ThunkActionDispatch`, but that doesn't
   //       seem to be reexported from `redux-thunk` via `@reduxjs/toolkit`...
   showDialogAndClearUndoHistory: (data?: ShowData) => void;
-  showEmergencyRTHDialog: () => void;
+  showCollectiveRTHDialog: () => void;
   status: Status;
-  swarmRTHStats: SwarmEmergencyRTHStats;
+  swarmRTHStats: SwarmCollectiveRTHStats;
 }>;
 
 const ShowConfiguratorButton = (props: Props): React.JSX.Element => {
   const {
     show,
     showDialogAndClearUndoHistory,
-    showEmergencyRTHDialog,
+    showCollectiveRTHDialog,
     status,
     swarmRTHStats,
   } = props;
@@ -178,7 +178,7 @@ const ShowConfiguratorButton = (props: Props): React.JSX.Element => {
             }
             onClick={(evt) => {
               evt.stopPropagation();
-              showEmergencyRTHDialog();
+              showCollectiveRTHDialog();
             }}
           >
             <Home />
@@ -193,11 +193,11 @@ const ConnectedShowConfiguratorButton = connect(
   (state: RootState) => ({
     show: selectShowConfiguratorDataFromShow(state),
     status: getSetupStageStatuses(state).showConfigurator,
-    swarmRTHStats: selectSwarmEmergencyRTHStats(state),
+    swarmRTHStats: selectSwarmCollectiveRTHStats(state),
   }),
   {
     showDialogAndClearUndoHistory,
-    showEmergencyRTHDialog,
+    showCollectiveRTHDialog,
   }
 )(ShowConfiguratorButton);
 

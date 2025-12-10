@@ -44,19 +44,19 @@ export async function adaptShow(hub, show, transformations, coordinateSystem) {
 }
 
 /**
- * Adds emergency RTH plans to drones using the given configuration.
+ * Adds collective RTH plans to drones using the given configuration.
  */
-export async function addEmergencyRTH(hub, show, config) {
+export async function addCollectiveRTH(hub, show, config) {
   const response = await hub.sendMessage(
     {
-      type: 'X-SHOW-ERTH',
+      type: 'X-SHOW-CRTH',
       show,
       config,
     },
     { timeout: 3600 }
   );
 
-  if (response?.body?.type === 'X-SHOW-ERTH') {
+  if (response?.body?.type === 'X-SHOW-CRTH') {
     return response.body;
   } else {
     throw new Error(response?.body?.reason ?? 'Unknown error.');
@@ -464,7 +464,7 @@ export async function isExtensionLoaded(hub, name) {
 export class QueryHandler {
   _queries = {
     adaptShow,
-    addEmergencyRTH,
+    addCollectiveRTH,
     getBasicBeaconProperties,
     getConfigurationOfExtension,
     getFirmwareUpdateObjects,

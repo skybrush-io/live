@@ -7,17 +7,17 @@ export type TransformationResult = {
   show: string;
 
   /**
-   * The first timestamp at which an emergency RTH plan was generated, in seconds.
+   * The first timestamp at which a collective RTH plan was generated, in seconds.
    */
   firstTime?: number;
 
   /**
-   * The last timestamp at which an emergency RTH plan was generated, in seconds.
+   * The last timestamp at which a collective RTH plan was generated, in seconds.
    */
   lastTime?: number;
 
   /**
-   * The maximum show duration assuming an emergency RTH plan got triggered, in seconds.
+   * The maximum show duration assuming a collective RTH plan got triggered, in seconds.
    */
   maxShowDuration?: number;
 };
@@ -27,20 +27,18 @@ export type TransformationResultOrStatus =
   | { error: string }
   | { loading: true };
 
-export type EmergencyRTHConfig = {};
-
-export type EmergencyRTHState = {
+export type CollectiveRTHDialogRTHState = {
   open: boolean;
   result?: TransformationResultOrStatus;
 };
 
-const initialState: EmergencyRTHState = {
+const initialState: CollectiveRTHDialogRTHState = {
   open: false,
   result: undefined,
 };
 
 const { reducer, actions } = createSlice({
-  name: 'emergency-rth',
+  name: 'collective-rth',
   initialState,
   reducers: {
     /**

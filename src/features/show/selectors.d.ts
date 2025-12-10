@@ -104,9 +104,9 @@ export const getConvexHullOfShowSegmentInWorldCoordinates: AppSelector<
 >;
 export const getOutdoorShowCoordinateSystem: AppSelector<OutdoorCoordinateSystem>;
 
-export type SwarmEmergencyRTHStats = {
+export type SwarmCollectiveRTHStats = {
   total: number;
   withRTHPlan: number;
   withoutRTHPlan: number;
 };
-export const selectSwarmEmergencyRTHStats: AppSelector<SwarmEmergencyRTHStats>;
+export const selectSwarmCollectiveRTHStats: AppSelector<SwarmCollectiveRTHStats>;

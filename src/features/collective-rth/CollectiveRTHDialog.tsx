@@ -1,6 +1,7 @@
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import DialogActions from '@mui/material/DialogActions';
+import Typography from '@mui/material/Typography';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
@@ -9,17 +10,19 @@ import { DraggableDialog } from '@skybrush/mui-components';
 
 import { loadBase64EncodedShow } from '~/features/show/actions';
 import {
-  selectSwarmEmergencyRTHStats,
-  type SwarmEmergencyRTHStats,
+  selectSwarmCollectiveRTHStats,
+  type SwarmCollectiveRTHStats,
 } from '~/features/show/selectors';
 import type { AppDispatch, RootState } from '~/store/reducers';
 
-import { Typography } from '@mui/material';
 import {
-  addEmergencyRTH,
-  type EmergencyRTHConfig,
+  addCollectiveRTH,
+  type CollectiveRTHParameters,
   saveTransformedShow,
 } from './actions';
+import CollectiveRTHParametersForm, {
+  useCollectiveRTHParametersFormState,
+} from './CollectiveRTHParametersForm';
 import {
   isDialogOpen,
   selectResult,
@@ -32,12 +35,12 @@ type StateProps = {
   error?: string;
   inProgress: boolean;
   open: boolean;
-  swarmRTHStats: SwarmEmergencyRTHStats;
+  swarmRTHStats: SwarmCollectiveRTHStats;
   transformationResult?: TransformationResult;
 };
 
 type DispatchProps = {
-  addEmergencyRTH: (config?: EmergencyRTHConfig) => void;
+  addCollectiveRTH: (params?: CollectiveRTHParameters) => void;
   applyTransformedShow: (show: string) => void;
   closeDialog: () => void;
   saveTransformedShow: () => void;
@@ -45,9 +48,9 @@ type DispatchProps = {
 
 type Props = DispatchProps & StateProps;
 
-const EmergencyRTHDialog = (props: Props) => {
+const CollectiveRTHDialog = (props: Props) => {
   const {
-    addEmergencyRTH,
+    addCollectiveRTH,
     applyTransformedShow,
     closeDialog,
     error,
@@ -57,16 +60,41 @@ const EmergencyRTHDialog = (props: Props) => {
     swarmRTHStats,
     transformationResult,
   } = props;
+  const parametersFormState = useCollectiveRTHParametersFormState();
   const { t } = useTranslation();
   const submitDisabled = transformationResult === undefined;
+
+  const parameteresForm = (
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, padding: 2 }}>
+      <CollectiveRTHParametersForm
+        disabled={inProgress}
+        {...parametersFormState}
+      />
+      <Box
+        sx={{
+          display: inProgress ? 'none' : 'flex',
+          flexDirection: 'column',
+          justifyItems: 'center',
+          alignItems: 'center',
+        }}
+      >
+        <Button
+          color='primary'
+          onClick={() => addCollectiveRTH(parametersFormState.parameters)}
+        >
+          {t('collectiveRTHDialog.action.addCollectiveRTH')}
+        </Button>
+      </Box>
+    </Box>
+  );
 
   return (
     <DraggableDialog
       fullWidth
       disableEscapeKeyDown={inProgress || transformationResult !== undefined}
       maxWidth='sm'
-      title={t('emergencyRTHDialog.title')}
       open={open}
+      title={t('collectiveRTHDialog.title')}
     >
       <Box
         sx={{
@@ -81,21 +109,21 @@ const EmergencyRTHDialog = (props: Props) => {
         {error !== undefined && (
           <>
             <Typography color='error'>
-              {t('emergencyRTHDialog.error')}
+              {t('collectiveRTHDialog.error')}
             </Typography>
             <Typography color='error'>{error}</Typography>
           </>
         )}
         {inProgress && (
-          <Typography>{t('emergencyRTHDialog.loading')}</Typography>
+          <Typography>{t('collectiveRTHDialog.loading')}</Typography>
         )}
         {transformationResult !== undefined && (
           <>
             <Typography>
               {t(
                 transformationResult.firstTime === undefined
-                  ? 'emergencyRTHDialog.summary.firstTime.unknown'
-                  : 'emergencyRTHDialog.summary.firstTime.message',
+                  ? 'collectiveRTHDialog.summary.firstTime.unknown'
+                  : 'collectiveRTHDialog.summary.firstTime.message',
                 {
                   firstTime: transformationResult.firstTime,
                 }
@@ -104,8 +132,8 @@ const EmergencyRTHDialog = (props: Props) => {
             <Typography>
               {t(
                 transformationResult.lastTime === undefined
-                  ? 'emergencyRTHDialog.summary.lastTime.unknown'
-                  : 'emergencyRTHDialog.summary.lastTime.message',
+                  ? 'collectiveRTHDialog.summary.lastTime.unknown'
+                  : 'collectiveRTHDialog.summary.lastTime.message',
                 {
                   lastTime: transformationResult.lastTime,
                 }
@@ -114,8 +142,8 @@ const EmergencyRTHDialog = (props: Props) => {
             <Typography>
               {t(
                 transformationResult.maxShowDuration === undefined
-                  ? 'emergencyRTHDialog.summary.maxShowDuration.unknown'
-                  : 'emergencyRTHDialog.summary.maxShowDuration.message',
+                  ? 'collectiveRTHDialog.summary.maxShowDuration.unknown'
+                  : 'collectiveRTHDialog.summary.maxShowDuration.message',
                 {
                   maxShowDuration: transformationResult.maxShowDuration,
                 }
@@ -127,27 +155,16 @@ const EmergencyRTHDialog = (props: Props) => {
           !inProgress &&
           error === undefined && (
             <>
-              <Typography>{t('emergencyRTHDialog.description')}</Typography>
+              <Typography>{t('collectiveRTHDialog.description')}</Typography>
               <Typography>
-                {t('emergencyRTHDialog.existingRTHPlans', {
+                {t('collectiveRTHDialog.existingRTHPlans', {
                   withRTHPlan: swarmRTHStats.withRTHPlan,
                   total: swarmRTHStats.total,
                 })}
               </Typography>
             </>
           )}
-        <Box
-          sx={{
-            display: inProgress ? 'none' : 'flex',
-            flexDirection: 'column',
-            justifyItems: 'center',
-            alignItems: 'center',
-          }}
-        >
-          <Button color='primary' onClick={() => addEmergencyRTH()}>
-            {t('emergencyRTHDialog.action.addEmergencyRTH')}
-          </Button>
-        </Box>
+        {parameteresForm}
       </Box>
       <DialogActions>
         <Box sx={{ flex: 1 }} />
@@ -192,24 +209,24 @@ const EmergencyRTHDialog = (props: Props) => {
  * The reason for this is to correctly initialize the dialog's state
  * when it is opened.
  */
-const EmergencyRTHDialogWrapper = (props: Props) => {
+const CollectiveRTHDialogWrapper = (props: Props) => {
   const { open, ...rest } = props;
-  return open ? <EmergencyRTHDialog open {...rest} /> : null;
+  return open ? <CollectiveRTHDialog open {...rest} /> : null;
 };
 
-const ConnectedEmergencyRTHDialog = connect(
+const ConnectedCollectiveRTHDialog = connect(
   // -- map state to props
   (state: RootState) => ({
     error: selectTransformationError(state),
     inProgress: selectTransformationInProgress(state),
     open: isDialogOpen(state),
-    swarmRTHStats: selectSwarmEmergencyRTHStats(state),
+    swarmRTHStats: selectSwarmCollectiveRTHStats(state),
     transformationResult: selectResult(state),
   }),
   // -- map dispatch to props
   (dispatch: AppDispatch) => ({
-    addEmergencyRTH: (config?: EmergencyRTHConfig): void => {
-      dispatch(addEmergencyRTH(config));
+    addCollectiveRTH: (params?: CollectiveRTHParameters): void => {
+      dispatch(addCollectiveRTH(params));
     },
     applyTransformedShow: (show: string): void => {
       dispatch(loadBase64EncodedShow(show));
@@ -221,6 +238,6 @@ const ConnectedEmergencyRTHDialog = connect(
       dispatch(saveTransformedShow());
     },
   })
-)(EmergencyRTHDialogWrapper);
+)(CollectiveRTHDialogWrapper);
 
-export default ConnectedEmergencyRTHDialog;
+export default ConnectedCollectiveRTHDialog;

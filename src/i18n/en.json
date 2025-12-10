@@ -85,23 +85,29 @@
     "disable": "Disable broadcast",
     "enable": "Enable broadcast for {{time}} seconds"
   },
-  "coordinateAveragingDialogToolbar": {
-    "addNewDrone": "Add new drone",
-    "copyCentroid": "Copy centroid",
-    "pauseMeasurement": "Pause measurement",
-    "removeSelected": "Remove selected",
-    "resetMeasurement": "Reset measurement",
-    "resumeMeasurement": "Resume measurement",
-    "setCentroidAsMapOrigin": "Set centroid as map origin"
-  },
-  "emergencyRTHDialog": {
+  "collectiveRTHDialog": {
     "action": {
-      "addEmergencyRTH": "Calculate RTH plans"
+      "addCollectiveRTH": "Calculate RTH plans"
     },
-    "description": "Calculate emergency RTH plans for all drones in the show. The RTH plans will be designed to bring the drones home as quickly as possible while avoiding collisions with each other.",
+    "description": "Calculate RTH plans for all drones in the show. The RTH plans will be designed to bring the drones home as quickly as possible while avoiding collisions with each other.",
     "error": "An error occurred while calculating RTH plans. Please try again.",
     "existingRTHPlans": "{{ withRTHPlan }} of {{ total }} drones have an RTH plan in the loaded show.",
     "loading": "RTH plans are being calculated, please wait. It may take some time.",
+    "parameters": {
+      "form": {
+        "minDistance": {
+          "help": "between drones during RTH",
+          "label": "Minimum distance"
+        },
+        "timeResolution": {
+          "help": "between planned RTH times.",
+          "label": "Time resolution"
+        }
+      },
+      "section": {
+        "parameters": "Parameters"
+      }
+    },
     "summary": {
       "firstTime": {
         "message": "Earliest RTH time: {{firstTime}}s",
@@ -116,7 +122,16 @@
         "unknown": "Maximum show duration, assuming RTH is triggered: unknown"
       }
     },
-    "title": "Plan emergency RTH"
+    "title": "Plan collective RTH"
+  },
+  "coordinateAveragingDialogToolbar": {
+    "addNewDrone": "Add new drone",
+    "copyCentroid": "Copy centroid",
+    "pauseMeasurement": "Pause measurement",
+    "removeSelected": "Remove selected",
+    "resetMeasurement": "Reset measurement",
+    "resumeMeasurement": "Resume measurement",
+    "setCentroidAsMapOrigin": "Set centroid as map origin"
   },
   "environmentEditorDialog": {
     "environmentSettings": "Environment settings",
