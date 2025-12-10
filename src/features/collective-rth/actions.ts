@@ -9,6 +9,8 @@ import { setResult, type TransformationResult } from './state';
 export type OptionalCollectiveRTHParameters = {
   minDistance?: number;
   timeResolution?: number;
+  horizontalVelocity?: number;
+  verticalVelocity?: number;
 };
 
 export type CollectiveRTHParameters = Required<OptionalCollectiveRTHParameters>;
@@ -28,6 +30,8 @@ export const addCollectiveRTH =
         await messageHub.query.addCollectiveRTH(base64ShowBlob, {
           min_distance: params?.minDistance,
           time_resolution: params?.timeResolution,
+          velocity_xy: params?.horizontalVelocity,
+          velocity_z: params?.verticalVelocity,
         });
 
       if (typeof show !== 'string') {

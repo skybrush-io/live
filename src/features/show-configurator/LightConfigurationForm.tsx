@@ -186,7 +186,7 @@ export const useLightConfigurationFormState = (onChange?: () => void) => {
   };
 };
 
-const MIN_VERSION = '2.40';
+const MIN_VERSION = '2.41';
 const supportsLightConfiguration = getServerVersionValidator(
   `>=${MIN_VERSION}`
 );
