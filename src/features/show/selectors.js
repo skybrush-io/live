@@ -936,7 +936,7 @@ export const {
 /**
  * Selector that returns an object summarizing how many drones have RTH plans.
  */
-export const selectSwarmCollectiveRTHStats = createSelector(
+export const selectCollectiveRTHStats = createSelector(
   getDroneSwarmSpecification,
   (drones) => {
     const result = {

@@ -27,12 +27,12 @@ import {
   getOutdoorShowOrigin,
   getShowSegments,
   hasLoadedShowFile,
-  selectSwarmCollectiveRTHStats,
-  type SwarmCollectiveRTHStats,
+  selectCollectiveRTHStats,
+  type CollectiveRTHStats,
 } from '~/features/show/selectors';
 import { getSetupStageStatuses } from '~/features/show/stages';
 import { showError } from '~/features/snackbar/actions';
-import { type PreparedI18nKey, tt } from '~/i18n';
+import { tt, type PreparedI18nKey } from '~/i18n';
 import Pro from '~/icons/Pro';
 import type { AppDispatch, AppSelector, RootState } from '~/store/reducers';
 import { type Nullable } from '~/utils/types';
@@ -78,7 +78,7 @@ type Props = Readonly<{
   showDialogAndClearUndoHistory: (data?: ShowData) => void;
   showCollectiveRTHDialog: () => void;
   status: Status;
-  swarmRTHStats: SwarmCollectiveRTHStats;
+  swarmRTHStats: CollectiveRTHStats;
 }>;
 
 const ShowConfiguratorButton = (props: Props): React.JSX.Element => {
@@ -193,7 +193,7 @@ const ConnectedShowConfiguratorButton = connect(
   (state: RootState) => ({
     show: selectShowConfiguratorDataFromShow(state),
     status: getSetupStageStatuses(state).showConfigurator,
-    swarmRTHStats: selectSwarmCollectiveRTHStats(state),
+    swarmRTHStats: selectCollectiveRTHStats(state),
   }),
   {
     showDialogAndClearUndoHistory,
