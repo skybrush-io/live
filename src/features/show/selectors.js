@@ -932,3 +932,28 @@ export const {
   getShowSegments,
   getOutdoorShowToWorldCoordinateSystemTransformation
 );
+
+/**
+ * Selector that returns an object summarizing how many drones have RTH plans.
+ */
+export const selectSwarmCollectiveRTHStats = createSelector(
+  getDroneSwarmSpecification,
+  (drones) => {
+    const result = {
+      total: drones.length,
+      withRTHPlan: 0,
+      withoutRTHPlan: 0,
+    };
+
+    for (const drone of drones) {
+      const planEntries = get(drone, 'settings.rthPlan.entries');
+      if (planEntries === undefined || planEntries.length === 0) {
+        result.withoutRTHPlan += 1;
+      } else {
+        result.withRTHPlan += 1;
+      }
+    }
+
+    return result;
+  }
+);
