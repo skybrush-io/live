@@ -28,7 +28,7 @@ import {
 import { convexHull2D, type Coordinate2D, getCentroid } from '~/utils/math';
 import { EMPTY_ARRAY } from '~/utils/redux';
 
-import type { AdaptResult, ShowData, ShowConfiguratorState } from './state';
+import type { AdaptResult, ShowConfiguratorState, ShowData } from './state';
 
 const _defaultCoordinateSystem: ShowData['coordinateSystem'] = {
   type: 'nwu',

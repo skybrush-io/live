@@ -383,7 +383,7 @@ function processShowInJSONFormatAndDispatchActions(spec, dispatch) {
  */
 export function reloadCurrentShowFile() {
   return async (dispatch, getState) => {
-    const { getFileAsBlob } = window.bridge;
+    const { getFileAsBlob } = globalThis.bridge;
 
     if (!getFileAsBlob) {
       console.warn('reloadCurrentShowFile() works only in Electron');
@@ -454,6 +454,9 @@ export const setOutdoorShowAltitudeReferenceValue =
 export const setOutdoorShowAltitudeReferenceToAverageAMSL =
   () => (dispatch, getState) => {
     const state = getState();
+
+    // This will include drones that are sleeping, but that's okay.
+    // See discussion in https://github.com/skybrush-io/live/issues/80
     const activeUAVIds = getActiveUAVIds(state);
     const altitudes = [];
 

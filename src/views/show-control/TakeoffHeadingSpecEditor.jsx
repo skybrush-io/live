@@ -88,7 +88,7 @@ export const TakeoffHeadingSpecEditor = ({
           {onSetToAverageHeading && (
             <Box sx={{ alignSelf: 'bottom', pt: 1 }}>
               <Tooltip
-                content={t('takeoffHeadingSpecEditor.setToAvergaeHeading')}
+                content={t('takeoffHeadingSpecEditor.setToAverageHeading')}
               >
                 <IconButton
                   edge='end'

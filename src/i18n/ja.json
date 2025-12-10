@@ -635,7 +635,7 @@
     "UAVheadings": "離陸前のUAVの方向は…",
     "compassDirection": "コンパス方位",
     "headingOffset": "ヘディングオフセット",
-    "setToAvergaeHeading": "アクティブなドローンに対し平均方位を設定",
+    "setToAverageHeading": "アクティブなドローンに対し平均方位を設定",
     "specifiedByAbsoluteCompassDirection": "コンパスの絶対方位で指定",
     "specifiedRelativeToShowOrientation": "ショーの相対方位で指定",
     "unspecified": "未指定"

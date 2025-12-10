@@ -17,6 +17,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The show adaptation dialog now allows you to specify the desired duration of
   the transition from takeoff to the first formation of the show.
 
+- The show adaptation dialog now allows you to set light configurations for the
+  recalculated takeoff and landing.
+
 - Upload dialogs can now be restricted to only showing and acting on the global
   drone selection. The feature works in combination with the drone selection
   hotkeys.
@@ -44,6 +47,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Optimized the calculation of the minimum distance between takeoff and landing
   positions, shaving off several seconds from the time needed to load a show with
   several thousands of drones.
+
+- Drones that are in sleep mode are excluded from the calculation of the
+  minimum and average battery charge, the maximum and minimum altitude, the
+  maximum horizontal and vertical velocity, and the average heading
+  when fitting the orientation of the show to the headings of the drones.
+  See https://github.com/skybrush-io/live/issues/80 for the reasoning behind
+  these decisions. Thanks to Jacob H on our Discord server for pointing out
+  this issue.
 
 ### Fixed
 

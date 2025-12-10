@@ -619,7 +619,7 @@
     "UAVheadings": "Wskazówki dla UAV's przed startem …",
     "compassDirection": "Kierunek kompasu",
     "headingOffset": "Zmień kierunek",
-    "setToAvergaeHeading": "Ustaw średni kurs dla aktywnych dronów",
+    "setToAverageHeading": "Ustaw średni kurs dla aktywnych dronów",
     "specifiedByAbsoluteCompassDirection": "Określony przez bezwzględny kierunek kompasu",
     "specifiedRelativeToShowOrientation": "Określony w stosunku do orientacji pokazu",
     "unspecified": "Nieokreślony"

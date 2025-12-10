@@ -113,7 +113,9 @@ export const getCurrentHeadingByUavId = (state: RootState, uavId: string) =>
  * Returns the average heading of the active UAVs.
  */
 export const getAverageHeadingOfActiveUAVs = (state: RootState) => {
-  const activeUAVIds = getActiveUAVIds(state);
+  // Get the IDs of all active and awake UAVs. Here we exclude sleeping UAVs
+  // because they may have outdated headings.
+  const activeUAVIds = getActiveAndAwakeUAVIds(state);
   const headings = activeUAVIds
     .map((uavId) => getCurrentHeadingByUavId(state, uavId))
     .filter((x) => typeof x === 'number');
@@ -510,6 +512,21 @@ const getUAVIdsByAge =
 export const getActiveUAVIds = getUAVIdsByAge(UAVAge.ACTIVE);
 
 /**
+ * Selector that selects all UAVs that are currently considered as "active"
+ * (i.e. we have received status information from them in the last few seconds)
+ * _and_ are also awake (i.e. not in sleep mode).
+ */
+export const getActiveAndAwakeUAVIds = createSelector(
+  getActiveUAVIds,
+  getUAVIdToStateMapping,
+  (activeUAVIds, uavsById) =>
+    activeUAVIds.filter((uavId) => {
+      const uav = uavsById[uavId];
+      return uav ? !isUAVSleeping(uav) : false;
+    })
+);
+
+/**
  * Selector that selects all UAVs that are currently considered as "inactive"
  * (i.e. we have not received status information from them in the last few
  * seconds but we hope that they will re-appear).
@@ -726,6 +743,9 @@ export function getSingleUAVStatusLevel(uav: StoredUAV): Status {
 
   return Status.SUCCESS;
 }
+
+export const isUAVSleeping = (uav: StoredUAV): boolean =>
+  uav.errors.includes(UAVErrorCode.SLEEPING);
 
 /* eslint-disable complexity */
 /**
