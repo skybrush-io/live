@@ -737,7 +737,7 @@ export function getSingleUAVStatusLevel(uav: StoredUAV): Status {
     return Status.SUCCESS;
   }
 
-  if (severity && severity >= Severity.INFO) {
+  if (severity !== undefined && severity >= Severity.INFO) {
     return errorSeverityToSemantics(severity);
   }
 
