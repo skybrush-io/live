@@ -24,7 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   drone selection. The feature works in combination with the drone selection
   hotkeys.
 
-- Added a compass calibration operation to the UAVs panel.
+- Added compass calibration operation to the UAVs panel.
 
 - Added a slider to the properties of the UAV layer that can be used to change
   the size of the UAV icons on the layer. Useful when flying larger fleets and
@@ -50,7 +50,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   minimum and average battery charge, the maximum and minimum altitude, the
   maximum horizontal and vertical velocity, and the average heading
   when fitting the orientation of the show to the headings of the drones.
-  See https://github.com/skybrush-io/live/issues/80 for the reasoning behind
+  See <https://github.com/skybrush-io/live/issues/80> for the reasoning behind
   these decisions. Thanks to Jacob H on our Discord server for pointing out
   this issue.
 
