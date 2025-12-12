@@ -5,7 +5,7 @@
   "main": "launcher.bundle.js",
   "scripts": {
     "bundle": "rimraf build && cross-env NODE_ENV=production webpack --mode=production --progress --config webpack/dist.config.js",
-    "lint": "xo",
+    "lint": "eslint",
     "postinstall": "patch-package",
     "start": "rimraf build && webpack serve --config webpack/browser.config.js --progress",
     "start:electron": "webpack serve --server-type https --config webpack/electron.config.js --progress",
@@ -181,6 +181,7 @@
     "@babel/preset-env": "^7.28.3",
     "@babel/preset-react": "^7.26.3",
     "@babel/preset-typescript": "^7.27.1",
+    "@eslint/js": "^9.39.1",
     "@jest/globals": "^30.2.0",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.6.1",
     "@types/file-saver": "^2.0.7",
@@ -202,11 +203,6 @@
     "dotenv-webpack": "^8.1.1",
     "electron": "^39.2.4",
     "eslint": "^9.33.0",
-    "eslint-config-xo": "^0.49.0",
-    "eslint-config-xo-react": "^0.28.0",
-    "eslint-plugin-import": "^2.32.0",
-    "eslint-plugin-react": "^7.37.5",
-    "eslint-plugin-react-hooks": "^5.2.0",
     "git-revision-webpack-plugin": "^5.0.0",
     "html-webpack-plugin": "^5.6.3",
     "jest": "^30.2.0",
@@ -223,13 +219,13 @@
     "ts-loader": "^9.5.2",
     "type-fest": "^5.0.1",
     "typescript": "^5.9.2",
+    "typescript-eslint": "^8.49.0",
     "webpack": "^5.102.0",
     "webpack-cli": "^6.0.1",
     "webpack-dev-server": "^5.2.1",
     "webpack-merge": "^6.0.1",
     "webpack-shell-plugin-next": "^2.3.3",
-    "worker-url": "^1.1.0",
-    "xo": "^1.2.1"
+    "worker-url": "^1.1.0"
   },
   "overrides": {
     "@pmmmwh/react-refresh-webpack-plugin": {
@@ -256,75 +252,5 @@
     "jsxSingleQuote": true,
     "singleQuote": true,
     "trailingComma": "es5"
-  },
-  "xo": [
-    {
-      "space": true,
-      "prettier": true,
-      "react": true,
-      "rules": {
-        "@stylistic/lines-between-class-members": "off",
-        "capitalized-comments": 0,
-        "import-x/extensions": 0,
-        "import/no-unassigned-import": 0,
-        "import-x/order": 0,
-        "n/file-extension-in-import": 0,
-        "no-bitwise": 0,
-        "no-else-return": 0,
-        "react/jsx-no-leaked-render": 0,
-        "no-lonely-if": 0,
-        "no-negated-condition": 0,
-        "no-warning-comments": 0,
-        "object-curly-spacing": [
-          "error",
-          "always"
-        ],
-        "object-shorthand": [
-          "error",
-          "always",
-          {
-            "avoidExplicitReturnArrows": false
-          }
-        ],
-        "react/boolean-prop-naming": 0,
-        "react/function-component-definition": 0,
-        "react/jsx-no-duplicate-props": 0,
-        "react/prefer-read-only-props": 0,
-        "react/require-default-props": 0,
-        "unicorn/filename-case": 0,
-        "unicorn/no-array-callback-reference": 0,
-        "unicorn/no-array-reduce": 0,
-        "unicorn/no-fn-reference-in-iterator": 0,
-        "unicorn/no-negated-condition": 0,
-        "unicorn/numeric-separators-style": 0,
-        "unicorn/prefer-global-this": 0,
-        "unicorn/prefer-module": 0,
-        "unicorn/prefer-node-protocol": 0,
-        "unicorn/prefer-ternary": 0,
-        "unicorn/prevent-abbreviations": 0,
-        "unicorn/switch-case-braces": 0
-      }
-    },
-    {
-      "files": [
-        "**/*.ts",
-        "**/*.tsx"
-      ],
-      "rules": {
-        "@typescript-eslint/consistent-type-assertions": [
-          "error",
-          {
-            "assertionStyle": "as",
-            "objectLiteralTypeAssertions": "allow"
-          }
-        ],
-        "@typescript-eslint/explicit-function-return-type": "off",
-        "@typescript-eslint/naming-convention": "off",
-        "@typescript-eslint/no-dynamic-delete": "off",
-        "@typescript-eslint/no-namespace": "off",
-        "@typescript-eslint/no-restricted-types": "off",
-        "@typescript-eslint/prefer-regexp-exec": "off"
-      }
-    }
-  ]
+  }
 }
