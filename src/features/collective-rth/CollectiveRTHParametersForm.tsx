@@ -9,6 +9,7 @@ import { FormHeader } from '@skybrush/mui-components';
 import {
   SimpleDistanceField,
   SimpleDurationField,
+  SimpleVelocityField,
 } from '~/components/forms/fields';
 
 import type {
@@ -27,7 +28,9 @@ function areParametersValid(params: CollectiveRTHParameters): boolean {
   return (
     params.minDistance >= 0 &&
     params.timeResolution >= 1 &&
-    Number.isInteger(params.timeResolution)
+    Number.isInteger(params.timeResolution) &&
+    params.horizontalVelocity > 0 &&
+    params.verticalVelocity > 0
   );
 }
 
@@ -41,8 +44,15 @@ function parseDistanceAsMeters(value: string): number {
 /**
  * Parses a duration (string) as seconds, rounded to an integer.
  */
-function parseDurationAsSeconds(value: string): number {
+function parseIntegerDurationAsSeconds(value: string): number {
   return Math.round(Number.parseFloat(value));
+}
+
+/**
+ * Parses a velocity (string) as meters per second.
+ */
+function parseVelocityMpS(value: string): number {
+  return Number.parseFloat(value);
 }
 
 export function useCollectiveRTHParametersFormState(
@@ -54,13 +64,21 @@ export function useCollectiveRTHParametersFormState(
   const [timeResolution, setTimeResolution] = useState(
     defaultParams?.timeResolution ?? 10
   );
+  const [horizontalVelocity, setHorizontalVelocity] = useState(
+    defaultParams?.horizontalVelocity ?? 5
+  );
+  const [verticalVelocity, setVerticalVelocity] = useState(
+    defaultParams?.verticalVelocity ?? 1.5
+  );
 
   const parameters = useMemo<CollectiveRTHParameters>(() => {
     return {
       minDistance,
       timeResolution,
+      horizontalVelocity,
+      verticalVelocity,
     };
-  }, [minDistance, timeResolution]);
+  }, [minDistance, timeResolution, horizontalVelocity, verticalVelocity]);
 
   const isValid = useMemo(() => {
     return areParametersValid(parameters);
@@ -76,8 +94,21 @@ export function useCollectiveRTHParametersFormState(
 
   const onTimeResolutionChanged = useCallback(
     (evt: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      const timeResolution = parseDurationAsSeconds(evt.target.value);
+      const timeResolution = parseIntegerDurationAsSeconds(evt.target.value);
       setTimeResolution(timeResolution);
+    },
+    []
+  );
+
+  const onHorizontalVelocityChanged = useCallback(
+    (evt: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      setHorizontalVelocity(parseVelocityMpS(evt.target.value));
+    },
+    []
+  );
+  const onVerticalVelocityChanged = useCallback(
+    (evt: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      setVerticalVelocity(parseVelocityMpS(evt.target.value));
     },
     []
   );
@@ -87,6 +118,8 @@ export function useCollectiveRTHParametersFormState(
     isValid,
     onMinDistanceChanged,
     onTimeResolutionChanged,
+    onHorizontalVelocityChanged,
+    onVerticalVelocityChanged,
   };
 }
 
@@ -96,11 +129,12 @@ type Props = ReturnType<typeof useCollectiveRTHParametersFormState> & {
 
 function CollectiveRTHParametersForm(props: Props) {
   const {
+    disabled,
     parameters,
-    isValid,
+    onHorizontalVelocityChanged,
     onMinDistanceChanged,
     onTimeResolutionChanged,
-    disabled,
+    onVerticalVelocityChanged,
   } = props;
   const { t } = useTranslation(undefined, {
     keyPrefix: 'collectiveRTHDialog.parameters',
@@ -110,6 +144,15 @@ function CollectiveRTHParametersForm(props: Props) {
   return (
     <FormGroup className={styles.formGroup}>
       <FormHeader>{t('section.parameters')}</FormHeader>
+      <SimpleDurationField
+        label={t('form.timeResolution.label')}
+        min={0}
+        max={600}
+        value={parameters.timeResolution}
+        disabled={disabled}
+        helperText={t('form.timeResolution.help')}
+        onChange={onTimeResolutionChanged}
+      />
       <SimpleDistanceField
         label={t('form.minDistance.label')}
         min={0.001}
@@ -119,14 +162,23 @@ function CollectiveRTHParametersForm(props: Props) {
         helperText={t('form.minDistance.help')}
         onChange={onMinDistanceChanged}
       />
-      <SimpleDurationField
-        label={t('form.timeResolution.label')}
-        min={0}
-        max={600}
-        value={parameters.timeResolution}
+      <SimpleVelocityField
+        label={t('form.horizontalVelocity.label')}
+        min={0.1}
+        max={100}
+        value={parameters.horizontalVelocity}
         disabled={disabled}
-        helperText={t('form.timeResolution.help')}
-        onChange={onTimeResolutionChanged}
+        helperText={t('form.horizontalVelocity.help')}
+        onChange={onHorizontalVelocityChanged}
+      />
+      <SimpleVelocityField
+        label={t('form.verticalVelocity.label')}
+        min={0.1}
+        max={100}
+        value={parameters.verticalVelocity}
+        disabled={disabled}
+        helperText={t('form.verticalVelocity.help')}
+        onChange={onVerticalVelocityChanged}
       />
     </FormGroup>
   );

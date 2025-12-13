@@ -10,15 +10,15 @@ import { DraggableDialog } from '@skybrush/mui-components';
 
 import { loadBase64EncodedShow } from '~/features/show/actions';
 import {
-  selectSwarmCollectiveRTHStats,
-  type SwarmCollectiveRTHStats,
+  selectCollectiveRTHStats,
+  type CollectiveRTHStats,
 } from '~/features/show/selectors';
 import type { AppDispatch, RootState } from '~/store/reducers';
 
 import {
   addCollectiveRTH,
-  type CollectiveRTHParameters,
   saveTransformedShow,
+  type CollectiveRTHParameters,
 } from './actions';
 import CollectiveRTHParametersForm, {
   useCollectiveRTHParametersFormState,
@@ -35,7 +35,7 @@ type StateProps = {
   error?: string;
   inProgress: boolean;
   open: boolean;
-  swarmRTHStats: SwarmCollectiveRTHStats;
+  swarmRTHStats: CollectiveRTHStats;
   transformationResult?: TransformationResult;
 };
 
@@ -220,7 +220,7 @@ const ConnectedCollectiveRTHDialog = connect(
     error: selectTransformationError(state),
     inProgress: selectTransformationInProgress(state),
     open: isDialogOpen(state),
-    swarmRTHStats: selectSwarmCollectiveRTHStats(state),
+    swarmRTHStats: selectCollectiveRTHStats(state),
     transformationResult: selectResult(state),
   }),
   // -- map dispatch to props

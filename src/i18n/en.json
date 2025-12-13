@@ -95,6 +95,10 @@
     "loading": "RTH plans are being calculated, please wait. It may take some time.",
     "parameters": {
       "form": {
+        "horizontalVelocity": {
+          "help": "during horizontal flight phases",
+          "label": "Horizontal velocity"
+        },
         "minDistance": {
           "help": "between drones during RTH",
           "label": "Minimum distance"
@@ -102,6 +106,10 @@
         "timeResolution": {
           "help": "between planned RTH times.",
           "label": "Time resolution"
+        },
+        "verticalVelocity": {
+          "help": "during vertical flight phases",
+          "label": "Vertical velocity"
         }
       },
       "section": {
