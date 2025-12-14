@@ -203,6 +203,7 @@
     "dotenv-webpack": "^8.1.1",
     "electron": "^39.2.4",
     "eslint": "^9.33.0",
+    "eslint-plugin-react": "^7.37.5",
     "git-revision-webpack-plugin": "^5.0.0",
     "html-webpack-plugin": "^5.6.3",
     "jest": "^30.2.0",

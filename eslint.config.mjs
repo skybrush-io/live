@@ -1,6 +1,5 @@
-// @ts-check
-
 import eslint from '@eslint/js';
+import react from 'eslint-plugin-react';
 import { defineConfig, globalIgnores } from 'eslint/config';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
@@ -9,7 +8,18 @@ export default defineConfig(
   eslint.configs.recommended,
   tseslint.configs.strict,
   tseslint.configs.stylistic,
+  react.configs.flat.recommended,
+  react.configs.flat['jsx-runtime'],
   globalIgnores(['build']),
+
+  {
+    // Allow eslint-plugin-react to detect the React version automatically
+    settings: {
+      react: {
+        version: 'detect',
+      },
+    },
+  },
 
   {
     files: [
