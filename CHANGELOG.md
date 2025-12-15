@@ -11,6 +11,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added a new dialog for planning collective RTH trajectories.
 
+## [2.12.1] - 2025-12-15
+
+### Fixed
+
+- Fixed a bug where drones in the INFO (blue) state were not counted correctly
+  in the status summary widget in the header.
+
+- Fixed the incorrect version number of the application in the sidebar.
+
 ## [2.12.0] - 2025-12-11
 
 ### Added
