@@ -1,11 +1,11 @@
 import Box from '@mui/material/Box';
 import FormGroup from '@mui/material/FormGroup';
-import type { Theme } from '@mui/material/styles';
 import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { ExpandMore } from '@mui/icons-material';
+import { Accordion, AccordionDetails, AccordionSummary } from '@mui/material';
 import { makeStyles } from '@skybrush/app-theme-mui';
-import { FormHeader } from '@skybrush/mui-components';
 
 import {
   SimpleDistanceField,
@@ -20,8 +20,6 @@ import type {
 import LightConfigurationForm, {
   type LightConfigurationProps,
 } from './LightConfigurationForm';
-import { Accordion, AccordionDetails, AccordionSummary } from '@mui/material';
-import { ExpandMore } from '@mui/icons-material';
 
 const defaultAdaptParameters: ShowAdaptParameters = {
   minDistance: 2,
