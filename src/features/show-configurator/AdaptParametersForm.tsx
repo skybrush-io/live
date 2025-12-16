@@ -1,11 +1,13 @@
+import ExpandMore from '@mui/icons-material/ExpandMore';
+import Accordion from '@mui/material/Accordion';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import AccordionSummary from '@mui/material/AccordionSummary';
 import Box from '@mui/material/Box';
 import FormGroup from '@mui/material/FormGroup';
-import type { Theme } from '@mui/material/styles';
-import React, { useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { makeStyles } from '@skybrush/app-theme-mui';
-import { FormHeader } from '@skybrush/mui-components';
 
 import {
   SimpleDistanceField,
@@ -20,8 +22,6 @@ import type {
 import LightConfigurationForm, {
   type LightConfigurationProps,
 } from './LightConfigurationForm';
-import { Accordion, AccordionDetails, AccordionSummary } from '@mui/material';
-import { ExpandMore } from '@mui/icons-material';
 
 const defaultAdaptParameters: ShowAdaptParameters = {
   minDistance: 2,
@@ -78,7 +78,6 @@ function parseVelocityMpS(value: string): number {
   return Number.parseFloat(value);
 }
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export function useAdaptParametersFormState(
   defaultParameters?: OptionalShowAdaptParameters,
   onChange?: () => void

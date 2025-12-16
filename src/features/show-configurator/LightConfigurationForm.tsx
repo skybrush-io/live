@@ -5,7 +5,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import Slider from '@mui/material/Slider';
 import Typography from '@mui/material/Typography';
-import React, { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 
@@ -25,13 +25,13 @@ const lightEffectTypes: LightEffectType[] = [
 type DefaultConfigurationFormProps = {
   brightness: number;
   disabled?: boolean;
-  onChange: (event: Event, value: number) => void;
+  onChanged: (event: Event, value: number) => void;
 };
 
 const DefaultConfigurationForm = ({
   brightness,
   disabled,
-  onChange,
+  onChanged,
 }: DefaultConfigurationFormProps) => {
   const { t } = useTranslation(undefined, {
     keyPrefix: 'showConfiguratorDialog.lights',
@@ -47,7 +47,7 @@ const DefaultConfigurationForm = ({
         step={0.05}
         value={brightness}
         valueLabelDisplay='auto'
-        onChange={onChange}
+        onChange={onChanged}
       />
     </>
   );
@@ -56,13 +56,13 @@ const DefaultConfigurationForm = ({
 type SolidConfigurationFormProps = {
   color: string;
   disabled?: boolean;
-  onChange: (color: string) => void;
+  onColorChanged: (color: string) => void;
 };
 
 const SolidConfigurationForm = ({
   color,
   disabled,
-  onChange,
+  onColorChanged,
 }: SolidConfigurationFormProps) => {
   const { t } = useTranslation(undefined, {
     keyPrefix: 'showConfiguratorDialog.lights',
@@ -74,39 +74,56 @@ const SolidConfigurationForm = ({
   return (
     <>
       <FormHelperText>{t('solid.color')}</FormHelperText>
-      <HexColorPicker color={color} {...extraProps} onChange={onChange} />
+      <HexColorPicker color={color} {...extraProps} onChange={onColorChanged} />
       <HexColorInput
         color={color}
         disabled={disabled}
         style={{ alignSelf: 'center' }}
-        onChange={onChange}
+        onChange={onColorChanged}
       />
     </>
   );
 };
 
 type SparksConfigurationFormProps = {
+  color: string;
   disabled?: boolean;
   offDuration: number;
-  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onColorChanged: (color: string) => void;
+  onDurationChanged: (event: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
 const SparksConfigurationForm = ({
+  color,
   disabled,
   offDuration,
-  onChange,
+  onColorChanged,
+  onDurationChanged,
 }: SparksConfigurationFormProps) => {
   const { t } = useTranslation(undefined, {
     keyPrefix: 'showConfiguratorDialog.lights',
   });
+  // TODO: update when upgrading to React 19 which recognizes the
+  // inert as a boolean attribute. Hopefully TS also won't complain
+  // if we set the attribute directly on the picker...
+  const extraProps = disabled ? { inert: '' } : {};
   return (
-    <SimpleDurationField
-      disabled={disabled}
-      label={t('sparks.offDuration')}
-      min={0}
-      value={offDuration}
-      onChange={onChange}
-    />
+    <>
+      <SimpleDurationField
+        disabled={disabled}
+        label={t('sparks.offDuration')}
+        min={0}
+        value={offDuration}
+        onChange={onDurationChanged}
+      />
+      <HexColorPicker color={color} {...extraProps} onChange={onColorChanged} />
+      <HexColorInput
+        color={color}
+        disabled={disabled}
+        style={{ alignSelf: 'center' }}
+        onChange={onColorChanged}
+      />
+    </>
   );
 };
 
@@ -114,7 +131,7 @@ export const useLightConfigurationFormState = (onChange?: () => void) => {
   const [lightEffectType, setLightEffectType] =
     useState<LightEffectType>('default');
   const [defaultConfigBrightness, setDefaultConfigBrightness] = useState(0.05);
-  const [solidConfigColor, setSolidConfigColor] = useState('FFF');
+  const [color, setColor] = useState('FFF');
   const [sparksConfigOffDuration, setSparksConfigOffDuration] = useState(3);
 
   const onLightEffectTypeChanged = useCallback(
@@ -133,9 +150,9 @@ export const useLightConfigurationFormState = (onChange?: () => void) => {
     },
     [onChange]
   );
-  const onSolidConfigColorChanged = useCallback(
+  const onColorChanged = useCallback(
     (color: string) => {
-      setSolidConfigColor(color);
+      setColor(color);
       onChange?.();
     },
     [onChange]
@@ -158,10 +175,10 @@ export const useLightConfigurationFormState = (onChange?: () => void) => {
         return { type: 'default', brightness: defaultConfigBrightness };
 
       case 'solid':
-        return { type: 'solid', color: solidConfigColor };
+        return { type: 'solid', color };
 
       case 'sparks':
-        return { type: 'sparks', off_duration: sparksConfigOffDuration };
+        return { type: 'sparks', color, off_duration: sparksConfigOffDuration };
 
       default:
         return { type: 'off' };
@@ -169,7 +186,7 @@ export const useLightConfigurationFormState = (onChange?: () => void) => {
   }, [
     lightEffectType,
     defaultConfigBrightness,
-    solidConfigColor,
+    color,
     sparksConfigOffDuration,
   ]);
 
@@ -179,8 +196,8 @@ export const useLightConfigurationFormState = (onChange?: () => void) => {
     onLightEffectTypeChanged,
     defaultConfigBrightness,
     onDefaultConfigBrightnessChanged,
-    solidConfigColor,
-    onSolidConfigColorChanged,
+    color,
+    onColorChanged,
     sparksConfigOffDuration,
     onSparksConfigOffDurationChanged,
   };
@@ -224,21 +241,23 @@ const LightConfigurationForm = (props: LightConfigurationProps) => {
         <DefaultConfigurationForm
           brightness={props.defaultConfigBrightness}
           disabled={disabled}
-          onChange={props.onDefaultConfigBrightnessChanged}
+          onChanged={props.onDefaultConfigBrightnessChanged}
         />
       )}
       {lightEffectType === 'solid' && (
         <SolidConfigurationForm
-          color={props.solidConfigColor}
+          color={props.color}
           disabled={disabled}
-          onChange={props.onSolidConfigColorChanged}
+          onColorChanged={props.onColorChanged}
         />
       )}
       {lightEffectType === 'sparks' && (
         <SparksConfigurationForm
+          color={props.color}
           disabled={disabled}
           offDuration={props.sparksConfigOffDuration}
-          onChange={props.onSparksConfigOffDurationChanged}
+          onColorChanged={props.onColorChanged}
+          onDurationChanged={props.onSparksConfigOffDurationChanged}
         />
       )}
     </>
