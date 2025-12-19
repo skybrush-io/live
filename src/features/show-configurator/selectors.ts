@@ -12,7 +12,7 @@ import {
 import {
   makeSelectors as makeTrajectorySelectors,
   positionsToWorldCoordinatesCombiner,
-} from '~/features/show/trajectory-selectors';
+} from '~/features/show/selectors/trajectory';
 import { isOutdoorCoordinateSystemWithOrigin } from '~/features/show/types';
 import { getAllValidUAVPositions } from '~/features/uavs/selectors';
 import { type GPSPosition } from '~/model/geography';
