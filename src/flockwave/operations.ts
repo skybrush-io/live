@@ -226,6 +226,27 @@ export async function startRTKSurvey(
 }
 
 /**
+ * Sets the RTK antenna position on the server by submitting explicit
+ * survey settings that contain a fixed position instead of starting a survey.
+ */
+export async function setRTKAntennaPosition(
+  hub: MessageHub,
+  { position, accuracy }: { position: [number, number, number]; accuracy: number }
+) {
+  const response = await hub.sendMessage({
+    type: 'X-RTK-SURVEY',
+    settings: {
+      position,
+      accuracy,
+    },
+  });
+
+  if (response.body.type !== 'ACK-ACK') {
+    throw new Error('Failed to set RTK antenna position on the server');
+  }
+}
+
+/**
  * Asks the server to upload a drone show specification to a given UAV.
  */
 export async function uploadDroneShow(
@@ -371,6 +392,7 @@ const _operations = {
   setParameter,
   setParameters,
   setRTKCorrectionsSource,
+  setRTKAntennaPosition,
   setShowConfiguration,
   setShowLightConfiguration,
   startRTKSurvey,

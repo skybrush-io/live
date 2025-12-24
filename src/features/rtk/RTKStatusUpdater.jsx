@@ -3,10 +3,12 @@ import isNil from 'lodash-es/isNil';
 import mapValues from 'lodash-es/mapValues';
 import PropTypes from 'prop-types';
 import { useEffect } from 'react';
-import { connect } from 'react-redux';
+import { connect, useDispatch, useSelector } from 'react-redux';
 
 import handleError from '~/error-handling';
 import { updateRTKStatistics } from '~/features/rtk/slice';
+import { saveCurrentCoordinateForPreset } from '~/features/rtk/actions';
+import { hasValidFix, shouldSaveCoordinate } from '~/features/rtk/utils';
 import useMessageHub from '~/hooks/useMessageHub';
 
 /**
@@ -15,11 +17,29 @@ import useMessageHub from '~/hooks/useMessageHub';
  */
 const RTKStatusUpdater = ({ onStatusChanged, period = 1000 }) => {
   const messageHub = useMessageHub();
+  const dispatch = useDispatch();
+  const savedCoordinates = useSelector((state) => state.rtk.savedCoordinates);
 
   useEffect(() => {
     const valueHolder = {
       finished: false,
       promise: null,
+    };
+
+    const checkAndAutosave = async (status) => {
+      // Autosave base station coordinate on first valid fix per preset
+      if (!hasValidFix(status)) {
+        return;
+      }
+
+      const selectedPresetId = await messageHub.query.getSelectedRTKPresetId();
+
+      if (
+        selectedPresetId &&
+        shouldSaveCoordinate(status, savedCoordinates, selectedPresetId)
+      ) {
+        dispatch(saveCurrentCoordinateForPreset(selectedPresetId));
+      }
     };
 
     const updateStatus = async () => {
@@ -28,6 +48,9 @@ const RTKStatusUpdater = ({ onStatusChanged, period = 1000 }) => {
           // eslint-disable-next-line no-await-in-loop
           const status = await messageHub.query.getRTKStatus();
           onStatusChanged(status);
+
+          // eslint-disable-next-line no-await-in-loop
+          await checkAndAutosave(status);
         } catch (error) {
           handleError(error, 'RTK status query');
         }
@@ -43,7 +66,7 @@ const RTKStatusUpdater = ({ onStatusChanged, period = 1000 }) => {
       valueHolder.finished = true;
       valueHolder.promise = null;
     };
-  }, [messageHub, onStatusChanged, period]);
+  }, [messageHub, onStatusChanged, period, dispatch, savedCoordinates]);
 
   return null;
 };
