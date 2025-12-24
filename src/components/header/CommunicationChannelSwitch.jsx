@@ -1,7 +1,6 @@
 import LooksTwo from '@mui/icons-material/LooksTwo';
 import { useTheme } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { connect } from 'react-redux';
 
 import { GenericHeaderButton, SidebarBadge } from '@skybrush/mui-components';

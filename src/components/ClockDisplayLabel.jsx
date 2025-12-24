@@ -6,8 +6,8 @@ import { useHarmonicIntervalFn, useUpdate } from 'react-use';
 import { getClockById } from '~/features/clocks/selectors';
 import {
   formatTicksOnClock,
-  getTickCountOnClockAt,
   getPreferredUpdateIntervalOfClock,
+  getTickCountOnClockAt,
   isClockAffectedByClockSkew,
   isClockSigned,
 } from '~/features/clocks/utils';

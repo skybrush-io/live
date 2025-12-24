@@ -25,8 +25,8 @@ async function findGreedyEuclideanAssignment(
 }
 
 async function findGreedyGeodeticAssignment(
-  sources: Array<LonLat>,
-  targets: Array<LonLat>,
+  sources: LonLat[],
+  targets: LonLat[],
   options: GreedyMatchingOptions
 ): Promise<Assignment> {
   return findAssignmentBetweenPoints(sources, targets, {
@@ -48,8 +48,8 @@ export default async function findGreedyAssignment(
       return findGreedyEuclideanAssignment(sources, targets, options);
     case 'geodetic':
       return findGreedyGeodeticAssignment(
-        sources as Array<LonLat>,
-        targets as Array<LonLat>,
+        sources as LonLat[],
+        targets as LonLat[],
         options
       );
     default:

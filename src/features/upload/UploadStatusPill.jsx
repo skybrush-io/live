@@ -2,7 +2,6 @@ import Box from '@mui/material/Box';
 import clsx from 'clsx';
 import isNil from 'lodash-es/isNil';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { connect } from 'react-redux';
 
 import { makeStyles } from '@skybrush/app-theme-mui';

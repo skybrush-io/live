@@ -1,4 +1,4 @@
-import * as copy from 'copy-to-clipboard';
+import copy from 'copy-to-clipboard';
 
 /**
  * Copies the currently displayed coordinates from the "mouse position" box

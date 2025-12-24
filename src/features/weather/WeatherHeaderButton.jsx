@@ -1,7 +1,6 @@
 import differenceInMinutes from 'date-fns/differenceInMinutes';
 import format from 'date-fns/format';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { connect } from 'react-redux';
 import TimeAgo from 'react-timeago';
 import { useToggle } from 'react-use';

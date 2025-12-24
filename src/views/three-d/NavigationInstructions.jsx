@@ -2,7 +2,6 @@ import Mouse from '@mui/icons-material/Mouse';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { Translation, withTranslation } from 'react-i18next';
 import { TransitionGroup } from 'react-transition-group';
 

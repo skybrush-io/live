@@ -15,7 +15,6 @@ import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import ListItemText from '@mui/material/ListItemText';
 import { green, grey, red, yellow } from '@mui/material/colors';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { connect } from 'react-redux';
 import TimeAgo from 'react-timeago';
 

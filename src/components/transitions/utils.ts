@@ -3,7 +3,7 @@
 // https://github.com/mui/material-ui/blob/master/packages/mui-material/src/transitions/utils.ts
 // Do not reexport it from the package. Ideally we should remove this file.
 
-import * as React from 'react';
+import type * as React from 'react';
 
 export const reflow = (node: Element) => node.scrollTop;
 

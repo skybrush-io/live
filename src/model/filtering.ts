@@ -1,14 +1,14 @@
-import * as memoize from 'memoizee';
+import memoize from 'memoizee';
 
 import { type StoredUAV } from '~/features/uavs/types';
 import { type PreparedI18nKey, tt } from '~/i18n';
 
+import UAVErrorCode from '~/flockwave/UAVErrorCode';
 import {
   isErrorCodeOrMoreSevere,
   isWarningCodeOrMoreSevere,
 } from './status-codes';
 import { UAVAge } from './uav';
-import UAVErrorCode from '~/flockwave/UAVErrorCode';
 
 /**
  * Enum that describes the possible filtering presets for a list that shows UAVs.

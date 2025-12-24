@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box';
 import type { Theme } from '@mui/material/styles';
-import React from 'react';
+import type React from 'react';
 
 import { makeStyles } from '@skybrush/app-theme-mui';
 

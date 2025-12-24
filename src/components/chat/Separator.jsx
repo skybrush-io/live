@@ -3,7 +3,6 @@
  */
 
 import PropTypes from 'prop-types';
-import React from 'react';
 
 import { makeStyles } from '@skybrush/app-theme-mui';
 

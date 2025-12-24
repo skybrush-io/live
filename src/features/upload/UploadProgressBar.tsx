@@ -1,5 +1,5 @@
 import LinearProgress from '@mui/material/LinearProgress';
-import React from 'react';
+import type React from 'react';
 import { useSelector } from 'react-redux';
 import { useThrottle } from 'react-use';
 

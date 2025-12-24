@@ -37,9 +37,9 @@ function bruteForceNearestNeighbors(
   let result: [Coordinate2D, Coordinate2D] | undefined = undefined;
 
   for (let i = 0; i < numPoints; i++) {
-    const pi = points[i]!;
+    const pi = points[i];
     for (let j = i + 1; j < numPoints; j++) {
-      const pj = points[j]!;
+      const pj = points[j];
       const current = squaredEuclideanDistance2D(pi, pj);
       if (current < minSqDist) {
         minSqDist = current;
@@ -139,9 +139,9 @@ function findClosestPairInStrip(
 
   // Check points within the strip for closer pairs.
   for (let i = 0; i < stripPoints.length; i++) {
-    const pi = stripPoints[i]!;
+    const pi = stripPoints[i];
     for (let j = i + 1; j < stripPoints.length; j++) {
-      const pj = stripPoints[j]!;
+      const pj = stripPoints[j];
       if (pj[axes.secondary] - pi[axes.secondary] > dist) {
         continue;
       }
@@ -177,7 +177,7 @@ function divideAndConquer(
   }
 
   const midIndex = Math.floor(numPoints / 2);
-  const midpointPrincipal = points[midIndex]![axes.principal]!;
+  const midpointPrincipal = points[midIndex]![axes.principal];
 
   // Divide the points into two halves
   const leftHalf = points.slice(0, midIndex);

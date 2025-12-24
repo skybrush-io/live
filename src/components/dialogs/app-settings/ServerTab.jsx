@@ -11,7 +11,6 @@ import TextField from '@mui/material/TextField';
 import remove from 'lodash-es/remove';
 import trim from 'lodash-es/trim';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { connect } from 'react-redux';
 
 import { Tooltip } from '@skybrush/mui-components';

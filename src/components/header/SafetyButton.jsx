@@ -1,6 +1,5 @@
 import Security from '@mui/icons-material/Security';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { Translation } from 'react-i18next';
 import { connect } from 'react-redux';
 

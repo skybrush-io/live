@@ -1,7 +1,6 @@
 import Box from '@mui/material/Box';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
-import React from 'react';
 
 import { makeStyles } from '@skybrush/app-theme-mui';
 

@@ -1,6 +1,5 @@
 import Box from '@mui/material/Box';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { HexColorInput, HexColorPicker } from 'react-colorful';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';

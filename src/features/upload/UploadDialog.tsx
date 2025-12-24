@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box';
 import Switch from '@mui/material/Switch';
 import isNil from 'lodash-es/isNil';
-import React from 'react';
+import type React from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 

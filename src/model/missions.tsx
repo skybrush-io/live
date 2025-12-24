@@ -12,7 +12,6 @@ import UpdateSafetyIcon from '@mui/icons-material/Security';
 import SetParameterIcon from '@mui/icons-material/Settings';
 import ChangeSpeedIcon from '@mui/icons-material/Speed';
 import isObject from 'lodash-es/isObject';
-import * as React from 'react';
 import UpdateGeofenceIcon from '~/icons/PlacesFence';
 
 import {
