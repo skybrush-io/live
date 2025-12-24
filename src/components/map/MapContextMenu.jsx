@@ -22,7 +22,7 @@ import Divider from '@mui/material/Divider';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import MenuItem from '@mui/material/MenuItem';
 import PropTypes from 'prop-types';
-import React from 'react';
+import type React from 'react';
 import { Translation } from 'react-i18next';
 
 import ContextMenu from '~/components/ContextMenu';
