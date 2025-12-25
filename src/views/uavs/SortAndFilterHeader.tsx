@@ -510,8 +510,7 @@ const SortAndFilterHeader = ({
     <div className={clsx(classes.root, floating && classes.floating)}>
       <div className={classes.widgets}>
         <Chip
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          ref={sortChipRef as any}
+          ref={sortChipRef}
           className={isSortActive ? classes.chipActive : classes.chip}
           variant='outlined'
           label={shortLabelsForUAVSortKey[sortBy.key](t)}
