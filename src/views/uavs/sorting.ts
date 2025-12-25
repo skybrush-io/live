@@ -13,8 +13,8 @@ import {
   type Comparable,
   type UAVSortKey,
 } from '~/model/sorting';
-import type { Item, UAVGroup, UAVIdAndMissionIndexPair } from './types';
 import type { Nullable } from '~/utils/types';
+import type { Item, UAVGroup, UAVIdAndMissionIndexPair } from './types';
 
 // Helper functions related to sorting and filtering the UAVs list
 
@@ -34,8 +34,7 @@ const getFilterFunctionForFilterIdentifier = memoize((filterId: UAVFilter) => {
     ? (uavsByIds: Record<string, StoredUAV>) =>
         (uavIdAndMissionId: UAVIdAndMissionIndexPair | Item): boolean =>
           filter(uavsByIds[uavIdAndMissionId[0]!])
-    : // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-      () => alwaysTrue;
+    : () => alwaysTrue;
 });
 
 /**
@@ -50,8 +49,7 @@ const getSortFunctionForKey = memoize((key: UAVSortKey) => {
     ? (uavsByIds: Record<string, StoredUAV>) =>
         (uavIdAndMissionId: UAVIdAndMissionIndexPair | Item): Comparable =>
           getter(uavsByIds[uavIdAndMissionId[0]!])
-    : // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-      () => identity;
+    : () => identity;
 });
 
 function applyFiltersToItems(

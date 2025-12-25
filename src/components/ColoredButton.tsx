@@ -1,8 +1,8 @@
 import ButtonBase from '@mui/material/ButtonBase';
 import clsx from 'clsx';
 import createColor from 'color';
-import PropTypes from 'prop-types';
-import React, { useMemo } from 'react';
+import type React from 'react';
+import { useMemo } from 'react';
 
 import { makeStyles } from '@skybrush/app-theme-mui';
 

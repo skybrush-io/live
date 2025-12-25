@@ -158,6 +158,7 @@ const MappingEditorToolbar = React.forwardRef<
     );
   }
 );
+MappingEditorToolbar.displayName = 'MappingEditorToolbar';
 
 export default connect(
   // mapStateToProps

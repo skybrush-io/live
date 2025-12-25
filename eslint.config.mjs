@@ -31,6 +31,10 @@ export default defineConfig(
   },
 
   {
+    ignores: ['**/*.js'],
+  },
+
+  {
     files: [
       'src/desktop/launcher/*.{js,mjs}',
       'src/desktop/preload/*.{js,mjs}',
@@ -93,7 +97,11 @@ export default defineConfig(
       // influences the inferred type).
       '@typescript-eslint/no-unused-vars': [
         'error',
-        { ignoreRestSiblings: true, argsIgnorePattern: '^_' },
+        {
+          ignoreRestSiblings: true,
+          argsIgnorePattern: '^_',
+          destructuredArrayIgnorePattern: '^_',
+        },
       ],
 
       // Allow 'never' in template expressions. This is because we often use template

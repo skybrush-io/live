@@ -44,7 +44,7 @@ export const getFileFromUser = async (
 ): Promise<File> => {
   const files = await getFilesFromUser(options);
   if (files.length === 1) {
-    return files[0]!;
+    return files[0];
   } else {
     throw new Error('Exactly one file should be selected');
   }

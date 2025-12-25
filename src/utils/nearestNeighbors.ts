@@ -177,7 +177,7 @@ function divideAndConquer(
   }
 
   const midIndex = Math.floor(numPoints / 2);
-  const midpointPrincipal = points[midIndex]![axes.principal];
+  const midpointPrincipal = points[midIndex][axes.principal];
 
   // Divide the points into two halves
   const leftHalf = points.slice(0, midIndex);

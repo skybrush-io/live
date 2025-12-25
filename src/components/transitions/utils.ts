@@ -3,25 +3,25 @@
 // https://github.com/mui/material-ui/blob/master/packages/mui-material/src/transitions/utils.ts
 // Do not reexport it from the package. Ideally we should remove this file.
 
-import type * as React from 'react';
+import type React from 'react';
 
 export const reflow = (node: Element) => node.scrollTop;
 
-interface ComponentProps {
+type ComponentProps = {
   easing: string | { enter?: string; exit?: string } | undefined;
   style: React.CSSProperties | undefined;
   timeout: number | { enter?: number; exit?: number };
-}
+};
 
-interface Options {
+type Options = {
   mode: 'enter' | 'exit';
-}
+};
 
-interface TransitionProps {
+type TransitionProps = {
   duration: string | number;
   easing: string | undefined;
   delay: string | undefined;
-}
+};
 
 export function getTransitionProps(
   props: ComponentProps,

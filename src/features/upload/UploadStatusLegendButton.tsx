@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import ButtonBase, { type ButtonBaseProps } from '@mui/material/ButtonBase';
 import type { Theme } from '@mui/material/styles';
 import clsx from 'clsx';

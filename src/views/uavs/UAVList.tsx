@@ -452,7 +452,6 @@ const UAVList = connect(
   () => {
     const containerDOMNodeId = `__keyboardNav-${nanoid()}`;
 
-    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
     return (dispatch) => ({
       containerDOMNodeId,
       dispatch,

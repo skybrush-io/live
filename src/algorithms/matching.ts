@@ -45,7 +45,7 @@ type MatchingOptions =
  *          the row and column indices of the matrix cells that were chosen
  */
 export function findAssignmentInDistanceMatrix(
-  matrix: Array<number[]>,
+  matrix: number[][],
   options?: MatchingOptions
 ): Assignment {
   const { algorithm, ...parameters } = options ?? { algorithm: 'greedy' };
@@ -57,7 +57,7 @@ export function findAssignmentInDistanceMatrix(
       return greedyMatchingAlgorithm(matrix, parameters);
 
     default:
-      throw new Error('unknown assignment algorithm: ' + algorithm);
+      throw new Error(`unknown assignment algorithm: ${algorithm}`);
   }
 }
 
@@ -67,7 +67,7 @@ export function findAssignmentInDistanceMatrix(
  * until all entries are selected.
  */
 function greedyMatchingAlgorithm(
-  matrix: Array<number[]>,
+  matrix: number[][],
   parameters: GreedyMatchingOptions = {}
 ): Assignment {
   const numberOfRows = matrix.length;

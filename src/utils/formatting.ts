@@ -258,9 +258,9 @@ export const formatItemInterval = <TItem>(
   if (items.length === 0) {
     return '—';
   } else if (items.length === 1) {
-    return formatter(items[0]!);
+    return formatter(items[0]);
   } else {
-    return `${formatter(items[0]!)}-${formatter(items.at(-1)!)}`;
+    return `${formatter(items[0])}-${formatter(items.at(-1)!)}`;
   }
 };
 

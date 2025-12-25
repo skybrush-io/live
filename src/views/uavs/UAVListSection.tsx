@@ -17,7 +17,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     flexDirection: 'row',
     flexWrap: 'wrap',
 
-    // eslint-disable-next-line @typescript-eslint/naming-convention
     '&>div': {
       padding: theme.spacing(1),
     },
