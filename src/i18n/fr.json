@@ -137,6 +137,8 @@
     },
     "commands": {
       "land": "Terre",
+      "loiter": "Loiter",
+      "manual": "Manuel",
       "positionHold": "Maintenir position",
       "powerOff": "Eteindre",
       "powerOn": "Allumer",

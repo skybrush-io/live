@@ -15,8 +15,10 @@ import FlightTakeoff from '@material-ui/icons/FlightTakeoff';
 import Assignment from '@material-ui/icons/Assignment';
 import FlightLand from '@material-ui/icons/FlightLand';
 import Home from '@material-ui/icons/Home';
+import Pause from '@material-ui/icons/Pause';
 import PositionHold from '@material-ui/icons/Flag';
 import Moon from '@material-ui/icons/NightsStay';
+import Manual from '@material-ui/icons/VideogameAsset';
 import PowerSettingsNew from '@material-ui/icons/PowerSettingsNew';
 import PlayArrow from '@material-ui/icons/PlayArrow';
 import Refresh from '@material-ui/icons/Refresh';
@@ -61,6 +63,8 @@ const UAVOperationsButtonGroup = ({
     flashLight,
     holdPosition,
     land,
+    manual,
+    loiter,
     reset,
     returnToHome,
     shutdown,
@@ -142,13 +146,13 @@ const UAVOperationsButtonGroup = ({
         <ToolbarDivider orientation='vertical' />
       )}
 
-      <Tooltip content={t('general.commands.takeoff')}>
+      <Tooltip content={t('general.commands.manual')}>
         <IconButton
           disabled={isSelectionEmpty}
           size={iconSize}
-          onClick={takeOff}
+          onClick={manual}
         >
-          <FlightTakeoff fontSize={fontSize} />
+          <Manual fontSize={fontSize} />
         </IconButton>
       </Tooltip>
 
@@ -158,6 +162,12 @@ const UAVOperationsButtonGroup = ({
           size={iconSize}
           onClick={holdPosition}
         >
+          <Pause fontSize={fontSize} />
+        </IconButton>
+      </Tooltip>
+
+      <Tooltip content={t('general.commands.loiter')}>
+        <IconButton disabled={isSelectionEmpty} size={iconSize} onClick={loiter}>
           <PositionHold fontSize={fontSize} />
         </IconButton>
       </Tooltip>
@@ -169,12 +179,6 @@ const UAVOperationsButtonGroup = ({
           onClick={returnToHome}
         >
           <Home fontSize={fontSize} />
-        </IconButton>
-      </Tooltip>
-
-      <Tooltip content={t('general.commands.land')}>
-        <IconButton disabled={isSelectionEmpty} size={iconSize} onClick={land}>
-          <FlightLand fontSize={fontSize} />
         </IconButton>
       </Tooltip>
 

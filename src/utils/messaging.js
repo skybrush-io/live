@@ -169,6 +169,16 @@ export const landUAVs = performMassOperation({
   name: 'Landing command',
 });
 
+export const loiterUAVs = performMassOperation({
+  type: 'UAV-LOITER',
+  name: 'Loiter command',
+});
+
+export const manualUAVs = performMassOperation({
+  type: 'UAV-MANUAL',
+  name: 'Manual command',
+});
+
 export const positionHoldUAVs = performMassOperation({
   type: 'UAV-HOVER',
   name: 'Position hold command',
@@ -265,6 +275,8 @@ const OPERATION_MAP = {
   flashLight: flashLightOnUAVs,
   shutdown: shutdownUAVs,
   land: landUAVs,
+  loiter:loiterUAVs,
+  manual: manualUAVs,
   holdPosition: positionHoldUAVs,
   reset: resetUAVs,
   returnToHome: returnToHomeUAVs,
