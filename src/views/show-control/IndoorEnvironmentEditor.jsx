@@ -1,14 +1,13 @@
+import Box from '@mui/material/Box';
+import Checkbox from '@mui/material/Checkbox';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormGroup from '@mui/material/FormGroup';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import Box from '@material-ui/core/Box';
-import Checkbox from '@material-ui/core/Checkbox';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormGroup from '@material-ui/core/FormGroup';
-
-import FormHeader from '@skybrush/mui-components/lib/FormHeader';
+import { FormHeader } from '@skybrush/mui-components';
 
 import XYZFields from '~/components/XYZFields';
 import {
@@ -36,9 +35,9 @@ const IndoorEnvironmentEditor = ({
       {t('indoorEnvironmentEditor.coordinatesOfTheCorners')}
     </FormHeader>
     <XYZFields value={firstCorner} onChange={onFirstCornerChanged} />
-    <Box p={1} />
+    <Box sx={{ p: 1 }} />
     <XYZFields value={secondCorner} onChange={onSecondCornerChanged} />
-    <Box p={1} />
+    <Box sx={{ p: 1 }} />
     <FormControlLabel
       label={t('indoorEnvironmentEditor.roomVisibleIn3D')}
       control={

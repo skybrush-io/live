@@ -44,7 +44,7 @@ export const getFileFromUser = async (
 ): Promise<File> => {
   const files = await getFilesFromUser(options);
   if (files.length === 1) {
-    return files[0]!;
+    return files[0];
   } else {
     throw new Error('Exactly one file should be selected');
   }
@@ -59,7 +59,6 @@ export const getFileFromUser = async (
  */
 const makeFileReaderForOutputType =
   (outputType: 'ArrayBuffer' | 'BinaryString' | 'DataURL' | 'Text') =>
-  // eslint-disable-next-line @typescript-eslint/ban-types
   async (file: File): Promise<string | ArrayBuffer | null> =>
     new Promise((resolve) => {
       const fileReader = new FileReader();

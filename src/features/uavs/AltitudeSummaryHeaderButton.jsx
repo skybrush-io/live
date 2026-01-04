@@ -1,12 +1,11 @@
+import Terrain from '@mui/icons-material/Terrain';
 import isNil from 'lodash-es/isNil';
 import PropTypes from 'prop-types';
 import React, { useMemo } from 'react';
 import { Translation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import Terrain from '@material-ui/icons/Terrain';
-
-import GenericHeaderButton from '@skybrush/mui-components/lib/GenericHeaderButton';
+import { GenericHeaderButton } from '@skybrush/mui-components';
 
 import { isConnected } from '~/features/servers/selectors';
 import { getAltitudeSummaryType } from '~/features/settings/selectors';
@@ -17,7 +16,7 @@ import {
   describeAltitudeSummaryType,
 } from '~/model/settings';
 
-import { getActiveUAVIds, getUAVById } from './selectors';
+import { getActiveAndAwakeUAVIds, getUAVById } from './selectors';
 
 // `makeStyles` from @material-ui cannot be used, as `GenericHeaderButton`
 // doesn't merge its own classes with the provided `className` from outside.
@@ -51,7 +50,6 @@ export const typeIndicatorStyle = {
  * (AMSL, AHL, AGL or local)
  */
 const altitudeGetters = {
-  /* eslint-disable object-shorthand */
   [AltitudeSummaryType.AMSL]: (uav) => uav?.position?.amsl,
   [AltitudeSummaryType.AHL]: (uav) => uav?.position?.ahl,
   [AltitudeSummaryType.AGL]: (uav) => uav?.position?.agl,
@@ -61,7 +59,6 @@ const altitudeGetters = {
     return Array.isArray(pos) ? pos[2] : null;
   },
   dummy: () => null,
-  /* eslint-enable object-shorthand */
 };
 
 const findAltitudeBounds = (type) => (state) => {
@@ -70,7 +67,8 @@ const findAltitudeBounds = (type) => (state) => {
   let minAltitude = Number.POSITIVE_INFINITY;
   let maxAltitude = Number.NEGATIVE_INFINITY;
 
-  for (const uavId of getActiveUAVIds(state)) {
+  // Exclude sleeping UAVs because they most likely do not report current velocity.
+  for (const uavId of getActiveAndAwakeUAVIds(state)) {
     const uav = getUAVById(state, uavId);
     const altitude = getter(uav);
 

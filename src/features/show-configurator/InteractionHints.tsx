@@ -1,17 +1,16 @@
+import Edit from '@mui/icons-material/Edit';
+import Mouse from '@mui/icons-material/Mouse';
+import SelectAll from '@mui/icons-material/SelectAll';
+import Box from '@mui/material/Box';
+import Fade from '@mui/material/Fade';
+import type { Theme } from '@mui/material/styles';
+import Tab from '@mui/material/Tab';
+import Tabs from '@mui/material/Tabs';
+import Typography from '@mui/material/Typography';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import Box from '@material-ui/core/Box';
-import Fade from '@material-ui/core/Fade';
-import Tab from '@material-ui/core/Tab';
-import Tabs from '@material-ui/core/Tabs';
-import Typography from '@material-ui/core/Typography';
-
-import { withStyles } from '@material-ui/core';
-
-import Edit from '@material-ui/icons/Edit';
-import Mouse from '@material-ui/icons/Mouse';
-import SelectAll from '@material-ui/icons/SelectAll';
+import { makeStyles } from '@skybrush/app-theme-mui';
 
 import { tt } from '~/i18n';
 
@@ -83,11 +82,11 @@ const CATEGORIES = [
 // HACK: Margin based alignment is just an overcomplicated hack,
 //       it should probably be replaced with something cleaner...
 
-const MiniTabs = withStyles((theme) => ({
+const useTabsStyles = makeStyles((theme: Theme) => ({
   root: {
     minHeight: 0,
     color: theme.palette.text.primary,
-    marginTop: -theme.spacing(0.25),
+    marginTop: `-${theme.spacing(0.25)}`,
     paddingBottom: theme.spacing(0.5),
   },
   flexContainer: {
@@ -96,36 +95,33 @@ const MiniTabs = withStyles((theme) => ({
   indicator: {
     height: 0,
     backgroundColor: 'transparent',
-    // eslint-disable-next-line @typescript-eslint/naming-convention
     '&::after': {
       content: '""',
       display: 'block',
-      marginTop: -theme.spacing(0.5),
-      marginLeft: theme.spacing(3),
+      marginTop: `-${theme.spacing(0.5)}`,
+      marginLeft: theme.spacing(2.5),
       borderBottom: `2px solid ${theme.palette.text.secondary}`,
     },
   },
-}))(Tabs);
+}));
 
-const MiniTab = withStyles({
+const useTabStyles = makeStyles({
   root: {
     minHeight: 0,
     padding: 0,
     opacity: 1,
-  },
-  wrapper: {
+    display: 'flex',
     flexDirection: 'row',
-    gap: 4,
   },
   selected: {
     background: 'gradient(linear, 0deg, #0000 0%, #f000 100%)',
   },
-})(Tab);
+});
 
 const InteractionHint = ({
   keys,
   action,
-}: Readonly<{ keys: string[]; action: string }>): JSX.Element => (
+}: Readonly<{ keys: string[]; action: string }>): React.JSX.Element => (
   <span>
     {keys.map((k) => (
       <kbd key={k}>{k}</kbd>
@@ -136,29 +132,31 @@ const InteractionHint = ({
   </span>
 );
 
-const InteractionHints = (): JSX.Element => {
+const InteractionHints = (): React.JSX.Element => {
   const { t } = useTranslation();
   const [active, setActive] = useState(0);
+  const tabStyles = useTabStyles();
+  const tabsStyles = useTabsStyles();
 
   return (
-    <Box height={50}>
-      <MiniTabs value={active} style={{ marginBottom: 2 }}>
-        {/* eslint-disable-next-line @typescript-eslint/naming-convention */}
+    <Box sx={{ height: '50px' }}>
+      <Tabs value={active} classes={tabsStyles} style={{ marginBottom: 2 }}>
         {CATEGORIES.map(({ icon: Icon, title }, i) => (
-          <MiniTab
+          <Tab
             key={title(t)}
             icon={<Icon fontSize='small' style={{ margin: 0 }} />}
             label={title(t)}
+            classes={tabStyles}
             onMouseOver={() => {
               setActive(i);
             }}
           />
         ))}
-      </MiniTabs>
+      </Tabs>
 
       {CATEGORIES.map((c, i) => (
         <Fade key={c.title(t)} in={active === i}>
-          <Box position='absolute' display='flex' style={{ gap: 16 }}>
+          <Box sx={{ position: 'absolute', display: 'flex', gap: 2 }}>
             {c.hints.map((h) => (
               <InteractionHint
                 key={h.keys.join('+')}

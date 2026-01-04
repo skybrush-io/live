@@ -1,11 +1,9 @@
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemText from '@mui/material/ListItemText';
+import Switch from '@mui/material/Switch';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
-
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import Switch from '@material-ui/core/Switch';
 
 import { toggleLightControlActive } from '~/features/light-control/actions';
 import { isLightControlActive } from '~/features/light-control/selectors';
@@ -16,8 +14,7 @@ import { isConnected } from '~/features/servers/selectors';
  * authorization has been given.
  */
 const LightControlMainSwitch = ({ active, connected, onToggle, t }) => (
-  <ListItem
-    button
+  <ListItemButton
     disabled={!connected}
     onClick={connected ? onToggle : undefined}
   >
@@ -38,7 +35,7 @@ const LightControlMainSwitch = ({ active, connected, onToggle, t }) => (
           : t('lightControl.connectToAServer')
       }
     />
-  </ListItem>
+  </ListItemButton>
 );
 
 LightControlMainSwitch.propTypes = {

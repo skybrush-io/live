@@ -2,10 +2,12 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
-import { colorForStatus, Status } from '@skybrush/app-theme-material-ui';
-import GenericHeaderButton from '@skybrush/mui-components/lib/GenericHeaderButton';
-import LazyTooltip from '@skybrush/mui-components/lib/LazyTooltip';
-import SidebarBadge from '@skybrush/mui-components/lib/SidebarBadge';
+import { colorForStatus, Status } from '@skybrush/app-theme-mui';
+import {
+  GenericHeaderButton,
+  LazyTooltip,
+  SidebarBadge,
+} from '@skybrush/mui-components';
 
 import { isConnected } from '~/features/servers/selectors';
 import Satellite from '~/icons/Satellite';

@@ -157,6 +157,7 @@
       "undo": "Undo"
     },
     "commands": {
+      "calibrateCompass": "Calibrate compass",
       "land": "Land",
       "loiter": "Loiter",
       "manual": "Manual",
@@ -181,6 +182,14 @@
       "inProgress": "in progress",
       "successful": "successful",
       "waiting": "waiting"
+    },
+    "time": {
+      "hours_one": "{{count}} hour",
+      "hours_other": "{{count}} hours",
+      "minutes_one": "{{count}} minute",
+      "minutes_other": "{{count}} minutes",
+      "seconds_one": "{{count}} second",
+      "seconds_other": "{{count}} seconds"
     }
   },
   "geofence": {
@@ -222,8 +231,8 @@
     "land": "Land",
     "landAll": "Land all",
     "selectionOnly": "Selection only",
-    "shutdown": "Shutdown",
-    "shutdownAll": "Shutdown all"
+    "shutdown": "Shut down",
+    "shutdownAll": "Shut down all"
   },
   "lightControl": {
     "connectToAServer": "Connect to a server to control lights",
@@ -271,6 +280,7 @@
   },
   "mappingEditorToolbar": {
     "assignSpares": "Assign spares",
+    "calculatingMapping": "Calculating mapping…",
     "clearMissing": "Clear missing",
     "clickToEdit": "Click to edit a single slot.",
     "dragNodes": "Drag nodes to rearrange the mapping.",
@@ -330,10 +340,10 @@
     "coordinateSystem": "Coordinate system",
     "copyMapOriginToShow": "Copy map origin to show origin",
     "copyShowOriginToMap": "Copy show origin to map origin",
-    "fileToShow": "FILE ➜ SHOW",
+    "fileToShow": "File ➜ Show",
     "fileToShowTooltip": "Requires show file with embedded location data",
     "fitCoordinateSysToCurrentDrone": "Fit coordinate system to current drone positions",
-    "mapToShow": "MAP ➜ SHOW",
+    "mapToShow": "Map ➜ Show",
     "setToAverageAMSL": "Set to average AMSL of active drones",
     "showCoordinateSystemAppliedToMap": "Show coordinate system applied to map.",
     "showCoordinateSystemUpdatedFromFile": "Show coordinate system updated from file.",
@@ -341,7 +351,7 @@
     "showIsControlledBasedOn": "Show is controlled based on…",
     "showOrientation": "Show orientation",
     "showOrigin": "Show origin",
-    "showToMap": "SHOW ➜ MAP",
+    "showToMap": "Show ➜ Map",
     "warningText": "Automatic show origin and orientation calculation assumes that all drones point towards the X axis of the show <underline>or</underline> that you specified their offset relative the X axis with the setting above. Absolute takeoff headings are not supported."
   },
   "parameterListSidebar": {
@@ -409,7 +419,7 @@
     },
     "lowBatteryThresholdTypeLabel": "Low battery threshold type",
     "lowBatteryThresholdValueLabel": "Threshold value",
-    "returnToHomeAltitudeHelperText": "Altitude in [mAHL] at which return to home operations are performed.",
+    "returnToHomeAltitudeHelperText": "Minimum altitude in [mAHL] above which return to home operations are performed.",
     "returnToHomeAltitudeLabel": "Return to home altitude",
     "returnToHomeSpeedHelperText": "Horizontal speed in [m/s] at which return to home operations are performed.",
     "returnToHomeSpeedLabel": "Return to home speed"
@@ -530,6 +540,7 @@
     "authorizationReq": "Authorization required before takeoff",
     "authorizeTheStart": "Authorize start of show",
     "authorized": "Show authorized to start",
+    "changedSinceLoaded": "Show changed since it was loaded",
     "chooseStartTime": "Choose start time",
     "chooseStartTimeNotSet": "Not set yet",
     "clear": "Clear loaded show",
@@ -622,13 +633,18 @@
           "help": "between drones during takeoff & RTH",
           "label": "Minimum distance"
         },
+        "takeoffDuration": {
+          "help": "ensuring exact start of show phase (if nonzero)",
+          "label": "Takeoff duration"
+        },
         "verticalVelocity": {
           "help": "during takeoff & RTH phases",
           "label": "Vertical velocity"
         }
       },
-      "section": {
-        "parameters": "Parameters"
+      "panel": {
+        "lights": "Lights",
+        "trajectories": "Trajectories"
       }
     },
     "adaptReview": {
@@ -653,6 +669,25 @@
     "help": {
       "config": "This tool lets you adjust takeoff positions and net show layout independently.\nSelect takeoff positions (yellow triangles), the net show (purple convex hull) or both (yellow convex hull) and move or rotate them as you need.\nWhen done, setup transformation parameters on the right side and press ADAPT to recalculate trajectories, keeping the original net show content, yet aligned to your new arrangement.\nThe new show layout should be validated thoroughly and saved to a production ready .skyc file on exit.",
       "review": "Review the changes before applying them to the show."
+    },
+    "lights": {
+      "default": {
+        "brightness": "Brightness"
+      },
+      "selectLabel": "Light effect",
+      "solid": {
+        "color": "Color"
+      },
+      "sparks": {
+        "offDuration": "Off duration"
+      },
+      "type": {
+        "default": "Default",
+        "off": "Off",
+        "solid": "Solid",
+        "sparks": "Sparks"
+      },
+      "unsupportedVersion": "Light configuration requires server version {{minVersion}} or higher."
     },
     "settings": {
       "dronesVisible": "Show drones"
@@ -721,7 +756,7 @@
   },
   "startUploadButton": {
     "startSelected": "Start selected",
-    "tooltip": "Select individual targets by clicking their ids to prepare a partial upload!"
+    "tooltip": "Select individual targets by clicking their IDs to prepare a partial upload"
   },
   "surveyStatusIndicator": {
     "noSurveyInformation": "No survey information"
@@ -744,6 +779,7 @@
     "UAVheadings": "UAV headings before takeoff are…",
     "compassDirection": "Compass direction",
     "headingOffset": "Heading offset",
+    "setToAverageHeading": "Set to average heading of active drones",
     "setToAvergaeHeading": "Set to average heading of active drones",
     "specifiedByAbsoluteCompassDirection": "Specified by absolute compass direction",
     "specifiedRelativeToShowOrientation": "Specified relative to show orientation",
@@ -760,17 +796,18 @@
     "uploadInProgress": "Upload in progress"
   },
   "uploadDialog": {
-    "restrictToGlobalSelection": "Filter for global selection"
+    "restrictToGlobalSelection": "Show global selection only"
   },
   "uploadPanel": {
     "cancelUpload": "Cancel upload",
     "flashLightsWhereFailed": "Flash lights of UAVs where the upload failed",
-    "hasHiddenTargets": "Some of the waiting UAVs may be hidden!",
+    "hasHiddenTargets": "Some of the waiting UAVs may be filtered.",
     "retryFailedAttempts": "Retry failed attempts automatically",
     "uploadAttemptFailed": "Upload attempt failed.",
     "uploadCancelled": "Upload cancelled by user.",
     "uploadFinishedSuccessfully": "Upload finished successfully.",
     "uploadInProgress": "Upload in progress…",
+    "uploadInProgressWithEstimate": "Estimated time remaining: {{time}}",
     "uploadNotFinishedYet": "Upload not finished yet."
   },
   "uploadStatusLegend": {

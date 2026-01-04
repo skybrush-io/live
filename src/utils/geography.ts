@@ -1,4 +1,3 @@
-/* eslint-disable import/no-duplicates */
 /**
  * @file Geography-related utility functions and variables.
  */
@@ -7,7 +6,7 @@ import turfBuffer from '@turf/buffer';
 import turfDifference from '@turf/difference';
 import turfDistance from '@turf/distance';
 import * as TurfHelpers from '@turf/helpers';
-import * as CoordinateParser from 'coordinate-parser';
+import CoordinateParser from 'coordinate-parser';
 import curry from 'lodash-es/curry';
 import isNil from 'lodash-es/isNil';
 import minBy from 'lodash-es/minBy';
@@ -32,7 +31,6 @@ import * as Projection from 'ol/proj';
 import type RenderFeature from 'ol/render/Feature';
 import VectorSource from 'ol/source/Vector';
 import { getArea, getLength } from 'ol/sphere';
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { type Vector3 } from 'three';
 
 import { type Feature, FeatureType } from '~/model/features';
@@ -248,8 +246,7 @@ export const findFeaturesById = curry(
         if (!features[i]) {
           const feature = source.getFeatureById(featureId);
           if (feature) {
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-            features[i] = feature as any;
+            features[i] = feature;
           }
         }
       }
@@ -496,7 +493,6 @@ export const formatAltitudeWithReference = (altitude: Altitude): string => {
       return formattedValue + ' above ground';
     }
 
-    // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
     default: {
       return `${formattedValue} above unknown reference: ${String(reference)}`;
     }
@@ -978,12 +974,22 @@ export function normalizePolygon([points, ...holes]: any): any {
   // TODO: This can be simplified when Turf 7.0.0 gets released, as
   //       difference will support multiple subtrahend features
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
-  const { geometry } = holes.reduce(
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    (poly: any, hole: any) => turfDifference(poly, TurfHelpers.polygon([hole])),
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    TurfHelpers.polygon([points])
-  );
+  const basePolygon = TurfHelpers.polygon([points]);
+  const difference =
+    holes.length > 0
+      ? turfDifference(
+          TurfHelpers.featureCollection([
+            basePolygon,
+            ...holes.map((hole: any) => TurfHelpers.polygon([hole])),
+          ])
+        )
+      : basePolygon;
+
+  if (!difference) {
+    return [];
+  }
+
+  const { geometry } = difference;
 
   switch (geometry.type) {
     case 'Polygon': {
@@ -995,7 +1001,7 @@ export function normalizePolygon([points, ...holes]: any): any {
     }
 
     default: {
-      throw new Error(`Unexpected geometry type: ${geometry.type}`);
+      throw new Error(`Unexpected geometry type: ${(geometry as any).type}`);
     }
   }
 }

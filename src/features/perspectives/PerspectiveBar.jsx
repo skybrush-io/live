@@ -1,5 +1,4 @@
 import PropTypes from 'prop-types';
-import React from 'react';
 import { PerspectiveBar as WbPerspectiveBar } from 'react-flexible-workbench';
 import { connect } from 'react-redux';
 

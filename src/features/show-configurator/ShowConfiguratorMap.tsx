@@ -12,6 +12,8 @@ import type VectorSource from 'ol/source/Vector';
 import React, { useCallback, useMemo } from 'react';
 import { connect } from 'react-redux';
 
+import ToolbarDivider from '~/components/ToolbarDivider';
+import UndoRedoButtons from '~/components/UndoRedoButtons';
 import Colors from '~/components/colors';
 import { Map, MapToolbars } from '~/components/map';
 import { type ViewProperties } from '~/components/map/Map';
@@ -39,8 +41,6 @@ import { FeaturesLayer } from '~/components/map/layers/features';
 import { UAVsLayer, type UAVsLayerProps } from '~/components/map/layers/uavs';
 import { noMark } from '~/components/map/layers/utils';
 import { Tool } from '~/components/map/tools';
-import ToolbarDivider from '~/components/ToolbarDivider';
-import UndoRedoButtons from '~/components/UndoRedoButtons';
 import { type GPSPosition } from '~/model/geography';
 import {
   globalIdToAreaId,
@@ -51,7 +51,7 @@ import {
 import { getVisibleSelectableLayers, LayerType } from '~/model/layers';
 import type { RootState } from '~/store/reducers';
 import type { Identifier } from '~/utils/collections';
-import { findFeaturesById, type LonLat } from '~/utils/geography';
+import { findFeaturesById } from '~/utils/geography';
 import { EMPTY_ARRAY } from '~/utils/redux';
 // TODO(vp): try to move or generalize this component
 // to get rid of the `~/views` import.
@@ -89,7 +89,7 @@ type ShowInfoLayerProps = LayerProps &
     selection: Identifier[];
   }>;
 
-const ShowInfoLayer = (props: ShowInfoLayerProps): JSX.Element => {
+const ShowInfoLayer = (props: ShowInfoLayerProps): React.JSX.Element => {
   const {
     approximateConvexHullOfFullShow,
     convexHull,
@@ -312,7 +312,7 @@ const useOwnState = (props: MapProps) => {
   };
 };
 
-const ShowConfiguratorMap = (props: MapProps): JSX.Element => {
+const ShowConfiguratorMap = (props: MapProps): React.JSX.Element => {
   const {
     defaultPosition,
     futureHistoryLength,
@@ -331,7 +331,7 @@ const ShowConfiguratorMap = (props: MapProps): JSX.Element => {
     updateModifiedFeatures,
   } = useOwnState(props);
 
-  const mapLayers = useMemo(() => ({ layers, layerComponents }), []);
+  const mapLayers = useMemo(() => ({ layers, layerComponents }), [layers]);
 
   return (
     <Map

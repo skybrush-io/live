@@ -1,12 +1,9 @@
-import clsx from 'clsx';
+import PersonIcon from '@mui/icons-material/Person';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import PersonIcon from '@material-ui/icons/Person';
-
-import GenericHeaderButton from '@skybrush/mui-components/lib/GenericHeaderButton';
+import { GenericHeaderButton } from '@skybrush/mui-components';
 
 import AuthenticationStatusBadge from '~/components/badges/AuthenticationStatusBadge';
 import {

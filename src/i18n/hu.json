@@ -42,7 +42,7 @@
     "spareUAVs": "Tartalék drónok"
   },
   "UAVOpButtonGrp": {
-    "armMotors": "Motorok indítása",
+    "armMotors": "Motorok elindítása",
     "details": "Részletek…",
     "disarmMotors": "Motorok leállítása",
     "flashLights": "Fény villogtatása",
@@ -176,19 +176,20 @@
   },
   "geofence": {
     "statusText": {
-      "automatic": "Automatikus geofence van használatban",
-      "error": "A műsor területe a geofence-en kívül esik",
-      "manual": "Kézi geofence van használatban",
-      "no": "Még nincs geofence beállítva"
+      "automatic": "Automatikus geokerítés van használatban",
+      "error": "A műsor területe a geokerítésen kívül esik",
+      "manual": "Kézi geokerítés van használatban",
+      "no": "Még nincs geokerítés beállítva"
     }
   },
   "geofenceAction": {
     "keepCurrent": "A jelenlegi művelet folytatása",
     "report": "Csak jelentés",
-    "shutDown": "Kikapcsolás",
+    "shutDown": "Lekapcsolás",
     "smartLand": "Leszállás ütközéselkerüléssel",
     "smartReturn": "Hazatérés ütközéselkerüléssel",
-    "stop": "Megáll és lebeg"
+    "stop": "Megáll és lebeg",
+    "unknown": "Ismeretlen művelet: {{action}}"
   },
   "header": {
     "distanceSummary": "Felszállási pozíciótól mért legkisebb és legnagyobb távolság",
@@ -202,8 +203,8 @@
   "largeControlButtonGroup": {
     "RTH": "Hazatérés",
     "RTHAll": "Haza mind",
-    "arm": "Indítás",
-    "armAll": "Összes indítása",
+    "arm": "Elindítás",
+    "armAll": "Összes elindítása",
     "broadcast": "Broadcast",
     "disarm": "Leállítás",
     "disarmAll": "Összes leállítása",
@@ -212,13 +213,13 @@
     "land": "Leszállás",
     "landAll": "Mind szálljon le",
     "selectionOnly": "Csak a kijelöltek",
-    "shutdown": "Kikapcsolás",
-    "shutdownAll": "Összes kikapcsolása"
+    "shutdown": "Lekapcsolás",
+    "shutdownAll": "Összes lekapcsolása"
   },
   "lightControl": {
     "connectToAServer": "Csatlakozzon egy szerverhez a fények irányításához",
     "fromGCS": "A fények GCS-sel vezéreltek",
-    "notConnected": "Nem csatlakozik a szerverhez",
+    "notConnected": "Nincs csatlakozás a szerverhez",
     "notFromGCS": "A fények nem GCS-sel vezéreltek",
     "restoreDefault": "Kattintson az alapértelmezett fényprogram visszaállításához",
     "takeControl": "Kattintson az irányítás átvételéhez"
@@ -242,7 +243,7 @@
   },
   "mapContextMenu": {
     "clearExclusionZone": "Kizárási zóna törlése",
-    "clearGeofence": "Geofence törlése",
+    "clearGeofence": "Geokerítés törlése",
     "details": "Részletek…",
     "flyHere": "Repülj ide",
     "flyHereAtAltitude": "Repülj ide ebben a magasságban…",
@@ -252,7 +253,7 @@
     "subtractPolygon": "{{subtrahend}} kivonása {{minuend}}-ból/-ből",
     "unnamedPolygon": "névtelen sokszög",
     "useAsExclusionZone": "Alkalmazás kizárási zónaként",
-    "useAsGeofence": "Alkalmazás geofence-ként"
+    "useAsGeofence": "Alkalmazás geokerítésként"
   },
   "mappingButtonGroup": {
     "editMapping": "Hozzárendelés szerkesztése",
@@ -261,6 +262,7 @@
   },
   "mappingEditorToolbar": {
     "assignSpares": "Tartalékok hozzárendelése",
+    "calculatingMapping": "Hozzárendelés folyamatban…",
     "clearMissing": "Hiányzó törlése",
     "clickToEdit": "Kattintson egy hely szerkesztéséhez.",
     "dragNodes": "Húzza az ikonokat a hozzárendelés átrendezéséhez.",
@@ -342,7 +344,7 @@
   "parameterUploadSetupDialog": {
     "uploadParameters": "Paraméterek feltöltése"
   },
-  "preferences": "Beállítások",
+  "preferences": "Preferenciák",
   "preflightTab": {
     "enterCheckItems": "Írja be a preferált manuális ellenőrzőlista elemeket, soronként egyet.",
     "headingsHint": "A kettősponttal (:) végződő sorok címsorokká válnak.",
@@ -354,16 +356,16 @@
     "recalculateMapping": "Hozzárendelés újraszámolása"
   },
   "safetyDialog": {
-    "geofence": "Geofence",
+    "geofence": "Geokerítés",
     "geofenceTab": {
-      "clear": "A jelenlegi geofence törlése",
+      "clear": "A jelenlegi geokerítés törlése",
       "errors": {
         "distance": "Hiba történt a távolság számítása közben",
         "height": "Hiba történt a magasság számítása közben"
       },
-      "fenceAction": "Geofence művelet",
+      "fenceAction": "Geokerítés művelet",
       "fenceActionHelperText": "Ezen opciók támogatása a drónokon múlik; nem minden opció támogatott minden drón által.",
-      "fenceActionLabel": "Elsődleges geofence művelet",
+      "fenceActionLabel": "Elsődleges geokerítés művelet",
       "horizontal": "Vízszintes",
       "maxAltitude": "Max magasság",
       "maxDistance": "Max távolság",
@@ -390,7 +392,7 @@
     },
     "lowBatteryThresholdTypeLabel": "Alacsony akku küszöb típusa",
     "lowBatteryThresholdValueLabel": "Küszöbérték",
-    "returnToHomeAltitudeHelperText": "Magasság [mAHL]-ben, amelyen a visszatérési műveletek végrehajtásra kerülnek.",
+    "returnToHomeAltitudeHelperText": "Minimum magasság [mAHL]-ben, a hazatérési műveletek e fölött hajtódnak végre.",
     "returnToHomeAltitudeLabel": "Hazatérési magasság",
     "returnToHomeSpeedHelperText": "Vízszintes sebesség [m/s]-ban, amellyel a visszatérési műveletek végrehajtásra kerülnek.",
     "returnToHomeSpeedLabel": "Hazatérési sebesség"
@@ -530,7 +532,7 @@
     "revokeAuthorization": "Kattintson ide a jóváhagyás visszavonásához",
     "selectFile": "Válassza ki, vagy húzza ide a műsor fájlt",
     "setupEnvironment": "Környezet beállítása",
-    "setupGeofence": "Geofence beállítása",
+    "setupGeofence": "Geokerítés beállítása",
     "setupTakeoffArea": "Felszállási terület beállítása",
     "startMethod": {
       "AUTO": "A műsor automatikusan el fog indulni",
@@ -627,7 +629,7 @@
     "UAVheadings": "Drónok irányai a felszállás előtt…",
     "compassDirection": "Iránytű iránya",
     "headingOffset": "Irány eltolás",
-    "setToAvergaeHeading": "Átlagos irány beállítása az aktív drónokra",
+    "setToAverageHeading": "Átlagos irány beállítása az aktív drónokra",
     "specifiedByAbsoluteCompassDirection": "Az abszolút iránytű irány határozza meg",
     "specifiedRelativeToShowOrientation": "A műsor irányához képest van megadva",
     "unspecified": "Nem meghatározott"

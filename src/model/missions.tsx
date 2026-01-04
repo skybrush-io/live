@@ -1,20 +1,18 @@
+import SetPayloadIcon from '@mui/icons-material/Camera';
+import MarkerIcon from '@mui/icons-material/Flag';
+import ChangeFlightModeIcon from '@mui/icons-material/Flight';
+import LandIcon from '@mui/icons-material/FlightLand';
+import TakeoffIcon from '@mui/icons-material/FlightTakeoff';
+import UpdateFlightAreaIcon from '@mui/icons-material/FormatShapes';
+import ChangeAltitudeIcon from '@mui/icons-material/Height';
+import HomeIcon from '@mui/icons-material/Home';
+import HoverIcon from '@mui/icons-material/HourglassEmpty';
+import ChangeHeadingIcon from '@mui/icons-material/RotateLeft';
+import UpdateSafetyIcon from '@mui/icons-material/Security';
+import SetParameterIcon from '@mui/icons-material/Settings';
+import ChangeSpeedIcon from '@mui/icons-material/Speed';
 import isObject from 'lodash-es/isObject';
-import * as React from 'react';
-
-import ChangeAltitudeIcon from '@material-ui/icons/Height';
-import ChangeFlightModeIcon from '@material-ui/icons/Flight';
-import ChangeHeadingIcon from '@material-ui/icons/RotateLeft';
-import ChangeSpeedIcon from '@material-ui/icons/Speed';
-import HoverIcon from '@material-ui/icons/HourglassEmpty';
-import MarkerIcon from '@material-ui/icons/Flag';
-import SetPayloadIcon from '@material-ui/icons/Camera';
-import SetParameterIcon from '@material-ui/icons/Settings';
-import TakeoffIcon from '@material-ui/icons/FlightTakeoff';
-import UpdateFlightAreaIcon from '@material-ui/icons/FormatShapes';
 import UpdateGeofenceIcon from '~/icons/PlacesFence';
-import UpdateSafetyIcon from '@material-ui/icons/Security';
-import LandIcon from '@material-ui/icons/FlightLand';
-import HomeIcon from '@material-ui/icons/Home';
 
 import {
   type GeofenceConfiguration,

@@ -2,9 +2,12 @@ import React, { useCallback } from 'react';
 // @ts-expect-error
 import { layer as olLayer } from '@collmot/ol-react';
 
-import Header from '@skybrush/mui-components/lib/FormHeader';
+import Slider from '@mui/material/Slider';
+import { FormHeader as Header } from '@skybrush/mui-components';
 
-import SwatchesColorPicker from '~/components/SwatchesColorPicker';
+import SwatchesColorPicker, {
+  type ColorResult,
+} from '~/components/SwatchesColorPicker';
 import flock from '~/flock';
 import type FlockModel from '~/model/flock';
 import { Layer } from '~/model/layers';
@@ -19,21 +22,33 @@ import type { BaseLayerSettingsProps } from './types';
 // === Settings UI for this layer ===
 
 export type UAVsLayerSettingsProps = BaseLayerSettingsProps & {
-  setLayerParameters: (params: { labelColor: string }) => void;
+  setLayerParameters: (
+    params: Partial<{ labelColor: string; scale: number }>
+  ) => void;
 };
+
+const MARKS = [{ value: 1 }];
 
 export const UAVsLayerSettings = ({
   layer,
   setLayerParameters,
 }: UAVsLayerSettingsProps) => {
   const { parameters } = layer;
-  const { labelColor: labelColorParam } = parameters || {};
+  const { labelColor: labelColorParam, scale: scaleParam } = parameters || {};
   const labelColor =
     typeof labelColorParam === 'string' ? labelColorParam : '#000000';
+  const scale = typeof scaleParam === 'number' ? scaleParam : 1;
 
   const onColorChanged = useCallback(
-    (color) => {
+    (color: ColorResult) => {
       setLayerParameters({ labelColor: color.hex });
+    },
+    [setLayerParameters]
+  );
+
+  const onScaleChanged = useCallback(
+    (event: Event, value: number | number[]) => {
+      setLayerParameters({ scale: value as number });
     },
     [setLayerParameters]
   );
@@ -44,6 +59,15 @@ export const UAVsLayerSettings = ({
       <SwatchesColorPicker
         color={labelColor}
         onChangeComplete={onColorChanged}
+      />
+      <Header>Icon size</Header>
+      <Slider
+        value={scale}
+        min={0.2}
+        max={2}
+        marks={MARKS}
+        step={0.1}
+        onChange={onScaleChanged}
       />
     </>
   );
@@ -57,6 +81,7 @@ type UAVsLayerSourceProps = {
   flock: FlockModel;
   projection?: CoordinateTransformationFunction;
   labelHidden?: boolean;
+  scale?: number;
 };
 
 export type UAVsLayerProps = {
@@ -82,6 +107,7 @@ export const UAVsLayer = ({
       labelColor={
         (layer.parameters['labelColor'] as string | undefined | null) ?? ''
       }
+      scale={(layer.parameters['scale'] as number | undefined | null) ?? 1}
       flock={flock}
       projection={projection}
       labelHidden={labelHidden}

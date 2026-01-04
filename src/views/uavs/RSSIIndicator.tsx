@@ -1,8 +1,10 @@
-import { makeStyles, type Theme } from '@material-ui/core/styles';
+import type { Theme } from '@mui/material/styles';
 import clsx from 'clsx';
-import React from 'react';
+import type React from 'react';
 
-import StatusPill from '~/components/StatusPill';
+import { makeStyles } from '@skybrush/app-theme-mui';
+import { StatusPill } from '@skybrush/mui-components';
+
 import { getSemanticsForRSSI } from '~/model/enums';
 import { formatRSSI } from '~/utils/formatting';
 
@@ -33,7 +35,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 export const RSSIIndicator = ({
   className,
   rssi,
-}: RSSIIndicatorProps): JSX.Element => {
+}: RSSIIndicatorProps): React.JSX.Element => {
   const classes = useStyles();
   if (rssi.length < 2) {
     // Show only one RSSI value in a full pill
@@ -68,3 +70,5 @@ export const RSSIIndicator = ({
     );
   }
 };
+
+export default RSSIIndicator;

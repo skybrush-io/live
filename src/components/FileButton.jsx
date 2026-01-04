@@ -1,10 +1,10 @@
+import Button from '@mui/material/Button';
 import PropTypes from 'prop-types';
 import React, { useCallback, useState } from 'react';
 import { DndProvider, useDrop } from 'react-dnd';
 import { HTML5Backend, NativeTypes } from 'react-dnd-html5-backend';
 
-import Button from '@material-ui/core/Button';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@skybrush/app-theme-mui';
 
 import { multiRef } from '~/utils/react';
 

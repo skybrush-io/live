@@ -1,25 +1,25 @@
+import { Speed } from '@mui/icons-material';
 import isNil from 'lodash-es/isNil';
 import maxBy from 'lodash-es/maxBy';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import GenericHeaderButton from '@skybrush/mui-components/lib/GenericHeaderButton';
+import { GenericHeaderButton } from '@skybrush/mui-components';
 
-import { Speed } from '@material-ui/icons';
 import { isConnected } from '~/features/servers/selectors';
 import { usePeriodicSelector } from '~/hooks/usePeriodicSelector';
 import { formatSpeed } from '~/utils/formatting';
 
 import { buttonStyle } from './AltitudeSummaryHeaderButton';
-import { getActiveUAVIds, getUAVById } from './selectors';
+import { getActiveAndAwakeUAVIds, getUAVById } from './selectors';
 
 const findVelocities = (state) => {
   let maxHorizontal = 0;
   let maxVertical = 0;
 
-  for (const uavId of getActiveUAVIds(state)) {
+  // Exclude sleeping UAVs because they most likely do not report current velocity.
+  for (const uavId of getActiveAndAwakeUAVIds(state)) {
     const uav = getUAVById(state, uavId);
     const velocity = uav.velocity ?? uav.velocityXYZ;
 

@@ -1,10 +1,11 @@
-import { makeStyles } from '@material-ui/core/styles';
-import HelpIcon from '@material-ui/icons/Help';
-import React from 'react';
+import HelpIcon from '@mui/icons-material/Help';
+import type { Theme } from '@mui/material/styles';
+import type React from 'react';
 
-import Tooltip from '@skybrush/mui-components/lib/Tooltip';
+import { makeStyles } from '@skybrush/app-theme-mui';
+import { Tooltip } from '@skybrush/mui-components';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   iconContainer: {
     padding: theme.spacing(1),
   },

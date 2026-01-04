@@ -122,6 +122,7 @@ const initialState: ShowSliceState = {
 
   environment: {
     editing: false,
+    estimatingCoordinateSystem: false,
     outdoor: {
       coordinateSystem: {
         orientation: '0',
@@ -206,6 +207,7 @@ const { actions, reducer } = createSlice({
 
     _clearLoadedShow: noPayload<ShowSliceState>((state) => {
       state.data = undefined;
+      state.base64Blob = undefined;
 
       state.sourceUrl = undefined;
       state.changedSinceLoaded = false;
@@ -313,6 +315,18 @@ const { actions, reducer } = createSlice({
       state.progress = undefined;
 
       state.changedSinceLoaded = false;
+    },
+
+    coordinateSystemEstimationPromisePending(state) {
+      state.environment.estimatingCoordinateSystem = true;
+    },
+
+    coordinateSystemEstimationPromiseFulfilled(state) {
+      state.environment.estimatingCoordinateSystem = false;
+    },
+
+    coordinateSystemEstimationPromiseRejected(state) {
+      state.environment.estimatingCoordinateSystem = false;
     },
 
     notifyShowFileChangedSinceLoaded(state) {

@@ -1,11 +1,13 @@
-import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import Button, { type ButtonProps } from '@mui/material/Button';
+import type React from 'react';
 import { useTranslation } from 'react-i18next';
-
-import Button, { type ButtonProps } from '@material-ui/core/Button';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { recalculateMapping } from '~/features/mission/actions';
-import { hasNonemptyMappingSlot } from '~/features/mission/selectors';
+import {
+  hasNonemptyMappingSlot,
+  isMappingBeingCalculated,
+} from '~/features/mission/selectors';
 import AutoFix from '~/icons/AutoFix';
 import type { AppDispatch } from '~/store/reducers';
 
@@ -17,13 +19,15 @@ type RecalculateMappingButtonProps = Omit<ButtonProps, 'onClick'>;
  */
 const RecalculateMappingButton = (
   props: RecalculateMappingButtonProps
-): JSX.Element => {
+): React.JSX.Element => {
   const { t } = useTranslation();
   const hasNonempty = useSelector(hasNonemptyMappingSlot);
+  const calculating = useSelector(isMappingBeingCalculated);
   const dispatch: AppDispatch = useDispatch();
   return (
     <Button
       startIcon={<AutoFix />}
+      disabled={calculating}
       onClick={() => {
         dispatch(recalculateMapping() as any);
       }}

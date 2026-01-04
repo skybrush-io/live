@@ -1,20 +1,19 @@
 import React from 'react';
 
-import Popover, { type PopoverProps } from '@material-ui/core/Popover';
-import Tooltip, {
-  type TooltipProps,
-} from '@skybrush/mui-components/lib/Tooltip';
+import Popover, { type PopoverProps } from '@mui/material/Popover';
+import { Tooltip, type TooltipProps } from '@skybrush/mui-components';
 
 export const ContainerContext = React.createContext(window.document.body);
 
 export const PopoverWithContainerFromContext = React.forwardRef<
-  HTMLElement,
+  HTMLDivElement,
   PopoverProps
 >((props, ref) => (
   <ContainerContext.Consumer>
     {(container) => <Popover {...props} ref={ref} container={container} />}
   </ContainerContext.Consumer>
 ));
+PopoverWithContainerFromContext.displayName = 'PopoverWithContainerFromContext';
 
 export const TooltipWithContainerFromContext = React.forwardRef<
   HTMLElement,
@@ -24,3 +23,4 @@ export const TooltipWithContainerFromContext = React.forwardRef<
     {(container) => <Tooltip {...props} ref={ref} appendTo={container} />}
   </ContainerContext.Consumer>
 ));
+TooltipWithContainerFromContext.displayName = 'TooltipWithContainerFromContext';

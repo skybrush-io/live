@@ -1,20 +1,17 @@
+import Settings from '@mui/icons-material/Settings';
+import Avatar from '@mui/material/Avatar';
+import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
+import ListItemAvatar from '@mui/material/ListItemAvatar';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import ListItemText from '@mui/material/ListItemText';
 import isEmpty from 'lodash-es/isEmpty';
 import isNumber from 'lodash-es/isNumber';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { connect } from 'react-redux';
 
-import Avatar from '@material-ui/core/Avatar';
-import Box from '@material-ui/core/Box';
-import IconButton from '@material-ui/core/IconButton';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
-import { makeStyles } from '@material-ui/core/styles';
-import Settings from '@material-ui/icons/Settings';
-
-import { Status } from '@skybrush/app-theme-material-ui';
+import { makeStyles, Status } from '@skybrush/app-theme-mui';
 
 import Colors from '~/components/colors';
 import { editMissionItemParameters } from '~/features/mission/actions';
@@ -35,28 +32,25 @@ import {
   titleForMissionItemType,
 } from '~/model/missions';
 import {
+  formatCoordinate,
   safelyFormatAltitudeWithReference,
   safelyFormatHeadingWithMode,
-  formatCoordinate,
 } from '~/utils/geography';
 
-const useStyles = makeStyles(
-  (theme) => ({
-    error: {
-      backgroundColor: Colors.error,
-      color: theme.palette.getContrastText(Colors.error),
-    },
-    success: {
-      backgroundColor: Colors.success,
-      color: theme.palette.getContrastText(Colors.success),
-    },
-    warning: {
-      backgroundColor: Colors.warning,
-      color: theme.palette.getContrastText(Colors.warning),
-    },
-  }),
-  { name: 'MissionOverviewListItem' }
-);
+const useStyles = makeStyles((theme) => ({
+  error: {
+    backgroundColor: Colors.error,
+    color: theme.palette.getContrastText(Colors.error),
+  },
+  success: {
+    backgroundColor: Colors.success,
+    color: theme.palette.getContrastText(Colors.success),
+  },
+  warning: {
+    backgroundColor: Colors.warning,
+    color: theme.palette.getContrastText(Colors.warning),
+  },
+}));
 
 // TODO: Reduce code duplication from `GeofenceButton.jsx`
 const formatGeofenceStatusText = (status) => {
@@ -154,7 +148,7 @@ const MissionOverviewListItem = ({
       break;
 
     case MissionItemType.CHANGE_FLIGHT_MODE:
-      secondaryText = `${item.parameters?.mode}`
+      secondaryText = `${item.parameters?.mode}`;
       break;
 
     case MissionItemType.CHANGE_HEADING:
@@ -191,7 +185,8 @@ const MissionOverviewListItem = ({
 
     case MissionItemType.SET_PAYLOAD:
       const { name, action, value } = item.parameters;
-      secondaryText = `${name}: ${action}` + (value !== undefined ? ` ${value}` : '');
+      secondaryText =
+        `${name}: ${action}` + (value !== undefined ? ` ${value}` : '');
 
       break;
 
@@ -222,7 +217,7 @@ const MissionOverviewListItem = ({
   }
 
   return (
-    <Box position='relative'>
+    <Box sx={{ position: 'relative' }}>
       <div
         style={{
           position: 'absolute',
@@ -235,8 +230,7 @@ const MissionOverviewListItem = ({
           width: `${(ratio ?? 0) * 100}%`,
         }}
       />
-      <ListItem
-        button
+      <ListItemButton
         dense
         selected={selected}
         onClick={onClick}
@@ -250,12 +244,16 @@ const MissionOverviewListItem = ({
         <ListItemText primary={primaryText} secondary={secondaryText} />
         {editMissionItemParameters && (
           <ListItemSecondaryAction>
-            <IconButton edge='end' onClick={editMissionItemParameters}>
+            <IconButton
+              edge='end'
+              size='large'
+              onClick={editMissionItemParameters}
+            >
               <Settings />
             </IconButton>
           </ListItemSecondaryAction>
         )}
-      </ListItem>
+      </ListItemButton>
     </Box>
   );
 };

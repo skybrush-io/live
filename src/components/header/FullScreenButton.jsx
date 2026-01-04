@@ -1,12 +1,12 @@
+import NavigationFullscreen from '@mui/icons-material/Fullscreen';
+import NavigationFullscreenExit from '@mui/icons-material/FullscreenExit';
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
+import { Translation } from 'react-i18next';
 import { useEvent, useUpdate } from 'react-use';
 import ScreenFull from 'screenfull';
-import { Translation } from 'react-i18next';
 
-import NavigationFullscreen from '@material-ui/icons/Fullscreen';
-import NavigationFullscreenExit from '@material-ui/icons/FullscreenExit';
-import GenericHeaderButton from '@skybrush/mui-components/lib/GenericHeaderButton';
+import { GenericHeaderButton } from '@skybrush/mui-components';
 
 const FullScreenButtonPresentation = ({ isFullscreen, ...rest }) => (
   <Translation>

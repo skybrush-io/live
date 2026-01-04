@@ -5,6 +5,23 @@
 
 import config from 'config';
 
+import Computer from '@mui/icons-material/Computer';
+import EditIcon from '@mui/icons-material/Edit';
+import SignalWifi0Bar from '@mui/icons-material/SignalWifi0Bar';
+import WifiIcon from '@mui/icons-material/Wifi';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import CircularProgress from '@mui/material/CircularProgress';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import Tab from '@mui/material/Tab';
+import Typography from '@mui/material/Typography';
 import partial from 'lodash-es/partial';
 import { Switches, TextField } from 'mui-rff';
 import PropTypes from 'prop-types';
@@ -13,31 +30,12 @@ import { Form } from 'react-final-form';
 import { Translation, useTranslation, withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import Button from '@material-ui/core/Button';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import Tab from '@material-ui/core/Tab';
-import Typography from '@material-ui/core/Typography';
-
-import Computer from '@material-ui/icons/Computer';
-import EditIcon from '@material-ui/icons/Edit';
-import SignalWifi0Bar from '@material-ui/icons/SignalWifi0Bar';
-import WifiIcon from '@material-ui/icons/Wifi';
-
-import DialogTabs from '@skybrush/mui-components/lib/DialogTabs';
-import SmallProgressIndicator from '@skybrush/mui-components/lib/SmallProgressIndicator';
+import { DialogTabs, SmallProgressIndicator } from '@skybrush/mui-components';
 
 import {
   ServerDetectionManager,
   isServerDetectionSupported,
-} from '../ServerDetectionManager';
-
+} from '~/components/ServerDetectionManager';
 import { forceFormSubmission } from '~/components/forms';
 import {
   closeServerSettingsDialog,
@@ -60,6 +58,27 @@ import {
   integer,
   required,
 } from '~/utils/validation';
+
+const styles = {
+  dialogContent: { paddingBottom: 0, paddingLeft: 0, paddingRight: 0 },
+  flexColumn: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '16px',
+  },
+  paddedBox: {
+    paddingLeft: 3,
+    paddingRight: 3,
+  },
+  serverList: {
+    height: '160px',
+    overflow: 'auto',
+    '& .MuiListItemButton-gutters': {
+      paddingLeft: 3,
+      paddingRight: 3,
+    },
+  },
+};
 
 const iconForServerItem = ({ hostName, type }) =>
   type === 'inferred' ? (
@@ -112,7 +131,7 @@ const DetectedServersListPresentation = ({
   onItemSelected,
   t,
 }) => (
-  <List disablePadding style={{ height: 160, overflow: 'auto' }}>
+  <List disablePadding sx={styles.serverList}>
     {isScanning && (!items || items.length === 0) ? (
       <ListItem key='__scanning'>
         <ListItemIcon>
@@ -125,7 +144,7 @@ const DetectedServersListPresentation = ({
       </ListItem>
     ) : null}
     {items.map((item) => (
-      <ListItem key={item.id} button onClick={partial(onItemSelected, item)}>
+      <ListItemButton key={item.id} onClick={partial(onItemSelected, item)}>
         <ListItemIcon>{iconForServerItem(item)}</ListItemIcon>
         <ListItemText
           {...(item.label
@@ -143,15 +162,15 @@ const DetectedServersListPresentation = ({
                 secondary: protocolForServerItem(item)(t),
               })}
         />
-      </ListItem>
+      </ListItemButton>
     ))}
     {manualSetupAllowed && (
-      <ListItem key='__manual' button onClick={partial(onItemSelected, null)}>
+      <ListItemButton key='__manual' onClick={partial(onItemSelected, null)}>
         <ListItemIcon>
           <EditIcon />
         </ListItemIcon>
         <ListItemText primary={t('serverSettingsDialog.enterManually')} />
-      </ListItem>
+      </ListItemButton>
     )}
   </List>
 );
@@ -195,6 +214,7 @@ const ServerSettingsFormPresentation = ({ onKeyPress, onSubmit, t }) => {
       {({ handleSubmit }) => (
         <form
           id='serverSettings'
+          style={styles.flexColumn}
           onSubmit={handleSubmit}
           onKeyPress={onKeyPress}
         >
@@ -203,14 +223,12 @@ const ServerSettingsFormPresentation = ({ onKeyPress, onSubmit, t }) => {
             name='hostName'
             label={t('serverSettingsDialog.hostname')}
             variant='filled'
-            margin='normal'
           />
           <TextField
             fullWidth
             name='port'
             label={t('serverSettingsDialog.port')}
             variant='filled'
-            margin='normal'
           />
           <Switches
             name='isSecure'
@@ -320,28 +338,32 @@ class ServerSettingsDialogPresentation extends React.Component {
         if (manualSetupAllowed) {
           if (!isServerDetectionSupported) {
             content.push(
-              <DialogContent key='contents'>
-                <Translation>
-                  {(t) => (
-                    <Typography variant='body2' color='textSecondary'>
-                      {t('serverSettingsDialog.autodiscoveryIsNotAvailable')}
-                    </Typography>
-                  )}
-                </Translation>
-              </DialogContent>
+              <Translation key='content'>
+                {(t) => (
+                  <Typography
+                    variant='body2'
+                    color='textSecondary'
+                    sx={styles.paddedBox}
+                  >
+                    {t('serverSettingsDialog.autodiscoveryIsNotAvailable')}
+                  </Typography>
+                )}
+              </Translation>
             );
           }
         } else {
           content.push(
-            <DialogContent key='contents'>
-              <Translation>
-                {(t) => (
-                  <Typography variant='body2' color='textSecondary'>
-                    {t('serverSettingsDialog.serverSelectionRestricted')}
-                  </Typography>
-                )}
-              </Translation>
-            </DialogContent>
+            <Translation key='content'>
+              {(t) => (
+                <Typography
+                  variant='body2'
+                  color='textSecondary'
+                  sx={styles.paddedBox}
+                >
+                  {t('serverSettingsDialog.serverSelectionRestricted')}
+                </Typography>
+              )}
+            </Translation>
           );
         }
 
@@ -350,12 +372,12 @@ class ServerSettingsDialogPresentation extends React.Component {
       case 'manual':
         if (manualSetupAllowed) {
           content.push(
-            <DialogContent key='contents'>
+            <Box key='content' sx={styles.paddedBox}>
               <ServerSettingsForm
                 onSubmit={onSubmit}
                 onKeyPress={this._handleKeyPress}
               />
-            </DialogContent>
+            </Box>
           );
           actions.push(
             <Translation key='connect'>
@@ -414,7 +436,9 @@ class ServerSettingsDialogPresentation extends React.Component {
             </DialogTabs>
 
             <ServerDetectionManager />
-            {content}
+            <DialogContent key='contents' sx={styles.dialogContent}>
+              {content}
+            </DialogContent>
             <DialogActions>{actions}</DialogActions>
           </Dialog>
         )}

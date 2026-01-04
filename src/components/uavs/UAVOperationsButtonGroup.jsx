@@ -1,44 +1,40 @@
+import Assignment from '@mui/icons-material/Assignment';
+import Clear from '@mui/icons-material/Clear';
+import Delete from '@mui/icons-material/Delete';
+import Explore from '@mui/icons-material/Explore';
+import PositionHold from '@mui/icons-material/Flag';
+import FlightLand from '@mui/icons-material/FlightLand';
+import FlightTakeoff from '@mui/icons-material/FlightTakeoff';
+import Home from '@mui/icons-material/Home';
+import Moon from '@mui/icons-material/NightsStay';
+import PlayArrow from '@mui/icons-material/PlayArrow';
+import PowerSettingsNew from '@mui/icons-material/PowerSettingsNew';
+import Refresh from '@mui/icons-material/Refresh';
+import WbSunny from '@mui/icons-material/WbSunny';
+import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
+import { bindActionCreators } from '@reduxjs/toolkit';
 import isEmpty from 'lodash-es/isEmpty';
 import PropTypes from 'prop-types';
 import React, { useCallback, useState } from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { useInterval } from 'react-use';
-import { bindActionCreators } from '@reduxjs/toolkit';
-
-import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
-
-import Clear from '@material-ui/icons/Clear';
-import Delete from '@material-ui/icons/Delete';
-import FlightTakeoff from '@material-ui/icons/FlightTakeoff';
-import Assignment from '@material-ui/icons/Assignment';
-import FlightLand from '@material-ui/icons/FlightLand';
-import Home from '@material-ui/icons/Home';
-import Pause from '@material-ui/icons/Pause';
-import PositionHold from '@material-ui/icons/Flag';
-import Moon from '@material-ui/icons/NightsStay';
-import Manual from '@material-ui/icons/VideogameAsset';
-import PowerSettingsNew from '@material-ui/icons/PowerSettingsNew';
-import PlayArrow from '@material-ui/icons/PlayArrow';
-import Refresh from '@material-ui/icons/Refresh';
-import WbSunny from '@material-ui/icons/WbSunny';
-
-import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
 
 import Colors from '~/components/colors';
 import ToolbarDivider from '~/components/ToolbarDivider';
-import Bolt from '~/icons/Bolt';
-
+import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
+import { getPreferredCommunicationChannelIndex } from '~/features/mission/selectors';
 import { UAV_SIGNAL_DURATION } from '~/features/settings/constants';
 import {
   requestRemovalOfUAVsByIds,
   requestRemovalOfUAVsMarkedAsGone,
 } from '~/features/uavs/actions';
+import { COMPASS_CALIB_UAV_LIMIT } from '~/features/uavs/constants';
 import { openUAVDetailsDialog } from '~/features/uavs/details';
-import { createUAVOperationThunks } from '~/utils/messaging';
-import { getPreferredCommunicationChannelIndex } from '~/features/mission/selectors';
 import { getUAVIdList } from '~/features/uavs/selectors';
+import Bolt from '~/icons/Bolt';
+import { createUAVOperationThunks } from '~/utils/messaging';
 
 /**
  * Main toolbar for controlling the UAVs.
@@ -61,6 +57,7 @@ const UAVOperationsButtonGroup = ({
   const isSelectionSingle = selectedUAVIds.length === 1 && !broadcast;
 
   const {
+    calibrateCompass,
     flashLight,
     holdPosition,
     land,
@@ -245,6 +242,18 @@ const UAVOperationsButtonGroup = ({
             </IconButton>
           </Tooltip>
           {flashLightsButton}
+          <Tooltip content={t('general.commands.calibrateCompass')}>
+            <IconButton
+              size={iconSize}
+              disabled={
+                selectedUAVIds.length === 0 ||
+                selectedUAVIds.length > COMPASS_CALIB_UAV_LIMIT
+              }
+              onClick={() => calibrateCompass()}
+            >
+              <Explore />
+            </IconButton>
+          </Tooltip>
         </>
       )}
 

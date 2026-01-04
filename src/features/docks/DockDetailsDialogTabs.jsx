@@ -1,10 +1,8 @@
+import Tab from '@mui/material/Tab';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { connect } from 'react-redux';
 
-import Tab from '@material-ui/core/Tab';
-
-import DialogTabs from '@skybrush/mui-components/lib/DialogTabs';
+import { DialogTabs } from '@skybrush/mui-components';
 
 import {
   getSelectedTabInDockDetailsDialog,
@@ -15,8 +13,13 @@ import {
  * Presentation component for the dialog that allows the user to inspect the
  * details of a specific docking station.
  */
-const DockDetailsDialogTabs = ({ dragHandleId, ...rest }) => (
-  <DialogTabs alignment='left' dragHandle={dragHandleId} {...rest}>
+const DockDetailsDialogTabs = ({ dragHandleId, value = 'status', ...rest }) => (
+  <DialogTabs
+    alignment='left'
+    dragHandle={dragHandleId}
+    value={value}
+    {...rest}
+  >
     <Tab label='Status' value='status' />
     <Tab label='Schedule' value='schedule' />
     <Tab label='Storage' value='storage' />
@@ -27,10 +30,6 @@ const DockDetailsDialogTabs = ({ dragHandleId, ...rest }) => (
 DockDetailsDialogTabs.propTypes = {
   dragHandleId: PropTypes.string,
   value: PropTypes.string,
-};
-
-DockDetailsDialogTabs.defaultProps = {
-  value: 'status',
 };
 
 export default connect(

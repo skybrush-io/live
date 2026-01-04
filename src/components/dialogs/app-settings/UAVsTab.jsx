@@ -1,20 +1,18 @@
+import Box from '@mui/material/Box';
+import Checkbox from '@mui/material/Checkbox';
+import FormControl from '@mui/material/FormControl';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormGroup from '@mui/material/FormGroup';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import Typography from '@mui/material/Typography';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import Box from '@material-ui/core/Box';
-import Checkbox from '@material-ui/core/Checkbox';
-import FormControl from '@material-ui/core/FormControl';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormGroup from '@material-ui/core/FormGroup';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
-import Typography from '@material-ui/core/Typography';
-import { useTheme } from '@material-ui/core/styles';
-
-import Header from '@skybrush/mui-components/lib/FormHeader';
+import { makeStyles } from '@skybrush/app-theme-mui';
+import { FormHeader as Header } from '@skybrush/mui-components';
 
 import {
   SimpleAngleField,
@@ -24,7 +22,6 @@ import {
   SimpleVoltageField,
 } from '~/components/forms';
 import { updateUAVVoltageThreshold } from '~/features/settings/actions';
-import { updateAppSettings } from '~/features/settings/slice';
 import {
   getDesiredPlacementAccuracyInMeters,
   getDesiredTakeoffHeadingAccuracy,
@@ -32,11 +29,12 @@ import {
   getMinimumIndoorTakeoffSpacing,
   getMinimumOutdoorTakeoffSpacing,
 } from '~/features/settings/selectors';
+import { updateAppSettings } from '~/features/settings/slice';
 import {
   BatteryDisplayStyle,
   describeBatteryDisplayStyle,
-  UAVOperationConfirmationStyle,
   describeUAVOperationConfirmationStyle,
+  UAVOperationConfirmationStyle,
 } from '~/model/settings';
 
 const batteryDisplayStyleOrder = [
@@ -52,6 +50,21 @@ const uavOperationConfirmationStyleOrder = [
 ];
 
 const vehicleTypeOptions = ['Copter', 'Boat'];
+
+const useStyles = makeStyles((theme) => ({
+  gridFormControl: {
+    display: 'grid',
+    gridTemplateColumns: '2fr 1fr',
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+  hidden: {
+    visibility: 'hidden',
+  },
+  horizontalSpacer: {
+    width: theme.spacing(2),
+  },
+}));
 
 const UAVsTabPresentation = ({
   autoRemove,
@@ -70,21 +83,21 @@ const UAVsTabPresentation = ({
   onIntegerFieldUpdated,
   onVoltageFieldUpdated,
   placementAccuracy,
-  preferredBatteryDisplayStyle,
+  preferredBatteryDisplayStyle = BatteryDisplayStyle.VOLTAGE,
   t,
   takeoffHeadingAccuracy,
   uavOperationConfirmationStyle,
   vehicleType,
   warnThreshold,
 }) => {
-  const theme = useTheme();
+  const styles = useStyles();
   return (
     <>
-      <FormGroup style={{ marginBottom: theme.spacing(2) }}>
-        <FormControl style={{ alignItems: 'center', flexDirection: 'row' }}>
+      <FormGroup sx={{ marginBottom: 2 }}>
+        <FormControl className={styles.gridFormControl}>
           <FormControlLabel
             label={t('settings.uavs.warn')}
-            control={<Checkbox checked style={{ visibility: 'hidden' }} />}
+            control={<Checkbox checked className={styles.hidden} />}
           />
           <SimpleDurationField
             name='warnThreshold'
@@ -96,10 +109,10 @@ const UAVsTabPresentation = ({
           />
         </FormControl>
 
-        <FormControl style={{ alignItems: 'center', flexDirection: 'row' }}>
+        <FormControl className={styles.gridFormControl}>
           <FormControlLabel
             label={t('settings.uavs.gone')}
-            control={<Checkbox checked style={{ visibility: 'hidden' }} />}
+            control={<Checkbox checked className={styles.hidden} />}
           />
           <SimpleDurationField
             name='goneThreshold'
@@ -111,7 +124,7 @@ const UAVsTabPresentation = ({
           />
         </FormControl>
 
-        <FormControl style={{ alignItems: 'center', flexDirection: 'row' }}>
+        <FormControl className={styles.gridFormControl}>
           <FormControlLabel
             label={t('settings.uavs.forget')}
             control={
@@ -134,7 +147,7 @@ const UAVsTabPresentation = ({
         </FormControl>
       </FormGroup>
 
-      <Box my={2}>
+      <Box sx={{ my: 2 }}>
         <Header>{t('settings.uavs.operationSettings')}</Header>
 
         <Box display='flex' flexDirection='row' mb={1}>
@@ -156,8 +169,8 @@ const UAVsTabPresentation = ({
             </Select>
           </FormControl>
         </Box>
-
-        <Box display='flex' flexDirection='row' mb={1}>
+       
+        <Box sx={{ display: 'flex', flexDirection: 'row', mb: 1 }}>
           <FormControl fullWidth variant='filled'>
             <InputLabel id='uav-operation-confirmation-style'>
               UAV operation confirmations
@@ -180,7 +193,7 @@ const UAVsTabPresentation = ({
           </FormControl>
         </Box>
 
-        <Box display='flex' flexDirection='row' mb={1}>
+        <Box sx={{ display: 'flex', flexDirection: 'row', mb: 1 }}>
           <SimpleNumericField
             fullWidth
             label={t('settings.uavs.maxUploadConcurrency')}
@@ -194,10 +207,10 @@ const UAVsTabPresentation = ({
         </Box>
       </Box>
 
-      <Box my={2}>
+      <Box sx={{ my: 2 }}>
         <Header>{t('settings.uavs.defaultBatterySettings')}</Header>
 
-        <Box display='flex' flexDirection='row' mb={1}>
+        <Box sx={{ display: 'flex', flexDirection: 'row', mb: 1 }}>
           <SimpleNumericField
             fullWidth
             label={t('settings.uavs.cellCount')}
@@ -208,33 +221,36 @@ const UAVsTabPresentation = ({
             value={defaultBatteryCellCount}
             onChange={onIntegerFieldUpdated}
           />
-          <Box width={theme.spacing(2)} />
+          <Box className={styles.horizontalSpacer} />
           <SimpleVoltageField
             fullWidth
             name='fullChargeVoltage'
             label={t('settings.uavs.fullCharge')}
+            size='medium'
             min={0.1}
             max={20}
             step={0.1}
             value={fullChargeVoltage}
             onChange={onVoltageFieldUpdated}
           />
-          <Box width={theme.spacing(2)} />
+          <Box className={styles.horizontalSpacer} />
           <SimpleVoltageField
             fullWidth
             name='lowVoltageThreshold'
             label={t('settings.uavs.lowTreshold')}
+            size='medium'
             min={0.1}
             max={20}
             step={0.1}
             value={lowVoltageThreshold}
             onChange={onVoltageFieldUpdated}
           />
-          <Box width={theme.spacing(2)} />
+          <Box className={styles.horizontalSpacer} />
           <SimpleVoltageField
             fullWidth
             name='criticalVoltageThreshold'
             label={t('settings.uavs.criticalTreshold')}
+            size='medium'
             min={0.1}
             max={20}
             step={0.1}
@@ -243,7 +259,7 @@ const UAVsTabPresentation = ({
           />
         </Box>
 
-        <Box display='flex' flexDirection='row' mb={1}>
+        <Box sx={{ display: 'flex', flexDirection: 'row', mb: 1 }}>
           <FormControl fullWidth variant='filled'>
             <InputLabel id='uav-battery-display-style'>
               {t('settings.uavs.batteryDisplayStyle')}
@@ -264,10 +280,10 @@ const UAVsTabPresentation = ({
         </Box>
       </Box>
 
-      <Box my={2}>
+      <Box>
         <Header>{t('settings.uavs.missionSetup')}</Header>
 
-        <Box display='flex' flexDirection='row' mb={1}>
+        <Box sx={{ display: 'flex', flexDirection: 'row', mb: 1 }}>
           <SimpleDistanceField
             fullWidth
             name='minOutdoorTakeoffSpacing'
@@ -278,7 +294,7 @@ const UAVsTabPresentation = ({
             value={minOutdoorTakeoffSpacing}
             onChange={onDistanceFieldUpdated}
           />
-          <Box width={theme.spacing(2)} />
+          <Box className={styles.horizontalSpacer} />
           <SimpleDistanceField
             fullWidth
             name='minIndoorTakeoffSpacing'
@@ -291,7 +307,7 @@ const UAVsTabPresentation = ({
           />
         </Box>
 
-        <Box display='flex' flexDirection='row' mb={1}>
+        <Box sx={{ display: 'flex', flexDirection: 'row', mb: 1 }}>
           <SimpleDistanceField
             fullWidth
             name='placementAccuracy'
@@ -302,7 +318,7 @@ const UAVsTabPresentation = ({
             value={placementAccuracy}
             onChange={onDistanceFieldUpdated}
           />
-          <Box width={theme.spacing(2)} />
+          <Box className={styles.horizontalSpacer} />
           <SimpleAngleField
             fullWidth
             name='takeoffHeadingAccuracy'
@@ -319,7 +335,6 @@ const UAVsTabPresentation = ({
           {t('settings.uavs.missionSetupDescription')}
         </Typography>
       </Box>
-
     </>
   );
 };
@@ -352,7 +367,6 @@ UAVsTabPresentation.propTypes = {
 };
 
 UAVsTabPresentation.defaultProps = {
-  preferredBatteryDisplayStyle: BatteryDisplayStyle.VOLTAGE,
   vehicleType: vehicleTypeOptions[0],
 };
 

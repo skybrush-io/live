@@ -1,9 +1,7 @@
-import { getDistance as haversineDistance } from 'ol/sphere';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import { createSelector } from '@reduxjs/toolkit';
-
+import { getDistance as haversineDistance } from 'ol/sphere';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 

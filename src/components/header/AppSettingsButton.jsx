@@ -1,10 +1,8 @@
-import React from 'react';
+import SettingsIcon from '@mui/icons-material/Settings';
 import { Translation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import SettingsIcon from '@material-ui/icons/Settings';
-
-import GenericHeaderButton from '@skybrush/mui-components/lib/GenericHeaderButton';
+import { GenericHeaderButton } from '@skybrush/mui-components';
 
 import { toggleAppSettingsDialog } from '~/features/settings/actions';
 

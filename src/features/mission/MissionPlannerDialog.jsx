@@ -1,14 +1,13 @@
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Checkbox from '@mui/material/Checkbox';
+import DialogActions from '@mui/material/DialogActions';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import PropTypes from 'prop-types';
 import React, { useCallback, useState } from 'react';
 import { connect } from 'react-redux';
 
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import Checkbox from '@material-ui/core/Checkbox';
-import DialogActions from '@material-ui/core/DialogActions';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-
-import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
+import { DraggableDialog } from '@skybrush/mui-components';
 
 import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
 import { isConnected as isConnectedToServer } from '~/features/servers/selectors';
@@ -145,7 +144,7 @@ const MissionPlannerDialog = ({
           />
         </Tooltip>
 
-        <Box flex={1} />
+        <Box sx={{ flex: 1 }} />
 
         <Button onClick={onClose}>Close</Button>
         <Button

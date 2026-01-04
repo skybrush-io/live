@@ -2,12 +2,10 @@ import format from 'date-fns/format';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import { makeStyles } from '@material-ui/core/styles';
+import { Status, makeStyles } from '@skybrush/app-theme-mui';
+import { StatusLight } from '@skybrush/mui-components';
 
 import { LogLevel } from '~/utils/logging';
-
-import { Status } from '@skybrush/app-theme-material-ui';
-import StatusLight from '@skybrush/mui-components/lib/StatusLight';
 
 const statusMap = {
   [LogLevel.DEBUG]: Status.DEBUG,

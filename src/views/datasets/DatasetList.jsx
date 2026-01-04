@@ -2,11 +2,9 @@
  * @file Component that displays the list datasets.
  */
 
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { connect } from 'react-redux';
 
 import { listOf } from '~/components/helpers/lists';
@@ -28,8 +26,6 @@ DatasetListEntry.propTypes = {
   /** The identifier of the dataset */
   id: PropTypes.string.isRequired,
 };
-
-DatasetListEntry.defaultProps = {};
 
 /**
  * Presentation component for showing a list of datasets.

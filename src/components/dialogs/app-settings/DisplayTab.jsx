@@ -1,27 +1,24 @@
 import config from 'config';
 
+import Box from '@mui/material/Box';
+import Checkbox from '@mui/material/Checkbox';
+import FormControl from '@mui/material/FormControl';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormGroup from '@mui/material/FormGroup';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import Box from '@material-ui/core/Box';
-import Checkbox from '@material-ui/core/Checkbox';
-import FormControl from '@material-ui/core/FormControl';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormGroup from '@material-ui/core/FormGroup';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
-
-import Header from '@skybrush/mui-components/lib/FormHeader';
-import ThemeSelector from '@skybrush/mui-components/lib/ThemeSelector';
+import { FormHeader as Header, ThemeSelector } from '@skybrush/mui-components';
 
 import CoordinateSystemFields from '~/components/CoordinateSystemFields';
 import {
   setFlatEarthCoordinateSystemOrientation,
-  setFlatEarthCoordinateSystemType,
   setFlatEarthCoordinateSystemOrigin,
+  setFlatEarthCoordinateSystemType,
 } from '~/features/map/origin';
 import { updateAppSettings } from '~/features/settings/slice';
 import { enabledLanguages } from '~/i18n';
@@ -37,9 +34,12 @@ const coordinateFormatOrder = [
   CoordinateFormat.SIGNED_DEGREES_MINUTES_SECONDS,
 ];
 
-const DisplayTabPresentation = ({ t, ...props }) => (
+// default value for 'language' ensures that updating from a non-localized
+// version does not leave the "Language" dropdown empty
+
+const DisplayTabPresentation = ({ language = 'en', t, ...props }) => (
   <>
-    <Box my={2}>
+    <Box>
       <FormControl fullWidth variant='filled'>
         <InputLabel id='language-selector-label'>
           {t('settings.display.language')}
@@ -47,7 +47,7 @@ const DisplayTabPresentation = ({ t, ...props }) => (
         <Select
           labelId='language-selector-label'
           name='language'
-          value={props.language}
+          value={language}
           onChange={props.onFieldChanged}
         >
           {enabledLanguages.map(({ code, label }) => (
@@ -59,11 +59,12 @@ const DisplayTabPresentation = ({ t, ...props }) => (
       </FormControl>
     </Box>
 
-    <Box my={2}>
+    <Box sx={{ my: 2 }}>
+      {/* TODO(vp): gap should be used on the parent component instead... */}
       <ThemeSelector value={props.theme} onChange={props.onFieldChanged} />
     </Box>
 
-    <Box my={2}>
+    <Box>
       <FormControl fullWidth variant='filled'>
         <InputLabel id='coordinate-format-label'>
           {t('settings.display.coordinateFormat')}
@@ -191,11 +192,6 @@ DisplayTabPresentation.propTypes = {
   showScaleLine: PropTypes.bool,
   t: PropTypes.func,
   theme: PropTypes.oneOf(['auto', 'dark', 'light']),
-};
-
-DisplayTabPresentation.defaultProps = {
-  // ensure that updating from a non-localized version does not leave the "Language" dropdown empty
-  language: 'en',
 };
 
 export default connect(

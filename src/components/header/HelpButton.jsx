@@ -1,9 +1,8 @@
+import Help from '@mui/icons-material/HelpOutline';
 import config from 'config';
-import React from 'react';
 import { Translation } from 'react-i18next';
 
-import Help from '@material-ui/icons/HelpOutline';
-import GenericHeaderButton from '@skybrush/mui-components/lib/GenericHeaderButton';
+import { GenericHeaderButton } from '@skybrush/mui-components';
 
 const showHelp = () => {
   if (config.urls.help) {
@@ -14,11 +13,7 @@ const showHelp = () => {
 const HelpButton = () => (
   <Translation>
     {(t) => (
-      <GenericHeaderButton
-        id='tour-help-button'
-        tooltip={t('help')}
-        onClick={showHelp}
-      >
+      <GenericHeaderButton tooltip={t('help')} onClick={showHelp}>
         <Help />
       </GenericHeaderButton>
     )}

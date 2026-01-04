@@ -1,18 +1,17 @@
+import Place from '@mui/icons-material/Place';
+import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 
-import Box from '@material-ui/core/Box';
-import IconButton from '@material-ui/core/IconButton';
-import { makeStyles } from '@material-ui/core/styles';
-import Place from '@material-ui/icons/Place';
-
 import {
   createSecondaryAreaStyle,
   isThemeDark,
-} from '@skybrush/app-theme-material-ui';
-import Tooltip from '@skybrush/mui-components/lib/Tooltip';
+  makeStyles,
+} from '@skybrush/app-theme-mui';
+import { Tooltip } from '@skybrush/mui-components';
 
 import FadeAndSlide from '~/components/transitions/FadeAndSlide';
 
@@ -26,33 +25,32 @@ import SurveyStatusIndicator from './SurveyStatusIndicator';
 
 /* ************************************************************************ */
 
-const useStyles = makeStyles(
-  (theme) => ({
-    root: {
-      ...createSecondaryAreaStyle(theme),
-    },
+const useStyles = makeStyles((theme) => ({
+  root: {
+    ...createSecondaryAreaStyle(theme),
+    display: 'flex',
+    flexDirection: 'column',
+  },
 
-    inset: {
-      border: `1px solid ${
-        isThemeDark(theme) ? 'rgba(0, 0, 0, 0.54)' : 'rgba(255, 255, 255, 0.54)'
-      }`,
-      boxShadow: '0 0 4px 2px inset rgba(0, 0, 0, 0.54)',
-      padding: theme.spacing(1),
-    },
+  inset: {
+    border: `1px solid ${
+      isThemeDark(theme) ? 'rgba(0, 0, 0, 0.54)' : 'rgba(255, 255, 255, 0.54)'
+    }`,
+    boxShadow: '0 0 4px 2px inset rgba(0, 0, 0, 0.54)',
+    padding: theme.spacing(1),
+  },
 
-    nonInset: {
-      borderTop: `1px solid ${
-        isThemeDark(theme) ? 'rgba(0, 0, 0, 0.54)' : 'rgba(255, 255, 255, 0.54)'
-      }`,
-      boxShadow: '0 2px 6px -2px inset rgba(0, 0, 0, 0.54)',
-      padding: theme.spacing(2, 3),
-    },
-  }),
-  { name: 'ChartContainer' }
-);
+  nonInset: {
+    borderTop: `1px solid ${
+      isThemeDark(theme) ? 'rgba(0, 0, 0, 0.54)' : 'rgba(255, 255, 255, 0.54)'
+    }`,
+    boxShadow: '0 2px 6px -2px inset rgba(0, 0, 0, 0.54)',
+    padding: theme.spacing(2, 3),
+  },
+}));
 
 const RTKSetupDialogBottomPanel = ({
-  chartHeight,
+  chartHeight = 160,
   inset,
   onToggleSurveySettings,
   surveySettingsVisible,
@@ -71,22 +69,24 @@ const RTKSetupDialogBottomPanel = ({
       className={clsx(classes.root, inset ? classes.inset : classes.nonInset)}
     >
       <RTKSatelliteObservations height={chartHeight} />
-
-      <Box position='relative' height={48}>
+      <Box sx={{ position: 'relative', height: 48 }}>
         <FadeAndSlide in={!surveySettingsVisible}>
           <Box
-            display='flex'
-            flexDirection='row'
-            alignItems='center'
-            left={0}
-            top={0}
-            right={0}
-            bottom={0}
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              left: 0,
+              top: 0,
+              right: 0,
+              bottom: 0,
+            }}
           >
             {onToggleSurveySettings && (
               <Tooltip content='Start new survey'>
                 <IconButton
                   disabled={!surveyStatus || !surveyStatus.supported}
+                  size='large'
                   onClick={onToggleSurveySettings}
                 >
                   <Place />
@@ -94,7 +94,7 @@ const RTKSetupDialogBottomPanel = ({
               </Tooltip>
             )}
             <SurveyStatusIndicator {...surveyStatus} />
-            <Box flex='1' />
+            <Box sx={{ flex: '1' }} />
             <AntennaPositionIndicator />
           </Box>
         </FadeAndSlide>
@@ -118,10 +118,6 @@ RTKSetupDialogBottomPanel.propTypes = {
   onToggleSurveySettings: PropTypes.func,
   surveySettingsVisible: PropTypes.bool,
   surveyStatus: PropTypes.object,
-};
-
-RTKSetupDialogBottomPanel.defaultProps = {
-  chartHeight: 160,
 };
 
 export default connect(

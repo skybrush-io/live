@@ -1,18 +1,13 @@
-/* eslint-disable @typescript-eslint/ban-types */
 /**
  * @file Component that displays the status of the known UAVs in a Skybrush
  * flock.
  */
 
-import AppBar from '@material-ui/core/AppBar';
-import Box from '@material-ui/core/Box';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import Delete from '@material-ui/icons/Delete';
-import {
-  bindActionCreators,
-  type AnyAction,
-  type Store,
-} from '@reduxjs/toolkit';
+import Delete from '@mui/icons-material/Delete';
+import AppBar from '@mui/material/AppBar';
+import Box from '@mui/material/Box';
+import type { Theme } from '@mui/material/styles';
+import { bindActionCreators, type AnyAction } from '@reduxjs/toolkit';
 import isNil from 'lodash-es/isNil';
 import { nanoid } from 'nanoid';
 import React, {
@@ -26,7 +21,7 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { connect, useStore } from 'react-redux';
 
-import { isThemeDark } from '@skybrush/app-theme-material-ui';
+import { isThemeDark, makeStyles } from '@skybrush/app-theme-mui';
 
 import { createSelectionHandlerThunk } from '~/components/helpers/lists';
 import FadeAndSlide from '~/components/transitions/FadeAndSlide';
@@ -77,39 +72,31 @@ import { getDisplayedItems, getGlobalIdsOfDisplayedItems } from './selectors';
 import type { Item } from './types';
 import { getSelectedUAVIdsAndMissionSlotIds, itemToGlobalId } from './utils';
 
-const useListStyles = makeStyles(
-  (theme) => ({
-    appBar: {
-      backgroundColor: isThemeDark(theme)
-        ? '#424242'
-        : theme.palette.background.paper,
-      height: 48,
-    },
+const useListStyles = makeStyles((theme: Theme) => ({
+  appBar: {
+    backgroundColor: isThemeDark(theme)
+      ? '#424242'
+      : theme.palette.background.paper,
+    height: 48,
+  },
 
-    toolbar: {
-      position: 'absolute',
-      left: 0,
-      right: 0,
-      top: 0,
-    },
+  toolbar: {
+    position: 'absolute',
+    gap: theme.spacing(0.75),
+    left: 0,
+    right: 0,
+    top: 0,
+  },
 
-    gridItem: {
-      padding: theme.spacing(1),
-      height: '100%',
-    },
+  gridItem: {
+    padding: theme.spacing(1),
+    height: '100%',
+  },
 
-    listItem: {
-      padding: theme.spacing(0.5),
-      borderBottom: `1px solid ${theme.palette.divider}`,
-
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      '&:first-child': {
-        borderTop: `1px solid ${theme.palette.divider}`,
-      },
-    },
-  }),
-  { name: 'UAVList' }
-);
+  listItem: {
+    borderBottom: `1px solid ${theme.palette.divider}`,
+  },
+}));
 
 type ItemRendererOptions = {
   className?: string;
@@ -147,7 +134,7 @@ const createGridItemRenderer =
     selection,
     showMissionIds,
   }: ItemRendererOptions) =>
-  (item: Item): JSX.Element => {
+  (item: Item): React.JSX.Element => {
     const [uavId, missionIndex, proposedLabel] = item;
     const itemId = itemToGlobalId(item);
     const editingThisItem =
@@ -233,7 +220,7 @@ const createListItemRenderer =
     selection,
     showMissionIds,
   }: ItemRendererOptions) =>
-  (item: Item): JSX.Element | null => {
+  (item: Item): React.JSX.Element | null => {
     if (item === deletionMarker) {
       return null;
     }
@@ -307,13 +294,13 @@ const UAVListPresentation = ({
   onSelectItem,
   selection,
   showMissionIds,
-}: UAVListPresentationProps): JSX.Element => {
+}: UAVListPresentationProps): React.JSX.Element => {
   // Regular styling stuff
   const classes = useListStyles();
 
   // Create a callback that can be used to retrun the index of the item showing
   // the given UAV. This is used to focus the list to a specific UAV.
-  const store: Store<RootState> = useStore();
+  const store = useStore<RootState>();
   const getIndexOfUavId = useCallback(
     (uavId: string): number => {
       const items = getDisplayedItems(store.getState());
@@ -403,7 +390,7 @@ const UAVListPresentation = ({
   // Finally, render time!
   return (
     <DndProvider backend={HTML5Backend}>
-      <Box display='flex' flexDirection='column' height='100%'>
+      <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
         <AppBar color='default' position='static' className={classes.appBar}>
           <FadeAndSlide mountOnEnter unmountOnExit in={!editingMapping}>
             <UAVToolbar className={classes.toolbar} />
@@ -423,7 +410,7 @@ const UAVListPresentation = ({
             <MappingSlotEditorToolbar className={classes.toolbar} />
           </FadeAndSlide>
         </AppBar>
-        <Box flex={1} position='relative'>
+        <Box sx={{ flex: 1, position: 'relative' }}>
           <SortAndFilterHeader floating />
           {/* We assume that each grid item is a <div> in the <Box> when we
            * calculate how many columns there are in the grid. Revise the
@@ -437,7 +424,9 @@ const UAVListPresentation = ({
         </Box>
         {editingMapping && layout === UAVListLayout.GRID ? (
           <Box className='bottom-bar'>
-            <Box display='flex' flexDirection='row' flexWrap='wrap'>
+            <Box
+              sx={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}
+            >
               {itemRenderer(deletionMarker)}
             </Box>
           </Box>
@@ -463,7 +452,6 @@ const UAVList = connect(
   () => {
     const containerDOMNodeId = `__keyboardNav-${nanoid()}`;
 
-    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
     return (dispatch) => ({
       containerDOMNodeId,
       dispatch,

@@ -1,19 +1,18 @@
+import CropSquare from '@mui/icons-material/CropSquare';
+import FiberManualRecord from '@mui/icons-material/FiberManualRecord';
+import PanoramaFishEye from '@mui/icons-material/PanoramaFishEye';
+import Place from '@mui/icons-material/Place';
+import SelectAll from '@mui/icons-material/SelectAll';
+import ShowChart from '@mui/icons-material/ShowChart';
+import StarBorder from '@mui/icons-material/StarBorder';
+import ZoomIn from '@mui/icons-material/ZoomIn';
+import type { SvgIconProps } from '@mui/material';
+import Divider from '@mui/material/Divider';
+import IconButton from '@mui/material/IconButton';
 import type { TFunction } from 'i18next';
 import partial from 'lodash-es/partial';
-import React from 'react';
+import type React from 'react';
 import { withTranslation } from 'react-i18next';
-
-import type { SvgIconProps } from '@material-ui/core';
-import Divider from '@material-ui/core/Divider';
-import IconButton from '@material-ui/core/IconButton';
-import CropSquare from '@material-ui/icons/CropSquare';
-import FiberManualRecord from '@material-ui/icons/FiberManualRecord';
-import PanoramaFishEye from '@material-ui/icons/PanoramaFishEye';
-import Place from '@material-ui/icons/Place';
-import SelectAll from '@material-ui/icons/SelectAll';
-import ShowChart from '@material-ui/icons/ShowChart';
-import StarBorder from '@material-ui/icons/StarBorder';
-import ZoomIn from '@material-ui/icons/ZoomIn';
 
 import { Tool } from '~/components/map/tools';
 import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
@@ -122,7 +121,10 @@ const DrawingToolbar = ({
             const { tool, label, icon: Icon } = drawingToolRegistry[toolId];
             return (
               <Tooltip key={toolId} content={label(t)} placement='right'>
-                <IconButton onClick={partial(onToolSelected, tool)}>
+                <IconButton
+                  size='large'
+                  onClick={partial(onToolSelected, tool)}
+                >
                   <Icon color={colorForTool(tool)} />
                 </IconButton>
               </Tooltip>

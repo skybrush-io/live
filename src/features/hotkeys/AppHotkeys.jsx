@@ -4,7 +4,6 @@
 
 import mapValues from 'lodash-es/mapValues';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { configure as configureHotkeys, GlobalHotKeys } from 'react-hotkeys';
 import { connect } from 'react-redux';
 

@@ -1,21 +1,18 @@
+import IconButton from '@mui/material/IconButton';
+import ListItemAvatar from '@mui/material/ListItemAvatar';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import ListItemText from '@mui/material/ListItemText';
 import clsx from 'clsx';
 import identity from 'lodash-es/identity';
 import isNil from 'lodash-es/isNil';
 import { getDistance as haversineDistance } from 'ol/sphere';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { Translation, useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import IconButton from '@material-ui/core/IconButton';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
-import { makeStyles } from '@material-ui/core/styles';
-
-import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
-import Tooltip from '@skybrush/mui-components/lib/Tooltip';
+import { makeStyles } from '@skybrush/app-theme-mui';
+import { BackgroundHint, Tooltip } from '@skybrush/mui-components';
 
 import Colors from '~/components/colors';
 import { multiSelectableListOf } from '~/components/helpers/lists';
@@ -66,55 +63,52 @@ const formatDurationOfSampling = (startedAt, lastSampleAt, extraSamplingTime) =>
       1000
   );
 
-const useStyles = makeStyles(
-  (theme) => ({
-    root: {
-      fontVariantNumeric: 'lining-nums tabular-nums',
+const useStyles = makeStyles((theme) => ({
+  root: {
+    fontVariantNumeric: 'lining-nums tabular-nums',
 
-      '&>div:first-child>div:first-child': {
-        maxWidth: 44 /* used to ensure that the cross looks nice when not sampling */,
-      },
+    '&>div:first-child>div:first-child': {
+      maxWidth: 44 /* used to ensure that the cross looks nice when not sampling */,
     },
+  },
 
-    dim: {
-      color: theme.palette.text.secondary,
-    },
+  dim: {
+    color: theme.palette.text.secondary,
+  },
 
-    avatar: {
-      transition: theme.transitions.create(['background-color', 'color'], {
-        duration: theme.transitions.duration.short,
-      }),
-    },
+  avatar: {
+    transition: theme.transitions.create(['background-color', 'color'], {
+      duration: theme.transitions.duration.short,
+    }),
+  },
 
-    sampling: {
-      backgroundColor: Colors.success,
-      color: theme.palette.getContrastText(Colors.success),
-      position: 'relative',
-    },
+  sampling: {
+    backgroundColor: Colors.success,
+    color: theme.palette.getContrastText(Colors.success),
+    position: 'relative',
+  },
 
-    primaryContainer: {
-      display: 'flex',
-    },
+  primaryContainer: {
+    display: 'flex',
+  },
 
-    secondaryContainer: {
-      display: 'flex',
-    },
+  secondaryContainer: {
+    display: 'flex',
+  },
 
-    latLonCoordinatesColumn: {
-      minWidth: 180,
-    },
+  latLonCoordinatesColumn: {
+    minWidth: 180,
+  },
 
-    amslColumn: {
-      minWidth: 140,
-    },
+  amslColumn: {
+    minWidth: 140,
+  },
 
-    ahlColumn: {
-      minWidth: 80,
-      flex: 1,
-    },
-  }),
-  { name: 'MeasurementListItem' }
-);
+  ahlColumn: {
+    minWidth: 80,
+    flex: 1,
+  },
+}));
 
 const MeasurementListItem = ({
   coordinateFormatter,
@@ -185,7 +179,7 @@ const MeasurementListItem = ({
   }
 
   return (
-    <ListItem button {...rest} className={classes.root}>
+    <ListItemButton {...rest} className={classes.root}>
       <ListItemAvatar>
         <DroneAvatar id={id} variant='minimal' crossed={!sampling} />
       </ListItemAvatar>
@@ -197,13 +191,18 @@ const MeasurementListItem = ({
       {numSamples > 0 && (
         <ListItemSecondaryAction>
           <Tooltip content={t('measurementList.copyToClipboard')}>
-            <IconButton edge='end' aria-label='copy' onClick={() => onCopy(id)}>
+            <IconButton
+              edge='end'
+              aria-label='copy'
+              size='large'
+              onClick={() => onCopy(id)}
+            >
               <ContentCopy />
             </IconButton>
           </Tooltip>
         </ListItemSecondaryAction>
       )}
-    </ListItem>
+    </ListItemButton>
   );
 };
 

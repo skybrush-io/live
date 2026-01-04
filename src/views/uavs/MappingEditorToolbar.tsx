@@ -1,18 +1,16 @@
-import PropTypes from 'prop-types';
+import Check from '@mui/icons-material/Check';
+import MoreVert from '@mui/icons-material/MoreVert';
+import Mouse from '@mui/icons-material/Mouse';
+import OpenWith from '@mui/icons-material/OpenWith';
+import Box from '@mui/material/Box';
+import Divider from '@mui/material/Divider';
+import IconButton from '@mui/material/IconButton';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import Toolbar, { type ToolbarProps } from '@mui/material/Toolbar';
 import React from 'react';
-import { Translation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
-
-import Box from '@material-ui/core/Box';
-import Divider from '@material-ui/core/Divider';
-import IconButton from '@material-ui/core/IconButton';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import Toolbar, { type ToolbarProps } from '@material-ui/core/Toolbar';
-import Check from '@material-ui/icons/Check';
-import Mouse from '@material-ui/icons/Mouse';
-import MoreVert from '@material-ui/icons/MoreVert';
-import OpenWith from '@material-ui/icons/OpenWith';
 
 import Colors from '~/components/colors';
 import {
@@ -22,14 +20,18 @@ import {
   importMapping,
   removeMissingUAVsFromMapping,
 } from '~/features/mission/actions';
-import { canAugmentMappingAutomaticallyFromSpareDrones } from '~/features/mission/selectors';
+import {
+  canAugmentMappingAutomaticallyFromSpareDrones,
+  isMappingBeingCalculated,
+} from '~/features/mission/selectors';
 import {
   clearMapping,
   finishMappingEditorSession,
 } from '~/features/mission/slice';
-import useDropdown from '~/hooks/useDropdown';
 import { isDeveloperModeEnabled } from '~/features/session/selectors';
+import useDropdown from '~/hooks/useDropdown';
 import type { RootState } from '~/store/reducers';
+import MappingCalculationInProgress from './MappingCalculationInProgress';
 
 const instructionsStyle: React.CSSProperties = {
   overflow: 'ellipsis',
@@ -41,6 +43,7 @@ type MappingEditorToolbarProps = ToolbarProps &
   Readonly<{
     augmentMapping: () => void;
     canAugmentMapping: boolean;
+    calculating: boolean;
     clearMapping: () => void;
     devMode: boolean;
     exportMapping: () => void;
@@ -50,6 +53,24 @@ type MappingEditorToolbarProps = ToolbarProps &
     removeMissingUAVsFromMapping: () => void;
   }>;
 
+const Instructions = () => {
+  const { t } = useTranslation();
+  return (
+    <>
+      <IconButton disabled size='large'>
+        <Mouse />
+      </IconButton>
+      <Box style={instructionsStyle}>
+        {t('mappingEditorToolbar.clickToEdit')}
+      </Box>
+      <IconButton disabled size='large'>
+        <OpenWith />
+      </IconButton>
+      <Box style={instructionsStyle}>{t('mappingEditorToolbar.dragNodes')}</Box>
+    </>
+  );
+};
+
 const MappingEditorToolbar = React.forwardRef<
   HTMLDivElement,
   MappingEditorToolbarProps
@@ -57,6 +78,7 @@ const MappingEditorToolbar = React.forwardRef<
   (
     {
       augmentMapping,
+      calculating,
       canAugmentMapping,
       clearMapping,
       devMode,
@@ -75,80 +97,74 @@ const MappingEditorToolbar = React.forwardRef<
       closeMappingMenu,
       closeMappingMenuWith,
     ] = useDropdown();
+    const { t } = useTranslation();
 
     return (
-      <Translation>
-        {(t) => (
-          <Toolbar ref={ref} disableGutters variant='dense' {...rest}>
-            <IconButton disabled>
-              <Mouse />
-            </IconButton>
-            <Box style={instructionsStyle}>
-              {t('mappingEditorToolbar.clickToEdit')}
-            </Box>
-            <IconButton disabled>
-              <OpenWith />
-            </IconButton>
-            <Box style={instructionsStyle}>
-              {t('mappingEditorToolbar.dragNodes')}
-            </Box>
-            <Box flex={1} />
-            <IconButton onClick={finishMappingEditorSession}>
-              <Check htmlColor={Colors.success} />
-            </IconButton>
-            <IconButton onClick={openMappingMenu}>
-              <MoreVert />
-            </IconButton>
-            <Menu
-              anchorEl={menuAnchorElement}
-              open={menuAnchorElement !== null}
-              variant='menu'
-              onClose={closeMappingMenu}
-            >
-              <MenuItem
-                disabled={!canAugmentMapping}
-                onClick={
-                  canAugmentMapping
-                    ? closeMappingMenuWith(augmentMapping)
-                    : undefined
-                }
-              >
-                {t('mappingEditorToolbar.assignSpares')}
-              </MenuItem>
-              <Divider />
-              <MenuItem onClick={closeMappingMenuWith(importMapping)}>
-                {t('mappingEditorToolbar.importMapping')}
-              </MenuItem>
-              <MenuItem onClick={closeMappingMenuWith(exportMapping)}>
-                {t('mappingEditorToolbar.exportMapping')}
-              </MenuItem>
-              <Divider />
-              {devMode && (
-                <MenuItem onClick={closeMappingMenuWith(generateRandomMapping)}>
-                  {t('mappingEditorToolbar.generateRandomMapping')}
-                </MenuItem>
-              )}
-              {devMode && <Divider />}
-              <MenuItem onClick={closeMappingMenuWith(clearMapping)}>
-                {t('general.action.clear')}
-              </MenuItem>
-              <MenuItem
-                onClick={closeMappingMenuWith(removeMissingUAVsFromMapping)}
-              >
-                {t('mappingEditorToolbar.clearMissing')}
-              </MenuItem>
-            </Menu>
-          </Toolbar>
+      <Toolbar ref={ref} disableGutters variant='dense' {...rest}>
+        {calculating ? (
+          <Box pl={2}>
+            <MappingCalculationInProgress size='small' />
+          </Box>
+        ) : (
+          <Instructions />
         )}
-      </Translation>
+        <Box sx={{ flex: 1 }} />
+        <IconButton size='large' onClick={finishMappingEditorSession}>
+          <Check htmlColor={Colors.success} />
+        </IconButton>
+        <IconButton size='large' onClick={openMappingMenu}>
+          <MoreVert />
+        </IconButton>
+        <Menu
+          anchorEl={menuAnchorElement}
+          open={menuAnchorElement !== null}
+          variant='menu'
+          onClose={closeMappingMenu}
+        >
+          <MenuItem
+            disabled={!canAugmentMapping}
+            onClick={
+              canAugmentMapping
+                ? closeMappingMenuWith(augmentMapping)
+                : undefined
+            }
+          >
+            {t('mappingEditorToolbar.assignSpares')}
+          </MenuItem>
+          <Divider />
+          <MenuItem onClick={closeMappingMenuWith(importMapping)}>
+            {t('mappingEditorToolbar.importMapping')}
+          </MenuItem>
+          <MenuItem onClick={closeMappingMenuWith(exportMapping)}>
+            {t('mappingEditorToolbar.exportMapping')}
+          </MenuItem>
+          <Divider />
+          {devMode && (
+            <MenuItem onClick={closeMappingMenuWith(generateRandomMapping)}>
+              {t('mappingEditorToolbar.generateRandomMapping')}
+            </MenuItem>
+          )}
+          {devMode && <Divider />}
+          <MenuItem onClick={closeMappingMenuWith(clearMapping)}>
+            {t('general.action.clear')}
+          </MenuItem>
+          <MenuItem
+            onClick={closeMappingMenuWith(removeMissingUAVsFromMapping)}
+          >
+            {t('mappingEditorToolbar.clearMissing')}
+          </MenuItem>
+        </Menu>
+      </Toolbar>
     );
   }
 );
+MappingEditorToolbar.displayName = 'MappingEditorToolbar';
 
 export default connect(
   // mapStateToProps
   (state: RootState) => ({
     canAugmentMapping: canAugmentMappingAutomaticallyFromSpareDrones(state),
+    calculating: isMappingBeingCalculated(state),
     devMode: isDeveloperModeEnabled(state),
   }),
   // mapDispatchToProps

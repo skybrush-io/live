@@ -1,6 +1,7 @@
-import isNil from 'lodash-es/isNil';
 import { createSelector } from '@reduxjs/toolkit';
 import { type License } from '@skybrush/flockwave-spec';
+import isNil from 'lodash-es/isNil';
+import * as semver from 'semver';
 
 import { ConnectionState } from '~/model/enums';
 import { type AppSelector, type RootState } from '~/store/reducers';
@@ -23,7 +24,7 @@ import {
  */
 export const getAuthenticationToken: AppSelector<string | undefined> = (
   state
-) => state.servers.token || undefined;
+) => state.servers.token ?? undefined;
 
 /**
  * Returns the estimated clock skew between us and the server, in milliseconds.
@@ -131,6 +132,32 @@ export const getServerHttpUrl: AppSelector<string | undefined> = createSelector(
 );
 
 /**
+ * Selector that returns the version number of the server that we are
+ * connected to, or undefined if we are not connected to the server yet.
+ */
+export const getServerVersion = (state: RootState): string | undefined =>
+  state.servers.current.version;
+
+/**
+ * Selector factory that takes a minimum version and returns a selector that
+ * indicates whether the connected server meets the minimum version requirement
+ * specified in standard `npm` conventions.
+ */
+export const getServerVersionValidator = (
+  requirement: string
+): AppSelector<boolean> =>
+  createSelector(getServerVersion, (serverVersion) => {
+    try {
+      return serverVersion
+        ? semver.satisfies(serverVersion, requirement, { loose: true })
+        : false;
+    } catch (error) {
+      console.warn('Failed to compare server version:', error);
+      return false;
+    }
+  });
+
+/**
  * Returns all the information that we know about the current Skybrush server.
  *
  * @param state - The state of the application
@@ -173,16 +200,6 @@ const getCurrentServerLicense: AppSelector<License | undefined> = (state) =>
 export const getCurrentServerPortMapping: AppSelector<
   Record<string, number>
 > = (state) => state.servers.current.ports;
-
-/**
- * Returns the version number of the currently connected Skybrush server.
- *
- * @param state - The state of the application
- * @return Version number of the currently connected Skybrush server
- */
-export const getCurrentServerVersion: AppSelector<string | undefined> = (
-  state
-) => state.servers.current.version;
 
 /**
  * Selector that calculates and caches the list of all the servers detected

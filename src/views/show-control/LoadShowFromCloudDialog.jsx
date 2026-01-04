@@ -1,17 +1,16 @@
 import config from 'config';
 
+import Dialog from '@mui/material/Dialog';
+import List from '@mui/material/List';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemText from '@mui/material/ListItemText';
+import ListSubheader from '@mui/material/ListSubheader';
+import Tab from '@mui/material/Tab';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
-import Dialog from '@material-ui/core/Dialog';
-import List from '@material-ui/core/List';
-import ListSubheader from '@material-ui/core/ListSubheader';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import Tab from '@material-ui/core/Tab';
-
-import DialogTabs from '@skybrush/mui-components/lib/DialogTabs';
+import { DialogTabs } from '@skybrush/mui-components';
 
 import { loadShowFromUrl } from '~/features/show/actions';
 import { closeLoadShowFromCloudDialog } from '~/features/show/slice';
@@ -21,7 +20,11 @@ import { closeLoadShowFromCloudDialog } from '~/features/show/slice';
  * file from a remote data source such as his/her Skybrush Account or a git
  * repository
  */
-const LoadShowFromCloudDialog = ({ open, onClose, onLoadShowFromUrl }) => {
+const LoadShowFromCloudDialog = ({
+  open = false,
+  onClose,
+  onLoadShowFromUrl,
+}) => {
   return (
     <Dialog fullWidth open={open} onClose={onClose}>
       <DialogTabs value='skybrushAccount'>
@@ -32,9 +35,9 @@ const LoadShowFromCloudDialog = ({ open, onClose, onLoadShowFromUrl }) => {
       <List>
         <ListSubheader>Shared with me</ListSubheader>
         {config.examples.shows.map(({ id, title, url }) => (
-          <ListItem key={id} button onClick={() => onLoadShowFromUrl(url)}>
+          <ListItemButton key={id} onClick={() => onLoadShowFromUrl(url)}>
             <ListItemText primary={title} />
-          </ListItem>
+          </ListItemButton>
         ))}
       </List>
     </Dialog>
@@ -45,10 +48,6 @@ LoadShowFromCloudDialog.propTypes = {
   onClose: PropTypes.func,
   onLoadShowFromUrl: PropTypes.func,
   open: PropTypes.bool,
-};
-
-LoadShowFromCloudDialog.defaultProps = {
-  open: false,
 };
 
 export default connect(

@@ -2,19 +2,18 @@
  * @file Component for viewing, editing and exporting markdown notes.
  */
 
+import Save from '@mui/icons-material/Save';
+import IconButton from '@mui/material/IconButton';
 import formatDate from 'date-fns/format';
+import 'easymde/dist/easymde.min.css';
 import debounce from 'lodash-es/debounce';
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
-import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
-
+import { connect } from 'react-redux';
 import SimpleMDE from 'react-simplemde-editor';
-import 'easymde/dist/easymde.min.css';
 
-import IconButton from '@material-ui/core/IconButton';
-import { makeStyles } from '@material-ui/core/styles';
-import Save from '@material-ui/icons/Save';
+import { makeStyles } from '@skybrush/app-theme-mui';
 
 import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
 import { updateFieldNotes } from '~/features/field-notes/slice';
@@ -50,37 +49,34 @@ const SIMPLE_MDE_OPTIONS = {
   },
 };
 
-const useStyles = makeStyles(
-  (theme) => ({
-    editorWrapper: {
-      height: '100%',
-      overflow: 'overlay',
+const useStyles = makeStyles((theme) => ({
+  editorWrapper: {
+    height: '100%',
+    overflow: 'overlay',
 
-      '&:hover': {
-        '& + $saveIcon': {
-          opacity: 1,
-        },
-      },
-    },
-
-    saveIcon: {
-      position: 'absolute',
-      top: 0,
-      right: 0,
-
-      opacity: 0,
-
-      '&:hover': {
+    '&:hover': {
+      '& + $saveIcon': {
         opacity: 1,
       },
-
-      transition: theme.transitions.create(['opacity'], {
-        duration: theme.transitions.duration.short,
-      }),
     },
-  }),
-  { name: 'FieldNotesPanel' }
-);
+  },
+
+  saveIcon: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+
+    opacity: 0,
+
+    '&:hover': {
+      opacity: 1,
+    },
+
+    transition: theme.transitions.create(['opacity'], {
+      duration: theme.transitions.duration.short,
+    }),
+  },
+}));
 
 const FieldNotesPanel = ({ contents, t, updateFieldNotes }) => {
   const classes = useStyles();
@@ -105,7 +101,11 @@ const FieldNotesPanel = ({ contents, t, updateFieldNotes }) => {
         content={t('fieldNotesPanel.exportNotesAsFile')}
         placement='left'
       >
-        <IconButton className={classes.saveIcon} onClick={exportNotes}>
+        <IconButton
+          className={classes.saveIcon}
+          size='large'
+          onClick={exportNotes}
+        >
           <Save />
         </IconButton>
       </Tooltip>

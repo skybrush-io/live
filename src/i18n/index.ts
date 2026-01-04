@@ -1,6 +1,6 @@
 import config from 'config';
 
-import i18next, { type TFuncKey, type TOptions, type TFunction } from 'i18next';
+import i18next, { type TOptions, type TFunction } from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
 import { type NestedRecord } from '~/utils/types';
@@ -12,8 +12,11 @@ import * as fr from './fr.json';
 import * as hu from './hu.json';
 import * as it from './it.json';
 import * as ja from './ja.json';
+import * as ko from './ko.json';
 import * as nl from './nl.json';
+import * as pl from './pl.json';
 import * as ro from './ro.json';
+import * as ru from './ru.json';
 import * as zhHans from './zh-Hans.json';
 
 /* Languages */
@@ -33,9 +36,12 @@ const availableLanguages: Language[] = [
   { label: 'Italiano', code: 'it', translation: it },
   { label: 'Magyar', code: 'hu', translation: hu },
   { label: 'Nederlands', code: 'nl', translation: nl },
+  { label: 'Polski', code: 'pl', translation: pl },
   { label: 'Română', code: 'ro', translation: ro },
-  { label: '日本語', code: 'ja', translation: ja },
+  { label: 'Русский', code: 'ru', translation: ru },
   { label: '中文', code: 'zh-Hans', translation: zhHans },
+  { label: '日本語', code: 'ja', translation: ja },
+  { label: '한국어', code: 'ko', translation: ko },
 ];
 
 export const enabledLanguages = availableLanguages.filter(({ code }) =>
@@ -63,6 +69,6 @@ export type PreparedI18nKey = (t: TFunction) => string;
 // https://www.typescriptlang.org/docs/handbook/utility-types.html#parameterstype
 // "For overloaded functions, this will be the parameters of the last signature;"
 export const tt =
-  (key: TFuncKey, options?: TOptions): PreparedI18nKey =>
+  (key: string, options?: TOptions): PreparedI18nKey =>
   (t: TFunction) =>
     options ? t(key, options) : t(key);

@@ -1,3 +1,12 @@
+import Error from '@mui/icons-material/Error';
+import GetApp from '@mui/icons-material/GetApp';
+import Save from '@mui/icons-material/Save';
+import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import ListItemText from '@mui/material/ListItemText';
+import Typography from '@mui/material/Typography';
 import isNil from 'lodash-es/isNil';
 import prettyBytes from 'pretty-bytes';
 import PropTypes from 'prop-types';
@@ -5,20 +14,12 @@ import React, { memo, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useAsyncRetry } from 'react-use';
 
-import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
-import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import Error from '@material-ui/icons/Error';
-import GetApp from '@material-ui/icons/GetApp';
-import Save from '@material-ui/icons/Save';
-
-import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
-import LargeProgressIndicator from '@skybrush/mui-components/lib/LargeProgressIndicator';
-import StatusLight from '@skybrush/mui-components/lib/StatusLight';
+import { makeStyles } from '@skybrush/app-theme-mui';
+import {
+  BackgroundHint,
+  LargeProgressIndicator,
+  StatusLight,
+} from '@skybrush/mui-components';
 
 import { listOf } from '~/components/helpers/lists';
 import { showNotification } from '~/features/snackbar/actions';
@@ -42,18 +43,13 @@ import ListItemProgressBar from './ListItemProgressBar';
 
 const SEPARATOR = ' · ';
 
-const useStyles = makeStyles(
-  (theme) => ({
-    progress: {
-      // Make sure that the progress bar (if any) has exactly the same height
-      // as the secondary text
-      padding: theme.spacing(1, 0),
-    },
-  }),
-  {
-    name: 'UAVLogListItem',
-  }
-);
+const useStyles = makeStyles((theme) => ({
+  progress: {
+    // Make sure that the progress bar (if any) has exactly the same height
+    // as the secondary text
+    padding: theme.spacing(1, 0),
+  },
+}));
 
 const saveLogToFile = (log) => {
   const { filename, blob } = convertFlightLogToBlob(log);
@@ -143,7 +139,7 @@ const UAVLogListItem = ({ id, kind, size, timestamp, uavId }) => {
   const onClick = isLoading ? undefined : log ? save : download;
 
   return (
-    <ListItem button onClick={onClick}>
+    <ListItemButton onClick={onClick}>
       <StatusLight
         status={
           {
@@ -163,7 +159,12 @@ const UAVLogListItem = ({ id, kind, size, timestamp, uavId }) => {
         secondary={secondaryComponent}
       />
       <ListItemSecondaryAction>
-        <IconButton edge='end' disabled={isLoading} onClick={onClick}>
+        <IconButton
+          edge='end'
+          disabled={isLoading}
+          size='large'
+          onClick={onClick}
+        >
           {downloadState?.status === LogDownloadStatus.SUCCESS ? (
             <Save />
           ) : (
@@ -171,7 +172,7 @@ const UAVLogListItem = ({ id, kind, size, timestamp, uavId }) => {
           )}
         </IconButton>
       </ListItemSecondaryAction>
-    </ListItem>
+    </ListItemButton>
   );
 };
 

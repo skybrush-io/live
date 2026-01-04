@@ -33,7 +33,7 @@ export async function adaptShow(hub, show, transformations, coordinateSystem) {
     },
     // Use a very long timeout for this message as the transformations
     // require a lot of computation.
-    { timeout: 60 }
+    { timeout: 600 }
   );
 
   if (response?.body?.type === 'X-SHOW-ADAPT') {
@@ -288,12 +288,12 @@ export async function getPreflightStatus(hub, uavId) {
 export async function getRTKPresets(hub) {
   let response;
 
-  response = await hub.sendMessage({ type: 'X-RTK-LIST' });
-  if (response.body && response.body.type === 'X-RTK-LIST') {
+  response = await hub.sendMessage({ type: 'RTK-LIST' });
+  if (response.body && response.body.type === 'RTK-LIST') {
     const rtkSourceIds = get(response, 'body.ids') || [];
     if (rtkSourceIds.length > 0) {
       response = await hub.sendMessage({
-        type: 'X-RTK-INF',
+        type: 'RTK-INF',
         ids: rtkSourceIds,
       });
 
@@ -313,9 +313,9 @@ export async function getRTKPresets(hub) {
  * Returns the RTK surveying settings from the server.
  */
 export async function getRTKSurveySettings(hub) {
-  const response = await hub.sendMessage({ type: 'X-RTK-SURVEY' });
+  const response = await hub.sendMessage({ type: 'RTK-SURVEY' });
   return response.body &&
-    response.body.type === 'X-RTK-SURVEY' &&
+    response.body.type === 'RTK-SURVEY' &&
     response.body.settings
     ? pick(response.body.settings, ['accuracy', 'duration'])
     : {};
@@ -325,8 +325,8 @@ export async function getRTKSurveySettings(hub) {
  * Returns the status of the RTK subsystem.
  */
 export async function getRTKStatus(hub) {
-  const response = await hub.sendMessage({ type: 'X-RTK-STAT' });
-  if (response.body && response.body.type === 'X-RTK-STAT') {
+  const response = await hub.sendMessage({ type: 'RTK-STAT' });
+  if (response.body && response.body.type === 'RTK-STAT') {
     return {
       antenna: response.body.antenna,
       messages: response.body.messages,

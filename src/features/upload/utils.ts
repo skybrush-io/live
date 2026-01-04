@@ -151,4 +151,20 @@ export const moveItemsBetweenQueues =
     if (source === 'failedItems') {
       removeErrorsForUAVs(state, uavIds);
     }
+
+    if (target === 'itemsFinished') {
+      // UAVs that have finished uploading need their progress info to be set
+      // to 100% so we can estimate the completion time of the tasks
+      // accurately
+      for (const uavId of uavIds) {
+        state.progresses[uavId] = 1;
+      }
+    } else if (source === 'itemsInProgress') {
+      // UAVs that are being moved from the "in progress" queue to anywhere
+      // else such that they are not completed must have their progress info
+      // reset
+      for (const uavId of uavIds) {
+        delete state.progresses[uavId];
+      }
+    }
   };

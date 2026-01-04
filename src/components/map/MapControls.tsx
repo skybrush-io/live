@@ -1,4 +1,4 @@
-import React from 'react';
+import type React from 'react';
 import { connect } from 'react-redux';
 
 // @ts-expect-error: no declaration file for @collmot/ol-react yet
@@ -29,7 +29,7 @@ const MapControlsPresentation = ({
   showMouseCoordinates,
   showScaleLine,
   showZoom,
-}: MapControlsPresentationProps): JSX.Element => (
+}: MapControlsPresentationProps): React.JSX.Element => (
   <>
     {(showZoom ?? true) && <control.Zoom />}
     {(showAttribution ?? true) && (

@@ -49,7 +49,7 @@ export const getBatteryFormatter = createSelector(
  * is old and it does not include a default value.
  */
 export const getDesiredPlacementAccuracyInMeters = (state) =>
-  (state.settings.uavs.placementAccuracy || 1000) / 1000;
+  (state.settings.uavs.placementAccuracy ?? 1000) / 1000;
 
 /**
  * Returns the desired accuracy of UAV headings that the user wants to use to
@@ -59,7 +59,7 @@ export const getDesiredPlacementAccuracyInMeters = (state) =>
  * is old and it does not include a default value.
  */
 export const getDesiredTakeoffHeadingAccuracy = (state) =>
-  state.settings.uavs.takeoffHeadingAccuracy || 20;
+  state.settings.uavs.takeoffHeadingAccuracy ?? 20;
 
 /**
  * Returns the currently selected display language for the application.

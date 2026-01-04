@@ -2,20 +2,18 @@
  * @file The global snackbar of the main window.
  */
 
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { connect } from 'react-redux';
 import { useToasts } from 'react-toast-notifications';
 
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import { styled } from '@material-ui/core/styles';
-
 import { useSignal } from '~/hooks';
 
-import { MessageSemantics } from './types';
 import { SNACKBAR_TRANSITION_DURATION } from './constants';
 import snackbarSignal from './signal';
+import { MessageSemantics } from './types';
 
 const semanticsToAppearance = {
   [MessageSemantics.INFO]: 'info',
@@ -54,10 +52,12 @@ const createContentNode = ({ buttons, message, header }, dispatch) => {
 
     result = (
       <Box
-        display='flex'
-        flexDirection='row'
-        justifyContent='space-between'
-        alignItems='center'
+        sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}
       >
         {result}
         {buttonComponents}

@@ -1,24 +1,22 @@
+import Battery20Icon from '@mui/icons-material/Battery20';
+import Battery30Icon from '@mui/icons-material/Battery30';
+import Battery50Icon from '@mui/icons-material/Battery50';
+import Battery60Icon from '@mui/icons-material/Battery60';
+import Battery80Icon from '@mui/icons-material/Battery80';
+import Battery90Icon from '@mui/icons-material/Battery90';
+import BatteryAlertIcon from '@mui/icons-material/BatteryAlert';
+import BatteryCharging20Icon from '@mui/icons-material/BatteryCharging20';
+import BatteryCharging30Icon from '@mui/icons-material/BatteryCharging30';
+import BatteryCharging50Icon from '@mui/icons-material/BatteryCharging50';
+import BatteryCharging60Icon from '@mui/icons-material/BatteryCharging60';
+import BatteryCharging80Icon from '@mui/icons-material/BatteryCharging80';
+import BatteryCharging90Icon from '@mui/icons-material/BatteryCharging90';
+import BatteryChargingFullIcon from '@mui/icons-material/BatteryChargingFull';
+import BatteryFullIcon from '@mui/icons-material/BatteryFull';
+import BatteryUnknownIcon from '@mui/icons-material/BatteryUnknown';
 import isNil from 'lodash-es/isNil';
-import React from 'react';
 
-import BatteryAlertIcon from '@material-ui/icons/BatteryAlert';
-import Battery20Icon from '@material-ui/icons/Battery20';
-import Battery30Icon from '@material-ui/icons/Battery30';
-import Battery50Icon from '@material-ui/icons/Battery50';
-import Battery60Icon from '@material-ui/icons/Battery60';
-import Battery80Icon from '@material-ui/icons/Battery80';
-import Battery90Icon from '@material-ui/icons/Battery90';
-import BatteryFullIcon from '@material-ui/icons/BatteryFull';
-import BatteryCharging20Icon from '@material-ui/icons/BatteryCharging20';
-import BatteryCharging30Icon from '@material-ui/icons/BatteryCharging30';
-import BatteryCharging50Icon from '@material-ui/icons/BatteryCharging50';
-import BatteryCharging60Icon from '@material-ui/icons/BatteryCharging60';
-import BatteryCharging80Icon from '@material-ui/icons/BatteryCharging80';
-import BatteryCharging90Icon from '@material-ui/icons/BatteryCharging90';
-import BatteryChargingFullIcon from '@material-ui/icons/BatteryChargingFull';
-import BatteryUnknownIcon from '@material-ui/icons/BatteryUnknown';
-
-import { Status } from '@skybrush/app-theme-material-ui';
+import { Status } from '@skybrush/app-theme-mui';
 
 import { BatterySettings, BatteryStatus } from '~/model/battery';
 import { BatteryDisplayStyle } from '~/model/settings';

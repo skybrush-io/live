@@ -3,17 +3,15 @@
  * the user needs to (or tries to) authenticate to the current server.
  */
 
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import Typography from '@mui/material/Typography';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { batch, connect } from 'react-redux';
-import Button from '@material-ui/core/Button';
 
-import Box from '@material-ui/core/Box';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import Typography from '@material-ui/core/Typography';
-
-import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
+import { DraggableDialog } from '@skybrush/mui-components';
 
 import {
   closeDeauthenticationDialog,
@@ -30,14 +28,14 @@ import { clearAuthenticationToken } from '~/features/servers/slice';
 const DeauthenticationDialogPresentation = ({
   onCancel,
   onDisconnect,
-  open,
+  open = false,
   title,
   user,
 }) => (
   <DraggableDialog maxWidth='xs' open={open} title={title}>
     <DialogContent>
-      <Box pt={2}>
-        <Typography paragraph>
+      <Box>
+        <Typography sx={{ marginBottom: '16px' }}>
           {user ? (
             <>
               You are currently authenticated as <code>{user}</code>. Are you
@@ -67,10 +65,6 @@ DeauthenticationDialogPresentation.propTypes = {
   open: PropTypes.bool,
   title: PropTypes.string.isRequired,
   user: PropTypes.string,
-};
-
-DeauthenticationDialogPresentation.defaultProps = {
-  open: false,
 };
 
 /**

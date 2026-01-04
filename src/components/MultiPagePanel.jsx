@@ -1,9 +1,9 @@
+import Box from '@mui/material/Box';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import Box from '@material-ui/core/Box';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@skybrush/app-theme-mui';
 
 import FadeAndSlide from './transitions/FadeAndSlide';
 
@@ -20,9 +20,6 @@ const useStyles = makeStyles(
       overflow: 'auto',
     },
   }),
-  {
-    name: 'MultiPagePanel',
-  }
 );
 
 /**
@@ -53,7 +50,15 @@ const MultiPagePanel = ({
   const classes = useStyles();
 
   return (
-    <Box position='relative' {...rest}>
+    <Box
+      {...rest}
+      sx={[
+        {
+          position: 'relative',
+        },
+        ...(Array.isArray(rest.sx) ? rest.sx : [rest.sx]),
+      ]}
+    >
       {React.Children.map(children, (child) => {
         const { className, id, keepMounted, scrollable, ...boxProps } =
           child.props;

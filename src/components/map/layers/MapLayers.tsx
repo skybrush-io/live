@@ -1,4 +1,4 @@
-import React from 'react';
+import type React from 'react';
 
 import type { ModifyEvent } from 'ol/interaction/Modify';
 import type { Tool } from '~/components/map/tools';
@@ -56,9 +56,9 @@ export const MapLayers = ({
         <CurrentLayer
           key={`${layer.id}_rendered`}
           layer={layer}
-          onFeaturesModified={onFeaturesModified}
           selectedTool={selectedTool}
           zIndex={zIndex}
+          onFeaturesModified={onFeaturesModified}
         />
       );
       zIndex++;

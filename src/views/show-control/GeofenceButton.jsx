@@ -1,12 +1,10 @@
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemText from '@mui/material/ListItemText';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-
-import StatusLight from '@skybrush/mui-components/lib/StatusLight';
+import { StatusLight } from '@skybrush/mui-components';
 
 import { Status } from '~/components/semantics';
 import { SafetyDialogTab } from '~/features/safety/constants';
@@ -44,8 +42,7 @@ const GeofenceButton = ({ onClick, status, ...rest }) => {
   const { t } = useTranslation();
 
   return (
-    <ListItem
-      button
+    <ListItemButton
       disabled={status === Status.OFF}
       onClick={onClick}
       {...rest}
@@ -55,7 +52,7 @@ const GeofenceButton = ({ onClick, status, ...rest }) => {
         primary={t('show.setupGeofence', 'Setup geofence')}
         secondary={formatStatusText(status)(t)}
       />
-    </ListItem>
+    </ListItemButton>
   );
 };
 
@@ -63,8 +60,6 @@ GeofenceButton.propTypes = {
   onClick: PropTypes.func,
   status: PropTypes.oneOf(Object.values(Status)),
 };
-
-GeofenceButton.defaultProps = {};
 
 export default connect(
   // mapStateToProps

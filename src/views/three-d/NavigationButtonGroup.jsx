@@ -1,16 +1,14 @@
+import CenterFocusStrong from '@mui/icons-material/CenterFocusStrong';
+import ZoomOut from '@mui/icons-material/ZoomOut';
+import IconButton from '@mui/material/IconButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { withTranslation } from 'react-i18next';
 
-import IconButton from '@material-ui/core/IconButton';
-import CenterFocusStrong from '@material-ui/icons/CenterFocusStrong';
-import ZoomOut from '@material-ui/icons/ZoomOut';
-import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
+import { Tooltip } from '@skybrush/mui-components';
 
-import Tooltip from '@skybrush/mui-components/lib/Tooltip';
-
-import ToolbarDivider from '~/components/ToolbarDivider';
 import ToggleButton from '~/components/ToggleButton';
+import ToolbarDivider from '~/components/ToolbarDivider';
 
 /**
  * Button group that allows the user to select the navigation mode currently
@@ -42,7 +40,12 @@ const NavigationButtonGroupPresentation = ({
     </ToggleButtonGroup>
     <ToolbarDivider orientation='vertical' />
     <Tooltip content={t('navigationButtonGroup.resetZoom')}>
-      <IconButton disableRipple disabled={!onResetZoom} onClick={onResetZoom}>
+      <IconButton
+        disableRipple
+        disabled={!onResetZoom}
+        size='large'
+        onClick={onResetZoom}
+      >
         <ZoomOut />
       </IconButton>
     </Tooltip>
@@ -50,6 +53,7 @@ const NavigationButtonGroupPresentation = ({
       <IconButton
         disableRipple
         disabled={!onRotateCameraTowardsDrones}
+        size='large'
         onClick={onRotateCameraTowardsDrones}
       >
         <CenterFocusStrong />

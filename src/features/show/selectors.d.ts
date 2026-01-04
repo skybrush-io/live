@@ -10,9 +10,10 @@ import type {
 import type { GPSPosition } from '~/model/geography';
 import type { AppSelector, RootState } from '~/store/reducers';
 import type { FlatEarthCoordinateSystem } from '~/utils/geography';
-import type { Coordinate2D } from '~/utils/math';
+import type { Coordinate2D, Coordinate3D } from '~/utils/math';
 
 import type { EnvironmentState, OutdoorCoordinateSystem } from './types';
+import type { TakeoffHeadingSpecification } from './constants';
 
 type ShowValidationResult =
   | 'loadingFailed'
@@ -25,6 +26,7 @@ type ShowValidationResult =
 export const areManualPreflightChecksSignedOff: (state: RootState) => boolean;
 export const areOnboardPreflightChecksSignedOff: (state: RootState) => boolean;
 export const areStartConditionsSyncedWithServer: (state: RootState) => boolean;
+export const countUAVsTakingOffAutomatically: (state: RootState) => number;
 export const didLastLoadingAttemptFail: (state: RootState) => boolean;
 export const didStartConditionSyncFail: (state: RootState) => boolean;
 export const getConvexHullOfShow: (state: RootState) => Coordinate2D[];
@@ -32,14 +34,21 @@ export const getEnvironmentFromLoadedShowData: AppSelector<
   Environment | undefined
 >;
 export const getEnvironmentState: AppSelector<EnvironmentState>;
+export const getFirstPointsOfTrajectories: AppSelector<
+  Array<Coordinate3D | undefined>
+>;
 export const getMaximumHeightInTrajectories: (
   state: RootState
 ) => number | undefined;
 export const getMaximumHorizontalDistanceFromTakeoffPositionInTrajectories: (
   state: RootState
 ) => number | undefined;
+export const getNumberOfDronesInShow: (state: RootState) => number;
 export const getOutdoorShowOrigin: AppSelector<
   OutdoorCoordinateSystem['origin']
+>;
+export const getOutdoorShowToWorldCoordinateSystemTransformation: AppSelector<
+  ((coords: Coordinate3D) => GPSPosition) | undefined
 >;
 export const getOutdoorShowToWorldCoordinateSystemTransformationObject: (
   state: RootState
@@ -48,6 +57,10 @@ export const getShowSegments: AppSelector<
   Partial<Record<ShowSegmentId, ShowSegment>> | undefined
 >;
 export const getShowStartTimeAsString: (state: RootState) => string;
+export const getShowToFlatEarthCoordinateSystemTransformation: AppSelector<
+  ((coords: Coordinate3D) => Coordinate3D) | undefined
+>;
+
 export const getShowValidationResult: (
   state: RootState
 ) => ShowValidationResult;
@@ -55,6 +68,13 @@ export const getShowValidationSettings: AppSelector<
   ValidationSettings | undefined
 >;
 export const getSwarmSpecification: AppSelector<SwarmSpecification | undefined>;
+export const getTakeoffHeadingSpecification: AppSelector<
+  TakeoffHeadingSpecification | undefined
+>;
+export const getTakeoffHeadingSpecificationValueAsNumber: (
+  state: RootState
+) => number | undefined;
+export const getTrajectories: AppSelector<Array<Trajectory | undefined>>;
 export const hasLoadedShowFile: (state: RootState) => boolean;
 export const hasScheduledStartTime: (state: RootState) => boolean;
 export const hasShowChangedExternallySinceLoaded: (state: RootState) => boolean;

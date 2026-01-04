@@ -1,28 +1,30 @@
-/* eslint-disable @typescript-eslint/naming-convention */
+import SortAscending from '@mui/icons-material/ArrowDownward';
+import SortDescending from '@mui/icons-material/ArrowUpward';
+import Check from '@mui/icons-material/Check';
+import Filter from '@mui/icons-material/FilterList';
+import Chip, { type ChipProps } from '@mui/material/Chip';
+import Divider from '@mui/material/Divider';
+import Menu from '@mui/material/Menu';
+import MenuItem, { type MenuItemProps } from '@mui/material/MenuItem';
+import type { Theme } from '@mui/material/styles';
 import clsx from 'clsx';
 import createColor from 'color';
 import type { TFunction } from 'i18next';
-import React, { useCallback, useRef, type SyntheticEvent } from 'react';
-import { withTranslation } from 'react-i18next';
-import { connect } from 'react-redux';
-
-import Chip, { type ChipProps } from '@material-ui/core/Chip';
-import Divider from '@material-ui/core/Divider';
-import Menu from '@material-ui/core/Menu';
-import MenuItem, { type MenuItemProps } from '@material-ui/core/MenuItem';
-import { type Theme, makeStyles } from '@material-ui/core/styles';
-import Check from '@material-ui/icons/Check';
-import Filter from '@material-ui/icons/FilterList';
-import SortAscending from '@material-ui/icons/ArrowDownward';
-import SortDescending from '@material-ui/icons/ArrowUpward';
-import type { PopupState } from 'material-ui-popup-state/core';
 import {
   bindMenu,
   bindTrigger,
   usePopupState,
+  type PopupState,
 } from 'material-ui-popup-state/hooks';
+import React, { useCallback, useRef, type SyntheticEvent } from 'react';
+import { withTranslation } from 'react-i18next';
+import { connect } from 'react-redux';
 
-import { isThemeDark, monospacedFont } from '@skybrush/app-theme-material-ui';
+import {
+  isThemeDark,
+  makeStyles,
+  monospacedFont,
+} from '@skybrush/app-theme-mui';
 
 import Colors from '~/components/colors';
 import FadeAndSlide from '~/components/transitions/FadeAndSlide';
@@ -53,13 +55,12 @@ import {
   labelsForUAVSortKey,
   shortLabelsForUAVSortKey,
 } from '~/model/sorting';
-import type { Nullable } from '~/utils/types';
 import type { RootState } from '~/store/reducers';
+import type { Nullable } from '~/utils/types';
 
 import { HEADER_HEIGHT } from './constants';
 
 const createChipStyle = (
-  // eslint-disable-next-line @typescript-eslint/ban-types
   color: string | null,
   theme: Theme
 ): Record<string, any> => {
@@ -77,105 +78,100 @@ const createChipStyle = (
     result['boxShadow'] = `0 0 4px 2px ${color}`;
     result['&:focus'] = {
       color: theme.palette.getContrastText(color),
-      backgroundColor: [lighter, '!important'],
+      backgroundColor: `${lighter} !important`,
     };
     result['&:hover'] = {
       color: theme.palette.getContrastText(color),
-      backgroundColor: [lighter, '!important'],
+      backgroundColor: `${lighter} !important`,
     };
     result['& svg'] = {
-      color: [theme.palette.getContrastText(color), '!important'],
+      color: `${theme.palette.getContrastText(color)} '!important'`,
     };
   }
 
   return result;
 };
 
-const useStyles = makeStyles(
-  (theme) => ({
-    root: {
-      backdropFilter: 'blur(5px)',
-      background: isThemeDark(theme)
-        ? 'rgba(36, 36, 36, 0.54)'
-        : 'rgba(255, 255, 255, 0.8)',
-      borderBottom: `1px solid ${theme.palette.divider}`,
-      minWidth: 800,
-      overflow: 'hidden',
-      zIndex: 10,
-      minHeight: HEADER_HEIGHT + 1 /* 1px for the border */,
+const useStyles = makeStyles((theme: Theme) => ({
+  root: {
+    backdropFilter: 'blur(5px)',
+    background: isThemeDark(theme)
+      ? 'rgba(36, 36, 36, 0.54)'
+      : 'rgba(255, 255, 255, 0.8)',
+    borderBottom: `1px solid ${theme.palette.divider}`,
+    minWidth: 800,
+    overflow: 'hidden',
+    zIndex: 10,
+    minHeight: HEADER_HEIGHT + 1 /* 1px for the border */,
+  },
+
+  floating: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+  },
+
+  widgets: {
+    display: 'flex',
+    position: 'absolute',
+    right: theme.spacing(0.5),
+    top: theme.spacing(1),
+    margin: 'auto',
+    zIndex: 20,
+
+    '& div': {
+      margin: theme.spacing(0, 0, 0, 0.5),
     },
+  },
 
-    floating: {
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      right: 0,
+  headerLine: {
+    alignItems: 'stretch',
+    cursor: 'default',
+    display: 'flex',
+    flexWrap: 'nowrap',
+    fontFamily: monospacedFont,
+    fontSize: 'small',
+    height: HEADER_HEIGHT,
+    overflow: 'hidden',
+    userSelect: 'none',
+    whiteSpace: 'pre',
+    width: '100%',
+    zIndex: 10,
+  },
+
+  headerLineItem: {
+    lineHeight: HEADER_HEIGHT + 'px',
+    padding: theme.spacing(0, 0.5),
+    flexShrink: 0, // important, otherwise the fixed width will not be respected if the view is very narrow
+
+    '&:last-child': {
+      flex: 1,
     },
+  },
 
-    widgets: {
-      display: 'flex',
-      position: 'absolute',
-      right: theme.spacing(0.5),
-      top: theme.spacing(1),
-      margin: 'auto',
-      zIndex: 20,
-
-      '& div': {
-        margin: theme.spacing(0, 0, 0, 0.5),
-      },
+  sortable: {
+    cursor: 'pointer',
+    '&:hover': {
+      backgroundColor: theme.palette.action.hover,
     },
+    transition: theme.transitions.create(['background-color'], {
+      duration: theme.transitions.duration.short,
+    }),
+  },
 
-    headerLine: {
-      alignItems: 'stretch',
-      cursor: 'default',
-      display: 'flex',
-      flexWrap: 'nowrap',
-      fontFamily: monospacedFont,
-      fontSize: 'small',
-      height: HEADER_HEIGHT,
-      overflow: 'hidden',
-      userSelect: 'none',
-      whiteSpace: 'pre',
-      width: '100%',
-      zIndex: 10,
-    },
+  sortActive: {
+    textDecoration: 'underline',
+    textUnderlineOffset: '4px',
+  },
 
-    headerLineItem: {
-      lineHeight: HEADER_HEIGHT + 'px',
-      padding: theme.spacing(0, 0.5),
-      flexShrink: 0, // important, otherwise the fixed width will not be respected if the view is very narrow
+  success: createChipStyle(Colors.success, theme),
+  warning: createChipStyle(Colors.warning, theme),
+  error: createChipStyle(Colors.error, theme),
 
-      '&:last-child': {
-        flex: 1,
-      },
-    },
-
-    sortable: {
-      cursor: 'pointer',
-      '&:hover': {
-        backgroundColor: theme.palette.action.hover,
-      },
-      transition: theme.transitions.create(['background-color'], {
-        duration: theme.transitions.duration.short,
-      }),
-    },
-
-    sortActive: {
-      textDecoration: 'underline',
-      textUnderlineOffset: '4px',
-    },
-
-    success: createChipStyle(Colors.success, theme),
-    warning: createChipStyle(Colors.warning, theme),
-    error: createChipStyle(Colors.error, theme),
-
-    chip: createChipStyle(null, theme),
-    chipActive: createChipStyle(Colors.info, theme),
-  }),
-  {
-    name: 'SortAndFilterHeader',
-  }
-);
+  chip: createChipStyle(null, theme),
+  chipActive: createChipStyle(Colors.info, theme),
+}));
 
 type HeaderPart = {
   sortKey?: UAVSortKey;
@@ -294,7 +290,7 @@ const HEADER_TEXT_PARTS: Record<string, HeaderPart[]> = {
       style: {
         textAlign: 'right',
         width: 40,
-      }
+      },
     },
     ...COMMON_HEADER_TEXT_PARTS,
   ],
@@ -351,11 +347,11 @@ const CheckableMenuItem = React.forwardRef<
   HTMLLIElement,
   CheckableMenuItemProps
 >(({ label, selected, ...rest }, ref) => (
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  <MenuItem ref={ref as any} dense {...(rest as any)}>
+  <MenuItem ref={ref} dense {...rest}>
     {label}
   </MenuItem>
 ));
+CheckableMenuItem.displayName = 'CheckableMenuItem';
 
 function bindChip({
   state,
@@ -364,7 +360,7 @@ function bindChip({
   popupTrigger = 'chip',
 }: {
   state: PopupState;
-  ref?: HTMLElement;
+  ref: HTMLElement | null;
   action?: () => void;
   popupTrigger?: 'chip' | 'icon';
 }): Partial<ChipProps> {
@@ -448,14 +444,14 @@ const SortAndFilterHeader = ({
   showMissionIds,
   sortBy,
   t,
-}: SortAndFilterHeaderProps): JSX.Element => {
+}: SortAndFilterHeaderProps): React.JSX.Element => {
   const classes = useStyles();
-  const sortChipRef = useRef<HTMLDivElement>();
+  const sortChipRef = useRef<HTMLDivElement>(null);
   const sortPopupState = usePopupState({
     variant: 'popover',
     popupId: 'uav-list-sort-options',
   });
-  const filterChipRef = useRef<HTMLDivElement>();
+  const filterChipRef = useRef<HTMLDivElement>(null);
   const filterPopupState = usePopupState({
     variant: 'popover',
     popupId: 'uav-list-filter-options',
@@ -513,8 +509,7 @@ const SortAndFilterHeader = ({
     <div className={clsx(classes.root, floating && classes.floating)}>
       <div className={classes.widgets}>
         <Chip
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          ref={sortChipRef as any}
+          ref={sortChipRef}
           className={isSortActive ? classes.chipActive : classes.chip}
           variant='outlined'
           label={shortLabelsForUAVSortKey[sortBy.key](t)}
@@ -562,15 +557,14 @@ const SortAndFilterHeader = ({
         </Menu>
 
         <Chip
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          ref={filterChipRef as any}
+          ref={filterChipRef}
           className={getFilterChipClass(filters, classes)}
           variant='outlined'
           label={
             isFilterActive
               ? filters.length > 1
                 ? t('filtering.composite')
-                : shortLabelsForUAVFilter[filters[0]!](t)
+                : shortLabelsForUAVFilter[filters[0]](t)
               : t('filtering.filter')
           }
           size='small'

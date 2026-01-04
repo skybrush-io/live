@@ -1,12 +1,10 @@
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemText from '@mui/material/ListItemText';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-
-import StatusLight from '@skybrush/mui-components/lib/StatusLight';
+import { StatusLight } from '@skybrush/mui-components';
 
 import { Status } from '~/components/semantics';
 import { getShowStartTimeAsString } from '~/features/show/selectors';
@@ -21,7 +19,7 @@ const StartTimeButton = ({ formattedStartTime, onClick, status }) => {
   const { t } = useTranslation();
 
   return (
-    <ListItem button onClick={onClick}>
+    <ListItemButton onClick={onClick}>
       <StatusLight status={status} />
       <ListItemText
         primary={t('show.chooseStartTime')}
@@ -31,7 +29,7 @@ const StartTimeButton = ({ formattedStartTime, onClick, status }) => {
             : t('show.chooseStartTimeNotSet', 'Not set yet')
         }
       />
-    </ListItem>
+    </ListItemButton>
   );
 };
 
@@ -40,8 +38,6 @@ StartTimeButton.propTypes = {
   onClick: PropTypes.func,
   status: PropTypes.oneOf(Object.values(Status)),
 };
-
-StartTimeButton.defaultProps = {};
 
 export default connect(
   // mapStateToProps

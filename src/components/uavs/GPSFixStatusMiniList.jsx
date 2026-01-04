@@ -7,8 +7,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { createSelector } from '@reduxjs/toolkit';
 
-import MiniList from '@skybrush/mui-components/lib/MiniList';
-import MiniListDivider from '@skybrush/mui-components/lib/MiniListDivider';
+import { MiniList, MiniListDivider } from '@skybrush/mui-components';
 
 import { listOf } from '~/components/helpers/lists';
 import { statusToPriority } from '~/components/semantics';

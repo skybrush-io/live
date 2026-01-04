@@ -1,18 +1,16 @@
+import Box from '@mui/material/Box';
+import Checkbox from '@mui/material/Checkbox';
+import FormControl from '@mui/material/FormControl';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormGroup from '@mui/material/FormGroup';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { Translation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import Box from '@material-ui/core/Box';
-import Checkbox from '@material-ui/core/Checkbox';
-import FormControl from '@material-ui/core/FormControl';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormGroup from '@material-ui/core/FormGroup';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
-
-import Header from '@skybrush/mui-components/lib/FormHeader';
+import { FormHeader as Header } from '@skybrush/mui-components';
 
 import {
   getLightingConditionsForThreeDView,
@@ -65,10 +63,10 @@ const grids = [
 const ThreeDViewTab = (props) => (
   <Translation>
     {(t) => (
-      <Box mb={2}>
+      <Box>
         <FormGroup>
-          <Header>{t('settings.threeDView.environment')}</Header>
-          <Box display='flex'>
+          <Header disablePadding>{t('settings.threeDView.environment')}</Header>
+          <Box sx={{ display: 'flex' }}>
             <FormControl fullWidth variant='filled'>
               <InputLabel id='threed-scenery-label'>
                 {t('settings.threeDView.scenery')}
@@ -86,7 +84,7 @@ const ThreeDViewTab = (props) => (
                 ))}
               </Select>
             </FormControl>
-            <Box px={1} />
+            <Box sx={{ px: 1 }} />
             <FormControl fullWidth variant='filled'>
               <InputLabel id='threed-lighting-label'>
                 {t('settings.threeDView.lighting')}
@@ -104,7 +102,7 @@ const ThreeDViewTab = (props) => (
                 ))}
               </Select>
             </FormControl>
-            <Box px={1} />
+            <Box sx={{ px: 1 }} />
             <FormControl fullWidth variant='filled'>
               <InputLabel id='threed-grid-label'>
                 {t('settings.threeDView.grid')}

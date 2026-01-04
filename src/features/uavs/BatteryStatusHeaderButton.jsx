@@ -1,14 +1,15 @@
+import Battery from '@mui/icons-material/BatteryChargingFull';
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import Battery from '@material-ui/icons/BatteryChargingFull';
-
-import { colorForStatus, Status } from '@skybrush/app-theme-material-ui';
-import GenericHeaderButton from '@skybrush/mui-components/lib/GenericHeaderButton';
-import SidebarBadge from '@skybrush/mui-components/lib/SidebarBadge';
-import Tooltip from '@skybrush/mui-components/lib/Tooltip';
+import { colorForStatus, Status } from '@skybrush/app-theme-mui';
+import {
+  GenericHeaderButton,
+  SidebarBadge,
+  Tooltip,
+} from '@skybrush/mui-components';
 
 import { BatteryFormatter } from '~/components/battery';
 import { isConnected } from '~/features/servers/selectors';

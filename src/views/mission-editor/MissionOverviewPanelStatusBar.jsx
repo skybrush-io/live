@@ -1,18 +1,17 @@
+import Error from '@mui/icons-material/Error';
+import Info from '@mui/icons-material/Info';
+import Timeline from '@mui/icons-material/Timeline';
+import Timer from '@mui/icons-material/Timer';
+import Warning from '@mui/icons-material/Warning';
+import Box from '@mui/material/Box';
+import Chip from '@mui/material/Chip';
+import Paper from '@mui/material/Paper';
+import Toolbar from '@mui/material/Toolbar';
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import { connect } from 'react-redux';
 
-import Box from '@material-ui/core/Box';
-import Chip from '@material-ui/core/Chip';
-import Paper from '@material-ui/core/Paper';
-import Toolbar from '@material-ui/core/Toolbar';
-import { makeStyles } from '@material-ui/core/styles';
-
-import Error from '@material-ui/icons/Error';
-import Info from '@material-ui/icons/Info';
-import Timeline from '@material-ui/icons/Timeline';
-import Timer from '@material-ui/icons/Timer';
-import Warning from '@material-ui/icons/Warning';
+import { makeStyles } from '@skybrush/app-theme-mui';
 
 import Colors from '~/components/colors';
 import ToggleButton from '~/components/ToggleButton';
@@ -27,17 +26,12 @@ import FollowScroll from '~/icons/FollowScroll';
 import { formatDistance, formatDuration } from '~/utils/formatting';
 import CustomPropTypes from '~/utils/prop-types';
 
-const useStyles = makeStyles(
-  (theme) => ({
-    root: {
-      background: theme.palette.action.hover,
-      padding: theme.spacing(0.5, 1),
-    },
-  }),
-  {
-    name: 'MissionOverviewPanelStatusBar',
-  }
-);
+const useStyles = makeStyles((theme) => ({
+  root: {
+    background: theme.palette.action.hover,
+    padding: theme.spacing(0.5, 1),
+  },
+}));
 
 const makeWarningList = (warnings) => (
   <ul style={{ paddingLeft: 28 }}>
@@ -91,7 +85,7 @@ const MissionOverviewPanelStatusBar = ({
                 />
               </Tooltip>
             )}
-            <Box py={0.25}>
+            <Box sx={{ py: 0.25 }}>
               <Tooltip content='Estimated route'>
                 <Chip
                   icon={<Timeline style={{ marginLeft: 6 }} />}
@@ -134,7 +128,7 @@ const MissionOverviewPanelStatusBar = ({
             variant='outlined'
           />
         )}
-        <Box component='div' flex={1} />
+        <Box component='div' sx={{ flex: 1 }} />
         <Tooltip content='Follow the active mission item'>
           <ToggleButton
             size='small'

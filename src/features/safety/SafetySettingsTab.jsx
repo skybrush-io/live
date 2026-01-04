@@ -2,21 +2,20 @@
  * @file Tab that shows the safety settings and allows the user to edit them.
  */
 
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import FormHelperText from '@mui/material/FormHelperText';
+import InputAdornment from '@mui/material/InputAdornment';
+import MenuItem from '@mui/material/MenuItem';
 import { Select, TextField } from 'mui-rff';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { withTranslation } from 'react-i18next';
 import { Form } from 'react-final-form';
+import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
-
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import MenuItem from '@material-ui/core/MenuItem';
 
 import {
   between,
@@ -30,6 +29,8 @@ import { BatteryThresholdType, unitForBatteryThresholdType } from './model';
 import { getSafetySettings } from './selectors';
 import { updateSafetySettings } from './slice';
 
+const dialogContentStyle = { paddingBottom: 0 };
+
 const toNumberIfDefined = (value) => value && Number(value);
 
 // TODO: Move this to `~/components/forms/fields.jsx`
@@ -38,9 +39,9 @@ const NumericFieldWithUnit = ({ unit, ...rest }) => (
     // Not `number`, because that would make distinguishing whether
     // a field is empty or contains invalid input impossible
     type='text'
-    InputProps={{
-      endAdornment: <InputAdornment position='end'>{unit}</InputAdornment>,
-      inputProps: {
+    slotProps={{
+      input: {
+        endAdornment: <InputAdornment position='end'>{unit}</InputAdornment>,
         inputMode: 'numeric',
       },
     }}
@@ -91,7 +92,7 @@ const SafetySettingsFormPresentation = ({ initialValues, onSubmit, t }) => (
             </FormHelperText>
           </Box>
           <Box>
-            <Box display='flex'>
+            <Box sx={{ display: 'flex' }}>
               {/* TODO: Use `Select` from `~/components/forms/fields.jsx` */}
               <Select
                 name='lowBatteryThreshold.type'
@@ -118,7 +119,7 @@ const SafetySettingsFormPresentation = ({ initialValues, onSubmit, t }) => (
                 BatteryThresholdType.PERCENTAGE,
               ].includes(values.lowBatteryThreshold?.type) && (
                 <>
-                  <Box p={1} />
+                  <Box sx={{ p: 1 }} />
                   <NumericFieldWithUnit
                     name='lowBatteryThreshold.value'
                     label={t('safetySettingsTab.lowBatteryThresholdValueLabel')}
@@ -204,7 +205,7 @@ const SafetySettingsForm = connect(
  */
 const SafetySettingsTabPresentation = ({ onClose, t }) => (
   <>
-    <DialogContent>
+    <DialogContent sx={dialogContentStyle}>
       <SafetySettingsForm />
     </DialogContent>
     <DialogActions>

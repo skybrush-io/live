@@ -1,25 +1,26 @@
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import Button from '@mui/material/Button';
+import CircularProgress from '@mui/material/CircularProgress';
+import Typography from '@mui/material/Typography';
+import type { Theme } from '@mui/material/styles';
 import clsx from 'clsx';
 import React, { type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
-import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
+import { makeStyles } from '@skybrush/app-theme-mui';
 
 import type { RootState } from '~/store/reducers';
 
+import { reviewInViewer } from './actions';
 import {
   selectAdaptResult,
   selectIsShowAdaptInProgress,
   selectShowAdaptError,
 } from './selectors';
 import type { AdaptResult } from './state';
-import { reviewInViewer } from './actions';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   centered: {
     display: 'flex',
     flexDirection: 'column',
@@ -36,12 +37,10 @@ const useStyles = makeStyles((theme) => ({
 
     // TODO: Add a `filter` to the `eslint` rule to ignore these cases globally!
     //       https://typescript-eslint.io/rules/naming-convention/#filter
-    // eslint-disable-next-line @typescript-eslint/naming-convention
     '& > p': {
       fontWeight: theme.typography.fontWeightMedium,
     },
 
-    // eslint-disable-next-line @typescript-eslint/naming-convention
     '& > p:nth-child(odd)': {
       textAlign: 'right',
     },
@@ -58,7 +57,7 @@ type AdaptReviewFormProps = Readonly<{
   reviewInViewer: () => void;
 }>;
 
-const AdaptReviewForm = (props: AdaptReviewFormProps): JSX.Element => {
+const AdaptReviewForm = (props: AdaptReviewFormProps): React.JSX.Element => {
   const { adaptResult, error, isShowAdaptInProgress, reviewInViewer } = props;
   const { t } = useTranslation(undefined, {
     keyPrefix: 'showConfiguratorDialog.adaptReview',

@@ -1,20 +1,20 @@
+import Box from '@mui/material/Box';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Switch from '@mui/material/Switch';
+import Typography from '@mui/material/Typography';
 import PropTypes from 'prop-types';
-import React from 'react';
-import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
+import { connect } from 'react-redux';
 import TimeAgo from 'react-timeago';
 
-import Box from '@material-ui/core/Box';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Switch from '@material-ui/core/Switch';
-import Typography from '@material-ui/core/Typography';
+import {
+  MiniList,
+  MiniListDivider,
+  MiniListItem,
+} from '@skybrush/mui-components';
 
-import MiniList from '@skybrush/mui-components/lib/MiniList';
-import MiniListDivider from '@skybrush/mui-components/lib/MiniListDivider';
-import MiniListItem from '@skybrush/mui-components/lib/MiniListItem';
-
-import { togglePreferredChannel } from '~/features/mission/slice';
 import { getPreferredCommunicationChannelIndex } from '~/features/mission/selectors';
+import { togglePreferredChannel } from '~/features/mission/slice';
 import { getConnectionsInOrder } from '~/selectors/ordered';
 import { shortTimeAgoFormatter } from '~/utils/formatting';
 
@@ -52,7 +52,7 @@ const ConnectionStatusMiniListAndButtons = ({
     <MiniListDivider />
     <FormControlLabel
       control={
-        <Box pl={1}>
+        <Box sx={{ pl: 1 }}>
           <Switch
             size='small'
             checked={useSecondaryChannel}

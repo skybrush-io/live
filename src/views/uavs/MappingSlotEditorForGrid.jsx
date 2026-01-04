@@ -1,11 +1,10 @@
+import Box from '@mui/material/Box';
+import InputBase from '@mui/material/InputBase';
 import Color from 'color';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { connect } from 'react-redux';
 
-import Box from '@material-ui/core/Box';
-import InputBase from '@material-ui/core/InputBase';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@skybrush/app-theme-mui';
 
 import Colors from '~/components/colors';
 import { getUAVIdForMappingSlotBeingEdited } from '~/features/mission/selectors';
@@ -15,33 +14,30 @@ import {
 } from '~/features/mission/slice';
 import { shouldOptimizeUIForTouch } from '~/features/settings/selectors';
 
-const useStyles = makeStyles(
-  (theme) => ({
-    root: {
-      position: 'absolute',
-      width: 48,
-      height: 48,
-      top: theme.spacing(0.5),
-      zIndex: 1000,
+const useStyles = makeStyles((theme) => ({
+  root: {
+    position: 'absolute',
+    width: 48,
+    height: 48,
+    top: theme.spacing(0.5),
+    zIndex: 1000,
+  },
+
+  input: {
+    position: 'absolute',
+    top: '50%',
+    transform: 'translateY(-50%)',
+    fontSize: '1.25rem',
+
+    '& input': {
+      textAlign: 'center',
     },
 
-    input: {
-      position: 'absolute',
-      top: '50%',
-      transform: 'translateY(-50%)',
-      fontSize: '1.25rem',
-
-      '& input': {
-        textAlign: 'center',
-      },
-
-      '& input::selection': {
-        backgroundColor: new Color(Colors.info).darken(0.2).string(),
-      },
+    '& input::selection': {
+      backgroundColor: new Color(Colors.info).darken(0.2).string(),
     },
-  }),
-  { name: 'MappingSlotEditorForGrid' }
-);
+  },
+}));
 
 /**
  * Simple text field overlaid on top of a drone avatar or drone placeholder

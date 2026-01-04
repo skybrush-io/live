@@ -43,16 +43,17 @@ import {
 } from '~/utils/collections';
 import {
   type EasNor,
+  FlatEarthCoordinateSystem,
   type LonLat,
   mapViewCoordinateFromLonLat,
   turfDistanceInMeters,
 } from '~/utils/geography';
 import {
-  calculateMinimumDistanceBetweenPairs,
   convexHull2D,
   createGeometryFromPoints,
   estimatePathDuration,
 } from '~/utils/math';
+import { findNearestNeighborsDistance } from '~/utils/nearestNeighbors';
 import { EMPTY_ARRAY } from '~/utils/redux';
 import { type Nullable } from '~/utils/types';
 
@@ -317,10 +318,16 @@ export const areFlightCommandsBroadcast: AppSelector<boolean> = (state) =>
   state.mission.commandsAreBroadcast;
 
 /**
+ * Returns whether the mapping is currently being calculated or recalculated.
+ */
+export const isMappingBeingCalculated: AppSelector<boolean> = (state) =>
+  Boolean(state.mission.mappingEditor.calculating);
+
+/**
  * Returns whether it currently makes sense to enable the "augment mapping from
  * current drone positions automatically" button. This action makes sense only
- * if there is at least one spare drone, at least one empty slot in the mapping
- * and the home coordinates are set.
+ * if there is at least one spare drone, at least one empty slot in the mapping,
+ * the home coordinates are set and we are not calculating a mapping.
  *
  * Note that right now we don't check whether there are spare drones as we would
  * need to reach out to another slice of the state store for that. This can be
@@ -330,9 +337,11 @@ export const canAugmentMappingAutomaticallyFromSpareDrones: AppSelector<boolean>
   createSelector(
     getEmptyMappingSlotIndices,
     getGPSBasedHomePositionsInMission,
-    (emptySlots, homePositions) =>
+    isMappingBeingCalculated,
+    (emptySlots, homePositions, calculating) =>
       emptySlots.length > 0 &&
-      homePositions.some((position) => !isNil(position))
+      homePositions.some((position) => !isNil(position)) &&
+      !calculating
   );
 
 /**
@@ -669,17 +678,99 @@ export const getMaximumHeightOfWaypoints: AppSelector<number | undefined> =
       max(missionItemsWithAltitude.map((mi) => mi.altitude.value))
   );
 
+const getApproximateCenterOfGPSPositions = (
+  points: GPSPosition[]
+): LonLat | undefined => {
+  const numPoints = points.length;
+
+  if (numPoints > 0) {
+    let lonSum = 0,
+      latSum = 0;
+    for (const { lon, lat } of points) {
+      lonSum += lon;
+      latSum += lat;
+    }
+
+    return [lonSum / numPoints, latSum / numPoints] as LonLat;
+  }
+};
+
+/**
+ * Returns an "approximate center" of the home positions of the mission.
+ * This can be used as the origin of a flat Earth transformation that can
+ * convert mission items from geodetic coordinates to Cartesian coordinates.
+ */
+const getApproximateCenterOfHomePositionsInMission: AppSelector<
+  LonLat | undefined
+> = createSelector(
+  getNonNullGPSBasedHomePositionsInMission,
+  getApproximateCenterOfGPSPositions
+);
+
+/**
+ * Returns an "approximate center" of the landing positions of the mission.
+ * This can be used as the origin of a flat Earth transformation that can
+ * convert mission items from geodetic coordinates to Cartesian coordinates.
+ */
+const getApproximateCenterOfLandingPositionsInMission: AppSelector<
+  LonLat | undefined
+> = createSelector(
+  getNonNullGPSBasedLandingPositionsInMission,
+  getApproximateCenterOfGPSPositions
+);
+
+/**
+ * Returns a flat Earth coordinate system that can be used to transform
+ * GPS coordinates into a 2D Cartesian coordinate system, assuming that they
+ * are sufficiently close to the home points in the mission (such that the
+ * distortions of the transformation are negligible).
+ */
+const getFlatEarthCoordinateSystemForHomePositions: AppSelector<
+  FlatEarthCoordinateSystem | undefined
+> = createSelector(getApproximateCenterOfHomePositionsInMission, (origin) => {
+  return origin ? new FlatEarthCoordinateSystem({ origin }) : undefined;
+});
+
+/**
+ * Returns a flat Earth coordinate system that can be used to transform
+ * GPS coordinates into a 2D Cartesian coordinate system, assuming that they
+ * are sufficiently close to the landing points in the mission (such that the
+ * distortions of the transformation are negligible).
+ */
+const getFlatEarthCoordinateSystemForLandingPositions: AppSelector<
+  FlatEarthCoordinateSystem | undefined
+> = createSelector(
+  getApproximateCenterOfLandingPositionsInMission,
+  (origin) => {
+    return origin ? new FlatEarthCoordinateSystem({ origin }) : undefined;
+  }
+);
+
+const mapGPSPositionToLonLat = (point: GPSPosition) => {
+  const { lon, lat } = point;
+  return [lon, lat] as LonLat;
+};
+
+const getMinimumDistanceBetweenGPSPositions = (
+  points: GPSPosition[],
+  flatEarth: FlatEarthCoordinateSystem | undefined
+) =>
+  flatEarth
+    ? findNearestNeighborsDistance(
+        points
+          .map(mapGPSPositionToLonLat)
+          .map((point) => flatEarth.fromLonLat(point))
+      )
+    : Infinity;
+
 /**
  * Returns the minimum distance between any two home positions. The result of
  * this selector is `Infinity` if there are less than two home positions.
  */
 export const getMinimumDistanceBetweenHomePositions = createSelector(
   getNonNullGPSBasedHomePositionsInMission,
-  (points) =>
-    calculateMinimumDistanceBetweenPairs(points, points, {
-      getter: ({ lon, lat }) => TurfHelpers.point([lon, lat]),
-      distanceFunction: turfDistanceInMeters,
-    })
+  getFlatEarthCoordinateSystemForHomePositions,
+  getMinimumDistanceBetweenGPSPositions
 );
 
 /**
@@ -688,11 +779,8 @@ export const getMinimumDistanceBetweenHomePositions = createSelector(
  */
 export const getMinimumDistanceBetweenLandingPositions = createSelector(
   getNonNullGPSBasedLandingPositionsInMission,
-  (points) =>
-    calculateMinimumDistanceBetweenPairs(points, points, {
-      getter: ({ lon, lat }) => TurfHelpers.point([lon, lat]),
-      distanceFunction: turfDistanceInMeters,
-    })
+  getFlatEarthCoordinateSystemForLandingPositions,
+  getMinimumDistanceBetweenGPSPositions
 );
 
 /**

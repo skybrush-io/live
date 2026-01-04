@@ -26,7 +26,7 @@ function pointsToString(points) {
     .join(', ');
 }
 
-const Trajectory = ({ lineWidth, points }) => {
+const Trajectory = ({ lineWidth = 5, points }) => {
   const path = pointsToString(points);
   return path ? (
     <a-entity
@@ -38,10 +38,6 @@ const Trajectory = ({ lineWidth, points }) => {
 Trajectory.propTypes = {
   lineWidth: PropTypes.number,
   points: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number)),
-};
-
-Trajectory.defaultProps = {
-  lineWidth: 5,
 };
 
 export default memo(Trajectory);

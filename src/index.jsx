@@ -2,8 +2,7 @@ import '@fontsource/fira-sans/400.css';
 import '@fontsource/fira-sans/500.css';
 
 import { disableReactDevTools } from '@fvilers/disable-react-devtools';
-import React from 'react';
-import { render } from 'react-dom';
+import { createRoot } from 'react-dom/client';
 
 import './i18n';
 import AppWithSplashScreen from './splash';
@@ -14,5 +13,6 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 // Render the application
-const root = document.querySelector('#root');
-render(<AppWithSplashScreen />, root);
+const container = document.querySelector('#root');
+const root = createRoot(container);
+root.render(<AppWithSplashScreen />);

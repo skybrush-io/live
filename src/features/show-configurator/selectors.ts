@@ -28,7 +28,7 @@ import {
 import { convexHull2D, type Coordinate2D, getCentroid } from '~/utils/math';
 import { EMPTY_ARRAY } from '~/utils/redux';
 
-import type { AdaptResult, ShowData, ShowConfiguratorState } from './state';
+import type { AdaptResult, ShowConfiguratorState, ShowData } from './state';
 
 const _defaultCoordinateSystem: ShowData['coordinateSystem'] = {
   type: 'nwu',
@@ -189,7 +189,7 @@ export const selectAdaptedShowAsUint8Array: AppSelector<
 
 export const selectAdaptedShowAsBlob: AppSelector<Blob | undefined> =
   createSelector(selectAdaptedShowAsUint8Array, (result) =>
-    result ? new Blob([result]) : undefined
+    result ? new Blob([result as any]) : undefined
   );
 
 export const {
@@ -220,8 +220,8 @@ export const selectConvexHullMarkerData: AppSelector<
     }
 
     const extent = boundingExtent(convexHull);
-    const x = extent[0]! + (extent[2]! - extent[0]!) / 2;
-    const y = extent[1]! + (extent[3]! - extent[1]!) / 2;
+    const x = extent[0] + (extent[2] - extent[0]) / 2;
+    const y = extent[1] + (extent[3] - extent[1]) / 2;
     if (!Number.isFinite(x) || !Number.isFinite(y)) {
       return undefined;
     }

@@ -1,5 +1,5 @@
-import isNil from 'lodash-es/isNil';
 import { createSelector } from '@reduxjs/toolkit';
+import isNil from 'lodash-es/isNil';
 
 import {
   getMissionMapping,
@@ -13,26 +13,26 @@ import {
   isShowingMissionIds,
 } from '~/features/settings/selectors';
 import {
+  getSelectedUAVIds,
   getUAVIdList,
   getUAVIdToStateMapping,
-  getSelectedUAVIds,
 } from '~/features/uavs/selectors';
 import { UAVSortKey } from '~/model/sorting';
 
+import { flatten } from 'lodash-es';
+import type { StoredUAV } from '~/features/uavs/types';
+import type { AppSelector, RootState } from '~/store/reducers';
+import type { Nullable } from '~/utils/types';
 import {
   applyFiltersAndSortDisplayedUAVGroups,
   applyFiltersAndSortDisplayedUAVIdList,
 } from './sorting';
-import type { AppSelector, RootState } from '~/store/reducers';
-import type { StoredUAV } from '~/features/uavs/types';
-import type { Nullable } from '~/utils/types';
 import {
   UAVGroupType,
   type GroupSelectionInfo,
   type Item,
   type UAVGroup,
 } from './types';
-import { flatten } from 'lodash-es';
 import { itemToGlobalId } from './utils';
 
 /**
@@ -327,7 +327,7 @@ export const getSelectionInfo = createSelector(
       if (uavIds.length > 0) {
         // Check the first item; it will settle either someSelected
         // or allSelected
-        if (isSelected(uavIds[0]!)) {
+        if (isSelected(uavIds[0])) {
           const allIsSelected = uavIds.every(isSelected);
           return {
             checked: allIsSelected,

@@ -1,15 +1,16 @@
 import differenceInMinutes from 'date-fns/differenceInMinutes';
 import format from 'date-fns/format';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { connect } from 'react-redux';
 import TimeAgo from 'react-timeago';
 import { useToggle } from 'react-use';
 
-import { colorForStatus, Status } from '@skybrush/app-theme-material-ui';
-import GenericHeaderButton from '@skybrush/mui-components/lib/GenericHeaderButton';
-import LazyTooltip from '@skybrush/mui-components/lib/LazyTooltip';
-import SidebarBadge from '@skybrush/mui-components/lib/SidebarBadge';
+import { colorForStatus, Status } from '@skybrush/app-theme-mui';
+import {
+  GenericHeaderButton,
+  LazyTooltip,
+  SidebarBadge,
+} from '@skybrush/mui-components';
 
 import { usePeriodicRefresh } from '~/hooks';
 import Sunrise from '~/icons/Sunrise';

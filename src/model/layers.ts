@@ -3,26 +3,24 @@
  * that we use on the map.
  */
 
-import * as React from 'react';
-
-import Block from '@material-ui/icons/Block';
-import FileAttachment from '@material-ui/icons/Attachment';
-import FileCloud from '@material-ui/icons/Cloud';
-import Flight from '@material-ui/icons/Flight';
-import Gamepad from '@material-ui/icons/Gamepad';
-import Grid from '@material-ui/icons/GridOn';
-import HelpOutline from '@material-ui/icons/HelpOutline';
-import Image from '@material-ui/icons/Image';
-import Info from '@material-ui/icons/Info';
-import Streetview from '@material-ui/icons/Streetview';
-import Map from '@material-ui/icons/Map';
-import MyLocation from '@material-ui/icons/MyLocation';
-import Timeline from '@material-ui/icons/Timeline';
-import TrackChanges from '@material-ui/icons/TrackChanges';
-
+import FileAttachment from '@mui/icons-material/Attachment';
+import Block from '@mui/icons-material/Block';
+import FileCloud from '@mui/icons-material/Cloud';
+import Flight from '@mui/icons-material/Flight';
+import Gamepad from '@mui/icons-material/Gamepad';
+import Grid from '@mui/icons-material/GridOn';
+import HelpOutline from '@mui/icons-material/HelpOutline';
+import Image from '@mui/icons-material/Image';
+import Info from '@mui/icons-material/Info';
+import Map from '@mui/icons-material/Map';
+import MyLocation from '@mui/icons-material/MyLocation';
+import Streetview from '@mui/icons-material/Streetview';
+import Timeline from '@mui/icons-material/Timeline';
+import TrackChanges from '@mui/icons-material/TrackChanges';
 import type BaseLayer from 'ol/layer/Base';
 import type OLLayer from 'ol/layer/Layer';
 import type OLMap from 'ol/Map';
+import * as React from 'react';
 
 import Antenna from '~/icons/Antenna';
 
@@ -335,7 +333,7 @@ export function getVisibleSelectableLayers(map: OLMap): BaseLayer[] {
  *                    constants from the {@link LayerType} enum
  * @returns The Material UI icon that represents the layer
  */
-export function iconForLayerType(layerType: LayerType): JSX.Element {
+export function iconForLayerType(layerType: LayerType): React.JSX.Element {
   return React.createElement(propertiesForLayerTypes[layerType].icon);
 }
 

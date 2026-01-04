@@ -1,7 +1,5 @@
+import Box from '@mui/material/Box';
 import PropTypes from 'prop-types';
-import React from 'react';
-
-import Box from '@material-ui/core/Box';
 
 import { SimpleDistanceField } from './forms/fields';
 
@@ -26,11 +24,11 @@ const XYZFields = ({ onChange, value }) => {
   });
 
   return (
-    <Box display='flex' flexDirection='row'>
+    <Box sx={{ display: 'flex', flexDirection: 'row' }}>
       <SimpleDistanceField label='X' value={value[0]} onChange={callbacks[0]} />
-      <Box p={1} />
+      <Box sx={{ p: 1 }} />
       <SimpleDistanceField label='Y' value={value[1]} onChange={callbacks[1]} />
-      <Box p={1} />
+      <Box sx={{ p: 1 }} />
       <SimpleDistanceField label='Z' value={value[2]} onChange={callbacks[2]} />
     </Box>
   );

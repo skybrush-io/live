@@ -7,11 +7,10 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { shallowEqual, useSelector } from 'react-redux';
 
-import { makeStyles } from '@material-ui/core/styles';
-import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
+import { makeStyles } from '@skybrush/app-theme-mui';
+import { BackgroundHint } from '@skybrush/mui-components';
 
 import { PopoverWithContainerFromContext as Popover } from '~/containerContext';
-
 import { getReverseMissionMapping } from '~/features/mission/selectors';
 import {
   getUAVIdList,
@@ -23,72 +22,28 @@ import DroneAvatar from './DroneAvatar';
 
 const SCROLLBAR_WIDTH = 10;
 
-const useStyles = makeStyles(
-  (theme) => ({
-    content: {
-      // HACK: Push the scrollbar to the outer edge of the popup
-      marginRight: -SCROLLBAR_WIDTH,
+const useStyles = makeStyles((theme) => ({
+  content: {
+    // HACK: Push the scrollbar to the outer edge of the popup
+    marginRight: -SCROLLBAR_WIDTH,
 
-      width:
-        5 * 40 + // Five avatars
-        6 * theme.spacing(1) + // Paddings and gaps
-        SCROLLBAR_WIDTH,
-      maxHeight:
-        5 * 40 + // Five avatars
-        6 * theme.spacing(1), // Paddings and gaps
+    width:
+      5 * 40 + // Five avatars
+      6 * Number.parseInt(theme.spacing(1)) + // Paddings and gaps
+      SCROLLBAR_WIDTH,
+    maxHeight:
+      5 * 40 + // Five avatars
+      6 * Number.parseInt(theme.spacing(1)), // Paddings and gaps
 
-      padding: theme.spacing(1),
+    padding: theme.spacing(1),
 
-      display: 'flex',
-      flexWrap: 'wrap',
-      gap: theme.spacing(1),
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: theme.spacing(1),
 
-      overflow: 'hidden auto',
-    },
-
-    paper: {
-      overflow: 'visible',
-
-      '&::before': {
-        content: '""',
-        display: 'block',
-
-        width: theme.spacing(2),
-        height: theme.spacing(2),
-
-        position: 'absolute',
-        top: -theme.spacing(1),
-        left: ({ anchorCenter }) =>
-          `calc(50% - ${theme.spacing(1)}px + ${
-            // Adjust arrow position when the `Popover` is pushed against the
-            // edge of the viewport, thus isn't centered on the anchor element
-            (() => {
-              const margin = theme.spacing(2);
-              const width =
-                5 * 40 + // Five avatars
-                6 * theme.spacing(1); // Paddings and gaps
-              const leftLimit = margin + width / 2;
-              const rightLimit = window.innerWidth - leftLimit;
-
-              // prettier-ignore
-              return (
-                anchorCenter < leftLimit ? anchorCenter - leftLimit :
-                anchorCenter > rightLimit ? anchorCenter - rightLimit :
-                0
-              );
-            })()
-          }px)`,
-
-        transform: 'rotate(45deg)',
-
-        backgroundColor: theme.palette.background.paper,
-      },
-    },
-  }),
-  {
-    name: 'UAVSelector',
-  }
-);
+    overflow: 'hidden auto',
+  },
+}));
 
 const UAVSelector = ({
   anchorEl,
@@ -115,7 +70,7 @@ const UAVSelector = ({
     return (left + right) / 2;
   }, [anchorEl]);
 
-  const classes = useStyles({ anchorCenter });
+  const classes = useStyles();
 
   const [filter, setFilter] = useState('');
 
@@ -179,9 +134,47 @@ const UAVSelector = ({
       anchorEl={anchorEl}
       anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       transformOrigin={{ vertical: 'top', horizontal: 'center' }}
-      PaperProps={{
-        className: classes.paper,
-        onKeyDown: filterable ? handleKeyDown : undefined,
+      slotProps={{
+        paper: {
+          sx: (theme) => ({
+            overflow: 'visible',
+
+            '&::before': {
+              content: '""',
+              display: 'block',
+
+              width: theme.spacing(2),
+              height: theme.spacing(2),
+
+              position: 'absolute',
+              top: `-${theme.spacing(1)}`,
+              left: `calc(50% - ${theme.spacing(1)} + ${
+                // Adjust arrow position when the `Popover` is pushed against the
+                // edge of the viewport, thus isn't centered on the anchor element
+                (() => {
+                  const margin = Number.parseInt(theme.spacing(2));
+                  const width =
+                    5 * 40 + // Five avatars
+                    6 * Number.parseInt(theme.spacing(1)); // Paddings and gaps
+                  const leftLimit = margin + width / 2;
+                  const rightLimit = window.innerWidth - leftLimit;
+
+                  // prettier-ignore
+                  return (
+                      anchorCenter < leftLimit ? anchorCenter - leftLimit :
+                      anchorCenter > rightLimit ? anchorCenter - rightLimit :
+                      0
+                    );
+                })()
+              }px)`,
+
+              transform: 'rotate(45deg)',
+
+              backgroundColor: theme.palette.background.paper,
+            },
+          }),
+          onKeyDown: filterable ? handleKeyDown : undefined,
+        },
       }}
       onClose={onClose}
       onFocus={onFocus}

@@ -1,5 +1,6 @@
 import formatISO9075 from 'date-fns/formatISO9075';
 import fromUnixTime from 'date-fns/fromUnixTime';
+import type { TFunction } from 'i18next';
 import isNil from 'lodash-es/isNil';
 
 /**
@@ -72,6 +73,41 @@ export function formatDurationHMS(
   }
 
   return `${hours}:${minutes}:${seconds}`;
+}
+
+export function formatDurationAsText(duration: number, t: TFunction): string {
+  if (duration < 0) {
+    return formatDurationAsText(-duration, t);
+  }
+
+  if (duration < 1) {
+    // Avoid displaying "0 seconds"
+    duration = 1;
+  }
+
+  const hours = Math.floor(duration / 3600);
+  duration %= 3600;
+
+  const minutes = Math.floor(duration / 60);
+  duration %= 60;
+
+  const seconds = Math.floor(duration);
+
+  const parts = [];
+
+  if (hours > 0) {
+    parts.push(t('general.time.hours', { count: hours }));
+  }
+
+  if (minutes > 0) {
+    parts.push(t('general.time.minutes', { count: minutes }));
+  }
+
+  if (seconds > 0) {
+    parts.push(t('general.time.seconds', { count: seconds }));
+  }
+
+  return parts.join(' ');
 }
 
 /**
@@ -222,9 +258,9 @@ export const formatItemInterval = <TItem>(
   if (items.length === 0) {
     return '—';
   } else if (items.length === 1) {
-    return formatter(items[0]!);
+    return formatter(items[0]);
   } else {
-    return `${formatter(items[0]!)}-${formatter(items.at(-1)!)}`;
+    return `${formatter(items[0])}-${formatter(items.at(-1)!)}`;
   }
 };
 

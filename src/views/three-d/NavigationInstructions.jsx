@@ -1,11 +1,9 @@
+import Mouse from '@mui/icons-material/Mouse';
+import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { Translation, withTranslation } from 'react-i18next';
 import { TransitionGroup } from 'react-transition-group';
-
-import Box from '@material-ui/core/Box';
-import IconButton from '@material-ui/core/IconButton';
-import Mouse from '@material-ui/icons/Mouse';
 
 import FadeAndSlide from '~/components/transitions/FadeAndSlide';
 
@@ -32,7 +30,7 @@ const instructionsByMode = {
             <kbd>Shift</kbd>
             <span> {t('navigationInstructions.run')} </span>
           </div>
-          <IconButton disabled>
+          <IconButton disabled size='large'>
             <Mouse />
           </IconButton>
           <div style={{ ...divStyle, marginLeft: -8 }}>
@@ -58,7 +56,7 @@ const instructionsByMode = {
             <kbd>C</kbd>
             <span> {t('navigationInstructions.altitude')} </span>
           </div>
-          <IconButton disabled>
+          <IconButton disabled size='large'>
             <Mouse />
           </IconButton>
           <div style={{ ...divStyle, marginLeft: -8 }}>
@@ -75,17 +73,19 @@ const instructionsByMode = {
  * current navigation mode.
  */
 const NavigationInstructionsPresentation = ({ mode, t }) => (
-  <Box mx={1} flex={1} alignSelf='stretch' position='relative'>
+  <Box sx={{ mx: 1, flex: 1, alignSelf: 'stretch', position: 'relative' }}>
     <TransitionGroup>
       <FadeAndSlide key={mode}>
         <Box
-          position='absolute'
-          left={0}
-          top={0}
-          bottom={0}
-          display='flex'
-          flexDirection='column'
-          justifyContent='center'
+          sx={{
+            position: 'absolute',
+            left: 0,
+            top: 0,
+            bottom: 0,
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+          }}
         >
           {instructionsByMode[mode] ||
             t('navigationInstructions.noInstruction')}

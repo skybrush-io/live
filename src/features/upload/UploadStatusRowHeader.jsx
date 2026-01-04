@@ -1,9 +1,8 @@
+import Box from '@mui/material/Box';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
-import React from 'react';
 
-import Box from '@material-ui/core/Box';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@skybrush/app-theme-mui';
 
 const useStyles = makeStyles((theme) => ({
   root: {

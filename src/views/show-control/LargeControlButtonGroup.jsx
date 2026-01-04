@@ -1,24 +1,23 @@
+import Clear from '@mui/icons-material/Clear';
+import PositionHold from '@mui/icons-material/Flag';
+import FlightLand from '@mui/icons-material/FlightLand';
+import Home from '@mui/icons-material/Home';
+import PlayArrow from '@mui/icons-material/PlayArrow';
+import PowerSettingsNew from '@mui/icons-material/PowerSettingsNew';
+import Box from '@mui/material/Box';
+import Divider from '@mui/material/Divider';
+import Switch from '@mui/material/Switch';
+import Typography from '@mui/material/Typography';
+import { bindActionCreators } from '@reduxjs/toolkit';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
-import { bindActionCreators } from '@reduxjs/toolkit';
 
-import Box from '@material-ui/core/Box';
-import Divider from '@material-ui/core/Divider';
-import Switch from '@material-ui/core/Switch';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@skybrush/app-theme-mui';
 
-import Clear from '@material-ui/icons/Clear';
-import Home from '@material-ui/icons/Home';
-import FlightLand from '@material-ui/icons/FlightLand';
-import PositionHold from '@material-ui/icons/Flag';
-import PowerSettingsNew from '@material-ui/icons/PowerSettingsNew';
-import PlayArrow from '@material-ui/icons/PlayArrow';
-
-import Colors from '~/components/colors';
 import ColoredButton from '~/components/ColoredButton';
+import Colors from '~/components/colors';
 import {
   areFlightCommandsBroadcast,
   getPreferredCommunicationChannelIndex,
@@ -30,30 +29,25 @@ import { createUAVOperationThunks } from '~/utils/messaging';
 
 import StartMethodExplanation from './StartMethodExplanation';
 
-const useStyles = makeStyles(
-  (theme) => ({
-    root: {
-      position: 'absolute',
-      left: 0,
-      top: 0,
-      right: 0,
-      bottom: 0,
-    },
+const useStyles = makeStyles((theme) => ({
+  root: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    right: 0,
+    bottom: 0,
+  },
 
-    scrollable: {
-      overflow: 'auto',
-    },
+  scrollable: {
+    overflow: 'auto',
+  },
 
-    button: {
-      flex: 1,
-      margin: theme.spacing(0.5),
-      lineHeight: 1,
-    },
-  }),
-  {
-    name: 'LargeControlButtonGroup',
-  }
-);
+  button: {
+    flex: 1,
+    margin: theme.spacing(0.5),
+    lineHeight: '1 !important',
+  },
+}));
 
 const LargeControlButtonGroup = ({
   broadcast,

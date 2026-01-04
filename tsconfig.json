@@ -1,17 +1,17 @@
 {
   "compilerOptions": {
     "allowJs": true,
-    "baseUrl": "src",
-    "jsx": "react",
-    "module": "esnext",
-    "moduleResolution": "node",
-    "noPropertyAccessFromIndexSignature": true,
-    "noUncheckedIndexedAccess": true,
-    "paths": { "~/*": ["*"] },
+    "jsx": "react-jsx",
+    "outDir": "./dist/",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "paths": {
+      "~/*": ["./src/*"],
+    },
+    "esModuleInterop": true, 
     "resolveJsonModule": true,
     "strict": true,
     "target": "esnext",
     "typeRoots": ["./types", "./node_modules/@types"],
-    "allowSyntheticDefaultImports": true
-  }
+  },
 }

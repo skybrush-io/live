@@ -1,20 +1,18 @@
+import Delete from '@mui/icons-material/Delete';
+import FolderOpen from '@mui/icons-material/FolderOpen';
+import NavigateNext from '@mui/icons-material/NavigateNext';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
+import ListItemButton from '@mui/material/ListItemButton';
+import { animated, useTransition } from '@react-spring/web';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
-import { animated, useTransition } from '@react-spring/web';
+import { connect } from 'react-redux';
 
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
-import ListItem from '@material-ui/core/ListItem';
-import { makeStyles } from '@material-ui/core/styles';
-import Delete from '@material-ui/icons/Delete';
-import FolderOpen from '@material-ui/icons/FolderOpen';
-import NavigateNext from '@material-ui/icons/NavigateNext';
-
-import MiniList from '@skybrush/mui-components/lib/MiniList';
-import Tooltip from '@skybrush/mui-components/lib/Tooltip';
+import { makeStyles } from '@skybrush/app-theme-mui';
+import { MiniList, Tooltip } from '@skybrush/mui-components';
 
 import FileButton from '~/components/FileButton';
 
@@ -22,44 +20,39 @@ import { importParametersFromFile, proceedToUpload } from './actions';
 import { getParameterManifest, isManifestEmpty } from './selectors';
 import { clearManifest, removeParameterFromManifest } from './slice';
 
-const useStyles = makeStyles(
-  (theme) => ({
-    root: {
-      display: 'flex',
-      flexDirection: 'column',
-      minWidth: 240,
-    },
+const useStyles = makeStyles((theme) => ({
+  root: {
+    display: 'flex',
+    flexDirection: 'column',
+    minWidth: 240,
+  },
 
-    header: {
-      display: 'flex',
-      minHeight: theme.spacing(6),
-      alignItems: 'center',
-      padding: theme.spacing(0, 0, 0, 2),
-    },
+  header: {
+    display: 'flex',
+    minHeight: theme.spacing(6),
+    alignItems: 'center',
+    padding: theme.spacing(0, 0, 0, 2),
+  },
 
-    title: {
-      textTransform: 'uppercase',
-      flex: 1,
-    },
+  title: {
+    textTransform: 'uppercase',
+    flex: 1,
+  },
 
-    list: {
-      position: 'relative',
-      flex: 1,
-      overflow: 'auto',
-    },
+  list: {
+    position: 'relative',
+    flex: 1,
+    overflow: 'auto',
+  },
 
-    footer: {
-      display: 'flex',
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      padding: theme.spacing(1),
-      textAlign: 'center',
-    },
-  }),
-  {
-    name: 'ParameterListSidebar',
-  }
-);
+  footer: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    padding: theme.spacing(1),
+    textAlign: 'center',
+  },
+}));
 
 /**
  * Sidebar of the parameter upload setup dialog.
@@ -94,6 +87,7 @@ const ParameterListSidebar = ({
         <Tooltip content={t('parameterListSidebar.removeAllItems')}>
           <IconButton
             disabled={!manifest || manifest.length === 0}
+            size='large'
             onClick={onRemoveAllItems}
           >
             <Delete />
@@ -109,14 +103,12 @@ const ParameterListSidebar = ({
               ...rest,
             }}
           >
-            <ListItem button onClick={() => onRemoveItem(name)}>
-              <Box display='flex' flexDirection='row' flexGrow={1}>
-                <Box flexGrow={1}>{name}</Box>
-                <Box color='text.secondary' ml={1}>
-                  {value}
-                </Box>
+            <ListItemButton onClick={() => onRemoveItem(name)}>
+              <Box sx={{ display: 'flex', flexDirection: 'row', flexGrow: 1 }}>
+                <Box sx={{ flexGrow: 1 }}>{name}</Box>
+                <Box sx={{ color: 'text.secondary', ml: 1 }}>{value}</Box>
               </Box>
-            </ListItem>
+            </ListItemButton>
           </animated.div>
         ))}
       </MiniList>

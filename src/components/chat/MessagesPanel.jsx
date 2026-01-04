@@ -3,25 +3,17 @@
  * to the UAVs.
  */
 
-import clsx from 'clsx';
+import DeleteSweep from '@mui/icons-material/DeleteSweep';
+import Box from '@mui/material/Box';
+import CircularProgress from '@mui/material/CircularProgress';
+import IconButton from '@mui/material/IconButton';
 import formatDate from 'date-fns/format';
 import isNil from 'lodash-es/isNil';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
-import Box from '@material-ui/core/Box';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import IconButton from '@material-ui/core/IconButton';
-import { withStyles } from '@material-ui/core/styles';
-import DeleteSweep from '@material-ui/icons/DeleteSweep';
-
-import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
-
-import ChatArea from './ChatArea';
-import ChatBubble from './ChatBubble';
-import Marker from './Marker';
-import MessageField from './MessageField';
+import { BackgroundHint } from '@skybrush/mui-components';
 
 import {
   createMessageListSelector,
@@ -37,16 +29,13 @@ import {
 import { shouldOptimizeUIForTouch } from '~/features/settings/selectors';
 import { formatCommandResponseAsHTML } from '~/flockwave/formatting';
 import { parseCommandFromString } from '~/flockwave/messages';
-import { MessageType } from '~/model/enums';
 import messageHub from '~/message-hub';
+import { MessageType } from '~/model/enums';
 
-const styles = {
-  noFocusOutline: {
-    '&:focus': {
-      outline: 'none',
-    },
-  },
-};
+import ChatArea from './ChatArea';
+import ChatBubble from './ChatBubble';
+import Marker from './Marker';
+import MessageField from './MessageField';
 
 const dateFormatter = (x) => formatDate(x, 'H:mm');
 
@@ -179,7 +168,6 @@ ChatAreaBackgroundHint.propTypes = {
 class MessagesPanel extends React.Component {
   static propTypes = {
     chatEntries: PropTypes.arrayOf(PropTypes.object),
-    classes: PropTypes.object,
     commandHistory: PropTypes.arrayOf(PropTypes.string),
     hideClearButton: PropTypes.bool,
     onClearMessages: PropTypes.func,
@@ -220,7 +208,6 @@ class MessagesPanel extends React.Component {
   render() {
     const {
       chatEntries,
-      classes,
       commandHistory,
       hideClearButton,
       onClearMessages,
@@ -258,17 +245,22 @@ class MessagesPanel extends React.Component {
       <Box
         ref={this._messageFieldContainerRef}
         key='textFieldContainer'
-        display='flex'
-        alignItems='baseline'
-        className={clsx('bottom-bar', classes.noFocusOutline)}
-        pb={2}
-        pl={2}
-        pr={isClearButtonVisible ? 0 : 2}
+        className='bottom-bar'
         tabIndex='-1'
         onKeyDown={(e) => {
           if (e.code === 'Enter') {
             this._messageFieldRef.current.focus();
           }
+        }}
+        sx={{
+          display: 'flex',
+          alignItems: 'baseline',
+          pb: 2,
+          pl: 2,
+          pr: isClearButtonVisible ? 0 : 2,
+          '&:focus': {
+            outline: 'none',
+          },
         }}
       >
         <MessageField
@@ -286,6 +278,7 @@ class MessagesPanel extends React.Component {
         {isClearButtonVisible && (
           <IconButton
             disabled={chatComponents.length === 0}
+            size='large'
             style={{ transform: 'translateY(8px)' }}
             onClick={onClearMessages}
           >
@@ -395,4 +388,4 @@ export default connect(
 
   // ref is needed because we want to access the scrollToBottom() method
   // from the outside
-)(withStyles(styles)(MessagesPanel));
+)(MessagesPanel);

@@ -1,13 +1,11 @@
+import Box from '@mui/material/Box';
+import InputBase from '@mui/material/InputBase';
 import Color from 'color';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
-import Box from '@material-ui/core/Box';
-import InputBase from '@material-ui/core/InputBase';
-import { makeStyles } from '@material-ui/core/styles';
-
-import { monospacedFont } from '@skybrush/app-theme-material-ui';
+import { makeStyles, monospacedFont } from '@skybrush/app-theme-mui';
 
 import Colors from '~/components/colors';
 import { getUAVIdForMappingSlotBeingEdited } from '~/features/mission/selectors';
@@ -19,48 +17,45 @@ import { shouldOptimizeUIForTouch } from '~/features/settings/selectors';
 
 const WIDTH = 80;
 
-const useStyles = makeStyles(
-  (theme) => ({
-    root: {
-      position: 'absolute',
+const useStyles = makeStyles((theme) => ({
+  root: {
+    position: 'absolute',
 
-      boxSizing: 'border-box',
-      width: WIDTH,
-      left: theme.spacing(1),
-      top: -5,
-      bottom: -6,
-      zIndex: 1000,
+    boxSizing: 'border-box',
+    width: WIDTH,
+    left: theme.spacing(1),
+    top: -5,
+    bottom: -6,
+    zIndex: 1000,
 
-      backgroundColor: 'rgba(0, 0, 0, 0.16)',
-      border: '1px solid rgba(0, 0, 0, 0.5)',
-      borderRadius: theme.spacing(0.5),
-      boxShadow: `0 0 4px 2px rgba(0, 0, 0, 0.3)`,
+    backgroundColor: 'rgba(0, 0, 0, 0.16)',
+    border: '1px solid rgba(0, 0, 0, 0.5)',
+    borderRadius: theme.spacing(0.5),
+    boxShadow: `0 0 4px 2px rgba(0, 0, 0, 0.3)`,
 
-      padding: theme.spacing(0, 0.5),
+    padding: theme.spacing(0, 0.5),
+  },
+
+  input: {
+    fontFamily: monospacedFont,
+    fontSize: 'small',
+
+    padding: theme.spacing(0, 0.5),
+    position: 'absolute',
+    top: '50%',
+    left: 0,
+    right: 0,
+    transform: 'translateY(-50%)',
+
+    '& input': {
+      textAlign: 'right',
     },
 
-    input: {
-      fontFamily: monospacedFont,
-      fontSize: 'small',
-
-      padding: theme.spacing(0, 0.5),
-      position: 'absolute',
-      top: '50%',
-      left: 0,
-      right: 0,
-      transform: 'translateY(-50%)',
-
-      '& input': {
-        textAlign: 'right',
-      },
-
-      '& input::selection': {
-        backgroundColor: new Color(Colors.info).darken(0.2).string(),
-      },
+    '& input::selection': {
+      backgroundColor: new Color(Colors.info).darken(0.2).string(),
     },
-  }),
-  { name: 'MappingSlotEditorForList' }
-);
+  },
+}));
 
 /**
  * Simple text field overlaid on top of a drone avatar or drone placeholder

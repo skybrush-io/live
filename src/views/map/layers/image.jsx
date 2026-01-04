@@ -1,20 +1,20 @@
+import { layer, source } from '@collmot/ol-react';
+import Image from '@mui/icons-material/Image';
+import Box from '@mui/material/Box';
+import InputAdornment from '@mui/material/InputAdornment';
+import Skeleton from '@mui/material/Skeleton';
+import { getPointResolution } from 'ol/proj';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useRef } from 'react';
 import { Form, FormSpy } from 'react-final-form';
 import { connect } from 'react-redux';
 import { usePrevious } from 'react-use';
-import { getPointResolution } from 'ol/proj';
-import { layer, source } from '@collmot/ol-react';
-import Box from '@material-ui/core/Box';
-import Image from '@material-ui/icons/Image';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import Skeleton from '@material-ui/lab/Skeleton';
 
 import FileButton from '~/components/FileButton';
 import {
+  HeadingField,
   LatitudeField,
   LongitudeField,
-  HeadingField,
   TextField,
   forceFormSubmission,
 } from '~/components/forms';
@@ -89,7 +89,7 @@ const ImageLayerSettingsPresentation = ({
             component={AutoSaveOnBlur}
             save={_forceFormSubmission}
           />
-          <Box display='flex' flexDirection='row'>
+          <Box sx={{ display: 'flex', flexDirection: 'row' }}>
             {parameters.image.name ? (
               <img
                 src={parameters.image.data}
@@ -102,14 +102,14 @@ const ImageLayerSettingsPresentation = ({
               />
             ) : (
               <Skeleton
-                variant='rect'
+                variant='rectangular'
                 width='100%'
                 height='10em'
                 onClick={handleClick}
               />
             )}
-            <Box p={0.75} />
-            <Box textAlign='center' margin='auto' width='100%'>
+            <Box sx={{ p: 0.75 }} />
+            <Box sx={{ textAlign: 'center', margin: 'auto', width: '100%' }}>
               <FileButton
                 ref={inputRef}
                 filter={['image/*']}
@@ -119,7 +119,7 @@ const ImageLayerSettingsPresentation = ({
               >
                 Select
               </FileButton>
-              <Box p={0.75} />
+              <Box sx={{ p: 0.75 }} />
               {parameters.image.name ? (
                 <>
                   <span>{parameters.image.name}</span>
@@ -134,35 +134,39 @@ const ImageLayerSettingsPresentation = ({
               )}
             </Box>
           </Box>
-          <Box display='flex' flexDirection='row'>
+          <Box sx={{ display: 'flex', flexDirection: 'row' }}>
             <LatitudeField
               fullWidth
-              margin='dense'
+              size='small'
               name='position.lat'
               label='Latitude of center'
             />
-            <Box p={0.75} />
+            <Box sx={{ p: 0.75 }} />
             <LongitudeField
               fullWidth
-              margin='dense'
+              size='small'
               name='position.lon'
               label='Longitude of center'
             />
           </Box>
-          <Box display='flex' flexDirection='row'>
-            <HeadingField fullWidth margin='dense' name='angle' label='Angle' />
-            <Box p={0.75} />
+          <Box sx={{ display: 'flex', flexDirection: 'row' }}>
+            <HeadingField fullWidth size='small' name='angle' label='Angle' />
+            <Box sx={{ p: 0.75 }} />
             <TextField
               fullWidth
               type='number'
-              inputProps={{ step: 0.1 }}
               fieldProps={{ validate: join([required, finite, positive]) }}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position='end'>cm/px</InputAdornment>
-                ),
+              slotProps={{
+                htmlInput: {
+                  step: 0.1,
+                },
+                input: {
+                  endAdornment: (
+                    <InputAdornment position='end'>cm/px</InputAdornment>
+                  ),
+                },
               }}
-              margin='dense'
+              size='small'
               name='scale'
               label='Scale'
               variant='filled'
