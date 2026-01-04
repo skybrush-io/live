@@ -55,6 +55,7 @@ const UAVOperationsButtonGroup = ({
   size,
   startSeparator,
   t,
+  vehicleType,
 }) => {
   const isSelectionEmpty = isEmpty(selectedUAVIds) && !broadcast;
   const isSelectionSingle = selectedUAVIds.length === 1 && !broadcast;
@@ -146,41 +147,89 @@ const UAVOperationsButtonGroup = ({
         <ToolbarDivider orientation='vertical' />
       )}
 
-      <Tooltip content={t('general.commands.manual')}>
-        <IconButton
-          disabled={isSelectionEmpty}
-          size={iconSize}
-          onClick={manual}
-        >
-          <Manual fontSize={fontSize} />
-        </IconButton>
-      </Tooltip>
+      {vehicleType === 'Boat' && (
+        <>
+          <Tooltip content={t('general.commands.manual')}>
+            <IconButton
+              disabled={isSelectionEmpty}
+              size={iconSize}
+              onClick={manual}
+            >
+              <Manual fontSize={fontSize} />
+            </IconButton>
+          </Tooltip>
 
-      <Tooltip content={t('general.commands.positionHold')}>
-        <IconButton
-          disabled={isSelectionEmpty}
-          size={iconSize}
-          onClick={holdPosition}
-        >
-          <Pause fontSize={fontSize} />
-        </IconButton>
-      </Tooltip>
+          <Tooltip content={t('general.commands.positionHold')}>
+            <IconButton
+              disabled={isSelectionEmpty}
+              size={iconSize}
+              onClick={holdPosition}
+            >
+              <Pause fontSize={fontSize} />
+            </IconButton>
+          </Tooltip>
 
-      <Tooltip content={t('general.commands.loiter')}>
-        <IconButton disabled={isSelectionEmpty} size={iconSize} onClick={loiter}>
-          <PositionHold fontSize={fontSize} />
-        </IconButton>
-      </Tooltip>
+          <Tooltip content={t('general.commands.loiter')}>
+            <IconButton disabled={isSelectionEmpty} size={iconSize} onClick={loiter}>
+              <PositionHold fontSize={fontSize} />
+            </IconButton>
+          </Tooltip>
 
-      <Tooltip content={t('general.commands.returnToHome')}>
-        <IconButton
-          disabled={isSelectionEmpty}
-          size={iconSize}
-          onClick={returnToHome}
-        >
-          <Home fontSize={fontSize} />
-        </IconButton>
-      </Tooltip>
+          <Tooltip content={t('general.commands.returnToHome')}>
+            <IconButton
+              disabled={isSelectionEmpty}
+              size={iconSize}
+              onClick={returnToHome}
+            >
+              <Home fontSize={fontSize} />
+            </IconButton>
+          </Tooltip>
+        </>
+      )}
+      
+      {vehicleType === 'Copter' && (
+        <>
+          <Tooltip content={t('general.commands.takeoff')}>
+            <IconButton
+              disabled={isSelectionEmpty}
+              size={iconSize}
+              onClick={takeOff}
+            >
+              <FlightTakeoff fontSize={fontSize} />
+            </IconButton>
+          </Tooltip>
+
+          <Tooltip content={t('general.commands.positionHold')}>
+            <IconButton
+              disabled={isSelectionEmpty}
+              size={iconSize}
+              onClick={holdPosition}
+            >
+              <PositionHold fontSize={fontSize} />
+            </IconButton>
+          </Tooltip>
+
+          <Tooltip content={t('general.commands.returnToHome')}>
+            <IconButton
+              disabled={isSelectionEmpty}
+              size={iconSize}
+              onClick={returnToHome}
+            >
+              <Home fontSize={fontSize} />
+            </IconButton>
+          </Tooltip>
+
+          <Tooltip content={t('general.commands.land')}>
+            <IconButton
+              disabled={isSelectionEmpty}
+              size={iconSize}
+              onClick={land}
+            >
+              <FlightLand fontSize={fontSize} />
+            </IconButton>
+          </Tooltip>
+        </>
+      )}
 
       {!hideSeparators && <ToolbarDivider orientation='vertical' />}
 
@@ -314,11 +363,14 @@ UAVOperationsButtonGroup.propTypes = {
   size: PropTypes.oneOf(['small', 'medium']),
   startSeparator: PropTypes.bool,
   t: PropTypes.func,
+  vehicleType: PropTypes.string,
 };
 
 export default connect(
   // mapStateToProps
-  () => ({}),
+  (state) => ({
+    vehicleType: state.settings.uavs.vehicleType || 'Copter',
+  }),
   // mapDispatchToProps
   (dispatch) => ({
     ...bindActionCreators(

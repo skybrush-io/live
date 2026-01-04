@@ -365,6 +365,7 @@
       "lowTreshold": "Seuil bas",
       "missionSetup": "Paramètres de mission",
       "missionSetupDescription": "Utilisé avant les missions multi-drones pour vérifier que chaque drone est à sa position de décollage prescrite et qu'il est orienté dans la bonne direction.",
+      "vehicleType": "Vehicle type",
       "warn": "Avertir de la présence de drones non vus depuis au moins"
     }
   },

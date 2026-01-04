@@ -51,6 +51,8 @@ const uavOperationConfirmationStyleOrder = [
   UAVOperationConfirmationStyle.ALWAYS,
 ];
 
+const vehicleTypeOptions = ['Copter', 'Boat'];
+
 const UAVsTabPresentation = ({
   autoRemove,
   criticalVoltageThreshold,
@@ -72,6 +74,7 @@ const UAVsTabPresentation = ({
   t,
   takeoffHeadingAccuracy,
   uavOperationConfirmationStyle,
+  vehicleType,
   warnThreshold,
 }) => {
   const theme = useTheme();
@@ -133,6 +136,26 @@ const UAVsTabPresentation = ({
 
       <Box my={2}>
         <Header>{t('settings.uavs.operationSettings')}</Header>
+
+        <Box display='flex' flexDirection='row' mb={1}>
+          <FormControl fullWidth variant='filled'>
+            <InputLabel id='uav-vehicle-type'>
+              {t('settings.uavs.vehicleType')}
+            </InputLabel>
+            <Select
+              labelId='uav-vehicle-type'
+              name='vehicleType'
+              value={vehicleType || vehicleTypeOptions[0]}
+              onChange={onEnumFieldUpdated}
+            >
+              {vehicleTypeOptions.map((v) => (
+                <MenuItem key={v} value={v}>
+                  {v}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Box>
 
         <Box display='flex' flexDirection='row' mb={1}>
           <FormControl fullWidth variant='filled'>
@@ -296,6 +319,7 @@ const UAVsTabPresentation = ({
           {t('settings.uavs.missionSetupDescription')}
         </Typography>
       </Box>
+
     </>
   );
 };
@@ -318,6 +342,7 @@ UAVsTabPresentation.propTypes = {
   onVoltageFieldUpdated: PropTypes.func,
   placementAccuracy: PropTypes.number,
   preferredBatteryDisplayStyle: PropTypes.oneOf(batteryDisplayStyleOrder),
+  vehicleType: PropTypes.oneOf(vehicleTypeOptions),
   t: PropTypes.func,
   takeoffHeadingAccuracy: PropTypes.number,
   uavOperationConfirmationStyle: PropTypes.oneOf(
@@ -328,6 +353,7 @@ UAVsTabPresentation.propTypes = {
 
 UAVsTabPresentation.defaultProps = {
   preferredBatteryDisplayStyle: BatteryDisplayStyle.VOLTAGE,
+  vehicleType: vehicleTypeOptions[0],
 };
 
 export default connect(
