@@ -2,7 +2,7 @@ import Home from '@mui/icons-material/Home';
 import IconButton from '@mui/material/IconButton';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
-import React, { useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect, useDispatch, useSelector } from 'react-redux';
 
@@ -19,6 +19,7 @@ import {
   isConnected,
   supportsStudioInterop,
 } from '~/features/servers/selectors';
+import { isDeveloperModeEnabled } from '~/features/session/selectors';
 import { showDialogAndClearUndoHistory } from '~/features/show-configurator/actions';
 import { selectShowConfiguratorDataFromShow } from '~/features/show-configurator/selectors';
 import { type ShowData } from '~/features/show-configurator/state';
@@ -71,6 +72,7 @@ const PREREQUISITES: ReadonlyArray<
 
 type Props = Readonly<{
   base64Blob?: string;
+  devModeEnabled: boolean;
   show: ShowData | undefined;
   partialShow: Partial<ShowData>;
   // TODO: This should probably be a `ThunkActionDispatch`, but that doesn't
@@ -83,6 +85,7 @@ type Props = Readonly<{
 
 const ShowConfiguratorButton = (props: Props): React.JSX.Element => {
   const {
+    devModeEnabled,
     show,
     showDialogAndClearUndoHistory,
     showCollectiveRTHDialog,
@@ -159,31 +162,33 @@ const ShowConfiguratorButton = (props: Props): React.JSX.Element => {
           }
           secondary={t('show.showConfigurator.description')}
         />
-        <Tooltip
-          content={t('show.showConfigurator.tooltip.rthPlanStats', {
-            total: swarmRTHStats.total,
-            withRTHPlan: swarmRTHStats.withRTHPlan,
-          })}
-          placement='left'
-        >
-          <IconButton
-            edge='end'
-            size='large'
-            color={
-              swarmRTHStats.total === 0
-                ? 'default'
-                : swarmRTHStats.total === swarmRTHStats.withRTHPlan
-                  ? 'success'
-                  : 'warning'
-            }
-            onClick={(evt) => {
-              evt.stopPropagation();
-              showCollectiveRTHDialog();
-            }}
+        {devModeEnabled && (
+          <Tooltip
+            content={t('show.showConfigurator.tooltip.rthPlanStats', {
+              total: swarmRTHStats.total,
+              withRTHPlan: swarmRTHStats.withRTHPlan,
+            })}
+            placement='left'
           >
-            <Home />
-          </IconButton>
-        </Tooltip>
+            <IconButton
+              edge='end'
+              size='large'
+              color={
+                swarmRTHStats.total === 0
+                  ? 'default'
+                  : swarmRTHStats.total === swarmRTHStats.withRTHPlan
+                    ? 'success'
+                    : 'warning'
+              }
+              onClick={(evt) => {
+                evt.stopPropagation();
+                showCollectiveRTHDialog();
+              }}
+            >
+              <Home />
+            </IconButton>
+          </Tooltip>
+        )}
       </ListItemButton>
     </div>
   );
@@ -194,6 +199,7 @@ const ConnectedShowConfiguratorButton = connect(
     show: selectShowConfiguratorDataFromShow(state),
     status: getSetupStageStatuses(state).showConfigurator,
     swarmRTHStats: selectCollectiveRTHStats(state),
+    devModeEnabled: isDeveloperModeEnabled(state),
   }),
   {
     showDialogAndClearUndoHistory,
