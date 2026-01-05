@@ -220,8 +220,8 @@ export const selectConvexHullMarkerData: AppSelector<
     }
 
     const extent = boundingExtent(convexHull);
-    const x = extent[0]! + (extent[2]! - extent[0]!) / 2;
-    const y = extent[1]! + (extent[3]! - extent[1]!) / 2;
+    const x = extent[0] + (extent[2] - extent[0]) / 2;
+    const y = extent[1] + (extent[3] - extent[1]) / 2;
     if (!Number.isFinite(x) || !Number.isFinite(y)) {
       return undefined;
     }

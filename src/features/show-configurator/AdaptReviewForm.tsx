@@ -37,12 +37,10 @@ const useStyles = makeStyles((theme: Theme) => ({
 
     // TODO: Add a `filter` to the `eslint` rule to ignore these cases globally!
     //       https://typescript-eslint.io/rules/naming-convention/#filter
-    // eslint-disable-next-line @typescript-eslint/naming-convention
     '& > p': {
       fontWeight: theme.typography.fontWeightMedium,
     },
 
-    // eslint-disable-next-line @typescript-eslint/naming-convention
     '& > p:nth-child(odd)': {
       textAlign: 'right',
     },

@@ -95,7 +95,6 @@ const useTabsStyles = makeStyles((theme: Theme) => ({
   indicator: {
     height: 0,
     backgroundColor: 'transparent',
-    // eslint-disable-next-line @typescript-eslint/naming-convention
     '&::after': {
       content: '""',
       display: 'block',
@@ -142,7 +141,6 @@ const InteractionHints = (): React.JSX.Element => {
   return (
     <Box sx={{ height: '50px' }}>
       <Tabs value={active} classes={tabsStyles} style={{ marginBottom: 2 }}>
-        {/* eslint-disable-next-line @typescript-eslint/naming-convention */}
         {CATEGORIES.map(({ icon: Icon, title }, i) => (
           <Tab
             key={title(t)}

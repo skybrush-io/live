@@ -12,10 +12,10 @@ type DataConfig = {
   rounds: number;
 };
 
-const randomPoint = (
-  xrange: number = 100,
-  yrange: number = 100
-): Coordinate2D => [Math.random() * xrange, Math.random() * yrange];
+const randomPoint = (xrange = 100, yrange = 100): Coordinate2D => [
+  Math.random() * xrange,
+  Math.random() * yrange,
+];
 
 // Data sizes to test with. Larger sets are very slow with the brute force algorithm,
 // so we don't use too much rounds with them.

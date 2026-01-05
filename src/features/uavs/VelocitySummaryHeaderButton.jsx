@@ -2,7 +2,6 @@ import { Speed } from '@mui/icons-material';
 import isNil from 'lodash-es/isNil';
 import maxBy from 'lodash-es/maxBy';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 

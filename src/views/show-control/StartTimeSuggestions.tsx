@@ -6,7 +6,7 @@ import format from 'date-fns/format';
 import getMinutes from 'date-fns/getMinutes';
 import getSeconds from 'date-fns/getSeconds';
 import startOfMinute from 'date-fns/startOfMinute';
-import React from 'react';
+import type React from 'react';
 
 import usePeriodicRefresh from '~/hooks/usePeriodicRefresh';
 

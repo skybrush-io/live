@@ -1,6 +1,5 @@
 import DarkModeIcon from '@mui/icons-material/Brightness4';
 import PropTypes from 'prop-types';
-import React from 'react';
 
 import ToggleButton from '~/components/ToggleButton';
 

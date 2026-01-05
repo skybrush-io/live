@@ -4,7 +4,6 @@
 
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
-import React from 'react';
 import TimeAgo from 'react-timeago';
 
 import { makeStyles } from '@skybrush/app-theme-mui';

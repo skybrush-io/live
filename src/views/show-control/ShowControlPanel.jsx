@@ -1,6 +1,5 @@
 import Box from '@mui/material/Box';
 import List from '@mui/material/List';
-import React from 'react';
 
 import { hasFeature } from '~/utils/configuration';
 

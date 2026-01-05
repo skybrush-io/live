@@ -197,10 +197,10 @@ function refineEstimate(
     /* Filter the coordinates and calculate the centroids */
     const numMatched = matching.length;
     let selectedUAVCoordinates = matching.map(
-      ([index, _]) => uavCoordinates[index]!
+      ([index, _]) => uavCoordinates[index]
     );
     let selectedTakeoffCoordinates = matching.map(
-      ([_, index]) => takeoffCoordinates[index]!
+      ([_, index]) => takeoffCoordinates[index]
     );
     const uavCenter = getCentroid(selectedUAVCoordinates);
     const takeoffCenter = getCentroid(selectedTakeoffCoordinates);
@@ -219,8 +219,8 @@ function refineEstimate(
       [0, 0],
     ];
     for (let i = 0; i < numMatched; i++) {
-      const uavCoordinate = selectedUAVCoordinates[i]!;
-      const takeoffCoordinate = selectedTakeoffCoordinates[i]!;
+      const uavCoordinate = selectedUAVCoordinates[i];
+      const takeoffCoordinate = selectedTakeoffCoordinates[i];
       dotProduct[0][0] += uavCoordinate[0] * takeoffCoordinate[0];
       dotProduct[0][1] += uavCoordinate[0] * takeoffCoordinate[1];
       dotProduct[1][0] += uavCoordinate[1] * takeoffCoordinate[0];

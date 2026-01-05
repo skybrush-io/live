@@ -1,4 +1,3 @@
-import React from 'react';
 import { StatusPill } from '@skybrush/mui-components';
 
 import {

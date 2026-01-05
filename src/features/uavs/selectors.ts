@@ -42,10 +42,10 @@ import { isGPSPositionValid } from '~/model/geography';
 import { globalIdToUavId } from '~/model/identifiers';
 import { UAVAge } from '~/model/uav';
 import { selectionForSubset } from '~/selectors/selection';
+import type { AppSelector, RootState } from '~/store/reducers';
 import { euclideanDistance2D, getMeanAngle } from '~/utils/math';
 import { EMPTY_ARRAY } from '~/utils/redux';
 import { createDeepResultSelector } from '~/utils/selectors';
-import type { AppSelector, RootState } from '~/store/reducers';
 import type { StoredUAV } from './types';
 
 /**
@@ -872,7 +872,7 @@ export const getUAVIdsSortedByErrorCode = createSelector(
       [
         (uavId) =>
           Math.max(
-            ...uavStatesById[uavId]!.errors.filter(
+            ...uavStatesById[uavId].errors.filter(
               (e) => getSeverityOfErrorCode(e) > Severity.INFO
             )
           ),

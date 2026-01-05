@@ -3,7 +3,7 @@
  * other components that request it through mini-signals.
  */
 
-import Map from 'ol/Map';
+import type Map from 'ol/Map';
 import React from 'react';
 
 // @ts-expect-error

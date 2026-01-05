@@ -6,7 +6,6 @@
 import isPromise from 'is-promise';
 import isFunction from 'lodash-es/isFunction';
 import PropTypes from 'prop-types';
-import React from 'react';
 
 import AlertWarning from '@mui/icons-material/Warning';
 

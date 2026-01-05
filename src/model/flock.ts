@@ -62,7 +62,7 @@ export default class Flock {
     const uavIds = this.getAllUAVIds();
 
     // NOTE: Bang justified by `uavIds` coming from `Object.keys(this._uavsById)`
-    return uavIds.map((uavId) => this._uavsById[uavId]!);
+    return uavIds.map((uavId) => this._uavsById[uavId]);
 
     // Alternative solution without relying on the non-null assertion operator:
     // return uavIds

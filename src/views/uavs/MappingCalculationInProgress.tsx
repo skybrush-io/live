@@ -1,4 +1,3 @@
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Status } from '@skybrush/app-theme-mui';
@@ -6,7 +5,6 @@ import {
   LabeledStatusLight,
   type StatusLightProps,
 } from '@skybrush/mui-components';
-import { size } from 'lodash-es';
 
 const MappingCalculationInProgress = (
   props: Omit<StatusLightProps, 'status'>

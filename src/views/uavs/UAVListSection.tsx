@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box';
 import type { Theme } from '@mui/material/styles';
-import React from 'react';
+import type React from 'react';
 
 import { makeStyles } from '@skybrush/app-theme-mui';
 
@@ -17,7 +17,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     flexDirection: 'row',
     flexWrap: 'wrap',
 
-    // eslint-disable-next-line @typescript-eslint/naming-convention
     '&>div': {
       padding: theme.spacing(1),
     },

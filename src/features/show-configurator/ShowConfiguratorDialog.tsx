@@ -6,9 +6,9 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import type { Theme } from '@mui/material/styles';
 import type { TFunction } from 'i18next';
-import React, { useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { withTranslation } from 'react-i18next';
-import { batch, connect } from 'react-redux';
+import { connect } from 'react-redux';
 
 import { makeStyles } from '@skybrush/app-theme-mui';
 import { DraggableDialog } from '@skybrush/mui-components';
@@ -53,7 +53,6 @@ import { closeDialog, setAdaptResult, setDronesVisible } from './state';
 const useStyles = makeStyles((theme: Theme) => ({
   /* Ugly hack to move the sidebar to the right */
   root: {
-    // eslint-disable-next-line @typescript-eslint/naming-convention
     '& div.MuiDialog-paper > div > div:first-child': {
       order: 100,
       boxShadow: '2px 0 6px -2px inset rgba(0, 0, 0, 0.54)',
@@ -135,7 +134,6 @@ type Props = StateProps &
 
 type AdaptStage = 'config' | 'review';
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 function useOwnState(props: Props) {
   const {
     adaptShow,
@@ -311,7 +309,6 @@ const ShowConfiguratorDialog = (props: Props): React.JSX.Element => {
           content={t(`showConfiguratorDialog.help.${stage}`)
             .split('\n')
             .map((item, idx) => (
-              // eslint-disable-next-line react/no-array-index-key
               <p key={idx}>{item}</p>
             ))}
         />
@@ -385,12 +382,9 @@ const ConnectedShowConfiguratorDialogWrapper = connect(
       showOrigin: LonLat,
       showOrientation: string
     ): void => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-      batch((): void => {
-        dispatch(setOutdoorShowOrigin(showOrigin));
-        dispatch(setOutdoorShowOrientation(showOrientation));
-        dispatch(loadBase64EncodedShow(base64Blob));
-      });
+      dispatch(setOutdoorShowOrigin(showOrigin));
+      dispatch(setOutdoorShowOrientation(showOrientation));
+      dispatch(loadBase64EncodedShow(base64Blob));
     },
     closeDialog: (): void => {
       dispatch(closeDialog());

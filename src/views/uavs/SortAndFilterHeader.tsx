@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import SortAscending from '@mui/icons-material/ArrowDownward';
 import SortDescending from '@mui/icons-material/ArrowUpward';
 import Check from '@mui/icons-material/Check';
@@ -348,11 +347,11 @@ const CheckableMenuItem = React.forwardRef<
   HTMLLIElement,
   CheckableMenuItemProps
 >(({ label, selected, ...rest }, ref) => (
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  <MenuItem ref={ref as any} dense {...(rest as any)}>
+  <MenuItem ref={ref} dense {...rest}>
     {label}
   </MenuItem>
 ));
+CheckableMenuItem.displayName = 'CheckableMenuItem';
 
 function bindChip({
   state,
@@ -361,7 +360,7 @@ function bindChip({
   popupTrigger = 'chip',
 }: {
   state: PopupState;
-  ref?: HTMLElement;
+  ref: HTMLElement | null;
   action?: () => void;
   popupTrigger?: 'chip' | 'icon';
 }): Partial<ChipProps> {
@@ -447,12 +446,12 @@ const SortAndFilterHeader = ({
   t,
 }: SortAndFilterHeaderProps): React.JSX.Element => {
   const classes = useStyles();
-  const sortChipRef = useRef<HTMLDivElement>();
+  const sortChipRef = useRef<HTMLDivElement>(null);
   const sortPopupState = usePopupState({
     variant: 'popover',
     popupId: 'uav-list-sort-options',
   });
-  const filterChipRef = useRef<HTMLDivElement>();
+  const filterChipRef = useRef<HTMLDivElement>(null);
   const filterPopupState = usePopupState({
     variant: 'popover',
     popupId: 'uav-list-filter-options',
@@ -510,8 +509,7 @@ const SortAndFilterHeader = ({
     <div className={clsx(classes.root, floating && classes.floating)}>
       <div className={classes.widgets}>
         <Chip
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          ref={sortChipRef as any}
+          ref={sortChipRef}
           className={isSortActive ? classes.chipActive : classes.chip}
           variant='outlined'
           label={shortLabelsForUAVSortKey[sortBy.key](t)}
@@ -559,15 +557,14 @@ const SortAndFilterHeader = ({
         </Menu>
 
         <Chip
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          ref={filterChipRef as any}
+          ref={filterChipRef}
           className={getFilterChipClass(filters, classes)}
           variant='outlined'
           label={
             isFilterActive
               ? filters.length > 1
                 ? t('filtering.composite')
-                : shortLabelsForUAVFilter[filters[0]!](t)
+                : shortLabelsForUAVFilter[filters[0]](t)
               : t('filtering.filter')
           }
           size='small'

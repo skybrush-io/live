@@ -2,7 +2,6 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { orderBy } from 'natural-orderby';
 import PropTypes from 'prop-types';
-import React from 'react';
 
 import { formatMissionId } from '~/utils/formatting';
 

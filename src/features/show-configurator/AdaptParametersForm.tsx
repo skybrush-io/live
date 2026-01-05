@@ -1,10 +1,12 @@
+import ExpandMore from '@mui/icons-material/ExpandMore';
+import Accordion from '@mui/material/Accordion';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import AccordionSummary from '@mui/material/AccordionSummary';
 import Box from '@mui/material/Box';
 import FormGroup from '@mui/material/FormGroup';
-import React, { useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { ExpandMore } from '@mui/icons-material';
-import { Accordion, AccordionDetails, AccordionSummary } from '@mui/material';
 import { makeStyles } from '@skybrush/app-theme-mui';
 
 import {
@@ -76,7 +78,6 @@ function parseVelocityMpS(value: string): number {
   return Number.parseFloat(value);
 }
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export function useAdaptParametersFormState(
   defaultParameters?: OptionalShowAdaptParameters,
   onChange?: () => void

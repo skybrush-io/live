@@ -1,7 +1,7 @@
 import mapValues from 'lodash-es/mapValues';
 import memoizeOne from 'memoize-one';
 import memoize from 'memoizee';
-import React from 'react';
+import type React from 'react';
 
 import { Point } from 'ol/geom';
 import type OLLayer from 'ol/layer/Layer';

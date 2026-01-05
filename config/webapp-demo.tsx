@@ -2,7 +2,6 @@
  * @file Application configuration at startup, suitable for the web app demo deployment.
  */
 
-import * as React from 'react';
 import demoShowUrl from '~/../assets/shows/demo.skyc';
 
 import { type ConfigOverrides } from 'config-overrides';

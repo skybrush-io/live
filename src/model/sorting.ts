@@ -1,5 +1,5 @@
 import isNil from 'lodash-es/isNil';
-import * as memoize from 'memoizee';
+import memoize from 'memoizee';
 
 import { type StoredUAV } from '~/features/uavs/types';
 import { type PreparedI18nKey, tt } from '~/i18n';

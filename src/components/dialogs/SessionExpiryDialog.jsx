@@ -12,7 +12,6 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
 import PropTypes from 'prop-types';
-import React from 'react';
 import { connect } from 'react-redux';
 
 const SessionExpiryDialog = ({ onClose, open }) => (

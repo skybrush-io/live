@@ -3,7 +3,6 @@ import Paper from '@mui/material/Paper';
 import Toolbar from '@mui/material/Toolbar';
 import GeoJSON from 'ol/format/GeoJSON';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { batch, connect } from 'react-redux';
 import readShapeFile from 'shpjs';
 

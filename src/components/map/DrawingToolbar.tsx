@@ -11,7 +11,7 @@ import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import type { TFunction } from 'i18next';
 import partial from 'lodash-es/partial';
-import React from 'react';
+import type React from 'react';
 import { withTranslation } from 'react-i18next';
 
 import { Tool } from '~/components/map/tools';

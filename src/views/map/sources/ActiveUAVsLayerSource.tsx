@@ -8,7 +8,7 @@ import { source, withLayer } from '@collmot/ol-react';
 import difference from 'lodash-es/difference';
 import includes from 'lodash-es/includes';
 import type Point from 'ol/geom/Point';
-import Layer from 'ol/layer/Layer';
+import type Layer from 'ol/layer/Layer';
 import type VectorSource from 'ol/source/Vector';
 import React from 'react';
 

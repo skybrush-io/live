@@ -2,12 +2,6 @@
  * @file Functions and classes related to dealing with Flockwave messages.
  */
 
-import has from 'lodash-es/has';
-import isObject from 'lodash-es/isObject';
-import { nanoid } from 'nanoid';
-import pDefer, { type DeferredPromise } from 'p-defer';
-import pProps from 'p-props';
-import pTimeout from 'p-timeout';
 import {
   Response_ASYNCCANCEL,
   type Notification_ASYNCRESP,
@@ -20,6 +14,12 @@ import {
   type Response_DEVSUB,
   type Response_DEVUNSUB,
 } from '@skybrush/flockwave-spec';
+import has from 'lodash-es/has';
+import isObject from 'lodash-es/isObject';
+import { nanoid } from 'nanoid';
+import pDefer, { type DeferredPromise } from 'p-defer';
+import pProps from 'p-props';
+import pTimeout from 'p-timeout';
 
 import {
   createCancellationRequest,
@@ -32,9 +32,9 @@ import {
   extractResultOrReceiptFromMaybeAsyncResponse,
 } from './parsing';
 import { QueryHandler } from './queries';
+import type { Body, Message, MultiAsyncOperationResponseBody } from './types';
 import { validateObjectId } from './validation';
 import version from './version';
-import type { Body, Message, MultiAsyncOperationResponseBody } from './types';
 
 type TimeoutOptions = { timeout?: number };
 
@@ -1336,7 +1336,7 @@ export default class MessageHub {
       this._notificationHandlers[type] = [];
     }
 
-    this._notificationHandlers[type]!.push(handler);
+    this._notificationHandlers[type].push(handler);
   }
 
   /**

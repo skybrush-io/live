@@ -6,7 +6,6 @@ import { blue, grey } from '@mui/material/colors';
 import clsx from 'clsx';
 import { Markup } from 'interweave';
 import PropTypes from 'prop-types';
-import React from 'react';
 
 import { isThemeDark, makeStyles } from '@skybrush/app-theme-mui';
 

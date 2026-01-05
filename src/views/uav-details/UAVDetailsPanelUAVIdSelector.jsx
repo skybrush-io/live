@@ -1,7 +1,6 @@
 import SelectAll from '@mui/icons-material/SelectAll';
 import Box from '@mui/material/Box';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { connect } from 'react-redux';
 
 import ToggleButton from '~/components/ToggleButton';

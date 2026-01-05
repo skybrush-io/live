@@ -6,10 +6,19 @@ import tseslint from 'typescript-eslint';
 
 export default defineConfig(
   eslint.configs.recommended,
-  tseslint.configs.strict,
+  tseslint.configs.recommendedTypeChecked,
   tseslint.configs.stylistic,
   react.configs.flat.recommended,
   react.configs.flat['jsx-runtime'],
+
+  {
+    languageOptions: {
+      parserOptions: {
+        projectService: true,
+      },
+    },
+  },
+
   globalIgnores(['build']),
 
   {
@@ -19,6 +28,10 @@ export default defineConfig(
         version: 'detect',
       },
     },
+  },
+
+  {
+    ignores: ['**/*.js'],
   },
 
   {
@@ -70,6 +83,11 @@ export default defineConfig(
       // Enable non-null assertions for now; we may want to revisit this later.
       '@typescript-eslint/no-non-null-assertion': 'off',
 
+      // Disabled because we decided to allow one-off usage of 'any' values
+      // as an escape hatch
+      '@typescript-eslint/no-unsafe-assignment': 'off',
+      '@typescript-eslint/no-unsafe-member-access': 'off',
+
       // Allow unused variables in rest siblings (e.g. object destructuring).
       // This is commonly used to omit certain properties from objects.
       //
@@ -79,7 +97,21 @@ export default defineConfig(
       // influences the inferred type).
       '@typescript-eslint/no-unused-vars': [
         'error',
-        { ignoreRestSiblings: true, argsIgnorePattern: '^_' },
+        {
+          ignoreRestSiblings: true,
+          argsIgnorePattern: '^_',
+          destructuredArrayIgnorePattern: '^_',
+        },
+      ],
+
+      // Allow 'never' in template expressions. This is because we often use template
+      // expressions in error strings produced from an otherwise (currently) exhaustive
+      //  switch expression of an enum type as a form of handling potential _future_
+      // enum values or as a form of defensive programming in case an invalid value
+      // somehow makes its way to the switch without the type checker complaining.
+      '@typescript-eslint/restrict-template-expressions': [
+        'warn',
+        { allowNever: true },
       ],
     },
   }
