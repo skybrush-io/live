@@ -2,6 +2,7 @@ import delay from 'delay';
 import type { Feature as OLFeature } from 'ol';
 import { ModifyEvent } from 'ol/interaction/Modify';
 import { getDistance as haversineDistance } from 'ol/sphere';
+import { batch } from 'react-redux';
 
 import { findAssignmentBetweenPoints } from '~/algorithms/matching';
 import type { TransformFeaturesInteractionEvent } from '~/components/map/interactions/TransformFeatures';
@@ -182,11 +183,9 @@ const updateHomePositions =
           }, {});
 
     if (event.subType === 'move') {
-      const delta: EasNor = event.delta;
-
       dispatch(
         moveHomePositionsByMapCoordinateDelta({
-          delta,
+          delta: event.delta,
           drones: homePositionIndexes,
         })
       );
@@ -206,47 +205,48 @@ const updateHomePositions =
  */
 export const updateModifiedFeatures =
   (features: OLFeature[], options: FeatureUpdateOptions): AppThunk =>
-  (dispatch) => {
-    // -- Reset adapt result
-    dispatch(setAdaptResult(undefined));
+  (dispatch) =>
+    batch((): void => {
+      // -- Reset adapt result
+      dispatch(setAdaptResult(undefined));
 
-    const requiresUpdate = {
-      convexHull: false,
-      homePositionIds: [] as Identifier[],
-      allHomePositions: false,
-    };
+      const requiresUpdate = {
+        convexHull: false,
+        homePositionIds: [] as Identifier[],
+        allHomePositions: false,
+      };
 
-    for (const feature of features) {
-      const gid = feature.getId();
-      if (!(typeof gid === 'string')) {
-        console.warn('Non-string global feature ID:', gid);
-        continue;
+      for (const feature of features) {
+        const gid = feature.getId();
+        if (!(typeof gid === 'string')) {
+          console.warn('Non-string global feature ID:', gid);
+          continue;
+        }
+
+        const areaId = globalIdToAreaId(gid);
+        if (areaId === NET_CONVEX_HULL_AREA_ID) {
+          requiresUpdate.convexHull = true;
+        } else if (areaId === GROSS_CONVEX_HULL_AREA_ID) {
+          requiresUpdate.convexHull = true;
+          requiresUpdate.allHomePositions = true;
+        } else if (isHomePositionId(gid)) {
+          requiresUpdate.homePositionIds.push(gid);
+        }
       }
 
-      const areaId = globalIdToAreaId(gid);
-      if (areaId === NET_CONVEX_HULL_AREA_ID) {
-        requiresUpdate.convexHull = true;
-      } else if (areaId === GROSS_CONVEX_HULL_AREA_ID) {
-        requiresUpdate.convexHull = true;
-        requiresUpdate.allHomePositions = true;
-      } else if (isHomePositionId(gid)) {
-        requiresUpdate.homePositionIds.push(gid);
+      // -- Update features
+      if (requiresUpdate.convexHull) {
+        dispatch(updateConvexHull(options));
       }
-    }
 
-    // -- Update features
-    if (requiresUpdate.convexHull) {
-      dispatch(updateConvexHull(options));
-    }
+      if (requiresUpdate.allHomePositions) {
+        dispatch(updateHomePositions(undefined, options));
+      } else if (requiresUpdate.homePositionIds.length > 0) {
+        dispatch(updateHomePositions(requiresUpdate.homePositionIds, options));
+      }
 
-    if (requiresUpdate.allHomePositions) {
-      dispatch(updateHomePositions(undefined, options));
-    } else if (requiresUpdate.homePositionIds.length > 0) {
-      dispatch(updateHomePositions(requiresUpdate.homePositionIds, options));
-    }
-
-    dispatch(historySnap());
-  };
+      dispatch(historySnap());
+    });
 
 /**
  * Action that adjusts home positions to the current drone positions
@@ -255,7 +255,6 @@ export const updateModifiedFeatures =
 export const adjustHomePositionsToDronePositions =
   (): AppThunk => (dispatch, getState) => {
     // Only outdoor shows are supported by the dialog.
-
     const homePositions = getHomePositionsInWorldCoordinates(getState());
     const dronePositions = getAllValidUAVPositions(getState());
     if (homePositions === undefined || dronePositions.length === 0) {
@@ -308,13 +307,6 @@ export type OptionalShowAdaptParameters = {
 export type ShowAdaptParameters = Required<OptionalShowAdaptParameters>;
 
 /**
- * "Off" configuration, no lights.
- */
-type OffConfiguration = {
-  type: 'off';
-};
-
-/**
  * Default light configuration.
  */
 type DefaultConfiguration = {
@@ -324,6 +316,21 @@ type DefaultConfiguration = {
    * Brightness in the [0,1] interval.
    */
   brightness: number;
+};
+
+/**
+ * "Off" configuration, no lights.
+ */
+type OffConfiguration = {
+  type: 'off';
+};
+
+/**
+ * "Original" configuration that attempts to keep the
+ * existing light configuration.
+ */
+type OriginalConfiguration = {
+  type: 'original';
 };
 
 /**
@@ -356,8 +363,9 @@ type SparksConfiguration = {
  * Light effect types.
  */
 export type LightEffectType =
-  | OffConfiguration['type']
   | DefaultConfiguration['type']
+  | OffConfiguration['type']
+  | OriginalConfiguration['type']
   | SolidConfiguration['type']
   | SparksConfiguration['type'];
 
@@ -365,8 +373,9 @@ export type LightEffectType =
  * Light effect configurations.
  */
 export type LightEffectConfiguration =
-  | OffConfiguration
   | DefaultConfiguration
+  | OffConfiguration
+  | OriginalConfiguration
   | SolidConfiguration
   | SparksConfiguration;
 
@@ -390,6 +399,7 @@ export const adaptShow =
       altitude: params.altitude,
       replace: true,
     };
+
     const transformations = [
       {
         type: 'takeoff',
@@ -414,6 +424,7 @@ export const adaptShow =
     try {
       const { show, takeoffLengthChange, rthLengthChange } =
         // @ts-expect-error: ts(2339)
+
         await messageHub.query.adaptShow(
           base64ShowBlob,
           transformations,

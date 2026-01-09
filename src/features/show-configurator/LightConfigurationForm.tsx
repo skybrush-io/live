@@ -16,8 +16,9 @@ import { getServerVersionValidator } from '~/features/servers/selectors';
 import type { LightEffectConfiguration, LightEffectType } from './actions';
 
 const lightEffectTypes: LightEffectType[] = [
-  'off',
   'default',
+  'off',
+  'original',
   'solid',
   'sparks',
 ];
@@ -179,6 +180,9 @@ export const useLightConfigurationFormState = (onChange?: () => void) => {
 
       case 'sparks':
         return { type: 'sparks', color, off_duration: sparksConfigOffDuration };
+
+      case 'original':
+        return { type: 'original' };
 
       default:
         return { type: 'off' };
