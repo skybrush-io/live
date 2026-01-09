@@ -1,6 +1,8 @@
+import Home from '@mui/icons-material/Home';
+import IconButton from '@mui/material/IconButton';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
-import React, { useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect, useDispatch, useSelector } from 'react-redux';
 
@@ -12,10 +14,12 @@ import {
 } from '@skybrush/mui-components';
 
 import { Status } from '~/components/semantics';
+import { showDialog as showCollectiveRTHDialog } from '~/features/collective-rth/state';
 import {
   isConnected,
   supportsStudioInterop,
 } from '~/features/servers/selectors';
+import { isDeveloperModeEnabled } from '~/features/session/selectors';
 import { showDialogAndClearUndoHistory } from '~/features/show-configurator/actions';
 import { selectShowConfiguratorDataFromShow } from '~/features/show-configurator/selectors';
 import { type ShowData } from '~/features/show-configurator/state';
@@ -24,16 +28,14 @@ import {
   getOutdoorShowOrigin,
   getShowSegments,
   hasLoadedShowFile,
+  selectCollectiveRTHPlanSummary,
+  type CollectiveRTHPlanSummary,
 } from '~/features/show/selectors';
 import { getSetupStageStatuses } from '~/features/show/stages';
 import { showError } from '~/features/snackbar/actions';
-import { type PreparedI18nKey, tt } from '~/i18n';
+import { tt, type PreparedI18nKey } from '~/i18n';
 import Pro from '~/icons/Pro';
-import {
-  type AppDispatch,
-  type AppSelector,
-  type RootState,
-} from '~/store/reducers';
+import type { AppDispatch, AppSelector, RootState } from '~/store/reducers';
 import { type Nullable } from '~/utils/types';
 
 const PREREQUISITES: ReadonlyArray<
@@ -70,16 +72,26 @@ const PREREQUISITES: ReadonlyArray<
 
 type Props = Readonly<{
   base64Blob?: string;
+  devModeEnabled: boolean;
   show: ShowData | undefined;
   partialShow: Partial<ShowData>;
   // TODO: This should probably be a `ThunkActionDispatch`, but that doesn't
   //       seem to be reexported from `redux-thunk` via `@reduxjs/toolkit`...
   showDialogAndClearUndoHistory: (data?: ShowData) => void;
+  showCollectiveRTHDialog: () => void;
   status: Status;
+  rthPlanSummary: CollectiveRTHPlanSummary;
 }>;
 
 const ShowConfiguratorButton = (props: Props): React.JSX.Element => {
-  const { show, showDialogAndClearUndoHistory, status } = props;
+  const {
+    devModeEnabled,
+    show,
+    showDialogAndClearUndoHistory,
+    showCollectiveRTHDialog,
+    status,
+    rthPlanSummary,
+  } = props;
 
   const dispatch = useDispatch<AppDispatch>();
   const { t } = useTranslation();
@@ -92,7 +104,6 @@ const ShowConfiguratorButton = (props: Props): React.JSX.Element => {
   const evaluatedPrerequisites = PREREQUISITES.map(({ selector, message }) => ({
     // NOTE: The `PREREQUISITES` list being readonly and frozen ensures that the
     //       `useSelector` hook will always be called the same number of times.
-    // eslint-disable-next-line react-hooks/rules-of-hooks
     result: useSelector(selector),
     message: message(t),
   }));
@@ -113,7 +124,6 @@ const ShowConfiguratorButton = (props: Props): React.JSX.Element => {
     <MiniList>
       {evaluatedPrerequisites.map(({ result, message }, idx) => (
         <MiniListItem
-          // eslint-disable-next-line react/no-array-index-key
           key={idx}
           iconPreset={
             result
@@ -150,6 +160,36 @@ const ShowConfiguratorButton = (props: Props): React.JSX.Element => {
           }
           secondary={t('show.showConfigurator.description')}
         />
+        {devModeEnabled && (
+          <Tooltip
+            content={
+              rthPlanSummary.isValid
+                ? t('show.showConfigurator.tooltip.validRTHPlan', {
+                    numPlans: Object.keys(rthPlanSummary.plans).length,
+                  })
+                : t('show.showConfigurator.tooltip.invalidRTHPlan')
+            }
+            placement='left'
+          >
+            <IconButton
+              edge='end'
+              size='large'
+              color={
+                rthPlanSummary.numDrones === 0
+                  ? 'default'
+                  : rthPlanSummary.isValid
+                    ? 'success'
+                    : 'warning'
+              }
+              onClick={(evt) => {
+                evt.stopPropagation();
+                showCollectiveRTHDialog();
+              }}
+            >
+              <Home />
+            </IconButton>
+          </Tooltip>
+        )}
       </ListItemButton>
     </div>
   );
@@ -159,9 +199,12 @@ const ConnectedShowConfiguratorButton = connect(
   (state: RootState) => ({
     show: selectShowConfiguratorDataFromShow(state),
     status: getSetupStageStatuses(state).showConfigurator,
+    rthPlanSummary: selectCollectiveRTHPlanSummary(state),
+    devModeEnabled: isDeveloperModeEnabled(state),
   }),
   {
     showDialogAndClearUndoHistory,
+    showCollectiveRTHDialog,
   }
 )(ShowConfiguratorButton);
 
