@@ -5,7 +5,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import Slider from '@mui/material/Slider';
 import Typography from '@mui/material/Typography';
-import React, { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 
@@ -16,8 +16,9 @@ import { getServerVersionValidator } from '~/features/servers/selectors';
 import type { LightEffectConfiguration, LightEffectType } from './actions';
 
 const lightEffectTypes: LightEffectType[] = [
-  'off',
   'default',
+  'off',
+  'original',
   'solid',
   'sparks',
 ];
@@ -162,6 +163,9 @@ export const useLightConfigurationFormState = (onChange?: () => void) => {
 
       case 'sparks':
         return { type: 'sparks', off_duration: sparksConfigOffDuration };
+
+      case 'original':
+        return { type: 'original' };
 
       default:
         return { type: 'off' };
