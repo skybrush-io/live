@@ -91,7 +91,8 @@
     },
     "description": "Calculate RTH plans for all drones in the show. The RTH plans will be designed to bring the drones home as quickly as possible while avoiding collisions with each other.",
     "error": "An error occurred while calculating RTH plans. Please try again.",
-    "existingRTHPlans": "{{ withRTHPlan }} of {{ total }} drones have an RTH plan in the loaded show.",
+    "existingInvalidRTHPlan": "The swarm has no valid collective RTH plans in the loaded show.",
+    "existingValidRTHPlan": "The swarm has valid RTH plans at {{numPlans}} timestamps in the loaded show.",
     "loading": "RTH plans are being calculated, please wait. It may take some time.",
     "parameters": {
       "form": {
@@ -118,16 +119,13 @@
     },
     "summary": {
       "firstTime": {
-        "message": "Earliest RTH time: {{firstTime}}s",
-        "unknown": "Earliest RTH time: unknown"
+        "message": "Earliest RTH time: {{firstTime}}s"
       },
       "lastTime": {
-        "message": "Last RTH time: {{lastTime}}s",
-        "unknown": "Last RTH time: unknown"
+        "message": "Last RTH time: {{lastTime}}s"
       },
-      "maxShowDuration": {
-        "message": "Maximum show duration, assuming RTH is triggered: {{maxShowDuration}}s",
-        "unknown": "Maximum show duration, assuming RTH is triggered: unknown"
+      "numPlans": {
+        "message": "Plan successfully calculated for {{numPlans}} timestamps"
       }
     },
     "title": "Plan collective RTH"
@@ -642,7 +640,8 @@
         "server": "Connection must be established to the server"
       },
       "tooltip": {
-        "rthPlanStats": "{{ withRTHPlan }} of {{ total }} drones have an RTH plan"
+        "invalidRTHPlan": "The swarm has no valid collective RTH plans.",
+        "validRTHPlan": "The swarm has valid RTH plans at {{numPlans}} timestamps."
       }
     },
     "startMethod": {

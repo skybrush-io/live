@@ -4,7 +4,7 @@ import type { AppThunk } from '~/store/reducers';
 import { writeBlobToFile } from '~/utils/filesystem';
 
 import { selectTransformedShowBlob } from './selectors';
-import { setResult, type TransformationResult } from './state';
+import { setResult } from './state';
 
 export type OptionalCollectiveRTHParameters = {
   minDistance?: number;
@@ -23,8 +23,7 @@ export const addCollectiveRTH =
     dispatch(setResult({ loading: true }));
 
     try {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const { show, firstTime, lastTime, maxShowDuration } =
+      const { show, showDuration, stats } =
         // @ts-expect-error: ts(2339)
         // eslint-disable-next-line @typescript-eslint/no-unsafe-call
         await messageHub.query.addCollectiveRTH(base64ShowBlob, {
@@ -40,39 +39,57 @@ export const addCollectiveRTH =
         );
       }
 
-      const result: TransformationResult = { show };
+      if (typeof showDuration !== 'number') {
+        throw new TypeError(
+          'Invalid showDuration response from collective RTH transformation.'
+        );
+      }
 
-      if (firstTime !== undefined) {
-        if (typeof firstTime !== 'number') {
+      if (!Array.isArray(stats)) {
+        throw new TypeError(
+          'Invalid stats response from collective RTH transformation.'
+        );
+      }
+
+      if (stats.length === 0) {
+        throw new TypeError(
+          'No stats returned from collective RTH transformation.'
+        );
+      }
+
+      let firstTime: number = Number.POSITIVE_INFINITY;
+      let lastTime: number = Number.NEGATIVE_INFINITY;
+
+      for (const stat of stats) {
+        if (typeof stat !== 'object') {
           throw new TypeError(
-            'Invalid firstTime response from collective RTH transformation.'
+            'Invalid stat in response to collective RTH transformation.'
           );
         }
 
-        result.firstTime = firstTime;
-      }
-
-      if (lastTime !== undefined) {
-        if (typeof lastTime !== 'number') {
+        if (typeof stat.time !== 'number') {
           throw new TypeError(
-            'Invalid lastTime response from collective RTH transformation.'
+            'Invalid time in stat in response to collective RTH transformation.'
           );
         }
 
-        result.lastTime = lastTime;
-      }
-
-      if (maxShowDuration !== undefined) {
-        if (typeof maxShowDuration !== 'number') {
+        if (typeof stat.duration !== 'number') {
           throw new TypeError(
-            'Invalid maxShowDuration response from collective RTH transformation.'
+            'Invalid duration in stat in response to collective RTH transformation.'
           );
         }
 
-        result.maxShowDuration = maxShowDuration;
+        if (typeof stat.showDuration !== 'number') {
+          throw new TypeError(
+            'Invalid showDuration in stat in response to collective RTH transformation.'
+          );
+        }
+
+        firstTime = Math.min(firstTime, stat.time as number);
+        lastTime = Math.max(lastTime, stat.time as number);
       }
 
-      dispatch(setResult(result));
+      dispatch(setResult({ show, showDuration, stats, firstTime, lastTime }));
     } catch (error) {
       console.warn('addCollectiveRTH failed with error:', error);
       const errorMessage =

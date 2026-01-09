@@ -2,7 +2,6 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import DialogActions from '@mui/material/DialogActions';
 import Typography from '@mui/material/Typography';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
@@ -10,8 +9,8 @@ import { DraggableDialog } from '@skybrush/mui-components';
 
 import { loadBase64EncodedShow } from '~/features/show/actions';
 import {
-  selectCollectiveRTHStats,
-  type CollectiveRTHStats,
+  selectCollectiveRTHPlanSummary,
+  type CollectiveRTHPlanSummary,
 } from '~/features/show/selectors';
 import type { AppDispatch, RootState } from '~/store/reducers';
 
@@ -33,9 +32,9 @@ import { closeDialog, type TransformationResult } from './state';
 
 type StateProps = {
   error?: string;
+  existingRTHPlanSummary: CollectiveRTHPlanSummary;
   inProgress: boolean;
   open: boolean;
-  swarmRTHStats: CollectiveRTHStats;
   transformationResult?: TransformationResult;
 };
 
@@ -54,10 +53,10 @@ const CollectiveRTHDialog = (props: Props) => {
     applyTransformedShow,
     closeDialog,
     error,
+    existingRTHPlanSummary,
     inProgress,
     open,
     saveTransformedShow,
-    swarmRTHStats,
     transformationResult,
   } = props;
   const parametersFormState = useCollectiveRTHParametersFormState();
@@ -120,34 +119,19 @@ const CollectiveRTHDialog = (props: Props) => {
         {transformationResult !== undefined && (
           <>
             <Typography>
-              {t(
-                transformationResult.firstTime === undefined
-                  ? 'collectiveRTHDialog.summary.firstTime.unknown'
-                  : 'collectiveRTHDialog.summary.firstTime.message',
-                {
-                  firstTime: transformationResult.firstTime,
-                }
-              )}
+              {t('collectiveRTHDialog.summary.numPlans.message', {
+                numPlans: transformationResult.stats.length,
+              })}
             </Typography>
             <Typography>
-              {t(
-                transformationResult.lastTime === undefined
-                  ? 'collectiveRTHDialog.summary.lastTime.unknown'
-                  : 'collectiveRTHDialog.summary.lastTime.message',
-                {
-                  lastTime: transformationResult.lastTime,
-                }
-              )}
+              {t('collectiveRTHDialog.summary.firstTime.message', {
+                firstTime: transformationResult.firstTime,
+              })}
             </Typography>
             <Typography>
-              {t(
-                transformationResult.maxShowDuration === undefined
-                  ? 'collectiveRTHDialog.summary.maxShowDuration.unknown'
-                  : 'collectiveRTHDialog.summary.maxShowDuration.message',
-                {
-                  maxShowDuration: transformationResult.maxShowDuration,
-                }
-              )}
+              {t('collectiveRTHDialog.summary.lastTime.message', {
+                lastTime: transformationResult.lastTime,
+              })}
             </Typography>
           </>
         )}
@@ -157,10 +141,12 @@ const CollectiveRTHDialog = (props: Props) => {
             <>
               <Typography>{t('collectiveRTHDialog.description')}</Typography>
               <Typography>
-                {t('collectiveRTHDialog.existingRTHPlans', {
-                  withRTHPlan: swarmRTHStats.withRTHPlan,
-                  total: swarmRTHStats.total,
-                })}
+                {existingRTHPlanSummary.isValid
+                  ? t('collectiveRTHDialog.existingValidRTHPlan', {
+                      numPlans: Object.keys(existingRTHPlanSummary.plans)
+                        .length,
+                    })
+                  : t('collectiveRTHDialog.existingInvalidRTHPlan')}
               </Typography>
             </>
           )}
@@ -220,7 +206,7 @@ const ConnectedCollectiveRTHDialog = connect(
     error: selectTransformationError(state),
     inProgress: selectTransformationInProgress(state),
     open: isDialogOpen(state),
-    swarmRTHStats: selectCollectiveRTHStats(state),
+    existingRTHPlanSummary: selectCollectiveRTHPlanSummary(state),
     transformationResult: selectResult(state),
   }),
   // -- map dispatch to props

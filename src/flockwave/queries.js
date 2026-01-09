@@ -49,14 +49,14 @@ export async function adaptShow(hub, show, transformations, coordinateSystem) {
 export async function addCollectiveRTH(hub, show, config) {
   const response = await hub.sendMessage(
     {
-      type: 'X-SHOW-CRTH',
+      type: 'X-SHOW-CRTH-PLAN',
       show,
       config,
     },
     { timeout: 3600 }
   );
 
-  if (response?.body?.type === 'X-SHOW-CRTH') {
+  if (response?.body?.type === 'X-SHOW-CRTH-PLAN') {
     return response.body;
   } else {
     throw new Error(response?.body?.reason ?? 'Unknown error.');

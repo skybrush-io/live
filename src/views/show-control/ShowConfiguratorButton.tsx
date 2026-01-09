@@ -28,8 +28,8 @@ import {
   getOutdoorShowOrigin,
   getShowSegments,
   hasLoadedShowFile,
-  selectCollectiveRTHStats,
-  type CollectiveRTHStats,
+  selectCollectiveRTHPlanSummary,
+  type CollectiveRTHPlanSummary,
 } from '~/features/show/selectors';
 import { getSetupStageStatuses } from '~/features/show/stages';
 import { showError } from '~/features/snackbar/actions';
@@ -80,7 +80,7 @@ type Props = Readonly<{
   showDialogAndClearUndoHistory: (data?: ShowData) => void;
   showCollectiveRTHDialog: () => void;
   status: Status;
-  swarmRTHStats: CollectiveRTHStats;
+  rthPlanSummary: CollectiveRTHPlanSummary;
 }>;
 
 const ShowConfiguratorButton = (props: Props): React.JSX.Element => {
@@ -90,7 +90,7 @@ const ShowConfiguratorButton = (props: Props): React.JSX.Element => {
     showDialogAndClearUndoHistory,
     showCollectiveRTHDialog,
     status,
-    swarmRTHStats,
+    rthPlanSummary,
   } = props;
 
   const dispatch = useDispatch<AppDispatch>();
@@ -104,7 +104,6 @@ const ShowConfiguratorButton = (props: Props): React.JSX.Element => {
   const evaluatedPrerequisites = PREREQUISITES.map(({ selector, message }) => ({
     // NOTE: The `PREREQUISITES` list being readonly and frozen ensures that the
     //       `useSelector` hook will always be called the same number of times.
-    // eslint-disable-next-line react-hooks/rules-of-hooks
     result: useSelector(selector),
     message: message(t),
   }));
@@ -125,7 +124,6 @@ const ShowConfiguratorButton = (props: Props): React.JSX.Element => {
     <MiniList>
       {evaluatedPrerequisites.map(({ result, message }, idx) => (
         <MiniListItem
-          // eslint-disable-next-line react/no-array-index-key
           key={idx}
           iconPreset={
             result
@@ -164,19 +162,22 @@ const ShowConfiguratorButton = (props: Props): React.JSX.Element => {
         />
         {devModeEnabled && (
           <Tooltip
-            content={t('show.showConfigurator.tooltip.rthPlanStats', {
-              total: swarmRTHStats.total,
-              withRTHPlan: swarmRTHStats.withRTHPlan,
-            })}
+            content={
+              rthPlanSummary.isValid
+                ? t('show.showConfigurator.tooltip.validRTHPlan', {
+                    numPlans: Object.keys(rthPlanSummary.plans).length,
+                  })
+                : t('show.showConfigurator.tooltip.invalidRTHPlan')
+            }
             placement='left'
           >
             <IconButton
               edge='end'
               size='large'
               color={
-                swarmRTHStats.total === 0
+                rthPlanSummary.numDrones === 0
                   ? 'default'
-                  : swarmRTHStats.total === swarmRTHStats.withRTHPlan
+                  : rthPlanSummary.isValid
                     ? 'success'
                     : 'warning'
               }
@@ -198,7 +199,7 @@ const ConnectedShowConfiguratorButton = connect(
   (state: RootState) => ({
     show: selectShowConfiguratorDataFromShow(state),
     status: getSetupStageStatuses(state).showConfigurator,
-    swarmRTHStats: selectCollectiveRTHStats(state),
+    rthPlanSummary: selectCollectiveRTHPlanSummary(state),
     devModeEnabled: isDeveloperModeEnabled(state),
   }),
   {

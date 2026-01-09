@@ -1,5 +1,22 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
+export type StatEntry = {
+  /**
+   * Start time of the collective RTH plan relative to show start, in seconds.
+   */
+  time: number;
+
+  /**
+   * The duration of the collective RTH operation, without landing, in seconds.
+   */
+  duration: number;
+
+  /**
+   * Total show duration including collective RTH and landing, in seconds.
+   */
+  show_duration: number;
+};
+
 export type TransformationResult = {
   /**
    * The transformed show as a base64-encoded string.
@@ -7,19 +24,24 @@ export type TransformationResult = {
   show: string;
 
   /**
-   * The first timestamp at which a collective RTH plan was generated, in seconds.
+   * The full duration of the show in seconds, stored for convenience.
    */
-  firstTime?: number;
+  showDuration: number;
+
+  /**
+   * Statistics about the collective RTH operation.
+   */
+  stats: StatEntry[];
 
   /**
    * The last timestamp at which a collective RTH plan was generated, in seconds.
    */
-  lastTime?: number;
+  firstTime: number;
 
   /**
-   * The maximum show duration assuming a collective RTH plan got triggered, in seconds.
+   * The last timestamp at which a collective RTH plan was generated, in seconds.
    */
-  maxShowDuration?: number;
+  lastTime: number;
 };
 
 export type TransformationResultOrStatus =
