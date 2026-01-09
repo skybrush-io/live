@@ -16,8 +16,8 @@ import { getServerVersionValidator } from '~/features/servers/selectors';
 import type { LightEffectConfiguration, LightEffectType } from './actions';
 
 const lightEffectTypes: LightEffectType[] = [
-  'off',
   'default',
+  'off',
   'original',
   'solid',
   'sparks',
