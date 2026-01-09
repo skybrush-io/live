@@ -730,6 +730,7 @@
       "type": {
         "default": "Default",
         "off": "Off",
+        "original": "Original",
         "solid": "Solid",
         "sparks": "Sparks"
       },

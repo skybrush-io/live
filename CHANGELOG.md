@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Support for keeping the original light configuration when adapting the show in
+  the show adaptation dialog.
 - Added a new dialog for planning collective RTH trajectories.
 
 ## [2.12.1] - 2025-12-15
