@@ -1,3 +1,7 @@
+# Git worktree directories
+.wt
+.worktree
+
 # VSCode settings
 .vscode
 
@@ -58,3 +62,7 @@ assets/shows/
 
 # Development stuff
 etc/dev/
+
+# AI
+.plan
+.prompt
