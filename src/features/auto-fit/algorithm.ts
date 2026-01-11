@@ -28,7 +28,7 @@ import type {
   CoordinateSystemFittingProblem,
 } from './types';
 
-if (COORDINATE_SYSTEM_TYPE !== OriginType.NWU) {
+if ((COORDINATE_SYSTEM_TYPE as OriginType) !== OriginType.NWU) {
   throw new Error(
     `The coordinate system type ${COORDINATE_SYSTEM_TYPE} is not supported by the auto-fit algorithm`
   );

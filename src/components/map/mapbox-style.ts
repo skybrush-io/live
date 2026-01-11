@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 
 import type { Feature } from 'ol';
-import { stylefunction as styleFunction } from 'ol-mapbox-style';
+// import { stylefunction as styleFunction } from 'ol-mapbox-style';
 import { Fill, Icon, Stroke, Style, Text } from 'ol/style';
 
 /**
@@ -442,30 +442,29 @@ function createMapboxStreetsV6Style() {
 
 export const streetsV6Style = createMapboxStreetsV6Style();
 
-// ol-mapbox-style does this, but it needs a layer that it can work on.
-// We provide a fake layer here.
-const fakeLayer = {
-  changed(): void {
-    /* nop */
-  },
-  set(): void {
-    /* nop */
-  },
-  setStyle(): void {
-    /* nop */
-  },
-};
+// // ol-mapbox-style does this, but it needs a layer that it can work on.
+// // We provide a fake layer here.
+// const fakeLayer = {
+//   changed(): void {
+//     /* nop */
+//   },
+//   set(): void {
+//     /* nop */
+//   },
+//   setStyle(): void {
+//     /* nop */
+//   },
+// };
 
-/**
- * Creates a Mapbox style function from its JSON representation.
- */
-
-export function createMapboxStyleFromJSON(
-  style: string | any,
-  source: string | string[]
-) {
-  return styleFunction(fakeLayer as any, style, source);
-}
+// /**
+//  * Creates a Mapbox style function from its JSON representation.
+//  */
+// export function createMapboxStyleFromJSON(
+//   style: string | any,
+//   source: string | string[]
+// ) {
+//   return styleFunction(fakeLayer as any, style, source);
+// }
 
 /*
 const maptilerBasicStyleData = require('~/../assets/map-styles/maptiler-basic.json');

@@ -37,7 +37,7 @@ import {
   Severity,
 } from '~/flockwave/errors';
 import { convertRGB565ToCSSNotation } from '~/flockwave/parsing';
-import UAVErrorCode from '~/flockwave/UAVErrorCode';
+import UAVErrorCode, { abbreviateUAVErrorCode } from '~/flockwave/UAVErrorCode';
 import { isGPSPositionValid } from '~/model/geography';
 import { globalIdToUavId } from '~/model/identifiers';
 import { UAVAge } from '~/model/uav';
@@ -654,7 +654,6 @@ export const getErrorCodeSummaryForUAVsInMission = createSelector(
       const uavState = uavStatesById[uavId];
       if (uavState) {
         for (const code of uavState.errors) {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
           if (code !== UAVErrorCode.ON_GROUND) {
             result.push([code, [uavId, reverseMapping[uavId] ?? null]]);
           }
@@ -791,7 +790,7 @@ export function getSingleUAVStatusSummary(uav?: StoredUAV) {
     maxError = Math.max(...uav.errors);
     const severity = getSeverityOfErrorCode(maxError);
 
-    text = UAVErrorCode.abbreviate(maxError);
+    text = abbreviateUAVErrorCode(maxError);
 
     if (maxError === UAVErrorCode.RETURN_TO_HOME) {
       // RTH is treated separately; it is always shown as the special RTH state

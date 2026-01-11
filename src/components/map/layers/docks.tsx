@@ -42,28 +42,27 @@ type DockFeatureProps = BaseFeatureProps & {
   value: DockState;
 };
 
-const DockFeature = React.memo(
-  ({ selected, value, ...rest }: DockFeatureProps) => {
-    const { id, position } = value;
+const DockFeature = React.memo(function DockFeature({
+  selected,
+  value,
+  ...rest
+}: DockFeatureProps) {
+  const { id, position } = value;
 
-    if (!position) {
-      return null;
-    }
-
-    const style = createDockStyle(id, selected);
-
-    return (
-      <Feature id={dockIdToGlobalId(id)} style={style} {...rest}>
-        <geom.Point
-          coordinates={mapViewCoordinateFromLonLat([
-            position.lon,
-            position.lat,
-          ])}
-        />
-      </Feature>
-    );
+  if (!position) {
+    return null;
   }
-);
+
+  const style = createDockStyle(id, selected);
+
+  return (
+    <Feature id={dockIdToGlobalId(id)} style={style} {...rest}>
+      <geom.Point
+        coordinates={mapViewCoordinateFromLonLat([position.lon, position.lat])}
+      />
+    </Feature>
+  );
+});
 
 // === Docks layer ===
 

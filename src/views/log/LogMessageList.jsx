@@ -10,7 +10,7 @@ import FadeAndSlide from '~/components/transitions/FadeAndSlide';
 
 import LogMessageListItem from './LogMessageListItem';
 
-const renderLogMessage = (index, item) => <LogMessageListItem item={item} />;
+const renderLogMessage = (_index, item) => <LogMessageListItem item={item} />;
 
 const useStyles = makeStyles((theme) => ({
   scrollToBottomButton: {

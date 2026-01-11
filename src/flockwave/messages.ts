@@ -2,17 +2,17 @@
  * @file Functions and classes related to dealing with Flockwave messages.
  */
 
-import type { Response_ASYNCCANCEL } from '@skybrush/flockwave-spec';
-import {
-  type Notification_ASYNCRESP,
-  type Notification_ASYNCST,
-  type Notification_ASYNCTIMEOUT,
-  type Response_ACKNAK,
-  type Response_ASYNCRESUME,
-  type Response_DEVINF,
-  type Response_DEVLISTSUB,
-  type Response_DEVSUB,
-  type Response_DEVUNSUB,
+import type {
+  Notification_ASYNCRESP,
+  Notification_ASYNCST,
+  Notification_ASYNCTIMEOUT,
+  Response_ACKNAK,
+  Response_ASYNCCANCEL,
+  Response_ASYNCRESUME,
+  Response_DEVINF,
+  Response_DEVLISTSUB,
+  Response_DEVSUB,
+  Response_DEVUNSUB,
 } from '@skybrush/flockwave-spec';
 import has from 'lodash-es/has';
 import isObject from 'lodash-es/isObject';
@@ -31,8 +31,12 @@ import {
   ensureNotNAK,
   extractResultOrReceiptFromMaybeAsyncResponse,
 } from './parsing';
-import { QueryHandler } from './queries';
-import type { Body, Message, MultiAsyncOperationResponseBody } from './types';
+import { ConstructedQueryHandler as QueryHandler } from './queries';
+import type {
+  Message,
+  MessageBody,
+  MultiAsyncOperationResponseBody,
+} from './types';
 import { validateObjectId } from './validation';
 import version from './version';
 
@@ -567,7 +571,9 @@ class MessageHubRelatedComponent {
    * Callback function that is called when the object is attached to a new
    * message hub. Must be overridden in subclasses.
    */
-  _onAttachedToHub(): void {}
+  _onAttachedToHub(): void {
+    // do nothing
+  }
 
   /**
    * Callback function that is called when the object is detached from a
@@ -752,7 +758,7 @@ class AsyncOperationManager extends MessageHubRelatedComponent {
         onResume: async (value) => {
           await this._sendSingleResumeRequest(receipt, value);
         },
-        onTimeout: this._onResponseTimedOut,
+        onTimeout: (...args) => void this._onResponseTimedOut(...args),
       });
 
       if (cancelToken && this._hub) {
@@ -990,7 +996,7 @@ class DeviceTreeSubscriptionManager extends MessageHubRelatedComponent {
       throw error;
     }
 
-    return () => this.unsubscribe(path, callback);
+    return () => void this.unsubscribe(path, callback);
   }
 
   /**
@@ -1021,7 +1027,9 @@ class DeviceTreeSubscriptionManager extends MessageHubRelatedComponent {
         'DEV-INF': this._onDeviceTreeNodeValuesChanged.bind(this),
       });
 
-      this.requestSubscriptionUpdates();
+      this.requestSubscriptionUpdates().catch((e) => {
+        throw new Error('Failed to request subscription updates', { cause: e });
+      });
     }
   }
 
@@ -1102,7 +1110,7 @@ class DeviceTreeSubscriptionManager extends MessageHubRelatedComponent {
       }
 
       if (response?.body?.success) {
-        for (const path of response?.body?.success) {
+        for (const path of response.body.success) {
           this._subscriptionsOnServer.delete(path);
         }
       }
@@ -1124,7 +1132,7 @@ class DeviceTreeSubscriptionManager extends MessageHubRelatedComponent {
       }
 
       if (response?.body?.success) {
-        for (const path of response?.body?.success) {
+        for (const path of response.body.success) {
           this._subscriptionsOnServer.add(path);
         }
 
@@ -1142,7 +1150,7 @@ class DeviceTreeSubscriptionManager extends MessageHubRelatedComponent {
     }
 
     if (shouldRetry) {
-      setTimeout(() => this._updateSubscriptions(), 5000);
+      setTimeout(() => void this._updateSubscriptions(), 5000);
     }
 
     this._subscriptionUpdateInProgress.resolve();
@@ -1198,8 +1206,6 @@ export default class MessageHub {
     this._executor = undefined;
     this._query = undefined;
 
-    this._onMessageTimedOut = this._onMessageTimedOut.bind(this);
-
     this._asyncOperationManager = new AsyncOperationManager(this);
     this._deviceTreeSubscriptionManager = new DeviceTreeSubscriptionManager(
       this
@@ -1243,11 +1249,7 @@ export default class MessageHub {
    * the server via the message hub.
    */
   get execute(): OperationExecutor {
-    if (!this._executor) {
-      this._executor = createOperationExecutor(this);
-    }
-
-    return this._executor;
+    return (this._executor ??= createOperationExecutor(this));
   }
 
   /**
@@ -1255,11 +1257,7 @@ export default class MessageHub {
    * server via the message hub.
    */
   get query(): QueryHandler {
-    if (!this._query) {
-      this._query = new QueryHandler(this);
-    }
-
-    return this._query;
+    return (this._query ??= new QueryHandler(this));
   }
 
   /**
@@ -1364,7 +1362,7 @@ export default class MessageHub {
    */
   unregisterNotificationHandler(type: string, handler: NotificationHandler) {
     const handlers = this._notificationHandlers[type];
-    if (!handlers || !handlers.includes(handler)) {
+    if (!handlers?.includes(handler)) {
       throw new Error(
         `Unable to unregister handler from ${type}. Handler doesn't exist.`
       );
@@ -1461,7 +1459,7 @@ export default class MessageHub {
    *        message hub is used.
    * @return a promise that resolves to the response of the server
    */
-  async sendMessage<T = Body>(
+  async sendMessage<T = MessageBody>(
     body = {},
     { timeout = undefined }: TimeoutOptions = {}
   ): Promise<Message<T>> {
@@ -1538,7 +1536,7 @@ export default class MessageHub {
    * results or errors (represented as Error objects).
    */
   async startAsyncOperation(
-    body: Body,
+    body: MessageBody,
     responseHandlerOptions: TimeoutOptions & BoundProgressHandlerOptions
   ) {
     const { type: expectedType } = body;
@@ -1574,7 +1572,7 @@ export default class MessageHub {
    */
   async startAsyncOperationForSingleId<T>(
     id: string,
-    message: Body & Record<string, unknown>,
+    message: MessageBody & Record<string, unknown>,
     options: AsyncOperationOptions = {}
   ): Promise<T> {
     const { ids, type: expectedType } = message;
@@ -1594,7 +1592,7 @@ export default class MessageHub {
       message[idProp ?? (single ? 'id' : 'ids')] = [id];
     }
 
-    let response: Message<Body & Record<string, unknown>> =
+    let response: Message<MessageBody & Record<string, unknown>> =
       await this.sendMessage(message);
 
     if (single) {
@@ -1669,9 +1667,9 @@ export default class MessageHub {
    *
    * @param messageId  the ID of the message
    */
-  _onMessageTimedOut(messageId: string) {
+  _onMessageTimedOut = (messageId: string) => {
     console.warn(`Response to message with ID=${messageId} timed out`);
-  }
+  };
 
   /**
    * Helper function to process the response to a multi-object async operation.

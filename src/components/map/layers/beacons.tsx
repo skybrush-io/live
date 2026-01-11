@@ -83,32 +83,31 @@ type BeaconFeatureProps = BaseFeatureProps & {
   value: Beacon;
 };
 
-const BeaconFeature = React.memo(
-  ({ selected, value, ...rest }: BeaconFeatureProps) => {
-    const { id, position, active } = value;
+const BeaconFeature = React.memo(function BeaconFeature({
+  selected,
+  value,
+  ...rest
+}: BeaconFeatureProps) {
+  const { id, position, active } = value;
 
-    if (!position) {
-      return null;
-    }
-
-    const style = createBeaconStyle(
-      getBeaconDisplayName(value),
-      selected,
-      active
-    );
-
-    return (
-      <Feature id={beaconIdToGlobalId(id)} style={style} {...rest}>
-        <geom.Point
-          coordinates={mapViewCoordinateFromLonLat([
-            position.lon,
-            position.lat,
-          ])}
-        />
-      </Feature>
-    );
+  if (!position) {
+    return null;
   }
-);
+
+  const style = createBeaconStyle(
+    getBeaconDisplayName(value),
+    selected,
+    active
+  );
+
+  return (
+    <Feature id={beaconIdToGlobalId(id)} style={style} {...rest}>
+      <geom.Point
+        coordinates={mapViewCoordinateFromLonLat([position.lon, position.lat])}
+      />
+    </Feature>
+  );
+});
 
 // === Beacons layer
 

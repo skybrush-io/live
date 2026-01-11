@@ -73,7 +73,7 @@ type MapProps = Partial<ViewProperties> & {
 
   // -- Ids and refs.
   id?: string;
-  mapRef?: React.Ref<typeof BaseMap>;
+  // mapRef?: React.Ref<typeof BaseMap>;
 };
 
 const Map = (props: MapProps) => {
@@ -89,7 +89,7 @@ const Map = (props: MapProps) => {
     onFeaturesModified,
     onMapMoved,
     id,
-    mapRef,
+    // mapRef,
   } = props;
 
   const view = useMemo(
@@ -109,7 +109,7 @@ const Map = (props: MapProps) => {
     <div style={styles.mapWrapper}>
       <BaseMap
         id={id}
-        ref={mapRef}
+        // ref={mapRef}
         loadTilesWhileInteracting
         view={view}
         useDefaultControls={false}

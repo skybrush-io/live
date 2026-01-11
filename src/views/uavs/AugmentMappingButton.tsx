@@ -23,9 +23,9 @@ const AugmentMappingButton = (props: AugmentMappingButtonProps) => {
     <Button
       startIcon={<Shuffle />}
       disabled={!canAugmentMapping}
-      onClick={() => {
-        dispatch(augmentMappingAutomaticallyFromSpareDrones());
-      }}
+      onClick={() =>
+        void dispatch(augmentMappingAutomaticallyFromSpareDrones())
+      }
       {...props}
     >
       {t('augmentMappingButton.assignSparesToEmptySlots')}

@@ -4,6 +4,7 @@ import type { DragBoxEvent } from 'ol/interaction/DragBox';
 import type { ModifyEvent } from 'ol/interaction/Modify';
 import VectorLayer from 'ol/layer/Vector';
 import type Map from 'ol/Map';
+import VectorSource from 'ol/source/Vector';
 import type React from 'react';
 import { useCallback } from 'react';
 
@@ -211,19 +212,19 @@ const MapInteractions = withMap((props: Props) => {
   // Having two separate interactions for the two layers would result in
   // multiple interaction points showing up simultaneously on the map if
   // features from different layers are close to each other.
-  const modifiableFeaturesOfVisibleEditableLayers = new Collection<any>();
+  const modifiableFeaturesOfVisibleEditableLayers = new Collection<Feature>();
   for (const vel of getVisibleEditableLayers(props.map)) {
     // BaseLayer doesn't have a getSource() method.
     if (!(vel instanceof VectorLayer)) {
       continue;
     }
 
-    const source = vel.getSource();
-    if (!source) {
+    const source: VectorSource<Feature> | null = vel?.getSource?.();
+    if (!source || !(source instanceof VectorSource)) {
       continue;
     }
 
-    const collection = source.getFeaturesCollection();
+    const collection = source?.getFeaturesCollection?.();
     if (!collection) {
       continue;
     }

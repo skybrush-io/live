@@ -17,7 +17,7 @@ import {
 } from '@skybrush/mui-components';
 
 import { errorCodeToSemantics } from '~/flockwave/errors';
-import UAVErrorCode from '~/flockwave/UAVErrorCode';
+import UAVErrorCode, { describeUAVErrorCode } from '~/flockwave/UAVErrorCode';
 import useMessageHub from '~/hooks/useMessageHub';
 import {
   describeOverallPreflightCheckResult,
@@ -45,7 +45,7 @@ const ErrorList = ({ errorCodes }) => {
         {relevantErrorCodes.map((code) => (
           <ListItem key={code}>
             <StatusLight status={errorCodeToSemantics(code)} />
-            <ListItemText primary={UAVErrorCode.describe(code)} />
+            <ListItemText primary={describeUAVErrorCode(code)} />
           </ListItem>
         ))}
       </List>

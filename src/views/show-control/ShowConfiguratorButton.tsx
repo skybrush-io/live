@@ -93,7 +93,6 @@ const ShowConfiguratorButton = (props: Props): React.JSX.Element => {
   const evaluatedPrerequisites = PREREQUISITES.map(({ selector, message }) => ({
     // NOTE: The `PREREQUISITES` list being readonly and frozen ensures that the
     //       `useSelector` hook will always be called the same number of times.
-    // eslint-disable-next-line react-hooks/rules-of-hooks
     result: useSelector(selector),
     message: message(t),
   }));

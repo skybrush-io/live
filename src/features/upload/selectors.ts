@@ -1,5 +1,3 @@
-/* eslint unicorn/no-array-callback-reference: 0 */
-
 import isNil from 'lodash-es/isNil';
 import mean from 'lodash-es/mean';
 import { createSelector } from '@reduxjs/toolkit';

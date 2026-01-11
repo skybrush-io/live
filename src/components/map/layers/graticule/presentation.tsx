@@ -134,7 +134,7 @@ type GraticuleLayerProps = {
 export const GraticuleLayer = ({
   coordinateformat,
   latFormatter,
-  layer,
+  layer: _layer,
   lonFormatter,
   zIndex,
 }: GraticuleLayerProps) => {
