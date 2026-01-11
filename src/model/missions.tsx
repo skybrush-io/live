@@ -368,7 +368,7 @@ export const schemaForMissionItemType: Record<
 /**
  * Returns whether the given mission item is valid.
  */
-// eslint-disable-next-line complexity
+ 
 export const isMissionItemValid = (item: unknown): item is MissionItem => {
   if (!isMissionItemLike(item)) {
     return false;

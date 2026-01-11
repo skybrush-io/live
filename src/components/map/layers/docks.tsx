@@ -71,7 +71,7 @@ const DockFeature = React.memo(
 type DocksLayerProps = {
   docks: DockState[];
   selectedDockIds: Identifier[];
-  zIndex?: Number;
+  zIndex?: number;
 };
 
 export const DocksLayer = ({

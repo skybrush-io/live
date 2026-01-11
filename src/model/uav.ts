@@ -243,7 +243,7 @@ export default class UAV {
    * @param status - The status information of this UAV from an UAV-INF message
    * @returns Whether the status information has been updated
    */
-  /* eslint-disable complexity */
+   
   handleUAVStatusInfo = (status: UAVStatusInfo): boolean => {
     const {
       timestamp,
@@ -376,7 +376,7 @@ export default class UAV {
 
     return updated;
   };
-  /* eslint-enable complexity */
+   
 
   /**
    * Returns a pure JavaScript object representation of the UAV that can be

@@ -21,7 +21,8 @@ import {
 import type { FormApi } from 'final-form';
 import type { TFunction } from 'i18next';
 import { Checkboxes, DatePicker, Select, TimePicker } from 'mui-rff';
-import React, { useMemo } from 'react';
+import type React from 'react';
+import { useMemo } from 'react';
 import { Form, type FormProps } from 'react-final-form';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
@@ -173,7 +174,7 @@ const StartTimeForm = ({
                 <Select
                   labelId='reference-clock-label'
                   name='clock'
-                  label={t('startTimeDialog.reference') as string}
+                  label={t('startTimeDialog.reference')}
                   formControlProps={{
                     fullWidth: true,
                     variant: 'filled',
@@ -251,7 +252,7 @@ const StartTimeForm = ({
             <Select
               labelId='start-signal-label'
               name='method'
-              label={t('startTimeDialog.startSignal') as string}
+              label={t('startTimeDialog.startSignal')}
               formControlProps={{
                 fullWidth: true,
                 margin: 'dense',
@@ -271,7 +272,7 @@ const StartTimeForm = ({
               data={{
                 label: t(
                   'startTimeDialog.authorizeWhenSettingStartTime'
-                ) as string,
+                ),
                 value: true,
               }}
             />

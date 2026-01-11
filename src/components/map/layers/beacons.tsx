@@ -58,7 +58,7 @@ const createBeaconStyle = (
 
   /* "Active" marker in upper left corner */
   if (active !== undefined && active !== null) {
-    styles.push(activeMarkerStyles[active ? 1 : 0] as Style);
+    styles.push(activeMarkerStyles[active ? 1 : 0]);
   }
 
   styles.push(

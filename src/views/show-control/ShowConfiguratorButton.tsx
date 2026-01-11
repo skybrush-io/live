@@ -1,6 +1,7 @@
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
-import React, { useCallback, useState } from 'react';
+import type React from 'react';
+import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect, useDispatch, useSelector } from 'react-redux';
 
@@ -113,7 +114,7 @@ const ShowConfiguratorButton = (props: Props): React.JSX.Element => {
     <MiniList>
       {evaluatedPrerequisites.map(({ result, message }, idx) => (
         <MiniListItem
-          // eslint-disable-next-line react/no-array-index-key
+           
           key={idx}
           iconPreset={
             result

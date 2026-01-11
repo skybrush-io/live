@@ -1,4 +1,5 @@
-import React, { useCallback } from 'react';
+import type React from 'react';
+import { useCallback } from 'react';
 // @ts-expect-error
 import { layer as olLayer } from '@collmot/ol-react';
 
@@ -10,7 +11,7 @@ import SwatchesColorPicker, {
 } from '~/components/SwatchesColorPicker';
 import flock from '~/flock';
 import type FlockModel from '~/model/flock';
-import { Layer } from '~/model/layers';
+import type { Layer } from '~/model/layers';
 import type { Identifier } from '~/utils/collections';
 import {
   type CoordinateTransformationFunction,

@@ -33,7 +33,5 @@ export type Message<T = Body> = {
 export type MultiAsyncOperationResponseBody<T> = Body & {
   receipt?: ReceiptMap;
   error?: ErrorMap;
-  result?: {
-    [k: string]: T;
-  };
+  result?: Record<string, T>;
 };

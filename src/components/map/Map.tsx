@@ -1,5 +1,6 @@
 import type { ModifyEvent } from 'ol/interaction/Modify';
-import React, { useMemo, type CSSProperties } from 'react';
+import type React from 'react';
+import { useMemo, type CSSProperties } from 'react';
 import { connect } from 'react-redux';
 
 // @ts-expect-error
@@ -10,7 +11,7 @@ import {
   getMapViewRotationAngle,
   getMapViewZoom,
 } from '~/selectors/map';
-import { RootState } from '~/store/reducers';
+import type { RootState } from '~/store/reducers';
 import { mapViewCoordinateFromLonLat, type LonLat } from '~/utils/geography';
 
 import BaseMap from './BaseMap';

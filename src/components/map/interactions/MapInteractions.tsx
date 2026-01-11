@@ -4,7 +4,8 @@ import type { DragBoxEvent } from 'ol/interaction/DragBox';
 import type { ModifyEvent } from 'ol/interaction/Modify';
 import VectorLayer from 'ol/layer/Vector';
 import type Map from 'ol/Map';
-import React, { useCallback } from 'react';
+import type React from 'react';
+import { useCallback } from 'react';
 
 // @ts-expect-error
 import { interaction, withMap } from '@collmot/ol-react';
@@ -22,7 +23,7 @@ import SelectNearestFeature from './SelectNearestFeature';
 import TransformFeatures, {
   type TransformFeaturesInteractionEvent,
 } from './TransformFeatures';
-import { BoxDragMode, FeatureSelectionOrActivationMode } from './types';
+import type { BoxDragMode, FeatureSelectionOrActivationMode } from './types';
 
 type Props = {
   map: Map;

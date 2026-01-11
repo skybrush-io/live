@@ -85,7 +85,7 @@ const getNavigationDeltaInDirection =
         case Direction.NEXT_PAGE:
           return getColumnCount(containerDOMNodeId);
 
-        // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
+         
         default:
           return 0;
       }

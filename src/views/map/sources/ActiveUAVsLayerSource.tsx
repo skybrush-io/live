@@ -13,7 +13,7 @@ import type VectorSource from 'ol/source/Vector';
 import React from 'react';
 
 import { getSingleUAVStatusLevel } from '~/features/uavs/selectors';
-import Flock from '~/model/flock';
+import type Flock from '~/model/flock';
 import { uavIdToGlobalId } from '~/model/identifiers';
 import { setLayerSelectable, setLayerTriggersTooltip } from '~/model/layers';
 import type UAV from '~/model/uav';

@@ -12,7 +12,7 @@ export default function usePersistentScrollPosition(): [
   const scrollPosition = useRef(0);
   const onScroll = useCallback(
     (event: React.SyntheticEvent) => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+       
       scrollPosition.current = (event.target as any).scrollTop;
     },
     [scrollPosition]

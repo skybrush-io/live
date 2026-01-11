@@ -10,7 +10,8 @@ import type { Theme } from '@mui/material/styles';
 import { bindActionCreators, type AnyAction } from '@reduxjs/toolkit';
 import isNil from 'lodash-es/isNil';
 import { nanoid } from 'nanoid';
-import React, {
+import type React from 'react';
+import {
   useCallback,
   useEffect,
   useMemo,

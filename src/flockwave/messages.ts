@@ -2,8 +2,9 @@
  * @file Functions and classes related to dealing with Flockwave messages.
  */
 
+import type {
+  Response_ASYNCCANCEL} from '@skybrush/flockwave-spec';
 import {
-  Response_ASYNCCANCEL,
   type Notification_ASYNCRESP,
   type Notification_ASYNCST,
   type Notification_ASYNCTIMEOUT,
@@ -894,7 +895,7 @@ class DeviceTreeSubscriptionManager extends MessageHubRelatedComponent {
    * be called when the device tree changes under the subtree described by
    * the path.
    */
-  _subscriptions: Map<string, Array<SubscriptionCallback>>;
+  _subscriptions: Map<string, SubscriptionCallback[]>;
 
   /**
    * Set of device tree paths we are currently subscribed to on the server;
@@ -1026,7 +1027,7 @@ class DeviceTreeSubscriptionManager extends MessageHubRelatedComponent {
   }
 
   _onDeviceTreeNodeValuesChanged(message: Message<Response_DEVINF>): void {
-    for (const [path, value] of Object.entries(message.body.values!)) {
+    for (const [path, value] of Object.entries(message.body.values)) {
       this._handleUpdatedValueOfDeviceTreeNode(path, value);
     }
   }
@@ -1109,7 +1110,7 @@ class DeviceTreeSubscriptionManager extends MessageHubRelatedComponent {
     }
 
     if (toSubscribe.length > 0) {
-      let response: Message<Response_DEVSUB> = await this._hub.sendMessage({
+      const response: Message<Response_DEVSUB> = await this._hub.sendMessage({
         type: 'DEV-SUB',
         paths: toSubscribe,
         lazy: true,
@@ -1129,14 +1130,14 @@ class DeviceTreeSubscriptionManager extends MessageHubRelatedComponent {
         }
 
         // Get the initial values
-        let infResponse: Message<Response_DEVINF> = await this._hub.sendMessage(
+        const infResponse: Message<Response_DEVINF> = await this._hub.sendMessage(
           {
             type: 'DEV-INF',
             paths: response?.body?.success,
           }
         );
 
-        for (const [path, value] of Object.entries(infResponse.body.values!)) {
+        for (const [path, value] of Object.entries(infResponse.body.values)) {
           this._handleUpdatedValueOfDeviceTreeNode(path, value);
         }
       }
@@ -1575,7 +1576,7 @@ export default class MessageHub {
    */
   async startAsyncOperationForSingleId<T>(
     id: string,
-    message: Body & { [k: string]: unknown },
+    message: Body & Record<string, unknown>,
     options: AsyncOperationOptions = {}
   ): Promise<T> {
     const { ids, type: expectedType } = message;
@@ -1595,7 +1596,7 @@ export default class MessageHub {
       message[idProp ?? (single ? 'id' : 'ids')] = [id];
     }
 
-    let response: Message<Body & { [k: string]: unknown }> =
+    let response: Message<Body & Record<string, unknown>> =
       await this.sendMessage(message);
 
     if (single) {
@@ -1682,7 +1683,7 @@ export default class MessageHub {
     response: Message<Response_ACKNAK | MultiAsyncOperationResponseBody<T>>,
     expectedType: string,
     { timeout, onProgress }: TimeoutOptions & BoundProgressHandlerOptions = {}
-  ): Promise<{ [x: string]: T | Error }> {
+  ): Promise<Record<string, T | Error>> {
     if (!response) {
       throw new Error('Response should not be empty');
     } else if (!response.body) {
