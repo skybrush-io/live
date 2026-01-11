@@ -2,8 +2,7 @@
  * @file Functions and classes related to dealing with Flockwave messages.
  */
 
-import type {
-  Response_ASYNCCANCEL} from '@skybrush/flockwave-spec';
+import type { Response_ASYNCCANCEL } from '@skybrush/flockwave-spec';
 import {
   type Notification_ASYNCRESP,
   type Notification_ASYNCST,
@@ -1130,12 +1129,11 @@ class DeviceTreeSubscriptionManager extends MessageHubRelatedComponent {
         }
 
         // Get the initial values
-        const infResponse: Message<Response_DEVINF> = await this._hub.sendMessage(
-          {
+        const infResponse: Message<Response_DEVINF> =
+          await this._hub.sendMessage({
             type: 'DEV-INF',
             paths: response?.body?.success,
-          }
-        );
+          });
 
         for (const [path, value] of Object.entries(infResponse.body.values)) {
           this._handleUpdatedValueOfDeviceTreeNode(path, value);

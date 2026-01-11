@@ -114,7 +114,6 @@ const ShowConfiguratorButton = (props: Props): React.JSX.Element => {
     <MiniList>
       {evaluatedPrerequisites.map(({ result, message }, idx) => (
         <MiniListItem
-           
           key={idx}
           iconPreset={
             result

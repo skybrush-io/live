@@ -80,8 +80,8 @@ export const getFormattedHeadersAndItems = createSelector(
         return item.type === 'header'
           ? `\n${label}:`
           : label
-          ? `- ${label}`
-          : label;
+            ? `- ${label}`
+            : label;
       })
       .join('\n')
       .trim()

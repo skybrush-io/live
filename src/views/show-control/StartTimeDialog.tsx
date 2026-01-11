@@ -270,9 +270,7 @@ const StartTimeForm = ({
             <Checkboxes
               name='authorizeWhenSettingStartTime'
               data={{
-                label: t(
-                  'startTimeDialog.authorizeWhenSettingStartTime'
-                ),
+                label: t('startTimeDialog.authorizeWhenSettingStartTime'),
                 value: true,
               }}
             />

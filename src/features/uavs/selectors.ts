@@ -747,7 +747,6 @@ export function getSingleUAVStatusLevel(uav: StoredUAV): Status {
 export const isUAVSleeping = (uav: StoredUAV): boolean =>
   uav.errors.includes(UAVErrorCode.SLEEPING);
 
- 
 /**
  * Function that takes a drone object from the Redux store and derives the
  * generic status summary of the drone.
@@ -852,7 +851,6 @@ export function getSingleUAVStatusSummary(uav?: StoredUAV) {
     batteryStatus: uav?.battery,
   };
 }
- 
 
 export const createSingleUAVStatusSummarySelector = () =>
   createDeepResultSelector(getUAVById, getSingleUAVStatusSummary);

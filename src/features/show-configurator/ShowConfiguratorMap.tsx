@@ -181,7 +181,6 @@ type MapProps = Readonly<{
   updateSelection: (mode: FeatureSelectionMode, ids: Identifier[]) => void;
 }>;
 
- 
 const useOwnState = (props: MapProps) => {
   const { selection, updateModifiedFeatures, updateSelection } = props;
 

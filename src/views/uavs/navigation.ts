@@ -85,7 +85,6 @@ const getNavigationDeltaInDirection =
         case Direction.NEXT_PAGE:
           return getColumnCount(containerDOMNodeId);
 
-         
         default:
           return 0;
       }

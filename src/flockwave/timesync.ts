@@ -55,7 +55,7 @@ export async function estimateClockSkewAndRoundTripTime(
       bestResult.roundTripTime > MAX_ROUNDTRIP_TIME
     ) {
       numberOfTriesLeft--;
-       
+
       nextResult = await attempt();
       if (nextResult.roundTripTime < bestResult.roundTripTime) {
         bestResult = nextResult;
@@ -81,7 +81,6 @@ export async function estimateClockSkewAndRoundTripTime(
       tries--;
 
       try {
-         
         const result = await attempt();
         if (
           result &&
@@ -97,7 +96,6 @@ export async function estimateClockSkewAndRoundTripTime(
       const elapsed = performance.now() - startedAt;
       const toWait = Math.max(500 - elapsed, 0);
       if (tries > 0 && toWait > 0) {
-         
         await delay(toWait);
       }
     }

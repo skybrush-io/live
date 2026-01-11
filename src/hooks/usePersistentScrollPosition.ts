@@ -12,7 +12,6 @@ export default function usePersistentScrollPosition(): [
   const scrollPosition = useRef(0);
   const onScroll = useCallback(
     (event: React.SyntheticEvent) => {
-       
       scrollPosition.current = (event.target as any).scrollTop;
     },
     [scrollPosition]

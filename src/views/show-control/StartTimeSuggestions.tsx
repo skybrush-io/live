@@ -95,7 +95,6 @@ const StartTimeSuggestions = ({
   return (
     <ButtonGroup variant='text' {...rest}>
       {items.map((suggestion, index) => (
-         
         <BorderlessButton
           key={`button${index}`}
           color='inherit'
@@ -109,7 +108,6 @@ const StartTimeSuggestions = ({
               ? format(suggestion.time, 'HH:mm')
               : format(suggestion.time, 'HH:mm:ss')}
         </BorderlessButton>
-         
       ))}
     </ButtonGroup>
   );

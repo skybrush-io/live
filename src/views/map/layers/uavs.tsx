@@ -27,7 +27,6 @@ export const UAVsLayerSettings = connect(
 )(UAVsLayerSettingsPresentation);
 
 const UAVsLayerPresentation = (props: Omit<UAVsLayerProps, 'LayerSource'>) => (
-   
   <BaseUAVsLayerPresentation {...props} LayerSource={ActiveUAVsLayerSource} />
 );
 

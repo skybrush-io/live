@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
- 
+
 import type { Feature } from 'ol';
 import { stylefunction as styleFunction } from 'ol-mapbox-style';
 import { Fill, Icon, Stroke, Style, Text } from 'ol/style';
@@ -44,7 +44,6 @@ function createMapboxStreetsV6Style() {
 
   const styles: Style[] = [];
 
-   
   return function (feature: Feature, resolution: number) {
     let length = 0;
     const layer = feature.get('layer');
@@ -460,7 +459,7 @@ const fakeLayer = {
 /**
  * Creates a Mapbox style function from its JSON representation.
  */
- 
+
 export function createMapboxStyleFromJSON(
   style: string | any,
   source: string | string[]

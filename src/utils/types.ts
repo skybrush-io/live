@@ -3,7 +3,7 @@
 //       See:
 //       ∙ https://github.com/microsoft/TypeScript/issues/41164
 //       ∙ https://github.com/typescript-eslint/typescript-eslint/issues/2687
- 
+
 export type NestedRecord<T> = { [key: string]: NestedRecordField<T> };
 export type NestedRecordField<T> = T | NestedRecord<T>;
 
