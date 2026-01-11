@@ -184,6 +184,7 @@
     "@eslint/js": "^9.39.2",
     "@jest/globals": "^30.2.0",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.6.2",
+    "@skybrush/eslint-config": "^0.2.1",
     "@types/file-saver": "^2.0.7",
     "@types/formatcoords": "^1.1.2",
     "@types/ip": "^1.1.3",
