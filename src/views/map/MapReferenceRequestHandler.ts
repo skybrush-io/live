@@ -6,7 +6,6 @@
 import type Map from 'ol/Map';
 import React from 'react';
 
-// @ts-expect-error
 import { withMap } from '@collmot/ol-react';
 
 import { mapReferenceRequestSignal } from '~/signals';
@@ -41,4 +40,4 @@ class MapReferenceRequestHandler extends React.Component<{ map: Map }> {
   }
 }
 
-export default withMap(MapReferenceRequestHandler) as React.Component<{}>;
+export default withMap(MapReferenceRequestHandler);

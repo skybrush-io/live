@@ -1,7 +1,6 @@
 import { Circle, Icon, Style, Text } from 'ol/style';
 import React from 'react';
 
-// @ts-expect-error: untyped
 import { Feature, geom, layer, source } from '@collmot/ol-react';
 
 import BeaconImage from '~/../assets/img/beacon-24x24.png';

@@ -6,7 +6,6 @@ import type ImageTile from 'ol/ImageTile';
 import type React from 'react';
 import { type ChangeEvent } from 'react';
 
-// @ts-expect-error: untyped
 import { layer as olLayer, source } from '@collmot/ol-react';
 
 import type { APIKeysRecord } from '~/APIKeys';

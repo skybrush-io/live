@@ -1,6 +1,5 @@
 import type React from 'react';
 import { useCallback } from 'react';
-// @ts-expect-error
 import { layer as olLayer } from '@collmot/ol-react';
 
 import Slider from '@mui/material/Slider';

@@ -1,7 +1,6 @@
 import { defaults as defaultOLInteractions } from 'ol/interaction/defaults';
 import React, { useMemo } from 'react';
 
-// @ts-expect-error @collmot/ol-react lacks types
 import { Map as OLMap } from '@collmot/ol-react';
 
 import 'ol/ol.css';

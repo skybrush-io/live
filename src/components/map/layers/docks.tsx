@@ -1,7 +1,6 @@
 import { RegularShape, Style, Text } from 'ol/style';
 import React from 'react';
 
-// @ts-expect-error: untyped
 import { Feature, geom, layer, source } from '@collmot/ol-react';
 
 import type { DockState } from '~/features/docks/types';

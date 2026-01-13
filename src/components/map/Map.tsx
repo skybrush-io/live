@@ -3,7 +3,6 @@ import type React from 'react';
 import { useMemo, type CSSProperties } from 'react';
 import { connect } from 'react-redux';
 
-// @ts-expect-error
 import { View } from '@collmot/ol-react';
 
 import {

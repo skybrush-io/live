@@ -2,7 +2,6 @@ import Fill from 'ol/style/Fill';
 import Stroke from 'ol/style/Stroke';
 import Text from 'ol/style/Text';
 
-// @ts-expect-error
 import { layer as OLLayer } from '@collmot/ol-react';
 
 import useDarkMode from '~/hooks/useDarkMode';
