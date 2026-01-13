@@ -6,8 +6,6 @@ import type {
   DroneSpecification,
   Environment,
   ShowMetadata,
-  ShowSegment,
-  ShowSegmentId,
   ShowSettings,
   SwarmSpecification,
   Trajectory,
@@ -35,6 +33,7 @@ import type {
   CoordinateSystem,
   EnvironmentState,
   OutdoorCoordinateSystem,
+  ShowSegmentsRecord,
 } from '../types';
 import { isYawActivelyControlled } from '../yaw';
 
@@ -350,9 +349,9 @@ export const getOutdoorShowOrigin: AppSelector<
   (coordinateSystem) => coordinateSystem.origin
 );
 
-export const getShowSegments: AppSelector<
-  Partial<Record<ShowSegmentId, ShowSegment>> | undefined
-> = (state) => state.show.data?.meta?.segments;
+export const getShowSegments: AppSelector<ShowSegmentsRecord | undefined> = (
+  state
+) => state.show.data?.meta?.segments;
 
 /**
  * Returns the reference clock that the show clock is syncing to.
