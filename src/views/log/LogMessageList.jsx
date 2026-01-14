@@ -1,7 +1,7 @@
 import ArrowDownward from '@mui/icons-material/ArrowDownward';
 import { Fab } from '@mui/material';
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
 import { makeStyles } from '@skybrush/app-theme-mui';

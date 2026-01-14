@@ -10,7 +10,6 @@ import Switch from '@mui/material/Switch';
 import Typography from '@mui/material/Typography';
 import { bindActionCreators } from '@reduxjs/toolkit';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 

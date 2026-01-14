@@ -6,7 +6,7 @@ import ListItemText from '@mui/material/ListItemText';
 import Zoom from '@mui/material/Zoom';
 import isNil from 'lodash-es/isNil';
 import PropTypes from 'prop-types';
-import React, { useCallback, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { useAsyncFn } from 'react-use';
 
 import { StatusLight } from '@skybrush/mui-components';

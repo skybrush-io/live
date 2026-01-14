@@ -11,7 +11,7 @@ import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import Toolbar from '@mui/material/Toolbar';
 import PropTypes from 'prop-types';
-import React, { useRef } from 'react';
+import { useRef } from 'react';
 import { IgnoreKeys } from 'react-hotkeys';
 import { connect } from 'react-redux';
 import useResizeObserver from 'use-resize-observer';

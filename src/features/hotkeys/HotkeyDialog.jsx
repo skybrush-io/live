@@ -10,7 +10,7 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 import PropTypes from 'prop-types';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { getApplicationKeyMap } from 'react-hotkeys';
 import { connect } from 'react-redux';
 

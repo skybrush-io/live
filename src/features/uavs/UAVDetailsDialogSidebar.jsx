@@ -1,7 +1,6 @@
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { connect } from 'react-redux';
 
 import { makeStyles } from '@skybrush/app-theme-mui';

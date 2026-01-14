@@ -8,7 +8,7 @@ import formatDate from 'date-fns/format';
 import 'easymde/dist/easymde.min.css';
 import debounce from 'lodash-es/debounce';
 import PropTypes from 'prop-types';
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import SimpleMDE from 'react-simplemde-editor';

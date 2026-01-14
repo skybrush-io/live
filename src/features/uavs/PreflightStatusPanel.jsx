@@ -5,7 +5,7 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import PropTypes from 'prop-types';
-import React, { memo, useEffect, useRef } from 'react';
+import { memo, useEffect, useRef } from 'react';
 import { connect } from 'react-redux';
 import { useAsyncRetry, useUnmount } from 'react-use';
 

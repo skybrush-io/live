@@ -16,7 +16,7 @@ import IconButton from '@mui/material/IconButton';
 import { bindActionCreators } from '@reduxjs/toolkit';
 import isEmpty from 'lodash-es/isEmpty';
 import PropTypes from 'prop-types';
-import React, { useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { useInterval } from 'react-use';
