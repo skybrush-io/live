@@ -7,20 +7,18 @@ import { makeStyles } from '@skybrush/app-theme-mui';
 
 import FadeAndSlide from './transitions/FadeAndSlide';
 
-const useStyles = makeStyles(
-  () => ({
-    page: {
-      position: 'absolute',
-      left: 0,
-      top: 0,
-      right: 0,
-      bottom: 0,
-    },
-    scrollable: {
-      overflow: 'auto',
-    },
-  }),
-);
+const useStyles = makeStyles(() => ({
+  page: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    right: 0,
+    bottom: 0,
+  },
+  scrollable: {
+    overflow: 'auto',
+  },
+}));
 
 /**
  * A single page in a multi-page panel component.

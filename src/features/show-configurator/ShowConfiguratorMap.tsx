@@ -9,7 +9,8 @@ import type { DragBoxEvent } from 'ol/interaction/DragBox';
 import type { ModifyEvent } from 'ol/interaction/Modify';
 import VectorLayer from 'ol/layer/Vector';
 import type VectorSource from 'ol/source/Vector';
-import React, { useCallback, useMemo } from 'react';
+import type React from 'react';
+import { useCallback, useMemo } from 'react';
 import { connect } from 'react-redux';
 
 import ToolbarDivider from '~/components/ToolbarDivider';
@@ -180,7 +181,6 @@ type MapProps = Readonly<{
   updateSelection: (mode: FeatureSelectionMode, ids: Identifier[]) => void;
 }>;
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 const useOwnState = (props: MapProps) => {
   const { selection, updateModifiedFeatures, updateSelection } = props;
 

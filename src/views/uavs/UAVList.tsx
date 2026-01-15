@@ -10,7 +10,8 @@ import type { Theme } from '@mui/material/styles';
 import { bindActionCreators, type AnyAction } from '@reduxjs/toolkit';
 import isNil from 'lodash-es/isNil';
 import { nanoid } from 'nanoid';
-import React, {
+import type React from 'react';
+import {
   useCallback,
   useEffect,
   useMemo,
@@ -118,23 +119,34 @@ type ItemRendererOptions = {
  */
 const deletionMarker: Item = [undefined, undefined, <Delete key='__delete' />];
 
+const keyForItem = ([
+  uavId,
+  missionIndex,
+  label,
+]: Item): React.Attributes['key'] =>
+  uavId ??
+  (missionIndex !== undefined
+    ? formatMissionId(missionIndex)
+    : typeof label === 'string'
+      ? label
+      : label?.key);
+
 /**
  * Helper function to create a single item in the grid view of drone avatars and
  * placeholders.
  */
-const createGridItemRenderer =
-  ({
-    className,
-    draggable,
-    isInEditMode,
-    mappingSlotBeingEdited,
-    onDropped,
-    onSelectedItem,
-    onStartEditing,
-    selection,
-    showMissionIds,
-  }: ItemRendererOptions) =>
-  (item: Item): React.JSX.Element => {
+const createGridItemRenderer = ({
+  className,
+  draggable,
+  isInEditMode,
+  mappingSlotBeingEdited,
+  onDropped,
+  onSelectedItem,
+  onStartEditing,
+  selection,
+  showMissionIds,
+}: ItemRendererOptions) =>
+  function GridItemRenderer(item: Item): React.JSX.Element {
     const [uavId, missionIndex, proposedLabel] = item;
     const itemId = itemToGlobalId(item);
     const editingThisItem =
@@ -170,11 +182,9 @@ const createGridItemRenderer =
           : uavId
         : uavId);
 
-    const key = uavId ?? `placeholder-${String(label) || 'null'}`;
-
     return uavId === undefined ? (
       <DroneListItem
-        key={key}
+        key={keyForItem(item)}
         className={className}
         onDrop={onDropped ? onDropped(missionIndex) : undefined}
         {...listItemProps}
@@ -188,7 +198,7 @@ const createGridItemRenderer =
       </DroneListItem>
     ) : (
       <DroneListItem
-        key={key}
+        key={keyForItem(item)}
         className={className}
         draggable={draggable}
         uavId={uavId}
@@ -209,18 +219,17 @@ const createGridItemRenderer =
  * Helper function to create a single item in the list view of drone avatars and
  * placeholders.
  */
-const createListItemRenderer =
-  ({
-    className,
-    isInEditMode,
-    mappingSlotBeingEdited,
-    onDropped,
-    onSelectedItem,
-    onStartEditing,
-    selection,
-    showMissionIds,
-  }: ItemRendererOptions) =>
-  (item: Item): React.JSX.Element | null => {
+const createListItemRenderer = ({
+  className,
+  isInEditMode,
+  mappingSlotBeingEdited,
+  onDropped,
+  onSelectedItem,
+  onStartEditing,
+  selection,
+  showMissionIds,
+}: ItemRendererOptions) =>
+  function ListItemRenderer(item: Item): React.JSX.Element | null {
     if (item === deletionMarker) {
       return null;
     }
@@ -252,14 +261,18 @@ const createListItemRenderer =
       : showMissionIds
         ? uavId
         : formattedMissionIndex;
-    const key = uavId ?? `placeholder-${String(label) || 'null'}`;
 
     return (
-      <DroneListItem key={key} stretch uavId={uavId} {...listItemProps}>
+      <DroneListItem
+        key={keyForItem(item)}
+        stretch
+        uavId={uavId}
+        {...listItemProps}
+      >
         {editingThisItem && <MappingSlotEditorForList />}
         <DroneStatusLine
           id={uavId}
-          label={String(label)}
+          label={typeof label === 'string' ? label : undefined}
           secondaryLabel={secondaryLabel}
         />
       </DroneListItem>

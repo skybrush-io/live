@@ -4,5 +4,5 @@ import skybrush from '@skybrush/eslint-config';
 export default defineConfig(
   skybrush.configs.recommended,
   globalIgnores(['build']),
-  globalIgnores(['**/*.js'])
+  globalIgnores(['**/*.js', '**/*.mjs'])
 );

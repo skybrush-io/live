@@ -27,7 +27,6 @@ export const UAVsLayerSettings = connect(
 )(UAVsLayerSettingsPresentation);
 
 const UAVsLayerPresentation = (props: Omit<UAVsLayerProps, 'LayerSource'>) => (
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   <BaseUAVsLayerPresentation {...props} LayerSource={ActiveUAVsLayerSource} />
 );
 

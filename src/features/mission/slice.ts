@@ -379,7 +379,7 @@ const { actions, reducer } = createSlice({
           oldIndex !== newIndex
         ) {
           const [itemId] = state.items.order.splice(oldIndex, 1);
-          state.items.order.splice(newIndex, 0, itemId!);
+          state.items.order.splice(newIndex, 0, itemId);
         }
       },
     },

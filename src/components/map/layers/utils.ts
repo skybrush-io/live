@@ -4,7 +4,7 @@ import { setLayerEditable, setLayerSelectable } from '~/model/layers';
 
 type MaybeLayerRef = { layer: OLLayer } | undefined | null;
 
-export function noMark(layer?: MaybeLayerRef) {
+export function noMark(_layer?: MaybeLayerRef) {
   // do nothing
 }
 

@@ -123,7 +123,10 @@ const updateConvexHull =
       dispatch(
         moveHomePositionsByMapCoordinateDelta({
           // NOTE: Type assertions justified by simple unary minus operation
-          delta: [-delta[0] as Easting, -delta[1] as Northing],
+          delta: [
+            -(delta[0] as number) as Easting,
+            -(delta[1] as number) as Northing,
+          ],
         })
       );
     } else if (event.subType === 'rotate' && event.angleDelta && event.origin) {
@@ -421,8 +424,6 @@ export const adaptShow =
 
     try {
       const { show, takeoffLengthChange, rthLengthChange } =
-        // @ts-expect-error: ts(2339)
-
         await messageHub.query.adaptShow(
           base64ShowBlob,
           transformations,

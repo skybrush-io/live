@@ -7,6 +7,7 @@ import turfDifference from '@turf/difference';
 import turfDistance from '@turf/distance';
 import * as TurfHelpers from '@turf/helpers';
 import CoordinateParser from 'coordinate-parser';
+import type { Position } from 'geojson';
 import curry from 'lodash-es/curry';
 import isNil from 'lodash-es/isNil';
 import minBy from 'lodash-es/minBy';
@@ -964,23 +965,22 @@ export const bufferPolygon = (
  * are completely contained in the perimeter. Returns an array of polygons,
  * since this operation might split the input into multiple parts.
  *
- * Note: Turf expects polygons to be closed (the first and last coordinates
+ * NOTE: Turf expects polygons to be closed (the first and last coordinates
  *       should be equal), so this function inherits this requirement.
+ *
+ * TODO: This probably belongs in `src/utils/math` instead of here.
  */
-export function normalizePolygon([points, ...holes]: any): any {
-  // TODO: This should be typed properly!
-
-  // Start with the boundary ring and subtract every hole from it with Turf
-  // TODO: This can be simplified when Turf 7.0.0 gets released, as
-  //       difference will support multiple subtrahend features
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
+export function normalizePolygon([
+  points,
+  ...holes
+]: Position[][]): Position[][][] {
   const basePolygon = TurfHelpers.polygon([points]);
   const difference =
     holes.length > 0
       ? turfDifference(
           TurfHelpers.featureCollection([
             basePolygon,
-            ...holes.map((hole: any) => TurfHelpers.polygon([hole])),
+            ...holes.map((hole) => TurfHelpers.polygon([hole])),
           ])
         )
       : basePolygon;

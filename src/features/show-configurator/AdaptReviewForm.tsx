@@ -4,7 +4,8 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Typography from '@mui/material/Typography';
 import type { Theme } from '@mui/material/styles';
 import clsx from 'clsx';
-import React, { type ReactNode } from 'react';
+import type React from 'react';
+import { type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 

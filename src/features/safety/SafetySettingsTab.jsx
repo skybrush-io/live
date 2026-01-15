@@ -12,7 +12,6 @@ import InputAdornment from '@mui/material/InputAdornment';
 import MenuItem from '@mui/material/MenuItem';
 import { Select, TextField } from 'mui-rff';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { Form } from 'react-final-form';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';

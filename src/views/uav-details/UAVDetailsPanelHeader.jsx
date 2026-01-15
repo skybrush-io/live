@@ -1,5 +1,4 @@
 import AppBar from '@mui/material/AppBar';
-import React from 'react';
 
 import { isThemeDark, makeStyles } from '@skybrush/app-theme-mui';
 

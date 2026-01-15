@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box';
 import Color from 'color';
 import PropTypes from 'prop-types';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 
 require('~/../assets/css/dseg.css');
 

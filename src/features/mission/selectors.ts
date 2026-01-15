@@ -493,9 +493,7 @@ type MissionItemWithExtraField<Field extends PropertyKey, Type> = {
   id: MissionItem['id'];
   index: number;
   item: MissionItem;
-} & {
-  [field in StringLiteral<Field>]: Type;
-};
+} & Record<StringLiteral<Field>, Type>;
 
 /**
  * Returns a filtered list of mission items which have a specific type of

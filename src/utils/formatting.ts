@@ -252,7 +252,7 @@ export const formatSpeed = (number: number, digits = 2): string =>
  *        their string representation.
  */
 export const formatItemInterval = <TItem>(
-  items: Array<TItem>,
+  items: TItem[],
   formatter: (item: TItem) => string = String
 ) => {
   if (items.length === 0) {

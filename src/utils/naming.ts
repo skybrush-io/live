@@ -44,7 +44,6 @@ export function chooseUniqueId(
   let index = 0;
   let candidate: string;
 
-  /* eslint-disable no-constant-condition */
   while (true) {
     index++;
     candidate = `${idProposal}_${index}`;
@@ -57,7 +56,6 @@ export function chooseUniqueId(
       return candidate;
     }
   }
-  /* eslint-enable no-constant-condition */
 }
 
 /**
@@ -100,7 +98,6 @@ export function chooseUniqueName(
   let index = match ? Number.parseInt(match[2], 10) : 0;
   let candidate: string;
 
-  /* eslint-disable no-constant-condition */
   while (true) {
     index++;
     candidate = `${nameBase} ${index}`;
@@ -108,7 +105,6 @@ export function chooseUniqueName(
       return candidate;
     }
   }
-  /* eslint-enable no-constant-condition */
 }
 
 /**

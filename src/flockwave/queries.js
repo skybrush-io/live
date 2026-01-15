@@ -497,3 +497,20 @@ export class QueryHandler {
     }
   }
 }
+
+// TODO: Replace with the following (or something better)
+//       when moving to TypeScript:
+// export type ConstructedQueryHandler = Record<
+//   keyof QueryHandler['_queries'],
+//   (...args: any[]) => Promise<any>
+// >;
+/**
+ * @typedef {{
+ *   [Q in keyof QueryHandler['_queries']]: (...args: any[]) => Promise<any>
+ * }} ConstructedQueryHandler
+ */
+
+/**
+ * @type {new (hub: MessageHub) => ConstructedQueryHandler}
+ */
+export const ConstructedQueryHandler = QueryHandler;
