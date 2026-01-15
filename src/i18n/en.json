@@ -130,6 +130,38 @@
     },
     "title": "Plan collective RTH"
   },
+  "collectiveRTHPanel": {
+    "error": {
+      "invalidPlan": "The collective RTH plan is invalid",
+      "missingPlan": "The drones have no collective RTH plans",
+      "partialPlan": "{{withoutPlans}} drones do not have RTH plans"
+    },
+    "message": {
+      "noDrones": "There are no drones in the loaded show",
+      "noShowFile": "No show file loaded"
+    },
+    "rthPlanDetails": {
+      "column": {
+        "duration": "Duration",
+        "end": "End",
+        "endShow": "End (Show)",
+        "start": "Start",
+        "startShow": "Start (Show)"
+      },
+      "info": {
+        "rth": {
+          "numPlans": "Number of plans:",
+          "title": "Collective RTH"
+        },
+        "showSegment": {
+          "duration": "Duration:",
+          "end": "End:",
+          "start": "Start:",
+          "title": "Show segment"
+        }
+      }
+    }
+  },
   "coordinateAveragingDialogToolbar": {
     "addNewDrone": "Add new drone",
     "copyCentroid": "Copy centroid",
@@ -867,6 +899,7 @@
   },
   "view": {
     "beacon-list": "Beacons",
+    "collective-rth": "Collective RTH",
     "dock-list": "Docks",
     "feature-list": "Features",
     "field-notes": "Field notes",
