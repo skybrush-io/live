@@ -2,7 +2,6 @@ import Home from '@mui/icons-material/Home';
 import IconButton from '@mui/material/IconButton';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
-import type React from 'react';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect, useDispatch, useSelector } from 'react-redux';
@@ -84,7 +83,7 @@ type Props = Readonly<{
   rthPlanSummary: CollectiveRTHPlanSummary;
 }>;
 
-const ShowConfiguratorButton = (props: Props): React.JSX.Element => {
+const ShowConfiguratorButton = (props: Props) => {
   const {
     devModeEnabled,
     show,
