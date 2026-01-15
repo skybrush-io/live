@@ -26,6 +26,7 @@ import { getMissionType } from '~/features/mission/selectors';
 import { areExperimentalFeaturesEnabled } from '~/features/settings/selectors';
 import Antenna from '~/icons/Antenna';
 import ConnectingAirports from '~/icons/ConnectingAirports';
+import Satellite from '~/icons/Satellite';
 import Route from '~/icons/Route';
 import ShapeLine from '~/icons/ShapeLine';
 import { MissionType } from '~/model/missions';
@@ -109,6 +110,18 @@ const Sidebar = ({
           icon={<ConnectingAirports />}
           label={t('view.uav-list')}
           component='uav-list'
+        />
+        <Module
+          id='uavStatuses'
+          icon={<ConnectingAirports />}
+          label={t('view.uav-statuses')}
+          component='uav-statuses'
+        />
+        <Module
+          id='rtkStatuses'
+          icon={<Satellite />}
+          label={t('view.rtk-statuses')}
+          component='rtk-statuses'
         />
         {hasFeature('beacons') && (
           <Module

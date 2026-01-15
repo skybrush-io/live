@@ -19,6 +19,8 @@ import MissionOverviewPanel from './mission-editor';
 import ShowControlPanel from './show-control';
 import UAVDetailsPanel from './uav-details';
 import UAVList from './uavs';
+import UAVStatusPanel from './uavs/UAVStatusPanel';
+import RTKStatusPanel from '../features/rtk/RTKStatusPanel';
 import ThreeDTopLevelView from './three-d';
 
 /* MapView not included as it is loaded lazily */
@@ -41,6 +43,8 @@ const views = {
   UAVDetailsPanel,
   UAVList,
   ThreeDTopLevelView,
+  UAVStatusPanel,
+  RTKStatusPanel,
 };
 
 export default views;
