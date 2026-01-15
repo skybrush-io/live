@@ -5,6 +5,7 @@
 
 import BeaconList from './beacons';
 import ClockDisplayList from './clocks';
+import CollectiveRTHPanel from './collective-rth';
 import ConnectionList from './connections';
 import DatasetList from './datasets';
 import DockList from './docks';
@@ -26,6 +27,7 @@ import ThreeDTopLevelView from './three-d';
 const views = {
   BeaconList,
   ClockDisplayList,
+  CollectiveRTHPanel,
   ConnectionList,
   DatasetList,
   DockList,
