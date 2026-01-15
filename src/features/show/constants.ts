@@ -73,3 +73,32 @@ export const JOB_TYPE = 'showUpload';
 export const SHOW_UPLOAD_JOB = Object.freeze({
   type: JOB_TYPE,
 });
+
+/**
+ * Timing constants for the collective RTH operation.
+ *
+ * During slowdown, the drones' internal "show" clock slows down, so their
+ * "show clock" and the "wall clock" desynchronizes. As a result, we need
+ * two separate slowdown constants, one for calculating timestamps in
+ * wall clock time, and another for calculating timestamps in show clock
+ * time.
+ */
+export const COLLECTIVE_RTH_TIMING = {
+  /**
+   * The duration while the server broadcasts the RTH command to the drones, in seconds.
+   *
+   * This is a mandatory delay before the RTH plan could start, and must be included in
+   * RTH plan selection and calculations.
+   */
+  broadcastDuration: 5,
+
+  /**
+   * The "wall clock" time it takes for drones to slow down to a stop, in seconds.
+   */
+  slowdownDuration: 5,
+
+  /**
+   * The "show" time it takes for drones to slow down to a stop, in seconds.
+   */
+  slowdownDurationInShowTime: 2.5,
+} as const;

@@ -85,6 +85,83 @@
     "disable": "Disable broadcast",
     "enable": "Enable broadcast for {{time}} seconds"
   },
+  "collectiveRTHDialog": {
+    "action": {
+      "addCollectiveRTH": "Calculate RTH plans"
+    },
+    "description": "Calculate RTH plans for all drones in the show. The RTH plans will be designed to bring the drones home as quickly as possible while avoiding collisions with each other.",
+    "error": "An error occurred while calculating RTH plans. Please try again.",
+    "existingInvalidRTHPlan": "The swarm has no valid collective RTH plans in the loaded show.",
+    "existingValidRTHPlan": "The swarm has valid RTH plans at {{numPlans}} timestamps in the loaded show.",
+    "loading": "RTH plans are being calculated, please wait. It may take some time.",
+    "parameters": {
+      "form": {
+        "horizontalVelocity": {
+          "help": "during horizontal flight phases",
+          "label": "Horizontal velocity"
+        },
+        "minDistance": {
+          "help": "between drones during RTH",
+          "label": "Minimum distance"
+        },
+        "timeResolution": {
+          "help": "between planned RTH times.",
+          "label": "Time resolution"
+        },
+        "verticalVelocity": {
+          "help": "during vertical flight phases",
+          "label": "Vertical velocity"
+        }
+      },
+      "section": {
+        "parameters": "Parameters"
+      }
+    },
+    "summary": {
+      "firstTime": {
+        "message": "Earliest RTH time: {{firstTime}}s"
+      },
+      "lastTime": {
+        "message": "Last RTH time: {{lastTime}}s"
+      },
+      "numPlans": {
+        "message": "Plan successfully calculated for {{numPlans}} timestamps"
+      }
+    },
+    "title": "Plan collective RTH"
+  },
+  "collectiveRTHPanel": {
+    "error": {
+      "invalidPlan": "The collective RTH plan is invalid.",
+      "missingPlan": "The drones have no collective RTH plans.",
+      "partialPlan": "{{withoutPlans}} drones do not have RTH plans."
+    },
+    "message": {
+      "noDrones": "There are no drones in the loaded show.",
+      "noShowFile": "No show file loaded"
+    },
+    "rthPlanDetails": {
+      "column": {
+        "duration": "Duration",
+        "end": "End",
+        "endShow": "End (Show)",
+        "start": "Start",
+        "startShow": "Start (Show)"
+      },
+      "info": {
+        "rth": {
+          "numPlans": "Number of plans:",
+          "title": "Collective RTH"
+        },
+        "showSegment": {
+          "duration": "Duration:",
+          "end": "End:",
+          "start": "Start:",
+          "title": "Show segment"
+        }
+      }
+    }
+  },
   "coordinateAveragingDialogToolbar": {
     "addNewDrone": "Add new drone",
     "copyCentroid": "Copy centroid",
@@ -593,6 +670,10 @@
         "origin": "A show origin must be included or set manually",
         "segments": "The show must be annotated with segment markers",
         "server": "Connection must be established to the server"
+      },
+      "tooltip": {
+        "invalidRTHPlan": "The swarm has no valid collective RTH plans.",
+        "validRTHPlan": "The swarm has valid RTH plans at {{numPlans}} timestamps."
       }
     },
     "startMethod": {
@@ -818,6 +899,7 @@
   },
   "view": {
     "beacon-list": "Beacons",
+    "collective-rth": "Collective RTH",
     "dock-list": "Docks",
     "feature-list": "Features",
     "field-notes": "Field notes",

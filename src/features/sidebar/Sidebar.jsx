@@ -9,6 +9,7 @@ import Flight from '@mui/icons-material/Flight';
 import FormatListBulleted from '@mui/icons-material/FormatListBulleted';
 import Gamepad from '@mui/icons-material/Gamepad';
 import Grain from '@mui/icons-material/Grain';
+import Home from '@mui/icons-material/Home';
 import Layers from '@mui/icons-material/Layers';
 import Map from '@mui/icons-material/Map';
 import Place from '@mui/icons-material/Place';
@@ -108,6 +109,12 @@ const Sidebar = ({
           icon={<ConnectingAirports />}
           label={t('view.uav-list')}
           component='uav-list'
+        />
+        <Module
+          id='collectiveRTH'
+          icon={<Home />}
+          label={t('view.collective-rth')}
+          component='collective-rth'
         />
         {hasFeature('beacons') && (
           <Module

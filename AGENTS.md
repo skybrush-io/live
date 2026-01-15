@@ -95,6 +95,9 @@ Type-only imports are grouped with regular imports, using `type` keyword.
 - Prop types defined as TypeScript types
 - If component is connected to the Redux store, create the base non-connected implementation with the desired component name.
   Then create a connected component with the same name and the "Connected" prefix. Finally default export the connected component.
+- Name components normally. Prefer not to use "Presentation" suffix in component names unless that's the used pattern in code you're editing.
+- Use `useOwnState(props: Props)` hook pattern for deriving state from props within a component.
+- Complex UI sections within a component should be extracted into separate components. They can be in the same file if small, or in separate files if more complex, for better modularity.
 
 ### Documentation
 
@@ -102,6 +105,15 @@ Type-only imports are grouped with regular imports, using `type` keyword.
 - Include parameter descriptions with `@param` tags
 - Include return type descriptions with `@returns` tags
 - Add inline comments for non-obvious logic
+
+### Internationalization (i18n)
+
+- **All UI text must be internationalized** - Never hardcode user-facing strings in JSX/TSX files
+- Use translation keys for all text elements, including small UI elements like arrows/separator symbols
+- **Use proper interpolation** - Define translation strings with `{{variable}}` placeholders and pass values as objects: `t('key', { value: ... })`
+- **Don't concatenate translated strings** - Instead of `${t('a')} ${t('b')}`, use a single translation key with multiple parameters
+- **Translation key organization** - Group related translations together in JSON files with consistent naming (e.g., `featureName.section.variableName`)
+- When adding new UI text, always add corresponding translations to `src/i18n/en.json` (or appropriate language files)
 
 ### Redux/State Management
 
