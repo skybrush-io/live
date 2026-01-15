@@ -24,8 +24,6 @@ export const addCollectiveRTH =
 
     try {
       const { show, showDuration, stats } =
-        // @ts-expect-error: ts(2339)
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
         await messageHub.query.addCollectiveRTH(base64ShowBlob, {
           min_distance: params?.minDistance,
           time_resolution: params?.timeResolution,

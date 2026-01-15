@@ -1,7 +1,7 @@
 import FormGroup from '@mui/material/FormGroup';
 import type { Theme } from '@mui/material/styles';
 import { makeStyles } from '@skybrush/app-theme-mui';
-import React, { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { FormHeader } from '@skybrush/mui-components';

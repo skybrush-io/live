@@ -28,6 +28,7 @@ import {
   TakeoffHeadingMode,
   type TakeoffHeadingSpecification,
 } from '../constants';
+import { EnvironmentType, SettingsSynchronizationStatus } from '../enums';
 import { isValidTrajectory } from '../trajectory';
 import type {
   CoordinateSystem,
@@ -138,7 +139,9 @@ export const isShowAuthorizedToStart: AppSelector<boolean> = (state) =>
  */
 export const areStartConditionsSyncedWithServer: AppSelector<boolean> = (
   state
-) => state.show.start.syncStatusWithServer === 'synced';
+) =>
+  state.show.start.syncStatusWithServer ===
+  SettingsSynchronizationStatus.SYNCED;
 
 /**
  * Returns the number of drones that are currently scheduled to take off
@@ -160,7 +163,7 @@ export const didLastLoadingAttemptFail: AppSelector<boolean> = (state) =>
  * show with the server failed when we attempted it the last time.
  */
 export const didStartConditionSyncFail: AppSelector<boolean> = (state) =>
-  state.show.start.syncStatusWithServer === 'error';
+  state.show.start.syncStatusWithServer === SettingsSynchronizationStatus.ERROR;
 
 /**
  * Returns whether the takeoff area arrangement was approved by the operator.
@@ -227,13 +230,13 @@ export const getTrajectories: AppSelector<Array<Trajectory | undefined>> =
  * Selector that returns whether the show is indoor.
  */
 export const isShowIndoor: AppSelector<boolean> = (state) =>
-  getShowEnvironmentType(state) === 'indoor';
+  getShowEnvironmentType(state) === EnvironmentType.INDOOR;
 
 /**
  * Selector that returns whether the show is outdoor.
  */
 export const isShowOutdoor: AppSelector<boolean> = (state) =>
-  getShowEnvironmentType(state) === 'outdoor';
+  getShowEnvironmentType(state) === EnvironmentType.OUTDOOR;
 
 /**
  * Selector that returns the definition of the coordinate system of an indoor
