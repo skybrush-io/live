@@ -22,8 +22,8 @@ import {
   shouldShowSurveySettings,
 } from './selectors';
 import {
-  toggleSurveySettingsPanel,
   showCoordinateRestorationDialog,
+  toggleSurveySettingsPanel,
 } from './slice';
 
 import AntennaPositionIndicator from './AntennaPositionIndicator';
