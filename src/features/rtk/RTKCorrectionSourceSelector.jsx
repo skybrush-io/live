@@ -44,7 +44,7 @@ const RTKCorrectionSourceSelector = ({
     console.warn('Failed to load RTK selection state:', selectionState.error);
   }
 
-  const presets = presetsState.value || [];
+  const presets = presetsState.value ?? [];
   const hasSelectionFromServer = selectionState.value !== undefined;
   const selectedOnServer =
     selectionState.value === undefined
