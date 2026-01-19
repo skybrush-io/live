@@ -76,9 +76,9 @@ const RTKCorrectionSourceSelector = ({
     const effectiveId = currentId === NULL_ID ? undefined : currentId;
     setCurrentRTKPresetId(effectiveId);
   }, [
+    hasSelectionFromServer,
     selectedByUser,
     selectedOnServer,
-    hasSelectionFromServer,
     setCurrentRTKPresetId,
   ]);
 
