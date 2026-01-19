@@ -62,7 +62,6 @@ const persistConfig = {
     'log',
     'logDownload',
     'messages',
-    'rtk',
     'servers',
     'session',
     'snackbar',
@@ -112,6 +111,9 @@ const persistConfig = {
 
     // Store only the persistent settings of the upload procedure
     createFilter('upload', ['settings']),
+
+    // Store only saved coordinates from RTK
+    createFilter('rtk', ['savedCoordinates']),
 
     // We do not wish to save 3D view tooltips, camera pose or the scene ID
     createBlacklistFilter('threeD', ['camera', 'tooltip', 'sceneId']),

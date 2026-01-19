@@ -10,6 +10,13 @@ import { noPayload } from '~/utils/redux';
 
 import { RTKAntennaPositionFormat, type RTKStatistics } from './types';
 
+type RTKPresetDialogState = {
+  open: boolean;
+  mode: 'create' | 'edit' | undefined;
+  presetId: string | undefined;
+  presetType: 'User' | 'Built-in' | 'Dynamic' | undefined;
+};
+
 type RTKSliceState = {
   stats: RTKStatistics;
 
@@ -18,6 +25,9 @@ type RTKSliceState = {
     antennaPositionFormat: RTKAntennaPositionFormat;
     surveySettingsEditorVisible: boolean;
   };
+
+  presetDialog: RTKPresetDialogState;
+  presetsRefreshTrigger: number;
 };
 
 const initialState: RTKSliceState = {
@@ -44,6 +54,14 @@ const initialState: RTKSliceState = {
     antennaPositionFormat: RTKAntennaPositionFormat.LON_LAT,
     surveySettingsEditorVisible: false,
   },
+
+  presetDialog: {
+    open: false,
+    mode: undefined,
+    presetId: undefined,
+    presetType: undefined,
+  },
+  presetsRefreshTrigger: 0,
 };
 
 const { actions, reducer } = createSlice({
@@ -95,9 +113,7 @@ const { actions, reducer } = createSlice({
       // gone
       state.stats.satellites = satellites;
 
-      if (state.stats.survey === undefined) {
-        state.stats.survey = {};
-      }
+      state.stats.survey ??= {};
 
       if (!isNil(survey.accuracy)) {
         state.stats.survey.accuracy = survey.accuracy;
@@ -107,12 +123,40 @@ const { actions, reducer } = createSlice({
         state.stats.survey.flags = survey.flags;
       }
     },
+
+    openRTKPresetDialog(
+      state,
+      action: PayloadAction<{
+        mode: 'create' | 'edit';
+        presetId?: string;
+        presetType?: 'User' | 'Built-in' | 'Dynamic';
+      }>
+    ) {
+      state.presetDialog.open = true;
+      state.presetDialog.mode = action.payload.mode;
+      state.presetDialog.presetId = action.payload.presetId;
+      state.presetDialog.presetType = action.payload.presetType ?? 'User';
+    },
+
+    closeRTKPresetDialog: noPayload<RTKSliceState>((state) => {
+      state.presetDialog.open = false;
+      state.presetDialog.mode = undefined;
+      state.presetDialog.presetId = undefined;
+      state.presetDialog.presetType = undefined;
+    }),
+
+    refreshRTKPresets: noPayload<RTKSliceState>((state) => {
+      state.presetsRefreshTrigger += 1;
+    }),
   },
 });
 
 export const {
+  closeRTKPresetDialog,
   closeRTKSetupDialog,
   closeSurveySettingsPanel,
+  openRTKPresetDialog,
+  refreshRTKPresets,
   resetRTKStatistics,
   setAntennaPositionFormat,
   showRTKSetupDialog,
