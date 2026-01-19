@@ -22,6 +22,7 @@ import {
   getSavedCoordinatesForPreset,
 } from '~/features/rtk/selectors';
 import { useSavedCoordinateForPreset } from '~/features/rtk/actions';
+import { formatDistance } from '~/utils/formatting';
 
 const SavedCoordinateItem = ({ coordinate, coordinateFormatter, onClick }) => {
   const { accuracy, savedAt } = coordinate;
@@ -34,7 +35,7 @@ const SavedCoordinateItem = ({ coordinate, coordinateFormatter, onClick }) => {
       <ListItemButton onClick={() => onClick(coordinate)}>
         <ListItemText
           primary={formattedPosition}
-          secondary={`Accuracy: ${accuracy.toFixed(3)} m • ${savedDateTime}`}
+          secondary={`Accuracy: ${formatDistance(accuracy, 3)} • ${savedDateTime}`}
         />
       </ListItemButton>
     </ListItem>
