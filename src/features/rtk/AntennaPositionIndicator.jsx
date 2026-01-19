@@ -53,6 +53,8 @@ const AntennaPositionIndicator = ({
       {onShowSavedCoordinates && (
         <Tooltip
           content={t('antennaPositionIndicator.useSavedCoordinate')}
+          // Explicitly set trigger to 'mouseenter' only to prevent the tooltip
+          // from showing when the dialog closes and focus returns to this button.
           trigger='mouseenter'
         >
           <IconButton
