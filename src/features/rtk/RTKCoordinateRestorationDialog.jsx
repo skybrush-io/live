@@ -43,12 +43,12 @@ const SavedCoordinateItem = ({ coordinate, coordinateFormatter, onClick }) => {
 };
 
 const RTKCoordinateRestorationDialog = ({
-  t,
-  dialog,
-  savedCoordinates,
   coordinateFormatter,
+  dialog,
   onClose,
   onUseSaved,
+  savedCoordinates,
+  t,
 }) => {
   if (!dialog.open) {
     return null;
@@ -102,12 +102,12 @@ const RTKCoordinateRestorationDialog = ({
 };
 
 RTKCoordinateRestorationDialog.propTypes = {
-  t: PropTypes.func,
-  dialog: PropTypes.object,
-  savedCoordinates: PropTypes.array,
   coordinateFormatter: PropTypes.func,
+  dialog: PropTypes.object,
   onClose: PropTypes.func,
   onUseSaved: PropTypes.func,
+  savedCoordinates: PropTypes.array,
+  t: PropTypes.func,
 };
 
 export default connect(
