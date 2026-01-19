@@ -24,8 +24,8 @@ const nullPreset = {
 
 const RTKCorrectionSourceSelector = ({
   onSourceChanged,
-  t,
   setCurrentRTKPresetId,
+  t,
 }) => {
   const [selectedByUser, setSelectedByUser] = useState();
   const [selectionState, getSelectionFromServer] = useAsyncFn(async () =>
