@@ -50,10 +50,6 @@ const RTKCoordinateRestorationDialog = ({
   savedCoordinates,
   t,
 }) => {
-  if (!dialog.open) {
-    return null;
-  }
-
   const { presetId } = dialog;
 
   const handleUseSaved = (coordinate) => {
