@@ -56,7 +56,7 @@ const RTKCoordinateRestorationDialog = ({
 
   const handleUseSaved = (coordinate) => {
     onClose(); // Close dialog first
-    onUseSaved(presetId, coordinate); // Then start async operation
+    void onUseSaved(presetId, coordinate); // Then start async operation
   };
 
   return (
