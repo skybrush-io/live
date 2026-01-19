@@ -90,7 +90,7 @@ const descriptions: Record<string, string> = {
   'rtcm3/1121': 'BeiDou MSM1 (DGNSS pseudorange)',
   'rtcm3/1122': 'BeiDou MSM2 (RTK pseudorange)',
   'rtcm3/1123': 'BeiDou MSM3 (code, carrier)',
-  'rtcm3/1124': 'BeiDou MSM3 (code, carrier, CNR)',
+  'rtcm3/1124': 'BeiDou MSM4 (code, carrier, CNR)',
   'rtcm3/1125': 'BeiDou MSM5 (code, carrier, doppler, CNR)',
   'rtcm3/1126': 'BeiDou MSM6 (hi-res code, carrier, doppler)',
   'rtcm3/1127': 'BeiDou MSM7 (hi-res code, carrier, doppler, CNR)',
