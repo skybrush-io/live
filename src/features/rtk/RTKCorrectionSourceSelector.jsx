@@ -47,9 +47,11 @@ const RTKCorrectionSourceSelector = ({
   const presets = presetsState.value ?? [];
   const hasSelectionFromServer = selectionState.value !== undefined;
   const selectedOnServer =
-    selectionState.value === undefined
-      ? undefined
-      : (selectionState.value ?? NULL_ID);
+    selectionState.value !== undefined
+      ? selectionState.value === null
+        ? NULL_ID
+        : selectionState.value
+      : undefined;
   const hasPresets = presets && presets.length > 0;
 
   const handleChange = async (event) => {
