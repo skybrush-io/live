@@ -151,9 +151,9 @@ export default connect(
     const currentPresetId = getCurrentRTKPresetId(state);
     return {
       currentPresetId,
-      hasSavedCoordinates: currentPresetId
-        ? hasSavedCoordinateForPreset(state, currentPresetId)
-        : false,
+      hasSavedCoordinates:
+        Boolean(currentPresetId) &&
+        hasSavedCoordinateForPreset(state, currentPresetId),
       surveyStatus: getSurveyStatus(state),
       surveySettingsVisible: shouldShowSurveySettings(state),
     };
