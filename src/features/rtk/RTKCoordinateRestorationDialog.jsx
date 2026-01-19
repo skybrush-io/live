@@ -23,11 +23,11 @@ import {
 } from '~/features/rtk/selectors';
 import { useSavedCoordinateForPreset } from '~/features/rtk/actions';
 
-const SavedCoordinateItem = connect((state, { coordinate }) => ({
-  formattedPosition: getFormattedCoordinatePosition(state, coordinate),
-}))(({ coordinate, formattedPosition, onClick }) => {
+const SavedCoordinateItem = ({ coordinate, coordinateFormatter, onClick }) => {
   const { accuracy, savedAt } = coordinate;
   const savedDateTime = formatDate(new Date(savedAt), 'yyyy-MM-dd HH:mm:ss');
+
+  const formattedPosition = coordinateFormatter(coordinate);
 
   return (
     <ListItem disablePadding>
@@ -39,12 +39,13 @@ const SavedCoordinateItem = connect((state, { coordinate }) => ({
       </ListItemButton>
     </ListItem>
   );
-});
+};
 
 const RTKCoordinateRestorationDialog = ({
   t,
   dialog,
   savedCoordinates,
+  coordinateFormatter,
   onClose,
   onUseSaved,
 }) => {
@@ -82,6 +83,7 @@ const RTKCoordinateRestorationDialog = ({
                 <SavedCoordinateItem
                   key={coordinate.savedAt}
                   coordinate={coordinate}
+                  coordinateFormatter={coordinateFormatter}
                   onClick={handleUseSaved}
                 />
               ))}
@@ -102,6 +104,7 @@ RTKCoordinateRestorationDialog.propTypes = {
   t: PropTypes.func,
   dialog: PropTypes.object,
   savedCoordinates: PropTypes.array,
+  coordinateFormatter: PropTypes.func,
   onClose: PropTypes.func,
   onUseSaved: PropTypes.func,
 };
@@ -109,11 +112,16 @@ RTKCoordinateRestorationDialog.propTypes = {
 export default connect(
   (state) => {
     const dialog = getCoordinateRestorationDialog(state);
+
+    const coordinateFormatter = (coordinate) =>
+      getFormattedCoordinatePosition(state, coordinate);
+
     return {
       dialog,
       savedCoordinates: dialog.presetId
         ? getSavedCoordinatesForPreset(state, dialog.presetId)
         : [],
+      coordinateFormatter,
     };
   },
   {
