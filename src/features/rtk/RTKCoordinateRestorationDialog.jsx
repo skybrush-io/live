@@ -90,7 +90,7 @@ const RTKCoordinateRestorationDialog = ({
       </DialogContent>
       <DialogActions>
         <Button color='primary' onClick={onClose}>
-          {t('RTKCoordinateRestorationDialog.cancel')}
+          {t('general.action.cancel')}
         </Button>
       </DialogActions>
     </Dialog>

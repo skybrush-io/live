@@ -33,7 +33,6 @@
     "accuracyLabel": "Pontosság",
     "dateLabel": "Mentve",
     "noSavedCoordinates": "Nincsenek mentett koordináták.",
-    "cancel": "Mégse",
     "useSaved": "Koordináta használata"
   },
   "RTKMessage": {

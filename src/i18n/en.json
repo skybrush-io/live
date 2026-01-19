@@ -23,7 +23,6 @@
   },
   "RTKCoordinateRestorationDialog": {
     "accuracyLabel": "Accuracy",
-    "cancel": "Cancel",
     "dateLabel": "Saved",
     "noSavedCoordinates": "No saved coordinates found.",
     "positionLabel": "Position",
