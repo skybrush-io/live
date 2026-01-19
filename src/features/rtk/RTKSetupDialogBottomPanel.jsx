@@ -77,7 +77,7 @@ const RTKSetupDialogBottomPanel = ({
 
   const handleShowSavedCoordinates = () => {
     if (currentPresetId) {
-      onShowSavedCoordinates(currentPresetId);
+      onShowSavedCoordinates?.(currentPresetId);
     }
   };
 
