@@ -115,7 +115,7 @@ const RTKSetupDialogBottomPanel = ({
             <AntennaPositionIndicator
               hasSavedCoordinates={hasSavedCoordinates}
               onShowSavedCoordinates={
-                onShowSavedCoordinates ? handleShowSavedCoordinates : undefined
+                onShowSavedCoordinates && handleShowSavedCoordinates
               }
             />
           </Box>
