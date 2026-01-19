@@ -27,7 +27,7 @@ const AntennaPositionIndicator = ({
   const hasAntennaPosition = Boolean(position);
 
   return (
-    <Box display='flex' alignItems='center'>
+    <Box display='flex' alignItems='center' gap={0.5}>
       <Tooltip content={t('antennaPositionIndicator.clickToToggle')}>
         <Typography
           variant='body2'
@@ -58,7 +58,6 @@ const AntennaPositionIndicator = ({
           <IconButton
             disabled={!hasSavedCoordinates}
             size='large'
-            sx={{ ml: -1.5 }}
             onClick={onShowSavedCoordinates}
           >
             <Restore />
