@@ -171,8 +171,8 @@ const RTKCorrectionSourceSelector = ({
 
 RTKCorrectionSourceSelector.propTypes = {
   onSourceChanged: PropTypes.func,
-  t: PropTypes.func,
   setCurrentRTKPresetId: PropTypes.func,
+  t: PropTypes.func,
 };
 
 export default connect(
