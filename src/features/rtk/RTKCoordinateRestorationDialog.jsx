@@ -15,6 +15,8 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 
+import { BackgroundHint } from '@skybrush/mui-components';
+
 import { closeCoordinateRestorationDialog } from '~/features/rtk/slice';
 import {
   getCoordinateRestorationDialog,
@@ -71,9 +73,7 @@ const RTKCoordinateRestorationDialog = ({
       <DialogContent>
         <Box>
           {savedCoordinates.length === 0 ? (
-            <Box p={2} textAlign='center'>
-              {t('RTKCoordinateRestorationDialog.noSavedCoordinates')}
-            </Box>
+            <BackgroundHint text={t('RTKCoordinateRestorationDialog.noSavedCoordinates')} />
           ) : (
             <List>
               {savedCoordinates.map((coordinate) => (
