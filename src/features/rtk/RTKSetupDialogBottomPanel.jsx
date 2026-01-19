@@ -16,10 +16,10 @@ import { Tooltip } from '@skybrush/mui-components';
 import FadeAndSlide from '~/components/transitions/FadeAndSlide';
 
 import {
-  getSurveyStatus,
-  shouldShowSurveySettings,
-  hasSavedCoordinateForPreset,
   getCurrentRTKPresetId,
+  getSurveyStatus,
+  hasSavedCoordinateForPreset,
+  shouldShowSurveySettings,
 } from './selectors';
 import {
   toggleSurveySettingsPanel,
