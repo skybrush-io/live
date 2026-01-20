@@ -6,8 +6,8 @@ import { useEffect } from 'react';
 import { connect, useDispatch, useSelector } from 'react-redux';
 
 import handleError from '~/error-handling';
-import { updateRTKStatistics } from '~/features/rtk/slice';
 import { saveCurrentCoordinateForPreset } from '~/features/rtk/actions';
+import { updateRTKStatistics } from '~/features/rtk/slice';
 import { hasValidFix, shouldSaveCoordinate } from '~/features/rtk/utils';
 import useMessageHub from '~/hooks/useMessageHub';
 
