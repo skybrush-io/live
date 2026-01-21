@@ -127,12 +127,12 @@ export function createShowConfigurationForUav(state, uavId) {
  * @param uavId    the ID of the UAV to upload the show trajectory to
  * @param data     the show specification, as selected from the state store
  */
-async function runSingleShowUpload({ uavId, data }) {
+async function runSingleShowUpload({ uavId, data, showHash }) {
   // No need for a timeout here; it utilizes the message hub, which has its
   // own timeout for failed command executions (although it is quite long)
   const cancelToken = messageHub.createCancelToken();
   const promise = messageHub.execute.uploadDroneShow(
-    { uavId, data },
+    { uavId, data, showHash },
     { cancelToken }
   );
   promise[CANCEL] = () => cancelToken.cancel({ allowFailure: true });

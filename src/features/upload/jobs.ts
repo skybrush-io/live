@@ -20,6 +20,7 @@ export type JobSpecification<T> = {
       uavId: string;
       payload: JobPayload;
       data: T;
+      showHash?: Promise<string>;
     },
     options: {
       onProgress: (id: string, status: ProgressStatus) => void;
@@ -50,10 +51,11 @@ export type JobSpecification<T> = {
  *   single UAV (e.g., uploads a drone show specification to a single UAV). This
  *   function runs in the context of a worker saga, which is blocked until the
  *   promise returned from the executor resolves or rejects. The function will
- *   be called with an object having three keys: `uavId` is the ID of the UAV
+ *   be called with an object having four keys: `uavId` is the ID of the UAV
  *   that is targeted by the job, `payload` is the payload of the original job
- *   specification, and `data` is the state slice that was extracted by the
- *   selector associated to the job type. The semantics of the payload and the
+ *   specification, `data` is the state slice that was extracted by the
+ *   selector associated to the job type, and `showHash` is an optional hash
+ *   `Promise` of the show specification. The semantics of the payload and the
  *   data object depends solely on the type of the job being executed.
  *
  * It is recommended to use an executor _saga_ or to make the executor return a

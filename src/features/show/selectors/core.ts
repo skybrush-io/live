@@ -7,6 +7,7 @@ import type {
   Environment,
   ShowMetadata,
   ShowSettings,
+  ShowSpecification,
   SwarmSpecification,
   Trajectory,
   ValidationSettings,
@@ -20,6 +21,7 @@ import type { AppSelector, RootState } from '~/store/reducers';
 import { type Coordinate3D } from '~/utils/math';
 import { EMPTY_ARRAY, EMPTY_OBJECT } from '~/utils/redux';
 
+import { sha1 } from '~/utils/hashing';
 import {
   AltitudeReference,
   DEFAULT_ALTITUDE_REFERENCE,
@@ -37,6 +39,13 @@ import type {
   ShowSegmentsRecord,
 } from '../types';
 import { isYawActivelyControlled } from '../yaw';
+
+/**
+ * Returns the show specification if a show is loaded, `undefined` otherwise.
+ */
+export const getShowSpecification: AppSelector<
+  ShowSpecification | undefined
+> = (state) => state.show.data;
 
 /**
  * Returns whether there is a show file currently loaded.
@@ -384,7 +393,7 @@ export const hasScheduledStartTime: AppSelector<boolean> = (state) =>
  * Returns the metadata of the show, if any.
  */
 export const getShowMetadata: AppSelector<ShowMetadata> = createSelector(
-  (state: RootState) => state.show.data,
+  getShowSpecification,
   (data) => (data && typeof data.meta === 'object' ? data.meta : null) || {}
 );
 
@@ -567,3 +576,15 @@ export const isShowUsingYawControl = createSelector(
       return isYawActivelyControlled(yawControl);
     })
 );
+
+/**
+ * Selector that returns a `Promise` that resolves to the hash of the
+ * currently loaded show and the related show-specific configuration.
+ *
+ * If you need this selector in a React component, make sure the component
+ * re-renders when the promise is resolved.
+ */
+export const getShowHash: AppSelector<Promise<string> | undefined> =
+  createSelector(getShowSpecification, (spec) =>
+    spec === undefined ? undefined : sha1(JSON.stringify(spec))
+  );

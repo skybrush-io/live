@@ -17,6 +17,9 @@ import { errorToString, handleError } from '~/error-handling';
 import { flashLightOnUAVsAndHideFailures } from '~/utils/messaging';
 import { createActionListenerSaga, putWithRetry } from '~/utils/sagas';
 
+import { getMaximumConcurrentUploadTaskCount } from '../settings/selectors';
+import { getShowHash } from '../show/selectors';
+import { recalculateEstimatedCompletionTime } from './actions';
 import { getSpecificationForJobType } from './jobs';
 import {
   getCurrentUploadJob,
@@ -26,21 +29,19 @@ import {
   shouldRetryFailedUploadsAutomatically,
 } from './selectors';
 import {
-  cancelUpload,
   _enqueueFailedUploads,
+  _notifyUploadFinished,
   _notifyUploadOnUavCancelled,
   _notifyUploadOnUavFailed,
   _notifyUploadOnUavQueued,
   _notifyUploadOnUavStarted,
   _notifyUploadOnUavSucceeded,
-  _notifyUploadFinished,
   _notifyUploadStartedAt,
   _setErrorMessageForUAV,
   _setProgressInfoForUAV,
+  cancelUpload,
   startUpload,
 } from './slice';
-import { getMaximumConcurrentUploadTaskCount } from '../settings/selectors';
-import { recalculateEstimatedCompletionTime } from './actions';
 
 /* ----- Progress handling -------------------------------------------------- */
 
@@ -84,9 +85,10 @@ function* runUploadWorker(chan, failed) {
     try {
       yield put(_notifyUploadOnUavStarted(uavId));
       const data = selector ? yield select(selector, uavId) : undefined;
+      const showHash = yield select(getShowHash);
       yield call(
         executor,
-        { uavId, payload, data },
+        { uavId, payload, data, showHash },
         { onProgress: uploadProgressCallback }
       );
       outcome = 'success';

@@ -20,13 +20,13 @@ import {
   createParameterSettingRequest,
 } from './builders';
 import type MessageHub from './messages';
-import { extractResponseForId } from './parsing';
-import { validateExtensionName, validateObjectId } from './validation';
-import type { Message, MessageBody } from './types';
 import type {
   AsyncOperationOptions,
   AsyncResponseHandlerOptions,
 } from './messages';
+import { extractResponseForId } from './parsing';
+import type { Message, MessageBody } from './types';
+import { validateExtensionName, validateObjectId } from './validation';
 
 /**
  * Asks the server to set a new configuration object for the extension with the
@@ -231,7 +231,15 @@ export async function startRTKSurvey(
  */
 export async function uploadDroneShow(
   hub: MessageHub,
-  { uavId, data }: { uavId: string; data: string },
+  {
+    uavId,
+    data,
+    showHash,
+  }: {
+    uavId: string;
+    data: string;
+    showHash?: Promise<string>;
+  },
   options: AsyncResponseHandlerOptions
 ) {
   validateObjectId(uavId);
@@ -246,6 +254,7 @@ export async function uploadDroneShow(
         command: '__show_upload',
         kwds: {
           show: data,
+          show_hash: await showHash,
         },
       },
       {
