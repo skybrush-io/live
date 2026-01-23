@@ -92,7 +92,7 @@ export const saveCurrentCoordinateForPreset =
     };
 
     // Check if this exact coordinate is already the latest saved one
-    const savedCoordinates = state.rtk.savedCoordinates[presetId] || [];
+    const savedCoordinates = state.rtk.savedCoordinates[presetId] ?? [];
     if (savedCoordinates.length > 0) {
       const latest = savedCoordinates[0];
       if (
