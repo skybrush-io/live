@@ -29,7 +29,7 @@ type RTKSliceState = {
     /** Dialog for asking user if they want to use saved coordinates */
     coordinateRestorationDialog: {
       open: boolean;
-      presetId: string | undefined;
+      presetId?: string;
     };
   };
 };
