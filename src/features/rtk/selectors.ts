@@ -221,7 +221,7 @@ export const getCurrentRTKPresetId = (state: RootState): string | undefined =>
 /**
  * Returns the coordinate restoration dialog state.
  */
-export const getCoordinateRestorationDialog = (
+export const getCoordinateRestorationDialogState = (
   state: RootState
 ): RootState['rtk']['dialog']['coordinateRestorationDialog'] =>
   state.rtk.dialog.coordinateRestorationDialog;
