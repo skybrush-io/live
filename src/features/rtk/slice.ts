@@ -162,11 +162,6 @@ const { actions, reducer } = createSlice({
       state.currentPresetId = action.payload;
     },
 
-    removeSavedCoordinateForPreset(state, action: PayloadAction<string>) {
-      const presetId = action.payload;
-      delete state.savedCoordinates[presetId];
-    },
-
     clearAllSavedCoordinates(state) {
       state.savedCoordinates = {};
     },
@@ -194,7 +189,6 @@ export const {
   closeSurveySettingsPanel,
   closeCoordinateRestorationDialog,
   clearAllSavedCoordinates,
-  removeSavedCoordinateForPreset,
   resetRTKStatistics,
   saveCoordinateForPreset,
   setAntennaPositionFormat,
