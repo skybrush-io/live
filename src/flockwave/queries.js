@@ -345,7 +345,7 @@ export async function getRTKStatus(hub) {
 export async function getSelectedRTKPresetId(hub) {
   const response = await hub.sendMessage(
     { type: 'X-RTK-SOURCE' },
-    // Use a larger timeout as the server might be busy reconfiguring the RTK
+    // Use a longer timeout as the server might be busy reconfiguring the RTK
     // source when we ask for it.
     { timeout: 15 }
   );
