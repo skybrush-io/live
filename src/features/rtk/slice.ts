@@ -10,8 +10,8 @@ import { noPayload } from '~/utils/redux';
 
 import {
   RTKAntennaPositionFormat,
-  type RTKStatistics,
   type RTKSavedCoordinate,
+  type RTKStatistics,
 } from './types';
 
 type RTKSliceState = {
