@@ -134,7 +134,8 @@ export function hasValidFix(status: Partial<RTKStatistics>): boolean {
   const surveyedCoordinateValid =
     typeof flags === 'number' && (flags & 0b100) !== 0;
 
-  return hasECEF && (surveyedCoordinateValid || typeof accuracy === 'number');
+  // Consider fix valid only with ECEF position, valid-coordinate flag, and numeric accuracy.
+  return hasECEF && surveyedCoordinateValid && typeof accuracy === 'number';
 }
 
 /**
