@@ -9,8 +9,8 @@ import {
 } from './selectors';
 import {
   closeSurveySettingsPanel,
-  setAntennaPositionFormat,
   saveCoordinateForPreset,
+  setAntennaPositionFormat,
 } from './slice';
 
 export const copyAntennaPositionToClipboard = () => (dispatch, getState) => {
