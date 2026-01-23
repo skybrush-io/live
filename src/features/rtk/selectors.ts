@@ -187,18 +187,6 @@ export const getSavedCoordinates = (
 ): RootState['rtk']['savedCoordinates'] => state.rtk.savedCoordinates;
 
 /**
- * Returns all saved coordinates as an array of { presetId, coordinates } objects.
- */
-export const getAllSavedCoordinates = createSelector(
-  getSavedCoordinates,
-  (savedCoordinates) =>
-    Object.entries(savedCoordinates).map(([presetId, coordinates]) => ({
-      presetId,
-      coordinates,
-    }))
-);
-
-/**
  * Returns the formatted saved coordinate position for a given coordinate.
  */
 export const getFormattedCoordinatePosition = createSelector(
