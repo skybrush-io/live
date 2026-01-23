@@ -20,7 +20,7 @@ type RTKSliceState = {
   /** Saved coordinates per RTK preset ID */
   savedCoordinates: Record<string, RTKSavedCoordinate[]>;
 
-  currentPresetId: string | undefined;
+  currentPresetId?: string;
 
   dialog: {
     open: boolean;
