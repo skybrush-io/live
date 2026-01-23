@@ -7,6 +7,7 @@ import { connect, useDispatch, useSelector } from 'react-redux';
 
 import handleError from '~/error-handling';
 import { saveCurrentCoordinateForPreset } from '~/features/rtk/actions';
+import { getSavedCoordinates } from '~/features/rtk/selectors';
 import { updateRTKStatistics } from '~/features/rtk/slice';
 import { hasValidFix, shouldSaveCoordinate } from '~/features/rtk/utils';
 import useMessageHub from '~/hooks/useMessageHub';
@@ -18,7 +19,7 @@ import useMessageHub from '~/hooks/useMessageHub';
 const RTKStatusUpdater = ({ onStatusChanged, period = 1000 }) => {
   const messageHub = useMessageHub();
   const dispatch = useDispatch();
-  const savedCoordinates = useSelector((state) => state.rtk.savedCoordinates);
+  const savedCoordinates = useSelector(getSavedCoordinates);
 
   useEffect(() => {
     const valueHolder = {

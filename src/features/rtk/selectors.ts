@@ -180,10 +180,17 @@ export const getSavedCoordinatesForPreset = (
 ): RTKSavedCoordinate[] => state.rtk.savedCoordinates[presetId] ?? [];
 
 /**
+ * Returns the full saved coordinates map keyed by preset ID.
+ */
+export const getSavedCoordinates = (
+  state: RootState
+): RootState['rtk']['savedCoordinates'] => state.rtk.savedCoordinates;
+
+/**
  * Returns all saved coordinates as an array of { presetId, coordinates } objects.
  */
 export const getAllSavedCoordinates = createSelector(
-  (state: RootState) => state.rtk.savedCoordinates,
+  getSavedCoordinates,
   (savedCoordinates) =>
     Object.entries(savedCoordinates).map(([presetId, coordinates]) => ({
       presetId,
