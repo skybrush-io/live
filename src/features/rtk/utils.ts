@@ -1,3 +1,5 @@
+import isEqual from 'lodash-es/isEqual';
+
 import type { RTKSavedCoordinate, RTKStatistics } from './types';
 
 const descriptions: Record<string, string> = {
@@ -161,10 +163,7 @@ export function shouldSaveCoordinate(
       : undefined;
 
   const isSameECEF =
-    incomingECEF && savedECEF
-      ? incomingECEF.length === savedECEF.length &&
-        incomingECEF.every((v, i) => v === savedECEF[i])
-      : false;
+    !!incomingECEF && !!savedECEF && isEqual(incomingECEF, savedECEF);
 
   return !isSameECEF;
 }
