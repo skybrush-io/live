@@ -185,16 +185,16 @@ const { actions, reducer } = createSlice({
 });
 
 export const {
+  clearAllSavedCoordinates,
+  closeCoordinateRestorationDialog,
   closeRTKSetupDialog,
   closeSurveySettingsPanel,
-  closeCoordinateRestorationDialog,
-  clearAllSavedCoordinates,
   resetRTKStatistics,
   saveCoordinateForPreset,
   setAntennaPositionFormat,
   setCurrentRTKPresetId,
-  showRTKSetupDialog,
   showCoordinateRestorationDialog,
+  showRTKSetupDialog,
   toggleSurveySettingsPanel,
   updateRTKStatistics,
 } = actions;
