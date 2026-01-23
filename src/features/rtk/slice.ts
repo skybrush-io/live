@@ -143,17 +143,6 @@ const { actions, reducer } = createSlice({
 
       const existing = state.savedCoordinates[presetId];
 
-      // Check if the latest coordinate is the same as the one we are trying to save
-      if (existing.length > 0) {
-        const latest = existing[0];
-        if (
-          latest &&
-          isEqual(latest.positionECEF, coordinate.positionECEF)
-        ) {
-          return;
-        }
-      }
-
       const duplicateIndex = existing.findIndex(
         (c) => isEqual(c.positionECEF, coordinate.positionECEF)
       );
