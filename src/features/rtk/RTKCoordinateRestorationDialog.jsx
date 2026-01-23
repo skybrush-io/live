@@ -24,6 +24,7 @@ import {
   getSavedCoordinatesForPreset,
 } from '~/features/rtk/selectors';
 import { useSavedCoordinateForPreset } from '~/features/rtk/actions';
+import Download from '~/icons/Download';
 import { formatDistance } from '~/utils/formatting';
 
 const SavedCoordinateItem = ({ coordinate, coordinateFormatter, onClick }) => {
@@ -35,10 +36,20 @@ const SavedCoordinateItem = ({ coordinate, coordinateFormatter, onClick }) => {
   return (
     <ListItem disablePadding>
       <ListItemButton onClick={() => onClick(coordinate)}>
-        <ListItemText
-          primary={formattedPosition}
-          secondary={`Accuracy: ${formatDistance(accuracy, 3)} • ${savedDateTime}`}
-        />
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            width: '100%',
+          }}
+        >
+          <ListItemText
+            primary={formattedPosition}
+            secondary={`Accuracy: ${formatDistance(accuracy, 3)} • ${savedDateTime}`}
+          />
+          <Download sx={{ marginLeft: 2 }} />
+        </Box>
       </ListItemButton>
     </ListItem>
   );
