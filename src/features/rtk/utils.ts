@@ -147,7 +147,7 @@ export function hasValidFix(status: Partial<RTKStatistics>): boolean {
  */
 export function shouldSaveCoordinate(
   status: Partial<RTKStatistics>,
-  savedCoordinates: Record<string, RTKSavedCoordinate[]> | undefined,
+  savedCoordinates: Record<string, RTKSavedCoordinate[]>,
   presetId: string
 ): boolean {
   const incomingECEF = Array.isArray(status?.antenna?.positionECEF)
