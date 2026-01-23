@@ -1,0 +1,19 @@
+name: Lint check
+
+on:
+  push:
+    branches: [ "main", "dev" ]
+  pull_request:
+    branches: [ "main", "dev" ]
+
+jobs:
+  eslint:
+    name: Run lint checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Install
+        run: npm install
+      - name: Lint
+        run: npm run lint:check
