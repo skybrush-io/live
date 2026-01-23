@@ -43,19 +43,13 @@ export const toggleAntennaPositionFormat = () => (dispatch, getState) => {
 };
 
 export const useSavedCoordinateForPreset =
-  (presetId, savedCoordinate) => async (dispatch, getState) => {
+  (presetId, savedCoordinate) => async (dispatch) => {
     try {
       // Set the saved coordinate as the current antenna position
       await messageHub.execute.setRTKAntennaPosition({
         position: savedCoordinate.positionECEF,
         accuracy: savedCoordinate.accuracy,
       });
-
-      // Check if the component is still mounted by checking if the dialog is still open
-      const currentState = getState();
-      if (!currentState.rtk.dialog.coordinateRestorationDialog.open) {
-        return;
-      }
 
       dispatch(
         showNotification({
@@ -65,12 +59,6 @@ export const useSavedCoordinateForPreset =
       );
     } catch (error) {
       console.warn('Failed to set saved coordinate:', error);
-
-      // Check if the component is still mounted
-      const currentState = getState();
-      if (!currentState.rtk.dialog.coordinateRestorationDialog.open) {
-        return;
-      }
 
       dispatch(
         showNotification({
