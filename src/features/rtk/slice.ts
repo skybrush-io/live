@@ -3,6 +3,7 @@
  * selected RTK stream on the server.
  */
 
+import isEqual from 'lodash-es/isEqual';
 import isNil from 'lodash-es/isNil';
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
@@ -147,19 +148,14 @@ const { actions, reducer } = createSlice({
         const latest = existing[0];
         if (
           latest &&
-          latest.positionECEF[0] === coordinate.positionECEF[0] &&
-          latest.positionECEF[1] === coordinate.positionECEF[1] &&
-          latest.positionECEF[2] === coordinate.positionECEF[2]
+          isEqual(latest.positionECEF, coordinate.positionECEF)
         ) {
           return;
         }
       }
 
       const duplicateIndex = existing.findIndex(
-        (c) =>
-          c.positionECEF[0] === coordinate.positionECEF[0] &&
-          c.positionECEF[1] === coordinate.positionECEF[1] &&
-          c.positionECEF[2] === coordinate.positionECEF[2]
+        (c) => isEqual(c.positionECEF, coordinate.positionECEF)
       );
 
       if (duplicateIndex !== -1) {
