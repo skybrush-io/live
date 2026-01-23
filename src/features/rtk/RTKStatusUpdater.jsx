@@ -67,7 +67,7 @@ const RTKStatusUpdater = ({ onStatusChanged, period = 1000 }) => {
       valueHolder.finished = true;
       valueHolder.promise = null;
     };
-  }, [messageHub, onStatusChanged, period, dispatch, savedCoordinates]);
+  }, [dispatch, messageHub, onStatusChanged, period, savedCoordinates]);
 
   return null;
 };
