@@ -13,6 +13,7 @@ import type {
 } from '@skybrush/flockwave-spec';
 
 import { errorToString } from '~/error-handling';
+import type { Coordinate3D } from '~/utils/math';
 
 import {
   createBulkParameterUploadRequest,
@@ -232,7 +233,7 @@ export async function startRTKSurvey(
  */
 export async function setRTKAntennaPosition(
   hub: MessageHub,
-  { position, accuracy }: { position: [number, number, number]; accuracy: number }
+  { position, accuracy }: { position: Coordinate3D; accuracy: number }
 ) {
   const response = await hub.sendMessage({
     type: 'X-RTK-SURVEY',
