@@ -6,6 +6,13 @@ import { getPreferredCoordinateFormatter } from '~/selectors/formatting';
 import type { RootState } from '~/store/reducers';
 import { RTKAntennaPositionFormat, type RTKSavedCoordinate } from './types';
 
+const formatPositionECEF = (
+  positionECEF?: RTKSavedCoordinate['positionECEF']
+): string | undefined =>
+  positionECEF && Array.isArray(positionECEF)
+    ? `[${positionECEF.map((c) => (c / 1e3).toFixed(3)).join(', ')}]`
+    : undefined;
+
 /**
  * Returns whether the antenna position should be shown in ECEF coordinates.
  */
@@ -23,11 +30,7 @@ export const getFormattedAntennaPosition = createSelector(
   (antennaInfo, formatter, isECEF) => {
     if (isECEF) {
       const { positionECEF } = antennaInfo || {};
-      return positionECEF && Array.isArray(positionECEF)
-        ? `[${(positionECEF[0] / 1e3).toFixed(3)}, ${(
-            positionECEF[1] / 1e3
-          ).toFixed(3)}, ${(positionECEF[2] / 1e3).toFixed(3)}]`
-        : undefined;
+      return formatPositionECEF(positionECEF);
     } else {
       const { position } = antennaInfo || {};
       return position ? formatter(position) : undefined;
@@ -201,11 +204,7 @@ export const getPreferredSavedRTKPositionFormatter = createSelector(
 
       if (isECEF) {
         const { positionECEF } = savedCoordinate;
-        return positionECEF && Array.isArray(positionECEF)
-          ? `[${(positionECEF[0] / 1e3).toFixed(3)}, ${(
-              positionECEF[1] / 1e3
-            ).toFixed(3)}, ${(positionECEF[2] / 1e3).toFixed(3)}]`
-          : undefined;
+        return formatPositionECEF(positionECEF);
       } else {
         const { position } = savedCoordinate;
         return position ? formatter(position) : undefined;
