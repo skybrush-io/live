@@ -168,7 +168,7 @@ export const hasSavedCoordinateForPreset = (
   presetId: string
 ): boolean => {
   const coords = state.rtk.savedCoordinates[presetId];
-  return Boolean(coords && coords.length > 0);
+  return Boolean(coords) && coords.length > 0;
 };
 
 /**
