@@ -1,4 +1,5 @@
 import copy from 'copy-to-clipboard';
+import isEqual from 'lodash-es/isEqual';
 import { showNotification } from '~/features/snackbar/actions';
 import { MessageSemantics } from '~/features/snackbar/types';
 import messageHub from '~/message-hub';
@@ -95,12 +96,7 @@ export const saveCurrentCoordinateForPreset =
     const savedCoordinates = state.rtk.savedCoordinates[presetId] ?? [];
     if (savedCoordinates.length > 0) {
       const latest = savedCoordinates[0];
-      if (
-        latest &&
-        latest.positionECEF[0] === savedCoordinate.positionECEF[0] &&
-        latest.positionECEF[1] === savedCoordinate.positionECEF[1] &&
-        latest.positionECEF[2] === savedCoordinate.positionECEF[2]
-      ) {
+      if (latest && isEqual(latest.positionECEF, savedCoordinate.positionECEF)) {
         // Coordinate is already saved as the latest, do nothing
         return;
       }
