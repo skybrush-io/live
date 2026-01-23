@@ -20,7 +20,7 @@ import { BackgroundHint } from '@skybrush/mui-components';
 import { closeCoordinateRestorationDialog } from '~/features/rtk/slice';
 import {
   getCoordinateRestorationDialog,
-  getFormattedCoordinatePosition,
+  getPreferredSavedRTKPositionFormatter,
   getSavedCoordinatesForPreset,
 } from '~/features/rtk/selectors';
 import { useSavedCoordinateForPreset } from '~/features/rtk/actions';
@@ -110,8 +110,7 @@ export default connect(
   (state) => {
     const dialog = getCoordinateRestorationDialog(state);
 
-    const coordinateFormatter = (coordinate) =>
-      getFormattedCoordinatePosition(state, coordinate);
+    const coordinateFormatter = getPreferredSavedRTKPositionFormatter(state);
 
     return {
       dialog,

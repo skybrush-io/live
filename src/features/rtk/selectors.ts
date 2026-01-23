@@ -187,29 +187,30 @@ export const getSavedCoordinates = (
 ): RootState['rtk']['savedCoordinates'] => state.rtk.savedCoordinates;
 
 /**
- * Returns the formatted saved coordinate position for a given coordinate.
+ * Returns a formatter function that formats a saved coordinate position
+ * according to the current RTK display settings.
  */
-export const getFormattedCoordinatePosition = createSelector(
-  (_state: RootState, coordinate: RTKSavedCoordinate) => coordinate,
+export const getPreferredSavedRTKPositionFormatter = createSelector(
   getPreferredCoordinateFormatter,
   isShowingAntennaPositionInECEF,
-  (savedCoordinate, formatter, isECEF) => {
-    if (!savedCoordinate) {
-      return undefined;
-    }
+  (formatter, isECEF) =>
+    (savedCoordinate?: RTKSavedCoordinate): string | undefined => {
+      if (!savedCoordinate) {
+        return undefined;
+      }
 
-    if (isECEF) {
-      const { positionECEF } = savedCoordinate;
-      return positionECEF && Array.isArray(positionECEF)
-        ? `[${(positionECEF[0] / 1e3).toFixed(3)}, ${(
-            positionECEF[1] / 1e3
-          ).toFixed(3)}, ${(positionECEF[2] / 1e3).toFixed(3)}]`
-        : undefined;
-    } else {
-      const { position } = savedCoordinate;
-      return position ? formatter(position) : undefined;
+      if (isECEF) {
+        const { positionECEF } = savedCoordinate;
+        return positionECEF && Array.isArray(positionECEF)
+          ? `[${(positionECEF[0] / 1e3).toFixed(3)}, ${(
+              positionECEF[1] / 1e3
+            ).toFixed(3)}, ${(positionECEF[2] / 1e3).toFixed(3)}]`
+          : undefined;
+      } else {
+        const { position } = savedCoordinate;
+        return position ? formatter(position) : undefined;
+      }
     }
-  }
 );
 
 /**
