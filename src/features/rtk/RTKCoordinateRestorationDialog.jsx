@@ -76,7 +76,9 @@ const RTKCoordinateRestorationDialog = ({
       <DialogContent>
         <Box>
           {savedCoordinates.length === 0 ? (
-            <BackgroundHint text={t('RTKCoordinateRestorationDialog.noSavedCoordinates')} />
+            <BackgroundHint
+              text={t('RTKCoordinateRestorationDialog.noSavedCoordinates')}
+            />
           ) : (
             <List>
               {savedCoordinates.map((coordinate) => (

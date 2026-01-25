@@ -96,7 +96,10 @@ export const saveCurrentCoordinateForPreset =
     const savedCoordinates = state.rtk.savedCoordinates[presetId] ?? [];
     if (savedCoordinates.length > 0) {
       const latest = savedCoordinates[0];
-      if (latest && isEqual(latest.positionECEF, savedCoordinate.positionECEF)) {
+      if (
+        latest &&
+        isEqual(latest.positionECEF, savedCoordinate.positionECEF)
+      ) {
         // Coordinate is already saved as the latest, do nothing
         return;
       }

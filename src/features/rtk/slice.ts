@@ -143,8 +143,8 @@ const { actions, reducer } = createSlice({
 
       const existing = state.savedCoordinates[presetId];
 
-      const duplicateIndex = existing.findIndex(
-        (c) => isEqual(c.positionECEF, coordinate.positionECEF)
+      const duplicateIndex = existing.findIndex((c) =>
+        isEqual(c.positionECEF, coordinate.positionECEF)
       );
 
       if (duplicateIndex !== -1) {
