@@ -69,18 +69,12 @@ const RTKCorrectionSourceSelector = ({
 
   // Update current preset ID in Redux
   useEffect(() => {
-    const currentId =
-      selectedByUser || (hasSelectionFromServer ? selectedOnServer : undefined);
+    const currentId = selectedByUser ?? selectedOnServer;
     // Convert NULL_ID to undefined or keep as is? The selector uses 'undefined' for no selection usually.
     // But presets have IDs.
     const effectiveId = currentId === NULL_ID ? undefined : currentId;
     setCurrentRTKPresetId(effectiveId);
-  }, [
-    hasSelectionFromServer,
-    selectedByUser,
-    selectedOnServer,
-    setCurrentRTKPresetId,
-  ]);
+  }, [selectedByUser, selectedOnServer, setCurrentRTKPresetId]);
 
   // If we have the preset list, but we don't have the current selection yet,
   // load the current selection
