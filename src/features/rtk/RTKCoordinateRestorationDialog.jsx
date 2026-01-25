@@ -71,16 +71,8 @@ const RTKCoordinateRestorationDialog = ({
   };
 
   return (
-    <Dialog
-      fullWidth
-      open={dialog.open}
-      aria-labelledby='coordinate-restoration-dialog-title'
-      maxWidth='sm'
-      onClose={onClose}
-    >
-      <DialogTitle id='coordinate-restoration-dialog-title'>
-        {t('RTKCoordinateRestorationDialog.title')}
-      </DialogTitle>
+    <Dialog fullWidth open={dialog.open} maxWidth='sm' onClose={onClose}>
+      <DialogTitle>{t('RTKCoordinateRestorationDialog.title')}</DialogTitle>
       <DialogContent>
         <Box>
           {savedCoordinates.length === 0 ? (
