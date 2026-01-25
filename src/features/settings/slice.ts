@@ -15,6 +15,7 @@ import {
   LIPO_FULL_CHARGE_VOLTAGE,
   LIPO_LOW_VOLTAGE_THRESHOLD,
 } from '~/model/constants';
+import { UAVType } from '~/model/enums';
 import {
   AltitudeSummaryType,
   BatteryDisplayStyle,
@@ -87,6 +88,7 @@ const initialState: SettingsSliceState = {
     maxUploadConcurrency: 8,
     minIndoorTakeoffSpacing: 200,
     minOutdoorTakeoffSpacing: 400,
+    defaultUAVType: UAVType.QUAD,
   },
 
   apiKeys: {},

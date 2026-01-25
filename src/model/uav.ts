@@ -15,7 +15,7 @@ import { type ErrorCode } from '~/flockwave/errors';
 import { type Latitude, type Longitude } from '~/utils/geography';
 import { type Coordinate3D } from '~/utils/math';
 
-import { GPSFixType } from './enums';
+import { GPSFixType, UAVType } from './enums';
 import { type GPSFix, type GPSPosition } from './geography';
 import { type VelocityNED, type VelocityXYZ } from './velocity';
 
@@ -58,6 +58,7 @@ export default class UAV {
   localPosition?: Coordinate3D;
   localVelocity?: VelocityXYZ;
   mode?: string;
+  type?: UAVType;
   velocity?: VelocityNED;
   rssi: RSSI;
 
@@ -99,6 +100,7 @@ export default class UAV {
     this.localPosition = undefined;
     this.localVelocity = undefined;
     this.mode = undefined;
+    this.type = undefined;
     this.velocity = undefined;
     this.rssi = [];
 
@@ -400,6 +402,7 @@ export default class UAV {
       localPosition,
       localVelocity: structuredClone(this.localVelocity),
       mode: this.mode,
+      type: this.type,
       position: this.position,
       velocity: structuredClone(this.velocity),
       rssi: structuredClone(this.rssi),

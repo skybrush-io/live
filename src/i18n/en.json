@@ -517,6 +517,7 @@
       "cellCount": "Cell count",
       "criticalTreshold": "Critical threshold",
       "defaultBatterySettings": "Default battery settings",
+      "defaultType": "Default UAV type",
       "desiredHeadingAccuracy": "Desired heading accuracy",
       "desiredPlacementAccuracy": "Desired placement accuracy",
       "forget": "Forget unseen drones after",

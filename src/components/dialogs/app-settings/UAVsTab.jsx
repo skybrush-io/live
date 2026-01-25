@@ -31,6 +31,7 @@ import {
   getMinimumOutdoorTakeoffSpacing,
 } from '~/features/settings/selectors';
 import { updateAppSettings } from '~/features/settings/slice';
+import { UAVType, getUAVTypeLabel } from '~/model/enums';
 import {
   BatteryDisplayStyle,
   describeBatteryDisplayStyle,
@@ -69,6 +70,7 @@ const UAVsTabPresentation = ({
   autoRemove,
   criticalVoltageThreshold,
   defaultBatteryCellCount,
+  defaultUAVType,
   forgetThreshold,
   fullChargeVoltage,
   goneThreshold,
@@ -147,6 +149,26 @@ const UAVsTabPresentation = ({
 
       <Box sx={{ my: 2 }}>
         <Header>{t('settings.uavs.operationSettings')}</Header>
+
+        <Box sx={{ display: 'flex', flexDirection: 'row', mb: 1 }}>
+          <FormControl fullWidth variant='filled'>
+            <InputLabel id='default-uav-type'>
+              {t('settings.uavs.defaultType')}
+            </InputLabel>
+            <Select
+              labelId='default-uav-type'
+              name='defaultUAVType'
+              value={defaultUAVType || UAVType.QUAD}
+              onChange={onEnumFieldUpdated}
+            >
+              {Object.values(UAVType).map((value) => (
+                <MenuItem key={value} value={value}>
+                  {getUAVTypeLabel(value)}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Box>
 
         <Box sx={{ display: 'flex', flexDirection: 'row', mb: 1 }}>
           <FormControl fullWidth variant='filled'>
@@ -321,6 +343,7 @@ UAVsTabPresentation.propTypes = {
   autoRemove: PropTypes.bool,
   criticalVoltageThreshold: PropTypes.number,
   defaultBatteryCellCount: PropTypes.number,
+  defaultUAVType: PropTypes.oneOf(Object.values(UAVType)),
   forgetThreshold: PropTypes.number,
   fullChargeVoltage: PropTypes.number,
   goneThreshold: PropTypes.number,

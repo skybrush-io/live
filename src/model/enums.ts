@@ -114,6 +114,45 @@ export enum FlightMode {
   UNKNOWN = 'unknown',
 }
 
+/**
+ * Enum representing the possible types of UAVs.
+ */
+export enum UAVType {
+  QUAD = 'quad',
+  VTOL = 'vtol',
+}
+
+export const isUAVType = (type: unknown): type is UAVType =>
+  Object.values(UAVType).includes(type as UAVType);
+
+/**
+ * Object mapping UAV types to their properties (human readable descriptions etc).
+ */
+export const propertiesForUAVTypes: Record<
+  UAVType,
+  {
+    label: string;
+    description: string;
+  }
+> = {
+  [UAVType.QUAD]: {
+    label: 'Quad',
+    description: 'Quad',
+  },
+  [UAVType.VTOL]: {
+    label: 'VTOL',
+    description: 'VTOL',
+  },
+};
+
+/**
+ * Returns the label of the given UAV type.
+ */
+export function getUAVTypeLabel(type: UAVType): string {
+  const props = propertiesForUAVTypes[type];
+  return props ? props.label : String(type);
+}
+
 export const isFlightMode = (mode: unknown): mode is FlightMode =>
   Object.values(FlightMode).includes(mode as FlightMode);
 

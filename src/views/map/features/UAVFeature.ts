@@ -11,15 +11,29 @@ import DroneImage from '~/../assets/img/drone-x-black-32x32.png';
 import DroneImageError from '~/../assets/img/drone-x-black-error-32x32.png';
 import DroneImageInfo from '~/../assets/img/drone-x-black-info-32x32.png';
 import DroneImageWarning from '~/../assets/img/drone-x-black-warning-32x32.png';
+// VTOL icons
+import DroneImageVTOL from '~/../assets/img/drone-vtol-black.png';
 import { Status } from '~/components/semantics';
+import { UAVType } from '~/model/enums';
 import { toRadians } from '~/utils/math';
 
-const droneImages: Record<string, string> = {
-  // Non-exhaustive mapping so we cannot type they key as Status
-  [Status.INFO]: DroneImageInfo,
-  [Status.WARNING]: DroneImageWarning,
-  [Status.ERROR]: DroneImageError,
-  [Status.CRITICAL]: DroneImageError,
+const droneImages: Record<UAVType, Record<string, string>> = {
+  [UAVType.QUAD]: {
+    // Non-exhaustive mapping so we cannot type they key as Status
+    [Status.INFO]: DroneImageInfo,
+    [Status.WARNING]: DroneImageWarning,
+    [Status.ERROR]: DroneImageError,
+    [Status.CRITICAL]: DroneImageError,
+    default: DroneImage,
+  },
+  [UAVType.VTOL]: {
+    // Using the same icon for all statuses for VTOL for now as we lack specific assets
+    [Status.INFO]: DroneImageVTOL,
+    [Status.WARNING]: DroneImageVTOL,
+    [Status.ERROR]: DroneImageVTOL,
+    [Status.CRITICAL]: DroneImageVTOL,
+    default: DroneImageVTOL,
+  },
 };
 
 /**
@@ -34,6 +48,7 @@ export default class UAVFeature extends Feature<Point> {
   _heading: number;
   _scale: number;
   _status: Status | null;
+  _uavType: UAVType;
   _hideLabel: boolean;
   _iconImage: Icon | null;
   _selectionImage: Icon | null;
@@ -60,6 +75,7 @@ export default class UAVFeature extends Feature<Point> {
     this._heading = 0;
     this._scale = 1;
     this._status = null;
+    this._uavType = UAVType.QUAD;
     this._hideLabel = Boolean(hideLabel ?? false);
     this._iconImage = null;
     this._selectionImage = null;
@@ -201,17 +217,39 @@ export default class UAVFeature extends Feature<Point> {
   }
 
   /**
+   * Returns the current UAV type.
+   */
+  get uavType() {
+    return this._uavType;
+  }
+
+  /**
+   * Sets the current UAV type.
+   */
+  set uavType(value: UAVType) {
+    if (this._uavType === value) {
+      return;
+    }
+
+    this._uavType = value;
+    this._setupStyle();
+  }
+
+  /**
    * Sets up or updates the style of the feature.
    */
   _setupStyle() {
     const styles = [];
 
     // Main image
+    const imagesForType = droneImages[this._uavType] || droneImages[UAVType.QUAD];
+    const src = imagesForType[this._status ?? ''] ?? imagesForType['default'];
+
     const iconImage = new Icon({
       rotateWithView: true,
       rotation: this._headingToRotation(),
       scale: this._scale,
-      src: droneImages[this._status ?? ''] ?? DroneImage,
+      src,
     });
     this._iconImage = iconImage;
 

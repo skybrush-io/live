@@ -9,6 +9,7 @@ import {
   type UAVsLayerSettingsProps,
 } from '~/components/map/layers/uavs';
 import { setLayerParametersById } from '~/features/map/layers';
+import { getDefaultUAVType } from '~/features/settings/selectors';
 import { getSelection } from '~/selectors/selection';
 import type { RootState } from '~/store/reducers';
 
@@ -37,6 +38,7 @@ export const UAVsLayer = connect(
   // mapStateToProps
   (state: RootState) => ({
     selection: getSelection(state),
+    defaultUAVType: getDefaultUAVType(state),
   }),
   // mapDispatchToProps
   {}

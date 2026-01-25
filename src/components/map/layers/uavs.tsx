@@ -11,6 +11,7 @@ import SwatchesColorPicker, {
 import flock from '~/flock';
 import type FlockModel from '~/model/flock';
 import { Layer } from '~/model/layers';
+import { UAVType } from '~/model/enums';
 import type { Identifier } from '~/utils/collections';
 import {
   type CoordinateTransformationFunction,
@@ -82,6 +83,7 @@ type UAVsLayerSourceProps = {
   projection?: CoordinateTransformationFunction;
   labelHidden?: boolean;
   scale?: number;
+  defaultUAVType?: UAVType;
 };
 
 export type UAVsLayerProps = {
@@ -91,6 +93,7 @@ export type UAVsLayerProps = {
   projection?: CoordinateTransformationFunction;
   zIndex?: number;
   labelHidden?: boolean;
+  defaultUAVType?: UAVType;
 };
 
 export const UAVsLayer = ({
@@ -100,6 +103,7 @@ export const UAVsLayer = ({
   selection,
   zIndex,
   labelHidden,
+  defaultUAVType,
 }: UAVsLayerProps) => (
   <olLayer.Vector updateWhileAnimating updateWhileInteracting zIndex={zIndex}>
     <LayerSource
@@ -111,6 +115,7 @@ export const UAVsLayer = ({
       flock={flock}
       projection={projection}
       labelHidden={labelHidden}
+      defaultUAVType={defaultUAVType}
     />
   </olLayer.Vector>
 );

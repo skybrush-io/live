@@ -9,6 +9,8 @@ import {
 } from '~/model/settings';
 import { type UAVSortKey } from '~/model/sorting';
 
+import { type UAVType } from '~/model/enums';
+
 export enum AppSettingsDialogTab {
   API_KEYS = 'apiKeys',
   DISPLAY = 'display',
@@ -208,6 +210,11 @@ export type SettingsState = {
      * Minimum distance allowed between two UAVs for outdoor shows, in meters.
      */
     minOutdoorTakeoffSpacing?: number;
+
+    /**
+     * Default UAV type for new UAVs or UAVs with undefined type.
+     */
+    defaultUAVType: UAVType;
   };
 
   apiKeys: Record<string, string>;

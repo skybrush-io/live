@@ -7,8 +7,11 @@ import type {
 } from './types';
 import type { UAVFilter } from '~/model/filtering';
 
+import { type UAVType } from '~/model/enums';
+
 export function shouldOptimizeUIForTouch(state: any): boolean;
 export function getAPIKeys(state: RootState): APIKeysRecord;
+export function getDefaultUAVType(state: RootState): UAVType;
 export function getMaximumConcurrentUploadTaskCount(state: RootState): number;
 export function getUAVListFilters(state: RootState): UAVFilter[];
 export function getUAVListLayout(state: RootState): UAVListLayout;

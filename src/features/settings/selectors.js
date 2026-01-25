@@ -3,6 +3,7 @@ import { createSelector } from '@reduxjs/toolkit';
 import DefaultAPIKeys from '~/APIKeys';
 import { BatteryFormatter } from '~/components/battery';
 import { BatterySettings } from '~/model/battery';
+import { UAVType } from '~/model/enums';
 import {
   AltitudeSummaryType,
   BatteryDisplayStyle,
@@ -60,6 +61,12 @@ export const getDesiredPlacementAccuracyInMeters = (state) =>
  */
 export const getDesiredTakeoffHeadingAccuracy = (state) =>
   state.settings.uavs.takeoffHeadingAccuracy || 20;
+
+/**
+ * Returns the default UAV type.
+ */
+export const getDefaultUAVType = (state) =>
+  state.settings.uavs?.defaultUAVType || UAVType.QUAD;
 
 /**
  * Returns the currently selected display language for the application.

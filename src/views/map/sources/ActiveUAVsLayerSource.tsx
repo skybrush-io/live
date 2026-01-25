@@ -14,6 +14,7 @@ import React from 'react';
 
 import { getSingleUAVStatusLevel } from '~/features/uavs/selectors';
 import Flock from '~/model/flock';
+import { UAVType } from '~/model/enums';
 import { uavIdToGlobalId } from '~/model/identifiers';
 import { setLayerSelectable, setLayerTriggersTooltip } from '~/model/layers';
 import type UAV from '~/model/uav';
@@ -29,6 +30,7 @@ export type ActiveUAVsLayerSourceProps = {
   selection: string[];
   labelHidden?: boolean;
   scale: number;
+  defaultUAVType?: UAVType;
 };
 
 type EventBindings = {
@@ -76,6 +78,10 @@ class ActiveUAVsLayerSource extends React.Component<ActiveUAVsLayerSourceProps> 
       this.props.labelColor
     );
     this._onScaleMaybeChanged(previousProps.scale, this.props.scale);
+    this._onDefaultUAVTypeMaybeChanged(
+      previousProps.defaultUAVType,
+      this.props.defaultUAVType
+    );
     this._featureManager.projection = this.props.projection;
     if (this.props.labelHidden !== previousProps.labelHidden) {
       this._featureManager.featureFactory = this._createFeatureFactory();
@@ -96,6 +102,7 @@ class ActiveUAVsLayerSource extends React.Component<ActiveUAVsLayerSourceProps> 
     this._onFlockMaybeChanged(undefined, this.props.flock);
     this._onSelectionMaybeChanged([], this.props.selection);
     this._onScaleMaybeChanged(0, this.props.scale);
+    this._onDefaultUAVTypeMaybeChanged(undefined, this.props.defaultUAVType);
   }
 
   componentWillUnmount() {
@@ -261,6 +268,30 @@ class ActiveUAVsLayerSource extends React.Component<ActiveUAVsLayerSourceProps> 
   };
 
   /**
+   * Function that checks whether the default UAV type has changed and
+   * updates the features accordingly.
+   *
+   * @param oldType The old default UAV type.
+   * @param newType The new default UAV type.
+   */
+  _onDefaultUAVTypeMaybeChanged = (
+    oldType: UAVType | undefined,
+    newType: UAVType | undefined
+  ) => {
+    if (oldType === newType) {
+      return;
+    }
+
+    // We need to re-evaluate the type for all features because the default changed.
+    // However, we don't have easy access to the UAV objects here to check their specific type.
+    // But _onUAVsUpdated sets the type on the feature.
+    // If we just trigger an update for all UAVs, it should fix it.
+    if (this.props.flock) {
+      this._onUAVsUpdated(this.props.flock.getAllUAVs());
+    }
+  };
+
+  /**
    * Event handler that is called when some UAVs were removed from the flock and
    * the layer should be re-drawn without these UAVs.
    *
@@ -303,6 +334,7 @@ class ActiveUAVsLayerSource extends React.Component<ActiveUAVsLayerSourceProps> 
       feature.status = getSingleUAVStatusLevel(uav);
       feature.labelColor = this.props.labelColor;
       feature.scale = this.props.scale;
+      feature.uavType = uav.type || this.props.defaultUAVType || UAVType.QUAD;
     }
   };
 }

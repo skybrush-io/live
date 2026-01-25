@@ -46,6 +46,7 @@ export type StoredUAV = {
   localPosition?: Coordinate3D;
   localVelocity?: VelocityXYZ;
   mode?: string;
+  type?: string;
   position?: GPSPosition;
   velocity?: VelocityNED;
   rssi: number[];
