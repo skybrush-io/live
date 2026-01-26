@@ -6,8 +6,8 @@ import {
   updateCurrentMissionItemId,
   updateCurrentMissionItemRatio,
 } from '~/features/mission/slice';
+import { getUAVIdList } from '~/features/uavs/selectors';
 import useDeviceTreeSubscription from '~/hooks/useDeviceTreeSubscription';
-import { getUAVIdList } from '../uavs/selectors';
 
 /**
  * Component that subscribes to waypoint status updates of a single UAV and

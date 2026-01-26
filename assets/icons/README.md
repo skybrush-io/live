@@ -22,4 +22,3 @@ for Windows:
 https://icoconvert.com/
 
 Favicon was generated with https://favicon.io
-
