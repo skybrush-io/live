@@ -17,6 +17,10 @@ import {
   selectMissionIndex,
 } from '~/features/mission/selectors';
 import {
+  getMinimumIndoorTakeoffSpacing,
+  getMinimumOutdoorTakeoffSpacing,
+} from '~/features/settings/selectors';
+import {
   formatDistance,
   formatDuration,
   formatDurationHMS,
@@ -30,10 +34,6 @@ import {
 import { findNearestNeighborsDistance } from '~/utils/nearestNeighbors';
 import { EMPTY_ARRAY, EMPTY_OBJECT } from '~/utils/redux';
 
-import {
-  getMinimumIndoorTakeoffSpacing,
-  getMinimumOutdoorTakeoffSpacing,
-} from '../settings/selectors';
 import {
   AltitudeReference,
   DEFAULT_ALTITUDE_REFERENCE,
