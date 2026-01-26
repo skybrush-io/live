@@ -907,7 +907,7 @@ export const getShowDescription = createSelector(
       ...(isNil(duration) ? [] : [formatDuration(duration)]),
       ...(isNil(maxHeight) ? [] : [`max AHL ${formatDistance(maxHeight, 1)}`]),
       ...(spacing > 0 && Number.isFinite(spacing)
-        ? [`spacing ${formatDistance(Math.round(spacing, 2), 1)}`]
+        ? [`spacing ${formatDistance(Math.round(spacing * 100) / 100, 1)}`]
         : []),
       ...(hasYawControl ? ['yaw controlled'] : []),
     ].join(', ')
