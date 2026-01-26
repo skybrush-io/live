@@ -14,9 +14,11 @@ import {
 } from 'redux-saga/effects';
 
 import { errorToString, handleError } from '~/error-handling';
+import { getMaximumConcurrentUploadTaskCount } from '~/features/settings/selectors';
 import { flashLightOnUAVsAndHideFailures } from '~/utils/messaging';
 import { createActionListenerSaga, putWithRetry } from '~/utils/sagas';
 
+import { recalculateEstimatedCompletionTime } from './actions';
 import { getSpecificationForJobType } from './jobs';
 import {
   getCurrentUploadJob,
@@ -26,21 +28,19 @@ import {
   shouldRetryFailedUploadsAutomatically,
 } from './selectors';
 import {
-  cancelUpload,
   _enqueueFailedUploads,
+  _notifyUploadFinished,
   _notifyUploadOnUavCancelled,
   _notifyUploadOnUavFailed,
   _notifyUploadOnUavQueued,
   _notifyUploadOnUavStarted,
   _notifyUploadOnUavSucceeded,
-  _notifyUploadFinished,
   _notifyUploadStartedAt,
   _setErrorMessageForUAV,
   _setProgressInfoForUAV,
+  cancelUpload,
   startUpload,
 } from './slice';
-import { getMaximumConcurrentUploadTaskCount } from '../settings/selectors';
-import { recalculateEstimatedCompletionTime } from './actions';
 
 /* ----- Progress handling -------------------------------------------------- */
 

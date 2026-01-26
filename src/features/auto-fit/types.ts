@@ -1,8 +1,6 @@
-import { COORDINATE_SYSTEM_TYPE } from '@skybrush/show-format';
-
+import type { OriginType } from '~/features/map/types';
 import type { LonLat } from '~/utils/geography';
 import type { Coordinate2D } from '~/utils/math';
-import type { OriginType } from '../map/types';
 
 export type CoordinateSystemFittingProblem = {
   uavIds: string[];
