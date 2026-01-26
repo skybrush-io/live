@@ -14,7 +14,7 @@ import {
 } from '@skybrush/mui-components';
 
 import { Status } from '~/components/semantics';
-import { showDialog as showCollectiveRTHDialog } from '~/features/collective-rth/state';
+import { showDialog as showCollectiveRTHDialog } from '~/features/collective-rth/slice';
 import {
   isConnected,
   supportsStudioInterop,

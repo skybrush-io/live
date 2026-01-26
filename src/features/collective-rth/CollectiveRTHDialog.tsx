@@ -28,7 +28,7 @@ import {
   selectTransformationError,
   selectTransformationInProgress,
 } from './selectors';
-import { closeDialog, type TransformationResult } from './state';
+import { closeDialog, type TransformationResult } from './slice';
 
 type StateProps = {
   error?: string;

@@ -4,7 +4,7 @@ import type { AppThunk } from '~/store/reducers';
 import { writeBlobToFile } from '~/utils/filesystem';
 
 import { selectTransformedShowBlob } from './selectors';
-import { setResult } from './state';
+import { setResult } from './slice';
 
 export type OptionalCollectiveRTHParameters = {
   minDistance?: number;

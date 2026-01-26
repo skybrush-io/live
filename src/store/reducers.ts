@@ -10,7 +10,7 @@ import undoable, { includeAction } from 'redux-undo';
  * Reducer functions for handling the part of the state object that stores the
  * state of the various dialogs.
  */
-import collectiveRTHReducer from '~/features/collective-rth/state';
+import collectiveRTHReducer from '~/features/collective-rth/slice';
 import dockDetailsDialogReducer from '~/features/docks/details';
 import errorHandlingReducer from '~/features/error-handling/slice';
 import featureEditorReducer from '~/features/map-features/editor';

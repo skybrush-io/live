@@ -6,7 +6,7 @@ import type { AppSelector, RootState } from '~/store/reducers';
 import type {
   CollectiveRTHDialogRTHState,
   TransformationResult,
-} from './state';
+} from './slice';
 
 const selectState: AppSelector<CollectiveRTHDialogRTHState> = (state) =>
   state.dialogs.collectiveRTH;
