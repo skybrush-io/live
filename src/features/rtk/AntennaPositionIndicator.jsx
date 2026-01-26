@@ -1,3 +1,5 @@
+import Restore from '@mui/icons-material/Restore';
+import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import PropTypes from 'prop-types';
@@ -15,15 +17,17 @@ import {
 import { getAntennaInfoSummary } from './selectors';
 
 const AntennaPositionIndicator = ({
+  hasSavedCoordinates,
   onCopyAntennaPositionToClipboard,
   onClick,
+  onShowSavedCoordinates,
   position,
   t,
 }) => {
   const hasAntennaPosition = Boolean(position);
 
   return (
-    <>
+    <Box display='flex' alignItems='center' gap={0.5}>
       <Tooltip content={t('antennaPositionIndicator.clickToToggle')}>
         <Typography
           variant='body2'
@@ -46,15 +50,33 @@ const AntennaPositionIndicator = ({
           </IconButton>
         </Tooltip>
       )}
-    </>
+      {onShowSavedCoordinates && (
+        <Tooltip
+          content={t('antennaPositionIndicator.useSavedCoordinate')}
+          // Explicitly set trigger to 'mouseenter' only to prevent the tooltip
+          // from showing when the dialog closes and focus returns to this button.
+          trigger='mouseenter'
+        >
+          <IconButton
+            disabled={!hasSavedCoordinates}
+            size='large'
+            onClick={onShowSavedCoordinates}
+          >
+            <Restore />
+          </IconButton>
+        </Tooltip>
+      )}
+    </Box>
   );
 };
 
 AntennaPositionIndicator.propTypes = {
   // description: PropTypes.string,
+  hasSavedCoordinates: PropTypes.bool,
   position: PropTypes.string,
   onClick: PropTypes.func,
   onCopyAntennaPositionToClipboard: PropTypes.func,
+  onShowSavedCoordinates: PropTypes.func,
   t: PropTypes.func,
 };
 

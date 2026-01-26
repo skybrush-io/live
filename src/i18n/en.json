@@ -21,6 +21,14 @@
     "passed": "Onboard preflight checks passed.",
     "signOffOn": "Sign off on onboard preflight checks"
   },
+  "RTKCoordinateRestorationDialog": {
+    "accuracyLabel": "Accuracy",
+    "dateLabel": "Saved",
+    "noSavedCoordinates": "No saved coordinates found.",
+    "positionLabel": "Position",
+    "title": "Choose a saved coordinate",
+    "useSaved": "Use coordinate"
+  },
   "RTKCorrectionSourceSelector": {
     "RTKCorrections": "RTK corrections",
     "error": "Error while loading RTK sources from server",
@@ -67,7 +75,8 @@
   "antennaPositionIndicator": {
     "antennaPositionNotKnown": "Antenna position not known",
     "clickToToggle": "Click to toggle between lon/lat and ECEF format",
-    "copyToClipboard": "Copy to clipboard"
+    "copyToClipboard": "Copy to clipboard",
+    "useSavedCoordinate": "Use saved coordinate"
   },
   "augmentMappingButton": {
     "assignSparesToEmptySlots": "Assign spares to empty slots"

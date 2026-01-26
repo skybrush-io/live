@@ -9,7 +9,10 @@ import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { useAsync, useAsyncFn } from 'react-use';
 
-import { resetRTKStatistics } from '~/features/rtk/slice';
+import {
+  resetRTKStatistics,
+  setCurrentRTKPresetId,
+} from '~/features/rtk/slice';
 import messageHub from '~/message-hub';
 
 const NULL_ID = '__null__';
@@ -19,7 +22,11 @@ const nullPreset = {
   title: 'RTK disabled',
 };
 
-const RTKCorrectionSourceSelector = ({ onSourceChanged, t }) => {
+const RTKCorrectionSourceSelector = ({
+  onSourceChanged,
+  setCurrentRTKPresetId,
+  t,
+}) => {
   const [selectedByUser, setSelectedByUser] = useState();
   const [selectionState, getSelectionFromServer] = useAsyncFn(async () =>
     messageHub.query.getSelectedRTKPresetId()
@@ -31,9 +38,13 @@ const RTKCorrectionSourceSelector = ({ onSourceChanged, t }) => {
   );
 
   const loading = presetsState.loading || selectionState.loading;
-  const hasError = presetsState.error || selectionState.error;
+  const hasError = presetsState.error;
 
-  const presets = presetsState.value ? presetsState.value : [];
+  if (selectionState.error) {
+    console.warn('Failed to load RTK selection state:', selectionState.error);
+  }
+
+  const presets = presetsState.value ?? [];
   const hasSelectionFromServer = selectionState.value !== undefined;
   const selectedOnServer =
     selectionState.value !== undefined
@@ -44,15 +55,26 @@ const RTKCorrectionSourceSelector = ({ onSourceChanged, t }) => {
   const hasPresets = presets && presets.length > 0;
 
   const handleChange = async (event) => {
+    const newPresetId = event.target.value;
+
     // We assume that the request will succeed so we eagerly select the new
     // value. If changing the RTK source fails, it will be changed back in the
     // response handler triggered by the effect that we set up below.
-    setSelectedByUser(event.target.value);
+    setSelectedByUser(newPresetId);
 
     if (onSourceChanged) {
       onSourceChanged();
     }
   };
+
+  // Update current preset ID in Redux
+  useEffect(() => {
+    const currentId = selectedByUser ?? selectedOnServer;
+    // Convert NULL_ID to undefined or keep as is? The selector uses 'undefined' for no selection usually.
+    // But presets have IDs.
+    const effectiveId = currentId === NULL_ID ? undefined : currentId;
+    setCurrentRTKPresetId(effectiveId);
+  }, [selectedByUser, selectedOnServer, setCurrentRTKPresetId]);
 
   // If we have the preset list, but we don't have the current selection yet,
   // load the current selection
@@ -143,14 +165,15 @@ const RTKCorrectionSourceSelector = ({ onSourceChanged, t }) => {
 
 RTKCorrectionSourceSelector.propTypes = {
   onSourceChanged: PropTypes.func,
+  setCurrentRTKPresetId: PropTypes.func,
   t: PropTypes.func,
 };
 
 export default connect(
-  // mapStateToProps
   null,
   // mapDispatchToProps
   {
     onSourceChanged: resetRTKStatistics,
+    setCurrentRTKPresetId,
   }
 )(withTranslation()(RTKCorrectionSourceSelector));

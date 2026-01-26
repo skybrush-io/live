@@ -6,6 +6,13 @@ export enum RTKAntennaPositionFormat {
   ECEF = 'ecef',
 }
 
+export type RTKSavedCoordinate = {
+  position: LonLat;
+  positionECEF: Coordinate3D;
+  accuracy: number;
+  savedAt: number;
+};
+
 export type RTKStatistics = {
   /**
    * Timestamp when the statistics was updated the last time,
