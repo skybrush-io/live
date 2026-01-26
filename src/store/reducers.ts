@@ -29,7 +29,7 @@ import showConfiguratorReducer, {
   historyUndo,
   type ShowConfiguratorState,
   type ShowData,
-} from '~/features/show-configurator/state';
+} from '~/features/show-configurator/slice';
 import uavDetailsDialogReducer from '~/features/uavs/details';
 
 /**

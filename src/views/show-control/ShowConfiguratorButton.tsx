@@ -22,7 +22,7 @@ import {
 import { isDeveloperModeEnabled } from '~/features/session/selectors';
 import { showDialogAndClearUndoHistory } from '~/features/show-configurator/actions';
 import { selectShowConfiguratorDataFromShow } from '~/features/show-configurator/selectors';
-import { type ShowData } from '~/features/show-configurator/state';
+import { type ShowData } from '~/features/show-configurator/slice';
 import {
   getEnvironmentFromLoadedShowData,
   getOutdoorShowOrigin,

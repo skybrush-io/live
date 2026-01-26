@@ -19,7 +19,7 @@ import {
   selectIsShowAdaptInProgress,
   selectShowAdaptError,
 } from './selectors';
-import type { AdaptResult } from './state';
+import type { AdaptResult } from './slice';
 
 const useStyles = makeStyles((theme: Theme) => ({
   centered: {
