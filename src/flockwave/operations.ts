@@ -96,7 +96,7 @@ export async function resumeShow(hub: MessageHub) {
     await hub.startAsyncOperation({ type: 'X-SHOW-RESUME' });
   } catch (error) {
     const errorString = errorToString(error);
-    throw new Error(`Failed to suspend show. ${errorString}`);
+    throw new Error(`Failed to resume show. ${errorString}`);
   }
 }
 
