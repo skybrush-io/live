@@ -89,15 +89,15 @@
     "action": {
       "addCollectiveRTH": "Calculate RTH plans"
     },
-    "description": "Calculate RTH plans for all drones in the show. The RTH plans will be designed to bring the drones home as quickly as possible while avoiding collisions with each other.",
+    "description": "Precalculate collective RTH plans at multiple timestamps in the show. In case of emergency collective RTH brings drones home as quickly as possible without collisions.",
     "error": "An error occurred while calculating RTH plans. Please try again.",
-    "existingInvalidRTHPlan": "The swarm has no valid collective RTH plans in the loaded show.",
-    "existingValidRTHPlan": "The swarm has valid RTH plans at {{numPlans}} timestamps in the loaded show.",
+    "existingInvalidRTHPlan": "The show has no valid collective RTH plans.",
+    "existingValidRTHPlan": "The show has valid collective RTH plans at {{numPlans}} timestamps.",
     "loading": "RTH plans are being calculated, please wait. It may take some time.",
     "parameters": {
       "form": {
         "horizontalVelocity": {
-          "help": "during horizontal flight phases",
+          "help": "during collective RTH",
           "label": "Horizontal velocity"
         },
         "minDistance": {
@@ -105,11 +105,11 @@
           "label": "Minimum distance"
         },
         "timeResolution": {
-          "help": "between planned RTH times.",
+          "help": "between consecutive RTH plans.",
           "label": "Time resolution"
         },
         "verticalVelocity": {
-          "help": "during vertical flight phases",
+          "help": "during collective RTH",
           "label": "Vertical velocity"
         }
       },
@@ -125,7 +125,7 @@
         "message": "Last RTH time: {{lastTime}}s"
       },
       "numPlans": {
-        "message": "Plan successfully calculated for {{numPlans}} timestamps"
+        "message": "Plan successfully calculated at {{numPlans}} timestamps"
       }
     },
     "title": "Plan collective RTH"
@@ -133,7 +133,7 @@
   "collectiveRTHPanel": {
     "error": {
       "invalidPlan": "The collective RTH plan is invalid.",
-      "missingPlan": "The drones have no collective RTH plans.",
+      "missingPlan": "The show has no collective RTH plans.",
       "partialPlan": "{{withoutPlans}} drones do not have RTH plans."
     },
     "message": {
@@ -676,8 +676,8 @@
         "server": "Connection must be established to the server"
       },
       "tooltip": {
-        "invalidRTHPlan": "The swarm has no valid collective RTH plans.",
-        "validRTHPlan": "The swarm has valid RTH plans at {{numPlans}} timestamps."
+        "invalidRTHPlan": "The show has no valid collective RTH plans.",
+        "validRTHPlan": "The show has {{numPlans}} valid collective RTH plans."
       }
     },
     "startMethod": {
