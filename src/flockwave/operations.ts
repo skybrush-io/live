@@ -20,13 +20,13 @@ import {
   createParameterSettingRequest,
 } from './builders';
 import type MessageHub from './messages';
-import { extractResponseForId } from './parsing';
-import { validateExtensionName, validateObjectId } from './validation';
-import type { Message, MessageBody } from './types';
 import type {
   AsyncOperationOptions,
   AsyncResponseHandlerOptions,
 } from './messages';
+import { extractResponseForId } from './parsing';
+import type { Message, MessageBody } from './types';
+import { validateExtensionName, validateObjectId } from './validation';
 
 /**
  * Asks the server to set a new configuration object for the extension with the
@@ -85,6 +85,18 @@ export async function resetUAV(hub: MessageHub, uavId: string): Promise<void> {
   } catch (error) {
     const errorString = errorToString(error);
     throw new Error(`Failed to reset UAV ${uavId}: ${errorString}`);
+  }
+}
+
+/**
+ * Asks the server to resume the currently suspended show.
+ */
+export async function resumeShow(hub: MessageHub) {
+  try {
+    await hub.startAsyncOperation({ type: 'X-SHOW-RESUME' });
+  } catch (error) {
+    const errorString = errorToString(error);
+    throw new Error(`Failed to suspend show. ${errorString}`);
   }
 }
 
@@ -223,6 +235,18 @@ export async function startRTKSurvey(
 
   if (response.body.type !== 'ACK-ACK') {
     throw new Error('Failed to start RTK survey on the server');
+  }
+}
+
+/**
+ * Asks the server to suspend the currently running show.
+ */
+export async function suspendShow(hub: MessageHub) {
+  try {
+    await hub.startAsyncOperation({ type: 'X-SHOW-SUSPEND' });
+  } catch (error) {
+    const errorString = errorToString(error);
+    throw new Error(`Failed to suspend show. ${errorString}`);
   }
 }
 
@@ -374,6 +398,7 @@ const _operations = {
   planMission,
   reloadExtension,
   resetUAV,
+  resumeShow,
   sendDebugMessage,
   setParameter,
   setParameters,
@@ -381,6 +406,7 @@ const _operations = {
   setShowConfiguration,
   setShowLightConfiguration,
   startRTKSurvey,
+  suspendShow,
   uploadDroneShow,
   uploadFirmware,
   uploadMission,
