@@ -450,6 +450,10 @@
     "manualPreflightCheckItems": "Manual preflight check items",
     "preflightCheckItems": "Preflight check items"
   },
+  "proControlButtonGroup": {
+    "resume": "Resume",
+    "suspend": "Suspend"
+  },
   "recalculateMappingButton": {
     "findOptimalMapping": "Find optimal mapping",
     "recalculateMapping": "Recalculate mapping"
