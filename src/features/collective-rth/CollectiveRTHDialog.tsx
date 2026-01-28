@@ -1,6 +1,7 @@
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import DialogActions from '@mui/material/DialogActions';
+import LinearProgress from '@mui/material/LinearProgress';
 import Typography from '@mui/material/Typography';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
@@ -114,7 +115,10 @@ const CollectiveRTHDialog = (props: Props) => {
           </>
         )}
         {inProgress && (
-          <Typography>{t('collectiveRTHDialog.loading')}</Typography>
+          <>
+            <Typography>{t('collectiveRTHDialog.loading')}</Typography>
+            <LinearProgress />
+          </>
         )}
         {transformationResult !== undefined && (
           <>
