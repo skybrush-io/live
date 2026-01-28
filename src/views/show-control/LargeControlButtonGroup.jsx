@@ -28,6 +28,7 @@ import {
   getUAVIdsParticipatingInMission,
 } from '~/features/mission/selectors';
 import { setCommandsAreBroadcast } from '~/features/mission/slice';
+import { isDeveloperModeEnabled } from '~/features/session/selectors';
 import { getSelectedUAVIds } from '~/features/uavs/selectors';
 import Pro from '~/icons/Pro';
 import { createUAVOperationThunks } from '~/utils/messaging';
@@ -61,6 +62,7 @@ const useStyles = makeStyles((theme) => ({
 
 const LargeControlButtonGroup = ({
   broadcast,
+  devModeEnabled,
   onChangeBroadcastMode,
   t,
   uavActions,
@@ -71,26 +73,30 @@ const LargeControlButtonGroup = ({
     <>
       <StartMethodExplanation />
       <Divider className={classes.divider} />
-      <Accordion
-        expanded={proControlsExpanded}
-        style={{ marginBottom: '2px', boxShadow: 'unset' }}
-        onChange={() => {
-          setProControlsExpanded((value) => !value);
-        }}
-      >
-        <AccordionSummary expandIcon={<ExpandMore />}>
-          <Pro />
-        </AccordionSummary>
-        <AccordionDetails
-          sx={{
-            margin: 0,
-            padding: 0,
-          }}
-        >
-          <ProControlButtonGroup />
-        </AccordionDetails>
-      </Accordion>
-      <Divider className={classes.divider} />
+      {devModeEnabled && (
+        <>
+          <Accordion
+            expanded={proControlsExpanded}
+            style={{ marginBottom: '2px', boxShadow: 'unset' }}
+            onChange={() => {
+              setProControlsExpanded((value) => !value);
+            }}
+          >
+            <AccordionSummary expandIcon={<ExpandMore />}>
+              <Pro />
+            </AccordionSummary>
+            <AccordionDetails
+              sx={{
+                margin: 0,
+                padding: 0,
+              }}
+            >
+              <ProControlButtonGroup />
+            </AccordionDetails>
+          </Accordion>
+          <Divider className={classes.divider} />
+        </>
+      )}
       <Box display='flex' alignItems='center' flexDirection='row' mt={0.5}>
         <Box flex='1' textAlign='right'>
           <Typography
@@ -182,6 +188,7 @@ const LargeControlButtonGroup = ({
 
 LargeControlButtonGroup.propTypes = {
   broadcast: PropTypes.bool,
+  devModeEnabled: PropTypes.bool.isRequired,
   onChangeBroadcastMode: PropTypes.func,
   t: PropTypes.func,
   uavActions: PropTypes.objectOf(PropTypes.func),
@@ -193,6 +200,7 @@ export default connect(
     allUAVIdsInMission: getUAVIdsParticipatingInMission(state),
     broadcast: areFlightCommandsBroadcast(state),
     channel: getPreferredCommunicationChannelIndex(state),
+    devModeEnabled: isDeveloperModeEnabled(state),
     selectedUAVIds: getSelectedUAVIds(state),
   }),
   // mapDispatchToProps
