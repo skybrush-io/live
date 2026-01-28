@@ -1,15 +1,20 @@
 import Clear from '@mui/icons-material/Clear';
+import ExpandMore from '@mui/icons-material/ExpandMore';
 import PositionHold from '@mui/icons-material/Flag';
 import FlightLand from '@mui/icons-material/FlightLand';
 import Home from '@mui/icons-material/Home';
 import PlayArrow from '@mui/icons-material/PlayArrow';
 import PowerSettingsNew from '@mui/icons-material/PowerSettingsNew';
+import Accordion from '@mui/material/Accordion';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import AccordionSummary from '@mui/material/AccordionSummary';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import Switch from '@mui/material/Switch';
 import Typography from '@mui/material/Typography';
 import { bindActionCreators } from '@reduxjs/toolkit';
 import PropTypes from 'prop-types';
+import { useState } from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
@@ -23,9 +28,12 @@ import {
   getUAVIdsParticipatingInMission,
 } from '~/features/mission/selectors';
 import { setCommandsAreBroadcast } from '~/features/mission/slice';
+import { isDeveloperModeEnabled } from '~/features/session/selectors';
 import { getSelectedUAVIds } from '~/features/uavs/selectors';
+import Pro from '~/icons/Pro';
 import { createUAVOperationThunks } from '~/utils/messaging';
 
+import ProControlButtonGroup from './ProControlButtonGroup';
 import StartMethodExplanation from './StartMethodExplanation';
 
 const useStyles = makeStyles((theme) => ({
@@ -46,19 +54,49 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(0.5),
     lineHeight: '1 !important',
   },
+
+  divider: {
+    borderTopWidth: '2px',
+  },
 }));
 
 const LargeControlButtonGroup = ({
   broadcast,
+  devModeEnabled,
   onChangeBroadcastMode,
   t,
   uavActions,
 }) => {
   const classes = useStyles();
+  const [proControlsExpanded, setProControlsExpanded] = useState(false);
   return (
     <>
       <StartMethodExplanation />
-      <Divider />
+      <Divider className={classes.divider} />
+      {devModeEnabled && (
+        <>
+          <Accordion
+            expanded={proControlsExpanded}
+            style={{ marginBottom: '2px', boxShadow: 'unset' }}
+            onChange={() => {
+              setProControlsExpanded((value) => !value);
+            }}
+          >
+            <AccordionSummary expandIcon={<ExpandMore />}>
+              <Pro />
+            </AccordionSummary>
+            <AccordionDetails
+              sx={{
+                margin: 0,
+                padding: 0,
+              }}
+            >
+              <ProControlButtonGroup />
+            </AccordionDetails>
+          </Accordion>
+          <Divider className={classes.divider} />
+        </>
+      )}
       <Box display='flex' alignItems='center' flexDirection='row' mt={0.5}>
         <Box flex='1' textAlign='right'>
           <Typography
@@ -150,6 +188,7 @@ const LargeControlButtonGroup = ({
 
 LargeControlButtonGroup.propTypes = {
   broadcast: PropTypes.bool,
+  devModeEnabled: PropTypes.bool.isRequired,
   onChangeBroadcastMode: PropTypes.func,
   t: PropTypes.func,
   uavActions: PropTypes.objectOf(PropTypes.func),
@@ -161,6 +200,7 @@ export default connect(
     allUAVIdsInMission: getUAVIdsParticipatingInMission(state),
     broadcast: areFlightCommandsBroadcast(state),
     channel: getPreferredCommunicationChannelIndex(state),
+    devModeEnabled: isDeveloperModeEnabled(state),
     selectedUAVIds: getSelectedUAVIds(state),
   }),
   // mapDispatchToProps

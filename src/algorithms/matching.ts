@@ -160,6 +160,5 @@ export function findAssignmentBetweenPoints<T, U = Coordinate2D>(
     targets,
     distanceCalculationOptions
   );
-  console.log(distances);
   return findAssignmentInDistanceMatrix(distances, matchingOptions);
 }

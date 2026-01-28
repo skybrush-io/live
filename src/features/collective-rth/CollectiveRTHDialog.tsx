@@ -1,0 +1,252 @@
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import DialogActions from '@mui/material/DialogActions';
+import Fade from '@mui/material/Fade';
+import Typography from '@mui/material/Typography';
+import { useTranslation } from 'react-i18next';
+import { connect } from 'react-redux';
+
+import { Status } from '@skybrush/app-theme-mui';
+import { DraggableDialog, LabeledStatusLight } from '@skybrush/mui-components';
+
+import { loadBase64EncodedShow } from '~/features/show/actions';
+import {
+  selectCollectiveRTHPlanSummary,
+  type CollectiveRTHPlanSummary,
+} from '~/features/show/selectors';
+import type { AppDispatch, RootState } from '~/store/reducers';
+
+import {
+  addCollectiveRTH,
+  saveTransformedShow,
+  type CollectiveRTHParameters,
+} from './actions';
+import CollectiveRTHParametersForm, {
+  useCollectiveRTHParametersFormState,
+} from './CollectiveRTHParametersForm';
+import {
+  isDialogOpen,
+  selectResult,
+  selectTransformationError,
+  selectTransformationInProgress,
+} from './selectors';
+import { closeDialog, type TransformationResult } from './slice';
+
+type StateProps = {
+  error?: string;
+  existingRTHPlanSummary: CollectiveRTHPlanSummary;
+  inProgress: boolean;
+  open: boolean;
+  transformationResult?: TransformationResult;
+};
+
+type DispatchProps = {
+  addCollectiveRTH: (params?: CollectiveRTHParameters) => void;
+  applyTransformedShow: (show: string) => void;
+  closeDialog: () => void;
+  saveTransformedShow: () => void;
+};
+
+type Props = DispatchProps & StateProps;
+
+const CollectiveRTHDialog = (props: Props) => {
+  const {
+    addCollectiveRTH,
+    applyTransformedShow,
+    closeDialog,
+    error,
+    existingRTHPlanSummary,
+    inProgress,
+    open,
+    saveTransformedShow,
+    transformationResult,
+  } = props;
+  const parametersFormState = useCollectiveRTHParametersFormState();
+  const { t } = useTranslation();
+  const submitDisabled = transformationResult === undefined;
+  const status: Status =
+    transformationResult !== undefined
+      ? Status.SUCCESS
+      : inProgress
+        ? Status.NEXT
+        : error !== undefined
+          ? Status.ERROR
+          : Status.INFO;
+  const statusMessage =
+    transformationResult !== undefined
+      ? t('collectiveRTHDialog.status.success')
+      : inProgress
+        ? t('collectiveRTHDialog.status.loading')
+        : error !== undefined
+          ? t('collectiveRTHDialog.status.error')
+          : '';
+
+  const parameteresForm = (
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, padding: 2 }}>
+      <CollectiveRTHParametersForm
+        disabled={inProgress}
+        {...parametersFormState}
+      />
+      <Box
+        sx={{
+          display: inProgress ? 'none' : 'flex',
+          flexDirection: 'column',
+          justifyItems: 'center',
+          alignItems: 'center',
+        }}
+      >
+        <Button
+          color='primary'
+          onClick={() => addCollectiveRTH(parametersFormState.parameters)}
+        >
+          {t('collectiveRTHDialog.action.addCollectiveRTH')}
+        </Button>
+      </Box>
+    </Box>
+  );
+
+  return (
+    <DraggableDialog
+      fullWidth
+      disableEscapeKeyDown={inProgress || transformationResult !== undefined}
+      maxWidth='sm'
+      open={open}
+      title={t('collectiveRTHDialog.title')}
+    >
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          paddingTop: 2,
+          paddingLeft: 4,
+          paddingRight: 4,
+          gap: 2,
+        }}
+      >
+        {transformationResult !== undefined && (
+          <>
+            <Typography>
+              {t('collectiveRTHDialog.summary.numPlans.message', {
+                numPlans: transformationResult.stats.length,
+              })}
+            </Typography>
+            <Typography>
+              {t('collectiveRTHDialog.summary.firstTime.message', {
+                firstTime: transformationResult.firstTime,
+              })}
+            </Typography>
+            <Typography>
+              {t('collectiveRTHDialog.summary.lastTime.message', {
+                lastTime: transformationResult.lastTime,
+              })}
+            </Typography>
+          </>
+        )}
+        {transformationResult === undefined &&
+          !inProgress &&
+          error === undefined && (
+            <>
+              <Typography>{t('collectiveRTHDialog.description')}</Typography>
+              <Typography>
+                {existingRTHPlanSummary.isValid
+                  ? t('collectiveRTHDialog.existingValidRTHPlan', {
+                      numPlans: Object.keys(existingRTHPlanSummary.plans)
+                        .length,
+                    })
+                  : t('collectiveRTHDialog.existingInvalidRTHPlan')}
+              </Typography>
+            </>
+          )}
+        {parameteresForm}
+      </Box>
+      <DialogActions>
+        <Fade
+          in={
+            inProgress ||
+            transformationResult !== undefined ||
+            error !== undefined
+          }
+        >
+          <Box sx={(theme) => ({ flex: 1, paddingLeft: theme.spacing(1) })}>
+            <LabeledStatusLight
+              color='textSecondary'
+              status={status}
+              size='small'
+            >
+              {statusMessage}
+            </LabeledStatusLight>
+          </Box>
+        </Fade>
+        <Button disabled={inProgress} onClick={() => closeDialog()}>
+          {t('general.action.close')}
+        </Button>
+        <Button
+          color='primary'
+          disabled={submitDisabled}
+          onClick={() => {
+            saveTransformedShow();
+          }}
+        >
+          {t('general.action.save')}
+        </Button>
+        <Button
+          color='primary'
+          disabled={submitDisabled}
+          onClick={() => {
+            const show = transformationResult?.show;
+            if (show === undefined) {
+              console.warn(
+                "Tried to apply transformed show, but it's undefined."
+              );
+              return;
+            }
+
+            applyTransformedShow(show);
+            closeDialog();
+          }}
+        >
+          {t('general.action.approve')}
+        </Button>
+      </DialogActions>
+    </DraggableDialog>
+  );
+};
+
+/**
+ * Wrapper that only renders the dialog when it is open.
+ *
+ * The reason for this is to correctly initialize the dialog's state
+ * when it is opened.
+ */
+const CollectiveRTHDialogWrapper = (props: Props) => {
+  const { open, ...rest } = props;
+  return open ? <CollectiveRTHDialog open {...rest} /> : null;
+};
+
+const ConnectedCollectiveRTHDialog = connect(
+  // -- map state to props
+  (state: RootState) => ({
+    error: selectTransformationError(state),
+    inProgress: selectTransformationInProgress(state),
+    open: isDialogOpen(state),
+    existingRTHPlanSummary: selectCollectiveRTHPlanSummary(state),
+    transformationResult: selectResult(state),
+  }),
+  // -- map dispatch to props
+  (dispatch: AppDispatch) => ({
+    addCollectiveRTH: (params?: CollectiveRTHParameters): void => {
+      dispatch(addCollectiveRTH(params));
+    },
+    applyTransformedShow: (show: string): void => {
+      dispatch(loadBase64EncodedShow(show));
+    },
+    closeDialog: (): void => {
+      dispatch(closeDialog());
+    },
+    saveTransformedShow: (): void => {
+      dispatch(saveTransformedShow());
+    },
+  })
+)(CollectiveRTHDialogWrapper);
+
+export default ConnectedCollectiveRTHDialog;

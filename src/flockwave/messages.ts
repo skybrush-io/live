@@ -1537,7 +1537,7 @@ export default class MessageHub {
    */
   async startAsyncOperation(
     body: MessageBody,
-    responseHandlerOptions: TimeoutOptions & BoundProgressHandlerOptions
+    responseHandlerOptions: TimeoutOptions & BoundProgressHandlerOptions = {}
   ) {
     const { type: expectedType } = body;
     if (!expectedType) {

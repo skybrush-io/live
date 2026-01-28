@@ -85,6 +85,86 @@
     "disable": "Disable broadcast",
     "enable": "Enable broadcast for {{time}} seconds"
   },
+  "collectiveRTHDialog": {
+    "action": {
+      "addCollectiveRTH": "Calculate RTH plans"
+    },
+    "description": "Precalculate collective RTH plans at multiple timestamps in the show. In case of emergency collective RTH brings drones home as quickly as possible without collisions.",
+    "existingInvalidRTHPlan": "The show has no valid collective RTH plans.",
+    "existingValidRTHPlan": "The show has valid collective RTH plans at {{numPlans}} timestamps.",
+    "parameters": {
+      "form": {
+        "horizontalVelocity": {
+          "help": "during collective RTH",
+          "label": "Horizontal velocity"
+        },
+        "minDistance": {
+          "help": "between drones during RTH",
+          "label": "Minimum distance"
+        },
+        "timeResolution": {
+          "help": "between consecutive RTH plans.",
+          "label": "Time resolution"
+        },
+        "verticalVelocity": {
+          "help": "during collective RTH",
+          "label": "Vertical velocity"
+        }
+      },
+      "section": {
+        "parameters": "Parameters"
+      }
+    },
+    "status": {
+      "error": "RTH plan calculation failed. Please try again.",
+      "loading": "Calculating RTH plans. It may take some time.",
+      "success": "RTH plans successfully calculated."
+    },
+    "summary": {
+      "firstTime": {
+        "message": "Earliest RTH time: {{firstTime}}s"
+      },
+      "lastTime": {
+        "message": "Last RTH time: {{lastTime}}s"
+      },
+      "numPlans": {
+        "message": "Plan successfully calculated at {{numPlans}} timestamps"
+      }
+    },
+    "title": "Plan collective RTH"
+  },
+  "collectiveRTHPanel": {
+    "error": {
+      "invalidPlan": "The collective RTH plan is invalid.",
+      "missingPlan": "The show has no collective RTH plans.",
+      "partialPlan": "{{withoutPlans}} drones do not have RTH plans."
+    },
+    "message": {
+      "noDrones": "There are no drones in the loaded show.",
+      "noShowFile": "No show file loaded"
+    },
+    "rthPlanDetails": {
+      "column": {
+        "duration": "Duration",
+        "end": "End",
+        "endShow": "End (Show)",
+        "start": "Start",
+        "startShow": "Start (Show)"
+      },
+      "info": {
+        "rth": {
+          "numPlans": "Number of plans:",
+          "title": "Collective RTH"
+        },
+        "showSegment": {
+          "duration": "Duration:",
+          "end": "End:",
+          "start": "Start:",
+          "title": "Show segment"
+        }
+      }
+    }
+  },
   "coordinateAveragingDialogToolbar": {
     "addNewDrone": "Add new drone",
     "copyCentroid": "Copy centroid",
@@ -373,6 +453,10 @@
     "manualPreflightCheckItems": "Manual preflight check items",
     "preflightCheckItems": "Preflight check items"
   },
+  "proControlButtonGroup": {
+    "resume": "Resume",
+    "suspend": "Suspend"
+  },
   "recalculateMappingButton": {
     "findOptimalMapping": "Find optimal mapping",
     "recalculateMapping": "Recalculate mapping"
@@ -593,6 +677,10 @@
         "origin": "A show origin must be included or set manually",
         "segments": "The show must be annotated with segment markers",
         "server": "Connection must be established to the server"
+      },
+      "tooltip": {
+        "invalidRTHPlan": "The show has no valid collective RTH plans.",
+        "validRTHPlan": "The show has {{numPlans}} valid collective RTH plans."
       }
     },
     "startMethod": {
@@ -818,6 +906,7 @@
   },
   "view": {
     "beacon-list": "Beacons",
+    "collective-rth": "Collective RTH",
     "dock-list": "Docks",
     "feature-list": "Features",
     "field-notes": "Field notes",

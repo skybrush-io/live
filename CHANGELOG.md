@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Support for keeping the original light configuration when adapting the show in
   the show adaptation dialog.
+- Added a new dialog for planning collective RTH trajectories.
+- Added a pro control group to the Control panel with show suspend and resume actions.
 
 ## [2.12.1] - 2025-12-15
 
