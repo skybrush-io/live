@@ -90,10 +90,8 @@
       "addCollectiveRTH": "Calculate RTH plans"
     },
     "description": "Precalculate collective RTH plans at multiple timestamps in the show. In case of emergency collective RTH brings drones home as quickly as possible without collisions.",
-    "error": "An error occurred while calculating RTH plans. Please try again.",
     "existingInvalidRTHPlan": "The show has no valid collective RTH plans.",
     "existingValidRTHPlan": "The show has valid collective RTH plans at {{numPlans}} timestamps.",
-    "loading": "RTH plans are being calculated, please wait. It may take some time.",
     "parameters": {
       "form": {
         "horizontalVelocity": {
@@ -116,6 +114,11 @@
       "section": {
         "parameters": "Parameters"
       }
+    },
+    "status": {
+      "error": "RTH plan calculation failed. Please try again.",
+      "loading": "Calculating RTH plans. It may take some time.",
+      "success": "RTH plans successfully calculated."
     },
     "summary": {
       "firstTime": {

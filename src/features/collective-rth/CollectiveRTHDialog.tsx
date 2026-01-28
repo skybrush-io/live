@@ -1,12 +1,13 @@
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import DialogActions from '@mui/material/DialogActions';
-import LinearProgress from '@mui/material/LinearProgress';
+import Fade from '@mui/material/Fade';
 import Typography from '@mui/material/Typography';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import { DraggableDialog } from '@skybrush/mui-components';
+import { Status } from '@skybrush/app-theme-mui';
+import { DraggableDialog, LabeledStatusLight } from '@skybrush/mui-components';
 
 import { loadBase64EncodedShow } from '~/features/show/actions';
 import {
@@ -63,6 +64,22 @@ const CollectiveRTHDialog = (props: Props) => {
   const parametersFormState = useCollectiveRTHParametersFormState();
   const { t } = useTranslation();
   const submitDisabled = transformationResult === undefined;
+  const status: Status =
+    transformationResult !== undefined
+      ? Status.SUCCESS
+      : inProgress
+        ? Status.NEXT
+        : error !== undefined
+          ? Status.ERROR
+          : Status.INFO;
+  const statusMessage =
+    transformationResult !== undefined
+      ? t('collectiveRTHDialog.status.success')
+      : inProgress
+        ? t('collectiveRTHDialog.status.loading')
+        : error !== undefined
+          ? t('collectiveRTHDialog.status.error')
+          : '';
 
   const parameteresForm = (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, padding: 2 }}>
@@ -106,20 +123,6 @@ const CollectiveRTHDialog = (props: Props) => {
           gap: 2,
         }}
       >
-        {error !== undefined && (
-          <>
-            <Typography color='error'>
-              {t('collectiveRTHDialog.error')}
-            </Typography>
-            <Typography color='error'>{error}</Typography>
-          </>
-        )}
-        {inProgress && (
-          <>
-            <Typography>{t('collectiveRTHDialog.loading')}</Typography>
-            <LinearProgress />
-          </>
-        )}
         {transformationResult !== undefined && (
           <>
             <Typography>
@@ -157,7 +160,23 @@ const CollectiveRTHDialog = (props: Props) => {
         {parameteresForm}
       </Box>
       <DialogActions>
-        <Box sx={{ flex: 1 }} />
+        <Fade
+          in={
+            inProgress ||
+            transformationResult !== undefined ||
+            error !== undefined
+          }
+        >
+          <Box sx={(theme) => ({ flex: 1, paddingLeft: theme.spacing(1) })}>
+            <LabeledStatusLight
+              color='textSecondary'
+              status={status}
+              size='small'
+            >
+              {statusMessage}
+            </LabeledStatusLight>
+          </Box>
+        </Fade>
         <Button disabled={inProgress} onClick={() => closeDialog()}>
           {t('general.action.close')}
         </Button>
