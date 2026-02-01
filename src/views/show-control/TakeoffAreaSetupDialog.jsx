@@ -1,23 +1,25 @@
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Switch from '@material-ui/core/Switch';
-import SelectAll from '@material-ui/icons/SelectAll';
-import VerticalAlignBottom from '@material-ui/icons/VerticalAlignBottom';
+import SelectAll from '@mui/icons-material/SelectAll';
+import VerticalAlignBottom from '@mui/icons-material/VerticalAlignBottom';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import DialogContent from '@mui/material/DialogContent';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Switch from '@mui/material/Switch';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { Translation, withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
+import {
+  DraggableDialog,
+  SmallProgressIndicator,
+} from '@skybrush/mui-components';
 
 import DronePlaceholderList from '~/components/uavs/DronePlaceholderList';
 import { addVirtualDronesForMission } from '~/features/mission/actions';
 import {
   getEmptyMappingSlotIndices,
   hasNonemptyMappingSlot,
+  isMappingBeingCalculated,
 } from '~/features/mission/selectors';
 import { supportsVirtualDrones } from '~/features/servers/selectors';
 import { approveTakeoffArea } from '~/features/show/actions';
@@ -234,9 +236,10 @@ const TakeoffAreaSetupDialogIndicators = connect(
  * all drones are properly placed in their takeoff positions.
  */
 const TakeoffAreaSetupDialog = ({
-  approved,
+  approved = false,
+  calculating,
   hasVirtualDrones,
-  open,
+  open = false,
   onAddVirtualDrones,
   onApprove,
   onClose,
@@ -263,11 +266,31 @@ const TakeoffAreaSetupDialog = ({
     >
       <DialogContent>
         <TakeoffAreaSetupDialogIndicators />
-        <Box py={2} display='flex' flexDirection='row' justifyContent='center'>
+        <Box
+          sx={{
+            pt: 2,
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'center',
+          }}
+        >
           <RecalculateMappingButton />
           <AugmentMappingButton />
         </Box>
-        <Box className='bottom-bar' textAlign='center' pt={2}>
+        <Box
+          sx={{
+            pb: 1,
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'center',
+          }}
+        >
+          <SmallProgressIndicator
+            label={t('mappingEditorToolbar.calculatingMapping')}
+            visible={calculating}
+          />
+        </Box>
+        <Box className='bottom-bar' sx={{ textAlign: 'center', pt: 2 }}>
           <FormControlLabel
             control={
               <Switch
@@ -280,13 +303,13 @@ const TakeoffAreaSetupDialog = ({
           />
         </Box>
       </DialogContent>
-      <DialogActions />
     </DraggableDialog>
   );
 };
 
 TakeoffAreaSetupDialog.propTypes = {
   approved: PropTypes.bool,
+  calculating: PropTypes.bool,
   hasVirtualDrones: PropTypes.bool,
   onAddVirtualDrones: PropTypes.func,
   onApprove: PropTypes.func,
@@ -294,11 +317,6 @@ TakeoffAreaSetupDialog.propTypes = {
   onRevoke: PropTypes.func,
   open: PropTypes.bool,
   t: PropTypes.func,
-};
-
-TakeoffAreaSetupDialog.defaultProps = {
-  approved: false,
-  open: false,
 };
 
 // TODO(ntamas): most selectors should return a combination of show and
@@ -309,6 +327,7 @@ export default connect(
   (state) => ({
     ...state.show.takeoffAreaSetupDialog,
     approved: isTakeoffAreaApproved(state),
+    calculating: isMappingBeingCalculated(state),
     hasVirtualDrones: supportsVirtualDrones(state),
   }),
 

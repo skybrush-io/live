@@ -5,6 +5,7 @@
   },
   "DrawingToolbar": {
     "addMarker": "Markierung hinzufügen",
+    "addWaypoint": "Wegpunkt hinzufügen",
     "cutHole": "Loch in Polygon schneiden",
     "drawCircle": "Kreis zeichnen",
     "drawPath": "Pfad zeichnen",

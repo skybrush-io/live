@@ -1,72 +1,80 @@
-import React from 'react';
+import Clear from '@mui/icons-material/Clear';
+import NavigateBack from '@mui/icons-material/NavigateBefore';
+import Alert from '@mui/material/Alert';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Checkbox from '@mui/material/Checkbox';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import Fade from '@mui/material/Fade';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import IconButton from '@mui/material/IconButton';
+import type { Theme } from '@mui/material/styles';
+import type React from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import Checkbox from '@material-ui/core/Checkbox';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import Fade from '@material-ui/core/Fade';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import IconButton from '@material-ui/core/IconButton';
-import { makeStyles } from '@material-ui/core/styles';
-import Clear from '@material-ui/icons/Clear';
-import NavigateBack from '@material-ui/icons/NavigateBefore';
-
-import LabeledStatusLight, {
+import { Colors, makeStyles } from '@skybrush/app-theme-mui';
+import {
+  LabeledStatusLight,
   type LabeledStatusLightProps,
-} from '@skybrush/mui-components/lib/LabeledStatusLight';
+} from '@skybrush/mui-components';
 
 import { Status } from '~/components/semantics';
 import {
+  getEstimatedCompletionTime,
   getLastUploadResultByJobType,
   getUploadDialogState,
   hasHiddenTargets,
   hasQueuedItems,
   isUploadInProgress,
-  shouldRetryFailedUploadsAutomatically,
   shouldFlashLightsOfFailedUploads,
+  shouldRetryFailedUploadsAutomatically,
 } from '~/features/upload/selectors';
 import {
   cancelUpload,
   closeUploadDialog,
   dismissLastUploadResult,
-  setUploadAutoRetry,
   setFlashFailed,
+  setUploadAutoRetry,
 } from '~/features/upload/slice';
 import StartUploadButton from '~/features/upload/StartUploadButton';
 import UploadProgressBar from '~/features/upload/UploadProgressBar';
 import UploadStatusLegend from '~/features/upload/UploadStatusLegend';
 import UploadStatusLights from '~/features/upload/UploadStatusLights';
+import { usePeriodicRefresh } from '~/hooks';
 import type { AppThunk, RootState } from '~/store/reducers';
-import { Colors } from '@skybrush/app-theme-material-ui';
-import { Typography } from '@material-ui/core';
+import { formatDurationAsText } from '~/utils/formatting';
 
 type UploadResultIndicatorProps = Omit<LabeledStatusLightProps, 'children'> &
   Readonly<{
+    completionTime?: number;
     result?: 'success' | 'error' | 'cancelled';
     running?: boolean;
   }>;
 
 /**
- * Helper componeht that shows an alert summarizing the result of the last
+ * Helper component that shows an alert summarizing the result of the last
  * upload attempt.
  */
 const UploadResultIndicator = ({
+  completionTime,
   result,
   running,
   ...rest
-}: UploadResultIndicatorProps): JSX.Element => {
+}: UploadResultIndicatorProps): React.JSX.Element => {
   const { t } = useTranslation();
 
   let status;
   let message;
 
-  if (running) {
-    status = Status.NEXT;
-    message = t('uploadPanel.uploadInProgress');
-  }
+  const now = Date.now();
+  const timeRemaining = completionTime
+    ? completionTime > now
+      ? (completionTime - now) / 1000
+      : undefined
+    : undefined;
+  usePeriodicRefresh(timeRemaining ? 500 : null);
 
   switch (result) {
     case 'success':
@@ -90,14 +98,30 @@ const UploadResultIndicator = ({
       break;
   }
 
+  if (running) {
+    status = Status.NEXT;
+    if (typeof timeRemaining === 'number' && timeRemaining > 0) {
+      message = t('uploadPanel.uploadInProgressWithEstimate', {
+        time: formatDurationAsText(timeRemaining, t),
+      });
+    } else {
+      message = t('uploadPanel.uploadInProgress');
+    }
+  }
+
   return (
-    <LabeledStatusLight status={status} size='small' {...rest}>
+    <LabeledStatusLight
+      color='textSecondary'
+      status={status}
+      size='small'
+      {...rest}
+    >
       {message}
     </LabeledStatusLight>
   );
 };
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   actions: {
     padding: theme.spacing(1, 3, 1, 3),
   },
@@ -112,6 +136,7 @@ const useStyles = makeStyles((theme) => ({
 
 type UploadPanelProps = Readonly<{
   autoRetry: boolean;
+  completionTime?: number;
   flashFailed: boolean;
   hasHiddenTargets: boolean;
   hasQueuedItems: boolean;
@@ -133,6 +158,7 @@ type UploadPanelProps = Readonly<{
  */
 const UploadPanel = ({
   autoRetry,
+  completionTime,
   flashFailed,
   hasHiddenTargets,
   hasQueuedItems,
@@ -145,7 +171,7 @@ const UploadPanel = ({
   onToggleFlashFailed,
   running = false,
   showLastUploadResult = false,
-}: UploadPanelProps): JSX.Element => {
+}: UploadPanelProps): React.JSX.Element => {
   const classes = useStyles();
   const { t } = useTranslation();
 
@@ -154,10 +180,10 @@ const UploadPanel = ({
       <DialogContent>
         <UploadStatusLights />
         <UploadStatusLegend />
-        <Box mt={1}>
+        <Box sx={{ mt: 1 }}>
           <UploadProgressBar />
         </Box>
-        <Box mt={1}>
+        <Box sx={{ mt: 1 }}>
           <FormControlLabel
             control={
               <Checkbox checked={autoRetry} onChange={onToggleAutoRetry} />
@@ -171,13 +197,11 @@ const UploadPanel = ({
             label={t('uploadPanel.flashLightsWhereFailed')}
           />
         </Box>
-        <Box mt={1}>
-          {hasHiddenTargets && (
-            <Typography className={classes.warningText}>
-              {t('uploadPanel.hasHiddenTargets')}
-            </Typography>
-          )}
-        </Box>
+        {hasHiddenTargets && (
+          <Alert severity='warning' variant='filled'>
+            <Box>{t('uploadPanel.hasHiddenTargets')}</Box>
+          </Alert>
+        )}
       </DialogContent>
       <DialogActions className={classes.actions}>
         {onStepBack && (
@@ -185,12 +209,13 @@ const UploadPanel = ({
             <NavigateBack />
           </IconButton>
         )}
-        <Fade in={lastUploadResult && showLastUploadResult}>
+        <Fade in={(lastUploadResult && showLastUploadResult) || running}>
           <Box
             className={classes.uploadResultIndicator}
             onClick={onDismissLastUploadResult}
           >
             <UploadResultIndicator
+              completionTime={completionTime}
               result={lastUploadResult}
               running={running}
             />
@@ -225,6 +250,7 @@ export default connect(
   ) => ({
     ...getUploadDialogState(state),
     autoRetry: shouldRetryFailedUploadsAutomatically(state),
+    completionTime: getEstimatedCompletionTime(state),
     flashFailed: shouldFlashLightsOfFailedUploads(state),
     hasHiddenTargets: hasHiddenTargets(state),
     hasQueuedItems: hasQueuedItems(state),

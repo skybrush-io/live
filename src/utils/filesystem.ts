@@ -27,7 +27,10 @@ export const readBlobFromFile = async ({
 }: ReadOptions = {}): Promise<Blob> =>
   new Blob(
     [
-      (await window?.bridge?.readBufferFromFile({ maxSize, dialogOptions })) ??
+      ((await window?.bridge?.readBufferFromFile({
+        maxSize,
+        dialogOptions,
+      })) as any) ??
         // TODO: Pass the relevant subset of options, e.g. filters -> accept,
         //       multiSelections -> multiple, openDirectory -> webkitdirectory
         (await readFileAsArrayBuffer(await getFileFromUser()))!,

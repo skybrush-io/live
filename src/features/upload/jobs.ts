@@ -1,3 +1,4 @@
+import type { ProgressStatus } from '~/flockwave/messages';
 import type { RootState } from '~/store/reducers';
 
 import type { JobPayload } from './types';
@@ -14,11 +15,16 @@ export type JobSpecification<T> = {
   title?: string;
   scope?: JobScope;
   selector?: (state: RootState, uavId: string) => T;
-  executor: (params: {
-    uavId: string;
-    payload: JobPayload;
-    data: T;
-  }) => Promise<void>;
+  executor: (
+    params: {
+      uavId: string;
+      payload: JobPayload;
+      data: T;
+    },
+    options: {
+      onProgress: (id: string, status: ProgressStatus) => void;
+    }
+  ) => Promise<void>;
 };
 
 /**

@@ -22,9 +22,17 @@ module.exports = merge(baseConfig, {
     app: './src/index',
   },
 
+  resolve: {
+    alias: {
+      // These are needed for WorkerUrlPlugin to work correctly, but only in the
+      // browser context
+      child_process: false,
+      worker_threads: false,
+    },
+  },
+
   output: {
-    publicPath: '_/',
-    path: path.resolve(outputDir, '_'),
+    path: outputDir,
   },
 
   plugins: [
@@ -32,7 +40,7 @@ module.exports = merge(baseConfig, {
     // 1.1.0
     new webpack.ProvidePlugin({
       Buffer: ['buffer', 'Buffer'],
-      process: 'process/browser',
+      process: require.resolve('process/browser'),
     }),
 
     // Create index.html on-the-fly

@@ -1,4 +1,7 @@
 {
+  "APIKeysTab": {
+    "description": "Alcuni provider di tiles di mappa funzionano senza chiave API; In questo caso, una chiave API default é usata. Questa chiave API é condivisa tra utenti. Noi non garantiamo la disponibilità della tiles di mappa se usi la chiave API condivisa di default."
+  },
   "ConnectionStatusMiniList": {
     "noConnections": "Questo server non utilizza connessioni.",
     "useSecondaryChannel": "Usa canale secondario"
@@ -24,6 +27,9 @@
     "noRTKData": "Nessuna fonte di dati RTK nel server",
     "pleaseWait": "Prego attendi, caricando fonti RTK…"
   },
+  "RTKMessage": {
+    "noRTKMessagesYet": "Nessun messaggio RTK ancora ricevuto"
+  },
   "RTKStatusMiniList": {
     "satelliteCount": "Numero dei satelliti",
     "surveyInProgress": "Survey in corso…",
@@ -44,6 +50,9 @@
     "removeItemsMarkedGone": "Rimuovi gli elementi marcati come scomparsi",
     "removeSelectedItems": "Rimuovi elementi selezionati"
   },
+  "UAVSelector": {
+    "noMatchingUAVs": "Nessun UAVS corrispondente per : \"{{filter}}\""
+  },
   "UAVStatus": {
     "noConnected": "Non ci sono UAVs collegati in questo momento"
   },
@@ -56,11 +65,21 @@
     "clickToChange": "Fare click per passare a {{altitudeType}}.",
     "showingCurrent": "Mostrando massima e minima {{altitudeType}}."
   },
+  "antennaPositionIndicator": {
+    "antennaPositionNotKnown": "Posizione dell'antenna sconosciuta",
+    "clickToToggle": "Clicca per decidere tra lon/lat e formato ECEF",
+    "copyToClipboard": "Copia in appunti"
+  },
   "augmentMappingButton": {
     "assignSparesToEmptySlots": "Assegna ricambi a slots vuoti"
   },
   "authentication": "Autenticazione",
   "batteryStatusHeaderButton": "Mostra i livelli di carica medi e minimi.",
+  "bearingCalculator": {
+    "addAtLeastTwoItems": "Aggiungi almeno due elementi per calcolare l'orientamento e la distanza tra di loro",
+    "bearing": ", orientamento:           . ",
+    "selectTwoItems": "Seleziona esattamente due elementi per calcolare l'orientamento e la distanza tra di loro"
+  },
   "broadcastButton": {
     "disable": "Disabilita broadcast",
     "enable": "Abilita broadcast per {{time}} secondi"
@@ -83,6 +102,7 @@
     "exportNotesAsFile": "Esporta note come Markdown file"
   },
   "filtering": {
+    "composite": "Composito",
     "filter": "Filtra",
     "filterBy": "Filtra per",
     "label": {
@@ -119,6 +139,7 @@
       "import": "Importa",
       "open": "Apri",
       "remove": "Rimuovi",
+      "reset": "Riavvia",
       "retry": "Riprova",
       "save": "Salva",
       "select": "Seleziona",
@@ -158,6 +179,15 @@
       "no": "Nessun geofence definito"
     }
   },
+  "geofenceAction": {
+    "keepCurrent": "Mantieni l'azione corrente",
+    "report": "Riporta solamente",
+    "shutDown": "Spegni",
+    "smartLand": "Atterra evitando collisioni",
+    "smartReturn": "Ritorna a casa senza evitare le collisioni",
+    "stop": "Fermo e mantieni",
+    "unknown": "Azione sconosciuta: {{action}}"
+  },
   "header": {
     "distanceSummary": "Massima e minima distanza dalla posizione di casa",
     "velocitySummary": "Massima velocità orizzontale e verticale"
@@ -167,10 +197,33 @@
     "coordinatesOfTheCorners": "Coordinate degli angoli della stanza",
     "roomVisibleIn3D": "Stanza visibile nella visione 3D"
   },
+  "largeControlButtonGroup": {
+    "RTH": "RTH",
+    "RTHAll": "RTH tutti",
+    "arm": "Arma",
+    "armAll": "Arma tutti",
+    "broadcast": "Invia a tutti",
+    "disarm": "Disarma",
+    "disarmAll": "Disarma tutti",
+    "hold": "Mantieni",
+    "holdAll": "Mantieni tutti",
+    "land": "Atterra",
+    "landAll": "Atterra tutti",
+    "selectionOnly": "Solo i selezionati",
+    "shutdown": "Spegni",
+    "shutdownAll": "Spegni tutti"
+  },
   "lightControl": {
+    "connectToAServer": "Connettiti ad un server per controllare le luci",
     "fromGCS": "Controllo luci dalla GCS",
     "notConnected": "Non connesso al server",
-    "notFromGCS": "Luci non controllate dalla GCS"
+    "notFromGCS": "Luci non controllate dalla GCS",
+    "restoreDefault": "Clicca per ripristinare il programma default di luci",
+    "takeControl": "Clicca per prendere il controllo"
+  },
+  "lightControlGrid": {
+    "allOff": "Tutti spenti",
+    "allOn": "Tutti accesi"
   },
   "map": {
     "resetRotation": "Ripristina rotazione"
@@ -186,22 +239,95 @@
     "useCachedMapTiles": "Usa lo strato della mappa cached dal server"
   },
   "mapContextMenu": {
+    "clearExclusionZone": "Elimina le zone di esclusione",
     "clearGeofence": "Pulisci geofence",
     "details": "Dettagli…",
     "flyHere": "Vola qui",
     "flyHereAtAltitude": "Vola qui all'altitudine…",
     "properties": "Proprietà…",
     "setMapOriginHere": "Imposta origine mappa qui",
-    "setShowOriginHere": "Imposta origine show qui"
+    "setShowOriginHere": "Imposta origine show qui",
+    "subtractPolygon": "Sottratti {{subtrahend}} da {{minuend}}",
+    "unnamedPolygon": "Poligono non nominato",
+    "useAsExclusionZone": "Usa come zona di esclusione",
+    "useAsGeofence": "Usa come geofence"
+  },
+  "mappingButtonGroup": {
+    "editMapping": "Modifica mappatura",
+    "hideEmptyMissionSlots": "Nascondi gli slots di missione vuoti",
+    "showEmptyMissionSlots": "Mostra gli slots di missione vuoti"
+  },
+  "mappingEditorToolbar": {
+    "assignSpares": "Assegna ricambi",
+    "clearMissing": "Elimina mancanti",
+    "clickToEdit": "Clicca per editare i singoli slot.",
+    "dragNodes": "Trascina i nodi per riordinare la mappatura.",
+    "exportMapping": "Esportando mappatura…",
+    "importMapping": "Importando mappatura…"
+  },
+  "mappingSlotEditorToolbar": {
+    "reverseDirection": "Tieni premuto <kbd>Shift</kbd> per invertire la direzione.",
+    "selectNextEmptySlot": "Seleziona il prossima slot vuoto"
   },
   "mappingToggleButton": {
     "sortByMissionID": "Ordina per IDs missione"
+  },
+  "measurementList": {
+    "addDrone": "Aggiungi un drone per misurare con il pulsante + nella barra degli strumenti",
+    "copyToClipboard": "Copia negli appunti",
+    "duration": "Durata",
+    "noSamplesYet": "Nessun samples ancora",
+    "samples": "samples",
+    "waitingForSamples": "Aspettando per i samples…"
+  },
+  "mission": {
+    "planner": {
+      "schema": {
+        "error": "Error durante il caricamento dei parametri schema della missione dal server",
+        "loading": "Recuperando i parametri di missione…",
+        "notFound": "Il server connesso non provvede uno schema per il tipo di missione selezionata"
+      }
+    }
+  },
+  "navigationButtonGroup": {
+    "fly": "Vola",
+    "resetZoom": "Resetta zoom",
+    "rotateCamera": "Ruota la camera verso i droni",
+    "walk": "Cammina"
+  },
+  "navigationInstructions": {
+    "altitude": "Altitudine",
+    "arrows": "Freccie",
+    "flyForwardBackward": "Vola avanti / indietro",
+    "lookAround": "Guarda intorno",
+    "moveSideways": "Muoviti di lato",
+    "noInstruction": "Nessuna istruzione per questo tipo di modalità di navigazione",
+    "run": "Corri",
+    "walkAround": "Cammina intorno"
   },
   "notifications": {
     "connectedToSkybrushServer": "Connesso a Skybrush server"
   },
   "outdoorEnvironmentEditor": {
-    "coordinateSystem": "Sistema di coordinate"
+    "AHL": "Altitudine sopra il livello di casa (AHL)",
+    "AMSL": "Altitudine sopra il livello del mare (AMSL)",
+    "AMSLReference": "Rifermento AMSL",
+    "altitudeControl": "Controllo altitudine e correzioni RTK",
+    "coordinateSystem": "Sistema di coordinate",
+    "copyMapOriginToShow": "Copia l'origine della mappa all'origine dello show",
+    "copyShowOriginToMap": "Copia l'origine dello show all'origine della mappa",
+    "fitCoordinateSysToCurrentDrone": "Posiziona le coordinate del sistema nella coordinate della posizione dei droni",
+    "setToAverageAMSL": "Imposta la media AMSL dei droni attivi",
+    "showCoordinateSystemAppliedToMap": "Coordinate dello show applicate alla mappa.",
+    "showCoordinateSystemUpdatedFromMap": "Coordinate dello show caricate dalla mappa.",
+    "showIsControlledBasedOn": "Lo show é controllato basato su…",
+    "showOrientation": "Orientamento show",
+    "showOrigin": "Origine show",
+    "warningText": "L'origine automatica dello show e il calcolo dell'orientamento assumono che tutti i droni puntino verso l'asse X dello show <underline>o</underline> che tu hai specificato i loro offset basato sull'asse X con le impostazioni di sopra.L'orientamento assoluto di takeoff non é supportato."
+  },
+  "parameterListSidebar": {
+    "import": "Importa…",
+    "nextStep": "Prossimo passo"
   },
   "preferences": "Preferenze",
   "safetyDialog": {

@@ -2,18 +2,17 @@
  * @file Dialog that shows the editor for a saved location.
  */
 
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
 import PropTypes from 'prop-types';
 import React, { useCallback, useRef } from 'react';
-import { Translation, withTranslation } from 'react-i18next';
 import { Form } from 'react-final-form';
+import { Translation, withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-
-import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
+import { DraggableDialog } from '@skybrush/mui-components';
 
 import {
   HeadingField,
@@ -46,56 +45,66 @@ const SavedLocationEditorFormPresentation = React.forwardRef(
             return (
               <form
                 id='SavedLocationEditor'
-                style={{ marginTop: 8, marginBottom: 0 }}
+                style={{
+                  // TODO(vp): use mui styling utilities and theme. Grid would simplify the DOM.
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 8,
+                  marginTop: 8,
+                  marginBottom: 0,
+                }}
                 onSubmit={handleSubmit}
               >
                 <TextField
                   autoFocus={!optimizeUIForTouch}
                   fullWidth
-                  margin='dense'
+                  size='small'
                   name='name'
                   label={t('savedLocationEditor.name')}
                   fieldProps={{ validate: required }}
                 />
-                <Box display='flex' flexDirection='row'>
+                <Box sx={{ display: 'flex', flexDirection: 'row', gap: 1 }}>
                   <LatitudeField
                     fullWidth
-                    margin='dense'
+                    size='small'
                     name='center.lat'
                     label={t('general.geography.latitude')}
                   />
-                  <Box p={0.75} />
                   <LongitudeField
                     fullWidth
-                    margin='dense'
+                    size='small'
                     name='center.lon'
                     label={t('general.geography.longitude')}
                   />
                 </Box>
-                <Box display='flex' flexDirection='row'>
+                <Box sx={{ display: 'flex', flexDirection: 'row', gap: 1 }}>
                   <HeadingField
                     fullWidth
-                    margin='dense'
+                    size='small'
                     name='rotation'
                     label={t('general.geometry.rotation')}
                   />
-                  <Box p={0.75} />
                   <TextField
                     fullWidth
                     type='number'
-                    margin='dense'
+                    size='small'
                     name='zoom'
                     label={t('savedLocationEditor.zoomLevel')}
                     fieldProps={{
                       validate: join([required, integer, between(1, 30)]),
                     }}
-                    inputProps={{ min: 1, max: 30 }}
+                    slotProps={{
+                      htmlInput: {
+                        min: 1,
+                        max: 30,
+                      },
+                    }}
                   />
                 </Box>
                 <TextField
                   fullWidth
                   multiline
-                  margin='dense'
+                  size='small'
                   name='notes'
                   label={t('savedLocationEditor.notes')}
                   minRows={3}

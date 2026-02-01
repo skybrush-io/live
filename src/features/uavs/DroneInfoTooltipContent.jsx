@@ -1,84 +1,78 @@
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { connect } from 'react-redux';
 
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@skybrush/app-theme-mui';
+import { StatusPill } from '@skybrush/mui-components';
 
 import { BatteryFormatter } from '~/components/battery';
 import BatteryIndicator from '~/components/BatteryIndicator';
-import StatusPill from '~/components/StatusPill';
 import { getBatteryFormatter } from '~/features/settings/selectors';
-import {
-  abbreviateFlightMode,
-  abbreviateGPSFixType,
-  getSemanticsForGPSFixType,
-} from '~/model/enums';
+import { UAVAge } from '~/model/uav';
 import { formatCoordinateArray, formatNumberSafely } from '~/utils/formatting';
+import FlightModeStatusPill from '~/views/uavs/FlightModeStatusPill';
+import GPSStatusPill from '~/views/uavs/GPSStatusPill';
 
 import { createSingleUAVStatusSummarySelector, getUAVById } from './selectors';
 
 const localCoordinateFormatter = formatCoordinateArray;
 
-const useStyles = makeStyles(
-  (theme) => ({
-    row: {
-      display: 'flex',
-      flexDirction: 'row',
-      flexWrap: 'no-wrap',
-      alignItems: 'baseline',
-      margin: theme.spacing(0, -0.5, 0.5, 0),
+const useStyles = makeStyles((theme) => ({
+  row: {
+    display: 'flex',
+    flexDirction: 'row',
+    flexWrap: 'no-wrap',
+    alignItems: 'baseline',
+    margin: theme.spacing(0, -0.5, 0.5, 0),
 
-      '& .muted': {
-        color: theme.palette.text.disabled,
-      },
+    '& .muted': {
+      color: theme.palette.text.disabled,
     },
-    uavIdCell: {
-      display: 'inline-block',
-      fontWeight: 'bold',
-      overflow: 'hidden',
-    },
-    pill: {
-      margin: theme.spacing(0, 0.5, 0, 0),
-      verticalAlign: 'text-top',
-    },
-    statusPill: {
-      minWidth: 88 + theme.spacing(0.5),
-      flex: 1,
-    },
-    modePill: {
-      minWidth: 48,
-      flex: 1,
-    },
-    gpsPill: {
-      minWidth: 40,
-      flex: 1,
-    },
-    batteryIndicator: {
-      display: 'inline-block',
-      flex: 1,
-      fontFamily: theme.typography.fontFamily,
-      minWidth: 48,
-      textAlign: 'left',
-      padding: theme.spacing(0, 0.75),
-      whiteSpace: 'noWrap',
-    },
-    altitudeLabel: {
-      flex: 1,
-      textAlign: 'center',
-      whiteSpace: 'noWrap',
-      margin: theme.spacing(0, 1, 0, 0),
-    },
-    numSatellitesLabel: {
-      flex: 1,
-      textAlign: 'center',
-      whiteSpace: 'noWrap',
-    },
-  }),
-  { name: 'DroneInfoTooltipContent' }
-);
+  },
+  uavIdCell: {
+    display: 'inline-block',
+    fontWeight: 'bold',
+    overflow: 'hidden',
+  },
+  pill: {
+    margin: theme.spacing(0, 0.5, 0, 0),
+    verticalAlign: 'text-top',
+  },
+  statusPill: {
+    minWidth: 88 + Number.parseInt(theme.spacing(0.5), 10),
+    flex: 1,
+  },
+  modePill: {
+    minWidth: 48,
+    flex: 1,
+  },
+  gpsPill: {
+    minWidth: 40,
+    flex: 1,
+    outline: 'none !important',
+  },
+  batteryIndicator: {
+    display: 'inline-block',
+    flex: 1,
+    fontFamily: theme.typography.fontFamily,
+    minWidth: 48,
+    textAlign: 'left',
+    padding: theme.spacing(0, 0.75),
+    whiteSpace: 'noWrap',
+  },
+  altitudeLabel: {
+    flex: 1,
+    textAlign: 'center',
+    whiteSpace: 'noWrap',
+    margin: theme.spacing(0, 1, 0, 0),
+  },
+  numSatellitesLabel: {
+    flex: 1,
+    textAlign: 'center',
+    whiteSpace: 'noWrap',
+  },
+}));
 
-const dash = '—';
 const naText = <span className='muted'>—</span>;
 
 /**
@@ -86,6 +80,7 @@ const naText = <span className='muted'>—</span>;
  * drone, displaying the most important details about the status of the drone.
  */
 const DroneInfoTooltipContent = ({
+  age,
   batteryFormatter,
   batteryStatus,
   details,
@@ -113,6 +108,7 @@ const DroneInfoTooltipContent = ({
       <div className={classes.row}>
         <StatusPill
           inline
+          hollow={age === UAVAge.GONE}
           className={clsx(classes.pill, classes.statusPill)}
           status={textSemantics}
         >
@@ -120,21 +116,14 @@ const DroneInfoTooltipContent = ({
         </StatusPill>
       </div>
       <div className={classes.row}>
-        <StatusPill
-          inline
+        <FlightModeStatusPill
+          mode={mode}
           className={clsx(classes.pill, classes.modePill)}
-          status='off'
-        >
-          {mode ? abbreviateFlightMode(mode) : '----'}
-        </StatusPill>
-        <StatusPill
-          inline
-          hollow
+        />
+        <GPSStatusPill
           className={clsx(classes.pill, classes.gpsPill)}
-          status={getSemanticsForGPSFixType(gpsFixType)}
-        >
-          {gpsFixType ? abbreviateGPSFixType(gpsFixType) : dash}
-        </StatusPill>
+          fixType={gpsFixType}
+        />
       </div>
       <div className={classes.row}>
         {hasLocalPosition ? (
@@ -157,6 +146,7 @@ const DroneInfoTooltipContent = ({
 };
 
 DroneInfoTooltipContent.propTypes = {
+  age: PropTypes.oneOf(Object.values(UAVAge)),
   batteryFormatter: PropTypes.instanceOf(BatteryFormatter),
   batteryStatus: PropTypes.shape({
     cellCount: PropTypes.number,

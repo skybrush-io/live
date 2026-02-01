@@ -14,7 +14,6 @@ import serversSaga from '~/features/servers/saga';
 import showSaga from '~/features/show/saga';
 import sessionSaga from '~/features/session/saga';
 import threeDViewSaga from '~/features/three-d/saga';
-import tourSaga from '~/features/tour/saga';
 import uavManagementSaga from '~/features/uavs/saga';
 import uploadSaga from '~/features/upload/saga';
 import weatherSaga from '~/features/weather/saga';
@@ -50,10 +49,6 @@ export default function* rootSaga() {
 
   if (hasTimeLimitedSession) {
     sagas.push(sessionSaga(config.session));
-  }
-
-  if (config.tour) {
-    sagas.push(tourSaga());
   }
 
   yield all(sagas);

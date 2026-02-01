@@ -34,6 +34,7 @@ import {
 } from '~/utils/geography';
 import { toRadians } from '~/utils/math';
 import { createAsyncAction } from '~/utils/redux';
+import workers from '~/workers';
 
 import { JOB_TYPE } from './constants';
 import { StartMethod } from './enums';
@@ -282,11 +283,17 @@ const createShowLoaderThunkFactory = (
 export const loadShowFromFile = createShowLoaderThunkFactory(
   async (file) => {
     const url = file && file.path ? `file://${file.path}` : undefined;
-    const { showSpec, zip } = await processFile(file);
-    const base64Blob = await zip.generateAsync({ type: 'base64' });
+    const { spec, blob } = await workers.loadShow(file, {
+      returnBlob: true,
+    });
+
+    // Base64-encode the blob so we can store it in the Redux store without
+    // the serializable middleware yelling at us
+    const base64Blob = blob ? Base64.fromUint8Array(blob) : undefined;
+
     // Pre-freeze the show data shallowly to give a hint to Redux Toolkit that
     // the show content won't change
-    return { spec: freeze(showSpec), url, base64Blob };
+    return { spec: Object.freeze(spec), url, base64Blob };
   },
   {
     errorMessage: 'Failed to load show from the given file.',
@@ -295,10 +302,16 @@ export const loadShowFromFile = createShowLoaderThunkFactory(
 
 export const loadBase64EncodedShow = createShowLoaderThunkFactory(
   async (base64Blob) => {
-    const { showSpec } = await processFile(Base64.toUint8Array(base64Blob));
+    // TODO(ntamas): The input is an Uint8Array; it would be more efficient to
+    // use a transferable to send it to the web worker instead of copying it.
+    // This will require modifications in workers.loadShow() in the future so
+    // it wraps Uint8Array inputs in a transferable
+    const { spec } = await workers.loadShow(Base64.toUint8Array(base64Blob), {
+      returnBlob: false,
+    });
     // Pre-freeze the show data shallowly to give a hint to Redux Toolkit that
     // the show content won't change
-    return { spec: freeze(showSpec), base64Blob };
+    return { spec: Object.freeze(spec), base64Blob };
   },
   {
     errorMessage: 'Failed to load show from the given base64-encoded data.',
@@ -370,7 +383,7 @@ function processShowInJSONFormatAndDispatchActions(spec, dispatch) {
  */
 export function reloadCurrentShowFile() {
   return async (dispatch, getState) => {
-    const { getFileAsBlob } = window.bridge;
+    const { getFileAsBlob } = globalThis.bridge;
 
     if (!getFileAsBlob) {
       console.warn('reloadCurrentShowFile() works only in Electron');
@@ -441,6 +454,9 @@ export const setOutdoorShowAltitudeReferenceValue =
 export const setOutdoorShowAltitudeReferenceToAverageAMSL =
   () => (dispatch, getState) => {
     const state = getState();
+
+    // This will include drones that are sleeping, but that's okay.
+    // See discussion in https://github.com/skybrush-io/live/issues/80
     const activeUAVIds = getActiveUAVIds(state);
     const altitudes = [];
 

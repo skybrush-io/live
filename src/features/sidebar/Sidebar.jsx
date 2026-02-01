@@ -1,25 +1,23 @@
 /* global VERSION */
 
-import Box from '@material-ui/core/Box';
-import Typography from '@material-ui/core/Typography';
-import Alarm from '@material-ui/icons/Alarm';
-// import Apps from '@material-ui/icons/Apps';
-import Assignment from '@material-ui/icons/Assignment';
-import Flight from '@material-ui/icons/Flight';
-import Gamepad from '@material-ui/icons/Gamepad';
-import Grain from '@material-ui/icons/Grain';
-import Layers from '@material-ui/icons/Layers';
-import Map from '@material-ui/icons/Map';
-import Place from '@material-ui/icons/Place';
-import FormatListBulleted from '@material-ui/icons/FormatListBulleted';
-// import Storage from '@material-ui/icons/Storage';
-import ThreeDRotation from '@material-ui/icons/ThreeDRotation';
-import WbSunny from '@material-ui/icons/WbSunny';
-
+import Alarm from '@mui/icons-material/Alarm';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+// import Apps from '@mui/icons-material/Apps';
+import Assignment from '@mui/icons-material/Assignment';
+import Flight from '@mui/icons-material/Flight';
+import FormatListBulleted from '@mui/icons-material/FormatListBulleted';
+import Gamepad from '@mui/icons-material/Gamepad';
+import Grain from '@mui/icons-material/Grain';
+import Layers from '@mui/icons-material/Layers';
+import Map from '@mui/icons-material/Map';
+import Place from '@mui/icons-material/Place';
+// import Storage from '@mui/icons-material/Storage';
+import ThreeDRotation from '@mui/icons-material/ThreeDRotation';
+import WbSunny from '@mui/icons-material/WbSunny';
 import PropTypes from 'prop-types';
-import React from 'react';
-import { withTranslation } from 'react-i18next';
 import { Module, ModuleTray, Workbench } from 'react-flexible-workbench';
+import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import LogStatusBadge from '~/components/badges/LogStatusBadge';
@@ -193,9 +191,8 @@ const Sidebar = ({
     </div>
     {isOpen && (
       <Box
-        py={0.5}
-        px={1}
         style={{ color: '#fff', opacity: 0.3, width: SIDEBAR_OPEN_WIDTH }}
+        sx={{ py: 0.5, px: 1 }}
       >
         {missionType && (
           <Typography align='center' variant='caption' component='footer'>

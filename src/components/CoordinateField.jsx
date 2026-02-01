@@ -1,8 +1,8 @@
+import Clear from '@mui/icons-material/Clear';
+import IconButton from '@mui/material/IconButton';
+import InputAdornment from '@mui/material/InputAdornment';
+import TextField from '@mui/material/TextField';
 import isEqual from 'lodash-es/isEqual';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import IconButton from '@material-ui/core/IconButton';
-import TextField from '@material-ui/core/TextField';
-import Clear from '@material-ui/icons/Clear';
 import PropTypes from 'prop-types';
 import React from 'react';
 
@@ -48,6 +48,7 @@ export default class CoordinateField extends React.Component {
         <IconButton
           aria-label='Clear field'
           edge='end'
+          size='large'
           tabIndex={-1}
           onClick={this._onClearField}
           onMouseDown={this._onMouseDownOnButton}
@@ -60,7 +61,7 @@ export default class CoordinateField extends React.Component {
       <TextField
         value={shownText}
         error={Boolean(error)}
-        InputProps={{ endAdornment }}
+        slotProps={{ input: { endAdornment } }}
         onBlur={this._onBlur}
         onChange={this._onChange}
         onKeyDown={this._onKeyDown}

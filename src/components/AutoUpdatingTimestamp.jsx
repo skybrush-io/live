@@ -9,8 +9,8 @@ import { useHarmonicIntervalFn, useUpdate } from 'react-use';
  */
 const AutoUpdatingTimestamp = ({
   clockSkew,
-  component,
-  format,
+  component = 'span',
+  format = 'yyyy-MM-dd HH:mm:ss',
   updateInterval,
   ...rest
 }) => {
@@ -29,11 +29,6 @@ AutoUpdatingTimestamp.propTypes = {
   clockSkew: PropTypes.number,
   format: PropTypes.string,
   updateInterval: PropTypes.number,
-};
-
-AutoUpdatingTimestamp.defaultProps = {
-  component: 'span',
-  format: 'yyyy-MM-dd HH:mm:ss',
 };
 
 export default AutoUpdatingTimestamp;

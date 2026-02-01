@@ -1,66 +1,63 @@
-/* eslint-disable @typescript-eslint/naming-convention */
+import type { Theme } from '@mui/material/styles';
 import clsx from 'clsx';
-import React, { useCallback } from 'react';
+import type React from 'react';
+import { useCallback } from 'react';
 import { useDrag, useDrop, type ConnectableElement } from 'react-dnd';
 
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@skybrush/app-theme-mui';
 
 import Colors from '~/components/colors';
 
-import { uavIdToDOMNodeId } from './utils';
 import { GRID_ITEM_WIDTH } from './constants';
+import { uavIdToDOMNodeId } from './utils';
 
-const useStyles = makeStyles(
-  (theme) => ({
-    root: {
-      alignItems: 'center',
-      cursor: 'pointer',
-      display: 'flex',
-      flexDirection: 'column',
-      minWidth: GRID_ITEM_WIDTH,
-      position: 'relative',
+const useStyles = makeStyles((theme: Theme) => ({
+  root: {
+    alignItems: 'center',
+    cursor: 'pointer',
+    display: 'flex',
+    flexDirection: 'column',
+    minWidth: GRID_ITEM_WIDTH,
+    padding: theme.spacing(0.25, 0.5),
+    position: 'relative',
 
-      scrollMarginTop:
-        '3em' /* to account for the hovering header in the list view */,
+    scrollMarginTop:
+      '3em' /* to account for the hovering header in the list view */,
 
-      // Transitions disabled because it makes hard to follow which item is
-      // selected when the user is holding down a keyboard navigation key
-      // continuously.
-      // transition: theme.transitions.create(['background-color', 'box-shadow']),
+    // Transitions disabled because it makes hard to follow which item is
+    // selected when the user is holding down a keyboard navigation key
+    // continuously.
+    // transition: theme.transitions.create(['background-color', 'box-shadow']),
+  },
+
+  draggable: {
+    '&:hover': {
+      boxShadow: theme.shadows[4],
     },
+  },
 
-    draggable: {
-      '&:hover': {
-        boxShadow: theme.shadows[4],
-      },
+  selectable: {
+    '&:hover': {
+      backgroundColor: theme.palette.action.hover,
     },
+  },
 
-    selectable: {
-      '&:hover': {
-        backgroundColor: theme.palette.action.hover,
-      },
-    },
-
-    selected: {
+  selected: {
+    backgroundColor: theme.palette.action.selected,
+    '&:hover': {
       backgroundColor: theme.palette.action.selected,
-      '&:hover': {
-        backgroundColor: theme.palette.action.selected,
-      },
     },
+  },
 
-    fill: {
-      flexGrow: 1,
-      padding: theme.spacing(2, 0),
-    },
+  fill: {
+    flexGrow: 1,
+    padding: theme.spacing(2, 0),
+  },
 
-    stretch: {
-      alignItems: ['stretch', '!important'] as any as string,
-    },
-  }),
-  {
-    name: 'DroneListItem',
-  }
-);
+  stretch: {
+    alignItems: 'stretch !important',
+  },
+}));
 
 const hideItem = { style: { opacity: 0 } };
 const addDropIndicator = {
@@ -84,7 +81,7 @@ const DragDropArea = ({
   id,
   onDrop,
   ...rest
-}: DragDropAreaProps): JSX.Element => {
+}: DragDropAreaProps): React.JSX.Element => {
   const [collectedDragProps, drag] = useDrag({
     item: { id },
     type: 'uav',
@@ -147,7 +144,7 @@ const DroneListItem = ({
   selected,
   stretch,
   uavId,
-}: DroneListItemProps): JSX.Element => {
+}: DroneListItemProps): React.JSX.Element => {
   const classes = useStyles();
   const mergedClassNames = clsx(
     classes.root,
@@ -158,7 +155,6 @@ const DroneListItem = ({
     fill && classes.fill,
     stretch && classes.stretch
   );
-  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
   return draggable || onDrop ? (
     <DragDropArea
       className={mergedClassNames}

@@ -1,3 +1,4 @@
+import Box from '@mui/material/Box';
 import identity from 'lodash-es/identity';
 import isNil from 'lodash-es/isNil';
 import PropTypes from 'prop-types';
@@ -5,10 +6,8 @@ import React, { useMemo } from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import Box from '@material-ui/core/Box';
-import { makeStyles } from '@material-ui/core/styles';
-
-import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
+import { makeStyles } from '@skybrush/app-theme-mui';
+import { BackgroundHint } from '@skybrush/mui-components';
 
 import { formatItemInterval } from '~/utils/formatting';
 

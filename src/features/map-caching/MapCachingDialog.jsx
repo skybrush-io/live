@@ -1,12 +1,14 @@
+import { DialogContent } from '@mui/material';
 import PropTypes from 'prop-types';
-import React from 'react';
-import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
+import { connect } from 'react-redux';
 
-import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
+import { DraggableDialog } from '@skybrush/mui-components';
 
 import MapCachingPanel from './MapCachingPanel';
 import { closeMapCachingDialog } from './slice';
+
+const noPaddingStyle = { padding: 0 };
 
 /**
  * Presentation component for the dialog that allows the user to adjust the
@@ -20,7 +22,9 @@ const MapCachingDialog = ({ onClose, open, t }) => (
     title={t('mapCachingDialog.offlineMaps')}
     onClose={onClose}
   >
-    <MapCachingPanel onClose={onClose} />
+    <DialogContent sx={noPaddingStyle}>
+      <MapCachingPanel onClose={onClose} />
+    </DialogContent>
   </DraggableDialog>
 );
 

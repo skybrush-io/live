@@ -111,7 +111,7 @@ export const getDisplayedSatelliteCNRValues = createSelector(
  * Returns the IDs of the satellites for which we currently have a CNR value.
  */
 export const getSatelliteIds = createSelector(
-  (state) => state.rtk.stats.satellites,
+  (state: RootState) => state.rtk.stats.satellites,
   (satelliteInfos) => Object.keys(satelliteInfos || {})
 );
 
@@ -127,7 +127,7 @@ export const getNumberOfSatellites = (state: RootState): number =>
  * above 40.
  */
 export const getNumberOfGoodSatellites = createSelector(
-  (state) => state.rtk.stats.satellites,
+  (state: RootState) => state.rtk.stats.satellites,
   (satelliteInfos) => {
     let result = 0;
 

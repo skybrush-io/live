@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
-import React from 'react';
 import { connect } from 'react-redux';
-import { makeStyles } from '@material-ui/core/styles';
+
+import { makeStyles } from '@skybrush/app-theme-mui';
 
 import { getPreferredCommunicationChannelIndex } from '~/features/mission/selectors';
 

@@ -11,6 +11,9 @@ const { THREE } = AFrame;
 
 export const rotateViewToDrones = () => (dispatch, getState) => {
   const state = getState();
+
+  // This will include drones that are sleeping, but that's okay.
+  // See discussion in https://github.com/skybrush-io/live/issues/80
   const activeUAVIds = getActiveUAVIds(state);
   if (activeUAVIds.length === 0) {
     dispatch(showError('No active UAVs to focus the view on.'));

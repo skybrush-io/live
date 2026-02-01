@@ -1,23 +1,9 @@
 import config from 'config';
 
+import Box from '@mui/material/Box';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { connect } from 'react-redux';
 import Shapeshifter from 'react-shapeshifter';
-
-import Box from '@material-ui/core/Box';
-
-import AlertButton from './AlertButton';
-import AppSettingsButton from './AppSettingsButton';
-import AuthenticationButton from './AuthenticationButton';
-import BroadcastButton from './BroadcastButton';
-import ConnectionStatusButton from './ConnectionStatusButton';
-import FullScreenButton from './FullScreenButton';
-import HelpButton from './HelpButton';
-import SafetyButton from './SafetyButton';
-import ServerConnectionSettingsButton from './ServerConnectionSettingsButton';
-import SessionExpiryBox from './SessionExpiryBox';
-import ToolboxButton from './ToolboxButton';
 
 import UAVStatusSummary from '~/components/uavs/UAVStatusSummary';
 import PerspectiveBar from '~/features/perspectives/PerspectiveBar';
@@ -32,6 +18,18 @@ import VelocitySummaryHeaderButton from '~/features/uavs/VelocitySummaryHeaderBu
 import WeatherHeaderButton from '~/features/weather/WeatherHeaderButton';
 import { shouldSidebarBeShown } from '~/features/workbench/selectors';
 import { hasFeature } from '~/utils/configuration';
+
+import AlertButton from './AlertButton';
+import AppSettingsButton from './AppSettingsButton';
+import AuthenticationButton from './AuthenticationButton';
+import BroadcastButton from './BroadcastButton';
+import ConnectionStatusButton from './ConnectionStatusButton';
+import FullScreenButton from './FullScreenButton';
+import HelpButton from './HelpButton';
+import SafetyButton from './SafetyButton';
+import ServerConnectionSettingsButton from './ServerConnectionSettingsButton';
+import SessionExpiryBox from './SessionExpiryBox';
+import ToolboxButton from './ToolboxButton';
 
 const style = {
   backgroundColor: '#333',
@@ -91,7 +89,7 @@ const Header = ({ isSidebarOpen, showSidebar, toggleSidebar }) => (
       )}
 
       <PerspectiveBar />
-      <Box pr={0.5} />
+      <Box sx={{ pr: 0.5 }} />
 
       {config.headerComponents
         .flatMap((group) => [

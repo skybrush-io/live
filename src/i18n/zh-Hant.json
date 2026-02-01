@@ -1,0 +1,8 @@
+{
+  "APIKeysTab": {
+    "description": "某些地圖圖塊提供者無需 API 金鑰即可使用；在這種情況下，系統會使用預設 API 金鑰。此 API 金鑰由所有使用者共用。如果您使用預設共用 API 金鑰，我們不保證地圖圖塊的可用性。"
+  },
+  "ConnectionStatusMiniList": {
+    "noConnections": "該伺服器不使用任何連接。"
+  }
+}

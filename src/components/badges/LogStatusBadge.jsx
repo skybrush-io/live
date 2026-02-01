@@ -5,9 +5,9 @@
 
 import { connect } from 'react-redux';
 
-import SidebarBadge from '@skybrush/mui-components/lib/SidebarBadge';
+import { SidebarBadge } from '@skybrush/mui-components';
 
-import { colorForLogLevel, LogLevel } from '../../utils/logging';
+import { colorForLogLevel, LogLevel } from '~/utils/logging';
 
 /**
  * Smart badge component that colors and shows itself according to the

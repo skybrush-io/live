@@ -20,7 +20,7 @@ const plugins = [
   // 1.1.0
   new webpack.ProvidePlugin({
     Buffer: ['buffer', 'Buffer'],
-    process: 'process/browser',
+    process: require.resolve('process/browser'),
   }),
 
   // Create index.html on-the-fly
@@ -42,6 +42,14 @@ if (useHotModuleReloading) {
 module.exports = merge(baseConfig, {
   entry: {
     app: './src/index',
+  },
+  resolve: {
+    alias: {
+      // These are needed for WorkerUrlPlugin to work correctly, but only in the
+      // browser context
+      child_process: false,
+      worker_threads: false,
+    },
   },
   optimization,
   plugins,

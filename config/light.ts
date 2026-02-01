@@ -44,9 +44,6 @@ const overrides: ConfigOverrides = {
     isSecure: true,
   },
 
-  // No startup tour
-  tour: null,
-
   // No help component
   urls: {
     help: null,

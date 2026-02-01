@@ -1,3 +1,12 @@
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import FormGroup from '@mui/material/FormGroup';
+import MenuItem from '@mui/material/MenuItem';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV2';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import {
   add,
   endOfDay,
@@ -11,30 +20,14 @@ import {
 } from 'date-fns';
 import type { FormApi } from 'final-form';
 import type { TFunction } from 'i18next';
-import {
-  Checkboxes,
-  KeyboardDatePicker,
-  KeyboardTimePicker,
-  Select,
-} from 'mui-rff';
-import React, { useMemo } from 'react';
+import { Checkboxes, DatePicker, Select, TimePicker } from 'mui-rff';
+import type React from 'react';
+import { useMemo } from 'react';
 import { Form, type FormProps } from 'react-final-form';
-import { useTranslation, withTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import DateFnsUtils from '@date-io/date-fns';
-
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import FormGroup from '@material-ui/core/FormGroup';
-import MenuItem from '@material-ui/core/MenuItem';
-import AccessTime from '@material-ui/icons/AccessTime';
-import { MuiPickersUtilsProvider } from '@material-ui/pickers';
-
-import Header from '@skybrush/mui-components/lib/FormHeader';
+import { FormHeader as Header } from '@skybrush/mui-components';
 
 import { HMSDurationField } from '~/components/forms/fields';
 import { CommonClockId } from '~/features/clocks/types';
@@ -152,12 +145,12 @@ type StartTimeFormPresentationProps = Readonly<{
  * Form in the start time management dialog that keeps track of the changes
  * made by the user before the changes are submitted.
  */
-const StartTimeFormPresentation = ({
+const StartTimeForm = ({
   alwaysAllowSubmission,
   initialValues,
   onClose,
   onSubmit,
-}: StartTimeFormPresentationProps): JSX.Element => {
+}: StartTimeFormPresentationProps): React.JSX.Element => {
   const { t } = useTranslation();
   const validateForm = useMemo(() => makeFormValidator(t), [t]);
 
@@ -168,23 +161,22 @@ const StartTimeFormPresentation = ({
       onSubmit={onSubmit}
     >
       {({ dirty, form, handleSubmit, invalid, values }) => (
-        <form id='start-time-form' onSubmit={handleSubmit}>
-          <DialogContent>
+        <form id='start-time-form' onSubmit={(e) => void handleSubmit(e)}>
+          <DialogContent sx={{ paddingBottom: 0, paddingTop: 2 }}>
             <StartTimeDisplay />
 
-            <Box mt={2}>
+            <Box sx={{ mt: 2 }}>
               <Header>{t('startTimeDialog.setTheStartTime')}</Header>
             </Box>
 
-            <FormGroup row>
-              <Box mr={1} minWidth={180}>
+            <FormGroup row sx={{ gap: 1 }}>
+              <Box sx={{ alignContent: 'center', minWidth: '160px' }}>
                 <Select
                   labelId='reference-clock-label'
                   name='clock'
                   label={t('startTimeDialog.reference')}
                   formControlProps={{
                     fullWidth: true,
-                    margin: 'dense',
                     variant: 'filled',
                   }}
                 >
@@ -200,43 +192,40 @@ const StartTimeFormPresentation = ({
                 </Select>
               </Box>
 
-              {values.clock === LocalClockId.ABSOLUTE ? (
+              {values?.clock === LocalClockId.ABSOLUTE ? (
                 <>
                   {/* we use separate pickers for the date and the time; this is
                    * because in most cases the date should default to the current
                    * day, but the time needs to be adjusted by the user */}
 
-                  <Box flex={1} mr={1}>
-                    <KeyboardDatePicker
+                  <Box
+                    sx={{ alignContent: 'center', minWidth: '160px', flex: 1 }}
+                  >
+                    <DatePicker
                       disablePast
                       format='yyyy-MM-dd'
-                      fullWidth={false}
-                      inputVariant='filled'
                       label={t('startTimeDialog.startDate')}
-                      margin='dense'
                       name='utcDate'
-                      variant='dialog'
+                      textFieldProps={{ variant: 'filled' }}
                     />
                   </Box>
-                  <Box flex={1}>
-                    <KeyboardTimePicker
+                  <Box
+                    sx={{ alignContent: 'center', minWidth: '160px', flex: 1 }}
+                  >
+                    <TimePicker
                       ampm={false}
                       format='HH:mm:ss'
-                      fullWidth={false}
-                      inputVariant='filled'
-                      keyboardIcon={<AccessTime />}
                       label={t('startTimeDialog.startTime')}
-                      margin='dense'
                       name='utcTime'
-                      variant='dialog'
+                      textFieldProps={{ variant: 'filled' }}
                     />
                   </Box>
                 </>
               ) : (
-                <Box flex={1}>
+                <Box sx={{ alignContent: 'center', flex: 1 }}>
                   <HMSDurationField
                     label={t('startTimeDialog.startTimeHms')}
-                    margin='dense'
+                    size='small'
                     name='timeOnClock'
                     variant='filled'
                   />
@@ -244,8 +233,8 @@ const StartTimeFormPresentation = ({
               )}
             </FormGroup>
 
-            {(values.clock === LocalClockId.ABSOLUTE ||
-              values.clock === LocalClockId.RELATIVE) && (
+            {(values?.clock === LocalClockId.ABSOLUTE ||
+              values?.clock === LocalClockId.RELATIVE) && (
               <StartTimeSuggestionsBox
                 label={t('startTimeDialog.suggestions')}
                 onChange={(suggestion) => {
@@ -254,7 +243,7 @@ const StartTimeFormPresentation = ({
               />
             )}
 
-            <Box mt={2}>
+            <Box sx={{ mt: 2 }}>
               <Header>
                 {invalid ? 'invalid' : t('startTimeDialog.additionalSettings')}
               </Header>
@@ -312,8 +301,6 @@ const StartTimeFormPresentation = ({
   );
 };
 
-const StartTimeForm = withTranslation()(StartTimeFormPresentation);
-
 type StartTimeDialogProps = Readonly<{
   authorizeWhenSettingStartTime?: boolean;
   clock?: string;
@@ -338,7 +325,7 @@ const StartTimeDialog = ({
   onUpdateSettings,
   timeOnClock,
   utcTime,
-}: StartTimeDialogProps): JSX.Element => {
+}: StartTimeDialogProps): React.JSX.Element => {
   const hasUtcStartTime = typeof utcTime === 'number';
   const hasStartTimeOnClock = typeof timeOnClock === 'number';
   const startDateTimeInUtc = hasUtcStartTime
@@ -350,7 +337,7 @@ const StartTimeDialog = ({
     : LocalClockId.ABSOLUTE;
 
   return (
-    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+    <LocalizationProvider dateAdapter={AdapterDateFns}>
       <Dialog fullWidth open={open} maxWidth='sm' onClose={onClose}>
         <StartTimeForm
           alwaysAllowSubmission={!hasUtcStartTime}
@@ -368,7 +355,7 @@ const StartTimeDialog = ({
           onSubmit={onUpdateSettings}
         />
       </Dialog>
-    </MuiPickersUtilsProvider>
+    </LocalizationProvider>
   );
 };
 

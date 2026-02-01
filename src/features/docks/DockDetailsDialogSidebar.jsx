@@ -1,23 +1,19 @@
+import MeetingRoom from '@mui/icons-material/MeetingRoom';
+import NoMeetingRoom from '@mui/icons-material/NoMeetingRoom';
+import PowerSettingsNew from '@mui/icons-material/PowerSettingsNew';
+import Refresh from '@mui/icons-material/Refresh';
+import Box from '@mui/material/Box';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import IconButton from '@mui/material/IconButton';
+import Switch from '@mui/material/Switch';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { connect } from 'react-redux';
 import { useToggle } from 'react-use';
 
-import Box from '@material-ui/core/Box';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import IconButton from '@material-ui/core/IconButton';
-import Switch from '@material-ui/core/Switch';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
-
-import MeetingRoom from '@material-ui/icons/MeetingRoom';
-import NoMeetingRoom from '@material-ui/icons/NoMeetingRoom';
-import PowerSettingsNew from '@material-ui/icons/PowerSettingsNew';
-import Refresh from '@material-ui/icons/Refresh';
-
-import StatusText from '@skybrush/mui-components/lib/StatusText';
-import Tooltip from '@skybrush/mui-components/lib/Tooltip';
+import { makeStyles } from '@skybrush/app-theme-mui';
+import { StatusText, Tooltip } from '@skybrush/mui-components';
 
 import { ComplexAvatar } from '~/components/avatar';
 import Colors from '~/components/colors';
@@ -25,43 +21,38 @@ import MiniTable from '~/components/MiniTable';
 
 import { getSelectedDockIdInDockDetailsDialog } from './details';
 
-const useStyles = makeStyles(
-  (theme) => ({
-    root: {
-      padding: theme.spacing(2),
-      minWidth: 185,
-      flex: 1,
-      display: 'flex',
-      flexDirection: 'column',
-    },
+const useStyles = makeStyles((theme) => ({
+  root: {
+    padding: theme.spacing(2),
+    minWidth: 185,
+    flex: 1,
+    display: 'flex',
+    flexDirection: 'column',
+  },
 
-    avatar: {
-      display: 'flex',
-      flexDirection: 'column',
-    },
+  avatar: {
+    display: 'flex',
+    flexDirection: 'column',
+  },
 
-    summary: {
-      paddingLeft: theme.spacing(2),
-    },
+  summary: {
+    paddingLeft: theme.spacing(2),
+  },
 
-    toolbar: {
-      justifyContent: 'center',
-      padding: theme.spacing(1, 0),
+  toolbar: {
+    justifyContent: 'center',
+    padding: theme.spacing(1, 0),
+  },
+  toolbarInner: {
+    display: 'flex',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    maxWidth: 144 /* 20px for the icon, 8px for the padding around the icons, four icons per row */,
+    '& > button': {
+      padding: 8,
     },
-    toolbarInner: {
-      display: 'flex',
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-      maxWidth: 144 /* 20px for the icon, 8px for the padding around the icons, four icons per row */,
-      '& > button': {
-        padding: 8,
-      },
-    },
-  }),
-  {
-    name: 'DockDetailsDialogSidebar',
-  }
-);
+  },
+}));
 
 /**
  * Sidebar of the UAV details dialog.
@@ -71,7 +62,7 @@ const DockDetailsDialogSidebar = ({ dockId }) => {
   const classes = useStyles();
   return (
     <Box className={classes.root}>
-      <Box display='flex' flexDirection='row' alignItems='center'>
+      <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
         <Box className={classes.avatar}>
           <ComplexAvatar label='OK' status='success' />
         </Box>
@@ -125,9 +116,9 @@ const DockDetailsDialogSidebar = ({ dockId }) => {
           ['Landing pad 1', <StatusText status='next'>charging</StatusText>],
         ]}
       />
-      <Box flex={1} />
+      <Box sx={{ flex: 1 }} />
       <FormControlLabel
-        control={<Switch color='primary' />}
+        control={<Switch />}
         label='Automatic mode'
         style={{ margin: '0 !important' }}
         checked={modeIsAuto}

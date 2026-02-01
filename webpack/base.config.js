@@ -8,6 +8,7 @@ const Dotenv = require('dotenv-webpack');
 
 const { GitRevisionPlugin } = require('git-revision-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
+const WorkerUrlPlugin = require('worker-url/plugin');
 
 const {
   isDevelopment,
@@ -38,17 +39,16 @@ module.exports = {
     hot: true,
   },
 
-  // AFrame places THREE in the global context so other packages that try to
-  // import 'three' can simply use window.THREE. This is needed to avoid
-  // warnings about THREE being imported multiple times
-  externals: { three: 'THREE' },
-
   plugins: [
     // The next module is needed for golden-layout to work nicely
     new webpack.ProvidePlugin({
       ReactDOM: 'react-dom',
       React: 'react',
     }),
+
+    // Add support for retrieving worker URLs directly from the code.
+    // This is needed to use the 'workerpool' package.
+    new WorkerUrlPlugin(),
 
     // Resolve process.env in the code; the object below provides the default
     // values
@@ -163,7 +163,6 @@ module.exports = {
         /* Drop console.log() calls in production */
         terserOptions: {
           compress: {
-            // eslint-disable-next-line camelcase
             drop_console: true,
           },
           output: {
@@ -175,8 +174,6 @@ module.exports = {
             // contains fancy accented characters as keys in an object, and
             // the UTF-8 representations of these accented characters get parsed
             // as ASCII, leading to invalid JS code.
-            //
-            // eslint-disable-next-line camelcase
             ascii_only: true,
           },
         },

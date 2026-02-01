@@ -1,18 +1,14 @@
-import React from 'react';
+import Divider from '@mui/material/Divider';
 
-import Divider from '@material-ui/core/Divider';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@skybrush/app-theme-mui';
 
-const useStyles = makeStyles(
-  (theme) => ({
-    divider: {
-      alignSelf: 'stretch',
-      height: 'auto',
-      margin: theme.spacing(1, 0.5),
-    },
-  }),
-  { name: 'StyledDivider' }
-);
+const useStyles = makeStyles((theme) => ({
+  divider: {
+    alignSelf: 'stretch',
+    height: 'auto',
+    margin: theme.spacing(1, 0.5),
+  },
+}));
 
 export const ToolbarDivider = (props) => {
   const classes = useStyles();

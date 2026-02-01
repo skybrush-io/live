@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
-
 const descriptions: Record<string, string> = {
   'rtcm2/1': 'Differential GPS Corrections',
   'rtcm2/2': 'Delta Differential GPS Corrections',

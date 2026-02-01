@@ -2,19 +2,16 @@
  * @file Component that displays the status of the known docking stations.
  */
 
+import Search from '@mui/icons-material/Search';
+import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import ListItemText from '@mui/material/ListItemText';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { connect } from 'react-redux';
 
-import Box from '@material-ui/core/Box';
-import IconButton from '@material-ui/core/IconButton';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
-import Search from '@material-ui/icons/Search';
-
-import StatusLight from '@skybrush/mui-components/lib/StatusLight';
-import Tooltip from '@skybrush/mui-components/lib/Tooltip';
+import { StatusLight, Tooltip } from '@skybrush/mui-components';
 
 import { multiSelectableListOf } from '~/components/helpers/lists';
 import { setSelectedBeaconIds } from '~/features/beacons/actions';
@@ -34,6 +31,7 @@ const BeaconListPresentation = multiSelectableListOf(
       <Tooltip content='Show on map'>
         <IconButton
           edge='end'
+          size='large'
           onClick={() => scrollToMapLocation(beacon.position)}
         >
           <Search />
@@ -42,16 +40,15 @@ const BeaconListPresentation = multiSelectableListOf(
     ) : null;
 
     return (
-      <ListItem
+      <ListItemButton
         key={beacon.id}
-        button
         className={selected ? 'selected-list-item' : undefined}
         onClick={props.onItemSelected}
       >
         <StatusLight status={beacon.active ? 'success' : 'error'} />
         <ListItemText primary={getBeaconDisplayName(beacon)} />
         <ListItemSecondaryAction>{rightIconButton}</ListItemSecondaryAction>
-      </ListItem>
+      </ListItemButton>
     );
   },
   {
@@ -70,8 +67,8 @@ const BeaconList = ({
   selectedIds,
   ...rest
 }) => (
-  <Box display='flex' flexDirection='column' height='100%'>
-    <Box height='100%' overflow='auto'>
+  <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+    <Box sx={{ height: '100%', overflow: 'auto' }}>
       <BeaconListPresentation
         dense
         value={selectedIds || []}

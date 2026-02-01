@@ -60,8 +60,8 @@ export function getNewEditIndex(
     continuation === 'prev' || continuation === 'prevEmpty'
       ? -1
       : continuation === 'next' || continuation === 'nextEmpty'
-      ? 1
-      : 0;
+        ? 1
+        : 0;
   const needsEmpty =
     continuation === 'prevEmpty' || continuation === 'nextEmpty';
   let newIndex;

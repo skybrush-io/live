@@ -1,32 +1,51 @@
-import { call } from 'redux-saga/effects';
+import { call, select } from 'redux-saga/effects';
 
+import { getServerVersionValidator } from '~/features/servers/selectors';
 import messageHub from '~/message-hub';
 
 import { JOB_TYPE } from './constants';
 
+const supportsBulkUpload = getServerVersionValidator('>=2.34.1');
+
 /**
  * Handles a parameter upload session to a single drone. Returns a promise that
- * resolves when all the parameers have been uploaded. The promise is extended
+ * resolves when all the parameters have been uploaded. The promise is extended
  * with a cancellation callback for Redux-saga.
  *
  * @param uavId    the ID of the UAV to upload the parameters to
  * @param payload  the parameters to upload
  */
-function* runSingleParameterUpload({ uavId, payload }) {
+function* runSingleParameterUpload({ uavId, payload }, options) {
   const { items, meta } = payload ?? {};
 
   if (!Array.isArray(items) || items.length === 0) {
     return;
   }
 
-  for (const { name, value } of items) {
+  const useBulkUpload = yield select(supportsBulkUpload);
+
+  if (useBulkUpload) {
+    const parameters = Object.fromEntries(
+      items.map(({ name, value }) => [name, value])
+    );
+
     // No need for a timeout here; it utilizes the message hub, which has its
     // own timeout for failed command executions (although it is quite long)
-    yield call(messageHub.execute.setParameter, {
-      uavId,
-      name,
-      value,
-    });
+    yield call(
+      messageHub.execute.setParameters,
+      { uavId, parameters },
+      options
+    );
+  } else {
+    for (const { name, value } of items) {
+      // No need for a timeout here; it utilizes the message hub, which has its
+      // own timeout for failed command executions (although it is quite long)
+      yield call(messageHub.execute.setParameter, {
+        uavId,
+        name,
+        value,
+      });
+    }
   }
 
   const { shouldReboot } = meta ?? {};

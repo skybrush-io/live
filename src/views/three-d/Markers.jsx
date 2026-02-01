@@ -1,5 +1,4 @@
 import PropTypes from 'prop-types';
-import React from 'react';
 
 /**
  * Presentational component that renders a set of markers in the scene at the

@@ -8,12 +8,12 @@ import {
   getMissionMapping,
   isMappingEditable,
 } from '~/features/mission/selectors';
+import { finishMappingEditorSession } from '~/features/mission/slice';
 import { showNotification } from '~/features/snackbar/actions';
 import { setSelectedUAVIds } from '~/features/uavs/actions';
 import { getUAVById } from '~/features/uavs/selectors';
 import { scrollUAVListItemIntoView } from '~/utils/navigation';
 
-import { finishMappingEditorSession } from '../mission/slice';
 import { getPendingUAVId, isPendingUAVIdOverlayVisible } from './selectors';
 import { setPendingUAVId, startPendingUAVIdTimeout } from './slice';
 

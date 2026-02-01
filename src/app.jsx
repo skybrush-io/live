@@ -8,15 +8,13 @@ import { connect, Provider as StoreProvider } from 'react-redux';
 import { ToastProvider } from 'react-toast-notifications';
 import { PersistGate } from 'redux-persist/es/integration/react';
 
-import loadable from '@loadable/component';
-import CssBaseline from '@material-ui/core/CssBaseline';
+import { StyledEngineProvider } from '@mui/material';
+import CssBaseline from '@mui/material/CssBaseline';
 
 import CornerRibbon from './components/CornerRibbon';
 import dialogs from './components/dialogs';
 import Header from './components/header';
 import ServerConnectionManager from './components/ServerConnectionManager';
-import ShowFileWatcher from './views/show-control/ShowFileWatcher';
-
 import DetachedPanelManager from './features/detachable-panels/DetachedPanelManager';
 import DockDetailsDialog from './features/docks/DockDetailsDialog';
 import FirmwareUpdateSetupDialog from './features/firmware-update/FirmwareUpdateSetupDialog';
@@ -35,16 +33,16 @@ import SafetyDialog from './features/safety/SafetyDialog';
 import SavedLocationEditorDialog from './features/saved-locations/SavedLocationEditorDialog';
 import ShowConfiguratorDialog from './features/show-configurator/ShowConfiguratorDialog';
 import Sidebar from './features/sidebar/Sidebar';
+import { SNACKBAR_TRANSITION_DURATION } from './features/snackbar/constants';
 import ToastNotificationManager from './features/snackbar/ToastNotificationManager';
 import UAVDetailsDialog from './features/uavs/UAVDetailsDialog';
 import UploadDialog from './features/upload/UploadDialog';
 import VersionCheckDialog from './features/version-check/VersionCheckDialog';
-
-import { SNACKBAR_TRANSITION_DURATION } from './features/snackbar/constants';
 import {
   isWorkbenchLayoutFixed,
   shouldSidebarBeShown,
 } from './features/workbench/selectors';
+import ShowFileWatcher from './views/show-control/ShowFileWatcher';
 
 import { ErrorHandler } from './error-handling';
 import flock, { Flock } from './flock';
@@ -69,10 +67,6 @@ require('../assets/css/proggy-vector.css');
 require('../assets/css/kbd.css');
 require('../assets/css/screen.less');
 require('../assets/css/tooltips.less');
-
-const Tour = loadable(
-  () => import(/* webpackChunkName: 'tour' */ './features/tour/Tour')
-);
 
 const rootStyle = {
   display: 'flex',
@@ -199,8 +193,6 @@ const App = ({ onFirstRender }) => (
       >
         <ToastNotificationManager />
       </ToastProvider>
-
-      {config.tour && <Tour />}
     </>
   </PersistGate>
 );
@@ -247,11 +239,13 @@ const enhancer = (Component) =>
           onReset={clearStoreAfterConfirmation}
         >
           <StoreProvider store={store}>
-            <ThemeProvider>
-              <Flock.Provider value={flock}>
-                <Component {...this.props} />
-              </Flock.Provider>
-            </ThemeProvider>
+            <StyledEngineProvider injectFirst>
+              <ThemeProvider>
+                <Flock.Provider value={flock}>
+                  <Component {...this.props} />
+                </Flock.Provider>
+              </ThemeProvider>
+            </StyledEngineProvider>
           </StoreProvider>
         </ErrorBoundary>
       );

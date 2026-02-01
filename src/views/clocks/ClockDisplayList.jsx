@@ -2,19 +2,17 @@
  * @file Component that displays the status of Skybrush clocks.
  */
 
-import { red, green } from '@material-ui/core/colors';
-import Avatar from '@material-ui/core/Avatar';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import PlayArrow from '@material-ui/icons/PlayArrow';
-import Stop from '@material-ui/icons/Stop';
-
+import PlayArrow from '@mui/icons-material/PlayArrow';
+import Stop from '@mui/icons-material/Stop';
+import Avatar from '@mui/material/Avatar';
+import { green, red } from '@mui/material/colors';
+import ListItem from '@mui/material/ListItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
 import isNil from 'lodash-es/isNil';
 import PropTypes from 'prop-types';
-import React from 'react';
-import { useHarmonicIntervalFn, useUpdate } from 'react-use';
 import { connect } from 'react-redux';
+import { useHarmonicIntervalFn, useUpdate } from 'react-use';
 
 import { listOf } from '~/components/helpers/lists';
 import { getClocksWithUpdateIntervalsInOrder } from '~/features/clocks/selectors';
@@ -40,10 +38,10 @@ const avatars = [
  * Presentation component for showing the state of a single Skybrush clock.
  */
 const ClockDisplayListEntry = ({
-  affectedByClockSkew,
+  affectedByClockSkew = false,
   clock,
-  clockSkew,
-  format,
+  clockSkew = 0,
+  format = 'yyyy-MM-dd HH:mm:ss xx',
 }) => {
   const { running, updateInterval } = clock;
   const avatar = avatars[running ? 1 : 0];
@@ -110,12 +108,6 @@ ClockDisplayListEntry.propTypes = {
 
   /** The format to use for displaying the clock value */
   format: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
-};
-
-ClockDisplayListEntry.defaultProps = {
-  affectedByClockSkew: false,
-  clockSkew: 0,
-  format: 'yyyy-MM-dd HH:mm:ss xx',
 };
 
 /**

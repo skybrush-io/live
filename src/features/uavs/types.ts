@@ -1,4 +1,4 @@
-import { type ErrorCode } from '~/flockwave/errors';
+import type UAVErrorCode from '~/flockwave/UAVErrorCode';
 import { type GPSFix, type GPSPosition } from '~/model/geography';
 import { type UAVAge, type UAVBattery } from '~/model/uav';
 import { type VelocityNED, type VelocityXYZ } from '~/model/velocity';
@@ -37,7 +37,7 @@ export type StoredUAV = {
   age?: UAVAge;
   battery: UAVBattery;
   debugString?: string;
-  errors: ErrorCode[];
+  errors: UAVErrorCode[];
   gpsFix: GPSFix;
   heading?: number;
   id: Identifier;

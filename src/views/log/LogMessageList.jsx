@@ -1,16 +1,16 @@
+import ArrowDownward from '@mui/icons-material/ArrowDownward';
+import { Fab } from '@mui/material';
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
-import { Fab } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-import ArrowDownward from '@material-ui/icons/ArrowDownward';
+import { makeStyles } from '@skybrush/app-theme-mui';
 
 import FadeAndSlide from '~/components/transitions/FadeAndSlide';
 
 import LogMessageListItem from './LogMessageListItem';
 
-const renderLogMessage = (index, item) => <LogMessageListItem item={item} />;
+const renderLogMessage = (_index, item) => <LogMessageListItem item={item} />;
 
 const useStyles = makeStyles((theme) => ({
   scrollToBottomButton: {

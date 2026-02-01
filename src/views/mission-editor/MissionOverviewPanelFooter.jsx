@@ -1,17 +1,16 @@
+import ArrowDown from '@mui/icons-material/ArrowDropDown';
+import ArrowUp from '@mui/icons-material/ArrowDropUp';
+import DeleteIcon from '@mui/icons-material/Delete';
+import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
+import Paper from '@mui/material/Paper';
+import Toolbar from '@mui/material/Toolbar';
 import isEmpty from 'lodash-es/isEmpty';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
-import Box from '@material-ui/core/Box';
-import IconButton from '@material-ui/core/IconButton';
-import Paper from '@material-ui/core/Paper';
-import Toolbar from '@material-ui/core/Toolbar';
-import { makeStyles } from '@material-ui/core/styles';
-
-import ArrowDown from '@material-ui/icons/ArrowDropDown';
-import ArrowUp from '@material-ui/icons/ArrowDropUp';
-import DeleteIcon from '@material-ui/icons/Delete';
+import { makeStyles } from '@skybrush/app-theme-mui';
 
 import ToolbarDivider from '~/components/ToolbarDivider';
 import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
@@ -33,17 +32,12 @@ import {
   titleForMissionItemType,
 } from '~/model/missions';
 
-const useStyles = makeStyles(
-  (theme) => ({
-    root: {
-      background: theme.palette.action.hover,
-      padding: theme.spacing(0, 1),
-    },
-  }),
-  {
-    name: 'MissionOverviewPanelFooter',
-  }
-);
+const useStyles = makeStyles((theme) => ({
+  root: {
+    background: theme.palette.action.hover,
+    padding: theme.spacing(0, 1),
+  },
+}));
 
 const availableMissionItemTypes = [
   MissionItemType.TAKEOFF,
@@ -84,7 +78,7 @@ const MissionOverviewPanelFooter = ({
           </Tooltip>
         ))}
 
-        <Box flex={1} />
+        <Box sx={{ flex: 1 }} />
 
         <ToolbarDivider orientation='vertical' />
         <Tooltip content='Move selected mission items up' placement='top'>

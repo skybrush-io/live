@@ -2,17 +2,16 @@
  * @file Component that displays the status of the known docking stations.
  */
 
-import Box from '@material-ui/core/Box';
-import IconButton from '@material-ui/core/IconButton';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
-import Search from '@material-ui/icons/Search';
-import Tooltip from '@skybrush/mui-components/lib/Tooltip';
-
+import Search from '@mui/icons-material/Search';
+import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import ListItemText from '@mui/material/ListItemText';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { connect } from 'react-redux';
+
+import { Tooltip } from '@skybrush/mui-components';
 
 import { multiSelectableListOf } from '~/components/helpers/lists';
 import { setSelectedDockIds } from '~/features/docks/actions';
@@ -32,6 +31,7 @@ const DockListPresentation = multiSelectableListOf(
       <Tooltip content='Show on map'>
         <IconButton
           edge='end'
+          size='large'
           onClick={() => scrollToMapLocation(dock.position)}
         >
           <Search />
@@ -40,15 +40,14 @@ const DockListPresentation = multiSelectableListOf(
     ) : null;
 
     return (
-      <ListItem
+      <ListItemButton
         key={dock.id}
-        button
         className={selected ? 'selected-list-item' : undefined}
         onClick={props.onItemSelected}
       >
         <ListItemText primary={dock.id} />
         <ListItemSecondaryAction>{rightIconButton}</ListItemSecondaryAction>
-      </ListItem>
+      </ListItemButton>
     );
   },
   {
@@ -67,8 +66,8 @@ const DockList = ({
   selectedIds,
   ...rest
 }) => (
-  <Box display='flex' flexDirection='column' height='100%'>
-    <Box height='100%' overflow='auto'>
+  <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+    <Box sx={{ height: '100%', overflow: 'auto' }}>
       <DockListPresentation
         dense
         value={selectedIds || []}

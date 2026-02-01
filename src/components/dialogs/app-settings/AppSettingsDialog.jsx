@@ -1,13 +1,11 @@
+import Dialog from '@mui/material/Dialog';
+import DialogContent from '@mui/material/DialogContent';
+import Tab from '@mui/material/Tab';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import Dialog from '@material-ui/core/Dialog';
-import DialogContent from '@material-ui/core/DialogContent';
-import Tab from '@material-ui/core/Tab';
-
-import DialogTabs from '@skybrush/mui-components/lib/DialogTabs';
+import { DialogTabs } from '@skybrush/mui-components';
 
 import {
   closeAppSettingsDialog,
@@ -39,8 +37,8 @@ const tabNameToComponent = {
 const AppSettingsDialogPresentation = ({
   onClose,
   onTabSelected,
-  open,
-  selectedTab,
+  open = false,
+  selectedTab = 'display',
   t,
 }) => (
   <Dialog fullWidth open={open} maxWidth='sm' onClose={onClose}>
@@ -66,11 +64,6 @@ AppSettingsDialogPresentation.propTypes = {
   open: PropTypes.bool,
   selectedTab: PropTypes.string,
   t: PropTypes.func,
-};
-
-AppSettingsDialogPresentation.defaultProps = {
-  open: false,
-  selectedTab: 'auto',
 };
 
 /**

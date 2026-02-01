@@ -1,15 +1,14 @@
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemText from '@mui/material/ListItemText';
 import PropTypes from 'prop-types';
-import React from 'react';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
 
 import AsyncGuard from '~/components/AsyncGuard';
 import { selectableListOf } from '~/components/helpers/lists';
 
 const MissionTypeListEntry = ({ name, description, onItemSelected }) => (
-  <ListItem button onClick={onItemSelected}>
+  <ListItemButton onClick={onItemSelected}>
     <ListItemText primary={name} secondary={description} />
-  </ListItem>
+  </ListItemButton>
 );
 
 MissionTypeListEntry.propTypes = {

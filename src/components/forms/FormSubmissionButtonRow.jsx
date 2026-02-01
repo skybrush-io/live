@@ -1,11 +1,9 @@
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { withTranslation } from 'react-i18next';
 
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-
-import LabeledStatusLight from '@skybrush/mui-components/lib/LabeledStatusLight';
+import { LabeledStatusLight } from '@skybrush/mui-components';
 
 /**
  * Helper component that provides an indicator at the bottom of react-final-form
@@ -19,7 +17,7 @@ const FormSubmissionButtonRowPresentation = ({
   onSubmit,
   t,
 }) => (
-  <Box display='flex' flexDirection='row'>
+  <Box sx={{ display: 'flex', flexDirection: 'row' }}>
     <LabeledStatusLight status={dirty ? 'warning' : 'success'}>
       {dirty
         ? `${label || 'Form'} changed; do not forget to save.`

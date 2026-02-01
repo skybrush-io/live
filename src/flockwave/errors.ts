@@ -2,7 +2,7 @@
  * @file Functions related to the handling of Flockwave error codes.
  */
 
-import { Severity as ModelSeverity } from '~/model/enums';
+import { Status } from '~/model/enums';
 
 /**
  * Error codes need to be numeric to support certain mathematical operations,
@@ -37,17 +37,17 @@ export const getSeverityOfMostSevereErrorCode = (
     ? Math.max(...codes.map(getSeverityOfErrorCode))
     : Severity.INFO;
 
-const semanticsForSeverities: Record<Severity, ModelSeverity> = {
-  [Severity.FATAL]: ModelSeverity.CRITICAL,
-  [Severity.ERROR]: ModelSeverity.ERROR,
-  [Severity.WARNING]: ModelSeverity.WARNING,
-  [Severity.INFO]: ModelSeverity.INFO,
+const semanticsForSeverities: Record<Severity, Status> = {
+  [Severity.FATAL]: Status.CRITICAL,
+  [Severity.ERROR]: Status.ERROR,
+  [Severity.WARNING]: Status.WARNING,
+  [Severity.INFO]: Status.INFO,
 };
 
-export function errorSeverityToSemantics(severity: Severity): ModelSeverity {
+export function errorSeverityToSemantics(severity: Severity): Status {
   return semanticsForSeverities[severity];
 }
 
-export function errorCodeToSemantics(code: ErrorCode): ModelSeverity {
+export function errorCodeToSemantics(code: ErrorCode): Status {
   return errorSeverityToSemantics(getSeverityOfErrorCode(code));
 }
