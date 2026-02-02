@@ -19,6 +19,8 @@ import {
   updateLandingPositions,
   updateTakeoffHeadings,
 } from '~/features/mission/slice';
+import { showConfirmationDialog } from '~/features/prompt/actions';
+import { getUAVOperationConfirmationStyle } from '~/features/settings/selectors';
 import { showNotification } from '~/features/snackbar/actions';
 import { MessageSemantics } from '~/features/snackbar/types';
 import {
@@ -26,7 +28,10 @@ import {
   getCurrentGPSPositionByUavId,
 } from '~/features/uavs/selectors';
 import { clearLastUploadResultForJobType } from '~/features/upload/slice';
+import i18n from '~/i18n';
+import messageHub from '~/message-hub';
 import { MissionType } from '~/model/missions';
+import { UAVOperationConfirmationStyle } from '~/model/settings';
 import {
   lonLatFromMapViewCoordinate,
   mapViewCoordinateFromLonLat,
@@ -50,12 +55,14 @@ import {
   getShowClockReference,
   hasScheduledStartTime,
 } from './selectors';
+import { selectIsCollectiveRTHTriggered } from './selectors/rth';
 import {
   _clearLoadedShow,
   _setOutdoorShowAltitudeReference,
   approveTakeoffAreaAt,
   loadingProgress,
   revokeTakeoffAreaApproval,
+  setCollectiveRTHSchedule,
   setEnvironmentType,
   setLastLoadingAttemptFailed,
   setOutdoorShowOrientation,
@@ -472,3 +479,126 @@ export const setOutdoorShowAltitudeReferenceToAverageAMSL =
       dispatch(setOutdoorShowAltitudeReferenceValue(avgAltitude.toFixed(1)));
     }
   };
+
+const confirmedCollectiveOperation = async (
+  dispatch,
+  getState,
+  { confirmationMessage, confirmationTitle }
+) => {
+  const baseState = getState();
+  if (selectIsCollectiveRTHTriggered(baseState)) {
+    console.error(
+      'Tried to trigger collective action when collective RTH was already triggered.'
+    );
+    return false;
+  }
+
+  const t = i18n.t;
+
+  if (
+    getUAVOperationConfirmationStyle(baseState) !==
+    UAVOperationConfirmationStyle.NEVER
+  ) {
+    const confirmation = await dispatch(
+      showConfirmationDialog(t(confirmationMessage), {
+        title: t(confirmationTitle),
+      })
+    );
+    if (!confirmation?.confirmed) {
+      return false;
+    }
+  }
+
+  return true;
+};
+
+export const startCollectiveRTH = () => async (dispatch, getState) => {
+  const proceed = await confirmedCollectiveOperation(dispatch, getState, {
+    confirmationMessage: 'show.collectiveRTH.confirmation.message',
+    confirmationTitle: 'show.collectiveRTH.confirmation.title',
+  });
+  if (!proceed) {
+    return;
+  }
+
+  const t = i18n.t;
+
+  try {
+    const schedule = await messageHub.execute.startCollectiveRTH();
+    setCollectiveRTHSchedule(schedule);
+    dispatch(
+      showNotification({
+        message: t('show.collectiveRTH.notification.success'),
+        semantics: MessageSemantics.SUCCESS,
+      })
+    );
+  } catch (error) {
+    dispatch(
+      showNotification({
+        message: error.message ?? t('show.collectiveRTH.notification.error'),
+        permanent: true,
+        semantics: MessageSemantics.ERROR,
+      })
+    );
+  }
+};
+
+export const suspendShow = () => async (dispatch, getState) => {
+  const proceed = await confirmedCollectiveOperation(dispatch, getState, {
+    confirmationMessage: 'show.suspend.confirmation.message',
+    confirmationTitle: 'show.suspend.confirmation.title',
+  });
+  if (!proceed) {
+    return;
+  }
+
+  const t = i18n.t;
+
+  try {
+    await messageHub.execute.suspendShow();
+    dispatch(
+      showNotification({
+        message: t('show.suspend.notification.success'),
+        semantics: MessageSemantics.SUCCESS,
+      })
+    );
+  } catch (error) {
+    dispatch(
+      showNotification({
+        message: error.message ?? t('show.suspend.notification.error'),
+        permanent: true,
+        semantics: MessageSemantics.ERROR,
+      })
+    );
+  }
+};
+
+export const resumeShow = () => async (dispatch, getState) => {
+  const proceed = await confirmedCollectiveOperation(dispatch, getState, {
+    confirmationMessage: 'show.suspend.confirmation.message',
+    confirmationTitle: 'show.suspend.confirmation.title',
+  });
+  if (!proceed) {
+    return;
+  }
+
+  const t = i18n.t;
+
+  try {
+    await messageHub.execute.resumeShow();
+    dispatch(
+      showNotification({
+        message: t('show.resume.notification.success'),
+        semantics: MessageSemantics.SUCCESS,
+      })
+    );
+  } catch (error) {
+    dispatch(
+      showNotification({
+        message: error.message ?? t('show.resume.notification.error'),
+        permanent: true,
+        semantics: MessageSemantics.ERROR,
+      })
+    );
+  }
+};

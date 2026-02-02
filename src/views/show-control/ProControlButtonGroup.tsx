@@ -1,3 +1,4 @@
+import Home from '@mui/icons-material/Home';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { makeStyles } from '@skybrush/app-theme-mui';
@@ -7,10 +8,14 @@ import { connect } from 'react-redux';
 import ColoredButton from '~/components/ColoredButton';
 import Colors from '~/components/colors';
 import { hasLicenseWithProFeatures } from '~/features/servers/selectors';
-import { showError } from '~/features/snackbar/actions';
+import {
+  resumeShow,
+  startCollectiveRTH,
+  suspendShow,
+} from '~/features/show/actions';
+import { selectIsCollectiveRTHTriggered } from '~/features/show/selectors/rth';
 import PauseCircle from '~/icons/PauseCircle';
 import PlayCircle from '~/icons/PlayCircle';
-import messageHub from '~/message-hub';
 import { type RootState } from '~/store/reducers';
 
 const useStyles = makeStyles((theme) => ({
@@ -27,31 +32,37 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 type StateProps = {
+  isCollectiveRTHTriggered: boolean;
   proFeaturesEnabled?: boolean;
 };
 
 type DispatchProps = {
-  showError: (message: string) => void;
+  resumeShow: () => void;
+  suspendShow: () => void;
+  startCollectiveRTH: () => void;
 };
 
 type Props = StateProps & DispatchProps;
 
 const ProControlButtonGroup = (props: Props) => {
-  const { proFeaturesEnabled, showError } = props;
+  const {
+    isCollectiveRTHTriggered,
+    proFeaturesEnabled,
+    resumeShow,
+    startCollectiveRTH,
+    suspendShow,
+  } = props;
+  const actionsDisabled = isCollectiveRTHTriggered || !proFeaturesEnabled;
   const classes = useStyles();
   const { t } = useTranslation();
   return (
     <Box className={classes.root}>
       <ColoredButton
         className={classes.button}
-        color={Colors.warning}
-        disabled={!proFeaturesEnabled}
+        color={Colors.positionHold}
+        disabled={actionsDisabled}
         icon={<PauseCircle fontSize='inherit' />}
-        onClick={() => {
-          void messageHub.execute.suspendShow().catch((error: Error) => {
-            showError(error.message);
-          });
-        }}
+        onClick={() => suspendShow()}
       >
         <Typography variant='body2'>
           {t('proControlButtonGroup.suspend')}
@@ -60,16 +71,23 @@ const ProControlButtonGroup = (props: Props) => {
       <ColoredButton
         className={classes.button}
         color={Colors.success}
-        disabled={!proFeaturesEnabled}
+        disabled={actionsDisabled}
         icon={<PlayCircle fontSize='inherit' />}
-        onClick={() => {
-          void messageHub.execute.resumeShow().catch((error: Error) => {
-            showError(error.message);
-          });
-        }}
+        onClick={() => resumeShow()}
       >
         <Typography variant='body2'>
           {t('proControlButtonGroup.resume')}
+        </Typography>
+      </ColoredButton>
+      <ColoredButton
+        className={classes.button}
+        color={Colors.seriousWarning}
+        disabled={actionsDisabled}
+        icon={<Home fontSize='inherit' />}
+        onClick={() => startCollectiveRTH()}
+      >
+        <Typography variant='body2'>
+          {t('proControlButtonGroup.collectiveRTH')}
         </Typography>
       </ColoredButton>
     </Box>
@@ -78,9 +96,10 @@ const ProControlButtonGroup = (props: Props) => {
 
 const ConnectedProControlButtonGroup = connect(
   (state: RootState) => ({
+    isCollectiveRTHTriggered: selectIsCollectiveRTHTriggered(state),
     proFeaturesEnabled: hasLicenseWithProFeatures(state),
   }),
-  { showError }
+  { resumeShow, suspendShow, startCollectiveRTH }
 )(ProControlButtonGroup);
 
 export default ConnectedProControlButtonGroup;

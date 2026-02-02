@@ -456,6 +456,7 @@
     "preflightCheckItems": "Preflight check items"
   },
   "proControlButtonGroup": {
+    "collectiveRTH": "Collective RTH",
     "resume": "Resume",
     "suspend": "Suspend"
   },
@@ -628,6 +629,16 @@
     "chooseStartTimeNotSet": "Not set yet",
     "clear": "Clear loaded show",
     "clock": "Show clock:",
+    "collectiveRTH": {
+      "confirmation": {
+        "message": "Are you sure you want to trigger the collective RTH operation?",
+        "title": "Confirmation needed"
+      },
+      "notification": {
+        "error": "Collective RTH command failed",
+        "success": "Collective RTH command successfully sent"
+      }
+    },
     "dronePlacementApproved": "Drone placement approved",
     "dronePlacementCheck": "Checking drone placement…",
     "dronePlacementError": "Error in drone placement",
@@ -646,6 +657,16 @@
     },
     "placementAccuracy": "Placement accuracy ≤ {{distance}}",
     "reload": "Reload show",
+    "resume": {
+      "confirmation": {
+        "message": "Are you sure you want to resume the show?",
+        "title": "Resume show"
+      },
+      "notification": {
+        "error": "Show resume command failed",
+        "success": "Show resume command successfully sent"
+      }
+    },
     "revokeAuthorization": "Click here to revoke authorization",
     "selectFile": "Select or drop a show file here",
     "setupEnvironment": "Setup environment",
@@ -691,6 +712,16 @@
     },
     "startTimeNotSet": "Start time not set yet",
     "startsAt": "Starts at {{time}}",
+    "suspend": {
+      "confirmation": {
+        "message": "Are you sure you want to suspend the show?",
+        "title": "Suspend show"
+      },
+      "notification": {
+        "error": "Show suspend command failed",
+        "success": "Show suspend command successfully sent"
+      }
+    },
     "takeOffMore": "{{quantity}} drones will take off automatically",
     "takeOffNoPosition": "No position yet for at least one drone",
     "takeOffOne": "One drone will take off automatically",
