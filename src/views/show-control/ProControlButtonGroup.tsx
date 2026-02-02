@@ -1,3 +1,5 @@
+import PauseCircleOutlined from '@mui/icons-material/PauseCircleOutlined';
+import PlayCircleOutlined from '@mui/icons-material/PlayCircleOutlined';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { makeStyles } from '@skybrush/app-theme-mui';
@@ -13,9 +15,7 @@ import {
   suspendShow,
 } from '~/features/show/actions';
 import { selectIsCollectiveRTHTriggered } from '~/features/show/selectors/rth';
-import CollectiveRTHIcon from '~/icons/CollectiveRTH';
-import PauseCircle from '~/icons/PauseCircle';
-import PlayCircle from '~/icons/PlayCircle';
+import HomeCircleOutlined from '~/icons/HomeCircleOutlined';
 import { type RootState } from '~/store/reducers';
 
 const useStyles = makeStyles((theme) => ({
@@ -61,7 +61,7 @@ const ProControlButtonGroup = (props: Props) => {
         className={classes.button}
         color={Colors.positionHold}
         disabled={actionsDisabled}
-        icon={<PauseCircle fontSize='inherit' />}
+        icon={<PauseCircleOutlined fontSize='inherit' />}
         onClick={() => suspendShow()}
       >
         <Typography variant='body2'>
@@ -72,7 +72,7 @@ const ProControlButtonGroup = (props: Props) => {
         className={classes.button}
         color={Colors.success}
         disabled={actionsDisabled}
-        icon={<PlayCircle fontSize='inherit' />}
+        icon={<PlayCircleOutlined fontSize='inherit' />}
         onClick={() => resumeShow()}
       >
         <Typography variant='body2'>
@@ -83,7 +83,7 @@ const ProControlButtonGroup = (props: Props) => {
         className={classes.button}
         color={Colors.seriousWarning}
         disabled={actionsDisabled}
-        icon={<CollectiveRTHIcon fontSize='inherit' />}
+        icon={<HomeCircleOutlined fontSize='inherit' />}
         onClick={() => startCollectiveRTH()}
       >
         <Typography variant='body2'>

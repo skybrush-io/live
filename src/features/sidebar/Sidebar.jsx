@@ -24,7 +24,7 @@ import LogStatusBadge from '~/components/badges/LogStatusBadge';
 import { getMissionType } from '~/features/mission/selectors';
 import { areExperimentalFeaturesEnabled } from '~/features/settings/selectors';
 import Antenna from '~/icons/Antenna';
-import CollectiveRTHIcon from '~/icons/CollectiveRTH';
+import CollectiveRTHIcon from '~/icons/HomeCircleOutlined';
 import ConnectingAirports from '~/icons/ConnectingAirports';
 import Route from '~/icons/Route';
 import ShapeLine from '~/icons/ShapeLine';

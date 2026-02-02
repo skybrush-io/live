@@ -33,7 +33,7 @@ import {
 import { getSetupStageStatuses } from '~/features/show/stages';
 import { showError } from '~/features/snackbar/actions';
 import { tt, type PreparedI18nKey } from '~/i18n';
-import CollectiveRTHIcon from '~/icons/CollectiveRTH';
+import CollectiveRTHIcon from '~/icons/HomeCircleOutlined';
 import Pro from '~/icons/Pro';
 import type { AppDispatch, AppSelector, RootState } from '~/store/reducers';
 import { type Nullable } from '~/utils/types';
