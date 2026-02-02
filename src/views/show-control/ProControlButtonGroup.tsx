@@ -1,4 +1,3 @@
-import Home from '@mui/icons-material/Home';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { makeStyles } from '@skybrush/app-theme-mui';
@@ -14,6 +13,7 @@ import {
   suspendShow,
 } from '~/features/show/actions';
 import { selectIsCollectiveRTHTriggered } from '~/features/show/selectors/rth';
+import CollectiveRTHIcon from '~/icons/CollectiveRTH';
 import PauseCircle from '~/icons/PauseCircle';
 import PlayCircle from '~/icons/PlayCircle';
 import { type RootState } from '~/store/reducers';
@@ -83,7 +83,7 @@ const ProControlButtonGroup = (props: Props) => {
         className={classes.button}
         color={Colors.seriousWarning}
         disabled={actionsDisabled}
-        icon={<Home fontSize='inherit' />}
+        icon={<CollectiveRTHIcon fontSize='inherit' />}
         onClick={() => startCollectiveRTH()}
       >
         <Typography variant='body2'>

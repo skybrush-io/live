@@ -1,4 +1,3 @@
-import Home from '@mui/icons-material/Home';
 import IconButton from '@mui/material/IconButton';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
@@ -34,6 +33,7 @@ import {
 import { getSetupStageStatuses } from '~/features/show/stages';
 import { showError } from '~/features/snackbar/actions';
 import { tt, type PreparedI18nKey } from '~/i18n';
+import CollectiveRTHIcon from '~/icons/CollectiveRTH';
 import Pro from '~/icons/Pro';
 import type { AppDispatch, AppSelector, RootState } from '~/store/reducers';
 import { type Nullable } from '~/utils/types';
@@ -186,7 +186,7 @@ const ShowConfiguratorButton = (props: Props) => {
                 showCollectiveRTHDialog();
               }}
             >
-              <Home />
+              <CollectiveRTHIcon />
             </IconButton>
           </Tooltip>
         )}

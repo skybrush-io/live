@@ -9,7 +9,6 @@ import Flight from '@mui/icons-material/Flight';
 import FormatListBulleted from '@mui/icons-material/FormatListBulleted';
 import Gamepad from '@mui/icons-material/Gamepad';
 import Grain from '@mui/icons-material/Grain';
-import Home from '@mui/icons-material/Home';
 import Layers from '@mui/icons-material/Layers';
 import Map from '@mui/icons-material/Map';
 import Place from '@mui/icons-material/Place';
@@ -25,6 +24,7 @@ import LogStatusBadge from '~/components/badges/LogStatusBadge';
 import { getMissionType } from '~/features/mission/selectors';
 import { areExperimentalFeaturesEnabled } from '~/features/settings/selectors';
 import Antenna from '~/icons/Antenna';
+import CollectiveRTHIcon from '~/icons/CollectiveRTH';
 import ConnectingAirports from '~/icons/ConnectingAirports';
 import Route from '~/icons/Route';
 import ShapeLine from '~/icons/ShapeLine';
@@ -112,7 +112,7 @@ const Sidebar = ({
         />
         <Module
           id='collectiveRTH'
-          icon={<Home />}
+          icon={<CollectiveRTHIcon />}
           label={t('view.collective-rth')}
           component='collective-rth'
         />
