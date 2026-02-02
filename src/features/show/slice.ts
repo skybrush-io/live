@@ -13,6 +13,7 @@ import isNil from 'lodash-es/isNil';
 import set from 'lodash-es/set';
 
 import { type Clock } from '~/features/clocks/types';
+import type { Schedule } from '~/flockwave/schedule';
 import type UAV from '~/model/uav';
 import { type LonLat } from '~/utils/geography';
 import { type Coordinate3D } from '~/utils/math';
@@ -98,6 +99,12 @@ type ShowSliceState = {
     /** Whether the state variables in this object are synced with the server */
     syncStatusWithServer: SettingsSynchronizationStatus;
   };
+
+  /**
+   * The schedule of the collective RTH being executed or `undefined` if
+   * collective RTH was not triggered.
+   */
+  collectiveRTHSchedule?: Schedule;
 
   startTimeDialog: {
     open: boolean;
@@ -187,6 +194,8 @@ const initialState: ShowSliceState = {
     uavIds: [],
     syncStatusWithServer: SettingsSynchronizationStatus.NOT_SYNCED,
   },
+
+  collectiveRTHSchedule: undefined,
 
   startTimeDialog: {
     open: false,
@@ -360,6 +369,10 @@ const { actions, reducer } = createSlice({
     revokeTakeoffAreaApproval: noPayload<ShowSliceState>((state) => {
       state.preflight.takeoffAreaApprovedAt = undefined;
     }),
+
+    setCollectiveRTHSchedule(state, action: PayloadAction<Schedule>) {
+      state.collectiveRTHSchedule = action.payload;
+    },
 
     setEnvironmentType(state, action: PayloadAction<EnvironmentType>) {
       state.environment.type = action.payload;
@@ -557,6 +570,7 @@ export const {
   openStartTimeDialog,
   openTakeoffAreaSetupDialog,
   revokeTakeoffAreaApproval,
+  setCollectiveRTHSchedule,
   setEnvironmentType,
   setIndoorShowOrientation,
   setIndoorShowTakeoffHeadingSpecification,

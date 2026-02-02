@@ -1,11 +1,12 @@
 import { createSelector } from '@reduxjs/toolkit';
 
+import type { Timestamp } from '@skybrush/flockwave-spec';
+
+import type { Schedule } from '~/flockwave/schedule';
 import type { AppSelector } from '~/store/reducers';
 
 import { validateCollectiveRTHPlan } from '../validators';
 import { getDroneSwarmSpecification } from './core';
-
-import type { Timestamp } from '@skybrush/flockwave-spec';
 
 export type CollectiveRTHPlanSummaryItem = {
   /**
@@ -36,3 +37,10 @@ export const selectCollectiveRTHPlanSummary: AppSelector<CollectiveRTHPlanSummar
   createSelector(getDroneSwarmSpecification, (drones) =>
     validateCollectiveRTHPlan(drones)
   );
+
+export const selectCollectiveRTHSchedule: AppSelector<Schedule | undefined> = (
+  state
+) => state.show.collectiveRTHSchedule;
+
+export const selectIsCollectiveRTHTriggered: AppSelector<boolean> = (state) =>
+  state.show.collectiveRTHSchedule !== undefined;
