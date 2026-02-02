@@ -92,7 +92,7 @@ export async function resetUAV(hub: MessageHub, uavId: string): Promise<void> {
 /**
  * Asks the server to resume the currently suspended show.
  */
-export async function resumeShow(hub: MessageHub) {
+export async function resumeShow(hub: MessageHub): Promise<Schedule> {
   let response: Message<MessageBody>;
   try {
     response = await hub.sendMessage({ type: 'X-SHOW-RESUME' });
@@ -104,6 +104,14 @@ export async function resumeShow(hub: MessageHub) {
   if (response.body.type !== 'X-SHOW-RESUME') {
     throw new Error('Failed to resume show.');
   }
+
+  if (isSchedule(response.body)) {
+    return response.body;
+  }
+
+  throw new Error(
+    `Invalid schedule in response to X-SHOW-RESUME: ${JSON.stringify(response.body)}`
+  );
 }
 
 /**
@@ -269,7 +277,7 @@ export async function startRTKSurvey(
 /**
  * Asks the server to suspend the currently running show.
  */
-export async function suspendShow(hub: MessageHub) {
+export async function suspendShow(hub: MessageHub): Promise<Schedule> {
   let response: Message<MessageBody>;
   try {
     response = await hub.sendMessage({ type: 'X-SHOW-SUSPEND' });
@@ -281,6 +289,14 @@ export async function suspendShow(hub: MessageHub) {
   if (response.body.type !== 'X-SHOW-SUSPEND') {
     throw new Error('Failed to suspend show.');
   }
+
+  if (isSchedule(response.body)) {
+    return response.body;
+  }
+
+  throw new Error(
+    `Invalid schedule in response to X-SHOW-SUSPEND: ${JSON.stringify(response.body)}`
+  );
 }
 
 /**
