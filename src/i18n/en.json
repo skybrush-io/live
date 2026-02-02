@@ -218,6 +218,7 @@
       "clear": "Clear",
       "click": "Click",
       "close": "Close",
+      "confirm": "Confirm",
       "delete": "Delete",
       "discard": "Discard",
       "drag": "Drag",
@@ -234,6 +235,7 @@
       "select": "Select",
       "start": "Start",
       "stop": "Stop",
+      "submit": "Submit",
       "undo": "Undo"
     },
     "commands": {
