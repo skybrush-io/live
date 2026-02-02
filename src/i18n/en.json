@@ -128,7 +128,7 @@
         "message": "Last RTH time: {{lastTime}}s"
       },
       "numPlans": {
-        "message": "Plan successfully calculated at {{numPlans}} timestamps"
+        "message": "Collective RTH plans successfully calculated at {{numPlans}} timestamps"
       }
     },
     "title": "Plan collective RTH"
