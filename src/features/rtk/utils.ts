@@ -1,3 +1,7 @@
+import isEqual from 'lodash-es/isEqual';
+
+import type { RTKSavedCoordinate, RTKStatistics } from './types';
+
 const descriptions: Record<string, string> = {
   'rtcm2/1': 'Differential GPS Corrections',
   'rtcm2/2': 'Delta Differential GPS Corrections',
@@ -117,4 +121,49 @@ export function formatSurveyAccuracy(
       : value >= 0.1
         ? (value * 100).toFixed(short ? 0 : 1) + 'cm'
         : (value * 100).toFixed(1) + 'cm';
+}
+
+/**
+ * Checks if the RTK status indicates a valid fix.
+ *
+ * @param status - The RTK statistics object.
+ * @returns True if a valid fix is present, false otherwise.
+ */
+export function hasValidFix(status: Partial<RTKStatistics>): boolean {
+  const hasECEF = Array.isArray(status?.antenna?.positionECEF);
+  const accuracy = status?.survey?.accuracy;
+  const flags = status?.survey?.flags;
+  const surveyedCoordinateValid =
+    typeof flags === 'number' && (flags & 0b100) !== 0;
+
+  // Consider fix valid only with ECEF position, valid-coordinate flag, and numeric accuracy.
+  return hasECEF && surveyedCoordinateValid && typeof accuracy === 'number';
+}
+
+/**
+ * Determines whether the current coordinate should be saved for a given preset.
+ *
+ * @param status - The RTK statistics object containing the current antenna position.
+ * @param savedCoordinates - The record of saved coordinates keyed by preset ID.
+ * @param presetId - The ID of the preset to check against.
+ * @returns True if the coordinate is new and should be saved, false otherwise.
+ */
+export function shouldSaveCoordinate(
+  status: Partial<RTKStatistics>,
+  savedCoordinates: Record<string, RTKSavedCoordinate[]>,
+  presetId: string
+): boolean {
+  const incomingECEF = Array.isArray(status?.antenna?.positionECEF)
+    ? status.antenna?.positionECEF?.slice(0, 3).map((x) => Math.round(x))
+    : undefined;
+  const saved = savedCoordinates?.[presetId];
+  const savedECEF =
+    saved && saved.length > 0 && Array.isArray(saved[0]?.positionECEF)
+      ? saved[0]?.positionECEF.slice(0, 3)
+      : undefined;
+
+  const isSameECEF =
+    !!incomingECEF && !!savedECEF && isEqual(incomingECEF, savedECEF);
+
+  return !isSameECEF;
 }

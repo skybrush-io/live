@@ -4,7 +4,14 @@ import { createSelector } from '@reduxjs/toolkit';
 
 import { getPreferredCoordinateFormatter } from '~/selectors/formatting';
 import type { RootState } from '~/store/reducers';
-import { RTKAntennaPositionFormat } from './types';
+import { RTKAntennaPositionFormat, type RTKSavedCoordinate } from './types';
+
+const formatPositionECEF = (
+  positionECEF?: RTKSavedCoordinate['positionECEF']
+): string | undefined =>
+  positionECEF && Array.isArray(positionECEF)
+    ? `[${positionECEF.map((c) => (c / 1e3).toFixed(3)).join(', ')}]`
+    : undefined;
 
 /**
  * Returns whether the antenna position should be shown in ECEF coordinates.
@@ -23,11 +30,7 @@ export const getFormattedAntennaPosition = createSelector(
   (antennaInfo, formatter, isECEF) => {
     if (isECEF) {
       const { positionECEF } = antennaInfo || {};
-      return positionECEF && Array.isArray(positionECEF)
-        ? `[${(positionECEF[0] / 1e3).toFixed(3)}, ${(
-            positionECEF[1] / 1e3
-          ).toFixed(3)}, ${(positionECEF[2] / 1e3).toFixed(3)}]`
-        : undefined;
+      return formatPositionECEF(positionECEF);
     } else {
       const { position } = antennaInfo || {};
       return position ? formatter(position) : undefined;
@@ -159,3 +162,66 @@ export const getSurveyStatus = createSelector(
  */
 export const shouldShowSurveySettings = (state: RootState): boolean =>
   state.rtk.dialog.surveySettingsEditorVisible;
+
+/**
+ * Returns whether there is a saved coordinate for the given RTK preset ID.
+ */
+export const hasSavedCoordinateForPreset = (
+  state: RootState,
+  presetId: string
+): boolean => {
+  const coords = state.rtk.savedCoordinates[presetId];
+  return Boolean(coords) && coords.length > 0;
+};
+
+/**
+ * Returns the saved coordinates for the given RTK preset ID, or empty array if none exists.
+ */
+export const getSavedCoordinatesForPreset = (
+  state: RootState,
+  presetId: string
+): RTKSavedCoordinate[] => state.rtk.savedCoordinates[presetId] ?? [];
+
+/**
+ * Returns the full saved coordinates map keyed by preset ID.
+ */
+export const getSavedCoordinates = (
+  state: RootState
+): RootState['rtk']['savedCoordinates'] => state.rtk.savedCoordinates;
+
+/**
+ * Returns a formatter function that formats a saved coordinate position
+ * according to the current RTK display settings.
+ */
+export const getPreferredSavedRTKPositionFormatter = createSelector(
+  getPreferredCoordinateFormatter,
+  isShowingAntennaPositionInECEF,
+  (formatter, isECEF) =>
+    (savedCoordinate?: RTKSavedCoordinate): string | undefined => {
+      if (!savedCoordinate) {
+        return undefined;
+      }
+
+      if (isECEF) {
+        const { positionECEF } = savedCoordinate;
+        return formatPositionECEF(positionECEF);
+      } else {
+        const { position } = savedCoordinate;
+        return position ? formatter(position) : undefined;
+      }
+    }
+);
+
+/**
+ * Returns the current RTK preset ID.
+ */
+export const getCurrentRTKPresetId = (state: RootState): string | undefined =>
+  state.rtk.currentPresetId;
+
+/**
+ * Returns the coordinate restoration dialog state.
+ */
+export const getCoordinateRestorationDialogState = (
+  state: RootState
+): RootState['rtk']['dialog']['coordinateRestorationDialog'] =>
+  state.rtk.dialog.coordinateRestorationDialog;

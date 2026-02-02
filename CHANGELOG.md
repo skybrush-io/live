@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support for keeping the original light configuration when adapting the show in
   the show adaptation dialog.
 
+- RTK base station coordinates can now be restored from positions stored during
+  earlier surveys.
+
 ## [2.12.1] - 2025-12-15
 
 ### Fixed

@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import RTKCorrectionSourceSelector from './RTKCorrectionSourceSelector';
+import RTKCoordinateRestorationDialog from './RTKCoordinateRestorationDialog';
 import RTKMessageStatistics from './RTKMessageStatistics';
 import RTKSetupDialogBottomPanel from './RTKSetupDialogBottomPanel';
 import RTKStatusUpdater from './RTKStatusUpdater';
@@ -14,25 +15,28 @@ import { closeRTKSetupDialog } from './slice';
  * monitor the RTK correction source for the UAVs.
  */
 const RTKSetupDialog = ({ onClose, open }) => (
-  <Dialog fullWidth open={open} maxWidth='sm' onClose={onClose}>
-    <RTKStatusUpdater />
-    <Box>
-      <Box sx={{ mx: 3, mt: 3 }}>
-        <RTKCorrectionSourceSelector />
-        <Box
-          sx={{
-            height: 100,
-            my: 2,
-            boxSizing: 'content-box',
-            overflow: 'auto',
-          }}
-        >
-          <RTKMessageStatistics />
+  <>
+    <Dialog fullWidth open={open} maxWidth='sm' onClose={onClose}>
+      <RTKStatusUpdater />
+      <Box>
+        <Box sx={{ mx: 3, mt: 3 }}>
+          <RTKCorrectionSourceSelector />
+          <Box
+            sx={{
+              height: 100,
+              my: 2,
+              boxSizing: 'content-box',
+              overflow: 'auto',
+            }}
+          >
+            <RTKMessageStatistics />
+          </Box>
         </Box>
+        <RTKSetupDialogBottomPanel />
       </Box>
-      <RTKSetupDialogBottomPanel />
-    </Box>
-  </Dialog>
+    </Dialog>
+    <RTKCoordinateRestorationDialog />
+  </>
 );
 
 RTKSetupDialog.propTypes = {

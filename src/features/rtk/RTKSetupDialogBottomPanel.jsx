@@ -15,8 +15,16 @@ import { Tooltip } from '@skybrush/mui-components';
 
 import FadeAndSlide from '~/components/transitions/FadeAndSlide';
 
-import { getSurveyStatus, shouldShowSurveySettings } from './selectors';
-import { toggleSurveySettingsPanel } from './slice';
+import {
+  getCurrentRTKPresetId,
+  getSurveyStatus,
+  hasSavedCoordinateForPreset,
+  shouldShowSurveySettings,
+} from './selectors';
+import {
+  showCoordinateRestorationDialog,
+  toggleSurveySettingsPanel,
+} from './slice';
 
 import AntennaPositionIndicator from './AntennaPositionIndicator';
 import RTKSatelliteObservations from './RTKSatelliteObservations';
@@ -51,7 +59,10 @@ const useStyles = makeStyles((theme) => ({
 
 const RTKSetupDialogBottomPanel = ({
   chartHeight = 160,
+  currentPresetId,
+  hasSavedCoordinates,
   inset,
+  onShowSavedCoordinates,
   onToggleSurveySettings,
   surveySettingsVisible,
   surveyStatus,
@@ -63,6 +74,12 @@ const RTKSetupDialogBottomPanel = ({
       onToggleSurveySettings();
     }
   }, [onToggleSurveySettings, surveySettingsVisible, surveyStatus?.supported]);
+
+  const handleShowSavedCoordinates = () => {
+    if (currentPresetId) {
+      onShowSavedCoordinates?.(currentPresetId);
+    }
+  };
 
   return (
     <Box
@@ -95,7 +112,12 @@ const RTKSetupDialogBottomPanel = ({
             )}
             <SurveyStatusIndicator {...surveyStatus} />
             <Box sx={{ flex: '1' }} />
-            <AntennaPositionIndicator />
+            <AntennaPositionIndicator
+              hasSavedCoordinates={hasSavedCoordinates}
+              onShowSavedCoordinates={
+                onShowSavedCoordinates && handleShowSavedCoordinates
+              }
+            />
           </Box>
         </FadeAndSlide>
         <FadeAndSlide in={surveySettingsVisible}>
@@ -114,7 +136,10 @@ const RTKSetupDialogBottomPanel = ({
 
 RTKSetupDialogBottomPanel.propTypes = {
   chartHeight: PropTypes.number,
+  currentPresetId: PropTypes.string,
+  hasSavedCoordinates: PropTypes.bool,
   inset: PropTypes.bool,
+  onShowSavedCoordinates: PropTypes.func,
   onToggleSurveySettings: PropTypes.func,
   surveySettingsVisible: PropTypes.bool,
   surveyStatus: PropTypes.object,
@@ -122,12 +147,20 @@ RTKSetupDialogBottomPanel.propTypes = {
 
 export default connect(
   // mapStateToProps
-  (state) => ({
-    surveyStatus: getSurveyStatus(state),
-    surveySettingsVisible: shouldShowSurveySettings(state),
-  }),
+  (state) => {
+    const currentPresetId = getCurrentRTKPresetId(state);
+    return {
+      currentPresetId,
+      hasSavedCoordinates:
+        Boolean(currentPresetId) &&
+        hasSavedCoordinateForPreset(state, currentPresetId),
+      surveyStatus: getSurveyStatus(state),
+      surveySettingsVisible: shouldShowSurveySettings(state),
+    };
+  },
   // mapDispatchToProps
   {
+    onShowSavedCoordinates: showCoordinateRestorationDialog,
     onToggleSurveySettings: toggleSurveySettingsPanel,
   }
 )(RTKSetupDialogBottomPanel);
