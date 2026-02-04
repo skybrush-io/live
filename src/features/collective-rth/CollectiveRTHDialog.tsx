@@ -81,7 +81,7 @@ const CollectiveRTHDialog = (props: Props) => {
           ? t('collectiveRTHDialog.status.error')
           : '';
 
-  const parameteresForm = (
+  const parametersForm = (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, padding: 2 }}>
       <CollectiveRTHParametersForm
         disabled={inProgress}
@@ -157,7 +157,7 @@ const CollectiveRTHDialog = (props: Props) => {
               </Typography>
             </>
           )}
-        {parameteresForm}
+        {parametersForm}
       </Box>
       <DialogActions>
         <Fade
