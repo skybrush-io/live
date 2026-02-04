@@ -64,10 +64,10 @@ const PromptDialogForm: React.FunctionComponent<PromptDialogFormProps> = ({
         >
           <DialogActions style={{ padding: 0 }}>
             <Button color='primary' type='submit'>
-              {t(submitButtonLabel ?? 'general.action.submit')}
+              {submitButtonLabel ?? t('general.action.submit')}
             </Button>
             <Button onClick={onCancel}>
-              {t(cancelButtonLabel ?? 'general.action.cancel')}
+              {cancelButtonLabel ?? t('general.action.cancel')}
             </Button>
           </DialogActions>
         </Form>
@@ -80,10 +80,10 @@ const PromptDialogForm: React.FunctionComponent<PromptDialogFormProps> = ({
               onSubmit({ formData: { confirmed: true } });
             }}
           >
-            {t(submitButtonLabel ?? 'general.action.confirm')}
+            {submitButtonLabel ?? t('general.action.confirm')}
           </Button>
           <Button onClick={onCancel}>
-            {t(cancelButtonLabel ?? 'general.action.cancel')}
+            {cancelButtonLabel ?? t('general.action.cancel')}
           </Button>
         </DialogActions>
       )}
