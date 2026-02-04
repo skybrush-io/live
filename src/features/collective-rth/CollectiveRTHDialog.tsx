@@ -233,20 +233,12 @@ const ConnectedCollectiveRTHDialog = connect(
     transformationResult: selectResult(state),
   }),
   // mapDispatchToProps
-  (dispatch: AppDispatch) => ({
-    addCollectiveRTH: (params?: CollectiveRTHParameters): void => {
-      dispatch(addCollectiveRTH(params));
-    },
-    applyTransformedShow: (show: string): void => {
-      dispatch(loadBase64EncodedShow(show));
-    },
-    closeDialog: (): void => {
-      dispatch(closeDialog());
-    },
-    saveTransformedShow: (): void => {
-      dispatch(saveTransformedShow());
-    },
-  })
+  {
+    addCollectiveRTH,
+    applyTransformedShow,
+    closeDialog,
+    saveTransformedShow,
+  }
 )(CollectiveRTHDialogWrapper);
 
 export default ConnectedCollectiveRTHDialog;
