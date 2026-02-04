@@ -3,12 +3,9 @@ import { createSelector } from 'reselect';
 
 import type { AppSelector, RootState } from '~/store/reducers';
 
-import type {
-  CollectiveRTHDialogRTHState,
-  TransformationResult,
-} from './slice';
+import type { CollectiveRTHDialogState, TransformationResult } from './slice';
 
-const selectState: AppSelector<CollectiveRTHDialogRTHState> = (state) =>
+const selectState: AppSelector<CollectiveRTHDialogState> = (state) =>
   state.dialogs.collectiveRTH;
 
 export const isDialogOpen: AppSelector<boolean> = (state) =>

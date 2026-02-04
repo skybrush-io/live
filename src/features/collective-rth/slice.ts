@@ -49,12 +49,12 @@ export type TransformationResultOrStatus =
   | { error: string }
   | { loading: true };
 
-export type CollectiveRTHDialogRTHState = {
+export type CollectiveRTHDialogState = {
   open: boolean;
   result?: TransformationResultOrStatus;
 };
 
-const initialState: CollectiveRTHDialogRTHState = {
+const initialState: CollectiveRTHDialogState = {
   open: false,
   result: undefined,
 };
