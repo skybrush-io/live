@@ -118,8 +118,7 @@ const CollectiveRTHDialog = (props: Props) => {
           display: 'flex',
           flexDirection: 'column',
           paddingTop: 2,
-          paddingLeft: 4,
-          paddingRight: 4,
+          paddingX: 4,
           gap: 2,
         }}
       >
@@ -167,7 +166,7 @@ const CollectiveRTHDialog = (props: Props) => {
             error !== undefined
           }
         >
-          <Box sx={(theme) => ({ flex: 1, paddingLeft: theme.spacing(1) })}>
+          <Box sx={{ flex: 1, paddingLeft: 1 }}>
             <LabeledStatusLight
               color='textSecondary'
               status={status}
