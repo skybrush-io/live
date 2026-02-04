@@ -12,20 +12,16 @@ export const isDialogOpen: AppSelector<boolean> = (state) =>
   selectState(state).open;
 
 export const selectTransformationInProgress: AppSelector<boolean> =
-  createSelector(
-    selectState,
-    ({ result }) =>
-      result !== undefined && 'loading' in result && result.loading
-  );
+  createSelector(selectState, ({ result }) => result?.state === 'loading');
 
 export const selectTransformationError: AppSelector<string | undefined> =
   createSelector(selectState, ({ result }) =>
-    result !== undefined && 'error' in result ? result.error : undefined
+    result?.state === 'error' ? result.error : undefined
   );
 
 export const selectResult: AppSelector<TransformationResult | undefined> =
   createSelector(selectState, ({ result }) =>
-    result !== undefined && 'show' in result ? result : undefined
+    result?.state === 'success' ? result : undefined
   );
 
 export const selectTransformedShowAsBase64String: AppSelector<

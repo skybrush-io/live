@@ -45,9 +45,9 @@ export type TransformationResult = {
 };
 
 export type TransformationResultOrStatus =
-  | TransformationResult
-  | { error: string }
-  | { loading: true };
+  | ({ state: 'success' } & TransformationResult)
+  | { state: 'error'; error: string }
+  | { state: 'loading' };
 
 export type CollectiveRTHDialogState = {
   open: boolean;

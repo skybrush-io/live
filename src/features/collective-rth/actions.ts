@@ -20,7 +20,7 @@ export const addCollectiveRTH =
   async (dispatch, getState): Promise<void> => {
     const state = getState();
     const base64ShowBlob = getBase64ShowBlob(state);
-    dispatch(setResult({ loading: true }));
+    dispatch(setResult({ state: 'loading' }));
 
     try {
       const { show, showDuration, stats } =
@@ -87,7 +87,16 @@ export const addCollectiveRTH =
         lastTime = Math.max(lastTime, stat.time as number);
       }
 
-      dispatch(setResult({ show, showDuration, stats, firstTime, lastTime }));
+      dispatch(
+        setResult({
+          state: 'success',
+          show,
+          showDuration,
+          stats,
+          firstTime,
+          lastTime,
+        })
+      );
     } catch (error) {
       console.warn('addCollectiveRTH failed with error:', error);
       const errorMessage =
@@ -96,7 +105,7 @@ export const addCollectiveRTH =
           : typeof error === 'string'
             ? error
             : 'Unknown error type.';
-      dispatch(setResult({ error: errorMessage }));
+      dispatch(setResult({ state: 'error', error: errorMessage }));
     }
   };
 
