@@ -493,15 +493,13 @@ const confirmedCollectiveOperation = async (
     return false;
   }
 
-  const t = i18n.t;
-
   if (
     getUAVOperationConfirmationStyle(baseState) !==
     UAVOperationConfirmationStyle.NEVER
   ) {
     const confirmation = await dispatch(
-      showConfirmationDialog(t(confirmationMessage), {
-        title: t(confirmationTitle),
+      showConfirmationDialog(i18n.t(confirmationMessage), {
+        title: i18n.t(confirmationTitle),
       })
     );
     if (!confirmation?.confirmed) {
@@ -521,21 +519,20 @@ export const startCollectiveRTH = () => async (dispatch, getState) => {
     return;
   }
 
-  const t = i18n.t;
-
   try {
     const schedule = await messageHub.execute.startCollectiveRTH();
     setCollectiveRTHSchedule(schedule);
     dispatch(
       showNotification({
-        message: t('show.collectiveRTH.notification.success'),
+        message: i18n.t('show.collectiveRTH.notification.success'),
         semantics: MessageSemantics.SUCCESS,
       })
     );
   } catch (error) {
     dispatch(
       showNotification({
-        message: error.message ?? t('show.collectiveRTH.notification.error'),
+        message:
+          error.message ?? i18n.t('show.collectiveRTH.notification.error'),
         permanent: true,
         semantics: MessageSemantics.ERROR,
       })
@@ -552,20 +549,18 @@ export const suspendShow = () => async (dispatch, getState) => {
     return;
   }
 
-  const t = i18n.t;
-
   try {
     await messageHub.execute.suspendShow();
     dispatch(
       showNotification({
-        message: t('show.suspend.notification.success'),
+        message: i18n.t('show.suspend.notification.success'),
         semantics: MessageSemantics.SUCCESS,
       })
     );
   } catch (error) {
     dispatch(
       showNotification({
-        message: error.message ?? t('show.suspend.notification.error'),
+        message: error.message ?? i18n.t('show.suspend.notification.error'),
         permanent: true,
         semantics: MessageSemantics.ERROR,
       })
@@ -575,27 +570,25 @@ export const suspendShow = () => async (dispatch, getState) => {
 
 export const resumeShow = () => async (dispatch, getState) => {
   const proceed = await confirmedCollectiveOperation(dispatch, getState, {
-    confirmationMessage: 'show.suspend.confirmation.message',
-    confirmationTitle: 'show.suspend.confirmation.title',
+    confirmationMessage: 'show.resume.confirmation.message',
+    confirmationTitle: 'show.resume.confirmation.title',
   });
   if (!proceed) {
     return;
   }
 
-  const t = i18n.t;
-
   try {
     await messageHub.execute.resumeShow();
     dispatch(
       showNotification({
-        message: t('show.resume.notification.success'),
+        message: i18n.t('show.resume.notification.success'),
         semantics: MessageSemantics.SUCCESS,
       })
     );
   } catch (error) {
     dispatch(
       showNotification({
-        message: error.message ?? t('show.resume.notification.error'),
+        message: error.message ?? i18n.t('show.resume.notification.error'),
         permanent: true,
         semantics: MessageSemantics.ERROR,
       })

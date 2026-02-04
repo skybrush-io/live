@@ -102,8 +102,8 @@ export const addCollectiveRTH =
 
 export const saveTransformedShow =
   (): AppThunk => async (_dispatch, getState) => {
-    const adaptedBase64Show = selectTransformedShowBlob(getState());
-    if (adaptedBase64Show) {
-      await writeBlobToFile(adaptedBase64Show, 'adapted-show.skyc');
+    const base64Show = selectTransformedShowBlob(getState());
+    if (base64Show) {
+      await writeBlobToFile(base64Show, 'transformed-show.skyc');
     }
   };

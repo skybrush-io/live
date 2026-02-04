@@ -14,7 +14,7 @@ export type StatEntry = {
   /**
    * Total show duration including collective RTH and landing, in seconds.
    */
-  show_duration: number;
+  showDuration: number;
 };
 
 export type TransformationResult = {
@@ -34,7 +34,7 @@ export type TransformationResult = {
   stats: StatEntry[];
 
   /**
-   * The last timestamp at which a collective RTH plan was generated, in seconds.
+   * The first timestamp at which a collective RTH plan was generated, in seconds.
    */
   firstTime: number;
 
