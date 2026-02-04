@@ -498,8 +498,8 @@ const confirmedCollectiveOperation = async (
     UAVOperationConfirmationStyle.NEVER
   ) {
     const confirmation = await dispatch(
-      showConfirmationDialog(i18n.t(confirmationMessage), {
-        title: i18n.t(confirmationTitle),
+      showConfirmationDialog(confirmationMessage, {
+        title: confirmationTitle,
       })
     );
     if (!confirmation?.confirmed) {
@@ -512,8 +512,8 @@ const confirmedCollectiveOperation = async (
 
 export const startCollectiveRTH = () => async (dispatch, getState) => {
   const proceed = await confirmedCollectiveOperation(dispatch, getState, {
-    confirmationMessage: 'show.collectiveRTH.confirmation.message',
-    confirmationTitle: 'show.collectiveRTH.confirmation.title',
+    confirmationMessage: i18n.t('show.collectiveRTH.confirmation.message'),
+    confirmationTitle: i18n.t('show.collectiveRTH.confirmation.title'),
   });
   if (!proceed) {
     return;
@@ -542,8 +542,8 @@ export const startCollectiveRTH = () => async (dispatch, getState) => {
 
 export const suspendShow = () => async (dispatch, getState) => {
   const proceed = await confirmedCollectiveOperation(dispatch, getState, {
-    confirmationMessage: 'show.suspend.confirmation.message',
-    confirmationTitle: 'show.suspend.confirmation.title',
+    confirmationMessage: i18n.t('show.suspend.confirmation.message'),
+    confirmationTitle: i18n.t('show.suspend.confirmation.title'),
   });
   if (!proceed) {
     return;
@@ -570,8 +570,8 @@ export const suspendShow = () => async (dispatch, getState) => {
 
 export const resumeShow = () => async (dispatch, getState) => {
   const proceed = await confirmedCollectiveOperation(dispatch, getState, {
-    confirmationMessage: 'show.resume.confirmation.message',
-    confirmationTitle: 'show.resume.confirmation.title',
+    confirmationMessage: i18n.t('show.resume.confirmation.message'),
+    confirmationTitle: i18n.t('show.resume.confirmation.title'),
   });
   if (!proceed) {
     return;
