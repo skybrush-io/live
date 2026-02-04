@@ -14,7 +14,7 @@ import {
   selectCollectiveRTHPlanSummary,
   type CollectiveRTHPlanSummary,
 } from '~/features/show/selectors';
-import type { AppDispatch, RootState } from '~/store/reducers';
+import type { RootState } from '~/store/reducers';
 
 import {
   addCollectiveRTH,
@@ -235,7 +235,7 @@ const ConnectedCollectiveRTHDialog = connect(
   // mapDispatchToProps
   {
     addCollectiveRTH,
-    applyTransformedShow,
+    applyTransformedShow: loadBase64EncodedShow,
     closeDialog,
     saveTransformedShow,
   }
