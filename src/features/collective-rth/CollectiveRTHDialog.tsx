@@ -232,7 +232,7 @@ const ConnectedCollectiveRTHDialog = connect(
     existingRTHPlanSummary: selectCollectiveRTHPlanSummary(state),
     transformationResult: selectResult(state),
   }),
-  // -- map dispatch to props
+  // mapDispatchToProps
   (dispatch: AppDispatch) => ({
     addCollectiveRTH: (params?: CollectiveRTHParameters): void => {
       dispatch(addCollectiveRTH(params));
