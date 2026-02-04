@@ -1,3 +1,5 @@
+import isObject from 'lodash-es/isObject';
+
 export type TimeSegmentType = 'preparation' | 'rth' | 'slowdown' | 'speedup';
 
 const VALID_TIME_SEGMENT_TYPES = new Set<TimeSegmentType>([
