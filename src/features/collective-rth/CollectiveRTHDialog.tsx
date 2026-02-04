@@ -224,7 +224,7 @@ const CollectiveRTHDialogWrapper = (props: Props) => {
 };
 
 const ConnectedCollectiveRTHDialog = connect(
-  // -- map state to props
+  // mapStateToProps
   (state: RootState) => ({
     error: selectTransformationError(state),
     inProgress: selectTransformationInProgress(state),
