@@ -41,36 +41,17 @@ export type Schedule = {
   schedule: TimeSegment[];
 };
 
-function isTimeSegment(data: unknown): data is TimeSegment {
-  if (!data || typeof data !== 'object') {
-    return false;
-  }
+const isTimeSegment = (data: unknown): data is TimeSegment =>
+  // prettier-ignore
+  isObject(data)
+  && 'type' in data && VALID_TIME_SEGMENT_TYPES.has(data.type as TimeSegmentType)
+  && 'startMs' in data && typeof data.startMs === 'number'
+  && 'endMs' in data && typeof data.endMs === 'number'
+  && (!('params' in data) || data.params === undefined || isObject(data.params));
 
-  const segment = data as Record<string, unknown>;
-  return (
-    VALID_TIME_SEGMENT_TYPES.has(segment.type as TimeSegmentType) &&
-    typeof segment.startMs === 'number' &&
-    typeof segment.endMs === 'number' &&
-    (segment.params === undefined ||
-      (typeof segment.params === 'object' && segment.params !== null))
-  );
-}
-
-export function isSchedule(data: unknown): data is Schedule {
-  if (!data || typeof data !== 'object') {
-    return false;
-  }
-
-  const record = data as Record<string, unknown>;
-  if (!Array.isArray(record.schedule)) {
-    return false;
-  }
-
-  for (const segment of record.schedule) {
-    if (!isTimeSegment(segment)) {
-      return false;
-    }
-  }
-
-  return true;
-}
+export const isSchedule = (data: unknown): data is Schedule =>
+  // prettier-ignore
+  isObject(data)
+  && 'schedule' in data
+  && Array.isArray(data.schedule)
+  && data.schedule.every(isTimeSegment);
