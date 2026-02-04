@@ -171,6 +171,7 @@ const App = ({ onFirstRender }) => (
       {hasTimeLimitedSession && <dialogs.SessionExpiryDialog />}
       <dialogs.TimeSyncDialog />
 
+      <CollectiveRTHDialog />
       <CoordinateAveragingDialog />
       <DockDetailsDialog />
       <FirmwareUpdateSetupDialog />
@@ -184,7 +185,6 @@ const App = ({ onFirstRender }) => (
       <SafetyDialog />
       <SavedLocationEditorDialog />
       <ShowConfiguratorDialog />
-      <CollectiveRTHDialog />
       <UAVDetailsDialog />
       <UploadDialog />
       <VersionCheckDialog />
