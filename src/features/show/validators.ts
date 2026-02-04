@@ -160,15 +160,10 @@ export function validateCollectiveRTHPlan(
     }
   }
 
-  let isValid = dronesWithRTHPlan === numDrones && dronesWithoutRTHPlan === 0;
-  if (isValid) {
-    for (const summary of Object.values(plans)) {
-      if (summary?.count !== numDrones) {
-        isValid = false;
-        break;
-      }
-    }
-  }
+  const isValid =
+    dronesWithoutRTHPlan === 0 &&
+    dronesWithRTHPlan === numDrones &&
+    Object.values(plans).every((summary) => summary?.count === numDrones);
 
   return {
     plans: plans as Record<number, CollectiveRTHPlanSummaryItem>,
