@@ -103,7 +103,7 @@
           "label": "Minimum distance"
         },
         "timeResolution": {
-          "help": "between consecutive RTH plans.",
+          "help": "between consecutive RTH plans",
           "label": "Time resolution"
         },
         "verticalVelocity": {
