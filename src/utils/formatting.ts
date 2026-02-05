@@ -328,11 +328,8 @@ export const formatUnixTimestamp = (timestamp: number, naText = '—'): string =
 /**
  * Formats a UNIX timestamp in seconds as a time of day text.
  */
-export const formatTimeOfDay = (
-  timestamp: number | null | undefined,
-  naText = '—'
-): string =>
-  isNil(timestamp) || Number.isNaN(timestamp)
+export const formatTimeOfDay = (timestamp: number, naText = '—'): string =>
+  Number.isNaN(timestamp)
     ? naText
     : formatISO9075(fromUnixTime(timestamp), { representation: 'time' });
 
