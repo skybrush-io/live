@@ -66,14 +66,12 @@ function isValidRTHPlanEntry(entry: RTHPlanEntry): boolean {
     return false;
   }
 
-  if (entry.action === 'goToKeepAlt') {
-    if (entry.target.length !== 2) {
-      return false;
-    }
-  } else if (entry.action === 'goToStraight') {
-    if (entry.target.length !== 3) {
-      return false;
-    }
+  if (entry.action === 'goToKeepAlt' && entry.target.length !== 2) {
+    return false;
+  }
+
+  if (entry.action === 'goToStraight' && entry.target.length !== 3) {
+    return false;
   }
 
   return true;
