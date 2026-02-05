@@ -82,9 +82,9 @@ import workbenchReducer from '~/features/workbench/slice';
 const dialogsReducer = combineReducers({
   appSettings: appSettingsReducer,
   authentication: authenticationReducer,
+  collectiveRTH: collectiveRTHReducer,
   deauthentication: deauthenticationReducer,
   dockDetails: dockDetailsDialogReducer,
-  collectiveRTH: collectiveRTHReducer,
   error: errorHandlingReducer,
   featureEditor: featureEditorReducer,
   layerSettings: layerSettingsReducer,
