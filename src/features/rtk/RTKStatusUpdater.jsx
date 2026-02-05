@@ -3,7 +3,7 @@ import isNil from 'lodash-es/isNil';
 import mapValues from 'lodash-es/mapValues';
 import PropTypes from 'prop-types';
 import { useEffect } from 'react';
-import { connect } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
 
 import handleError from '~/error-handling';
 import { updateRTKStatistics } from '~/features/rtk/slice';
@@ -15,6 +15,7 @@ import useMessageHub from '~/hooks/useMessageHub';
  */
 const RTKStatusUpdater = ({ onStatusChanged, period = 1000 }) => {
   const messageHub = useMessageHub();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const valueHolder = {
@@ -43,7 +44,7 @@ const RTKStatusUpdater = ({ onStatusChanged, period = 1000 }) => {
       valueHolder.finished = true;
       valueHolder.promise = null;
     };
-  }, [messageHub, onStatusChanged, period]);
+  }, [messageHub, onStatusChanged, period, dispatch]);
 
   return null;
 };
