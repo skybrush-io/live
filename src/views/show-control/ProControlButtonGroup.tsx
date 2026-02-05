@@ -1,7 +1,6 @@
 import PauseCircleOutlined from '@mui/icons-material/PauseCircleOutlined';
 import PlayCircleOutlined from '@mui/icons-material/PlayCircleOutlined';
 import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
 import { makeStyles } from '@skybrush/app-theme-mui';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
@@ -62,33 +61,27 @@ const ProControlButtonGroup = (props: Props) => {
         color={Colors.positionHold}
         disabled={actionsDisabled}
         icon={<PauseCircleOutlined fontSize='inherit' />}
-        onClick={() => suspendShow()}
+        onClick={suspendShow}
       >
-        <Typography variant='body2'>
-          {t('proControlButtonGroup.suspend')}
-        </Typography>
+        {t('proControlButtonGroup.suspend')}
       </ColoredButton>
       <ColoredButton
         className={classes.button}
         color={Colors.success}
         disabled={actionsDisabled}
         icon={<PlayCircleOutlined fontSize='inherit' />}
-        onClick={() => resumeShow()}
+        onClick={resumeShow}
       >
-        <Typography variant='body2'>
-          {t('proControlButtonGroup.resume')}
-        </Typography>
+        {t('proControlButtonGroup.resume')}
       </ColoredButton>
       <ColoredButton
         className={classes.button}
         color={Colors.seriousWarning}
         disabled={actionsDisabled}
         icon={<HomeCircleOutlined fontSize='inherit' />}
-        onClick={() => startCollectiveRTH()}
+        onClick={startCollectiveRTH}
       >
-        <Typography variant='body2'>
-          {t('proControlButtonGroup.collectiveRTH')}
-        </Typography>
+        {t('proControlButtonGroup.collectiveRTH')}
       </ColoredButton>
     </Box>
   );
