@@ -521,7 +521,7 @@ export const startCollectiveRTH = () => async (dispatch, getState) => {
 
   try {
     const schedule = await messageHub.execute.startCollectiveRTH();
-    setCollectiveRTHSchedule(schedule);
+    dispatch(setCollectiveRTHSchedule(schedule));
     dispatch(
       showNotification({
         message: i18n.t('show.collectiveRTH.notification.success'),
