@@ -14,7 +14,6 @@ import Switch from '@mui/material/Switch';
 import Typography from '@mui/material/Typography';
 import { bindActionCreators } from '@reduxjs/toolkit';
 import PropTypes from 'prop-types';
-import { useState } from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
@@ -68,7 +67,6 @@ const LargeControlButtonGroup = ({
   uavActions,
 }) => {
   const classes = useStyles();
-  const [proControlsExpanded, setProControlsExpanded] = useState(false);
   return (
     <>
       <StartMethodExplanation />
@@ -76,11 +74,8 @@ const LargeControlButtonGroup = ({
       {devModeEnabled && (
         <>
           <Accordion
-            expanded={proControlsExpanded}
+            defaultExpanded={true}
             style={{ marginBottom: '2px', boxShadow: 'unset' }}
-            onChange={() => {
-              setProControlsExpanded((value) => !value);
-            }}
           >
             <AccordionSummary expandIcon={<ExpandMore />}>
               <Pro />
