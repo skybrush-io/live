@@ -85,12 +85,7 @@ const LargeControlButtonGroup = ({
             <AccordionSummary expandIcon={<ExpandMore />}>
               <Pro />
             </AccordionSummary>
-            <AccordionDetails
-              sx={{
-                margin: 0,
-                padding: 0,
-              }}
-            >
+            <AccordionDetails sx={{ m: 0, p: 0 }}>
               <ProControlButtonGroup />
             </AccordionDetails>
           </Accordion>
