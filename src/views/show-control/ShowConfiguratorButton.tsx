@@ -197,14 +197,14 @@ const ShowConfiguratorButton = (props: Props) => {
 
 const ConnectedShowConfiguratorButton = connect(
   (state: RootState) => ({
+    devModeEnabled: isDeveloperModeEnabled(state),
+    rthPlanSummary: selectCollectiveRTHPlanSummary(state),
     show: selectShowConfiguratorDataFromShow(state),
     status: getSetupStageStatuses(state).showConfigurator,
-    rthPlanSummary: selectCollectiveRTHPlanSummary(state),
-    devModeEnabled: isDeveloperModeEnabled(state),
   }),
   {
-    showDialogAndClearUndoHistory,
     showCollectiveRTHDialog,
+    showDialogAndClearUndoHistory,
   }
 )(ShowConfiguratorButton);
 

@@ -226,9 +226,9 @@ const ConnectedCollectiveRTHDialog = connect(
   // mapStateToProps
   (state: RootState) => ({
     error: selectTransformationError(state),
+    existingRTHPlanSummary: selectCollectiveRTHPlanSummary(state),
     inProgress: selectTransformationInProgress(state),
     open: isDialogOpen(state),
-    existingRTHPlanSummary: selectCollectiveRTHPlanSummary(state),
     transformationResult: selectResult(state),
   }),
   // mapDispatchToProps
