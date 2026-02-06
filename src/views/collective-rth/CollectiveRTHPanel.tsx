@@ -25,11 +25,11 @@ type Props = {
 };
 
 const useOwnState = ({
-  plans,
-  numDrones,
-  dronesWithoutRTHPlan,
   dronesWithRTHPlan,
+  dronesWithoutRTHPlan,
   isValid,
+  numDrones,
+  plans,
 }: CollectiveRTHPlanSummary) => {
   const { t } = useTranslation();
 
