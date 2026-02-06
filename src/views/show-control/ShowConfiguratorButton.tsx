@@ -86,11 +86,11 @@ type Props = Readonly<{
 const ShowConfiguratorButton = (props: Props) => {
   const {
     devModeEnabled,
-    show,
-    showDialogAndClearUndoHistory,
-    showCollectiveRTHDialog,
-    status,
     rthPlanSummary,
+    show,
+    showCollectiveRTHDialog,
+    showDialogAndClearUndoHistory,
+    status,
   } = props;
 
   const dispatch = useDispatch<AppDispatch>();
