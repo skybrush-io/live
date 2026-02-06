@@ -68,7 +68,7 @@ const useOwnState = ({
     }
 
     return undefined;
-  }, [dronesWithRTHPlan, dronesWithoutRTHPlan, numDrones, isValid, t]);
+  }, [dronesWithRTHPlan, dronesWithoutRTHPlan, isValid, numDrones, t]);
 
   return {
     errorInfo,
