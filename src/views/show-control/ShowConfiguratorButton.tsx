@@ -73,14 +73,14 @@ const PREREQUISITES: ReadonlyArray<
 type Props = Readonly<{
   base64Blob?: string;
   devModeEnabled: boolean;
-  show: ShowData | undefined;
   partialShow: Partial<ShowData>;
+  rthPlanSummary: CollectiveRTHPlanSummary;
+  show: ShowData | undefined;
+  showCollectiveRTHDialog: () => void;
   // TODO: This should probably be a `ThunkActionDispatch`, but that doesn't
   //       seem to be reexported from `redux-thunk` via `@reduxjs/toolkit`...
   showDialogAndClearUndoHistory: (data?: ShowData) => void;
-  showCollectiveRTHDialog: () => void;
   status: Status;
-  rthPlanSummary: CollectiveRTHPlanSummary;
 }>;
 
 const ShowConfiguratorButton = (props: Props) => {
