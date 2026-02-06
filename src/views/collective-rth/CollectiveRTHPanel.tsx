@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import Centered from '~/components/Centered';
+import CenteredBox from '~/components/CenteredBox';
 import { hasLoadedShowFile } from '~/features/show/selectors';
 import {
   selectCollectiveRTHPlanSummary,
@@ -83,30 +83,31 @@ const CollectiveRTHPanel = ({ hasLoadedShowFile, planSummary }: Props) => {
 
   if (!hasLoadedShowFile) {
     return (
-      <Centered>
+      <CenteredBox>
         <Typography variant='h6'>
           {t('collectiveRTHPanel.message.noShowFile')}
         </Typography>
-      </Centered>
+      </CenteredBox>
     );
   }
 
   if (numDrones === 0) {
     return (
-      <Centered>
+      <CenteredBox>
         <Typography variant='h6' color='warning'>
           {t('collectiveRTHPanel.message.noDrones')}
         </Typography>
-      </Centered>
+      </CenteredBox>
     );
   }
+
   if (!isValid) {
     return (
-      <Centered>
+      <CenteredBox>
         <Typography variant='h6' color={errorInfo?.severity ?? 'error'}>
           {errorInfo?.message ?? t('collectiveRTHPanel.error.invalidPlan')}
         </Typography>
-      </Centered>
+      </CenteredBox>
     );
   }
 
