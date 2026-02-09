@@ -457,6 +457,7 @@
   },
   "proControlButtonGroup": {
     "collectiveRTH": "Collective RTH",
+    "collectiveRTHPanelNotFound": "The Collective RTH panel was not found. Please try to open it manually from the sidebar.",
     "resume": "Resume",
     "suspend": "Suspend"
   },
@@ -520,6 +521,41 @@
     "name": "Name",
     "notes": "Notes",
     "zoomLevel": "Zoom level"
+  },
+  "scheduleProgressIndicator": {
+    "caption": "{{elapsedSeconds}}s/{{durationSeconds}}s",
+    "segment": {
+      "preparation": {
+        "description": "Drones are being notified about the requested operation and they are getting ready to execute it.",
+        "title": "Preparation ({{remainingSeconds}}s)"
+      },
+      "rth": {
+        "description": "Drones are returning to their home locations.",
+        "title": "Return to Home ({{remainingSeconds}}s)"
+      },
+      "slowdown": {
+        "description": "Drones are slowing down. They remain on their original trajectories to avoid collisions.",
+        "title": "Slowdown ({{remainingSeconds}}s)"
+      },
+      "speedup": {
+        "description": "Drones are speeding up. They continue their original trajectories to avoid collisions.",
+        "title": "Speedup ({{remainingSeconds}}s)"
+      }
+    },
+    "stage": {
+      "completed": {
+        "description": "The operation has completed.",
+        "title": "Completed"
+      },
+      "progress": {
+        "description": "The operation is in progress.",
+        "title": "In progress ({{remainingSeconds}}s)"
+      },
+      "waiting": {
+        "description": "The operation will start soon.",
+        "title": "Waiting to start ({{remainingSeconds}}s)"
+      }
+    }
   },
   "serverConnectionStatus": {
     "clockSkew": "Clock skew",

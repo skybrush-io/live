@@ -4,12 +4,15 @@ import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import CenteredBox from '~/components/CenteredBox';
+import ScheduleProgressIndicator from '~/components/ScheduleProgressIndicator';
 import { hasLoadedShowFile } from '~/features/show/selectors';
 import {
   selectCollectiveRTHPlanSummary,
+  selectCollectiveRTHSchedule,
   type CollectiveRTHPlanSummary,
   type CollectiveRTHPlanSummaryItem,
 } from '~/features/show/selectors/rth';
+import type { Schedule } from '~/flockwave/schedule';
 import type { RootState } from '~/store/reducers';
 
 import RTHPlanDetails from './RTHPlanDetails';
@@ -22,6 +25,7 @@ type ErrorInfo = {
 type Props = {
   hasLoadedShowFile: boolean;
   planSummary: CollectiveRTHPlanSummary;
+  rthSchedule?: Schedule;
 };
 
 const useOwnState = ({
@@ -77,9 +81,21 @@ const useOwnState = ({
   };
 };
 
-const CollectiveRTHPanel = ({ hasLoadedShowFile, planSummary }: Props) => {
+const CollectiveRTHPanel = ({
+  hasLoadedShowFile,
+  planSummary,
+  rthSchedule,
+}: Props) => {
   const { firstTime, lastTime, numDrones, isValid } = planSummary;
   const { errorInfo, sortedPlanEntries, t } = useOwnState(planSummary);
+
+  if (rthSchedule !== undefined) {
+    return (
+      <CenteredBox>
+        <ScheduleProgressIndicator schedule={rthSchedule.schedule} />
+      </CenteredBox>
+    );
+  }
 
   if (!hasLoadedShowFile) {
     return (
@@ -123,6 +139,7 @@ const CollectiveRTHPanel = ({ hasLoadedShowFile, planSummary }: Props) => {
 const ConnectedCollectiveRTHPanel = connect((state: RootState) => ({
   hasLoadedShowFile: hasLoadedShowFile(state),
   planSummary: selectCollectiveRTHPlanSummary(state),
+  rthSchedule: selectCollectiveRTHSchedule(state),
 }))(CollectiveRTHPanel);
 
 export default ConnectedCollectiveRTHPanel;
