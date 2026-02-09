@@ -87,21 +87,15 @@ const CollectiveRTHDialog = (props: Props) => {
         disabled={inProgress}
         {...parametersFormState}
       />
-      <Box
-        sx={{
-          display: inProgress ? 'none' : 'flex',
-          flexDirection: 'column',
-          justifyItems: 'center',
-          alignItems: 'center',
-        }}
+      <Button
+        color='primary'
+        loading={inProgress}
+        loadingPosition='start'
+        onClick={() => addCollectiveRTH(parametersFormState.parameters)}
+        sx={{ margin: 'auto' }}
       >
-        <Button
-          color='primary'
-          onClick={() => addCollectiveRTH(parametersFormState.parameters)}
-        >
-          {t('collectiveRTHDialog.action.addCollectiveRTH')}
-        </Button>
-      </Box>
+        {t('collectiveRTHDialog.action.addCollectiveRTH')}
+      </Button>
     </Box>
   );
 
