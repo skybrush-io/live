@@ -525,6 +525,7 @@ export const startCollectiveRTH = () => async (dispatch, getState) => {
     dispatch(
       showNotification({
         message: i18n.t('show.collectiveRTH.notification.success'),
+        permanent: true,
         semantics: MessageSemantics.SUCCESS,
       })
     );
