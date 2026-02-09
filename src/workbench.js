@@ -80,7 +80,6 @@ export const componentRegistry = {
     component: views.CollectiveRTHPanel,
     label: 'Collective RTH',
     detachable: true,
-    feature: 'collectiveRTH',
   },
   'connection-list': {
     // deprecated, kept there for compatibility
