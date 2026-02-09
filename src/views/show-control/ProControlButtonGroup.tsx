@@ -2,6 +2,7 @@ import PauseCircleOutlined from '@mui/icons-material/PauseCircleOutlined';
 import PlayCircleOutlined from '@mui/icons-material/PlayCircleOutlined';
 import Box from '@mui/material/Box';
 import { makeStyles } from '@skybrush/app-theme-mui';
+import { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
@@ -14,8 +15,11 @@ import {
   suspendShow,
 } from '~/features/show/actions';
 import { selectIsCollectiveRTHTriggered } from '~/features/show/selectors/rth';
+import { showNotification } from '~/features/snackbar/actions';
+import { MessageSemantics, type Notification } from '~/features/snackbar/types';
 import HomeCircleOutlined from '~/icons/HomeCircleOutlined';
 import { type RootState } from '~/store/reducers';
+import { Workbench } from '~/workbench';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -37,8 +41,9 @@ type StateProps = {
 
 type DispatchProps = {
   resumeShow: () => void;
-  suspendShow: () => void;
+  showNotification: (notification: string | Notification) => void;
   startCollectiveRTH: () => void;
+  suspendShow: () => void;
 };
 
 type Props = StateProps & DispatchProps;
@@ -48,10 +53,12 @@ const ProControlButtonGroup = (props: Props) => {
     isCollectiveRTHTriggered,
     proFeaturesEnabled,
     resumeShow,
+    showNotification,
     startCollectiveRTH,
     suspendShow,
   } = props;
   const actionsDisabled = isCollectiveRTHTriggered || !proFeaturesEnabled;
+  const workbench = useContext(Workbench);
   const classes = useStyles();
   const { t } = useTranslation();
   return (
@@ -79,7 +86,15 @@ const ProControlButtonGroup = (props: Props) => {
         color={Colors.seriousWarning}
         disabled={actionsDisabled}
         icon={<HomeCircleOutlined fontSize='inherit' />}
-        onClick={startCollectiveRTH}
+        onClick={() => {
+          startCollectiveRTH();
+          if (!workbench.bringToFront('collectiveRTH')) {
+            showNotification({
+              message: t('proControlButtonGroup.collectiveRTHPanelNotFound'),
+              semantics: MessageSemantics.WARNING,
+            });
+          }
+        }}
       >
         {t('proControlButtonGroup.collectiveRTH')}
       </ColoredButton>
@@ -92,7 +107,7 @@ const ConnectedProControlButtonGroup = connect(
     isCollectiveRTHTriggered: selectIsCollectiveRTHTriggered(state),
     proFeaturesEnabled: hasLicenseWithProFeatures(state),
   }),
-  { resumeShow, suspendShow, startCollectiveRTH }
+  { resumeShow, showNotification, startCollectiveRTH, suspendShow }
 )(ProControlButtonGroup);
 
 export default ConnectedProControlButtonGroup;
