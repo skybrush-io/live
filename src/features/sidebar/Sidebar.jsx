@@ -24,8 +24,8 @@ import LogStatusBadge from '~/components/badges/LogStatusBadge';
 import { getMissionType } from '~/features/mission/selectors';
 import { areExperimentalFeaturesEnabled } from '~/features/settings/selectors';
 import Antenna from '~/icons/Antenna';
-import CollectiveRTHIcon from '~/icons/HomeCircleOutlined';
 import ConnectingAirports from '~/icons/ConnectingAirports';
+import HomeCircleOutlined from '~/icons/HomeCircleOutlined';
 import Route from '~/icons/Route';
 import ShapeLine from '~/icons/ShapeLine';
 import { MissionType } from '~/model/missions';
@@ -112,7 +112,7 @@ const Sidebar = ({
         />
         <Module
           id='collectiveRTH'
-          icon={<CollectiveRTHIcon />}
+          icon={<HomeCircleOutlined />}
           label={t('view.collective-rth')}
           component='collective-rth'
         />
