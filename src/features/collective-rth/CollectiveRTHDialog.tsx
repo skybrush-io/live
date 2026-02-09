@@ -110,6 +110,7 @@ const CollectiveRTHDialog = (props: Props) => {
       fullWidth
       disableEscapeKeyDown={inProgress || transformationResult !== undefined}
       maxWidth='sm'
+      onClose={closeDialog}
       open={open}
       title={t('collectiveRTHDialog.title')}
     >
