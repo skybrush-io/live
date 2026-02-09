@@ -217,10 +217,8 @@ const CollectiveRTHDialog = (props: Props) => {
  * The reason for this is to correctly initialize the dialog's state
  * when it is opened.
  */
-const CollectiveRTHDialogWrapper = (props: Props) => {
-  const { open, ...rest } = props;
-  return open ? <CollectiveRTHDialog open {...rest} /> : null;
-};
+const CollectiveRTHDialogWrapper = ({ open, ...rest }: Props) =>
+  open ? <CollectiveRTHDialog open {...rest} /> : null;
 
 const ConnectedCollectiveRTHDialog = connect(
   // mapStateToProps
