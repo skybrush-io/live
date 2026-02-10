@@ -269,7 +269,8 @@
       "minutes_one": "{{count}} minute",
       "minutes_other": "{{count}} minutes",
       "seconds_one": "{{count}} second",
-      "seconds_other": "{{count}} seconds"
+      "seconds_other": "{{count}} seconds",
+      "seconds_short": "{{count}}s"
     }
   },
   "geofence": {

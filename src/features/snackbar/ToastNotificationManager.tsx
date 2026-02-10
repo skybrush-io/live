@@ -5,17 +5,21 @@
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import { styled } from '@mui/material/styles';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { useToasts } from 'react-toast-notifications';
+import type { ReactNode } from 'react';
+import { useDispatch } from 'react-redux';
+import { type AppearanceTypes, useToasts } from 'react-toast-notifications';
 
+import Countdown from '~/components/Countdown';
 import { useSignal } from '~/hooks';
+import type { AppDispatch } from '~/store/reducers';
 
 import { SNACKBAR_TRANSITION_DURATION } from './constants';
 import snackbarSignal from './signal';
-import { MessageSemantics } from './types';
+import { MessageSemantics, type Notification } from './types';
 
-const semanticsToAppearance = {
+const semanticsToAppearance: Partial<
+  Record<MessageSemantics, AppearanceTypes>
+> = {
   [MessageSemantics.INFO]: 'info',
   [MessageSemantics.SUCCESS]: 'success',
   [MessageSemantics.WARNING]: 'warning',
@@ -30,14 +34,24 @@ const ToastNotificationButton = styled(Button)({
 /**
  * Function that creates a React content node to show for the given notification.
  */
-const createContentNode = ({ buttons, message, header }, dispatch) => {
-  let result = message;
+const createContentNode = (
+  { buttons, countdown, message, header, timeout }: Notification,
+  dispatch: AppDispatch
+): ReactNode => {
+  let result: ReactNode = message;
+
+  if (countdown && timeout !== undefined && Number.isFinite(timeout)) {
+    result = (
+      <>
+        {result}&nbsp;({<Countdown seconds={timeout / 1000} />})
+      </>
+    );
+  }
 
   if (Array.isArray(buttons) && buttons.length > 0) {
     const buttonComponents = buttons.map(
-      ({ action, label, ...rest }, index) => (
+      ({ action, label, ...rest }, index: number) => (
         <ToastNotificationButton
-          // eslint-disable-next-line react/no-array-index-key
           key={index}
           size='small'
           variant='outlined'
@@ -79,30 +93,32 @@ const createContentNode = ({ buttons, message, header }, dispatch) => {
   return result;
 };
 
-/**
- * Presentation component for the global snackbar of the main window.
- *
- * @returns  {Object}  the rendered snackbar component
- */
-const ToastNotificationManager = ({ dispatch }) => {
+const ToastNotificationManager = () => {
+  const dispatch = useDispatch();
   const { addToast, toastStack, removeToast } = useToasts();
 
   useSignal(
     snackbarSignal,
     ({
       buttons,
+      countdown,
       header,
       message,
       permanent = false,
       semantics = MessageSemantics.DEFAULT,
       timeout,
       topic,
-    }) => {
-      const match = topic && toastStack.find((t) => t?.topic === topic);
+    }: Notification) => {
+      const match =
+        topic &&
+        toastStack.find((t) => (t as { topic?: string })?.topic === topic);
 
-      const content = createContentNode({ buttons, message, header }, dispatch);
+      const content = createContentNode(
+        { buttons, countdown, message, header, timeout },
+        dispatch
+      );
       const options = {
-        appearance: semanticsToAppearance[semantics] || 'info',
+        appearance: semanticsToAppearance[semantics] ?? 'info',
         autoDismiss: !permanent,
         // We don't want to override the default, and `undefined` is not ignored
         // internally, so we only pass the parameter, if it's actually present
@@ -130,12 +146,4 @@ const ToastNotificationManager = ({ dispatch }) => {
   return null;
 };
 
-ToastNotificationManager.propTypes = {
-  dispatch: PropTypes.func.isRequired,
-};
-
-/**
- * Global snackbar at the bottom of the main window.
- */
-export default connect()(ToastNotificationManager);
-// We only need `connect` to get `dispatch` as a prop.
+export default ToastNotificationManager;

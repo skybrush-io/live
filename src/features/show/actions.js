@@ -551,11 +551,16 @@ export const suspendShow = () => async (dispatch, getState) => {
   }
 
   try {
-    await messageHub.execute.suspendShow();
+    const result = await messageHub.execute.suspendShow();
+    const timeout = result.schedule.at(-1)?.endMs - Date.now();
+    const countdown = Number.isNaN(timeout)
+      ? undefined
+      : { countdown: true, timeout };
     dispatch(
       showNotification({
         message: i18n.t('show.suspend.notification.success'),
         semantics: MessageSemantics.SUCCESS,
+        ...countdown,
       })
     );
   } catch (error) {
@@ -579,11 +584,16 @@ export const resumeShow = () => async (dispatch, getState) => {
   }
 
   try {
-    await messageHub.execute.resumeShow();
+    const result = await messageHub.execute.resumeShow();
+    const timeout = result.schedule.at(-1)?.endMs - Date.now();
+    const countdown = Number.isNaN(timeout)
+      ? undefined
+      : { countdown: true, timeout };
     dispatch(
       showNotification({
         message: i18n.t('show.resume.notification.success'),
         semantics: MessageSemantics.SUCCESS,
+        ...countdown,
       })
     );
   } catch (error) {
