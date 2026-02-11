@@ -182,8 +182,6 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 type Props = {
   plans: CollectiveRTHPlanSummaryItem[];
-  firstTime: number | undefined;
-  lastTime: number | undefined;
   showStartTime: number | null;
   showSegments: ShowSegmentsRecord | undefined;
 };
