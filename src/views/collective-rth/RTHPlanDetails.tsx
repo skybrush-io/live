@@ -8,9 +8,11 @@ import { type TableProps, TableVirtuoso } from 'react-virtuoso';
 import { makeStyles, monospacedFont } from '@skybrush/app-theme-mui';
 
 import { COLLECTIVE_RTH_TIMING } from '~/features/show/constants';
-import { getShowStartTime } from '~/features/show/selectors';
+import {
+  type CollectiveRTHPlanSummaryItem,
+  getShowStartTime,
+} from '~/features/show/selectors';
 import { getShowSegments } from '~/features/show/selectors/core';
-import { type CollectiveRTHPlanSummaryItem } from '~/features/show/selectors/rth';
 import type { ShowSegmentsRecord } from '~/features/show/types';
 import type { RootState } from '~/store/reducers';
 import { formatDurationMS, formatTimeOfDay } from '~/utils/formatting';

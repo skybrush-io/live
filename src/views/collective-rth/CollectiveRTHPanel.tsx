@@ -5,13 +5,13 @@ import { connect } from 'react-redux';
 
 import CenteredBox from '~/components/CenteredBox';
 import ScheduleProgressIndicator from '~/components/ScheduleProgressIndicator';
-import { hasLoadedShowFile } from '~/features/show/selectors';
 import {
+  hasLoadedShowFile,
   selectCollectiveRTHPlanSummary,
   selectCollectiveRTHSchedule,
   type CollectiveRTHPlanSummary,
   type CollectiveRTHPlanSummaryItem,
-} from '~/features/show/selectors/rth';
+} from '~/features/show/selectors';
 import type { Schedule } from '~/flockwave/schedule';
 import type { RootState } from '~/store/reducers';
 

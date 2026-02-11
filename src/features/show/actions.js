@@ -54,8 +54,8 @@ import {
   getRoomCorners,
   getShowClockReference,
   hasScheduledStartTime,
+  selectIsCollectiveRTHTriggered,
 } from './selectors';
-import { selectIsCollectiveRTHTriggered } from './selectors/rth';
 import {
   _clearLoadedShow,
   _setOutdoorShowAltitudeReference,

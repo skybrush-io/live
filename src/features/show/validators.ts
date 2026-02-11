@@ -5,7 +5,7 @@ import type { DroneSpecification } from '@skybrush/show-format';
 import type {
   CollectiveRTHPlanSummary,
   CollectiveRTHPlanSummaryItem,
-} from './selectors/rth';
+} from './selectors';
 
 type RTHAction = RTHPlanEntry['action'];
 

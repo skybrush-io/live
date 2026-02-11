@@ -14,7 +14,7 @@ import {
   startCollectiveRTH,
   suspendShow,
 } from '~/features/show/actions';
-import { selectIsCollectiveRTHTriggered } from '~/features/show/selectors/rth';
+import { selectIsCollectiveRTHTriggered } from '~/features/show/selectors';
 import { showNotification } from '~/features/snackbar/actions';
 import { MessageSemantics, type Notification } from '~/features/snackbar/types';
 import HomeCircleOutlined from '~/icons/HomeCircleOutlined';
