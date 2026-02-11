@@ -86,7 +86,7 @@ const CollectiveRTHPanel = ({
   planSummary,
   rthSchedule,
 }: Props) => {
-  const { firstTime, lastTime, numDrones, isValid } = planSummary;
+  const { numDrones, isValid } = planSummary;
   const { errorInfo, sortedPlanEntries, t } = useOwnState(planSummary);
 
   if (rthSchedule !== undefined) {
