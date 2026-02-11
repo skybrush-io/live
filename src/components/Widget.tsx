@@ -7,20 +7,17 @@
  */
 
 import Paper from '@mui/material/Paper';
-import PropTypes from 'prop-types';
+import type React from 'react';
 
-const Widget = ({ children, style }) => (
+type Props = {
+  children?: React.ReactNode;
+  style?: React.CSSProperties;
+};
+
+const Widget = ({ children, style }: Props) => (
   <Paper className='widget' style={style}>
     {children}
   </Paper>
 );
-
-Widget.propTypes = {
-  children: PropTypes.oneOfType([
-    PropTypes.arrayOf(PropTypes.node),
-    PropTypes.node,
-  ]),
-  style: PropTypes.object,
-};
 
 export default Widget;
