@@ -127,13 +127,7 @@ const CollectiveRTHPanel = ({
     );
   }
 
-  return (
-    <RTHPlanDetails
-      plans={sortedPlanEntries}
-      firstTime={firstTime}
-      lastTime={lastTime}
-    />
-  );
+  return <RTHPlanDetails plans={sortedPlanEntries} />;
 };
 
 const ConnectedCollectiveRTHPanel = connect((state: RootState) => ({
