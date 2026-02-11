@@ -1,6 +1,5 @@
-import Box from '@mui/material/Box';
+import Box, { type BoxProps } from '@mui/material/Box';
 import clsx from 'clsx';
-import PropTypes from 'prop-types';
 
 import { makeStyles } from '@skybrush/app-theme-mui';
 
@@ -32,6 +31,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+type Size = 'small' | 'normal' | 'large';
+
+type Props = Omit<BoxProps, 'children' | 'color'> & {
+  color: string;
+  inline?: boolean;
+  size?: Size;
+};
+
 /**
  * Small component resembling an LED light that can be set to an arbitrary
  * color, with no semantic meaning.
@@ -42,11 +49,11 @@ const useStyles = makeStyles((theme) => ({
  */
 const ColoredLight = ({
   color = '#000000',
-  inline,
+  inline = false,
   size = 'normal',
   style,
   ...rest
-}) => {
+}: Props) => {
   const classes = useStyles();
 
   return (
@@ -54,7 +61,7 @@ const ColoredLight = ({
       className={clsx(
         classes.root,
         inline && classes.inline,
-        classes[`size-${size}`]
+        classes[`size-${size}` as keyof ReturnType<typeof useStyles>]
       )}
       component={inline ? 'span' : 'div'}
       style={{
@@ -64,13 +71,6 @@ const ColoredLight = ({
       {...rest}
     />
   );
-};
-
-ColoredLight.propTypes = {
-  color: PropTypes.string,
-  inline: PropTypes.bool,
-  size: PropTypes.oneOf(['small', 'normal', 'large']),
-  style: PropTypes.object,
 };
 
 export default ColoredLight;
