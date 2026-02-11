@@ -1,3 +1,2 @@
 # .gitignore override for dev tools
-!.plan
-!.prompt
+!ai
