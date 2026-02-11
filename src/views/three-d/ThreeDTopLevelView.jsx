@@ -92,7 +92,7 @@ const ThreeDTopLevelView = ({
             <ToolbarDivider orientation='vertical' />
             <NavigationInstructions mode={navigation.mode} />
             <DarkModeSwitch
-              value={lighting === 'dark'}
+              selected={lighting === 'dark'}
               onChange={onToggleLightingConditions}
             />
           </Toolbar>
