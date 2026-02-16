@@ -86,31 +86,30 @@ const UAVTestButton = ({
   const [progress, setProgress] = useState(null);
   const [suspended, setSuspended] = useState(false);
   const resumeCallback = useRef(null);
+  const uavIdRef = useRef(uavId);
+  uavIdRef.current = uavId;
 
   const clearPendingConfirmation = useCallback(() => {
     clearTimeout(pendingConfirmation);
     setPendingConfirmation(null);
-  }, [pendingConfirmation, setPendingConfirmation]);
+  }, [pendingConfirmation]);
 
   const askForConfirmation = useCallback(() => {
     clearPendingConfirmation();
     setPendingConfirmation(setTimeout(clearPendingConfirmation, 3000));
-  }, [clearPendingConfirmation, setPendingConfirmation]);
+  }, [clearPendingConfirmation]);
 
-  const giveConfirmation = useCallback(() => {
-    clearPendingConfirmation();
-    if (suspended) {
-      resume();
-    } else {
-      execute();
-    }
-  }, [clearPendingConfirmation, execute, resume, suspended]);
-
-  const progressHandler = useCallback(({ progress, resume, suspended }) => {
-    setProgress(progress);
-    setSuspended(Boolean(suspended));
-    resumeCallback.current = resume;
-  }, []);
+  const progressHandler = useCallback(
+    (progressUAVId, { progress, resume, suspended }) => {
+      if (progressUAVId !== uavIdRef.current) {
+        return;
+      }
+      setProgress(progress);
+      setSuspended(Boolean(suspended));
+      resumeCallback.current = resume;
+    },
+    []
+  );
 
   const [executionState, execute] = useAsyncFn(async () => {
     // TODO(ntamas): use the proper UAV-TEST messages designated for this
@@ -120,10 +119,10 @@ const UAVTestButton = ({
         command: type === 'test' ? 'test' : 'calib',
         args: [String(component)],
       },
-      { onProgress: progressHandler, timeout }
+      { onProgress: (progress) => progressHandler(uavId, progress), timeout }
     );
     return true;
-  }, [messageHub, progressHandler]);
+  }, [component, messageHub, progressHandler, timeout, type, uavId]);
 
   const [, resume] = useAsyncFn(async () => {
     if (resumeCallback.current) {
@@ -132,6 +131,15 @@ const UAVTestButton = ({
       throw new Error('No resume callback has been provided');
     }
   }, []);
+
+  const giveConfirmation = useCallback(() => {
+    clearPendingConfirmation();
+    if (suspended) {
+      resume();
+    } else {
+      execute();
+    }
+  }, [clearPendingConfirmation, execute, resume, suspended]);
 
   return (
     <ListItemButton
