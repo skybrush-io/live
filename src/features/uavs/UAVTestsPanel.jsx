@@ -6,7 +6,7 @@ import ListItemText from '@mui/material/ListItemText';
 import Zoom from '@mui/material/Zoom';
 import isNil from 'lodash-es/isNil';
 import PropTypes from 'prop-types';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useAsyncFn } from 'react-use';
 
 import { StatusLight } from '@skybrush/mui-components';
@@ -86,6 +86,7 @@ const UAVTestButton = ({
   const [progress, setProgress] = useState(null);
   const [suspended, setSuspended] = useState(false);
   const resumeCallback = useRef(null);
+  const lastExecutedUavIdRef = useRef(null);
   const uavIdRef = useRef(uavId);
   uavIdRef.current = uavId;
 
@@ -93,6 +94,13 @@ const UAVTestButton = ({
     clearTimeout(pendingConfirmation);
     setPendingConfirmation(null);
   }, [pendingConfirmation]);
+
+  useEffect(() => {
+    clearPendingConfirmation();
+    setProgress(null);
+    setSuspended(false);
+    resumeCallback.current = null;
+  }, [clearPendingConfirmation, uavId]);
 
   const askForConfirmation = useCallback(() => {
     clearPendingConfirmation();
@@ -111,7 +119,8 @@ const UAVTestButton = ({
     []
   );
 
-  const [executionState, execute] = useAsyncFn(async () => {
+  const [lastExecutionState, execute] = useAsyncFn(async () => {
+    lastExecutedUavIdRef.current = uavId;
     // TODO(ntamas): use the proper UAV-TEST messages designated for this
     await messageHub.sendCommandRequest(
       {
@@ -123,6 +132,11 @@ const UAVTestButton = ({
     );
     return true;
   }, [component, messageHub, progressHandler, timeout, type, uavId]);
+
+  const executionState =
+    lastExecutedUavIdRef.current === uavId
+      ? lastExecutionState
+      : { loading: false };
 
   const [, resume] = useAsyncFn(async () => {
     if (resumeCallback.current) {
