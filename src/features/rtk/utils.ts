@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
+import { formatDistance } from "~/utils/formatting";
 
 const descriptions: Record<string, string> = {
   'rtcm2/1': 'Differential GPS Corrections',
@@ -112,11 +113,13 @@ export function formatSurveyAccuracy(
   value: number,
   { max = 20, short = false } = {}
 ): string {
-  return value > max
-    ? `> ${max}m`
-    : value >= 1
-      ? value.toFixed(2) + 'm'
-      : value >= 0.1
-        ? (value * 100).toFixed(short ? 0 : 1) + 'cm'
-        : (value * 100).toFixed(1) + 'cm';
+  if (value > max) {
+    return `> ${max}m`
+  }
+  if (value > 1) {
+    const ceiled = Math.ceil(value * 100) / 100
+    return formatDistance(ceiled, 2)
+  }
+  const ceiled = Math.ceil(value * 1000) / 1000
+  return formatDistance(ceiled, 1)
 }
