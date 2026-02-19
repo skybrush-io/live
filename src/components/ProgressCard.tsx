@@ -79,6 +79,7 @@ const ProgressCard = (props: Props) => {
         <LinearProgress
           value={value}
           variant='determinate'
+          color={value >= 100 ? 'success' : 'primary'}
           sx={{ borderRadius: '0px 0px 4px 4px', height: 8, mx: -2 }}
         />
       </Box>

@@ -524,23 +524,43 @@
     "zoomLevel": "Zoom level"
   },
   "scheduleProgressIndicator": {
-    "caption": "{{elapsedSeconds}}s/{{durationSeconds}}s",
+    "empty": {
+      "description": "No operations are scheduled.",
+      "title": "Empty schedule"
+    },
+    "progress": {
+      "active": "{{elapsedSeconds}}s/{{durationSeconds}}s",
+      "completed": "Completed",
+      "waiting": "Waiting ..."
+    },
     "segment": {
       "preparation": {
         "description": "Drones are being notified about the requested operation and they are getting ready to execute it.",
-        "title": "Preparation ({{remainingSeconds}}s)"
+        "title": {
+          "default": "Preparation",
+          "waiting": "Preparation (in {{countdownSeconds}}s)"
+        }
       },
       "rth": {
         "description": "Drones are returning to their home locations.",
-        "title": "Return to Home ({{remainingSeconds}}s)"
+        "title": {
+          "default": "Return to Home",
+          "waiting": "Return to Home (in {{countdownSeconds}}s)"
+        }
       },
       "slowdown": {
         "description": "Drones are slowing down. They remain on their original trajectories to avoid collisions.",
-        "title": "Slowdown ({{remainingSeconds}}s)"
+        "title": {
+          "default": "Slowdown",
+          "waiting": "Slowdown (in {{countdownSeconds}}s)"
+        }
       },
       "speedup": {
         "description": "Drones are speeding up. They continue their original trajectories to avoid collisions.",
-        "title": "Speedup ({{remainingSeconds}}s)"
+        "title": {
+          "default": "Speedup",
+          "waiting": "Speedup (in {{countdownSeconds}}s)"
+        }
       }
     },
     "stage": {

@@ -90,11 +90,7 @@ const CollectiveRTHPanel = ({
   const { errorInfo, sortedPlanEntries, t } = useOwnState(planSummary);
 
   if (rthSchedule !== undefined) {
-    return (
-      <CenteredBox>
-        <ScheduleProgressIndicator schedule={rthSchedule.schedule} />
-      </CenteredBox>
-    );
+    return <ScheduleProgressIndicator schedule={rthSchedule.schedule} />;
   }
 
   if (!hasLoadedShowFile) {

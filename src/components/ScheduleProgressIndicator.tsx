@@ -1,8 +1,7 @@
-import Check from '@mui/icons-material/Check';
-import HourglassTop from '@mui/icons-material/HourglassTop';
 import PauseCircleOutlined from '@mui/icons-material/PauseCircleOutlined';
 import PlayCircleOutlined from '@mui/icons-material/PlayCircleOutlined';
 import Webhook from '@mui/icons-material/Webhook';
+import Box from '@mui/material/Box';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -20,82 +19,87 @@ const SEGMENT_TYPE_ICONS: Record<TimeSegmentType, React.ReactNode> = {
   speedup: <PlayCircleOutlined />,
 };
 
-type Stage =
-  | { id: 'waiting'; remainingMs: number }
-  | { id: 'completed'; remainingMs: number }
-  | {
-      id: 'progress';
-      remainingMs: number;
-      segment: TimeSegment | undefined;
-    };
+type SegmentStage = 'waiting' | 'active' | 'completed';
 
-function getCurrentStage(segments: TimeSegment[], nowMs: number): Stage {
-  if (segments.length === 0) {
-    return { id: 'completed', remainingMs: 0 };
-  }
-
-  const firstSegment = segments[0];
-  if (nowMs < firstSegment.startMs) {
-    return { id: 'waiting', remainingMs: firstSegment.startMs - nowMs };
-  }
-
-  const lastSegment = segments[segments.length - 1];
-  if (nowMs >= lastSegment.endMs) {
-    return { id: 'completed', remainingMs: 0 };
-  }
-
-  // There must be a segment that ends after the current ms
-  // otherwise we'd be in the completed stage.
-  const nextSegment = segments.find((seg) => nowMs < seg.endMs)!;
-  const inNextSegment = nextSegment.startMs <= nowMs;
-
-  return {
-    id: 'progress',
-    remainingMs: inNextSegment
-      ? nextSegment.endMs - nowMs
-      : nextSegment.startMs - nowMs,
-    segment: inNextSegment ? nextSegment : undefined,
-  };
-}
-
-type Progress = {
-  /**
-   * The total duration of the schedule in milliseconds.
-   *
-   * 0 if the schedule is empty.
-   */
+type SegmentProgress = {
   durationMs: number;
-
-  /**
-   * The number of milliseconds since the start time of the first time segment.
-   *
-   * 0 if the schedule is empty.
-   */
   elapsedMs: number;
-
-  /**
-   * Current progress in the [0,100] interval.
-   */
   progress: number;
+  stage: SegmentStage;
+  waitingMs: number;
 };
 
-function calculateProgress(segments: TimeSegment[], nowMs: number): Progress {
-  if (segments.length === 0) {
-    return { durationMs: 0, elapsedMs: 0, progress: 100 };
+function calculateSegmentProgress(
+  segment: TimeSegment,
+  nowMs: number
+): SegmentProgress {
+  const durationMs = Math.max(segment.endMs - segment.startMs, 0);
+  const elapsedMs = Math.max(Math.min(nowMs - segment.startMs, durationMs), 0);
+  const progress =
+    durationMs > 0
+      ? Math.min(Math.floor((elapsedMs / durationMs) * 100), 100)
+      : 100;
+  let waitingMs = 0;
+
+  let stage: SegmentStage;
+  if (nowMs < segment.startMs) {
+    stage = 'waiting';
+    waitingMs = segment.startMs - nowMs;
+  } else if (progress < 100) {
+    stage = 'active';
+  } else {
+    stage = 'completed';
   }
 
-  const firstSegment = segments[0];
-  const lastSegment = segments[segments.length - 1];
-
-  const durationMs = Math.max(lastSegment.endMs - firstSegment.startMs, 0);
-  if (durationMs <= 0) {
-    return { durationMs: 0, elapsedMs: 0, progress: 100 };
-  }
-
-  const elapsedMs = Math.max(nowMs - firstSegment.startMs, 0);
-  const progress = Math.min(Math.max((elapsedMs / durationMs) * 100, 0), 100);
-  return { durationMs, elapsedMs, progress };
+  return { durationMs, elapsedMs, progress, stage, waitingMs };
 }
+
+type SegmentProgressCardProps = {
+  segment: TimeSegment;
+};
+
+const SegmentProgressCard = ({ segment }: SegmentProgressCardProps) => {
+  const { t } = useTranslation();
+  const [nowMs, setNowMs] = useState(() => Date.now());
+  const { durationMs, elapsedMs, progress, stage, waitingMs } =
+    calculateSegmentProgress(segment, nowMs);
+
+  useEffect(() => {
+    if (stage === 'completed') {
+      return;
+    }
+
+    const intervalId = setInterval(() => {
+      setNowMs(Date.now());
+    }, UPDATE_INTERVAL_MS);
+
+    return () => clearInterval(intervalId);
+  }, [stage]);
+
+  const title = t(
+    `scheduleProgressIndicator.segment.${segment.type}.title.${
+      stage === 'waiting' ? 'waiting' : 'default'
+    }`,
+    { countdownSeconds: Math.ceil(waitingMs / 1000) }
+  );
+  const description = t(
+    `scheduleProgressIndicator.segment.${segment.type}.description`
+  );
+  const caption = t(`scheduleProgressIndicator.progress.${stage}`, {
+    elapsedSeconds: Math.floor(elapsedMs / 1000),
+    durationSeconds: Math.ceil(durationMs / 1000),
+  });
+
+  return (
+    <ProgressCard
+      value={progress}
+      title={title}
+      description={description}
+      caption={caption}
+      icon={SEGMENT_TYPE_ICONS[segment.type]}
+    />
+  );
+};
 
 type ScheduleProgressIndicatorProps = {
   schedule: TimeSegment[];
@@ -105,65 +109,34 @@ const ScheduleProgressIndicator = ({
   schedule,
 }: ScheduleProgressIndicatorProps) => {
   const { t } = useTranslation();
-  const [nowMs, setNowMs] = useState(() => Date.now());
-  const stage = getCurrentStage(schedule, nowMs);
-  const stageId = stage.id;
-  const { durationMs, elapsedMs, progress } = calculateProgress(
-    schedule,
-    nowMs
-  );
-
-  useEffect(() => {
-    if (stageId === 'completed') {
-      return;
-    }
-
-    const intervalId = setInterval(() => {
-      setNowMs(Date.now());
-    }, UPDATE_INTERVAL_MS);
-
-    return () => clearInterval(intervalId);
-  }, [stageId]);
-
-  const segment = stage.id === 'progress' ? stage.segment : undefined;
-  const [title, description] =
-    segment === undefined
-      ? [
-          t(`scheduleProgressIndicator.stage.${stage.id}.title`, {
-            remainingSeconds: String(Math.ceil(stage.remainingMs / 1000)),
-          }),
-          t(`scheduleProgressIndicator.stage.${stage.id}.description`),
-        ]
-      : [
-          t(`scheduleProgressIndicator.segment.${segment.type}.title`, {
-            remainingSeconds: String(Math.ceil(stage.remainingMs / 1000)),
-          }),
-          t(`scheduleProgressIndicator.segment.${segment.type}.description`),
-        ];
 
   return (
-    <ProgressCard
-      value={progress}
-      title={title}
-      description={description}
-      caption={t('scheduleProgressIndicator.caption', {
-        elapsedSeconds: String(
-          Math.floor(Math.min(elapsedMs, durationMs) / 1000)
-        ),
-        durationSeconds: String(Math.ceil(durationMs / 1000)),
-      })}
-      icon={
-        stage.id === 'waiting' ? (
-          <HourglassTop />
-        ) : stage.id === 'completed' ? (
-          <Check />
-        ) : stage.segment?.type === undefined ? (
-          <Webhook />
-        ) : (
-          SEGMENT_TYPE_ICONS[stage.segment.type]
-        )
-      }
-    ></ProgressCard>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        minHeight: '100%',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 2,
+        p: 2,
+      }}
+    >
+      {schedule.length === 0 ? (
+        <ProgressCard
+          value={100}
+          title={t('scheduleProgressIndicator.empty.title')}
+          description={t('scheduleProgressIndicator.empty.description')}
+        />
+      ) : (
+        schedule.map((segment) => (
+          <SegmentProgressCard
+            key={`${segment.type}-${segment.startMs}`}
+            segment={segment}
+          />
+        ))
+      )}
+    </Box>
   );
 };
 
