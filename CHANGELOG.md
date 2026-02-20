@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support for keeping the original light configuration when adapting the show in
   the show adaptation dialog.
 
+- It is now possible to set a UAV ID for parameters in the parameter upload dialog.
+  `PARAM=value` or `PARAM,value` can be used to target all UAVs, and `UAV_ID=PARAM=value`
+  or `UAV_ID,PARAM,value` can be used to target a single UAV.
+
 ### Fixed
 
 - Fixed UAV changing issues on the Tests panel of the UAV properties dialog.
