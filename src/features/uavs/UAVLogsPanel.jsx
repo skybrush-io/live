@@ -10,7 +10,7 @@ import Typography from '@mui/material/Typography';
 import isNil from 'lodash-es/isNil';
 import prettyBytes from 'pretty-bytes';
 import PropTypes from 'prop-types';
-import React, { memo, useCallback } from 'react';
+import { memo, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useAsyncRetry } from 'react-use';
 
@@ -159,12 +159,7 @@ const UAVLogListItem = ({ id, kind, size, timestamp, uavId }) => {
         secondary={secondaryComponent}
       />
       <ListItemSecondaryAction>
-        <IconButton
-          edge='end'
-          disabled={isLoading}
-          size='large'
-          onClick={onClick}
-        >
+        <IconButton edge='end' disabled={isLoading} size='large'>
           {downloadState?.status === LogDownloadStatus.SUCCESS ? (
             <Save />
           ) : (
