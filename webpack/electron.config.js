@@ -55,6 +55,14 @@ module.exports = merge(baseConfig, {
   entry: {
     app: ['process/browser', './src/index'],
   },
+  devServer: {
+    static: [
+      {
+        directory: path.join(projectRoot, 'assets'),
+        publicPath: '/assets',
+      },
+    ],
+  },
   optimization,
   plugins,
   resolve: {

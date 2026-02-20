@@ -7,6 +7,7 @@ import 'aframe-environment-component';
 
 import './components/deallocate';
 import './components/drone-flock';
+import './components/fbx-model';
 import './components/glow-material';
 import './components/sync-pose-with-store';
 

@@ -43,6 +43,14 @@ module.exports = merge(baseConfig, {
   entry: {
     app: './src/index',
   },
+  devServer: {
+    static: [
+      {
+        directory: path.join(projectRoot, 'assets'),
+        publicPath: '/assets',
+      },
+    ],
+  },
   resolve: {
     alias: {
       // These are needed for WorkerUrlPlugin to work correctly, but only in the

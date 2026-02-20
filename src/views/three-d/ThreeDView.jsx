@@ -7,6 +7,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 import CoordinateSystemAxes from './CoordinateSystemAxes';
+import DroneShapeMarkers from './DroneShapeMarkers';
 import HomePositionMarkers from './HomePositionMarkers';
 import LandingPositionMarkers from './LandingPositionMarkers';
 import Room from './Room';
@@ -94,6 +95,7 @@ const ThreeDView = React.forwardRef((props, ref) => {
       {...extraSceneProps}
     >
       <a-assets>
+        <a-asset-item id='drone-fbx' src='assets/fbx/drone.fbx' />
         <a-mixin
           id='takeoff-marker'
           geometry='primitive: triangle; vertexA: 1 0 0; vertexB: -0.5 0.866 0; vertexC: -0.5 -0.866 0'
@@ -103,6 +105,10 @@ const ThreeDView = React.forwardRef((props, ref) => {
           id='landing-marker'
           geometry='primitive: triangle; vertexA: -1 0 0; vertexB: 0.5 -0.866 0; vertexC: 0.5 0.866 0'
           material={`color: ${Colors.markers.landing}; shader: flat; side: double`}
+        />
+        <a-mixin
+          id='drone-marker'
+          fbx-model='src: #drone-fbx; scale: 0.01 0.01 0.01'
         />
       </a-assets>
 
@@ -130,6 +136,7 @@ const ThreeDView = React.forwardRef((props, ref) => {
         {showLandingPositions && <LandingPositionMarkers />}
         {showTrajectoriesOfSelection && <SelectedTrajectories />}
 
+        <DroneShapeMarkers />
         <a-drone-flock />
 
         <Room />
