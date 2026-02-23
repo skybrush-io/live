@@ -133,6 +133,8 @@ AFrame.registerSystem('drone-flock', {
     }
 
     const color = convertRGB565ToHex(uav.light | 0);
+    entity.originalColor = color;
+    entity.originalGlowColor = color;
     const mesh = entity.getObject3D('mesh');
     if (mesh) {
       mesh.material.color.setHex(color);
@@ -161,6 +163,19 @@ AFrame.registerSystem('drone-flock', {
     const glowMesh = this._getGlowMeshFromEntity(entity);
     if (glowMesh) {
       glowMesh.scale.set(this._glowScale, this._glowScale, 1);
+    }
+
+    // Update edges
+    if (entity.edgesLine) {
+      entity.object3D.remove(entity.edgesLine);
+    }
+    const mesh = entity.getObject3D('mesh');
+    if (mesh) {
+      const edges = new THREE.EdgesGeometry(mesh.geometry);
+      const line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0xff0000 }));
+      line.visible = false;
+      entity.object3D.add(line);
+      entity.edgesLine = line;
     }
   },
 
@@ -251,9 +266,33 @@ AFrame.registerComponent('drone-flock', {
         entity.className = 'three-d-clickable';
         entity.addEventListener('mouseenter', () => {
           store.dispatch(setFeatureIdForTooltip(uavIdToGlobalId(id)));
+          const mesh = entity.getObject3D('mesh');
+          if (mesh) {
+            entity.originalColor = entity.originalColor || mesh.material.color.getHex();
+            mesh.material.color.setHex(0xff0000);
+          }
+          const glowMesh = this.system._getGlowMeshFromEntity(entity);
+          if (glowMesh && glowMesh.material) {
+            entity.originalGlowColor = entity.originalGlowColor || glowMesh.material.color.getHex();
+            glowMesh.material.color.setHex(0xff0000);
+          }
+          if (entity.edgesLine) {
+            entity.edgesLine.visible = true;
+          }
         });
         entity.addEventListener('mouseleave', () => {
           store.dispatch(setFeatureIdForTooltip(null));
+          const mesh = entity.getObject3D('mesh');
+          if (mesh && entity.originalColor) {
+            mesh.material.color.setHex(entity.originalColor);
+          }
+          const glowMesh = this.system._getGlowMeshFromEntity(entity);
+          if (glowMesh && glowMesh.material && entity.originalGlowColor) {
+            glowMesh.material.color.setHex(entity.originalGlowColor);
+          }
+          if (entity.edgesLine) {
+            entity.edgesLine.visible = false;
+          }
         });
         entity.addEventListener('click', (event) => {
           // TODO(ntamas): the click event we receive from A-Frame does not

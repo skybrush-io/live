@@ -25,21 +25,12 @@ import {
 import { isShowIndoor } from '~/features/show/selectors';
 import { isMapCoordinateSystemLeftHanded } from '~/selectors/map';
 
-/**
- * Selector that returns the "effective' scenery to use in the 3D view,
- * potentially based on whether the show is indoor or outdoor.
- */
 const getEffectiveScenery = (state) => {
   const scenery = getSceneryForThreeDView(state);
   if (scenery === 'auto') {
-    if (isShowIndoor(state)) {
-      return 'indoor';
-    } else {
-      return 'outdoor';
-    }
-  } else {
-    return scenery;
+    return isShowIndoor(state) ? 'indoor' : 'outdoor';
   }
+  return scenery;
 };
 
 const ThreeDView = React.forwardRef((props, ref) => {
@@ -66,65 +57,59 @@ const ThreeDView = React.forwardRef((props, ref) => {
       minAltitude: 0.5,
       reverseMouseDrag: true,
     }),
-    'look-controls': objectToString({
-      enabled: false,
-    }),
-    'wasd-controls': objectToString({
-      enabled: false,
-    }),
+    'look-controls': objectToString({ enabled: false }),
+    'wasd-controls': objectToString({ enabled: false }),
   };
-  const extraSceneProps = {};
 
-  if (showStatistics) {
-    extraSceneProps.stats = 'true';
-  }
+  const extraSceneProps = {};
+  if (showStatistics) extraSceneProps.stats = 'true';
 
   return (
     <a-scene
       key={sceneId}
       ref={ref}
       deallocate
-      embedded='true'
-      keyboard-shortcuts='enterVR: false'
-      loading-screen='backgroundColor: #424242; dotsColor: #888'
-      renderer='antialias: false; colorManagement: true; physicallyCorrectLights: true'
-      xr-mode-ui='enabled: false'
-      device-orientation-permission-ui='enabled: false'
+      embedded="true"
+      keyboard-shortcuts="enterVR: false"
+      loading-screen="backgroundColor: #424242; dotsColor: #888"
+      renderer="antialias: false; colorManagement: true; physicallyCorrectLights: true"
+      xr-mode-ui="enabled: false"
+      device-orientation-permission-ui="enabled: false"
       tabIndex={-1}
-      class='react-hotkeys-ignore no-focus-ring'
+      class="react-hotkeys-ignore no-focus-ring"
       {...extraSceneProps}
     >
       <a-assets>
-        <a-asset-item id='drone-fbx' src='assets/fbx/drone.fbx' />
+        <a-asset-item id="drone-fbx" src="assets/fbx/drone.fbx" />
         <a-mixin
-          id='takeoff-marker'
-          geometry='primitive: triangle; vertexA: 1 0 0; vertexB: -0.5 0.866 0; vertexC: -0.5 -0.866 0'
+          id="takeoff-marker"
+          geometry="primitive: triangle; vertexA: 1 0 0; vertexB: -0.5 0.866 0; vertexC: -0.5 -0.866 0"
           material={`color: ${Colors.markers.takeoff}; shader: flat; side: double`}
         />
         <a-mixin
-          id='landing-marker'
-          geometry='primitive: triangle; vertexA: -1 0 0; vertexB: 0.5 -0.866 0; vertexC: 0.5 0.866 0'
+          id="landing-marker"
+          geometry="primitive: triangle; vertexA: -1 0 0; vertexB: 0.5 -0.866 0; vertexC: 0.5 0.866 0"
           material={`color: ${Colors.markers.landing}; shader: flat; side: double`}
         />
-        <a-mixin
-          id='drone-marker'
-          fbx-model='src: #drone-fbx; scale: 0.01 0.01 0.01'
-        />
+        <a-mixin id="drone-marker" fbx-model="src: #drone-fbx; scale: 0.01 0.01 0.01" />
       </a-assets>
 
+      {/* ✅ 마우스 레이 전용 엔티티 (카메라/컨트롤 영향 최소) */}
+      <a-entity
+        id="mouse-ray"
+        cursor="rayOrigin: mouse"
+        raycaster="enabled: true; interval: 16; far: 5000"
+      />
+
+      {/* ✅ 카메라에는 raycaster/cursor 없음 */}
       <a-camera
         ref={cameraRef}
-        sync-pose-with-store=''
-        id='three-d-camera'
+        sync-pose-with-store=""
+        id="three-d-camera"
         {...extraCameraProps}
-      >
-        <a-entity
-          cursor='rayOrigin: mouse'
-          raycaster='objects: .three-d-clickable; interval: 100'
-        />
-      </a-camera>
+      />
 
-      <a-entity rotation='-90 0 90'>
+      <a-entity rotation="-90 0 90">
         {showAxes && (
           <CoordinateSystemAxes
             leftHanded={isCoordinateSystemLeftHanded}
@@ -166,7 +151,6 @@ ThreeDView.propTypes = {
 };
 
 export default connect(
-  // mapStateToProps
   (state) => ({
     isCoordinateSystemLeftHanded: isMapCoordinateSystemLeftHanded(state),
     ...state.settings.threeD,
@@ -174,9 +158,7 @@ export default connect(
     scenery: getEffectiveScenery(state),
     lighting: getLightingConditionsForThreeDView(state),
   }),
-  // mapDispatchToProps
   {},
-  // mergeProps
   null,
   { forwardRef: true }
 )(ThreeDView);

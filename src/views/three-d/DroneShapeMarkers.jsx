@@ -5,11 +5,11 @@ import React from 'react';
  * Y is up in the scene; positions are slightly above ground to avoid z-fighting.
  */
 const DRONE_SHAPE_POSITIONS = [
-  [0, 1, 0],
-  [1.5, 1, 0],
-  [3, 1, 0],
-  [-1.5, 1, 0],
-  [-3, 1, 0],
+  [0, 1, 1],
+  [1.5, 1, 1],
+  [3, 1, 1],
+  [-1.5, 1, 1],
+  [-3, 1, 1],
 ];
 
 /**
@@ -18,10 +18,18 @@ const DRONE_SHAPE_POSITIONS = [
 const DroneShapeMarkers = () =>
   DRONE_SHAPE_POSITIONS.map((pos, index) => (
     <a-entity
-      key={`drone-marker-${index}`}
-      mixin='drone-marker'
+      key={index}
+      class="three-d-clickable"
+      mixin="drone-marker"
       position={pos.join(' ')}
-    />
+      rotation="0 0 0"
+    >
+      {/* 👇 이게 raycast용 invisible collider */}
+      <a-entity
+        geometry="primitive: sphere; radius: 0.5"
+        material="opacity: 0; transparent: true"
+      />
+    </a-entity>
   ));
 
 export default DroneShapeMarkers;

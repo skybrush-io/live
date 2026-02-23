@@ -1,75 +1,95 @@
-/**
- * A-Frame component that loads and displays an FBX model.
- * Uses Three.js FBXLoader to load FBX files.
- */
-
 import AFrame from '@skybrush/aframe-components';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
 
-AFrame.registerComponent('fbx-model', {
-  schema: {
-    src: { type: 'asset', default: '' },
-    scale: { type: 'vec3', default: { x: 1, y: 1, z: 1 } },
-  },
+if (!AFrame.components['fbx-model']) {
+  AFrame.registerComponent('fbx-model', {
+    schema: {
+      src: { type: 'asset', default: '' },
+      scale: { type: 'vec3', default: { x: 1, y: 1, z: 1 } },
+    },
 
-  init() {
-    this.model = null;
-    this.loader = new FBXLoader();
-  },
+    init() {
+      this.model = null;
+      this.loader = new FBXLoader();
+      this._origColors = new Map();
 
-  update() {
-    const { src, scale } = this.data;
+      // ✅ mixin class가 안 먹어도 무조건 클릭 타겟이 되게 보장
+      this.el.classList.add('three-d-clickable');
 
-    if (!src) {
-      return;
-    }
+      this.onHit = this.onHit.bind(this);
+      this.onUnhit = this.onUnhit.bind(this);
 
-    // Get the actual URL from A-Frame asset system if it's an asset ID
-    let finalUrl = src;
-    if (src.startsWith('#')) {
-      const assetId = src.replace('#', '');
-      const assetItem = this.el.sceneEl.querySelector(`a-asset-item[id="${assetId}"]`);
-      if (assetItem) {
+      // ✅ mouseenter보다 이게 훨씬 안정적
+      this.el.addEventListener('raycaster-intersected', this.onHit);
+      this.el.addEventListener('raycaster-intersected-cleared', this.onUnhit);
+    },
+
+    update() {
+      const { src, scale } = this.data;
+      if (!src) return;
+
+      let finalUrl = src;
+      if (src.startsWith('#')) {
+        const assetId = src.slice(1);
+        const assetItem = this.el.sceneEl.querySelector(`a-asset-item[id="${assetId}"]`);
+        if (!assetItem) return;
         finalUrl = assetItem.getAttribute('src');
-      } else {
-        console.warn(`FBX asset item with id "${assetId}" not found`);
-        return;
       }
-    }
 
-    // Load the FBX model
-    this.loader.load(
-      finalUrl,
-      (fbx) => {
-        // Remove old model if exists
-        if (this.model) {
-          this.el.object3D.remove(this.model);
-        }
+      this.loader.load(finalUrl, (fbx) => {
+        if (this.model) this.el.object3D.remove(this.model);
 
-        // Apply scale
         fbx.scale.set(scale.x, scale.y, scale.z);
-
-        // Add to entity's object3D directly (avoid setObject3D so we don't
-        // hit A-Frame's instanceof THREE.Object3D check — FBXLoader uses
-        // a different THREE instance than A-Frame)
         this.model = fbx;
         this.el.object3D.add(fbx);
-        this.el.emit('model-loaded', { format: 'fbx', model: fbx });
-      },
-      (progress) => {
-        this.el.emit('model-loading', { progress });
-      },
-      (error) => {
-        console.error('Error loading FBX model:', error);
-        this.el.emit('model-error', { error });
-      }
-    );
-  },
+      });
+    },
 
-  remove() {
-    if (this.model) {
-      this.el.object3D.remove(this.model);
-      this.model = null;
-    }
-  },
-});
+    _setMeshRed(mesh) {
+      const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+      mats.forEach((mat, i) => {
+        if (!mat || !mat.color) return;
+        const key = `${mesh.uuid}:${i}`;
+        if (!this._origColors.has(key)) this._origColors.set(key, mat.color.getHex());
+        mat.color.setHex(0xff0000);
+        mat.needsUpdate = true;
+      });
+    },
+
+    _restoreMesh(mesh) {
+      const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+      mats.forEach((mat, i) => {
+        if (!mat || !mat.color) return;
+        const key = `${mesh.uuid}:${i}`;
+        if (!this._origColors.has(key)) return;
+        mat.color.setHex(this._origColors.get(key));
+        mat.needsUpdate = true;
+      });
+    },
+
+    onHit() {
+      console.log('HIT', this.el);
+      if (!this.model) return;
+
+      // ✅ Group 전체 traverse 해서 mesh에 적용
+      this.model.traverse((child) => {
+        if (child && child.isMesh) this._setMeshRed(child);
+      });
+    },
+
+    onUnhit() {
+      console.log('UNHIT', this.el);
+      if (!this.model) return;
+
+      this.model.traverse((child) => {
+        if (child && child.isMesh) this._restoreMesh(child);
+      });
+    },
+
+    remove() {
+      this.el.removeEventListener('raycaster-intersected', this.onHit);
+      this.el.removeEventListener('raycaster-intersected-cleared', this.onUnhit);
+      this._origColors.clear();
+    },
+  });
+}
