@@ -20,7 +20,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fixed UAV changing issues on the Tests panel of the UAV properties dialog.
 
-- Fixed and improved test progress reporting on the Tests panel of the UAV properties dialog.
+- Fixed and improved test progress reporting on the Tests panel of the UAV
+  properties dialog.
 
 - Fixed double event handling on the Logs panel of the UAV properties dialog.
 
