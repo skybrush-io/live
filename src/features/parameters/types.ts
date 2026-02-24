@@ -1,7 +1,11 @@
-import { type Identifier } from '~/utils/collections';
+import type { Identifier } from '~/utils/collections';
 
-export type Parameter = {
-  id: Identifier;
+export type ParameterData = {
   name: string;
+  uavId: string | undefined;
   value: unknown;
+};
+
+export type Parameter = ParameterData & {
+  id: Identifier;
 };

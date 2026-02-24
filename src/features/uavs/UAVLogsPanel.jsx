@@ -159,12 +159,7 @@ const UAVLogListItem = ({ id, kind, size, timestamp, uavId }) => {
         secondary={secondaryComponent}
       />
       <ListItemSecondaryAction>
-        <IconButton
-          edge='end'
-          disabled={isLoading}
-          size='large'
-          onClick={onClick}
-        >
+        <IconButton edge='end' disabled={isLoading} size='large'>
           {downloadState?.status === LogDownloadStatus.SUCCESS ? (
             <Save />
           ) : (
