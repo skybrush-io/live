@@ -6,7 +6,7 @@ import ListItemText from '@mui/material/ListItemText';
 import Zoom from '@mui/material/Zoom';
 import isNil from 'lodash-es/isNil';
 import PropTypes from 'prop-types';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useAsyncFn } from 'react-use';
 
 import { StatusLight } from '@skybrush/mui-components';
@@ -86,16 +86,65 @@ const UAVTestButton = ({
   const [progress, setProgress] = useState(null);
   const [suspended, setSuspended] = useState(false);
   const resumeCallback = useRef(null);
+  const lastExecutedUavIdRef = useRef(null);
+  const uavIdRef = useRef(uavId);
+  uavIdRef.current = uavId;
 
   const clearPendingConfirmation = useCallback(() => {
     clearTimeout(pendingConfirmation);
     setPendingConfirmation(null);
-  }, [pendingConfirmation, setPendingConfirmation]);
+  }, [pendingConfirmation]);
+
+  useEffect(() => {
+    clearPendingConfirmation();
+    setProgress(null);
+    setSuspended(false);
+    resumeCallback.current = null;
+  }, [uavId]);
 
   const askForConfirmation = useCallback(() => {
     clearPendingConfirmation();
     setPendingConfirmation(setTimeout(clearPendingConfirmation, 3000));
-  }, [clearPendingConfirmation, setPendingConfirmation]);
+  }, [clearPendingConfirmation]);
+
+  const progressHandler = useCallback(
+    (progressUAVId, { progress, resume, suspended }) => {
+      if (progressUAVId !== uavIdRef.current) {
+        return;
+      }
+      setProgress(progress);
+      setSuspended(Boolean(suspended));
+      resumeCallback.current = resume;
+    },
+    []
+  );
+
+  const [lastExecutionState, execute] = useAsyncFn(async () => {
+    lastExecutedUavIdRef.current = uavId;
+    // TODO(ntamas): use the proper UAV-TEST messages designated for this
+    await messageHub.sendCommandRequest(
+      {
+        uavId,
+        command: type === 'test' ? 'test' : 'calib',
+        args: [String(component)],
+      },
+      { onProgress: (progress) => progressHandler(uavId, progress), timeout }
+    );
+    return true;
+  }, [component, messageHub, progressHandler, timeout, type, uavId]);
+
+  const executionState =
+    lastExecutedUavIdRef.current === uavId
+      ? lastExecutionState
+      : { loading: false };
+
+  const [, resume] = useAsyncFn(async () => {
+    if (resumeCallback.current) {
+      return resumeCallback.current();
+    } else {
+      throw new Error('No resume callback has been provided');
+    }
+  }, []);
 
   const giveConfirmation = useCallback(() => {
     clearPendingConfirmation();
@@ -105,33 +154,6 @@ const UAVTestButton = ({
       execute();
     }
   }, [clearPendingConfirmation, execute, resume, suspended]);
-
-  const progressHandler = useCallback(({ progress, resume, suspended }) => {
-    setProgress(progress);
-    setSuspended(Boolean(suspended));
-    resumeCallback.current = resume;
-  }, []);
-
-  const [executionState, execute] = useAsyncFn(async () => {
-    // TODO(ntamas): use the proper UAV-TEST messages designated for this
-    await messageHub.sendCommandRequest(
-      {
-        uavId,
-        command: type === 'test' ? 'test' : 'calib',
-        args: [String(component)],
-      },
-      { onProgress: progressHandler, timeout }
-    );
-    return true;
-  }, [messageHub, progressHandler]);
-
-  const [, resume] = useAsyncFn(async () => {
-    if (resumeCallback.current) {
-      return resumeCallback.current();
-    } else {
-      throw new Error('No resume callback has been provided');
-    }
-  }, []);
 
   return (
     <ListItemButton

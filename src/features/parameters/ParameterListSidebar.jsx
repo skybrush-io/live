@@ -23,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
     flexDirection: 'column',
-    minWidth: 240,
+    minWidth: 320,
   },
 
   header: {
@@ -75,7 +75,7 @@ const ParameterListSidebar = ({
       leave: { height: 0, opacity: 0 },
       enter: ({ y }) => ({ y, opacity: 1 }),
       update: ({ y }) => ({ y }),
-      key: (item) => item.name,
+      key: (item) => item.id,
     }
   );
 
@@ -94,7 +94,7 @@ const ParameterListSidebar = ({
         </Tooltip>
       </Box>
       <MiniList className={classes.list}>
-        {transitions(({ y, ...rest }, { name, value }) => (
+        {transitions(({ y, ...rest }, { id, name, uavId, value }) => (
           <animated.div
             style={{
               transform: y.to((y) => `translate3d(0,${y}px,0)`),
@@ -102,9 +102,11 @@ const ParameterListSidebar = ({
               ...rest,
             }}
           >
-            <ListItemButton onClick={() => onRemoveItem(name)}>
+            <ListItemButton onClick={() => onRemoveItem(id)}>
               <Box sx={{ display: 'flex', flexDirection: 'row', flexGrow: 1 }}>
-                <Box sx={{ flexGrow: 1 }}>{name}</Box>
+                <Box sx={{ flexGrow: 1 }}>
+                  {uavId === undefined ? name : `${name} (${uavId})`}
+                </Box>
                 <Box sx={{ color: 'text.secondary', ml: 1 }}>{value}</Box>
               </Box>
             </ListItemButton>
