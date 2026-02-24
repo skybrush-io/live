@@ -100,7 +100,7 @@ const UAVTestButton = ({
     setProgress(null);
     setSuspended(false);
     resumeCallback.current = null;
-  }, [clearPendingConfirmation, uavId]);
+  }, [uavId]);
 
   const askForConfirmation = useCallback(() => {
     clearPendingConfirmation();
