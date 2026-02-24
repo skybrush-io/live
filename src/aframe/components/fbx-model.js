@@ -2,6 +2,7 @@ import AFrame from '@skybrush/aframe-components';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
 
 if (!AFrame.components['fbx-model']) {
+
   AFrame.registerComponent('fbx-model', {
     schema: {
       src: { type: 'asset', default: '' },
@@ -11,17 +12,15 @@ if (!AFrame.components['fbx-model']) {
     init() {
       this.model = null;
       this.loader = new FBXLoader();
-      this._origColors = new Map();
 
-      // ✅ mixin class가 안 먹어도 무조건 클릭 타겟이 되게 보장
+      this._origMatColors = new Map();
+      this._tintedMats = new Set();
+      this._isSelected = false;
+
       this.el.classList.add('three-d-clickable');
 
-      this.onHit = this.onHit.bind(this);
-      this.onUnhit = this.onUnhit.bind(this);
-
-      // ✅ mouseenter보다 이게 훨씬 안정적
-      this.el.addEventListener('raycaster-intersected', this.onHit);
-      this.el.addEventListener('raycaster-intersected-cleared', this.onUnhit);
+      this.onClick = this.onClick.bind(this);
+      this.el.addEventListener('click', this.onClick);
     },
 
     update() {
@@ -37,59 +36,76 @@ if (!AFrame.components['fbx-model']) {
       }
 
       this.loader.load(finalUrl, (fbx) => {
-        if (this.model) this.el.object3D.remove(this.model);
+        if (this.model) {
+          this._restoreAll();
+          this.el.object3D.remove(this.model);
+        }
 
         fbx.scale.set(scale.x, scale.y, scale.z);
         this.model = fbx;
         this.el.object3D.add(fbx);
+
+        if (this._isSelected) this._applyRed();
       });
     },
 
-    _setMeshRed(mesh) {
-      const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
-      mats.forEach((mat, i) => {
-        if (!mat || !mat.color) return;
-        const key = `${mesh.uuid}:${i}`;
-        if (!this._origColors.has(key)) this._origColors.set(key, mat.color.getHex());
-        mat.color.setHex(0xff0000);
-        mat.needsUpdate = true;
-      });
-    },
-
-    _restoreMesh(mesh) {
-      const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
-      mats.forEach((mat, i) => {
-        if (!mat || !mat.color) return;
-        const key = `${mesh.uuid}:${i}`;
-        if (!this._origColors.has(key)) return;
-        mat.color.setHex(this._origColors.get(key));
-        mat.needsUpdate = true;
-      });
-    },
-
-    onHit() {
-      console.log('HIT', this.el);
-      if (!this.model) return;
-
-      // ✅ Group 전체 traverse 해서 mesh에 적용
-      this.model.traverse((child) => {
-        if (child && child.isMesh) this._setMeshRed(child);
-      });
-    },
-
-    onUnhit() {
-      console.log('UNHIT', this.el);
+    _applyRed() {
       if (!this.model) return;
 
       this.model.traverse((child) => {
-        if (child && child.isMesh) this._restoreMesh(child);
+        if (!child?.isMesh) return;
+
+        const mats = Array.isArray(child.material) ? child.material : [child.material];
+        mats.forEach((mat) => {
+          if (!mat?.color) return;
+
+          if (!this._origMatColors.has(mat)) {
+            this._origMatColors.set(mat, mat.color.getHex());
+          }
+
+          mat.color.setHex(0xff0000);
+          mat.needsUpdate = true;
+          this._tintedMats.add(mat);
+        });
       });
+    },
+
+    _restoreAll() {
+      this._tintedMats.forEach((mat) => {
+        const hex = this._origMatColors.get(mat);
+        if (hex == null || !mat?.color) return;
+        mat.color.setHex(hex);
+        mat.needsUpdate = true;
+      });
+      this._tintedMats.clear();
+    },
+
+    _select() {
+      console.log('Selected:', this.el);
+      this._isSelected = true;
+      this._applyRed();
+    },
+
+    _deselect() {
+      this._isSelected = false;
+      this._restoreAll();
+    },
+
+    onClick(e) {
+      e.stopPropagation?.();
+
+      if (this._isSelected) {
+        this._deselect();
+      } else {
+        this._select();
+      }
     },
 
     remove() {
-      this.el.removeEventListener('raycaster-intersected', this.onHit);
-      this.el.removeEventListener('raycaster-intersected-cleared', this.onUnhit);
-      this._origColors.clear();
+      this.el.removeEventListener('click', this.onClick);
+      this._restoreAll();
+      this._origMatColors.clear();
+      this._tintedMats.clear();
     },
   });
 }
