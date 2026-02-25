@@ -87,7 +87,9 @@ export function useAdaptParametersFormState(
 ) {
   const [parameters, setParameters] = useState<ShowAdaptParameters>({
     altitude: defaultParameters?.altitude ?? defaultAdaptParameters.altitude,
-    altitudeOffset: defaultParameters?.altitudeOffset ?? defaultAdaptParameters.altitudeOffset,
+    altitudeOffset:
+      defaultParameters?.altitudeOffset ??
+      defaultAdaptParameters.altitudeOffset,
     minDistance:
       defaultParameters?.minDistance ?? defaultAdaptParameters.minDistance,
     horizontalVelocity:

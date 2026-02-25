@@ -420,14 +420,16 @@ export const adaptShow =
         },
       },
       ...(params.altitudeOffset
-        ? [{
-            type: 'shift',
-            parameters: {
-              'z': params.altitudeOffset,
+        ? [
+            {
+              type: 'shift',
+              parameters: {
+                z: params.altitudeOffset,
+              },
             },
-          }]
+          ]
         : []),
-      ];
+    ];
 
     dispatch(setAdaptResult({ loading: true }));
 
