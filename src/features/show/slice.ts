@@ -20,10 +20,10 @@ import { type Coordinate3D } from '~/utils/math';
 import { noPayload } from '~/utils/redux';
 
 import {
-  type AltitudeReferenceSpecification,
   DEFAULT_ALTITUDE_REFERENCE,
   DEFAULT_ROOM_SIZE,
   DEFAULT_TAKEOFF_HEADING,
+  type AltitudeReferenceSpecification,
   type TakeoffHeadingSpecification,
 } from './constants';
 import {
@@ -227,6 +227,9 @@ const { actions, reducer } = createSlice({
 
       // Last upload result cleared in the upload feature as it also handles
       // this action
+
+      // Reset collective RTH schedule
+      state.collectiveRTHSchedule = undefined;
     }),
 
     clearManualPreflightChecks: noPayload<ShowSliceState>((state) => {
@@ -317,6 +320,9 @@ const { actions, reducer } = createSlice({
       // Just in case the "show changed" warning was triggered while we tried
       // to load it...
       state.changedSinceLoaded = false;
+
+      // Reset collective RTH schedule
+      state.collectiveRTHSchedule = undefined;
     },
 
     loadingPromiseRejected(state) {
@@ -517,6 +523,9 @@ const { actions, reducer } = createSlice({
           state.start.utcTime = undefined;
         }
       }
+
+      // Reset collective RTH schedule
+      state.collectiveRTHSchedule = undefined;
     },
 
     setUAVIdsToStartAutomatically(
