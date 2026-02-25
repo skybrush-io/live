@@ -26,6 +26,7 @@ import LightConfigurationForm, {
 const defaultAdaptParameters: ShowAdaptParameters = {
   minDistance: 2,
   altitude: 5,
+  altitudeOffset: 0,
   horizontalVelocity: 5,
   verticalVelocity: 1.5,
   takeoffDuration: 0,
@@ -51,6 +52,8 @@ function adaptParametersValid(parameters: ShowAdaptParameters): boolean {
   return (
     parameters.minDistance > 0 &&
     parameters.altitude > 0 &&
+    parameters.altitudeOffset >= -100 &&
+    parameters.altitudeOffset <= 100 &&
     parameters.verticalVelocity > 0 &&
     parameters.horizontalVelocity > 0 &&
     parameters.takeoffDuration >= 0
@@ -84,6 +87,7 @@ export function useAdaptParametersFormState(
 ) {
   const [parameters, setParameters] = useState<ShowAdaptParameters>({
     altitude: defaultParameters?.altitude ?? defaultAdaptParameters.altitude,
+    altitudeOffset: defaultParameters?.altitudeOffset ?? defaultAdaptParameters.altitudeOffset,
     minDistance:
       defaultParameters?.minDistance ?? defaultAdaptParameters.minDistance,
     horizontalVelocity:
@@ -117,6 +121,19 @@ export function useAdaptParametersFormState(
       const newParameters: ShowAdaptParameters = {
         ...parameters,
         altitude: value,
+      };
+      setParameters(newParameters);
+      setIsValid(adaptParametersValid(newParameters));
+      onChange?.();
+    },
+    [onChange, parameters]
+  );
+  const onAltitudeOffsetChanged = useCallback(
+    (evt: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      const value = parseDistanceAsMeters(evt.target.value);
+      const newParameters: ShowAdaptParameters = {
+        ...parameters,
+        altitudeOffset: value,
       };
       setParameters(newParameters);
       setIsValid(adaptParametersValid(newParameters));
@@ -169,6 +186,7 @@ export function useAdaptParametersFormState(
     isValid,
     onMinDistanceChanged,
     onAltitudeChanged,
+    onAltitudeOffsetChanged,
     onHorizontalVelocityChanged,
     onVerticalVelocityChanged,
     onTakeoffDurationChanged,
@@ -188,6 +206,7 @@ const AdaptParametersForm = (props: Props): React.JSX.Element => {
     parameters,
     onMinDistanceChanged,
     onAltitudeChanged,
+    onAltitudeOffsetChanged,
     onHorizontalVelocityChanged,
     onVerticalVelocityChanged,
     onTakeoffDurationChanged,
@@ -197,22 +216,20 @@ const AdaptParametersForm = (props: Props): React.JSX.Element => {
   });
   const styles = useStyles();
   const [shownSection, setShownSection] = useState<
-    'none' | 'parameters' | 'lights'
-  >('parameters');
+    'none' | 'safety' | 'trajectories' | 'lights'
+  >('safety');
   return (
     <Box>
       <FormGroup>
         <Accordion
-          expanded={shownSection === 'parameters'}
+          expanded={shownSection === 'safety'}
           style={{ margin: 0 }}
           onChange={() => {
-            setShownSection(
-              shownSection === 'parameters' ? 'none' : 'parameters'
-            );
+            setShownSection(shownSection === 'safety' ? 'none' : 'safety');
           }}
         >
           <AccordionSummary expandIcon={<ExpandMore />}>
-            {t('panel.trajectories')}
+            {t('panel.safety')}
           </AccordionSummary>
           <AccordionDetails className={styles.accordionDetails}>
             <SimpleDistanceField
@@ -223,15 +240,6 @@ const AdaptParametersForm = (props: Props): React.JSX.Element => {
               disabled={disabled}
               helperText={t('form.minDistance.help')}
               onChange={onMinDistanceChanged}
-            />
-            <SimpleDistanceField
-              label={t('form.altitude.label')}
-              min={1}
-              max={100}
-              value={parameters.altitude}
-              disabled={disabled}
-              helperText={t('form.altitude.help')}
-              onChange={onAltitudeChanged}
             />
             <SimpleVelocityField
               label={t('form.horizontalVelocity.label')}
@@ -250,6 +258,39 @@ const AdaptParametersForm = (props: Props): React.JSX.Element => {
               disabled={disabled}
               helperText={t('form.verticalVelocity.help')}
               onChange={onVerticalVelocityChanged}
+            />
+          </AccordionDetails>
+        </Accordion>
+        <Accordion
+          expanded={shownSection === 'trajectories'}
+          style={{ margin: 0 }}
+          onChange={() => {
+            setShownSection(
+              shownSection === 'trajectories' ? 'none' : 'trajectories'
+            );
+          }}
+        >
+          <AccordionSummary expandIcon={<ExpandMore />}>
+            {t('panel.trajectories')}
+          </AccordionSummary>
+          <AccordionDetails className={styles.accordionDetails}>
+            <SimpleDistanceField
+              label={t('form.altitudeOffset.label')}
+              min={-100}
+              max={100}
+              value={parameters.altitudeOffset}
+              disabled={disabled}
+              helperText={t('form.altitudeOffset.help')}
+              onChange={onAltitudeOffsetChanged}
+            />
+            <SimpleDistanceField
+              label={t('form.altitude.label')}
+              min={1}
+              max={100}
+              value={parameters.altitude}
+              disabled={disabled}
+              helperText={t('form.altitude.help')}
+              onChange={onAltitudeChanged}
             />
             <SimpleDurationField
               label={t('form.takeoffDuration.label')}

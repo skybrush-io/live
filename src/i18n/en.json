@@ -622,6 +622,10 @@
           "help": "of vertical motion at takeoff & land",
           "label": "Altitude"
         },
+        "altitudeOffset": {
+          "help": "of the net show",
+          "label": "Altitude offset"
+        },
         "horizontalVelocity": {
           "help": "during takeoff & RTH phases",
           "label": "Horizontal velocity"
@@ -641,6 +645,7 @@
       },
       "panel": {
         "lights": "Lights",
+        "safety": "Safety",
         "trajectories": "Trajectories"
       }
     },

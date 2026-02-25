@@ -299,6 +299,7 @@ type Seconds = number;
 
 export type OptionalShowAdaptParameters = {
   altitude?: Meters | undefined;
+  altitudeOffset?: Meters | undefined;
   minDistance?: Meters | undefined;
   horizontalVelocity?: MetersPerSecond | undefined;
   verticalVelocity?: MetersPerSecond | undefined;
@@ -418,7 +419,15 @@ export const adaptShow =
           ...common,
         },
       },
-    ];
+      ...(params.altitudeOffset
+        ? [{
+            type: 'shift',
+            parameters: {
+              'z': params.altitudeOffset,
+            },
+          }]
+        : []),
+      ];
 
     dispatch(setAdaptResult({ loading: true }));
 
