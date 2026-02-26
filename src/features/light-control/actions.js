@@ -1,14 +1,14 @@
 import createColor from 'color';
 
+import { showError } from '~/features/snackbar/actions';
+import { MessageSemantics } from '~/features/snackbar/types';
+import messageHub from '~/message-hub';
+
 import {
   getCurrentColorInLightControlPanel,
   isLightControlActive,
 } from './selectors';
 import { setColor, setLightControlActive } from './slice';
-
-import { showNotification } from '~/features/snackbar/actions';
-import { MessageSemantics } from '~/features/snackbar/types';
-import messageHub from '~/message-hub';
 
 /**
  * Thunk that sets the current color of the light control module, activates
@@ -17,7 +17,7 @@ import messageHub from '~/message-hub';
 export const setColorAndActivate = (color) => (dispatch, getState) => {
   dispatch(setColor(color));
   dispatch(setLightControlActive(true));
-  submitShowLightConfigurationToServer(dispatch, getState);
+  submitShowLightConfigurationToServer(getState);
 };
 
 /**
@@ -31,7 +31,7 @@ export const setColorAndUpdateServerIfActive =
     dispatch(setColor(color));
 
     if (isActive) {
-      submitShowLightConfigurationToServer(dispatch, getState);
+      submitShowLightConfigurationToServer(getState);
     }
   };
 
@@ -43,10 +43,10 @@ export const setColorAndUpdateServerIfActive =
 export const toggleLightControlActive = () => (dispatch, getState) => {
   const isActive = isLightControlActive(getState());
   dispatch(setLightControlActive(!isActive));
-  submitShowLightConfigurationToServer(dispatch, getState);
+  submitShowLightConfigurationToServer(getState);
 };
 
-async function submitShowLightConfigurationToServer(dispatch, getState) {
+async function submitShowLightConfigurationToServer(getState) {
   const state = getState();
   const isActive = isLightControlActive(state);
   const color = getCurrentColorInLightControlPanel(state);
@@ -57,11 +57,9 @@ async function submitShowLightConfigurationToServer(dispatch, getState) {
       color: createColor(color).rgb().array(),
     });
   } catch {
-    dispatch(
-      showNotification({
-        message: 'Failed to update light configuration on the server.',
-        semantics: MessageSemantics.ERROR,
-      })
-    );
+    showError({
+      message: 'Failed to update light configuration on the server.',
+      semantics: MessageSemantics.ERROR,
+    });
   }
 }

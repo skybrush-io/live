@@ -3,7 +3,7 @@ import ListItemText from '@mui/material/ListItemText';
 import type React from 'react';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { connect, useDispatch, useSelector } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 
 import {
   MiniList,
@@ -30,11 +30,7 @@ import { getSetupStageStatuses } from '~/features/show/stages';
 import { showError } from '~/features/snackbar/actions';
 import { type PreparedI18nKey, tt } from '~/i18n';
 import Pro from '~/icons/Pro';
-import {
-  type AppDispatch,
-  type AppSelector,
-  type RootState,
-} from '~/store/reducers';
+import type { AppSelector, RootState } from '~/store/reducers';
 import { type Nullable } from '~/utils/types';
 
 const PREREQUISITES: ReadonlyArray<
@@ -82,7 +78,6 @@ type Props = Readonly<{
 const ShowConfiguratorButton = (props: Props): React.JSX.Element => {
   const { show, showDialogAndClearUndoHistory, status } = props;
 
-  const dispatch = useDispatch<AppDispatch>();
   const { t } = useTranslation();
 
   // NOTE: Using a `ref` here broke when rearranging the GolenLayout panels...
@@ -105,9 +100,9 @@ const ShowConfiguratorButton = (props: Props): React.JSX.Element => {
     if (show) {
       showDialogAndClearUndoHistory(show);
     } else {
-      dispatch(showError(t('show.showConfigurator.noShowData')));
+      showError(t('show.showConfigurator.noShowData'));
     }
-  }, [dispatch, show, showDialogAndClearUndoHistory, t]);
+  }, [show, showDialogAndClearUndoHistory, t]);
 
   const tooltipContent = (
     <MiniList>

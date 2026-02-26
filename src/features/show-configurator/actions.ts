@@ -442,7 +442,7 @@ export const adaptShow =
     }
   };
 
-export const reviewInViewer = (): AppThunk => async (dispatch, getState) => {
+export const reviewInViewer = (): AppThunk => async (_dispatch, getState) => {
   const { bridge } = window;
   if (!bridge) {
     console.warn('This action is available only when running in Electron');
@@ -463,12 +463,10 @@ export const reviewInViewer = (): AppThunk => async (dispatch, getState) => {
         extension: 'skyc',
       });
     } catch (error) {
-      dispatch(
-        showError(
-          errorToString(
-            error,
-            'Error while saving adapted show to a temporary file'
-          )
+      showError(
+        errorToString(
+          error,
+          'Error while saving adapted show to a temporary file'
         )
       );
     }
@@ -477,12 +475,10 @@ export const reviewInViewer = (): AppThunk => async (dispatch, getState) => {
       try {
         await bridge.openPath(filename);
       } catch (error) {
-        dispatch(
-          showError(
-            errorToString(
-              error,
-              'Error while opening adapted show in Skybrush Viewer'
-            )
+        showError(
+          errorToString(
+            error,
+            'Error while opening adapted show in Skybrush Viewer'
           )
         );
       }

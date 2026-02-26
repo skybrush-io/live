@@ -19,8 +19,7 @@ import {
   updateLandingPositions,
   updateTakeoffHeadings,
 } from '~/features/mission/slice';
-import { showNotification } from '~/features/snackbar/actions';
-import { MessageSemantics } from '~/features/snackbar/types';
+import { showError } from '~/features/snackbar/actions';
 import {
   getActiveUAVIds,
   getCurrentGPSPositionByUavId,
@@ -260,13 +259,7 @@ const createShowLoaderThunkFactory = (
       } = await promise;
       processShowInJSONFormatAndDispatchActions(spec, dispatch);
     } catch (error) {
-      dispatch(
-        showNotification({
-          message: errorMessage || 'Failed to load show.',
-          semantics: MessageSemantics.ERROR,
-          permanent: true,
-        })
-      );
+      showError(errorMessage || 'Failed to load show.', { permanent: true });
       dispatch(setLastLoadingAttemptFailed(true));
       console.error(error);
     }

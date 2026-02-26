@@ -331,8 +331,8 @@ export default connect(
         );
       },
 
-    showNotificationWithNavigationOption: (message, location) => (dispatch) => {
-      dispatch(
+    showNotificationWithNavigationOption:
+      (message, location) => (_dispatch) => {
         showNotification({
           message,
           semantics: MessageSemantics.SUCCESS,
@@ -345,9 +345,8 @@ export default connect(
           ],
           timeout: 10000,
           topic: 'coordinate-system-updated',
-        })
-      );
-    },
+        });
+      },
 
     updateFlatEarthCoordinateSystem,
     updateOutdoorShowSettings,

@@ -11,8 +11,7 @@ import { makeStyles } from '@skybrush/app-theme-mui';
 import { LazyTooltip, StatusLight } from '@skybrush/mui-components';
 
 import { Status } from '~/components/semantics';
-import { showNotification } from '~/features/snackbar/actions';
-import { MessageSemantics } from '~/features/snackbar/types';
+import { showWarning } from '~/features/snackbar/actions';
 import {
   getSingleUAVStatusLevel,
   getUAVIdList,
@@ -117,12 +116,28 @@ const statusOrder = [
   null,
 ];
 
-const UAVStatusSummary = ({ counts, ...rest }) => {
+const showUAVsList = (workbench) => {
+  if (!workbench) {
+    return;
+  }
+
+  if (!workbench.bringToFront('uavList')) {
+    showWarning('UAVs panel is not added to the workbench yet');
+  }
+};
+
+const UAVStatusSummary = ({ counts, workbench, ...rest }) => {
   const classes = useStyles();
 
   return (
     <LazyTooltip interactive content={<UAVStatusMiniList />}>
-      <Box className={clsx(classes.root, 'wb-module')} {...rest}>
+      <Box
+        className={clsx(classes.root, 'wb-module')}
+        onClick={() => {
+          showUAVsList(workbench);
+        }}
+        {...rest}
+      >
         <div className={classes.inner}>
           {statusOrder.map((statusCode, index) => (
             <React.Fragment key={statusCode}>
@@ -152,31 +167,13 @@ const UAVStatusSummary = ({ counts, ...rest }) => {
 
 UAVStatusSummary.propTypes = {
   counts: PropTypes.arrayOf(PropTypes.number),
-};
-
-const showUAVsList = (workbench, dispatch) => () => {
-  if (!workbench) {
-    return;
-  }
-
-  if (!workbench.bringToFront('uavList')) {
-    dispatch(
-      showNotification({
-        message: 'UAVs panel is not added to the workbench yet',
-        semantics: MessageSemantics.WARNING,
-      })
-    );
-  }
+  workbench: PropTypes.object,
 };
 
 const ConnectedUAVStatusSummary = connect(
   // mapStateToProps
   (state) => ({
     counts: getStatusSummary(state),
-  }),
-  // mapDispatchToProps
-  (dispatch, ownProps) => ({
-    onClick: showUAVsList(ownProps.workbench, dispatch),
   })
 )(UAVStatusSummary);
 

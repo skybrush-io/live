@@ -9,6 +9,7 @@ import TextField from '@mui/material/TextField';
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import { showNotification } from '~/features/snackbar/actions';
 import { TileServerType, TileServerTypes } from '~/model/layers';
 
 // === Settings for this particular layer type ===
@@ -19,7 +20,6 @@ export class TileServerLayerSettings extends React.Component {
 
     changeTileServerType: PropTypes.func,
     setLayerParameters: PropTypes.func,
-    showMessage: PropTypes.func,
   };
 
   constructor(props) {
@@ -103,7 +103,7 @@ export class TileServerLayerSettings extends React.Component {
   _handleClick = () => {
     const { layers, url } = this.state;
     this.props.setLayerParameters({ layers, url });
-    this.props.showMessage('Layer settings saved successfully.');
+    showNotification('Layer settings saved successfully.');
   };
 }
 

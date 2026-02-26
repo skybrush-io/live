@@ -4,8 +4,8 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { WorkbenchView } from 'react-flexible-workbench';
+import { Toaster } from 'react-hot-toast';
 import { connect, Provider as StoreProvider } from 'react-redux';
-import { ToastProvider } from 'react-toast-notifications';
 import { PersistGate } from 'redux-persist/es/integration/react';
 
 import { StyledEngineProvider } from '@mui/material';
@@ -33,8 +33,6 @@ import SafetyDialog from './features/safety/SafetyDialog';
 import SavedLocationEditorDialog from './features/saved-locations/SavedLocationEditorDialog';
 import ShowConfiguratorDialog from './features/show-configurator/ShowConfiguratorDialog';
 import Sidebar from './features/sidebar/Sidebar';
-import { SNACKBAR_TRANSITION_DURATION } from './features/snackbar/constants';
-import ToastNotificationManager from './features/snackbar/ToastNotificationManager';
 import UAVDetailsDialog from './features/uavs/UAVDetailsDialog';
 import UploadDialog from './features/upload/UploadDialog';
 import VersionCheckDialog from './features/version-check/VersionCheckDialog';
@@ -187,12 +185,13 @@ const App = ({ onFirstRender }) => (
       <UploadDialog />
       <VersionCheckDialog />
 
-      <ToastProvider
-        placement={config.toastPlacement}
-        transitionDuration={SNACKBAR_TRANSITION_DURATION}
-      >
-        <ToastNotificationManager />
-      </ToastProvider>
+      <Toaster
+        position={config.toastPlacement}
+        toastOptions={{
+          duration: 4000,
+          style: { padding: '0px' },
+        }}
+      />
     </>
   </PersistGate>
 );
