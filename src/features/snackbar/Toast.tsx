@@ -3,14 +3,23 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import { styled } from '@mui/material/styles';
 import { type ReactNode } from 'react';
+import toast from 'react-hot-toast';
 import { useDispatch } from 'react-redux';
 
-import toast from 'react-hot-toast';
 import { MessageSemantics, type Notification } from './types';
 
 const ToastNotificationButton = styled(Button)({
   border: '1px solid currentColor',
   color: 'inherit',
+});
+
+const StyledAlert = styled(Alert)({
+  minWidth: '400px',
+  maxWidth: '400px',
+  width: '400px',
+  '> .MuiAlert-message': {
+    flex: 1,
+  },
 });
 
 const semanticsToSeverity: Record<MessageSemantics, AlertColor> = {
@@ -83,7 +92,7 @@ type ToastProps = ToastContentProps & {
 
 const Toast = ({ toastId, notification }: ToastProps) => {
   return (
-    <Alert
+    <StyledAlert
       severity={
         semanticsToSeverity[notification.semantics ?? MessageSemantics.DEFAULT]
       }
@@ -91,10 +100,9 @@ const Toast = ({ toastId, notification }: ToastProps) => {
       onClose={() => {
         toast.dismiss(toastId);
       }}
-      sx={{ minWidth: '400px', maxWidth: '400px', width: '400px' }}
     >
       <ToastContent notification={notification} />
-    </Alert>
+    </StyledAlert>
   );
 };
 
