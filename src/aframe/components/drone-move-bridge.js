@@ -5,7 +5,8 @@ if (!AFrame.components['drone-move-bridge']) {
     init() {
       this._onMove = this._onMove.bind(this);
       this._onPath = this._onPath.bind(this);
-      this._currentPathCancel = null;
+      // 드론별로 경로 애니메이션 취소 함수를 따로 관리
+      this._currentPathCancels = {};
       window.addEventListener('drone-move-request', this._onMove);
       window.addEventListener('drone-path-request', this._onPath);
     },
@@ -14,9 +15,15 @@ if (!AFrame.components['drone-move-bridge']) {
       window.removeEventListener('drone-move-request', this._onMove);
       window.removeEventListener('drone-path-request', this._onPath);
 
-      if (this._currentPathCancel) {
-        this._currentPathCancel();
-        this._currentPathCancel = null;
+      if (this._currentPathCancels) {
+        Object.values(this._currentPathCancels).forEach((cancel) => {
+          try {
+            cancel();
+          } catch (e) {
+            // ignore
+          }
+        });
+        this._currentPathCancels = {};
       }
     },
 
@@ -51,10 +58,10 @@ if (!AFrame.components['drone-move-bridge']) {
         return;
       }
 
-      // 기존 경로 애니메이션 정리
-      if (this._currentPathCancel) {
-        this._currentPathCancel();
-        this._currentPathCancel = null;
+      // 기존 경로 애니메이션 정리 (해당 드론만)
+      if (this._currentPathCancels[id]) {
+        this._currentPathCancels[id]();
+        delete this._currentPathCancels[id];
       }
 
       let index = 0;
@@ -66,7 +73,9 @@ if (!AFrame.components['drone-move-bridge']) {
 
       const playNext = () => {
         if (index >= points.length) {
-          this._currentPathCancel = null;
+          if (this._currentPathCancels[id]) {
+            delete this._currentPathCancels[id];
+          }
           window.dispatchEvent(
             new CustomEvent('drone-path-finished', { detail: { id } })
           );
@@ -94,7 +103,7 @@ if (!AFrame.components['drone-move-bridge']) {
           playNext();
         };
 
-        this._currentPathCancel = () => {
+        this._currentPathCancels[id] = () => {
           target.removeEventListener('animationcomplete__path', onComplete);
           target.removeAttribute('animation__path');
         };

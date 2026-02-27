@@ -9,13 +9,25 @@ export default function DroneInfoPanel({ open, drone, onClose }) {
     { x: '', y: '', z: '', durationMs: '1000' },
   ]);
 
-  // 드론 바뀔 때 입력칸 초기화
+  // 드론 바뀔 때 입력칸 및 경로 초기화 / JSON에서 path가 오면 반영
   useEffect(() => {
     setX('');
     setY('');
     setZ('');
-    setPathPoints([{ x: '', y: '', z: '', durationMs: '1000' }]);
-  }, [drone?.id]);
+
+    if (drone && Array.isArray(drone.path) && drone.path.length) {
+      setPathPoints(
+        drone.path.map((p) => ({
+          x: String(p.x ?? ''),
+          y: String(p.y ?? ''),
+          z: String(p.z ?? ''),
+          durationMs: String(p.durationMs ?? '1000'),
+        }))
+      );
+    } else {
+      setPathPoints([{ x: '', y: '', z: '', durationMs: '1000' }]);
+    }
+  }, [drone?.id, drone?.path]);
 
   const canMove = useMemo(() => {
     const nx = Number(x), ny = Number(y), nz = Number(z);
@@ -24,12 +36,24 @@ export default function DroneInfoPanel({ open, drone, onClose }) {
 
   const canPlayPath = useMemo(() => {
     if (!drone?.id) return false;
-    const parsed = pathPoints.map((p) => ({
-      x: Number(p.x),
-      y: Number(p.y),
-      z: Number(p.z),
-    }));
-    return parsed.some((p) => Number.isFinite(p.x) && Number.isFinite(p.y) && Number.isFinite(p.z));
+
+    return pathPoints.some((p) => {
+      const hasAll =
+        p.x !== undefined &&
+        p.y !== undefined &&
+        p.z !== undefined &&
+        String(p.x).trim() !== '' &&
+        String(p.y).trim() !== '' &&
+        String(p.z).trim() !== '';
+
+      if (!hasAll) return false;
+
+      const nx = Number(p.x);
+      const ny = Number(p.y);
+      const nz = Number(p.z);
+
+      return Number.isFinite(nx) && Number.isFinite(ny) && Number.isFinite(nz);
+    });
   }, [drone?.id, pathPoints]);
 
   const requestMove = () => {
@@ -59,13 +83,30 @@ export default function DroneInfoPanel({ open, drone, onClose }) {
     if (!drone?.id) return;
 
     const points = pathPoints
+      .filter((p) => {
+        if (
+          p.x === undefined ||
+          p.y === undefined ||
+          p.z === undefined ||
+          String(p.x).trim() === '' ||
+          String(p.y).trim() === '' ||
+          String(p.z).trim() === ''
+        ) {
+          return false;
+        }
+
+        const nx = Number(p.x);
+        const ny = Number(p.y);
+        const nz = Number(p.z);
+
+        return Number.isFinite(nx) && Number.isFinite(ny) && Number.isFinite(nz);
+      })
       .map((p) => ({
         x: Number(p.x),
         y: Number(p.y),
         z: Number(p.z),
         durationMs: Number(p.durationMs),
-      }))
-      .filter((p) => Number.isFinite(p.x) && Number.isFinite(p.y) && Number.isFinite(p.z));
+      }));
 
     if (!points.length) return;
 
@@ -75,6 +116,16 @@ export default function DroneInfoPanel({ open, drone, onClose }) {
           id: drone.id,
           points,
           durationPerSegment: 1000,
+        },
+      })
+    );
+
+    // JSON 저장용으로 현재 경로를 ThreeDView에 알려줌
+    window.dispatchEvent(
+      new CustomEvent('drone-path-updated', {
+        detail: {
+          id: drone.id,
+          path: points,
         },
       })
     );
@@ -134,7 +185,6 @@ export default function DroneInfoPanel({ open, drone, onClose }) {
               Move to (x, y, z)
             </div>
 
-            {/* ✅ FIX: X/Y/Z가 한 줄에 다 보이도록 3열 그리드로 */}
             <div
               style={{
                 display: 'grid',
