@@ -108,6 +108,7 @@ const ThreeDView = React.forwardRef((props, ref) => {
         device-orientation-permission-ui="enabled: false"
         tabIndex={-1}
         class="react-hotkeys-ignore no-focus-ring"
+        drone-move-bridge=""
         {...extraSceneProps}
       >
         <a-assets>

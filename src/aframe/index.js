@@ -17,6 +17,7 @@ import './components/mouse-click-ray-2d';
 import './components/click-pick';
 import './components/hover-cursor';
 import './primitives/drone-flock';
+import './components/drone-move-bridge';
 import './components/click-select-on-cursor';
 
 // eslint-disable-next-line unicorn/prefer-export-from
