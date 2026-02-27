@@ -306,6 +306,35 @@ const ThreeDView = React.forwardRef((props, ref) => {
     });
   };
 
+  const handleResetAll = () => {
+    const base =
+      droneConfig && Array.isArray(droneConfig.drones) && droneConfig.drones.length
+        ? droneConfig
+        : collectConfigFromScene();
+
+    if (!base || !Array.isArray(base.drones) || !base.drones.length) return;
+
+    base.drones.forEach((d) => {
+      if (!Array.isArray(d.pos) || d.pos.length < 3 || !d.id) return;
+
+      const [px, py, pz] = d.pos;
+      const x = Number(px);
+      const y = Number(py);
+      const z = Number(pz);
+      if (!Number.isFinite(x) || !Number.isFinite(y) || !Number.isFinite(z)) return;
+
+      window.dispatchEvent(
+        new CustomEvent('drone-path-request', {
+          detail: {
+            id: d.id,
+            points: [{ x, y, z, durationMs: 1000 }],
+            durationPerSegment: 1000,
+          },
+        })
+      );
+    });
+  };
+
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%' }}>
       <input
@@ -347,7 +376,7 @@ const ThreeDView = React.forwardRef((props, ref) => {
             <span style={{ width: 32, textAlign: 'right' }}>{Math.round(pathProgress)}%</span>
           </div>
         </div>
-        <div style={{ display: 'flex', gap: 6 }}>
+        <div style={{ display: 'flex', gap: 6, marginBottom: 4 }}>
           <button
             type="button"
             onClick={handlePlayAll}
@@ -365,9 +394,24 @@ const ThreeDView = React.forwardRef((props, ref) => {
           </button>
           <button
             type="button"
-            onClick={handleLoadConfigClick}
+            onClick={handleResetAll}
             style={{
               flex: 1,
+              padding: '4px 6px',
+              borderRadius: 6,
+              border: '1px solid rgba(255,255,255,0.4)',
+              background: 'rgba(255,255,255,0.12)',
+              color: 'white',
+              cursor: 'pointer',
+            }}
+          >
+            원위치
+          </button>
+          <button
+            type="button"
+            onClick={handleLoadConfigClick}
+            style={{
+              flex: 0.9,
               padding: '4px 6px',
               borderRadius: 6,
               border: '1px solid rgba(255,255,255,0.4)',
@@ -382,7 +426,7 @@ const ThreeDView = React.forwardRef((props, ref) => {
             type="button"
             onClick={handleSaveConfigClick}
             style={{
-              flex: 1,
+              flex: 0.9,
               padding: '4px 6px',
               borderRadius: 6,
               border: '1px solid rgba(255,255,255,0.4)',
