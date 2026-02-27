@@ -91,6 +91,7 @@ const Toast = ({ toastId, notification }: ToastProps) => {
       onClose={() => {
         toast.dismiss(toastId);
       }}
+      sx={{ minWidth: '400px', maxWidth: '400px', width: '400px' }}
     >
       <ToastContent notification={notification} />
     </Alert>
