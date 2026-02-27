@@ -1,35 +1,26 @@
 import React from 'react';
 
-/**
- * Fixed positions for demo drone-shaped circles in the 3D view (local coordinates).
- * Y is up in the scene; positions are slightly above ground to avoid z-fighting.
- */
-const DRONE_SHAPE_POSITIONS = [
-  [0, 1, 1],
-  [1.5, 1, 1],
-  [3, 1, 1],
-  [-1.5, 1, 1],
-  [-3, 1, 1],
+const DRONES = [
+  { id: 'drone-1', name: 'Drone A', battery: 92, status: 'Idle', pos: [0, 1, 1] },
+  { id: 'drone-2', name: 'Drone B', battery: 76, status: 'Flying', pos: [1.5, 1, 1] },
+  { id: 'drone-3', name: 'Drone C', battery: 55, status: 'Charging', pos: [3, 1, 1] },
+  { id: 'drone-4', name: 'Drone D', battery: 88, status: 'Idle', pos: [-1.5, 1, 1] },
+  { id: 'drone-5', name: 'Drone E', battery: 63, status: 'Returning', pos: [-3, 1, 1] },
 ];
 
-/**
- * Renders a few circular drone-shaped markers in the 3D view for reference/demo.
- */
 const DroneShapeMarkers = () =>
-  DRONE_SHAPE_POSITIONS.map((pos, index) => (
+  DRONES.map((d) => (
     <a-entity
-      key={index}
-      class="three-d-clickable"
+      key={d.id}
       mixin="drone-marker"
-      position={pos.join(' ')}
-      rotation="0 0 0"
-    >
-      {/* 👇 이게 raycast용 invisible collider */}
-      <a-entity
-        geometry="primitive: sphere; radius: 0.5"
-        material="opacity: 0; transparent: true"
-      />
-    </a-entity>
+      position={d.pos.join(' ')}
+      rotation="90 0 0"
+      class="three-d-clickable"
+      data-drone-id={d.id}
+      data-drone-name={d.name}
+      data-battery={d.battery}
+      data-status={d.status}
+    />
   ));
 
 export default DroneShapeMarkers;

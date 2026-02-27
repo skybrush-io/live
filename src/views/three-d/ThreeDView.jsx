@@ -3,7 +3,7 @@
  */
 
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 
 import CoordinateSystemAxes from './CoordinateSystemAxes';
@@ -13,6 +13,7 @@ import LandingPositionMarkers from './LandingPositionMarkers';
 import Room from './Room';
 import Scenery from './Scenery';
 import SelectedTrajectories from './SelectedTrajectories';
+import DroneInfoPanel from './DroneInfoPanel';
 
 // eslint-disable-next-line no-unused-vars
 import AFrame from '~/aframe';
@@ -49,6 +50,27 @@ const ThreeDView = React.forwardRef((props, ref) => {
     showTrajectoriesOfSelection,
   } = props;
 
+  // ✅ 선택된 드론 정보만 state로 관리 (open은 derived)
+  const [selectedDrone, setSelectedDrone] = useState(null);
+
+  // ✅ click-pick에서 dispatch 하는 이벤트 받기
+  useEffect(() => {
+    const onSelected = (e) => {
+      setSelectedDrone(e.detail ?? null);
+    };
+    const onDeselected = () => {
+      setSelectedDrone(null);
+    };
+
+    window.addEventListener('drone-selected', onSelected);
+    window.addEventListener('drone-deselected', onDeselected);
+
+    return () => {
+      window.removeEventListener('drone-selected', onSelected);
+      window.removeEventListener('drone-deselected', onDeselected);
+    };
+  }, []);
+
   const extraCameraProps = {
     'advanced-camera-controls': objectToString({
       acceptsKeyboardEvent: 'notEditable',
@@ -63,6 +85,14 @@ const ThreeDView = React.forwardRef((props, ref) => {
 
   const extraSceneProps = {};
   if (showStatistics) extraSceneProps.stats = 'true';
+
+  const panelOpen = !!selectedDrone;
+
+  const closePanel = () => {
+    // ✅ 패널 닫기 = 선택 해제까지 같이 일어나게 (A-Frame도 정리되도록)
+    window.dispatchEvent(new CustomEvent('drone-deselected'));
+    setSelectedDrone(null);
+  };
 
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%' }}>
@@ -95,11 +125,13 @@ const ThreeDView = React.forwardRef((props, ref) => {
           <a-mixin id="drone-marker" fbx-model="src: #drone-fbx; scale: 0.01 0.01 0.01" />
         </a-assets>
 
-          <a-entity
-            id="mouse-ray"
-            click-pick=""
-            hover-cursor="className: three-d-clickable; interval: 50"
-          />
+        {/* ✅ 마우스 피킹/호버 커서 */}
+        <a-entity
+          id="mouse-ray"
+          click-pick=""
+          hover-cursor="className: three-d-clickable; interval: 50"
+        />
+
         {/* ✅ 카메라 */}
         <a-camera
           ref={cameraRef}
@@ -127,6 +159,13 @@ const ThreeDView = React.forwardRef((props, ref) => {
 
         <Scenery type={`${scenery}-${lighting}`} grid={grid} />
       </a-scene>
+
+      {/* ✅ 우측 패널 */}
+      <DroneInfoPanel
+        open={panelOpen}
+        onClose={closePanel}
+        drone={selectedDrone}
+      />
 
       {/* ✅ 커서에서 시작하는 레이를 그릴 2D 오버레이 */}
       <div

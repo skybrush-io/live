@@ -11,14 +11,19 @@ if (!AFrame.components['click-pick']) {
       this._onPointerDown = this._onPointerDown.bind(this);
 
       const sceneEl = this.el.sceneEl;
-      const bind = () => sceneEl.canvas?.addEventListener('pointerdown', this._onPointerDown, true);
+      const bind = () =>
+        sceneEl.canvas?.addEventListener('pointerdown', this._onPointerDown, true);
 
       if (sceneEl.hasLoaded) bind();
       else sceneEl.addEventListener('loaded', bind);
     },
 
     remove() {
-      this.el.sceneEl?.canvas?.removeEventListener('pointerdown', this._onPointerDown, true);
+      this.el.sceneEl?.canvas?.removeEventListener(
+        'pointerdown',
+        this._onPointerDown,
+        true
+      );
     },
 
     _collectClickableRoots() {
@@ -49,6 +54,23 @@ if (!AFrame.components['click-pick']) {
       }
     },
 
+    _emitSelected(hitEl) {
+      window.dispatchEvent(
+        new CustomEvent('drone-selected', {
+          detail: {
+            id: hitEl.getAttribute('data-drone-id'),
+            name: hitEl.getAttribute('data-drone-name'),
+            battery: hitEl.getAttribute('data-battery'),
+            status: hitEl.getAttribute('data-status'),
+          },
+        })
+      );
+    },
+
+    _emitDeselected() {
+      window.dispatchEvent(new CustomEvent('drone-deselected'));
+    },
+
     _onPointerDown(e) {
       const sceneEl = this.el.sceneEl;
       const canvas = sceneEl?.canvas;
@@ -57,7 +79,12 @@ if (!AFrame.components['click-pick']) {
 
       // 캔버스 영역 클릭만 처리
       const rect = canvas.getBoundingClientRect();
-      if (e.clientX < rect.left || e.clientX > rect.right || e.clientY < rect.top || e.clientY > rect.bottom) {
+      if (
+        e.clientX < rect.left ||
+        e.clientX > rect.right ||
+        e.clientY < rect.top ||
+        e.clientY > rect.bottom
+      ) {
         return;
       }
 
@@ -68,13 +95,14 @@ if (!AFrame.components['click-pick']) {
       this._raycaster.setFromCamera(this._mouse, camera);
 
       const roots = this._collectClickableRoots();
-      const hits = this._raycaster.intersectObjects(roots, true);
+      const hits = this._raycaster.intersectObjects(roots, true); // ✅ 오타 제거
 
-      // ✅ 빈 곳 클릭 → 해제
+      // ✅ 빈 곳 클릭 → 해제 + 이벤트
       if (!hits.length) {
         if (selectedEl?.components?.['fbx-model']?._deselect) {
           selectedEl.components['fbx-model']._deselect();
           selectedEl = null;
+          this._emitDeselected();
           this._requestRender();
         }
         return;
@@ -83,25 +111,29 @@ if (!AFrame.components['click-pick']) {
       const hit = hits[0];
       const hitEl = this._findFbxEntityFromObject3D(hit.object);
 
-      // hit은 났는데 fbx-model 엔티티를 못 찾은 경우(구조 문제)
       if (!hitEl) {
         console.warn('[click-pick] hit but no fbx-model entity found', hit.object);
         return;
       }
 
-      // ✅ 다른 선택 해제
+      // ✅ 다른 선택 해제 (다른 드론 클릭)
       if (selectedEl && selectedEl !== hitEl) {
         selectedEl.components?.['fbx-model']?._deselect?.();
       }
 
-      // ✅ 토글 선택
       const comp = hitEl.components?.['fbx-model'];
       if (!comp) return;
 
-      if (comp._isSelected) comp._deselect();
-      else comp._select();
-
-      selectedEl = comp._isSelected ? hitEl : null;
+      // ✅ 토글을 "먼저" 수행하고, 그 결과로 이벤트 발행
+      if (comp._isSelected) {
+        comp._deselect();
+        selectedEl = null;
+        this._emitDeselected();
+      } else {
+        comp._select();
+        selectedEl = hitEl;
+        this._emitSelected(hitEl);
+      }
 
       this._requestRender();
       e.stopPropagation?.();
