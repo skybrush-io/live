@@ -83,6 +83,46 @@ const rootInnerStyle = {
 };
 
 /**
+ * GoldenLayout / workbench 상태에서 잘못된 activeItemIndex 값을 정리한다.
+ * (content 길이보다 크거나 음수인 인덱스를 0 ~ length-1 범위로 보정)
+ */
+const sanitizeWorkbenchState = (state) => {
+  if (!state) {
+    return state;
+  }
+
+  // Redux persist에서 온 순수 JSON이므로 깊은 복사로 충분하다.
+  const cloned = JSON.parse(JSON.stringify(state));
+
+  const sanitizeNode = (node) => {
+    if (!node || typeof node !== 'object') {
+      return;
+    }
+
+    if (Array.isArray(node)) {
+      node.forEach(sanitizeNode);
+      return;
+    }
+
+    if (Array.isArray(node.content) && typeof node.activeItemIndex === 'number') {
+      const len = node.content.length;
+      if (len <= 0) {
+        delete node.activeItemIndex;
+      } else if (node.activeItemIndex < 0 || node.activeItemIndex >= len) {
+        node.activeItemIndex = Math.min(Math.max(node.activeItemIndex, 0), len - 1);
+      }
+    }
+
+    Object.keys(node).forEach((key) => {
+      sanitizeNode(node[key]);
+    });
+  };
+
+  sanitizeNode(cloned);
+  return cloned;
+};
+
+/**
  * Helper function that restores the state of the workbench when it was loaded
  * back from the local storage during startup.
  */
@@ -90,7 +130,8 @@ const restoreWorkbench = (whenDone) => async () => {
   const state = store.getState();
 
   if (state && state.workbench && state.workbench.state) {
-    workbench.restoreState(state.workbench.state);
+    const sanitizedState = sanitizeWorkbenchState(state.workbench.state);
+    workbench.restoreState(sanitizedState);
   }
 
   if (whenDone) {
