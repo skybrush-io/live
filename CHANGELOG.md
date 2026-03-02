@@ -20,6 +20,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add takeoff method selection to the show adaptation dialog.
 
+### Changed
+
+- Smaller headings in the Field Notes panel.
+
 ### Fixed
 
 - Fixed UAV changing issues on the Tests panel of the UAV properties dialog.
