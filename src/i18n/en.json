@@ -638,6 +638,13 @@
           "help": "ensuring exact start of show phase (if nonzero)",
           "label": "Takeoff duration"
         },
+        "takeoffMethod": {
+          "label": "Takeoff method",
+          "type": {
+            "organic": "Organic",
+            "layered": "Layered"
+          }
+        },
         "verticalVelocity": {
           "help": "during takeoff & RTH phases",
           "label": "Vertical velocity"

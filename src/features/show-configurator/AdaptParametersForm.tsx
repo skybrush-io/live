@@ -3,7 +3,11 @@ import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import Box from '@mui/material/Box';
+import FormControl from '@mui/material/FormControl';
 import FormGroup from '@mui/material/FormGroup';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -15,9 +19,11 @@ import {
   SimpleVelocityField,
 } from '~/components/forms/fields';
 
-import type {
-  OptionalShowAdaptParameters,
-  ShowAdaptParameters,
+import {
+  TAKEOFF_METHODS,
+  type OptionalShowAdaptParameters,
+  type ShowAdaptParameters,
+  type TakeoffMethodType,
 } from './actions';
 import LightConfigurationForm, {
   type LightConfigurationProps,
@@ -30,6 +36,7 @@ const defaultAdaptParameters: ShowAdaptParameters = {
   horizontalVelocity: 5,
   verticalVelocity: 1.5,
   takeoffDuration: 0,
+  takeoffMethod: 'layered',
 };
 
 const useStyles = makeStyles((theme) => ({
@@ -101,6 +108,8 @@ export function useAdaptParametersFormState(
     takeoffDuration:
       defaultParameters?.takeoffDuration ??
       defaultAdaptParameters.takeoffDuration,
+    takeoffMethod:
+      defaultParameters?.takeoffMethod ?? defaultAdaptParameters.takeoffMethod,
   });
   const [isValid, setIsValid] = useState(adaptParametersValid(parameters));
 
@@ -182,6 +191,27 @@ export function useAdaptParametersFormState(
     },
     [onChange, parameters]
   );
+  const onTakeoffMethodChanged = useCallback(
+    (
+      event:
+        | React.ChangeEvent<{ value: string }>
+        | { target: { value: string } }
+    ) => {
+      const value: TakeoffMethodType = TAKEOFF_METHODS.includes(
+        event.target.value as TakeoffMethodType
+      )
+        ? (event.target.value as TakeoffMethodType)
+        : 'layered';
+      const newParameters: ShowAdaptParameters = {
+        ...parameters,
+        takeoffMethod: value,
+      };
+      setParameters(newParameters);
+      setIsValid(adaptParametersValid(newParameters));
+      onChange?.();
+    },
+    [onChange, parameters]
+  );
 
   return {
     parameters,
@@ -192,6 +222,7 @@ export function useAdaptParametersFormState(
     onHorizontalVelocityChanged,
     onVerticalVelocityChanged,
     onTakeoffDurationChanged,
+    onTakeoffMethodChanged,
   };
 }
 
@@ -212,6 +243,7 @@ const AdaptParametersForm = (props: Props): React.JSX.Element => {
     onHorizontalVelocityChanged,
     onVerticalVelocityChanged,
     onTakeoffDurationChanged,
+    onTakeoffMethodChanged,
   } = props;
   const { t } = useTranslation(undefined, {
     keyPrefix: 'showConfiguratorDialog.adaptParameters',
@@ -303,6 +335,23 @@ const AdaptParametersForm = (props: Props): React.JSX.Element => {
               helperText={t('form.takeoffDuration.help')}
               onChange={onTakeoffDurationChanged}
             />
+            <FormControl fullWidth variant='filled'>
+              <InputLabel id='takeoff-method-label'>
+                {t('form.takeoffMethod.label')}
+              </InputLabel>
+              <Select
+                disabled={disabled}
+                labelId='takeoff-method-label'
+                value={parameters.takeoffMethod}
+                onChange={onTakeoffMethodChanged}
+              >
+                {TAKEOFF_METHODS.map((value) => (
+                  <MenuItem key={value} value={value}>
+                    {t(`form.takeoffMethod.type.${value}`)}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
           </AccordionDetails>
         </Accordion>
         <Accordion

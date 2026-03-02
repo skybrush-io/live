@@ -18,6 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added possibility to shift the net show vertically during show adaptation.
 
+- Add takeoff method selection to the show adaptation dialog.
+
 ### Fixed
 
 - Fixed UAV changing issues on the Tests panel of the UAV properties dialog.

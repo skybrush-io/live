@@ -296,14 +296,18 @@ export const adjustHomePositionsToDronePositions =
 type Meters = number;
 type MetersPerSecond = number;
 type Seconds = number;
+export type TakeoffMethodType = 'layered' | 'organic';
+
+export const TAKEOFF_METHODS: TakeoffMethodType[] = ['layered', 'organic'];
 
 export type OptionalShowAdaptParameters = {
-  altitude?: Meters | undefined;
-  altitudeOffset?: Meters | undefined;
-  minDistance?: Meters | undefined;
-  horizontalVelocity?: MetersPerSecond | undefined;
-  verticalVelocity?: MetersPerSecond | undefined;
-  takeoffDuration?: Seconds | undefined;
+  altitude?: Meters;
+  altitudeOffset?: Meters;
+  minDistance?: Meters;
+  horizontalVelocity?: MetersPerSecond;
+  verticalVelocity?: MetersPerSecond;
+  takeoffDuration?: Seconds;
+  takeoffMethod?: TakeoffMethodType;
 };
 
 export type ShowAdaptParameters = Required<OptionalShowAdaptParameters>;
@@ -408,6 +412,14 @@ export const adaptShow =
         parameters: {
           positions,
           duration: params.takeoffDuration || undefined,
+          method:
+            // TODO: newer servers support both "layered" and "positions",
+            // "positions" being the legacy name of the "layered" method.
+            // We convert to the legacy name here to be on the safe
+            // side. We can remove this in the future.
+            params.takeoffMethod === 'layered'
+              ? 'positions'
+              : params.takeoffMethod,
           lights,
           ...common,
         },
