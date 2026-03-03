@@ -9,8 +9,7 @@ import {
   isMappingEditable,
 } from '~/features/mission/selectors';
 import { finishMappingEditorSession } from '~/features/mission/slice';
-import { showNotification } from '~/features/snackbar/actions';
-import { MessageSemantics } from '~/features/snackbar/types';
+import { showError, showNotification } from '~/features/snackbar/actions';
 import { setSelectedUAVIds } from '~/features/uavs/actions';
 import { getUAVById } from '~/features/uavs/selectors';
 import { scrollUAVListItemIntoView } from '~/utils/navigation';
@@ -272,10 +271,7 @@ export const copyCoordinates = () => (_dispatch) => {
   if (copyDisplayedCoordinatesToClipboard()) {
     showNotification('Coordinates copied to clipboard.');
   } else {
-    showNotification({
-      message: 'Failed to copy coordinates; are you hovering over the map?',
-      semantics: MessageSemantics.ERROR,
-    });
+    showError('Failed to copy coordinates; are you hovering over the map?');
   }
 };
 
