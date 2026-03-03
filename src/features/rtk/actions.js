@@ -1,6 +1,5 @@
 import copy from 'copy-to-clipboard';
-import { showNotification } from '~/features/snackbar/actions';
-import { MessageSemantics } from '~/features/snackbar/types';
+import { showError, showNotification } from '~/features/snackbar/actions';
 import messageHub from '~/message-hub';
 
 import {
@@ -18,10 +17,7 @@ export const startNewSurveyOnServer = (settings) => async (dispatch) => {
   try {
     await messageHub.execute.startRTKSurvey(settings);
   } catch {
-    showNotification({
-      message: 'Failed to start RTK survey on the server.',
-      semantics: MessageSemantics.ERROR,
-    });
+    showError('Failed to start RTK survey on the server.');
     return;
   }
 
