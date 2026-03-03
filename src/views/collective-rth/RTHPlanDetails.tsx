@@ -1,6 +1,13 @@
 import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
 import type { Theme } from '@mui/material/styles';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableRow, { type TableRowProps } from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { type TableProps, TableVirtuoso } from 'react-virtuoso';
@@ -17,34 +24,19 @@ import type { ShowSegmentsRecord } from '~/features/show/types';
 import type { RootState } from '~/store/reducers';
 import { formatDurationMS, formatTimeOfDay } from '~/utils/formatting';
 
-const useTableRowStyles = makeStyles((theme: Theme) => ({
-  root: {
-    display: 'flex',
-    borderBottom: `1px solid ${theme.palette.divider}`,
-  },
-  cell: {
-    padding: theme.spacing(0.5, 1),
-    flex: 1,
-    minWidth: 0,
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-  },
-}));
-
-type TableRowProps = {
+type TableRowContentProps = {
   item: CollectiveRTHPlanSummaryItem;
   showStartTime: number | null;
 };
 
-const TableRow = ({ item, showStartTime }: TableRowProps) => {
-  const classes = useTableRowStyles();
+const TableRowContent = ({ item, showStartTime }: TableRowContentProps) => {
   return (
-    <Box className={classes.root}>
-      <Box className={classes.cell}>
+    <>
+      <TableCell>
         {formatTimeOfDay(item.time + (showStartTime ?? NaN))}
-      </Box>
-      <Box className={classes.cell}>{formatDurationMS(item.time)}</Box>
-      <Box className={classes.cell}>
+      </TableCell>
+      <TableCell>{formatDurationMS(item.time)}</TableCell>
+      <TableCell>
         {formatTimeOfDay(
           item.time +
             item.maxDuration +
@@ -52,22 +44,17 @@ const TableRow = ({ item, showStartTime }: TableRowProps) => {
             COLLECTIVE_RTH_TIMING.slowdownDuration -
             COLLECTIVE_RTH_TIMING.slowdownDurationInShowTime
         )}
-      </Box>
-      <Box className={classes.cell}>
-        {formatDurationMS(item.time + item.maxDuration)}
-      </Box>
-      <Box className={classes.cell}>{formatDurationMS(item.maxDuration)}</Box>
-    </Box>
+      </TableCell>
+      <TableCell>{formatDurationMS(item.time + item.maxDuration)}</TableCell>
+      <TableCell>{formatDurationMS(item.maxDuration)}</TableCell>
+    </>
   );
 };
 
 const useTableHeaderStyles = makeStyles((theme: Theme) => ({
   root: {
-    display: 'flex',
-    borderBottom: `1px solid ${theme.palette.divider}`,
     backgroundColor: theme.palette.background.default,
-    position: 'sticky',
-    top: 0,
+    height: '38px', // Same as HEADER_HEIGHT in views/uavs/constants.ts
   },
   cell: {
     padding: theme.spacing(0.5, 1),
@@ -88,23 +75,23 @@ const TableHeader = () => {
   const classes = useTableHeaderStyles();
 
   return (
-    <tr className={classes.root}>
-      <Typography className={classes.cell} component='th'>
+    <TableRow className={classes.root}>
+      <TableCell className={classes.cell} variant='head'>
         {t('collectiveRTHPanel.rthPlanDetails.column.start')}
-      </Typography>
-      <Typography className={classes.cell} component='th'>
+      </TableCell>
+      <TableCell className={classes.cell} variant='head'>
         {t('collectiveRTHPanel.rthPlanDetails.column.startShow')}
-      </Typography>
-      <Typography className={classes.cell} component='th'>
+      </TableCell>
+      <TableCell className={classes.cell} variant='head'>
         {t('collectiveRTHPanel.rthPlanDetails.column.end')}
-      </Typography>
-      <Typography className={classes.cell} component='th'>
+      </TableCell>
+      <TableCell className={classes.cell} variant='head'>
         {t('collectiveRTHPanel.rthPlanDetails.column.endShow')}
-      </Typography>
-      <Typography className={classes.cell} component='th'>
+      </TableCell>
+      <TableCell className={classes.cell} variant='head'>
         {t('collectiveRTHPanel.rthPlanDetails.column.duration')}
-      </Typography>
-    </tr>
+      </TableCell>
+    </TableRow>
   );
 };
 
@@ -178,12 +165,17 @@ const useStyles = makeStyles((theme: Theme) => ({
     gap: theme.spacing(1),
     height: '100%',
   },
+  tableRow: {
+    '& .MuiTableCell-root': {
+      padding: theme.spacing(0.5),
+    },
+  },
 }));
 
 type Props = {
   plans: CollectiveRTHPlanSummaryItem[];
-  showStartTime: number | null;
   showSegments: ShowSegmentsRecord | undefined;
+  showStartTime: number | null;
 };
 
 const RTHPlanDetails = ({ plans, showSegments, showStartTime }: Props) => {
@@ -197,14 +189,27 @@ const RTHPlanDetails = ({ plans, showSegments, showStartTime }: Props) => {
         <TableVirtuoso
           data={plans}
           components={{
+            // eslint-disable-next-line react/display-name
+            Scroller: React.forwardRef<HTMLDivElement>((props, ref) => (
+              <TableContainer component={Paper} {...props} ref={ref} />
+            )),
             Table: ({ style, ...props }: TableProps) => (
-              <table {...props} style={{ ...style, width: '100%' }} />
+              <Table {...props} sx={{ ...style, width: '100%' }} />
+            ),
+            // eslint-disable-next-line react/display-name
+            TableBody: React.forwardRef<HTMLTableSectionElement>(
+              (props, ref) => <TableBody {...props} ref={ref} />
+            ),
+            TableRow: ({
+              item,
+              ...rest
+            }: TableRowProps & { item: CollectiveRTHPlanSummaryItem }) => (
+              <TableRow className={classes.tableRow} {...rest}>
+                <TableRowContent item={item} showStartTime={showStartTime} />
+              </TableRow>
             ),
           }}
           fixedHeaderContent={TableHeader}
-          itemContent={(_, item) => (
-            <TableRow item={item} showStartTime={showStartTime} />
-          )}
         />
       </Box>
     </Box>
