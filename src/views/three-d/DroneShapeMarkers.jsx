@@ -46,6 +46,7 @@ const DroneShapeMarkers = ({ drones }) => {
       data-drone-name={d.name}
       data-battery={d.battery}
       data-status={d.status}
+      data-initial-pos={d.pos.join(' ')}
       data-path={d.path && d.path.length ? JSON.stringify(d.path) : undefined}
     />
   ));

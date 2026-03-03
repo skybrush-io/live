@@ -1,10 +1,12 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 
 export default function DroneInfoPanel({ open, drone, onClose }) {
   const [x, setX] = useState('');
   const [y, setY] = useState('');
   const [z, setZ] = useState('');
+  const draggingPathIndexRef = useRef(null);
+  const [dragOverPathIndex, setDragOverPathIndex] = useState(null);
   const [pathPoints, setPathPoints] = useState([
     { x: '', y: '', z: '', durationMs: '1000' },
   ]);
@@ -79,6 +81,50 @@ export default function DroneInfoPanel({ open, drone, onClose }) {
     setPathPoints((prev) => [...prev, { x: '', y: '', z: '', durationMs: '1000' }]);
   };
 
+  const movePathPoint = (fromIndex, toIndex) => {
+    if (
+      fromIndex === toIndex ||
+      fromIndex < 0 ||
+      toIndex < 0 ||
+      fromIndex >= pathPoints.length ||
+      toIndex >= pathPoints.length
+    ) {
+      return;
+    }
+
+    setPathPoints((prev) => {
+      const next = [...prev];
+      const [moved] = next.splice(fromIndex, 1);
+      next.splice(toIndex, 0, moved);
+      return next;
+    });
+  };
+
+  const handlePathDragStart = (event, index) => {
+    draggingPathIndexRef.current = index;
+    event.dataTransfer.effectAllowed = 'move';
+    // 일부 브라우저에서 드래그 시작 인식을 위해 데이터 설정이 필요함
+    event.dataTransfer.setData('text/plain', String(index));
+    setDragOverPathIndex(index);
+  };
+
+  const handlePathDragOver = (event, index) => {
+    event.preventDefault();
+    setDragOverPathIndex(index);
+  };
+
+  const handlePathDrop = (index) => {
+    if (draggingPathIndexRef.current === null) return;
+    movePathPoint(draggingPathIndexRef.current, index);
+    draggingPathIndexRef.current = null;
+    setDragOverPathIndex(null);
+  };
+
+  const handlePathDragEnd = () => {
+    draggingPathIndexRef.current = null;
+    setDragOverPathIndex(null);
+  };
+
   const requestPath = () => {
     if (!drone?.id) return;
 
@@ -116,6 +162,7 @@ export default function DroneInfoPanel({ open, drone, onClose }) {
           id: drone.id,
           points,
           durationPerSegment: 1000,
+          startFromInitial: true,
         },
       })
     );
@@ -250,15 +297,40 @@ export default function DroneInfoPanel({ open, drone, onClose }) {
               {pathPoints.map((p, idx) => (
                 <div
                   key={idx}
+                  onDragOver={(e) => handlePathDragOver(e, idx)}
+                  onDrop={() => handlePathDrop(idx)}
+                  onDragEnter={(e) => handlePathDragOver(e, idx)}
+                  onDragEnd={handlePathDragEnd}
                   style={{
                     display: 'grid',
-                    gridTemplateColumns: '24px 1fr 1fr 1fr 72px',
+                    gridTemplateColumns: '28px 24px 1fr 1fr 1fr 72px',
                     gap: 6,
                     alignItems: 'center',
                     marginBottom: 6,
                     fontSize: 12,
+                    borderRadius: 6,
+                    padding: '2px 4px',
+                    border:
+                      dragOverPathIndex === idx
+                        ? '1px dashed rgba(255,255,255,0.45)'
+                        : '1px dashed transparent',
                   }}
                 >
+                  <div
+                    draggable
+                    onDragStart={(e) => handlePathDragStart(e, idx)}
+                    style={{
+                      textAlign: 'center',
+                      opacity: 0.7,
+                      cursor: 'grab',
+                      userSelect: 'none',
+                      fontSize: 14,
+                      lineHeight: 1,
+                    }}
+                    title="드래그해서 순서 변경"
+                  >
+                    ≡
+                  </div>
                   <div style={{ fontSize: 11, opacity: 0.6, textAlign: 'center' }}>
                     {idx + 1}
                   </div>
@@ -326,6 +398,9 @@ export default function DroneInfoPanel({ open, drone, onClose }) {
 
             <div style={{ marginTop: 10, fontSize: 12, opacity: 0.6 }}>
               입력값은 ThreeDView 로컬 좌표계 기준입니다.
+            </div>
+            <div style={{ marginTop: 4, fontSize: 11, opacity: 0.5 }}>
+              경로 점 행을 드래그해서 순서를 변경할 수 있습니다.
             </div>
           </>
         )}

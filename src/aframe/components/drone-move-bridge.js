@@ -48,7 +48,7 @@ if (!AFrame.components['drone-move-bridge']) {
     },
 
     _onPath(e) {
-      const { id, points, durationPerSegment = 1000 } = e.detail || {};
+      const { id, points, durationPerSegment = 1000, startFromInitial = true } = e.detail || {};
       if (!id || !Array.isArray(points) || points.length === 0) return;
 
       const sceneEl = this.el.sceneEl || this.el;
@@ -64,7 +64,61 @@ if (!AFrame.components['drone-move-bridge']) {
         delete this._currentPathCancels[id];
       }
 
-      let index = 0;
+      const initialPosAttr = target.getAttribute('data-initial-pos');
+      let hasInitialPos = false;
+      let startAnchor = null;
+      if (startFromInitial && typeof initialPosAttr === 'string' && initialPosAttr.trim()) {
+        const [sx, sy, sz] = initialPosAttr.trim().split(/\s+/);
+        const ix = Number(sx);
+        const iy = Number(sy);
+        const iz = Number(sz);
+        hasInitialPos = Number.isFinite(ix) && Number.isFinite(iy) && Number.isFinite(iz);
+        if (hasInitialPos) {
+          // 경로 재생은 항상 원위치(초기 position)부터 시작
+          target.setAttribute('position', `${ix} ${iy} ${iz}`);
+          startAnchor = { x: ix, y: iy, z: iz };
+        }
+      }
+
+      const firstPoint = points[0] || {};
+      const firstX = Number(firstPoint.x);
+      const firstY = Number(firstPoint.y);
+      const firstZ = Number(firstPoint.z);
+      const hasValidFirstPoint =
+        Number.isFinite(firstX) && Number.isFinite(firstY) && Number.isFinite(firstZ);
+
+      // 초기 position 시작을 쓰지 않는 경우, 현재 위치를 시작 앵커로 사용
+      if (!startFromInitial) {
+        const currentPos = target.getAttribute('position');
+        if (currentPos && typeof currentPos === 'object') {
+          startAnchor = {
+            x: Number(currentPos.x) || 0,
+            y: Number(currentPos.y) || 0,
+            z: Number(currentPos.z) || 0,
+          };
+        }
+      }
+
+      // 초기 position 정보가 없으면 경로 첫 점으로 폴백
+      if (!startAnchor && hasValidFirstPoint) {
+        target.setAttribute('position', `${firstX} ${firstY} ${firstZ}`);
+        startAnchor = { x: firstX, y: firstY, z: firstZ };
+      }
+
+      const almostEqual = (a, b) => Math.abs(a - b) < 1e-6;
+      const firstDuration = Number(firstPoint.durationMs);
+      const firstIsMarkerPoint = startFromInitial && Number.isFinite(firstDuration) && firstDuration === 0;
+      const firstEqualsAnchor =
+        startFromInitial &&
+        !!startAnchor &&
+        hasValidFirstPoint &&
+        almostEqual(firstX, startAnchor.x) &&
+        almostEqual(firstY, startAnchor.y) &&
+        almostEqual(firstZ, startAnchor.z);
+
+      // 시작점 마커(0ms) 또는 앵커와 동일한 첫 점은 건너뛰고 실제 이동 구간부터 재생
+      let index = firstIsMarkerPoint || firstEqualsAnchor ? 1 : 0;
+      let currentFrom = startAnchor || target.getAttribute('position') || { x: 0, y: 0, z: 0 };
 
       const defaultDur =
         Number.isFinite(Number(durationPerSegment)) && Number(durationPerSegment) > 0
@@ -82,9 +136,8 @@ if (!AFrame.components['drone-move-bridge']) {
           return;
         }
 
-        const currentPos = target.getAttribute('position') || { x: 0, y: 0, z: 0 };
         const { x, y, z, durationMs } = points[index] || {};
-        const from = `${currentPos.x} ${currentPos.y} ${currentPos.z}`;
+        const from = `${currentFrom.x} ${currentFrom.y} ${currentFrom.z}`;
         const to = `${x} ${y} ${z}`;
 
         if (!Number.isFinite(x) || !Number.isFinite(y) || !Number.isFinite(z)) {
@@ -110,10 +163,19 @@ if (!AFrame.components['drone-move-bridge']) {
 
         target.addEventListener('animationcomplete__path', onComplete);
 
-        const segDur =
-          Number.isFinite(Number(durationMs)) && Number(durationMs) > 0
-            ? Number(durationMs)
-            : defaultDur;
+        const parsedDuration = Number(durationMs);
+        const hasDuration = Number.isFinite(parsedDuration) && parsedDuration >= 0;
+        const segDur = hasDuration ? parsedDuration : defaultDur;
+
+        // 0ms 구간은 즉시 이동으로 처리해 다음 구간 계산 오차를 줄인다.
+        if (segDur === 0) {
+          target.setAttribute('position', to);
+          currentFrom = { x, y, z };
+          target.removeEventListener('animationcomplete__path', onComplete);
+          index += 1;
+          playNext();
+          return;
+        }
 
         target.setAttribute('animation__path', {
           property: 'position',
@@ -123,6 +185,7 @@ if (!AFrame.components['drone-move-bridge']) {
           easing: 'easeInOutQuad',
           loop: 0,
         });
+        currentFrom = { x, y, z };
       };
 
       playNext();

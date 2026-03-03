@@ -3,7 +3,7 @@
  */
 
 import PropTypes from 'prop-types';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { connect } from 'react-redux';
 
 import CoordinateSystemAxes from './CoordinateSystemAxes';
@@ -14,6 +14,7 @@ import Room from './Room';
 import Scenery from './Scenery';
 import SelectedTrajectories from './SelectedTrajectories';
 import DroneInfoPanel from './DroneInfoPanel';
+import PathControlPanel from './PathControlPanel';
 
 // eslint-disable-next-line no-unused-vars
 import AFrame from '~/aframe';
@@ -32,6 +33,118 @@ const getEffectiveScenery = (state) => {
     return isShowIndoor(state) ? 'indoor' : 'outdoor';
   }
   return scenery;
+};
+
+const toFiniteDurationMs = (value, fallback = 1000) => {
+  const n = Number(value);
+  if (Number.isFinite(n) && n >= 0) return n;
+  return fallback;
+};
+
+const getPathTotalDurationMs = (path) => {
+  if (!Array.isArray(path) || path.length < 2) return 0;
+  let total = 0;
+  for (let i = 1; i < path.length; i += 1) {
+    total += toFiniteDurationMs(path[i]?.durationMs, 1000);
+  }
+  return total;
+};
+
+const getInitialPointFromDrone = (drone) => {
+  if (!drone || !Array.isArray(drone.pos) || drone.pos.length < 3) return null;
+  const [px, py, pz] = drone.pos;
+  const x = Number(px);
+  const y = Number(py);
+  const z = Number(pz);
+  if (!Number.isFinite(x) || !Number.isFinite(y) || !Number.isFinite(z)) return null;
+  return { x, y, z, durationMs: 0 };
+};
+
+const toFinitePoint = (point) => {
+  if (!point) return null;
+  const x = Number(point.x);
+  const y = Number(point.y);
+  const z = Number(point.z);
+  if (!Number.isFinite(x) || !Number.isFinite(y) || !Number.isFinite(z)) return null;
+  return {
+    x,
+    y,
+    z,
+    durationMs: toFiniteDurationMs(point.durationMs, 1000),
+  };
+};
+
+const almostEqual = (a, b) => Math.abs(Number(a) - Number(b)) < 1e-6;
+
+const buildSeekPathWithInitial = (drone) => {
+  const initial = getInitialPointFromDrone(drone);
+  const raw = Array.isArray(drone?.path) ? drone.path.map(toFinitePoint).filter(Boolean) : [];
+
+  if (!initial) return raw;
+  if (!raw.length) return [initial];
+
+  const first = raw[0];
+  const sameAsInitial =
+    almostEqual(first.x, initial.x) &&
+    almostEqual(first.y, initial.y) &&
+    almostEqual(first.z, initial.z);
+
+  if (sameAsInitial) return raw;
+  return [initial, ...raw];
+};
+
+const slicePathByProgress = (path, progressRatio) => {
+  if (!Array.isArray(path) || path.length === 0) return [];
+  if (path.length === 1) return [path[0]];
+
+  const clamped = Math.min(1, Math.max(0, Number(progressRatio) || 0));
+  if (clamped <= 0) return path.slice();
+
+  const total = getPathTotalDurationMs(path);
+  if (total <= 0) return path.slice();
+
+  const targetMs = total * clamped;
+  if (targetMs >= total) {
+    const last = path[path.length - 1];
+    return [{ ...last, durationMs: 0 }];
+  }
+
+  let acc = 0;
+  for (let i = 1; i < path.length; i += 1) {
+    const segMs = toFiniteDurationMs(path[i]?.durationMs, 1000);
+    if (acc + segMs >= targetMs) {
+      const from = path[i - 1];
+      const to = path[i];
+      const local = (targetMs - acc) / (segMs || 1);
+
+      const startPoint = {
+        x: Number(from.x) + (Number(to.x) - Number(from.x)) * local,
+        y: Number(from.y) + (Number(to.y) - Number(from.y)) * local,
+        z: Number(from.z) + (Number(to.z) - Number(from.z)) * local,
+        durationMs: 0,
+      };
+
+      const firstRemainingMs = Math.max(0, Math.round(segMs * (1 - local)));
+      const remaining = [{ ...to, durationMs: firstRemainingMs }];
+
+      for (let j = i + 1; j < path.length; j += 1) {
+        remaining.push({ ...path[j], durationMs: toFiniteDurationMs(path[j]?.durationMs, 1000) });
+      }
+
+      return [startPoint, ...remaining];
+    }
+    acc += segMs;
+  }
+
+  return path.slice(path.length - 1);
+};
+
+const slicePathByElapsedMs = (path, elapsedMs) => {
+  const total = getPathTotalDurationMs(path);
+  if (total <= 0) return path.slice();
+  const clampedMs = Math.min(total, Math.max(0, Number(elapsedMs) || 0));
+  const ratio = clampedMs / total;
+  return slicePathByProgress(path, ratio);
 };
 
 const ThreeDView = React.forwardRef((props, ref) => {
@@ -259,6 +372,68 @@ const ThreeDView = React.forwardRef((props, ref) => {
   };
 
   const [pathProgress, setPathProgress] = useState(0);
+  const effectiveConfig = useMemo(() => {
+    if (droneConfig && Array.isArray(droneConfig.drones) && droneConfig.drones.length) {
+      return droneConfig;
+    }
+    return collectConfigFromScene();
+  }, [droneConfig]);
+
+  const maxPathDurationMs = useMemo(() => {
+    if (!effectiveConfig || !Array.isArray(effectiveConfig.drones)) return 0;
+    return effectiveConfig.drones.reduce((max, d) => {
+      const seekPath = buildSeekPathWithInitial(d);
+      const total = getPathTotalDurationMs(seekPath);
+      return Math.max(max, total);
+    }, 0);
+  }, [effectiveConfig]);
+
+  const currentPositionMs =
+    maxPathDurationMs * (Math.min(100, Math.max(0, Number(pathProgress) || 0)) / 100);
+
+  const applyProgressToAll = (progressPercent) => {
+    const base =
+      droneConfig && Array.isArray(droneConfig.drones) && droneConfig.drones.length
+        ? droneConfig
+        : collectConfigFromScene();
+
+    if (!base || !Array.isArray(base.drones) || !base.drones.length) return;
+
+    const progress = Math.min(100, Math.max(0, Number(progressPercent) || 0)) / 100;
+    const elapsedMs = maxPathDurationMs * progress;
+
+    base.drones.forEach((d) => {
+      if (!Array.isArray(d.path) || !d.path.length || !d.id) return;
+
+      const seekPath = buildSeekPathWithInitial(d);
+      if (!seekPath.length) return;
+      const sliced = slicePathByElapsedMs(seekPath, elapsedMs);
+      if (!sliced.length) return;
+
+      const point = sliced[0];
+      const x = Number(point.x);
+      const y = Number(point.y);
+      const z = Number(point.z);
+      if (!Number.isFinite(x) || !Number.isFinite(y) || !Number.isFinite(z)) return;
+
+      // 슬라이더 이동 시 즉시 해당 진행 위치로 점프(기존 애니메이션은 브리지에서 취소)
+      window.dispatchEvent(
+        new CustomEvent('drone-move-request', {
+          detail: {
+            id: d.id,
+            x,
+            y,
+            z,
+          },
+        })
+      );
+    });
+  };
+
+  const handlePathProgressChange = (nextValue) => {
+    setPathProgress(nextValue);
+    applyProgressToAll(nextValue);
+  };
 
   const handlePlayAll = () => {
     const base =
@@ -269,29 +444,13 @@ const ThreeDView = React.forwardRef((props, ref) => {
     if (!base || !Array.isArray(base.drones) || !base.drones.length) return;
 
     const progress = Math.min(100, Math.max(0, Number(pathProgress) || 0)) / 100;
+    const elapsedMs = maxPathDurationMs * progress;
 
     base.drones.forEach((d) => {
       if (!Array.isArray(d.path) || !d.path.length || !d.id) return;
-
-      const durations = d.path.map((p) => {
-        const v = Number(p.durationMs);
-        return Number.isFinite(v) && v > 0 ? v : 1000;
-      });
-      const total = durations.reduce((acc, v) => acc + v, 0);
-      if (total <= 0) return;
-
-      const targetTime = total * progress;
-      let acc = 0;
-      let startIndex = 0;
-      for (let i = 0; i < durations.length; i += 1) {
-        if (acc + durations[i] >= targetTime) {
-          startIndex = i;
-          break;
-        }
-        acc += durations[i];
-      }
-
-      const remainingPath = d.path.slice(startIndex);
+      const playPathBase = buildSeekPathWithInitial(d);
+      if (!playPathBase.length) return;
+      const remainingPath = slicePathByElapsedMs(playPathBase, elapsedMs);
       if (!remainingPath.length) return;
 
       window.dispatchEvent(
@@ -300,6 +459,7 @@ const ThreeDView = React.forwardRef((props, ref) => {
             id: d.id,
             points: remainingPath,
             durationPerSegment: 1000,
+            startFromInitial: true,
           },
         })
       );
@@ -329,6 +489,7 @@ const ThreeDView = React.forwardRef((props, ref) => {
             id: d.id,
             points: [{ x, y, z, durationMs: 1000 }],
             durationPerSegment: 1000,
+            startFromInitial: false,
           },
         })
       );
@@ -337,108 +498,18 @@ const ThreeDView = React.forwardRef((props, ref) => {
 
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%' }}>
-      <input
-        type="file"
-        accept="application/json"
-        ref={fileInputRef}
-        style={{ display: 'none' }}
-        onChange={handleFileChange}
+      <PathControlPanel
+        fileInputRef={fileInputRef}
+        pathProgress={pathProgress}
+        onPathProgressChange={handlePathProgressChange}
+        currentPositionMs={currentPositionMs}
+        totalDurationMs={maxPathDurationMs}
+        onPlayAll={handlePlayAll}
+        onResetAll={handleResetAll}
+        onLoadConfigClick={handleLoadConfigClick}
+        onSaveConfigClick={handleSaveConfigClick}
+        onFileChange={handleFileChange}
       />
-
-      {/* Path / JSON 컨트롤 패널 */}
-      <div
-        style={{
-          position: 'absolute',
-          left: 8,
-          bottom: 8,
-          zIndex: 11000,
-          padding: 8,
-          borderRadius: 8,
-          background: 'rgba(0,0,0,0.7)',
-          color: 'white',
-          fontSize: 12,
-          minWidth: 260,
-          maxWidth: 340,
-        }}
-      >
-        <div style={{ marginBottom: 6, fontWeight: 600 }}>Path & JSON</div>
-        <div style={{ marginBottom: 6 }}>
-          <div style={{ marginBottom: 2 }}>재생 위치</div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <input
-              type="range"
-              min="0"
-              max="100"
-              value={pathProgress}
-              onChange={(e) => setPathProgress(e.target.value)}
-              style={{ flex: 1 }}
-            />
-            <span style={{ width: 32, textAlign: 'right' }}>{Math.round(pathProgress)}%</span>
-          </div>
-        </div>
-        <div style={{ display: 'flex', gap: 6, marginBottom: 4 }}>
-          <button
-            type="button"
-            onClick={handlePlayAll}
-            style={{
-              flex: 1.4,
-              padding: '4px 6px',
-              borderRadius: 6,
-              border: '1px solid rgba(255,255,255,0.4)',
-              background: 'rgba(255,255,255,0.08)',
-              color: 'white',
-              cursor: 'pointer',
-            }}
-          >
-            전체 재생
-          </button>
-          <button
-            type="button"
-            onClick={handleResetAll}
-            style={{
-              flex: 1,
-              padding: '4px 6px',
-              borderRadius: 6,
-              border: '1px solid rgba(255,255,255,0.4)',
-              background: 'rgba(255,255,255,0.12)',
-              color: 'white',
-              cursor: 'pointer',
-            }}
-          >
-            원위치
-          </button>
-          <button
-            type="button"
-            onClick={handleLoadConfigClick}
-            style={{
-              flex: 0.9,
-              padding: '4px 6px',
-              borderRadius: 6,
-              border: '1px solid rgba(255,255,255,0.4)',
-              background: 'rgba(0,0,0,0.6)',
-              color: 'white',
-              cursor: 'pointer',
-            }}
-          >
-            불러오기
-          </button>
-          <button
-            type="button"
-            onClick={handleSaveConfigClick}
-            style={{
-              flex: 0.9,
-              padding: '4px 6px',
-              borderRadius: 6,
-              border: '1px solid rgba(255,255,255,0.4)',
-              background: 'rgba(0,0,0,0.4)',
-              color: 'white',
-              cursor: 'pointer',
-            }}
-          >
-            저장
-          </button>
-        </div>
-      </div>
       <a-scene
         key={sceneId}
         ref={ref}
