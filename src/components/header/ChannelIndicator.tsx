@@ -1,9 +1,9 @@
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import { makeStyles } from '@skybrush/app-theme-mui';
 
 import { getPreferredCommunicationChannelIndex } from '~/features/mission/selectors';
+import type { RootState } from '~/store/reducers';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -20,15 +20,15 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const ChannelIndicator = ({ channel }) => {
+type Props = {
+  channel: number;
+};
+
+const ChannelIndicator = ({ channel }: Props) => {
   const classes = useStyles();
   return <div className={classes.root}>{channel}</div>;
 };
 
-ChannelIndicator.propTypes = {
-  channel: PropTypes.number.isRequired,
-};
-
-export default connect((state) => ({
+export default connect((state: RootState) => ({
   channel: getPreferredCommunicationChannelIndex(state) + 1,
 }))(ChannelIndicator);

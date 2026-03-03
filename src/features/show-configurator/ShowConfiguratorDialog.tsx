@@ -48,7 +48,7 @@ import {
   selectDronesVisible,
   selectIsShowAdaptInProgress,
 } from './selectors';
-import { closeDialog, setAdaptResult, setDronesVisible } from './state';
+import { closeDialog, setAdaptResult, setDronesVisible } from './slice';
 
 const useStyles = makeStyles((theme: Theme) => ({
   /* Ugly hack to move the sidebar to the right */

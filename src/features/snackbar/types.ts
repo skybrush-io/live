@@ -21,8 +21,11 @@ export type Notification = {
     label: string;
     action: Action;
   }>;
+  countdown?: boolean;
   header?: string;
   message: string;
   permanent?: boolean;
   semantics?: MessageSemantics;
+  timeout?: number;
+  topic?: string;
 };

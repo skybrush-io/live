@@ -85,6 +85,86 @@
     "disable": "Disable broadcast",
     "enable": "Enable broadcast for {{time}} seconds"
   },
+  "collectiveRTHDialog": {
+    "action": {
+      "addCollectiveRTH": "Calculate RTH plans"
+    },
+    "description": "Precalculate collective RTH plans at multiple timestamps in the show. In case of emergency, collective RTH brings drones home as quickly as possible without collisions.",
+    "existingInvalidRTHPlan": "The show has no valid collective RTH plans.",
+    "existingValidRTHPlan": "The show has valid collective RTH plans at {{numPlans}} timestamps.",
+    "parameters": {
+      "form": {
+        "horizontalVelocity": {
+          "help": "during collective RTH",
+          "label": "Horizontal velocity"
+        },
+        "minDistance": {
+          "help": "between drones during RTH",
+          "label": "Minimum distance"
+        },
+        "timeResolution": {
+          "help": "between consecutive RTH plans",
+          "label": "Time resolution"
+        },
+        "verticalVelocity": {
+          "help": "during collective RTH",
+          "label": "Vertical velocity"
+        }
+      },
+      "section": {
+        "parameters": "Parameters"
+      }
+    },
+    "status": {
+      "error": "RTH plan calculation failed. Please try again.",
+      "loading": "Calculating RTH plans. It may take some time.",
+      "success": "RTH plans successfully calculated."
+    },
+    "summary": {
+      "firstTime": {
+        "message": "Earliest RTH time: {{firstTime}}s"
+      },
+      "lastTime": {
+        "message": "Last RTH time: {{lastTime}}s"
+      },
+      "numPlans": {
+        "message": "Collective RTH plans successfully calculated at {{numPlans}} timestamps"
+      }
+    },
+    "title": "Plan collective RTH"
+  },
+  "collectiveRTHPanel": {
+    "error": {
+      "invalidPlan": "The collective RTH plan is invalid.",
+      "missingPlan": "The show has no collective RTH plans.",
+      "partialPlan": "{{withoutPlans}} drones do not have RTH plans."
+    },
+    "message": {
+      "noDrones": "There are no drones in the loaded show.",
+      "noShowFile": "No show file loaded"
+    },
+    "rthPlanDetails": {
+      "column": {
+        "duration": "Duration",
+        "end": "End",
+        "endShow": "End (Show)",
+        "start": "Start",
+        "startShow": "Start (Show)"
+      },
+      "info": {
+        "rth": {
+          "numPlans": "Number of plans:",
+          "title": "Collective RTH"
+        },
+        "showSegment": {
+          "duration": "Duration:",
+          "end": "End:",
+          "start": "Start:",
+          "title": "Show segment"
+        }
+      }
+    }
+  },
   "coordinateAveragingDialogToolbar": {
     "addNewDrone": "Add new drone",
     "copyCentroid": "Copy centroid",
@@ -138,6 +218,7 @@
       "clear": "Clear",
       "click": "Click",
       "close": "Close",
+      "confirm": "Confirm",
       "delete": "Delete",
       "discard": "Discard",
       "drag": "Drag",
@@ -154,6 +235,7 @@
       "select": "Select",
       "start": "Start",
       "stop": "Stop",
+      "submit": "Submit",
       "undo": "Undo"
     },
     "commands": {
@@ -187,7 +269,8 @@
       "minutes_one": "{{count}} minute",
       "minutes_other": "{{count}} minutes",
       "seconds_one": "{{count}} second",
-      "seconds_other": "{{count}} seconds"
+      "seconds_other": "{{count}} seconds",
+      "seconds_short": "{{count}}s"
     }
   },
   "geofence": {
@@ -373,6 +456,12 @@
     "manualPreflightCheckItems": "Manual preflight check items",
     "preflightCheckItems": "Preflight check items"
   },
+  "proControlButtonGroup": {
+    "collectiveRTH": "Collective RTH",
+    "collectiveRTHPanelNotFound": "The Collective RTH panel was not found. Please try to open it manually from the sidebar.",
+    "resume": "Resume",
+    "suspend": "Suspend"
+  },
   "recalculateMappingButton": {
     "findOptimalMapping": "Find optimal mapping",
     "recalculateMapping": "Recalculate mapping"
@@ -433,6 +522,61 @@
     "name": "Name",
     "notes": "Notes",
     "zoomLevel": "Zoom level"
+  },
+  "scheduleProgressIndicator": {
+    "empty": {
+      "description": "No operations are scheduled.",
+      "title": "Empty schedule"
+    },
+    "progress": {
+      "active": "{{elapsedSeconds}}s/{{durationSeconds}}s",
+      "completed": "Completed",
+      "waiting": "Waiting ..."
+    },
+    "segment": {
+      "preparation": {
+        "description": "Drones are being notified about the requested operation and they are getting ready to execute it.",
+        "title": {
+          "default": "Preparation",
+          "waiting": "Preparation (in {{countdownSeconds}}s)"
+        }
+      },
+      "rth": {
+        "description": "Drones are returning to their home locations.",
+        "title": {
+          "default": "Return to Home",
+          "waiting": "Return to Home (in {{countdownSeconds}}s)"
+        }
+      },
+      "slowdown": {
+        "description": "Drones are slowing down. They remain on their original trajectories to avoid collisions.",
+        "title": {
+          "default": "Slowdown",
+          "waiting": "Slowdown (in {{countdownSeconds}}s)"
+        }
+      },
+      "speedup": {
+        "description": "Drones are speeding up. They continue their original trajectories to avoid collisions.",
+        "title": {
+          "default": "Speedup",
+          "waiting": "Speedup (in {{countdownSeconds}}s)"
+        }
+      }
+    },
+    "stage": {
+      "completed": {
+        "description": "The operation has completed.",
+        "title": "Completed"
+      },
+      "progress": {
+        "description": "The operation is in progress.",
+        "title": "In progress ({{remainingSeconds}}s)"
+      },
+      "waiting": {
+        "description": "The operation will start soon.",
+        "title": "Waiting to start ({{remainingSeconds}}s)"
+      }
+    }
   },
   "serverConnectionStatus": {
     "clockSkew": "Clock skew",
@@ -542,6 +686,16 @@
     "chooseStartTimeNotSet": "Not set yet",
     "clear": "Clear loaded show",
     "clock": "Show clock:",
+    "collectiveRTH": {
+      "confirmation": {
+        "message": "Are you sure you want to trigger the collective RTH operation?",
+        "title": "Confirmation needed"
+      },
+      "notification": {
+        "error": "Collective RTH command failed",
+        "success": "Collective RTH command successfully sent"
+      }
+    },
     "dronePlacementApproved": "Drone placement approved",
     "dronePlacementCheck": "Checking drone placement…",
     "dronePlacementError": "Error in drone placement",
@@ -560,6 +714,16 @@
     },
     "placementAccuracy": "Placement accuracy ≤ {{distance}}",
     "reload": "Reload show",
+    "resume": {
+      "confirmation": {
+        "message": "Are you sure you want to resume the show?",
+        "title": "Resume show"
+      },
+      "notification": {
+        "error": "Show resume command failed",
+        "success": "Show resume command successfully sent"
+      }
+    },
     "revokeAuthorization": "Click here to revoke authorization",
     "selectFile": "Select or drop a show file here",
     "setupEnvironment": "Setup environment",
@@ -593,6 +757,10 @@
         "origin": "A show origin must be included or set manually",
         "segments": "The show must be annotated with segment markers",
         "server": "Connection must be established to the server"
+      },
+      "tooltip": {
+        "invalidRTHPlan": "The show has no valid collective RTH plans.",
+        "validRTHPlan": "The show has {{numPlans}} valid collective RTH plans."
       }
     },
     "startMethod": {
@@ -601,6 +769,16 @@
     },
     "startTimeNotSet": "Start time not set yet",
     "startsAt": "Starts at {{time}}",
+    "suspend": {
+      "confirmation": {
+        "message": "Are you sure you want to suspend the show?",
+        "title": "Suspend show"
+      },
+      "notification": {
+        "error": "Show suspend command failed",
+        "success": "Show suspend command successfully sent"
+      }
+    },
     "takeOffMore": "{{quantity}} drones will take off automatically",
     "takeOffNoPosition": "No position yet for at least one drone",
     "takeOffOne": "One drone will take off automatically",
@@ -830,6 +1008,7 @@
   },
   "view": {
     "beacon-list": "Beacons",
+    "collective-rth": "Collective RTH",
     "dock-list": "Docks",
     "feature-list": "Features",
     "field-notes": "Field notes",

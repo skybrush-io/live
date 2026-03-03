@@ -20,13 +20,14 @@ import {
   createParameterSettingRequest,
 } from './builders';
 import type MessageHub from './messages';
-import { extractResponseForId } from './parsing';
-import { validateExtensionName, validateObjectId } from './validation';
-import type { Message, MessageBody } from './types';
 import type {
   AsyncOperationOptions,
   AsyncResponseHandlerOptions,
 } from './messages';
+import { extractResponseForId } from './parsing';
+import { isSchedule, type Schedule } from './schedule';
+import type { Message, MessageBody } from './types';
+import { validateExtensionName, validateObjectId } from './validation';
 
 /**
  * Asks the server to set a new configuration object for the extension with the
@@ -86,6 +87,31 @@ export async function resetUAV(hub: MessageHub, uavId: string): Promise<void> {
     const errorString = errorToString(error);
     throw new Error(`Failed to reset UAV ${uavId}: ${errorString}`);
   }
+}
+
+/**
+ * Asks the server to resume the currently suspended show.
+ */
+export async function resumeShow(hub: MessageHub): Promise<Schedule> {
+  let response: Message<MessageBody>;
+  try {
+    response = await hub.sendMessage({ type: 'X-SHOW-RESUME' });
+  } catch (error) {
+    const errorString = errorToString(error);
+    throw new Error(`Failed to resume show. ${errorString}`);
+  }
+
+  if (response.body.type !== 'X-SHOW-RESUME') {
+    throw new Error('Failed to resume show.');
+  }
+
+  if (isSchedule(response.body)) {
+    return response.body;
+  }
+
+  throw new Error(
+    `Invalid schedule in response to X-SHOW-RESUME: ${JSON.stringify(response.body)}`
+  );
 }
 
 /**
@@ -208,6 +234,28 @@ export async function setShowLightConfiguration(
   }
 }
 
+export async function startCollectiveRTH(hub: MessageHub): Promise<Schedule> {
+  let response: Message<MessageBody>;
+  try {
+    response = await hub.sendMessage({ type: 'X-SHOW-CRTH-START' });
+  } catch (error) {
+    const errorString = errorToString(error);
+    throw new Error(`Failed to start collective RTH. ${errorString}`);
+  }
+
+  if (response.body.type !== 'X-SHOW-CRTH-START') {
+    throw new Error('Failed to start collective RTH.');
+  }
+
+  if (isSchedule(response.body)) {
+    return response.body;
+  }
+
+  throw new Error(
+    `Invalid schedule in response to collective RTH trigger: ${JSON.stringify(response.body)}`
+  );
+}
+
 /**
  * Asks the RTK framework on the server to start a new survey on the current
  * RTK connection.
@@ -224,6 +272,31 @@ export async function startRTKSurvey(
   if (response.body.type !== 'ACK-ACK') {
     throw new Error('Failed to start RTK survey on the server');
   }
+}
+
+/**
+ * Asks the server to suspend the currently running show.
+ */
+export async function suspendShow(hub: MessageHub): Promise<Schedule> {
+  let response: Message<MessageBody>;
+  try {
+    response = await hub.sendMessage({ type: 'X-SHOW-SUSPEND' });
+  } catch (error) {
+    const errorString = errorToString(error);
+    throw new Error(`Failed to suspend show. ${errorString}`);
+  }
+
+  if (response.body.type !== 'X-SHOW-SUSPEND') {
+    throw new Error('Failed to suspend show.');
+  }
+
+  if (isSchedule(response.body)) {
+    return response.body;
+  }
+
+  throw new Error(
+    `Invalid schedule in response to X-SHOW-SUSPEND: ${JSON.stringify(response.body)}`
+  );
 }
 
 /**
@@ -374,13 +447,16 @@ const _operations = {
   planMission,
   reloadExtension,
   resetUAV,
+  resumeShow,
   sendDebugMessage,
   setParameter,
   setParameters,
   setRTKCorrectionsSource,
   setShowConfiguration,
   setShowLightConfiguration,
+  startCollectiveRTH,
   startRTKSurvey,
+  suspendShow,
   uploadDroneShow,
   uploadFirmware,
   uploadMission,

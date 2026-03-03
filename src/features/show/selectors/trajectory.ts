@@ -2,7 +2,6 @@ import { createSelector } from 'reselect';
 
 import type {
   DroneSpecification,
-  ShowSegment,
   ShowSegmentId,
   SwarmSpecification,
   TimeWindow,
@@ -22,11 +21,12 @@ import {
   getConvexHullOfTrajectory,
   getTrajectoryInTimeWindow,
   isValidTrajectory,
-} from './trajectory';
+} from '../trajectory';
 import {
   isOutdoorCoordinateSystemWithOrigin,
   type OutdoorCoordinateSystem,
-} from './types';
+  type ShowSegmentsRecord,
+} from '../types';
 
 export type CoordinateToWorldTransformationFunction = <
   TCoord extends Coordinate2DPlus,
@@ -224,10 +224,8 @@ export function makeSelectors(
  *
  */
 export function makeSegmentSelectors(
-  selectSwarm: AppSelector<SwarmSpecification>,
-  selectShowSegments: AppSelector<
-    Record<ShowSegmentId, ShowSegment> | undefined
-  >,
+  selectSwarm: AppSelector<SwarmSpecification | undefined>,
+  selectShowSegments: AppSelector<ShowSegmentsRecord | undefined>,
   selectOutdoorShowToWorldCoordinateSystemTransformation: AppSelector<
     | (<TCoord extends Coordinate2DPlus>(point: TCoord) => GPSPosition)
     | undefined
@@ -283,7 +281,7 @@ export function makeSegmentSelectors(
       makeSegmentSelector(segmentId),
       selectSwarm,
       (segment, swarm): SwarmSpecification | undefined => {
-        if (segment === undefined) {
+        if (segment === undefined || swarm === undefined) {
           return undefined;
         }
 

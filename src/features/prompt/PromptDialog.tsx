@@ -10,6 +10,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import { Form } from '@rjsf/mui';
 import validator from '@rjsf/validator-ajv8';
 import type React from 'react';
+import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import { DraggableDialog } from '@skybrush/mui-components';
@@ -44,44 +45,51 @@ const PromptDialogForm: React.FunctionComponent<PromptDialogFormProps> = ({
   schema,
   submitButtonLabel,
   type,
-}) => (
-  <DialogContent>
-    {message && (
-      <Box sx={{ py: 1 }}>
-        <DialogContentText>{message}</DialogContentText>
-      </Box>
-    )}
-    {type === PromptDialogType.GENERIC && (
-      <Form
-        // TODO: Somehow make `fields.SchemaField` use `DialogContent`.
-        formData={initialValues}
-        schema={schema}
-        validator={validator}
-        onSubmit={onSubmit}
-      >
-        <DialogActions style={{ padding: 0 }}>
-          <Button color='primary' type='submit'>
-            {submitButtonLabel ?? 'Submit'}
-          </Button>
-          <Button onClick={onCancel}>{cancelButtonLabel ?? 'Cancel'}</Button>
-        </DialogActions>
-      </Form>
-    )}
-    {type === PromptDialogType.CONFIRMATION && (
-      <DialogActions style={{ padding: 0 }}>
-        <Button
-          color='primary'
-          onClick={(): void => {
-            onSubmit({ formData: { confirmed: true } });
-          }}
+}) => {
+  const { t } = useTranslation();
+  return (
+    <DialogContent>
+      {message && (
+        <Box sx={{ py: 1 }}>
+          <DialogContentText>{message}</DialogContentText>
+        </Box>
+      )}
+      {type === PromptDialogType.GENERIC && (
+        <Form
+          // TODO: Somehow make `fields.SchemaField` use `DialogContent`.
+          formData={initialValues}
+          schema={schema}
+          validator={validator}
+          onSubmit={onSubmit}
         >
-          {submitButtonLabel ?? 'Confirm'}
-        </Button>
-        <Button onClick={onCancel}>{cancelButtonLabel ?? 'Cancel'}</Button>
-      </DialogActions>
-    )}
-  </DialogContent>
-);
+          <DialogActions style={{ padding: 0 }}>
+            <Button color='primary' type='submit'>
+              {submitButtonLabel ?? t('general.action.submit')}
+            </Button>
+            <Button onClick={onCancel}>
+              {cancelButtonLabel ?? t('general.action.cancel')}
+            </Button>
+          </DialogActions>
+        </Form>
+      )}
+      {type === PromptDialogType.CONFIRMATION && (
+        <DialogActions style={{ padding: 0 }}>
+          <Button
+            color='primary'
+            onClick={(): void => {
+              onSubmit({ formData: { confirmed: true } });
+            }}
+          >
+            {submitButtonLabel ?? t('general.action.confirm')}
+          </Button>
+          <Button onClick={onCancel}>
+            {cancelButtonLabel ?? t('general.action.cancel')}
+          </Button>
+        </DialogActions>
+      )}
+    </DialogContent>
+  );
+};
 
 type PromptDialogPresentationProps = PromptDialogFormProps &
   Readonly<{

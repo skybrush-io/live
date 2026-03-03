@@ -2,7 +2,7 @@ import { type KeyMap } from '~/features/hotkeys/keymap';
 import { HotkeyScope } from '~/features/hotkeys/types';
 
 import { clearSelection, selectAllModifiableItems } from './actions';
-import { historyRedo, historyUndo } from './state';
+import { historyRedo, historyUndo } from './slice';
 
 export const keyMap: KeyMap = {
   SHOW_CONFIGURATOR_SELECT_ALL: {

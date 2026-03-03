@@ -1,25 +1,30 @@
 import clsx from 'clsx';
-import PropTypes from 'prop-types';
 
 import '~/../assets/css/corner-ribbon.less';
 
-const positionMap = {
+type CornerRibbonPosition =
+  | 'topLeft'
+  | 'topRight'
+  | 'bottomLeft'
+  | 'bottomRight';
+
+const positionMap: Record<CornerRibbonPosition, string> = {
   topLeft: 'left-top',
   topRight: 'right-top',
   bottomLeft: 'left-bottom',
   bottomRight: 'right-bottom',
 };
 
-const CornerRibbon = ({ label, position = 'topRight' }) => (
+type Props = {
+  label: string;
+  position?: CornerRibbonPosition;
+};
+
+const CornerRibbon = ({ label, position = 'topRight' }: Props) => (
   <div
     className={clsx('corner-ribbon', positionMap[position])}
     data-ribbon={label}
   />
 );
-
-CornerRibbon.propTypes = {
-  label: PropTypes.string,
-  position: PropTypes.oneOf(Object.keys(positionMap)),
-};
 
 export default CornerRibbon;

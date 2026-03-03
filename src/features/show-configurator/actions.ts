@@ -44,7 +44,7 @@ import {
   showDialog,
   updateSelection,
   type ShowData,
-} from './state';
+} from './slice';
 
 // -- Initializing
 

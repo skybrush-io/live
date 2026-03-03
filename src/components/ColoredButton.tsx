@@ -1,4 +1,4 @@
-import ButtonBase from '@mui/material/ButtonBase';
+import ButtonBase, { type ButtonBaseProps } from '@mui/material/ButtonBase';
 import clsx from 'clsx';
 import createColor from 'color';
 import type React from 'react';
@@ -23,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-type ColoredButtonProps = {
+type ColoredButtonProps = ButtonBaseProps & {
   children: React.ReactNode;
   color: string;
   className?: string;
