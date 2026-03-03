@@ -1,7 +1,6 @@
 import createColor from 'color';
 
 import { showError } from '~/features/snackbar/actions';
-import { MessageSemantics } from '~/features/snackbar/types';
 import messageHub from '~/message-hub';
 
 import {
@@ -57,9 +56,6 @@ async function submitShowLightConfigurationToServer(getState) {
       color: createColor(color).rgb().array(),
     });
   } catch {
-    showError({
-      message: 'Failed to update light configuration on the server.',
-      semantics: MessageSemantics.ERROR,
-    });
+    showError('Failed to update light configuration on the server.');
   }
 }
