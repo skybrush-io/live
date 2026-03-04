@@ -23,7 +23,6 @@ const StyledAlert = styled(Alert)({
   '> .MuiAlert-message': {
     flex: 1,
   },
-  opacity: 0.85,
 });
 
 const semanticsToSeverity: Record<MessageSemantics, AlertColor> = {
