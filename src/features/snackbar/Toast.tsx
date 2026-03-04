@@ -6,6 +6,8 @@ import { type ReactNode } from 'react';
 import toast from 'react-hot-toast';
 import { useDispatch } from 'react-redux';
 
+import Countdown from '~/components/Countdown';
+
 import { MessageSemantics, type Notification } from './types';
 
 const ToastNotificationButton = styled(Button)({
@@ -14,8 +16,8 @@ const ToastNotificationButton = styled(Button)({
 });
 
 const StyledAlert = styled(Alert)({
-  minWidth: '400px',
-  maxWidth: '400px',
+  minWidth: '420px',
+  maxWidth: '420px',
   width: '400px',
   '> .MuiAlert-message': {
     flex: 1,
@@ -36,9 +38,17 @@ type ToastContentProps = {
 
 const ToastContent = ({ notification }: ToastContentProps) => {
   const dispatch = useDispatch();
-  const { buttons, message, header } = notification;
+  const { buttons, message, header, countdown, timeout } = notification;
 
   let result: ReactNode = message;
+
+  if (countdown && timeout !== undefined && Number.isFinite(timeout)) {
+    result = (
+      <>
+        {result}&nbsp;({<Countdown seconds={timeout / 1000} />})
+      </>
+    );
+  }
 
   if (Array.isArray(buttons) && buttons.length > 0) {
     const buttonComponents = buttons.map(
@@ -72,7 +82,7 @@ const ToastContent = ({ notification }: ToastContentProps) => {
     );
   }
 
-  if (header && header.length > 0) {
+  if (header) {
     result = (
       <div>
         <div>
