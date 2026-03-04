@@ -13,6 +13,10 @@ import DroneImageInfo from '~/../assets/img/drone-x-black-info-32x32.png';
 import DroneImageWarning from '~/../assets/img/drone-x-black-warning-32x32.png';
 // VTOL icons
 import DroneImageVTOL from '~/../assets/img/drone-vtol-black.png';
+import DroneImageVTOLInfo from '~/../assets/img/drone-vtol-black-info.png';
+import DroneImageVTOLWarning from '~/../assets/img/drone-vtol-black-warning.png';
+import DroneImageVTOLError from '~/../assets/img/drone-vtol-black-error.png';
+import DroneImageVTOLOutline from '~/../assets/img/drone-vtol-outline.png';
 import { Status } from '~/components/semantics';
 import { UAVType } from '~/model/enums';
 import { toRadians } from '~/utils/math';
@@ -28,12 +32,17 @@ const droneImages: Record<UAVType, Record<string, string>> = {
   },
   [UAVType.VTOL]: {
     // Using the same icon for all statuses for VTOL for now as we lack specific assets
-    [Status.INFO]: DroneImageVTOL,
-    [Status.WARNING]: DroneImageVTOL,
-    [Status.ERROR]: DroneImageVTOL,
-    [Status.CRITICAL]: DroneImageVTOL,
+    [Status.INFO]: DroneImageVTOLInfo,
+    [Status.WARNING]: DroneImageVTOLWarning,
+    [Status.ERROR]: DroneImageVTOLError,
+    [Status.CRITICAL]: DroneImageVTOLError,
     default: DroneImageVTOL,
   },
+};
+
+const selectionImages: Record<UAVType, string> = {
+  [UAVType.QUAD]: SelectionGlow,
+  [UAVType.VTOL]: DroneImageVTOLOutline,
 };
 
 /**
@@ -258,11 +267,14 @@ export default class UAVFeature extends Feature<Point> {
 
     // Selection image
 
+    const selectionSrc =
+      selectionImages[this._uavType] || selectionImages[UAVType.QUAD];
+
     const selectionImage = new Icon({
       rotateWithView: true,
       rotation: this._headingToRotation(),
       scale: this._scale,
-      src: SelectionGlow,
+      src: selectionSrc,
     });
     this._selectionImage = selectionImage;
 
