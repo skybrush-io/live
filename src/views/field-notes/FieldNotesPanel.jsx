@@ -59,6 +59,30 @@ const useStyles = makeStyles((theme) => ({
         opacity: 1,
       },
     },
+
+    '& .cm-s-easymde .cm-header-1': {
+      fontSize: 'calc(1.2rem + 0.4vw)',
+    },
+
+    '& .cm-s-easymde .cm-header-2': {
+      fontSize: 'calc(1.2rem + 0.3vw)',
+    },
+
+    '& .cm-s-easymde .cm-header-3': {
+      fontSize: 'calc(1.2rem + 0.2vw)',
+    },
+
+    '& .cm-s-easymde .cm-header-4': {
+      fontSize: 'calc(1.2rem + 0.1vw)',
+    },
+
+    '& .cm-s-easymde .cm-header-5': {
+      fontSize: '1.2rem',
+    },
+
+    '& .cm-s-easymde .cm-header-6': {
+      fontSize: '1.1rem',
+    },
   },
 
   saveIcon: {

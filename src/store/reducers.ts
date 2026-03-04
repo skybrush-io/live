@@ -10,6 +10,7 @@ import undoable, { includeAction } from 'redux-undo';
  * Reducer functions for handling the part of the state object that stores the
  * state of the various dialogs.
  */
+import collectiveRTHReducer from '~/features/collective-rth/slice';
 import dockDetailsDialogReducer from '~/features/docks/details';
 import errorHandlingReducer from '~/features/error-handling/slice';
 import featureEditorReducer from '~/features/map-features/editor';
@@ -26,9 +27,9 @@ import showConfiguratorReducer, {
   historyRedo,
   historySnap,
   historyUndo,
-  type ShowData,
   type ShowConfiguratorState,
-} from '~/features/show-configurator/state';
+  type ShowData,
+} from '~/features/show-configurator/slice';
 import uavDetailsDialogReducer from '~/features/uavs/details';
 
 /**
@@ -81,6 +82,7 @@ import workbenchReducer from '~/features/workbench/slice';
 const dialogsReducer = combineReducers({
   appSettings: appSettingsReducer,
   authentication: authenticationReducer,
+  collectiveRTH: collectiveRTHReducer,
   deauthentication: deauthenticationReducer,
   dockDetails: dockDetailsDialogReducer,
   error: errorHandlingReducer,

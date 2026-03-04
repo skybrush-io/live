@@ -15,6 +15,7 @@ import CornerRibbon from './components/CornerRibbon';
 import dialogs from './components/dialogs';
 import Header from './components/header';
 import ServerConnectionManager from './components/ServerConnectionManager';
+import CollectiveRTHDialog from './features/collective-rth/CollectiveRTHDialog';
 import DetachedPanelManager from './features/detachable-panels/DetachedPanelManager';
 import DockDetailsDialog from './features/docks/DockDetailsDialog';
 import FirmwareUpdateSetupDialog from './features/firmware-update/FirmwareUpdateSetupDialog';
@@ -168,6 +169,7 @@ const App = ({ onFirstRender }) => (
       {hasTimeLimitedSession && <dialogs.SessionExpiryDialog />}
       <dialogs.TimeSyncDialog />
 
+      <CollectiveRTHDialog />
       <CoordinateAveragingDialog />
       <DockDetailsDialog />
       <FirmwareUpdateSetupDialog />

@@ -126,7 +126,6 @@ const doFindGreedyAssignmentBetweenPoints = createAsyncAction(
   'mission/calculateMapping',
   async (resultHolder, ...args) => {
     const result = await workers.findGreedyAssignment(...args);
-    console.log(result);
     resultHolder.result = result;
   },
   { minDelay: 500 }

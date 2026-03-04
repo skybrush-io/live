@@ -23,6 +23,7 @@ type ToastButton = {
  */
 export type Notification = {
   buttons?: ToastButton[];
+  countdown?: boolean;
   header?: string;
   message: string;
   permanent?: boolean;

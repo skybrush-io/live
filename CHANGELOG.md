@@ -11,10 +11,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Support for keeping the original light configuration when adapting the show in
   the show adaptation dialog.
+- Added a new dialog for planning collective RTH trajectories.
+- Added a pro control group to the Control panel with show suspend and resume actions.
 
 - It is now possible to set a UAV ID for parameters in the parameter upload dialog.
   `PARAM=value` or `PARAM,value` can be used to target all UAVs, and `UAV_ID=PARAM=value`
   or `UAV_ID,PARAM,value` can be used to target a single UAV.
+
+- Added possibility to shift the net show vertically during show adaptation.
+
+- Add takeoff method selection to the show adaptation dialog.
+
+### Changed
+
+- Smaller headings in the Field Notes panel.
 
 ### Fixed
 

@@ -19,13 +19,19 @@ import {
   updateLandingPositions,
   updateTakeoffHeadings,
 } from '~/features/mission/slice';
-import { showError } from '~/features/snackbar/actions';
+import { showConfirmationDialog } from '~/features/prompt/actions';
+import { getUAVOperationConfirmationStyle } from '~/features/settings/selectors';
+import { showError, showNotification } from '~/features/snackbar/actions';
+import { MessageSemantics } from '~/features/snackbar/types';
 import {
   getActiveUAVIds,
   getCurrentGPSPositionByUavId,
 } from '~/features/uavs/selectors';
 import { clearLastUploadResultForJobType } from '~/features/upload/slice';
+import i18n from '~/i18n';
+import messageHub from '~/message-hub';
 import { MissionType } from '~/model/missions';
+import { UAVOperationConfirmationStyle } from '~/model/settings';
 import {
   lonLatFromMapViewCoordinate,
   mapViewCoordinateFromLonLat,
@@ -48,6 +54,7 @@ import {
   getRoomCorners,
   getShowClockReference,
   hasScheduledStartTime,
+  selectIsCollectiveRTHTriggered,
 } from './selectors';
 import {
   _clearLoadedShow,
@@ -55,6 +62,7 @@ import {
   approveTakeoffAreaAt,
   loadingProgress,
   revokeTakeoffAreaApproval,
+  setCollectiveRTHSchedule,
   setEnvironmentType,
   setLastLoadingAttemptFailed,
   setOutdoorShowOrientation,
@@ -465,3 +473,130 @@ export const setOutdoorShowAltitudeReferenceToAverageAMSL =
       dispatch(setOutdoorShowAltitudeReferenceValue(avgAltitude.toFixed(1)));
     }
   };
+
+const confirmedCollectiveOperation = async (
+  dispatch,
+  getState,
+  { confirmationMessage, confirmationTitle }
+) => {
+  const baseState = getState();
+  if (selectIsCollectiveRTHTriggered(baseState)) {
+    console.error(
+      'Tried to trigger collective action when collective RTH was already triggered.'
+    );
+    return false;
+  }
+
+  if (
+    getUAVOperationConfirmationStyle(baseState) !==
+    UAVOperationConfirmationStyle.NEVER
+  ) {
+    const confirmation = await dispatch(
+      showConfirmationDialog(confirmationMessage, {
+        title: confirmationTitle,
+      })
+    );
+    if (!confirmation?.confirmed) {
+      return false;
+    }
+  }
+
+  return true;
+};
+
+export const startCollectiveRTH = () => async (dispatch, getState) => {
+  const proceed = await confirmedCollectiveOperation(dispatch, getState, {
+    confirmationMessage: i18n.t('show.collectiveRTH.confirmation.message'),
+    confirmationTitle: i18n.t('show.collectiveRTH.confirmation.title'),
+  });
+  if (!proceed) {
+    return;
+  }
+
+  try {
+    const schedule = await messageHub.execute.startCollectiveRTH();
+    dispatch(setCollectiveRTHSchedule(schedule));
+    dispatch(
+      showNotification({
+        message: i18n.t('show.collectiveRTH.notification.success'),
+        permanent: true,
+        semantics: MessageSemantics.SUCCESS,
+      })
+    );
+  } catch (error) {
+    dispatch(
+      showNotification({
+        message:
+          error.message ?? i18n.t('show.collectiveRTH.notification.error'),
+        permanent: true,
+        semantics: MessageSemantics.ERROR,
+      })
+    );
+  }
+};
+
+export const suspendShow = () => async (dispatch, getState) => {
+  const proceed = await confirmedCollectiveOperation(dispatch, getState, {
+    confirmationMessage: i18n.t('show.suspend.confirmation.message'),
+    confirmationTitle: i18n.t('show.suspend.confirmation.title'),
+  });
+  if (!proceed) {
+    return;
+  }
+
+  try {
+    const result = await messageHub.execute.suspendShow();
+    const timeout = result.schedule.at(-1)?.endMs - Date.now();
+    const countdown = Number.isNaN(timeout)
+      ? undefined
+      : { countdown: true, timeout };
+    dispatch(
+      showNotification({
+        message: i18n.t('show.suspend.notification.success'),
+        semantics: MessageSemantics.SUCCESS,
+        ...countdown,
+      })
+    );
+  } catch (error) {
+    dispatch(
+      showNotification({
+        message: error.message ?? i18n.t('show.suspend.notification.error'),
+        permanent: true,
+        semantics: MessageSemantics.ERROR,
+      })
+    );
+  }
+};
+
+export const resumeShow = () => async (dispatch, getState) => {
+  const proceed = await confirmedCollectiveOperation(dispatch, getState, {
+    confirmationMessage: i18n.t('show.resume.confirmation.message'),
+    confirmationTitle: i18n.t('show.resume.confirmation.title'),
+  });
+  if (!proceed) {
+    return;
+  }
+
+  try {
+    const result = await messageHub.execute.resumeShow();
+    const timeout = result.schedule.at(-1)?.endMs - Date.now();
+    const countdown = Number.isNaN(timeout)
+      ? undefined
+      : { countdown: true, timeout };
+    dispatch(
+      showNotification({
+        message: i18n.t('show.resume.notification.success'),
+        semantics: MessageSemantics.SUCCESS,
+        ...countdown,
+      })
+    );
+  } catch (error) {
+    dispatch(
+      showNotification({
+        message: error.message ?? i18n.t('show.resume.notification.error'),
+        permanent: true,
+        semantics: MessageSemantics.ERROR,
+      })
+    );
+  }
+};
