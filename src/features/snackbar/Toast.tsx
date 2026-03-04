@@ -38,7 +38,7 @@ type ToastContentProps = {
 
 const ToastContent = ({ notification }: ToastContentProps) => {
   const dispatch = useDispatch();
-  const { buttons, message, header, countdown, timeout } = notification;
+  const { message, buttons, countdown, timeout } = notification;
 
   let result: ReactNode = message;
 
@@ -79,17 +79,6 @@ const ToastContent = ({ notification }: ToastContentProps) => {
         {result}
         {buttonComponents}
       </Box>
-    );
-  }
-
-  if (header) {
-    result = (
-      <div>
-        <div>
-          <strong>{header}</strong>
-        </div>
-        {result}
-      </div>
     );
   }
 

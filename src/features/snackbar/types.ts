@@ -22,10 +22,9 @@ type ToastButton = {
  * snackbar notification.
  */
 export type Notification = {
+  message: string;
   buttons?: ToastButton[];
   countdown?: boolean;
-  header?: string;
-  message: string;
   permanent?: boolean;
   semantics?: MessageSemantics;
   timeout?: number;
