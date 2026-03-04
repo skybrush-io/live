@@ -15,8 +15,7 @@ import {
   suspendShow,
 } from '~/features/show/actions';
 import { selectIsCollectiveRTHTriggered } from '~/features/show/selectors';
-import { showNotification } from '~/features/snackbar/actions';
-import { MessageSemantics, type Notification } from '~/features/snackbar/types';
+import { showWarning } from '~/features/snackbar/actions';
 import HomeCircleOutlined from '~/icons/HomeCircleOutlined';
 import { type RootState } from '~/store/reducers';
 import { Workbench } from '~/workbench';
@@ -41,7 +40,6 @@ type StateProps = {
 
 type DispatchProps = {
   resumeShow: () => void;
-  showNotification: (notification: string | Notification) => void;
   startCollectiveRTH: () => void;
   suspendShow: () => void;
 };
@@ -53,7 +51,6 @@ const ProControlButtonGroup = (props: Props) => {
     isCollectiveRTHTriggered,
     proFeaturesEnabled,
     resumeShow,
-    showNotification,
     startCollectiveRTH,
     suspendShow,
   } = props;
@@ -89,10 +86,7 @@ const ProControlButtonGroup = (props: Props) => {
         onClick={() => {
           startCollectiveRTH();
           if (!workbench.bringToFront('collectiveRTH')) {
-            showNotification({
-              message: t('proControlButtonGroup.collectiveRTHPanelNotFound'),
-              semantics: MessageSemantics.WARNING,
-            });
+            showWarning(t('proControlButtonGroup.collectiveRTHPanelNotFound'));
           }
         }}
       >
@@ -107,7 +101,7 @@ const ConnectedProControlButtonGroup = connect(
     isCollectiveRTHTriggered: selectIsCollectiveRTHTriggered(state),
     proFeaturesEnabled: hasLicenseWithProFeatures(state),
   }),
-  { resumeShow, showNotification, startCollectiveRTH, suspendShow }
+  { resumeShow, startCollectiveRTH, suspendShow }
 )(ProControlButtonGroup);
 
 export default ConnectedProControlButtonGroup;

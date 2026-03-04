@@ -12,18 +12,19 @@ export enum MessageSemantics {
   DEFAULT = 'default',
 }
 
+type ToastButton = {
+  label: string;
+  action: Action;
+};
+
 /**
  * Object shape for describing the appearance, contents and behavior of a
  * snackbar notification.
  */
 export type Notification = {
-  buttons?: Array<{
-    label: string;
-    action: Action;
-  }>;
-  countdown?: boolean;
-  header?: string;
   message: string;
+  buttons?: ToastButton[];
+  countdown?: boolean;
   permanent?: boolean;
   semantics?: MessageSemantics;
   timeout?: number;

@@ -21,8 +21,7 @@ import {
 } from '~/features/mission/slice';
 import { showConfirmationDialog } from '~/features/prompt/actions';
 import { getUAVOperationConfirmationStyle } from '~/features/settings/selectors';
-import { showNotification } from '~/features/snackbar/actions';
-import { MessageSemantics } from '~/features/snackbar/types';
+import { showError, showSuccess } from '~/features/snackbar/actions';
 import {
   getActiveUAVIds,
   getCurrentGPSPositionByUavId,
@@ -267,13 +266,7 @@ const createShowLoaderThunkFactory = (
       } = await promise;
       processShowInJSONFormatAndDispatchActions(spec, dispatch);
     } catch (error) {
-      dispatch(
-        showNotification({
-          message: errorMessage || 'Failed to load show.',
-          semantics: MessageSemantics.ERROR,
-          permanent: true,
-        })
-      );
+      showError(errorMessage || 'Failed to load show.', { permanent: true });
       dispatch(setLastLoadingAttemptFailed(true));
       console.error(error);
     }
@@ -522,21 +515,13 @@ export const startCollectiveRTH = () => async (dispatch, getState) => {
   try {
     const schedule = await messageHub.execute.startCollectiveRTH();
     dispatch(setCollectiveRTHSchedule(schedule));
-    dispatch(
-      showNotification({
-        message: i18n.t('show.collectiveRTH.notification.success'),
-        permanent: true,
-        semantics: MessageSemantics.SUCCESS,
-      })
-    );
+    showSuccess(i18n.t('show.collectiveRTH.notification.success'), {
+      permanent: true,
+    });
   } catch (error) {
-    dispatch(
-      showNotification({
-        message:
-          error.message ?? i18n.t('show.collectiveRTH.notification.error'),
-        permanent: true,
-        semantics: MessageSemantics.ERROR,
-      })
+    showError(
+      error.message ?? i18n.t('show.collectiveRTH.notification.error'),
+      { permanent: true }
     );
   }
 };
@@ -553,24 +538,17 @@ export const suspendShow = () => async (dispatch, getState) => {
   try {
     const result = await messageHub.execute.suspendShow();
     const timeout = result.schedule.at(-1)?.endMs - Date.now();
-    const countdown = Number.isNaN(timeout)
+    const notificationOptions = Number.isNaN(timeout)
       ? undefined
       : { countdown: true, timeout };
-    dispatch(
-      showNotification({
-        message: i18n.t('show.suspend.notification.success'),
-        semantics: MessageSemantics.SUCCESS,
-        ...countdown,
-      })
+    showSuccess(
+      i18n.t('show.suspend.notification.success'),
+      notificationOptions
     );
   } catch (error) {
-    dispatch(
-      showNotification({
-        message: error.message ?? i18n.t('show.suspend.notification.error'),
-        permanent: true,
-        semantics: MessageSemantics.ERROR,
-      })
-    );
+    showError(error.message ?? i18n.t('show.suspend.notification.error'), {
+      permanent: true,
+    });
   }
 };
 
@@ -586,23 +564,16 @@ export const resumeShow = () => async (dispatch, getState) => {
   try {
     const result = await messageHub.execute.resumeShow();
     const timeout = result.schedule.at(-1)?.endMs - Date.now();
-    const countdown = Number.isNaN(timeout)
+    const notificationOptions = Number.isNaN(timeout)
       ? undefined
       : { countdown: true, timeout };
-    dispatch(
-      showNotification({
-        message: i18n.t('show.resume.notification.success'),
-        semantics: MessageSemantics.SUCCESS,
-        ...countdown,
-      })
+    showSuccess(
+      i18n.t('show.resume.notification.success'),
+      notificationOptions
     );
   } catch (error) {
-    dispatch(
-      showNotification({
-        message: error.message ?? i18n.t('show.resume.notification.error'),
-        permanent: true,
-        semantics: MessageSemantics.ERROR,
-      })
-    );
+    showError(error.message ?? i18n.t('show.resume.notification.error'), {
+      permanent: true,
+    });
   }
 };

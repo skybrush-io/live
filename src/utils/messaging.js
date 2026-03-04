@@ -56,12 +56,10 @@ const processResponses = (
   }
 
   if (message) {
-    store.dispatch(
-      showNotification({
-        message,
-        semantics,
-      })
-    );
+    showNotification({
+      message,
+      semantics,
+    });
   }
 };
 

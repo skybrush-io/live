@@ -22,19 +22,3 @@ export function semanticsFromSeverity(severity: Severity): MessageSemantics {
       return MessageSemantics.DEFAULT;
   }
 }
-
-const emojisForSemantics = {
-  [MessageSemantics.SUCCESS]: '✅',
-  [MessageSemantics.ERROR]: '🛑',
-  [MessageSemantics.WARNING]: '⚠',
-  [MessageSemantics.INFO]: '💡',
-  [MessageSemantics.DEFAULT]: '',
-};
-
-/**
- * Converts a message semantics value to an emoji that can be used to represent
- * that severity level in text.
- */
-export function semanticsToEmoji(semantics: MessageSemantics): string {
-  return emojisForSemantics[semantics] || '';
-}

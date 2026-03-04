@@ -1,6 +1,5 @@
 import copy from 'copy-to-clipboard';
-import { showNotification } from '~/features/snackbar/actions';
-import { MessageSemantics } from '~/features/snackbar/types';
+import { showError, showNotification } from '~/features/snackbar/actions';
 import messageHub from '~/message-hub';
 
 import {
@@ -9,21 +8,16 @@ import {
 } from './selectors';
 import { closeSurveySettingsPanel, setAntennaPositionFormat } from './slice';
 
-export const copyAntennaPositionToClipboard = () => (dispatch, getState) => {
+export const copyAntennaPositionToClipboard = () => (_dispatch, getState) => {
   copy(getFormattedAntennaPosition(getState()));
-  dispatch(showNotification('Coordinates copied to clipboard.'));
+  showNotification('Coordinates copied to clipboard.');
 };
 
 export const startNewSurveyOnServer = (settings) => async (dispatch) => {
   try {
     await messageHub.execute.startRTKSurvey(settings);
   } catch {
-    dispatch(
-      showNotification({
-        message: 'Failed to start RTK survey on the server.',
-        semantics: MessageSemantics.ERROR,
-      })
-    );
+    showError('Failed to start RTK survey on the server.');
     return;
   }
 

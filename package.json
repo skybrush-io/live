@@ -136,6 +136,7 @@
     "react-error-overlay": "^6.1.0",
     "react-final-form": "^7.0.0",
     "react-flexible-workbench": "^6.3.3",
+    "react-hot-toast": "^2.6.0",
     "react-hotkeys": "^2.0.0",
     "react-i18next": "^16.5.0",
     "react-is": "^18.3.1",
@@ -144,7 +145,6 @@
     "react-shapeshifter": "^1.0.32",
     "react-simplemde-editor": "^5.2.0",
     "react-timeago": "^8.3.0",
-    "react-toast-notifications": "^2.5.1",
     "react-transition-group": "^4.4.2",
     "react-use": "^17.6.0",
     "react-virtuoso": "^4.17.0",
@@ -246,10 +246,6 @@
       "@mui/material": "^7.3.2",
       "@mui/styled-engine": "^7.3.2",
       "react": "^18.3.1"
-    },
-    "react-toast-notifications": {
-      "react": "^18.3.1",
-      "react-dom": "^18.3.1"
     },
     "mui-rff": {
       "final-form": "^5",

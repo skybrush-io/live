@@ -83,14 +83,12 @@ export default connect(
           }
         });
 
-        dispatch(
-          showSuccess(
-            // TODO: Use the `pluralize` package?
-            `Successfully imported ${counter} feature${counter > 1 ? 's' : ''}`
-          )
+        showSuccess(
+          // TODO: Use the `pluralize` package?
+          `Successfully imported ${counter} feature${counter > 1 ? 's' : ''}`
         );
       } catch (error) {
-        dispatch(showError(`Error while importing shapefile: ${error}`));
+        showError(`Error while importing shapefile: ${error}`);
       }
     },
   })

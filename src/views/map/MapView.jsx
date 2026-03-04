@@ -10,7 +10,7 @@ import { connect } from 'react-redux';
 import { interaction, View, withMap } from '@collmot/ol-react';
 
 import { BaseMap, MapControls, MapToolbars } from '~/components/map';
-import ConnectedFitAllFeaturesButton from '~/components/map/buttons/FitAllFeaturesButton';
+import FitAllFeaturesButton from '~/components/map/buttons/FitAllFeaturesButton';
 import * as Condition from '~/components/map/conditions';
 import {
   SelectNearestFeature,
@@ -438,7 +438,7 @@ class MapViewPresentation extends React.Component {
                   <ToolbarDivider orientation='vertical' />
                   {/* NOTE: Margin is calibrated such that the vertical      */}
                   {/*       drawing toolbar will not cover any of the drones */}
-                  <ConnectedFitAllFeaturesButton duration={500} margin={80} />
+                  <FitAllFeaturesButton duration={500} margin={80} />
                 </>
               }
             />

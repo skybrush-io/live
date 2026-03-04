@@ -76,24 +76,20 @@ const UAVLogListItem = ({ id, kind, size, timestamp, uavId }) => {
       })
       .then((log) => {
         dispatch(storeDownloadedLog(uavId, id, log));
-        dispatch(
-          showNotification({
-            message: `Log ${id} of UAV ${uavId} downloaded successfully.`,
-            semantics: MessageSemantics.SUCCESS,
-            buttons: [{ label: 'Save', action: () => saveLogToFile(log) }],
-            timeout: 20000,
-          })
-        );
+        showNotification({
+          message: `Log ${id} of UAV ${uavId} downloaded successfully.`,
+          semantics: MessageSemantics.SUCCESS,
+          buttons: [{ label: 'Save', action: () => saveLogToFile(log) }],
+          timeout: 20000,
+        });
       })
       .catch(({ message }) => {
-        dispatch(
-          showNotification({
-            message: `Couldn't download log ${id} of UAV ${uavId}: ${message}`,
-            semantics: MessageSemantics.ERROR,
-            buttons: [{ label: 'Retry', action: download }],
-            timeout: 20000,
-          })
-        );
+        showNotification({
+          message: `Couldn't download log ${id} of UAV ${uavId}: ${message}`,
+          semantics: MessageSemantics.ERROR,
+          buttons: [{ label: 'Retry', action: download }],
+          timeout: 20000,
+        });
         dispatch(setLogDownloadError(uavId, id, message));
       });
   }, [dispatch, id, messageHub, uavId]);
