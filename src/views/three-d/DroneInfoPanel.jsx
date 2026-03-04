@@ -13,9 +13,16 @@ export default function DroneInfoPanel({ open, drone, onClose }) {
 
   // 드론 바뀔 때 입력칸 및 경로 초기화 / JSON에서 path가 오면 반영
   useEffect(() => {
-    setX('');
-    setY('');
-    setZ('');
+    const initial = drone?.initialPosition;
+    if (initial) {
+      setX(String(initial.x ?? ''));
+      setY(String(initial.y ?? ''));
+      setZ(String(initial.z ?? ''));
+    } else {
+      setX('');
+      setY('');
+      setZ('');
+    }
 
     if (drone && Array.isArray(drone.path) && drone.path.length) {
       setPathPoints(
@@ -31,10 +38,19 @@ export default function DroneInfoPanel({ open, drone, onClose }) {
     }
   }, [drone?.id, drone?.path]);
 
-  const canMove = useMemo(() => {
+  const canSetInitialPositionFromInputs = useMemo(() => {
     const nx = Number(x), ny = Number(y), nz = Number(z);
     return !!drone?.id && Number.isFinite(nx) && Number.isFinite(ny) && Number.isFinite(nz);
   }, [drone?.id, x, y, z]);
+
+  const canSetInitialPositionFromCurrent = useMemo(() => {
+    const pos = drone?.currentPosition;
+    if (!drone?.id || !pos) return false;
+    const nx = Number(pos.x);
+    const ny = Number(pos.y);
+    const nz = Number(pos.z);
+    return Number.isFinite(nx) && Number.isFinite(ny) && Number.isFinite(nz);
+  }, [drone?.id, drone?.currentPosition]);
 
   const canPlayPath = useMemo(() => {
     if (!drone?.id) return false;
@@ -58,16 +74,31 @@ export default function DroneInfoPanel({ open, drone, onClose }) {
     });
   }, [drone?.id, pathPoints]);
 
-  const requestMove = () => {
-    if (!canMove) return;
+  const requestSetInitialPosition = () => {
+    if (!canSetInitialPositionFromInputs) return;
 
     window.dispatchEvent(
-      new CustomEvent('drone-move-request', {
+      new CustomEvent('drone-initial-pos-set', {
         detail: {
           id: drone.id,
           x: Number(x),
           y: Number(y),
           z: Number(z),
+        },
+      })
+    );
+  };
+
+  const requestSetInitialPositionFromCurrent = () => {
+    if (!canSetInitialPositionFromCurrent) return;
+    const pos = drone.currentPosition;
+    window.dispatchEvent(
+      new CustomEvent('drone-initial-pos-set', {
+        detail: {
+          id: drone.id,
+          x: Number(pos.x),
+          y: Number(pos.y),
+          z: Number(pos.z),
         },
       })
     );
@@ -79,6 +110,56 @@ export default function DroneInfoPanel({ open, drone, onClose }) {
 
   const addPathPoint = () => {
     setPathPoints((prev) => [...prev, { x: '', y: '', z: '', durationMs: '1000' }]);
+  };
+
+  const addCurrentPositionPathPoint = () => {
+    if (!drone?.id || typeof document === 'undefined') return;
+
+    const safeId =
+      typeof CSS !== 'undefined' && typeof CSS.escape === 'function'
+        ? CSS.escape(drone.id)
+        : drone.id;
+    const target = document.querySelector(`a-scene [data-drone-id="${safeId}"]`);
+    const pos = target?.getAttribute?.('position');
+    if (!pos || typeof pos !== 'object') return;
+
+    const nx = Number(pos.x);
+    const ny = Number(pos.y);
+    const nz = Number(pos.z);
+    if (!Number.isFinite(nx) || !Number.isFinite(ny) || !Number.isFinite(nz)) return;
+
+    const formatCoord = (value) => String(Math.round(value * 1000) / 1000);
+    const nextPoint = {
+      x: formatCoord(nx),
+      y: formatCoord(ny),
+      z: formatCoord(nz),
+      durationMs: '1000',
+    };
+
+    setPathPoints((prev) => [
+      // 기본 빈 1행만 있는 경우에는 교체하고, 아니면 맨 뒤에 추가
+      ...(Array.isArray(prev) &&
+      prev.length === 1 &&
+      String(prev[0]?.x ?? '').trim() === '' &&
+      String(prev[0]?.y ?? '').trim() === '' &&
+      String(prev[0]?.z ?? '').trim() === ''
+        ? [nextPoint]
+        : [...(Array.isArray(prev) ? prev : []), nextPoint]),
+    ]);
+  };
+
+  const removePathPoint = (index) => {
+    setPathPoints((prev) => {
+      if (!Array.isArray(prev) || !prev.length) {
+        return [{ x: '', y: '', z: '', durationMs: '1000' }];
+      }
+
+      const next = prev.filter((_, i) => i !== index);
+      if (!next.length) {
+        return [{ x: '', y: '', z: '', durationMs: '1000' }];
+      }
+      return next;
+    });
   };
 
   const movePathPoint = (fromIndex, toIndex) => {
@@ -178,6 +259,16 @@ export default function DroneInfoPanel({ open, drone, onClose }) {
     );
   };
 
+  const currentPositionText = useMemo(() => {
+    const pos = drone?.currentPosition;
+    if (!pos) return '-';
+    const x = Number(pos.x);
+    const y = Number(pos.y);
+    const z = Number(pos.z);
+    if (!Number.isFinite(x) || !Number.isFinite(y) || !Number.isFinite(z)) return '-';
+    return `${x.toFixed(3)}, ${y.toFixed(3)}, ${z.toFixed(3)}`;
+  }, [drone?.currentPosition]);
+
   return (
     <div
       style={{
@@ -226,10 +317,14 @@ export default function DroneInfoPanel({ open, drone, onClose }) {
               <div style={{ fontSize: 12, opacity: 0.6 }}>ID</div>
               <div style={{ fontSize: 16 }}>{drone.id}</div>
             </div>
+            <div style={{ marginBottom: 12 }}>
+              <div style={{ fontSize: 12, opacity: 0.6 }}>Current Position (x, y, z)</div>
+              <div style={{ fontSize: 14 }}>{currentPositionText}</div>
+            </div>
 
-            {/* Move */}
+            {/* Initial Position */}
             <div style={{ marginTop: 18, fontWeight: 700, marginBottom: 8 }}>
-              Move to (x, y, z)
+              Initial Position (x, y, z)
             </div>
 
             <div
@@ -268,20 +363,41 @@ export default function DroneInfoPanel({ open, drone, onClose }) {
             </div>
 
             <button
-              disabled={!canMove}
-              onClick={requestMove}
+              disabled={!canSetInitialPositionFromCurrent}
+              onClick={requestSetInitialPositionFromCurrent}
               style={{
                 marginTop: 10,
                 width: '100%',
                 padding: '10px 12px',
                 borderRadius: 8,
                 border: '1px solid rgba(255,255,255,0.25)',
-                background: canMove ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.06)',
+                background: canSetInitialPositionFromCurrent
+                  ? 'rgba(255,255,255,0.12)'
+                  : 'rgba(255,255,255,0.06)',
                 color: 'white',
-                cursor: canMove ? 'pointer' : 'not-allowed',
+                cursor: canSetInitialPositionFromCurrent ? 'pointer' : 'not-allowed',
               }}
             >
-              이동
+              현재 위치를 초기 위치로 설정
+            </button>
+            <button
+              disabled={!canSetInitialPositionFromInputs}
+              onClick={requestSetInitialPosition}
+              style={{
+                marginTop: 8,
+                width: '100%',
+                padding: '8px 12px',
+                borderRadius: 8,
+                border: '1px solid rgba(255,255,255,0.18)',
+                background: canSetInitialPositionFromInputs
+                  ? 'rgba(255,255,255,0.08)'
+                  : 'rgba(255,255,255,0.04)',
+                color: 'rgba(255,255,255,0.9)',
+                cursor: canSetInitialPositionFromInputs ? 'pointer' : 'not-allowed',
+                fontSize: 12,
+              }}
+            >
+              입력값으로 초기 위치 설정
             </button>
 
             {/* Path */}
@@ -303,7 +419,7 @@ export default function DroneInfoPanel({ open, drone, onClose }) {
                   onDragEnd={handlePathDragEnd}
                   style={{
                     display: 'grid',
-                    gridTemplateColumns: '28px 24px 1fr 1fr 1fr 72px',
+                    gridTemplateColumns: '28px 24px 1fr 1fr 1fr 72px 28px',
                     gap: 6,
                     alignItems: 'center',
                     marginBottom: 6,
@@ -366,6 +482,25 @@ export default function DroneInfoPanel({ open, drone, onClose }) {
                       fontSize: 11,
                     }}
                   />
+                  <button
+                    type="button"
+                    onClick={() => removePathPoint(idx)}
+                    style={{
+                      width: 24,
+                      height: 24,
+                      borderRadius: 6,
+                      border: '1px solid rgba(255,80,80,0.45)',
+                      background: 'rgba(255,60,60,0.12)',
+                      color: '#ff9b9b',
+                      cursor: 'pointer',
+                      fontSize: 14,
+                      lineHeight: 1,
+                      padding: 0,
+                    }}
+                    title="이 점 삭제"
+                  >
+                    -
+                  </button>
                 </div>
               ))}
 
@@ -376,6 +511,13 @@ export default function DroneInfoPanel({ open, drone, onClose }) {
                   style={secondaryBtnStyle}
                 >
                   점 추가
+                </button>
+                <button
+                  type="button"
+                  onClick={addCurrentPositionPathPoint}
+                  style={secondaryBtnStyle}
+                >
+                  현재 위치 점 추가
                 </button>
 
                 <button
@@ -404,6 +546,39 @@ export default function DroneInfoPanel({ open, drone, onClose }) {
             </div>
           </>
         )}
+
+        {/* 드론 삭제 */}
+        <div
+          style={{
+            marginTop: 18,
+            paddingTop: 14,
+            borderTop: '1px solid rgba(255,255,255,0.1)',
+          }}
+        >
+          <button
+            type="button"
+            onClick={() => {
+              if (!drone?.id) return;
+              window.dispatchEvent(
+                new CustomEvent('drone-delete-request', { detail: { id: drone.id } })
+              );
+            }}
+            style={{
+              width: '100%',
+              padding: '7px 10px',
+              borderRadius: 7,
+              border: '1px solid rgba(255,80,80,0.45)',
+              background: 'rgba(255,60,60,0.12)',
+              color: '#ff8080',
+              cursor: 'pointer',
+              fontSize: 12,
+              fontWeight: 600,
+              letterSpacing: 0.3,
+            }}
+          >
+            이 드론 삭제
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -436,6 +611,16 @@ DroneInfoPanel.propTypes = {
   open: PropTypes.bool.isRequired,
   drone: PropTypes.shape({
     id: PropTypes.string,
+    currentPosition: PropTypes.shape({
+      x: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+      y: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+      z: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    }),
+    initialPosition: PropTypes.shape({
+      x: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+      y: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+      z: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    }),
   }),
   onClose: PropTypes.func.isRequired,
 };

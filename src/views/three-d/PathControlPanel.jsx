@@ -12,6 +12,7 @@ export default function PathControlPanel({
   onLoadConfigClick,
   onSaveConfigClick,
   onFileChange,
+  onAddDroneClick,
 }) {
   const formatMs = (ms) => {
     const safe = Math.max(0, Math.round(Number(ms) || 0));
@@ -46,7 +47,33 @@ export default function PathControlPanel({
           maxWidth: 340,
         }}
       >
-        <div style={{ marginBottom: 6, fontWeight: 600 }}>Path & JSON</div>
+        <div
+          style={{
+            marginBottom: 8,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          }}
+        >
+          <span style={{ fontWeight: 600 }}>Path & JSON</span>
+          <button
+            type="button"
+            onClick={onAddDroneClick}
+            style={{
+              padding: '3px 10px',
+              borderRadius: 6,
+              border: '1px solid rgba(74,158,255,0.6)',
+              background: 'rgba(74,158,255,0.18)',
+              color: '#7ec8ff',
+              cursor: 'pointer',
+              fontSize: 11,
+              fontWeight: 600,
+              letterSpacing: 0.3,
+            }}
+          >
+            + 드론 추가
+          </button>
+        </div>
         <div style={{ marginBottom: 6 }}>
           <div style={{ marginBottom: 2 }}>재생 위치</div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -142,4 +169,5 @@ PathControlPanel.propTypes = {
   onLoadConfigClick: PropTypes.func.isRequired,
   onSaveConfigClick: PropTypes.func.isRequired,
   onFileChange: PropTypes.func.isRequired,
+  onAddDroneClick: PropTypes.func.isRequired,
 };

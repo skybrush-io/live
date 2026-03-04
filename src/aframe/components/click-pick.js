@@ -45,6 +45,17 @@ if (!AFrame.components['click-pick']) {
       return null;
     },
 
+    _findDroneEntityFromObject3D(obj) {
+      // 추가된 드론처럼 fbx-model 초기화 타이밍이 늦어도 data-drone-id 기준으로 찾는다.
+      let cur = obj;
+      while (cur) {
+        const el = cur.el;
+        if (el?.hasAttribute?.('data-drone-id')) return el;
+        cur = cur.parent;
+      }
+      return null;
+    },
+
     _requestRender() {
       const sceneEl = this.el.sceneEl;
       if (!sceneEl) return;
@@ -54,7 +65,37 @@ if (!AFrame.components['click-pick']) {
       }
     },
 
+    _readPosition(el, attributeName = 'position') {
+      if (!el) return null;
+      const pos = el.getAttribute(attributeName);
+      if (!pos) return null;
+
+      if (typeof pos === 'object') {
+        const x = Number(pos.x);
+        const y = Number(pos.y);
+        const z = Number(pos.z);
+        if (Number.isFinite(x) && Number.isFinite(y) && Number.isFinite(z)) {
+          return { x, y, z };
+        }
+        return null;
+      }
+
+      if (typeof pos === 'string') {
+        const [sx, sy, sz] = pos.trim().split(/\s+/);
+        const x = Number(sx);
+        const y = Number(sy);
+        const z = Number(sz);
+        if (Number.isFinite(x) && Number.isFinite(y) && Number.isFinite(z)) {
+          return { x, y, z };
+        }
+      }
+
+      return null;
+    },
+
     _emitSelected(hitEl) {
+      const currentPosition = this._readPosition(hitEl, 'position');
+      const initialPosition = this._readPosition(hitEl, 'data-initial-pos');
       window.dispatchEvent(
         new CustomEvent('drone-selected', {
           detail: {
@@ -62,6 +103,8 @@ if (!AFrame.components['click-pick']) {
             name: hitEl.getAttribute('data-drone-name'),
             battery: hitEl.getAttribute('data-battery'),
             status: hitEl.getAttribute('data-status'),
+            currentPosition,
+            initialPosition,
           },
         })
       );
@@ -72,6 +115,10 @@ if (!AFrame.components['click-pick']) {
     },
 
     _onPointerDown(e) {
+      if (window.__droneAxisGizmoDragging) {
+        return;
+      }
+
       const sceneEl = this.el.sceneEl;
       const canvas = sceneEl?.canvas;
       const camera = sceneEl?.camera;
@@ -95,12 +142,30 @@ if (!AFrame.components['click-pick']) {
       this._raycaster.setFromCamera(this._mouse, camera);
 
       const roots = this._collectClickableRoots();
-      const hits = this._raycaster.intersectObjects(roots, true); // ✅ 오타 제거
+      const hits = this._raycaster.intersectObjects(roots, true); // 드론 hit
+
+      // 기즈모 축 핸들 클릭은 드론보다 앞에서 맞았을 때만 선택 토글에서 제외한다.
+      const gizmoHandles = [];
+      sceneEl.object3D?.traverse((obj) => {
+        if (obj?.userData?.gizmoHandle) gizmoHandles.push(obj);
+      });
+      if (gizmoHandles.length) {
+        const gizmoHits = this._raycaster.intersectObjects(gizmoHandles, true);
+        const nearestGizmo = gizmoHits[0];
+        const nearestDrone = hits[0];
+        const gizmoIsFront =
+          nearestGizmo &&
+          (!nearestDrone || Number(nearestGizmo.distance) <= Number(nearestDrone.distance) + 1e-6);
+        if (gizmoIsFront) {
+          e.stopPropagation?.();
+          return;
+        }
+      }
 
       // ✅ 빈 곳 클릭 → 해제 + 이벤트
       if (!hits.length) {
-        if (selectedEl?.components?.['fbx-model']?._deselect) {
-          selectedEl.components['fbx-model']._deselect();
+        if (selectedEl) {
+          selectedEl.components?.['fbx-model']?._deselect?.();
           selectedEl = null;
           this._emitDeselected();
           this._requestRender();
@@ -109,7 +174,8 @@ if (!AFrame.components['click-pick']) {
       }
 
       const hit = hits[0];
-      const hitEl = this._findFbxEntityFromObject3D(hit.object);
+      const hitEl = this._findFbxEntityFromObject3D(hit.object)
+        || this._findDroneEntityFromObject3D(hit.object);
 
       if (!hitEl) {
         console.warn('[click-pick] hit but no fbx-model entity found', hit.object);
@@ -122,15 +188,14 @@ if (!AFrame.components['click-pick']) {
       }
 
       const comp = hitEl.components?.['fbx-model'];
-      if (!comp) return;
 
-      // ✅ 토글을 "먼저" 수행하고, 그 결과로 이벤트 발행
-      if (comp._isSelected) {
-        comp._deselect();
+      // ✅ fbx-model 유무와 상관없이 data-drone-id 기준으로 토글
+      if (selectedEl === hitEl) {
+        comp?._deselect?.();
         selectedEl = null;
         this._emitDeselected();
       } else {
-        comp._select();
+        comp?._select?.();
         selectedEl = hitEl;
         this._emitSelected(hitEl);
       }

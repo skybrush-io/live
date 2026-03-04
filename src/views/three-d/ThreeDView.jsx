@@ -15,6 +15,7 @@ import Scenery from './Scenery';
 import SelectedTrajectories from './SelectedTrajectories';
 import DroneInfoPanel from './DroneInfoPanel';
 import PathControlPanel from './PathControlPanel';
+import AddDroneModal from './AddDroneModal';
 
 // eslint-disable-next-line no-unused-vars
 import AFrame from '~/aframe';
@@ -75,6 +76,42 @@ const toFinitePoint = (point) => {
 };
 
 const almostEqual = (a, b) => Math.abs(Number(a) - Number(b)) < 1e-6;
+
+const parsePositionLike = (positionAttr, fallback = [0, 1, 1]) => {
+  let pos = fallback;
+  if (!positionAttr) return pos;
+
+  if (Array.isArray(positionAttr) && positionAttr.length >= 3) {
+    const nx = Number(positionAttr[0]);
+    const ny = Number(positionAttr[1]);
+    const nz = Number(positionAttr[2]);
+    pos = [
+      Number.isFinite(nx) ? nx : fallback[0],
+      Number.isFinite(ny) ? ny : fallback[1],
+      Number.isFinite(nz) ? nz : fallback[2],
+    ];
+  } else if (typeof positionAttr === 'string') {
+    const [sx, sy, sz] = positionAttr.split(/\s+/);
+    const nx = Number(sx);
+    const ny = Number(sy);
+    const nz = Number(sz);
+    pos = [
+      Number.isFinite(nx) ? nx : fallback[0],
+      Number.isFinite(ny) ? ny : fallback[1],
+      Number.isFinite(nz) ? nz : fallback[2],
+    ];
+  } else if (typeof positionAttr === 'object') {
+    const nx = Number(positionAttr.x);
+    const ny = Number(positionAttr.y);
+    const nz = Number(positionAttr.z);
+    pos = [
+      Number.isFinite(nx) ? nx : fallback[0],
+      Number.isFinite(ny) ? ny : fallback[1],
+      Number.isFinite(nz) ? nz : fallback[2],
+    ];
+  }
+  return pos;
+};
 
 const buildSeekPathWithInitial = (drone) => {
   const initial = getInitialPointFromDrone(drone);
@@ -166,8 +203,12 @@ const ThreeDView = React.forwardRef((props, ref) => {
   // 선택된 드론 정보 및 JSON에서 불러온 드론 구성
   const [selectedDrone, setSelectedDrone] = useState(null);
   const [droneConfig, setDroneConfig] = useState(null);
+  const [pendingAutoSelectDrone, setPendingAutoSelectDrone] = useState(null);
   const droneConfigRef = useRef(null);
   droneConfigRef.current = droneConfig;
+
+  // 드론 추가 모달
+  const [addDroneModalOpen, setAddDroneModalOpen] = useState(false);
 
   const collectConfigFromScene = () => {
     if (typeof document === 'undefined') {
@@ -186,31 +227,10 @@ const ThreeDView = React.forwardRef((props, ref) => {
       const batteryAttr = el.getAttribute('data-battery');
       const status = el.getAttribute('data-status') || 'Idle';
       const positionAttr = el.getAttribute('position');
+      const initialPosAttr = el.getAttribute('data-initial-pos');
 
-      // A-Frame의 position 속성은 문자열("x y z") 또는 객체({x,y,z}) 둘 다 올 수 있으므로 둘 다 처리
-      let pos = [0, 1, 1];
-      if (positionAttr) {
-        if (typeof positionAttr === 'string') {
-          const [sx, sy, sz] = positionAttr.split(/\s+/);
-          const nx = Number(sx);
-          const ny = Number(sy);
-          const nz = Number(sz);
-          pos = [
-            Number.isFinite(nx) ? nx : 0,
-            Number.isFinite(ny) ? ny : 1,
-            Number.isFinite(nz) ? nz : 1,
-          ];
-        } else if (typeof positionAttr === 'object') {
-          const nx = Number(positionAttr.x);
-          const ny = Number(positionAttr.y);
-          const nz = Number(positionAttr.z);
-          pos = [
-            Number.isFinite(nx) ? nx : 0,
-            Number.isFinite(ny) ? ny : 1,
-            Number.isFinite(nz) ? nz : 1,
-          ];
-        }
-      }
+      const pos = parsePositionLike(positionAttr, [0, 1, 1]);
+      const initialPos = parsePositionLike(initialPosAttr, pos);
 
       let path = [];
       const pathAttr = el.getAttribute('data-path');
@@ -233,6 +253,7 @@ const ThreeDView = React.forwardRef((props, ref) => {
         battery: Number.isFinite(batteryNum) ? batteryNum : 100,
         status,
         pos,
+        initialPos,
         path,
       };
     });
@@ -254,6 +275,13 @@ const ThreeDView = React.forwardRef((props, ref) => {
         const found = currentConfig.drones.find((d) => d.id === base.id);
         if (found) {
           base.path = found.path || [];
+          if (!base.initialPosition && Array.isArray(found.initialPos) && found.initialPos.length >= 3) {
+            base.initialPosition = {
+              x: Number(found.initialPos[0]) || 0,
+              y: Number(found.initialPos[1]) || 0,
+              z: Number(found.initialPos[2]) || 0,
+            };
+          }
         }
       }
 
@@ -287,10 +315,86 @@ const ThreeDView = React.forwardRef((props, ref) => {
 
     window.addEventListener('drone-path-updated', onPathUpdated);
 
+    const onInitialPosUpdated = (e) => {
+      const { id, x, y, z } = e.detail || {};
+      if (!id) return;
+      const nx = Number(x);
+      const ny = Number(y);
+      const nz = Number(z);
+      if (!Number.isFinite(nx) || !Number.isFinite(ny) || !Number.isFinite(nz)) return;
+
+      setDroneConfig((prev) => {
+        const base =
+          prev && Array.isArray(prev.drones) && prev.drones.length
+            ? prev
+            : collectConfigFromScene();
+
+        if (!base || !Array.isArray(base.drones)) return base;
+        const drones = base.drones.map((d) =>
+          d.id === id ? { ...d, initialPos: [nx, ny, nz], pos: Array.isArray(d.pos) ? d.pos : [0, 1, 1] } : d
+        );
+        return { ...base, drones };
+      });
+
+      setSelectedDrone((prev) => {
+        if (!prev || prev.id !== id) return prev;
+        return {
+          ...prev,
+          initialPosition: { x: nx, y: ny, z: nz },
+        };
+      });
+    };
+
+    window.addEventListener('drone-initial-pos-updated', onInitialPosUpdated);
+
+    const onDroneMoved = (e) => {
+      const { id, x, y, z } = e.detail || {};
+      if (!id) return;
+
+      const nx = Number(x);
+      const ny = Number(y);
+      const nz = Number(z);
+      if (!Number.isFinite(nx) || !Number.isFinite(ny) || !Number.isFinite(nz)) return;
+
+      setSelectedDrone((prev) => {
+        if (!prev || prev.id !== id) return prev;
+        return {
+          ...prev,
+          currentPosition: { x: nx, y: ny, z: nz },
+        };
+      });
+    };
+
+    window.addEventListener('drone-moved', onDroneMoved);
+
+    const onDroneDeleteRequest = (e) => {
+      const { id } = e.detail || {};
+      if (!id) return;
+
+      setDroneConfig((prev) => {
+        const base =
+          prev && Array.isArray(prev.drones) && prev.drones.length
+            ? prev
+            : collectConfigFromScene();
+
+        if (!base || !Array.isArray(base.drones)) return base;
+
+        const drones = base.drones.filter((d) => d.id !== id);
+        return { ...base, drones };
+      });
+
+      setSelectedDrone((prev) => (prev && prev.id === id ? null : prev));
+    };
+
+    window.addEventListener('drone-delete-request', onDroneDeleteRequest);
+
     return () => {
       window.removeEventListener('drone-selected', onSelected);
       window.removeEventListener('drone-deselected', onDeselected);
       window.removeEventListener('drone-path-updated', onPathUpdated);
+      window.removeEventListener('drone-initial-pos-updated', onInitialPosUpdated);
+      window.removeEventListener('drone-moved', onDroneMoved);
+      window.removeEventListener('drone-delete-request', onDroneDeleteRequest);
     };
   }, []);
 
@@ -339,7 +443,31 @@ const ThreeDView = React.forwardRef((props, ref) => {
           console.warn('[ThreeDView] invalid drone config JSON (missing "drones" array)');
           return;
         }
-        setDroneConfig(parsed);
+        const normalizedDrones = parsed.drones.map((d, index) => {
+          const id = d?.id || `drone-${index + 1}`;
+          const name = d?.name || id;
+          const batteryNum = Number(d?.battery);
+          const status = d?.status || 'Idle';
+          const fallbackPos = parsePositionLike(d?.pos, [0, 1, 1]);
+          const initialPos = parsePositionLike(d?.initialPos, fallbackPos);
+
+          return {
+            ...d,
+            id,
+            name,
+            battery: Number.isFinite(batteryNum) ? batteryNum : 100,
+            status,
+            // ✅ 불러오기 시에는 initialPos를 실제 배치 기준으로 사용
+            pos: initialPos,
+            initialPos,
+            path: Array.isArray(d?.path) ? d.path : [],
+          };
+        });
+
+        setDroneConfig({
+          ...parsed,
+          drones: normalizedDrones,
+        });
       } catch (err) {
         // eslint-disable-next-line no-console
         console.error('[ThreeDView] failed to parse drone config JSON', err);
@@ -371,7 +499,79 @@ const ThreeDView = React.forwardRef((props, ref) => {
     URL.revokeObjectURL(url);
   };
 
+  const handleAddDrone = (newDrone) => {
+    setDroneConfig((prev) => {
+      const base =
+        prev && Array.isArray(prev.drones) && prev.drones.length
+          ? prev
+          : collectConfigFromScene();
+
+      const existingDrones =
+        base && Array.isArray(base.drones) ? base.drones : [];
+
+      return { ...base, drones: [...existingDrones, newDrone] };
+    });
+    setPendingAutoSelectDrone(newDrone);
+  };
+
+  useEffect(() => {
+    if (!pendingAutoSelectDrone?.id) return undefined;
+    if (typeof document === 'undefined') {
+      setPendingAutoSelectDrone(null);
+      return undefined;
+    }
+
+    let cancelled = false;
+    let tries = 0;
+    let rafId = null;
+
+    const trySelect = () => {
+      if (cancelled) return;
+      tries += 1;
+
+      const sceneEl = document.querySelector('a-scene');
+      const safeId =
+        typeof CSS !== 'undefined' && typeof CSS.escape === 'function'
+          ? CSS.escape(pendingAutoSelectDrone.id)
+          : pendingAutoSelectDrone.id;
+      const target = sceneEl?.querySelector?.(`[data-drone-id="${safeId}"]`);
+
+      if (target) {
+        const position = parsePositionLike(target.getAttribute('position'), [0, 1, 1]);
+        const initialPos = parsePositionLike(target.getAttribute('data-initial-pos'), position);
+        window.dispatchEvent(
+          new CustomEvent('drone-selected', {
+            detail: {
+              id: pendingAutoSelectDrone.id,
+              name: pendingAutoSelectDrone.name,
+              battery: pendingAutoSelectDrone.battery,
+              status: pendingAutoSelectDrone.status,
+              path: Array.isArray(pendingAutoSelectDrone.path) ? pendingAutoSelectDrone.path : [],
+              currentPosition: { x: position[0], y: position[1], z: position[2] },
+              initialPosition: { x: initialPos[0], y: initialPos[1], z: initialPos[2] },
+            },
+          })
+        );
+        setPendingAutoSelectDrone(null);
+        return;
+      }
+
+      if (tries < 30) {
+        rafId = requestAnimationFrame(trySelect);
+      } else {
+        setPendingAutoSelectDrone(null);
+      }
+    };
+
+    rafId = requestAnimationFrame(trySelect);
+    return () => {
+      cancelled = true;
+      if (rafId) cancelAnimationFrame(rafId);
+    };
+  }, [pendingAutoSelectDrone]);
+
   const [pathProgress, setPathProgress] = useState(0);
+  const [gizmoDragState, setGizmoDragState] = useState({ dragging: false, axis: null });
   const effectiveConfig = useMemo(() => {
     if (droneConfig && Array.isArray(droneConfig.drones) && droneConfig.drones.length) {
       return droneConfig;
@@ -435,6 +635,19 @@ const ThreeDView = React.forwardRef((props, ref) => {
     applyProgressToAll(nextValue);
   };
 
+  useEffect(() => {
+    const onGizmoDragState = (e) => {
+      const detail = e.detail || {};
+      setGizmoDragState({
+        dragging: !!detail.dragging,
+        axis: detail.axis || null,
+      });
+    };
+
+    window.addEventListener('drone-gizmo-drag-state', onGizmoDragState);
+    return () => window.removeEventListener('drone-gizmo-drag-state', onGizmoDragState);
+  }, []);
+
   const handlePlayAll = () => {
     const base =
       droneConfig && Array.isArray(droneConfig.drones) && droneConfig.drones.length
@@ -475,9 +688,10 @@ const ThreeDView = React.forwardRef((props, ref) => {
     if (!base || !Array.isArray(base.drones) || !base.drones.length) return;
 
     base.drones.forEach((d) => {
-      if (!Array.isArray(d.pos) || d.pos.length < 3 || !d.id) return;
+      const resetPos = Array.isArray(d.initialPos) && d.initialPos.length >= 3 ? d.initialPos : d.pos;
+      if (!Array.isArray(resetPos) || resetPos.length < 3 || !d.id) return;
 
-      const [px, py, pz] = d.pos;
+      const [px, py, pz] = resetPos;
       const x = Number(px);
       const y = Number(py);
       const z = Number(pz);
@@ -509,6 +723,17 @@ const ThreeDView = React.forwardRef((props, ref) => {
         onLoadConfigClick={handleLoadConfigClick}
         onSaveConfigClick={handleSaveConfigClick}
         onFileChange={handleFileChange}
+        onAddDroneClick={() => setAddDroneModalOpen(true)}
+      />
+      <AddDroneModal
+        open={addDroneModalOpen}
+        onClose={() => setAddDroneModalOpen(false)}
+        onAdd={handleAddDrone}
+        existingIds={
+          effectiveConfig && Array.isArray(effectiveConfig.drones)
+            ? effectiveConfig.drones.map((d) => d.id)
+            : []
+        }
       />
       <a-scene
         key={sceneId}
@@ -523,6 +748,7 @@ const ThreeDView = React.forwardRef((props, ref) => {
         tabIndex={-1}
         class="react-hotkeys-ignore no-focus-ring"
         drone-move-bridge=""
+        drone-axis-gizmo=""
         {...extraSceneProps}
       >
         <a-assets>
@@ -592,6 +818,29 @@ const ThreeDView = React.forwardRef((props, ref) => {
           zIndex: 9999,
         }}
       />
+      {panelOpen && (
+        <div
+          style={{
+            position: 'absolute',
+            left: '50%',
+            top: 12,
+            transform: 'translateX(-50%)',
+            zIndex: 12000,
+            pointerEvents: 'none',
+            padding: '6px 12px',
+            borderRadius: 999,
+            border: '1px solid rgba(255,255,255,0.2)',
+            background: 'rgba(0,0,0,0.62)',
+            color: 'white',
+            fontSize: 12,
+            letterSpacing: 0.2,
+          }}
+        >
+          {gizmoDragState.dragging && gizmoDragState.axis
+            ? `${gizmoDragState.axis.toUpperCase()} 축 드래그 중`
+            : '축(빨강 X / 파랑 Y / 초록 Z) 클릭 후 마우스 드래그'}
+        </div>
+      )}
     </div>
   );
 });

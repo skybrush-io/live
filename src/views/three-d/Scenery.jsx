@@ -71,6 +71,8 @@ const Scenery = ({ grid, type = 'outdoor-dark' }) => {
       <a-entity
         environment={objectToString({
           ...(environments[type] || environments['outdoor-dark']),
+          // three.js setupLightsView 크래시를 피하기 위해 environment의 동적 라이트를 끈다.
+          lighting: 'none',
           grid: typeof grid === 'string' ? grid : grid ? '1x1' : 'none',
         })}
       />

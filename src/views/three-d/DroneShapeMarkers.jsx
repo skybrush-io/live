@@ -1,16 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const DEFAULT_DRONES = [
-  { id: 'drone-1', name: 'Drone A', battery: 92, status: 'Idle', pos: [0, 1, 1] },
-  { id: 'drone-2', name: 'Drone B', battery: 76, status: 'Flying', pos: [1.5, 1, 1] },
-  { id: 'drone-3', name: 'Drone C', battery: 55, status: 'Charging', pos: [3, 1, 1] },
-  { id: 'drone-4', name: 'Drone D', battery: 88, status: 'Idle', pos: [-1.5, 1, 1] },
-  { id: 'drone-5', name: 'Drone E', battery: 63, status: 'Returning', pos: [-3, 1, 1] },
-];
-
 function normalizeDrones(drones) {
-  if (!Array.isArray(drones) || !drones.length) return DEFAULT_DRONES;
+  if (!Array.isArray(drones) || !drones.length) return [];
 
   return drones
     .map((d, index) => {

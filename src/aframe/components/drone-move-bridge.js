@@ -5,15 +5,18 @@ if (!AFrame.components['drone-move-bridge']) {
     init() {
       this._onMove = this._onMove.bind(this);
       this._onPath = this._onPath.bind(this);
+      this._onInitialPosSet = this._onInitialPosSet.bind(this);
       // 드론별로 경로 애니메이션 취소 함수를 따로 관리
       this._currentPathCancels = {};
       window.addEventListener('drone-move-request', this._onMove);
       window.addEventListener('drone-path-request', this._onPath);
+      window.addEventListener('drone-initial-pos-set', this._onInitialPosSet);
     },
 
     remove() {
       window.removeEventListener('drone-move-request', this._onMove);
       window.removeEventListener('drone-path-request', this._onPath);
+      window.removeEventListener('drone-initial-pos-set', this._onInitialPosSet);
 
       if (this._currentPathCancels) {
         Object.values(this._currentPathCancels).forEach((cancel) => {
@@ -44,6 +47,30 @@ if (!AFrame.components['drone-move-bridge']) {
       // 선택적으로: 패널 값 갱신용 이벤트
       window.dispatchEvent(
         new CustomEvent('drone-moved', { detail: { id, x, y, z } })
+      );
+    },
+
+    _onInitialPosSet(e) {
+      const { id, x, y, z } = e.detail || {};
+      if (!id) return;
+
+      const nx = Number(x);
+      const ny = Number(y);
+      const nz = Number(z);
+      if (!Number.isFinite(nx) || !Number.isFinite(ny) || !Number.isFinite(nz)) return;
+
+      const sceneEl = this.el.sceneEl || this.el;
+      const target = sceneEl.querySelector(`[data-drone-id="${CSS.escape(id)}"]`);
+      if (!target) {
+        console.warn('[drone-move-bridge] initial-pos target not found:', id);
+        return;
+      }
+
+      target.setAttribute('data-initial-pos', `${nx} ${ny} ${nz}`);
+      window.dispatchEvent(
+        new CustomEvent('drone-initial-pos-updated', {
+          detail: { id, x: nx, y: ny, z: nz },
+        })
       );
     },
 

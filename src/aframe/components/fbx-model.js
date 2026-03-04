@@ -44,9 +44,6 @@ if (!AFrame.components['fbx-model']) {
       this._tmpQuat = new THREE.Quaternion();
 
       this.el.classList.add('three-d-clickable');
-
-      this.onClick = this.onClick.bind(this);
-      this.el.addEventListener('click', this.onClick);
     },
 
     update() {
@@ -233,14 +230,7 @@ if (!AFrame.components['fbx-model']) {
       this._restoreColorsOnly();
     },
 
-    onClick(e) {
-      e.stopPropagation?.();
-      if (this._isSelected) this._deselect();
-      else this._select();
-    },
-
     remove() {
-      this.el.removeEventListener('click', this.onClick);
       this._restoreColorsOnly();
       this._removeLight();
       this._origMatColors.clear();
