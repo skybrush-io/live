@@ -819,8 +819,8 @@
         "takeoffMethod": {
           "label": "Takeoff method",
           "type": {
-            "organic": "Organic",
-            "layered": "Layered"
+            "layered": "Layered",
+            "organic": "Organic"
           }
         },
         "verticalVelocity": {
