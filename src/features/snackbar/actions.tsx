@@ -1,11 +1,14 @@
 import toast, { type ToastOptions } from 'react-hot-toast';
 
+import { TOAST_WIDTH } from './constants';
 import Toast from './Toast';
 import { MessageSemantics, type Notification } from './types';
 
 const toastStyles: ToastOptions = {
   style: {
+    maxWidth: TOAST_WIDTH,
     padding: '0px',
+    background: 'transparent',
   },
   ariaProps: {
     // @ts-expect-error Hack to set Message.style to remove the margin.

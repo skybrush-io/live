@@ -8,6 +8,7 @@ import { useDispatch } from 'react-redux';
 
 import Countdown from '~/components/Countdown';
 
+import { TOAST_WIDTH } from './constants';
 import { MessageSemantics, type Notification } from './types';
 
 const ToastNotificationButton = styled(Button)({
@@ -16,12 +17,13 @@ const ToastNotificationButton = styled(Button)({
 });
 
 const StyledAlert = styled(Alert)({
-  minWidth: '420px',
-  maxWidth: '420px',
-  width: '400px',
+  minWidth: TOAST_WIDTH,
+  maxWidth: TOAST_WIDTH,
+  width: TOAST_WIDTH,
   '> .MuiAlert-message': {
     flex: 1,
   },
+  opacity: 0.85,
 });
 
 const semanticsToSeverity: Record<MessageSemantics, AlertColor> = {
@@ -95,7 +97,6 @@ const Toast = ({ toastId, notification }: ToastProps) => {
       severity={
         semanticsToSeverity[notification.semantics ?? MessageSemantics.DEFAULT]
       }
-      variant='filled'
       onClose={() => {
         toast.dismiss(toastId);
       }}
