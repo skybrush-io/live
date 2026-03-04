@@ -5,11 +5,11 @@ const STATUS_OPTIONS = ['Idle', 'Flying', 'Charging', 'Returning'];
 
 const inputStyle = {
   width: '100%',
-  background: 'rgba(255,255,255,0.08)',
-  border: '1px solid rgba(255,255,255,0.2)',
-  borderRadius: 6,
-  color: 'white',
-  padding: '6px 10px',
+  background: 'rgba(245,250,255,0.08)',
+  border: '1px solid rgba(130,190,255,0.24)',
+  borderRadius: 8,
+  color: '#ecf5ff',
+  padding: '8px 10px',
   fontSize: 13,
   outline: 'none',
   boxSizing: 'border-box',
@@ -22,9 +22,9 @@ const labelStyle = {
 
 const labelTextStyle = {
   fontSize: 11,
-  opacity: 0.65,
-  marginBottom: 4,
-  letterSpacing: 0.3,
+  opacity: 0.72,
+  marginBottom: 5,
+  letterSpacing: 0.2,
 };
 
 export default function AddDroneModal({ open, onClose, onAdd, existingIds }) {
@@ -101,7 +101,7 @@ export default function AddDroneModal({ open, onClose, onAdd, existingIds }) {
         position: 'fixed',
         inset: 0,
         zIndex: 20000,
-        background: 'rgba(0,0,0,0.55)',
+        background: 'rgba(6,10,16,0.62)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -112,27 +112,27 @@ export default function AddDroneModal({ open, onClose, onAdd, existingIds }) {
     >
       <div
         style={{
-          background: '#1a1a2e',
-          borderRadius: 12,
-          padding: '24px 28px',
-          color: 'white',
+          background: 'linear-gradient(165deg, rgba(18,24,36,0.97), rgba(11,16,26,0.95))',
+          borderRadius: 14,
+          padding: '22px 24px',
+          color: '#f3f8ff',
           width: 360,
-          border: '1px solid rgba(255,255,255,0.15)',
-          boxShadow: '0 12px 40px rgba(0,0,0,0.6)',
+          border: '1px solid rgba(126, 200, 255, 0.26)',
+          boxShadow: '0 14px 32px rgba(0,0,0,0.42)',
         }}
         onKeyDown={handleKeyDown}
       >
         <div
           style={{
-            fontSize: 15,
+            fontSize: 16,
             fontWeight: 700,
-            marginBottom: 20,
+            marginBottom: 18,
             display: 'flex',
             alignItems: 'center',
             gap: 8,
           }}
         >
-          <span style={{ fontSize: 18 }}>✈</span>
+          <span style={{ fontSize: 17 }}>✈</span>
           드론 추가
         </div>
 
@@ -161,7 +161,7 @@ export default function AddDroneModal({ open, onClose, onAdd, existingIds }) {
                 <div
                   style={{
                     fontSize: 10,
-                    opacity: 0.5,
+                    opacity: 0.56,
                     marginBottom: 3,
                     textAlign: 'center',
                   }}
@@ -214,7 +214,7 @@ export default function AddDroneModal({ open, onClose, onAdd, existingIds }) {
           <div
             style={{
               marginBottom: 12,
-              padding: '6px 10px',
+              padding: '8px 10px',
               borderRadius: 6,
               background: 'rgba(255,80,80,0.15)',
               border: '1px solid rgba(255,80,80,0.4)',
@@ -227,16 +227,16 @@ export default function AddDroneModal({ open, onClose, onAdd, existingIds }) {
         )}
 
         {/* 버튼 */}
-        <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+        <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', marginTop: 6 }}>
           <button
             type="button"
             onClick={onClose}
             style={{
-              padding: '7px 18px',
-              borderRadius: 7,
-              border: '1px solid rgba(255,255,255,0.25)',
-              background: 'rgba(255,255,255,0.06)',
-              color: 'rgba(255,255,255,0.8)',
+              padding: '8px 18px',
+              borderRadius: 8,
+              border: '1px solid rgba(255,255,255,0.2)',
+              background: 'rgba(255,255,255,0.07)',
+              color: 'rgba(243,248,255,0.86)',
               cursor: 'pointer',
               fontSize: 13,
             }}
@@ -248,13 +248,13 @@ export default function AddDroneModal({ open, onClose, onAdd, existingIds }) {
             onClick={handleAdd}
             disabled={!isValid}
             style={{
-              padding: '7px 22px',
-              borderRadius: 7,
+              padding: '8px 22px',
+              borderRadius: 8,
               border: 'none',
               background: isValid
-                ? 'linear-gradient(135deg, #4a9eff, #2b7cdd)'
-                : 'rgba(255,255,255,0.1)',
-              color: isValid ? 'white' : 'rgba(255,255,255,0.3)',
+                ? 'linear-gradient(135deg, #4ea8ff, #2a79d9)'
+                : 'rgba(255,255,255,0.12)',
+              color: isValid ? '#ffffff' : 'rgba(255,255,255,0.36)',
               cursor: isValid ? 'pointer' : 'not-allowed',
               fontSize: 13,
               fontWeight: 600,

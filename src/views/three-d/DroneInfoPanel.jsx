@@ -273,33 +273,38 @@ export default function DroneInfoPanel({ open, drone, onClose }) {
     <div
       style={{
         position: 'absolute',
-        top: 12,
+        top: 14,
         right: 0,
-        width: 430,
-        maxWidth: 'min(430px, 92vw)',
-        height: 'calc(100% - 24px)',
-        background: 'rgba(20,20,20,0.95)',
-        color: 'white',
+        width: 420,
+        maxWidth: 'min(420px, 92vw)',
+        height: 'calc(100% - 28px)',
+        background: 'linear-gradient(170deg, rgba(18,24,36,0.95), rgba(11,15,24,0.93))',
+        color: '#edf5ff',
         padding: 16,
         boxSizing: 'border-box',
         transform: open ? 'translateX(0)' : 'translateX(100%)',
         transition: 'transform 200ms ease',
         zIndex: 10000,
-        borderLeft: '1px solid rgba(255,255,255,0.1)',
+        borderLeft: '1px solid rgba(126, 200, 255, 0.25)',
+        boxShadow: '-12px 0 28px rgba(0,0,0,0.28)',
+        backdropFilter: 'blur(8px)',
         overflowY: 'auto',
       }}
     >
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div style={{ fontWeight: 700, fontSize: 18 }}>Drone Info</div>
+        <div>
+          <div style={{ fontWeight: 700, fontSize: 17 }}>Drone Info</div>
+          <div style={{ fontSize: 11, opacity: 0.65, marginTop: 1 }}>선택 드론 상세 제어</div>
+        </div>
         <button
           onClick={onClose}
           style={{
-            background: 'transparent',
-            border: '1px solid rgba(255,255,255,0.3)',
-            color: 'white',
-            borderRadius: 6,
-            padding: '4px 8px',
+            background: 'rgba(255,255,255,0.08)',
+            border: '1px solid rgba(255,255,255,0.22)',
+            color: '#f2f8ff',
+            borderRadius: 8,
+            padding: '5px 9px',
             cursor: 'pointer',
           }}
         >
@@ -313,13 +318,13 @@ export default function DroneInfoPanel({ open, drone, onClose }) {
         ) : (
           <>
             {/* ID */}
-            <div style={{ marginBottom: 12 }}>
-              <div style={{ fontSize: 12, opacity: 0.6 }}>ID</div>
-              <div style={{ fontSize: 16 }}>{drone.id}</div>
+            <div style={{ marginBottom: 12, padding: '8px 10px', borderRadius: 10, background: 'rgba(255,255,255,0.05)' }}>
+              <div style={{ fontSize: 11, opacity: 0.62 }}>ID</div>
+              <div style={{ fontSize: 15.5, fontWeight: 600 }}>{drone.id}</div>
             </div>
-            <div style={{ marginBottom: 12 }}>
-              <div style={{ fontSize: 12, opacity: 0.6 }}>Current Position (x, y, z)</div>
-              <div style={{ fontSize: 14 }}>{currentPositionText}</div>
+            <div style={{ marginBottom: 12, padding: '8px 10px', borderRadius: 10, background: 'rgba(255,255,255,0.05)' }}>
+              <div style={{ fontSize: 11, opacity: 0.62 }}>Current Position (x, y, z)</div>
+              <div style={{ fontSize: 13.5 }}>{currentPositionText}</div>
             </div>
 
             {/* Initial Position */}
@@ -340,7 +345,7 @@ export default function DroneInfoPanel({ open, drone, onClose }) {
                 { label: 'Z', value: z, setter: setZ },
               ].map(({ label, value, setter }) => (
                 <div key={label} style={{ display: 'flex', flexDirection: 'column' }}>
-                  <div style={{ fontSize: 12, opacity: 0.6 }}>{label}</div>
+                  <div style={{ fontSize: 11.5, opacity: 0.62 }}>{label}</div>
                   <input
                     value={value}
                     onChange={(e) => setter(e.target.value)}
@@ -348,11 +353,11 @@ export default function DroneInfoPanel({ open, drone, onClose }) {
                     inputMode="decimal"
                     style={{
                       marginTop: 4,
-                      padding: '6px 8px',
-                      borderRadius: 6,
-                      border: '1px solid rgba(255,255,255,0.18)',
-                      background: 'rgba(0,0,0,0.25)',
-                      color: 'white',
+                      padding: '8px 8px',
+                      borderRadius: 8,
+                      border: '1px solid rgba(130,190,255,0.24)',
+                      background: 'rgba(248,252,255,0.07)',
+                      color: '#edf5ff',
                       width: '100%',
                       boxSizing: 'border-box',
                       outline: 'none',
@@ -368,13 +373,13 @@ export default function DroneInfoPanel({ open, drone, onClose }) {
               style={{
                 marginTop: 10,
                 width: '100%',
-                padding: '10px 12px',
+                padding: '9px 12px',
                 borderRadius: 8,
-                border: '1px solid rgba(255,255,255,0.25)',
+                border: '1px solid rgba(255,255,255,0.24)',
                 background: canSetInitialPositionFromCurrent
-                  ? 'rgba(255,255,255,0.12)'
-                  : 'rgba(255,255,255,0.06)',
-                color: 'white',
+                  ? 'rgba(255,255,255,0.14)'
+                  : 'rgba(255,255,255,0.07)',
+                color: '#f3f8ff',
                 cursor: canSetInitialPositionFromCurrent ? 'pointer' : 'not-allowed',
               }}
             >
@@ -388,11 +393,11 @@ export default function DroneInfoPanel({ open, drone, onClose }) {
                 width: '100%',
                 padding: '8px 12px',
                 borderRadius: 8,
-                border: '1px solid rgba(255,255,255,0.18)',
+                border: '1px solid rgba(255,255,255,0.2)',
                 background: canSetInitialPositionFromInputs
-                  ? 'rgba(255,255,255,0.08)'
-                  : 'rgba(255,255,255,0.04)',
-                color: 'rgba(255,255,255,0.9)',
+                  ? 'rgba(255,255,255,0.1)'
+                  : 'rgba(255,255,255,0.05)',
+                color: 'rgba(243,248,255,0.9)',
                 cursor: canSetInitialPositionFromInputs ? 'pointer' : 'not-allowed',
                 fontSize: 12,
               }}
@@ -428,8 +433,9 @@ export default function DroneInfoPanel({ open, drone, onClose }) {
                     padding: '2px 4px',
                     border:
                       dragOverPathIndex === idx
-                        ? '1px dashed rgba(255,255,255,0.45)'
+                        ? '1px dashed rgba(178,221,255,0.74)'
                         : '1px dashed transparent',
+                    background: 'rgba(255,255,255,0.03)',
                   }}
                 >
                   <div
@@ -527,8 +533,8 @@ export default function DroneInfoPanel({ open, drone, onClose }) {
                   style={{
                     ...secondaryBtnStyle,
                     background: canPlayPath
-                      ? 'rgba(255,255,255,0.16)'
-                      : 'rgba(255,255,255,0.06)',
+                      ? 'rgba(255,255,255,0.14)'
+                      : 'rgba(255,255,255,0.07)',
                     cursor: canPlayPath ? 'pointer' : 'not-allowed',
                     opacity: canPlayPath ? 1 : 0.8,
                   }}
@@ -565,8 +571,8 @@ export default function DroneInfoPanel({ open, drone, onClose }) {
             }}
             style={{
               width: '100%',
-              padding: '7px 10px',
-              borderRadius: 7,
+              padding: '8px 10px',
+              borderRadius: 8,
               border: '1px solid rgba(255,80,80,0.45)',
               background: 'rgba(255,60,60,0.12)',
               color: '#ff8080',
@@ -585,11 +591,11 @@ export default function DroneInfoPanel({ open, drone, onClose }) {
 }
 
 const smallInputStyle = {
-  padding: '6px 8px',
-  borderRadius: 6,
-  border: '1px solid rgba(255,255,255,0.18)',
-  background: 'rgba(0,0,0,0.25)',
-  color: 'white',
+  padding: '7px 8px',
+  borderRadius: 8,
+  border: '1px solid rgba(130,190,255,0.24)',
+  background: 'rgba(248,252,255,0.07)',
+  color: '#ecf5ff',
   fontSize: 12,
   width: '100%',
   boxSizing: 'border-box',
@@ -600,11 +606,11 @@ const secondaryBtnStyle = {
   flex: 1,
   padding: '8px 10px',
   borderRadius: 8,
-  border: '1px solid rgba(255,255,255,0.25)',
-  background: 'rgba(255,255,255,0.08)',
-  color: 'white',
+  border: '1px solid rgba(255,255,255,0.22)',
+  background: 'rgba(255,255,255,0.09)',
+  color: '#f1f7ff',
   cursor: 'pointer',
-  fontSize: 13,
+  fontSize: 12.5,
 };
 
 DroneInfoPanel.propTypes = {

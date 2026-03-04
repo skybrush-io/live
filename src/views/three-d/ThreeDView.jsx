@@ -25,6 +25,7 @@ import {
   getLightingConditionsForThreeDView,
   getSceneryForThreeDView,
 } from '~/features/settings/selectors';
+import { setViewRuntimeState } from '~/features/three-d/slice';
 import { isShowIndoor } from '~/features/show/selectors';
 import { isMapCoordinateSystemLeftHanded } from '~/selectors/map';
 
@@ -198,17 +199,42 @@ const ThreeDView = React.forwardRef((props, ref) => {
     showLandingPositions,
     showStatistics,
     showTrajectoriesOfSelection,
+    viewRuntime,
+    onSetViewRuntimeState,
   } = props;
+
+  const persistedDroneConfig =
+    viewRuntime && typeof viewRuntime === 'object' ? viewRuntime.droneConfig : null;
+  const persistedPathProgressRaw =
+    viewRuntime && typeof viewRuntime === 'object' ? viewRuntime.pathProgress : 0;
+  const persistedPathProgress = Number.isFinite(Number(persistedPathProgressRaw))
+    ? Number(persistedPathProgressRaw)
+    : 0;
 
   // 선택된 드론 정보 및 JSON에서 불러온 드론 구성
   const [selectedDrone, setSelectedDrone] = useState(null);
-  const [droneConfig, setDroneConfig] = useState(null);
+  const [droneConfig, setDroneConfig] = useState(() => (
+    persistedDroneConfig && typeof persistedDroneConfig === 'object'
+      ? persistedDroneConfig
+      : null
+  ));
   const [pendingAutoSelectDrone, setPendingAutoSelectDrone] = useState(null);
   const droneConfigRef = useRef(null);
   droneConfigRef.current = droneConfig;
 
   // 드론 추가 모달
   const [addDroneModalOpen, setAddDroneModalOpen] = useState(false);
+  const [pathProgress, setPathProgress] = useState(persistedPathProgress);
+
+  useEffect(() => {
+    if (!droneConfig && persistedDroneConfig && typeof persistedDroneConfig === 'object') {
+      setDroneConfig(persistedDroneConfig);
+    }
+  }, [droneConfig, persistedDroneConfig]);
+
+  useEffect(() => {
+    onSetViewRuntimeState({ droneConfig, pathProgress });
+  }, [droneConfig, pathProgress, onSetViewRuntimeState]);
 
   const collectConfigFromScene = () => {
     if (typeof document === 'undefined') {
@@ -570,7 +596,6 @@ const ThreeDView = React.forwardRef((props, ref) => {
     };
   }, [pendingAutoSelectDrone]);
 
-  const [pathProgress, setPathProgress] = useState(0);
   const [gizmoDragState, setGizmoDragState] = useState({ dragging: false, axis: null });
   const effectiveConfig = useMemo(() => {
     if (droneConfig && Array.isArray(droneConfig.drones) && droneConfig.drones.length) {
@@ -823,17 +848,19 @@ const ThreeDView = React.forwardRef((props, ref) => {
           style={{
             position: 'absolute',
             left: '50%',
-            top: 12,
+            top: 14,
             transform: 'translateX(-50%)',
             zIndex: 12000,
             pointerEvents: 'none',
-            padding: '6px 12px',
+            padding: '7px 13px',
             borderRadius: 999,
-            border: '1px solid rgba(255,255,255,0.2)',
-            background: 'rgba(0,0,0,0.62)',
-            color: 'white',
+            border: '1px solid rgba(160,220,255,0.3)',
+            background: 'linear-gradient(145deg, rgba(17,25,39,0.88), rgba(10,15,25,0.84))',
+            color: '#e6f3ff',
             fontSize: 12,
             letterSpacing: 0.2,
+            backdropFilter: 'blur(8px)',
+            boxShadow: '0 6px 18px rgba(0,0,0,0.3)',
           }}
         >
           {gizmoDragState.dragging && gizmoDragState.axis
@@ -861,6 +888,11 @@ ThreeDView.propTypes = {
   showLandingPositions: PropTypes.bool,
   showStatistics: PropTypes.bool,
   showTrajectoriesOfSelection: PropTypes.bool,
+  viewRuntime: PropTypes.shape({
+    droneConfig: PropTypes.any,
+    pathProgress: PropTypes.number,
+  }),
+  onSetViewRuntimeState: PropTypes.func,
 };
 
 export default connect(
@@ -871,7 +903,9 @@ export default connect(
     scenery: getEffectiveScenery(state),
     lighting: getLightingConditionsForThreeDView(state),
   }),
-  {},
+  {
+    onSetViewRuntimeState: setViewRuntimeState,
+  },
   null,
   { forwardRef: true }
 )(ThreeDView);

@@ -22,6 +22,11 @@ type ThreeDSliceState = {
   tooltip?: string;
 
   sceneId: number;
+
+  viewRuntime: {
+    droneConfig: unknown | null;
+    pathProgress: number;
+  };
 };
 
 const initialState: ThreeDSliceState = {
@@ -38,6 +43,11 @@ const initialState: ThreeDSliceState = {
   tooltip: undefined,
 
   sceneId: 0,
+
+  viewRuntime: {
+    droneConfig: null,
+    pathProgress: 0,
+  },
 };
 
 const { actions, reducer } = createSlice({
@@ -103,6 +113,19 @@ const { actions, reducer } = createSlice({
     hideTooltip(state) {
       state.tooltip = undefined;
     },
+
+    setViewRuntimeState(
+      state,
+      action: PayloadAction<{ droneConfig: unknown | null; pathProgress: number }>
+    ) {
+      const { droneConfig, pathProgress } = action.payload ?? {};
+      const normalizedProgress = Number(pathProgress);
+
+      state.viewRuntime.droneConfig = droneConfig ?? null;
+      state.viewRuntime.pathProgress = Number.isFinite(normalizedProgress)
+        ? Math.min(100, Math.max(0, normalizedProgress))
+        : 0;
+    },
   },
 });
 
@@ -113,6 +136,7 @@ export const {
   rotateViewTowards,
   setCameraPose,
   setNavigationMode,
+  setViewRuntimeState,
   showTooltip,
 } = actions;
 
