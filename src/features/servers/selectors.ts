@@ -367,7 +367,7 @@ export const isTimeSyncWarningDialogVisible: AppSelector<boolean> = (state) =>
   state.servers.timeSyncDialog.open;
 
 /**
- * Selector that returns whether the server support the show suspend, resume,
+ * Selector that returns whether the server supports the show suspend, resume,
  * and collective RTH options.
  */
 export const supportsSuspendResumeCRTH: AppSelector<boolean> =
