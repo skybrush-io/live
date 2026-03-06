@@ -1,10 +1,12 @@
 import Alert, { type AlertColor } from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import { styled } from '@mui/material/styles';
+import { alpha, styled } from '@mui/material/styles';
 import { type ReactNode } from 'react';
 import toast from 'react-hot-toast';
 import { useDispatch } from 'react-redux';
+
+import { isThemeDark } from '@skybrush/app-theme-mui';
 
 import Countdown from '~/components/Countdown';
 
@@ -16,14 +18,21 @@ const ToastNotificationButton = styled(Button)({
   color: 'inherit',
 });
 
-const StyledAlert = styled(Alert)({
+const StyledAlert = styled(Alert)(({ theme, severity }) => ({
   minWidth: TOAST_WIDTH,
   maxWidth: TOAST_WIDTH,
   width: TOAST_WIDTH,
+  backdropFilter: 'blur(3px)',
+  backgroundColor: alpha(
+    isThemeDark(theme)
+      ? theme.palette[severity ?? 'info'].dark
+      : theme.palette[severity ?? 'info'].light,
+    0.9
+  ),
   '> .MuiAlert-message': {
     flex: 1,
   },
-});
+}));
 
 const semanticsToSeverity: Record<MessageSemantics, AlertColor> = {
   [MessageSemantics.DEFAULT]: 'info',
