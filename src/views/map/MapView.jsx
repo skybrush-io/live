@@ -43,7 +43,10 @@ import {
 import { getSelectedTool } from '~/features/map/tools';
 import { updateMapViewSettings } from '~/features/map/view';
 import { addNewMissionItem } from '~/features/mission/actions';
-import { getGeofencePolygonId } from '~/features/mission/selectors';
+import {
+  getGeofencePolygonId,
+  getMissionMapping,
+} from '~/features/mission/selectors';
 import NearestItemTooltip from '~/features/session/NearestItemTooltip';
 import { setFeatureIdForTooltip } from '~/features/session/slice';
 import { getFollowMapSelectionInUAVDetailsPanel } from '~/features/uavs/selectors';
@@ -76,6 +79,7 @@ import {
 } from '~/utils/geography';
 import { toDegrees } from '~/utils/math';
 import { forwardCollectionChanges } from '~/utils/openlayers';
+import { groupConvexHullAndTakeoffPositions } from '~/utils/selection';
 
 import DrawingToolbar from './DrawingToolbar';
 import { Layers } from './layers';
@@ -336,6 +340,7 @@ class MapViewPresentation extends React.Component {
     position: PropTypes.arrayOf(PropTypes.number),
     selectedTool: PropTypes.string,
     selection: PropTypes.arrayOf(PropTypes.string).isRequired,
+    takeoffPositionIds: PropTypes.arrayOf(PropTypes.string).isRequired,
     zoom: PropTypes.number,
 
     glContainer: PropTypes.object,
@@ -646,7 +651,10 @@ class MapViewPresentation extends React.Component {
       toggle: toggleInSelection,
     };
     const action = actionMapping[mode] || setSelection;
-    const ids = features ? features.map((feature) => feature.getId()) : [];
+    const ids = groupConvexHullAndTakeoffPositions(
+      features ? features.map((feature) => feature.getId()) : [],
+      this.props.takeoffPositionIds
+    );
     if (action === setSelection || (ids && ids.length > 0)) {
       this.props.dispatch(action(ids));
     }
@@ -732,6 +740,7 @@ const MapView = connect(
     selectedFeatures: getSelectedFeatureIds(state),
     selectedTool: getSelectedTool(state),
     selection: getSelection(state),
+    takeoffPositionIds: getMissionMapping(state).map((_, i) => String(i)),
 
     uavDetailsPanelFollowsSelection:
       getFollowMapSelectionInUAVDetailsPanel(state),
