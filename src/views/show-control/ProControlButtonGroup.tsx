@@ -8,7 +8,10 @@ import { connect } from 'react-redux';
 
 import ColoredButton from '~/components/ColoredButton';
 import Colors from '~/components/colors';
-import { hasLicenseWithProFeatures } from '~/features/servers/selectors';
+import {
+  hasLicenseWithProFeatures,
+  supportsSuspendResumeCRTH,
+} from '~/features/servers/selectors';
 import {
   resumeShow,
   startCollectiveRTH,
@@ -36,6 +39,7 @@ const useStyles = makeStyles((theme) => ({
 type StateProps = {
   isCollectiveRTHTriggered: boolean;
   proFeaturesEnabled?: boolean;
+  supportsSuspendResumeCRTH: boolean;
 };
 
 type DispatchProps = {
@@ -52,12 +56,18 @@ const ProControlButtonGroup = (props: Props) => {
     proFeaturesEnabled,
     resumeShow,
     startCollectiveRTH,
+    supportsSuspendResumeCRTH,
     suspendShow,
   } = props;
-  const actionsDisabled = isCollectiveRTHTriggered || !proFeaturesEnabled;
   const workbench = useContext(Workbench);
   const classes = useStyles();
   const { t } = useTranslation();
+
+  const actionsDisabled =
+    isCollectiveRTHTriggered ||
+    !proFeaturesEnabled ||
+    !supportsSuspendResumeCRTH;
+
   return (
     <Box className={classes.root}>
       <ColoredButton
@@ -100,6 +110,7 @@ const ConnectedProControlButtonGroup = connect(
   (state: RootState) => ({
     isCollectiveRTHTriggered: selectIsCollectiveRTHTriggered(state),
     proFeaturesEnabled: hasLicenseWithProFeatures(state),
+    supportsSuspendResumeCRTH: supportsSuspendResumeCRTH(state),
   }),
   { resumeShow, startCollectiveRTH, suspendShow }
 )(ProControlButtonGroup);
