@@ -221,12 +221,16 @@ const ThreeDView = React.forwardRef((props, ref) => {
   const [pendingAutoSelectDrone, setPendingAutoSelectDrone] = useState(null);
   const droneConfigRef = useRef(null);
   droneConfigRef.current = droneConfig;
+  const ignorePersistedDroneConfigRef = useRef(false);
 
   // 드론 추가 모달
   const [addDroneModalOpen, setAddDroneModalOpen] = useState(false);
   const [pathProgress, setPathProgress] = useState(persistedPathProgress);
 
   useEffect(() => {
+    if (ignorePersistedDroneConfigRef.current) {
+      return;
+    }
     if (!droneConfig && persistedDroneConfig && typeof persistedDroneConfig === 'object') {
       setDroneConfig(persistedDroneConfig);
     }
@@ -735,6 +739,16 @@ const ThreeDView = React.forwardRef((props, ref) => {
     });
   };
 
+  const handleResetPanelSettings = () => {
+    // Prevent immediate re-hydration of old persisted runtime config.
+    ignorePersistedDroneConfigRef.current = true;
+    setPathProgress(0);
+    setSelectedDrone(null);
+    setPendingAutoSelectDrone(null);
+    window.dispatchEvent(new CustomEvent('drone-deselected'));
+    setDroneConfig(null);
+  };
+
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%' }}>
       <PathControlPanel
@@ -745,6 +759,7 @@ const ThreeDView = React.forwardRef((props, ref) => {
         totalDurationMs={maxPathDurationMs}
         onPlayAll={handlePlayAll}
         onResetAll={handleResetAll}
+        onResetPanelSettings={handleResetPanelSettings}
         onLoadConfigClick={handleLoadConfigClick}
         onSaveConfigClick={handleSaveConfigClick}
         onFileChange={handleFileChange}

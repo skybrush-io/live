@@ -35,7 +35,7 @@ if (!AFrame.components['click-pick']) {
     },
 
     _findFbxEntityFromObject3D(obj) {
-      // ✅ 핵심: 부모 타고 올라가면서 "fbx-model 컴포넌트가 있는 엔티티"를 찾는다
+      // 핵심: 부모 타고 올라가면서 "fbx-model 컴포넌트가 있는 엔티티"를 찾는다
       let cur = obj;
       while (cur) {
         const el = cur.el;
@@ -162,7 +162,7 @@ if (!AFrame.components['click-pick']) {
         }
       }
 
-      // ✅ 빈 곳 클릭 → 해제 + 이벤트
+      // 빈 곳 클릭 → 해제 + 이벤트
       if (!hits.length) {
         if (selectedEl) {
           selectedEl.components?.['fbx-model']?._deselect?.();
@@ -182,14 +182,14 @@ if (!AFrame.components['click-pick']) {
         return;
       }
 
-      // ✅ 다른 선택 해제 (다른 드론 클릭)
+      // 다른 선택 해제 (다른 드론 클릭)
       if (selectedEl && selectedEl !== hitEl) {
         selectedEl.components?.['fbx-model']?._deselect?.();
       }
 
       const comp = hitEl.components?.['fbx-model'];
 
-      // ✅ fbx-model 유무와 상관없이 data-drone-id 기준으로 토글
+      // fbx-model 유무와 상관없이 data-drone-id 기준으로 토글
       if (selectedEl === hitEl) {
         comp?._deselect?.();
         selectedEl = null;

@@ -9,6 +9,7 @@ export default function PathControlPanel({
   totalDurationMs,
   onPlayAll,
   onResetAll,
+  onResetPanelSettings,
   onLoadConfigClick,
   onSaveConfigClick,
   onFileChange,
@@ -164,6 +165,23 @@ export default function PathControlPanel({
             저장
           </button>
         </div>
+        <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+          <button
+            type="button"
+            onClick={onResetPanelSettings}
+            style={{
+              flex: 1,
+              padding: '7px 8px',
+              borderRadius: 8,
+              border: '1px solid rgba(255, 120, 120, 0.36)',
+              background: 'rgba(110, 22, 22, 0.34)',
+              color: '#ffd9d9',
+              cursor: 'pointer',
+            }}
+          >
+            설정 초기화
+          </button>
+        </div>
       </div>
     </>
   );
@@ -177,6 +195,7 @@ PathControlPanel.propTypes = {
   totalDurationMs: PropTypes.number.isRequired,
   onPlayAll: PropTypes.func.isRequired,
   onResetAll: PropTypes.func.isRequired,
+  onResetPanelSettings: PropTypes.func.isRequired,
   onLoadConfigClick: PropTypes.func.isRequired,
   onSaveConfigClick: PropTypes.func.isRequired,
   onFileChange: PropTypes.func.isRequired,
