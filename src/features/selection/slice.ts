@@ -3,8 +3,8 @@
  * map.
  */
 
-import xor from 'lodash-es/xor';
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import xor from 'lodash-es/xor';
 
 import { removeFeaturesByIds } from '~/features/map-features/slice';
 import { removeMissionItemsByIds } from '~/features/mission/slice';
@@ -16,51 +16,53 @@ import { type Identifier } from '~/utils/collections';
 
 import { findAllUAVFeatures, updateSelection } from './utils';
 
-type MapSelectionSliceState = Identifier[];
+type MapSelectionSliceState = {
+  ids: Identifier[];
+};
 
-const initialState: MapSelectionSliceState = [];
+const initialState: MapSelectionSliceState = { ids: [] };
 
 const { actions, reducer } = createSlice({
-  name: 'map/selection',
+  name: 'selection',
   initialState,
   reducers: {
     addToSelection(state, action: PayloadAction<string[]>) {
-      return updateSelection(state, action.payload);
+      state.ids = updateSelection(state.ids, action.payload);
     },
 
     clearSelection(state) {
-      state.length = 0;
+      state.ids.length = 0;
     },
 
     removeFromSelection(state, action: PayloadAction<string[]>) {
-      return updateSelection(state, [], action.payload);
+      state.ids = updateSelection(state.ids, [], action.payload);
     },
 
-    selectAllUAVs() {
-      return updateSelection([], findAllUAVFeatures());
+    selectAllUAVs(state) {
+      state.ids = updateSelection([], findAllUAVFeatures());
     },
 
-    setSelection(_state, action: PayloadAction<string[]>) {
-      return updateSelection([], action.payload);
+    setSelection(state, action: PayloadAction<string[]>) {
+      state.ids = updateSelection([], action.payload);
     },
 
     toggleInSelection(state, action: PayloadAction<string[]>) {
-      return updateSelection([], xor(state, action.payload));
+      state.ids = updateSelection([], xor(state.ids, action.payload));
     },
   },
 
   extraReducers(builder) {
     builder.addCase(removeFeaturesByIds, (state, action) => {
-      return updateSelection(
-        state,
+      state.ids = updateSelection(
+        state.ids,
         [],
         action.payload.map(featureIdToGlobalId).filter(Boolean)
       );
     });
 
     builder.addCase(removeMissionItemsByIds, (state, action) => {
-      return updateSelection(
-        state,
+      state.ids = updateSelection(
+        state.ids,
         [],
         action.payload.map(missionItemIdToGlobalId).filter(Boolean)
       );

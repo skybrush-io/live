@@ -15,9 +15,9 @@ import {
   getFeatureById,
   getSingleSelectedFeatureIdOfType,
 } from '~/features/map-features/selectors';
-import { setSelection } from '~/features/map/selection';
 import { showPromptDialog } from '~/features/prompt/actions';
 import { updateGeofencePolygon } from '~/features/safety/actions';
+import { setSelection } from '~/features/selection/slice';
 import {
   getFirstPointsOfTrajectories,
   getOutdoorShowCoordinateSystem,

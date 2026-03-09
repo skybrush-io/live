@@ -1,4 +1,4 @@
-import { setSelection } from '~/features/map/selection';
+import { setSelection } from '~/features/selection/slice';
 import { beaconIdToGlobalId } from '~/model/identifiers';
 
 /**

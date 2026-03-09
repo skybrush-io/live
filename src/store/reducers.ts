@@ -17,6 +17,7 @@ import featureEditorReducer from '~/features/map-features/editor';
 import layerSettingsReducer from '~/features/map/layer-settings-dialog';
 import promptReducer from '~/features/prompt/slice';
 import savedLocationEditorReducer from '~/features/saved-locations/editor';
+import selectionReducer from '~/features/selection/slice';
 import authenticationReducer from '~/features/servers/authentication-dialog';
 import deauthenticationReducer from '~/features/servers/deauthentication-dialog';
 import serverSettingsReducer from '~/features/servers/server-settings-dialog';
@@ -138,6 +139,7 @@ const reducer = combineReducers({
   rtk: rtkReducer,
   safety: safetyReducer,
   savedLocations: savedLocationsReducer,
+  selection: selectionReducer,
   servers: serversReducer,
   session: sessionReducer,
   settings: settingsReducer,

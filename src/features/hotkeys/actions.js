@@ -3,12 +3,12 @@ import isNil from 'lodash-es/isNil';
 import { copyDisplayedCoordinatesToClipboard } from '~/components/map/utils';
 import { hasPendingAudibleAlerts } from '~/features/alert/selectors';
 import { dismissAlerts } from '~/features/alert/slice';
-import { clearSelection } from '~/features/map/selection';
 import {
   getMissionMapping,
   isMappingEditable,
 } from '~/features/mission/selectors';
 import { finishMappingEditorSession } from '~/features/mission/slice';
+import { clearSelection } from '~/features/selection/slice';
 import { showError, showNotification } from '~/features/snackbar/actions';
 import { setSelectedUAVIds } from '~/features/uavs/actions';
 import { getUAVById } from '~/features/uavs/selectors';

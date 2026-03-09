@@ -2,10 +2,10 @@ import isNil from 'lodash-es/isNil';
 import reject from 'lodash-es/reject';
 import xor from 'lodash-es/xor';
 
-import { setSelection } from '~/features/map/selection';
+import { getSelection } from '~/features/selection/selectors';
+import { setSelection } from '~/features/selection/slice';
 import flock from '~/flock';
 import { isUavId, uavIdToGlobalId } from '~/model/identifiers';
-import { getSelection } from '~/selectors/selection';
 
 import type { PayloadAction } from '@reduxjs/toolkit';
 import type { AppThunk } from '~/store/reducers';

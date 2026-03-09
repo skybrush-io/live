@@ -12,7 +12,7 @@ import xor from 'lodash-es/xor';
 import { Point } from 'ol/geom';
 
 import { type FeatureSelectionMode } from '~/components/map/interactions/types';
-import { updateSelection as updateSelectedIds } from '~/features/map/utils';
+import { updateSelection as updateSelectedIds } from '~/features/selection/utils';
 import type { OutdoorCoordinateSystemWithOrigin } from '~/features/show/types';
 import type { Identifier } from '~/utils/collections';
 import {
