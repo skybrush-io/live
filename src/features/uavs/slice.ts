@@ -7,7 +7,7 @@
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
-import { setSelection } from '~/features/map/selection';
+import { setSelection } from '~/features/selection/slice';
 import { globalIdToUavId, isUavId } from '~/model/identifiers';
 import {
   addItemSorted,

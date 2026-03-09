@@ -7,7 +7,7 @@ import {
   type UAVsLayerSettingsProps,
 } from '~/components/map/layers/uavs';
 import { setLayerParametersById } from '~/features/map/layers';
-import { getSelection } from '~/selectors/selection';
+import { getSelection } from '~/features/selection/selectors';
 import type { RootState } from '~/store/reducers';
 
 import ActiveUAVsLayerSource from '../sources/ActiveUAVsLayerSource';

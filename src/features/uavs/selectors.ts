@@ -15,6 +15,7 @@ import {
   getTakeoffHeadingsInMission,
   getUAVIdsParticipatingInMission,
 } from '~/features/mission/selectors';
+import { selectionForSubset } from '~/features/selection/selectors';
 import {
   getDesiredPlacementAccuracyInMeters,
   getDesiredTakeoffHeadingAccuracy,
@@ -41,7 +42,6 @@ import UAVErrorCode, { abbreviateUAVErrorCode } from '~/flockwave/UAVErrorCode';
 import { isGPSPositionValid } from '~/model/geography';
 import { globalIdToUavId } from '~/model/identifiers';
 import { UAVAge } from '~/model/uav';
-import { selectionForSubset } from '~/selectors/selection';
 import type { AppSelector, RootState } from '~/store/reducers';
 import { euclideanDistance2D, getMeanAngle } from '~/utils/math';
 import { EMPTY_ARRAY } from '~/utils/redux';

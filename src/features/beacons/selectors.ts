@@ -1,7 +1,7 @@
 import { createSelector } from '@reduxjs/toolkit';
 
+import { selectionForSubset } from '~/features/selection/selectors';
 import { globalIdToBeaconId } from '~/model/identifiers';
-import { selectionForSubset } from '~/selectors/selection';
 import { type AppSelector } from '~/store/reducers';
 import {
   type Collection,

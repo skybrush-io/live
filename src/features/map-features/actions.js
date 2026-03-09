@@ -1,9 +1,10 @@
+import turfDifference from '@turf/difference';
 import isEqualWith from 'lodash-es/isEqualWith';
 import isNil from 'lodash-es/isNil';
 import reject from 'lodash-es/reject';
-import turfDifference from '@turf/difference';
 
-import { setSelection } from '~/features/map/selection';
+import { getSelection } from '~/features/selection/selectors';
+import { setSelection } from '~/features/selection/slice';
 import { getNearestFeatureIdForTooltip } from '~/features/session/selectors';
 import { setFeatureIdForTooltip } from '~/features/session/slice';
 import { openUAVDetailsDialog } from '~/features/uavs/details';
@@ -15,7 +16,6 @@ import {
   isFeatureId,
   isUavId,
 } from '~/model/identifiers';
-import { getSelection } from '~/selectors/selection';
 
 import {
   getFeatureById,
