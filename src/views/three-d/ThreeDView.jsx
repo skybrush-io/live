@@ -185,6 +185,25 @@ const slicePathByElapsedMs = (path, elapsedMs) => {
   return slicePathByProgress(path, ratio);
 };
 
+const normalizeDroneForConfigIO = (drone, index = 0) => {
+  const id = drone?.id || `drone-${index + 1}`;
+  const name = drone?.name || id;
+  const batteryNum = Number(drone?.battery);
+  const status = drone?.status || 'Idle';
+
+  // For config I/O, pos is the canonical initial position.
+  const basePos = parsePositionLike(drone?.pos, [0, 1, 1]);
+
+  return {
+    id,
+    name,
+    battery: Number.isFinite(batteryNum) ? batteryNum : 100,
+    status,
+    pos: basePos,
+    path: Array.isArray(drone?.path) ? drone.path : [],
+  };
+};
+
 const ThreeDView = React.forwardRef((props, ref) => {
   const {
     cameraRef,
@@ -474,23 +493,10 @@ const ThreeDView = React.forwardRef((props, ref) => {
           return;
         }
         const normalizedDrones = parsed.drones.map((d, index) => {
-          const id = d?.id || `drone-${index + 1}`;
-          const name = d?.name || id;
-          const batteryNum = Number(d?.battery);
-          const status = d?.status || 'Idle';
-          const fallbackPos = parsePositionLike(d?.pos, [0, 1, 1]);
-          const initialPos = parsePositionLike(d?.initialPos, fallbackPos);
-
+          const normalized = normalizeDroneForConfigIO(d, index);
           return {
-            ...d,
-            id,
-            name,
-            battery: Number.isFinite(batteryNum) ? batteryNum : 100,
-            status,
-            // ✅ 불러오기 시에는 initialPos를 실제 배치 기준으로 사용
-            pos: initialPos,
-            initialPos,
-            path: Array.isArray(d?.path) ? d.path : [],
+            ...normalized,
+            initialPos: normalized.pos.slice(),
           };
         });
 
@@ -512,9 +518,25 @@ const ThreeDView = React.forwardRef((props, ref) => {
         ? droneConfig
         : collectConfigFromScene();
 
-    const configToSave = baseConfig && Array.isArray(baseConfig.drones)
-      ? baseConfig
-      : { drones: [] };
+    const configToSave =
+      baseConfig && Array.isArray(baseConfig.drones)
+        ? {
+            drones: baseConfig.drones.map((d, index) => {
+              const normalized = normalizeDroneForConfigIO(
+                {
+                  ...d,
+                  // Export format uses pos as canonical initial position.
+                  pos:
+                    Array.isArray(d?.initialPos) && d.initialPos.length >= 3
+                      ? d.initialPos
+                      : d?.pos,
+                },
+                index
+              );
+              return normalized;
+            }),
+          }
+        : { drones: [] };
 
     const blob = new Blob([JSON.stringify(configToSave, null, 2)], {
       type: 'application/json',
