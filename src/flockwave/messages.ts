@@ -1446,7 +1446,7 @@ export default class MessageHub {
   }
 
   /**
-   * Sends a Flockwave component calibration request (UAV-CALIB) with the given 
+   * Sends a Flockwave component calibration request (UAV-CALIB) with the given
    * body and returns a promise that resolves or rejects when one of the following
    * events happen:
    *
@@ -1495,7 +1495,7 @@ export default class MessageHub {
   }
 
   /**
-   * Sends a Flockwave component test request (UAV-TEST) with the given 
+   * Sends a Flockwave component test request (UAV-TEST) with the given
    * body and returns a promise that resolves or rejects when one of the following
    * events happen:
    *

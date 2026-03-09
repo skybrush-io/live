@@ -169,7 +169,7 @@ export function createBulkParameterUploadRequest(
  */
 export function createComponentCalibrationRequest(
   uavIds: ObjectIDs,
-  component: string,
+  component: string
 ): Request_UAVCALIB {
   const result: Request_UAVCALIB = {
     type: 'UAV-CALIB',
@@ -189,7 +189,7 @@ export function createComponentCalibrationRequest(
  */
 export function createComponentTestRequest(
   uavIds: ObjectIDs,
-  component: string,
+  component: string
 ): Request_UAVTEST {
   const result: Request_UAVTEST = {
     type: 'UAV-TEST',
