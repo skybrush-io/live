@@ -514,10 +514,19 @@ export const startCollectiveRTH = () => async (dispatch, getState) => {
 
   try {
     const schedule = await messageHub.execute.startCollectiveRTH();
+    const rthSegment = schedule.schedule.find(
+      (segment) => segment.type === 'rth'
+    );
     dispatch(setCollectiveRTHSchedule(schedule));
-    showSuccess(i18n.t('show.collectiveRTH.notification.success'), {
-      permanent: true,
-    });
+    showSuccess(
+      i18n.t('show.collectiveRTH.notification.success'),
+      rthSegment === undefined
+        ? undefined
+        : {
+            countdown: true,
+            timeout: rthSegment.startMs - Date.now(),
+          }
+    );
   } catch (error) {
     showError(
       error.message ?? i18n.t('show.collectiveRTH.notification.error'),
