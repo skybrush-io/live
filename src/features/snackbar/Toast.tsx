@@ -1,27 +1,44 @@
 import Alert, { type AlertColor } from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import LinearProgress from '@mui/material/LinearProgress';
 import { styled } from '@mui/material/styles';
 import { type ReactNode } from 'react';
 import toast from 'react-hot-toast';
 import { useDispatch } from 'react-redux';
 
 import Countdown from '~/components/Countdown';
+import { useCountdown } from '~/hooks/useCountdown';
 
 import { TOAST_WIDTH } from './constants';
 import { MessageSemantics, type Notification } from './types';
 
+const PROGRESS_BAR_HEIGHT = 4;
+
 const ToastNotificationButton = styled(Button)({
   border: '1px solid currentColor',
   color: 'inherit',
+  flexShrink: 0,
 });
 
 const StyledAlert = styled(Alert)({
   minWidth: TOAST_WIDTH,
   maxWidth: TOAST_WIDTH,
   width: TOAST_WIDTH,
+  position: 'relative',
+  // Slightly smaller paddings than the default, increased bottom padding
+  // to compensate for the progress bar's height (positioned by CSS).
+  padding: `4px 10px ${4 + PROGRESS_BAR_HEIGHT}px 10px`,
   '> .MuiAlert-message': {
     flex: 1,
+    '> .MuiLinearProgress-root': {
+      position: 'absolute',
+      bottom: 0,
+      left: 0,
+      right: 0,
+      height: PROGRESS_BAR_HEIGHT,
+      borderRadius: '0px 0px 4px 4px',
+    },
   },
 });
 
@@ -58,7 +75,6 @@ const ToastContent = ({ notification }: ToastContentProps) => {
           key={index}
           size='small'
           variant='outlined'
-          style={{ flexShrink: 0 }}
           onClick={() => dispatch(action as never)}
           {...rest}
         >
@@ -91,16 +107,27 @@ type ToastProps = ToastContentProps & {
 };
 
 const Toast = ({ toastId, notification }: ToastProps) => {
+  const { pause, progress, resume } = useCountdown(notification.timeout);
+  const effectiveProgress =
+    notification.timeout === undefined ? progress : 100 - progress;
+  const severity =
+    semanticsToSeverity[notification.semantics ?? MessageSemantics.DEFAULT];
+
   return (
     <StyledAlert
-      severity={
-        semanticsToSeverity[notification.semantics ?? MessageSemantics.DEFAULT]
-      }
+      severity={severity}
       onClose={() => {
         toast.dismiss(toastId);
       }}
+      onMouseEnter={pause}
+      onMouseLeave={resume}
     >
       <ToastContent notification={notification} />
+      <LinearProgress
+        value={effectiveProgress}
+        variant='determinate'
+        color={severity}
+      />
     </StyledAlert>
   );
 };
