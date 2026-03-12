@@ -12,6 +12,7 @@ export default function PathControlPanel({
   onResetPanelSettings,
   onLoadConfigClick,
   onSaveConfigClick,
+  onOpenPathGenerator,
   onFileChange,
   onAddDroneClick,
 }) {
@@ -168,6 +169,23 @@ export default function PathControlPanel({
         <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
           <button
             type="button"
+            onClick={onOpenPathGenerator}
+            style={{
+              flex: 1,
+              padding: '7px 8px',
+              borderRadius: 8,
+              border: '1px solid rgba(126, 200, 255, 0.36)',
+              background: 'rgba(22, 68, 110, 0.34)',
+              color: '#dcefff',
+              cursor: 'pointer',
+            }}
+          >
+            경로 생성하기
+          </button>
+        </div>
+        <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+          <button
+            type="button"
             onClick={onResetPanelSettings}
             style={{
               flex: 1,
@@ -198,6 +216,7 @@ PathControlPanel.propTypes = {
   onResetPanelSettings: PropTypes.func.isRequired,
   onLoadConfigClick: PropTypes.func.isRequired,
   onSaveConfigClick: PropTypes.func.isRequired,
+  onOpenPathGenerator: PropTypes.func.isRequired,
   onFileChange: PropTypes.func.isRequired,
   onAddDroneClick: PropTypes.func.isRequired,
 };

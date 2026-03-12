@@ -16,6 +16,7 @@ import SelectedTrajectories from './SelectedTrajectories';
 import DroneInfoPanel from './DroneInfoPanel';
 import PathControlPanel from './PathControlPanel';
 import AddDroneModal from './AddDroneModal';
+import PathGeneratorModal from './PathGeneratorModal';
 
 // eslint-disable-next-line no-unused-vars
 import AFrame from '~/aframe';
@@ -244,6 +245,7 @@ const ThreeDView = React.forwardRef((props, ref) => {
 
   // 드론 추가 모달
   const [addDroneModalOpen, setAddDroneModalOpen] = useState(false);
+  const [pathGeneratorModalOpen, setPathGeneratorModalOpen] = useState(false);
   const [pathProgress, setPathProgress] = useState(persistedPathProgress);
 
   useEffect(() => {
@@ -437,6 +439,26 @@ const ThreeDView = React.forwardRef((props, ref) => {
 
     window.addEventListener('drone-delete-request', onDroneDeleteRequest);
 
+    const onPathGeneratorResponse = (e) => {
+      const responseConfig = e?.detail;
+      if (!responseConfig || !Array.isArray(responseConfig.drones)) return;
+
+      const normalizedDrones = responseConfig.drones.map((d, index) => {
+        const normalized = normalizeDroneForConfigIO(d, index);
+        return {
+          ...normalized,
+          initialPos: normalized.pos.slice(),
+        };
+      });
+
+      setPathProgress(0);
+      setDroneConfig({ drones: normalizedDrones });
+      setSelectedDrone(null);
+      window.dispatchEvent(new CustomEvent('drone-deselected'));
+    };
+
+    window.addEventListener('path-generator-response', onPathGeneratorResponse);
+
     return () => {
       window.removeEventListener('drone-selected', onSelected);
       window.removeEventListener('drone-deselected', onDeselected);
@@ -444,6 +466,7 @@ const ThreeDView = React.forwardRef((props, ref) => {
       window.removeEventListener('drone-initial-pos-updated', onInitialPosUpdated);
       window.removeEventListener('drone-moved', onDroneMoved);
       window.removeEventListener('drone-delete-request', onDroneDeleteRequest);
+      window.removeEventListener('path-generator-response', onPathGeneratorResponse);
     };
   }, []);
 
@@ -784,6 +807,7 @@ const ThreeDView = React.forwardRef((props, ref) => {
         onResetPanelSettings={handleResetPanelSettings}
         onLoadConfigClick={handleLoadConfigClick}
         onSaveConfigClick={handleSaveConfigClick}
+        onOpenPathGenerator={() => setPathGeneratorModalOpen(true)}
         onFileChange={handleFileChange}
         onAddDroneClick={() => setAddDroneModalOpen(true)}
       />
@@ -796,6 +820,10 @@ const ThreeDView = React.forwardRef((props, ref) => {
             ? effectiveConfig.drones.map((d) => d.id)
             : []
         }
+      />
+      <PathGeneratorModal
+        open={pathGeneratorModalOpen}
+        onClose={() => setPathGeneratorModalOpen(false)}
       />
       <a-scene
         key={sceneId}
