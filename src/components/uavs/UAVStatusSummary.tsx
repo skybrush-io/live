@@ -1,22 +1,23 @@
 import Sum from '@mui/icons-material/Functions';
-import Box from '@mui/material/Box';
+import Box, { type BoxProps } from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import { createSelector } from '@reduxjs/toolkit';
 import clsx from 'clsx';
-import identity from 'lodash-es/identity';
-import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useContext } from 'react';
 import { connect } from 'react-redux';
 
 import { makeStyles } from '@skybrush/app-theme-mui';
 import { LazyTooltip, StatusLight } from '@skybrush/mui-components';
 
 import { Status } from '~/components/semantics';
+import { selectAllUAVs } from '~/features/selection/slice';
 import { showWarning } from '~/features/snackbar/actions';
 import {
   getSingleUAVStatusLevel,
   getUAVIdList,
   getUAVIdToStateMapping,
 } from '~/features/uavs/selectors';
+import type { RootState } from '~/store/reducers';
 import { createShallowSelector } from '~/utils/selectors';
 import { Workbench } from '~/workbench';
 
@@ -34,7 +35,9 @@ const getStatusSummaryInner = createSelector(
   getUAVIdToStateMapping,
   getUAVIdList,
   (byId, order) => {
-    const result = [0, 0, 0, 0, 0, 0];
+    const result: [number, number, number, number, number, number] = [
+      0, 0, 0, 0, 0, 0,
+    ];
 
     for (const uavId of order) {
       const uav = byId[uavId];
@@ -46,7 +49,6 @@ const getStatusSummaryInner = createSelector(
             result[4] += 1;
             break;
 
-          case Status.GONE:
           case Status.OFF:
             /* excluded from counts */
             break;
@@ -79,20 +81,24 @@ const getStatusSummaryInner = createSelector(
  * Wrapper of `getStatusSummaryInner()` to prevent a re-rendering when the
  * status summary result did not change.
  */
-const getStatusSummary = createShallowSelector(getStatusSummaryInner, identity);
+const getStatusSummary = createShallowSelector(
+  getStatusSummaryInner,
+  (result) => result
+);
 
 /* ************************************************************************ */
 
 const useStyles = makeStyles((theme) => ({
   root: {
     fontSize: '1rem',
+    cursor: 'pointer',
   },
 
   inner: {
     alignItems: 'center',
     display: 'flex',
     height: '100%',
-    marginRight: theme.spacing(-1.5),
+    marginRight: theme.spacing(-1),
     padding: theme.spacing(1),
   },
 
@@ -107,7 +113,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const statusOrder = [
+const statusOrder: Array<Status | null> = [
   Status.SUCCESS,
   Status.INFO,
   Status.WARNING,
@@ -116,69 +122,76 @@ const statusOrder = [
   null,
 ];
 
-const showUAVsList = (workbench) => {
-  if (!workbench) {
-    return;
-  }
+type UAVStatusSummaryProps = {
+  counts: number[];
+  selectAllUAVs: () => void;
+} & Omit<BoxProps, 'children'>;
 
-  if (!workbench.bringToFront('uavList')) {
-    showWarning('UAVs panel is not added to the workbench yet');
-  }
-};
-
-const UAVStatusSummary = ({ counts, workbench, ...rest }) => {
+const UAVStatusSummary = ({
+  counts,
+  selectAllUAVs,
+  ...rest
+}: UAVStatusSummaryProps) => {
   const classes = useStyles();
+  const workbench = useContext(Workbench);
 
   return (
     <LazyTooltip interactive content={<UAVStatusMiniList />}>
       <Box
         className={clsx(classes.root, 'wb-module')}
         onClick={() => {
-          showUAVsList(workbench);
+          if (!workbench.bringToFront('uavList')) {
+            showWarning('UAVs panel is not added to the workbench yet');
+          }
         }}
         {...rest}
       >
         <div className={classes.inner}>
-          {statusOrder.map((statusCode, index) => (
-            <React.Fragment key={statusCode}>
-              {statusCode ? (
-                <StatusLight
-                  inline
-                  status={counts[index] > 0 ? statusCode : Status.OFF}
-                />
-              ) : (
-                <Sum />
-              )}
-              <div
-                className={clsx(
-                  classes.counter,
-                  counts[index] <= 0 && classes.off
+          {statusOrder.map((statusCode, index) => {
+            const content = (
+              <React.Fragment key={statusCode?.toString() ?? 'total'}>
+                {statusCode !== null ? (
+                  <StatusLight
+                    inline
+                    status={counts[index] > 0 ? statusCode : Status.OFF}
+                  />
+                ) : (
+                  <Sum />
                 )}
-              >
-                {counts[index]}
-              </div>
-            </React.Fragment>
-          ))}
+                <div
+                  className={clsx(
+                    classes.counter,
+                    counts[index] <= 0 && classes.off
+                  )}
+                >
+                  {counts[index]}
+                </div>
+              </React.Fragment>
+            );
+
+            return statusCode === null ? (
+              <Button sx={{ pr: 1 }} onClick={() => selectAllUAVs()}>
+                {content}
+              </Button>
+            ) : (
+              content
+            );
+          })}
         </div>
       </Box>
     </LazyTooltip>
   );
 };
 
-UAVStatusSummary.propTypes = {
-  counts: PropTypes.arrayOf(PropTypes.number),
-  workbench: PropTypes.object,
-};
-
 const ConnectedUAVStatusSummary = connect(
   // mapStateToProps
-  (state) => ({
+  (state: RootState) => ({
     counts: getStatusSummary(state),
+  }),
+  // mapDispatchToProps
+  (dispatch) => ({
+    selectAllUAVs: () => dispatch(selectAllUAVs()),
   })
 )(UAVStatusSummary);
 
-export default () => (
-  <Workbench.Consumer>
-    {(workbench) => <ConnectedUAVStatusSummary workbench={workbench} />}
-  </Workbench.Consumer>
-);
+export default ConnectedUAVStatusSummary;
