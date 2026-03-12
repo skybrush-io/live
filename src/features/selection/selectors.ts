@@ -1,5 +1,12 @@
 import { createSelector } from '@reduxjs/toolkit';
+import {
+  areaIdToGlobalId,
+  GROSS_CONVEX_HULL_AREA_ID,
+  homePositionIdToGlobalId,
+} from '~/model/identifiers';
 
+import { getMissionMapping } from '~/features/mission/selectors/local';
+import { hasLoadedShowFile } from '~/features/show/selectors/core';
 import type { AppSelector } from '~/store/reducers';
 import { rejectNullish } from '~/utils/arrays';
 import {
@@ -20,6 +27,20 @@ import type { SelectionGroup } from './types';
  */
 export const getSelection: AppSelector<Identifier[]> = (state) =>
   state.selection.ids;
+
+export const getVirtualSelection: AppSelector<Identifier[]> = createSelector(
+  getSelection,
+  getMissionMapping,
+  hasLoadedShowFile,
+  (selection, mapping, hasLoadedShowFile) =>
+    hasLoadedShowFile &&
+    selection.includes(areaIdToGlobalId(GROSS_CONVEX_HULL_AREA_ID))
+      ? [
+          ...selection,
+          ...mapping.map((_, i) => String(i)).map(homePositionIdToGlobalId),
+        ]
+      : selection
+);
 
 const getSelectionGroups: AppSelector<Collection<SelectionGroup>> = (state) =>
   state.selection.groups;
