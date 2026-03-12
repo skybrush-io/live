@@ -7,6 +7,8 @@ import type {
   Request_OBJCMD,
   Request_PRMSET,
   Request_PRMSETMANY,
+  Request_UAVCALIB,
+  Request_UAVTEST,
 } from '@skybrush/flockwave-spec';
 
 import arrify from 'arrify';
@@ -156,4 +158,44 @@ export function createBulkParameterUploadRequest(
     ids: arrify(uavIds),
     parameters,
   };
+}
+
+/**
+ * Creates an UAV-CALIB (component calibration) message
+ *
+ * @param  uavIds  IDs of the UAVs to send the request to
+ * @param  component the component to calibrate
+ * @return the message
+ */
+export function createComponentCalibrationRequest(
+  uavIds: ObjectIDs,
+  component: string
+): Request_UAVCALIB {
+  const result: Request_UAVCALIB = {
+    type: 'UAV-CALIB',
+    ids: uavIds,
+    component,
+  };
+
+  return result;
+}
+
+/**
+ * Creates an UAV-TEST (component test) message
+ *
+ * @param  uavIds  IDs of the UAVs to send the request to
+ * @param  component the component to test
+ * @return the message
+ */
+export function createComponentTestRequest(
+  uavIds: ObjectIDs,
+  component: string
+): Request_UAVTEST {
+  const result: Request_UAVTEST = {
+    type: 'UAV-TEST',
+    ids: uavIds,
+    component,
+  };
+
+  return result;
 }

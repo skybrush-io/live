@@ -121,13 +121,13 @@ const UAVTestButton = ({
 
   const [lastExecutionState, execute] = useAsyncFn(async () => {
     lastExecutedUavIdRef.current = uavId;
-    // TODO(ntamas): use the proper UAV-TEST messages designated for this
-    await messageHub.sendCommandRequest(
-      {
-        uavId,
-        command: type === 'test' ? 'test' : 'calib',
-        args: [String(component)],
-      },
+    await (
+      type === 'calib'
+        ? messageHub.sendComponentCalibrationRequest
+        : messageHub.sendComponentTestRequest
+    ).call(
+      messageHub,
+      { uavId, component },
       { onProgress: (progress) => progressHandler(uavId, progress), timeout }
     );
     return true;
