@@ -131,6 +131,7 @@ const useStyles = makeStyles((theme) => ({
     paddingLeft: 0,
     paddingRight: 0,
     minWidth: 48,
+    textShadow: '0 1px 2px rgba(0, 0, 0, 0.65)' /* copied from .wb-module */,
 
     '&:hover': {
       boxShadow: theme.shadows[2],
