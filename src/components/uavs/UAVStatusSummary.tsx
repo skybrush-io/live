@@ -44,6 +44,22 @@ const getStatusSummaryInner = createSelector(
       if (uav) {
         const level = getSingleUAVStatusLevel(uav);
         switch (level) {
+          case Status.SUCCESS:
+            result[0] += 1;
+            break;
+
+          case Status.INFO:
+            result[1] += 1;
+            break;
+
+          case Status.WARNING:
+            result[2] += 1;
+            break;
+
+          case Status.MISSING:
+            result[3] += 1;
+            break;
+
           case Status.CRITICAL:
           case Status.ERROR:
             result[4] += 1;
@@ -53,20 +69,9 @@ const getStatusSummaryInner = createSelector(
             /* excluded from counts */
             break;
 
-          case Status.SUCCESS:
-            result[0] += 1;
-            break;
-
-          case Status.INFO:
-            result[1] += 1;
-            break;
-
-          case Status.MISSING:
-            result[3] += 1;
-            break;
-
           default:
-            result[2] += 1;
+            /* unknown status, excluded from counts */
+            break;
         }
       }
     }
