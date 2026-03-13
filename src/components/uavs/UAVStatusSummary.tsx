@@ -102,19 +102,39 @@ const useStyles = makeStyles((theme) => ({
   inner: {
     alignItems: 'center',
     display: 'flex',
+    gap: theme.spacing(1),
     height: '100%',
-    marginRight: theme.spacing(-1),
-    padding: theme.spacing(1),
+    padding: theme.spacing(0, 1),
   },
 
   counter: {
-    padding: theme.spacing(0, 1.5, 0, 0.5),
+    padding: theme.spacing(0, 0.5),
     userSelect: 'none',
     fontVariantNumeric: 'tabular-nums',
   },
 
   off: {
     opacity: 0.5,
+  },
+
+  statusLight: {
+    display: 'flex',
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+
+  button: {
+    display: 'flex',
+    flexDirection: 'row',
+    fontSize: '1rem',
+    fontWeight: 'normal',
+    paddingLeft: 0,
+    paddingRight: 0,
+    minWidth: 48,
+
+    '&:hover': {
+      boxShadow: theme.shadows[2],
+    },
   },
 }));
 
@@ -175,11 +195,14 @@ const UAVStatusSummary = ({
             );
 
             return statusCode === null ? (
-              <Button sx={{ pr: 1 }} onClick={() => selectAllUAVs()}>
+              <Button
+                className={classes.button}
+                onClick={() => selectAllUAVs()}
+              >
                 {content}
               </Button>
             ) : (
-              content
+              <div className={classes.statusLight}>{content}</div>
             );
           })}
         </div>
