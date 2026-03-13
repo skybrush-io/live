@@ -41,7 +41,10 @@ import {
   getMissionItemsWithCoordinatesInOrder,
   getSelectedMissionIndicesForTrajectoryDisplay,
 } from '~/features/mission/selectors';
-import { getSelection } from '~/features/selection/selectors';
+import {
+  getSelection,
+  getVirtualSelection,
+} from '~/features/selection/selectors';
 import {
   getConvexHullOfShowInWorldCoordinates,
   getOutdoorShowOrientation,
@@ -638,6 +641,7 @@ const MissionInfoVectorSource = ({
           ? formatMissionId(homePositions.length - 1).length *
             TAKEOFF_LANDING_POSITION_CHARACTER_WIDTH
           : 0,
+        selection,
       }),
       landingPositionPoints(landingPositions, {
         minimumDistanceBetweenPositions: minimumDistanceBetweenLandingPositions,
@@ -752,7 +756,8 @@ export const MissionInfoLayer = connect(
       state,
       MissionItemType.RETURN_TO_HOME
     ),
-    selection: getSelection(state),
+    // selection: getSelection(state),
+    selection: getVirtualSelection(state),
     uavIdsForTrajectories: layer?.parameters?.showTrajectoriesOfSelection
       ? getSelectedUAVIdsForTrajectoryDisplay(state)
       : undefined,

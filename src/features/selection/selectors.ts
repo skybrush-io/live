@@ -1,6 +1,12 @@
 import { createSelector } from '@reduxjs/toolkit';
+import {
+  areaIdToGlobalId,
+  GROSS_CONVEX_HULL_AREA_ID,
+  homePositionIdToGlobalId,
+} from '~/model/identifiers';
 
-import { type AppSelector } from '~/store/reducers';
+// import { getMissionMapping } from '~/features/mission/selectors';
+import { type RootState, type AppSelector } from '~/store/reducers';
 import { rejectNullish } from '~/utils/arrays';
 import { type Identifier } from '~/utils/collections';
 
@@ -13,6 +19,19 @@ import { type Identifier } from '~/utils/collections';
  */
 export const getSelection: AppSelector<Identifier[]> = (state) =>
   state.selection.ids;
+
+export const getVirtualSelection: AppSelector<Identifier[]> = createSelector(
+  getSelection,
+  // getMissionMapping, // TODO: This causes a dependency cycle
+  (state: RootState) => state.mission.mapping,
+  (selection, mapping) =>
+    selection.includes(areaIdToGlobalId(GROSS_CONVEX_HULL_AREA_ID))
+      ? [
+          ...selection,
+          ...mapping.map((_, i) => String(i)).map(homePositionIdToGlobalId),
+        ]
+      : selection
+);
 
 /**
  * Selector factory that creates a selector that returns true if and only if a
