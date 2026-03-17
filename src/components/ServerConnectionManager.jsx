@@ -48,6 +48,7 @@ import {
 import { Protocol } from '~/features/servers/types';
 import {
   clearStartTimeAndMethod,
+  setCollectiveRTHSchedule,
   synchronizeShowSettings,
 } from '~/features/show/slice';
 import { showError, showNotification } from '~/features/snackbar/actions';
@@ -484,6 +485,10 @@ class ServerConnectionManagerPresentation extends React.Component {
  */
 async function executeTasksAfterConnection(dispatch, getState) {
   let response;
+
+  // Clear the collective RTH schedule if it exists. We can not be sure
+  // it is synchronized with the state of server we connected to.
+  dispatch(setCollectiveRTHSchedule(undefined));
 
   try {
     const {
