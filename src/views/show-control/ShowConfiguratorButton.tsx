@@ -3,15 +3,11 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { connect, useSelector } from 'react-redux';
+import { connect } from 'react-redux';
 
-import {
-  MiniList,
-  MiniListItem,
-  StatusLight,
-  Tooltip,
-} from '@skybrush/mui-components';
+import { StatusLight, Tooltip } from '@skybrush/mui-components';
 
+import PrerequisiteList from '~/components/PrerequisiteList';
 import { Status } from '~/components/semantics';
 import { showDialog as showCollectiveRTHDialog } from '~/features/collective-rth/slice';
 import {
@@ -32,18 +28,17 @@ import {
 } from '~/features/show/selectors';
 import { getSetupStageStatuses } from '~/features/show/stages';
 import { showError } from '~/features/snackbar/actions';
-import { tt, type PreparedI18nKey } from '~/i18n';
+import {
+  useConstPrerequisites,
+  type Prerequisite,
+} from '~/hooks/useConstPrerequisites';
+import { tt } from '~/i18n';
 import HomeCircleOutlined from '~/icons/HomeCircleOutlined';
 import Pro from '~/icons/Pro';
-import type { AppSelector, RootState } from '~/store/reducers';
+import type { RootState } from '~/store/reducers';
 import { type Nullable } from '~/utils/types';
 
-const PREREQUISITES: ReadonlyArray<
-  Readonly<{
-    selector: AppSelector<boolean>;
-    message: PreparedI18nKey;
-  }>
-> = Object.freeze([
+const PREREQUISITES: readonly Prerequisite[] = Object.freeze([
   {
     selector: hasLoadedShowFile,
     message: tt('show.showConfigurator.prerequisites.loaded'),
@@ -100,16 +95,8 @@ const ShowConfiguratorButton = (props: Props) => {
   const [tooltipTriggerTarget, setTooltipTriggerTarget] =
     useState<Nullable<HTMLDivElement>>();
 
-  const evaluatedPrerequisites = PREREQUISITES.map(({ selector, message }) => ({
-    // NOTE: The `PREREQUISITES` list being readonly and frozen ensures that the
-    //       `useSelector` hook will always be called the same number of times.
-    result: useSelector(selector),
-    message: message(t),
-  }));
-
-  const prerequisitesFulfilled = evaluatedPrerequisites.every(
-    ({ result }) => result
-  );
+  const { prerequisites, prerequisitesFulfilled } =
+    useConstPrerequisites(PREREQUISITES);
 
   const openWithShow = useCallback(() => {
     if (show) {
@@ -118,22 +105,6 @@ const ShowConfiguratorButton = (props: Props) => {
       showError(t('show.showConfigurator.noShowData'));
     }
   }, [show, showDialogAndClearUndoHistory, t]);
-
-  const tooltipContent = (
-    <MiniList>
-      {evaluatedPrerequisites.map(({ result, message }, idx) => (
-        <MiniListItem
-          key={idx}
-          iconPreset={
-            result
-              ? 'success'
-              : 'disconnected' /* TODO: use 'error' when we migrated to mui */
-          }
-          primaryText={message}
-        />
-      ))}
-    </MiniList>
-  );
 
   const tooltipVisible = status !== Status.OFF && !prerequisitesFulfilled;
   const disabled = status === Status.OFF || !prerequisitesFulfilled;
@@ -145,7 +116,7 @@ const ShowConfiguratorButton = (props: Props) => {
         <ListItemText
           primary={
             <Tooltip
-              content={tooltipContent}
+              content={<PrerequisiteList prerequisites={prerequisites} />}
               disabled={!tooltipVisible}
               maxWidth={500}
               placement='left'
