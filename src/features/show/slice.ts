@@ -376,7 +376,10 @@ const { actions, reducer } = createSlice({
       state.preflight.takeoffAreaApprovedAt = undefined;
     }),
 
-    setCollectiveRTHSchedule(state, action: PayloadAction<Schedule>) {
+    setCollectiveRTHSchedule(
+      state,
+      action: PayloadAction<Schedule | undefined>
+    ) {
       state.collectiveRTHSchedule = action.payload;
     },
 

@@ -48,6 +48,7 @@ import {
 import { Protocol } from '~/features/servers/types';
 import {
   clearStartTimeAndMethod,
+  setCollectiveRTHSchedule,
   synchronizeShowSettings,
 } from '~/features/show/slice';
 import { showError, showNotification } from '~/features/snackbar/actions';
@@ -743,6 +744,10 @@ const ServerConnectionManager = connect(
         semantics: 'info',
       });
       dispatch(setCurrentServerConnectionState(ConnectionState.CONNECTED));
+
+      // Clear the collective RTH schedule if it exists. We can not be sure
+      // it is synchronized with the state of server we connected to.
+      dispatch(setCollectiveRTHSchedule(undefined));
 
       // Execute all the tasks that should be executed after establishing a
       // connection to the server
