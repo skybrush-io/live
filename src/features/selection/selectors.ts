@@ -3,6 +3,7 @@ import { createSelector } from '@reduxjs/toolkit';
 import type { AppSelector } from '~/store/reducers';
 import { rejectNullish } from '~/utils/arrays';
 import {
+  getItemById,
   selectOrdered,
   type Collection,
   type Identifier,
@@ -22,6 +23,11 @@ export const getSelection: AppSelector<Identifier[]> = (state) =>
 
 const getSelectionGroups: AppSelector<Collection<SelectionGroup>> = (state) =>
   state.selection.groups;
+
+export const getSelectionGroupById =
+  (id: Identifier): AppSelector<SelectionGroup | undefined> =>
+  (state) =>
+    getItemById(getSelectionGroups(state), id);
 
 /**
  * Selector that returns all selection groups ordered by ID.

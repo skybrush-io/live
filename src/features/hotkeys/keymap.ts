@@ -163,6 +163,13 @@ const sendCommandKeyMap: KeyMap = {
 };
 
 const uavIdOverlayKeyMap: KeyMap = {
+  TYPE_G: {
+    name: 'Prepend G to the pending UAV ID for group selection',
+    sequence: 'g',
+    group: HotkeyGroup.HIDDEN,
+    scopes: [HotkeyScope.GLOBAL],
+  },
+
   TYPE_S: {
     name: 'Prepend S to the pending UAV ID',
     sequence: 's',

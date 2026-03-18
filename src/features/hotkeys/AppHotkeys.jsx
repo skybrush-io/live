@@ -176,6 +176,7 @@ export default connect(
         TYPE_7: () => appendToPendingUAVId(7),
         TYPE_8: () => appendToPendingUAVId(8),
         TYPE_9: () => appendToPendingUAVId(9),
+        TYPE_G: () => appendToPendingUAVId('g'),
         TYPE_S: () => appendToPendingUAVId('s'),
         TYPE_MINUS: () => appendToPendingUAVId('-'),
         ...showConfiguratorHandlers,
