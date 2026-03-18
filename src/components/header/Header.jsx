@@ -8,6 +8,7 @@ import Shapeshifter from 'react-shapeshifter';
 import UAVStatusSummary from '~/components/uavs/UAVStatusSummary';
 import PerspectiveBar from '~/features/perspectives/PerspectiveBar';
 import RTKStatusHeaderButton from '~/features/rtk/RTKStatusHeaderButton';
+import SelectionGroupMenuButton from '~/features/selection/SelectionGroupMenuButton';
 import { BROADCAST_MODE_TIMEOUT_LENGTH } from '~/features/settings/constants';
 import { toggleSidebar } from '~/features/sidebar/actions';
 import { isSidebarOpen } from '~/features/sidebar/selectors';
@@ -65,7 +66,15 @@ const componentRegistry = {
   ),
   'session-expiry-box': SessionExpiryBox,
   'toolbox-button': () => hasFeature('toolboxMenu') && <ToolboxButton />,
-  'uav-status-summary': UAVStatusSummary,
+  'uav-status-summary': () => (
+    <>
+      <Box alignSelf='center'>
+        <SelectionGroupMenuButton />
+      </Box>
+      <hr />
+      <UAVStatusSummary />
+    </>
+  ),
   'velocity-summary-header-button': VelocitySummaryHeaderButton,
   'weather-header-button': WeatherHeaderButton,
 };

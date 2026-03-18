@@ -11,13 +11,13 @@ import isError from 'lodash-es/isError';
 import isFunction from 'lodash-es/isFunction';
 import createDeferred from 'p-defer';
 import createDebounce from 'redux-debounce';
-import { createPromise } from 'redux-promise-middleware';
-import createSagaMiddleware from 'redux-saga';
-import { persistStore, persistReducer } from 'redux-persist';
+import { persistReducer, persistStore } from 'redux-persist';
 import {
   createBlacklistFilter,
   createFilter,
 } from 'redux-persist-transform-filter';
+import { createPromise } from 'redux-promise-middleware';
+import createSagaMiddleware from 'redux-saga';
 
 import { updateAveragingByIds } from '~/features/measurement/slice';
 import { shouldPreventSleepMode } from '~/features/power-saving/selectors';
@@ -63,6 +63,7 @@ const persistConfig = {
     'logDownload',
     'messages',
     'rtk',
+    'selection',
     'servers',
     'session',
     'snackbar',

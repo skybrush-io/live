@@ -257,6 +257,9 @@
       "rotation": "Rotation",
       "zoom": "Zoom"
     },
+    "label": {
+      "groupWithId": "Group {{id}}"
+    },
     "status": {
       "failed": "failed",
       "inProgress": "in progress",
@@ -459,14 +462,14 @@
   "proControlButtonGroup": {
     "collectiveRTH": "Collective RTH",
     "collectiveRTHPanelNotFound": "The Collective RTH panel was not found. Please try to open it manually from the sidebar.",
-    "resume": "Resume",
-    "suspend": "Suspend",
     "prerequisites": {
       "collectiveRTHNotTriggered": "Collective RTH has not been triggered yet",
       "hasCollectiveRTHPlan": "The show contains a collective RTH plan",
       "proFeaturesEnabled": "Pro features are enabled on the server",
       "supportsSuspendResumeCRTH": "The server supports the suspend, resume, and collective RTH operations"
-    }
+    },
+    "resume": "Resume",
+    "suspend": "Suspend"
   },
   "recalculateMappingButton": {
     "findOptimalMapping": "Find optimal mapping",
@@ -583,6 +586,15 @@
         "title": "Waiting to start ({{remainingSeconds}}s)"
       }
     }
+  },
+  "selectionGroupMenuButton": {
+    "action": {
+      "save": "Save selection"
+    },
+    "header": {
+      "groups": "Groups"
+    },
+    "tooltip": "Selection groups"
   },
   "serverConnectionStatus": {
     "clockSkew": "Clock skew",

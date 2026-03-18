@@ -7,10 +7,10 @@ import sortedIndex from 'lodash-es/sortedIndex';
 import sortedIndexBy from 'lodash-es/sortedIndexBy';
 import { orderBy } from 'natural-orderby';
 
+import isEmpty from 'lodash-es/isEmpty';
 import { rejectNullish } from './arrays';
 import { chooseUniqueIdFromName } from './naming';
 import { EMPTY_ARRAY, EMPTY_OBJECT } from './redux';
-import isEmpty from 'lodash-es/isEmpty';
 
 export type Identifier = string;
 export type ItemLike = { id: Identifier };
@@ -560,4 +560,30 @@ export const ensureNaturalSortOrder = <T extends ItemLike>(
   collection: Collection<T>
 ): void => {
   collection.order = orderBy(collection.order);
+};
+
+/**
+ * Returns the item with the given ID from the collection, or `undefined` if
+ * no item with that ID is found.
+ */
+export const getItemById = <T extends ItemLike>(
+  collection: Collection<T>,
+  id: Identifier
+): T | undefined => {
+  return collection.byId[id];
+};
+
+/**
+ * Returns the first unused numeric ID that doesn't already exist in the collection.
+ */
+export const firstUnusedNumericId = (
+  { byId }: Collection<ItemLike>,
+  start = 1
+): Identifier => {
+  for (let i = start; ; i++) {
+    const id = i.toString();
+    if (!(id in byId)) {
+      return id;
+    }
+  }
 };
