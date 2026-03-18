@@ -64,5 +64,4 @@ assets/shows/
 etc/dev/
 
 # AI
-.plan
-.prompt
+ai/

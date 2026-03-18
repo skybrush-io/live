@@ -16,8 +16,8 @@ export const toggleDeveloperMode =
   (dispatch: AppDispatch, getState: () => RootState): void => {
     dispatch(setDeveloperMode(!isDeveloperModeEnabled(getState())));
     if (isDeveloperModeEnabled(getState())) {
-      dispatch(showNotification('Developer mode is enabled') as any);
+      showNotification('Developer mode is enabled');
     } else {
-      dispatch(showNotification('Developer mode is disabled') as any);
+      showNotification('Developer mode is disabled');
     }
   };

@@ -1,7 +1,7 @@
 import copy from 'copy-to-clipboard';
 import isEqual from 'lodash-es/isEqual';
-import { showNotification } from '~/features/snackbar/actions';
 import { MessageSemantics } from '~/features/snackbar/types';
+import { showError, showNotification } from '~/features/snackbar/actions';
 import messageHub from '~/message-hub';
 
 import {
@@ -14,21 +14,16 @@ import {
   setAntennaPositionFormat,
 } from './slice';
 
-export const copyAntennaPositionToClipboard = () => (dispatch, getState) => {
+export const copyAntennaPositionToClipboard = () => (_dispatch, getState) => {
   copy(getFormattedAntennaPosition(getState()));
-  dispatch(showNotification('Coordinates copied to clipboard.'));
+  showNotification('Coordinates copied to clipboard.');
 };
 
 export const startNewSurveyOnServer = (settings) => async (dispatch) => {
   try {
     await messageHub.execute.startRTKSurvey(settings);
   } catch {
-    dispatch(
-      showNotification({
-        message: 'Failed to start RTK survey on the server.',
-        semantics: MessageSemantics.ERROR,
-      })
-    );
+    showError('Failed to start RTK survey on the server.');
     return;
   }
 
@@ -52,21 +47,17 @@ export const useSavedCoordinateForPreset =
         accuracy: savedCoordinate.accuracy,
       });
 
-      dispatch(
-        showNotification({
-          message: `Using saved coordinate for preset ${presetId}`,
-          semantics: MessageSemantics.SUCCESS,
-        })
-      );
+      showNotification({
+        message: `Using saved coordinate for preset ${presetId}`,
+        semantics: MessageSemantics.SUCCESS,
+      });
     } catch (error) {
       console.warn('Failed to set saved coordinate:', error);
 
-      dispatch(
-        showNotification({
-          message: 'Failed to use saved coordinate.',
-          semantics: MessageSemantics.ERROR,
-        })
-      );
+      showNotification({
+        message: 'Failed to use saved coordinate.',
+        semantics: MessageSemantics.ERROR,
+      });
     }
   };
 
@@ -76,12 +67,10 @@ export const saveCurrentCoordinateForPreset =
     const { antenna, survey } = state.rtk.stats;
 
     if (!antenna.position || !antenna.positionECEF || !survey.accuracy) {
-      dispatch(
-        showNotification({
-          message: 'No valid coordinate data available to save.',
-          semantics: MessageSemantics.ERROR,
-        })
-      );
+      showNotification({
+        message: 'No valid coordinate data available to save.',
+        semantics: MessageSemantics.ERROR,
+      });
       return;
     }
 
@@ -120,10 +109,8 @@ export const saveCurrentCoordinateForPreset =
       console.warn('Failed to fetch RTK presets:', error);
     }
 
-    dispatch(
-      showNotification({
-        message: `Coordinate saved for preset ${presetName}`,
-        semantics: MessageSemantics.SUCCESS,
-      })
-    );
+    showNotification({
+      message: `Coordinate saved for preset ${presetName}`,
+      semantics: MessageSemantics.SUCCESS,
+    });
   };

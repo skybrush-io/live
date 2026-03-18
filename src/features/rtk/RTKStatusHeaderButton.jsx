@@ -74,10 +74,7 @@ const RTKStatusHeaderButton = ({
         }
         secondaryLabel={
           surveyStatus.supported && typeof surveyStatus.accuracy === 'number'
-            ? formatSurveyAccuracy(surveyStatus.accuracy, {
-                max: 9,
-                short: true,
-              })
+            ? formatSurveyAccuracy(surveyStatus.accuracy, { max: 9 })
             : null
         }
         style={buttonStyle}

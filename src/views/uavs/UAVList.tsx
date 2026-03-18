@@ -29,7 +29,6 @@ import FadeAndSlide from '~/components/transitions/FadeAndSlide';
 import DroneAvatar from '~/components/uavs/DroneAvatar';
 import DronePlaceholder from '~/components/uavs/DronePlaceholder';
 import { useKeyboardNavigation } from '~/features/hotkeys/hooks';
-import { setSelection } from '~/features/map/selection';
 import {
   getIndexOfMappingSlotBeingEdited,
   isMappingEditable,
@@ -38,12 +37,13 @@ import {
   adjustMissionMapping,
   startMappingEditorSessionAtSlot,
 } from '~/features/mission/slice';
+import { getSelection } from '~/features/selection/selectors';
+import { setSelection } from '~/features/selection/slice';
 import {
   getUAVListLayout,
   isShowingMissionIds,
 } from '~/features/settings/selectors';
 import { UAVListLayout } from '~/features/settings/types';
-import { getSelection } from '~/selectors/selection';
 import type { AppDispatch, RootState } from '~/store/reducers';
 import { formatMissionId } from '~/utils/formatting';
 import {

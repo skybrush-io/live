@@ -1,11 +1,11 @@
+import { createSelector } from '@reduxjs/toolkit';
+import turfContains from '@turf/boolean-contains';
+import * as TurfHelpers from '@turf/helpers';
 import { produce } from 'immer';
 import isNil from 'lodash-es/isNil';
 import max from 'lodash-es/max';
 import range from 'lodash-es/range';
 import unary from 'lodash-es/unary';
-import { createSelector } from '@reduxjs/toolkit';
-import turfContains from '@turf/boolean-contains';
-import * as TurfHelpers from '@turf/helpers';
 
 import {
   getFeaturesById,
@@ -13,6 +13,7 @@ import {
 } from '~/features/map-features/selectors';
 import { type FeatureWithProperties } from '~/features/map-features/types';
 import { GeofenceAction, isValidGeofenceAction } from '~/features/safety/model';
+import { selectionForSubset } from '~/features/selection/selectors';
 import {
   type Altitude,
   AltitudeReference,
@@ -33,7 +34,6 @@ import {
   MissionType,
 } from '~/model/missions';
 import type UAV from '~/model/uav';
-import { selectionForSubset } from '~/selectors/selection';
 import { type AppSelector } from '~/store/reducers';
 import { rejectNullish } from '~/utils/arrays';
 import {

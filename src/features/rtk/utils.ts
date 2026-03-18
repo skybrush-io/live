@@ -1,5 +1,7 @@
 import isEqual from 'lodash-es/isEqual';
 
+import { formatDistance } from '~/utils/formatting';
+
 import type { RTKSavedCoordinate, RTKStatistics } from './types';
 
 const descriptions: Record<string, string> = {
@@ -110,17 +112,16 @@ export function describeMessageType(type: string): string {
   );
 }
 
-export function formatSurveyAccuracy(
-  value: number,
-  { max = 20, short = false } = {}
-): string {
-  return value > max
-    ? `> ${max}m`
-    : value >= 1
-      ? value.toFixed(2) + 'm'
-      : value >= 0.1
-        ? (value * 100).toFixed(short ? 0 : 1) + 'cm'
-        : (value * 100).toFixed(1) + 'cm';
+export function formatSurveyAccuracy(value: number, { max = 20 } = {}): string {
+  if (value > max) {
+    return `> ${max}m`;
+  }
+  if (value > 1) {
+    const ceiled = Math.ceil(value * 100) / 100;
+    return formatDistance(ceiled, 2);
+  }
+  const ceiled = Math.ceil(value * 1000) / 1000;
+  return formatDistance(ceiled, 1);
 }
 
 /**
