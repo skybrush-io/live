@@ -11,7 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Support for keeping the original light configuration when adapting the show in
   the show adaptation dialog.
+  
 - Added a new dialog for planning collective RTH trajectories.
+
 - Added a pro control group to the Control panel with show suspend and resume actions.
 
 - It is now possible to set a UAV ID for parameters in the parameter upload dialog.
@@ -22,9 +24,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add takeoff method selection to the show adaptation dialog.
 
+- The sum icon in the UAV status header selects all UAVs when clicked.
+
 ### Changed
 
 - Smaller headings in the Field Notes panel.
+
+- New notification UI.
 
 ### Fixed
 
