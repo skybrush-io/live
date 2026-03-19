@@ -459,14 +459,14 @@
   "proControlButtonGroup": {
     "collectiveRTH": "Collective RTH",
     "collectiveRTHPanelNotFound": "The Collective RTH panel was not found. Please try to open it manually from the sidebar.",
-    "resume": "Resume",
-    "suspend": "Suspend",
     "prerequisites": {
       "collectiveRTHNotTriggered": "Collective RTH has not been triggered yet",
       "hasCollectiveRTHPlan": "The show contains a collective RTH plan",
       "proFeaturesEnabled": "Pro features are enabled on the server",
       "supportsSuspendResumeCRTH": "The server supports the suspend, resume, and collective RTH operations"
-    }
+    },
+    "resume": "Resume",
+    "suspend": "Suspend"
   },
   "recalculateMappingButton": {
     "findOptimalMapping": "Find optimal mapping",
