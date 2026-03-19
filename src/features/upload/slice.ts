@@ -59,7 +59,7 @@ export type UploadSliceState = {
   // is updated in features/upload/utils.js
 
   /** Errors corresponding to the individual UAVs in the current upload job */
-  errors: Record<UAV['id'], unknown>;
+  errors: Record<UAV['id'], string>;
 
   /** Progress information corresponding to the individual UAVs in the
    * current upload job.

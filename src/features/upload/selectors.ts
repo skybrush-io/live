@@ -237,7 +237,7 @@ export const getObjectIdsCompatibleWithSelectedJobInUploadDialog = (
  */
 export const getUploadErrorMessageMapping = (
   state: RootState
-): Record<UAV['id'], unknown> => state.upload.errors;
+): Record<UAV['id'], string> => state.upload.errors;
 
 /**
  * Returns an object that counts how many drones are currently in the
