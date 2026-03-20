@@ -1,0 +1,200 @@
+import { useEffect } from 'react';
+
+import { normalizeDroneForConfigIO } from '../utils/threeDViewUtils';
+
+export default function useThreeDViewDroneEvents({
+  droneConfigRef,
+  setSelectedDrone,
+  setDroneConfig,
+  setPathProgress,
+  collectConfigFromScene,
+}) {
+  useEffect(() => {
+    const applyGeneratedConfigToScene = (drones) => {
+      if (typeof window === 'undefined' || !Array.isArray(drones) || !drones.length) return;
+
+      // React 렌더로 엔티티 속성이 실제 DOM에 반영된 다음 브리지 이벤트를 보낸다.
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          drones.forEach((d) => {
+            if (!d?.id) return;
+
+            const pos = Array.isArray(d.initialPos) && d.initialPos.length >= 3 ? d.initialPos : d.pos;
+            if (Array.isArray(pos) && pos.length >= 3) {
+              const x = Number(pos[0]);
+              const y = Number(pos[1]);
+              const z = Number(pos[2]);
+              if (Number.isFinite(x) && Number.isFinite(y) && Number.isFinite(z)) {
+                window.dispatchEvent(
+                  new CustomEvent('drone-move-request', {
+                    detail: { id: d.id, x, y, z },
+                  })
+                );
+              }
+            }
+
+            if (Array.isArray(d.path) && d.path.length) {
+              window.dispatchEvent(
+                new CustomEvent('drone-path-updated', {
+                  detail: { id: d.id, path: d.path },
+                })
+              );
+            }
+          });
+        });
+      });
+    };
+
+    const onSelected = (e) => {
+      const base = e.detail ?? null;
+      if (!base) {
+        setSelectedDrone(null);
+        return;
+      }
+
+      const currentConfig = droneConfigRef.current;
+      if (currentConfig && Array.isArray(currentConfig.drones)) {
+        const found = currentConfig.drones.find((d) => d.id === base.id);
+        if (found) {
+          base.path = found.path || [];
+          if (!base.initialPosition && Array.isArray(found.initialPos) && found.initialPos.length >= 3) {
+            base.initialPosition = {
+              x: Number(found.initialPos[0]) || 0,
+              y: Number(found.initialPos[1]) || 0,
+              z: Number(found.initialPos[2]) || 0,
+            };
+          }
+        }
+      }
+
+      setSelectedDrone(base);
+    };
+
+    const onDeselected = () => {
+      setSelectedDrone(null);
+    };
+
+    const onPathUpdated = (e) => {
+      const { id, path } = e.detail || {};
+      if (!id || !Array.isArray(path)) return;
+
+      setDroneConfig((prev) => {
+        const base =
+          prev && Array.isArray(prev.drones) && prev.drones.length
+            ? prev
+            : collectConfigFromScene();
+
+        if (!base || !Array.isArray(base.drones)) return base;
+
+        const drones = base.drones.map((d) =>
+          d.id === id ? { ...d, path: path.slice() } : d
+        );
+        return { ...base, drones };
+      });
+    };
+
+    const onInitialPosUpdated = (e) => {
+      const { id, x, y, z } = e.detail || {};
+      if (!id) return;
+      const nx = Number(x);
+      const ny = Number(y);
+      const nz = Number(z);
+      if (!Number.isFinite(nx) || !Number.isFinite(ny) || !Number.isFinite(nz)) return;
+
+      setDroneConfig((prev) => {
+        const base =
+          prev && Array.isArray(prev.drones) && prev.drones.length
+            ? prev
+            : collectConfigFromScene();
+
+        if (!base || !Array.isArray(base.drones)) return base;
+        const drones = base.drones.map((d) =>
+          d.id === id ? { ...d, initialPos: [nx, ny, nz], pos: Array.isArray(d.pos) ? d.pos : [0, 1, 1] } : d
+        );
+        return { ...base, drones };
+      });
+
+      setSelectedDrone((prev) => {
+        if (!prev || prev.id !== id) return prev;
+        return {
+          ...prev,
+          initialPosition: { x: nx, y: ny, z: nz },
+        };
+      });
+    };
+
+    const onDroneMoved = (e) => {
+      const { id, x, y, z } = e.detail || {};
+      if (!id) return;
+
+      const nx = Number(x);
+      const ny = Number(y);
+      const nz = Number(z);
+      if (!Number.isFinite(nx) || !Number.isFinite(ny) || !Number.isFinite(nz)) return;
+
+      setSelectedDrone((prev) => {
+        if (!prev || prev.id !== id) return prev;
+        return {
+          ...prev,
+          currentPosition: { x: nx, y: ny, z: nz },
+        };
+      });
+    };
+
+    const onDroneDeleteRequest = (e) => {
+      const { id } = e.detail || {};
+      if (!id) return;
+
+      setDroneConfig((prev) => {
+        const base =
+          prev && Array.isArray(prev.drones) && prev.drones.length
+            ? prev
+            : collectConfigFromScene();
+
+        if (!base || !Array.isArray(base.drones)) return base;
+
+        const drones = base.drones.filter((d) => d.id !== id);
+        return { ...base, drones };
+      });
+
+      setSelectedDrone((prev) => (prev && prev.id === id ? null : prev));
+    };
+
+    const onPathGeneratorResponse = (e) => {
+      const responseConfig = e?.detail;
+      if (!responseConfig || !Array.isArray(responseConfig.drones)) return;
+
+      const normalizedDrones = responseConfig.drones.map((d, index) => {
+        const normalized = normalizeDroneForConfigIO(d, index);
+        return {
+          ...normalized,
+          initialPos: normalized.pos.slice(),
+        };
+      });
+
+      setPathProgress(0);
+      setDroneConfig({ drones: normalizedDrones });
+      setSelectedDrone(null);
+      window.dispatchEvent(new CustomEvent('drone-deselected'));
+      applyGeneratedConfigToScene(normalizedDrones);
+    };
+
+    window.addEventListener('drone-selected', onSelected);
+    window.addEventListener('drone-deselected', onDeselected);
+    window.addEventListener('drone-path-updated', onPathUpdated);
+    window.addEventListener('drone-initial-pos-updated', onInitialPosUpdated);
+    window.addEventListener('drone-moved', onDroneMoved);
+    window.addEventListener('drone-delete-request', onDroneDeleteRequest);
+    window.addEventListener('path-generator-response', onPathGeneratorResponse);
+
+    return () => {
+      window.removeEventListener('drone-selected', onSelected);
+      window.removeEventListener('drone-deselected', onDeselected);
+      window.removeEventListener('drone-path-updated', onPathUpdated);
+      window.removeEventListener('drone-initial-pos-updated', onInitialPosUpdated);
+      window.removeEventListener('drone-moved', onDroneMoved);
+      window.removeEventListener('drone-delete-request', onDroneDeleteRequest);
+      window.removeEventListener('path-generator-response', onPathGeneratorResponse);
+    };
+  }, [collectConfigFromScene, droneConfigRef, setDroneConfig, setPathProgress, setSelectedDrone]);
+}

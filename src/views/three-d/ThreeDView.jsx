@@ -3,7 +3,7 @@
  */
 
 import PropTypes from 'prop-types';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { connect } from 'react-redux';
 
 import CoordinateSystemAxes from './CoordinateSystemAxes';
@@ -17,6 +17,16 @@ import DroneInfoPanel from './DroneInfoPanel';
 import PathControlPanel from './PathControlPanel';
 import AddDroneModal from './AddDroneModal';
 import PathGeneratorModal from './PathGeneratorModal';
+import useThreeDViewDroneEvents from './hooks/useThreeDViewDroneEvents';
+import {
+  buildSeekPathWithInitial,
+  collectConfigFromScene as collectConfigFromSceneUtil,
+  getEffectiveScenery as getEffectiveSceneryUtil,
+  getPathTotalDurationMs,
+  normalizeDroneForConfigIO,
+  parsePositionLike,
+  slicePathByElapsedMs,
+} from './utils/threeDViewUtils';
 
 // eslint-disable-next-line no-unused-vars
 import AFrame from '~/aframe';
@@ -31,178 +41,7 @@ import { isShowIndoor } from '~/features/show/selectors';
 import { isMapCoordinateSystemLeftHanded } from '~/selectors/map';
 
 const getEffectiveScenery = (state) => {
-  const scenery = getSceneryForThreeDView(state);
-  if (scenery === 'auto') {
-    return isShowIndoor(state) ? 'indoor' : 'outdoor';
-  }
-  return scenery;
-};
-
-const toFiniteDurationMs = (value, fallback = 1000) => {
-  const n = Number(value);
-  if (Number.isFinite(n) && n >= 0) return n;
-  return fallback;
-};
-
-const getPathTotalDurationMs = (path) => {
-  if (!Array.isArray(path) || path.length < 2) return 0;
-  let total = 0;
-  for (let i = 1; i < path.length; i += 1) {
-    total += toFiniteDurationMs(path[i]?.durationMs, 1000);
-  }
-  return total;
-};
-
-const getInitialPointFromDrone = (drone) => {
-  if (!drone || !Array.isArray(drone.pos) || drone.pos.length < 3) return null;
-  const [px, py, pz] = drone.pos;
-  const x = Number(px);
-  const y = Number(py);
-  const z = Number(pz);
-  if (!Number.isFinite(x) || !Number.isFinite(y) || !Number.isFinite(z)) return null;
-  return { x, y, z, durationMs: 0 };
-};
-
-const toFinitePoint = (point) => {
-  if (!point) return null;
-  const x = Number(point.x);
-  const y = Number(point.y);
-  const z = Number(point.z);
-  if (!Number.isFinite(x) || !Number.isFinite(y) || !Number.isFinite(z)) return null;
-  return {
-    x,
-    y,
-    z,
-    durationMs: toFiniteDurationMs(point.durationMs, 1000),
-  };
-};
-
-const almostEqual = (a, b) => Math.abs(Number(a) - Number(b)) < 1e-6;
-
-const parsePositionLike = (positionAttr, fallback = [0, 1, 1]) => {
-  let pos = fallback;
-  if (!positionAttr) return pos;
-
-  if (Array.isArray(positionAttr) && positionAttr.length >= 3) {
-    const nx = Number(positionAttr[0]);
-    const ny = Number(positionAttr[1]);
-    const nz = Number(positionAttr[2]);
-    pos = [
-      Number.isFinite(nx) ? nx : fallback[0],
-      Number.isFinite(ny) ? ny : fallback[1],
-      Number.isFinite(nz) ? nz : fallback[2],
-    ];
-  } else if (typeof positionAttr === 'string') {
-    const [sx, sy, sz] = positionAttr.split(/\s+/);
-    const nx = Number(sx);
-    const ny = Number(sy);
-    const nz = Number(sz);
-    pos = [
-      Number.isFinite(nx) ? nx : fallback[0],
-      Number.isFinite(ny) ? ny : fallback[1],
-      Number.isFinite(nz) ? nz : fallback[2],
-    ];
-  } else if (typeof positionAttr === 'object') {
-    const nx = Number(positionAttr.x);
-    const ny = Number(positionAttr.y);
-    const nz = Number(positionAttr.z);
-    pos = [
-      Number.isFinite(nx) ? nx : fallback[0],
-      Number.isFinite(ny) ? ny : fallback[1],
-      Number.isFinite(nz) ? nz : fallback[2],
-    ];
-  }
-  return pos;
-};
-
-const buildSeekPathWithInitial = (drone) => {
-  const initial = getInitialPointFromDrone(drone);
-  const raw = Array.isArray(drone?.path) ? drone.path.map(toFinitePoint).filter(Boolean) : [];
-
-  if (!initial) return raw;
-  if (!raw.length) return [initial];
-
-  const first = raw[0];
-  const sameAsInitial =
-    almostEqual(first.x, initial.x) &&
-    almostEqual(first.y, initial.y) &&
-    almostEqual(first.z, initial.z);
-
-  if (sameAsInitial) return raw;
-  return [initial, ...raw];
-};
-
-const slicePathByProgress = (path, progressRatio) => {
-  if (!Array.isArray(path) || path.length === 0) return [];
-  if (path.length === 1) return [path[0]];
-
-  const clamped = Math.min(1, Math.max(0, Number(progressRatio) || 0));
-  if (clamped <= 0) return path.slice();
-
-  const total = getPathTotalDurationMs(path);
-  if (total <= 0) return path.slice();
-
-  const targetMs = total * clamped;
-  if (targetMs >= total) {
-    const last = path[path.length - 1];
-    return [{ ...last, durationMs: 0 }];
-  }
-
-  let acc = 0;
-  for (let i = 1; i < path.length; i += 1) {
-    const segMs = toFiniteDurationMs(path[i]?.durationMs, 1000);
-    if (acc + segMs >= targetMs) {
-      const from = path[i - 1];
-      const to = path[i];
-      const local = (targetMs - acc) / (segMs || 1);
-
-      const startPoint = {
-        x: Number(from.x) + (Number(to.x) - Number(from.x)) * local,
-        y: Number(from.y) + (Number(to.y) - Number(from.y)) * local,
-        z: Number(from.z) + (Number(to.z) - Number(from.z)) * local,
-        durationMs: 0,
-      };
-
-      const firstRemainingMs = Math.max(0, Math.round(segMs * (1 - local)));
-      const remaining = [{ ...to, durationMs: firstRemainingMs }];
-
-      for (let j = i + 1; j < path.length; j += 1) {
-        remaining.push({ ...path[j], durationMs: toFiniteDurationMs(path[j]?.durationMs, 1000) });
-      }
-
-      return [startPoint, ...remaining];
-    }
-    acc += segMs;
-  }
-
-  return path.slice(path.length - 1);
-};
-
-const slicePathByElapsedMs = (path, elapsedMs) => {
-  const total = getPathTotalDurationMs(path);
-  if (total <= 0) return path.slice();
-  const clampedMs = Math.min(total, Math.max(0, Number(elapsedMs) || 0));
-  const ratio = clampedMs / total;
-  return slicePathByProgress(path, ratio);
-};
-
-const normalizeDroneForConfigIO = (drone, index = 0) => {
-  const id = drone?.id || `drone-${index + 1}`;
-  const name = drone?.name || id;
-  const batteryNum = Number(drone?.battery);
-  const status = drone?.status || 'Idle';
-
-  // For config I/O, pos is the canonical initial position.
-  const basePos = parsePositionLike(drone?.pos, [0, 1, 1]);
-
-  return {
-    id,
-    name,
-    battery: Number.isFinite(batteryNum) ? batteryNum : 100,
-    status,
-    pos: basePos,
-    path: Array.isArray(drone?.path) ? drone.path : [],
-  };
+  return getEffectiveSceneryUtil(state, getSceneryForThreeDView, isShowIndoor);
 };
 
 const ThreeDView = React.forwardRef((props, ref) => {
@@ -261,214 +100,15 @@ const ThreeDView = React.forwardRef((props, ref) => {
     onSetViewRuntimeState({ droneConfig, pathProgress });
   }, [droneConfig, pathProgress, onSetViewRuntimeState]);
 
-  const collectConfigFromScene = () => {
-    if (typeof document === 'undefined') {
-      return { drones: [] };
-    }
+  const collectConfigFromScene = useCallback(() => collectConfigFromSceneUtil(), []);
 
-    const sceneEl = document.querySelector('a-scene');
-    if (!sceneEl) {
-      return { drones: [] };
-    }
-
-    const nodes = sceneEl.querySelectorAll('[data-drone-id]');
-    const drones = Array.from(nodes).map((el, index) => {
-      const id = el.getAttribute('data-drone-id') || `drone-${index + 1}`;
-      const name = el.getAttribute('data-drone-name') || id;
-      const batteryAttr = el.getAttribute('data-battery');
-      const status = el.getAttribute('data-status') || 'Idle';
-      const positionAttr = el.getAttribute('position');
-      const initialPosAttr = el.getAttribute('data-initial-pos');
-
-      const pos = parsePositionLike(positionAttr, [0, 1, 1]);
-      const initialPos = parsePositionLike(initialPosAttr, pos);
-
-      let path = [];
-      const pathAttr = el.getAttribute('data-path');
-      if (pathAttr) {
-        try {
-          const parsed = JSON.parse(pathAttr);
-          if (Array.isArray(parsed)) {
-            path = parsed;
-          }
-        } catch (e) {
-          // ignore
-        }
-      }
-
-      const batteryNum = Number(batteryAttr);
-
-      return {
-        id,
-        name,
-        battery: Number.isFinite(batteryNum) ? batteryNum : 100,
-        status,
-        pos,
-        initialPos,
-        path,
-      };
-    });
-
-    return { drones };
-  };
-
-  // ✅ click-pick에서 dispatch 하는 이벤트 받기
-  useEffect(() => {
-    const onSelected = (e) => {
-      const base = e.detail ?? null;
-      if (!base) {
-        setSelectedDrone(null);
-        return;
-      }
-
-      const currentConfig = droneConfigRef.current;
-      if (currentConfig && Array.isArray(currentConfig.drones)) {
-        const found = currentConfig.drones.find((d) => d.id === base.id);
-        if (found) {
-          base.path = found.path || [];
-          if (!base.initialPosition && Array.isArray(found.initialPos) && found.initialPos.length >= 3) {
-            base.initialPosition = {
-              x: Number(found.initialPos[0]) || 0,
-              y: Number(found.initialPos[1]) || 0,
-              z: Number(found.initialPos[2]) || 0,
-            };
-          }
-        }
-      }
-
-      setSelectedDrone(base);
-    };
-    const onDeselected = () => {
-      setSelectedDrone(null);
-    };
-
-    window.addEventListener('drone-selected', onSelected);
-    window.addEventListener('drone-deselected', onDeselected);
-
-    const onPathUpdated = (e) => {
-      const { id, path } = e.detail || {};
-      if (!id || !Array.isArray(path)) return;
-
-      setDroneConfig((prev) => {
-        const base =
-          prev && Array.isArray(prev.drones) && prev.drones.length
-            ? prev
-            : collectConfigFromScene();
-
-        if (!base || !Array.isArray(base.drones)) return base;
-
-        const drones = base.drones.map((d) =>
-          d.id === id ? { ...d, path: path.slice() } : d
-        );
-        return { ...base, drones };
-      });
-    };
-
-    window.addEventListener('drone-path-updated', onPathUpdated);
-
-    const onInitialPosUpdated = (e) => {
-      const { id, x, y, z } = e.detail || {};
-      if (!id) return;
-      const nx = Number(x);
-      const ny = Number(y);
-      const nz = Number(z);
-      if (!Number.isFinite(nx) || !Number.isFinite(ny) || !Number.isFinite(nz)) return;
-
-      setDroneConfig((prev) => {
-        const base =
-          prev && Array.isArray(prev.drones) && prev.drones.length
-            ? prev
-            : collectConfigFromScene();
-
-        if (!base || !Array.isArray(base.drones)) return base;
-        const drones = base.drones.map((d) =>
-          d.id === id ? { ...d, initialPos: [nx, ny, nz], pos: Array.isArray(d.pos) ? d.pos : [0, 1, 1] } : d
-        );
-        return { ...base, drones };
-      });
-
-      setSelectedDrone((prev) => {
-        if (!prev || prev.id !== id) return prev;
-        return {
-          ...prev,
-          initialPosition: { x: nx, y: ny, z: nz },
-        };
-      });
-    };
-
-    window.addEventListener('drone-initial-pos-updated', onInitialPosUpdated);
-
-    const onDroneMoved = (e) => {
-      const { id, x, y, z } = e.detail || {};
-      if (!id) return;
-
-      const nx = Number(x);
-      const ny = Number(y);
-      const nz = Number(z);
-      if (!Number.isFinite(nx) || !Number.isFinite(ny) || !Number.isFinite(nz)) return;
-
-      setSelectedDrone((prev) => {
-        if (!prev || prev.id !== id) return prev;
-        return {
-          ...prev,
-          currentPosition: { x: nx, y: ny, z: nz },
-        };
-      });
-    };
-
-    window.addEventListener('drone-moved', onDroneMoved);
-
-    const onDroneDeleteRequest = (e) => {
-      const { id } = e.detail || {};
-      if (!id) return;
-
-      setDroneConfig((prev) => {
-        const base =
-          prev && Array.isArray(prev.drones) && prev.drones.length
-            ? prev
-            : collectConfigFromScene();
-
-        if (!base || !Array.isArray(base.drones)) return base;
-
-        const drones = base.drones.filter((d) => d.id !== id);
-        return { ...base, drones };
-      });
-
-      setSelectedDrone((prev) => (prev && prev.id === id ? null : prev));
-    };
-
-    window.addEventListener('drone-delete-request', onDroneDeleteRequest);
-
-    const onPathGeneratorResponse = (e) => {
-      const responseConfig = e?.detail;
-      if (!responseConfig || !Array.isArray(responseConfig.drones)) return;
-
-      const normalizedDrones = responseConfig.drones.map((d, index) => {
-        const normalized = normalizeDroneForConfigIO(d, index);
-        return {
-          ...normalized,
-          initialPos: normalized.pos.slice(),
-        };
-      });
-
-      setPathProgress(0);
-      setDroneConfig({ drones: normalizedDrones });
-      setSelectedDrone(null);
-      window.dispatchEvent(new CustomEvent('drone-deselected'));
-    };
-
-    window.addEventListener('path-generator-response', onPathGeneratorResponse);
-
-    return () => {
-      window.removeEventListener('drone-selected', onSelected);
-      window.removeEventListener('drone-deselected', onDeselected);
-      window.removeEventListener('drone-path-updated', onPathUpdated);
-      window.removeEventListener('drone-initial-pos-updated', onInitialPosUpdated);
-      window.removeEventListener('drone-moved', onDroneMoved);
-      window.removeEventListener('drone-delete-request', onDroneDeleteRequest);
-      window.removeEventListener('path-generator-response', onPathGeneratorResponse);
-    };
-  }, []);
+  useThreeDViewDroneEvents({
+    droneConfigRef,
+    setSelectedDrone,
+    setDroneConfig,
+    setPathProgress,
+    collectConfigFromScene,
+  });
 
   const extraCameraProps = {
     'advanced-camera-controls': objectToString({

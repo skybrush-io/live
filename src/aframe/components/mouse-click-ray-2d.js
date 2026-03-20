@@ -20,7 +20,7 @@ if (!AFrame.components['mouse-click-ray-2d']) {
       }
       this._overlay = overlay;
 
-      // ✅ SVG/Line을 한 번만 만들고 재사용
+      // SVG/Line을 한 번만 만들고 재사용
       const svgNS = 'http://www.w3.org/2000/svg';
 
       this._svg = document.createElementNS(svgNS, 'svg');
@@ -61,7 +61,6 @@ if (!AFrame.components['mouse-click-ray-2d']) {
         this._line.setAttribute('stroke', this.data.color);
         this._line.setAttribute('stroke-width', String(this.data.width));
 
-        // ✅ 보이기 (innerHTML 삭제 금지!)
         this._svg.style.opacity = '1';
 
         clearTimeout(this._hideTimer);
@@ -74,7 +73,6 @@ if (!AFrame.components['mouse-click-ray-2d']) {
     },
 
     update() {
-      // props 바뀌면 반영
       if (this._line) {
         this._line.setAttribute('stroke', this.data.color);
         this._line.setAttribute('stroke-width', String(this.data.width));
@@ -85,7 +83,6 @@ if (!AFrame.components['mouse-click-ray-2d']) {
       clearTimeout(this._hideTimer);
       this.el.sceneEl?.removeEventListener('pointerdown', this._onPointerDown, true);
 
-      // 만든 DOM 정리
       if (this._svg && this._overlay) {
         this._overlay.removeChild(this._svg);
       }

@@ -1,6 +1,34 @@
 import PropTypes from 'prop-types';
 import React, { useMemo, useState } from 'react';
 
+const DEFAULT_PATH_PLANNER_URL = '/api/v1/path-planner/plan';
+
+const parseResponseBodyAsText = async (response) => {
+  const contentType = response.headers.get('content-type') || '';
+  if (contentType.includes('application/json')) {
+    try {
+      const body = await response.json();
+      return JSON.stringify(body);
+    } catch (e) {
+      return '';
+    }
+  }
+  try {
+    return await response.text();
+  } catch (e) {
+    return '';
+  }
+};
+
+const getFallbackRelativeUrl = (rawUrl) => {
+  try {
+    const parsed = new URL(rawUrl, window.location.href);
+    return `${parsed.pathname}${parsed.search || ''}`;
+  } catch (e) {
+    return '';
+  }
+};
+
 const parsePointList = (rawText, key) => {
   const keyMatch = rawText.match(new RegExp(`${key}\\s*:\\s*\\[([\\s\\S]*?)\\]`, 'i'));
   if (!keyMatch) {
@@ -30,7 +58,48 @@ const parsePointList = (rawText, key) => {
   return points;
 };
 
+const normalizePointList = (value, key) => {
+  if (!Array.isArray(value)) {
+    throw new Error(`"${key}"는 배열이어야 합니다.`);
+  }
+
+  const points = value.map((point) => {
+    if (!Array.isArray(point) || point.length !== 3) {
+      throw new Error(`"${key}"의 좌표 형식이 올바르지 않습니다. 예: [0, 1, 2]`);
+    }
+
+    const values = point.map((n) => Number(n));
+    if (values.some((n) => !Number.isFinite(n))) {
+      throw new Error(`"${key}"의 좌표 값은 숫자여야 합니다.`);
+    }
+    return values;
+  });
+
+  return points;
+};
+
 const parseInitialTargetInput = (rawText) => {
+  // 우선 JSON 형식을 시도: { "initial": [[x,y,z], ...], "target": [[x,y,z], ...] }
+  try {
+    const parsedJson = JSON.parse(rawText);
+    if (parsedJson && typeof parsedJson === 'object') {
+      const initial = normalizePointList(parsedJson.initial, 'initial');
+      const target = normalizePointList(parsedJson.target, 'target');
+
+      if (!initial.length) {
+        throw new Error('"initial" 좌표가 비어 있습니다.');
+      }
+      if (!target.length) {
+        throw new Error('"target" 좌표가 비어 있습니다.');
+      }
+
+      return { initial, target };
+    }
+  } catch (e) {
+    // JSON 파싱 실패 시 기존 튜플 텍스트 형식으로 폴백
+  }
+
+  // 레거시 텍스트 형식: initial: [(0, 1, 2), ...]
   const initial = parsePointList(rawText, 'initial');
   const target = parsePointList(rawText, 'target');
 
@@ -42,6 +111,12 @@ const parseInitialTargetInput = (rawText) => {
   }
 
   return { initial, target };
+};
+
+const toPreviewPosition = (point) => {
+  const [x, y, z] = point;
+  // 앱 좌표계는 Z-up 기준이므로, A-Frame 미리보기(Y-up)로 변환한다.
+  return [x, z, y];
 };
 
 const MiniScene = ({ title, points, color }) => (
@@ -76,15 +151,21 @@ const MiniScene = ({ title, points, color }) => (
           material='opacity: 0.92'
         />
 
-        {points.map((point, index) => (
-          <a-entity key={`${title}-${index}`} position={`${point[0]} ${point[1]} ${point[2]}`}>
+        {points.map((point, index) => {
+          const previewPos = toPreviewPosition(point);
+          return (
+            <a-entity
+              key={`${title}-${index}`}
+              position={`${previewPos[0]} ${previewPos[1]} ${previewPos[2]}`}
+            >
             <a-sphere radius='0.35' color={color} />
             <a-entity
               position='0 0.55 0'
               text={`value: ${index + 1}; align: center; color: #ffffff; width: 3`}
             />
           </a-entity>
-        ))}
+          );
+        })}
 
         <a-camera position='0 9 20' rotation='-18 0 0' />
       </a-scene>
@@ -101,7 +182,7 @@ MiniScene.propTypes = {
 export default function PathGeneratorModal({ open, onClose }) {
   const [rawInput, setRawInput] = useState('');
   const [error, setError] = useState('');
-  const [requestUrl, setRequestUrl] = useState('/api/path-request');
+  const [requestUrl, setRequestUrl] = useState(DEFAULT_PATH_PLANNER_URL);
   const [isRequesting, setIsRequesting] = useState(false);
   const [requestStatus, setRequestStatus] = useState('');
   const [previewData, setPreviewData] = useState({ initial: [], target: [] });
@@ -185,7 +266,7 @@ export default function PathGeneratorModal({ open, onClose }) {
           <input
             value={requestUrl}
             onChange={(e) => setRequestUrl(e.target.value)}
-            placeholder='/api/path-request'
+            placeholder={DEFAULT_PATH_PLANNER_URL}
             style={{
               width: '100%',
               background: 'rgba(245,250,255,0.08)',
@@ -264,7 +345,8 @@ export default function PathGeneratorModal({ open, onClose }) {
                   }
 
                   setIsRequesting(true);
-                  const response = await fetch(requestUrl.trim(), {
+                  const usedUrl = getFallbackRelativeUrl(requestUrl.trim()) || requestUrl.trim();
+                  const response = await fetch(usedUrl, {
                     method: 'POST',
                     headers: {
                       'Content-Type': 'application/json',
@@ -273,7 +355,18 @@ export default function PathGeneratorModal({ open, onClose }) {
                   });
 
                   if (!response.ok) {
-                    throw new Error(`요청 실패: ${response.status} ${response.statusText}`);
+                    const errorBody = await parseResponseBodyAsText(response);
+                    if (response.status === 404 && usedUrl.startsWith('/api/')) {
+                      throw new Error(
+                        `요청 실패: 404 Not Found (URL: ${usedUrl})\n` +
+                          '개발 서버 프록시가 아직 반영되지 않았을 수 있습니다. 프론트 dev 서버를 재시작해주세요.'
+                      );
+                    }
+                    throw new Error(
+                      `요청 실패: ${response.status} ${response.statusText} (URL: ${usedUrl})${
+                        errorBody ? `\n응답: ${errorBody}` : ''
+                      }`
+                    );
                   }
 
                   const result = await response.json();
@@ -289,7 +382,15 @@ export default function PathGeneratorModal({ open, onClose }) {
 
                   setRequestStatus(`경로 요청 성공: ${result.drones.length}개 드론 반영됨`);
                 } catch (e) {
-                  setError(e instanceof Error ? e.message : '경로 요청에 실패했습니다.');
+                  if (e instanceof TypeError) {
+                    setError(
+                      `네트워크/CORS 오류로 요청에 실패했습니다.\n` +
+                        `서버가 실행 중인지, CORS 허용(origin) 설정이 되어있는지 확인해주세요.\n` +
+                        `URL: ${requestUrl.trim()}`
+                    );
+                  } else {
+                    setError(e instanceof Error ? e.message : '경로 요청에 실패했습니다.');
+                  }
                 } finally {
                   setIsRequesting(false);
                 }
