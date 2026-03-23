@@ -49,7 +49,7 @@
     "@rjsf/validator-ajv8": "^6.1.2",
     "@skybrush/aframe-components": "^2.0.0",
     "@skybrush/app-theme-mui": "^4.0.1",
-    "@skybrush/electron-app-framework": "^3.0.0",
+    "@skybrush/electron-app-framework": "^5.1.0",
     "@skybrush/flockwave-spec": "^2.5.0",
     "@skybrush/mui-components": "^5.0.1",
     "@skybrush/show-format": "^3.4.0",
