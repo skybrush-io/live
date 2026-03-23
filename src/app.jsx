@@ -7,6 +7,9 @@ import { WorkbenchView } from 'react-flexible-workbench';
 import { connect, Provider as StoreProvider } from 'react-redux';
 import { PersistGate } from 'redux-persist/es/integration/react';
 
+import createCache from '@emotion/cache';
+import { CacheProvider } from '@emotion/react';
+
 import { StyledEngineProvider } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 
@@ -203,6 +206,16 @@ App.propTypes = {
 const DragProxy = () => <div className='drag-proxy' />;
 
 /**
+ * We need to revert to the legacy style injection method to
+ * stay compatible with our `ExternalWindow` implementation.
+ * NOTE: The `speedy: false` option is not documented as of committing
+ * this, but it is suggested by the developers in GitHub discussions,
+ * so I assume that it is actually meant to be part of the public API:
+ * https://github.com/emotion-js/emotion/discussions/2903#discussioncomment-3737996
+ */
+const styleCache = createCache({ key: 'style-cache', speedy: false });
+
+/**
  * The context provider for the main application component and the
  * individual application panels.
  *
@@ -235,11 +248,13 @@ const enhancer = (Component) =>
         >
           <StoreProvider store={store}>
             <StyledEngineProvider injectFirst>
-              <ThemeProvider>
-                <Flock.Provider value={flock}>
-                  <Component {...this.props} />
-                </Flock.Provider>
-              </ThemeProvider>
+              <CacheProvider value={styleCache}>
+                <ThemeProvider>
+                  <Flock.Provider value={flock}>
+                    <Component {...this.props} />
+                  </Flock.Provider>
+                </ThemeProvider>
+              </CacheProvider>
             </StyledEngineProvider>
           </StoreProvider>
         </ErrorBoundary>
