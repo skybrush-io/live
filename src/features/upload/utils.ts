@@ -1,12 +1,11 @@
-import arrify from 'arrify';
-import isNil from 'lodash-es/isNil';
-import pull from 'lodash-es/pull';
-import without from 'lodash-es/without';
 import {
   type CaseReducer,
   type Draft,
   type PayloadAction,
 } from '@reduxjs/toolkit';
+import isNil from 'lodash-es/isNil';
+import pull from 'lodash-es/pull';
+import without from 'lodash-es/without';
 
 import type UAV from '~/model/uav';
 import { deleteItemById } from '~/utils/collections';
@@ -84,7 +83,9 @@ export const ensureItemsInQueue = ({
   );
 
   return (state, action) => {
-    const uavIds = arrify(action.payload);
+    const uavIds = Array.isArray(action.payload)
+      ? action.payload
+      : [action.payload];
     const targetQueue = target ? state.queues[target] : undefined;
 
     for (const queueName of allOtherQueues) {
@@ -134,7 +135,9 @@ export const moveItemsBetweenQueues =
     PayloadAction<UAV['id'] | Array<UAV['id']>>
   > =>
   (state, action) => {
-    const uavIds = arrify(action.payload);
+    const uavIds = Array.isArray(action.payload)
+      ? action.payload
+      : [action.payload];
     const sourceQueue = state.queues[source];
     const targetQueue = target ? state.queues[target] : undefined;
 
