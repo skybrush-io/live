@@ -83,8 +83,13 @@ if (!AFrame.components['mouse-click-ray-2d']) {
       clearTimeout(this._hideTimer);
       this.el.sceneEl?.removeEventListener('pointerdown', this._onPointerDown, true);
 
-      if (this._svg && this._overlay) {
-        this._overlay.removeChild(this._svg);
+      if (this._svg && this._overlay && this._svg.parentNode === this._overlay) {
+        try {
+          this._overlay.removeChild(this._svg);
+        } catch (error) {
+          // HMR / rapid unmount races can detach the node twice.
+          if (error?.name !== 'NotFoundError') throw error;
+        }
       }
       this._svg = null;
       this._line = null;

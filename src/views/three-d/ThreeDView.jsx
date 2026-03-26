@@ -210,7 +210,13 @@ const ThreeDView = React.forwardRef((props, ref) => {
     a.download = 'three-d-drone-config.json';
     document.body.appendChild(a);
     a.click();
-    document.body.removeChild(a);
+    if (a.parentNode === document.body) {
+      try {
+        document.body.removeChild(a);
+      } catch (error) {
+        if (error?.name !== 'NotFoundError') throw error;
+      }
+    }
     URL.revokeObjectURL(url);
   };
 

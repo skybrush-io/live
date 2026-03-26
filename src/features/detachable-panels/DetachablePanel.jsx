@@ -10,25 +10,29 @@ import { isDetached } from './selectors';
 import { attachPanel, detachPanel } from './slice';
 
 const getOrCreatePortalContainer = (tab) => {
-  const found = tab.element[0].querySelector('.portal-container');
+  const tabElement = tab?.element?.[0];
+  const titleElement = tab?.titleElement?.[0];
+  if (!tabElement || !titleElement) {
+    return null;
+  }
+
+  const found = tabElement.querySelector('.portal-container');
   if (found !== null) {
     return found;
   } else {
     const portalContainer = document.createElement('div');
     portalContainer.classList.add('portal-container');
     portalContainer.style.display = 'inline-block';
-    tab.titleElement[0].after(portalContainer);
+    titleElement.after(portalContainer);
     return portalContainer;
   }
 };
 
 const DetachButtonPortal = ({ glContainer, label, onClick }) => {
-  const [container, setContainer] = useState(
-    getOrCreatePortalContainer(glContainer.tab)
-  );
+  const [, forceRender] = useState(0);
 
   useEffect(() => {
-    const tabHandler = (tab) => setContainer(getOrCreatePortalContainer(tab));
+    const tabHandler = () => forceRender((prev) => prev + 1);
     glContainer.on('tab', tabHandler);
     return () => {
       glContainer.off('tab', tabHandler);
@@ -58,6 +62,11 @@ const DetachButtonPortal = ({ glContainer, label, onClick }) => {
       </ul>
     </div>
   );
+
+  const container = getOrCreatePortalContainer(glContainer.tab);
+  if (!container || !container.isConnected) {
+    return null;
+  }
 
   return ReactDOM.createPortal(detachButton, container);
 };
