@@ -63,7 +63,7 @@ export function parseCommandFromString(string: string): {
   args: string[];
   kwds: Record<string, unknown>;
 } {
-  const parts = string && string.length > 0 ? string.split(/\s+/) : [''];
+  const parts = string.trim().length > 0 ? string.trim().split(/\s+/) : [''];
   return {
     command: parts[0] ?? '',
     args: parts.slice(1),
