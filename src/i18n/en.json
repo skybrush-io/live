@@ -548,7 +548,7 @@
         }
       },
       "rth": {
-        "description": "Drones are returning to their home locations.",
+        "description": "Drones are returning to their home locations in a coordinated manner, without collisions.",
         "title": {
           "default": "Return to Home",
           "waiting": "Return to Home (in {{countdownSeconds}}s)"
