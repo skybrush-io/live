@@ -15,8 +15,14 @@ export type JobData = {
   payload?: JobPayload;
 };
 
-export type UploadJob = {
-  id: Identifier;
-  payload: JobPayload;
-  result: 'success' | 'error' | 'cancelled';
+export type UAVStatus = 'success' | 'error';
+
+export type UploadJobResult = UAVStatus | 'cancelled';
+
+type ErrorMessage = string;
+
+export type HistoryItem = {
+  result: UploadJobResult;
+  perUavStatuses: Record<Identifier, UAVStatus>;
+  perUavErrors: Record<Identifier, ErrorMessage>;
 };

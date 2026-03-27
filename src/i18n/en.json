@@ -994,6 +994,7 @@
   },
   "uploadPanel": {
     "cancelUpload": "Cancel upload",
+    "clearHistory": "Clear history",
     "flashLightsWhereFailed": "Flash lights of UAVs where the upload failed",
     "hasHiddenTargets": "Some of the waiting UAVs may be filtered.",
     "retryFailedAttempts": "Retry failed attempts automatically",
@@ -1006,8 +1007,8 @@
   },
   "uploadStatusLegend": {
     "clearUploadQueue": "Clear upload queue",
-    "restartSuccessfulItems": "Restart successful items",
-    "retryFailedItems": "Retry failed items"
+    "restartSuccessfulItems": "Enqueue successful items",
+    "retryFailedItems": "Enqueue failed items"
   },
   "uploadStatusLights": {
     "noAvailableUAVs": "There are no available UAVs to upload to."
