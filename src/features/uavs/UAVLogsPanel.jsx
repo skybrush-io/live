@@ -4,7 +4,6 @@ import Save from '@mui/icons-material/Save';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import ListItemButton from '@mui/material/ListItemButton';
-import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
 import isNil from 'lodash-es/isNil';
@@ -134,8 +133,18 @@ const UAVLogListItem = ({ id, kind, size, timestamp, uavId }) => {
   const isLoading = downloadState?.status === LogDownloadStatus.LOADING;
   const onClick = isLoading ? undefined : log ? save : download;
 
+  const saveOrDownloadButton = (
+    <IconButton edge='end' disabled={isLoading} size='large'>
+      {downloadState?.status === LogDownloadStatus.SUCCESS ? (
+        <Save />
+      ) : (
+        <GetApp />
+      )}
+    </IconButton>
+  );
+
   return (
-    <ListItemButton onClick={onClick}>
+    <ListItemButton onClick={onClick} secondaryAction={saveOrDownloadButton}>
       <StatusLight
         status={
           {
@@ -154,15 +163,6 @@ const UAVLogListItem = ({ id, kind, size, timestamp, uavId }) => {
         }
         secondary={secondaryComponent}
       />
-      <ListItemSecondaryAction>
-        <IconButton edge='end' disabled={isLoading} size='large'>
-          {downloadState?.status === LogDownloadStatus.SUCCESS ? (
-            <Save />
-          ) : (
-            <GetApp />
-          )}
-        </IconButton>
-      </ListItemSecondaryAction>
     </ListItemButton>
   );
 };

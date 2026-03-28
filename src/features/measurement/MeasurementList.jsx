@@ -1,7 +1,6 @@
 import IconButton from '@mui/material/IconButton';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import ListItemButton from '@mui/material/ListItemButton';
-import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import ListItemText from '@mui/material/ListItemText';
 import clsx from 'clsx';
 import identity from 'lodash-es/identity';
@@ -178,8 +177,26 @@ const MeasurementListItem = ({
     );
   }
 
+  const copyButton =
+    numSamples > 0 ? (
+      <Tooltip content={t('measurementList.copyToClipboard')}>
+        <IconButton
+          edge='end'
+          aria-label='copy'
+          size='large'
+          onClick={() => onCopy(id)}
+        >
+          <ContentCopy />
+        </IconButton>
+      </Tooltip>
+    ) : undefined;
+
   return (
-    <ListItemButton {...rest} className={classes.root}>
+    <ListItemButton
+      {...rest}
+      className={classes.root}
+      secondaryAction={copyButton}
+    >
       <ListItemAvatar>
         <DroneAvatar id={id} variant='minimal' crossed={!sampling} />
       </ListItemAvatar>
@@ -188,20 +205,6 @@ const MeasurementListItem = ({
         primary={primaryText}
         secondary={secondaryText}
       />
-      {numSamples > 0 && (
-        <ListItemSecondaryAction>
-          <Tooltip content={t('measurementList.copyToClipboard')}>
-            <IconButton
-              edge='end'
-              aria-label='copy'
-              size='large'
-              onClick={() => onCopy(id)}
-            >
-              <ContentCopy />
-            </IconButton>
-          </Tooltip>
-        </ListItemSecondaryAction>
-      )}
     </ListItemButton>
   );
 };
