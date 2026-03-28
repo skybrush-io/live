@@ -562,7 +562,7 @@
     "setupTakeoffArea": "分配无人机表演舞步",
     "showConfigurator": {
       "button": "根据场地调整演出",
-      "description": "如果需要，调整起飞网格并显示布局",
+      "description": "根据实际需要调整起飞阵列并查看布局效果",
       "interactionHints": {
         "action": {
           "boxSelect": "框选",
