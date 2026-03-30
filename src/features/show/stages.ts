@@ -136,7 +136,7 @@ const stages: Record<Stage, StageSpecification> = {
       return result === 'error'
         ? Status.ERROR
         : result === 'partial'
-          ? Status.MISSING
+          ? Status.WARNING
           : result === 'success'
             ? Status.SUCCESS
             : Status.OFF;
