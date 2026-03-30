@@ -5,6 +5,25 @@
 
 import isEmpty from 'lodash-es/isEmpty';
 
+import { Status } from '~/components/semantics';
+import {
+  getEmptyMappingSlotIndices,
+  hasActiveGeofencePolygon,
+  hasNonemptyMappingSlot,
+} from '~/features/mission/selectors';
+import { getGeofenceStatus } from '~/features/mission/selectors-geofence-extra';
+import {
+  areAllPreflightChecksTicked,
+  hasManualPreflightChecks,
+} from '~/features/preflight/selectors';
+import { isConnected as isConnectedToServer } from '~/features/servers/selectors';
+import {
+  areAllUAVsInMissionWithoutErrors,
+  getMissingUAVIdsInMapping,
+} from '~/features/uavs/selectors';
+import { makeUploadStatusSelectorForMissionMappingByJobType } from '~/features/upload/selectors';
+import type { AppSelector, RootState } from '~/store/reducers';
+
 import { JOB_TYPE } from './constants';
 import {
   areManualPreflightChecksSignedOff,
@@ -26,26 +45,6 @@ import {
   isTakeoffAreaApproved,
 } from './selectors';
 
-import { Status } from '~/components/semantics';
-
-import {
-  getEmptyMappingSlotIndices,
-  hasActiveGeofencePolygon,
-  hasNonemptyMappingSlot,
-} from '~/features/mission/selectors';
-import { getGeofenceStatus } from '~/features/mission/selectors-geofence-extra';
-import {
-  areAllPreflightChecksTicked,
-  hasManualPreflightChecks,
-} from '~/features/preflight/selectors';
-import { isConnected as isConnectedToServer } from '~/features/servers/selectors';
-import {
-  areAllUAVsInMissionWithoutErrors,
-  getMissingUAVIdsInMapping,
-} from '~/features/uavs/selectors';
-import { getLastUploadResultByJobType } from '~/features/upload/selectors';
-import type { AppSelector, RootState } from '~/store/reducers';
-
 type Stage =
   | 'selectShowFile'
   | 'setupEnvironment'
@@ -63,6 +62,12 @@ type StageSpecification = {
   requires?: Array<Stage | AppSelector<boolean>>;
   suggests?: Array<Stage | AppSelector<boolean>>;
 };
+
+/**
+ * Selector that returns the status of the show upload job.
+ */
+const getShowUploadStatus =
+  makeUploadStatusSelectorForMissionMappingByJobType(JOB_TYPE);
 
 /**
  * Definitions of the stages that one needs to pass through in order to launch
@@ -127,11 +132,11 @@ const stages: Record<Stage, StageSpecification> = {
 
   uploadShow: {
     evaluate(state) {
-      const result = getLastUploadResultByJobType(state, JOB_TYPE);
+      const result = getShowUploadStatus(state);
       return result === 'error'
         ? Status.ERROR
-        : result === 'cancelled'
-          ? Status.SKIPPED
+        : result === 'partial'
+          ? Status.MISSING
           : result === 'success'
             ? Status.SUCCESS
             : Status.OFF;

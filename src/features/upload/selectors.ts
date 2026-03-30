@@ -20,7 +20,13 @@ import { EMPTY_ARRAY } from '~/utils/redux';
 
 import { getScopeForJobType, JobScope } from './jobs';
 import type { UploadSliceState } from './slice';
-import type { HistoryItem, JobPayload, UploadJobResult } from './types';
+import type {
+  HistoryItem,
+  JobPayload,
+  UploadJobResult,
+  UploadStatus,
+} from './types';
+import { aggregateUAVStatusesFromHistory } from './utils';
 
 /**
  * Returns the current upload job. The returned object is guaranteed to have
@@ -63,14 +69,29 @@ export const getSelectedJobInUploadDialog = (
   getUploadDialogState(state)?.selectedJob ?? {};
 
 /**
+ * Returns the selected job type in the upload dialog.
+ */
+export const getSelectedJobTypeInUploadDialog = (
+  state: RootState
+): string | undefined => getSelectedJobInUploadDialog(state).type;
+
+/**
+ * Returns the history items for the given job type, or an empty array if there
+ * is no history for it.
+ */
+const getHistoryForJobType = (
+  history: Record<string, HistoryItem[]>,
+  jobType: string | undefined
+): HistoryItem[] => (jobType ? (history[jobType] ?? EMPTY_ARRAY) : EMPTY_ARRAY);
+
+/**
  * Returns the history items for the currently selected job type, or an empty
  * array if no job type is selected or there is no history for it.
  */
 const getHistoryForSelectedJobType = createSelector(
   (state: RootState) => state.upload.history,
-  getSelectedJobInUploadDialog,
-  (history, selectedJob): HistoryItem[] =>
-    selectedJob.type ? (history[selectedJob.type] ?? EMPTY_ARRAY) : EMPTY_ARRAY
+  getSelectedJobTypeInUploadDialog,
+  getHistoryForJobType
 );
 
 /**
@@ -113,34 +134,49 @@ const getUploadStatusCodeMappingOfQueuedUAVs = createSelector(
 );
 
 /**
+ * Selector factory that creates a selector that returns the status code
+ * mapping, combining the upload history and the current queues.
+ *
+ * If `jobType` is `undefined`, the dialog's selected job type will be used.
+ */
+export const makeUploadStatusCodeMappingForJobTypeSelector = (
+  jobType?: string
+) =>
+  createSelector(
+    (state: RootState) => state.upload.history,
+    getUploadStatusCodeMappingOfQueuedUAVs,
+    getSelectedJobTypeInUploadDialog,
+    (history, queuedMapping, dialogJobType): Record<Identifier, Status> => {
+      const historyItems = getHistoryForJobType(
+        history,
+        jobType ?? dialogJobType
+      );
+
+      // Aggregate from history
+      const result: Record<Identifier, Status> =
+        aggregateUAVStatusesFromHistory(historyItems, (status) =>
+          status === 'error' ? Status.ERROR : Status.SUCCESS
+        );
+
+      // Add current queues on top
+      Object.assign(result, queuedMapping);
+
+      return result;
+    }
+  );
+
+/**
  * Returns a mapping from UAV IDs to their corresponding upload status codes,
  * combining the upload history and the current queues.
  */
-export const getUploadStatusCodeMapping = createSelector(
-  getHistoryForSelectedJobType,
-  getUploadStatusCodeMappingOfQueuedUAVs,
-  (historyItems, queuedMapping): Record<Identifier, Status> => {
-    const result: Record<Identifier, Status> = {};
-
-    // Aggregate from history
-    for (const item of historyItems) {
-      for (const [uavId, status] of Object.entries(item.perUavStatuses)) {
-        result[uavId] = status === 'error' ? Status.ERROR : Status.SUCCESS;
-      }
-    }
-
-    // Add current queues on top
-    Object.assign(result, queuedMapping);
-
-    return result;
-  }
-);
+export const getUploadStatusCodeMappingForSelectedJobType =
+  makeUploadStatusCodeMappingForJobTypeSelector();
 
 /**
  * Returns all upload items whose last known status is error.
  */
 export const getFailedUploadItems = createSelector(
-  getUploadStatusCodeMapping,
+  getUploadStatusCodeMappingForSelectedJobType,
   (statusMapping): Identifier[] => {
     const result: Identifier[] = [];
 
@@ -158,7 +194,7 @@ export const getFailedUploadItems = createSelector(
  * Returns all upload items whose last known status is success.
  */
 export const getSuccessfulUploadItems = createSelector(
-  getUploadStatusCodeMapping,
+  getUploadStatusCodeMappingForSelectedJobType,
   (statusMapping): Identifier[] => {
     const result: Identifier[] = [];
 
@@ -181,12 +217,8 @@ export const getLastUploadResultByJobType = (
   state: RootState,
   type: string
 ): UploadJobResult | undefined => {
-  if (!type) return undefined;
-
-  const items = state.upload.history[type];
-  if (items === undefined || items.length === 0) return undefined;
-
-  return items[items.length - 1].result;
+  const items = getHistoryForJobType(state.upload.history, type);
+  return items.length === 0 ? undefined : items[items.length - 1].result;
 };
 
 /**
@@ -277,8 +309,8 @@ export const shouldRestrictToGlobalSelection = (state: RootState): boolean =>
  * Returns the scope of the currently _selected_ job in the upload dialog.
  */
 export const getScopeOfSelectedJobInUploadDialog = createSelector(
-  getSelectedJobInUploadDialog,
-  ({ type }) => (type ? getScopeForJobType(type) : JobScope.ALL)
+  getSelectedJobTypeInUploadDialog,
+  (jobType) => (jobType ? getScopeForJobType(jobType) : JobScope.ALL)
 );
 
 export const getMissionIdFormatter = createSelector(
@@ -315,6 +347,47 @@ export const getMissionMapping = createSelector(
     );
   }
 );
+
+/**
+ * Factory that creates a selector that returns the upload status for
+ * the given job type, taking all UAVs in the mission into account.
+ */
+export const makeUploadStatusSelectorForMissionMappingByJobType = (
+  jobType: string
+) =>
+  createSelector(
+    (state: RootState) => getHistoryForJobType(state.upload.history, jobType),
+    _getFullMissionMapping,
+    (historyItems, missionMapping): UploadStatus => {
+      // We ignore the currently executed upload and only work from the
+      // history for efficiency.
+      const uavsInMission = missionMapping.filter((id) => id !== null);
+      if (historyItems.length === 0 || uavsInMission.length === 0) {
+        return 'not-available';
+      }
+
+      const uploadStatuses = aggregateUAVStatusesFromHistory(
+        historyItems,
+        (status) => status
+      );
+
+      let hasMissingUav = false;
+      for (const item of uavsInMission) {
+        const status = uploadStatuses[item];
+        switch (status) {
+          case 'error':
+            return 'error';
+          case 'success':
+            break;
+          default:
+            hasMissingUav = true;
+            break;
+        }
+      }
+
+      return hasMissingUav ? 'partial' : 'success';
+    }
+  );
 
 export const getObjectIdsCompatibleWithSelectedJobInUploadDialog = (
   state: RootState
@@ -408,7 +481,7 @@ export const getUAVsInLatestUploadForSelectedJobType = createSelector(
  * "waiting", "in progress", "failed" and "successful" stages of the upload.
  */
 export const getUploadStatusCodeCounters = createSelector(
-  getUploadStatusCodeMapping,
+  getUploadStatusCodeMappingForSelectedJobType,
   (statusMapping) => {
     const counts = { failed: 0, finished: 0, inProgress: 0, waiting: 0 };
 

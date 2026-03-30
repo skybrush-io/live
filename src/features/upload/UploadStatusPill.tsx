@@ -13,7 +13,7 @@ import { toggleUavInWaitingQueue } from './actions';
 import {
   getUAVsInLatestUploadForSelectedJobType,
   getUploadErrorMessageMapping,
-  getUploadStatusCodeMapping,
+  getUploadStatusCodeMappingForSelectedJobType,
 } from './selectors';
 
 const useStyles = makeStyles((theme) => ({
@@ -62,7 +62,9 @@ const makeUploadStatusSelectorForUavId = (uavId?: Identifier) =>
   uavId === undefined
     ? uploadStatusSelectorForNil
     : (state: RootState): UploadStatus => ({
-        status: getUploadStatusCodeMapping(state)[uavId] ?? Status.OFF,
+        status:
+          getUploadStatusCodeMappingForSelectedJobType(state)[uavId] ??
+          Status.OFF,
         inLatestUpload: uavId in getUAVsInLatestUploadForSelectedJobType(state),
         message: getUploadErrorMessageMapping(state)[uavId] ?? '',
       });

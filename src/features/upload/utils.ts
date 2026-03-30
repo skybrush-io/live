@@ -180,6 +180,27 @@ export const moveItemsBetweenQueues =
   };
 
 /**
+ * Aggregates UAV statuses from the given history items.
+ */
+export function aggregateUAVStatusesFromHistory<TStatus>(
+  historyItems: HistoryItem[] | undefined,
+  mapStatus: (status: UAVStatus) => TStatus
+): Record<Identifier, TStatus> {
+  const result: Record<Identifier, TStatus> = {};
+  if (historyItems === undefined) {
+    return result;
+  }
+
+  for (const item of historyItems) {
+    for (const [uavId, status] of Object.entries(item.perUavStatuses)) {
+      result[uavId] = mapStatus(status);
+    }
+  }
+
+  return result;
+}
+
+/**
  * Creates a history item from the given job result, queues, and errors.
  */
 export function createHistoryItem(

@@ -19,6 +19,11 @@ export type UAVStatus = 'success' | 'error';
 
 export type UploadJobResult = UAVStatus | 'cancelled';
 
+/**
+ * Aggregated upload status for a job type.
+ */
+export type UploadStatus = UAVStatus | 'partial' | 'not-available';
+
 type ErrorMessage = string;
 
 export type HistoryItem = {
