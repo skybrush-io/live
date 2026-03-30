@@ -19,7 +19,7 @@ import AnotherJobTypeRunningHint from './AnotherJobTypeRunningHint';
 import { getDialogTitleForJobType } from './jobs';
 import {
   getRunningUploadJobType,
-  getSelectedJobInUploadDialog,
+  getSelectedJobTypeInUploadDialog,
   getUploadDialogState,
   shouldRestrictToGlobalSelection,
 } from './selectors';
@@ -103,7 +103,7 @@ export default connect(
       canStartUpload: true,
       restrictToGlobalSelection: shouldRestrictToGlobalSelection(state),
       runningJobType: getRunningUploadJobType(state),
-      selectedJobType: getSelectedJobInUploadDialog(state)?.type,
+      selectedJobType: getSelectedJobTypeInUploadDialog(state),
     };
   },
   // mapDispatchToProps

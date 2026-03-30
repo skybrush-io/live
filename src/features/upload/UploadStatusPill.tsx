@@ -11,13 +11,19 @@ import type { Identifier } from '~/utils/collections';
 
 import { toggleUavInWaitingQueue } from './actions';
 import {
+  getUAVsInLatestUploadForSelectedJobType,
   getUploadErrorMessageMapping,
-  getUploadStatusCodeMapping,
+  getUploadStatusCodeMappingForSelectedJobType,
 } from './selectors';
 
 const useStyles = makeStyles((theme) => ({
   root: {
     padding: theme.spacing(0.5),
+  },
+
+  historicalStatus: {
+    // TODO: replace with a background alpha prop in StatusPill
+    opacity: 0.55,
   },
 
   hover: {
@@ -33,8 +39,9 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 type UploadStatus = {
-  hollow?: boolean;
+  inLatestUpload: boolean;
   status: Status;
+  hollow?: boolean;
   message?: string;
 };
 
@@ -42,6 +49,7 @@ type UploadStatus = {
  * Dummy status selector for slots that do not have a corresponding UAV.
  */
 const uploadStatusSelectorForNil = (): UploadStatus => ({
+  inLatestUpload: true,
   hollow: true,
   status: Status.OFF,
 });
@@ -54,7 +62,10 @@ const makeUploadStatusSelectorForUavId = (uavId?: Identifier) =>
   uavId === undefined
     ? uploadStatusSelectorForNil
     : (state: RootState): UploadStatus => ({
-        status: getUploadStatusCodeMapping(state)[uavId] ?? Status.OFF,
+        status:
+          getUploadStatusCodeMappingForSelectedJobType(state)[uavId] ??
+          Status.OFF,
+        inLatestUpload: uavId in getUAVsInLatestUploadForSelectedJobType(state),
         message: getUploadErrorMessageMapping(state)[uavId] ?? '',
       });
 
@@ -73,6 +84,7 @@ type UploadStatusPillProps = OwnProps & StateProps & DispatchProps;
 
 const UploadStatusPill = ({
   children,
+  inLatestUpload,
   message,
   onClick,
   uavId,
@@ -85,7 +97,12 @@ const UploadStatusPill = ({
       className={clsx(classes.root, clickHandler && classes.selectable)}
       onClick={clickHandler}
     >
-      <StatusPill {...rest}>{children}</StatusPill>
+      <StatusPill
+        className={inLatestUpload ? undefined : classes.historicalStatus}
+        {...rest}
+      >
+        {children}
+      </StatusPill>
     </Box>
   );
 

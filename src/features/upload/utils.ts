@@ -7,10 +7,11 @@ import isNil from 'lodash-es/isNil';
 import pull from 'lodash-es/pull';
 import without from 'lodash-es/without';
 
-import type UAV from '~/model/uav';
-import { deleteItemById } from '~/utils/collections';
+import type { Identifier } from '~/utils/collections';
+import { EMPTY_ARRAY } from '~/utils/redux';
 
 import { type UploadSliceState } from './slice';
+import type { HistoryItem, UAVStatus, UploadJobResult } from './types';
 
 const ALL_QUEUES: Array<keyof UploadSliceState['queues']> = [
   'failedItems',
@@ -20,21 +21,29 @@ const ALL_QUEUES: Array<keyof UploadSliceState['queues']> = [
   'itemsFinished',
 ];
 
-export function clearLastUploadResultForJobTypeHelper(
+export function clearUploadHistoryForJobTypeHelper(
   state: Draft<UploadSliceState>,
   jobType: string
 ): void {
-  deleteItemById(state.history, jobType);
+  delete state.history[jobType];
 }
 
-export function clearQueues(state: Draft<UploadSliceState>): void {
-  state.queues.failedItems = [];
-  state.queues.itemsFinished = [];
-  state.queues.itemsQueued = [];
-  state.queues.itemsWaitingToStart = [];
+export function clearQueues(
+  state: Draft<UploadSliceState>,
+  options: { showLastUploadResult: boolean }
+): void {
+  state.queues = {
+    itemsInProgress: [],
+    itemsWaitingToStart: [],
+    itemsQueued: [],
+    itemsFinished: [],
+    failedItems: [],
+  };
+
   state.errors = {};
   state.progresses = {};
-  state.dialog.showLastUploadResult = false;
+
+  state.dialog.showLastUploadResult = options.showLastUploadResult;
 }
 
 /**
@@ -43,7 +52,7 @@ export function clearQueues(state: Draft<UploadSliceState>): void {
  */
 function removeErrorsForUAVs(
   state: Draft<UploadSliceState>,
-  uavIds: Array<UAV['id']>
+  uavIds: Identifier[]
 ): void {
   for (const uavId of uavIds) {
     delete state.errors[uavId];
@@ -74,7 +83,7 @@ export const ensureItemsInQueue = ({
   doNotMoveWhenIn?: Array<keyof UploadSliceState['queues']>;
 } = {}): CaseReducer<
   UploadSliceState,
-  PayloadAction<UAV['id'] | Array<UAV['id']>>
+  PayloadAction<Identifier | Identifier[]>
 > => {
   const allOtherQueues = without(
     ALL_QUEUES,
@@ -130,10 +139,7 @@ export const moveItemsBetweenQueues =
   }: {
     source: keyof UploadSliceState['queues'];
     target?: keyof UploadSliceState['queues'];
-  }): CaseReducer<
-    UploadSliceState,
-    PayloadAction<UAV['id'] | Array<UAV['id']>>
-  > =>
+  }): CaseReducer<UploadSliceState, PayloadAction<Identifier | Identifier[]>> =>
   (state, action) => {
     const uavIds = Array.isArray(action.payload)
       ? action.payload
@@ -145,9 +151,10 @@ export const moveItemsBetweenQueues =
       const index = sourceQueue.indexOf(uavId);
       if (index >= 0) {
         sourceQueue.splice(index, 1);
-        if (targetQueue) {
-          targetQueue.push(uavId);
-        }
+      }
+      // Add the item to the target queue even if it's not in the source queue
+      if (targetQueue) {
+        targetQueue.push(uavId);
       }
     }
 
@@ -171,3 +178,103 @@ export const moveItemsBetweenQueues =
       }
     }
   };
+
+/**
+ * Aggregates UAV statuses from the given history items.
+ */
+export function aggregateUAVStatusesFromHistory<TStatus>(
+  historyItems: HistoryItem[] | undefined,
+  mapStatus: (status: UAVStatus) => TStatus
+): Record<Identifier, TStatus> {
+  const result: Record<Identifier, TStatus> = {};
+  if (historyItems === undefined) {
+    return result;
+  }
+
+  for (const item of historyItems) {
+    for (const [uavId, status] of Object.entries(item.perUavStatuses)) {
+      result[uavId] = mapStatus(status);
+    }
+  }
+
+  return result;
+}
+
+/**
+ * Creates a history item from the given job result, queues, and errors.
+ */
+export function createHistoryItem(
+  result: UploadJobResult,
+  queues: { itemsFinished: Identifier[]; failedItems: Identifier[] },
+  errors: Record<Identifier, string>
+): HistoryItem {
+  const perUavStatuses: Record<Identifier, UAVStatus> = {};
+  for (const uavId of queues.itemsFinished) {
+    perUavStatuses[uavId] = 'success';
+  }
+  for (const uavId of queues.failedItems) {
+    perUavStatuses[uavId] = 'error';
+  }
+
+  return {
+    result,
+    perUavStatuses,
+    perUavErrors: { ...errors },
+  };
+}
+
+/**
+ * Record that maps upload job results to their priority/severity level.
+ */
+const COMPACTION_RESULT_PRIORITY: Record<UploadJobResult, number> = {
+  success: 0,
+  cancelled: 1,
+  error: 2,
+};
+
+/**
+ * Compacts a history array if it exceeds `maxSize`. The last
+ * `Math.floor(maxSize / 2)` items are kept as-is; the overflow is
+ * merged into a single item where per-UAV statuses and errors
+ * are layered chronologically (newer overrides older).
+ */
+export function compactHistory(
+  history: HistoryItem[],
+  maxSize = 8
+): HistoryItem[] {
+  if (maxSize < 1) {
+    return EMPTY_ARRAY;
+  }
+
+  if (history.length <= maxSize) {
+    return history;
+  }
+
+  const keepCount = Math.floor(maxSize / 2);
+  const mergeUntil = history.length - keepCount;
+
+  const perUavStatuses: Record<Identifier, UAVStatus> = {};
+  const perUavErrors: Record<Identifier, string> = {};
+  let worstResult: UploadJobResult = 'success';
+
+  for (let i = 0; i < mergeUntil; i++) {
+    const item = history[i];
+    Object.assign(perUavStatuses, item.perUavStatuses);
+    Object.assign(perUavErrors, item.perUavErrors);
+
+    if (
+      COMPACTION_RESULT_PRIORITY[item.result] >
+      COMPACTION_RESULT_PRIORITY[worstResult]
+    ) {
+      worstResult = item.result;
+    }
+  }
+
+  const compacted: HistoryItem = {
+    result: worstResult,
+    perUavStatuses,
+    perUavErrors,
+  };
+
+  return [compacted, ...history.slice(mergeUntil)];
+}
