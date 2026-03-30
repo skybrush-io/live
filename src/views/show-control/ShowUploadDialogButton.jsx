@@ -7,9 +7,10 @@ import { StatusLight } from '@skybrush/mui-components';
 
 import ListItemTextWithProgress from '~/components/ListItemTextWithProgress';
 import { Status } from '~/components/semantics';
-import { SHOW_UPLOAD_JOB } from '~/features/show/constants';
+import { JOB_TYPE, SHOW_UPLOAD_JOB } from '~/features/show/constants';
 import { getSetupStageStatuses } from '~/features/show/stages';
 import {
+  getSelectedJobTypeInUploadDialog,
   getUploadProgress,
   isUploadInProgress,
 } from '~/features/upload/selectors';
@@ -47,7 +48,9 @@ ShowUploadDialogButton.propTypes = {
 export default connect(
   // mapStateToProps
   (state) => ({
-    loading: isUploadInProgress(state),
+    loading:
+      getSelectedJobTypeInUploadDialog(state) === JOB_TYPE &&
+      isUploadInProgress(state),
     progress: getUploadProgress(state),
     status: getSetupStageStatuses(state).uploadShow,
   }),
