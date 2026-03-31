@@ -1,14 +1,25 @@
 import Box from '@mui/material/Box';
-import ListItemText from '@mui/material/ListItemText';
+import ListItemText, { ListItemTextProps } from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
-import PropTypes from 'prop-types';
+import { ReactNode } from 'react';
+
+type ListItemTextWithProgressProps = Omit<
+  ListItemTextProps,
+  'disableTypography'
+> & {
+  primary: ReactNode;
+  secondary: ReactNode;
+};
 
 /**
  * Variant on the Material-UI list item component that is styled in a way that
  * we can place a `<LinearProgress />` component in the secondary text without
- * messing up the layout.`
+ * messing up the layout.
  */
-const ListItemTextWithProgress = ({ secondary, ...rest }) => (
+const ListItemTextWithProgress = ({
+  secondary,
+  ...rest
+}: ListItemTextWithProgressProps) => (
   <ListItemText
     {...rest}
     disableTypography
@@ -28,9 +39,5 @@ const ListItemTextWithProgress = ({ secondary, ...rest }) => (
     }
   />
 );
-
-ListItemTextWithProgress.propTypes = {
-  secondary: PropTypes.node,
-};
 
 export default ListItemTextWithProgress;
