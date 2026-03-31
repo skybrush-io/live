@@ -3,7 +3,7 @@ import ListItemText, {
   type ListItemTextProps,
 } from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
 type ListItemTextWithProgressProps = Omit<
   ListItemTextProps,
