@@ -1,5 +1,7 @@
 import Box from '@mui/material/Box';
-import ListItemText, { ListItemTextProps } from '@mui/material/ListItemText';
+import ListItemText, {
+  type ListItemTextProps,
+} from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
 import { ReactNode } from 'react';
 
