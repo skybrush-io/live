@@ -6,7 +6,6 @@ import Search from '@mui/icons-material/Search';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import ListItemButton from '@mui/material/ListItemButton';
-import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import ListItemText from '@mui/material/ListItemText';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
@@ -44,10 +43,10 @@ const BeaconListPresentation = multiSelectableListOf(
         key={beacon.id}
         className={selected ? 'selected-list-item' : undefined}
         onClick={props.onItemSelected}
+        secondaryAction={rightIconButton}
       >
         <StatusLight status={beacon.active ? 'success' : 'error'} />
         <ListItemText primary={getBeaconDisplayName(beacon)} />
-        <ListItemSecondaryAction>{rightIconButton}</ListItemSecondaryAction>
       </ListItemButton>
     );
   },

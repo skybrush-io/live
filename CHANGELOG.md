@@ -11,7 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Support for keeping the original light configuration when adapting the show in
   the show adaptation dialog.
+
 - Added a new dialog for planning collective RTH trajectories.
+
 - Added a pro control group to the Control panel with show suspend and resume actions.
 
 - It is now possible to set a UAV ID for parameters in the parameter upload dialog.
@@ -22,9 +24,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add takeoff method selection to the show adaptation dialog.
 
+- The sum icon in the UAV status header selects all UAVs when clicked.
+
+- The application remembers per-UAV upload statuses from all previous upload jobs for all upload job types. More details in the [PR](https://github.com/skybrush-io/live/pull/156).
+
+- The upload dialog has a "Clear history" button that erases the upload history for the current upload job type.
+
 ### Changed
 
 - Smaller headings in the Field Notes panel.
+
+- New notification UI.
+
+- The "successful" and "failed" counters/buttons in the upload dialog simply add the UAVs with the corresponding statuses to the queue. The upload no longer starts automatically.
+
+- Status buttons and counters in the upload dialog show the summary of all previous job executions, using the latest known status for every UAV. Statuses from the earlier uploads use a slightly different style.
+
+- The "Upload show data" button in the control panel displays success status only when the show has been successfully uploaded to all UAVs.
+
+- The "Upload show data" button in the control panel only shows a progress indicator for show upload jobs.
 
 ### Fixed
 

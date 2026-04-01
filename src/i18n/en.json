@@ -468,14 +468,14 @@
   "proControlButtonGroup": {
     "collectiveRTH": "Collective RTH",
     "collectiveRTHPanelNotFound": "The Collective RTH panel was not found. Please try to open it manually from the sidebar.",
-    "resume": "Resume",
-    "suspend": "Suspend",
     "prerequisites": {
       "collectiveRTHNotTriggered": "Collective RTH has not been triggered yet",
       "hasCollectiveRTHPlan": "The show contains a collective RTH plan",
       "proFeaturesEnabled": "Pro features are enabled on the server",
       "supportsSuspendResumeCRTH": "The server supports the suspend, resume, and collective RTH operations"
-    }
+    },
+    "resume": "Resume",
+    "suspend": "Suspend"
   },
   "recalculateMappingButton": {
     "findOptimalMapping": "Find optimal mapping",
@@ -557,7 +557,7 @@
         }
       },
       "rth": {
-        "description": "Drones are returning to their home locations.",
+        "description": "Drones are returning to their home locations in a coordinated manner, without collisions.",
         "title": {
           "default": "Return to Home",
           "waiting": "Return to Home (in {{countdownSeconds}}s)"
@@ -1003,6 +1003,7 @@
   },
   "uploadPanel": {
     "cancelUpload": "Cancel upload",
+    "clearHistory": "Clear history",
     "flashLightsWhereFailed": "Flash lights of UAVs where the upload failed",
     "hasHiddenTargets": "Some of the waiting UAVs may be filtered.",
     "retryFailedAttempts": "Retry failed attempts automatically",
@@ -1015,8 +1016,8 @@
   },
   "uploadStatusLegend": {
     "clearUploadQueue": "Clear upload queue",
-    "restartSuccessfulItems": "Restart successful items",
-    "retryFailedItems": "Retry failed items"
+    "restartSuccessfulItems": "Enqueue successful items",
+    "retryFailedItems": "Enqueue failed items"
   },
   "uploadStatusLights": {
     "noAvailableUAVs": "There are no available UAVs to upload to."

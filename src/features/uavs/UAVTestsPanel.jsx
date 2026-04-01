@@ -1,7 +1,6 @@
 import Button from '@mui/material/Button';
 import List from '@mui/material/List';
 import ListItemButton from '@mui/material/ListItemButton';
-import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import ListItemText from '@mui/material/ListItemText';
 import Zoom from '@mui/material/Zoom';
 import isNil from 'lodash-es/isNil';
@@ -155,9 +154,23 @@ const UAVTestButton = ({
     }
   }, [clearPendingConfirmation, execute, resume, suspended]);
 
+  const confirmButton = (
+    <Zoom in={Boolean(pendingConfirmation)}>
+      {/* TODO: Change to `Slide` from right when switching to Material UI v5,
+                as that version supports setting a `container`. */}
+      <Button
+        style={{ color: Colors.seriousWarning }}
+        onClick={giveConfirmation}
+      >
+        Confirm
+      </Button>
+    </Zoom>
+  );
+
   return (
     <ListItemButton
       onClick={needsConfirmation ? askForConfirmation : giveConfirmation}
+      secondaryAction={needsConfirmation ? confirmButton : null}
     >
       <StatusLight
         status={
@@ -194,18 +207,6 @@ const UAVTestButton = ({
           ) : null
         }
       />
-      <ListItemSecondaryAction>
-        {/* TODO: Change to `Slide` from right when switching to Material UI v5,
-                  as that version supports setting a `container`. */}
-        <Zoom in={Boolean(pendingConfirmation)}>
-          <Button
-            style={{ color: Colors.seriousWarning }}
-            onClick={giveConfirmation}
-          >
-            Confirm
-          </Button>
-        </Zoom>
-      </ListItemSecondaryAction>
     </ListItemButton>
   );
 };

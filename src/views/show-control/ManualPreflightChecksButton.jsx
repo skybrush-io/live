@@ -36,16 +36,6 @@ const ManualPreflightChecksButton = ({
       <ListItemText
         primary={t('show.manualPreflightChecks', 'Manual preflight checks')}
       />
-      {/* TODO: show how many checks were not ticked off by the user yet */}
-      {/*
-      <ListItemSecondaryAction>
-        <Switch
-          checked={areChecksSignedOff}
-          edge='end'
-          onChange={areChecksSignedOff ? onRevoke : onApprove}
-        />
-      </ListItemSecondaryAction>
-      */}
     </ListItemButton>
   ) : null;
 };

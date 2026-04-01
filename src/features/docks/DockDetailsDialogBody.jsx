@@ -3,7 +3,6 @@ import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import List from '@mui/material/List';
 import ListItemButton from '@mui/material/ListItemButton';
-import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import ListItemText from '@mui/material/ListItemText';
 import ListSubheader from '@mui/material/ListSubheader';
 import PropTypes from 'prop-types';
@@ -103,17 +102,18 @@ const DockDetailsDialogBody = ({ dockId, selectedTab }) => {
                 secondary='4.0 GB used • 9.8 GB free • 29%'
               />
             </ListItem>
-            <ListItem>
+            <ListItem
+              secondaryAction={
+                <IconButton size='large'>
+                  <Sync />
+                </IconButton>
+              }
+            >
               <StatusLight status='success' />
               <ListItemText
                 primary='/dev/mmcblk0p5 • Data storage'
                 secondary='0.5 GB used • 63.1 GB free • 0.8%'
               />
-              <ListItemSecondaryAction>
-                <IconButton size='large'>
-                  <Sync />
-                </IconButton>
-              </ListItemSecondaryAction>
             </ListItem>
             <Divider />
           </List>

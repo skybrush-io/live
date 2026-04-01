@@ -234,7 +234,12 @@ const enhancer = (Component) =>
           onReset={clearStoreAfterConfirmation}
         >
           <StoreProvider store={store}>
-            <StyledEngineProvider injectFirst>
+            <StyledEngineProvider
+              injectFirst
+              // We need to revert to the legacy style injection method to
+              // stay compatible with our `ExternalWindow` implementation.
+              speedy={false}
+            >
               <ThemeProvider>
                 <Flock.Provider value={flock}>
                   <Component {...this.props} />
