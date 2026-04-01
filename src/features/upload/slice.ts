@@ -403,7 +403,6 @@ const { actions, reducer } = createSlice({
     cancelUpload: noPayload<UploadSliceState>(() => {
       // The action will stop the upload saga; nothing to do here.
       // State will be updated in _notifyUploadFinished()
-      console.log('cancelUpload() called');
     }),
   },
 
