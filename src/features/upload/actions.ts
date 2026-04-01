@@ -5,9 +5,9 @@ import type { AppThunk, RootState } from '~/store/reducers';
 import type { Identifier } from '~/utils/collections';
 
 import {
-  getFailedUploadItems,
+  getFailedUploadItemsToEnqueue,
   getSelectedJobInUploadDialog,
-  getSuccessfulUploadItems,
+  getSuccessfulUploadItemsToEnqueue,
   getUploadDialogState,
   getUploadTargets,
   isItemInUploadBacklog,
@@ -77,7 +77,7 @@ export function recalculateEstimatedCompletionTime(): AppThunk<void> {
  */
 export function restartSuccessfulUploads(): AppThunk<void> {
   return (dispatch, getState) => {
-    const successfulItems = getSuccessfulUploadItems(getState());
+    const successfulItems = getSuccessfulUploadItemsToEnqueue(getState());
     dispatch(_enqueueSuccessfulUploads(successfulItems));
   };
 }
@@ -88,7 +88,7 @@ export function restartSuccessfulUploads(): AppThunk<void> {
  */
 export function retryFailedUploads(): AppThunk<void> {
   return (dispatch, getState) => {
-    const failedItems = getFailedUploadItems(getState());
+    const failedItems = getFailedUploadItemsToEnqueue(getState());
     dispatch(_enqueueFailedUploads(failedItems));
   };
 }
