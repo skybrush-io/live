@@ -4,6 +4,7 @@ import NavigateNext from '@mui/icons-material/NavigateNext';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
+import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import { animated, useTransition } from '@react-spring/web';
 import PropTypes from 'prop-types';
@@ -102,14 +103,16 @@ const ParameterListSidebar = ({
               ...rest,
             }}
           >
-            <ListItemButton onClick={() => onRemoveItem(id)}>
-              <Box sx={{ display: 'flex', flexDirection: 'row', flexGrow: 1 }}>
-                <Box sx={{ flexGrow: 1 }}>
-                  {uavId === undefined ? name : `${name} (${uavId})`}
+            <ListItem disablePadding>
+              <ListItemButton onClick={() => onRemoveItem(id)}>
+                <Box sx={{ display: 'flex', flexDirection: 'row', flexGrow: 1 }}>
+                  <Box sx={{ flexGrow: 1 }}>
+                    {uavId === undefined ? name : `${name} (${uavId})`}
+                  </Box>
+                  <Box sx={{ color: 'text.secondary', ml: 1 }}>{value}</Box>
                 </Box>
-                <Box sx={{ color: 'text.secondary', ml: 1 }}>{value}</Box>
-              </Box>
-            </ListItemButton>
+              </ListItemButton>
+            </ListItem>
           </animated.div>
         ))}
       </MiniList>

@@ -3,6 +3,7 @@
  */
 
 import AddCircleOutline from '@mui/icons-material/AddCircleOutline';
+import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
@@ -26,17 +27,15 @@ import { getLayersInTopmostFirstOrder } from '~/selectors/ordered';
 const createListItemForLayer = (layer, props) => {
   const icon = iconForLayerType(layer.type);
   return (
-    <ListItemButton
-      key={layer.id}
-      style={layer.visible ? undefined : { opacity: 0.3 }}
-      onClick={props.onItemSelected}
-    >
-      {icon && <ListItemIcon>{icon}</ListItemIcon>}
-      <ListItemText
-        primary={layer.label}
-        secondary={labelForLayerType(layer.type)}
-      />
-    </ListItemButton>
+    <ListItem key={layer.id} disablePadding style={layer.visible ? undefined : { opacity: 0.3 }}>
+      <ListItemButton onClick={props.onItemSelected}>
+        {icon && <ListItemIcon>{icon}</ListItemIcon>}
+        <ListItemText
+          primary={layer.label}
+          secondary={labelForLayerType(layer.type)}
+        />
+      </ListItemButton>
+    </ListItem>
   );
 };
 
@@ -48,12 +47,14 @@ const createListItemForLayer = (layer, props) => {
  */
 const createNewItemEntry = (props) => {
   return (
-    <ListItemButton key='__newItem__' onClick={props.onNewItem}>
-      <ListItemIcon>
-        <AddCircleOutline />
-      </ListItemIcon>
-      <ListItemText primary='Add new layer' />
-    </ListItemButton>
+    <ListItem key='__newItem__' disablePadding>
+      <ListItemButton onClick={props.onNewItem}>
+        <ListItemIcon>
+          <AddCircleOutline />
+        </ListItemIcon>
+        <ListItemText primary='Add new layer' />
+      </ListItemButton>
+    </ListItem>
   );
 };
 

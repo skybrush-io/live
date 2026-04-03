@@ -1,3 +1,4 @@
+import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import PropTypes from 'prop-types';
@@ -31,22 +32,24 @@ const ManualPreflightChecksButton = ({
   const { t } = useTranslation();
 
   return hasManualChecks ? (
-    <ListItemButton disabled={status === Status.OFF} {...rest}>
-      <StatusLight status={status} />
-      <ListItemText
-        primary={t('show.manualPreflightChecks', 'Manual preflight checks')}
-      />
-      {/* TODO: show how many checks were not ticked off by the user yet */}
-      {/*
-      <ListItemSecondaryAction>
-        <Switch
-          checked={areChecksSignedOff}
-          edge='end'
-          onChange={areChecksSignedOff ? onRevoke : onApprove}
+    <ListItem disablePadding>
+      <ListItemButton disabled={status === Status.OFF} {...rest}>
+        <StatusLight status={status} />
+        <ListItemText
+          primary={t('show.manualPreflightChecks', 'Manual preflight checks')}
         />
-      </ListItemSecondaryAction>
-      */}
-    </ListItemButton>
+        {/* TODO: show how many checks were not ticked off by the user yet */}
+        {/*
+        <ListItemSecondaryAction>
+          <Switch
+            checked={areChecksSignedOff}
+            edge='end'
+            onChange={areChecksSignedOff ? onRevoke : onApprove}
+          />
+        </ListItemSecondaryAction>
+        */}
+      </ListItemButton>
+    </ListItem>
   ) : null;
 };
 

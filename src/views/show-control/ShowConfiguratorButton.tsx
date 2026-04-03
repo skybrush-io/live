@@ -1,3 +1,4 @@
+import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import type React from 'react';
@@ -35,7 +36,6 @@ import {
   type AppSelector,
   type RootState,
 } from '~/store/reducers';
-import { type Nullable } from '~/utils/types';
 
 const PREREQUISITES: ReadonlyArray<
   Readonly<{
@@ -88,7 +88,7 @@ const ShowConfiguratorButton = (props: Props): React.JSX.Element => {
   // NOTE: Using a `ref` here broke when rearranging the GolenLayout panels...
   //       (The popup wouldn't show up until something triggered a rerender.)
   const [tooltipTriggerTarget, setTooltipTriggerTarget] =
-    useState<Nullable<HTMLDivElement>>();
+    useState<HTMLElement | null>();
 
   const evaluatedPrerequisites = PREREQUISITES.map(({ selector, message }) => ({
     // NOTE: The `PREREQUISITES` list being readonly and frozen ensures that the
@@ -129,7 +129,7 @@ const ShowConfiguratorButton = (props: Props): React.JSX.Element => {
   const disabled = status === Status.OFF || !prerequisitesFulfilled;
 
   return (
-    <div ref={setTooltipTriggerTarget}>
+    <ListItem disablePadding ref={setTooltipTriggerTarget}>
       <ListItemButton disabled={disabled} onClick={openWithShow}>
         <StatusLight status={disabled ? Status.OFF : status} />
         <ListItemText
@@ -150,7 +150,7 @@ const ShowConfiguratorButton = (props: Props): React.JSX.Element => {
           secondary={t('show.showConfigurator.description')}
         />
       </ListItemButton>
-    </div>
+    </ListItem>
   );
 };
 

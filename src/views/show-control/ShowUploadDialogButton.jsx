@@ -1,3 +1,4 @@
+import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
@@ -24,17 +25,19 @@ const ShowUploadDialogButton = ({ loading, status, ...rest }) => {
   const { t } = useTranslation();
 
   return (
-    <ListItemButton disabled={status === Status.OFF} {...rest}>
-      <StatusLight status={status} />
-      <ListItemTextWithProgress
-        primary={
-          loading ? t('show.uploadShowDataLoading') : t('show.uploadShowData')
-        }
-        secondary={
-          loading ? <UploadProgressBar /> : t('show.uploadShowDataStart')
-        }
-      />
-    </ListItemButton>
+    <ListItem disablePadding>
+      <ListItemButton disabled={status === Status.OFF} {...rest}>
+        <StatusLight status={status} />
+        <ListItemTextWithProgress
+          primary={
+            loading ? t('show.uploadShowDataLoading') : t('show.uploadShowData')
+          }
+          secondary={
+            loading ? <UploadProgressBar /> : t('show.uploadShowDataStart')
+          }
+        />
+      </ListItemButton>
+    </ListItem>
   );
 };
 
