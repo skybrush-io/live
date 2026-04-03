@@ -27,7 +27,7 @@ import { getLayersInTopmostFirstOrder } from '~/selectors/ordered';
 const createListItemForLayer = (layer, props) => {
   const icon = iconForLayerType(layer.type);
   return (
-    <ListItem key={layer.id} disablePadding style={layer.visible ? undefined : { opacity: 0.3 }}>
+    <ListItem key={layer.id} disablePadding sx={layer.visible ? undefined : { opacity: 0.3 }}>
       <ListItemButton onClick={props.onItemSelected}>
         {icon && <ListItemIcon>{icon}</ListItemIcon>}
         <ListItemText
