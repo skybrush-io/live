@@ -20,31 +20,42 @@ const DockDetailsDialogBody = ({ dockId, selectedTab }) => {
     case 'status':
       return (
         <List>
-          <ListItemButton>
-            <StatusLight status='success' />
-            <ListItemText primary='Door closed' />
-          </ListItemButton>
-          <ListItemButton>
-            <StatusLight status='success' />
-            <ListItemText primary='Tilt angle: 0.7°' />
-          </ListItemButton>
+          <ListItem>
+            <ListItemButton>
+              <StatusLight status='success' />
+              <ListItemText primary='Door closed' />
+            </ListItemButton>
+          </ListItem>
+
+          <ListItem>
+            <ListItemButton>
+              <StatusLight status='success' />
+              <ListItemText primary='Tilt angle: 0.7°' />
+            </ListItemButton>
+          </ListItem>
 
           <ListSubheader>Landing pad 1</ListSubheader>
-          <ListItemButton>
-            <StatusLight status='success' />
-            <ListItemText primary='Landing pad is at the bottom' />
-          </ListItemButton>
-          <ListItemButton>
-            <StatusLight status='success' />
-            <ListItemText primary='Tweezers touching drone leg (left, right)' />
-          </ListItemButton>
-          <ListItemButton>
-            <StatusLight status='info' />
-            <ListItemText
-              primary='Drone is charging'
-              secondary='11.6V • Time until full: 17m 12s'
-            />
-          </ListItemButton>
+          <ListItem>
+            <ListItemButton>
+              <StatusLight status='success' />
+              <ListItemText primary='Landing pad is at the bottom' />
+            </ListItemButton>
+          </ListItem>
+          <ListItem>
+            <ListItemButton>
+              <StatusLight status='success' />
+              <ListItemText primary='Tweezers touching drone leg (left, right)' />
+            </ListItemButton>
+          </ListItem>
+          <ListItem>
+            <ListItemButton>
+              <StatusLight status='info' />
+              <ListItemText
+                primary='Drone is charging'
+                secondary='11.6V • Time until full: 17m 12s'
+              />
+            </ListItemButton>
+          </ListItem>
         </List>
       );
 
