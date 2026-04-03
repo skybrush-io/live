@@ -62,7 +62,6 @@ const { actions, reducer } = createSlice({
       state,
       action: PayloadAction<Array<AveragingResult['id']>>
     ) {
-      console.log(action.payload);
       state.averagingDialog.selectedUAVIds = [...action.payload];
     },
 
