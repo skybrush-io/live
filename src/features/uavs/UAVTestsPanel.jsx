@@ -1,5 +1,6 @@
 import Button from '@mui/material/Button';
 import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import Zoom from '@mui/material/Zoom';
@@ -168,46 +169,50 @@ const UAVTestButton = ({
   );
 
   return (
-    <ListItemButton
-      onClick={needsConfirmation ? askForConfirmation : giveConfirmation}
+    <ListItem
+      disablePadding
       secondaryAction={needsConfirmation ? confirmButton : null}
     >
-      <StatusLight
-        status={
-          suspended
-            ? 'warning'
-            : executionState.loading
-              ? 'next'
-              : executionState.error
-                ? 'error'
-                : isNil(executionState.value)
-                  ? 'off'
-                  : executionState.value
-                    ? 'success'
-                    : 'error'
-        }
-      />
-      <ListItemText
-        primary={
-          suspended
-            ? `${progress.message || 'Operation suspended'}. Click to resume.`
-            : progress && (!executionState.error || executionState.loading)
-              ? `${progress.message || label}`
-              : label
-        }
-        secondary={
-          !executionState.loading && executionState.error ? (
-            errorToString(executionState.error)
-          ) : progress ? (
-            /* Prefer progress bars even in suspended state */
-            <ListItemProgressBar progress={progress} />
-          ) : suspended ? (
-            /* If we are suspended but we don't have progress info, show an indefinite progress bar */
-            <ListItemProgressBar />
-          ) : null
-        }
-      />
-    </ListItemButton>
+      <ListItemButton
+        onClick={needsConfirmation ? askForConfirmation : giveConfirmation}
+      >
+        <StatusLight
+          status={
+            suspended
+              ? 'warning'
+              : executionState.loading
+                ? 'next'
+                : executionState.error
+                  ? 'error'
+                  : isNil(executionState.value)
+                    ? 'off'
+                    : executionState.value
+                      ? 'success'
+                      : 'error'
+          }
+        />
+        <ListItemText
+          primary={
+            suspended
+              ? `${progress.message || 'Operation suspended'}. Click to resume.`
+              : progress && (!executionState.error || executionState.loading)
+                ? `${progress.message || label}`
+                : label
+          }
+          secondary={
+            !executionState.loading && executionState.error ? (
+              errorToString(executionState.error)
+            ) : progress ? (
+              /* Prefer progress bars even in suspended state */
+              <ListItemProgressBar progress={progress} />
+            ) : suspended ? (
+              /* If we are suspended but we don't have progress info, show an indefinite progress bar */
+              <ListItemProgressBar />
+            ) : null
+          }
+        />
+      </ListItemButton>
+    </ListItem>
   );
 };
 
