@@ -56,6 +56,7 @@ type SelectableListProps<T> = {
 export type MultiSelectableListProps = {
   onActivate?: (item: string) => void;
   onChange?: (items: string[]) => void;
+  onItemSelected?: (event: React.UIEvent) => void;
   value: string[];
 };
 
