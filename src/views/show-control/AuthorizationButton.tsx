@@ -55,13 +55,17 @@ const AuthorizationButton = ({
         {...rest}
       >
         <StatusLight
-          status={isAuthorized && status === Status.OFF ? Status.SKIPPED : status}
+          status={
+            isAuthorized && status === Status.OFF ? Status.SKIPPED : status
+          }
         />
         <ListItemText
           disableTypography
           primary={
             <Typography variant='button'>
-              {isAuthorized ? t('show.authorized') : t('show.authorizeTheStart')}
+              {isAuthorized
+                ? t('show.authorized')
+                : t('show.authorizeTheStart')}
             </Typography>
           }
           secondary={

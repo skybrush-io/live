@@ -48,10 +48,7 @@ const PreflightCheckListPresentation = ({
       const itemId = `preflight-item-${item.id}`;
       return (
         <ListItem key={itemId} disablePadding>
-          <ListItemButton
-            disableRipple
-            onClick={() => onToggle(item.id)}
-          >
+          <ListItemButton disableRipple onClick={() => onToggle(item.id)}>
             <ListItemIcon>
               <Checkbox
                 checked={checkedItemIds.includes(item.id)}

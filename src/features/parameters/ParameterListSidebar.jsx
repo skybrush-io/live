@@ -105,7 +105,9 @@ const ParameterListSidebar = ({
           >
             <ListItem disablePadding>
               <ListItemButton onClick={() => onRemoveItem(id)}>
-                <Box sx={{ display: 'flex', flexDirection: 'row', flexGrow: 1 }}>
+                <Box
+                  sx={{ display: 'flex', flexDirection: 'row', flexGrow: 1 }}
+                >
                   <Box sx={{ flexGrow: 1 }}>
                     {uavId === undefined ? name : `${name} (${uavId})`}
                   </Box>
