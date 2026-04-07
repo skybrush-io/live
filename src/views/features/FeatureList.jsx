@@ -50,15 +50,24 @@ import { fitCoordinatesIntoMapView } from '~/signals';
 const ICON_SIZE = 24;
 const GAP_SIZE = 12;
 
+const ACTION_BUTTON_COLLAPSE_THRESHOLD = 350;
+const NUM_BUTTONS = 4;
+
 const useStyles = makeStyles({
   button: {
-    '@container (max-width: 350px)': {
+    [`@container (max-width: ${ACTION_BUTTON_COLLAPSE_THRESHOLD}px)`]: {
       display: 'none',
     },
   },
   menu: {
-    '@container (min-width: 351px)': {
+    [`@container (min-width: ${ACTION_BUTTON_COLLAPSE_THRESHOLD + 1}px)`]: {
       display: 'none',
+    },
+  },
+  listItem: {
+    containerType: 'inline-size',
+    [`@container (min-width: ${ACTION_BUTTON_COLLAPSE_THRESHOLD + 1}px)`]: {
+      paddingRight: (ICON_SIZE + GAP_SIZE) * NUM_BUTTONS,
     },
   },
 });
@@ -180,13 +189,7 @@ const FeatureListEntryPresentation = (props) => {
           {actionMenu}
         </>
       }
-      sx={{
-        containerType: 'inline-size',
-        '@container (min-width: 351px)': {
-          paddingRight:
-            ICON_SIZE * actions.length + GAP_SIZE * (actions.length + 1),
-        },
-      }}
+      className={classes.listItem}
     >
       <ListItemButton selected={selected} onClick={onSelect}>
         <ListItemIcon
