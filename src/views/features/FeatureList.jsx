@@ -180,18 +180,15 @@ const FeatureListEntryPresentation = (props) => {
           {actionMenu}
         </>
       }
+      sx={{
+        containerType: 'inline-size',
+        '@container (min-width: 351px)': {
+          paddingRight:
+            ICON_SIZE * actions.length + GAP_SIZE * (actions.length + 1),
+        },
+      }}
     >
-      <ListItemButton
-        sx={{
-          containerType: 'inline-size',
-          '@container (min-width: 351px)': {
-            paddingRight:
-              ICON_SIZE * actions.length + GAP_SIZE * (actions.length + 1),
-          },
-        }}
-        selected={selected}
-        onClick={onSelect}
-      >
+      <ListItemButton selected={selected} onClick={onSelect}>
         <ListItemIcon
           style={{ color: suggestedColor, minWidth: 0, marginRight: '16px' }}
         >
