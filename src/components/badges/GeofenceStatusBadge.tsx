@@ -10,6 +10,7 @@ import { SidebarBadge } from '@skybrush/mui-components';
 import { colorForStatus } from '~/components/colors';
 import { Status } from '~/components/semantics';
 import { getGeofenceStatus } from '~/features/mission/selectors-geofence-extra';
+import type { RootState } from '~/store/reducers';
 
 /**
  * Smart badge component that shows whether a geofence is active and in case it
@@ -17,7 +18,7 @@ import { getGeofenceStatus } from '~/features/mission/selectors-geofence-extra';
  */
 export default connect(
   // mapStateToProps
-  (state) => {
+  (state: RootState) => {
     const status = getGeofenceStatus(state);
     return {
       color: colorForStatus(status),

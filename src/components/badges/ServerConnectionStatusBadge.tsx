@@ -10,8 +10,9 @@ import { SidebarBadge } from '@skybrush/mui-components';
 import Colors from '~/components/colors';
 import { getCurrentServerState } from '~/features/servers/selectors';
 import { ConnectionState } from '~/model/enums';
+import type { RootState } from '~/store/reducers';
 
-const colorForState = {
+const colorForState: Record<ConnectionState, string> = {
   [ConnectionState.CONNECTED]: Colors.success,
   [ConnectionState.CONNECTING]: Colors.warning,
   [ConnectionState.DISCONNECTING]: Colors.warning,
@@ -24,7 +25,7 @@ const colorForState = {
  */
 export default connect(
   // mapStateToProps
-  (state) => ({
+  (state: RootState) => ({
     color: colorForState[getCurrentServerState(state).state],
     visible: state.dialogs.serverSettings.active,
   }),

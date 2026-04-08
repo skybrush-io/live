@@ -13,8 +13,15 @@ import {
   isAuthenticating,
   requiresAuthentication,
 } from '~/features/servers/selectors';
+import type { RootState } from '~/store/reducers';
 
-const colorForState = {
+type AuthState =
+  | 'authenticated'
+  | 'authenticating'
+  | 'notAuthenticated'
+  | 'authenticationNotRequired';
+
+const colorForState: Record<AuthState, string | undefined> = {
   authenticated: Colors.success,
   authenticating: Colors.warning,
   notAuthenticated: Colors.error,
@@ -27,8 +34,8 @@ const colorForState = {
  */
 export default connect(
   // mapStateToProps
-  (state) => {
-    const authState = isAuthenticated(state)
+  (state: RootState) => {
+    const authState: AuthState = isAuthenticated(state)
       ? 'authenticated'
       : isAuthenticating(state)
         ? 'authenticating'
