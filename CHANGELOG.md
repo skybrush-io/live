@@ -53,6 +53,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fixed double event handling on the Logs panel of the UAV properties dialog.
 
+- Several multi-monitor related issues got resolved:
+  - Context menus appear at the right position.
+  - Hotkeys are triggered correctly in external windows.
+  - The map resizes properly when shown in a detached panel.
+
 ## [2.12.1] - 2025-12-15
 
 ### Fixed
