@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import { colorForStatus, Status } from '@skybrush/app-theme-mui';
@@ -10,6 +9,7 @@ import {
 
 import { isConnected } from '~/features/servers/selectors';
 import Satellite from '~/icons/Satellite';
+import type { RootState } from '~/store/reducers';
 
 import RTKStatusMiniList from './RTKStatusMiniList';
 import RTKStatusUpdater from './RTKStatusUpdater';
@@ -23,10 +23,23 @@ import { formatSurveyAccuracy } from './utils';
 
 const BADGE_OFFSET = [24, 8];
 
-const buttonStyle = {
+const buttonStyle: React.CSSProperties = {
   justifyContent: 'space-between',
   textAlign: 'right',
   width: 80,
+};
+
+type RTKStatusHeaderButtonProps = {
+  isConnected: boolean;
+  numGoodSatellites: number;
+  numSatellites: number;
+  showRTKSetupDialog: () => void;
+  surveyStatus: {
+    accuracy?: number;
+    active: boolean;
+    supported: boolean;
+    valid: boolean;
+  };
 };
 
 const RTKStatusHeaderButton = ({
@@ -35,7 +48,7 @@ const RTKStatusHeaderButton = ({
   numSatellites,
   showRTKSetupDialog,
   surveyStatus,
-}) => {
+}: RTKStatusHeaderButtonProps) => {
   let badgeStatus = null;
   const hasError = false;
 
@@ -83,7 +96,7 @@ const RTKStatusHeaderButton = ({
         <Satellite />
         <SidebarBadge
           anchor='topLeft'
-          color={badgeStatus ? colorForStatus(badgeStatus) : null}
+          color={badgeStatus ? colorForStatus(badgeStatus) : undefined}
           offset={BADGE_OFFSET}
           visible={Boolean(badgeStatus)}
         />
@@ -93,22 +106,9 @@ const RTKStatusHeaderButton = ({
   );
 };
 
-RTKStatusHeaderButton.propTypes = {
-  isConnected: PropTypes.bool,
-  numGoodSatellites: PropTypes.number,
-  numSatellites: PropTypes.number,
-  showRTKSetupDialog: PropTypes.func,
-  surveyStatus: PropTypes.shape({
-    accuracy: PropTypes.number,
-    active: PropTypes.bool,
-    supported: PropTypes.bool,
-    valid: PropTypes.bool,
-  }),
-};
-
 export default connect(
   // mapStateToProps
-  (state) => ({
+  (state: RootState) => ({
     isConnected: isConnected(state),
     numGoodSatellites: getNumberOfGoodSatellites(state),
     numSatellites: getNumberOfSatellites(state),

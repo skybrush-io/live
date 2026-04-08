@@ -1,7 +1,6 @@
 import config from 'config';
 
 import Box from '@mui/material/Box';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import Shapeshifter from 'react-shapeshifter';
 
@@ -17,6 +16,7 @@ import DistanceSummaryHeaderButton from '~/features/uavs/DistanceSummaryHeaderBu
 import VelocitySummaryHeaderButton from '~/features/uavs/VelocitySummaryHeaderButton';
 import WeatherHeaderButton from '~/features/weather/WeatherHeaderButton';
 import { shouldSidebarBeShown } from '~/features/workbench/selectors';
+import type { RootState } from '~/store/reducers';
 import { hasFeature } from '~/utils/configuration';
 
 import AlertButton from './AlertButton';
@@ -42,7 +42,7 @@ const innerStyle = {
   flexFlow: 'row nowrap',
 };
 
-const componentRegistry = {
+const componentRegistry: Record<string, React.ComponentType> = {
   'alert-button': AlertButton,
   'altitude-summary-header-button': AltitudeSummaryHeaderButton,
   'app-settings-button': AppSettingsButton,
@@ -60,7 +60,7 @@ const componentRegistry = {
   'safety-button': SafetyButton,
   'server-connection-settings-button': () => (
     <ServerConnectionSettingsButton
-      hideTooltip={config.optimizeUIForTouch.default}
+      hideTooltip={Boolean(config.optimizeUIForTouch.default)}
     />
   ),
   'session-expiry-box': SessionExpiryBox,
@@ -70,13 +70,17 @@ const componentRegistry = {
   'weather-header-button': WeatherHeaderButton,
 };
 
+type Props = {
+  isSidebarOpen: boolean;
+  showSidebar?: boolean;
+  toggleSidebar: () => void;
+};
+
 /**
  * Presentation component for the header at the top edge of the main
  * window.
- *
- * @returns  {Object}  the rendered header component
  */
-const Header = ({ isSidebarOpen, showSidebar, toggleSidebar }) => (
+const Header = ({ isSidebarOpen, showSidebar, toggleSidebar }: Props) => (
   <div id='header' style={{ ...style, overflow: 'hidden' }}>
     <div id='header-inner' style={innerStyle}>
       {showSidebar && (
@@ -104,15 +108,9 @@ const Header = ({ isSidebarOpen, showSidebar, toggleSidebar }) => (
   </div>
 );
 
-Header.propTypes = {
-  isSidebarOpen: PropTypes.bool.isRequired,
-  showSidebar: PropTypes.bool,
-  toggleSidebar: PropTypes.func.isRequired,
-};
-
 export default connect(
   // mapStateToProps
-  (state) => ({
+  (state: RootState) => ({
     sessionExpiresAt: state.session.expiresAt,
     isSidebarOpen: isSidebarOpen(state),
     showSidebar: shouldSidebarBeShown(state),

@@ -1,14 +1,21 @@
 import ConnectionIcon from '@mui/icons-material/Power';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
-import { GenericHeaderButton, LazyTooltip } from '@skybrush/mui-components';
+import {
+  GenericHeaderButton,
+  LazyTooltip,
+  type GenericHeaderButtonProps,
+} from '@skybrush/mui-components';
 
 import ServerConnectionStatusMiniList from '~/components/ServerConnectionStatusMiniList';
 import ServerConnectionStatusBadge from '~/components/badges/ServerConnectionStatusBadge';
 import { showServerSettingsDialog } from '~/features/servers/actions';
 
-const ServerConnectionSettingsButton = ({ hideTooltip, ...rest }) => {
+type Props = {
+  hideTooltip?: boolean;
+} & GenericHeaderButtonProps;
+
+const ServerConnectionSettingsButton = ({ hideTooltip, ...rest }: Props) => {
   const body = (
     <GenericHeaderButton {...rest}>
       <ServerConnectionStatusBadge />
@@ -23,11 +30,6 @@ const ServerConnectionSettingsButton = ({ hideTooltip, ...rest }) => {
       {body}
     </LazyTooltip>
   );
-};
-
-ServerConnectionSettingsButton.propTypes = {
-  hideTooltip: PropTypes.bool,
-  onClick: PropTypes.func,
 };
 
 export default connect(

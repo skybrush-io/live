@@ -1,15 +1,23 @@
 import LooksTwo from '@mui/icons-material/LooksTwo';
 import { useTheme } from '@mui/material/styles';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
-import { GenericHeaderButton, SidebarBadge } from '@skybrush/mui-components';
+import {
+  GenericHeaderButton,
+  type GenericHeaderButtonProps,
+  SidebarBadge,
+} from '@skybrush/mui-components';
 
 import Colors from '~/components/colors';
 import { getPreferredCommunicationChannelIndex } from '~/features/mission/selectors';
 import { togglePreferredChannel } from '~/features/mission/slice';
+import type { RootState } from '~/store/reducers';
 
-const CommunicationChannelSwitch = ({ selected, ...rest }) => {
+type Props = {
+  selected: boolean;
+} & GenericHeaderButtonProps;
+
+const CommunicationChannelSwitch = ({ selected, ...rest }: Props) => {
   const theme = useTheme();
   return (
     <GenericHeaderButton
@@ -28,18 +36,13 @@ const CommunicationChannelSwitch = ({ selected, ...rest }) => {
   );
 };
 
-CommunicationChannelSwitch.propTypes = {
-  onClick: PropTypes.func,
-  selected: PropTypes.bool,
-};
-
 export default connect(
   // mapStateToProps
-  (state) => ({
+  (state: RootState) => ({
     selected: getPreferredCommunicationChannelIndex(state) !== 0,
   }),
   // mapDispatchToProps
   {
-    onClick: togglePreferredChannel,
+    onClick: () => togglePreferredChannel(),
   }
 )(CommunicationChannelSwitch);

@@ -1,14 +1,21 @@
 import SettingsEthernet from '@mui/icons-material/SettingsEthernet';
 import { connect } from 'react-redux';
 
-import { GenericHeaderButton, LazyTooltip } from '@skybrush/mui-components';
+import {
+  GenericHeaderButton,
+  LazyTooltip,
+  type GenericHeaderButtonProps,
+} from '@skybrush/mui-components';
 
 import ConnectionStatusMiniList from '~/components/ConnectionStatusMiniList';
 import ConnectionStatusBadge from '~/components/badges/ConnectionStatusBadge';
 import ChannelIndicator from '~/components/header/ChannelIndicator';
 import { isConnected } from '~/features/servers/selectors';
+import type { RootState } from '~/store/reducers';
 
-const ConnectionStatusButtonPresentation = (props) => (
+type Props = GenericHeaderButtonProps;
+
+const ConnectionStatusButtonPresentation = (props: Props) => (
   <LazyTooltip
     interactive
     content={<ConnectionStatusMiniList />}
@@ -28,11 +35,9 @@ ConnectionStatusButtonPresentation.propTypes = {
 
 export default connect(
   // mapStateToProps
-  (state) => ({
+  (state: RootState) => ({
     disabled: !isConnected(state),
   }),
   // mapDispatchToProps
-  () => ({
-    onClick() {},
-  })
+  {}
 )(ConnectionStatusButtonPresentation);

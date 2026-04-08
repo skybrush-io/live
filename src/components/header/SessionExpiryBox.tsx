@@ -1,12 +1,17 @@
 import Box from '@mui/material/Box';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import TimeAgo from 'react-timeago';
 
-const headingFormatter = (_value, _unit, suffix) =>
+import type { RootState } from '~/store/reducers';
+
+const headingFormatter = (_value: number, _unit: string, suffix: string) =>
   suffix === 'ago' ? 'Session expired' : 'Session expires';
 
-const SessionExpiryBox = ({ expiresAt }) =>
+type Props = {
+  expiresAt?: number;
+};
+
+const SessionExpiryBox = ({ expiresAt }: Props) =>
   expiresAt ? (
     <Box
       style={{ color: 'white', fontSize: '0.875rem', textAlign: 'right' }}
@@ -23,13 +28,9 @@ const SessionExpiryBox = ({ expiresAt }) =>
     </Box>
   ) : null;
 
-SessionExpiryBox.propTypes = {
-  expiresAt: PropTypes.number,
-};
-
 export default connect(
   // mapStateToProps
-  (state) => ({
+  (state: RootState) => ({
     expiresAt: state.session.expiresAt,
   })
 )(SessionExpiryBox);
