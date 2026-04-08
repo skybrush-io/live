@@ -13,6 +13,7 @@ import type {
 } from '@skybrush/flockwave-spec';
 
 import { errorToString } from '~/error-handling';
+import type { Coordinate3D } from '~/utils/math';
 
 import {
   createBulkParameterUploadRequest,
@@ -275,6 +276,27 @@ export async function startRTKSurvey(
 }
 
 /**
+ * Sets the RTK antenna position on the server by submitting explicit
+ * survey settings that contain a fixed position instead of starting a survey.
+ */
+export async function setRTKAntennaPosition(
+  hub: MessageHub,
+  { position, accuracy }: { position: Coordinate3D; accuracy: number }
+) {
+  const response = await hub.sendMessage({
+    type: 'X-RTK-SURVEY',
+    settings: {
+      position,
+      accuracy,
+    },
+  });
+
+  if (response.body.type !== 'ACK-ACK') {
+    throw new Error('Failed to set RTK antenna position on the server');
+  }
+}
+
+/**
  * Asks the server to suspend the currently running show.
  */
 export async function suspendShow(hub: MessageHub): Promise<Schedule> {
@@ -451,6 +473,7 @@ const _operations = {
   sendDebugMessage,
   setParameter,
   setParameters,
+  setRTKAntennaPosition,
   setRTKCorrectionsSource,
   setShowConfiguration,
   setShowLightConfiguration,

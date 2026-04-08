@@ -3,20 +3,35 @@
  * selected RTK stream on the server.
  */
 
+import isEqual from 'lodash-es/isEqual';
 import isNil from 'lodash-es/isNil';
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
 import { noPayload } from '~/utils/redux';
 
-import { RTKAntennaPositionFormat, type RTKStatistics } from './types';
+import {
+  RTKAntennaPositionFormat,
+  type RTKSavedCoordinate,
+  type RTKStatistics,
+} from './types';
 
 type RTKSliceState = {
   stats: RTKStatistics;
+
+  /** Saved coordinates per RTK preset ID */
+  savedCoordinates: Record<string, RTKSavedCoordinate[]>;
+
+  currentPresetId?: string;
 
   dialog: {
     open: boolean;
     antennaPositionFormat: RTKAntennaPositionFormat;
     surveySettingsEditorVisible: boolean;
+    /** Dialog for asking user if they want to use saved coordinates */
+    coordinateRestorationDialog: {
+      open: boolean;
+      presetId?: string;
+    };
   };
 };
 
@@ -39,10 +54,18 @@ const initialState: RTKSliceState = {
     },
   },
 
+  savedCoordinates: {},
+
+  currentPresetId: undefined,
+
   dialog: {
     open: false,
     antennaPositionFormat: RTKAntennaPositionFormat.LON_LAT,
     surveySettingsEditorVisible: false,
+    coordinateRestorationDialog: {
+      open: false,
+      presetId: undefined,
+    },
   },
 };
 
@@ -95,9 +118,7 @@ const { actions, reducer } = createSlice({
       // gone
       state.stats.satellites = satellites;
 
-      if (state.stats.survey === undefined) {
-        state.stats.survey = {};
-      }
+      state.stats.survey ??= {};
 
       if (!isNil(survey.accuracy)) {
         state.stats.survey.accuracy = survey.accuracy;
@@ -107,14 +128,72 @@ const { actions, reducer } = createSlice({
         state.stats.survey.flags = survey.flags;
       }
     },
+
+    // Saved coordinates management
+    saveCoordinateForPreset(
+      state,
+      action: PayloadAction<{
+        presetId: string;
+        coordinate: RTKSavedCoordinate;
+      }>
+    ) {
+      const { presetId, coordinate } = action.payload;
+
+      state.savedCoordinates[presetId] ??= [];
+
+      const existing = state.savedCoordinates[presetId];
+
+      const duplicateIndex = existing.findIndex((c) =>
+        isEqual(c.positionECEF, coordinate.positionECEF)
+      );
+
+      if (duplicateIndex !== -1) {
+        existing.splice(duplicateIndex, 1);
+      }
+
+      existing.unshift(coordinate);
+
+      if (existing.length > 5) {
+        existing.pop();
+      }
+    },
+
+    setCurrentRTKPresetId(state, action: PayloadAction<string | undefined>) {
+      state.currentPresetId = action.payload;
+    },
+
+    clearAllSavedCoordinates(state) {
+      state.savedCoordinates = {};
+    },
+
+    // Coordinate restoration dialog management
+    showCoordinateRestorationDialog(state, action: PayloadAction<string>) {
+      const presetId = action.payload;
+      state.dialog.coordinateRestorationDialog = {
+        open: true,
+        presetId,
+      };
+    },
+
+    closeCoordinateRestorationDialog: noPayload<RTKSliceState>((state) => {
+      state.dialog.coordinateRestorationDialog = {
+        open: false,
+        presetId: undefined,
+      };
+    }),
   },
 });
 
 export const {
+  clearAllSavedCoordinates,
+  closeCoordinateRestorationDialog,
   closeRTKSetupDialog,
   closeSurveySettingsPanel,
   resetRTKStatistics,
+  saveCoordinateForPreset,
   setAntennaPositionFormat,
+  setCurrentRTKPresetId,
+  showCoordinateRestorationDialog,
   showRTKSetupDialog,
   toggleSurveySettingsPanel,
   updateRTKStatistics,

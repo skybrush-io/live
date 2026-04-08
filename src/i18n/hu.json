@@ -27,6 +27,14 @@
     "noRTKData": "Nincsenek RTK adatforrások a szerveren",
     "pleaseWait": "Kérem várjon, RTK források betöltése…"
   },
+  "RTKCoordinateRestorationDialog": {
+    "title": "Válassz egy mentett koordinátát",
+    "positionLabel": "Pozíció",
+    "accuracyLabel": "Pontosság",
+    "dateLabel": "Mentve",
+    "noSavedCoordinates": "Nincsenek mentett koordináták.",
+    "useSaved": "Koordináta használata"
+  },
   "RTKMessage": {
     "noRTKMessagesYet": "Még nem érkezett RTK üzenet"
   },

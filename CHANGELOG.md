@@ -34,6 +34,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The upload dialog has a "Clear history" button that erases the upload history
   for the current upload job type.
 
+- RTK base station coordinates can now be restored from positions stored during
+  earlier surveys.
+
 ### Changed
 
 - Smaller headings in the Field Notes panel.
