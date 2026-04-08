@@ -1,3 +1,4 @@
+import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import PropTypes from 'prop-types';
@@ -31,12 +32,14 @@ const ManualPreflightChecksButton = ({
   const { t } = useTranslation();
 
   return hasManualChecks ? (
-    <ListItemButton disabled={status === Status.OFF} {...rest}>
-      <StatusLight status={status} />
-      <ListItemText
-        primary={t('show.manualPreflightChecks', 'Manual preflight checks')}
-      />
-    </ListItemButton>
+    <ListItem disablePadding>
+      <ListItemButton disabled={status === Status.OFF} {...rest}>
+        <StatusLight status={status} />
+        <ListItemText
+          primary={t('show.manualPreflightChecks', 'Manual preflight checks')}
+        />
+      </ListItemButton>
+    </ListItem>
   ) : null;
 };
 

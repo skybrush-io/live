@@ -1,4 +1,5 @@
 import IconButton from '@mui/material/IconButton';
+import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import { useCallback, useState } from 'react';
@@ -93,7 +94,7 @@ const ShowConfiguratorButton = (props: Props) => {
   // NOTE: Using a `ref` here broke when rearranging the GolenLayout panels...
   //       (The popup wouldn't show up until something triggered a rerender.)
   const [tooltipTriggerTarget, setTooltipTriggerTarget] =
-    useState<Nullable<HTMLDivElement>>();
+    useState<Nullable<HTMLElement>>();
 
   const { prerequisites, prerequisitesFulfilled } =
     useConstPrerequisites(PREREQUISITES);
@@ -110,7 +111,7 @@ const ShowConfiguratorButton = (props: Props) => {
   const disabled = status === Status.OFF || !prerequisitesFulfilled;
 
   return (
-    <div ref={setTooltipTriggerTarget}>
+    <ListItem disablePadding ref={setTooltipTriggerTarget}>
       <ListItemButton disabled={disabled} onClick={openWithShow}>
         <StatusLight status={disabled ? Status.OFF : status} />
         <ListItemText
@@ -161,7 +162,7 @@ const ShowConfiguratorButton = (props: Props) => {
           </Tooltip>
         )}
       </ListItemButton>
-    </div>
+    </ListItem>
   );
 };
 

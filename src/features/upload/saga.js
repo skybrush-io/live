@@ -81,21 +81,31 @@ function* runUploadWorker(chan, failed) {
     outcome = undefined;
     storedError = undefined;
 
+    let data = undefined;
+
     try {
       yield put(_notifyUploadOnUavStarted(uavId));
-      const data = selector ? yield select(selector, uavId) : undefined;
-      yield call(
-        executor,
-        { uavId, payload, data },
-        { onProgress: uploadProgressCallback }
-      );
-      outcome = 'success';
+      data = selector ? yield select(selector, uavId) : undefined;
     } catch (error) {
-      outcome = 'failure';
+      outcome = 'permanent-failure';
       storedError = error;
-    } finally {
-      if (yield cancelled() && !outcome) {
-        outcome = 'cancelled';
+    }
+
+    if (outcome === undefined) {
+      try {
+        yield call(
+          executor,
+          { uavId, payload, data },
+          { onProgress: uploadProgressCallback }
+        );
+        outcome = 'success';
+      } catch (error) {
+        outcome = 'failure';
+        storedError = error;
+      } finally {
+        if (yield cancelled() && !outcome) {
+          outcome = 'cancelled';
+        }
       }
     }
 
@@ -104,13 +114,18 @@ function* runUploadWorker(chan, failed) {
         yield put(_notifyUploadOnUavSucceeded(uavId));
         break;
 
+      case 'permanent-failure':
       case 'failure':
-        failed.push(uavId);
+        // Only add normal failures to the failed list. Other failures must
+        // not be retried, because they could cause an infinite loop.
+        if (outcome === 'failure') {
+          failed.push(uavId);
+        }
         yield put(_notifyUploadOnUavFailed(uavId));
         yield put(
           _setErrorMessageForUAV(
             uavId,
-            errorToString(storedError.message || storedError)
+            errorToString(storedError?.message || storedError)
           )
         );
         break;

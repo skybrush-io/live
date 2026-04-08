@@ -5,6 +5,7 @@
 import Add from '@mui/icons-material/Add';
 import Edit from '@mui/icons-material/Edit';
 import IconButton from '@mui/material/IconButton';
+import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import PropTypes from 'prop-types';
@@ -51,9 +52,11 @@ const LocationListEntry = (props) => {
   );
 
   return (
-    <ListItemButton onClick={scrollToLocation} secondaryAction={actionButton}>
-      <ListItemText primary={name} />
-    </ListItemButton>
+    <ListItem disablePadding secondaryAction={actionButton}>
+      <ListItemButton onClick={scrollToLocation}>
+        <ListItemText primary={name} />
+      </ListItemButton>
+    </ListItem>
   );
 };
 
@@ -69,19 +72,21 @@ LocationListEntry.propTypes = {
  * @return {React.Node}  the rendered list item
  */
 const createNewItemEntry = (props) => (
-  <ListItemButton
+  <ListItem
     key='__addNew__'
-    onClick={props.onNewItem}
+    disablePadding
     secondaryAction={
       <IconButton edge='end' size='large' onClick={props.onNewItem}>
         <Add />
       </IconButton>
     }
   >
-    <Translation>
-      {(t) => <ListItemText primary={t('savedLocation.addNew')} />}
-    </Translation>
-  </ListItemButton>
+    <ListItemButton onClick={props.onNewItem}>
+      <Translation>
+        {(t) => <ListItemText primary={t('savedLocation.addNew')} />}
+      </Translation>
+    </ListItemButton>
+  </ListItem>
 );
 
 /**

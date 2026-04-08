@@ -3,6 +3,7 @@ import GetApp from '@mui/icons-material/GetApp';
 import Save from '@mui/icons-material/Save';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
+import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
@@ -134,7 +135,7 @@ const UAVLogListItem = ({ id, kind, size, timestamp, uavId }) => {
   const onClick = isLoading ? undefined : log ? save : download;
 
   const saveOrDownloadButton = (
-    <IconButton edge='end' disabled={isLoading} size='large'>
+    <IconButton edge='end' disabled={isLoading} onClick={onClick} size='large'>
       {downloadState?.status === LogDownloadStatus.SUCCESS ? (
         <Save />
       ) : (
@@ -144,26 +145,28 @@ const UAVLogListItem = ({ id, kind, size, timestamp, uavId }) => {
   );
 
   return (
-    <ListItemButton onClick={onClick} secondaryAction={saveOrDownloadButton}>
-      <StatusLight
-        status={
-          {
-            [LogDownloadStatus.LOADING]: 'next',
-            [LogDownloadStatus.ERROR]: 'error',
-            [LogDownloadStatus.SUCCESS]: 'success',
-          }[downloadState?.status] ?? 'off'
-        }
-      />
-      <ListItemText
-        disableTypography
-        primary={
-          <Typography variant='body2'>
-            {primaryParts.join(SEPARATOR)}
-          </Typography>
-        }
-        secondary={secondaryComponent}
-      />
-    </ListItemButton>
+    <ListItem disablePadding secondaryAction={saveOrDownloadButton}>
+      <ListItemButton onClick={onClick}>
+        <StatusLight
+          status={
+            {
+              [LogDownloadStatus.LOADING]: 'next',
+              [LogDownloadStatus.ERROR]: 'error',
+              [LogDownloadStatus.SUCCESS]: 'success',
+            }[downloadState?.status] ?? 'off'
+          }
+        />
+        <ListItemText
+          disableTypography
+          primary={
+            <Typography variant='body2'>
+              {primaryParts.join(SEPARATOR)}
+            </Typography>
+          }
+          secondary={secondaryComponent}
+        />
+      </ListItemButton>
+    </ListItem>
   );
 };
 

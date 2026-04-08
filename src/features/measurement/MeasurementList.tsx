@@ -1,12 +1,14 @@
 import IconButton from '@mui/material/IconButton';
+import ListItem from '@mui/material/ListItem';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
-import ListItemButton from '@mui/material/ListItemButton';
+import ListItemButton, {
+  type ListItemButtonProps,
+} from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import clsx from 'clsx';
 import identity from 'lodash-es/identity';
 import isNil from 'lodash-es/isNil';
 import { getDistance as haversineDistance } from 'ol/sphere';
-import PropTypes from 'prop-types';
 import { Translation, useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
@@ -14,11 +16,19 @@ import { makeStyles } from '@skybrush/app-theme-mui';
 import { BackgroundHint, Tooltip } from '@skybrush/mui-components';
 
 import Colors from '~/components/colors';
-import { multiSelectableListOf } from '~/components/helpers/lists';
+import {
+  multiSelectableListOf,
+  type MultiSelectableListProps,
+} from '~/components/helpers/lists';
 import DroneAvatar from '~/components/uavs/DroneAvatar';
 import ContentCopy from '~/icons/ContentCopy';
-import { getPreferredCoordinateFormatter } from '~/selectors/formatting';
+import {
+  getPreferredCoordinateFormatter,
+  type CoordinatePairFormatter,
+} from '~/selectors/formatting';
+import type { AppDispatch, RootState } from '~/store/reducers';
 import { formatDistance, formatDuration } from '~/utils/formatting';
+import type { LatLonObject, LonLat } from '~/utils/geography';
 
 import { copyCentroidOfAveragedCoordinatesToClipboard } from './actions';
 import {
@@ -26,8 +36,13 @@ import {
   getSelectedUAVIdsForAveragingMeasurement,
 } from './selectors';
 import { setSelectedUAVIdsForAveragingMeasurement } from './slice';
+import type { AveragingResult } from './types';
 
-const formatMeanAndStdDev = (mean, sqDiff, numberOfSamples) => {
+const formatMeanAndStdDev = (
+  mean: number,
+  sqDiff: number,
+  numberOfSamples: number
+): string => {
   if (sqDiff > 0 && numberOfSamples > 1) {
     return `${mean.toFixed(1)} ± ${Math.sqrt(
       sqDiff / (numberOfSamples - 1)
@@ -37,7 +52,11 @@ const formatMeanAndStdDev = (mean, sqDiff, numberOfSamples) => {
   return mean.toFixed(1);
 };
 
-const formatStdDevInXYPlane = (mean, sqDiff, numberOfSamples) => {
+const formatStdDevInXYPlane = (
+  mean: LatLonObject,
+  sqDiff: LatLonObject,
+  numberOfSamples: number
+): string => {
   if (numberOfSamples < 2) {
     return '0';
   }
@@ -53,7 +72,11 @@ const formatStdDevInXYPlane = (mean, sqDiff, numberOfSamples) => {
   return formatDistance(diff, 1);
 };
 
-const formatDurationOfSampling = (startedAt, lastSampleAt, extraSamplingTime) =>
+const formatDurationOfSampling = (
+  startedAt: number,
+  lastSampleAt: number,
+  extraSamplingTime: number
+): string =>
   formatDuration(
     ((!isNil(lastSampleAt) && !isNil(startedAt)
       ? lastSampleAt - startedAt
@@ -96,7 +119,7 @@ const useStyles = makeStyles((theme) => ({
   },
 
   latLonCoordinatesColumn: {
-    minWidth: 180,
+    minWidth: 190,
   },
 
   amslColumn: {
@@ -109,12 +132,18 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+type MeasurementListItemProps = ListItemButtonProps & {
+  coordinateFormatter?: CoordinatePairFormatter;
+  measurement: AveragingResult;
+  onCopy?: (id: string) => void;
+};
+
 const MeasurementListItem = ({
   coordinateFormatter,
   measurement,
   onCopy,
   ...rest
-}) => {
+}: MeasurementListItemProps) => {
   const classes = useStyles();
   const { t } = useTranslation();
 
@@ -129,8 +158,9 @@ const MeasurementListItem = ({
     sqDiff,
   } = measurement || {};
 
-  const effectiveFormatter = coordinateFormatter || identity;
-  const coords = [mean.lon, mean.lat];
+  const effectiveFormatter: CoordinatePairFormatter =
+    coordinateFormatter ?? identity;
+  const coords: LonLat = [mean.lon, mean.lat];
   let primaryText;
   let secondaryText;
 
@@ -171,7 +201,11 @@ const MeasurementListItem = ({
         </div>
         <div className={clsx(classes.dim, classes.ahlColumn)}>
           {`${t('measurementList.duration')}: `}
-          {formatDurationOfSampling(startedAt, lastSampleAt, extraSamplingTime)}
+          {formatDurationOfSampling(
+            startedAt!,
+            lastSampleAt!,
+            extraSamplingTime
+          )}
         </div>
       </div>
     );
@@ -184,7 +218,7 @@ const MeasurementListItem = ({
           edge='end'
           aria-label='copy'
           size='large'
-          onClick={() => onCopy(id)}
+          onClick={onCopy ? () => onCopy(id) : undefined}
         >
           <ContentCopy />
         </IconButton>
@@ -192,34 +226,35 @@ const MeasurementListItem = ({
     ) : undefined;
 
   return (
-    <ListItemButton
-      {...rest}
+    <ListItem
       className={classes.root}
       secondaryAction={copyButton}
+      disablePadding
     >
-      <ListItemAvatar>
-        <DroneAvatar id={id} variant='minimal' crossed={!sampling} />
-      </ListItemAvatar>
-      <ListItemText
-        disableTypography
-        primary={primaryText}
-        secondary={secondaryText}
-      />
-    </ListItemButton>
+      <ListItemButton {...rest}>
+        <ListItemAvatar>
+          <DroneAvatar id={id} variant='minimal' crossed={!sampling} />
+        </ListItemAvatar>
+        <ListItemText
+          disableTypography
+          primary={primaryText}
+          secondary={secondaryText}
+        />
+      </ListItemButton>
+    </ListItem>
   );
 };
 
-MeasurementListItem.propTypes = {
-  coordinateFormatter: PropTypes.func,
-  measurement: PropTypes.shape({
-    id: PropTypes.string,
-    numSamples: PropTypes.number,
-    sampling: PropTypes.bool,
-  }).isRequired,
-  onCopy: PropTypes.func,
+type MeasurementListProps = MultiSelectableListProps & {
+  coordinateFormatter?: CoordinatePairFormatter;
+  measurements: AveragingResult[];
+  onCopy?: (id: string) => void;
 };
 
-const MeasurementList = multiSelectableListOf(
+const MeasurementList = multiSelectableListOf<
+  AveragingResult,
+  MeasurementListProps
+>(
   (item, props, selected) => (
     <MeasurementListItem
       key={item.id}
@@ -227,7 +262,7 @@ const MeasurementList = multiSelectableListOf(
       measurement={item}
       selected={selected}
       onClick={props.onItemSelected}
-      onCopy={props.onCopy}
+      onCopy={props.onCopy as any}
     />
   ),
   {
@@ -247,17 +282,17 @@ const MeasurementList = multiSelectableListOf(
 
 export default connect(
   // mapStateToProps
-  (state) => ({
+  (state: RootState) => ({
     coordinateFormatter: getPreferredCoordinateFormatter(state),
-    dense: true,
-    fullWidth: true,
     measurements: getAveragingMeasurements(state),
     value: getSelectedUAVIdsForAveragingMeasurement(state),
+    dense: true,
+    fullWidth: true,
   }),
   // mapDispatchToProps
   {
     onChange: setSelectedUAVIdsForAveragingMeasurement,
-    onCopy: (uavId) => (dispatch) =>
+    onCopy: (uavId: string) => (dispatch: AppDispatch) =>
       dispatch(copyCentroidOfAveragedCoordinatesToClipboard([uavId])),
   }
 )(MeasurementList);

@@ -5,6 +5,7 @@
 import Search from '@mui/icons-material/Search';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
+import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import PropTypes from 'prop-types';
@@ -39,15 +40,16 @@ const BeaconListPresentation = multiSelectableListOf(
     ) : null;
 
     return (
-      <ListItemButton
-        key={beacon.id}
-        className={selected ? 'selected-list-item' : undefined}
-        onClick={props.onItemSelected}
-        secondaryAction={rightIconButton}
-      >
-        <StatusLight status={beacon.active ? 'success' : 'error'} />
-        <ListItemText primary={getBeaconDisplayName(beacon)} />
-      </ListItemButton>
+      <ListItem disablePadding secondaryAction={rightIconButton}>
+        <ListItemButton
+          key={beacon.id}
+          className={selected ? 'selected-list-item' : undefined}
+          onClick={props.onItemSelected}
+        >
+          <StatusLight status={beacon.active ? 'success' : 'error'} />
+          <ListItemText primary={getBeaconDisplayName(beacon)} />
+        </ListItemButton>
+      </ListItem>
     );
   },
   {

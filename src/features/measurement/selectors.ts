@@ -1,15 +1,18 @@
+import { createSelector } from '@reduxjs/toolkit';
 import isNil from 'lodash-es/isNil';
 import sum from 'lodash-es/sum';
-import { createSelector } from '@reduxjs/toolkit';
 
-import { selectOrdered } from '~/utils/collections';
+import type { RootState } from '~/store/reducers';
+import { type Identifier, selectOrdered } from '~/utils/collections';
+import type { Latitude, Longitude, LonLat } from '~/utils/geography';
+import type { AveragingResult } from './types';
 
 /**
  * Selector that returns which UAVs have an active position averaging record
  * in the measurement-related state.
  */
 export const getActiveUAVIdsBeingAveraged = createSelector(
-  (state) => state.measurement.averagingResults,
+  (state: RootState) => state.measurement.averagingResults,
   ({ byId, order }) => {
     const result = [];
 
@@ -26,15 +29,16 @@ export const getActiveUAVIdsBeingAveraged = createSelector(
 /**
  * Selector that returns all UAV IDs whose position is currently being averaged.
  */
-export const getAllUAVIdsCurrentlyBeingAveragedEvenIfPaused = (state) =>
-  state.measurement.averagingResults.order;
+export const getAllUAVIdsCurrentlyBeingAveragedEvenIfPaused = (
+  state: RootState
+): string[] => state.measurement.averagingResults.order;
 
 /**
  * Selector that returns the current state of all averaging measurements,
  * in the order they should appear on the UI.
  */
 export const getAveragingMeasurements = createSelector(
-  (state) => state.measurement.averagingResults,
+  (state: RootState) => state.measurement.averagingResults,
   selectOrdered
 );
 
@@ -42,14 +46,18 @@ export const getAveragingMeasurements = createSelector(
  * Selector that returns a mapping that maps UAV IDs to the corresponding
  * averaging measurements.
  */
-export const getAveragingMeasurementsById = (state) =>
-  state.measurement.averagingResults.byId;
+export const getAveragingMeasurementsById = (
+  state: RootState
+): Record<string, AveragingResult> => state.measurement.averagingResults.byId;
 
 /**
  * Selector that returns the centroid of the averaged coordinates of the
  * given list of UAV IDs, or undefined if the list is empty.
  */
-export const getAveragedCentroidOfUAVsById = (state, uavIds) => {
+export const getAveragedCentroidOfUAVsById = (
+  state: RootState,
+  uavIds: Identifier[]
+): LonLat | undefined => {
   const measurements = getAveragingMeasurementsById(state);
   const lats = [];
   const lons = [];
@@ -67,7 +75,10 @@ export const getAveragedCentroidOfUAVsById = (state, uavIds) => {
   }
 
   if (lats.length > 0) {
-    return [sum(lons) / lons.length, sum(lats) / lats.length];
+    return [
+      (sum(lons) / lons.length) as Longitude,
+      (sum(lats) / lats.length) as Latitude,
+    ];
   }
 
   return undefined;
@@ -77,8 +88,9 @@ export const getAveragedCentroidOfUAVsById = (state, uavIds) => {
  * Selector that returns which UAVs are currently selected in the averaging
  * measurements dialog box.
  */
-export const getSelectedUAVIdsForAveragingMeasurement = (state) =>
-  state.measurement.averagingDialog.selectedUAVIds;
+export const getSelectedUAVIdsForAveragingMeasurement = (
+  state: RootState
+): string[] => state.measurement.averagingDialog.selectedUAVIds;
 
 /**
  * Selector that returns whether there are any UAVs being measured in the

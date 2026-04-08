@@ -7,6 +7,7 @@ import { JOB_TYPE as FIRMWARE_UPDATE_JOB_TYPE } from '~/features/firmware-update
 import { getSupportingObjectIdsForTargetId } from '~/features/firmware-update/selectors';
 import { getMissionMapping as _getFullMissionMapping } from '~/features/mission/selectors';
 import { getSelection } from '~/features/selection/selectors';
+import { JOB_TYPE as SHOW_UPLOAD_JOB_TYPE } from '~/features/show/constants';
 import {
   getUAVIdList as _getAllKnownUAVIds,
   getSingleSelectedUAVIdAsArray,
@@ -95,6 +96,28 @@ const getHistoryForSelectedJobType = createSelector(
 );
 
 /**
+ * Selector that returns the set of UAV IDs that may be relevant for the
+ * current job type, assuming filtering is necessary in a selector or action.
+ *
+ * The selector returns `undefined` if no filtering is necessary.
+ *
+ * Upload job types that may require filtering:
+ *
+ * - `SHOW_UPLOAD_JOB_TYPE`: UAVs that don't participate in the mission don't
+ *   matter for example in upload status counts, cumulative upload status,
+ *   or enqueueing.
+ */
+const getFilteredUAVIdsForCurrentJobType = createSelector(
+  getSelectedJobTypeInUploadDialog,
+  _getFullMissionMapping,
+  (jobType, missionMapping): Set<Identifier> | undefined => {
+    return jobType === SHOW_UPLOAD_JOB_TYPE
+      ? new Set(missionMapping.filter((uav): uav is Identifier => uav !== null))
+      : undefined;
+  }
+);
+
+/**
  * Returns a mapping of UAV IDs to their corresponding upload status codes,
  * based only on the current queue states.
  *
@@ -173,15 +196,21 @@ export const getUploadStatusCodeMappingForSelectedJobType =
   makeUploadStatusCodeMappingForJobTypeSelector();
 
 /**
- * Returns all upload items whose last known status is error.
+ * Returns all upload items whose last known status is error and who can
+ * be added to the waiting queue for the current job type.
  */
-export const getFailedUploadItems = createSelector(
+export const getFailedUploadItemsToEnqueue = createSelector(
   getUploadStatusCodeMappingForSelectedJobType,
-  (statusMapping): Identifier[] => {
+  getFilteredUAVIdsForCurrentJobType,
+  (statusMapping, relevantIds): Identifier[] => {
     const result: Identifier[] = [];
+    const includeUAV =
+      relevantIds === undefined
+        ? () => true
+        : (uavId: Identifier) => relevantIds.has(uavId);
 
     for (const [uavId, status] of Object.entries(statusMapping)) {
-      if (status === Status.ERROR) {
+      if (status === Status.ERROR && includeUAV(uavId)) {
         result.push(uavId);
       }
     }
@@ -191,15 +220,21 @@ export const getFailedUploadItems = createSelector(
 );
 
 /**
- * Returns all upload items whose last known status is success.
+ * Returns all upload items whose last known status is success and who
+ * can be added to the waiting queue for the current job type.
  */
-export const getSuccessfulUploadItems = createSelector(
+export const getSuccessfulUploadItemsToEnqueue = createSelector(
   getUploadStatusCodeMappingForSelectedJobType,
-  (statusMapping): Identifier[] => {
+  getFilteredUAVIdsForCurrentJobType,
+  (statusMapping, relevantIds): Identifier[] => {
     const result: Identifier[] = [];
+    const includeUAV =
+      relevantIds === undefined
+        ? () => true
+        : (uavId: Identifier) => relevantIds.has(uavId);
 
     for (const [uavId, status] of Object.entries(statusMapping)) {
-      if (status === Status.SUCCESS) {
+      if (status === Status.SUCCESS && includeUAV(uavId)) {
         result.push(uavId);
       }
     }
@@ -482,22 +517,30 @@ export const getUAVsInLatestUploadForSelectedJobType = createSelector(
  */
 export const getUploadStatusCodeCounters = createSelector(
   getUploadStatusCodeMappingForSelectedJobType,
-  (statusMapping) => {
+  getFilteredUAVIdsForCurrentJobType,
+  (statusMapping, relevantIds) => {
     const counts = { failed: 0, finished: 0, inProgress: 0, waiting: 0 };
+    // Function that returns 1 if the given UAV should be counted, 0 otherwise.
+    const countUAV =
+      relevantIds === undefined
+        ? () => 1
+        : (uav: Identifier) => (relevantIds.has(uav) ? 1 : 0);
 
-    for (const status of Object.values(statusMapping)) {
+    for (const [uavId, status] of Object.entries(statusMapping)) {
       switch (status) {
         case Status.ERROR:
-          counts.failed++;
+          counts.failed += countUAV(uavId);
           break;
         case Status.SUCCESS:
-          counts.finished++;
+          counts.finished += countUAV(uavId);
           break;
         case Status.WARNING:
+          // Count all in-progress UAVs
           counts.inProgress++;
           break;
         case Status.WAITING:
         case Status.NEXT:
+          // Count all queued UAVs
           counts.waiting++;
           break;
       }

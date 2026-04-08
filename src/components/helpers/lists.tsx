@@ -25,7 +25,7 @@ type ItemWithId = { id: string };
 type ItemRenderer<T extends ItemWithId, P> = (
   item: T,
   props: P,
-  selected?: boolean
+  selected: boolean
 ) => React.ReactElement;
 type ListFactory<P> = (
   props: P,
@@ -53,9 +53,10 @@ type SelectableListProps<T> = {
   value: string;
 };
 
-type MultiSelectableListProps = {
+export type MultiSelectableListProps = {
   onActivate?: (item: string) => void;
   onChange?: (items: string[]) => void;
+  onItemSelected?: (event: React.UIEvent) => void;
   value: string[];
 };
 
@@ -139,7 +140,7 @@ export function listOf<T extends ItemWithId, P>(
   const ListView = React.forwardRef<unknown, P>((props, ref) => {
     const items = dataProvider(props);
     const children = postprocess(
-      items.map((item) => itemRenderer(item, props)),
+      items.map((item) => itemRenderer(item, props, false)),
       props
     );
     if (hasSomeItems(children)) {
@@ -189,6 +190,7 @@ export function createSelectionHandlerFactory<T = string>({
         setSelection
       ) {
         setSelection(xor(selection, [id]));
+        return;
       }
 
       // Cater for the common case when we are re-selecting an item; no need to
@@ -460,7 +462,7 @@ export function multiSelectableListOf<
   P extends MultiSelectableListProps,
 >(
   itemRenderer: ItemRenderer<T, P>,
-  options: Partial<ValidatedListOfOptions<T, React.PropsWithoutRef<P>>> = {}
+  options: Partial<ListOfOptions<T, React.PropsWithoutRef<P>>> = {}
 ): React.ForwardRefExoticComponent<
   PropsWithoutRef<P> & React.RefAttributes<unknown>
 > {

@@ -5,7 +5,6 @@ import Refresh from '@mui/icons-material/Refresh';
 import IconButton from '@mui/material/IconButton';
 import LinearProgress from '@mui/material/LinearProgress';
 import ListItemButton from '@mui/material/ListItemButton';
-import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import isNil from 'lodash-es/isNil';
 import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
@@ -97,7 +96,7 @@ const LoadShowFromFileButton = ({
   <FileButton
     accepts={isFile}
     component={ListItemButton}
-    componentProps={{ sx: { paddingRight: 6 } }}
+    componentProps={{ sx: { paddingRight: 2 } }}
     filter={EXTENSIONS}
     id='show-file-upload'
     onSelected={onShowFileSelected}
@@ -132,27 +131,48 @@ const LoadShowFromFileButton = ({
         )
       }
     />
-    <ListItemSecondaryAction>
+    <div>
       {changedSinceLoaded ? (
         <Tooltip content={t('show.reload')}>
-          <IconButton edge='end' size='large' onClick={onReloadShowFile}>
+          <IconButton
+            edge='end'
+            size='large'
+            onClick={(event) => {
+              onReloadShowFile();
+              event.preventDefault();
+            }}
+          >
             <Refresh />
           </IconButton>
         </Tooltip>
       ) : hasLoadedShowFile ? (
         <Tooltip content={t('show.clear')}>
-          <IconButton edge='end' size='large' onClick={onClearLoadedShow}>
+          <IconButton
+            edge='end'
+            size='large'
+            onClick={(event) => {
+              onClearLoadedShow();
+              event.preventDefault();
+            }}
+          >
             <Clear />
           </IconButton>
         </Tooltip>
       ) : hasFeature('loadShowFromCloud') ? (
         <Tooltip content={t('show.fromCloud')}>
-          <IconButton edge='end' size='large' onClick={onLoadShowFromCloud}>
+          <IconButton
+            edge='end'
+            size='large'
+            onClick={(event) => {
+              onLoadShowFromCloud();
+              event.preventDefault();
+            }}
+          >
             <CloudDownload />
           </IconButton>
         </Tooltip>
       ) : null}
-    </ListItemSecondaryAction>
+    </div>
   </FileButton>
 );
 
