@@ -1,13 +1,13 @@
-import Box from '@mui/material/Box';
+import Box, { type BoxProps } from '@mui/material/Box';
 import Fade from '@mui/material/Fade';
-import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 
 import { LabeledStatusLight } from '@skybrush/mui-components';
 
+import { Status } from '~/components/semantics';
 import { formatSurveyAccuracy } from './utils';
 
-function formatAccuracy(message, value) {
+function formatAccuracy(message: string, value: number | undefined) {
   if (typeof value !== 'number' || value <= 0) {
     return message;
   }
@@ -28,13 +28,20 @@ function formatAccuracy(message, value) {
   }
 }
 
+type Props = {
+  accuracy?: number;
+  active: boolean;
+  supported: boolean;
+  valid: boolean;
+} & BoxProps;
+
 const SurveyStatusIndicator = ({
   accuracy,
   active,
   supported,
   valid,
   ...rest
-}) => {
+}: Props) => {
   const { t } = useTranslation();
 
   return (
@@ -53,9 +60,7 @@ const SurveyStatusIndicator = ({
       >
         <LabeledStatusLight
           size='small'
-          status={
-            valid ? 'success' : active ? 'next' : supported ? 'error' : 'off'
-          }
+          status={valid ? Status.SUCCESS : active ? Status.NEXT : Status.OFF}
           color='textSecondary'
         >
           {active
@@ -63,19 +68,12 @@ const SurveyStatusIndicator = ({
             : valid
               ? formatAccuracy('', accuracy)
               : supported
-                ? 'Survey not started yet'
+                ? t('surveyStatusIndicator.notStartedYet')
                 : t('surveyStatusIndicator.noSurveyInformation')}
         </LabeledStatusLight>
       </Box>
     </Fade>
   );
-};
-
-SurveyStatusIndicator.propTypes = {
-  accuracy: PropTypes.number,
-  active: PropTypes.bool,
-  supported: PropTypes.bool,
-  valid: PropTypes.bool,
 };
 
 export default SurveyStatusIndicator;

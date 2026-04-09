@@ -2,7 +2,6 @@ import Place from '@mui/icons-material/Place';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import clsx from 'clsx';
-import PropTypes from 'prop-types';
 import { useEffect } from 'react';
 import { connect } from 'react-redux';
 
@@ -14,6 +13,7 @@ import {
 import { Tooltip } from '@skybrush/mui-components';
 
 import FadeAndSlide from '~/components/transitions/FadeAndSlide';
+import type { RootState } from '~/store/reducers';
 
 import {
   getCurrentRTKPresetId,
@@ -57,6 +57,22 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+type Props = {
+  chartHeight?: number;
+  currentPresetId?: string;
+  hasSavedCoordinates: boolean;
+  inset?: boolean;
+  onShowSavedCoordinates?: (presetId: string) => void;
+  onToggleSurveySettings?: () => void;
+  surveySettingsVisible: boolean;
+  surveyStatus: {
+    accuracy?: number;
+    supported: boolean;
+    active: boolean;
+    valid: boolean;
+  };
+};
+
 const RTKSetupDialogBottomPanel = ({
   chartHeight = 160,
   currentPresetId,
@@ -66,11 +82,15 @@ const RTKSetupDialogBottomPanel = ({
   onToggleSurveySettings,
   surveySettingsVisible,
   surveyStatus,
-}) => {
+}: Props) => {
   const classes = useStyles();
 
   useEffect(() => {
-    if (surveySettingsVisible && !surveyStatus?.supported) {
+    if (
+      surveySettingsVisible &&
+      !surveyStatus?.supported &&
+      onToggleSurveySettings
+    ) {
       onToggleSurveySettings();
     }
   }, [onToggleSurveySettings, surveySettingsVisible, surveyStatus?.supported]);
@@ -135,20 +155,9 @@ const RTKSetupDialogBottomPanel = ({
   );
 };
 
-RTKSetupDialogBottomPanel.propTypes = {
-  chartHeight: PropTypes.number,
-  currentPresetId: PropTypes.string,
-  hasSavedCoordinates: PropTypes.bool,
-  inset: PropTypes.bool,
-  onShowSavedCoordinates: PropTypes.func,
-  onToggleSurveySettings: PropTypes.func,
-  surveySettingsVisible: PropTypes.bool,
-  surveyStatus: PropTypes.object,
-};
-
 export default connect(
   // mapStateToProps
-  (state) => {
+  (state: RootState) => {
     const currentPresetId = getCurrentRTKPresetId(state);
     return {
       currentPresetId,

@@ -38,6 +38,9 @@
   "RTKMessage": {
     "noRTKMessagesYet": "No RTK messages have been received yet"
   },
+  "RTKSetupDialog": {
+    "title": "RTK corrections"
+  },
   "RTKStatusMiniList": {
     "satelliteCount": "Satellite count",
     "surveyInProgress": "Survey in progress…",
@@ -962,7 +965,8 @@
     "tooltip": "Select individual targets by clicking their IDs to prepare a partial upload"
   },
   "surveyStatusIndicator": {
-    "noSurveyInformation": "No survey information"
+    "noSurveyInformation": "No survey information",
+    "notStartedYet": "Survey not started yet"
   },
   "takeoffAreaSetupDialog": {
     "allDroneOnline": "All drones in the mission are online.",

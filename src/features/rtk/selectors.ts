@@ -173,8 +173,12 @@ export const shouldShowSurveySettings = (state: RootState): boolean =>
  */
 export const hasSavedCoordinateForPreset = (
   state: RootState,
-  presetId: string
+  presetId: string | undefined
 ): boolean => {
+  if (!presetId) {
+    return false;
+  }
+
   const coords = state.rtk.savedCoordinates[presetId];
   return Boolean(coords) && coords.length > 0;
 };
