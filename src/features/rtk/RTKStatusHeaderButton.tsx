@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 
-import { colorForStatus, Status } from '@skybrush/app-theme-mui';
+import { colorForStatus, type Status } from '@skybrush/app-theme-mui';
 import {
   GenericHeaderButton,
   LazyTooltip,
@@ -14,8 +14,8 @@ import type { RootState } from '~/store/reducers';
 import RTKStatusMiniList from './RTKStatusMiniList';
 import RTKStatusUpdater from './RTKStatusUpdater';
 import {
-  getNumberOfGoodSatellites,
   getNumberOfSatellites,
+  getOverallRTKStatus,
   getSurveyStatus,
 } from './selectors';
 import { showRTKSetupDialog } from './slice';
@@ -31,8 +31,8 @@ const buttonStyle: React.CSSProperties = {
 
 type RTKStatusHeaderButtonProps = {
   isConnected: boolean;
-  numGoodSatellites: number;
   numSatellites: number;
+  overallStatus: Status | undefined;
   showRTKSetupDialog: () => void;
   surveyStatus: {
     accuracy?: number;
@@ -44,74 +44,41 @@ type RTKStatusHeaderButtonProps = {
 
 const RTKStatusHeaderButton = ({
   isConnected,
-  numGoodSatellites,
   numSatellites,
   showRTKSetupDialog,
+  overallStatus,
   surveyStatus,
-}: RTKStatusHeaderButtonProps) => {
-  let badgeStatus = null;
-  const hasError = false;
-
-  if (isConnected) {
-    if (hasError) {
-      // If we have an RTK-related error, show an error badge
-      // TODO(ntamas): right now we never report an error; what conditions
-      // shall we prepare for here?
-      badgeStatus = Status.ERROR;
-    } else if (surveyStatus.supported) {
-      // If the RTK device supports surveying, show the survey status
-      badgeStatus = surveyStatus.valid
-        ? Status.SUCCESS
-        : surveyStatus.active
-          ? Status.NEXT
-          : Status.ERROR;
-    } else {
-      // If the RTK device does not support surveying, simply show success if
-      // we have info about at least one satellite
-      badgeStatus = numSatellites > 1 ? Status.SUCCESS : null;
-    }
-
-    // If the badge would be green but we do not have enough good satellites,
-    // show a warning instead
-    if (badgeStatus === Status.SUCCESS && numGoodSatellites < 7) {
-      badgeStatus = Status.WARNING;
-    }
-  }
-
-  return (
-    <LazyTooltip interactive content={<RTKStatusMiniList />}>
-      <GenericHeaderButton
-        disabled={!isConnected}
-        label={
-          isConnected ? (numSatellites > 0 ? String(numSatellites) : '—') : '—'
-        }
-        secondaryLabel={
-          surveyStatus.supported && typeof surveyStatus.accuracy === 'number'
-            ? formatSurveyAccuracy(surveyStatus.accuracy, { max: 9 })
-            : null
-        }
-        style={buttonStyle}
-        onClick={showRTKSetupDialog}
-      >
-        <Satellite />
-        <SidebarBadge
-          anchor='topLeft'
-          color={badgeStatus ? colorForStatus(badgeStatus) : undefined}
-          offset={BADGE_OFFSET}
-          visible={Boolean(badgeStatus)}
-        />
-        {isConnected && <RTKStatusUpdater />}
-      </GenericHeaderButton>
-    </LazyTooltip>
-  );
-};
+}: RTKStatusHeaderButtonProps) => (
+  <LazyTooltip interactive content={<RTKStatusMiniList />}>
+    <GenericHeaderButton
+      disabled={!isConnected}
+      label={isConnected && numSatellites > 0 ? String(numSatellites) : '—'}
+      secondaryLabel={
+        surveyStatus.supported && typeof surveyStatus.accuracy === 'number'
+          ? formatSurveyAccuracy(surveyStatus.accuracy, { max: 9 })
+          : null
+      }
+      style={buttonStyle}
+      onClick={showRTKSetupDialog}
+    >
+      <Satellite />
+      <SidebarBadge
+        anchor='topLeft'
+        color={overallStatus ? colorForStatus(overallStatus) : undefined}
+        offset={BADGE_OFFSET}
+        visible={Boolean(overallStatus)}
+      />
+      {isConnected && <RTKStatusUpdater />}
+    </GenericHeaderButton>
+  </LazyTooltip>
+);
 
 export default connect(
   // mapStateToProps
   (state: RootState) => ({
     isConnected: isConnected(state),
-    numGoodSatellites: getNumberOfGoodSatellites(state),
     numSatellites: getNumberOfSatellites(state),
+    overallStatus: getOverallRTKStatus(state),
     surveyStatus: getSurveyStatus(state),
   }),
   // mapDispatchToProps

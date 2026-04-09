@@ -1,7 +1,9 @@
 import sortBy from 'lodash-es/sortBy';
 
 import { createSelector } from '@reduxjs/toolkit';
+import { Status } from '@skybrush/app-theme-mui';
 
+import { isConnected } from '~/features/servers/selectors';
 import { getPreferredCoordinateFormatter } from '~/selectors/formatting';
 import type { RootState } from '~/store/reducers';
 import { RTKAntennaPositionFormat, type RTKSavedCoordinate } from './types';
@@ -223,5 +225,52 @@ export const getCurrentRTKPresetId = (state: RootState): string | undefined =>
  */
 export const getCoordinateRestorationDialogState = (
   state: RootState
-): RootState['rtk']['dialog']['coordinateRestorationDialog'] =>
+): { open: boolean; presetId?: string | undefined } =>
   state.rtk.dialog.coordinateRestorationDialog;
+
+/**
+ * Returns an overall semantic status enum value that is intended to summarize the
+ * health of the RTK corrections in general. This is used by the RTK status header
+ * widget but may also be used in other parts of the application where no specific
+ * details are needed.
+ */
+export const getOverallRTKStatus = createSelector(
+  isConnected,
+  getNumberOfGoodSatellites,
+  getNumberOfSatellites,
+  getSurveyStatus,
+  (
+    isConnected,
+    numGoodSatellites,
+    numSatellites,
+    surveyStatus
+  ): Status | undefined => {
+    let result: Status | undefined = undefined;
+
+    if (!isConnected) {
+      // Not connected to the server at all, show nothing
+      return undefined;
+    }
+
+    if (surveyStatus.supported) {
+      // If the RTK device supports surveying, show the survey status
+      result = surveyStatus.valid
+        ? Status.SUCCESS
+        : surveyStatus.active
+          ? Status.NEXT
+          : Status.ERROR;
+    } else {
+      // If the RTK device does not support surveying, simply show success if
+      // we have info about at least one satellite
+      result = numSatellites > 1 ? Status.SUCCESS : undefined;
+    }
+
+    // If the result would be successful but we do not have enough good satellites,
+    // show a warning instead
+    if (result === Status.SUCCESS && numGoodSatellites < 7) {
+      result = Status.WARNING;
+    }
+
+    return result;
+  }
+);
