@@ -28,6 +28,7 @@ import MissionPlannerDialog from './features/mission/MissionPlannerDialog';
 import MissionProgressObserver from './features/mission/MissionProgressObserver';
 import ParameterUploadSetupDialog from './features/parameters/ParameterUploadSetupDialog';
 import PromptDialog from './features/prompt/PromptDialog';
+import RTKCoordinateRestorationDialog from './features/rtk/RTKCoordinateRestorationDialog';
 import RTKSetupDialog from './features/rtk/RTKSetupDialog';
 import SafetyDialog from './features/safety/SafetyDialog';
 import SavedLocationEditorDialog from './features/saved-locations/SavedLocationEditorDialog';
@@ -179,6 +180,7 @@ const App = ({ onFirstRender }) => (
       <MissionPlannerDialog />
       <ParameterUploadSetupDialog />
       <PromptDialog />
+      <RTKCoordinateRestorationDialog />
       <RTKSetupDialog />
       <SafetyDialog />
       <SavedLocationEditorDialog />

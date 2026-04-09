@@ -103,6 +103,7 @@ const RTKSetupDialogBottomPanel = ({
               <Tooltip content='Start new survey'>
                 <IconButton
                   disabled={!surveyStatus || !surveyStatus.supported}
+                  edge='start'
                   size='large'
                   onClick={onToggleSurveySettings}
                 >
