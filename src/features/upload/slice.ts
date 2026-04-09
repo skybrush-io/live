@@ -6,6 +6,11 @@
 import { type Action, createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
 import { notifyUAVsInMissionMappingChanged } from '~/features/mission/slice';
+import { JOB_TYPE as PARAMETER_UPLOAD_JOB_TYPE } from '~/features/parameters/constants';
+import {
+  removeParameterFromManifest,
+  updateParametersInManifest,
+} from '~/features/parameters/slice';
 import { SHOW_UPLOAD_JOB } from '~/features/show/constants';
 import { _clearLoadedShow } from '~/features/show/slice';
 import type { Identifier } from '~/utils/collections';
@@ -414,6 +419,7 @@ const { actions, reducer } = createSlice({
     builder.addCase(_clearLoadedShow, (state) => {
       clearUploadHistoryForJobTypeHelper(state, SHOW_UPLOAD_JOB.type);
     });
+
     builder.addCase(notifyUAVsInMissionMappingChanged, (state, action) => {
       const uavIds = action.payload;
 
@@ -433,6 +439,14 @@ const { actions, reducer } = createSlice({
           {} as Record<string, MaybeOutdateUAVStatus>
         ),
       });
+    });
+
+    builder.addCase(removeParameterFromManifest, (state) => {
+      clearUploadHistoryForJobTypeHelper(state, PARAMETER_UPLOAD_JOB_TYPE);
+    });
+
+    builder.addCase(updateParametersInManifest, (state) => {
+      clearUploadHistoryForJobTypeHelper(state, PARAMETER_UPLOAD_JOB_TYPE);
     });
   },
 });
