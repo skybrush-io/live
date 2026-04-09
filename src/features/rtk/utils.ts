@@ -1,9 +1,9 @@
 import { Status, colorForStatus } from '@skybrush/app-theme-mui';
+import type { TFunction } from 'i18next';
 import isEqual from 'lodash-es/isEqual';
 
 import { formatDistance } from '~/utils/formatting';
 
-import { TFunction } from 'i18next';
 import {
   RTKCorrectionStatus,
   type RTKSavedCoordinate,
