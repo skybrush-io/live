@@ -2,10 +2,10 @@ import FormControl from '@mui/material/FormControl';
 import FormGroup from '@mui/material/FormGroup';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';
-import PropTypes from 'prop-types';
+import Select, { type SelectChangeEvent } from '@mui/material/Select';
+import type { RTKPresetID } from '@skybrush/flockwave-spec';
 import { useEffect, useState } from 'react';
-import { withTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { useAsync, useAsyncFn } from 'react-use';
 
@@ -15,27 +15,41 @@ import {
 } from '~/features/rtk/slice';
 import messageHub from '~/message-hub';
 
-const NULL_ID = '__null__';
+const NULL_ID: RTKPresetID = '__null__';
 
-const nullPreset = {
+type RTKPresetSource = {
+  id: RTKPresetID;
+  title: string;
+};
+
+const nullPreset: RTKPresetSource = {
   id: NULL_ID,
   title: 'RTK disabled',
+};
+
+type Props = {
+  onSourceChanged?: () => void;
+  setCurrentRTKPresetId: (presetId?: RTKPresetID) => void;
 };
 
 const RTKCorrectionSourceSelector = ({
   onSourceChanged,
   setCurrentRTKPresetId,
-  t,
-}) => {
-  const [selectedByUser, setSelectedByUser] = useState();
-  const [selectionState, getSelectionFromServer] = useAsyncFn(async () =>
-    messageHub.query.getSelectedRTKPresetId()
+}: Props) => {
+  const { t } = useTranslation();
+  const [selectedByUser, setSelectedByUser] = useState<string>();
+  const [selectionState, getSelectionFromServer] = useAsyncFn(
+    async (): Promise<RTKPresetID | null> => {
+      const presetId: RTKPresetID | null =
+        await messageHub.query.getSelectedRTKPresetId();
+      return presetId;
+    }
   );
 
-  const presetsState = useAsync(
-    async () => messageHub.query.getRTKPresets(),
-    []
-  );
+  const presetsState = useAsync(async () => {
+    const presets: RTKPresetSource[] = await messageHub.query.getRTKPresets();
+    return presets;
+  }, []);
 
   const loading = presetsState.loading || selectionState.loading;
   const hasError = presetsState.error;
@@ -54,7 +68,7 @@ const RTKCorrectionSourceSelector = ({
       : undefined;
   const hasPresets = presets && presets.length > 0;
 
-  const handleChange = async (event) => {
+  const handleChange = (event: SelectChangeEvent<string>) => {
     const newPresetId = event.target.value;
 
     // We assume that the request will succeed so we eagerly select the new
@@ -80,7 +94,7 @@ const RTKCorrectionSourceSelector = ({
   // load the current selection
   useEffect(() => {
     if (!loading && !hasError && hasPresets && selectedOnServer === undefined) {
-      getSelectionFromServer();
+      void getSelectionFromServer();
     }
   });
 
@@ -101,7 +115,7 @@ const RTKCorrectionSourceSelector = ({
         try {
           if (isMounted) {
             setSelectedByUser(undefined);
-            getSelectionFromServer();
+            void getSelectionFromServer();
           }
         } catch (error) {
           console.warn(error);
@@ -109,7 +123,7 @@ const RTKCorrectionSourceSelector = ({
         }
       };
 
-      commitNewSelection();
+      void commitNewSelection();
     }
 
     return () => {
@@ -163,12 +177,6 @@ const RTKCorrectionSourceSelector = ({
   );
 };
 
-RTKCorrectionSourceSelector.propTypes = {
-  onSourceChanged: PropTypes.func,
-  setCurrentRTKPresetId: PropTypes.func,
-  t: PropTypes.func,
-};
-
 export default connect(
   null,
   // mapDispatchToProps
@@ -176,4 +184,4 @@ export default connect(
     onSourceChanged: resetRTKStatistics,
     setCurrentRTKPresetId,
   }
-)(withTranslation()(RTKCorrectionSourceSelector));
+)(RTKCorrectionSourceSelector);

@@ -361,6 +361,8 @@ export async function getRTKStatus(hub) {
 
 /**
  * Returns the currently selected RTK data source ID.
+ *
+ * @return {Promise<string | null>}
  */
 export async function getSelectedRTKPresetId(hub) {
   const response = await hub.sendMessage(

@@ -1,5 +1,6 @@
-import { type LonLat } from '~/utils/geography';
-import { type Coordinate3D } from '~/utils/math';
+import type { Response_RTKSTAT } from '@skybrush/flockwave-spec';
+import type { LonLat } from '~/utils/geography';
+import type { Coordinate3D } from '~/utils/math';
 
 export enum RTKAntennaPositionFormat {
   LON_LAT = 'lonLat',
@@ -118,4 +119,8 @@ export type RTKStatistics = {
      */
     flags?: number;
   };
+};
+
+export type RTKStatisticsResponse = Omit<Response_RTKSTAT, 'messages_tx'> & {
+  messagesTx: Response_RTKSTAT['messages_tx'];
 };

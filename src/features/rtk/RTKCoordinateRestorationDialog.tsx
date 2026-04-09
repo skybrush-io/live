@@ -1,7 +1,5 @@
 import formatDate from 'date-fns/format';
-import PropTypes from 'prop-types';
-import React from 'react';
-import { withTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import Box from '@mui/material/Box';
@@ -17,17 +15,30 @@ import ListItemText from '@mui/material/ListItemText';
 
 import { BackgroundHint } from '@skybrush/mui-components';
 
-import { closeCoordinateRestorationDialog } from '~/features/rtk/slice';
+import { useSavedCoordinateForPreset } from '~/features/rtk/actions';
 import {
   getCoordinateRestorationDialogState,
   getPreferredSavedRTKPositionFormatter,
   getSavedCoordinatesForPreset,
 } from '~/features/rtk/selectors';
-import { useSavedCoordinateForPreset } from '~/features/rtk/actions';
+import { closeCoordinateRestorationDialog } from '~/features/rtk/slice';
 import Download from '~/icons/Download';
+import type { RootState } from '~/store/reducers';
 import { formatDistance } from '~/utils/formatting';
 
-const SavedCoordinateItem = ({ coordinate, coordinateFormatter, onClick }) => {
+import type { RTKSavedCoordinate } from './types';
+
+type SavedCoordinateItemProps = {
+  coordinate: RTKSavedCoordinate;
+  coordinateFormatter: (coordinate?: RTKSavedCoordinate) => string | undefined;
+  onClick: (coordinate: RTKSavedCoordinate) => void;
+};
+
+const SavedCoordinateItem = ({
+  coordinate,
+  coordinateFormatter,
+  onClick,
+}: SavedCoordinateItemProps) => {
   const { accuracy, savedAt } = coordinate;
   const savedDateTime = formatDate(new Date(savedAt), 'yyyy-MM-dd HH:mm:ss');
 
@@ -55,17 +66,31 @@ const SavedCoordinateItem = ({ coordinate, coordinateFormatter, onClick }) => {
   );
 };
 
+type RTKCoordinateRestorationDialogProps = {
+  coordinateFormatter: (coordinate?: RTKSavedCoordinate) => string | undefined;
+  dialog: {
+    open: boolean;
+    presetId?: string;
+  };
+  onClose: () => void;
+  onUseSaved: (
+    presetId: string | undefined,
+    coordinate: RTKSavedCoordinate
+  ) => void;
+  savedCoordinates: RTKSavedCoordinate[];
+};
+
 const RTKCoordinateRestorationDialog = ({
   coordinateFormatter,
   dialog,
   onClose,
   onUseSaved,
   savedCoordinates,
-  t,
-}) => {
+}: RTKCoordinateRestorationDialogProps) => {
   const { presetId } = dialog;
 
-  const handleUseSaved = (coordinate) => {
+  const { t } = useTranslation();
+  const handleUseSaved = (coordinate: RTKSavedCoordinate) => {
     onClose(); // Close dialog first
     void onUseSaved(presetId, coordinate); // Then start async operation
   };
@@ -102,17 +127,8 @@ const RTKCoordinateRestorationDialog = ({
   );
 };
 
-RTKCoordinateRestorationDialog.propTypes = {
-  coordinateFormatter: PropTypes.func,
-  dialog: PropTypes.object,
-  onClose: PropTypes.func,
-  onUseSaved: PropTypes.func,
-  savedCoordinates: PropTypes.array,
-  t: PropTypes.func,
-};
-
 export default connect(
-  (state) => {
+  (state: RootState) => {
     const dialog = getCoordinateRestorationDialogState(state);
 
     const coordinateFormatter = getPreferredSavedRTKPositionFormatter(state);
@@ -129,4 +145,4 @@ export default connect(
     onClose: closeCoordinateRestorationDialog,
     onUseSaved: useSavedCoordinateForPreset,
   }
-)(withTranslation()(RTKCoordinateRestorationDialog));
+)(RTKCoordinateRestorationDialog);

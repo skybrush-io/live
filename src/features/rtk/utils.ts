@@ -1,5 +1,6 @@
 import { Status, colorForStatus } from '@skybrush/app-theme-mui';
-import { type MiniListItemIconProps } from '@skybrush/mui-components';
+import type { ECEFCoordinate } from '@skybrush/flockwave-spec';
+import type { MiniListItemIconProps } from '@skybrush/mui-components';
 import type { TFunction } from 'i18next';
 import isEqual from 'lodash-es/isEqual';
 
@@ -137,7 +138,9 @@ export function formatSurveyAccuracy(value: number, { max = 20 } = {}): string {
  * @param status - The RTK statistics object.
  * @returns True if a valid fix is present, false otherwise.
  */
-export function hasValidFix(status: Partial<RTKStatistics>): boolean {
+export function hasValidFix(
+  status: Pick<RTKStatistics, 'antenna' | 'survey'>
+): boolean {
   const hasECEF = Array.isArray(status?.antenna?.positionECEF);
   const accuracy = status?.survey?.accuracy;
   const flags = status?.survey?.flags;
@@ -151,18 +154,18 @@ export function hasValidFix(status: Partial<RTKStatistics>): boolean {
 /**
  * Determines whether the current coordinate should be saved for a given preset.
  *
- * @param status - The RTK statistics object containing the current antenna position.
+ * @param position - The current antenna position.
  * @param savedCoordinates - The record of saved coordinates keyed by preset ID.
  * @param presetId - The ID of the preset to check against.
  * @returns True if the coordinate is new and should be saved, false otherwise.
  */
 export function shouldSaveCoordinate(
-  status: Partial<RTKStatistics>,
+  position: ECEFCoordinate | undefined,
   savedCoordinates: Record<string, RTKSavedCoordinate[]>,
   presetId: string
 ): boolean {
-  const incomingECEF = Array.isArray(status?.antenna?.positionECEF)
-    ? status.antenna?.positionECEF?.slice(0, 3).map((x) => Math.round(x))
+  const incomingECEF = Array.isArray(position)
+    ? position.slice(0, 3).map((x) => Math.round(x))
     : undefined;
   const saved = savedCoordinates?.[presetId];
   const savedECEF =

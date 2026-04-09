@@ -1,8 +1,7 @@
 import ArrowBack from '@mui/icons-material/ArrowBack';
-import Box from '@mui/material/Box';
+import Box, { type BoxProps } from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
-import PropTypes from 'prop-types';
 import { Form } from 'react-final-form';
 import { connect } from 'react-redux';
 import { useAsync } from 'react-use';
@@ -15,7 +14,12 @@ import messageHub from '~/message-hub';
 import { startNewSurveyOnServer } from './actions';
 import { toggleSurveySettingsPanel } from './slice';
 
-const SurveySettingsEditor = ({ onClose, onSubmit, ...rest }) => {
+type Props = Omit<BoxProps, 'onClose' | 'onSubmit'> & {
+  onClose: () => void;
+  onSubmit: (values: { accuracy: number; duration: number }) => void;
+};
+
+const SurveySettingsEditor = ({ onClose, onSubmit, ...rest }: Props) => {
   const settings = useAsync(async () => {
     const settingsFromServer = await messageHub.query.getRTKSurveySettings();
     return settingsFromServer
@@ -74,7 +78,7 @@ const SurveySettingsEditor = ({ onClose, onSubmit, ...rest }) => {
                 style={{ flex: 1 }}
               />
               <Box sx={{ p: 0.5 }} />
-              <Button onClick={handleSubmit}>Start survey</Button>
+              <Button onClick={void handleSubmit}>Start survey</Button>
             </>
           )}
         </Form>
@@ -83,18 +87,19 @@ const SurveySettingsEditor = ({ onClose, onSubmit, ...rest }) => {
   );
 };
 
-SurveySettingsEditor.propTypes = {
-  onClose: PropTypes.func,
-  onSubmit: PropTypes.func,
-};
-
 export default connect(
   // mapStateToProps
   null,
   // mapDispatchToProps
   {
     onClose: toggleSurveySettingsPanel,
-    onSubmit: ({ accuracy, duration }) =>
+    onSubmit: ({
+      accuracy,
+      duration,
+    }: {
+      accuracy: number;
+      duration: number;
+    }) =>
       startNewSurveyOnServer({
         accuracy: Number(accuracy),
         duration: Number(duration),

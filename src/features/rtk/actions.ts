@@ -54,7 +54,10 @@ export const toggleAntennaPositionFormat =
   };
 
 export const useSavedCoordinateForPreset =
-  (presetId: string, savedCoordinate: RTKSavedCoordinate): AppThunk =>
+  (
+    presetId: string | undefined,
+    savedCoordinate: RTKSavedCoordinate
+  ): AppThunk =>
   async () => {
     try {
       // Set the saved coordinate as the current antenna position

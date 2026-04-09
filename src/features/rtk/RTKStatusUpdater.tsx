@@ -1,9 +1,8 @@
 import delay from 'delay';
 import isNil from 'lodash-es/isNil';
 import mapValues from 'lodash-es/mapValues';
-import PropTypes from 'prop-types';
 import { useEffect } from 'react';
-import { connect, useDispatch, useSelector } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 
 import handleError from '~/error-handling';
 import { saveCurrentCoordinateForPreset } from '~/features/rtk/actions';
@@ -11,52 +10,67 @@ import { getSavedCoordinates } from '~/features/rtk/selectors';
 import { updateRTKStatistics } from '~/features/rtk/slice';
 import { hasValidFix, shouldSaveCoordinate } from '~/features/rtk/utils';
 import useMessageHub from '~/hooks/useMessageHub';
+import { useAppDispatch } from '~/store/hooks';
+import type { Latitude, Longitude, LonLat } from '~/utils/geography';
+import type { Coordinate3D } from '~/utils/math';
+
+import type { RTKStatistics, RTKStatisticsResponse } from './types';
+
+type Props = {
+  onStatusChanged: (status: RTKStatisticsResponse) => void;
+  period?: number;
+};
 
 /**
  * Component that renders nothing but constantly queries the server for the
  * current RTK status and dispatches actions to update the local store.
  */
-const RTKStatusUpdater = ({ onStatusChanged, period = 1000 }) => {
+const RTKStatusUpdater = ({ onStatusChanged, period = 1000 }: Props) => {
   const messageHub = useMessageHub();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const savedCoordinates = useSelector(getSavedCoordinates);
 
   useEffect(() => {
-    const valueHolder = {
+    const valueHolder: {
+      finished: boolean;
+      promise: Promise<void> | null;
+    } = {
       finished: false,
       promise: null,
     };
 
-    const checkAndAutosave = async (status) => {
+    const checkAndAutosave = async (status: RTKStatisticsResponse) => {
       // Autosave base station coordinate on first valid fix per preset
-      if (!hasValidFix(status)) {
+      if (!hasValidFix(status as any as RTKStatistics)) {
         return;
       }
 
-      const selectedPresetId = await messageHub.query.getSelectedRTKPresetId();
+      const selectedPresetId: string | null =
+        await messageHub.query.getSelectedRTKPresetId();
 
       if (
         selectedPresetId &&
-        shouldSaveCoordinate(status, savedCoordinates, selectedPresetId)
+        shouldSaveCoordinate(
+          status?.antenna?.positionECEF,
+          savedCoordinates,
+          selectedPresetId
+        )
       ) {
-        dispatch(saveCurrentCoordinateForPreset(selectedPresetId));
+        void dispatch(saveCurrentCoordinateForPreset(selectedPresetId));
       }
     };
 
     const updateStatus = async () => {
       while (!valueHolder.finished) {
         try {
-          // eslint-disable-next-line no-await-in-loop
-          const status = await messageHub.query.getRTKStatus();
+          const status: RTKStatisticsResponse =
+            await messageHub.query.getRTKStatus();
           onStatusChanged(status);
-
-          // eslint-disable-next-line no-await-in-loop
           await checkAndAutosave(status);
         } catch (error) {
           handleError(error, 'RTK status query');
         }
 
-        // eslint-disable-next-line no-await-in-loop
         await delay(period);
       }
     };
@@ -72,17 +86,12 @@ const RTKStatusUpdater = ({ onStatusChanged, period = 1000 }) => {
   return null;
 };
 
-RTKStatusUpdater.propTypes = {
-  onStatusChanged: PropTypes.func,
-  period: PropTypes.number,
-};
-
 export default connect(
   // mapStateToProps
   null,
   // mapDispatchToProps
   (dispatch) => ({
-    onStatusChanged(status) {
+    onStatusChanged(status: RTKStatisticsResponse) {
       const {
         antenna = {},
         messages = {},
@@ -91,24 +100,29 @@ export default connect(
         survey = {},
       } = status;
       const now = Date.now();
-      const messageStats = {};
+      const messageStats: RTKStatistics['messages'] = {};
       const hasTxBandwidthInfo = messagesTx !== undefined;
 
-      let position;
-      let positionECEF;
+      let position: LonLat | undefined;
+      let positionECEF: Coordinate3D | undefined;
       let height;
 
       if (antenna.position) {
-        position = [antenna.position[1] / 1e7, antenna.position[0] / 1e7];
+        position = [
+          (antenna.position[1] / 1e7) as Longitude,
+          (antenna.position[0] / 1e7) as Latitude,
+        ];
         height =
-          antenna.position[2] === undefined
-            ? undefined
-            : antenna.position[2] / 1e3;
+          typeof antenna.position[2] === 'number'
+            ? antenna.position[2] / 1e3
+            : undefined;
       }
 
       if (antenna.positionECEF) {
         positionECEF = Array.isArray(antenna.positionECEF)
-          ? antenna.positionECEF.slice(0, 3).map((x) => Math.round(x))
+          ? (antenna.positionECEF
+              .slice(0, 3)
+              .map((x) => Math.round(x)) as Coordinate3D)
           : undefined;
       }
 
@@ -124,7 +138,7 @@ export default connect(
       }
 
       /* Process bit rates of outbound messages */
-      for (const [key, messageStat] of Object.entries(messagesTx || {})) {
+      for (const [key, messageStat] of Object.entries(messagesTx ?? {})) {
         const [timestamp, bitsPerSecond] = messageStat;
         const lastUpdatedAt = now - timestamp;
         let entry = messageStats[key];
@@ -145,8 +159,8 @@ export default connect(
       dispatch(
         updateRTKStatistics({
           antenna: {
-            descriptor: String(antenna.descriptor || ''),
-            serialNumber: String(antenna.serialNumber || ''),
+            descriptor: String(antenna.descriptor ?? ''),
+            serialNumber: String(antenna.serialNumber ?? ''),
             stationId: isNil(antenna.stationId)
               ? undefined
               : Number(antenna.stationId),
