@@ -1,4 +1,5 @@
 import { Status, colorForStatus } from '@skybrush/app-theme-mui';
+import { type MiniListItemIconProps } from '@skybrush/mui-components';
 import type { TFunction } from 'i18next';
 import isEqual from 'lodash-es/isEqual';
 
@@ -194,9 +195,11 @@ export function getSemanticsOfRTKStatus(
       return Status.WAITING;
 
     case RTKCorrectionStatus.ERROR:
-    case RTKCorrectionStatus.NOT_ENOUGH_SATELLITES:
     case RTKCorrectionStatus.NO_ANTENNA_POSITION:
       return Status.ERROR;
+
+    case RTKCorrectionStatus.NOT_ENOUGH_SATELLITES:
+      return Status.WARNING;
 
     default:
       return Status.WARNING;
@@ -211,6 +214,37 @@ export function getColorOfRTKStatus(
 ): string | undefined {
   const semantics = getSemanticsOfRTKStatus(status);
   return semantics ? colorForStatus(semantics) : undefined;
+}
+
+/**
+ * Returns an icon preset for the given overall RTK correction status that can be
+ * used in a MiniListItem component
+ */
+export function getIconPresetForRTKStatus(
+  status: RTKCorrectionStatus
+): MiniListItemIconProps['preset'] {
+  switch (status) {
+    case RTKCorrectionStatus.OK:
+      return 'success';
+
+    case RTKCorrectionStatus.ERROR:
+    case RTKCorrectionStatus.NO_ANTENNA_POSITION:
+      return 'error';
+
+    case RTKCorrectionStatus.NOT_ENOUGH_SATELLITES:
+      return 'warning';
+
+    case RTKCorrectionStatus.CONNECTED_RECENTLY:
+    case RTKCorrectionStatus.SURVEY_IN_PROGRESS:
+      return 'connecting';
+
+    case RTKCorrectionStatus.NOT_CONNECTED:
+    case RTKCorrectionStatus.INACTIVE:
+      return 'empty';
+
+    default:
+      return 'warning';
+  }
 }
 
 /**

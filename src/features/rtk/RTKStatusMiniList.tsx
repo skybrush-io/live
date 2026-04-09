@@ -1,7 +1,5 @@
-import PropTypes from 'prop-types';
-import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
-import { withTranslation } from 'react-i18next';
 
 import {
   MiniList,
@@ -10,15 +8,30 @@ import {
 } from '@skybrush/mui-components';
 
 import GPSFixStatusMiniList from '~/components/uavs/GPSFixStatusMiniList';
+import type { RootState } from '~/store/reducers';
 
-import { getSatelliteIds, getSurveyStatus } from './selectors';
-import { formatSurveyAccuracy } from './utils';
+import {
+  getOverallRTKStatus,
+  getSatelliteIds,
+  getSurveyStatus,
+} from './selectors';
+import { RTKCorrectionStatus } from './types';
+import {
+  describeRTKStatus,
+  formatSurveyAccuracy,
+  getIconPresetForRTKStatus,
+} from './utils';
 
 const listStyle = {
   minWidth: 150,
 };
 
-const gnssSystems = {
+type GNSSSystemDescription = {
+  name: string;
+  flag: string;
+};
+
+const gnssSystems: Record<string, GNSSSystemDescription> = {
   C: {
     name: 'BeiDou',
     flag: '🇨🇳',
@@ -43,8 +56,8 @@ const gnssSystems = {
 
 const gnssSystemOrder = ['G', 'R', 'E', 'C', 'other'];
 
-const countSatellitesByGNSSSystem = (satelliteIds) => {
-  const result = {};
+const countSatellitesByGNSSSystem = (satelliteIds: string[]) => {
+  const result: Record<string, number> = {};
 
   for (const satelliteId of satelliteIds) {
     let gnssSystemCode = satelliteId.length > 0 ? satelliteId.charAt(0) : null;
@@ -63,10 +76,33 @@ const countSatellitesByGNSSSystem = (satelliteIds) => {
   return result;
 };
 
-const RTKStatusMiniList = ({ satelliteIds, surveyStatus, t }) => {
+type Props = {
+  overallStatus: RTKCorrectionStatus;
+  satelliteIds: string[];
+  surveyStatus: {
+    accuracy?: number;
+    active: boolean;
+    supported: boolean;
+    valid: boolean;
+  };
+};
+
+const RTKStatusMiniList = ({
+  overallStatus,
+  satelliteIds,
+  surveyStatus,
+}: Props) => {
+  const { t } = useTranslation();
   const counts = countSatellitesByGNSSSystem(satelliteIds);
   return (
     <MiniList style={listStyle}>
+      {overallStatus !== RTKCorrectionStatus.INACTIVE &&
+        overallStatus !== RTKCorrectionStatus.NOT_CONNECTED && (
+          <MiniListItem
+            iconPreset={getIconPresetForRTKStatus(overallStatus)}
+            primaryText={describeRTKStatus(overallStatus, t)}
+          />
+        )}
       {surveyStatus.supported && (
         <MiniListItem
           primaryText={
@@ -112,23 +148,13 @@ const RTKStatusMiniList = ({ satelliteIds, surveyStatus, t }) => {
   );
 };
 
-RTKStatusMiniList.propTypes = {
-  satelliteIds: PropTypes.arrayOf(PropTypes.string),
-  surveyStatus: PropTypes.shape({
-    accuracy: PropTypes.number,
-    active: PropTypes.bool,
-    supported: PropTypes.bool,
-    valid: PropTypes.bool,
-  }),
-  t: PropTypes.func,
-};
-
 export default connect(
   // mapStateToProps
-  (state) => ({
+  (state: RootState) => ({
+    overallStatus: getOverallRTKStatus(state),
     satelliteIds: getSatelliteIds(state),
     surveyStatus: getSurveyStatus(state),
   }),
   // mapDispatchToProps
   {}
-)(withTranslation()(RTKStatusMiniList));
+)(RTKStatusMiniList);

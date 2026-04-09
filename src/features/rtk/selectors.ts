@@ -259,11 +259,6 @@ export const getOverallRTKStatus = createSelector(
       return RTKCorrectionStatus.NOT_CONNECTED;
     }
 
-    if (presetId === undefined) {
-      // No RTK base station selected
-      return RTKCorrectionStatus.INACTIVE;
-    }
-
     if (surveyStatus.supported) {
       // If the RTK device supports surveying, show the survey status.
       //
@@ -280,9 +275,11 @@ export const getOverallRTKStatus = createSelector(
     }
 
     // If the result would be successful but we do not have enough good satellites,
-    // show a warning instead
+    // show a warning instead - but only if we have a selected preset
     if (result === RTKCorrectionStatus.OK && numGoodSatellites < 7) {
-      result = RTKCorrectionStatus.NOT_ENOUGH_SATELLITES;
+      result = presetId
+        ? RTKCorrectionStatus.NOT_ENOUGH_SATELLITES
+        : RTKCorrectionStatus.INACTIVE;
     }
 
     // TODO(ntamas): check age of satellite CNR information
