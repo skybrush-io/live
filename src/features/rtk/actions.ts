@@ -1,8 +1,13 @@
+import type {
+  RTKConfigurationPreset,
+  RTKSurveySettings,
+} from '@skybrush/flockwave-spec';
 import copy from 'copy-to-clipboard';
 import isEqual from 'lodash-es/isEqual';
-import { MessageSemantics } from '~/features/snackbar/types';
 import { showError, showNotification } from '~/features/snackbar/actions';
+import { MessageSemantics } from '~/features/snackbar/types';
 import messageHub from '~/message-hub';
+import type { AppThunk } from '~/store/reducers';
 
 import {
   getFormattedAntennaPosition,
@@ -13,33 +18,44 @@ import {
   saveCoordinateForPreset,
   setAntennaPositionFormat,
 } from './slice';
+import { RTKAntennaPositionFormat, type RTKSavedCoordinate } from './types';
 
-export const copyAntennaPositionToClipboard = () => (_dispatch, getState) => {
-  copy(getFormattedAntennaPosition(getState()));
-  showNotification('Coordinates copied to clipboard.');
-};
+export const copyAntennaPositionToClipboard =
+  (): AppThunk => (_dispatch, getState) => {
+    const position = getFormattedAntennaPosition(getState());
+    if (position) {
+      copy(position);
+      showNotification('Coordinates copied to clipboard.');
+    }
+  };
 
-export const startNewSurveyOnServer = (settings) => async (dispatch) => {
-  try {
-    await messageHub.execute.startRTKSurvey(settings);
-  } catch {
-    showError('Failed to start RTK survey on the server.');
-    return;
-  }
+export const startNewSurveyOnServer =
+  (settings: RTKSurveySettings): AppThunk =>
+  async (dispatch) => {
+    try {
+      await messageHub.execute.startRTKSurvey(settings);
+    } catch {
+      showError('Failed to start RTK survey on the server.');
+      return;
+    }
 
-  dispatch(closeSurveySettingsPanel());
-};
+    dispatch(closeSurveySettingsPanel());
+  };
 
-export const toggleAntennaPositionFormat = () => (dispatch, getState) => {
-  dispatch(
-    setAntennaPositionFormat(
-      isShowingAntennaPositionInECEF(getState()) ? 'lonLat' : 'ecef'
-    )
-  );
-};
+export const toggleAntennaPositionFormat =
+  (): AppThunk => (dispatch, getState) => {
+    dispatch(
+      setAntennaPositionFormat(
+        isShowingAntennaPositionInECEF(getState())
+          ? RTKAntennaPositionFormat.LON_LAT
+          : RTKAntennaPositionFormat.ECEF
+      )
+    );
+  };
 
 export const useSavedCoordinateForPreset =
-  (presetId, savedCoordinate) => async (dispatch) => {
+  (presetId: string, savedCoordinate: RTKSavedCoordinate): AppThunk =>
+  async () => {
     try {
       // Set the saved coordinate as the current antenna position
       await messageHub.execute.setRTKAntennaPosition({
@@ -62,7 +78,8 @@ export const useSavedCoordinateForPreset =
   };
 
 export const saveCurrentCoordinateForPreset =
-  (presetId) => async (dispatch, getState) => {
+  (presetId: string): AppThunk =>
+  async (dispatch, getState) => {
     const state = getState();
     const { antenna, survey } = state.rtk.stats;
 
@@ -100,7 +117,8 @@ export const saveCurrentCoordinateForPreset =
 
     let presetName = presetId;
     try {
-      const presets = await messageHub.query.getRTKPresets();
+      const presets: RTKConfigurationPreset[] =
+        await messageHub.query.getRTKPresets();
       const preset = presets.find((p) => p.id === presetId);
       if (preset) {
         presetName = preset.title;
