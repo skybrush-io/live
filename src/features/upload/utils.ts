@@ -180,7 +180,9 @@ export const moveItemsBetweenQueues =
   };
 
 /**
- * Aggregates UAV statuses from the given history items.
+ * Aggregates up to date UAV statuses from the given history items.
+ *
+ * Outdated statuses are ignored.
  */
 export function aggregateUAVStatusesFromHistory<TStatus>(
   historyItems: HistoryItem[] | undefined,
@@ -193,7 +195,11 @@ export function aggregateUAVStatusesFromHistory<TStatus>(
 
   for (const item of historyItems) {
     for (const [uavId, status] of Object.entries(item.perUavStatuses)) {
-      result[uavId] = mapStatus(status);
+      if (status === 'outdated') {
+        delete result[uavId];
+      } else {
+        result[uavId] = mapStatus(status);
+      }
     }
   }
 
@@ -277,4 +283,17 @@ export function compactHistory(
   };
 
   return [compacted, ...history.slice(mergeUntil)];
+}
+
+/**
+ * Pushes a new history item into the history of the given job type.
+ */
+export function pushItemToHistory(
+  history: Record<string, HistoryItem[]>,
+  jobType: string,
+  item: HistoryItem
+) {
+  const historyItems = history[jobType] ?? [];
+  historyItems.push(item);
+  history[jobType] = compactHistory(historyItems);
 }

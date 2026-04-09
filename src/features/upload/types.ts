@@ -17,6 +17,8 @@ export type JobData = {
 
 export type UAVStatus = 'success' | 'error';
 
+export type MaybeOutdateUAVStatus = UAVStatus | 'outdated';
+
 export type UploadJobResult = UAVStatus | 'cancelled';
 
 /**
@@ -28,6 +30,6 @@ type ErrorMessage = string;
 
 export type HistoryItem = {
   result: UploadJobResult;
-  perUavStatuses: Record<Identifier, UAVStatus>;
+  perUavStatuses: Record<Identifier, MaybeOutdateUAVStatus>;
   perUavErrors: Record<Identifier, ErrorMessage>;
 };

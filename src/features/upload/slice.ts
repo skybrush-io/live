@@ -5,19 +5,25 @@
 
 import { type Action, createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
+import { notifyUAVsInMissionMappingChanged } from '~/features/mission/slice';
 import { SHOW_UPLOAD_JOB } from '~/features/show/constants';
 import { _clearLoadedShow } from '~/features/show/slice';
 import type { Identifier } from '~/utils/collections';
 import { noPayload } from '~/utils/redux';
 
-import type { HistoryItem, JobData, JobPayload } from './types';
+import type {
+  HistoryItem,
+  JobData,
+  JobPayload,
+  MaybeOutdateUAVStatus,
+} from './types';
 import {
   clearQueues,
   clearUploadHistoryForJobTypeHelper,
-  compactHistory,
   createHistoryItem,
   ensureItemsInQueue,
   moveItemsBetweenQueues,
+  pushItemToHistory,
 } from './utils';
 
 export type UploadSliceState = {
@@ -229,17 +235,15 @@ const { actions, reducer } = createSlice({
 
       // Store the data in history
       if (jobType) {
-        const historyItem = createHistoryItem(
-          cancelled ? 'cancelled' : success ? 'success' : 'error',
-          state.queues,
-          state.errors
+        pushItemToHistory(
+          state.history,
+          jobType,
+          createHistoryItem(
+            cancelled ? 'cancelled' : success ? 'success' : 'error',
+            state.queues,
+            state.errors
+          )
         );
-
-        if (!state.history[jobType]) {
-          state.history[jobType] = [];
-        }
-        state.history[jobType].push(historyItem);
-        state.history[jobType] = compactHistory(state.history[jobType]);
       }
 
       // Clear queues and show the last upload result in the dialog.
@@ -409,6 +413,26 @@ const { actions, reducer } = createSlice({
   extraReducers(builder) {
     builder.addCase(_clearLoadedShow, (state) => {
       clearUploadHistoryForJobTypeHelper(state, SHOW_UPLOAD_JOB.type);
+    });
+    builder.addCase(notifyUAVsInMissionMappingChanged, (state, action) => {
+      const uavIds = action.payload;
+
+      if (uavIds === undefined) {
+        clearUploadHistoryForJobTypeHelper(state, SHOW_UPLOAD_JOB.type);
+        return;
+      }
+
+      pushItemToHistory(state.history, SHOW_UPLOAD_JOB.type, {
+        result: 'success',
+        perUavErrors: {},
+        perUavStatuses: uavIds.reduce(
+          (res, id) => {
+            res[id] = 'outdated';
+            return res;
+          },
+          {} as Record<string, MaybeOutdateUAVStatus>
+        ),
+      });
     });
   },
 });
