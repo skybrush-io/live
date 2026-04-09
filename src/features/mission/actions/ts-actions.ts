@@ -70,11 +70,17 @@ export const commitMappingEditorSessionAtCurrentSlot =
     const mappingState = getMissionMapping(state);
     const index = getIndexOfMappingSlotBeingEdited(state);
 
-    if (index >= 0 && index < mappingState.length) {
+    if (index < 0 || index >= mappingState.length) {
+      dispatch(updateEditedMappingIndex(continuation));
+      return;
+    }
+
+    const oldValue = mappingState[index];
+    const existingIndex =
+      validatedValue === null ? -1 : mappingState.indexOf(validatedValue);
+
+    if (index !== existingIndex || validatedValue !== oldValue) {
       const newMapping = [...mappingState];
-      const oldValue = newMapping[index];
-      const existingIndex =
-        validatedValue === null ? -1 : newMapping.indexOf(validatedValue);
 
       // Collect affected UAV IDs (non-null values)
       const affectedUavIds: Identifier[] = [];
