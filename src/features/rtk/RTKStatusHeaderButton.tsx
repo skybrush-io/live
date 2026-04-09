@@ -1,6 +1,5 @@
 import { connect } from 'react-redux';
 
-import { colorForStatus, type Status } from '@skybrush/app-theme-mui';
 import {
   GenericHeaderButton,
   LazyTooltip,
@@ -19,7 +18,8 @@ import {
   getSurveyStatus,
 } from './selectors';
 import { showRTKSetupDialog } from './slice';
-import { formatSurveyAccuracy } from './utils';
+import type { RTKCorrectionStatus } from './types';
+import { formatSurveyAccuracy, getColorOfRTKStatus } from './utils';
 
 const BADGE_OFFSET = [24, 8];
 
@@ -32,7 +32,7 @@ const buttonStyle: React.CSSProperties = {
 type RTKStatusHeaderButtonProps = {
   isConnected: boolean;
   numSatellites: number;
-  overallStatus: Status | undefined;
+  overallStatus: RTKCorrectionStatus;
   showRTKSetupDialog: () => void;
   surveyStatus: {
     accuracy?: number;
@@ -48,30 +48,34 @@ const RTKStatusHeaderButton = ({
   showRTKSetupDialog,
   overallStatus,
   surveyStatus,
-}: RTKStatusHeaderButtonProps) => (
-  <LazyTooltip interactive content={<RTKStatusMiniList />}>
-    <GenericHeaderButton
-      disabled={!isConnected}
-      label={isConnected && numSatellites > 0 ? String(numSatellites) : '—'}
-      secondaryLabel={
-        surveyStatus.supported && typeof surveyStatus.accuracy === 'number'
-          ? formatSurveyAccuracy(surveyStatus.accuracy, { max: 9 })
-          : null
-      }
-      style={buttonStyle}
-      onClick={showRTKSetupDialog}
-    >
-      <Satellite />
-      <SidebarBadge
-        anchor='topLeft'
-        color={overallStatus ? colorForStatus(overallStatus) : undefined}
-        offset={BADGE_OFFSET}
-        visible={Boolean(overallStatus)}
-      />
-      {isConnected && <RTKStatusUpdater />}
-    </GenericHeaderButton>
-  </LazyTooltip>
-);
+}: RTKStatusHeaderButtonProps) => {
+  const badgeColor = getColorOfRTKStatus(overallStatus);
+
+  return (
+    <LazyTooltip interactive content={<RTKStatusMiniList />}>
+      <GenericHeaderButton
+        disabled={!isConnected}
+        label={isConnected && numSatellites > 0 ? String(numSatellites) : '—'}
+        secondaryLabel={
+          surveyStatus.supported && typeof surveyStatus.accuracy === 'number'
+            ? formatSurveyAccuracy(surveyStatus.accuracy, { max: 9 })
+            : null
+        }
+        style={buttonStyle}
+        onClick={showRTKSetupDialog}
+      >
+        <Satellite />
+        <SidebarBadge
+          anchor='topLeft'
+          color={badgeColor}
+          offset={BADGE_OFFSET}
+          visible={Boolean(badgeColor)}
+        />
+        {isConnected && <RTKStatusUpdater />}
+      </GenericHeaderButton>
+    </LazyTooltip>
+  );
+};
 
 export default connect(
   // mapStateToProps

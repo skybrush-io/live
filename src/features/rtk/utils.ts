@@ -1,8 +1,13 @@
+import { Status, colorForStatus } from '@skybrush/app-theme-mui';
 import isEqual from 'lodash-es/isEqual';
 
 import { formatDistance } from '~/utils/formatting';
 
-import type { RTKSavedCoordinate, RTKStatistics } from './types';
+import {
+  RTKCorrectionStatus,
+  type RTKSavedCoordinate,
+  type RTKStatistics,
+} from './types';
 
 const descriptions: Record<string, string> = {
   'rtcm2/1': 'Differential GPS Corrections',
@@ -167,4 +172,42 @@ export function shouldSaveCoordinate(
     !!incomingECEF && !!savedECEF && isEqual(incomingECEF, savedECEF);
 
   return !isSameECEF;
+}
+
+/**
+ * Converts the overall RTK correction status to a semantic status enum.
+ */
+export function getSemanticsOfRTKStatus(
+  status: RTKCorrectionStatus
+): Status | undefined {
+  switch (status) {
+    case RTKCorrectionStatus.OK:
+      return Status.SUCCESS;
+
+    case RTKCorrectionStatus.NOT_CONNECTED:
+    case RTKCorrectionStatus.INACTIVE:
+      return undefined;
+
+    case RTKCorrectionStatus.CONNECTED_RECENTLY:
+    case RTKCorrectionStatus.SURVEY_IN_PROGRESS:
+      return Status.WAITING;
+
+    case RTKCorrectionStatus.ERROR:
+    case RTKCorrectionStatus.NOT_ENOUGH_SATELLITES:
+    case RTKCorrectionStatus.NO_ANTENNA_POSITION:
+      return Status.ERROR;
+
+    default:
+      return Status.WARNING;
+  }
+}
+
+/**
+ * Converts the overall RTK correction status to a color.
+ */
+export function getColorOfRTKStatus(
+  status: RTKCorrectionStatus
+): string | undefined {
+  const semantics = getSemanticsOfRTKStatus(status);
+  return semantics ? colorForStatus(semantics) : undefined;
 }

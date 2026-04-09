@@ -1,12 +1,15 @@
 import sortBy from 'lodash-es/sortBy';
 
 import { createSelector } from '@reduxjs/toolkit';
-import { Status } from '@skybrush/app-theme-mui';
 
 import { isConnected } from '~/features/servers/selectors';
 import { getPreferredCoordinateFormatter } from '~/selectors/formatting';
 import type { RootState } from '~/store/reducers';
-import { RTKAntennaPositionFormat, type RTKSavedCoordinate } from './types';
+import {
+  RTKAntennaPositionFormat,
+  RTKCorrectionStatus,
+  type RTKSavedCoordinate,
+} from './types';
 
 const formatPositionECEF = (
   positionECEF?: RTKSavedCoordinate['positionECEF']
@@ -236,40 +239,53 @@ export const getCoordinateRestorationDialogState = (
  */
 export const getOverallRTKStatus = createSelector(
   isConnected,
+  getCurrentRTKPresetId,
   getNumberOfGoodSatellites,
-  getNumberOfSatellites,
   getSurveyStatus,
   (
     isConnected,
+    presetId,
     numGoodSatellites,
-    numSatellites,
     surveyStatus
-  ): Status | undefined => {
-    let result: Status | undefined = undefined;
+  ): RTKCorrectionStatus => {
+    let result: RTKCorrectionStatus;
 
     if (!isConnected) {
-      // Not connected to the server at all, show nothing
-      return undefined;
+      // Not connected to the server at all
+      return RTKCorrectionStatus.NOT_CONNECTED;
+    }
+
+    if (presetId === undefined) {
+      // No RTK base station selected
+      return RTKCorrectionStatus.INACTIVE;
     }
 
     if (surveyStatus.supported) {
-      // If the RTK device supports surveying, show the survey status
-      result = surveyStatus.valid
-        ? Status.SUCCESS
-        : surveyStatus.active
-          ? Status.NEXT
-          : Status.ERROR;
+      // If the RTK device supports surveying, show the survey status.
+      //
+      // Note that we don't check surveyStatus.valid because if the survey is not
+      // active and not valid either it could also mean that we have a fixed position.
+      //
+      // We will check the recency of RTK correction messages later below anyway.
+      result = surveyStatus.active
+        ? RTKCorrectionStatus.SURVEY_IN_PROGRESS
+        : RTKCorrectionStatus.OK;
     } else {
-      // If the RTK device does not support surveying, simply show success if
-      // we have info about at least one satellite
-      result = numSatellites > 1 ? Status.SUCCESS : undefined;
+      // If the RTK device does not support surveying, simply show success
+      result = RTKCorrectionStatus.OK;
     }
 
     // If the result would be successful but we do not have enough good satellites,
     // show a warning instead
-    if (result === Status.SUCCESS && numGoodSatellites < 7) {
-      result = Status.WARNING;
+    if (result === RTKCorrectionStatus.OK && numGoodSatellites < 7) {
+      result = RTKCorrectionStatus.NOT_ENOUGH_SATELLITES;
     }
+
+    // TODO(ntamas): check age of satellite CNR information
+    // TODO(ntamas): check recency of antenna position information as well
+    // TODO(ntamas): replace errors and warnings with RTKCorrectionStatus.CONNECTED_RECENTLY if
+    // we have just connected to the server and we don't have enough information yet to
+    // determine the status conclusively
 
     return result;
   }
