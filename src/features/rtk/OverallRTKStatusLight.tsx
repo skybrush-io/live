@@ -12,16 +12,18 @@ type Props = Omit<LabeledStatusLightProps, 'children' | 'status'> & {
   format: 'short' | 'long';
 };
 
-const OverallRTKStatusLight = (props: Props) => {
+const OverallRTKStatusLight = ({ format, ...rest }: Props) => {
   const { t } = useTranslation();
   const status = useSelector(getOverallRTKStatus);
 
   return (
     <LabeledStatusLight
+      reversed
+      color='textSecondary'
       status={getSemanticsOfRTKStatus(status) ?? Status.OFF}
-      {...props}
+      {...rest}
     >
-      {describeRTKStatus(status, t)}
+      {describeRTKStatus(status, t, { format })}
     </LabeledStatusLight>
   );
 };

@@ -30,7 +30,11 @@ const RTKSetupDialog = ({ onClose, open }: Props) => {
       maxWidth='sm'
       onClose={onClose}
       title={t('RTKSetupDialog.title')}
-      titleComponents={<OverallRTKStatusLight format='short' />}
+      titleComponents={
+        <Box>
+          <OverallRTKStatusLight format='short' />
+        </Box>
+      }
     >
       <RTKStatusUpdater />
       <Box>
