@@ -14,11 +14,23 @@ import {
   isShowingAntennaPositionInECEF,
 } from './selectors';
 import {
+  _setCurrentRTKPresetIdAndTimestamp,
   closeSurveySettingsPanel,
   saveCoordinateForPreset,
   setAntennaPositionFormat,
 } from './slice';
 import { RTKAntennaPositionFormat, type RTKSavedCoordinate } from './types';
+
+export const setCurrentRTKPresetId =
+  (presetId: string | undefined): AppThunk =>
+  (dispatch) => {
+    dispatch(
+      _setCurrentRTKPresetIdAndTimestamp({
+        id: presetId,
+        lastUpdatedAt: Date.now(),
+      })
+    );
+  };
 
 export const copyAntennaPositionToClipboard =
   (): AppThunk => (_dispatch, getState) => {

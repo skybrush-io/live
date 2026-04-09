@@ -3,9 +3,9 @@
  * selected RTK stream on the server.
  */
 
+import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import isEqual from 'lodash-es/isEqual';
 import isNil from 'lodash-es/isNil';
-import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
 import { noPayload } from '~/utils/redux';
 
@@ -21,7 +21,10 @@ type RTKSliceState = {
   /** Saved coordinates per RTK preset ID */
   savedCoordinates: Record<string, RTKSavedCoordinate[]>;
 
-  currentPresetId?: string;
+  currentPreset: {
+    id: string | undefined;
+    lastUpdatedAt: number | undefined;
+  };
 
   dialog: {
     open: boolean;
@@ -56,7 +59,10 @@ const initialState: RTKSliceState = {
 
   savedCoordinates: {},
 
-  currentPresetId: undefined,
+  currentPreset: {
+    id: undefined,
+    lastUpdatedAt: undefined,
+  },
 
   dialog: {
     open: false,
@@ -158,8 +164,14 @@ const { actions, reducer } = createSlice({
       }
     },
 
-    setCurrentRTKPresetId(state, action: PayloadAction<string | undefined>) {
-      state.currentPresetId = action.payload;
+    _setCurrentRTKPresetIdAndTimestamp(
+      state,
+      action: PayloadAction<{ id: string | undefined; lastUpdatedAt: number }>
+    ) {
+      state.currentPreset = {
+        ...state.currentPreset,
+        ...action.payload,
+      };
     },
 
     clearAllSavedCoordinates(state) {
@@ -192,11 +204,11 @@ export const {
   resetRTKStatistics,
   saveCoordinateForPreset,
   setAntennaPositionFormat,
-  setCurrentRTKPresetId,
   showCoordinateRestorationDialog,
   showRTKSetupDialog,
   toggleSurveySettingsPanel,
   updateRTKStatistics,
+  _setCurrentRTKPresetIdAndTimestamp,
 } = actions;
 
 export default reducer;

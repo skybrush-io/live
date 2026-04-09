@@ -9,10 +9,8 @@ import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { useAsync, useAsyncFn } from 'react-use';
 
-import {
-  resetRTKStatistics,
-  setCurrentRTKPresetId,
-} from '~/features/rtk/slice';
+import { setCurrentRTKPresetId } from '~/features/rtk/actions';
+import { resetRTKStatistics } from '~/features/rtk/slice';
 import messageHub from '~/message-hub';
 
 const NULL_ID: RTKPresetID = '__null__';

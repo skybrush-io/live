@@ -225,7 +225,15 @@ export const getPreferredSavedRTKPositionFormatter = createSelector(
  * Returns the current RTK preset ID.
  */
 export const getCurrentRTKPresetId = (state: RootState): string | undefined =>
-  state.rtk.currentPresetId;
+  state.rtk.currentPreset.id;
+
+/**
+ * Returns the current RTK preset ID and the time when we switched to it, if available.
+ */
+export const getCurrentRTKPresetIdAndTimestamp = (
+  state: RootState
+): { id: string | undefined; lastUpdatedAt: number | undefined } =>
+  state.rtk.currentPreset;
 
 /**
  * Returns the coordinate restoration dialog state.
@@ -243,12 +251,12 @@ export const getCoordinateRestorationDialogState = (
  */
 export const getOverallRTKStatus = createSelector(
   isConnected,
-  getCurrentRTKPresetId,
+  getCurrentRTKPresetIdAndTimestamp,
   getNumberOfGoodSatellites,
   getSurveyStatus,
   (
     isConnected,
-    presetId,
+    { id, lastUpdatedAt },
     numGoodSatellites,
     surveyStatus
   ): RTKCorrectionStatus => {
@@ -275,18 +283,23 @@ export const getOverallRTKStatus = createSelector(
     }
 
     // If the result would be successful but we do not have enough good satellites,
-    // show a warning instead - but only if we have a selected preset
+    // show a warning instead - but only if we have a selected preset and we have
+    // been using that preset for a while now
     if (result === RTKCorrectionStatus.OK && numGoodSatellites < 7) {
-      result = presetId
-        ? RTKCorrectionStatus.NOT_ENOUGH_SATELLITES
-        : RTKCorrectionStatus.INACTIVE;
+      if (!id) {
+        result = RTKCorrectionStatus.INACTIVE;
+      } else {
+        const age = Date.now() - (lastUpdatedAt ?? 0);
+        if (age >= 5000) {
+          // 5 seconds should be enough to get information about the satellites
+          result = RTKCorrectionStatus.NOT_ENOUGH_SATELLITES;
+        } else {
+          result = RTKCorrectionStatus.CONNECTED_RECENTLY;
+        }
+      }
     }
 
-    // TODO(ntamas): check age of satellite CNR information
     // TODO(ntamas): check recency of antenna position information as well
-    // TODO(ntamas): replace errors and warnings with RTKCorrectionStatus.CONNECTED_RECENTLY if
-    // we have just connected to the server and we don't have enough information yet to
-    // determine the status conclusively
 
     return result;
   }
