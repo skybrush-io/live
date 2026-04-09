@@ -421,6 +421,14 @@ const { actions, reducer } = createSlice({
     });
 
     builder.addCase(notifyUAVsInMissionMappingChanged, (state, action) => {
+      if (state.history[SHOW_UPLOAD_JOB.type] === undefined) {
+        // No history, nothing to do. We must avoid creating a new history
+        // item, because that would affect the result of the
+        // `makeUploadStatusSelectorForMissionMappingByJobType()`
+        // factory!!
+        return;
+      }
+
       const uavIds = action.payload;
 
       if (uavIds === undefined) {
