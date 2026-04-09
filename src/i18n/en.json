@@ -484,6 +484,30 @@
     "findOptimalMapping": "Find optimal mapping",
     "recalculateMapping": "Recalculate mapping"
   },
+  "rtkStatus": {
+    "long": {
+      "connectedRecently": "Determining RTK correction status...",
+      "error": "Unspecified error in RTK corrections",
+      "inactive": "No selected RTK correction source",
+      "noAntennaPosition": "RTK antenna position unknown",
+      "notConnected": "Not connected to server",
+      "notEnoughSatellites": "Not enough satellites with valid RTK corrections",
+      "ok": "RTK corrections are valid",
+      "surveyInProgress": "Survey in progress",
+      "unknown": "Unknown RTK correction status"
+    },
+    "short": {
+      "connectedRecently": "Waiting for data",
+      "error": "Error",
+      "inactive": "No source",
+      "noAntennaPosition": "No antenna position",
+      "notConnected": "Not connected",
+      "notEnoughSatellites": "Not enough satellites",
+      "ok": "Valid",
+      "surveyInProgress": "Surveying",
+      "unknown": "Unknown status"
+    }
+  },
   "safetyDialog": {
     "geofence": "Geofence",
     "geofenceTab": {
