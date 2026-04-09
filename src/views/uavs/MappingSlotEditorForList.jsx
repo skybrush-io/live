@@ -7,11 +7,9 @@ import { connect } from 'react-redux';
 import { makeStyles, monospacedFont } from '@skybrush/app-theme-mui';
 
 import Colors from '~/components/colors';
+import { commitMappingEditorSessionAtCurrentSlot } from '~/features/mission/actions';
 import { getUAVIdForMappingSlotBeingEdited } from '~/features/mission/selectors';
-import {
-  cancelMappingEditorSessionAtCurrentSlot,
-  commitMappingEditorSessionAtCurrentSlot,
-} from '~/features/mission/slice';
+import { cancelMappingEditorSessionAtCurrentSlot } from '~/features/mission/slice';
 import { shouldOptimizeUIForTouch } from '~/features/settings/selectors';
 
 const WIDTH = 80;
