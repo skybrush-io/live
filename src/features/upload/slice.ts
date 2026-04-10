@@ -5,12 +5,21 @@
 
 import { type Action, createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
-import { notifyUAVsInMissionMappingChanged } from '~/features/mission/slice';
+import {
+  clearGeofencePolygonId,
+  notifyUAVsInMissionMappingChanged,
+  setGeofenceAction,
+  setGeofencePolygonId,
+} from '~/features/mission/slice';
 import { JOB_TYPE as PARAMETER_UPLOAD_JOB_TYPE } from '~/features/parameters/constants';
 import {
   removeParameterFromManifest,
   updateParametersInManifest,
 } from '~/features/parameters/slice';
+import {
+  updateGeofenceSettings,
+  updateSafetySettings,
+} from '~/features/safety/slice';
 import { SHOW_UPLOAD_JOB } from '~/features/show/constants';
 import { _clearLoadedShow } from '~/features/show/slice';
 import type { Identifier } from '~/utils/collections';
@@ -143,6 +152,21 @@ const initialState: UploadSliceState = {
     flashFailed: false,
     restrictToGlobalSelection: false,
   },
+};
+
+const historyCleaningActionMatchersByJobType = {
+  [SHOW_UPLOAD_JOB.type]: new Set<string>([
+    _clearLoadedShow.type,
+    clearGeofencePolygonId.type,
+    setGeofenceAction.type,
+    setGeofencePolygonId.type,
+    updateGeofenceSettings.type,
+    updateSafetySettings.type,
+  ]),
+  [PARAMETER_UPLOAD_JOB_TYPE]: new Set<string>([
+    removeParameterFromManifest.type,
+    updateParametersInManifest.type,
+  ]),
 };
 
 const { actions, reducer } = createSlice({
@@ -416,10 +440,6 @@ const { actions, reducer } = createSlice({
   },
 
   extraReducers(builder) {
-    builder.addCase(_clearLoadedShow, (state) => {
-      clearUploadHistoryForJobTypeHelper(state, SHOW_UPLOAD_JOB.type);
-    });
-
     builder.addCase(notifyUAVsInMissionMappingChanged, (state, action) => {
       if (state.history[SHOW_UPLOAD_JOB.type] === undefined) {
         // No history, nothing to do. We must avoid creating a new history
@@ -449,13 +469,27 @@ const { actions, reducer } = createSlice({
       });
     });
 
-    builder.addCase(removeParameterFromManifest, (state) => {
-      clearUploadHistoryForJobTypeHelper(state, PARAMETER_UPLOAD_JOB_TYPE);
-    });
+    builder.addMatcher(
+      // Clear show upload history
+      (action: Action) =>
+        historyCleaningActionMatchersByJobType[SHOW_UPLOAD_JOB.type].has(
+          action.type
+        ),
+      (state) => {
+        clearUploadHistoryForJobTypeHelper(state, SHOW_UPLOAD_JOB.type);
+      }
+    );
 
-    builder.addCase(updateParametersInManifest, (state) => {
-      clearUploadHistoryForJobTypeHelper(state, PARAMETER_UPLOAD_JOB_TYPE);
-    });
+    builder.addMatcher(
+      // Clear parameter upload history
+      (action: Action) =>
+        historyCleaningActionMatchersByJobType[PARAMETER_UPLOAD_JOB_TYPE].has(
+          action.type
+        ),
+      (state) => {
+        clearUploadHistoryForJobTypeHelper(state, PARAMETER_UPLOAD_JOB_TYPE);
+      }
+    );
   },
 });
 
