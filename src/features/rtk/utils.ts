@@ -1,9 +1,9 @@
 import { Status, colorForStatus } from '@skybrush/app-theme-mui';
 import type { ECEFCoordinate } from '@skybrush/flockwave-spec';
 import type { MiniListItemIconProps } from '@skybrush/mui-components';
-import type { TFunction } from 'i18next';
 import isEqual from 'lodash-es/isEqual';
 
+import type { TranslateFn } from '~/i18n/types';
 import { formatDistance } from '~/utils/formatting';
 
 import {
@@ -109,15 +109,18 @@ const descriptions: Record<string, string> = {
   'rtcm3/1230': 'GLONASS L1 and L2 code-phase biases',
 };
 
-export function describeMessageType(type: string): string {
-  return (
+export function describeMessageType(
+  type: string,
+  t: TranslateFn | undefined = undefined
+): string {
+  const description =
     descriptions[type] ??
     (type?.startsWith('rtcm2/')
       ? `RTCMv2 message, type ${type.slice(6)}`
       : type?.startsWith('rtcm3/')
         ? `RTCMv3 message, type ${type.slice(6)}`
-        : `Unknown message, type ${type}`)
-  );
+        : `Unknown message, type ${type}`);
+  return t ? t(`rtkMessageType.${type}`, description) : description;
 }
 
 export function formatSurveyAccuracy(value: number, { max = 20 } = {}): string {
@@ -250,50 +253,53 @@ export function getIconPresetForRTKStatus(
   }
 }
 
+const rtkCorrectionStatusLongDescriptions: Record<RTKCorrectionStatus, string> =
+  {
+    [RTKCorrectionStatus.CONNECTED_RECENTLY]:
+      'Determining RTK correction status...',
+    [RTKCorrectionStatus.ERROR]: 'Unspecified error in RTK corrections',
+    [RTKCorrectionStatus.INACTIVE]: 'No selected RTK correction source',
+    [RTKCorrectionStatus.NO_ANTENNA_POSITION]: 'RTK antenna position unknown',
+    [RTKCorrectionStatus.NOT_CONNECTED]: 'Not connected to server',
+    [RTKCorrectionStatus.NOT_ENOUGH_SATELLITES]:
+      'Not enough satellites with valid RTK corrections',
+    [RTKCorrectionStatus.OK]: 'RTK corrections are valid',
+    [RTKCorrectionStatus.SURVEY_IN_PROGRESS]: 'Survey in progress',
+  };
+
+const rtkCorrectionStatusShortDescriptions: Record<
+  RTKCorrectionStatus,
+  string
+> = {
+  [RTKCorrectionStatus.CONNECTED_RECENTLY]: 'Waiting for data',
+  [RTKCorrectionStatus.ERROR]: 'Error',
+  [RTKCorrectionStatus.INACTIVE]: 'No source',
+  [RTKCorrectionStatus.NO_ANTENNA_POSITION]: 'No antenna position',
+  [RTKCorrectionStatus.NOT_CONNECTED]: 'Not connected',
+  [RTKCorrectionStatus.NOT_ENOUGH_SATELLITES]: 'Not enough satellites',
+  [RTKCorrectionStatus.OK]: 'Valid',
+  [RTKCorrectionStatus.SURVEY_IN_PROGRESS]: 'Surveying',
+};
+
 /**
- * Converts the overall RTK correction status to a human-readable description, using a
- * translation function.
+ * Converts the overall RTK correction status to a human-readable description.
  */
 export function describeRTKStatus(
   status: RTKCorrectionStatus,
-  t: TFunction,
-  options: Partial<{ format: 'short' | 'long' }> = {}
+  options: Partial<{ format: 'short' | 'long' }> = {},
+  t: TranslateFn | undefined = undefined
 ): string {
   const { format = 'long' } = options;
-
-  // All translation keys spelled out so react-i18next can find them when parsing
-  // the source
-  const long = format === 'long';
-  switch (status) {
-    case RTKCorrectionStatus.NOT_CONNECTED:
-      return long
-        ? t('rtkStatus.long.notConnected')
-        : t('rtkStatus.short.notConnected');
-    case RTKCorrectionStatus.INACTIVE:
-      return long
-        ? t('rtkStatus.long.inactive')
-        : t('rtkStatus.short.inactive');
-    case RTKCorrectionStatus.CONNECTED_RECENTLY:
-      return long
-        ? t('rtkStatus.long.connectedRecently')
-        : t('rtkStatus.short.connectedRecently');
-    case RTKCorrectionStatus.SURVEY_IN_PROGRESS:
-      return long
-        ? t('rtkStatus.long.surveyInProgress')
-        : t('rtkStatus.short.surveyInProgress');
-    case RTKCorrectionStatus.NOT_ENOUGH_SATELLITES:
-      return long
-        ? t('rtkStatus.long.notEnoughSatellites')
-        : t('rtkStatus.short.notEnoughSatellites');
-    case RTKCorrectionStatus.NO_ANTENNA_POSITION:
-      return long
-        ? t('rtkStatus.long.noAntennaPosition')
-        : t('rtkStatus.short.noAntennaPosition');
-    case RTKCorrectionStatus.OK:
-      return long ? t('rtkStatus.long.ok') : t('rtkStatus.short.ok');
-    case RTKCorrectionStatus.ERROR:
-      return long ? t('rtkStatus.long.error') : t('rtkStatus.short.error');
-    default:
-      return long ? t('rtkStatus.long.unknown') : t('rtkStatus.short.unknown');
-  }
+  const descriptions =
+    format === 'long'
+      ? rtkCorrectionStatusLongDescriptions
+      : rtkCorrectionStatusShortDescriptions;
+  const description =
+    descriptions[status] ||
+    (format === 'long' ? 'Unknown RTK correction status' : 'Unknown status');
+  const namespace =
+    format === 'long'
+      ? 'rtkCorrectionStatus.long'
+      : 'rtkCorrectionStatus.short';
+  return t ? t(`${namespace}.${status}`, description) : description;
 }

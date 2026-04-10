@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box';
 import type React from 'react';
-import { Translation } from 'react-i18next';
+import { Translation, useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import TimeAgo from 'react-timeago';
 
@@ -33,10 +33,11 @@ const RTKMessageStatisticsListEntry = ({
   const hasTx = (bitsPerSecondTransferred ?? 0) > 0;
   const hasRx = bitsPerSecondReceived > 0;
   const bps = hasTx ? bitsPerSecondTransferred! : bitsPerSecondReceived;
+  const { t } = useTranslation();
   return (
     <Box key={id} sx={{ display: 'flex' }}>
       <Box sx={{ width: 80, color: 'text.secondary' }}>{id}</Box>
-      <Box sx={{ flex: 1 }}>{describeMessageType(id)}</Box>
+      <Box sx={{ flex: 1 }}>{describeMessageType(id, t)}</Box>
       <Box
         sx={{ width: 112, ml: 1, color: 'text.secondary', textAlign: 'right' }}
       >

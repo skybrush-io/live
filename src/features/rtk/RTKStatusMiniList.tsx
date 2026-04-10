@@ -100,7 +100,7 @@ const RTKStatusMiniList = ({
         overallStatus !== RTKCorrectionStatus.NOT_CONNECTED && (
           <MiniListItem
             iconPreset={getIconPresetForRTKStatus(overallStatus)}
-            primaryText={describeRTKStatus(overallStatus, t)}
+            primaryText={describeRTKStatus(overallStatus, {}, t)}
           />
         )}
       {surveyStatus.supported && (

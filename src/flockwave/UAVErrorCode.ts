@@ -2,6 +2,8 @@
  * @file UAV-related error codes.
  */
 
+import type { TranslateFn } from '~/i18n/types';
+
 enum UAVErrorCode {
   NO_ERROR = 0,
 
@@ -227,8 +229,12 @@ export const abbreviateUAVErrorCode = (code: UAVErrorCode): string => {
 /**
  * Returns a human-readable description of the error code.
  */
-export const describeUAVErrorCode = (code: UAVErrorCode): string => {
-  return descriptions[code] || `Error ${code}`;
+export const describeUAVErrorCode = (
+  code: UAVErrorCode,
+  t: TranslateFn | undefined = undefined
+): string => {
+  const description = descriptions[code] || `Error ${code}`;
+  return t ? t(`uavErrorCode.${code}`, description) : description;
 };
 
 export default UAVErrorCode;

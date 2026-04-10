@@ -11,6 +11,7 @@ import isNil from 'lodash-es/isNil';
 import prettyBytes from 'pretty-bytes';
 import PropTypes from 'prop-types';
 import { memo, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useAsyncRetry } from 'react-use';
 
@@ -61,6 +62,7 @@ const UAVLogListItem = ({ id, kind, size, timestamp, uavId }) => {
 
   const dispatch = useDispatch();
   const messageHub = useMessageHub();
+  const { t } = useTranslation();
   const classes = useStyles();
 
   const downloadState = useSelector(getLogDownloadState(uavId, id));
@@ -114,7 +116,7 @@ const UAVLogListItem = ({ id, kind, size, timestamp, uavId }) => {
   if (downloadState?.status === LogDownloadStatus.ERROR) {
     secondaryParts.push(downloadState?.error);
   } else {
-    secondaryParts.push(describeFlightLogKind(kind));
+    secondaryParts.push(describeFlightLogKind(kind, t));
     if (!isNil(size)) {
       secondaryParts.push(prettyBytes(size));
     }

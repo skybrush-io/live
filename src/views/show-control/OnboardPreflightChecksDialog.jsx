@@ -61,7 +61,7 @@ const PreflightCheckListPresentation = ({ items, showMissionIds, ...rest }) => {
               <StatusLight status={status} />
               <ListItemText
                 id={itemId}
-                primary={describeUAVErrorCode(item.code)}
+                primary={describeUAVErrorCode(item.code, t)}
                 secondary={formatUAVIds(
                   item.uavIdsAndIndices.map(
                     showMissionIds

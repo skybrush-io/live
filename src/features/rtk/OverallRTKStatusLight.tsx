@@ -23,7 +23,7 @@ const OverallRTKStatusLight = ({ format, ...rest }: Props) => {
       status={getSemanticsOfRTKStatus(status) ?? Status.OFF}
       {...rest}
     >
-      {describeRTKStatus(status, t, { format })}
+      {describeRTKStatus(status, { format }, t)}
     </LabeledStatusLight>
   );
 };

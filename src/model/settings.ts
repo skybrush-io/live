@@ -2,6 +2,8 @@
  * @file Model objects and classes related to the settings of the app.
  */
 
+import type { TranslateFn } from '~/i18n/types';
+
 export enum AltitudeSummaryType {
   AMSL = 'amsl',
   AHL = 'ahl',
@@ -25,11 +27,18 @@ const altitudeSummaryTypeShortDescriptions = {
 
 export const describeAltitudeSummaryType = (
   type: AltitudeSummaryType,
-  { short = false } = {}
-): string =>
-  (short
+  { short = false } = {},
+  t: TranslateFn | undefined = undefined
+): string => {
+  const descriptions = short
     ? altitudeSummaryTypeShortDescriptions
-    : altitudeSummaryTypeDescriptions)[type] || 'Unknown altitude type';
+    : altitudeSummaryTypeDescriptions;
+  const description = descriptions[type] || 'Unknown altitude type';
+  const namespace = short
+    ? 'altitudeSummaryType.short'
+    : 'altitudeSummaryType.long';
+  return t ? t(`${namespace}.${type}`, description) : description;
+};
 
 export enum CoordinateFormat {
   DEGREES = 'd',
@@ -50,8 +59,13 @@ const coordinateFormatDescriptions = {
     'Degrees, minutes and seconds (signed)',
 };
 
-export const describeCoordinateFormat = (format: CoordinateFormat): string =>
-  coordinateFormatDescriptions[format] || 'Unknown format';
+export const describeCoordinateFormat = (
+  format: CoordinateFormat,
+  t: TranslateFn | undefined = undefined
+): string => {
+  const description = coordinateFormatDescriptions[format] || 'Unknown format';
+  return t ? t(`coordinateFormat.${format}`, description) : description;
+};
 
 export enum BatteryDisplayStyle {
   VOLTAGE = 'voltage',
@@ -68,8 +82,12 @@ const batteryDisplayStyleDescriptions = {
 };
 
 export const describeBatteryDisplayStyle = (
-  style: BatteryDisplayStyle
-): string => batteryDisplayStyleDescriptions[style] || 'Unknown style';
+  style: BatteryDisplayStyle,
+  t: TranslateFn | undefined = undefined
+): string => {
+  const description = batteryDisplayStyleDescriptions[style] || 'Unknown style';
+  return t ? t(`batteryDisplayStyle.${style}`, description) : description;
+};
 
 /**
  * Enum that describes when we will be asking for user confirmation before
@@ -89,6 +107,12 @@ const uavOperationConfirmationStyleDescriptions = {
 };
 
 export const describeUAVOperationConfirmationStyle = (
-  style: UAVOperationConfirmationStyle
-): string =>
-  uavOperationConfirmationStyleDescriptions[style] || 'Unknown style';
+  style: UAVOperationConfirmationStyle,
+  t: TranslateFn | undefined = undefined
+): string => {
+  const description =
+    uavOperationConfirmationStyleDescriptions[style] || 'Unknown style';
+  return t
+    ? t(`uavOperationConfirmationStyle.${style}`, description)
+    : description;
+};
