@@ -150,7 +150,7 @@ const UAVsTabPresentation = ({
         <Box sx={{ display: 'flex', flexDirection: 'row', mb: 1 }}>
           <FormControl fullWidth variant='filled'>
             <InputLabel id='uav-operation-confirmation-style'>
-              UAV operation confirmations
+              {t('settings.uavs.uavOperationConfirmations')}
             </InputLabel>
             <Select
               labelId='uav-operation-confirmation-style'

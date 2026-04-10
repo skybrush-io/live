@@ -115,6 +115,7 @@ const DisplayTabPresentation = ({ language = 'en', ...props }) => {
             origin={props.origin}
             originLabel={t('settings.display.mapOrigin')}
             orientation={props.orientation}
+            orientationLabel={t('settings.display.orientationXAxis')}
             type={props.coordinateSystemType}
             onOrientationChanged={props.onOrientationChanged}
             onOriginChanged={props.onOriginChanged}

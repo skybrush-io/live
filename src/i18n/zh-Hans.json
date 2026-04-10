@@ -519,7 +519,6 @@
       "fullCharge": "充满",
       "gone": "此后把无人机标记为离线",
       "lowTreshold": "低电压阈值",
-      "maxConcurrency": "最大并发上传数",
       "maxUploadConcurrency": "最大并发上传数",
       "minIndoorTakeoffSpacing": "最小起飞间距（室内）",
       "minOutdoorTakeoffSpacing": "最小起飞间距（室外）",

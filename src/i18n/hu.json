@@ -459,6 +459,7 @@
       "hideInactiveSegmentsOnDarkLCD": "LCD órák kontrasztarányának javítása sötét módban",
       "language": "Nyelv",
       "mapOrigin": "A térkép origója",
+      "orientationXAxis": "Tájolás (X+ tengely)",
       "mapWidgets": "Térkép eszközök",
       "miscellaneous": "Egyéb",
       "operationModes": "Üzemmódok",
@@ -506,8 +507,13 @@
       "fullCharge": "Teljes töltés",
       "gone": "A drónok megjelölése eltűntként ennyi idő után",
       "lowTreshold": "Alsó határérték",
+      "maxUploadConcurrency": "Egy időben történő feltöltések maximális száma",
+      "minIndoorTakeoffSpacing": "Minimális felszállási térköz (beltéren)",
+      "minOutdoorTakeoffSpacing": "Minimális felszállási térköz (kültéren)",
       "missionSetup": "Küldetés beállítás",
       "missionSetupDescription": "Több drónos küldetések előtt használandó, annak ellenőrzésére, hogy minden drón az előírt felszállási pozícióban és megfelelő irányban áll-e.",
+      "operationSettings": "Műveletek",
+      "uavOperationConfirmations": "Drónműveletek megerősítése",
       "warn": "Figyelmeztessen azokra a drónokra, amelyek nem láthatók legalább ennyi ideje"
     }
   },
