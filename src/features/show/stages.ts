@@ -11,7 +11,7 @@ import {
   hasActiveGeofencePolygon,
   hasNonemptyMappingSlot,
 } from '~/features/mission/selectors';
-import { getGeofenceStatus } from '~/features/mission/selectors-geofence-extra';
+import { getGeofenceStatus } from '~/features/mission/selectors/geofence';
 import {
   areAllPreflightChecksTicked,
   hasManualPreflightChecks,

@@ -11,12 +11,12 @@ import { MissionType } from '~/model/missions';
 
 import {
   getGeofencePolygon,
-  getMissionType,
   hasActiveGeofencePolygon,
   isWaypointMissionConvexHullInsideGeofence,
-} from './selectors';
+} from './composed';
+import { getMissionType } from './local';
 
-export const getGeofenceValidatorBasedOnMissionType = createSelector(
+export const isGeofenceValidBasedOnMissionType = createSelector(
   isShowConvexHullInsideGeofence,
   isWaypointMissionConvexHullInsideGeofence,
   getMissionType,
@@ -30,12 +30,12 @@ export const getGeofenceValidatorBasedOnMissionType = createSelector(
 export const getGeofenceStatus = createSelector(
   hasActiveGeofencePolygon,
   getGeofencePolygon,
-  getGeofenceValidatorBasedOnMissionType,
+  isGeofenceValidBasedOnMissionType,
   getMissionType,
-  (hasActiveGeofencePolygon, geofencePolygon, validator, missionType) => {
+  (hasActiveGeofencePolygon, geofencePolygon, geofenceValid, missionType) => {
     return !hasActiveGeofencePolygon
       ? Status.OFF
-      : !validator
+      : !geofenceValid
         ? Status.ERROR
         : geofencePolygon.owner === missionType
           ? Status.SUCCESS
