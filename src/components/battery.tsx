@@ -38,7 +38,6 @@ const iconStyle = {
 
 const unknownIconStyle = {};
 
-/* eslint-disable react/jsx-key */
 const batteryIcons = [
   <BatteryAlertIcon key='batteryIcon' fontSize='small' style={iconStyle} />,
   <BatteryAlertIcon key='batteryIcon' fontSize='small' style={iconStyle} />,
@@ -144,9 +143,8 @@ const largeChargingBatteryIcons = [
   <BatteryChargingFullIcon key='batteryIcon' />,
   <BatteryUnknownIcon key='batteryIcon' />,
 ];
-/* eslint-enable react/jsx-key */
 
-const safeToFixed = (number, digits) =>
+const safeToFixed = (number: any, digits: number) =>
   typeof number === 'number' ? number.toFixed(digits) : String(number);
 
 /**
@@ -158,7 +156,13 @@ const safeToFixed = (number, digits) =>
  * what the voltage thresholds are.
  */
 export class BatteryFormatter {
-  constructor({ settings, style = BatteryDisplayStyle.VOLTAGE } = {}) {
+  _settings: BatterySettings;
+  _style: BatteryDisplayStyle;
+
+  constructor({
+    settings,
+    style = BatteryDisplayStyle.VOLTAGE,
+  }: Partial<{ settings: BatterySettings; style: BatteryDisplayStyle }> = {}) {
     if (settings instanceof BatterySettings) {
       this._settings = settings;
     } else {
@@ -168,7 +172,11 @@ export class BatteryFormatter {
     this._style = style;
   }
 
-  getBatteryIcon = (percentage, status, charging) => {
+  getBatteryIcon = (
+    percentage: number | undefined,
+    status: BatteryStatus,
+    charging: boolean
+  ) => {
     const index =
       percentage === undefined
         ? batteryIconIndexByStatus[status]
@@ -177,7 +185,11 @@ export class BatteryFormatter {
     return iconSet[index];
   };
 
-  getBatteryLabel = (voltage, percentage, cellCount) => {
+  getBatteryLabel = (
+    voltage: number | undefined,
+    percentage: number | undefined,
+    cellCount: number
+  ) => {
     if (isNil(percentage)) {
       if (isNil(voltage)) {
         return '???';
@@ -205,12 +217,20 @@ export class BatteryFormatter {
     }
   };
 
-  getBatteryStatus = (voltage, percentage, cellCount) =>
+  getBatteryStatus = (
+    voltage: number | undefined,
+    percentage: number | undefined,
+    cellCount: number
+  ) =>
     this._settings
       ? this._settings.getBatteryStatus(voltage, percentage, cellCount)
       : BatteryStatus.UNKNOWN;
 
-  getLargeBatteryIcon = (percentage, status, charging) => {
+  getLargeBatteryIcon = (
+    percentage: number | undefined,
+    status: BatteryStatus,
+    charging: boolean
+  ) => {
     const index =
       percentage === undefined
         ? batteryIconIndexByStatus[status]
@@ -219,7 +239,11 @@ export class BatteryFormatter {
     return iconSet[index];
   };
 
-  getSemanticBatteryStatus = (voltage, percentage, cellCount) =>
+  getSemanticBatteryStatus = (
+    voltage: number | undefined,
+    percentage: number | undefined,
+    cellCount: number
+  ) =>
     this._settings
       ? this._settings.getSemanticBatteryStatus(voltage, percentage, cellCount)
       : Status.OFF;

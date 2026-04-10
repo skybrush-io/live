@@ -1,43 +1,70 @@
 import { createSelector } from '@reduxjs/toolkit';
 
-import DefaultAPIKeys from '~/APIKeys';
+import DefaultAPIKeys, { type APIKeysRecord } from '~/APIKeys';
 import { BatteryFormatter } from '~/components/battery';
 import { BatterySettings } from '~/model/battery';
+import type { UAVFilter } from '~/model/filtering';
 import {
   AltitudeSummaryType,
   BatteryDisplayStyle,
   UAVOperationConfirmationStyle,
 } from '~/model/settings';
 import { UAVSortKey } from '~/model/sorting';
+import type UAV from '~/model/uav';
+import type { RootState } from '~/store/reducers';
+import {
+  UAVListLayout,
+  UAVListOrientation,
+  type UAVSortKeyAndOrder,
+} from './types';
 
-export const getAltitudeSummaryType = (state) =>
+type UAVAgingThresholds = {
+  goneThreshold: number;
+  warnThreshold: number;
+  forgetThreshold: number;
+};
+
+type UAVSettings = RootState['settings']['uavs'];
+
+export const getAltitudeSummaryType = (state: RootState): AltitudeSummaryType =>
   state.settings.display?.altitudeSummaryType || AltitudeSummaryType.AMSL;
 
 export const getBatterySettings = createSelector(
-  (state) => state.settings.uavs,
-  ({
-    defaultBatteryCellCount,
-    fullChargeVoltage,
-    lowVoltageThreshold,
-    criticalVoltageThreshold,
-  } = {}) =>
-    new BatterySettings({
+  (state: RootState) => state.settings.uavs,
+  (uavsSettings: Partial<UAVSettings> = {}) => {
+    const {
+      defaultBatteryCellCount,
+      fullChargeVoltage,
+      lowVoltageThreshold,
+      criticalVoltageThreshold,
+    } = uavsSettings;
+
+    return new BatterySettings({
       defaultBatteryCellCount,
       voltageThresholds: {
         full: fullChargeVoltage,
         low: lowVoltageThreshold,
         critical: criticalVoltageThreshold,
       },
-    })
+    });
+  }
 );
 
 export const getBatteryFormatter = createSelector(
   getBatterySettings,
-  (state) => state.settings.uavs,
+  (state: RootState) => state.settings.uavs,
   (
-    settings,
-    { preferredBatteryDisplayStyle = BatteryDisplayStyle.VOLTAGE } = {}
-  ) => new BatteryFormatter({ settings, style: preferredBatteryDisplayStyle })
+    settings: BatterySettings,
+    uavsSettings: Partial<UAVSettings> = {}
+  ): BatteryFormatter => {
+    const { preferredBatteryDisplayStyle = BatteryDisplayStyle.VOLTAGE } =
+      uavsSettings;
+
+    return new BatteryFormatter({
+      settings,
+      style: preferredBatteryDisplayStyle,
+    });
+  }
 );
 
 /**
@@ -48,7 +75,7 @@ export const getBatteryFormatter = createSelector(
  * Also, we need to enforce a default value in case the state store of the user
  * is old and it does not include a default value.
  */
-export const getDesiredPlacementAccuracyInMeters = (state) =>
+export const getDesiredPlacementAccuracyInMeters = (state: RootState): number =>
   (state.settings.uavs.placementAccuracy ?? 1000) / 1000;
 
 /**
@@ -58,19 +85,23 @@ export const getDesiredPlacementAccuracyInMeters = (state) =>
  * We need to enforce a default value in case the state store of the user
  * is old and it does not include a default value.
  */
-export const getDesiredTakeoffHeadingAccuracy = (state) =>
+export const getDesiredTakeoffHeadingAccuracy = (state: RootState): number =>
   state.settings.uavs.takeoffHeadingAccuracy ?? 20;
 
 /**
  * Returns the currently selected display language for the application.
  */
-export const getDisplayLanguage = (state) => state.settings.display.language;
+export const getDisplayLanguage = (state: RootState): string =>
+  state.settings.display.language;
 
 /**
  * Returns the name of the lighting conditions preset for the 3D view.
  */
-export const getLightingConditionsForThreeDView = (state) => {
-  const { scenery, lighting } = state.settings.threeD;
+export const getLightingConditionsForThreeDView = (
+  state: RootState
+): 'light' | 'dark' => {
+  const { lighting } = state.settings.threeD;
+  const scenery = String(state.settings.threeD.scenery);
 
   // Map legacy names to the new ones
   if (scenery === 'day') {
@@ -92,34 +123,37 @@ export const getLightingConditionsForThreeDView = (state) => {
  * Returns the maximum number of concurrent upload tasks that the client should
  * attempt to start on the server during upload jobs.
  */
-export const getMaximumConcurrentUploadTaskCount = (state) =>
+export const getMaximumConcurrentUploadTaskCount = (state: RootState): number =>
   state.settings.uavs.maxUploadConcurrency ?? 8;
 
 /**
  * Returns the minimum allowed distance between two UAVs in an indoor show at
  * takeoff.
  */
-export const getMinimumIndoorTakeoffSpacing = (state) =>
+export const getMinimumIndoorTakeoffSpacing = (state: RootState): number =>
   (state.settings.uavs.minIndoorTakeoffSpacing ?? 200) / 1000;
 
 /**
  * Returns the minimum allowed distance between two UAVs in an indoor show at
  * takeoff.
  */
-export const getMinimumOutdoorTakeoffSpacing = (state) =>
+export const getMinimumOutdoorTakeoffSpacing = (state: RootState): number =>
   (state.settings.uavs.minOutdoorTakeoffSpacing ?? 400) / 1000;
 
 /**
  * Returns the currently selected preferred battery display style.
  */
-export const getPreferredBatteryDisplayStyle = (state) =>
-  state.settings.uavs.preferredBatteryDisplayStyle;
+export const getPreferredBatteryDisplayStyle = (
+  state: RootState
+): BatteryDisplayStyle => state.settings.uavs.preferredBatteryDisplayStyle;
 
 /**
  * Returns the name of the scenery preset for the 3D view.
  */
-export const getSceneryForThreeDView = (state) => {
-  const result = state.settings.threeD.scenery;
+export const getSceneryForThreeDView = (
+  state: RootState
+): 'outdoor' | 'indoor' | 'auto' => {
+  const result = String(state.settings.threeD.scenery);
 
   // Map legacy names to the new ones
   if (result === 'day' || result === 'night') {
@@ -142,8 +176,13 @@ export const getSceneryForThreeDView = (state) => {
  * be marked as inactive (no telemetry), gone or forgotten.
  */
 export const getUAVAgingThresholds = createSelector(
-  (state) => state.settings.uavs,
-  ({ warnThreshold, goneThreshold, forgetThreshold, autoRemove }) => ({
+  (state: RootState) => state.settings.uavs,
+  ({
+    warnThreshold,
+    goneThreshold,
+    forgetThreshold,
+    autoRemove,
+  }: UAVSettings): UAVAgingThresholds => ({
     // Conversion from seconds to msec happens here. Use some sensible lower
     // limits.
     goneThreshold: Math.max(1000, goneThreshold * 1000),
@@ -154,13 +193,16 @@ export const getUAVAgingThresholds = createSelector(
   })
 );
 
-const DEFAULT_FILTER = [];
-const DEFAULT_SORT = { key: UAVSortKey.DEFAULT, reverse: false };
+const DEFAULT_FILTER: UAVFilter[] = [];
+const DEFAULT_SORT: UAVSortKeyAndOrder = {
+  key: UAVSortKey.DEFAULT,
+  reverse: false,
+};
 
 /**
  * Returns the array of filters to apply for the list showing the UAVs.
  */
-export const getUAVListFilters = (state) => {
+export const getUAVListFilters = (state: RootState): UAVFilter[] => {
   const result = state.settings.display?.uavListFilters;
   return result || DEFAULT_FILTER;
 };
@@ -168,13 +210,16 @@ export const getUAVListFilters = (state) => {
 /**
  * Returns the current layout of the list showing the UAVs.
  */
-export const getUAVListLayout = (state) => state.settings.display.uavListLayout;
+export const getUAVListLayout = (state: RootState): UAVListLayout =>
+  state.settings.display.uavListLayout;
 
 /**
  * Returns the current primary orientation of the list or grid showing the UAVs.
  */
-export const getUAVListOrientation = (state) =>
-  getUAVListLayout(state) === 'grid' ? 'horizontal' : 'vertical';
+export const getUAVListOrientation = (state: RootState): UAVListOrientation =>
+  getUAVListLayout(state) === UAVListLayout.GRID
+    ? UAVListOrientation.HORIZONTAL
+    : UAVListOrientation.VERTICAL;
 
 /**
  * Returns the preferred sort order of the list showing the UAVs. This is the
@@ -185,7 +230,7 @@ export const getUAVListOrientation = (state) =>
  * a value from the UAVSortKey enum, and <code>reverse</code>, which is
  * true if the UAVs are to be sorted in reverse order.
  */
-export function getUAVListSortPreference(state) {
+export function getUAVListSortPreference(state: RootState): UAVSortKeyAndOrder {
   const result = state.settings.display?.uavListSortPreference;
   return result || DEFAULT_SORT;
 }
@@ -194,7 +239,9 @@ export function getUAVListSortPreference(state) {
  * Returns whether UAV operations dispatched from toolbars or buttons should
  * be confirmed by the user.
  */
-export function getUAVOperationConfirmationStyle(state) {
+export function getUAVOperationConfirmationStyle(
+  state: RootState
+): UAVOperationConfirmationStyle {
   return (
     state.settings.uavs?.uavOperationConfirmationStyle ||
     UAVOperationConfirmationStyle.NEVER
@@ -204,28 +251,32 @@ export function getUAVOperationConfirmationStyle(state) {
 /**
  * Returns whether we are currently showing empty mission slots in the UAV list.
  */
-export const isShowingEmptyMissionSlots = (state) =>
+export const isShowingEmptyMissionSlots = (state: RootState): boolean =>
   !state.settings.display?.hideEmptyMissionSlots;
 
 /**
  * Returns whether we are currently showing mission IDs on the screen
  * where possible.
  */
-export const isShowingMissionIds = (state) =>
-  state.settings.display?.showMissionIds;
+export const isShowingMissionIds = (state: RootState): boolean =>
+  state.settings.display?.showMissionIds ?? false;
 
 /**
  * Returns whether the user is allowed to see experimental features that are
  * not ready for production use yet.
  */
-export const areExperimentalFeaturesEnabled = (state) =>
-  state.settings.display?.experimentalFeaturesEnabled;
+export const areExperimentalFeaturesEnabled = (state: RootState): boolean =>
+  state.settings.display?.experimentalFeaturesEnabled ?? false;
 
 /**
  * Returns whether the app should ask for a confirmation when performing a
  * UAV operation affecting the given UAVs.
  */
-export function shouldConfirmUAVOperation(state, uavs, isBroadcast) {
+export function shouldConfirmUAVOperation(
+  state: RootState,
+  uavs: UAV[] | null | undefined,
+  isBroadcast: boolean
+): boolean {
   const style = getUAVOperationConfirmationStyle(state);
 
   switch (style) {
@@ -244,34 +295,39 @@ export function shouldConfirmUAVOperation(state, uavs, isBroadcast) {
  * Returns whether the inactive segments of LCD clocks should be hidden when a
  * dark theme is in use.
  */
-export const shouldShowInactiveSegmentsOnDarkLCD = (state) =>
-  state.settings.display?.hideInactiveSegmentsOnDarkLCD;
+export const shouldShowInactiveSegmentsOnDarkLCD = (
+  state: RootState
+): boolean => state.settings.display?.hideInactiveSegmentsOnDarkLCD ?? false;
 
 /**
  * Returns whether the application should be optimized for single UAV operation.
  */
-export const shouldOptimizeForSingleUAV = (state) =>
-  state.settings.display?.optimizeForSingleUAV;
+export const shouldOptimizeForSingleUAV = (state: RootState): boolean =>
+  state.settings.display?.optimizeForSingleUAV ?? false;
 
 /**
  * Returns whether the UI should be adjusted primarily for touch based input.
  */
-export const shouldOptimizeUIForTouch = (state) =>
-  state.settings.display?.optimizeUIForTouch;
+export const shouldOptimizeUIForTouch = (state: RootState): boolean =>
+  state.settings.display?.optimizeUIForTouch ?? false;
 
 /**
  * Returns an object mapping service identifiers to their API keys.
  */
 export const getAPIKeys = createSelector(
-  (state) => state.settings.apiKeys,
-  (apiKeys) => {
-    const result = {};
-    for (const [key, value] of Object.entries({
-      ...DefaultAPIKeys,
-      ...apiKeys,
-    })) {
-      result[String(key).toUpperCase()] =
-        String(value || DefaultAPIKeys[key]) || '';
+  (state: RootState) => state.settings.apiKeys,
+  (apiKeys): APIKeysRecord => {
+    const result: APIKeysRecord = {
+      BING: '',
+      GOOGLE: '',
+      MAPBOX: '',
+      MAPTILER: '',
+      NEXTZEN: '',
+    };
+
+    for (const key of Object.keys(result) as Array<keyof APIKeysRecord>) {
+      const value = apiKeys[key] ?? DefaultAPIKeys[key];
+      result[key] = value ? String(value) : '';
     }
 
     return result;
