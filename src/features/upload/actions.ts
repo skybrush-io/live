@@ -9,6 +9,7 @@ import {
   getSelectedJobInUploadDialog,
   getSuccessfulUploadItemsToEnqueue,
   getUploadDialogState,
+  getUploadItemsWithNoUploadStatus,
   getUploadTargets,
   isItemInUploadBacklog,
 } from './selectors';
@@ -72,10 +73,9 @@ export function recalculateEstimatedCompletionTime(): AppThunk<void> {
 }
 
 /**
- * Thunk that restarts the upload process on all UAVs that are currently
- * marked as successful.
+ * Thunk that enqueues all upload items whose latest status is success.
  */
-export function restartSuccessfulUploads(): AppThunk<void> {
+export function enqueueSuccessfulUploads(): AppThunk<void> {
   return (dispatch, getState) => {
     const successfulItems = getSuccessfulUploadItemsToEnqueue(getState());
     dispatch(_enqueueSuccessfulUploads(successfulItems));
@@ -83,13 +83,25 @@ export function restartSuccessfulUploads(): AppThunk<void> {
 }
 
 /**
- * Thunk that retrieves all failed upload items from the state, places all of
- * them in the upload queue and then restarts the upload process if needed.
+ * Thunk that enqueues all upload items whose latest status is failure.
  */
-export function retryFailedUploads(): AppThunk<void> {
+export function enqueueFailedUploads(): AppThunk<void> {
   return (dispatch, getState) => {
     const failedItems = getFailedUploadItemsToEnqueue(getState());
     dispatch(_enqueueFailedUploads(failedItems));
+  };
+}
+
+/**
+ * Thunk that enqueues all upload items with no upload status.
+ */
+export function enqueueItemsWithNoUploadStatus(): AppThunk<void> {
+  return (dispatch, getState) => {
+    const itemsWithNoUploadStatus =
+      getUploadItemsWithNoUploadStatus(getState());
+    if (itemsWithNoUploadStatus.length > 0) {
+      dispatch(putUavsInWaitingQueue(itemsWithNoUploadStatus));
+    }
   };
 }
 
