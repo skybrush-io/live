@@ -153,6 +153,29 @@ export const getNumberOfGoodSatellites = createSelector(
   }
 );
 
+const RTCM_ANTENNA_POSITION_MESSAGE_IDS: string[] = [
+  'rtcm3/1005',
+  'rtcm3/1006',
+];
+
+/**
+ * Returns the timestamp of the most recent RTCM antenna position message.
+ */
+export const getAntennaPositionTimestamp = createSelector(
+  getMessageInfo,
+  (messages) => {
+    for (const messageId of RTCM_ANTENNA_POSITION_MESSAGE_IDS) {
+      const messageInfo = messages[messageId];
+      const lastUpdatedAt = messageInfo?.lastUpdatedAt;
+      if (typeof lastUpdatedAt === 'number') {
+        return lastUpdatedAt;
+      }
+    }
+
+    return undefined;
+  }
+);
+
 /**
  * Returns an object summarizing the status of the survey procedure.
  */
@@ -258,11 +281,13 @@ export const getOverallRTKStatus = createSelector(
   getCurrentRTKPresetIdAndTimestamp,
   getNumberOfGoodSatellites,
   getSurveyStatus,
+  getAntennaPositionTimestamp,
   (
     isConnected,
     { id, lastUpdatedAt },
     numGoodSatellites,
-    surveyStatus
+    surveyStatus,
+    antennaPositionTimestamp
   ): RTKCorrectionStatus => {
     let result: RTKCorrectionStatus;
 
@@ -286,24 +311,40 @@ export const getOverallRTKStatus = createSelector(
       result = RTKCorrectionStatus.OK;
     }
 
-    // If the result would be successful but we do not have enough good satellites,
-    // show a warning instead - but only if we have a selected preset and we have
-    // been using that preset for a while now
+    const now = Date.now();
+
+    // Check whether we have enough satellites
     if (result === RTKCorrectionStatus.OK && numGoodSatellites < 7) {
+      result = RTKCorrectionStatus.NOT_ENOUGH_SATELLITES;
+    }
+
+    // Check recency of antenna position. We have seen RTK base stations in the wild
+    // that send antenna position only every 15 seconds, so we use a threshold of 30
+    // seconds here.
+    if (
+      result === RTKCorrectionStatus.OK &&
+      now - (antennaPositionTimestamp ?? 0) >= 30000
+    ) {
+      result = RTKCorrectionStatus.NO_ANTENNA_POSITION;
+    }
+
+    // If we would show a warning about the number of satellites or the antenna position,
+    // check whether we have an RTK preset selected and whether we have spent enough
+    // time watching the RTCM messages. Relax the error condition if this is not the
+    // case yet.
+    if (
+      result === RTKCorrectionStatus.NOT_ENOUGH_SATELLITES ||
+      result === RTKCorrectionStatus.NO_ANTENNA_POSITION
+    ) {
       if (!id) {
         result = RTKCorrectionStatus.INACTIVE;
       } else {
-        const age = Date.now() - (lastUpdatedAt ?? 0);
-        if (age >= 5000) {
-          // 5 seconds should be enough to get information about the satellites
-          result = RTKCorrectionStatus.NOT_ENOUGH_SATELLITES;
-        } else {
+        const age = now - (lastUpdatedAt ?? 0);
+        if (age < 6000) {
           result = RTKCorrectionStatus.CONNECTED_RECENTLY;
         }
       }
     }
-
-    // TODO(ntamas): check recency of antenna position information as well
 
     return result;
   }
