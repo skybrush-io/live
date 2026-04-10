@@ -18,6 +18,10 @@ const formatPositionECEF = (
     ? `[${positionECEF.map((c) => (c / 1e3).toFixed(3)).join(', ')}]`
     : undefined;
 
+const getAntennaInfo = (state: RootState) => state.rtk.stats.antenna;
+const getMessageInfo = (state: RootState) => state.rtk.stats.messages;
+const getSatelliteInfo = (state: RootState) => state.rtk.stats.satellites;
+
 /**
  * Returns whether the antenna position should be shown in ECEF coordinates.
  */
@@ -29,7 +33,7 @@ export const isShowingAntennaPositionInECEF = (state: RootState): boolean =>
  * antenna position yet.
  */
 export const getFormattedAntennaPosition = createSelector(
-  (state: RootState) => state.rtk.stats.antenna,
+  getAntennaInfo,
   getPreferredCoordinateFormatter,
   isShowingAntennaPositionInECEF,
   (antennaInfo, formatter, isECEF) => {
@@ -48,7 +52,7 @@ export const getFormattedAntennaPosition = createSelector(
  * format they should appear on the UI.
  */
 export const getAntennaInfoSummary = createSelector(
-  (state: RootState) => state.rtk.stats.antenna,
+  getAntennaInfo,
   getFormattedAntennaPosition,
   (antennaInfo, formattedPosition) => {
     if (!antennaInfo) {
@@ -86,7 +90,7 @@ export const getAntennaInfoSummary = createSelector(
  * on the UI.
  */
 export const getDisplayedListOfMessages = createSelector(
-  (state: RootState) => state.rtk.stats.messages,
+  getMessageInfo,
   (messages) =>
     sortBy(
       Object.entries(messages || {}).map(([messageId, message]) => ({
@@ -102,7 +106,7 @@ export const getDisplayedListOfMessages = createSelector(
  * should appear on the UI.
  */
 export const getDisplayedSatelliteCNRValues = createSelector(
-  (state: RootState) => state.rtk.stats.satellites,
+  getSatelliteInfo,
   (satelliteInfos) =>
     sortBy(
       Object.entries(satelliteInfos || {}).map(
@@ -119,7 +123,7 @@ export const getDisplayedSatelliteCNRValues = createSelector(
  * Returns the IDs of the satellites for which we currently have a CNR value.
  */
 export const getSatelliteIds = createSelector(
-  (state: RootState) => state.rtk.stats.satellites,
+  getSatelliteInfo,
   (satelliteInfos) => Object.keys(satelliteInfos || {})
 );
 
@@ -135,7 +139,7 @@ export const getNumberOfSatellites = (state: RootState): number =>
  * above 40.
  */
 export const getNumberOfGoodSatellites = createSelector(
-  (state: RootState) => state.rtk.stats.satellites,
+  getSatelliteInfo,
   (satelliteInfos) => {
     let result = 0;
 
