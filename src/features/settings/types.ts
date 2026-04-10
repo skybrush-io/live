@@ -51,7 +51,7 @@ export type SettingsState = {
     hideEmptyMissionSlots: boolean;
 
     /** Language code for the selected language of the application */
-    language: 'en' | 'hu';
+    language: string;
 
     /** Whether the application should be optimized for operating a single UAV. */
     optimizeForSingleUAV: boolean;
