@@ -144,7 +144,7 @@ const largeChargingBatteryIcons = [
   <BatteryUnknownIcon key='batteryIcon' />,
 ];
 
-const safeToFixed = (number: any, digits: number) =>
+const safeToFixed = (number: unknown, digits: number) =>
   typeof number === 'number' ? number.toFixed(digits) : String(number);
 
 /**

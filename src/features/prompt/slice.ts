@@ -8,6 +8,8 @@ import { type PayloadAction, createSlice } from '@reduxjs/toolkit';
 
 import { PromptDialogType, type PromptOptions } from './types';
 
+// TODO: This should probably be a discriminated union based on the `type`
+//       field to ensure correct inference of optional and required options
 export type PromptSliceState = {
   open: boolean;
   type: PromptDialogType;

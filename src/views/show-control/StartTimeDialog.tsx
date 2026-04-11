@@ -39,7 +39,7 @@ import {
   setStartTime,
   synchronizeShowSettings,
 } from '~/features/show/slice';
-import type { RootState } from '~/store/reducers';
+import type { AppDispatch, RootState } from '~/store/reducers';
 import { formatDurationHMS } from '~/utils/formatting';
 import { parseDurationHMS } from '~/utils/parsing';
 
@@ -61,7 +61,7 @@ type AllowedClockIdsForStartTime =
 
 /** Type guard for AllowedClockIdsForStartTime */
 const validateClockIdForStartTimeForm = (
-  clock: any
+  clock: unknown
 ): clock is AllowedClockIdsForStartTime => {
   return (
     clock === LocalClockId.ABSOLUTE ||
@@ -367,7 +367,7 @@ export default connect(
   }),
 
   // mapDispatchToProps
-  (dispatch) => ({
+  (dispatch: AppDispatch) => ({
     onClose(): void {
       dispatch(closeStartTimeDialog());
     },
@@ -415,7 +415,7 @@ export default connect(
       }
 
       if (authorizeWhenSettingStartTime) {
-        dispatch(authorizeIfAndOnlyIfHasStartTime() as any);
+        dispatch(authorizeIfAndOnlyIfHasStartTime());
       }
 
       dispatch(synchronizeShowSettings('toServer'));

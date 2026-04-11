@@ -5,19 +5,39 @@
 
 import { type Action, createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
+import {
+  clearGeofencePolygonId,
+  notifyUAVsInMissionMappingChanged,
+  setGeofenceAction,
+  setGeofencePolygonId,
+} from '~/features/mission/slice';
+import { JOB_TYPE as PARAMETER_UPLOAD_JOB_TYPE } from '~/features/parameters/constants';
+import {
+  removeParameterFromManifest,
+  updateParametersInManifest,
+} from '~/features/parameters/slice';
+import {
+  updateGeofenceSettings,
+  updateSafetySettings,
+} from '~/features/safety/slice';
 import { SHOW_UPLOAD_JOB } from '~/features/show/constants';
 import { _clearLoadedShow } from '~/features/show/slice';
 import type { Identifier } from '~/utils/collections';
 import { noPayload } from '~/utils/redux';
 
-import type { HistoryItem, JobData, JobPayload } from './types';
+import type {
+  HistoryItem,
+  JobData,
+  JobPayload,
+  MaybeOutdateUAVStatus,
+} from './types';
 import {
   clearQueues,
   clearUploadHistoryForJobTypeHelper,
-  compactHistory,
   createHistoryItem,
   ensureItemsInQueue,
   moveItemsBetweenQueues,
+  pushItemToHistory,
 } from './utils';
 
 export type UploadSliceState = {
@@ -134,6 +154,21 @@ const initialState: UploadSliceState = {
   },
 };
 
+const historyCleaningActionMatchersByJobType = {
+  [SHOW_UPLOAD_JOB.type]: new Set<string>([
+    _clearLoadedShow.type,
+    clearGeofencePolygonId.type,
+    setGeofenceAction.type,
+    setGeofencePolygonId.type,
+    updateGeofenceSettings.type,
+    updateSafetySettings.type,
+  ]),
+  [PARAMETER_UPLOAD_JOB_TYPE]: new Set<string>([
+    removeParameterFromManifest.type,
+    updateParametersInManifest.type,
+  ]),
+};
+
 const { actions, reducer } = createSlice({
   name: 'upload',
   initialState,
@@ -229,17 +264,15 @@ const { actions, reducer } = createSlice({
 
       // Store the data in history
       if (jobType) {
-        const historyItem = createHistoryItem(
-          cancelled ? 'cancelled' : success ? 'success' : 'error',
-          state.queues,
-          state.errors
+        pushItemToHistory(
+          state.history,
+          jobType,
+          createHistoryItem(
+            cancelled ? 'cancelled' : success ? 'success' : 'error',
+            state.queues,
+            state.errors
+          )
         );
-
-        if (!state.history[jobType]) {
-          state.history[jobType] = [];
-        }
-        state.history[jobType].push(historyItem);
-        state.history[jobType] = compactHistory(state.history[jobType]);
       }
 
       // Clear queues and show the last upload result in the dialog.
@@ -407,9 +440,56 @@ const { actions, reducer } = createSlice({
   },
 
   extraReducers(builder) {
-    builder.addCase(_clearLoadedShow, (state) => {
-      clearUploadHistoryForJobTypeHelper(state, SHOW_UPLOAD_JOB.type);
+    builder.addCase(notifyUAVsInMissionMappingChanged, (state, action) => {
+      if (state.history[SHOW_UPLOAD_JOB.type] === undefined) {
+        // No history, nothing to do. We must avoid creating a new history
+        // item, because that would affect the result of the
+        // `makeUploadStatusSelectorForMissionMappingByJobType()`
+        // factory!!
+        return;
+      }
+
+      const uavIds = action.payload;
+
+      if (uavIds === undefined) {
+        clearUploadHistoryForJobTypeHelper(state, SHOW_UPLOAD_JOB.type);
+        return;
+      }
+
+      pushItemToHistory(state.history, SHOW_UPLOAD_JOB.type, {
+        result: 'success',
+        perUavErrors: {},
+        perUavStatuses: uavIds.reduce(
+          (res, id) => {
+            res[id] = 'outdated';
+            return res;
+          },
+          {} as Record<string, MaybeOutdateUAVStatus>
+        ),
+      });
     });
+
+    builder.addMatcher(
+      // Clear show upload history
+      (action: Action) =>
+        historyCleaningActionMatchersByJobType[SHOW_UPLOAD_JOB.type].has(
+          action.type
+        ),
+      (state) => {
+        clearUploadHistoryForJobTypeHelper(state, SHOW_UPLOAD_JOB.type);
+      }
+    );
+
+    builder.addMatcher(
+      // Clear parameter upload history
+      (action: Action) =>
+        historyCleaningActionMatchersByJobType[PARAMETER_UPLOAD_JOB_TYPE].has(
+          action.type
+        ),
+      (state) => {
+        clearUploadHistoryForJobTypeHelper(state, PARAMETER_UPLOAD_JOB_TYPE);
+      }
+    );
   },
 });
 
