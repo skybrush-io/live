@@ -27,6 +27,8 @@ import MapCloudOff from '~/icons/MapCloudOff';
 import Pro from '~/icons/Pro';
 import type { RootState } from '~/store/reducers';
 
+import { HelpOutline } from '@mui/icons-material';
+import { isHelpAvailable, showHelp } from '~/utils/help';
 import ToolboxDevMenuItems from './ToolboxDevMenuItems';
 
 type ToolboxMenuPresentationProps = Readonly<{
@@ -134,6 +136,14 @@ const ToolboxMenuPresentation = ({
         </ListItemIcon>
         <ListItemText primary={t('toolbox.licenseInfo')} />
       </MenuItem>
+      {isHelpAvailable && (
+        <MenuItem onClick={createClickListener(showHelp)}>
+          <ListItemIcon>
+            <HelpOutline />
+          </ListItemIcon>
+          <ListItemText primary={t('help')} />
+        </MenuItem>
+      )}
       {/*
         <MenuItem onClick={createClickListener(showVersionCheckDialog)}>
           Version check
