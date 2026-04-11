@@ -657,6 +657,33 @@
     "tooltip": "Eszköztár",
     "uploadInProgress": "Feltöltés folyamatban"
   },
+  "unit": {
+    "degree": {
+      "short": "fok",
+      "long": "fok",
+      "longPlural": "fok"
+    },
+    "meter": {
+      "short": "m",
+      "long": "méter",
+      "longPlural": "méter"
+    },
+    "meterPerSecond": {
+      "short": "m/s",
+      "long": "méter/sec",
+      "longPlural": "méter/sec"
+    },
+    "second": {
+      "short": "mp",
+      "long": "másodperc",
+      "longPlural": "másodperc"
+    },
+    "volt": {
+      "short": "V",
+      "long": "volt",
+      "longPlural": "volt"
+    }
+  },
   "uploadPanel": {
     "cancelUpload": "Feltöltés megszakítása",
     "flashLightsWhereFailed": "Azon drónok villogtatása, ahol nem sikerült a feltöltés",

@@ -1303,6 +1303,33 @@
     "never": "Never ask for confirmation",
     "onlyMultiple": "Confirm when the operation may affect multiple UAVs"
   },
+  "unit": {
+    "degree": {
+      "short": "deg",
+      "long": "degree",
+      "longPlural": "degrees"
+    },
+    "meter": {
+      "short": "m",
+      "long": "meter",
+      "longPlural": "meters"
+    },
+    "meterPerSecond": {
+      "short": "m/s",
+      "long": "meter/sec",
+      "longPlural": "meters/sec"
+    },
+    "second": {
+      "short": "s",
+      "long": "second",
+      "longPlural": "seconds"
+    },
+    "volt": {
+      "short": "V",
+      "long": "volt",
+      "longPlural": "volts"
+    }
+  },
   "uploadDialog": {
     "restrictToGlobalSelection": "Show global selection only"
   },
