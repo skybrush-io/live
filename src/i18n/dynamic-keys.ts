@@ -271,5 +271,4 @@
  * t("uavOperationConfirmationStyle.onlyMultiple")
  * t("uavOperationConfirmationStyle.always")
  */
-export { };
-
+export {};
