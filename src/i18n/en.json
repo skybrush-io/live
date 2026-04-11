@@ -868,12 +868,12 @@
       "hideInactiveSegmentsOnDarkLCD": "Enhance contrast on dark mode LCD clocks",
       "language": "Language",
       "mapOrigin": "Map origin",
-      "orientationXAxis": "Orientation (X+ axis)",
       "mapWidgets": "Map widgets",
       "miscellaneous": "Miscellaneous",
       "operationModes": "Operation modes",
       "optimizeForSingleUAV": "Optimize the interface for single UAV operation",
       "optimizeUIForTouch": "Optimize the interface for touchscreen devices",
+      "orientationXAxis": "Orientation (X+ axis)",
       "showMouseCoordinates": "Show mouse coordinates",
       "showScaleLine": "Show scale line"
     },
