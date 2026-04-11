@@ -542,7 +542,7 @@ const validateOptions = <T, P>(
  * @return {boolean}  whether the given array or immutable list contains
  *         at least one item
  */
-function hasSomeItems(array: any): array is unknown[] {
+function hasSomeItems(array: unknown): array is unknown[] {
   return Array.isArray(array) && array.length > 0;
 }
 

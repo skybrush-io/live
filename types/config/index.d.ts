@@ -46,6 +46,7 @@ declare module 'config' {
 
   import { type Origin, type View } from '~/features/map/types';
   import { type SavedLocation } from '~/features/saved-locations/types';
+  import { type Feature } from '~/model/features';
   import { type LayerType } from '~/model/layers';
 
   type Nullable<T> = T | null;
@@ -156,7 +157,7 @@ declare module 'config' {
         /**
          * Post-creation hook function for map features.
          */
-        onCreate: (feature: any) => void;
+        onCreate: (feature: Feature) => void;
       };
 
       /**

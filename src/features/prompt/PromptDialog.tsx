@@ -15,24 +15,23 @@ import { connect } from 'react-redux';
 
 import { DraggableDialog } from '@skybrush/mui-components';
 
-import { cancelPromptDialog, submitPromptDialog } from './actions';
-import type { PromptSliceState } from './slice';
-import { PromptDialogType, type PromptOptions } from './types';
+import { type AppDispatch, type RootState } from '~/store/reducers';
 
-type FormValues = {
-  value: string;
-};
+import { cancelPromptDialog, submitPromptDialog } from './actions';
+import { PromptDialogType, type PromptOptions } from './types';
 
 type PromptDialogFormProps = Pick<
   PromptOptions,
-  'cancelButtonLabel' | 'message' | 'submitButtonLabel'
+  | 'cancelButtonLabel'
+  | 'initialValues'
+  | 'message'
+  | 'schema'
+  | 'submitButtonLabel'
 > &
   Readonly<{
-    initialValues: FormValues;
     onCancel: () => void;
     onSubmit: (event: { formData?: Record<string, any> }) => void;
     optimizeUIForTouch?: boolean;
-    schema: Record<string, any>;
     type: PromptDialogType;
   }>;
 
@@ -54,7 +53,8 @@ const PromptDialogForm: React.FunctionComponent<PromptDialogFormProps> = ({
           <DialogContentText>{message}</DialogContentText>
         </Box>
       )}
-      {type === PromptDialogType.GENERIC && (
+      {/* TODO: Make sure that `GENERIC` prompt dialogs always have `schema` */}
+      {type === PromptDialogType.GENERIC && schema !== undefined && (
         <Form
           // TODO: Somehow make `fields.SchemaField` use `DialogContent`.
           formData={initialValues}
@@ -94,7 +94,7 @@ const PromptDialogForm: React.FunctionComponent<PromptDialogFormProps> = ({
 type PromptDialogPresentationProps = PromptDialogFormProps &
   Readonly<{
     open: boolean;
-    title: string;
+    title?: string;
   }>;
 
 const PromptDialogPresentation: React.FunctionComponent<
@@ -105,20 +105,18 @@ const PromptDialogPresentation: React.FunctionComponent<
   </DraggableDialog>
 );
 
-// TODO: remove 'any' types from here once the store is properly annotated
-
-const PromptDialog = connect<PromptDialogPresentationProps>(
+const PromptDialog = connect(
   // mapStateToProps
-  (state: any): any => state.dialogs.prompt as PromptSliceState,
+  (state: RootState) => state.dialogs.prompt,
 
   // mapDispatchToProps
-  (dispatch) => ({
+  (dispatch: AppDispatch) => ({
     onCancel(): void {
-      dispatch(cancelPromptDialog() as any);
+      dispatch(cancelPromptDialog());
     },
 
-    onSubmit({ formData }: { formData: Record<string, any> }): void {
-      dispatch(submitPromptDialog(formData) as any);
+    onSubmit({ formData }: { formData?: Record<string, any> }): void {
+      dispatch(submitPromptDialog(formData));
     },
   })
 )(PromptDialogPresentation);
