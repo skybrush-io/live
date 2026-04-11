@@ -21,6 +21,9 @@
     "passed": "飞机上的飞行前检查已通过。",
     "signOffOn": "签署机上飞行前检查"
   },
+  "RTKCoordinateRestorationDialog": {
+    "accuracyLabel": "精度"
+  },
   "RTKCorrectionSourceSelector": {
     "RTKCorrections": "RTK校正",
     "error": "从服务器加载RTK源时出错",
