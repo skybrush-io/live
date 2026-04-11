@@ -55,7 +55,6 @@ const baseline: Config = {
       'toolbox-button',
       'app-settings-button',
       'alert-button',
-      'full-screen-button',
       'session-expiry-box',
     ],
   ],
