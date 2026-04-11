@@ -1,19 +1,17 @@
 import Help from '@mui/icons-material/HelpOutline';
-import config from 'config';
+import { GenericHeaderButton } from '@skybrush/mui-components';
 import { Translation } from 'react-i18next';
 
-import { GenericHeaderButton } from '@skybrush/mui-components';
-
-const showHelp = () => {
-  if (config.urls.help) {
-    window.open(config.urls.help, '_blank');
-  }
-};
+import { isHelpAvailable, showHelp } from '~/utils/help';
 
 const HelpButton = () => (
   <Translation>
     {(t) => (
-      <GenericHeaderButton tooltip={t('help')} onClick={showHelp}>
+      <GenericHeaderButton
+        tooltip={t('help')}
+        onClick={showHelp}
+        disabled={!isHelpAvailable}
+      >
         <Help />
       </GenericHeaderButton>
     )}
