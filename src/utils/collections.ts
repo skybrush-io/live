@@ -1,4 +1,5 @@
 import has from 'lodash-es/has';
+import isEmpty from 'lodash-es/isEmpty';
 import isNil from 'lodash-es/isNil';
 import isObject from 'lodash-es/isObject';
 import property, { type PropertyPath } from 'lodash-es/property';
@@ -7,7 +8,6 @@ import sortedIndex from 'lodash-es/sortedIndex';
 import sortedIndexBy from 'lodash-es/sortedIndexBy';
 import { orderBy } from 'natural-orderby';
 
-import isEmpty from 'lodash-es/isEmpty';
 import { rejectNullish } from './arrays';
 import { chooseUniqueIdFromName } from './naming';
 import { EMPTY_ARRAY, EMPTY_OBJECT } from './redux';

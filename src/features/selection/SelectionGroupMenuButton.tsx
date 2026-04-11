@@ -27,7 +27,7 @@ type DispatchProps = {
 
 type Props = StateProps &
   DispatchProps & {
-    size: IconButtonProps['size'];
+    size?: IconButtonProps['size'];
   };
 
 const useMenuState = () => {
