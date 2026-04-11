@@ -1,5 +1,6 @@
 import Build from '@mui/icons-material/Build';
 import Functions from '@mui/icons-material/Functions';
+import HelpOutline from '@mui/icons-material/HelpOutline';
 import Tune from '@mui/icons-material/Tune';
 import VpnKey from '@mui/icons-material/VpnKey';
 import Divider from '@mui/material/Divider';
@@ -27,7 +28,6 @@ import MapCloudOff from '~/icons/MapCloudOff';
 import Pro from '~/icons/Pro';
 import type { RootState } from '~/store/reducers';
 
-import { HelpOutline } from '@mui/icons-material';
 import { isHelpAvailable, showHelp } from '~/utils/help';
 import ToolboxDevMenuItems from './ToolboxDevMenuItems';
 
