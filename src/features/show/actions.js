@@ -11,9 +11,9 @@ import { loadShowSpecificationAndZip as processFile } from '@skybrush/show-forma
 
 import { getFeaturesInOrder } from '~/features/map-features/selectors';
 import { removeFeaturesByIds } from '~/features/map-features/slice';
+import { setMappingLength } from '~/features/mission/actions';
 import {
   setCommandsAreBroadcast,
-  setMappingLength,
   setMissionType,
   updateHomePositions,
   updateLandingPositions,

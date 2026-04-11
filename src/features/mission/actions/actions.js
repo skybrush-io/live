@@ -64,13 +64,13 @@ import { chooseUniqueId } from '~/utils/naming';
 import { createAsyncAction } from '~/utils/redux';
 import workers from '~/workers';
 
-import { JOB_TYPE } from './constants';
+import { JOB_TYPE } from '../constants';
 import {
   contextVolatilities,
   ContextVolatility,
   getParametersFromContext,
   ParameterUIContext,
-} from './parameter-context';
+} from '../parameter-context';
 import {
   createCanMoveSelectedMissionItemsByDeltaSelector,
   getEmptyMappingSlotIndices,
@@ -89,19 +89,15 @@ import {
   getMissionPlannerDialogUserParameters,
   getSelectedMissionItemIds,
   shouldMissionPlannerDialogApplyGeofence,
-} from './selectors';
+} from '../selectors';
 import {
   _setMissionItemsFromValidatedArray,
   addMissionItem,
-  clearMapping,
   closeMissionPlannerDialog,
   moveMissionItem,
   removeMissionItemsByIds,
-  removeUAVsFromMapping,
-  replaceMapping,
   setLastClearedMissionData,
   setLastSuccessfulPlannerInvocationParameters,
-  setMappingLength,
   setMissionName,
   setMissionPlannerDialogSelectedType,
   setMissionPlannerDialogUserParameters,
@@ -110,8 +106,14 @@ import {
   updateCurrentMissionItemRatio,
   updateHomePositions,
   updateMissionItemParameters,
-} from './slice';
-import { getMissionItemUploadJobPayload } from './upload';
+} from '../slice';
+import { getMissionItemUploadJobPayload } from '../upload';
+import {
+  clearMapping,
+  removeUAVsFromMapping,
+  replaceMapping,
+  setMappingLength,
+} from './ts-actions';
 
 /**
  * Internal action that finds an optimal assignment between two point sets
