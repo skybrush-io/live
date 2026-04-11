@@ -1305,29 +1305,29 @@
   },
   "unit": {
     "degree": {
-      "short": "deg",
       "long": "degree",
-      "longPlural": "degrees"
+      "longPlural": "degrees",
+      "short": "deg"
     },
     "meter": {
-      "short": "m",
       "long": "meter",
-      "longPlural": "meters"
+      "longPlural": "meters",
+      "short": "m"
     },
     "meterPerSecond": {
-      "short": "m/s",
       "long": "meter/sec",
-      "longPlural": "meters/sec"
+      "longPlural": "meters/sec",
+      "short": "m/s"
     },
     "second": {
-      "short": "s",
       "long": "second",
-      "longPlural": "seconds"
+      "longPlural": "seconds",
+      "short": "s"
     },
     "volt": {
-      "short": "V",
       "long": "volt",
-      "longPlural": "volts"
+      "longPlural": "volts",
+      "short": "V"
     }
   },
   "uploadDialog": {
