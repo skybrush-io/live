@@ -23,9 +23,7 @@ const StartTimeDisplay = (): React.JSX.Element => {
           <Button
             color='inherit'
             startIcon={<Clear />}
-            onClick={() => {
-              dispatch(clearStartTime() as any);
-            }}
+            onClick={() => dispatch(clearStartTime())}
           >
             {t('general.action.clear')}
           </Button>

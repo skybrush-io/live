@@ -1,4 +1,5 @@
 import { Status } from '~/components/semantics';
+import type { TranslateFn } from '~/i18n/types';
 
 export { Status } from '~/components/semantics';
 
@@ -76,11 +77,15 @@ const propertiesForFlightLogKinds: Record<
 /**
  * Returns the description of the given flight log kind / format.
  */
-export function describeFlightLogKind(kind: FlightLogKind): string {
-  const props =
-    propertiesForFlightLogKinds[kind] ||
-    propertiesForFlightLogKinds[FlightLogKind.UNKNOWN];
-  return props.description;
+export function describeFlightLogKind(
+  kind: FlightLogKind,
+  t: TranslateFn | undefined = undefined
+): string {
+  const resolvedKind = propertiesForFlightLogKinds[kind]
+    ? kind
+    : FlightLogKind.UNKNOWN;
+  const description = propertiesForFlightLogKinds[resolvedKind].description;
+  return t ? t(`flightLogKind.${resolvedKind}`, description) : description;
 }
 
 /**
@@ -255,11 +260,15 @@ export const abbreviateFlightMode = (mode: FlightMode | string): string =>
 /**
  * Returns the description of the given flight mode.
  */
-export function describeFlightMode(mode: FlightMode): string {
-  const props =
-    propertiesForFlightModes[mode] ||
-    propertiesForFlightModes[FlightMode.UNKNOWN];
-  return props.description;
+export function describeFlightMode(
+  mode: FlightMode,
+  t: TranslateFn | undefined = undefined
+): string {
+  const resolvedMode = propertiesForFlightModes[mode]
+    ? mode
+    : FlightMode.UNKNOWN;
+  const description = propertiesForFlightModes[resolvedMode].description;
+  return t ? t(`flightMode.${resolvedMode}`, description) : description;
 }
 
 /**
@@ -376,11 +385,15 @@ export function abbreviateGPSFixType(fixType: GPSFixType): string {
 /**
  * Returns the description of the given GPS fix type.
  */
-export function describeGPSFixType(fixType: GPSFixType): string {
-  const props =
-    propertiesForGPSFixTypes[fixType] ||
-    propertiesForGPSFixTypes[GPSFixType.UNKNOWN];
-  return props.description;
+export function describeGPSFixType(
+  fixType: GPSFixType,
+  t: TranslateFn | undefined = undefined
+): string {
+  const resolvedFixType = propertiesForGPSFixTypes[fixType]
+    ? fixType
+    : GPSFixType.UNKNOWN;
+  const description = propertiesForGPSFixTypes[resolvedFixType].description;
+  return t ? t(`gpsFixType.${resolvedFixType}`, description) : description;
 }
 
 /**
@@ -487,24 +500,34 @@ const propertiesForPreflightCheckResults: Record<
  * Returns the description of the given preflight check result.
  */
 export function describePreflightCheckResult(
-  result: PreflightCheckResult
+  result: PreflightCheckResult,
+  t: TranslateFn | undefined = undefined
 ): string {
-  const props =
-    propertiesForPreflightCheckResults[result] ||
-    propertiesForPreflightCheckResults[PreflightCheckResult.UNKNOWN];
-  return props.description;
+  const resolvedResult = propertiesForPreflightCheckResults[result]
+    ? result
+    : PreflightCheckResult.UNKNOWN;
+  const description =
+    propertiesForPreflightCheckResults[resolvedResult].description;
+  return t
+    ? t(`preflightCheckResult.short.${resolvedResult}`, description)
+    : description;
 }
 
 /**
  * Returns the description of the given preflight check result.
  */
 export function describeOverallPreflightCheckResult(
-  result: PreflightCheckResult
+  result: PreflightCheckResult,
+  t: TranslateFn | undefined = undefined
 ): string {
-  const props =
-    propertiesForPreflightCheckResults[result] ||
-    propertiesForPreflightCheckResults[PreflightCheckResult.UNKNOWN];
-  return props.overallDescription;
+  const resolvedResult = propertiesForPreflightCheckResults[result]
+    ? result
+    : PreflightCheckResult.UNKNOWN;
+  const description =
+    propertiesForPreflightCheckResults[resolvedResult].overallDescription;
+  return t
+    ? t(`preflightCheckResult.overall.${resolvedResult}`, description)
+    : description;
 }
 
 /**

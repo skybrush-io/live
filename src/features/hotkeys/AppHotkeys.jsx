@@ -67,14 +67,24 @@ configureHotkeys({
 // Luckily it is not a problem if we use GlobalHotKeys "outside" the workbench
 // and normal <HotKeys> "inside" the workbench.
 
-const AppHotkeys = ({ activeHotkeyScope, handlers }) => {
+const AppHotkeys = ({
+  activeHotkeyScope,
+  Component = GlobalHotKeys,
+  handlers,
+  ...rest
+}) => {
   const filteredKeyMap = Object.fromEntries(
     Object.entries(keyMap).filter(([, { scopes }]) =>
       scopes.includes(activeHotkeyScope)
     )
   );
   return (
-    <GlobalHotKeys allowChanges keyMap={filteredKeyMap} handlers={handlers} />
+    <Component
+      allowChanges
+      keyMap={filteredKeyMap}
+      handlers={handlers}
+      {...rest}
+    />
   );
 };
 
@@ -84,7 +94,7 @@ const bindHotkeyHandlers = (reduxHandlers, nonReduxHandlers, dispatch) => ({
     if (event.defaultPrevented) {
       return;
     }
-    // Prevent the default action of the event (e.g. scrolling the page
+    // Prevent the default action of the event (e.g. scrolling the page)
     event.preventDefault();
     dispatch(handler());
   }),

@@ -51,7 +51,7 @@ export type SettingsState = {
     hideEmptyMissionSlots: boolean;
 
     /** Language code for the selected language of the application */
-    language: 'en' | 'hu';
+    language: string;
 
     /** Whether the application should be optimized for operating a single UAV. */
     optimizeForSingleUAV: boolean;
@@ -88,7 +88,7 @@ export type SettingsState = {
   // (Taking into account the mappings of old values in the selectors?)
   threeD: {
     /** Scenery to use in the 3D view */
-    scenery: 'auto' | 'outdoor' | 'indoor';
+    scenery: 'auto' | 'indoor' | 'outdoor';
 
     /** Lighting conditions to use in the 3D view */
     lighting: 'light' | 'dark';
@@ -165,6 +165,12 @@ export type SettingsState = {
      * as an integer, to avoid rounding errors
      */
     placementAccuracy: number;
+
+    /**
+     * Desired heading accuracy in preflight checks, in degrees,
+     * as an integer, to avoid rounding errors
+     */
+    takeoffHeadingAccuracy: number;
 
     // Battery-related properties
 

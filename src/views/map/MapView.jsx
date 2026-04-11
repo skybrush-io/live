@@ -337,8 +337,6 @@ class MapViewPresentation extends React.Component {
     selectedTool: PropTypes.string,
     selection: PropTypes.arrayOf(PropTypes.string).isRequired,
     zoom: PropTypes.number,
-
-    glContainer: PropTypes.object,
   };
 
   static defaultProps = { ...config.map.view };
@@ -354,49 +352,16 @@ class MapViewPresentation extends React.Component {
     this._onSetSelectedFeatures = partial(this._onBoxDragEnded, 'set');
 
     this._map = React.createRef();
-    this._mapInnerDiv = React.createRef();
+    this._mapWrapper = React.createRef();
+
+    this._resizeObserver = new ResizeObserver(this._updateSize);
   }
 
   componentDidMount() {
-    const { glContainer } = this.props;
-    this.layoutManager = glContainer ? glContainer.layoutManager : undefined;
+    this._resizeObserver.observe(this._mapWrapper.current);
 
     mapViewManager.initialize();
     this._disableDefaultContextMenu();
-  }
-
-  componentDidUpdate() {
-    const { glContainer } = this.props;
-    this.layoutManager = glContainer ? glContainer.layoutManager : undefined;
-  }
-
-  /**
-   * Returns the layout manager that the map view currently participates in.
-   * @return {GoldenLayout} the layout manager
-   */
-  get layoutManager() {
-    return this._layoutManager;
-  }
-
-  /**
-   * Sets the layout manager that the map view currently participates in.
-   *
-   * @param {GoldenLayout} value  the new layout manager
-   */
-  set layoutManager(value) {
-    if (this._layoutManager === value) {
-      return;
-    }
-
-    if (this._layoutManager) {
-      this._layoutManager.off('stateChanged', this.updateSize, this);
-    }
-
-    this._layoutManager = value;
-
-    if (this._layoutManager) {
-      this._layoutManager.on('stateChanged', this.updateSize, this);
-    }
   }
 
   render() {
@@ -417,7 +382,7 @@ class MapViewPresentation extends React.Component {
     // give access to the underlying OpenLayers Map object instead.
     return (
       <NearestItemTooltip>
-        <div style={mapStyles.mapWrapper}>
+        <div ref={this._mapWrapper} style={mapStyles.mapWrapper}>
           <BaseMap
             ref={this._map}
             loadTilesWhileInteracting
@@ -709,12 +674,12 @@ class MapViewPresentation extends React.Component {
    * Method that must be called whenever the size of the container holding
    * the map view has changed.
    */
-  updateSize() {
+  _updateSize = () => {
     const map = this._map.current;
     if (map) {
       map.updateSize();
     }
-  }
+  };
 }
 
 /**

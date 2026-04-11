@@ -2,15 +2,15 @@ import delay from 'delay';
 import isNil from 'lodash-es/isNil';
 
 import type { AppThunk, RootState } from '~/store/reducers';
+import type { Identifier } from '~/utils/collections';
 
 import {
-  getFailedUploadItems,
+  getFailedUploadItemsToEnqueue,
   getSelectedJobInUploadDialog,
-  getSuccessfulUploadItems,
+  getSuccessfulUploadItemsToEnqueue,
   getUploadDialogState,
   getUploadTargets,
   isItemInUploadBacklog,
-  isUploadInProgress,
 } from './selectors';
 import {
   _enqueueFailedUploads,
@@ -22,7 +22,6 @@ import {
   setupNextUploadJob,
   startUpload,
 } from './slice';
-import type UAV from '~/model/uav';
 
 /**
  * Thunk that closes the upload dialog and performs the "back" action currently
@@ -78,11 +77,8 @@ export function recalculateEstimatedCompletionTime(): AppThunk<void> {
  */
 export function restartSuccessfulUploads(): AppThunk<void> {
   return (dispatch, getState) => {
-    const successfulItems = getSuccessfulUploadItems(getState());
+    const successfulItems = getSuccessfulUploadItemsToEnqueue(getState());
     dispatch(_enqueueSuccessfulUploads(successfulItems));
-    if (!isUploadInProgress(getState())) {
-      dispatch(startUpload());
-    }
   };
 }
 
@@ -92,11 +88,8 @@ export function restartSuccessfulUploads(): AppThunk<void> {
  */
 export function retryFailedUploads(): AppThunk<void> {
   return (dispatch, getState) => {
-    const failedItems = getFailedUploadItems(getState());
+    const failedItems = getFailedUploadItemsToEnqueue(getState());
     dispatch(_enqueueFailedUploads(failedItems));
-    if (!isUploadInProgress(getState())) {
-      dispatch(startUpload());
-    }
   };
 }
 
@@ -104,7 +97,7 @@ export function retryFailedUploads(): AppThunk<void> {
  * Toggles a single UAV into our out of the upload queue, assuming that it is
  * in a state where such modification is allowed.
  */
-export function toggleUavInWaitingQueue(uavId: UAV['id']) {
+export function toggleUavInWaitingQueue(uavId: Identifier) {
   return toggleUavsInWaitingQueue([uavId]);
 }
 
@@ -124,13 +117,11 @@ export function toggleUavInWaitingQueue(uavId: UAV['id']) {
  * UAV IDs contain either UAVs that are all in the waiting queue, or a mixture
  * of UAVs that are either in the waiting queue or are being processed.
  */
-export function toggleUavsInWaitingQueue(
-  uavIds: Array<UAV['id']>
-): AppThunk<void> {
+export function toggleUavsInWaitingQueue(uavIds: Identifier[]): AppThunk<void> {
   return (dispatch, getState) => {
     const state = getState();
-    const toRemove: Array<UAV['id']> = [];
-    const toAdd: Array<UAV['id']> = [];
+    const toRemove: Identifier[] = [];
+    const toAdd: Identifier[] = [];
 
     for (const uavId of uavIds) {
       if (!isNil(uavId)) {
