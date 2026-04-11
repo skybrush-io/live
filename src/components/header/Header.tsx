@@ -55,6 +55,7 @@ const componentRegistry: Record<string, React.ComponentType> = {
   'connection-status-button': ConnectionStatusButton,
   'distance-summary-header-button': DistanceSummaryHeaderButton,
   'full-screen-button': FullScreenButton,
+  'groups-button': SelectionGroupMenuButton,
   'help-button': () => (config.urls.help ? <HelpButton /> : null),
   'rtk-status-header-button': () =>
     hasFeature('toolboxMenu') && <RTKStatusHeaderButton />,
@@ -66,15 +67,7 @@ const componentRegistry: Record<string, React.ComponentType> = {
   ),
   'session-expiry-box': SessionExpiryBox,
   'toolbox-button': () => hasFeature('toolboxMenu') && <ToolboxButton />,
-  'uav-status-summary': () => (
-    <>
-      <Box alignSelf='center'>
-        <SelectionGroupMenuButton />
-      </Box>
-      <hr />
-      <UAVStatusSummary />
-    </>
-  ),
+  'uav-status-summary': UAVStatusSummary,
   'velocity-summary-header-button': VelocitySummaryHeaderButton,
   'weather-header-button': WeatherHeaderButton,
 };
