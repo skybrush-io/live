@@ -93,7 +93,7 @@ const { actions, reducer } = createSlice({
       if (group !== undefined) {
         group.ids = selectedIds;
       } else {
-        const name = i18n.t('general.label.groupWithId', { id });
+        const name = i18n.t('selectionGroups.newGroupNameTemplate', { id });
         addItemSorted(state.groups, { id, name, ids: selectedIds });
       }
     },

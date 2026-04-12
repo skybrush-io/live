@@ -56,7 +56,7 @@
     "armMotors": "Motorok elindítása",
     "details": "Részletek…",
     "disarmMotors": "Motorok leállítása",
-    "flashLights": "Fény villogtatása",
+    "flashLights": "Villogtatás",
     "removeItemsMarkedGone": "Eltűntként megjelölt elemek eltávolítása",
     "removeSelectedItems": "Kiválasztott elemek eltávolítása"
   },
@@ -658,6 +658,14 @@
     "name": "Név",
     "notes": "Jegyzetek",
     "zoomLevel": "Nagyítás mértéke"
+  },
+  "selectionGroups": {
+    "action": {
+      "createNew": "Új csoport létrehozása"
+    },
+    "label": "Csoportok",
+    "newGroupNameTemplate": "{{id}}. csoport",
+    "tooltip": "Elmentett csoportok"
   },
   "serverConnectionStatus": {
     "clockSkew": "Óra szinkronizálás",
