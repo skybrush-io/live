@@ -1,4 +1,4 @@
-import SelectAll from '@mui/icons-material/SelectAll';
+import Workspaces from '@mui/icons-material/Workspaces';
 import Divider from '@mui/material/Divider';
 import IconButton, { type IconButtonProps } from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
@@ -61,7 +61,7 @@ const SelectionGroupMenuButton = ({
     <Tooltip content={t('tooltip')}>
       <>
         <IconButton size={size} onClick={handleButtonClick}>
-          <SelectAll />
+          <Workspaces />
         </IconButton>
         <Menu anchorEl={anchorEl} open={isOpen} onClose={handleClose}>
           <MenuItem onClick={saveSelection}>{t('action.save')}</MenuItem>
