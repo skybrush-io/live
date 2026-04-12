@@ -1,7 +1,7 @@
 import Divider from '@mui/material/Divider';
+import ListSubheader from '@mui/material/ListSubheader';
 import Menu, { type MenuProps } from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import Typography from '@mui/material/Typography';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -9,7 +9,7 @@ import { useSelector } from 'react-redux';
 import { useAppDispatch } from '~/store/hooks';
 
 import SelectionGroupMenuItem from './SelectionGroupMenuItem';
-import { getOrderedSelectionGroups } from './selectors';
+import { getOrderedSelectionGroups, hasSelection } from './selectors';
 import { saveCurrentSelectionAsGroup } from './slice';
 
 type Props = Omit<MenuProps, 'onClose'> & {
@@ -17,6 +17,7 @@ type Props = Omit<MenuProps, 'onClose'> & {
 };
 
 const SelectionGroupMenu = ({ requestClose, ...rest }: Props) => {
+  const isSelectionNotEmpty = useSelector(hasSelection);
   const selectionGroups = useSelector(getOrderedSelectionGroups);
   const dispatch = useAppDispatch();
   const { t } = useTranslation(undefined, {
@@ -30,13 +31,13 @@ const SelectionGroupMenu = ({ requestClose, ...rest }: Props) => {
 
   return (
     <Menu onClose={requestClose} {...rest}>
-      <MenuItem onClick={saveSelection}>{t('action.createNew')}</MenuItem>
+      <MenuItem onClick={saveSelection} disabled={!isSelectionNotEmpty}>
+        {t('action.createNew')}
+      </MenuItem>
       {selectionGroups.length > 0 && (
         <>
           <Divider />
-          <MenuItem disabled>
-            <Typography>{t('label')}</Typography>
-          </MenuItem>
+          <ListSubheader>{t('label')}</ListSubheader>
           {selectionGroups.map((g) => (
             <SelectionGroupMenuItem
               key={g.name}

@@ -36,6 +36,12 @@ export const getOrderedSelectionGroups: AppSelector<SelectionGroup[]> =
   createSelector(getSelectionGroups, selectOrdered);
 
 /**
+ * Returns whether the current selection is not empty.
+ */
+export const hasSelection: AppSelector<boolean> = (state) =>
+  state.selection.ids.length > 0;
+
+/**
  * Selector factory that creates a selector that returns true if and only if a
  * feature with the given ID is selected.
  */
