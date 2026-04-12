@@ -832,7 +832,7 @@
     },
     "label": "Groups",
     "newGroupNameTemplate": "Group {{id}}",
-    "tooltip": "Selection groups"
+    "updated": "Updated"
   },
   "serverConnectionStatus": {
     "clockSkew": "Clock skew",

@@ -665,7 +665,7 @@
     },
     "label": "Csoportok",
     "newGroupNameTemplate": "{{id}}. csoport",
-    "tooltip": "Elmentett csoportok"
+    "updated": "Frissítve"
   },
   "serverConnectionStatus": {
     "clockSkew": "Óra szinkronizálás",
