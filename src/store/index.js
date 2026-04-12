@@ -62,7 +62,6 @@ const persistConfig = {
     'log',
     'logDownload',
     'messages',
-    'selection',
     'servers',
     'session',
     'snackbar',
@@ -105,6 +104,9 @@ const persistConfig = {
 
     // We do not wish to save which preflight checks the user has ticked off
     createBlacklistFilter('preflight', ['checked']),
+
+    // We want to keep only the stored groups from the selection slice
+    createFilter('selection', ['groups']),
 
     // Most of the stuff in the 'show' slice is temporary as we unload the
     // show when refreshing the page
