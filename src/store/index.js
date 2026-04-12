@@ -11,13 +11,13 @@ import isError from 'lodash-es/isError';
 import isFunction from 'lodash-es/isFunction';
 import createDeferred from 'p-defer';
 import createDebounce from 'redux-debounce';
-import { createPromise } from 'redux-promise-middleware';
-import createSagaMiddleware from 'redux-saga';
-import { persistStore, persistReducer } from 'redux-persist';
+import { persistReducer, persistStore } from 'redux-persist';
 import {
   createBlacklistFilter,
   createFilter,
 } from 'redux-persist-transform-filter';
+import { createPromise } from 'redux-promise-middleware';
+import createSagaMiddleware from 'redux-saga';
 
 import { updateAveragingByIds } from '~/features/measurement/slice';
 import { shouldPreventSleepMode } from '~/features/power-saving/selectors';
@@ -104,6 +104,9 @@ const persistConfig = {
 
     // We do not wish to save which preflight checks the user has ticked off
     createBlacklistFilter('preflight', ['checked']),
+
+    // We want to keep only the stored groups from the selection slice
+    createFilter('selection', ['groups']),
 
     // Most of the stuff in the 'show' slice is temporary as we unload the
     // show when refreshing the page

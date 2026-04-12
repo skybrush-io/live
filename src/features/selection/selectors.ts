@@ -1,8 +1,15 @@
 import { createSelector } from '@reduxjs/toolkit';
 
-import { type AppSelector } from '~/store/reducers';
+import type { AppSelector } from '~/store/reducers';
 import { rejectNullish } from '~/utils/arrays';
-import { type Identifier } from '~/utils/collections';
+import {
+  getItemById,
+  selectOrdered,
+  type Collection,
+  type Identifier,
+} from '~/utils/collections';
+
+import type { SelectionGroup } from './types';
 
 /**
  * Selector that retrieves the list of item IDs in the current selection
@@ -13,6 +20,20 @@ import { type Identifier } from '~/utils/collections';
  */
 export const getSelection: AppSelector<Identifier[]> = (state) =>
   state.selection.ids;
+
+const getSelectionGroups: AppSelector<Collection<SelectionGroup>> = (state) =>
+  state.selection.groups;
+
+export const getSelectionGroupById =
+  (id: Identifier): AppSelector<SelectionGroup | undefined> =>
+  (state) =>
+    getItemById(getSelectionGroups(state), id);
+
+/**
+ * Selector that returns all selection groups ordered by ID.
+ */
+export const getOrderedSelectionGroups: AppSelector<SelectionGroup[]> =
+  createSelector(getSelectionGroups, selectOrdered);
 
 /**
  * Selector factory that creates a selector that returns true if and only if a

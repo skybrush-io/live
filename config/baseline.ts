@@ -37,6 +37,7 @@ const baseline: Config = {
 
   headerComponents: [
     ['uav-status-summary'],
+    ['groups-button'],
     [
       'battery-status-header-button',
       'distance-summary-header-button',
