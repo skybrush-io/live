@@ -7,7 +7,7 @@ import Shapeshifter from 'react-shapeshifter';
 import UAVStatusSummary from '~/components/uavs/UAVStatusSummary';
 import PerspectiveBar from '~/features/perspectives/PerspectiveBar';
 import RTKStatusHeaderButton from '~/features/rtk/RTKStatusHeaderButton';
-import SelectionGroupMenuButton from '~/features/selection/SelectionGroupMenuButton';
+import SelectionGroupsHeaderButton from '~/features/selection/SelectionGroupsHeaderButton';
 import { BROADCAST_MODE_TIMEOUT_LENGTH } from '~/features/settings/constants';
 import { toggleSidebar } from '~/features/sidebar/actions';
 import { isSidebarOpen } from '~/features/sidebar/selectors';
@@ -55,7 +55,7 @@ const componentRegistry: Record<string, React.ComponentType> = {
   'connection-status-button': ConnectionStatusButton,
   'distance-summary-header-button': DistanceSummaryHeaderButton,
   'full-screen-button': FullScreenButton,
-  'groups-button': SelectionGroupMenuButton,
+  'groups-button': SelectionGroupsHeaderButton,
   'help-button': () => (config.urls.help ? <HelpButton /> : null),
   'rtk-status-header-button': () =>
     hasFeature('toolboxMenu') && <RTKStatusHeaderButton />,

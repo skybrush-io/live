@@ -324,9 +324,6 @@
       "rotation": "Rotation",
       "zoom": "Zoom"
     },
-    "label": {
-      "groupWithId": "Group {{id}}"
-    },
     "status": {
       "failed": "failed",
       "inProgress": "in progress",
@@ -829,14 +826,13 @@
       }
     }
   },
-  "selectionGroupMenuButton": {
+  "selectionGroups": {
     "action": {
-      "save": "Save selection"
+      "createNew": "Create new group"
     },
-    "header": {
-      "groups": "Groups"
-    },
-    "tooltip": "Selection groups"
+    "label": "Groups",
+    "newGroupNameTemplate": "Group {{id}}",
+    "updated": "Updated"
   },
   "serverConnectionStatus": {
     "clockSkew": "Clock skew",
