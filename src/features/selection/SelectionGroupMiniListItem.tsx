@@ -6,11 +6,10 @@ import { deleteGroup, saveCurrentSelectionAsGroup, selectGroup } from './slice';
 import type { SelectionGroup } from './types';
 
 type Props = {
-  index: number;
   group: SelectionGroup;
 };
 
-const SelectionGroupMiniListItem = ({ index, group }: Props) => {
+const SelectionGroupMiniListItem = ({ group }: Props) => {
   const { id, name } = group;
   const dispatch = useAppDispatch();
   const [recentlyUpdated, setRecentlyUpdated] = useState(false);
@@ -49,9 +48,7 @@ const SelectionGroupMiniListItem = ({ index, group }: Props) => {
   return (
     <MiniListItemButton
       key={id}
-      iconPreset={
-        recentlyUpdated ? 'success' : index < 6 ? `number${index + 1}` : 'empty'
-      }
+      iconPreset={recentlyUpdated ? 'success' : `number${id}`}
       primaryText={recentlyUpdated ? t('updated') : name}
       secondaryActions={
         recentlyUpdated ? (

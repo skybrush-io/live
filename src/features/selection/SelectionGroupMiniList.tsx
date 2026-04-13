@@ -5,7 +5,9 @@ import {
 } from '@skybrush/mui-components';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
+
 import { useAppDispatch } from '~/store/hooks';
+
 import SelectionGroupMiniListItem from './SelectionGroupMiniListItem';
 import { getOrderedSelectionGroups, hasSelection } from './selectors';
 import { saveCurrentSelectionAsGroup } from './slice';
@@ -24,12 +26,8 @@ const SelectionGroupMiniList = () => {
 
   return (
     <MiniList style={listStyle}>
-      {selectionGroups.map((group, index) => (
-        <SelectionGroupMiniListItem
-          key={group.id}
-          group={group}
-          index={index}
-        />
+      {selectionGroups.map((group) => (
+        <SelectionGroupMiniListItem key={group.id} group={group} />
       ))}
       {selectionGroups.length > 0 && <MiniListDivider />}
       <MiniListItemButton
