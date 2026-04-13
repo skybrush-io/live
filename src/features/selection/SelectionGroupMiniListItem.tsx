@@ -58,7 +58,7 @@ const SelectionGroupMiniListItem = ({ group }: Props) => {
           </>
         ) : (
           <>
-            <MiniListItemIcon preset='update' onClick={handleUpdate} />
+            <MiniListItemIcon preset='save' onClick={handleUpdate} />
             <MiniListItemIcon preset={'delete'} onClick={handleDelete} />
           </>
         )
