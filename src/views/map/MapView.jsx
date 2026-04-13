@@ -38,7 +38,7 @@ import { getSelectedTool } from '~/features/map/tools';
 import { updateMapViewSettings } from '~/features/map/view';
 import { addNewMissionItem } from '~/features/mission/actions';
 import { getGeofencePolygonId } from '~/features/mission/selectors';
-import { getSelection } from '~/features/selection/selectors';
+import { getVirtualSelection } from '~/features/selection/selectors';
 import {
   addToSelection,
   removeFromSelection,
@@ -49,7 +49,12 @@ import NearestItemTooltip from '~/features/session/NearestItemTooltip';
 import { setFeatureIdForTooltip } from '~/features/session/slice';
 import { getFollowMapSelectionInUAVDetailsPanel } from '~/features/uavs/selectors';
 import mapViewManager from '~/mapViewManager';
-import { featureIdToGlobalId } from '~/model/identifiers';
+import {
+  areaIdToGlobalId,
+  featureIdToGlobalId,
+  GROSS_CONVEX_HULL_AREA_ID,
+  isHomePositionId,
+} from '~/model/identifiers';
 import {
   canLayerTriggerTooltip,
   getVisibleEditableLayers,
@@ -611,7 +616,15 @@ class MapViewPresentation extends React.Component {
       toggle: toggleInSelection,
     };
     const action = actionMapping[mode] || setSelection;
-    const ids = features ? features.map((feature) => feature.getId()) : [];
+    const rawIds = features ? features.map((feature) => feature.getId()) : [];
+
+    const ids = rawIds.some(isHomePositionId)
+      ? [
+          ...rawIds.filter((id) => !isHomePositionId(id)),
+          areaIdToGlobalId(GROSS_CONVEX_HULL_AREA_ID),
+        ]
+      : rawIds;
+
     if (action === setSelection || (ids && ids.length > 0)) {
       this.props.dispatch(action(ids));
     }
@@ -696,7 +709,7 @@ const MapView = connect(
 
     selectedFeatures: getSelectedFeatureIds(state),
     selectedTool: getSelectedTool(state),
-    selection: getSelection(state),
+    selection: getVirtualSelection(state),
 
     uavDetailsPanelFollowsSelection:
       getFollowMapSelectionInUAVDetailsPanel(state),

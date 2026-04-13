@@ -9,7 +9,7 @@ import { SidebarBadge } from '@skybrush/mui-components';
 
 import { colorForStatus } from '~/components/colors';
 import { Status } from '~/components/semantics';
-import { getGeofenceStatus } from '~/features/mission/selectors-geofence-extra';
+import { getGeofenceStatus } from '~/features/mission/selectors/geofence';
 import type { RootState } from '~/store/reducers';
 
 /**

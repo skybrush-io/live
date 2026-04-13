@@ -1,5 +1,4 @@
 import { createSelector } from '@reduxjs/toolkit';
-import turfContains from '@turf/boolean-contains';
 import * as TurfHelpers from '@turf/helpers';
 import { produce } from 'immer';
 import isNil from 'lodash-es/isNil';
@@ -7,22 +6,12 @@ import max from 'lodash-es/max';
 import range from 'lodash-es/range';
 import unary from 'lodash-es/unary';
 
-import {
-  getFeaturesById,
-  getFeaturesInOrder,
-} from '~/features/map-features/selectors';
-import { type FeatureWithProperties } from '~/features/map-features/types';
 import { GeofenceAction, isValidGeofenceAction } from '~/features/safety/model';
-import { selectionForSubset } from '~/features/selection/selectors';
 import {
   type Altitude,
   AltitudeReference,
   type GPSPosition,
 } from '~/model/geography';
-import {
-  globalIdToMissionItemId,
-  globalIdToMissionSlotId,
-} from '~/model/identifiers';
 import {
   getAltitudeFromMissionItem,
   getAreaFromMissionItem,
@@ -48,16 +37,11 @@ import {
   mapViewCoordinateFromLonLat,
   turfDistanceInMeters,
 } from '~/utils/geography';
-import {
-  convexHull2D,
-  createGeometryFromPoints,
-  estimatePathDuration,
-} from '~/utils/math';
+import { convexHull2D, estimatePathDuration } from '~/utils/math';
 import { findNearestNeighborsDistance } from '~/utils/nearestNeighbors';
-import { EMPTY_ARRAY } from '~/utils/redux';
 import { type Nullable } from '~/utils/types';
 
-import { type MissionSliceState } from './slice';
+import { type MissionSliceState } from '../slice';
 
 /**
  * Key selector function for cached selectors that cache things by mission
@@ -94,14 +78,6 @@ export const getMissionItemsAsCollection: AppSelector<
  */
 export const getMissionItemIds: AppSelector<Identifier[]> = (state) =>
   state.mission.items.order;
-
-/**
- * Selector that calculates and caches the list of selected mission item IDs from
- * the state object.
- */
-export const getSelectedMissionItemIds = selectionForSubset(
-  globalIdToMissionItemId
-);
 
 /**
  * Returns a mapping from IDs to the corresponding mission items.
@@ -263,26 +239,6 @@ export const getUAVIdForMappingSlotBeingEdited: AppSelector<
 );
 
 /**
- * Selector that calculates and caches the list of selected mission indices from
- * the state object.
- */
-export const getSelectedMissionSlotIds = selectionForSubset(
-  globalIdToMissionSlotId
-);
-
-/**
- * Selector that returns at most five selected mission indices for sake of
- * displaying their trajectories.
- */
-export const getSelectedMissionIndicesForTrajectoryDisplay: AppSelector<
-  MissionIndex[]
-> = createSelector(getSelectedMissionSlotIds, (selectedMissionSlotIds) =>
-  selectedMissionSlotIds.length <= 5
-    ? selectedMissionSlotIds.map(Number)
-    : EMPTY_ARRAY
-);
-
-/**
  * Returns a list of all the UAV IDs that participate in the mission, without
  * the null entries, sorted in ascending order by the UAV IDs.
  *
@@ -376,108 +332,6 @@ export const getGeofenceActionWithValidation: AppSelector<GeofenceAction> =
 export const getGeofencePolygonId: AppSelector<
   MissionSliceState['geofencePolygonId']
 > = (state) => state.mission.geofencePolygonId;
-
-/**
- * Gets the polygon that is to be used as a geofence.
- */
-export const getGeofencePolygon: AppSelector<
-  FeatureWithProperties | undefined
-> = createSelector(
-  getGeofencePolygonId,
-  getFeaturesById,
-  (geofencePolygonId, featuresById) =>
-    typeof geofencePolygonId === 'string'
-      ? featuresById[geofencePolygonId]
-      : undefined
-);
-
-/**
- * Gets the coordinates of the polygon that is to be used as a geofence, in
- * world coordinates, or undefined if no geofence polygon is defined.
- */
-export const getGeofencePolygonInWorldCoordinates: AppSelector<
-  LonLat[] | undefined
-> = createSelector(
-  getGeofencePolygon,
-  (geofencePolygon) => geofencePolygon?.points
-);
-
-/**
- * Returns whether a geofence is currently set by the user (either automatically)
- * or manually.
- */
-export const hasActiveGeofencePolygon: AppSelector<boolean> = createSelector(
-  getGeofencePolygonId,
-  getFeaturesById,
-  (geofencePolygonId, featuresById) =>
-    geofencePolygonId !== undefined &&
-    featuresById[geofencePolygonId] !== undefined
-);
-
-export const getExclusionZonePolygons: AppSelector<FeatureWithProperties[]> =
-  createSelector(getFeaturesInOrder, (featuresInOrder) =>
-    featuresInOrder.filter((f) => f.attributes?.['isExclusionZone'])
-  );
-
-export const getItemIndexRangeForSelectedMissionItems: AppSelector<
-  [number, number]
-> = createSelector(
-  getMissionItemIds,
-  getSelectedMissionItemIds,
-  (allIds, selectedIds) => {
-    const indices = selectedIds.map((id) => allIds.indexOf(id));
-    return [Math.min(...indices), Math.max(...indices)];
-  }
-);
-
-/**
- * Returns whether the currently selected mission items form a single,
- * uninterrupted chunk in the list of mission items.
- */
-export const areSelectedMissionItemsInOneChunk: AppSelector<boolean> =
-  createSelector(
-    getItemIndexRangeForSelectedMissionItems,
-    getSelectedMissionItemIds,
-    (indexRange, selectedIds) => {
-      const [minIndex, maxIndex] = indexRange;
-      return minIndex >= 0 && maxIndex === minIndex + selectedIds.length - 1;
-    }
-  );
-
-export const createCanMoveSelectedMissionItemsByDeltaSelector = (
-  delta: number
-): AppSelector<boolean> =>
-  createSelector(
-    getMissionItemIds,
-    areSelectedMissionItemsInOneChunk,
-    getItemIndexRangeForSelectedMissionItems,
-    (allIds, inOneChunk, indexRange) => {
-      if (!inOneChunk) {
-        return false;
-      }
-
-      const [minIndex, maxIndex] = indexRange;
-      if (delta < 0) {
-        return minIndex >= Math.abs(delta);
-      } else {
-        return maxIndex + delta < allIds.length;
-      }
-    }
-  );
-
-/**
- * Returns whether the currently selected mission items can be moved upwards
- * by one slot.
- */
-export const canMoveSelectedMissionItemsUp: AppSelector<boolean> =
-  createCanMoveSelectedMissionItemsByDeltaSelector(-1);
-
-/**
- * Returns whether the currently selected mission items can be moved downwards
- * by one slot.
- */
-export const canMoveSelectedMissionItemsDown: AppSelector<boolean> =
-  createCanMoveSelectedMissionItemsByDeltaSelector(1);
 
 /**
  * Returns whether the mission editor panel should follow the active item.
@@ -606,35 +460,6 @@ export const getConvexHullOfMissionInMapViewCoordinates: AppSelector<EasNor[]> =
         unary<LonLat, EasNor>(mapViewCoordinateFromLonLat)
       )
   );
-
-/**
- * Returns whether the convex hull of the waypoint mission (home positions and
- * mission items) is fully contained inside the geofence polygon.
- */
-export const isWaypointMissionConvexHullInsideGeofence: AppSelector<
-  boolean | undefined
-> = createSelector(
-  getConvexHullOfMissionInWorldCoordinates,
-  getGeofencePolygonInWorldCoordinates,
-  (convexHullPoints, geofencePoints) => {
-    if (
-      geofencePoints !== undefined &&
-      geofencePoints.length > 0 &&
-      convexHullPoints !== undefined &&
-      convexHullPoints.length > 0
-    ) {
-      const geofence = createGeometryFromPoints(geofencePoints);
-      const convexHull = createGeometryFromPoints(convexHullPoints);
-      return (
-        geofence.isOk() &&
-        convexHull.isOk() &&
-        turfContains(geofence.value, convexHull.value)
-      );
-    } else {
-      return false;
-    }
-  }
-);
 
 /**
  * Returns the maximum distance of any waypoint or flight area vertex in the
