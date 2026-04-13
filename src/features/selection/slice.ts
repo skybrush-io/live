@@ -18,6 +18,7 @@ import {
   type Collection,
   deleteItemById,
   EMPTY_COLLECTION,
+  ensureNaturalSortOrder,
   firstUnusedNumericId,
   getItemById,
   type Identifier,
@@ -95,6 +96,7 @@ const { actions, reducer } = createSlice({
       } else {
         const name = i18n.t('selectionGroups.newGroupNameTemplate', { id });
         addItemSorted(state.groups, { id, name, ids: selectedIds });
+        ensureNaturalSortOrder(state.groups);
       }
     },
 
