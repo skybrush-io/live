@@ -51,7 +51,11 @@ const UploadStatusLegend = ({
         disabled={isUploadInProgress}
         label={t('general.status.waiting')}
         status={Status.INFO}
-        tooltip={t('uploadStatusLegend.clearUploadQueue')}
+        tooltip={
+          waiting === 0
+            ? t('uploadStatusLegend.enqueueItemsWithNoUploadStatus')
+            : t('uploadStatusLegend.clearUploadQueue')
+        }
         onClick={() => {
           if (waiting === 0) {
             enqueueItemsWithNoUploadStatus();
