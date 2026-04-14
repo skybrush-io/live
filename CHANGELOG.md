@@ -74,7 +74,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed and improved test progress reporting on the Tests panel of the UAV
   properties dialog.
 
-- Fixed double event handling on the Logs panel of the UAV properties dialog.
+- Fixed event handling of secondary action buttons on list items.
 
 - Several multi-monitor related issues were resolved. Context menus now appear at the
   right position, hotkeys are triggered correctly in external windows, and he map
