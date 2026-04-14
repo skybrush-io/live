@@ -37,6 +37,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - RTK base station coordinates can now be restored from positions stored during
   earlier surveys.
 
+- In the upload dialog, if there are no waiting items (the "waiting" counter is
+  zero), clicking the counter will now select all visible UAVs that have no
+  upload status.
+
 ### Changed
 
 - Smaller headings in the Field Notes panel.

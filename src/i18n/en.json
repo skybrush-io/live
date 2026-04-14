@@ -1356,6 +1356,7 @@
   },
   "uploadStatusLegend": {
     "clearUploadQueue": "Clear upload queue",
+    "enqueueItemsWithNoUploadStatus": "Enqueue unprocessed items",
     "restartSuccessfulItems": "Enqueue successful items",
     "retryFailedItems": "Enqueue failed items"
   },

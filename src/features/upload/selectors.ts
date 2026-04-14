@@ -14,7 +14,6 @@ import {
 } from '~/features/uavs/selectors';
 import { uavIdToGlobalId } from '~/model/identifiers';
 import type { RootState } from '~/store/reducers';
-import { rejectNullish } from '~/utils/arrays';
 import type { Identifier } from '~/utils/collections';
 import { formatMissionId } from '~/utils/formatting';
 import { EMPTY_ARRAY } from '~/utils/redux';
@@ -367,22 +366,6 @@ export const getMissionIdFormatter = createSelector(
   }
 );
 
-export const getMissionMapping = createSelector(
-  _getFullMissionMapping,
-  getSelection,
-  shouldRestrictToGlobalSelection,
-  (missionMapping, selection, restrictToGlobalSelection) => {
-    if (!restrictToGlobalSelection) {
-      return missionMapping;
-    }
-
-    const allowedIds = new Set(selection);
-    return missionMapping.filter(
-      (id) => id !== null && allowedIds.has(uavIdToGlobalId(id))
-    );
-  }
-);
-
 /**
  * Factory that creates a selector that returns the upload status for
  * the given job type, taking all UAVs in the mission into account.
@@ -582,7 +565,7 @@ export const getUploadProgress = createSelector(
   }
 );
 
-export const getUAVIdList = createSelector(
+const getUAVIdList = createSelector(
   _getAllKnownUAVIds,
   getSelection,
   shouldRestrictToGlobalSelection,
@@ -610,8 +593,20 @@ export const getUAVIdList = createSelector(
  * by the server but are nevertheless in the mapping.
  */
 const getMissionUAVIdsForUploadJob = createSelector(
-  getMissionMapping,
-  (mapping) => rejectNullish(mapping)
+  _getFullMissionMapping,
+  getSelection,
+  shouldRestrictToGlobalSelection,
+  (missionMapping, selection, restrictToGlobalSelection): Identifier[] => {
+    if (!restrictToGlobalSelection) {
+      return missionMapping.filter((id): id is Identifier => id !== null);
+    }
+
+    const allowedIds = new Set(selection);
+    return missionMapping.filter(
+      (id): id is Identifier =>
+        id !== null && allowedIds.has(uavIdToGlobalId(id))
+    );
+  }
 );
 
 /**
@@ -649,6 +644,15 @@ export const getUploadDialogIdList = createSelector(
 
     return result;
   }
+);
+
+/**
+ * Returns all potential upload items that have no upload status.
+ */
+export const getUploadItemsWithNoUploadStatus = createSelector(
+  getUploadDialogIdList,
+  getUploadStatusCodeMappingForSelectedJobType,
+  (dialogIds, statuses) => dialogIds.filter((id) => statuses[id] === undefined)
 );
 
 /**
