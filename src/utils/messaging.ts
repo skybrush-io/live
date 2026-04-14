@@ -118,7 +118,10 @@ function performMassOperation<T, U>(
   }: MassOperationOptions<T, U>,
   responseHandlerOptions?: StartAsyncOperationOptions
 ) {
-  return async (uavs: string[], args: T & { transport?: TransportOptions }) => {
+  return async (
+    uavs: string[],
+    args: T & { transport?: TransportOptions | undefined }
+  ) => {
     // Do not bail out early if uavs is empty because in the args there might be
     // an option that intructs the server to do a broadcast to all UAVs.
 
@@ -235,6 +238,32 @@ export const wakeUpUAVs = performMassOperation({
   name: 'Resume from low-power mode command',
 });
 
+export const setColorOnUAVs = performMassOperation({
+  type: 'OBJ-CMD',
+  name: 'Set color command',
+  mapper: (options: { color: string }) => ({
+    command: 'color',
+    args: [options.color],
+  }),
+  reportSuccess: false,
+
+  // Light signals are harmless so skip any confirmation dialogs
+  skipConfirmation: true,
+});
+
+export const turnOffColorOverrideOnUAVs = performMassOperation({
+  type: 'OBJ-CMD',
+  name: 'Set color command',
+  mapper: () => ({
+    command: 'color',
+    args: ['off'],
+  }),
+  reportSuccess: false,
+
+  // Light signals are harmless so skip any confirmation dialogs
+  skipConfirmation: true,
+});
+
 type MoveUAVsLowLevelOptions = {
   target: GPSPosition;
 };
@@ -319,21 +348,65 @@ export const calibrateCompassOnUAVs = performMassOperation(
   { timeout: COMPASS_CALIB_TIMEOUT }
 );
 
-// moveUAVs() not in this map because it requires extra args
-const OPERATION_MAP = {
+type OperationHandler<T extends object = object> = (
+  uavs: string[],
+  args: T & { transport?: TransportOptions }
+) => Promise<void>;
+
+// moveUAVs() and setColor() are not in this map because they require extra args
+const OPERATION_MAP: Record<string, OperationHandler<object>> = {
   calibrateCompass: calibrateCompassOnUAVs,
   flashLight: flashLightOnUAVs,
-  shutdown: shutdownUAVs,
-  land: landUAVs,
   holdPosition: positionHoldUAVs,
+  land: landUAVs,
   reset: resetUAVs,
   returnToHome: returnToHomeUAVs,
+  shutdown: shutdownUAVs,
   sleep: sleepUAVs,
   takeOff: takeoffUAVs,
   turnMotorsOff: turnMotorsOffForUAVs,
   turnMotorsOn: turnMotorsOnForUAVs,
   wakeUp: wakeUpUAVs,
 };
+
+/**
+ * Creates a Redux thunk that can be used to dispatch a command to UAVs.
+ */
+export function createUAVOperationThunk<T extends object>(
+  func: OperationHandler<T>,
+  {
+    getTargetedUAVIds,
+    getTransportOptions,
+  }: {
+    getTargetedUAVIds: AppSelector<string[]>;
+    getTransportOptions?: AppSelector<TransportOptions>;
+  }
+) {
+  if (typeof getTargetedUAVIds !== 'function') {
+    throw new TypeError('getTargetedUAVIds() must be a function');
+  }
+
+  return (args?: Parameters<typeof func>[1]): AppThunk =>
+    (_dispatch, getState) => {
+      const state = getState();
+      const uavIds = getTargetedUAVIds(state);
+      const options: Parameters<typeof func>[1] & {
+        transport?: TransportOptions;
+      } = { ...(args ?? {}) } as any as Parameters<typeof func>[1];
+
+      if (getTransportOptions) {
+        options.transport = getTransportOptions(state);
+
+        if (options.transport?.channel === 0) {
+          // Work around a bug in older versions of Skybrush Server (2.1.0 and
+          // before) where virtual UAVs did not accept a channel index
+          delete options.transport.channel;
+        }
+      }
+
+      void func(uavIds, options);
+    };
+}
 
 /**
  * Creates Redux thunks that can be used to dispatch commands to UAVs.
@@ -356,28 +429,7 @@ export function createUAVOperationThunks({
   getTargetedUAVIds: AppSelector<string[]>;
   getTransportOptions?: AppSelector<TransportOptions>;
 }) {
-  if (typeof getTargetedUAVIds !== 'function') {
-    throw new TypeError('getTargetedUAVIds() must be a function');
-  }
-
-  return mapValues(
-    OPERATION_MAP,
-    (func) => (): AppThunk => (_dispatch, getState) => {
-      const state = getState();
-      const uavIds = getTargetedUAVIds(state);
-      const options: { transport?: TransportOptions } = {};
-
-      if (getTransportOptions) {
-        options.transport = getTransportOptions(state);
-
-        if (options.transport?.channel === 0) {
-          // Work around a bug in older versions of Skybrush Server (2.1.0 and
-          // before) where virtual UAVs did not accept a channel index
-          delete options.transport.channel;
-        }
-      }
-
-      void func(uavIds, options);
-    }
+  return mapValues(OPERATION_MAP, (func) =>
+    createUAVOperationThunk(func, { getTargetedUAVIds, getTransportOptions })
   );
 }

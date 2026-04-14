@@ -49,6 +49,34 @@ import { createDeepResultSelector } from '~/utils/selectors';
 import type { StoredUAV } from './types';
 
 /**
+ * Returns a mapping from color names to the list of UAV IDs whose color needs to be
+ * overridden to the given color.
+ */
+export const getColorOverrideToUAVIdsMap = createSelector(
+  (state: RootState) => state.uavs.lights,
+  (colorToUAVIds) => {
+    const result: Record<string, string[]> = {};
+    for (const [uavId, color] of Object.entries(colorToUAVIds)) {
+      result[color] ??= [];
+      result[color].push(uavId);
+    }
+    return result;
+  }
+);
+
+/**
+ * Counts the number of UAVs whose LED light color is currently being overridden to the
+ * given color.
+ */
+export const countUAVsWithColorOverride = (
+  state: RootState,
+  color: string
+): number => {
+  const overrideMap = getColorOverrideToUAVIdsMap(state);
+  return (overrideMap[color] ?? []).length;
+};
+
+/**
  * Returns the list of UAV IDs that should be shown on the UI, in the
  * order preferred by the state of the application.
  *

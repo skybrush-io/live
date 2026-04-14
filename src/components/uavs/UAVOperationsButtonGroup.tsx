@@ -30,12 +30,15 @@ import {
   requestRemovalOfUAVsByIds,
   requestRemovalOfUAVsMarkedAsGone,
 } from '~/features/uavs/actions';
-import { COMPASS_CALIB_UAV_LIMIT } from '~/features/uavs/constants';
+import { UAV_TOOLBAR_MULTI_SELECTION_LIMIT } from '~/features/uavs/constants';
 import { openUAVDetailsDialog } from '~/features/uavs/details';
 import { getUAVIdList } from '~/features/uavs/selectors';
 import Bolt from '~/icons/Bolt';
 import type { AppDispatch, RootState } from '~/store/reducers';
 import { createUAVOperationThunks } from '~/utils/messaging';
+
+import ClearColorOverrideButton from './ClearColorOverrideButton';
+import OverrideUAVColorButton from './OverrideUAVColorButton';
 
 type Props = {
   broadcast: boolean;
@@ -45,9 +48,14 @@ type Props = {
   requestRemovalOfUAVsByIds: (ids: string[]) => void;
   requestRemovalOfUAVsMarkedAsGone: () => void;
   selectedUAVIds: string[];
+  showColorOverrideBadges?: boolean;
   size?: 'small' | 'medium';
   startSeparator?: boolean;
 };
+
+// Must be valid CSS color names that are _also_ understood by the server in the
+// "color" command
+const COLORS: string[] = ['#ff0000', '#00ff00', '#0000ff'];
 
 /**
  * Main toolbar for controlling the UAVs.
@@ -61,11 +69,31 @@ const UAVOperationsButtonGroup = ({
   requestRemovalOfUAVsMarkedAsGone,
   selectedUAVIds,
   size,
+  showColorOverrideBadges,
   startSeparator,
 }: Props) => {
   const { t } = useTranslation();
   const isSelectionEmpty = isEmpty(selectedUAVIds) && !broadcast;
   const isSelectionSingle = selectedUAVIds.length === 1 && !broadcast;
+
+  const thunkOptions = {
+    getTargetedUAVIds(state: RootState) {
+      return broadcast ? getUAVIdList(state) : selectedUAVIds;
+    },
+
+    getTransportOptions(state: RootState) {
+      const result: TransportOptions = {
+        channel: getPreferredCommunicationChannelIndex(state),
+      };
+
+      if (broadcast) {
+        result.broadcast = true;
+        result.ignoreIds = true;
+      }
+
+      return result;
+    },
+  };
 
   const {
     calibrateCompass,
@@ -80,27 +108,7 @@ const UAVOperationsButtonGroup = ({
     turnMotorsOff,
     turnMotorsOn,
     wakeUp,
-  } = bindActionCreators(
-    createUAVOperationThunks({
-      getTargetedUAVIds(state: RootState) {
-        return broadcast ? getUAVIdList(state) : selectedUAVIds;
-      },
-
-      getTransportOptions(state: RootState) {
-        const result: TransportOptions = {
-          channel: getPreferredCommunicationChannelIndex(state),
-        };
-
-        if (broadcast) {
-          result.broadcast = true;
-          result.ignoreIds = true;
-        }
-
-        return result;
-      },
-    }),
-    dispatch
-  );
+  } = bindActionCreators(createUAVOperationThunks(thunkOptions), dispatch);
 
   const [keepFlashing, setKeepFlashing] = useState(false);
   const flashLightsButtonOnClick = useCallback(
@@ -121,6 +129,9 @@ const UAVOperationsButtonGroup = ({
 
   const fontSize = size === 'small' ? 'small' : 'medium';
   const iconSize = size;
+  const allowOperationForMultipleSelection =
+    selectedUAVIds.length >= 1 &&
+    selectedUAVIds.length <= UAV_TOOLBAR_MULTI_SELECTION_LIMIT;
 
   const flashLightsButton =
     size === 'small' ? (
@@ -206,16 +217,30 @@ const UAVOperationsButtonGroup = ({
           <Tooltip content={t('general.commands.calibrateCompass')}>
             <IconButton
               size={iconSize}
-              disabled={
-                selectedUAVIds.length === 0 ||
-                selectedUAVIds.length > COMPASS_CALIB_UAV_LIMIT
-              }
+              disabled={!allowOperationForMultipleSelection}
               onClick={() => calibrateCompass()}
             >
               <Explore />
             </IconButton>
           </Tooltip>
         </>
+      )}
+
+      {!hideSeparators && <ToolbarDivider orientation='vertical' />}
+
+      {COLORS.map((color) => (
+        <OverrideUAVColorButton
+          disabled={!allowOperationForMultipleSelection}
+          key={color}
+          color={color}
+          showBadge={showColorOverrideBadges}
+          uavIds={selectedUAVIds}
+          size={iconSize}
+        />
+      ))}
+
+      {COLORS.length > 0 && (
+        <ClearColorOverrideButton uavIds={selectedUAVIds} size={iconSize} />
       )}
 
       {!hideSeparators && <ToolbarDivider orientation='vertical' />}

@@ -1,3 +1,4 @@
+import type { PayloadAction } from '@reduxjs/toolkit';
 import isNil from 'lodash-es/isNil';
 import reject from 'lodash-es/reject';
 import xor from 'lodash-es/xor';
@@ -6,14 +7,62 @@ import { getSelection } from '~/features/selection/selectors';
 import { setSelection } from '~/features/selection/slice';
 import flock from '~/flock';
 import { isUavId, uavIdToGlobalId } from '~/model/identifiers';
+import type { AppThunk, RootState } from '~/store/reducers';
+import { setColorOnUAVs, turnOffColorOverrideOnUAVs } from '~/utils/messaging';
 
-import type { PayloadAction } from '@reduxjs/toolkit';
-import type { AppThunk } from '~/store/reducers';
 import {
   getSelectedUAVIds,
   getUAVIdList,
   getUAVIdsMarkedAsGone,
 } from './selectors';
+import { _clearUAVColorOverrides, _setLEDColorOverride } from './slice';
+
+/**
+ * Clears any color override related to the given UAV.
+ */
+export const clearUAVColorOverride =
+  (ids: string[]): AppThunk =>
+  (dispatch) => {
+    dispatch(overrideUAVColor(ids, null));
+  };
+
+/**
+ * Clears all color overrides.
+ */
+export const clearUAVColorOverrides = (): AppThunk => (dispatch, getState) => {
+  const state = getState();
+  void Promise.all(
+    Object.keys(state.uavs.lights).map((uavId) =>
+      turnOffColorOverrideOnUAVs([uavId], {})
+    )
+  );
+  dispatch(_clearUAVColorOverrides());
+};
+
+/**
+ * Returns whether there is at least one UAV color override in effect.
+ */
+export const hasUAVColorOverride = (
+  state: RootState,
+  uavId: string | undefined = undefined
+): boolean =>
+  uavId
+    ? Boolean(state.uavs.lights[uavId])
+    : Object.values(state.uavs.lights).some((x) => x.length > 0);
+
+/**
+ * Overrides the color of the UAV with the given ID to the given color.
+ */
+export const overrideUAVColor =
+  (ids: string[], color: string | null): AppThunk =>
+  (dispatch) => {
+    if (color) {
+      void setColorOnUAVs(ids, { color });
+    } else {
+      void turnOffColorOverrideOnUAVs(ids, {});
+    }
+    dispatch(_setLEDColorOverride({ ids, color }));
+  };
 
 /**
  * Action factory that returns a thunk that requests the global flock object

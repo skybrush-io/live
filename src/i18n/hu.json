@@ -249,12 +249,15 @@
       "stop": "Megállítás"
     },
     "commands": {
+      "calibrateCompass": "Iránytű kalibrálása",
+      "clearLEDColor": "LED színének törlése",
       "land": "Leszállás",
       "positionHold": "Pozíció tartása",
       "powerOff": "Kikapcsolás",
       "powerOn": "Bekapcsolás",
       "reboot": "Újraindítás",
       "returnToHome": "Hazatérés",
+      "setLEDColor": "LED színének beállítása",
       "sleep": "Alvás",
       "takeoff": "Felszállás"
     },

@@ -307,12 +307,14 @@
     },
     "commands": {
       "calibrateCompass": "Calibrate compass",
+      "clearLEDColor": "Clear LED color override",
       "land": "Land",
       "positionHold": "Position hold",
       "powerOff": "Power off",
       "powerOn": "Power on",
       "reboot": "Reboot",
       "returnToHome": "Return to home",
+      "setLEDColor": "Set color of LED",
       "sleep": "Sleep",
       "takeoff": "Takeoff"
     },
