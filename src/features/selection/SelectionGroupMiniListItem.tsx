@@ -1,8 +1,11 @@
 import { MiniListItemButton, MiniListItemIcon } from '@skybrush/mui-components';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSelector } from 'react-redux';
 import { useAppDispatch } from '~/store/hooks';
-import { deleteGroup, saveCurrentSelectionAsGroup, selectGroup } from './slice';
+import { saveCurrentSelectionAsGroupIfNotEmpty } from './actions';
+import { hasSelection } from './selectors';
+import { deleteGroup, selectGroup } from './slice';
 import type { SelectionGroup } from './types';
 
 type Props = {
@@ -12,6 +15,7 @@ type Props = {
 const SelectionGroupMiniListItem = ({ group }: Props) => {
   const { id, name } = group;
   const dispatch = useAppDispatch();
+  const isSelectionNotEmpty = useSelector(hasSelection);
   const [recentlyUpdated, setRecentlyUpdated] = useState(false);
   const { t } = useTranslation(undefined, {
     keyPrefix: 'selectionGroups',
@@ -22,7 +26,7 @@ const SelectionGroupMiniListItem = ({ group }: Props) => {
   }, [id, dispatch]);
 
   const handleUpdate = useCallback(() => {
-    dispatch(saveCurrentSelectionAsGroup(id));
+    dispatch(saveCurrentSelectionAsGroupIfNotEmpty(id));
     setRecentlyUpdated(true);
   }, [id, dispatch, setRecentlyUpdated]);
 
@@ -58,7 +62,9 @@ const SelectionGroupMiniListItem = ({ group }: Props) => {
           </>
         ) : (
           <>
-            <MiniListItemIcon preset='save' onClick={handleUpdate} />
+            {isSelectionNotEmpty && (
+              <MiniListItemIcon preset='save' onClick={handleUpdate} />
+            )}
             <MiniListItemIcon preset={'delete'} onClick={handleDelete} />
           </>
         )

@@ -42,8 +42,9 @@ export const getVirtualSelection: AppSelector<Identifier[]> = createSelector(
       : selection
 );
 
-const getSelectionGroups: AppSelector<Collection<SelectionGroup>> = (state) =>
-  state.selection.groups;
+export const getSelectionGroups: AppSelector<Collection<SelectionGroup>> = (
+  state
+) => state.selection.groups;
 
 export const getSelectionGroupById =
   (id: Identifier): AppSelector<SelectionGroup | undefined> =>

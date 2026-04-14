@@ -8,12 +8,12 @@ import { useSelector } from 'react-redux';
 
 import { useAppDispatch } from '~/store/hooks';
 
+import { saveCurrentSelectionAsGroupIfNotEmpty } from './actions';
 import SelectionGroupMiniListItem from './SelectionGroupMiniListItem';
 import { getOrderedSelectionGroups, hasSelection } from './selectors';
-import { saveCurrentSelectionAsGroup } from './slice';
 
 const listStyle = {
-  minWidth: 150,
+  minWidth: 200,
 };
 
 const SelectionGroupMiniList = () => {
@@ -33,7 +33,7 @@ const SelectionGroupMiniList = () => {
       <MiniListItemButton
         disabled={!isSelectionNotEmpty}
         onClick={() => {
-          dispatch(saveCurrentSelectionAsGroup());
+          dispatch(saveCurrentSelectionAsGroupIfNotEmpty());
         }}
         iconPreset='add'
         primaryText={t('action.createNew')}

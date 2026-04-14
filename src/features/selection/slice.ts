@@ -8,7 +8,6 @@ import xor from 'lodash-es/xor';
 
 import { removeFeaturesByIds } from '~/features/map-features/slice';
 import { removeMissionItemsByIds } from '~/features/mission/slice';
-import i18n from '~/i18n';
 import {
   featureIdToGlobalId,
   missionItemIdToGlobalId,
@@ -19,7 +18,6 @@ import {
   deleteItemById,
   EMPTY_COLLECTION,
   ensureNaturalSortOrder,
-  firstUnusedNumericId,
   getItemById,
   type Identifier,
 } from '~/utils/collections';
@@ -76,28 +74,18 @@ const { actions, reducer } = createSlice({
 
     // -- Groups
 
-    deleteGroup(state, action: PayloadAction<Identifier>) {
-      deleteItemById(state.groups, action.payload);
+    _addGroup(
+      state,
+      action: PayloadAction<{ id: Identifier; data: SelectionGroupData }>
+    ) {
+      // precondition: there is no group with the given ID yet; caller must check this
+      const { id, data } = action.payload;
+      addItemSorted(state.groups, { id, ...data });
+      ensureNaturalSortOrder(state.groups);
     },
 
-    saveCurrentSelectionAsGroup(
-      state,
-      action: PayloadAction<Identifier | undefined>
-    ) {
-      const selectedIds = state.ids;
-      if (selectedIds.length === 0) {
-        return;
-      }
-
-      const id = action.payload ?? firstUnusedNumericId(state.groups);
-      const group = getItemById(state.groups, id);
-      if (group !== undefined) {
-        group.ids = selectedIds;
-      } else {
-        const name = i18n.t('selectionGroups.newGroupNameTemplate', { id });
-        addItemSorted(state.groups, { id, name, ids: selectedIds });
-        ensureNaturalSortOrder(state.groups);
-      }
+    deleteGroup(state, action: PayloadAction<Identifier>) {
+      deleteItemById(state.groups, action.payload);
     },
 
     selectGroup(state, action: PayloadAction<Identifier>) {
@@ -161,7 +149,7 @@ export const {
   setSelection,
   toggleInSelection,
   updateGroup,
-  saveCurrentSelectionAsGroup,
+  _addGroup,
 } = actions;
 
 export default reducer;
