@@ -124,6 +124,7 @@ const useStyles = makeStyles((theme) => ({
   },
 
   button: {
+    color: 'white',
     display: 'flex',
     flexDirection: 'row',
     fontSize: '1rem',
