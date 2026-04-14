@@ -107,9 +107,9 @@ const StatusSummaryMiniTable = ({
   const rssiLabels = [];
 
   if (rssi && Array.isArray(rssi) && rssi.length > 0) {
-    for (const rssiValue of rssi) {
+    for (const [index, rssiValue] of Object.entries(rssi)) {
       rssiLabels.push(
-        <StatusText status={getSemanticsForRSSI(rssiValue)}>
+        <StatusText key={index} status={getSemanticsForRSSI(rssiValue)}>
           {formatRSSI(rssiValue)}
         </StatusText>,
         ' / '
