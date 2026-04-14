@@ -21,6 +21,13 @@
     "passed": "Onboard preflight checks passed.",
     "signOffOn": "Sign off on onboard preflight checks"
   },
+  "PathScanner": {
+    "notFound": "Server executable not found.",
+    "scanAgain": "'Click to scan again",
+    "scanning": "Please wait…",
+    "scanningSecondary": "Looking for server",
+    "success": "Server executable found successfully."
+  },
   "RTKCoordinateRestorationDialog": {
     "accuracyLabel": "Accuracy",
     "dateLabel": "Saved",
