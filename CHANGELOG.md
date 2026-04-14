@@ -41,6 +41,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   zero), clicking the counter will now select all visible UAVs that have no
   upload status.
 
+- The operator can now define selection groups with the "Selection groups" header
+  widget.
+
+- Added new buttons to the toolbar of the UAVs panel and the UAV details dialog that
+  allow the operator to set the color of the LED on a drone to a specific color.
+
 ### Changed
 
 - Smaller headings in the Field Notes panel.
