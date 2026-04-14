@@ -14,8 +14,9 @@ import {
   getSelectedUAVIds,
   getUAVIdList,
   getUAVIdsMarkedAsGone,
+  getUAVIdsWithColorOverride,
 } from './selectors';
-import { _clearUAVColorOverrides, _setLEDColorOverride } from './slice';
+import { _setLEDColorOverride } from './slice';
 
 /**
  * Clears any color override related to the given UAV.
@@ -27,17 +28,27 @@ export const clearUAVColorOverride =
   };
 
 /**
+ * Clears the color override on all UAVs that are currently being overridden to the given color.
+ */
+export const clearUAVColorOverrideForColor =
+  (color: string): AppThunk =>
+  (dispatch, getState) => {
+    const state = getState();
+    const ids = getUAVIdsWithColorOverride(state, color);
+    if (ids.length > 0) {
+      dispatch(clearUAVColorOverride(ids));
+    }
+  };
+
+/**
  * Clears all color overrides.
  */
-export const clearUAVColorOverrides = (): AppThunk => (dispatch, getState) => {
-  const state = getState();
-  void Promise.all(
-    Object.keys(state.uavs.lights).map((uavId) =>
-      turnOffColorOverrideOnUAVs([uavId], {})
-    )
-  );
-  dispatch(_clearUAVColorOverrides());
-};
+export const clearAllUAVColorOverrides =
+  (): AppThunk => (dispatch, getState) => {
+    const state = getState();
+    const ids = Object.keys(state.uavs.lights);
+    dispatch(clearUAVColorOverride(ids));
+  };
 
 /**
  * Returns whether there is at least one UAV color override in effect.

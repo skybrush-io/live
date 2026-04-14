@@ -37,7 +37,6 @@ import Bolt from '~/icons/Bolt';
 import type { AppDispatch, RootState } from '~/store/reducers';
 import { createUAVOperationThunks } from '~/utils/messaging';
 
-import ClearColorOverrideButton from './ClearColorOverrideButton';
 import OverrideUAVColorButton from './OverrideUAVColorButton';
 
 type Props = {
@@ -55,7 +54,7 @@ type Props = {
 
 // Must be valid CSS color names that are _also_ understood by the server in the
 // "color" command
-const COLORS: string[] = ['#ff0000', '#00ff00', '#0000ff'];
+const COLORS: string[] = ['#ff0000', '#00ff00', '#0000ff', '#ffffff'];
 
 /**
  * Main toolbar for controlling the UAVs.
@@ -230,7 +229,6 @@ const UAVOperationsButtonGroup = ({
 
       {COLORS.map((color) => (
         <OverrideUAVColorButton
-          disabled={!allowOperationForMultipleSelection}
           key={color}
           color={color}
           showBadge={showColorOverrideBadges}
@@ -238,10 +236,6 @@ const UAVOperationsButtonGroup = ({
           size={iconSize}
         />
       ))}
-
-      {COLORS.length > 0 && (
-        <ClearColorOverrideButton uavIds={selectedUAVIds} size={iconSize} />
-      )}
 
       {!hideSeparators && <ToolbarDivider orientation='vertical' />}
 

@@ -63,10 +63,6 @@ const { actions, reducer } = createSlice({
       clearOrderedCollection<StoredUAV>(state);
     },
 
-    _clearUAVColorOverrides(state) {
-      state.lights = {};
-    },
-
     _removeUAVsByIds(state, action: PayloadAction<Array<StoredUAV['id']>>) {
       // Do not call this reducer directly from anywhere except in reaction to
       // events dispatched from the global flock object. This is to ensure that
@@ -156,7 +152,6 @@ export const {
   updateAgesOfUAVs,
   updateUAVs,
   _removeUAVsByIds,
-  _clearUAVColorOverrides,
   _setLEDColorOverride,
 } = actions;
 

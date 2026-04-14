@@ -5,8 +5,8 @@ import { useSelector } from 'react-redux';
 
 import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
 import {
+  clearAllUAVColorOverrides,
   clearUAVColorOverride,
-  clearUAVColorOverrides,
   hasUAVColorOverride,
 } from '~/features/uavs/actions';
 import { useAppDispatch } from '~/store/hooks';
@@ -34,7 +34,7 @@ const ClearColorOverrideButton = ({ size, uavIds }: Props) => {
           dispatch(
             uavIds.length > 0
               ? clearUAVColorOverride(uavIds)
-              : clearUAVColorOverrides()
+              : clearAllUAVColorOverrides()
           );
         }}
       >

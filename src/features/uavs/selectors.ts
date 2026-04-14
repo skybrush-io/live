@@ -65,15 +65,15 @@ export const getColorOverrideToUAVIdsMap = createSelector(
 );
 
 /**
- * Counts the number of UAVs whose LED light color is currently being overridden to the
+ * Returns the IDs of the UAVs whose LED light color is currently being overridden to the
  * given color.
  */
-export const countUAVsWithColorOverride = (
+export const getUAVIdsWithColorOverride = (
   state: RootState,
   color: string
-): number => {
+): string[] => {
   const overrideMap = getColorOverrideToUAVIdsMap(state);
-  return (overrideMap[color] ?? []).length;
+  return overrideMap[color] ?? EMPTY_ARRAY;
 };
 
 /**
