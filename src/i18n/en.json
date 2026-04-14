@@ -830,9 +830,12 @@
   },
   "selectionGroups": {
     "action": {
-      "createNew": "Create new group"
+      "createNew": "Create new group",
+      "rename": "Rename group"
     },
-    "label": "Groups",
+    "label": {
+      "name": "Group name"
+    },
     "newGroupNameTemplate": "Group {{id}}",
     "updated": "Updated"
   },
