@@ -46,10 +46,13 @@ type BoundProgressHandlerOptions = {
   onProgress?: (id: string, status: ProgressStatus) => void;
 };
 
+export type StartAsyncOperationOptions = TimeoutOptions &
+  BoundProgressHandlerOptions;
+
 /**
  * Creates a new Flockwave message ID.
  *
- * @return {string} a new, random Flockwave message ID
+ * @return a new, random Flockwave message ID
  */
 const createMessageId = () => nanoid(8);
 
@@ -1538,7 +1541,7 @@ export default class MessageHub {
    */
   async startAsyncOperation(
     body: MessageBody,
-    responseHandlerOptions: TimeoutOptions & BoundProgressHandlerOptions = {}
+    responseHandlerOptions: StartAsyncOperationOptions = {}
   ) {
     const { type: expectedType } = body;
     if (!expectedType) {

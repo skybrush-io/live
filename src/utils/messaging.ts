@@ -2,6 +2,7 @@
  * @file Utility file for sharing messaging related code between components.
  */
 
+import type { TransportOptions } from '@skybrush/flockwave-spec';
 import countBy from 'lodash-es/countBy';
 import isError from 'lodash-es/isError';
 import isNil from 'lodash-es/isNil';
@@ -14,19 +15,30 @@ import { shouldConfirmUAVOperation } from '~/features/settings/selectors';
 import { showNotification } from '~/features/snackbar/actions';
 import { MessageSemantics } from '~/features/snackbar/types';
 import { COMPASS_CALIB_TIMEOUT } from '~/features/uavs/constants';
+import type { StartAsyncOperationOptions } from '~/flockwave/messages';
 import messageHub from '~/message-hub';
+import { NULL_ISLAND, type GPSPosition } from '~/model/geography';
 import store from '~/store';
+import type {
+  AppDispatch,
+  AppSelector,
+  AppThunk,
+  RootState,
+} from '~/store/reducers';
 
 import makeLogger from './logging';
 
 const logger = makeLogger('messaging');
 
 const processResponses = (
-  commandName,
-  responses,
-  { reportSuccess = true, reportFailure = true } = {}
+  commandName: string,
+  responseMap: Record<string, unknown>,
+  {
+    reportSuccess = true,
+    reportFailure = true,
+  }: { reportSuccess?: boolean; reportFailure?: boolean } = {}
 ) => {
-  responses = values(responses);
+  const responses = values(responseMap);
 
   const errorCounts = countBy(responses, isError);
   const numberOfFailures = errorCounts.true || 0;
@@ -63,7 +75,11 @@ const processResponses = (
   }
 };
 
-const createConfirmationMessage = (operation, uavs, broadcast) => {
+const createConfirmationMessage = (
+  operation: string,
+  uavs: string[],
+  broadcast: boolean
+) => {
   const lowercasedOperation = (operation || 'an unknown command').toLowerCase();
   let target;
 
@@ -82,33 +98,47 @@ const createConfirmationMessage = (operation, uavs, broadcast) => {
   return `Are you sure you want to execute ${lowercasedOperation}${target}?`;
 };
 
-const performMassOperation =
-  (
-    {
-      type,
-      name,
-      mapper = undefined,
-      reportFailure = true,
-      reportSuccess = true,
-      skipConfirmation = false,
-    },
-    responseHandlerOptions = undefined
-  ) =>
-  async (uavs, args) => {
+type MassOperationOptions<T = unknown, U = unknown> = {
+  type: string;
+  name: string;
+  mapper?: (args: T) => U;
+  reportFailure?: boolean;
+  reportSuccess?: boolean;
+  skipConfirmation?: boolean;
+};
+
+function performMassOperation<T, U>(
+  {
+    type,
+    name,
+    mapper = undefined,
+    reportFailure = true,
+    reportSuccess = true,
+    skipConfirmation = false,
+  }: MassOperationOptions<T, U>,
+  responseHandlerOptions?: StartAsyncOperationOptions
+) {
+  return async (uavs: string[], args: T & { transport?: TransportOptions }) => {
     // Do not bail out early if uavs is empty because in the args there might be
     // an option that intructs the server to do a broadcast to all UAVs.
 
     try {
       const finalArgs = mapper ? mapper(args) : args;
-      const isBroadcast = Boolean(finalArgs?.transport?.broadcast);
+      const isBroadcast = Boolean(
+        (finalArgs as { transport?: TransportOptions })?.transport?.broadcast
+      );
       const needsConfirmation =
         !skipConfirmation &&
-        shouldConfirmUAVOperation(store.getState(), uavs, isBroadcast);
+        shouldConfirmUAVOperation(
+          store.getState() as RootState,
+          uavs,
+          isBroadcast
+        );
 
       if (needsConfirmation) {
         // This operation needs confirmation, so instead of executing it, show
         // a confirmation dialog
-        const confirmation = await store.dispatch(
+        const confirmation = await (store.dispatch as AppDispatch)(
           showConfirmationDialog(
             createConfirmationMessage(name, uavs, isBroadcast),
             { title: 'Confirmation needed' }
@@ -134,11 +164,12 @@ const performMassOperation =
       logger.error(`${name}: ${String(error)}`);
     }
   };
+}
 
 export const flashLightOnUAVs = performMassOperation({
   type: 'UAV-SIGNAL',
   name: 'Light signal command',
-  mapper: (options) => ({
+  mapper: (options: { duration?: number }) => ({
     signals: ['light'],
     duration: 5000,
     ...options,
@@ -152,7 +183,7 @@ export const flashLightOnUAVs = performMassOperation({
 export const flashLightOnUAVsAndHideFailures = performMassOperation({
   type: 'UAV-SIGNAL',
   name: 'Light signal command',
-  mapper: (options) => ({
+  mapper: (options: { duration?: number }) => ({
     signals: ['light'],
     duration: UAV_SIGNAL_DURATION * 1000,
     ...options,
@@ -204,10 +235,14 @@ export const wakeUpUAVs = performMassOperation({
   name: 'Resume from low-power mode command',
 });
 
+type MoveUAVsLowLevelOptions = {
+  target: GPSPosition;
+};
+
 const moveUAVsLowLevel = performMassOperation({
   type: 'UAV-FLY',
   name: 'Fly to target command',
-  mapper: ({ target }) => ({
+  mapper: ({ target }: MoveUAVsLowLevelOptions) => ({
     target: [
       Math.round(target.lat * 1e7),
       Math.round(target.lon * 1e7),
@@ -221,7 +256,10 @@ const moveUAVsLowLevel = performMassOperation({
   skipConfirmation: true,
 });
 
-export const moveUAVs = (uavIds, { target, ...rest }) => {
+export const moveUAVs = (
+  uavIds: string[],
+  { target, ...rest }: { target: GPSPosition }
+) => {
   if (isNil(target)) {
     throw new Error('No target given in arguments');
   }
@@ -232,7 +270,7 @@ export const moveUAVs = (uavIds, { target, ...rest }) => {
     throw new Error('only one of AMSL, AHL and AGL may be given');
   }
 
-  const args = rest;
+  const args: MoveUAVsLowLevelOptions = { target: NULL_ISLAND, ...rest };
 
   if (!isNil(amsl)) {
     args.target = { lat, lon, amsl };
@@ -250,7 +288,7 @@ export const moveUAVs = (uavIds, { target, ...rest }) => {
 export const turnMotorsOffForUAVs = performMassOperation({
   type: 'UAV-MOTOR',
   name: 'Motor off command',
-  mapper: (options) => ({
+  mapper: (options: { force?: boolean } = {}) => ({
     ...options,
     start: false,
   }),
@@ -259,7 +297,7 @@ export const turnMotorsOffForUAVs = performMassOperation({
 export const turnMotorsOnForUAVs = performMassOperation({
   type: 'UAV-MOTOR',
   name: 'Motor on command',
-  mapper: (options) => ({
+  mapper: (options: { force?: boolean } = {}) => ({
     ...options,
     start: true,
   }),
@@ -269,7 +307,10 @@ export const calibrateCompassOnUAVs = performMassOperation(
   {
     type: 'UAV-CALIB',
     name: 'Calibrate compass',
-    mapper: ({ transport, ...options }) => ({
+    mapper: ({
+      transport,
+      ...options
+    }: { transport?: TransportOptions } = {}) => ({
       // Ignore transport, it's not a valid argument.
       ...options,
       component: 'compass',
@@ -297,10 +338,10 @@ const OPERATION_MAP = {
 /**
  * Creates Redux thunks that can be used to dispatch commands to UAVs.
  *
- * @param {function} getTargetedUAVIds  a selector that is invoked with the current
+ * @param getTargetedUAVIds  a selector that is invoked with the current
  *        Redux state and that must return the list of UAV IDs that the command
  *        will be targeted to
- * @param {function?} getTransportOptions  an optional selector that is invoked with
+ * @param getTransportOptions  an optional selector that is invoked with
  *        the current Redux state and that must return a transport options object
  *        with keys `channel` and `broadcast` to describe how the commands should
  *        be sent to the UAVs (on which channel and whether to be sent in
@@ -311,26 +352,32 @@ const OPERATION_MAP = {
 export function createUAVOperationThunks({
   getTargetedUAVIds,
   getTransportOptions,
-} = {}) {
+}: {
+  getTargetedUAVIds: AppSelector<string[]>;
+  getTransportOptions?: AppSelector<TransportOptions>;
+}) {
   if (typeof getTargetedUAVIds !== 'function') {
     throw new TypeError('getTargetedUAVIds() must be a function');
   }
 
-  return mapValues(OPERATION_MAP, (func) => () => (_dispatch, getState) => {
-    const state = getState();
-    const uavIds = getTargetedUAVIds(state);
-    const options = {};
+  return mapValues(
+    OPERATION_MAP,
+    (func) => (): AppThunk => (_dispatch, getState) => {
+      const state = getState();
+      const uavIds = getTargetedUAVIds(state);
+      const options: { transport?: TransportOptions } = {};
 
-    if (getTransportOptions) {
-      options.transport = getTransportOptions(state);
+      if (getTransportOptions) {
+        options.transport = getTransportOptions(state);
 
-      if (options.transport?.channel === 0) {
-        // Work around a bug in older versions of Skybrush Server (2.1.0 and
-        // before) where virtual UAVs did not accept a channel index
-        delete options.transport.channel;
+        if (options.transport?.channel === 0) {
+          // Work around a bug in older versions of Skybrush Server (2.1.0 and
+          // before) where virtual UAVs did not accept a channel index
+          delete options.transport.channel;
+        }
       }
-    }
 
-    func(uavIds, options);
-  });
+      void func(uavIds, options);
+    }
+  );
 }

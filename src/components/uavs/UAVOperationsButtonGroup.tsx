@@ -14,10 +14,10 @@ import WbSunny from '@mui/icons-material/WbSunny';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import { bindActionCreators } from '@reduxjs/toolkit';
+import type { TransportOptions } from '@skybrush/flockwave-spec';
 import isEmpty from 'lodash-es/isEmpty';
-import PropTypes from 'prop-types';
 import { useCallback, useState } from 'react';
-import { withTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { useInterval } from 'react-use';
 
@@ -34,12 +34,24 @@ import { COMPASS_CALIB_UAV_LIMIT } from '~/features/uavs/constants';
 import { openUAVDetailsDialog } from '~/features/uavs/details';
 import { getUAVIdList } from '~/features/uavs/selectors';
 import Bolt from '~/icons/Bolt';
+import type { AppDispatch, RootState } from '~/store/reducers';
 import { createUAVOperationThunks } from '~/utils/messaging';
+
+type Props = {
+  broadcast: boolean;
+  dispatch: AppDispatch;
+  hideSeparators?: boolean;
+  openUAVDetailsDialog: (id: string) => void;
+  requestRemovalOfUAVsByIds: (ids: string[]) => void;
+  requestRemovalOfUAVsMarkedAsGone: () => void;
+  selectedUAVIds: string[];
+  size?: 'small' | 'medium';
+  startSeparator?: boolean;
+};
 
 /**
  * Main toolbar for controlling the UAVs.
  */
-// eslint-disable-next-line complexity
 const UAVOperationsButtonGroup = ({
   broadcast,
   dispatch,
@@ -50,8 +62,8 @@ const UAVOperationsButtonGroup = ({
   selectedUAVIds,
   size,
   startSeparator,
-  t,
-}) => {
+}: Props) => {
+  const { t } = useTranslation();
   const isSelectionEmpty = isEmpty(selectedUAVIds) && !broadcast;
   const isSelectionSingle = selectedUAVIds.length === 1 && !broadcast;
 
@@ -70,12 +82,12 @@ const UAVOperationsButtonGroup = ({
     wakeUp,
   } = bindActionCreators(
     createUAVOperationThunks({
-      getTargetedUAVIds(state) {
+      getTargetedUAVIds(state: RootState) {
         return broadcast ? getUAVIdList(state) : selectedUAVIds;
       },
 
-      getTransportOptions(state) {
-        const result = {
+      getTransportOptions(state: RootState) {
+        const result: TransportOptions = {
           channel: getPreferredCommunicationChannelIndex(state),
         };
 
@@ -92,7 +104,7 @@ const UAVOperationsButtonGroup = ({
 
   const [keepFlashing, setKeepFlashing] = useState(false);
   const flashLightsButtonOnClick = useCallback(
-    (event) => {
+    (event: React.MouseEvent<HTMLElement>) => {
       if (keepFlashing) {
         setKeepFlashing(false);
       } else if (event.shiftKey) {
@@ -310,19 +322,6 @@ const UAVOperationsButtonGroup = ({
   );
 };
 
-UAVOperationsButtonGroup.propTypes = {
-  broadcast: PropTypes.bool,
-  dispatch: PropTypes.func,
-  openUAVDetailsDialog: PropTypes.func,
-  requestRemovalOfUAVsByIds: PropTypes.func,
-  requestRemovalOfUAVsMarkedAsGone: PropTypes.func,
-  selectedUAVIds: PropTypes.arrayOf(PropTypes.string),
-  hideSeparators: PropTypes.bool,
-  size: PropTypes.oneOf(['small', 'medium']),
-  startSeparator: PropTypes.bool,
-  t: PropTypes.func,
-};
-
 export default connect(
   // mapStateToProps
   () => ({}),
@@ -338,4 +337,4 @@ export default connect(
     ),
     dispatch,
   })
-)(withTranslation()(UAVOperationsButtonGroup));
+)(UAVOperationsButtonGroup);

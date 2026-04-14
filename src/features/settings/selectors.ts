@@ -10,7 +10,6 @@ import {
   UAVOperationConfirmationStyle,
 } from '~/model/settings';
 import { UAVSortKey } from '~/model/sorting';
-import type UAV from '~/model/uav';
 import type { RootState } from '~/store/reducers';
 import {
   UAVListLayout,
@@ -274,7 +273,7 @@ export const areExperimentalFeaturesEnabled = (state: RootState): boolean =>
  */
 export function shouldConfirmUAVOperation(
   state: RootState,
-  uavs: UAV[] | null | undefined,
+  uavs: string[] | null | undefined,
   isBroadcast: boolean
 ): boolean {
   const style = getUAVOperationConfirmationStyle(state);

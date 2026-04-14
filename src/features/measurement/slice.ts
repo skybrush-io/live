@@ -6,13 +6,13 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import intersection from 'lodash-es/intersection';
 
+import { NULL_ISLAND } from '~/model/geography';
 import {
   addItemSortedUnlessExists,
   type Collection,
   deleteItemsByIds,
   EMPTY_COLLECTION,
 } from '~/utils/collections';
-import type { Latitude, Longitude } from '~/utils/geography';
 import { noPayload } from '~/utils/redux';
 
 import { type AveragingResult } from './types';
@@ -29,13 +29,6 @@ type MeasurementSliceState = {
     selectedUAVIds: Array<AveragingResult['id']>;
   };
 };
-
-const NULL_ISLAND = Object.freeze({
-  lat: 0 as Latitude,
-  lon: 0 as Longitude,
-  amsl: 0,
-  ahl: 0,
-});
 
 const initialState: MeasurementSliceState = {
   averagingResults: EMPTY_COLLECTION,
