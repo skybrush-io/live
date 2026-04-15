@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [main]
+## [2.13.0] - 2026-04-15
 
 ### Added
 
@@ -44,8 +44,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The operator can now define selection groups with the "Selection groups" header
   widget.
 
-- Added new buttons to the toolbar of the UAVs panel and the UAV details dialog that
-  allow the operator to set the color of the LED on a drone to a specific color.
+- Added new buttons to the toolbar of the UAVs panel and the UAV details dialog
+  that allow the operator to set the color of the LED on a drone to a specific
+  color.
 
 ### Changed
 
@@ -53,9 +54,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - New notification UI.
 
-- The "successful" and "failed" counters/buttons in the upload dialog simply add the
-  UAVs with the corresponding statuses to the queue. The upload no longer starts
-  automatically.
+- The "successful" and "failed" counters/buttons in the upload dialog simply add
+  the UAVs with the corresponding statuses to the queue. The upload no longer
+  starts automatically.
 
 - Status buttons and counters in the upload dialog show the summary of all previous
   job executions, using the latest known status for every UAV. Statuses from the
@@ -76,9 +77,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fixed event handling of secondary action buttons on list items.
 
-- Several multi-monitor related issues were resolved. Context menus now appear at the
-  right position, hotkeys are triggered correctly in external windows, and he map
-  resizes properly when shown in a detached panel.
+- Several multi-monitor related issues were resolved. Context menus now appear
+  at the right position, hotkeys are triggered correctly in external windows,
+  and the map resizes properly when shown in a detached panel.
 
 ## [2.12.1] - 2025-12-15
 
