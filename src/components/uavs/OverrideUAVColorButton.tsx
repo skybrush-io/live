@@ -27,6 +27,15 @@ type Props = {
   size?: 'small' | 'medium' | 'large' | undefined;
 };
 
+const isSubsetOf = (subset: string[], superset: string[]) => {
+  if (subset.length > superset.length) {
+    return false;
+  }
+
+  const supersetSet = new Set(superset);
+  return subset.every((item) => supersetSet.has(item));
+};
+
 const OverrideUAVColorButton = ({ color, showBadge, size, uavIds }: Props) => {
   const theme = useTheme();
   const dispatch = useAppDispatch();
@@ -37,14 +46,12 @@ const OverrideUAVColorButton = ({ color, showBadge, size, uavIds }: Props) => {
   );
   const overriddenUAVIds = useSelector(selector);
   const disabled = overriddenUAVIds.length == 0 && uavIds.length == 0;
-  const singleUAVMode = uavIds.length === 1;
-  const operation: 'set' | 'clearAll' | 'clearSingle' = singleUAVMode
-    ? overriddenUAVIds.includes(uavIds[0])
-      ? 'clearSingle'
-      : 'set'
-    : uavIds.length === 0
-      ? 'clearAll'
-      : 'set';
+  const operation: 'set' | 'clearAll' | 'clearSelected' =
+    uavIds.length > 0 && isSubsetOf(uavIds, overriddenUAVIds)
+      ? 'clearSelected'
+      : uavIds.length === 0
+        ? 'clearAll'
+        : 'set';
 
   // Make sure that we can see a white circle in light mode
   const needsOutline = !isThemeDark(theme) && color === '#ffffff' && !disabled;
@@ -73,7 +80,7 @@ const OverrideUAVColorButton = ({ color, showBadge, size, uavIds }: Props) => {
         onClick={() => {
           if (operation === 'set') {
             dispatch(overrideUAVColor(uavIds, color));
-          } else if (operation === 'clearSingle') {
+          } else if (operation === 'clearSelected') {
             dispatch(clearUAVColorOverride(uavIds));
           } else {
             dispatch(clearUAVColorOverrideForColor(color));

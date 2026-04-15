@@ -15,6 +15,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - LED override buttons now change the icon shape when clicking on them would turn the
   override _off_.
 
+- Slightly tweaked the logic that decides whether clicking on the LED override button
+  would turn the override on or off to make it more intuitive.
+
 ## [2.13.0] - 2026-04-15
 
 ### Added
