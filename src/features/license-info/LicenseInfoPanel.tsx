@@ -10,7 +10,7 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import PropTypes from 'prop-types';
+import { useTranslation } from 'react-i18next';
 import { useAsyncRetry } from 'react-use';
 
 import {
@@ -20,13 +20,31 @@ import {
 
 import useMessageHub from '~/hooks/useMessageHub';
 
+type Props = {
+  id?: string;
+  licensee?: string;
+  expiryDate?: string;
+  features?: Array<{
+    type: string;
+    label: string;
+    secondaryLabel?: string;
+  }>;
+  restrictions?: Array<{
+    type: string;
+    label: string;
+    secondaryLabel?: string;
+  }>;
+};
+
 const LicenseInfoPanelPresentation = ({
   expiryDate,
   features,
   id,
   licensee,
   restrictions,
-}) => {
+}: Props) => {
+  const { t } = useTranslation(undefined, { keyPrefix: 'LicenseInfoPanel' });
+
   const featureItems = [];
   const restrictionItems = [];
 
@@ -72,8 +90,8 @@ const LicenseInfoPanelPresentation = ({
           <VpnKey />
         </ListItemIcon>
         <ListItemText
-          primary='License ID'
-          secondary={id || 'No license activated'}
+          primary={t('licenseId')}
+          secondary={id ?? t('noLicenseActivated')}
         />
       </ListItem>
       {licensee && (
@@ -81,7 +99,7 @@ const LicenseInfoPanelPresentation = ({
           <ListItemIcon>
             <Person />
           </ListItemIcon>
-          <ListItemText primary='Name of license holder' secondary={licensee} />
+          <ListItemText primary={t('licensee')} secondary={licensee} />
         </ListItem>
       )}
       {id && (
@@ -90,8 +108,8 @@ const LicenseInfoPanelPresentation = ({
             <Event />
           </ListItemIcon>
           <ListItemText
-            primary='Expiry date'
-            secondary={expiryDate || 'This license never expires'}
+            primary={t('expiryDate')}
+            secondary={expiryDate ?? t('neverExpires')}
           />
         </ListItem>
       )}
@@ -103,27 +121,9 @@ const LicenseInfoPanelPresentation = ({
   );
 };
 
-LicenseInfoPanelPresentation.propTypes = {
-  id: PropTypes.string,
-  licensee: PropTypes.string,
-  expiryDate: PropTypes.string,
-  features: PropTypes.arrayOf(
-    PropTypes.shape({
-      type: PropTypes.string,
-      label: PropTypes.string,
-      secondaryLabel: PropTypes.string,
-    })
-  ),
-  restrictions: PropTypes.arrayOf(
-    PropTypes.shape({
-      type: PropTypes.string,
-      label: PropTypes.string,
-      secondaryLabel: PropTypes.string,
-    })
-  ),
-};
-
 const LicenseInfoPanel = () => {
+  const { t } = useTranslation(undefined, { keyPrefix: 'LicenseInfoPanel' });
+
   const messageHub = useMessageHub();
   const state = useAsyncRetry(messageHub.query.getLicenseInformation, [
     messageHub,
@@ -133,8 +133,8 @@ const LicenseInfoPanel = () => {
     return (
       <BackgroundHint
         icon={<Error />}
-        text='Error while loading license information'
-        button={<Button onClick={state.retry}>Try again</Button>}
+        text={t('errorWhileLoading')}
+        button={<Button onClick={state.retry}>{t('tryAgain')}</Button>}
       />
     );
   }
@@ -143,12 +143,7 @@ const LicenseInfoPanel = () => {
     return <LicenseInfoPanelPresentation {...state.value} />;
   }
 
-  return (
-    <LargeProgressIndicator
-      fullHeight
-      label='Retrieving license information...'
-    />
-  );
+  return <LargeProgressIndicator fullHeight label={t('loading')} />;
 };
 
 export default LicenseInfoPanel;

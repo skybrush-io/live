@@ -16,6 +16,19 @@
     "drawRectangle": "Draw rectangle",
     "editFeature": "Edit feature"
   },
+  "LicenseInfoDialog": {
+    "title": "License information"
+  },
+  "LicenseInfoPanel": {
+    "errorWhileLoading": "Error while loading license information",
+    "expiryDate": "Expiry date",
+    "licenseId": "License ID",
+    "licensee": "Name of license holder",
+    "loading": "Retrieving license information…",
+    "neverExpires": "This license never expires",
+    "noLicenseActivated": "No license activated",
+    "tryAgain": "Try again"
+  },
   "OnboardPreflightChecksDialog": {
     "noError": "None of the UAVs indicated an error.",
     "passed": "Onboard preflight checks passed.",
