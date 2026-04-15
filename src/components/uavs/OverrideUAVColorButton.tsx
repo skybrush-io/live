@@ -1,6 +1,10 @@
-import Circle from '@mui/icons-material/Circle';
+import CircleOff from '@mui/icons-material/Cancel';
+import CircleOffOutlined from '@mui/icons-material/CancelOutlined';
+import CircleOn from '@mui/icons-material/Circle';
+import CircleOnOutlined from '@mui/icons-material/CircleOutlined';
 import IconButton from '@mui/material/IconButton';
-import { Colors } from '@skybrush/app-theme-mui';
+import { useTheme } from '@mui/material/styles';
+import { Colors, isThemeDark } from '@skybrush/app-theme-mui';
 import { SidebarBadge } from '@skybrush/mui-components';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -24,6 +28,7 @@ type Props = {
 };
 
 const OverrideUAVColorButton = ({ color, showBadge, size, uavIds }: Props) => {
+  const theme = useTheme();
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
   const selector = useMemo(
@@ -40,6 +45,18 @@ const OverrideUAVColorButton = ({ color, showBadge, size, uavIds }: Props) => {
     : uavIds.length === 0
       ? 'clearAll'
       : 'set';
+
+  // Make sure that we can see a white circle in light mode
+  const needsOutline = !isThemeDark(theme) && color === '#ffffff' && !disabled;
+  const iconColor = needsOutline ? 'black' : color;
+  const iconIsOn = operation === 'set' || disabled;
+  const Icon = needsOutline
+    ? iconIsOn
+      ? CircleOnOutlined
+      : CircleOffOutlined
+    : iconIsOn
+      ? CircleOn
+      : CircleOff;
 
   return (
     <Tooltip
@@ -63,7 +80,7 @@ const OverrideUAVColorButton = ({ color, showBadge, size, uavIds }: Props) => {
           }
         }}
       >
-        <Circle fontSize='inherit' htmlColor={disabled ? undefined : color} />
+        <Icon fontSize='inherit' htmlColor={disabled ? undefined : iconColor} />
         {showBadge ? (
           <SidebarBadge
             visible={overriddenUAVIds.length > 0}
