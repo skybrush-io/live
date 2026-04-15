@@ -1,8 +1,7 @@
-import isAfter from 'date-fns/isAfter';
 import format from 'date-fns/format';
+import isAfter from 'date-fns/isAfter';
 import isNil from 'lodash-es/isNil';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import TimeAgo from 'react-timeago';
@@ -16,16 +15,16 @@ import {
 
 import {
   MiniList,
-  MiniListItem,
   MiniListDivider,
+  MiniListItem,
   SmallProgressIndicator,
   StatusText,
 } from '@skybrush/mui-components';
 
 import {
   getDeclinationFromMagneticVector,
-  getSunriseSunsetTimesForMapViewCenterPosition,
   getStatusForKpIndex,
+  getSunriseSunsetTimesForMapViewCenterPosition,
 } from './selectors';
 
 function safelyFormat(time, formatString) {

@@ -14,7 +14,7 @@ import { layer as olLayer, source } from '@collmot/ol-react';
 import Colors from '~/components/colors';
 import PopupColorPicker from '~/components/PopupColorPicker';
 import { setLayerParametersById } from '~/features/map/layers';
-import { showNotification } from '~/features/snackbar/actions';
+import { showError, showSuccess } from '~/features/snackbar/actions';
 import { parseColor } from '~/utils/coloring';
 import { convertSimpleStyleToOLStyle } from '~/utils/simplestyle';
 
@@ -25,7 +25,6 @@ class GeoJSONLayerSettingsPresentation extends React.Component {
     layer: PropTypes.object,
 
     setLayerParameters: PropTypes.func,
-    showMessage: PropTypes.func,
   };
 
   state = {
@@ -123,15 +122,9 @@ class GeoJSONLayerSettingsPresentation extends React.Component {
     try {
       const parsedData = JSON.parse(this.state.data);
       this.props.setLayerParameters({ data: parsedData });
-      this.props.showMessage({
-        message: 'GeoJSON imported successfully.',
-        semantics: 'success',
-      });
+      showSuccess('GeoJSON imported successfully.');
     } catch {
-      this.props.showMessage({
-        message: 'Invalid GeoJSON data.',
-        semantics: 'error',
-      });
+      showError('Invalid GeoJSON data.');
     }
   };
 }
@@ -143,9 +136,6 @@ export const GeoJSONLayerSettings = connect(
   (dispatch, ownProps) => ({
     setLayerParameters(parameters) {
       dispatch(setLayerParametersById(ownProps.layerId, parameters));
-    },
-    showMessage(message) {
-      dispatch(showNotification(message));
     },
   })
 )(GeoJSONLayerSettingsPresentation);

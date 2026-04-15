@@ -10,7 +10,6 @@ import Point from 'ol/geom/Point';
 import { getPointResolution } from 'ol/proj';
 import { Circle, Icon, Style, Text } from 'ol/style';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { connect } from 'react-redux';
 
 import { Feature, geom, layer as olLayer, source } from '@collmot/ol-react';
@@ -42,6 +41,7 @@ import {
   getMissionItemsWithCoordinatesInOrder,
   getSelectedMissionIndicesForTrajectoryDisplay,
 } from '~/features/mission/selectors';
+import { getSelection } from '~/features/selection/selectors';
 import {
   getConvexHullOfShowInWorldCoordinates,
   getOutdoorShowOrientation,
@@ -58,7 +58,6 @@ import {
 } from '~/model/identifiers';
 import { MissionItemType } from '~/model/missions';
 import { getMapOriginRotationAngle } from '~/selectors/map';
-import { getSelection } from '~/selectors/selection';
 import { hasFeature } from '~/utils/configuration';
 import { formatMissionId } from '~/utils/formatting';
 import { mapViewCoordinateFromLonLat } from '~/utils/geography';

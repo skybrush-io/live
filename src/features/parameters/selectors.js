@@ -38,7 +38,7 @@ export const getParameterUploadJobPayloadFromManifest = createSelector(
   shouldRebootAfterParameterUpload,
   (manifest, shouldReboot) => {
     const items = manifest
-      .map(({ name, value }) => ({ name, value }))
+      .map(({ name, uavId, value }) => ({ name, uavId, value }))
       .filter(({ name }) => typeof name === 'string' && name.length > 0);
     const meta = { shouldReboot };
     return { items, meta };

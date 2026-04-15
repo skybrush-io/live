@@ -10,11 +10,11 @@ import { euclideanDistance2D } from '~/utils/math';
 
 export type DistanceMetric = 'euclidean' | 'geodetic';
 
-async function findGreedyEuclideanAssignment(
+function findGreedyEuclideanAssignment(
   sources: Array<[number, number]>,
   targets: Array<[number, number]>,
   options: GreedyMatchingOptions
-): Promise<Assignment> {
+): Assignment {
   return findAssignmentBetweenPoints(sources, targets, {
     distanceFunction: euclideanDistance2D,
     matching: {
@@ -24,11 +24,11 @@ async function findGreedyEuclideanAssignment(
   });
 }
 
-async function findGreedyGeodeticAssignment(
-  sources: Array<LonLat>,
-  targets: Array<LonLat>,
+function findGreedyGeodeticAssignment(
+  sources: LonLat[],
+  targets: LonLat[],
   options: GreedyMatchingOptions
-): Promise<Assignment> {
+): Assignment {
   return findAssignmentBetweenPoints(sources, targets, {
     distanceFunction: haversineDistance,
     matching: {
@@ -38,18 +38,18 @@ async function findGreedyGeodeticAssignment(
   });
 }
 
-export default async function findGreedyAssignment(
+export default function findGreedyAssignment(
   sources: Array<[number, number]>,
   targets: Array<[number, number]>,
   options: GreedyMatchingOptions & { distanceMetric: DistanceMetric }
-): Promise<Assignment> {
+): Assignment {
   switch (options.distanceMetric) {
     case 'euclidean':
       return findGreedyEuclideanAssignment(sources, targets, options);
     case 'geodetic':
       return findGreedyGeodeticAssignment(
-        sources as Array<LonLat>,
-        targets as Array<LonLat>,
+        sources as LonLat[],
+        targets as LonLat[],
         options
       );
     default:

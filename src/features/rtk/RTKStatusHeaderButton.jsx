@@ -1,5 +1,4 @@
 import PropTypes from 'prop-types';
-import React from 'react';
 import { connect } from 'react-redux';
 
 import { colorForStatus, Status } from '@skybrush/app-theme-mui';
@@ -75,10 +74,7 @@ const RTKStatusHeaderButton = ({
         }
         secondaryLabel={
           surveyStatus.supported && typeof surveyStatus.accuracy === 'number'
-            ? formatSurveyAccuracy(surveyStatus.accuracy, {
-                max: 9,
-                short: true,
-              })
+            ? formatSurveyAccuracy(surveyStatus.accuracy, { max: 9 })
             : null
         }
         style={buttonStyle}

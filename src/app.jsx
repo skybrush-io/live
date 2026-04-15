@@ -5,7 +5,6 @@ import React from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { WorkbenchView } from 'react-flexible-workbench';
 import { connect, Provider as StoreProvider } from 'react-redux';
-import { ToastProvider } from 'react-toast-notifications';
 import { PersistGate } from 'redux-persist/es/integration/react';
 
 import { StyledEngineProvider } from '@mui/material';
@@ -15,6 +14,7 @@ import CornerRibbon from './components/CornerRibbon';
 import dialogs from './components/dialogs';
 import Header from './components/header';
 import ServerConnectionManager from './components/ServerConnectionManager';
+import CollectiveRTHDialog from './features/collective-rth/CollectiveRTHDialog';
 import DetachedPanelManager from './features/detachable-panels/DetachedPanelManager';
 import DockDetailsDialog from './features/docks/DockDetailsDialog';
 import FirmwareUpdateSetupDialog from './features/firmware-update/FirmwareUpdateSetupDialog';
@@ -34,8 +34,7 @@ import SafetyDialog from './features/safety/SafetyDialog';
 import SavedLocationEditorDialog from './features/saved-locations/SavedLocationEditorDialog';
 import ShowConfiguratorDialog from './features/show-configurator/ShowConfiguratorDialog';
 import Sidebar from './features/sidebar/Sidebar';
-import { SNACKBAR_TRANSITION_DURATION } from './features/snackbar/constants';
-import ToastNotificationManager from './features/snackbar/ToastNotificationManager';
+import Notifications from './features/snackbar/Notifications';
 import UAVDetailsDialog from './features/uavs/UAVDetailsDialog';
 import UploadDialog from './features/upload/UploadDialog';
 import VersionCheckDialog from './features/version-check/VersionCheckDialog';
@@ -171,6 +170,7 @@ const App = ({ onFirstRender }) => (
       {hasTimeLimitedSession && <dialogs.SessionExpiryDialog />}
       <dialogs.TimeSyncDialog />
 
+      <CollectiveRTHDialog />
       <CoordinateAveragingDialog />
       <DockDetailsDialog />
       <FirmwareUpdateSetupDialog />
@@ -189,12 +189,7 @@ const App = ({ onFirstRender }) => (
       <UploadDialog />
       <VersionCheckDialog />
 
-      <ToastProvider
-        placement={config.toastPlacement}
-        transitionDuration={SNACKBAR_TRANSITION_DURATION}
-      >
-        <ToastNotificationManager />
-      </ToastProvider>
+      <Notifications />
     </>
   </PersistGate>
 );

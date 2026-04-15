@@ -3,7 +3,7 @@ import LocalShipping from '@mui/icons-material/LocalShipping';
 import Visibility from '@mui/icons-material/Visibility';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import React from 'react';
+import type React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { BackgroundHint } from '@skybrush/mui-components';

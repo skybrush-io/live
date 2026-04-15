@@ -1,27 +1,25 @@
-/* eslint unicorn/no-array-callback-reference: 0 */
-
+import { createSelector } from '@reduxjs/toolkit';
 import isNil from 'lodash-es/isNil';
 import mean from 'lodash-es/mean';
-import { createSelector } from '@reduxjs/toolkit';
 
 import { Status } from '~/components/semantics';
 import { JOB_TYPE as FIRMWARE_UPDATE_JOB_TYPE } from '~/features/firmware-update/constants';
 import { getSupportingObjectIdsForTargetId } from '~/features/firmware-update/selectors';
 import { getMissionMapping as _getFullMissionMapping } from '~/features/mission/selectors';
+import { getSelection } from '~/features/selection/selectors';
 import {
-  getSingleSelectedUAVIdAsArray,
   getUAVIdList as _getAllKnownUAVIds,
+  getSingleSelectedUAVIdAsArray,
 } from '~/features/uavs/selectors';
 import { uavIdToGlobalId } from '~/model/identifiers';
 import type UAV from '~/model/uav';
-import { getSelection } from '~/selectors/selection';
 import type { RootState } from '~/store/reducers';
 import { rejectNullish } from '~/utils/arrays';
 import { formatMissionId } from '~/utils/formatting';
 
 import { getScopeForJobType, JobScope } from './jobs';
-import type { JobPayload, UploadJob } from './types';
 import type { UploadSliceState } from './slice';
+import type { JobPayload, UploadJob } from './types';
 
 /**
  * Returns the current upload job. The returned object is guaranteed to have

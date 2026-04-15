@@ -2,7 +2,6 @@ import Box from '@mui/material/Box';
 import DialogContent from '@mui/material/DialogContent';
 import Typography from '@mui/material/Typography';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 

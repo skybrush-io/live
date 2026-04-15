@@ -2,7 +2,6 @@ import config from 'config';
 
 import Box from '@mui/material/Box';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { connect } from 'react-redux';
 import Shapeshifter from 'react-shapeshifter';
 

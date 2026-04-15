@@ -1,9 +1,9 @@
-import React from 'react';
+import type React from 'react';
 import { useTranslation } from 'react-i18next';
 
+import type { UAVListLayout } from '~/features/settings/types';
 import { type GroupSelectionInfo, type UAVGroup } from './types';
 import UAVListSection, { type UAVListSectionProps } from './UAVListSection';
-import type { UAVListLayout } from '~/features/settings/types';
 import { getLabelForUAVGroup } from './utils';
 
 export type UAVListBodyProps = Readonly<{

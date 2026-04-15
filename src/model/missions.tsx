@@ -12,7 +12,6 @@ import UpdateSafetyIcon from '@mui/icons-material/Security';
 import SetParameterIcon from '@mui/icons-material/Settings';
 import ChangeSpeedIcon from '@mui/icons-material/Speed';
 import isObject from 'lodash-es/isObject';
-import * as React from 'react';
 import UpdateGeofenceIcon from '~/icons/PlacesFence';
 
 import {
@@ -369,7 +368,7 @@ export const schemaForMissionItemType: Record<
 /**
  * Returns whether the given mission item is valid.
  */
-// eslint-disable-next-line complexity
+
 export const isMissionItemValid = (item: unknown): item is MissionItem => {
   if (!isMissionItemLike(item)) {
     return false;

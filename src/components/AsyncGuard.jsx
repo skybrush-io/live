@@ -1,7 +1,6 @@
 import Error from '@mui/icons-material/Error';
 import Button from '@mui/material/Button';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { useAsyncRetry } from 'react-use';
 
 import {

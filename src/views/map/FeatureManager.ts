@@ -134,7 +134,7 @@ export default class FeatureManager<F extends Feature<Point> = Feature<Point>> {
    *
    * @return an array containing all the features managed by this manager
    */
-  getFeatureArray = (): Array<F> => {
+  getFeatureArray = (): F[] => {
     return values(this._featuresByObjectId);
   };
 

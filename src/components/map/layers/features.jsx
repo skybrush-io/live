@@ -4,7 +4,6 @@ import FillPattern from 'ol-ext/style/FillPattern';
 import { MultiPoint, MultiPolygon, Polygon } from 'ol/geom';
 import { Circle, Style, Text } from 'ol/style';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { connect } from 'react-redux';
 
 import {
@@ -336,7 +335,6 @@ const Feature = connect(
 
 const FeaturesLayerPresentation = ({
   features,
-  onError,
   onFeatureModificationStarted,
   onFeaturesModified,
   selectedTool,
@@ -358,7 +356,7 @@ const FeaturesLayerPresentation = ({
       {selectedTool === Tool.CUT_HOLE ? (
         <interaction.CutHole
           abortCondition={escapeKeyDown}
-          onError={onError}
+          onError={showError}
           onCutStart={onFeatureModificationStarted}
           onCutEnd={onFeaturesModified}
         />
@@ -374,7 +372,6 @@ FeaturesLayerPresentation.propTypes = {
 
   features: PropTypes.arrayOf(PropTypes.object).isRequired,
 
-  onError: PropTypes.func,
   onFeatureModificationStarted: PropTypes.func,
   onFeaturesModified: PropTypes.func,
 };
@@ -385,11 +382,5 @@ export const FeaturesLayer = connect(
   // mapStateToProps
   (state) => ({
     features: getFeaturesInOrder(state),
-  }),
-  // mapDispatchToProps
-  (dispatch) => ({
-    onError(message) {
-      dispatch(showError(message));
-    },
   })
 )(FeaturesLayerPresentation);

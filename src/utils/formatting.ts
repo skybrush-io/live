@@ -252,15 +252,15 @@ export const formatSpeed = (number: number, digits = 2): string =>
  *        their string representation.
  */
 export const formatItemInterval = <TItem>(
-  items: Array<TItem>,
+  items: TItem[],
   formatter: (item: TItem) => string = String
 ) => {
   if (items.length === 0) {
     return '—';
   } else if (items.length === 1) {
-    return formatter(items[0]!);
+    return formatter(items[0]);
   } else {
-    return `${formatter(items[0]!)}-${formatter(items.at(-1)!)}`;
+    return `${formatter(items[0])}-${formatter(items.at(-1)!)}`;
   }
 };
 
@@ -324,6 +324,14 @@ export const formatUnixTimestamp = (timestamp: number, naText = '—'): string =
   isNil(timestamp) || Number.isNaN(timestamp)
     ? naText
     : formatISO9075(fromUnixTime(timestamp));
+
+/**
+ * Formats a UNIX timestamp in seconds as a time of day text.
+ */
+export const formatTimeOfDay = (timestamp: number, naText = '—'): string =>
+  Number.isNaN(timestamp)
+    ? naText
+    : formatISO9075(fromUnixTime(timestamp), { representation: 'time' });
 
 /**
  * Twitter-style short formatter for TimeAgo components

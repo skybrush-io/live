@@ -6,7 +6,7 @@ import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import ListItemText from '@mui/material/ListItemText';
 import memoizee from 'memoizee';
 import PropTypes from 'prop-types';
-import React, { useEffect, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 
 import DialogHeaderListItem from '~/components/DialogHeaderListItem';
 import MultiPagePanel, { Page } from '~/components/MultiPagePanel';

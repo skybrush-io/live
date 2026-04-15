@@ -3,9 +3,9 @@ import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import MVTFormat from 'ol/format/MVT';
 import type ImageTile from 'ol/ImageTile';
-import React, { type ChangeEvent } from 'react';
+import type React from 'react';
+import { type ChangeEvent } from 'react';
 
-// @ts-expect-error: untyped
 import { layer as olLayer, source } from '@collmot/ol-react';
 
 import type { APIKeysRecord } from '~/APIKeys';

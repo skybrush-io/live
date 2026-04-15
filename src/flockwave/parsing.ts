@@ -4,8 +4,12 @@
 
 import type { ErrorMap, Response_ACKNAK } from '@skybrush/flockwave-spec';
 import color from 'color';
-import get from 'lodash-es/get';
-import type { Message, MultiAsyncOperationResponseBody } from './types';
+
+import type {
+  Message,
+  MessageBody,
+  MultiAsyncOperationResponseBody,
+} from './types';
 
 /**
  * Converts a color in RGB565 format to a hex value.
@@ -55,10 +59,11 @@ const MESSAGES_WITH_RECEIPTS: Record<string, boolean> = {
  * Helper function that throws an error if the received message was an
  * ACK-NAK message or a message without a type, and returns the message intact otherwise.
  */
-export function ensureNotNAK<T>(message: Message<T>): Message<T> {
+export function ensureNotNAK<T extends MessageBody>(
+  message: Message<T>
+): Message<T> {
   const { body } = message || {};
 
-  /* @ts-ignore */
   const { type } = body || {};
 
   if (!type) {
@@ -95,11 +100,11 @@ export function extractResultOrReceiptFromMaybeAsyncResponse<T>(
   if (MESSAGES_WITH_RECEIPTS[type]) {
     // We may still have a rejection here
     const { error, receipt, result } = checkedBody;
-    if (error && error[objectId] !== undefined) {
+    if (error?.[objectId] !== undefined) {
       throw new Error(error[objectId] ?? 'Failed to execute command');
-    } else if (result && result[objectId] !== undefined) {
+    } else if (result?.[objectId] !== undefined) {
       return { result: result[objectId] };
-    } else if (receipt && receipt[objectId] !== undefined) {
+    } else if (receipt?.[objectId] !== undefined) {
       return { receipt: receipt[objectId] };
     } else {
       throw new Error(

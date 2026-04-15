@@ -6,7 +6,6 @@ import ListItem, { type ListItemProps } from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import { green, red, yellow } from '@mui/material/colors';
 import type { Theme } from '@mui/material/styles';
-import React from 'react';
 
 import { isThemeDark, makeStyles } from '@skybrush/app-theme-mui';
 

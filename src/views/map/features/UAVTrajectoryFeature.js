@@ -1,7 +1,7 @@
 import reject from 'lodash-es/reject';
 import { Style } from 'ol/style';
 import PropTypes from 'prop-types';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { connect } from 'react-redux';
 
 import { Feature, geom } from '@collmot/ol-react';

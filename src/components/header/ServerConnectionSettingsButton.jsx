@@ -1,6 +1,5 @@
 import ConnectionIcon from '@mui/icons-material/Power';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { connect } from 'react-redux';
 
 import { GenericHeaderButton, LazyTooltip } from '@skybrush/mui-components';

@@ -4,7 +4,7 @@ import Checkbox from '@mui/material/Checkbox';
 import DialogActions from '@mui/material/DialogActions';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import PropTypes from 'prop-types';
-import React, { useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { connect } from 'react-redux';
 
 import { DraggableDialog } from '@skybrush/mui-components';

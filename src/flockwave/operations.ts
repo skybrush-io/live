@@ -6,6 +6,7 @@
 import type {
   DroneLightsConfiguration,
   DroneShowConfiguration,
+  Response_ACKNAK,
   Response_EXTRELOAD,
   Response_EXTSETCFG,
   RTKSurveySettings,
@@ -19,13 +20,14 @@ import {
   createParameterSettingRequest,
 } from './builders';
 import type MessageHub from './messages';
-import { extractResponseForId } from './parsing';
-import { validateExtensionName, validateObjectId } from './validation';
-import type { Message } from './types';
 import type {
   AsyncOperationOptions,
   AsyncResponseHandlerOptions,
 } from './messages';
+import { extractResponseForId } from './parsing';
+import { isSchedule, type Schedule } from './schedule';
+import type { Message, MessageBody } from './types';
+import { validateExtensionName, validateObjectId } from './validation';
 
 /**
  * Asks the server to set a new configuration object for the extension with the
@@ -85,6 +87,31 @@ export async function resetUAV(hub: MessageHub, uavId: string): Promise<void> {
     const errorString = errorToString(error);
     throw new Error(`Failed to reset UAV ${uavId}: ${errorString}`);
   }
+}
+
+/**
+ * Asks the server to resume the currently suspended show.
+ */
+export async function resumeShow(hub: MessageHub): Promise<Schedule> {
+  let response: Message<MessageBody>;
+  try {
+    response = await hub.sendMessage({ type: 'X-SHOW-RESUME' });
+  } catch (error) {
+    const errorString = errorToString(error);
+    throw new Error(`Failed to resume show. ${errorString}`);
+  }
+
+  if (response.body.type !== 'X-SHOW-RESUME') {
+    throw new Error('Failed to resume show.');
+  }
+
+  if (isSchedule(response.body)) {
+    return response.body;
+  }
+
+  throw new Error(
+    `Invalid schedule in response to X-SHOW-RESUME: ${JSON.stringify(response.body)}`
+  );
 }
 
 /**
@@ -306,6 +333,28 @@ export async function setShowLightConfiguration(
   }
 }
 
+export async function startCollectiveRTH(hub: MessageHub): Promise<Schedule> {
+  let response: Message<MessageBody>;
+  try {
+    response = await hub.sendMessage({ type: 'X-SHOW-CRTH-START' });
+  } catch (error) {
+    const errorString = errorToString(error);
+    throw new Error(`Failed to start collective RTH. ${errorString}`);
+  }
+
+  if (response.body.type !== 'X-SHOW-CRTH-START') {
+    throw new Error('Failed to start collective RTH.');
+  }
+
+  if (isSchedule(response.body)) {
+    return response.body;
+  }
+
+  throw new Error(
+    `Invalid schedule in response to collective RTH trigger: ${JSON.stringify(response.body)}`
+  );
+}
+
 /**
  * Asks the RTK framework on the server to start a new survey on the current
  * RTK connection.
@@ -353,6 +402,31 @@ export async function setRTKAntennaPosition(
       'Failed to set RTK antenna position on the server';
     throw new Error(errorMessage);
   }
+}
+
+/**
+ * Asks the server to suspend the currently running show.
+ */
+export async function suspendShow(hub: MessageHub): Promise<Schedule> {
+  let response: Message<MessageBody>;
+  try {
+    response = await hub.sendMessage({ type: 'X-SHOW-SUSPEND' });
+  } catch (error) {
+    const errorString = errorToString(error);
+    throw new Error(`Failed to suspend show. ${errorString}`);
+  }
+
+  if (response.body.type !== 'X-SHOW-SUSPEND') {
+    throw new Error('Failed to suspend show.');
+  }
+
+  if (isSchedule(response.body)) {
+    return response.body;
+  }
+
+  throw new Error(
+    `Invalid schedule in response to X-SHOW-SUSPEND: ${JSON.stringify(response.body)}`
+  );
 }
 
 /**
@@ -456,7 +530,7 @@ export async function uploadMission(
  * Custom class of errors representing server side plan generation problems.
  */
 export class ServerPlanError extends Error {
-  constructor(message: string) {
+  constructor(message?: string) {
     super(message);
     this.name = 'ServerPlanError';
   }
@@ -469,23 +543,29 @@ export async function planMission(
   hub: MessageHub,
   { id, parameters }: { id: string; parameters: Record<string, unknown> }
 ) {
-  const response = await hub.sendMessage({
-    type: 'X-MSN-PLAN',
-    id,
-    parameters,
-  });
+  const response = await hub.sendMessage<
+    | (MessageBody<'X-MSN-PLAN'> & { result: Record<string, unknown> })
+    | Response_ACKNAK
+  >({ type: 'X-MSN-PLAN', id, parameters });
 
-  const { type, result } = response.body as any;
+  const { type } = response.body;
   if (type !== 'X-MSN-PLAN') {
-    throw new ServerPlanError((response.body as any).reason);
+    throw new ServerPlanError(response.body.reason);
   }
 
+  const { result } = response.body;
   if (result?.format !== 'skybrush-live/mission-items') {
-    throw new Error(`Mission plan has an unknown format: ${result?.format}`);
+    throw new Error(
+      `Mission plan has an unknown format: ${String(result?.format)}`
+    );
   }
 
   const { payload } = result;
-  if (payload?.version !== 1 || !Array.isArray(payload.items)) {
+  if (
+    !(typeof payload === 'object' && payload !== null) ||
+    !('version' in payload && payload?.version == 1) ||
+    !('items' in payload && Array.isArray(payload?.items))
+  ) {
     throw new Error('Mission plan response must be in version 1 format');
   }
 
@@ -499,6 +579,7 @@ const _operations = {
   planMission,
   reloadExtension,
   resetUAV,
+  resumeShow,
   saveRTKPresets,
   sendDebugMessage,
   setParameter,
@@ -507,7 +588,9 @@ const _operations = {
   setRTKCorrectionsSource,
   setShowConfiguration,
   setShowLightConfiguration,
+  startCollectiveRTH,
   startRTKSurvey,
+  suspendShow,
   updateRTKPreset,
   uploadDroneShow,
   uploadFirmware,
@@ -525,11 +608,13 @@ export type OperationExecutor = {
  * Query handler object that can be used to perform common operations on a
  * Flockwave server using a given message hub.
  */
-export function createOperationExecutor(hub: MessageHub): OperationExecutor {
-  const result: Record<string, any> = {};
-  for (const [name, func] of Object.entries(_operations)) {
-    // @ts-ignore
-    result[name] = (...args) => func(hub, ...args);
-  }
-  return result as any as OperationExecutor;
-}
+export const createOperationExecutor = (hub: MessageHub): OperationExecutor =>
+  Object.fromEntries(
+    Object.entries(_operations).map(([name, func]) => [
+      name,
+      // @ts-expect-error Correctly annotating this would require dependent
+      //                  types, as each operation has different arguments
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      (...args) => func(hub, ...args),
+    ])
+  ) as OperationExecutor;

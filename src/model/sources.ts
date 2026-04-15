@@ -13,6 +13,7 @@ import APIKeys from '~/APIKeys';
  * NOTE: Not sure whether this is the right representation for this structure,
  *       but it seems to work for now until we come up with something better.
  */
+// eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace Source {
   export enum BING {
     AERIAL_WITH_LABELS = 'bingMaps.aerialWithLabels',

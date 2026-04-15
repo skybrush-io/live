@@ -10,7 +10,7 @@ import Fade from '@mui/material/Fade';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import IconButton from '@mui/material/IconButton';
 import type { Theme } from '@mui/material/styles';
-import React from 'react';
+import type React from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
@@ -42,9 +42,9 @@ import StartUploadButton from '~/features/upload/StartUploadButton';
 import UploadProgressBar from '~/features/upload/UploadProgressBar';
 import UploadStatusLegend from '~/features/upload/UploadStatusLegend';
 import UploadStatusLights from '~/features/upload/UploadStatusLights';
+import { usePeriodicRefresh } from '~/hooks';
 import type { AppThunk, RootState } from '~/store/reducers';
 import { formatDurationAsText } from '~/utils/formatting';
-import { usePeriodicRefresh } from '~/hooks';
 
 type UploadResultIndicatorProps = Omit<LabeledStatusLightProps, 'children'> &
   Readonly<{

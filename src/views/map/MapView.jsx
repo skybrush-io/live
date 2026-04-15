@@ -10,7 +10,7 @@ import { connect } from 'react-redux';
 import { interaction, View, withMap } from '@collmot/ol-react';
 
 import { BaseMap, MapControls, MapToolbars } from '~/components/map';
-import ConnectedFitAllFeaturesButton from '~/components/map/buttons/FitAllFeaturesButton';
+import FitAllFeaturesButton from '~/components/map/buttons/FitAllFeaturesButton';
 import * as Condition from '~/components/map/conditions';
 import {
   SelectNearestFeature,
@@ -34,16 +34,17 @@ import {
   showDetailsForFeatureInTooltipOrGivenFeature,
 } from '~/features/map-features/actions';
 import { getSelectedFeatureIds } from '~/features/map-features/selectors';
+import { getSelectedTool } from '~/features/map/tools';
+import { updateMapViewSettings } from '~/features/map/view';
+import { addNewMissionItem } from '~/features/mission/actions';
+import { getGeofencePolygonId } from '~/features/mission/selectors';
+import { getSelection } from '~/features/selection/selectors';
 import {
   addToSelection,
   removeFromSelection,
   setSelection,
   toggleInSelection,
-} from '~/features/map/selection';
-import { getSelectedTool } from '~/features/map/tools';
-import { updateMapViewSettings } from '~/features/map/view';
-import { addNewMissionItem } from '~/features/mission/actions';
-import { getGeofencePolygonId } from '~/features/mission/selectors';
+} from '~/features/selection/slice';
 import NearestItemTooltip from '~/features/session/NearestItemTooltip';
 import { setFeatureIdForTooltip } from '~/features/session/slice';
 import { getFollowMapSelectionInUAVDetailsPanel } from '~/features/uavs/selectors';
@@ -68,7 +69,6 @@ import {
   getMapViewZoom,
 } from '~/selectors/map';
 import { getVisibleLayersInOrder } from '~/selectors/ordered';
-import { getSelection } from '~/selectors/selection';
 import {
   findFeaturesById,
   lonLatFromMapViewCoordinate,
@@ -438,7 +438,7 @@ class MapViewPresentation extends React.Component {
                   <ToolbarDivider orientation='vertical' />
                   {/* NOTE: Margin is calibrated such that the vertical      */}
                   {/*       drawing toolbar will not cover any of the drones */}
-                  <ConnectedFitAllFeaturesButton duration={500} margin={80} />
+                  <FitAllFeaturesButton duration={500} margin={80} />
                 </>
               }
             />

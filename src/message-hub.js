@@ -13,11 +13,11 @@ import MessageHub from './flockwave/messages';
 
 import { handleBeaconInformationMessage } from './model/beacons';
 import { handleClockInformationMessage } from './model/clocks';
-import { handleDockInformationMessage } from './model/docks';
 import {
   handleConnectionDeletionMessage,
   handleConnectionInformationMessage,
 } from './model/connections';
+import { handleDockInformationMessage } from './model/docks';
 import { handleObjectDeletionMessage } from './model/objects';
 
 import { batchAddInboundMessages } from './features/messages/slice';
@@ -53,11 +53,11 @@ messageHub.registerNotificationHandlers({
   'OBJ-DEL': (message) => handleObjectDeletionMessage(message.body, dispatch),
   'SYS-CLOSE': (message) => {
     if (message.body && message.body.reason) {
-      dispatch(showError(message.body.reason));
+      showError(message.body.reason);
     }
   },
   'SYS-MSG': (message) => {
-    if (message.body && Array.isArray(message.body.items)) {
+    if (Array.isArray(message?.body?.items)) {
       batch(() => {
         const fromUAV = [];
 
@@ -65,12 +65,12 @@ messageHub.registerNotificationHandlers({
           if (isEmpty(item.sender)) {
             // This message came directly from the server so we show it as a
             // notification
-            dispatch(
-              showNotification({
-                message: item.message,
-                semantics: semanticsFromSeverity(item.severity),
-              })
-            );
+            showNotification({
+              message: item.message,
+              semantics: semanticsFromSeverity(
+                (item.severity ?? '').toLowerCase()
+              ),
+            });
           } else {
             // This message probably came from a UAV so let's add it to the
             // list of messages received from the UAV

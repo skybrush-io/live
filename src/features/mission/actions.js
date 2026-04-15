@@ -7,7 +7,6 @@ import pickBy from 'lodash-es/pickBy';
 import shuffle from 'lodash-es/shuffle';
 
 import { showErrorMessage } from '~/features/error-handling/actions';
-import { setSelection } from '~/features/map/selection';
 import {
   addFeatureIfMissing,
   selectSingleFeatureOfTypeUnlessAmbiguous,
@@ -18,6 +17,7 @@ import {
 } from '~/features/map-features/selectors';
 import { showPromptDialog } from '~/features/prompt/actions';
 import { updateGeofencePolygon } from '~/features/safety/actions';
+import { setSelection } from '~/features/selection/slice';
 import {
   getFirstPointsOfTrajectories,
   getOutdoorShowCoordinateSystem,
@@ -91,6 +91,7 @@ import {
   shouldMissionPlannerDialogApplyGeofence,
 } from './selectors';
 import {
+  _setMissionItemsFromValidatedArray,
   addMissionItem,
   clearMapping,
   closeMissionPlannerDialog,
@@ -109,7 +110,6 @@ import {
   updateCurrentMissionItemRatio,
   updateHomePositions,
   updateMissionItemParameters,
-  _setMissionItemsFromValidatedArray,
 } from './slice';
 import { getMissionItemUploadJobPayload } from './upload';
 
@@ -126,7 +126,6 @@ const doFindGreedyAssignmentBetweenPoints = createAsyncAction(
   'mission/calculateMapping',
   async (resultHolder, ...args) => {
     const result = await workers.findGreedyAssignment(...args);
-    console.log(result);
     resultHolder.result = result;
   },
   { minDelay: 500 }
@@ -272,7 +271,7 @@ export const setSelectedMissionSlotIds = (slotIds) =>
  *
  * At the same time, the mapping will be cleared.
  */
-export const addVirtualDronesForMission = () => async (dispatch, getState) => {
+export const addVirtualDronesForMission = () => async (_dispatch, getState) => {
   const state = getState();
 
   if (!isShowOutdoor(state)) {
@@ -335,13 +334,13 @@ export const addVirtualDronesForMission = () => async (dispatch, getState) => {
   await messageHub.execute.reloadExtension('virtual_uavs');
 
   // Show a snackbar message
-  dispatch(showSuccess('Virtual drones configured successfully.'));
+  showSuccess('Virtual drones configured successfully.');
 };
 
 /**
  * Thunk that exports the current mapping to a file.
  */
-export const exportMapping = () => async (dispatch, getState) => {
+export const exportMapping = () => async (_dispatch, getState) => {
   const contents = getMissionMappingFileContents(getState());
   const proposedMappingFileName = proposeMappingFileName(getState());
   try {
@@ -354,7 +353,7 @@ export const exportMapping = () => async (dispatch, getState) => {
       ],
     });
   } catch (error) {
-    dispatch(showError(`Error while exporting mapping: ${String(error)}`));
+    showError(`Error while exporting mapping: ${String(error)}`);
   }
 };
 
@@ -399,7 +398,7 @@ export const importMapping = () => async (dispatch, getState) => {
 
     dispatch(replaceMapping(mapping));
   } catch (error) {
-    dispatch(showError(`Error while importing mapping: ${String(error)}`));
+    showError(`Error while importing mapping: ${String(error)}`);
   }
 };
 
@@ -731,10 +730,9 @@ export const invokeMissionPlanner =
         })
       );
 
-      dispatch(
-        showNotification({
-          message: 'Mission planned successfully. Would you like to export it?',
-          semantics: MessageSemantics.SUCCESS,
+      showSuccess(
+        'Mission planned successfully. Would you like to export it?',
+        {
           buttons: [
             {
               label: 'Export',
@@ -743,7 +741,7 @@ export const invokeMissionPlanner =
           ],
           permanent: true,
           topic: 'export-suggestion',
-        })
+        }
       );
     }
   };
@@ -758,20 +756,18 @@ export const clearMission = () => (dispatch, _getState) => {
   dispatch(setLastSuccessfulPlannerInvocationParameters(null));
   dispatch(setMissionItemsFromArray([]));
   dispatch(setMappingLength(0));
-  dispatch(
-    showNotification({
-      message: 'Previous mission cleared.',
-      semantics: MessageSemantics.INFO,
-      buttons: [
-        {
-          label: 'Undo',
-          action: restoreLastClearedMission(),
-        },
-      ],
-      permanent: true,
-      topic: 'mission-cleared',
-    })
-  );
+  showNotification({
+    message: 'Previous mission cleared.',
+    semantics: MessageSemantics.INFO,
+    buttons: [
+      {
+        label: 'Undo',
+        action: restoreLastClearedMission(),
+      },
+    ],
+    permanent: true,
+    topic: 'mission-cleared',
+  });
 };
 
 /**
@@ -917,14 +913,14 @@ export const restoreMission =
  */
 export const restoreLastClearedMission = () => (dispatch, getState) => {
   dispatch(restoreMission(getLastClearedMissionData(getState())));
-  dispatch(showNotification({ topic: 'mission-cleared' }));
-  dispatch(showSuccess('Mission restored successfully'));
+  showNotification({ topic: 'mission-cleared' });
+  showSuccess('Mission restored successfully');
 };
 
 /**
  * Thunk that stores the current mission into a file.
  */
-export const exportMission = () => (dispatch, getState) => {
+export const exportMission = () => (_dispatch, getState) => {
   const state = getState();
   // The ISO 8601 extended format cannot be used because colons are usually not
   // allowed in filenames, and the ISO 8601 basic format is less human-readable
@@ -936,8 +932,8 @@ export const exportMission = () => (dispatch, getState) => {
     `mission-export-${date}.json`,
     { title: 'Export mission data' }
   );
-  dispatch(showNotification({ topic: 'export-suggestion' }));
-  dispatch(showSuccess('Successfully exported mission'));
+  showNotification({ topic: 'export-suggestion' });
+  showSuccess('Successfully exported mission');
 };
 
 /**
@@ -947,8 +943,8 @@ export const importMission = (file) => async (dispatch, _getState) => {
   try {
     const data = JSON.parse(await readFileAsText(file));
     dispatch(restoreMission(data.mission));
-    dispatch(showSuccess('Successfully imported mission'));
+    showSuccess('Successfully imported mission');
   } catch (error) {
-    dispatch(showError(`Error while importing mission: ${error}`));
+    showError(`Error while importing mission: ${error}`);
   }
 };

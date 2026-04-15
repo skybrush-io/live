@@ -19,14 +19,18 @@ import {
   updateLandingPositions,
   updateTakeoffHeadings,
 } from '~/features/mission/slice';
-import { showNotification } from '~/features/snackbar/actions';
-import { MessageSemantics } from '~/features/snackbar/types';
+import { showConfirmationDialog } from '~/features/prompt/actions';
+import { getUAVOperationConfirmationStyle } from '~/features/settings/selectors';
+import { showError, showSuccess } from '~/features/snackbar/actions';
 import {
   getActiveUAVIds,
   getCurrentGPSPositionByUavId,
 } from '~/features/uavs/selectors';
 import { clearLastUploadResultForJobType } from '~/features/upload/slice';
+import i18n from '~/i18n';
+import messageHub from '~/message-hub';
 import { MissionType } from '~/model/missions';
+import { UAVOperationConfirmationStyle } from '~/model/settings';
 import {
   lonLatFromMapViewCoordinate,
   mapViewCoordinateFromLonLat,
@@ -49,6 +53,7 @@ import {
   getRoomCorners,
   getShowClockReference,
   hasScheduledStartTime,
+  selectIsCollectiveRTHTriggered,
 } from './selectors';
 import {
   _clearLoadedShow,
@@ -56,6 +61,7 @@ import {
   approveTakeoffAreaAt,
   loadingProgress,
   revokeTakeoffAreaApproval,
+  setCollectiveRTHSchedule,
   setEnvironmentType,
   setLastLoadingAttemptFailed,
   setOutdoorShowOrientation,
@@ -260,13 +266,7 @@ const createShowLoaderThunkFactory = (
       } = await promise;
       processShowInJSONFormatAndDispatchActions(spec, dispatch);
     } catch (error) {
-      dispatch(
-        showNotification({
-          message: errorMessage || 'Failed to load show.',
-          semantics: MessageSemantics.ERROR,
-          permanent: true,
-        })
-      );
+      showError(errorMessage || 'Failed to load show.', { permanent: true });
       dispatch(setLastLoadingAttemptFailed(true));
       console.error(error);
     }
@@ -383,7 +383,7 @@ function processShowInJSONFormatAndDispatchActions(spec, dispatch) {
  */
 export function reloadCurrentShowFile() {
   return async (dispatch, getState) => {
-    const { getFileAsBlob } = window.bridge;
+    const { getFileAsBlob } = globalThis.bridge;
 
     if (!getFileAsBlob) {
       console.warn('reloadCurrentShowFile() works only in Electron');
@@ -454,6 +454,9 @@ export const setOutdoorShowAltitudeReferenceValue =
 export const setOutdoorShowAltitudeReferenceToAverageAMSL =
   () => (dispatch, getState) => {
     const state = getState();
+
+    // This will include drones that are sleeping, but that's okay.
+    // See discussion in https://github.com/skybrush-io/live/issues/80
     const activeUAVIds = getActiveUAVIds(state);
     const altitudes = [];
 
@@ -469,3 +472,117 @@ export const setOutdoorShowAltitudeReferenceToAverageAMSL =
       dispatch(setOutdoorShowAltitudeReferenceValue(avgAltitude.toFixed(1)));
     }
   };
+
+const confirmedCollectiveOperation = async (
+  dispatch,
+  getState,
+  { confirmationMessage, confirmationTitle }
+) => {
+  const baseState = getState();
+  if (selectIsCollectiveRTHTriggered(baseState)) {
+    console.error(
+      'Tried to trigger collective action when collective RTH was already triggered.'
+    );
+    return false;
+  }
+
+  if (
+    getUAVOperationConfirmationStyle(baseState) !==
+    UAVOperationConfirmationStyle.NEVER
+  ) {
+    const confirmation = await dispatch(
+      showConfirmationDialog(confirmationMessage, {
+        title: confirmationTitle,
+      })
+    );
+    if (!confirmation?.confirmed) {
+      return false;
+    }
+  }
+
+  return true;
+};
+
+export const startCollectiveRTH = () => async (dispatch, getState) => {
+  const proceed = await confirmedCollectiveOperation(dispatch, getState, {
+    confirmationMessage: i18n.t('show.collectiveRTH.confirmation.message'),
+    confirmationTitle: i18n.t('show.collectiveRTH.confirmation.title'),
+  });
+  if (!proceed) {
+    return;
+  }
+
+  try {
+    const schedule = await messageHub.execute.startCollectiveRTH();
+    const rthSegment = schedule.schedule.find(
+      (segment) => segment.type === 'rth'
+    );
+    dispatch(setCollectiveRTHSchedule(schedule));
+    showSuccess(
+      i18n.t('show.collectiveRTH.notification.success'),
+      rthSegment === undefined
+        ? undefined
+        : {
+            countdown: true,
+            timeout: rthSegment.startMs - Date.now(),
+          }
+    );
+  } catch (error) {
+    showError(
+      error.message ?? i18n.t('show.collectiveRTH.notification.error'),
+      { permanent: true }
+    );
+  }
+};
+
+export const suspendShow = () => async (dispatch, getState) => {
+  const proceed = await confirmedCollectiveOperation(dispatch, getState, {
+    confirmationMessage: i18n.t('show.suspend.confirmation.message'),
+    confirmationTitle: i18n.t('show.suspend.confirmation.title'),
+  });
+  if (!proceed) {
+    return;
+  }
+
+  try {
+    const result = await messageHub.execute.suspendShow();
+    const timeout = result.schedule.at(-1)?.endMs - Date.now();
+    const notificationOptions = Number.isNaN(timeout)
+      ? undefined
+      : { countdown: true, timeout };
+    showSuccess(
+      i18n.t('show.suspend.notification.success'),
+      notificationOptions
+    );
+  } catch (error) {
+    showError(error.message ?? i18n.t('show.suspend.notification.error'), {
+      permanent: true,
+    });
+  }
+};
+
+export const resumeShow = () => async (dispatch, getState) => {
+  const proceed = await confirmedCollectiveOperation(dispatch, getState, {
+    confirmationMessage: i18n.t('show.resume.confirmation.message'),
+    confirmationTitle: i18n.t('show.resume.confirmation.title'),
+  });
+  if (!proceed) {
+    return;
+  }
+
+  try {
+    const result = await messageHub.execute.resumeShow();
+    const timeout = result.schedule.at(-1)?.endMs - Date.now();
+    const notificationOptions = Number.isNaN(timeout)
+      ? undefined
+      : { countdown: true, timeout };
+    showSuccess(
+      i18n.t('show.resume.notification.success'),
+      notificationOptions
+    );
+  } catch (error) {
+    showError(error.message ?? i18n.t('show.resume.notification.error'), {
+      permanent: true,
+    });
+  }
+};

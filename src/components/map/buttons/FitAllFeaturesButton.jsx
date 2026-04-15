@@ -10,7 +10,6 @@ import VectorLayer from 'ol/layer/Vector';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Translation } from 'react-i18next';
-import { connect } from 'react-redux';
 
 import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
 import { showError } from '~/features/snackbar/actions';
@@ -36,7 +35,6 @@ class FitAllFeaturesButton extends React.Component {
   static propTypes = {
     duration: PropTypes.number,
     margin: PropTypes.number,
-    showError: PropTypes.func,
     target: PropTypes.oneOf(['drones', 'all']),
   };
 
@@ -143,7 +141,7 @@ class FitAllFeaturesButton extends React.Component {
           this._onGeolocationError
         );
       } else {
-        this.props.showError(
+        showError(
           'There are no features to fit into the view, and geolocation is not available'
         );
       }
@@ -185,40 +183,25 @@ class FitAllFeaturesButton extends React.Component {
    * @param {Object} error the error object provided by the geolocation service
    */
   _onGeolocationError = (error) => {
-    const { showError } = this.props;
+    let message;
 
-    if (!showError) {
-      console.error(error.message);
-    } else {
-      let message;
-
-      switch (error.code) {
-        case 1:
-          message = 'Could not retrieve your location: permission denied';
-          break;
-        case 2:
-          message = 'Error while retrieveing your location; try again later';
-          break;
-        case 3:
-          message = 'Timeout while retrieving your locaiton; try again later';
-          break;
-        default:
-          message =
-            'An unexpected error happened while retrieving your location';
-          console.error(error.message);
-      }
-
-      showError(message);
+    switch (error.code) {
+      case 1:
+        message = 'Could not retrieve your location: permission denied';
+        break;
+      case 2:
+        message = 'Error while retrieveing your location; try again later';
+        break;
+      case 3:
+        message = 'Timeout while retrieving your locaiton; try again later';
+        break;
+      default:
+        message = 'An unexpected error happened while retrieving your location';
+        console.error(error.message);
     }
+
+    showError(message);
   };
 }
 
-const ConnectedFitAllFeaturesButton = connect(
-  // mapStateToProps
-  null,
-  // mapDispatchToProps
-  {
-    showError,
-  }
-)(FitAllFeaturesButton);
-export default ConnectedFitAllFeaturesButton;
+export default FitAllFeaturesButton;

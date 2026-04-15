@@ -16,7 +16,6 @@ import Place from '@mui/icons-material/Place';
 import ThreeDRotation from '@mui/icons-material/ThreeDRotation';
 import WbSunny from '@mui/icons-material/WbSunny';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { Module, ModuleTray, Workbench } from 'react-flexible-workbench';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
@@ -26,6 +25,7 @@ import { getMissionType } from '~/features/mission/selectors';
 import { areExperimentalFeaturesEnabled } from '~/features/settings/selectors';
 import Antenna from '~/icons/Antenna';
 import ConnectingAirports from '~/icons/ConnectingAirports';
+import HomeCircleOutlined from '~/icons/HomeCircleOutlined';
 import Route from '~/icons/Route';
 import ShapeLine from '~/icons/ShapeLine';
 import { MissionType } from '~/model/missions';
@@ -109,6 +109,12 @@ const Sidebar = ({
           icon={<ConnectingAirports />}
           label={t('view.uav-list')}
           component='uav-list'
+        />
+        <Module
+          id='collectiveRTH'
+          icon={<HomeCircleOutlined />}
+          label={t('view.collective-rth')}
+          component='collective-rth'
         />
         {hasFeature('beacons') && (
           <Module

@@ -1,7 +1,7 @@
 import { styled } from '@mui/material/styles';
 import { keyframes } from '@mui/styled-engine';
 import PropTypes from 'prop-types';
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 

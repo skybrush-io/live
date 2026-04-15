@@ -68,6 +68,7 @@ const MappingSlotEditorToolbar = React.forwardRef<
     </Translation>
   );
 });
+MappingSlotEditorToolbar.displayName = 'MappingSlotEditorToolbar';
 
 export default connect(
   // mapStateToProps

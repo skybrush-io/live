@@ -1,6 +1,5 @@
 import Help from '@mui/icons-material/HelpOutline';
 import config from 'config';
-import React from 'react';
 import { Translation } from 'react-i18next';
 
 import { GenericHeaderButton } from '@skybrush/mui-components';

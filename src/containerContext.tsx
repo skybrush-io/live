@@ -13,6 +13,7 @@ export const PopoverWithContainerFromContext = React.forwardRef<
     {(container) => <Popover {...props} ref={ref} container={container} />}
   </ContainerContext.Consumer>
 ));
+PopoverWithContainerFromContext.displayName = 'PopoverWithContainerFromContext';
 
 export const TooltipWithContainerFromContext = React.forwardRef<
   HTMLElement,
@@ -22,3 +23,4 @@ export const TooltipWithContainerFromContext = React.forwardRef<
     {(container) => <Tooltip {...props} ref={ref} appendTo={container} />}
   </ContainerContext.Consumer>
 ));
+TooltipWithContainerFromContext.displayName = 'TooltipWithContainerFromContext';

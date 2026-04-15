@@ -1,6 +1,6 @@
 import HelpIcon from '@mui/icons-material/Help';
 import type { Theme } from '@mui/material/styles';
-import React from 'react';
+import type React from 'react';
 
 import { makeStyles } from '@skybrush/app-theme-mui';
 import { Tooltip } from '@skybrush/mui-components';

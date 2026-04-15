@@ -1,5 +1,4 @@
 import SettingsEthernet from '@mui/icons-material/SettingsEthernet';
-import React from 'react';
 import { connect } from 'react-redux';
 
 import { GenericHeaderButton, LazyTooltip } from '@skybrush/mui-components';

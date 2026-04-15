@@ -8,7 +8,7 @@ import formatDate from 'date-fns/format';
 import 'easymde/dist/easymde.min.css';
 import debounce from 'lodash-es/debounce';
 import PropTypes from 'prop-types';
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import SimpleMDE from 'react-simplemde-editor';
@@ -58,6 +58,30 @@ const useStyles = makeStyles((theme) => ({
       '& + $saveIcon': {
         opacity: 1,
       },
+    },
+
+    '& .cm-s-easymde .cm-header-1': {
+      fontSize: 'calc(1.2rem + 0.4vw)',
+    },
+
+    '& .cm-s-easymde .cm-header-2': {
+      fontSize: 'calc(1.2rem + 0.3vw)',
+    },
+
+    '& .cm-s-easymde .cm-header-3': {
+      fontSize: 'calc(1.2rem + 0.2vw)',
+    },
+
+    '& .cm-s-easymde .cm-header-4': {
+      fontSize: 'calc(1.2rem + 0.1vw)',
+    },
+
+    '& .cm-s-easymde .cm-header-5': {
+      fontSize: '1.2rem',
+    },
+
+    '& .cm-s-easymde .cm-header-6': {
+      fontSize: '1.1rem',
     },
   },
 

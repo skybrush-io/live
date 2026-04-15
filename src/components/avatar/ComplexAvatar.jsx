@@ -1,7 +1,6 @@
 import CircularProgress from '@mui/material/CircularProgress';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
-import React from 'react';
 
 import { Colors, Status, makeStyles } from '@skybrush/app-theme-mui';
 import { SemanticAvatar, StatusPill } from '@skybrush/mui-components';

@@ -3,7 +3,6 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { Form } from 'react-final-form';
 import { connect } from 'react-redux';
 import { useAsync } from 'react-use';

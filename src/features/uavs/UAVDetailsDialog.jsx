@@ -1,7 +1,6 @@
 import Box from '@mui/material/Box';
 import clamp from 'lodash-es/clamp';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { connect } from 'react-redux';
 
 import { DraggableDialog } from '@skybrush/mui-components';

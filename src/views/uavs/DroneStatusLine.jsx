@@ -3,7 +3,6 @@ import isNil from 'lodash-es/isNil';
 import padEnd from 'lodash-es/padEnd';
 import padStart from 'lodash-es/padStart';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { connect } from 'react-redux';
 
 import { makeStyles, monospacedFont } from '@skybrush/app-theme-mui';
@@ -23,9 +22,9 @@ import { UAVAge } from '~/model/uav';
 import { getPreferredCoordinateFormatter } from '~/selectors/formatting';
 import { formatCoordinateArray } from '~/utils/formatting';
 
+import FlightModeStatusPill from './FlightModeStatusPill';
 import GPSStatusPill from './GPSStatusPill';
 import RSSIIndicator from './RSSIIndicator';
-import FlightModeStatusPill from './FlightModeStatusPill';
 
 /**
  * Converts the absolute value of a heading deviation, in degrees, to the

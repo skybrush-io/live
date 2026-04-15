@@ -4,15 +4,14 @@
 
 import mapValues from 'lodash-es/mapValues';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { configure as configureHotkeys, GlobalHotKeys } from 'react-hotkeys';
 import { connect } from 'react-redux';
 
 import { removeSelectedFeatures } from '~/features/map-features/actions';
-import { selectAllUAVs } from '~/features/map/selection';
 import { removeSelectedMissionItems } from '~/features/mission/actions';
 import { getPreferredCommunicationChannelIndex } from '~/features/mission/selectors';
 import { togglePreferredChannel } from '~/features/mission/slice';
+import { selectAllUAVs } from '~/features/selection/slice';
 import {
   toggleBroadcast,
   toggleDeveloperMode,

@@ -35,19 +35,20 @@ import {
 } from '~/features/servers/selectors';
 import {
   addServerFeatures,
-  clearTimeSyncStatistics,
   clearServerFeatures,
   clearServerLicense,
   clearServerPortMapping,
+  clearTimeSyncStatistics,
   openTimeSyncWarningDialog,
   setCurrentServerConnectionState,
   setServerLicense,
-  setServerVersion,
   setServerPortMapping,
+  setServerVersion,
 } from '~/features/servers/slice';
 import { Protocol } from '~/features/servers/types';
 import {
   clearStartTimeAndMethod,
+  setCollectiveRTHSchedule,
   synchronizeShowSettings,
 } from '~/features/show/slice';
 import { showError, showNotification } from '~/features/snackbar/actions';
@@ -485,6 +486,10 @@ class ServerConnectionManagerPresentation extends React.Component {
 async function executeTasksAfterConnection(dispatch, getState) {
   let response;
 
+  // Clear the collective RTH schedule if it exists. We can not be sure
+  // it is synchronized with the state of server we connected to.
+  dispatch(setCollectiveRTHSchedule(undefined));
+
   try {
     const {
       body: { version },
@@ -615,21 +620,19 @@ async function executeTasksAfterConnection(dispatch, getState) {
     ) {
       const clockSkew = getClockSkewInMilliseconds(getState());
       const formattedClockSkew = formatClockSkew(Math.abs(clockSkew));
-      dispatch(
-        showNotification({
-          message: `Server clock is ${
-            clockSkew > 0 ? 'ahead' : 'behind'
-          } by ${formattedClockSkew}`,
-          buttons: [
-            {
-              label: 'Details',
-              action: openTimeSyncWarningDialog(),
-            },
-          ],
-          semantics: MessageSemantics.WARNING,
-          permanent: true,
-        })
-      );
+      showNotification({
+        message: `Server clock is ${
+          clockSkew > 0 ? 'ahead' : 'behind'
+        } by ${formattedClockSkew}`,
+        buttons: [
+          {
+            label: 'Details',
+            action: openTimeSyncWarningDialog(),
+          },
+        ],
+        semantics: MessageSemantics.WARNING,
+        permanent: true,
+      });
     }
   } catch (error) {
     console.error(error);
@@ -669,20 +672,20 @@ const createCommonDisconnectionAndErrorHandlerThunk =
     switch (reason) {
       case 'connection error':
         if (!willReconnect) {
-          dispatch(showError('Error while connecting to Skybrush server'));
+          showError('Error while connecting to Skybrush server');
         }
 
         break;
 
       case 'connection timeout':
         if (!willReconnect) {
-          dispatch(showError('Timeout while connecting to Skybrush server'));
+          showError('Timeout while connecting to Skybrush server');
         }
 
         break;
 
       case 'io client disconnect':
-        dispatch(showNotification('Disconnected from Skybrush server'));
+        showNotification('Disconnected from Skybrush server');
         break;
 
       case 'io server disconnect':
@@ -691,11 +694,11 @@ const createCommonDisconnectionAndErrorHandlerThunk =
         break;
 
       case 'transport close':
-        dispatch(showError('Skybrush server closed connection unexpectedly'));
+        showError('Skybrush server closed connection unexpectedly');
         break;
 
       case 'ping timeout':
-        dispatch(showError('Connection to Skybrush server lost'));
+        showError('Connection to Skybrush server lost');
         break;
 
       default:
@@ -740,12 +743,10 @@ const ServerConnectionManager = connect(
 
     onConnected() {
       // Let the user know that we are connected
-      dispatch(
-        showNotification({
-          message: i18n.t('notifications.connectedToSkybrushServer'),
-          semantics: 'info',
-        })
-      );
+      showNotification({
+        message: i18n.t('notifications.connectedToSkybrushServer'),
+        semantics: 'info',
+      });
       dispatch(setCurrentServerConnectionState(ConnectionState.CONNECTED));
 
       // Execute all the tasks that should be executed after establishing a
@@ -785,7 +786,7 @@ const ServerConnectionManager = connect(
         ? 'Skybrush server died unexpectedly'
         : 'Failed to launch local Skybrush server';
       dispatch(setCurrentServerConnectionState(ConnectionState.DISCONNECTED));
-      dispatch(showError(message ? `${baseMessage}: ${message}` : baseMessage));
+      showError(message ? `${baseMessage}: ${message}` : baseMessage);
     },
 
     onLocalServerStarted() {

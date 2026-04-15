@@ -6,7 +6,6 @@ import DialogContent from '@mui/material/DialogContent';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { Translation, withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 

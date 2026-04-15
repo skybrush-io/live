@@ -9,7 +9,6 @@ import ListItemText from '@mui/material/ListItemText';
 import isEmpty from 'lodash-es/isEmpty';
 import isNumber from 'lodash-es/isNumber';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { connect } from 'react-redux';
 
 import { makeStyles, Status } from '@skybrush/app-theme-mui';

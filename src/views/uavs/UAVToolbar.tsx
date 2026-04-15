@@ -65,6 +65,7 @@ const UAVToolbar = React.forwardRef<HTMLDivElement, UAVToolbarProps>(
     );
   }
 );
+UAVToolbar.displayName = 'UAVToolbar';
 
 export default connect(
   // mapStateToProps

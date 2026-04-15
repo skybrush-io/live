@@ -37,8 +37,8 @@ const doEstimate = createAsyncAction(
  * Action thunk that estimates the coordinate system of the show based on the
  * current positions of the active UAVs.
  */
-export function estimateShowCoordinateSystemFromActiveUAVs(): AppThunk {
-  return async (dispatch, getState) => {
+export const estimateShowCoordinateSystemFromActiveUAVs =
+  (): AppThunk => async (dispatch, getState) => {
     const state = getState();
 
     if (!canEstimateShowCoordinateSystemFromActiveUAVs(state)) {
@@ -51,7 +51,8 @@ export function estimateShowCoordinateSystemFromActiveUAVs(): AppThunk {
     };
 
     try {
-      await dispatch(doEstimate(args));
+      // TODO: Properly integrate `redux-promise-middleware` into `AppDispatch`!
+      await (dispatch(doEstimate(args)) as unknown as Promise<unknown>);
     } catch (error) {
       console.error(error);
       console.log('Problem description:', args.problem);
@@ -88,4 +89,3 @@ export function estimateShowCoordinateSystemFromActiveUAVs(): AppThunk {
       );
     }
   };
-}

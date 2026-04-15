@@ -28,6 +28,7 @@ export const injectFlockFromContext = <
 ): React.ForwardRefExoticComponent<
   React.PropsWithoutRef<TProps> & React.RefAttributes<TElement>
 > =>
+  // eslint-disable-next-line react/display-name
   React.forwardRef<TElement, TProps>((props, ref) => (
     <Flock.Consumer>
       {(flock) => <Component {...(props as TProps)} ref={ref} flock={flock} />}

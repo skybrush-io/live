@@ -60,30 +60,28 @@ const VirtualizedUAVListBody = React.forwardRef<
     <VirtuosoGrid
       ref={ref}
       components={{
-        // eslint-disable-next-line @typescript-eslint/naming-convention
         Header: GridHeaderPadding,
       }}
       itemClassName={classes.gridItem}
-      itemContent={(index) => itemRenderer(items[index]!)}
+      itemContent={(index) => itemRenderer(items[index])}
       listClassName={classes.grid}
       totalCount={items.length}
       {...(rest as any)}
     />
   ) : (
     <Virtuoso
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       ref={ref as any}
       className={classes.list}
       components={{
-        // eslint-disable-next-line @typescript-eslint/naming-convention
         Header: GridHeaderPadding,
       }}
-      itemContent={(index) => itemRenderer(items[index]!)}
+      itemContent={(index) => itemRenderer(items[index])}
       totalCount={items.length}
       {...rest}
     />
   );
 });
+VirtualizedUAVListBody.displayName = 'VirtualizedUAVListBody';
 
 export default connect(
   // mapStateToProps

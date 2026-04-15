@@ -2,7 +2,6 @@ import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import capitalize from 'lodash-es/capitalize';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { connect } from 'react-redux';
 
 import { getSelectedTabInUAVDetailsPanel } from '~/features/uavs/selectors';

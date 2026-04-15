@@ -1,5 +1,5 @@
 import Box from '@mui/material/Box';
-import React from 'react';
+import type React from 'react';
 import { Translation } from 'react-i18next';
 import { connect } from 'react-redux';
 import TimeAgo from 'react-timeago';

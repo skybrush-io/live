@@ -3,7 +3,6 @@ import Box from '@mui/material/Box';
 import { useTheme } from '@mui/material/styles';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { connect } from 'react-redux';
 import { useMeasure } from 'react-use';
 

@@ -1,6 +1,6 @@
 import type { Theme } from '@mui/material/styles';
 import clsx from 'clsx';
-import React from 'react';
+import type React from 'react';
 
 import { makeStyles } from '@skybrush/app-theme-mui';
 import { StatusPill } from '@skybrush/mui-components';

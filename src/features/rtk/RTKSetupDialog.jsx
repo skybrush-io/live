@@ -1,7 +1,6 @@
 import Box from '@mui/material/Box';
 import Dialog from '@mui/material/Dialog';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { connect } from 'react-redux';
 
 import RTKCorrectionSourceSelector from './RTKCorrectionSourceSelector';

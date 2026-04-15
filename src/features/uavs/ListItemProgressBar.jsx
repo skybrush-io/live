@@ -1,7 +1,6 @@
 import LinearProgress from '@mui/material/LinearProgress';
 import isNil from 'lodash-es/isNil';
 import PropTypes from 'prop-types';
-import React from 'react';
 
 const ListItemProgressBar = ({ progress }) => {
   const { percentage } = progress || {};

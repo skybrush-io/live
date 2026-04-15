@@ -9,7 +9,8 @@ import type { DragBoxEvent } from 'ol/interaction/DragBox';
 import type { ModifyEvent } from 'ol/interaction/Modify';
 import VectorLayer from 'ol/layer/Vector';
 import type VectorSource from 'ol/source/Vector';
-import React, { useCallback, useMemo } from 'react';
+import type React from 'react';
+import { useCallback, useMemo } from 'react';
 import { connect } from 'react-redux';
 
 import ToolbarDivider from '~/components/ToolbarDivider';
@@ -51,7 +52,7 @@ import {
 import { getVisibleSelectableLayers, LayerType } from '~/model/layers';
 import type { RootState } from '~/store/reducers';
 import type { Identifier } from '~/utils/collections';
-import { findFeaturesById, type LonLat } from '~/utils/geography';
+import { findFeaturesById } from '~/utils/geography';
 import { EMPTY_ARRAY } from '~/utils/redux';
 // TODO(vp): try to move or generalize this component
 // to get rid of the `~/views` import.
@@ -75,7 +76,7 @@ import {
   historyRedo,
   historyUndo,
   updateSelection,
-} from './state';
+} from './slice';
 
 // === Layers ===
 
@@ -180,7 +181,6 @@ type MapProps = Readonly<{
   updateSelection: (mode: FeatureSelectionMode, ids: Identifier[]) => void;
 }>;
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 const useOwnState = (props: MapProps) => {
   const { selection, updateModifiedFeatures, updateSelection } = props;
 
@@ -331,7 +331,7 @@ const ShowConfiguratorMap = (props: MapProps): React.JSX.Element => {
     updateModifiedFeatures,
   } = useOwnState(props);
 
-  const mapLayers = useMemo(() => ({ layers, layerComponents }), []);
+  const mapLayers = useMemo(() => ({ layers, layerComponents }), [layers]);
 
   return (
     <Map

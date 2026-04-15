@@ -15,4 +15,3 @@ https://github.com/sindresorhus/p-timeout/commit/234f6428dabd228116a31a146c725eb
 
 We should stick to 6.1.4 until this is sorted out, _or_ maybe refactor our code
 to use an `AbortSignal` instead where possible.
-

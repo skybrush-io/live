@@ -1,5 +1,7 @@
 import { type SetRequired } from 'type-fest';
 
+import type { ShowSegment, ShowSegmentId } from '@skybrush/show-format';
+
 import { type LonLat } from '~/utils/geography';
 import type { Coordinate3D } from '~/utils/math';
 
@@ -51,3 +53,5 @@ export type EnvironmentState = {
   indoor: IndoorEnvironment;
   type: EnvironmentType;
 };
+
+export type ShowSegmentsRecord = Partial<Record<ShowSegmentId, ShowSegment>>;

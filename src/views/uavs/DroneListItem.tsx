@@ -1,7 +1,7 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import type { Theme } from '@mui/material/styles';
 import clsx from 'clsx';
-import React, { useCallback } from 'react';
+import type React from 'react';
+import { useCallback } from 'react';
 import { useDrag, useDrop, type ConnectableElement } from 'react-dnd';
 
 import { makeStyles } from '@skybrush/app-theme-mui';
@@ -155,7 +155,6 @@ const DroneListItem = ({
     fill && classes.fill,
     stretch && classes.stretch
   );
-  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
   return draggable || onDrop ? (
     <DragDropArea
       className={mergedClassNames}

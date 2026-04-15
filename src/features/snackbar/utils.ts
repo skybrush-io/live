@@ -7,7 +7,7 @@ import { MessageSemantics } from './types';
  * semantics value.
  */
 export function semanticsFromSeverity(severity: Severity): MessageSemantics {
-  switch ((severity || '').toLowerCase()) {
+  switch (severity) {
     case Severity.ERROR:
     case Severity.CRITICAL:
       return MessageSemantics.ERROR;
@@ -21,20 +21,4 @@ export function semanticsFromSeverity(severity: Severity): MessageSemantics {
     default:
       return MessageSemantics.DEFAULT;
   }
-}
-
-const emojisForSemantics = {
-  [MessageSemantics.SUCCESS]: '✅',
-  [MessageSemantics.ERROR]: '🛑',
-  [MessageSemantics.WARNING]: '⚠',
-  [MessageSemantics.INFO]: '💡',
-  [MessageSemantics.DEFAULT]: '',
-};
-
-/**
- * Converts a message semantics value to an emoji that can be used to represent
- * that severity level in text.
- */
-export function semanticsToEmoji(semantics: MessageSemantics): string {
-  return emojisForSemantics[semantics] || '';
 }

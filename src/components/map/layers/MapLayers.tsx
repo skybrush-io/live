@@ -1,4 +1,4 @@
-import React from 'react';
+import type React from 'react';
 
 import type { ModifyEvent } from 'ol/interaction/Modify';
 import type { Tool } from '~/components/map/tools';

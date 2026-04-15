@@ -1,4 +1,7 @@
 #!/usr/bin/env -S deno run --allow-all
+/* eslint-disable */
+
+/* Disabling eslint because we use Deno and eslint has no idea what to do with it */
 
 import puppeteer from 'npm:puppeteer-core';
 
@@ -6,7 +9,7 @@ import puppeteer from 'npm:puppeteer-core';
 
 const getBrowserExecutablePath = async () => {
   for (const browser of ['chromium', 'chrome']) {
-    const { stdout, stderr, code } = await new Deno.Command('which', {
+    const { stdout, code } = await new Deno.Command('which', {
       args: [browser],
     }).output();
     if (code === 0) {

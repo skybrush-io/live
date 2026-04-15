@@ -1,6 +1,5 @@
 import Box from '@mui/material/Box';
 import PropTypes from 'prop-types';
-import React from 'react';
 
 /**
  * Overlay that can be placed on top of the 3D view in order to show some

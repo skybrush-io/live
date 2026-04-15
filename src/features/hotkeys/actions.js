@@ -3,17 +3,17 @@ import isNil from 'lodash-es/isNil';
 import { copyDisplayedCoordinatesToClipboard } from '~/components/map/utils';
 import { hasPendingAudibleAlerts } from '~/features/alert/selectors';
 import { dismissAlerts } from '~/features/alert/slice';
-import { clearSelection } from '~/features/map/selection';
 import {
   getMissionMapping,
   isMappingEditable,
 } from '~/features/mission/selectors';
-import { showNotification } from '~/features/snackbar/actions';
+import { finishMappingEditorSession } from '~/features/mission/slice';
+import { clearSelection } from '~/features/selection/slice';
+import { showError, showNotification } from '~/features/snackbar/actions';
 import { setSelectedUAVIds } from '~/features/uavs/actions';
 import { getUAVById } from '~/features/uavs/selectors';
 import { scrollUAVListItemIntoView } from '~/utils/navigation';
 
-import { finishMappingEditorSession } from '../mission/slice';
 import { getPendingUAVId, isPendingUAVIdOverlayVisible } from './selectors';
 import { setPendingUAVId, startPendingUAVIdTimeout } from './slice';
 
@@ -267,16 +267,11 @@ export function clearSelectionOrPendingUAVId() {
  * Thunk action that copies the currently displayed map coordinates to the
  * clipboard and then shows a notification to the user.
  */
-export const copyCoordinates = () => (dispatch) => {
+export const copyCoordinates = () => (_dispatch) => {
   if (copyDisplayedCoordinatesToClipboard()) {
-    dispatch(showNotification('Coordinates copied to clipboard.'));
+    showNotification('Coordinates copied to clipboard.');
   } else {
-    dispatch(
-      showNotification({
-        message: 'Failed to copy coordinates; are you hovering over the map?',
-        semantics: 'error',
-      })
-    );
+    showError('Failed to copy coordinates; are you hovering over the map?');
   }
 };
 

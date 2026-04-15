@@ -1,3 +1,8 @@
+import type { TFunction } from 'i18next';
+import partial from 'lodash-es/partial';
+import type React from 'react';
+import { withTranslation } from 'react-i18next';
+
 import CropSquare from '@mui/icons-material/CropSquare';
 import FiberManualRecord from '@mui/icons-material/FiberManualRecord';
 import PanoramaFishEye from '@mui/icons-material/PanoramaFishEye';
@@ -6,13 +11,9 @@ import SelectAll from '@mui/icons-material/SelectAll';
 import ShowChart from '@mui/icons-material/ShowChart';
 import StarBorder from '@mui/icons-material/StarBorder';
 import ZoomIn from '@mui/icons-material/ZoomIn';
-import type { SvgIconProps } from '@mui/material';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
-import type { TFunction } from 'i18next';
-import partial from 'lodash-es/partial';
-import React from 'react';
-import { withTranslation } from 'react-i18next';
+import type { SvgIconProps } from '@mui/material/SvgIcon';
 
 import { Tool } from '~/components/map/tools';
 import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';

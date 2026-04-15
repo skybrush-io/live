@@ -8,7 +8,6 @@ import identity from 'lodash-es/identity';
 import isNil from 'lodash-es/isNil';
 import { getDistance as haversineDistance } from 'ol/sphere';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { Translation, useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 

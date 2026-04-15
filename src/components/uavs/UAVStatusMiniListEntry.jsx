@@ -1,7 +1,6 @@
 import Box from '@mui/material/Box';
 import ListItemButton from '@mui/material/ListItemButton';
 import PropTypes from 'prop-types';
-import React from 'react';
 
 import { StatusPill } from '@skybrush/mui-components';
 

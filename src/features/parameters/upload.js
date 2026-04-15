@@ -1,10 +1,11 @@
 import { call, select } from 'redux-saga/effects';
-import semver from 'semver';
 
-import { getServerVersion } from '~/features/servers/selectors';
+import { getServerVersionValidator } from '~/features/servers/selectors';
 import messageHub from '~/message-hub';
 
 import { JOB_TYPE } from './constants';
+
+const supportsBulkUpload = getServerVersionValidator('>=2.34.1');
 
 /**
  * Handles a parameter upload session to a single drone. Returns a promise that
@@ -17,16 +18,22 @@ import { JOB_TYPE } from './constants';
 function* runSingleParameterUpload({ uavId, payload }, options) {
   const { items, meta } = payload ?? {};
 
-  if (!Array.isArray(items) || items.length === 0) {
+  if (!Array.isArray(items)) {
     return;
   }
 
-  const version = yield select(getServerVersion);
-  const useBulkUpload = semver.gte(version, '2.34.1');
+  const uavItems = items.filter(
+    (param) => param.uavId === undefined || param.uavId === uavId
+  );
+  if (uavItems.length === 0) {
+    return;
+  }
+
+  const useBulkUpload = yield select(supportsBulkUpload);
 
   if (useBulkUpload) {
     const parameters = Object.fromEntries(
-      items.map(({ name, value }) => [name, value])
+      uavItems.map(({ name, value }) => [name, value])
     );
 
     // No need for a timeout here; it utilizes the message hub, which has its
@@ -37,7 +44,7 @@ function* runSingleParameterUpload({ uavId, payload }, options) {
       options
     );
   } else {
-    for (const { name, value } of items) {
+    for (const { name, value } of uavItems) {
       // No need for a timeout here; it utilizes the message hub, which has its
       // own timeout for failed command executions (although it is quite long)
       yield call(messageHub.execute.setParameter, {
