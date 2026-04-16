@@ -26,6 +26,7 @@ import type {
   RootState,
 } from '~/store/reducers';
 
+import handleError from '~/error-handling';
 import makeLogger from './logging';
 
 const logger = makeLogger('messaging');
@@ -404,7 +405,7 @@ export function createUAVOperationThunk<T extends object>(
         }
       }
 
-      void func(uavIds, options);
+      func(uavIds, options).catch(handleError);
     };
 }
 
@@ -429,7 +430,24 @@ export function createUAVOperationThunks({
   getTargetedUAVIds: AppSelector<string[]>;
   getTransportOptions?: AppSelector<TransportOptions>;
 }) {
-  return mapValues(OPERATION_MAP, (func) =>
-    createUAVOperationThunk(func, { getTargetedUAVIds, getTransportOptions })
+  return mapValues(
+    OPERATION_MAP,
+    (func) => (): AppThunk => (_dispatch, getState) => {
+      const state = getState();
+      const uavIds = getTargetedUAVIds(state);
+      const options: { transport?: TransportOptions } = {};
+
+      if (getTransportOptions) {
+        options.transport = getTransportOptions(state);
+
+        if (options.transport?.channel === 0) {
+          // Work around a bug in older versions of Skybrush Server (2.1.0 and
+          // before) where virtual UAVs did not accept a channel index
+          delete options.transport.channel;
+        }
+      }
+
+      func(uavIds, options).catch(handleError);
+    }
   );
 }
