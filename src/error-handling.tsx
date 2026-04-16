@@ -69,20 +69,33 @@ export function errorToString(error: unknown, prefix?: string): string {
   return prefix ? `${prefix}: ${String(error)}` : String(error);
 }
 
+type ErrorHandlerOptions = {
+  operation?: string;
+  quiet?: boolean;
+};
+
 /**
  * Handles the given error object gracefully within the application.
  *
  * @param err  the error to handle
- * @param operation  the operation we attempted to perform when the
- *         error happened, if known
+ * @param options.operation  the operation we attempted to perform when the
+ *        error happened, if known
+ * @param options.quiet  whether to suppress visible error notifications and simply use
+ *        the logger
  */
-export function handleError(error: unknown, operation?: string) {
+export function handleError(error: unknown, options: ErrorHandlerOptions = {}) {
+  const { quiet = false, operation } = options;
+
   if (typeof error !== 'object') {
     const message = errorToString(error);
 
     logger.error(message);
     console.error(message);
-    showError(message, operation ? { topic: operation } : undefined);
+
+    if (!quiet) {
+      showError(message, operation ? { topic: operation } : undefined);
+    }
+
     return;
   }
 
@@ -95,7 +108,10 @@ export function handleError(error: unknown, operation?: string) {
 
       logger.warn(message);
       console.warn(message);
-      showWarning(message, operation ? { topic: operation } : undefined);
+
+      if (!quiet) {
+        showWarning(message, operation ? { topic: operation } : undefined);
+      }
 
       return;
     }
@@ -105,7 +121,11 @@ export function handleError(error: unknown, operation?: string) {
 
       logger.warn(message);
       console.warn(message);
-      showWarning(message, operation ? { topic: operation } : undefined);
+
+      if (!quiet) {
+        showWarning(message, operation ? { topic: operation } : undefined);
+      }
+
       return;
     }
   }
@@ -114,7 +134,10 @@ export function handleError(error: unknown, operation?: string) {
 
   logger.error(message);
   console.error(message);
-  showError(message, operation ? { topic: operation } : undefined);
+
+  if (!quiet) {
+    showError(message, operation ? { topic: operation } : undefined);
+  }
 }
 
 /**
@@ -122,8 +145,10 @@ export function handleError(error: unknown, operation?: string) {
  * handler that handles any errors thrown by the function.
  *
  * @param func  the function to wrap
- * @param operation  the operation we are attempting to perform when calling
+ * @param options.operation  the operation we are attempting to perform when calling
  *        the function, if known
+ * @param options.quiet  whether to suppress visible error notifications and simply use
+ *        the logger
  * @return  a new function that behaves the same as the original function but
  *          handles any errors thrown by it gracefully. The return type of the
  *          function is extended with `undefined` to cater for the case when the
@@ -132,22 +157,22 @@ export function handleError(error: unknown, operation?: string) {
  */
 export function wrapInErrorHandler<T extends any[], U>(
   func: (...args: T) => Promise<U>,
-  operation?: string
+  options?: ErrorHandlerOptions
 ): (...args: T) => Promise<U | undefined>;
 export function wrapInErrorHandler<T extends any[], U>(
   func: (...args: T) => U,
-  operation?: string
+  options?: ErrorHandlerOptions
 ): (...args: T) => U | undefined;
 export function wrapInErrorHandler<T extends any[], U>(
   func: (...args: T) => U,
-  operation?: string
+  options: ErrorHandlerOptions = {}
 ): (...args: T) => Promise<U | undefined> | U | undefined {
   return (...args) => {
     let result: U;
     try {
       result = func(...args);
     } catch (error) {
-      handleError(error, operation);
+      handleError(error, options);
       return;
     }
 
@@ -156,7 +181,7 @@ export function wrapInErrorHandler<T extends any[], U>(
     }
 
     return (result as any as Promise<U>).catch((error: unknown) => {
-      handleError(error, operation);
+      handleError(error, options);
       return undefined;
     });
   };
@@ -169,22 +194,24 @@ export function wrapInErrorHandler<T extends any[], U>(
  * without arguments.
  *
  * @param func  the function to call
- * @param operation  the operation we are attempting to perform when calling
+ * @param options.operation  the operation we are attempting to perform when calling
  *        the function, if known
+ * @param options.quiet  whether to suppress visible error notifications and simply use
+ *        the logger
  */
 export function callAndHandleErrors<T>(
   func: () => Promise<T>,
-  operation?: string
+  options?: ErrorHandlerOptions
 ): Promise<T | undefined>;
 export function callAndHandleErrors<T>(
   func: () => T,
-  operation?: string
+  options?: ErrorHandlerOptions
 ): T | undefined;
 export function callAndHandleErrors<T>(
   func: () => T | Promise<T>,
-  operation?: string
+  options: ErrorHandlerOptions = {}
 ): T | undefined | Promise<T | undefined> {
-  return wrapInErrorHandler(func, operation)();
+  return wrapInErrorHandler(func, options)();
 }
 
 export default handleError;

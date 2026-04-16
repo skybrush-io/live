@@ -267,7 +267,7 @@ function* uploaderSagaWithCancellation() {
       })
     );
   } catch (error) {
-    handleError(error, 'Upload operation');
+    handleError(error, { operation: 'Upload operation' });
     yield put(_notifyUploadFinished({ cancelled: false, success: false }));
   }
 }

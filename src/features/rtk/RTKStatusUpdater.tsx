@@ -68,7 +68,7 @@ const RTKStatusUpdater = ({ onStatusChanged, period = 1000 }: Props) => {
           onStatusChanged(status);
           await checkAndAutosave(status);
         } catch (error) {
-          handleError(error, 'RTK status query');
+          handleError(error, { operation: 'RTK status query', quiet: true });
         }
 
         await delay(period);
