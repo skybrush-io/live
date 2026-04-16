@@ -93,31 +93,31 @@ const createBackgroundHint = (
  * the given item renderer function, and optionally shows a small textual
  * hint instead if there are no items.
  *
- * @param  {function|React.Component} itemRenderer  function that is called
- *         with a single item to be rendered and the props of the generated
- *         component, and must return a React component that shows the item
- * @param  {Object}  options  additional options to tweak the behaviour of
+ * @param  itemRenderer  function that is called with a single item to be
+ *         rendered, the props of the generated component, and whether the item is
+ *         selected, and must return a React component that shows the item
+ * @param  options  additional options to tweak the behaviour of
  *         the generated list
- * @param  {string?}  options.backgroundHint  optional background hint to show in
+ * @param  options.backgroundHint  optional background hint to show in
  *         place of the list when there are no items
- * @param  {function|string} options.dataProvider  function that gets the React props
+ * @param  options.dataProvider  function that gets the React props
  *         of the generated component and returns the items to show, or a
  *         string that contains the name of the React prop that holds the
  *         items to show in the generated component
- * @param  {string} options.displayName  name of the component when used in
+ * @param  options.displayName  name of the component when used in
  *         React debugging views
- * @param  {function}  options.postprocess  post-processor function that will
+ * @param  options.postprocess  post-processor function that will
  *         be called with the items generated for the list and the props of the
  *         list, and must return the actual list of items to be included in the
  *         list. Can be used to add extra items to the list without modifying
  *         the data provider.
- * @param  {function|React.Component} options.listFactory  React component
+ * @param  options.listFactory  React component
  *         that will be used as the root component of the generated list,
  *         or a function that will be called with the props of the generated
  *         component and the children that are to be put into the root
  *         React component, and returns the root React component of the list
  *         populated with the children
- * @return {React.Component}  the constructed React component
+ * @return the constructed React component
  */
 export function listOf<T extends ItemWithId, P>(
   itemRenderer: ItemRenderer<T, PropsWithoutRef<P>>,
