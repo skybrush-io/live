@@ -1,10 +1,12 @@
+import { useTheme } from '@mui/material';
 import Box from '@mui/material/Box';
+import { isThemeDark } from '@skybrush/app-theme-mui';
 import { DraggableDialog } from '@skybrush/mui-components';
+import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import type { RootState } from '~/store/reducers';
 
-import { useTranslation } from 'react-i18next';
 import OverallRTKStatusLight from './OverallRTKStatusLight';
 import RTKCorrectionSourceSelector from './RTKCorrectionSourceSelector';
 import RTKMessageStatistics from './RTKMessageStatistics';
@@ -22,6 +24,7 @@ type Props = {
  * monitor the RTK correction source for the UAVs.
  */
 const RTKSetupDialog = ({ onClose, open }: Props) => {
+  const theme = useTheme();
   const { t } = useTranslation();
   return (
     <DraggableDialog
@@ -32,7 +35,14 @@ const RTKSetupDialog = ({ onClose, open }: Props) => {
       title={t('RTKSetupDialog.title')}
       titleComponents={
         <Box>
-          <OverallRTKStatusLight format='short' />
+          <OverallRTKStatusLight
+            color={
+              isThemeDark(theme)
+                ? 'textSecondary'
+                : theme.palette.primary.contrastText
+            }
+            format='short'
+          />
         </Box>
       }
     >

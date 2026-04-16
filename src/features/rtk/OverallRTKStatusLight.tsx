@@ -19,7 +19,6 @@ const OverallRTKStatusLight = ({ format, ...rest }: Props) => {
   return (
     <LabeledStatusLight
       reversed
-      color='textSecondary'
       status={getSemanticsOfRTKStatus(status) ?? Status.OFF}
       {...rest}
     >

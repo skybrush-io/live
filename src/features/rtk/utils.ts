@@ -198,7 +198,7 @@ export function getSemanticsOfRTKStatus(
 
     case RTKCorrectionStatus.CONNECTED_RECENTLY:
     case RTKCorrectionStatus.SURVEY_IN_PROGRESS:
-      return Status.WAITING;
+      return Status.NEXT;
 
     case RTKCorrectionStatus.ERROR:
     case RTKCorrectionStatus.NO_ANTENNA_POSITION:
