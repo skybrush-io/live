@@ -5,18 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [main]
+## [2.13.1] - 2026-04-16
 
 ### Fixed
 
 - Improved visibility of LED override buttons in the UAV toolbar, especially in
   light mode.
 
-- LED override buttons now change the icon shape when clicking on them would turn the
-  override _off_.
+- LED override buttons now change the icon shape when clicking on them would
+  turn the override _off_.
 
-- Slightly tweaked the logic that decides whether clicking on the LED override button
-  would turn the override on or off to make it more intuitive.
+- Slightly tweaked the logic that decides whether clicking on the LED override
+  button would turn the override on or off to make it more intuitive.
+
+- Fixed a crash in the RTK details dialog when new messages started to appear.
+  This was introduced in 2.13.0 due to the usage of a translation hook in the
+  list item component.
 
 ## [2.13.0] - 2026-04-15
 
