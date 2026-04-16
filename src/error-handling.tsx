@@ -7,6 +7,10 @@ import isPromise from 'is-promise';
 
 import AlertWarning from '@mui/icons-material/Warning';
 
+import {
+  showError,
+  showWarning,
+} from '~/features/snackbar/actions';
 import makeLogger from '~/utils/logging';
 
 const logger = makeLogger('error');
@@ -81,6 +85,7 @@ export function handleError(error: unknown, operation?: string) {
 
     logger.error(message);
     console.error(message);
+    showError(message, operation ? { topic: operation } : undefined);
     return;
   }
 
@@ -93,6 +98,7 @@ export function handleError(error: unknown, operation?: string) {
 
       logger.warn(message);
       console.warn(message);
+      showWarning(message, operation ? { topic: operation } : undefined);
 
       return;
     }
@@ -102,6 +108,7 @@ export function handleError(error: unknown, operation?: string) {
 
       logger.warn(message);
       console.warn(message);
+      showWarning(message, operation ? { topic: operation } : undefined);
       return;
     }
   }
@@ -110,6 +117,7 @@ export function handleError(error: unknown, operation?: string) {
 
   logger.error(message);
   console.error(message);
+  showError(message, operation ? { topic: operation } : undefined);
 }
 
 /**

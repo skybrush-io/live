@@ -56,7 +56,7 @@ const RTKStatusUpdater = ({ onStatusChanged, period = 1000 }: Props) => {
           selectedPresetId
         )
       ) {
-        void dispatch(saveCurrentCoordinateForPreset(selectedPresetId));
+        await dispatch(saveCurrentCoordinateForPreset(selectedPresetId));
       }
     };
 

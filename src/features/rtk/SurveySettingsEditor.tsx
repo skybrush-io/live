@@ -78,7 +78,7 @@ const SurveySettingsEditor = ({ onClose, onSubmit, ...rest }: Props) => {
                 style={{ flex: 1 }}
               />
               <Box sx={{ p: 0.5 }} />
-              <Button onClick={void handleSubmit}>Start survey</Button>
+              <Button onClick={handleSubmit}>Start survey</Button>
             </>
           )}
         </Form>

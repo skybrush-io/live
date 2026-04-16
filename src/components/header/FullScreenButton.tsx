@@ -10,6 +10,8 @@ import {
   type GenericHeaderButtonProps,
 } from '@skybrush/mui-components';
 
+import handleError from '~/error-handling';
+
 type Props = {
   isFullscreen: boolean;
 } & GenericHeaderButtonProps;
@@ -29,7 +31,7 @@ const FullScreenButtonPresentation = ({ isFullscreen, ...rest }: Props) => (
 
 const FullScreenButton = () => {
   const toggleFullscreen = useCallback(() => {
-    void ScreenFull.toggle();
+    ScreenFull.toggle().catch(handleError);
   }, []);
   const update = useUpdate();
 

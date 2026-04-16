@@ -3,6 +3,7 @@ import Button, { type ButtonProps } from '@mui/material/Button';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 
+import { wrapInErrorHandler } from '~/error-handling';
 import { augmentMappingAutomaticallyFromSpareDrones } from '~/features/mission/actions';
 import { canAugmentMappingAutomaticallyFromSpareDrones } from '~/features/mission/selectors';
 import type { AppDispatch } from '~/store/reducers';
@@ -23,9 +24,9 @@ const AugmentMappingButton = (props: AugmentMappingButtonProps) => {
     <Button
       startIcon={<Shuffle />}
       disabled={!canAugmentMapping}
-      onClick={() =>
-        void dispatch(augmentMappingAutomaticallyFromSpareDrones())
-      }
+      onClick={wrapInErrorHandler(() =>
+        dispatch(augmentMappingAutomaticallyFromSpareDrones())
+      )}
       {...props}
     >
       {t('augmentMappingButton.assignSparesToEmptySlots')}

@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { useAppDispatch } from '~/store/hooks';
+import { wrapInErrorHandler } from '~/error-handling';
 import { showPromptDialog } from '../prompt/actions';
 import { saveCurrentSelectionAsGroupIfNotEmpty } from './actions';
 import { hasSelection } from './selectors';
@@ -93,7 +94,7 @@ const SelectionGroupMiniListItem = ({ group }: Props) => {
               onClick={(event) => {
                 event.preventDefault();
                 event.stopPropagation();
-                void handleRename();
+                wrapInErrorHandler(handleRename)();
               }}
             />
             {isSelectionNotEmpty && (

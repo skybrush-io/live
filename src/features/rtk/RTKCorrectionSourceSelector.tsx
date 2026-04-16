@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { useAsync, useAsyncFn } from 'react-use';
 
+import handleError from '~/error-handling';
 import { setCurrentRTKPresetId } from '~/features/rtk/actions';
 import { resetRTKStatistics } from '~/features/rtk/slice';
 import messageHub from '~/message-hub';
@@ -121,7 +122,7 @@ const RTKCorrectionSourceSelector = ({
         }
       };
 
-      void commitNewSelection();
+      commitNewSelection().catch(handleError);
     }
 
     return () => {
