@@ -1,5 +1,5 @@
-import { useTheme } from '@mui/material';
 import Box from '@mui/material/Box';
+import { useTheme } from '@mui/material/styles';
 import { isThemeDark } from '@skybrush/app-theme-mui';
 import { DraggableDialog } from '@skybrush/mui-components';
 import { useTranslation } from 'react-i18next';
