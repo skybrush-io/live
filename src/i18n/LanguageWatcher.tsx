@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 
+import handleError from '~/error-handling';
 import { getDisplayLanguage } from '~/features/settings/selectors';
 
 /**
@@ -13,7 +14,7 @@ const LanguageWatcher = () => {
   const language = useSelector(getDisplayLanguage);
 
   useEffect(() => {
-    void i18n.changeLanguage(language);
+    i18n.changeLanguage(language).catch(handleError);
   }, [i18n, language]);
 
   return null;

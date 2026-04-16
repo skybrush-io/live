@@ -11,6 +11,7 @@ import { SmallProgressIndicator } from '@skybrush/mui-components';
 import { DistanceField, DurationField } from '~/components/forms/fields';
 import messageHub from '~/message-hub';
 
+import { callAndHandleErrors } from '~/error-handling';
 import { startNewSurveyOnServer } from './actions';
 import { toggleSurveySettingsPanel } from './slice';
 
@@ -78,7 +79,15 @@ const SurveySettingsEditor = ({ onClose, onSubmit, ...rest }: Props) => {
                 style={{ flex: 1 }}
               />
               <Box sx={{ p: 0.5 }} />
-              <Button onClick={void handleSubmit}>Start survey</Button>
+              <Button
+                onClick={(event) => {
+                  if (handleSubmit) {
+                    void callAndHandleErrors(() => handleSubmit(event));
+                  }
+                }}
+              >
+                Start survey
+              </Button>
             </>
           )}
         </Form>

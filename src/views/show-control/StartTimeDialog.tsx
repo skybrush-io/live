@@ -30,6 +30,7 @@ import { connect } from 'react-redux';
 import { FormHeader as Header } from '@skybrush/mui-components';
 
 import { HMSDurationField } from '~/components/forms/fields';
+import { callAndHandleErrors } from '~/error-handling';
 import { CommonClockId } from '~/features/clocks/types';
 import { authorizeIfAndOnlyIfHasStartTime } from '~/features/show/actions';
 import { StartMethod } from '~/features/show/enums';
@@ -161,7 +162,12 @@ const StartTimeForm = ({
       onSubmit={onSubmit}
     >
       {({ dirty, form, handleSubmit, invalid, values }) => (
-        <form id='start-time-form' onSubmit={(e) => void handleSubmit(e)}>
+        <form
+          id='start-time-form'
+          onSubmit={(event) => {
+            void callAndHandleErrors(() => handleSubmit(event));
+          }}
+        >
           <DialogContent sx={{ paddingBottom: 0, paddingTop: 2 }}>
             <StartTimeDisplay />
 
