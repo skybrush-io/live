@@ -54,7 +54,6 @@ const persistConfig = {
     'beacons',
     'clocks',
     'connections',
-    'datasets',
     'detachablePanels',
     'docks',
     'firmwareUpdate',

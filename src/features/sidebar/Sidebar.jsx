@@ -166,14 +166,6 @@ const Sidebar = ({
           label={t('view.lcd-clock-panel')}
           component='lcd-clock-panel'
         />
-        {/*
-        <Module
-          id="datasets"
-          icon={<Storage />}
-          label="Datasets"
-          component="dataset-list"
-        />
-        */}
         <Module
           id='locations'
           icon={<Place />}
