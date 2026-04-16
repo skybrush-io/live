@@ -165,4 +165,21 @@ export function wrapInErrorHandler<T extends any[], U>(
   };
 }
 
+/**
+ * Calls the given (possibly async) function immediately and handles any errors
+ * thrown by it gracefully. This is a convenience wrapper around
+ * `wrapInErrorHandler` for cases where the function is called immediately
+ * without arguments.
+ *
+ * @param func  the function to call
+ * @param operation  the operation we are attempting to perform when calling
+ *        the function, if known
+ */
+export function callAndHandleErrors(
+  func: () => unknown,
+  operation?: string
+): void {
+  wrapInErrorHandler(func, operation)();
+}
+
 export default handleError;

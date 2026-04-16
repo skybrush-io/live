@@ -15,7 +15,7 @@ import ListItemText from '@mui/material/ListItemText';
 
 import { BackgroundHint } from '@skybrush/mui-components';
 
-import { wrapInErrorHandler } from '~/error-handling';
+import { callAndHandleErrors } from '~/error-handling';
 import { useSavedCoordinateForPreset } from '~/features/rtk/actions';
 import {
   getCoordinateRestorationDialogState,
@@ -93,7 +93,7 @@ const RTKCoordinateRestorationDialog = ({
   const { t } = useTranslation();
   const handleUseSaved = (coordinate: RTKSavedCoordinate) => {
     onClose(); // Close dialog first
-    wrapInErrorHandler(() => onUseSaved(presetId, coordinate))(); // Then start async operation
+    callAndHandleErrors(() => onUseSaved(presetId, coordinate)); // Then start async operation
   };
 
   return (
