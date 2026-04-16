@@ -64,19 +64,24 @@ const RTKMessageStatisticsListEntry = ({
   );
 };
 
-const RTKMessageStatistics = listOf(RTKMessageStatisticsListEntry, {
-  dataProvider: 'items',
-  backgroundHint: (
-    <Translation>
-      {(t) => (
-        <BackgroundHint
-          // TODO(vp): fix type coercion.
-          text={t('RTKMessage.noRTKMessagesYet') as string | undefined}
-        />
-      )}
-    </Translation>
+const RTKMessageStatistics = listOf(
+  (item: RTKMessageStatisticsListEntryProps) => (
+    <RTKMessageStatisticsListEntry {...item} />
   ),
-});
+  {
+    dataProvider: 'items',
+    backgroundHint: (
+      <Translation>
+        {(t) => (
+          <BackgroundHint
+            // TODO(vp): fix type coercion.
+            text={t('RTKMessage.noRTKMessagesYet') as string | undefined}
+          />
+        )}
+      </Translation>
+    ),
+  }
+);
 
 export default connect(
   // mapStateToProps
