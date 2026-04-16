@@ -7,10 +7,7 @@ import isPromise from 'is-promise';
 
 import AlertWarning from '@mui/icons-material/Warning';
 
-import {
-  showError,
-  showWarning,
-} from '~/features/snackbar/actions';
+import { showError, showWarning } from '~/features/snackbar/actions';
 import makeLogger from '~/utils/logging';
 
 const logger = makeLogger('error');
@@ -175,11 +172,19 @@ export function wrapInErrorHandler<T extends any[], U>(
  * @param operation  the operation we are attempting to perform when calling
  *        the function, if known
  */
-export function callAndHandleErrors(
-  func: () => unknown,
+export function callAndHandleErrors<T>(
+  func: () => Promise<T>,
   operation?: string
-): void {
-  wrapInErrorHandler(func, operation)();
+): Promise<T | undefined>;
+export function callAndHandleErrors<T>(
+  func: () => T,
+  operation?: string
+): T | undefined;
+export function callAndHandleErrors<T>(
+  func: () => T | Promise<T>,
+  operation?: string
+): T | undefined | Promise<T | undefined> {
+  return wrapInErrorHandler(func, operation)();
 }
 
 export default handleError;
