@@ -3,8 +3,6 @@
  */
 
 import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
 import type { Action, UnknownAction } from '@reduxjs/toolkit';
 import get from 'lodash-es/get';
 import identity from 'lodash-es/identity';
@@ -134,7 +132,6 @@ export function listOf<T extends ItemWithId, P>(
     listFactory,
     postprocess,
   } = validateOptions(options);
-  itemRenderer = validateItemRenderer(itemRenderer);
 
   // A separate variable is needed here to make ESLint happy
   const ListView = React.forwardRef<unknown, P>((props, ref) => {
@@ -362,7 +359,6 @@ export function selectableListOf<
     listFactory,
     postprocess,
   } = validateOptions(options);
-  itemRenderer = validateItemRenderer(itemRenderer);
 
   // A separate variable is needed here to make ESLint happy
   const SelectableListView = React.forwardRef<unknown, P>((props, ref) => {
@@ -473,7 +469,6 @@ export function multiSelectableListOf<
     listFactory,
     postprocess,
   } = validateOptions(options);
-  itemRenderer = validateItemRenderer(itemRenderer);
 
   // A separate variable is needed here to make ESLint happy
   const MultiSelectableListView = React.forwardRef<unknown, P>((props, ref) => {
@@ -565,43 +560,6 @@ function validateDataProvider<T, P>(
 }
 
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
-
-/**
- * Helper function that validates the incoming itemRenderer argument of the
- * list component generation methods. When the incoming argument is a React
- * component, it returns a function that generates a new instance of that
- * component, filled with the item as its props. Otherwise it returns the
- * incoming argument intact.
- *
- * @param  {function|React.Component} itemRenderer  the item renderer function
- *         or component
- * @return {function}  the incoming item renderer function, intact, or the
- *         incoming React component converted into a suitable item renderer
- *         function
- */
-function validateItemRenderer<T extends ItemWithId, P>(
-  itemRenderer: ItemRenderer<T, P> | React.ComponentType<P>
-): ItemRenderer<T, P> {
-  if (Object.prototype.isPrototypeOf.call(React.Component, itemRenderer)) {
-    /* eslint-disable react/prop-types */
-    const clickHandler =
-      itemRenderer === ListItem || itemRenderer == ListItemButton
-        ? 'onTouchTap'
-        : 'onClick';
-    // eslint-disable-next-line react/display-name
-    return (item: T, props: P, selected = false) => {
-      return React.createElement(itemRenderer as any, {
-        ...item,
-        key: item.id,
-        [clickHandler]: (props as any).onItemSelected,
-        selected,
-      });
-    };
-    /* eslint-enable react/prop-types */
-  } else {
-    return itemRenderer as ItemRenderer<T, P>;
-  }
-}
 
 /**
  * Helper function that validates the incoming <code>listFactory</code>
