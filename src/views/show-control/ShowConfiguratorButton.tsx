@@ -67,9 +67,7 @@ const PREREQUISITES: readonly Prerequisite[] = Object.freeze([
 ]);
 
 type Props = Readonly<{
-  base64Blob?: string;
   devModeEnabled: boolean;
-  partialShow: Partial<ShowData>;
   rthPlanSummary: CollectiveRTHPlanSummary;
   show: ShowData | undefined;
   showCollectiveRTHDialog: () => void;
