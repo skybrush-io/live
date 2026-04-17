@@ -86,13 +86,7 @@ class GeoJSONLayerSettingsPresentation extends React.Component {
           />
         </Box>
         <Box sx={{ textAlign: 'center', pt: 2 }}>
-          <Button
-            variant='contained'
-            color='primary'
-            onClick={this._handleClick}
-          >
-            Update layer
-          </Button>
+          <Button onClick={this._handleClick}>Update layer</Button>
         </Box>
       </Box>
     );
