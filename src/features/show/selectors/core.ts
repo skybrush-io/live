@@ -1,6 +1,7 @@
 import { createSelector } from '@reduxjs/toolkit';
 import formatDate from 'date-fns/format';
 import isNil from 'lodash-es/isNil';
+import max from 'lodash-es/max';
 
 import type {
   DroneSpecification,
@@ -29,7 +30,7 @@ import {
   type TakeoffHeadingSpecification,
 } from '../constants';
 import { EnvironmentType, SettingsSynchronizationStatus } from '../enums';
-import { isValidTrajectory } from '../trajectory';
+import { getDurationOfTrajectory, isValidTrajectory } from '../trajectory';
 import type {
   CoordinateSystem,
   EnvironmentState,
@@ -225,6 +226,13 @@ export const getTrajectories: AppSelector<Array<Trajectory | undefined>> =
       return isValidTrajectory(trajectory) ? trajectory : undefined;
     })
   );
+
+/**
+ * Returns the total duration of the show, in seconds.
+ */
+export const getShowDuration = createSelector(getTrajectories, (trajectories) =>
+  max(trajectories.map((x) => (x ? (getDurationOfTrajectory(x) ?? 0) : 0)))
+);
 
 /**
  * Selector that returns whether the show is indoor.

@@ -29,7 +29,6 @@ import { findNearestNeighborsDistance } from '~/utils/nearestNeighbors';
 
 import {
   getConvexHullOfTrajectory,
-  getDurationOfTrajectory,
   getFirstPointOfTrajectory,
   getLastPointOfTrajectory,
   getMaximumHeightOfTrajectory,
@@ -45,6 +44,7 @@ import {
   getNumberOfDronesInShow,
   getOutdoorShowCoordinateSystem,
   getShowClockReference,
+  getShowDuration,
   getShowSegments,
   getShowStartTime,
   getSwarmSpecification,
@@ -255,13 +255,6 @@ export const getMaximumHorizontalDistanceFromTakeoffPositionInTrajectories =
 export const getMaximumHeightInTrajectories = createSelector(
   getTrajectories,
   (trajectories) => max(trajectories.map(getMaximumHeightOfTrajectory))
-);
-
-/**
- * Returns the total duration of the show, in seconds.
- */
-export const getShowDuration = createSelector(getTrajectories, (trajectories) =>
-  max(trajectories.map(getDurationOfTrajectory))
 );
 
 /**
