@@ -1,6 +1,5 @@
 import NavigationFullscreen from '@mui/icons-material/Fullscreen';
 import NavigationFullscreenExit from '@mui/icons-material/FullscreenExit';
-import { useCallback } from 'react';
 import { Translation } from 'react-i18next';
 import { useEvent, useUpdate } from 'react-use';
 import ScreenFull from 'screenfull';
@@ -10,7 +9,7 @@ import {
   type GenericHeaderButtonProps,
 } from '@skybrush/mui-components';
 
-import handleError from '~/error-handling';
+import { toggleFullScreen } from '~/utils/full-screen';
 
 type Props = {
   isFullscreen: boolean;
@@ -30,9 +29,6 @@ const FullScreenButtonPresentation = ({ isFullscreen, ...rest }: Props) => (
 );
 
 const FullScreenButton = () => {
-  const toggleFullscreen = useCallback(() => {
-    ScreenFull.toggle().catch(handleError);
-  }, []);
   const update = useUpdate();
 
   useEvent('change', update, ScreenFull);
@@ -42,7 +38,7 @@ const FullScreenButton = () => {
     <FullScreenButtonPresentation
       isFullscreen={ScreenFull.isFullscreen}
       disabled={!ScreenFull.isEnabled}
-      onClick={toggleFullscreen}
+      onClick={toggleFullScreen}
     />
   );
 };

@@ -25,6 +25,7 @@ import { getSelectedUAVIds, getUAVIdList } from '~/features/uavs/selectors';
 import { clearStoreAfterConfirmation } from '~/store';
 import { createUAVOperationThunks } from '~/utils/messaging';
 
+import { toggleFullScreen } from '~/utils/full-screen';
 import {
   appendToPendingUAVId,
   clearSelectionOrPendingUAVId,
@@ -202,6 +203,7 @@ export default connect(
         SELECT_UP: sendKeyboardNavigationSignal('SELECT_UP'),
         SELECT_LEFT: sendKeyboardNavigationSignal('SELECT_LEFT'),
         SELECT_RIGHT: sendKeyboardNavigationSignal('SELECT_RIGHT'),
+        TOGGLE_FULL_SCREEN: toggleFullScreen,
       },
       dispatch
     ),

@@ -1,6 +1,7 @@
 import { keyMap as showConfiguratorKeyMap } from '~/features/show-configurator/hotkeys';
 import { isRunningOnMac } from '~/utils/platform';
 
+import { FULL_SCREEN_HOTKEY } from '~/utils/full-screen';
 import { HotkeyGroup, HotkeyScope } from './types';
 
 export type KeyMap = Record<
@@ -221,6 +222,12 @@ const keyMap: KeyMap = {
     name: 'Copy coordinates to clipboard',
     sequence: 'mod+shift+c',
     scopes: [HotkeyScope.GLOBAL],
+  },
+
+  TOGGLE_FULL_SCREEN: {
+    name: 'Toggle full-screen mode',
+    sequence: FULL_SCREEN_HOTKEY,
+    scopes: [HotkeyScope.GLOBAL, HotkeyScope.SHOW_CONFIGURATOR],
   },
 
   SHOW_HOTKEY_DIALOG: {
