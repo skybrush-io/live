@@ -21,6 +21,13 @@
     "passed": "飞机上的飞行前检查已通过。",
     "signOffOn": "签署机上飞行前检查"
   },
+  "PathScanner": {
+    "notFound": "未找到服务器可执行文件。",
+    "scanAgain": "点击重新扫描",
+    "scanning": "请等待…",
+    "scanningSecondary": "正在查找服务器",
+    "success": "已成功找到服务器可执行文件。"
+  },
   "RTKCoordinateRestorationDialog": {
     "accuracyLabel": "精度",
     "dateLabel": "保存",
@@ -86,7 +93,8 @@
     "short": {
       "agl": "离地高度",
       "ahl": "相对高度",
-      "amsl": "海拔高度"
+      "amsl": "海拔高度",
+      "xyz": "Z坐标"
     }
   },
   "antennaPositionIndicator": {
@@ -171,7 +179,29 @@
       "partialPlan": "{{withoutPlans}} 架无人机无返航方案。"
     },
     "message": {
-      "noDrones": "当前加载的演出中没有无人机。"
+      "noDrones": "当前加载的演出中没有无人机。",
+      "noShowFile": "未加载演出文件"
+    },
+    "rthPlanDetails": {
+      "column": {
+        "duration": "持续时间",
+        "end": "结束",
+        "endShow": "结束（演出）",
+        "start": "开始",
+        "startShow": "开始（演出）"
+      },
+      "info": {
+        "rth": {
+          "numPlans": "方案数量：",
+          "title": "集体返航"
+        },
+        "showSegment": {
+          "duration": "持续时间：",
+          "end": "结束：",
+          "start": "开始：",
+          "title": "演出片段"
+        }
+      }
     }
   },
   "coordinateAveragingDialogToolbar": {
@@ -182,6 +212,14 @@
     "resetMeasurement": "重置测量",
     "resumeMeasurement": "恢复测量",
     "setCentroidAsMapOrigin": "将中心点设为地图原点"
+  },
+  "coordinateFormat": {
+    "-d": "十进制度（有符号）",
+    "-dm": "度和分（有符号）",
+    "-dms": "度、分、秒（有符号）",
+    "d": "十进制度",
+    "dm": "度和分",
+    "dms": "度、分、秒"
   },
   "environmentEditorDialog": {
     "environmentSettings": "环境设置",
@@ -214,6 +252,34 @@
     "fitAllDrones": "匹配所有无人机",
     "fitAllFeatures": "匹配所有特征"
   },
+  "flightLogKind": {
+    "ardupilot": "ArduPilot 飞行日志",
+    "flockctrl": "FlockCtrl 高级飞行日志",
+    "text": "纯文本飞行日志",
+    "ulog": "PX4 ULog 飞行日志",
+    "unknown": "未知的飞行日志格式"
+  },
+  "flightMode": {
+    "acro": "特技飞行",
+    "alt": "定高",
+    "auto": "自动模式",
+    "circle": "环绕兴趣点飞行",
+    "flow": "光流定点",
+    "follow": "跟随另一设备",
+    "guided": "由伴飞计算机控制",
+    "land": "自主降落",
+    "loiter": "定点保持，手动速度控制",
+    "mission": "执行预编程任务",
+    "other": "其他（未指定的飞行模式）",
+    "pos": "定点保持（手动姿态控制）",
+    "precland": "自主精准降落",
+    "rth": "自主返航",
+    "show": "执行无人机表演",
+    "simple": "简化辅助飞行模式",
+    "stab": "横滚与俯仰稳定",
+    "takeoff": "自主起飞",
+    "unknown": "未知飞行模式"
+  },
   "fullScreen": {
     "exit": "退出全屏模式",
     "on": "全屏模式"
@@ -227,6 +293,7 @@
       "clear": "清除",
       "click": "点击",
       "close": "关闭",
+      "confirm": "确认",
       "delete": "删除",
       "discard": "丢弃",
       "drag": "拖",
@@ -243,15 +310,19 @@
       "select": "选择",
       "start": "开始",
       "stop": "停止",
+      "submit": "提交",
       "undo": "撤消"
     },
     "commands": {
+      "calibrateCompass": "校准指南针",
+      "clearLEDColor": "清除LED颜色覆盖设置",
       "land": "降落",
       "positionHold": "位置保持",
       "powerOff": "关机",
       "powerOn": "开机",
       "reboot": "重启",
       "returnToHome": "返航",
+      "setLEDColor": "设置LED颜色",
       "sleep": "休眠",
       "takeoff": "起飞"
     },
@@ -272,7 +343,8 @@
     "time": {
       "hours_other": "{{count}} 小时",
       "minutes_other": "{{count}} 分钟",
-      "seconds_other": "{{count}} 秒"
+      "seconds_other": "{{count}} 秒",
+      "seconds_short": "{{count}}秒"
     }
   },
   "geofence": {
@@ -291,6 +363,17 @@
     "smartReturn": "带避障返航",
     "stop": "停止并悬停",
     "unknown": "未知操作: {{action}}"
+  },
+  "gpsFixType": {
+    "0": "未连接GPS",
+    "1": "未获得GPS定位",
+    "2": "2D GPS 定位",
+    "3": "3D GPS 定位",
+    "4": "带DGPS/SBAS的3D GPS定位",
+    "5": "RTK浮动解",
+    "6": "RTK固定解",
+    "7": "静态位置",
+    "8": "未知GPS定位类型"
   },
   "header": {
     "distanceSummary": "距初始位置的最大和最小距离",
@@ -363,6 +446,7 @@
   },
   "mappingEditorToolbar": {
     "assignSpares": "分配备用无人机",
+    "calculatingMapping": "正在计算地图…",
     "clearMissing": "清除缺失项",
     "clickToEdit": "点击以编辑单个槽位。",
     "dragNodes": "拖动节点以重新排列映射。",
@@ -451,15 +535,56 @@
     "uploadParameters": "上传参数"
   },
   "preferences": "偏好设置",
+  "preflightCheckResult": {
+    "overall": {
+      "error": "执行起飞前检查时出错",
+      "failure": "起飞前检查失败",
+      "off": "所有起飞前检查已禁用",
+      "pass": "起飞前检查通过",
+      "running": "起飞前检查正在进行中…",
+      "softFailure": "部分起飞前检查暂时失败",
+      "unknown": "未知的起飞前测试结果",
+      "warning": "部分起飞前检查项需要注意"
+    },
+    "short": {
+      "error": "执行测试时出错",
+      "failure": "失败",
+      "off": "已禁用",
+      "pass": "确定",
+      "running": "检查进行中...",
+      "softFailure": "暂时失败",
+      "unknown": "未知的测试结果",
+      "warning": "需要注意"
+    }
+  },
   "preflightTab": {
     "enterCheckItems": "输入你首选的手动起飞前检查项目，每行一个。",
     "headingsHint": "以冒号 (:) 结尾的行将成为标题。",
     "manualPreflightCheckItems": "手动起飞前检查项目",
     "preflightCheckItems": "起飞前检查项"
   },
+  "proControlButtonGroup": {
+    "collectiveRTH": "集体返航",
+    "collectiveRTHPanelNotFound": "未找到集体返航面板，请尝试从侧边栏手动打开。",
+    "prerequisites": {
+      "collectiveRTHNotTriggered": "集体返航尚未触发",
+      "hasCollectiveRTHPlan": "该演出包含集体返航方案",
+      "proFeaturesEnabled": "服务器已启用专业功能",
+      "supportsSuspendResumeCRTH": "服务器支持挂起 恢复 和集体返航操作"
+    },
+    "resume": "恢复",
+    "suspend": "挂起"
+  },
   "recalculateMappingButton": {
     "findOptimalMapping": "寻找最佳映射",
     "recalculateMapping": "重新计算映射"
+  },
+  "rtkCorrectionStatus": {
+    "long": {
+      "connectedRecently": "正在确定RTK修正状态...",
+      "error": "RTK修正中出现未指定错误",
+      "inactive": "未选择RTK修正源"
+    }
   },
   "safetyDialog": {
     "geofence": "地理围栏",
