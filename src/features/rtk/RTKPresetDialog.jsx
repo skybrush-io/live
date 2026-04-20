@@ -83,6 +83,12 @@ SourceInputField.propTypes = {
   disabled: PropTypes.bool,
 };
 
+const PRESET_TYPE_LABELS = {
+  user: 'User',
+  builtin: 'Built-in',
+  dynamic: 'Dynamic',
+};
+
 /**
  * Presentation component for the RTK preset dialog form.
  */
@@ -98,10 +104,7 @@ const RTKPresetDialogFormPresentation = ({
   presetType,
   t,
 }) => {
-  // Capitalize first letter for display
-  const displayType = presetType
-    ? presetType.charAt(0).toUpperCase() + presetType.slice(1)
-    : 'User';
+  const displayType = PRESET_TYPE_LABELS[presetType] ?? PRESET_TYPE_LABELS.user;
 
   const dispatch = useDispatch();
   const [sources, setSources] = useState(
@@ -135,14 +138,11 @@ const RTKPresetDialogFormPresentation = ({
     if (
       !(await dispatch(
         showConfirmationDialog(
-          t(
-            'rtkPresetDialog.deleteConfirmation',
-            'Are you sure you want to delete this preset?'
-          ),
+          t('rtkPresetDialog.deleteConfirmation'),
           {
-            title: t('rtkPresetDialog.deletePreset', 'Delete Preset'),
-            submitButtonLabel: t('general.action.delete', 'Delete'),
-            cancelButtonLabel: t('general.action.cancel', 'Cancel'),
+            title: t('rtkPresetDialog.deletePreset'),
+            submitButtonLabel: t('general.action.delete'),
+            cancelButtonLabel: t('general.action.cancel'),
           }
         )
       ))
@@ -154,13 +154,18 @@ const RTKPresetDialogFormPresentation = ({
     setError(null);
 
     try {
+      const selectedPresetId = await messageHub.query.getSelectedRTKPresetId();
+      
+      // Disable RTK if the deleted preset was the active one
+      if (selectedPresetId == presetId) {
+        await messageHub.execute.setRTKCorrectionsSource(null);
+      }
+
+      // Delete the preset
       await messageHub.execute.deleteRTKPreset(presetId);
 
       // Persist changes to disk
       await messageHub.execute.saveRTKPresets();
-
-      // The deleted preset was the active one, so switch to "RTK Disabled" (null)
-      await messageHub.execute.setRTKCorrectionsSource(null);
 
       // Trigger refresh of preset list in selector
       if (onRefreshPresets) {
@@ -170,7 +175,7 @@ const RTKPresetDialogFormPresentation = ({
       onSubmit();
     } catch (error_) {
       const errorMessage =
-        error_?.message || error_?.reason || 'Failed to delete preset';
+        error_?.message || error_?.reason || t('rtkPresetDialog.deleteFailed');
       setError(errorMessage);
     } finally {
       setSubmitting(false);
@@ -222,7 +227,7 @@ const RTKPresetDialogFormPresentation = ({
         const errorMessage =
           error_?.message ||
           error_?.reason ||
-          (isNew ? 'Failed to create preset' : 'Failed to update preset');
+          (isNew ? t('rtkPresetDialog.createFailed') : t('rtkPresetDialog.updateFailed'));
         setError(errorMessage);
       } finally {
         setSubmitting(false);
@@ -272,29 +277,26 @@ const RTKPresetDialogFormPresentation = ({
               >
                 <Box display='flex' alignItems='center' style={{ gap: 8 }}>
                   <Typography variant='body2' color='textSecondary'>
-                    {t('rtkPresetDialog.type', 'Type')}:
+                    {t('rtkPresetDialog.type')}:
                   </Typography>
                   <Chip
                     label={displayType}
                     size='small'
                     color={
-                      presetType === 'user' || presetType === 'User'
+                      presetType === 'user'
                         ? 'primary'
                         : 'default'
                     }
                   />
                   {isReadOnly && (
                     <Typography variant='caption' color='textSecondary'>
-                      {t(
-                        'rtkPresetDialog.readOnlyMessage',
-                        'Built-in/Dynamic presets cannot be edited'
-                      )}
+                      {t('rtkPresetDialog.readOnlyMessage')}
                     </Typography>
                   )}
                 </Box>
                 {isEditMode && presetId && (
                   <Typography variant='body2' color='textSecondary'>
-                    {t('rtkPresetDialog.id', 'ID')}: <code>{presetId}</code>
+                    {t('rtkPresetDialog.id')}: <code>{presetId}</code>
                   </Typography>
                 )}
               </Box>
@@ -306,22 +308,16 @@ const RTKPresetDialogFormPresentation = ({
                   autoFocus
                   size='small'
                   name='title'
-                  label={t('rtkPresetDialog.presetName', 'Preset Name')}
-                  placeholder={t(
-                    'rtkPresetDialog.presetNamePlaceholder',
-                    'My RTK Base Station'
-                  )}
+                  label={t('rtkPresetDialog.presetName')}
+                  placeholder={t('rtkPresetDialog.presetNamePlaceholder')}
                   fieldProps={{ validate: required }}
-                  helperText={t(
-                    'rtkPresetDialog.presetNameHelp',
-                    'A descriptive name for this RTK preset'
-                  )}
+                  helperText={t('rtkPresetDialog.presetNameHelp')}
                   disabled={isReadOnly}
                 />
 
                 <Box>
                   <Typography variant='body2' style={{ marginBottom: 8 }}>
-                    {t('rtkPresetDialog.dataSources', 'Data Sources')}
+                    {t('rtkPresetDialog.dataSources')}
                   </Typography>
                   {sources.map((source, index) => (
                     <SourceInputField
@@ -332,10 +328,7 @@ const RTKPresetDialogFormPresentation = ({
                         index === 0 &&
                         sources.length === 1 &&
                         !source.value.trim()
-                          ? t(
-                              'rtkPresetDialog.sourcesHelp',
-                              'Connection URLs for RTK correction data. You can specify multiple sources.'
-                            )
+                          ? t('rtkPresetDialog.sourcesHelp')
                           : undefined
                       }
                       disabled={isReadOnly}
@@ -351,7 +344,7 @@ const RTKPresetDialogFormPresentation = ({
                       style={{ marginTop: 8 }}
                       onClick={handleAddSource}
                     >
-                      {t('rtkPresetDialog.addSource', 'Add Source')}
+                      {t('rtkPresetDialog.addSource')}
                     </Button>
                   )}
                 </Box>
@@ -360,17 +353,14 @@ const RTKPresetDialogFormPresentation = ({
                   fullWidth
                   size='small'
                   name='format'
-                  label={t('rtkPresetDialog.messageFormat', 'Message Format')}
+                  label={t('rtkPresetDialog.messageFormat')}
                   disabled={isReadOnly}
                   formControlProps={{
-                    helperText: t(
-                      'rtkPresetDialog.formatHelp',
-                      'Format of the GPS messages arriving in this configuration (supported formats: "rtcm2", "rtcm3", "ubx", and "auto" for auto detection)'
-                    ),
+                    helperText: t('rtkPresetDialog.formatHelp'),
                   }}
                 >
                   <MenuItem value='auto'>
-                    {t('rtkPresetDialog.formatAuto', 'Detect automatically')}
+                    {t('rtkPresetDialog.formatAuto')}
                   </MenuItem>
                   <MenuItem value='rtcm2'>RTCM2</MenuItem>
                   <MenuItem value='rtcm3'>RTCM3</MenuItem>
@@ -386,11 +376,11 @@ const RTKPresetDialogFormPresentation = ({
                   style={{ marginRight: 'auto' }}
                   onClick={handleDelete}
                 >
-                  {t('general.action.delete', 'Delete')}
+                  {t('general.action.delete')}
                 </Button>
               )}
               <Button disabled={submitting} onClick={onCancel}>
-                {t('general.action.cancel', 'Cancel')}
+                {t('general.action.cancel')}
               </Button>
               {!isReadOnly && (
                 <Button
@@ -403,11 +393,10 @@ const RTKPresetDialogFormPresentation = ({
                     !values.title.trim() ||
                     Object.keys(errors || {}).length > 0
                   }
-                  onClick={formHandleSubmit}
                 >
                   {submitting
-                    ? t('general.action.saving', 'Saving...')
-                    : t('general.action.save', 'Save')}
+                    ? t('general.action.saving')
+                    : t('general.action.save')}
                 </Button>
               )}
             </DialogActions>
@@ -428,7 +417,7 @@ RTKPresetDialogFormPresentation.propTypes = {
   onSubmit: PropTypes.func.isRequired,
   onCancel: PropTypes.func.isRequired,
   presetId: PropTypes.string,
-  presetType: PropTypes.oneOf(['User', 'Built-in', 'Dynamic']),
+  presetType: PropTypes.oneOf(['user', 'builtin', 'dynamic']),
   t: PropTypes.func,
 };
 
@@ -446,14 +435,13 @@ const RTKPresetDialogPresentation = ({
   t,
 }) => {
   const isEditMode = mode === 'edit';
-  // Only Built-in and Dynamic are read-only; everything else (including null/undefined) is editable
-  const isReadOnly =
-    presetType !== 'User' && presetType !== 'user' && isEditMode;
+  // Only builtin and dynamic are read-only
+  const isReadOnly = presetType !== 'user' && isEditMode;
 
   const title =
     mode === 'create'
-      ? t('rtkPresetDialog.createTitle', 'Create RTK Preset')
-      : t('rtkPresetDialog.editTitle', 'Edit RTK Preset');
+      ? t('rtkPresetDialog.createTitle')
+      : t('rtkPresetDialog.editTitle');
 
   return (
     <DraggableDialog
@@ -486,7 +474,7 @@ RTKPresetDialogPresentation.propTypes = {
   onRefreshPresets: PropTypes.func,
   open: PropTypes.bool.isRequired,
   presetId: PropTypes.string,
-  presetType: PropTypes.oneOf(['User', 'Built-in', 'Dynamic']),
+  presetType: PropTypes.oneOf(['user', 'builtin', 'dynamic']),
   t: PropTypes.func,
 };
 
@@ -542,7 +530,7 @@ RTKPresetDialogContainer.propTypes = {
   onRefreshPresets: PropTypes.func,
   open: PropTypes.bool.isRequired,
   presetId: PropTypes.string,
-  presetType: PropTypes.oneOf(['User', 'Built-in', 'Dynamic']),
+  presetType: PropTypes.oneOf(['user', 'builtin', 'dynamic']),
 };
 
 /**

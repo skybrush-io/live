@@ -113,10 +113,15 @@ const RTKCorrectionSourceSelector = ({
     }
   };
 
+  const normalizePresetType = (type) => {
+    const t = String(type || '').toLowerCase();
+    if (t === 'user' || t === 'builtin' || t === 'dynamic') return t;
+    return 'user';
+  };
+  
   const handleEditPreset = (presetId, preset) => {
     if (onEditPreset) {
-      // Determine preset type - assume User if not specified
-      const presetType = preset?.type || 'User';
+      const presetType = normalizePresetType(preset?.type);
       onEditPreset(presetId, presetType);
     }
   };
@@ -183,7 +188,7 @@ const RTKCorrectionSourceSelector = ({
           </Select>
         </FormControl>
         <Tooltip
-          title={t('RTKCorrectionSourceSelector.editPreset', 'Edit preset')}
+          title={t('RTKCorrectionSourceSelector.editPreset')}
         >
           <span>
             <IconButton
@@ -196,10 +201,7 @@ const RTKCorrectionSourceSelector = ({
           </span>
         </Tooltip>
         <Tooltip
-          title={t(
-            'RTKCorrectionSourceSelector.createPreset',
-            'Create new RTK preset'
-          )}
+          title={t('RTKCorrectionSourceSelector.createPreset')}
         >
           <span>
             <IconButton

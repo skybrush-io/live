@@ -10,11 +10,13 @@ import { noPayload } from '~/utils/redux';
 
 import { RTKAntennaPositionFormat, type RTKStatistics } from './types';
 
+type RTKPresetType = 'user' | 'builtin' | 'dynamic';
+
 type RTKPresetDialogState = {
   open: boolean;
   mode: 'create' | 'edit' | undefined;
   presetId: string | undefined;
-  presetType: 'User' | 'Built-in' | 'Dynamic' | undefined;
+  presetType: RTKPresetType | undefined;
 };
 
 type RTKSliceState = {
@@ -129,13 +131,13 @@ const { actions, reducer } = createSlice({
       action: PayloadAction<{
         mode: 'create' | 'edit';
         presetId?: string;
-        presetType?: 'User' | 'Built-in' | 'Dynamic';
+        presetType?: RTKPresetType;
       }>
     ) {
       state.presetDialog.open = true;
       state.presetDialog.mode = action.payload.mode;
       state.presetDialog.presetId = action.payload.presetId;
-      state.presetDialog.presetType = action.payload.presetType ?? 'User';
+      state.presetDialog.presetType = action.payload.presetType ?? 'user';
     },
 
     closeRTKPresetDialog: noPayload<RTKSliceState>((state) => {
