@@ -287,7 +287,6 @@
     "selectNextEmptySlot": "选择下一个空槽位"
   },
   "mappingToggleButton": {
-    "sortByMissionID": "按任务IDs排序"
   },
   "measurementList": {
     "addDrone": "在工具栏中使用 + 按钮添加一个测量无人机",

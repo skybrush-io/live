@@ -280,7 +280,6 @@
     "selectNextEmptySlot": "次のからのスロットを選択してください"
   },
   "mappingToggleButton": {
-    "sortByMissionID": "mission IDでソート"
   },
   "measurementList": {
     "addDrone": "ツールバーの＋ボタンで測定するドローンを追加する",

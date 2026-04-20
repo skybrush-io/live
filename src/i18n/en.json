@@ -374,7 +374,7 @@
     "selectNextEmptySlot": "Select next empty slot"
   },
   "mappingToggleButton": {
-    "sortByMissionID": "Sort by mission IDs"
+    "mappingMode": "Mapping mode"
   },
   "measurementList": {
     "addDrone": "Add a drone to measure with the + button in the toolbar",

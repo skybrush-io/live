@@ -22,7 +22,7 @@ function MappingToggleButton({ selected, onChange }: MappingToggleButtonProps) {
   const { t } = useTranslation();
 
   return (
-    <Tooltip content={t('mappingToggleButton.sortByMissionID')}>
+    <Tooltip content={t('mappingToggleButton.mappingMode')}>
       <ToggleButton value='missionIds' selected={selected} onChange={onChange}>
         <Mapping />
       </ToggleButton>

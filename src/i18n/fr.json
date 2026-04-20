@@ -225,7 +225,6 @@
     "selectNextEmptySlot": "Sélectionne le prochain créneau vide"
   },
   "mappingToggleButton": {
-    "sortByMissionID": "trie les missions par ID"
   },
   "mission": {
     "planner": {
