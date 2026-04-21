@@ -1,14 +1,17 @@
-import { layer, source } from '@collmot/ol-react';
-import Image from '@mui/icons-material/Image';
-import Box from '@mui/material/Box';
-import InputAdornment from '@mui/material/InputAdornment';
-import Skeleton from '@mui/material/Skeleton';
 import isEqual from 'lodash-es/isEqual';
 import { getPointResolution } from 'ol/proj';
 import PropTypes from 'prop-types';
 import { useCallback, useEffect, useRef } from 'react';
 import { Form, FormSpy } from 'react-final-form';
 import { connect } from 'react-redux';
+
+import { layer, source } from '@collmot/ol-react';
+
+import Image from '@mui/icons-material/Image';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
+import InputAdornment from '@mui/material/InputAdornment';
+import Skeleton from '@mui/material/Skeleton';
 
 import FileButton from '~/components/FileButton';
 import {
@@ -78,27 +81,38 @@ const ImageLayerSettingsPresentation = ({
               }
             }}
           />
-          <Box sx={{ display: 'flex', flexDirection: 'row' }}>
-            {parameters.image.name ? (
-              <img
-                src={parameters.image.data}
-                style={{
-                  width: '100%',
-                  minWidth: '0', // Not needed in Firefox, not quite sure why.
-                  height: '10em',
-                  objectFit: 'contain',
-                }}
-              />
-            ) : (
-              <Skeleton
-                variant='rectangular'
-                width='100%'
-                height='10em'
-                onClick={handleClick}
-              />
-            )}
-            <Box sx={{ p: 0.75 }} />
-            <Box sx={{ textAlign: 'center', margin: 'auto', width: '100%' }}>
+          <Grid container spacing={1}>
+            <Grid
+              size={6}
+              display='flex'
+              justifyContent='center'
+              alignItems='center'
+            >
+              {parameters.image.name ? (
+                <img
+                  src={parameters.image.data}
+                  style={{
+                    width: '100%',
+                    height: '10em',
+                    objectFit: 'contain',
+                  }}
+                />
+              ) : (
+                <Skeleton
+                  variant='rectangular'
+                  width='100%'
+                  height='10em'
+                  onClick={handleClick}
+                />
+              )}
+            </Grid>
+            <Grid
+              size={6}
+              display='flex'
+              flexDirection='column'
+              justifyContent='center'
+              alignItems='center'
+            >
               <FileButton
                 ref={inputRef}
                 filter={['image/*']}
@@ -112,7 +126,6 @@ const ImageLayerSettingsPresentation = ({
               {parameters.image.name ? (
                 <>
                   <span>{parameters.image.name}</span>
-                  <br />
                   <span style={{ fontStyle: 'italic' }}>
                     {parameters.image.dimensions.width}&nbsp;×&nbsp;
                     {parameters.image.dimensions.height}&nbsp;px
@@ -121,46 +134,43 @@ const ImageLayerSettingsPresentation = ({
               ) : (
                 'Please select an image!'
               )}
-            </Box>
-          </Box>
-          <Box sx={{ display: 'flex', flexDirection: 'row' }}>
-            <LatitudeField
-              fullWidth
-              size='small'
-              name='position.lat'
-              label='Latitude of center'
-            />
-            <Box sx={{ p: 0.75 }} />
-            <LongitudeField
-              fullWidth
-              size='small'
-              name='position.lon'
-              label='Longitude of center'
-            />
-          </Box>
-          <Box sx={{ display: 'flex', flexDirection: 'row' }}>
-            <HeadingField fullWidth size='small' name='angle' label='Angle' />
-            <Box sx={{ p: 0.75 }} />
-            <TextField
-              fullWidth
-              type='number'
-              fieldProps={{ validate: join([required, finite, positive]) }}
-              slotProps={{
-                htmlInput: {
-                  step: 0.1,
-                },
-                input: {
-                  endAdornment: (
-                    <InputAdornment position='end'>cm/px</InputAdornment>
-                  ),
-                },
-              }}
-              size='small'
-              name='scale'
-              label='Scale'
-              variant='filled'
-            />
-          </Box>
+            </Grid>
+            <Grid size={6}>
+              <LatitudeField
+                size='small'
+                name='position.lat'
+                label='Latitude of center'
+              />
+            </Grid>
+            <Grid size={6}>
+              <LongitudeField
+                size='small'
+                name='position.lon'
+                label='Longitude of center'
+              />
+            </Grid>
+            <Grid size={6}>
+              <HeadingField size='small' name='angle' label='Angle' />
+            </Grid>
+            <Grid size={6}>
+              <TextField
+                type='number'
+                fieldProps={{ validate: join([required, finite, positive]) }}
+                slotProps={{
+                  htmlInput: { step: 0.1 },
+                  input: {
+                    endAdornment: (
+                      <InputAdornment position='end'>cm/px</InputAdornment>
+                    ),
+                  },
+                }}
+                size='small'
+                name='scale'
+                label='Scale'
+                variant='filled'
+              />
+            </Grid>
+          </Grid>
           <input hidden type='submit' />
         </form>
       )}
