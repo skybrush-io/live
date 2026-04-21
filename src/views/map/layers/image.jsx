@@ -3,12 +3,12 @@ import Image from '@mui/icons-material/Image';
 import Box from '@mui/material/Box';
 import InputAdornment from '@mui/material/InputAdornment';
 import Skeleton from '@mui/material/Skeleton';
+import isEqual from 'lodash-es/isEqual';
 import { getPointResolution } from 'ol/proj';
 import PropTypes from 'prop-types';
 import { useCallback, useEffect, useRef } from 'react';
 import { Form, FormSpy } from 'react-final-form';
 import { connect } from 'react-redux';
-import { usePrevious } from 'react-use';
 
 import FileButton from '~/components/FileButton';
 import {
@@ -24,20 +24,6 @@ import { readFileAsDataURL } from '~/utils/files';
 import { mapViewCoordinateFromLonLat } from '~/utils/geography';
 import { toRadians } from '~/utils/math';
 import { finite, join, positive, required } from '~/utils/validation';
-
-const AutoSaveOnBlur = ({ active, save }) => {
-  const prevActive = usePrevious(active);
-  if (prevActive && prevActive !== active) {
-    setTimeout(save, 0);
-  }
-
-  return null;
-};
-
-AutoSaveOnBlur.propTypes = {
-  active: PropTypes.string,
-  save: PropTypes.func,
-};
 
 const getDimensions = async (source) =>
   new Promise((resolve) => {
@@ -82,12 +68,15 @@ const ImageLayerSettingsPresentation = ({
       initialValues={{ ...parameters.transform }}
       onSubmit={updateTransform}
     >
-      {({ handleSubmit }) => (
+      {({ handleSubmit, values }) => (
         <form id='ImageTransformEditor' onSubmit={handleSubmit}>
           <FormSpy
-            subscription={{ active: true, values: true }}
-            component={AutoSaveOnBlur}
-            save={_forceFormSubmission}
+            subscription={{ values: true }}
+            onChange={({ values: newValues }) => {
+              if (!isEqual(values, newValues)) {
+                _forceFormSubmission();
+              }
+            }}
           />
           <Box sx={{ display: 'flex', flexDirection: 'row' }}>
             {parameters.image.name ? (
