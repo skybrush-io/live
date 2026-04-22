@@ -4,6 +4,7 @@ import IconButton from '@mui/material/IconButton';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import { useEffect } from 'react';
+import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import {
@@ -55,6 +56,7 @@ const RTKSetupDialogBottomPanel = ({
   onToggleSurveySettings,
   surveySettingsVisible,
   surveyStatus,
+  t,
 }) => {
   const classes = useStyles();
 
@@ -83,7 +85,7 @@ const RTKSetupDialogBottomPanel = ({
             }}
           >
             {onToggleSurveySettings && (
-              <Tooltip content='Start new survey'>
+              <Tooltip content={t('rtkSetupDialog.startNewSurvey')}>
                 <IconButton
                   disabled={!surveyStatus || !surveyStatus.supported}
                   size='large'
@@ -118,6 +120,7 @@ RTKSetupDialogBottomPanel.propTypes = {
   onToggleSurveySettings: PropTypes.func,
   surveySettingsVisible: PropTypes.bool,
   surveyStatus: PropTypes.object,
+  t: PropTypes.func,
 };
 
 export default connect(
@@ -130,4 +133,4 @@ export default connect(
   {
     onToggleSurveySettings: toggleSurveySettingsPanel,
   }
-)(RTKSetupDialogBottomPanel);
+)(withTranslation()(RTKSetupDialogBottomPanel));

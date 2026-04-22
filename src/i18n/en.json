@@ -499,6 +499,9 @@
     "type": "Type",
     "updateFailed": "Failed to update preset"
   },
+  "rtkSetupDialog": {
+    "startNewSurvey": "Start new survey"
+  },
   "safetyDialog": {
     "geofence": "Geofence",
     "geofenceTab": {
