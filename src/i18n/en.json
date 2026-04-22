@@ -29,6 +29,17 @@
     "noLicenseActivated": "No license activated",
     "tryAgain": "Try again"
   },
+  "MissionInfoLayer": {
+    "settings": {
+      "showConvexHull": "Show convex hull of trajectories",
+      "showHomePositions": "Show home positions",
+      "showLandingPositions": "Show landing positions",
+      "showMapOrigin": "Show map origin",
+      "showMissionItems": "Show mission items",
+      "showMissionOrigin": "Show mission origin",
+      "showTrajectoriesOfSelection": "Show trajectories of selected drones"
+    }
+  },
   "OnboardPreflightChecksDialog": {
     "noError": "None of the UAVs indicated an error.",
     "passed": "Onboard preflight checks passed.",

@@ -16,6 +16,17 @@
     "drawRectangle": "Négyszög rajzolás",
     "editFeature": "Objektumok szerkesztése"
   },
+  "MissionInfoLayer": {
+    "settings": {
+      "showConvexHull": "Pályák konvex burkának megjelenítése",
+      "showHomePositions": "Felszálló pozíciók megjelenítése",
+      "showLandingPositions": "Leszállási pozíciók megjelenítése",
+      "showMapOrigin": "Térkép origó megjelenítése",
+      "showMissionItems": "Küldetés elemeinek megjelenítése",
+      "showMissionOrigin": "Küldetés origójának megjelenítése",
+      "showTrajectoriesOfSelection": "Kiválasztott drónok pályáinak megjelenítése"
+    }
+  },
   "OnboardPreflightChecksDialog": {
     "noError": "Egyik drón sem jelzett hibát.",
     "passed": "Automata fedélzeti ellenőrzés rendben.",
