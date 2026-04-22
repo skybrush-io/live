@@ -13,7 +13,13 @@ export type Comparable = number | string;
  * UAVs.
  */
 export enum UAVSortKey {
+  /**
+   * Legacy value, kept for backwards compatibility with persisted user state.
+   * Treated as UAV_ID everywhere; not shown in the "Sort by" menu.
+   */
   DEFAULT = 'default',
+  UAV_ID = 'uavId',
+  MISSION_ID = 'missionId',
   STATUS = 'status',
   FLIGHT_MODE = 'flightMode',
   BATTERY = 'battery',
@@ -29,7 +35,8 @@ export enum UAVSortKey {
  * Order in which the UAV sort keys should appear on the UI.
  */
 export const UAVSortKeys = [
-  UAVSortKey.DEFAULT,
+  UAVSortKey.UAV_ID,
+  UAVSortKey.MISSION_ID,
   UAVSortKey.STATUS,
   UAVSortKey.FLIGHT_MODE,
   UAVSortKey.BATTERY,
@@ -45,8 +52,13 @@ export const UAVSortKeys = [
  * Human-readable labels that should be used
  * on the UI to represent a UAV sort option.
  */
+const idLabel: PreparedI18nKey = () => 'ID';
+const sidLabel: PreparedI18nKey = () => 'sID';
+
 export const labelsForUAVSortKey: Record<UAVSortKey, PreparedI18nKey> = {
-  [UAVSortKey.DEFAULT]: tt('sorting.label.default'),
+  [UAVSortKey.DEFAULT]: idLabel,
+  [UAVSortKey.UAV_ID]: idLabel,
+  [UAVSortKey.MISSION_ID]: sidLabel,
   [UAVSortKey.STATUS]: tt('sorting.label.status'),
   [UAVSortKey.FLIGHT_MODE]: tt('sorting.label.flightMode'),
   [UAVSortKey.BATTERY]: tt('sorting.label.battery'),
@@ -63,7 +75,9 @@ export const labelsForUAVSortKey: Record<UAVSortKey, PreparedI18nKey> = {
  * on the UI to represent a UAV filter preset.
  */
 export const shortLabelsForUAVSortKey: Record<UAVSortKey, PreparedI18nKey> = {
-  [UAVSortKey.DEFAULT]: tt('sorting.shortLabel.default'),
+  [UAVSortKey.DEFAULT]: idLabel,
+  [UAVSortKey.UAV_ID]: idLabel,
+  [UAVSortKey.MISSION_ID]: sidLabel,
   [UAVSortKey.STATUS]: tt('sorting.shortLabel.status'),
   [UAVSortKey.FLIGHT_MODE]: tt('sorting.shortLabel.flightMode'),
   [UAVSortKey.BATTERY]: tt('sorting.shortLabel.battery'),
@@ -162,6 +176,11 @@ export const getKeyFunctionForUAVSortKey = memoize(
         return (uav) => uav?.rssi?.[0] ?? -1;
 
       case UAVSortKey.DEFAULT:
+      case UAVSortKey.UAV_ID:
+      case UAVSortKey.MISSION_ID:
+        // These keys do not depend on the StoredUAV object; sorting for
+        // them is handled directly in the UAV list view layer using the
+        // item tuple's uavId / missionIndex.
         return undefined;
 
       // No default

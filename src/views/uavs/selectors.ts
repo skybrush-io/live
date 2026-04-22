@@ -50,7 +50,13 @@ const getUAVIdToStateMappingForSortAndFilter: AppSelector<
 > = (state: RootState) => {
   const { key } = getUAVListSortPreference(state);
   const filters = getUAVListFilters(state);
-  return key === UAVSortKey.DEFAULT && filters.length === 0
+  // UAV ID / mission index based sorts don't need the StoredUAV mapping,
+  // they can be computed from the item tuple directly.
+  const sortNeedsStateMapping =
+    key !== UAVSortKey.DEFAULT &&
+    key !== UAVSortKey.UAV_ID &&
+    key !== UAVSortKey.MISSION_ID;
+  return !sortNeedsStateMapping && filters.length === 0
     ? null
     : getUAVIdToStateMapping(state);
 };

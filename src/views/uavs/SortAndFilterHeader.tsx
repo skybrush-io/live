@@ -278,7 +278,7 @@ const HEADER_TEXT_PARTS: Record<string, HeaderPart[]> = {
   missionIds: [
     {
       label: 'sID',
-      sortKey: UAVSortKey.DEFAULT,
+      sortKey: UAVSortKey.MISSION_ID,
       style: {
         textAlign: 'right',
         width: 48,
@@ -286,7 +286,7 @@ const HEADER_TEXT_PARTS: Record<string, HeaderPart[]> = {
     },
     {
       label: 'ID',
-      sortKey: UAVSortKey.DEFAULT,
+      sortKey: UAVSortKey.UAV_ID,
       style: {
         textAlign: 'right',
         width: 40,
@@ -297,7 +297,7 @@ const HEADER_TEXT_PARTS: Record<string, HeaderPart[]> = {
   droneIds: [
     {
       label: 'ID',
-      sortKey: UAVSortKey.DEFAULT,
+      sortKey: UAVSortKey.UAV_ID,
       style: {
         textAlign: 'right',
         width: 48,
@@ -305,7 +305,7 @@ const HEADER_TEXT_PARTS: Record<string, HeaderPart[]> = {
     },
     {
       label: 'sID',
-      sortKey: UAVSortKey.DEFAULT,
+      sortKey: UAVSortKey.MISSION_ID,
       style: {
         textAlign: 'right',
         width: 40,
@@ -401,8 +401,8 @@ function formatHeaderParts(
         className={clsx(
           classes.headerLineItem,
           sortKey && classes.sortable,
-          sortBy.key === sortKey &&
-            sortKey !== UAVSortKey.DEFAULT &&
+          sortKey !== undefined &&
+            sortBy.key === sortKey &&
             classes.sortActive
         )}
         style={style}
@@ -502,7 +502,14 @@ const SortAndFilterHeader = ({
     [onSetSortBy, onToggleSortDirection, sortBy]
   );
 
-  const isSortActive = sortBy.key !== UAVSortKey.DEFAULT;
+  // Sorting by UAV ID or mission ID is considered the "natural" order and
+  // does not highlight the sort chip; other keys (battery, RSSI, etc.) do.
+  // DEFAULT is kept for backwards compatibility with persisted user state
+  // and is treated the same as UAV_ID here.
+  const isSortActive =
+    sortBy.key !== UAVSortKey.DEFAULT &&
+    sortBy.key !== UAVSortKey.UAV_ID &&
+    sortBy.key !== UAVSortKey.MISSION_ID;
   const isFilterActive = Array.isArray(filters) && filters.length > 0;
 
   return (

@@ -49,7 +49,7 @@ const initialState: SettingsSliceState = {
     ],
     uavListLayout: UAVListLayout.GRID,
     uavListSortPreference: {
-      key: UAVSortKey.DEFAULT,
+      key: UAVSortKey.UAV_ID,
       reverse: false,
     },
   },

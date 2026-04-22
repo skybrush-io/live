@@ -155,7 +155,7 @@ export const getUAVAgingThresholds = createSelector(
 );
 
 const DEFAULT_FILTER = [];
-const DEFAULT_SORT = { key: UAVSortKey.DEFAULT, reverse: false };
+const DEFAULT_SORT = { key: UAVSortKey.UAV_ID, reverse: false };
 
 /**
  * Returns the array of filters to apply for the list showing the UAVs.
@@ -177,17 +177,26 @@ export const getUAVListOrientation = (state) =>
   getUAVListLayout(state) === 'grid' ? 'horizontal' : 'vertical';
 
 /**
- * Returns the preferred sort order of the list showing the UAVs. This is the
- * _secondary_ sorting preference; the primary is whether to sort the UAVs by
- * UAV ID or mission ID first.
+ * Returns the preferred sort order of the list showing the UAVs.
  *
  * The returned value is an object with two keys: <code>key</code>, which is
  * a value from the UAVSortKey enum, and <code>reverse</code>, which is
  * true if the UAVs are to be sorted in reverse order.
+ *
+ * Legacy persisted state that stores <code>UAVSortKey.DEFAULT</code> is
+ * transparently mapped to <code>UAVSortKey.UAV_ID</code>.
  */
 export function getUAVListSortPreference(state) {
   const result = state.settings.display?.uavListSortPreference;
-  return result || DEFAULT_SORT;
+  if (!result) {
+    return DEFAULT_SORT;
+  }
+
+  if (result.key === UAVSortKey.DEFAULT) {
+    return { ...result, key: UAVSortKey.UAV_ID };
+  }
+
+  return result;
 }
 
 /**

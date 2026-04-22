@@ -17,7 +17,7 @@ import {
   toggleDeveloperMode,
 } from '~/features/session/actions';
 import { isBroadcast } from '~/features/session/selectors';
-import { toggleMissionIds } from '~/features/settings/slice';
+import { toggleMissionIdsAndSyncSort } from '~/features/settings/actions';
 import { handlers as showConfiguratorHandlers } from '~/features/show-configurator/hotkeys';
 import { requestRemovalOfSelectedUAVs } from '~/features/uavs/actions';
 import { openUAVDetailsDialog } from '~/features/uavs/details';
@@ -165,7 +165,7 @@ export default connect(
         TOGGLE_BROADCAST_MODE_LEGACY: toggleBroadcast,
         TOGGLE_PREFERRED_CHANNEL: togglePreferredChannel,
         TOGGLE_DEVELOPER_MODE: toggleDeveloperMode,
-        TOGGLE_SORT_BY_MISSION_ID: toggleMissionIds,
+        TOGGLE_SORT_BY_MISSION_ID: toggleMissionIdsAndSyncSort,
         TYPE_0: () => appendToPendingUAVId(0),
         TYPE_1: () => appendToPendingUAVId(1),
         TYPE_2: () => appendToPendingUAVId(2),

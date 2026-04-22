@@ -5,8 +5,8 @@ import { connect } from 'react-redux';
 
 import ToggleButton from '~/components/ToggleButton';
 import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
+import { toggleMissionIdsAndSyncSort } from '~/features/settings/actions';
 import { isShowingMissionIds } from '~/features/settings/selectors';
-import { toggleMissionIds } from '~/features/settings/slice';
 import { type RootState } from '~/store/reducers';
 
 type MappingToggleButtonProps = {
@@ -37,6 +37,6 @@ export default connect(
   }),
   // mapDispatchToProps
   {
-    onChange: toggleMissionIds,
+    onChange: toggleMissionIdsAndSyncSort,
   }
 )(MappingToggleButton);
