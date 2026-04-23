@@ -1023,8 +1023,8 @@
     "setupGeofence": "Setup geofence",
     "setupTakeoffArea": "Assign drones to show",
     "showConfigurator": {
-      "button": "Adapt show to venue",
-      "description": "Adjust takeoff grid and show layout if needed",
+      "button": "Plan collective RTH",
+      "description": "Create collective return-to-home plans",
       "interactionHints": {
         "action": {
           "boxSelect": "Box select",
@@ -1048,12 +1048,11 @@
         "extension": "The studio extension must be enabled on the server",
         "loaded": "A show file must be loaded",
         "origin": "A show origin must be included or set manually",
-        "segments": "The show must be annotated with segment markers",
         "server": "Connection must be established to the server"
       },
       "tooltip": {
-        "invalidRTHPlan": "The show has no valid collective RTH plans.",
-        "validRTHPlan": "The show has {{numPlans}} valid collective RTH plans."
+        "adaptShow": "Adapt show to venue",
+        "showSegmentsRequired": "The show must be annotated with segment markers"
       }
     },
     "startMethod": {
