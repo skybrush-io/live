@@ -16,6 +16,9 @@
     "drawRectangle": "Draw rectangle",
     "editFeature": "Edit feature"
   },
+  "ImageLayer": {
+    "geoTIFFOnlyInDevMode": "GeoTIFF rendering is currently restricted to developer mode."
+  },
   "LicenseInfoDialog": {
     "title": "License information"
   },

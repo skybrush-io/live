@@ -13,6 +13,7 @@ import { layer, source } from '@collmot/ol-react';
 
 import Image from '@mui/icons-material/Image';
 import Navigation from '@mui/icons-material/Navigation';
+import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Collapse from '@mui/material/Collapse';
@@ -29,6 +30,7 @@ import {
   forceFormSubmission,
 } from '~/components/forms';
 import { setLayerParametersById } from '~/features/map/layers';
+import { isDeveloperModeEnabled } from '~/features/session/selectors';
 import { getMapViewCenterPosition } from '~/selectors/map';
 import { mapReferenceRequestSignal, mapViewToExtentSignal } from '~/signals';
 import { readFileAsDataURL } from '~/utils/files';
@@ -258,6 +260,11 @@ const ImageLayerSettingsPresentation = ({
           >
             {filePicker}
           </Grid>
+          <Grid size={12}>
+            <Alert severity='warning'>
+              {t('ImageLayer.geoTIFFOnlyInDevMode')}
+            </Alert>
+          </Grid>
         </Grid>
       </Collapse>
     </>
@@ -312,6 +319,7 @@ export const ImageLayerSettings = connect(
 )(ImageLayerSettingsPresentation);
 
 const ImageLayerPresentation = ({
+  devMode,
   layer: {
     id,
     parameters: {
@@ -322,9 +330,11 @@ const ImageLayerPresentation = ({
   zIndex,
 }) =>
   image.data.startsWith('data:image/tiff') ? (
-    <layer.WebGLTile properties={{ id }} zIndex={zIndex}>
-      <source.GeoTIFF sources={[{ blob: base64DataURLToBlob(image.data) }]} />
-    </layer.WebGLTile>
+    devMode && (
+      <layer.WebGLTile properties={{ id }} zIndex={zIndex}>
+        <source.GeoTIFF sources={[{ blob: base64DataURLToBlob(image.data) }]} />
+      </layer.WebGLTile>
+    )
   ) : position ? (
     <layer.GeoImage zIndex={zIndex}>
       <source.GeoImage
@@ -348,4 +358,11 @@ ImageLayerPresentation.propTypes = {
   zIndex: PropTypes.number,
 };
 
-export const ImageLayer = ImageLayerPresentation;
+export const ImageLayer = connect(
+  // mapStateToProps
+  (state) => ({
+    devMode: isDeveloperModeEnabled(state),
+  }),
+  // mapDispatchToProps
+  null
+)(ImageLayerPresentation);
