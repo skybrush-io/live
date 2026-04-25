@@ -1111,6 +1111,13 @@
           "help": "between drones during takeoff & RTH",
           "label": "Minimum distance"
         },
+        "returnToHomeMethod": {
+          "label": "RTH method",
+          "type": {
+            "plain": "Plain",
+            "smart": "Smart"
+          }
+        },
         "takeoffDuration": {
           "help": "ensuring exact start of show phase (if nonzero)",
           "label": "Takeoff duration"
