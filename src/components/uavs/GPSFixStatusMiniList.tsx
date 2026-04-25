@@ -1,26 +1,46 @@
-import isEmpty from 'lodash-es/isEmpty';
-import partial from 'lodash-es/partial';
+import { createSelector } from '@reduxjs/toolkit';
 import sortBy from 'lodash-es/sortBy';
-import unary from 'lodash-es/unary';
 import { orderBy } from 'natural-orderby';
 import React from 'react';
 import { connect } from 'react-redux';
-import { createSelector } from '@reduxjs/toolkit';
 
 import { MiniList, MiniListDivider } from '@skybrush/mui-components';
 
 import { listOf } from '~/components/helpers/lists';
-import { statusToPriority } from '~/components/semantics';
+import { type Status, statusToPriority } from '~/components/semantics';
 import { setSelectedUAVIds } from '~/features/uavs/actions';
 import {
-  getUAVIdToStateMapping,
   getUAVIdList,
+  getUAVIdToStateMapping,
 } from '~/features/uavs/selectors';
 import { abbreviateGPSFixType, getSemanticsForGPSFixType } from '~/model/enums';
+import type { RootState } from '~/store/reducers';
 
 import UAVStatusMiniListEntry from './UAVStatusMiniListEntry';
 
 /* ************************************************************************ */
+
+type GPSFixListItem = {
+  id: string;
+  label: string;
+  priority: number;
+  status: Status;
+  uavIds: string[];
+};
+
+type GPSFixDivider = { id: '__divider' };
+
+type GPSFixListEntry = GPSFixListItem | GPSFixDivider;
+
+const DIVIDER: GPSFixDivider = Object.freeze({ id: '__divider' });
+
+const isDivider = (item: GPSFixListEntry): item is GPSFixDivider =>
+  item.id === '__divider';
+
+type GPSFixStatusMiniListProps = {
+  items: GPSFixListEntry[];
+  onClick?: (uavIds: string[], event: React.SyntheticEvent) => void;
+};
 
 /**
  * Component-specific selector that creates the list of entries to show in the
@@ -29,12 +49,12 @@ import UAVStatusMiniListEntry from './UAVStatusMiniListEntry';
 const getListItems = createSelector(
   getUAVIdToStateMapping,
   getUAVIdList,
-  (byId, order) => {
-    const items = {};
+  (byId, order): GPSFixListEntry[] => {
+    const items: Record<string, GPSFixListItem> = {};
 
     for (const uavId of order) {
       const uav = byId[uavId];
-      if (uav && uav.gpsFix) {
+      if (uav?.gpsFix) {
         const gpsFixType = uav.gpsFix.type;
         const key = String(gpsFixType);
         if (items[key] === undefined) {
@@ -56,27 +76,28 @@ const getListItems = createSelector(
       item.uavIds = orderBy(item.uavIds);
     }
 
-    if (isEmpty(items)) {
+    const values = Object.values(items);
+    if (values.length === 0) {
       return [];
-    } else {
-      return [null, ...sortBy(items, ['priority', 'label'])];
     }
+
+    return [DIVIDER, ...sortBy(values, ['priority', 'label'])];
   }
 );
 
-const GPSFixStatusMiniList = listOf(
+const GPSFixStatusMiniList = listOf<GPSFixListEntry, GPSFixStatusMiniListProps>(
   (item, props) =>
-    item ? (
+    !isDivider(item) ? (
       <UAVStatusMiniListEntry
         key={item.id}
         {...item}
         pillWidth={48}
         onClick={
           props.onClick
-            ? (event) => {
+            ? (event: React.SyntheticEvent) => {
                 event.preventDefault();
                 event.stopPropagation();
-                props.onClick(item?.uavIds, event);
+                props.onClick!(item.uavIds, event);
               }
             : null
         }
@@ -86,15 +107,18 @@ const GPSFixStatusMiniList = listOf(
     ),
   {
     dataProvider: 'items',
-    listFactory: partial(React.createElement, MiniList),
+    listFactory: (
+      { onClick, items, ...rest }: GPSFixStatusMiniListProps,
+      children: React.ReactNode[]
+    ) => React.createElement(MiniList, rest, children),
   }
 );
 
 export default connect(
-  (state) => ({
+  (state: RootState) => ({
     items: getListItems(state),
   }),
   {
-    onClick: unary(setSelectedUAVIds),
+    onClick: (ids: string[]) => setSelectedUAVIds(ids),
   }
 )(GPSFixStatusMiniList);
