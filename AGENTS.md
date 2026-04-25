@@ -7,6 +7,7 @@
 - Never cast types using `const x = y as unknown as SomeType` patterns
 - Allow non-null assertions (`!`), but document why it's justified
 - Do not add return type annotation to React components
+- Import types explicitly with `import type` unless it is also used as a value.
 
 ## Import groups
 
