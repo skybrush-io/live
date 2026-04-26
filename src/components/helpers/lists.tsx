@@ -46,8 +46,10 @@ type ListOfOptions<T, P> = Omit<
   listFactory?: undefined | ListFactory<P> | React.ComponentType<P>;
   dataProvider?: string | ((props: P) => T[]);
 };
-type SelectableListProps<T> = {
+
+export type SelectableListProps<T> = {
   onChange?: (event: React.UIEvent, item: T) => void;
+  onItemSelected?: (event: React.UIEvent) => void;
   value: string;
 };
 
@@ -348,7 +350,7 @@ export function selectableListOf<
   P extends SelectableListProps<T>,
 >(
   itemRenderer: ItemRenderer<T, PropsWithoutRef<P>>,
-  options: Partial<ValidatedListOfOptions<T, PropsWithoutRef<P>>> = {}
+  options: Partial<ListOfOptions<T, PropsWithoutRef<P>>> = {}
 ): React.ForwardRefExoticComponent<
   PropsWithoutRef<P> & React.RefAttributes<unknown>
 > {
