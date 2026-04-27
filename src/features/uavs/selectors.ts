@@ -46,7 +46,7 @@ import type { AppSelector, RootState } from '~/store/reducers';
 import { euclideanDistance2D, getMeanAngle } from '~/utils/math';
 import { EMPTY_ARRAY } from '~/utils/redux';
 import { createDeepResultSelector } from '~/utils/selectors';
-import type { StoredUAV } from './types';
+import type { StoredUAV, UAVDetailsPanelTab } from './types';
 
 /**
  * Returns a mapping from color names to the list of UAV IDs whose color needs to be
@@ -910,8 +910,9 @@ export const getFollowMapSelectionInUAVDetailsPanel: AppSelector<boolean> = (
   state
 ) => state.uavs.panel.followMapSelection;
 
-export const getSelectedTabInUAVDetailsPanel: AppSelector<string> = (state) =>
-  state.uavs.panel.selectedTab;
+export const getSelectedTabInUAVDetailsPanel: AppSelector<
+  UAVDetailsPanelTab
+> = (state) => state.uavs.panel.selectedTab;
 
 export const getSelectedUAVIdInUAVDetailsPanel: AppSelector<
   string | undefined

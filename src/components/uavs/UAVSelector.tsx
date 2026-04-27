@@ -2,7 +2,6 @@
  * @file Component that allows the user to select a UAV from a dropdown list.
  */
 
-import PropTypes from 'prop-types';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { shallowEqual, useSelector } from 'react-redux';
@@ -45,6 +44,16 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+type UAVSelectorProps = {
+  anchorEl: Element | null;
+  filterable?: boolean;
+  onClose: () => void;
+  onFocus: (event: React.FocusEvent) => void;
+  onSelect: (uavId: string) => void;
+  open: boolean;
+  sortedByError?: boolean;
+};
+
 const UAVSelector = ({
   anchorEl,
   filterable,
@@ -53,7 +62,7 @@ const UAVSelector = ({
   onSelect,
   open,
   sortedByError,
-}) => {
+}: UAVSelectorProps) => {
   const { t } = useTranslation();
   const uavIds = useSelector(
     sortedByError ? getUAVIdsSortedByErrorCode : getUAVIdList,
@@ -88,7 +97,7 @@ const UAVSelector = ({
         formatMissionId(reverseMissionMapping[uavId]).startsWith(filter))
   );
 
-  const handleKeyDown = (event) => {
+  const handleKeyDown = (event: React.KeyboardEvent) => {
     switch (event.key) {
       case 'Enter': {
         if (filtered.length > 0) {
@@ -205,29 +214,35 @@ const UAVSelector = ({
   );
 };
 
-UAVSelector.propTypes = {
-  anchorEl: PropTypes.object, // TODO: Find a more exact PropType for this!
-  filterable: PropTypes.bool,
-  onClose: PropTypes.func,
-  onFocus: PropTypes.func,
-  onSelect: PropTypes.func,
-  open: PropTypes.bool,
-  sortedByError: PropTypes.bool,
+type UAVSelectorWrapperProps = {
+  children: (handleClick: (event: React.MouseEvent) => void) => React.ReactNode;
+  onSelect: (uavId: string) => void;
+  sortedByError?: boolean;
+};
+
+type ElementWithFocusRestorationTarget = Element & {
+  focusRestorationTarget?: HTMLElement | null;
 };
 
 /**
  * Wrapper component that provides a `handleClick` function for the children
  * components to be attached to the target that should trigger the selector
  */
-export const UAVSelectorWrapper = ({ children, ...rest }) => {
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [focusRestorationTarget, setFocusRestorationTarget] = useState(null);
+export const UAVSelectorWrapper = ({
+  children,
+  ...rest
+}: UAVSelectorWrapperProps) => {
+  const [anchorEl, setAnchorEl] = useState<Element | null>(null);
+  const [focusRestorationTarget, setFocusRestorationTarget] =
+    useState<HTMLElement | null>(null);
 
-  const handleClick = (event) => {
+  const handleClick = (event: React.MouseEvent) => {
     setAnchorEl(event.currentTarget);
   };
 
-  const handleFocus = (event) => {
+  const handleFocus = (
+    event: React.FocusEvent<Element, ElementWithFocusRestorationTarget>
+  ) => {
     if (event?.relatedTarget?.focusRestorationTarget) {
       setFocusRestorationTarget(event.relatedTarget.focusRestorationTarget);
     }
@@ -236,7 +251,9 @@ export const UAVSelectorWrapper = ({ children, ...rest }) => {
   const handleClose = () => {
     setAnchorEl(null);
     if (focusRestorationTarget) {
-      setTimeout(() => focusRestorationTarget.focus(), 0);
+      setTimeout(() => {
+        focusRestorationTarget.focus();
+      }, 0);
     }
   };
 
@@ -252,9 +269,4 @@ export const UAVSelectorWrapper = ({ children, ...rest }) => {
       />
     </>
   );
-};
-
-UAVSelectorWrapper.propTypes = {
-  children: PropTypes.func,
-  sortedByError: PropTypes.bool,
 };
