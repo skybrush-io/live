@@ -1,20 +1,21 @@
-import HighlightOff from '@mui/icons-material/HighlightOff';
-import IconButton from '@mui/material/IconButton';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
+
+import HighlightOff from '@mui/icons-material/HighlightOff';
+import IconButton, { type IconButtonProps } from '@mui/material/IconButton';
 
 import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
 import {
   clearAllUAVColorOverrides,
   clearUAVColorOverride,
-  hasUAVColorOverride,
 } from '~/features/uavs/actions';
+import { hasUAVColorOverride } from '~/features/uavs/selectors';
 import { useAppDispatch } from '~/store/hooks';
 import type { RootState } from '~/store/reducers';
 
 type Props = {
   uavIds: string[];
-  size?: 'small' | 'medium' | 'large' | undefined;
+  size?: IconButtonProps['size'];
 };
 
 const ClearColorOverrideButton = ({ size, uavIds }: Props) => {
@@ -30,13 +31,13 @@ const ClearColorOverrideButton = ({ size, uavIds }: Props) => {
       <IconButton
         disabled={!hasColorOverride}
         size={size}
-        onClick={() => {
+        onClick={() =>
           dispatch(
             uavIds.length > 0
               ? clearUAVColorOverride(uavIds)
               : clearAllUAVColorOverrides()
-          );
-        }}
+          )
+        }
       >
         <HighlightOff fontSize='inherit' />
       </IconButton>

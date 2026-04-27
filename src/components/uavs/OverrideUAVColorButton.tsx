@@ -2,7 +2,7 @@ import CircleOff from '@mui/icons-material/Cancel';
 import CircleOffOutlined from '@mui/icons-material/CancelOutlined';
 import CircleOn from '@mui/icons-material/Circle';
 import CircleOnOutlined from '@mui/icons-material/CircleOutlined';
-import IconButton from '@mui/material/IconButton';
+import IconButton, { type IconButtonProps } from '@mui/material/IconButton';
 import { useTheme } from '@mui/material/styles';
 import { Colors, isThemeDark } from '@skybrush/app-theme-mui';
 import { SidebarBadge } from '@skybrush/mui-components';
@@ -24,16 +24,7 @@ type Props = {
   uavIds: string[];
   color: string;
   showBadge?: boolean;
-  size?: 'small' | 'medium' | 'large' | undefined;
-};
-
-const isSubsetOf = (subset: string[], superset: string[]) => {
-  if (subset.length > superset.length) {
-    return false;
-  }
-
-  const supersetSet = new Set(superset);
-  return subset.every((item) => supersetSet.has(item));
+  size?: IconButtonProps['size'];
 };
 
 const OverrideUAVColorButton = ({ color, showBadge, size, uavIds }: Props) => {
@@ -47,7 +38,7 @@ const OverrideUAVColorButton = ({ color, showBadge, size, uavIds }: Props) => {
   const overriddenUAVIds = useSelector(selector);
   const disabled = overriddenUAVIds.length == 0 && uavIds.length == 0;
   const operation: 'set' | 'clearAll' | 'clearSelected' =
-    uavIds.length > 0 && isSubsetOf(uavIds, overriddenUAVIds)
+    uavIds.length > 0 && new Set(uavIds).isSubsetOf(new Set(overriddenUAVIds))
       ? 'clearSelected'
       : uavIds.length === 0
         ? 'clearAll'
@@ -88,12 +79,12 @@ const OverrideUAVColorButton = ({ color, showBadge, size, uavIds }: Props) => {
         }}
       >
         <Icon fontSize='inherit' htmlColor={disabled ? undefined : iconColor} />
-        {showBadge ? (
+        {showBadge && (
           <SidebarBadge
             visible={overriddenUAVIds.length > 0}
             color={Colors.warning}
           />
-        ) : null}
+        )}
       </IconButton>
     </Tooltip>
   );

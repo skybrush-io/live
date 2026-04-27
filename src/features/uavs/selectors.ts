@@ -54,14 +54,8 @@ import type { StoredUAV, UAVDetailsPanelTab } from './types';
  */
 export const getColorOverrideToUAVIdsMap = createSelector(
   (state: RootState) => state.uavs.lights,
-  (colorToUAVIds) => {
-    const result: Record<string, string[]> = {};
-    for (const [uavId, color] of Object.entries(colorToUAVIds)) {
-      result[color] ??= [];
-      result[color].push(uavId);
-    }
-    return result;
-  }
+  (colorToUAVIds) =>
+    Object.groupBy(Object.keys(colorToUAVIds), (uavId) => colorToUAVIds[uavId])
 );
 
 /**
@@ -71,10 +65,18 @@ export const getColorOverrideToUAVIdsMap = createSelector(
 export const getUAVIdsWithColorOverride = (
   state: RootState,
   color: string
-): string[] => {
-  const overrideMap = getColorOverrideToUAVIdsMap(state);
-  return overrideMap[color] ?? EMPTY_ARRAY;
-};
+): string[] => getColorOverrideToUAVIdsMap(state)[color] ?? EMPTY_ARRAY;
+
+/**
+ * Returns whether there is at least one UAV color override in effect.
+ */
+export const hasUAVColorOverride = (
+  state: RootState,
+  uavId?: string
+): boolean =>
+  uavId
+    ? Boolean(state.uavs.lights[uavId])
+    : Object.values(state.uavs.lights).some((x) => x.length > 0);
 
 /**
  * Returns the list of UAV IDs that should be shown on the UI, in the
