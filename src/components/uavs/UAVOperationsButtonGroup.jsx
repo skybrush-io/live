@@ -63,6 +63,51 @@ const FLIGHT_COMMAND_LABEL_KEYS = {
   land: 'general.commands.land',
 };
 
+/** Toolbar accent: takeoff green, hold/RTH yellow, land red (black text on fill). */
+const FLIGHT_COMMAND_COLORS = {
+  takeOff: Colors.success,
+  holdPosition: Colors.positionHold,
+  returnToHome: Colors.positionHold,
+  land: Colors.error,
+};
+
+const FLIGHT_COMMAND_FG = '#000';
+
+const flightCommandIconButtonSx = (bgColor, isSelectionEmpty) =>
+  isSelectionEmpty
+    ? {}
+    : {
+        backgroundColor: bgColor,
+        color: FLIGHT_COMMAND_FG,
+        borderRadius: 1,
+        '&:hover': {
+          backgroundColor: bgColor,
+          filter: 'brightness(0.92)',
+        },
+      };
+
+const flightCommandLabeledButtonSx = (bgColor, isSelectionEmpty) => ({
+  ...LABELED_OP_BUTTON_SX,
+  ...(isSelectionEmpty
+    ? {}
+    : {
+        backgroundColor: bgColor,
+        color: FLIGHT_COMMAND_FG,
+        borderRadius: 1,
+        '&:hover': {
+          backgroundColor: bgColor,
+          filter: 'brightness(0.92)',
+        },
+        '& .MuiButton-startIcon': {
+          ...LABELED_OP_BUTTON_SX['& .MuiButton-startIcon'],
+          color: FLIGHT_COMMAND_FG,
+          '& > *:nth-of-type(1)': {
+            fontSize: '1.35rem',
+          },
+        },
+      }),
+});
+
 /**
  * Main toolbar for controlling the UAVs.
  */
@@ -233,6 +278,10 @@ const UAVOperationsButtonGroup = ({
               disabled={isSelectionEmpty}
               size={iconSize}
               onClick={() => requestFlightCommand('takeOff')}
+              sx={flightCommandIconButtonSx(
+                FLIGHT_COMMAND_COLORS.takeOff,
+                isSelectionEmpty
+              )}
             >
               <FlightTakeoff fontSize={fontSize} />
             </IconButton>
@@ -243,6 +292,10 @@ const UAVOperationsButtonGroup = ({
               disabled={isSelectionEmpty}
               size={iconSize}
               onClick={() => requestFlightCommand('holdPosition')}
+              sx={flightCommandIconButtonSx(
+                FLIGHT_COMMAND_COLORS.holdPosition,
+                isSelectionEmpty
+              )}
             >
               <PositionHold fontSize={fontSize} />
             </IconButton>
@@ -253,6 +306,10 @@ const UAVOperationsButtonGroup = ({
               disabled={isSelectionEmpty}
               size={iconSize}
               onClick={() => requestFlightCommand('returnToHome')}
+              sx={flightCommandIconButtonSx(
+                FLIGHT_COMMAND_COLORS.returnToHome,
+                isSelectionEmpty
+              )}
             >
               <Home fontSize={fontSize} />
             </IconButton>
@@ -263,6 +320,10 @@ const UAVOperationsButtonGroup = ({
               disabled={isSelectionEmpty}
               size={iconSize}
               onClick={() => requestFlightCommand('land')}
+              sx={flightCommandIconButtonSx(
+                FLIGHT_COMMAND_COLORS.land,
+                isSelectionEmpty
+              )}
             >
               <FlightLand fontSize={fontSize} />
             </IconButton>
@@ -278,7 +339,10 @@ const UAVOperationsButtonGroup = ({
               size='medium'
               startIcon={<FlightTakeoff fontSize={fontSize} />}
               onClick={() => requestFlightCommand('takeOff')}
-              sx={LABELED_OP_BUTTON_SX}
+              sx={flightCommandLabeledButtonSx(
+                FLIGHT_COMMAND_COLORS.takeOff,
+                isSelectionEmpty
+              )}
             >
               {t('general.commands.takeoff')}
             </Button>
@@ -292,7 +356,10 @@ const UAVOperationsButtonGroup = ({
               size='medium'
               startIcon={<PositionHold fontSize={fontSize} />}
               onClick={() => requestFlightCommand('holdPosition')}
-              sx={LABELED_OP_BUTTON_SX}
+              sx={flightCommandLabeledButtonSx(
+                FLIGHT_COMMAND_COLORS.holdPosition,
+                isSelectionEmpty
+              )}
             >
               {t('general.commands.positionHold')}
             </Button>
@@ -306,7 +373,10 @@ const UAVOperationsButtonGroup = ({
               size='medium'
               startIcon={<Home fontSize={fontSize} />}
               onClick={() => requestFlightCommand('returnToHome')}
-              sx={LABELED_OP_BUTTON_SX}
+              sx={flightCommandLabeledButtonSx(
+                FLIGHT_COMMAND_COLORS.returnToHome,
+                isSelectionEmpty
+              )}
             >
               {t('general.commands.returnToHome')}
             </Button>
@@ -320,7 +390,10 @@ const UAVOperationsButtonGroup = ({
               size='medium'
               startIcon={<FlightLand fontSize={fontSize} />}
               onClick={() => requestFlightCommand('land')}
-              sx={LABELED_OP_BUTTON_SX}
+              sx={flightCommandLabeledButtonSx(
+                FLIGHT_COMMAND_COLORS.land,
+                isSelectionEmpty
+              )}
             >
               {t('general.commands.land')}
             </Button>

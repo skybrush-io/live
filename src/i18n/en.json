@@ -137,7 +137,6 @@
       "approve": "Approve",
       "back": "Back",
       "cancel": "Cancel",
-      "yes": "Yes",
       "clear": "Clear",
       "click": "Click",
       "close": "Close",
@@ -157,7 +156,8 @@
       "select": "Select",
       "start": "Start",
       "stop": "Stop",
-      "undo": "Undo"
+      "undo": "Undo",
+      "yes": "Yes"
     },
     "commands": {
       "calibrateCompass": "Calibrate compass",
@@ -170,6 +170,9 @@
       "sleep": "Sleep",
       "takeoff": "Takeoff"
     },
+    "confirmDialog": {
+      "title": "Confirm"
+    },
     "geography": {
       "latitude": "Latitude",
       "longitude": "Longitude"
@@ -177,9 +180,6 @@
     "geometry": {
       "rotation": "Rotation",
       "zoom": "Zoom"
-    },
-    "confirmDialog": {
-      "title": "Confirm"
     },
     "status": {
       "failed": "failed",
