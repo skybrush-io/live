@@ -7,7 +7,7 @@ import FormControl from '@mui/material/FormControl';
 import FormGroup from '@mui/material/FormGroup';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -198,11 +198,7 @@ export function useAdaptParametersFormState(
     [onChange, parameters]
   );
   const onTakeoffMethodChanged = useCallback(
-    (
-      event:
-        | React.ChangeEvent<{ value: string }>
-        | { target: { value: string } }
-    ) => {
+    (event: SelectChangeEvent) => {
       const value: TakeoffMethodType = TAKEOFF_METHODS.includes(
         event.target.value as TakeoffMethodType
       )
