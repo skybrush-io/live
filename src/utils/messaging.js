@@ -96,15 +96,21 @@ const performMassOperation =
     },
     responseHandlerOptions = undefined
   ) =>
-  async (uavs, args) => {
+  async (uavs, args = {}) => {
     // Do not bail out early if uavs is empty because in the args there might be
     // an option that intructs the server to do a broadcast to all UAVs.
 
     try {
-      const finalArgs = mapper ? mapper(args) : args;
+      const userAlreadyConfirmed =
+        args.skipUAVOperationConfirmation === true;
+      const argsForPayload = { ...args };
+      delete argsForPayload.skipUAVOperationConfirmation;
+
+      const finalArgs = mapper ? mapper(argsForPayload) : argsForPayload;
       const isBroadcast = Boolean(finalArgs?.transport?.broadcast);
       const needsConfirmation =
         !skipConfirmation &&
+        !userAlreadyConfirmed &&
         shouldConfirmUAVOperation(store.getState(), uavs, isBroadcast);
 
       if (needsConfirmation) {
@@ -318,21 +324,31 @@ export function createUAVOperationThunks({
     throw new TypeError('getTargetedUAVIds() must be a function');
   }
 
-  return mapValues(OPERATION_MAP, (func) => () => (_dispatch, getState) => {
-    const state = getState();
-    const uavIds = getTargetedUAVIds(state);
-    const options = {};
+  return mapValues(
+    OPERATION_MAP,
+    (func) => (maybeOverrides) => (_dispatch, getState) => {
+      const overrides =
+        maybeOverrides &&
+        typeof maybeOverrides === 'object' &&
+        maybeOverrides.skipUAVOperationConfirmation === true
+          ? { skipUAVOperationConfirmation: true }
+          : {};
 
-    if (getTransportOptions) {
-      options.transport = getTransportOptions(state);
+      const state = getState();
+      const uavIds = getTargetedUAVIds(state);
+      const options = { ...overrides };
 
-      if (options.transport?.channel === 0) {
-        // Work around a bug in older versions of Skybrush Server (2.1.0 and
-        // before) where virtual UAVs did not accept a channel index
-        delete options.transport.channel;
+      if (getTransportOptions) {
+        options.transport = getTransportOptions(state);
+
+        if (options.transport?.channel === 0) {
+          // Work around a bug in older versions of Skybrush Server (2.1.0 and
+          // before) where virtual UAVs did not accept a channel index
+          delete options.transport.channel;
+        }
       }
-    }
 
-    func(uavIds, options);
-  });
+      func(uavIds, options);
+    }
+  );
 }

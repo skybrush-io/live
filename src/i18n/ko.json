@@ -1,1 +1,15 @@
-{}
+{
+  "general": {
+    "action": {
+      "cancel": "취소",
+      "yes": "예"
+    },
+    "confirmDialog": {
+      "title": "명령 확인"
+    }
+  },
+  "UAVOpButtonGrp": {
+    "confirmFlightCommandMessage": "선택한 UAV에 \"{{command}}\" 명령을 실행할까요?",
+    "confirmFlightCommandMessageBroadcast": "모든 UAV에 \"{{command}}\" 명령을 브로드캐스트할까요?"
+  }
+}

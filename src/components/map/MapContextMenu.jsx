@@ -32,6 +32,12 @@ import Fence from '~/icons/PlacesFence';
 import { FeatureType } from '~/model/features';
 import * as messaging from '~/utils/messaging';
 
+const MENU_ITEM_SX = {
+  fontSize: 15,
+  fontWeight: 700,
+  minHeight: 40,
+};
+
 /**
  * Context menu that shows the menu items that should appear when the
  * user right-clicks on the map.
@@ -93,6 +99,7 @@ class MapContextMenu extends React.Component {
                   <MenuItem
                     key='fly'
                     dense
+                    sx={MENU_ITEM_SX}
                     onClick={this._moveSelectedUAVsAtCurrentAltitude}
                   >
                     <ListItemIcon>
@@ -103,6 +110,7 @@ class MapContextMenu extends React.Component {
                   <MenuItem
                     key='flyAtAltitude'
                     dense
+                    sx={MENU_ITEM_SX}
                     onClick={this._moveSelectedUAVsAtGivenAltitude}
                   >
                     <ListItemIcon>
@@ -114,16 +122,19 @@ class MapContextMenu extends React.Component {
                   <MenuItem
                     key='takeoff'
                     dense
+                    sx={MENU_ITEM_SX}
                     onClick={this._takeoffSelectedUAVs}
                   >
                     <ListItemIcon>
                       <FlightTakeoff />
+                      Takeoff
                     </ListItemIcon>
                     {t('general.commands.takeoff')}
                   </MenuItem>,
                   <MenuItem
                     key='poshold'
                     dense
+                    sx={MENU_ITEM_SX}
                     onClick={this._positionHoldSelectedUAVs}
                   >
                     <ListItemIcon>
@@ -131,13 +142,23 @@ class MapContextMenu extends React.Component {
                     </ListItemIcon>
                     {t('general.commands.positionHold')}
                   </MenuItem>,
-                  <MenuItem key='home' dense onClick={this._returnSelectedUAVs}>
+                  <MenuItem
+                    key='home'
+                    dense
+                    sx={MENU_ITEM_SX}
+                    onClick={this._returnSelectedUAVs}
+                  >
                     <ListItemIcon>
                       <Home />
                     </ListItemIcon>
                     {t('general.commands.returnToHome')}
                   </MenuItem>,
-                  <MenuItem key='land' dense onClick={this._landSelectedUAVs}>
+                  <MenuItem
+                    key='land'
+                    dense
+                    sx={MENU_ITEM_SX}
+                    onClick={this._landSelectedUAVs}
+                  >
                     <ListItemIcon>
                       <FlightLand />
                     </ListItemIcon>
@@ -147,6 +168,7 @@ class MapContextMenu extends React.Component {
                   <MenuItem
                     key='message'
                     dense
+                    sx={MENU_ITEM_SX}
                     disabled={!hasSingleSelectedUAV}
                     onClick={this._openDetailsDialogForSelectedUAVs}
                   >
@@ -159,6 +181,7 @@ class MapContextMenu extends React.Component {
                   <MenuItem
                     key='wakeUp'
                     dense
+                    sx={MENU_ITEM_SX}
                     onClick={this._wakeUpSelectedUAVs}
                   >
                     <ListItemIcon>
@@ -166,13 +189,23 @@ class MapContextMenu extends React.Component {
                     </ListItemIcon>
                     {t('general.commands.powerOn')}
                   </MenuItem>,
-                  <MenuItem key='sleep' dense onClick={this._sleepSelectedUAVs}>
+                  <MenuItem
+                    key='sleep'
+                    dense
+                    sx={MENU_ITEM_SX}
+                    onClick={this._sleepSelectedUAVs}
+                  >
                     <ListItemIcon>
                       <Moon />
                     </ListItemIcon>
                     {t('general.commands.sleep')}
                   </MenuItem>,
-                  <MenuItem key='reset' dense onClick={this._resetUAVs}>
+                  <MenuItem
+                    key='reset'
+                    dense
+                    sx={MENU_ITEM_SX}
+                    onClick={this._resetUAVs}
+                  >
                     <ListItemIcon>
                       <Refresh color='secondary' />
                     </ListItemIcon>
@@ -181,6 +214,7 @@ class MapContextMenu extends React.Component {
                   <MenuItem
                     key='shutdown'
                     dense
+                    sx={MENU_ITEM_SX}
                     onClick={this._shutdownSelectedUAVs}
                   >
                     <ListItemIcon>
@@ -197,6 +231,7 @@ class MapContextMenu extends React.Component {
                   <MenuItem
                     key='addPointToMission'
                     dense
+                    sx={MENU_ITEM_SX}
                     onClick={this._addPointToMission}
                   >
                     <ListItemIcon>
@@ -212,6 +247,7 @@ class MapContextMenu extends React.Component {
                   <MenuItem
                     key='setMapCoordinateSystemOrigin'
                     dense
+                    sx={MENU_ITEM_SX}
                     onClick={this._setMapCoordinateSystemOrigin}
                   >
                     <ListItemIcon>
@@ -227,6 +263,7 @@ class MapContextMenu extends React.Component {
                   <MenuItem
                     key='setShowCoordinateSystemOrigin'
                     dense
+                    sx={MENU_ITEM_SX}
                     onClick={this._setShowCoordinateSystemOrigin}
                   >
                     <ListItemIcon>
@@ -249,6 +286,7 @@ class MapContextMenu extends React.Component {
                   <MenuItem
                     key='geofence'
                     dense
+                    sx={MENU_ITEM_SX}
                     disabled={!featureSuitableForGeofence}
                     onClick={
                       isCurrentGeofence
@@ -276,6 +314,7 @@ class MapContextMenu extends React.Component {
                   <MenuItem
                     key='exclusionZone'
                     dense
+                    sx={MENU_ITEM_SX}
                     disabled={!featureSuitableForExclusionZone}
                     onClick={
                       isExclusionZone
@@ -299,7 +338,12 @@ class MapContextMenu extends React.Component {
                 selectedFeatures.every((t) => t.type === FeatureType.POLYGON)
               ) {
                 result.push(
-                  <MenuItem key='cut' dense onClick={this._cutSelectedFeatures}>
+                  <MenuItem
+                    key='cut'
+                    dense
+                    sx={MENU_ITEM_SX}
+                    onClick={this._cutSelectedFeatures}
+                  >
                     <ListItemIcon>
                       <ContentCut />
                     </ListItemIcon>
@@ -321,6 +365,7 @@ class MapContextMenu extends React.Component {
                   <MenuItem
                     key='setProperties'
                     dense
+                    sx={MENU_ITEM_SX}
                     disabled={!hasSingleSelectedFeature}
                     onClick={this._editSelectedFeature}
                   >
@@ -332,6 +377,7 @@ class MapContextMenu extends React.Component {
                   <MenuItem
                     key='remove'
                     dense
+                    sx={MENU_ITEM_SX}
                     disabled={!hasSelectedFeatures}
                     onClick={this._removeSelectedFeatures}
                   >

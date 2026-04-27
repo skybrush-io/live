@@ -16,12 +16,13 @@ import IconButton from '@mui/material/IconButton';
 import { bindActionCreators } from '@reduxjs/toolkit';
 import isEmpty from 'lodash-es/isEmpty';
 import PropTypes from 'prop-types';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { useInterval } from 'react-use';
 
 import Colors from '~/components/colors';
+import ConfirmationDialog from '~/components/dialogs/ConfirmationDialog';
 import ToolbarDivider from '~/components/ToolbarDivider';
 import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
 import { getPreferredCommunicationChannelIndex } from '~/features/mission/selectors';
@@ -35,6 +36,32 @@ import { openUAVDetailsDialog } from '~/features/uavs/details';
 import { getUAVIdList } from '~/features/uavs/selectors';
 import Bolt from '~/icons/Bolt';
 import { createUAVOperationThunks } from '~/utils/messaging';
+
+/** Text + icon flight commands on the main toolbar (readable contrast & spacing). */
+const LABELED_OP_BUTTON_SX = {
+  textTransform: 'none',
+  fontWeight: 600,
+  fontSize: '0.8125rem',
+  letterSpacing: '0.01em',
+  color: 'text.primary',
+  px: 1.25,
+  py: 0.65,
+  minWidth: 'auto',
+  '& .MuiButton-startIcon': {
+    mr: 0.75,
+    color: 'text.secondary',
+    '& > *:nth-of-type(1)': {
+      fontSize: '1.35rem',
+    },
+  },
+};
+
+const FLIGHT_COMMAND_LABEL_KEYS = {
+  takeOff: 'general.commands.takeoff',
+  holdPosition: 'general.commands.positionHold',
+  returnToHome: 'general.commands.returnToHome',
+  land: 'general.commands.land',
+};
 
 /**
  * Main toolbar for controlling the UAVs.
@@ -90,6 +117,60 @@ const UAVOperationsButtonGroup = ({
     dispatch
   );
 
+  const [flightConfirmOpen, setFlightConfirmOpen] = useState(false);
+  const [pendingFlightCommand, setPendingFlightCommand] = useState(null);
+
+  const requestFlightCommand = useCallback((commandKey) => {
+    setPendingFlightCommand(commandKey);
+    setFlightConfirmOpen(true);
+  }, []);
+
+  const handleFlightConfirmClose = useCallback(() => {
+    setFlightConfirmOpen(false);
+    setPendingFlightCommand(null);
+  }, []);
+
+  const handleFlightConfirmAction = useCallback(() => {
+    if (!pendingFlightCommand) {
+      return;
+    }
+
+    const runners = {
+      takeOff,
+      holdPosition,
+      returnToHome,
+      land,
+    };
+    runners[pendingFlightCommand]({
+      skipUAVOperationConfirmation: true,
+    });
+    handleFlightConfirmClose();
+  }, [
+    pendingFlightCommand,
+    takeOff,
+    holdPosition,
+    returnToHome,
+    land,
+    handleFlightConfirmClose,
+  ]);
+
+  const flightConfirmMessage = useMemo(() => {
+    if (!pendingFlightCommand) {
+      return '';
+    }
+
+    const cmdKey = FLIGHT_COMMAND_LABEL_KEYS[pendingFlightCommand];
+    const commandLabel = cmdKey ? t(cmdKey) : pendingFlightCommand;
+
+    return broadcast
+      ? t('UAVOpButtonGrp.confirmFlightCommandMessageBroadcast', {
+          command: commandLabel,
+        })
+      : t('UAVOpButtonGrp.confirmFlightCommandMessage', {
+          command: commandLabel,
+        });
+  }, [broadcast, pendingFlightCommand, t]);
+
   const [keepFlashing, setKeepFlashing] = useState(false);
   const flashLightsButtonOnClick = useCallback(
     (event) => {
@@ -116,7 +197,10 @@ const UAVOperationsButtonGroup = ({
         startIcon={<WbSunny color={keepFlashing ? 'primary' : undefined} />}
         disabled={isSelectionEmpty}
         size={iconSize}
+        variant='text'
+        color='inherit'
         onClick={flashLightsButtonOnClick}
+        sx={LABELED_OP_BUTTON_SX}
       >
         {t('UAVOpButtonGrp.flashLights')}
       </Button>
@@ -126,6 +210,7 @@ const UAVOperationsButtonGroup = ({
           disabled={isSelectionEmpty}
           size={iconSize}
           onClick={flashLightsButtonOnClick}
+          sx={{ color: 'text.primary' }}
         >
           <WbSunny
             fontSize={fontSize}
@@ -141,41 +226,107 @@ const UAVOperationsButtonGroup = ({
         <ToolbarDivider orientation='vertical' />
       )}
 
-      <Tooltip content={t('general.commands.takeoff')}>
-        <IconButton
-          disabled={isSelectionEmpty}
-          size={iconSize}
-          onClick={takeOff}
-        >
-          <FlightTakeoff fontSize={fontSize} />
-        </IconButton>
-      </Tooltip>
+      {size === 'small' ? (
+        <>
+          <Tooltip content={t('general.commands.takeoff')}>
+            <IconButton
+              disabled={isSelectionEmpty}
+              size={iconSize}
+              onClick={() => requestFlightCommand('takeOff')}
+            >
+              <FlightTakeoff fontSize={fontSize} />
+            </IconButton>
+          </Tooltip>
 
-      <Tooltip content={t('general.commands.positionHold')}>
-        <IconButton
-          disabled={isSelectionEmpty}
-          size={iconSize}
-          onClick={holdPosition}
-        >
-          <PositionHold fontSize={fontSize} />
-        </IconButton>
-      </Tooltip>
+          <Tooltip content={t('general.commands.positionHold')}>
+            <IconButton
+              disabled={isSelectionEmpty}
+              size={iconSize}
+              onClick={() => requestFlightCommand('holdPosition')}
+            >
+              <PositionHold fontSize={fontSize} />
+            </IconButton>
+          </Tooltip>
 
-      <Tooltip content={t('general.commands.returnToHome')}>
-        <IconButton
-          disabled={isSelectionEmpty}
-          size={iconSize}
-          onClick={returnToHome}
-        >
-          <Home fontSize={fontSize} />
-        </IconButton>
-      </Tooltip>
+          <Tooltip content={t('general.commands.returnToHome')}>
+            <IconButton
+              disabled={isSelectionEmpty}
+              size={iconSize}
+              onClick={() => requestFlightCommand('returnToHome')}
+            >
+              <Home fontSize={fontSize} />
+            </IconButton>
+          </Tooltip>
 
-      <Tooltip content={t('general.commands.land')}>
-        <IconButton disabled={isSelectionEmpty} size={iconSize} onClick={land}>
-          <FlightLand fontSize={fontSize} />
-        </IconButton>
-      </Tooltip>
+          <Tooltip content={t('general.commands.land')}>
+            <IconButton
+              disabled={isSelectionEmpty}
+              size={iconSize}
+              onClick={() => requestFlightCommand('land')}
+            >
+              <FlightLand fontSize={fontSize} />
+            </IconButton>
+          </Tooltip>
+        </>
+      ) : (
+        <>
+          <Tooltip content={t('general.commands.takeoff')}>
+            <Button
+              variant='text'
+              color='inherit'
+              disabled={isSelectionEmpty}
+              size='medium'
+              startIcon={<FlightTakeoff fontSize={fontSize} />}
+              onClick={() => requestFlightCommand('takeOff')}
+              sx={LABELED_OP_BUTTON_SX}
+            >
+              {t('general.commands.takeoff')}
+            </Button>
+          </Tooltip>
+
+          <Tooltip content={t('general.commands.positionHold')}>
+            <Button
+              variant='text'
+              color='inherit'
+              disabled={isSelectionEmpty}
+              size='medium'
+              startIcon={<PositionHold fontSize={fontSize} />}
+              onClick={() => requestFlightCommand('holdPosition')}
+              sx={LABELED_OP_BUTTON_SX}
+            >
+              {t('general.commands.positionHold')}
+            </Button>
+          </Tooltip>
+
+          <Tooltip content={t('general.commands.returnToHome')}>
+            <Button
+              variant='text'
+              color='inherit'
+              disabled={isSelectionEmpty}
+              size='medium'
+              startIcon={<Home fontSize={fontSize} />}
+              onClick={() => requestFlightCommand('returnToHome')}
+              sx={LABELED_OP_BUTTON_SX}
+            >
+              {t('general.commands.returnToHome')}
+            </Button>
+          </Tooltip>
+
+          <Tooltip content={t('general.commands.land')}>
+            <Button
+              variant='text'
+              color='inherit'
+              disabled={isSelectionEmpty}
+              size='medium'
+              startIcon={<FlightLand fontSize={fontSize} />}
+              onClick={() => requestFlightCommand('land')}
+              sx={LABELED_OP_BUTTON_SX}
+            >
+              {t('general.commands.land')}
+            </Button>
+          </Tooltip>
+        </>
+      )}
 
       {!hideSeparators && <ToolbarDivider orientation='vertical' />}
 
@@ -186,8 +337,9 @@ const UAVOperationsButtonGroup = ({
               disabled={!isSelectionSingle}
               size={iconSize}
               onClick={() => openUAVDetailsDialog(selectedUAVIds[0])}
+              sx={{ color: 'text.primary' }}
             >
-              <Assignment />
+              <Assignment fontSize={fontSize} />
             </IconButton>
           </Tooltip>
           {flashLightsButton}
@@ -199,8 +351,9 @@ const UAVOperationsButtonGroup = ({
                 selectedUAVIds.length > COMPASS_CALIB_UAV_LIMIT
               }
               onClick={() => calibrateCompass()}
+              sx={{ color: 'text.primary' }}
             >
-              <Explore />
+              <Explore fontSize={fontSize} />
             </IconButton>
           </Tooltip>
         </>
@@ -213,6 +366,7 @@ const UAVOperationsButtonGroup = ({
           disabled={isSelectionEmpty}
           size={iconSize}
           onClick={turnMotorsOn}
+          sx={{ color: 'text.primary' }}
         >
           <PlayArrow
             fontSize={fontSize}
@@ -226,6 +380,7 @@ const UAVOperationsButtonGroup = ({
           disabled={isSelectionEmpty}
           size={iconSize}
           onClick={turnMotorsOff}
+          sx={{ color: 'text.primary' }}
         >
           <Clear
             fontSize={fontSize}
@@ -243,6 +398,7 @@ const UAVOperationsButtonGroup = ({
           disabled={isSelectionEmpty}
           size={iconSize}
           onClick={wakeUp}
+          sx={{ color: 'text.primary' }}
         >
           <Bolt
             htmlColor={isSelectionEmpty ? undefined : Colors.success}
@@ -252,7 +408,12 @@ const UAVOperationsButtonGroup = ({
       </Tooltip>
 
       <Tooltip content={t('general.commands.sleep')}>
-        <IconButton disabled={isSelectionEmpty} size={iconSize} onClick={sleep}>
+        <IconButton
+          disabled={isSelectionEmpty}
+          size={iconSize}
+          onClick={sleep}
+          sx={{ color: 'text.primary' }}
+        >
           <Moon
             htmlColor={isSelectionEmpty ? undefined : Colors.warning}
             fontSize={fontSize}
@@ -261,7 +422,12 @@ const UAVOperationsButtonGroup = ({
       </Tooltip>
 
       <Tooltip content={t('general.commands.reboot')}>
-        <IconButton disabled={isSelectionEmpty} size={iconSize} onClick={reset}>
+        <IconButton
+          disabled={isSelectionEmpty}
+          size={iconSize}
+          onClick={reset}
+          sx={{ color: 'text.primary' }}
+        >
           <Refresh
             htmlColor={isSelectionEmpty ? undefined : Colors.error}
             fontSize={fontSize}
@@ -274,6 +440,7 @@ const UAVOperationsButtonGroup = ({
           disabled={isSelectionEmpty}
           size={iconSize}
           onClick={shutdown}
+          sx={{ color: 'text.primary' }}
         >
           <PowerSettingsNew
             htmlColor={isSelectionEmpty ? undefined : Colors.error}
@@ -300,12 +467,20 @@ const UAVOperationsButtonGroup = ({
                   ? requestRemovalOfUAVsMarkedAsGone()
                   : requestRemovalOfUAVsByIds(selectedUAVIds)
               }
+              sx={{ color: 'text.primary' }}
             >
-              <Delete />
+              <Delete fontSize={fontSize} />
             </IconButton>
           </Tooltip>
         </>
       )}
+
+      <ConfirmationDialog
+        open={flightConfirmOpen}
+        message={flightConfirmMessage}
+        onConfirm={handleFlightConfirmAction}
+        onCancel={handleFlightConfirmClose}
+      />
     </>
   );
 };

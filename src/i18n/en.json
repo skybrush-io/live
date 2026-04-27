@@ -43,6 +43,8 @@
   },
   "UAVOpButtonGrp": {
     "armMotors": "Arm motors",
+    "confirmFlightCommandMessage": "Run \"{{command}}\" on the selected UAVs?",
+    "confirmFlightCommandMessageBroadcast": "Broadcast \"{{command}}\" to all UAVs?",
     "details": "Details…",
     "disarmMotors": "Disarm motors",
     "flashLights": "Flash lights",
@@ -135,6 +137,7 @@
       "approve": "Approve",
       "back": "Back",
       "cancel": "Cancel",
+      "yes": "Yes",
       "clear": "Clear",
       "click": "Click",
       "close": "Close",
@@ -174,6 +177,9 @@
     "geometry": {
       "rotation": "Rotation",
       "zoom": "Zoom"
+    },
+    "confirmDialog": {
+      "title": "Confirm"
     },
     "status": {
       "failed": "failed",
