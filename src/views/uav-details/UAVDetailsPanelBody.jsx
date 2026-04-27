@@ -6,7 +6,6 @@ import { BackgroundHint } from '@skybrush/mui-components';
 import MessagesPanel from '~/components/chat/MessagesPanel';
 import UAVLogsPanel from '~/features/uavs/UAVLogsPanel';
 import PreflightStatusPanel from '~/features/uavs/PreflightStatusPanel';
-import RangefinderPanel from '~/features/uavs/RangefinderPanel';
 import {
   getSelectedTabInUAVDetailsPanel,
   getSelectedUAVIdInUAVDetailsPanel,
@@ -18,7 +17,6 @@ export const views = {
   tests: UAVTestsPanel,
   messages: MessagesPanel,
   logs: UAVLogsPanel,
-  rangefinder: RangefinderPanel,
 };
 
 // prettier-ignore
