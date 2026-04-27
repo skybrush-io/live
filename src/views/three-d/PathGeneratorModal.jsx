@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { useMemo, useState } from 'react';
 
-const DEFAULT_PATH_PLANNER_URL = '/api/v1/path-planner/plan';
+const DEFAULT_PATH_PLANNER_URL = 'http://localhost:5001/api/v1/path-planner/plan';
 
 const parseResponseBodyAsText = async (response) => {
   const contentType = response.headers.get('content-type') || '';

@@ -9,6 +9,7 @@ import { selectOrdered } from '~/utils/collections';
 
 import { CLOCK_SKEW_WARNING_THRESHOLD, MAX_ROUNDTRIP_TIME } from './constants';
 import { INVALID, type ServersSliceState } from './slice';
+import { isTCPConnectionSupported } from './server-settings-dialog';
 import {
   Protocol,
   type ServerAuthenticationInformation,
@@ -66,8 +67,12 @@ export const getRoundTripTimeInMilliseconds: AppSelector<number | undefined> = (
  * connected to or that the user is trying to connect to.
  * (Defaults to WebSocket for backwards compatibility.)
  */
-export const getServerProtocolWithDefaultWS: AppSelector<Protocol> = (state) =>
-  state.dialogs.serverSettings.protocol || Protocol.WS;
+export const getServerProtocolWithDefaultWS: AppSelector<Protocol> = (state) => {
+  const protocol = state.dialogs.serverSettings.protocol || Protocol.WS;
+  return protocol === Protocol.TCP && !isTCPConnectionSupported
+    ? Protocol.WS
+    : protocol;
+};
 
 /**
  * Selector that returns the hostname of the server that the user is

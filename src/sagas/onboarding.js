@@ -83,13 +83,17 @@ export default function* onboardingSaga() {
 
         case 5001:
           // Default Skybrush server port for TCP connections
-          protocol = Protocol.TCP;
+          protocol = isTCPConnectionSupported ? Protocol.TCP : Protocol.WS;
           break;
 
         default:
           // Educated guess
           protocol = isTCPConnectionSupported ? Protocol.TCP : Protocol.WS;
       }
+    }
+
+    if (protocol === Protocol.TCP && !isTCPConnectionSupported) {
+      protocol = Protocol.WS;
     }
 
     const updates = {

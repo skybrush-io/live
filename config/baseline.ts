@@ -154,7 +154,7 @@ const baseline: Config = {
     preventAutodetection: false,
     preventManualSetup: false,
     hostName: 'localhost',
-    port: null,
+    port: 5001,
     isSecure: null,
     warnClockSkew: true,
   },
