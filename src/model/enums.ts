@@ -189,7 +189,7 @@ const propertiesForFlightModes: Record<
   [FlightMode.LOITER]: {
     abbreviation: 'Loit',
     label: 'Loiter',
-    description: 'Posiiton hold with manual velocity control',
+    description: 'Position hold with manual velocity control',
   },
   [FlightMode.MISSION]: {
     abbreviation: 'Wp',
