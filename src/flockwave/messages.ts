@@ -24,6 +24,8 @@ import pTimeout from 'p-timeout';
 import {
   createCancellationRequest,
   createCommandRequest,
+  createComponentCalibrationRequest,
+  createComponentTestRequest,
   createResumeRequest,
 } from './builders';
 import { createOperationExecutor, type OperationExecutor } from './operations';
@@ -1439,6 +1441,104 @@ export default class MessageHub {
   ): Promise<unknown> {
     const { uavId, command, args, kwds } = request;
     const message = createCommandRequest([uavId], command, args, kwds);
+    const response = await this.sendMessage(message);
+    return this._asyncOperationManager.handleMultiAsyncResponseForSingleId(
+      response,
+      uavId,
+      options
+    );
+  }
+
+  /**
+   * Sends a Flockwave component calibration request (UAV-CALIB) with the given
+   * body and returns a promise that resolves or rejects when one of the following
+   * events happen:
+   *
+   * <ul>
+   * <li>The server signals an execution failure in a direct UAV-CALIB
+   * response to the original request. In this case, the promise errors
+   * out with an appropriate human-readable message.</li>
+   * <li>The server returns the response to the request in a direct UAV-CALIB
+   * message. In this case, the promise resolves normally with the
+   * UAV-CALIB message itself.</li>
+   * <li>The server signals a timeout or error for the request in a direct UAV-CALIB
+   * message. In this case, the promise errors out with an appropriate
+   * human-readable message.</li>
+   * <li>Any of the above, but in a separate notification delivered asynchronously
+   * with ASYNC-RESP (for responses and errors) or ASYNC-TIMEOUT (for timeouts).</li>
+   * <li>A cancellation is delivered to the server in an ASYNC-CANCEL request
+   * and the server acknowledges the cancellation in the corresponding
+   * ASYNC-CANCEL response.</li>
+   * </ul>
+   *
+   * @param  request.uavId   ID of the UAV to send the request to
+   * @param  request.component the component to calibrate
+   * @param  options additional options to forward to the
+   *         `handleMultiAsyncResponseForSingleId()` method of the
+   *         AsyncOperationManager. Typical keys to use are `cancelToken`,
+   *         `onProgress`, `timeout` and `noThrow`.
+   * @return a promise that resolves to the response of the UAV
+   *         to the command or errors out in case of execution errors and
+   *         timeouts.
+   */
+  async sendComponentCalibrationRequest(
+    request: {
+      uavId: string;
+      component: string;
+    },
+    options: AsyncResponseHandlerOptions
+  ): Promise<unknown> {
+    const { uavId, component } = request;
+    const message = createComponentCalibrationRequest([uavId], component);
+    const response = await this.sendMessage(message);
+    return this._asyncOperationManager.handleMultiAsyncResponseForSingleId(
+      response,
+      uavId,
+      options
+    );
+  }
+
+  /**
+   * Sends a Flockwave component test request (UAV-TEST) with the given
+   * body and returns a promise that resolves or rejects when one of the following
+   * events happen:
+   *
+   * <ul>
+   * <li>The server signals an execution failure in a direct UAV-TEST
+   * response to the original request. In this case, the promise errors
+   * out with an appropriate human-readable message.</li>
+   * <li>The server returns the response to the request in a direct UAV-TEST
+   * message. In this case, the promise resolves normally with the
+   * UAV-TEST message itself.</li>
+   * <li>The server signals a timeout or error for the request in a direct UAV-TEST
+   * message. In this case, the promise errors out with an appropriate
+   * human-readable message.</li>
+   * <li>Any of the above, but in a separate notification delivered asynchronously
+   * with ASYNC-RESP (for responses and errors) or ASYNC-TIMEOUT (for timeouts).</li>
+   * <li>A cancellation is delivered to the server in an ASYNC-CANCEL request
+   * and the server acknowledges the cancellation in the corresponding
+   * ASYNC-CANCEL response.</li>
+   * </ul>
+   *
+   * @param  request.uavId   ID of the UAV to send the request to
+   * @param  request.component the component to calibrate
+   * @param  options additional options to forward to the
+   *         `handleMultiAsyncResponseForSingleId()` method of the
+   *         AsyncOperationManager. Typical keys to use are `cancelToken`,
+   *         `onProgress`, `timeout` and `noThrow`.
+   * @return a promise that resolves to the response of the UAV
+   *         to the command or errors out in case of execution errors and
+   *         timeouts.
+   */
+  async sendComponentTestRequest(
+    request: {
+      uavId: string;
+      component: string;
+    },
+    options: AsyncResponseHandlerOptions
+  ): Promise<unknown> {
+    const { uavId, component } = request;
+    const message = createComponentTestRequest([uavId], component);
     const response = await this.sendMessage(message);
     return this._asyncOperationManager.handleMultiAsyncResponseForSingleId(
       response,
