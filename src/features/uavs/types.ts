@@ -4,6 +4,7 @@ import { type UAVAge, type UAVBattery } from '~/model/uav';
 import { type VelocityNED, type VelocityXYZ } from '~/model/velocity';
 import { type Identifier } from '~/utils/collections';
 import { type Coordinate3D } from '~/utils/math';
+import { isSomeEnum } from '~/utils/types';
 
 /**
  * Serialized information about a UAV.
@@ -64,3 +65,6 @@ export enum UAVDetailsPanelTab {
   PREFLIGHT = 'preflight',
   TESTS = 'tests',
 }
+
+export const isUAVDetailsDialogTab = isSomeEnum(UAVDetailsDialogTab);
+export const isUAVDetailsPanelTab = isSomeEnum(UAVDetailsPanelTab);

@@ -1,6 +1,5 @@
 import SelectAll from '@mui/icons-material/SelectAll';
 import Box from '@mui/material/Box';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import ToggleButton from '~/components/ToggleButton';
@@ -10,12 +9,19 @@ import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
 import {
   getFollowMapSelectionInUAVDetailsPanel,
   getSelectedUAVIdInUAVDetailsPanel,
-  getUAVIdList,
 } from '~/features/uavs/selectors';
 import {
   setSelectedUAVIdInUAVDetailsPanel,
   toggleFollowMapSelectionInUAVDetailsPanel,
 } from '~/features/uavs/slice';
+import type { RootState } from '~/store/reducers';
+
+type UAVDetailsPanelUAVIdSelectorProps = {
+  followMapSelection: boolean;
+  selectedUAVId?: string;
+  setSelectedUAVId: (uavId: string) => void;
+  toggleFollowMapSelection: () => void;
+};
 
 /**
  * Components for selecting the active UAV in the panel from a dropdown or by
@@ -26,7 +32,7 @@ const UAVDetailsPanelUAVIdSelector = ({
   selectedUAVId,
   setSelectedUAVId,
   toggleFollowMapSelection,
-}) => (
+}: UAVDetailsPanelUAVIdSelectorProps) => (
   <Box sx={{ display: 'flex', alignItems: 'center', mx: 0.5 }}>
     <UAVSelectorWrapper sortedByError onSelect={setSelectedUAVId}>
       {(handleClick) => (
@@ -53,20 +59,11 @@ const UAVDetailsPanelUAVIdSelector = ({
   </Box>
 );
 
-UAVDetailsPanelUAVIdSelector.propTypes = {
-  followMapSelection: PropTypes.bool,
-  selectedUAVId: PropTypes.string,
-  setSelectedUAVId: PropTypes.func,
-  toggleFollowMapSelection: PropTypes.func,
-  uavIds: PropTypes.arrayOf(PropTypes.string),
-};
-
 export default connect(
   // mapStateToProps
-  (state) => ({
+  (state: RootState) => ({
     followMapSelection: getFollowMapSelectionInUAVDetailsPanel(state),
     selectedUAVId: getSelectedUAVIdInUAVDetailsPanel(state),
-    uavIds: getUAVIdList(state),
   }),
   // mapDispatchToProps
   {

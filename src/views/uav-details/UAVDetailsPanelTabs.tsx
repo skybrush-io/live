@@ -1,33 +1,35 @@
 import Tab from '@mui/material/Tab';
-import Tabs from '@mui/material/Tabs';
-import PropTypes from 'prop-types';
+import Tabs, { type TabsProps } from '@mui/material/Tabs';
 import { connect } from 'react-redux';
 
 import { getSelectedTabInUAVDetailsPanel } from '~/features/uavs/selectors';
 import { setSelectedTabInUAVDetailsPanel } from '~/features/uavs/slice';
+import { isUAVDetailsPanelTab } from '~/features/uavs/types';
+import type { AppDispatch, RootState } from '~/store/reducers';
 
 import { views } from './UAVDetailsPanelBody';
 
 /**
  * Tab list for selecting a view on the UAV Details Panel.
  */
-const UAVDetailsPanelTabs = ({ ...rest }) => (
-  <Tabs {...rest}>
+const UAVDetailsPanelTabs = (props: TabsProps) => (
+  <Tabs {...props}>
     {Object.keys(views).map((view) => (
       <Tab key={view} label={view} value={view} />
     ))}
   </Tabs>
 );
 
-UAVDetailsPanelTabs.propTypes = {
-  onChange: PropTypes.func,
-  value: PropTypes.string,
-};
-
 export default connect(
   // mapStateToProps
-  (state) => ({ value: getSelectedTabInUAVDetailsPanel(state) }),
+  (state: RootState) => ({ value: getSelectedTabInUAVDetailsPanel(state) }),
 
   // mapDispatchToProps
-  { onChange: (_event, value) => setSelectedTabInUAVDetailsPanel(value) }
+  (dispatch: AppDispatch) => ({
+    onChange: (_event: unknown, value: string) => {
+      if (isUAVDetailsPanelTab(value)) {
+        dispatch(setSelectedTabInUAVDetailsPanel(value));
+      }
+    },
+  })
 )(UAVDetailsPanelTabs);

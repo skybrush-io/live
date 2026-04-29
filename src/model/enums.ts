@@ -121,6 +121,10 @@ export enum FlightMode {
   UNKNOWN = 'unknown',
 }
 
+/**
+ * Type guard that checks if a string represents a known flight mode enum value,
+ * and asserts it's type accordingly.
+ */
 export const isFlightMode = (mode: unknown): mode is FlightMode =>
   Object.values(FlightMode).includes(mode as FlightMode);
 
@@ -185,7 +189,7 @@ const propertiesForFlightModes: Record<
   [FlightMode.LOITER]: {
     abbreviation: 'Loit',
     label: 'Loiter',
-    description: 'Posiiton hold with manual velocity control',
+    description: 'Position hold with manual velocity control',
   },
   [FlightMode.MISSION]: {
     abbreviation: 'Wp',
@@ -243,17 +247,10 @@ const propertiesForFlightModes: Record<
 };
 
 /**
- * Type guard that checks if a string represents a known flight mode enum value,
- * and asserts it's type accordingly.
- */
-const isKnownFlightMode = (mode: string): mode is FlightMode =>
-  Object.values(FlightMode).includes(mode as FlightMode);
-
-/**
  * Returns the abbreviation of the given flight mode.
  */
 export const abbreviateFlightMode = (mode: FlightMode | string): string =>
-  isKnownFlightMode(mode)
+  isFlightMode(mode)
     ? propertiesForFlightModes[mode].abbreviation
     : mode.slice(0, 4);
 
