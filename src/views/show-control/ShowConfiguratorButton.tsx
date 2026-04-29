@@ -1,4 +1,4 @@
-import ControlCamera from '@mui/icons-material/ControlCamera';
+import BlurCircular from '@mui/icons-material/BlurCircular';
 import IconButton from '@mui/material/IconButton';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
@@ -155,7 +155,7 @@ const ShowConfiguratorButton = (props: Props) => {
                 openAdaptDialog();
               }}
             >
-              <ControlCamera />
+              <BlurCircular />
             </IconButton>
           </span>
         </Tooltip>
