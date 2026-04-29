@@ -13,7 +13,7 @@ const SelectionGroupMenuButton = () => {
     <LazyTooltip interactive content={<SelectionGroupMiniList />}>
       <GenericHeaderButton
         label={numberOfSelectedItems > 0 ? String(numberOfSelectedItems) : '—'}
-        style={{ fontSize: '1rem' }}
+        style={{ fontSize: '1rem', fontWeight: 'normal', fontFamily: 'inherit' }}
       >
         <Workspaces />
       </GenericHeaderButton>
