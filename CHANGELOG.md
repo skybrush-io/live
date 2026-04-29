@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Added RTH method parameter to the show adaptation dialog box.
+
 - Added selected item count to the Selection groups header widget.
 
 ## [2.13.2] - 2026-04-16
