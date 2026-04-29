@@ -20,6 +20,43 @@ const parseResponseBodyAsText = async (response) => {
   }
 };
 
+const tryParseJsonResponse = async (response) => {
+  const contentType = response.headers.get('content-type') || '';
+  if (!contentType.includes('application/json')) return null;
+  try {
+    return await response.json();
+  } catch (e) {
+    return null;
+  }
+};
+
+// Format a list of structured validation issues coming from the
+// path-planner backend into a human-readable, multi-line string.
+// Each issue has the shape:
+//   { code, severity, message, validator, details: { ... } }
+const formatValidationIssues = (issues) => {
+  if (!Array.isArray(issues) || issues.length === 0) return '';
+  return issues
+    .map((issue) => {
+      const tag = (issue.severity || 'error').toUpperCase();
+      const code = issue.code || 'UNKNOWN';
+      const validator = issue.validator ? ` [${issue.validator}]` : '';
+      const head = `[${tag}]${validator} ${code}: ${issue.message || ''}`;
+      const details = issue.details;
+      if (!details || typeof details !== 'object') return head;
+
+      const violations = Array.isArray(details.violations)
+        ? details.violations
+            .map((v) => `${v.label}[${v.index}] z=${v.z}`)
+            .join(', ')
+        : '';
+      const min = details.min_alt_m != null ? `min=${details.min_alt_m}m` : '';
+      const extras = [min, violations].filter(Boolean).join(' | ');
+      return extras ? `${head}\n  ${extras}` : head;
+    })
+    .join('\n');
+};
+
 const getFallbackRelativeUrl = (rawUrl) => {
   try {
     const parsed = new URL(rawUrl, window.location.href);
@@ -290,6 +327,8 @@ export default function PathGeneratorModal({ open, onClose }) {
               border: '1px solid rgba(255,80,80,0.45)',
               color: '#ffb3b3',
               fontSize: 12,
+              whiteSpace: 'pre-line',
+              fontFamily: 'Consolas, monospace',
             }}
           >
             {error}
@@ -305,6 +344,7 @@ export default function PathGeneratorModal({ open, onClose }) {
               border: '1px solid rgba(83, 170, 255, 0.45)',
               color: '#cce8ff',
               fontSize: 12,
+              whiteSpace: 'pre-line',
             }}
           >
             {requestStatus}
@@ -355,6 +395,19 @@ export default function PathGeneratorModal({ open, onClose }) {
                   });
 
                   if (!response.ok) {
+                    // Structured validation failure (422 from path-planner):
+                    // surface the issue list in a readable form.
+                    if (response.status === 422) {
+                      const json = await tryParseJsonResponse(response);
+                      const issues = json?.validation?.issues || [];
+                      const formatted = formatValidationIssues(issues);
+                      throw new Error(
+                        formatted
+                          ? `Path 컴파일 검증 실패:\n${formatted}`
+                          : `Path 컴파일 검증 실패 (URL: ${usedUrl})`
+                      );
+                    }
+
                     const errorBody = await parseResponseBodyAsText(response);
                     if (response.status === 404 && usedUrl.startsWith('/api/')) {
                       throw new Error(
@@ -380,7 +433,16 @@ export default function PathGeneratorModal({ open, onClose }) {
                     );
                   }
 
-                  setRequestStatus(`경로 요청 성공: ${result.drones.length}개 드론 반영됨`);
+                  // Surface non-blocking validation warnings, if any.
+                  const warnIssues = (result?.validation?.issues || []).filter(
+                    (i) => i.severity === 'warning'
+                  );
+                  const warnText = formatValidationIssues(warnIssues);
+                  setRequestStatus(
+                    warnText
+                      ? `경로 요청 성공: ${result.drones.length}개 드론 반영됨\n경고:\n${warnText}`
+                      : `경로 요청 성공: ${result.drones.length}개 드론 반영됨`
+                  );
                 } catch (e) {
                   if (e instanceof TypeError) {
                     setError(
