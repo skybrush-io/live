@@ -117,7 +117,7 @@ const ImageLayerSettingsPresentation = ({
           )}
         </>
       ) : (
-        'Please select an image!'
+        t('ImageLayer.selectImage')
       )}
     </>
   );
@@ -196,18 +196,22 @@ const ImageLayerSettingsPresentation = ({
                   <LatitudeField
                     size='small'
                     name='position.lat'
-                    label='Latitude of center'
+                    label={t('general.geography.latitude')}
                   />
                 </Grid>
                 <Grid size={6}>
                   <LongitudeField
                     size='small'
                     name='position.lon'
-                    label='Longitude of center'
+                    label={t('general.geography.longitude')}
                   />
                 </Grid>
                 <Grid size={6}>
-                  <HeadingField size='small' name='angle' label='Angle' />
+                  <HeadingField
+                    size='small'
+                    name='angle'
+                    label={t('general.geometry.angle')}
+                  />
                 </Grid>
                 <Grid size={6}>
                   <TextField
@@ -225,7 +229,7 @@ const ImageLayerSettingsPresentation = ({
                     }}
                     size='small'
                     name='scale'
-                    label='Scale'
+                    label={t('general.geometry.scale')}
                     variant='filled'
                   />
                 </Grid>

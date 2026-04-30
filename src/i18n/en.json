@@ -20,7 +20,8 @@
     "title": "An error happened"
   },
   "ImageLayer": {
-    "geoTIFFOnlyInDevMode": "GeoTIFF rendering is currently restricted to developer mode."
+    "geoTIFFOnlyInDevMode": "GeoTIFF rendering is currently restricted to developer mode.",
+    "selectImage": "Please select an image!"
   },
   "LicenseInfoDialog": {
     "title": "License information"
@@ -360,7 +361,9 @@
       "longitude": "Longitude"
     },
     "geometry": {
+      "angle": "Angle",
       "rotation": "Rotation",
+      "scale": "Scale",
       "zoom": "Zoom"
     },
     "status": {
