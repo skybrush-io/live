@@ -13,6 +13,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added selected item count to the Selection groups header widget.
 
+### Changed
+
+- Collective RTH plan calculation is fully enabled now.
+
+- Replaced the Show adapt stage with the collective RTH plan stage
+  in the control panel.
+
 ## [2.13.2] - 2026-04-16
 
 ### Fixed
