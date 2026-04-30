@@ -679,6 +679,7 @@
     },
     "label": "Csoportok",
     "newGroupNameTemplate": "{{id}}. csoport",
+    "selectedObjects": "Kijelölt objektumok",
     "updated": "Frissítve"
   },
   "serverConnectionStatus": {

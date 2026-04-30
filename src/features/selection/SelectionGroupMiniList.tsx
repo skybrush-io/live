@@ -2,6 +2,7 @@ import {
   MiniList,
   MiniListDivider,
   MiniListItemButton,
+  MiniListItem,
 } from '@skybrush/mui-components';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -10,7 +11,11 @@ import { useAppDispatch } from '~/store/hooks';
 
 import { saveCurrentSelectionAsGroupIfNotEmpty } from './actions';
 import SelectionGroupMiniListItem from './SelectionGroupMiniListItem';
-import { getOrderedSelectionGroups, hasSelection } from './selectors';
+import {
+  getNumberOfSelectedItems,
+  getOrderedSelectionGroups,
+  hasSelection,
+} from './selectors';
 
 const listStyle = {
   minWidth: 200,
@@ -18,6 +23,7 @@ const listStyle = {
 
 const SelectionGroupMiniList = () => {
   const isSelectionNotEmpty = useSelector(hasSelection);
+  const numberOfSelectedItems = useSelector(getNumberOfSelectedItems);
   const selectionGroups = useSelector(getOrderedSelectionGroups);
   const dispatch = useAppDispatch();
   const { t } = useTranslation(undefined, {
@@ -26,6 +32,11 @@ const SelectionGroupMiniList = () => {
 
   return (
     <MiniList style={listStyle}>
+      <MiniListItem
+        primaryText={t('selectedObjects')}
+        secondaryText={String(numberOfSelectedItems)}
+      />
+      <MiniListDivider />
       {selectionGroups.map((group) => (
         <SelectionGroupMiniListItem key={group.id} group={group} />
       ))}

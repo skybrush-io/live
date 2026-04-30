@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added RTH method parameter to the show adaptation dialog box.
 
+- Added selected item count to the Selection groups header widget.
+
 ### Changed
 
 - Collective RTH plan calculation is fully enabled now.
