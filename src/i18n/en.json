@@ -332,16 +332,20 @@
       "import": "Import",
       "navigate": "Navigate",
       "open": "Open",
+      "pan": "Pan",
       "redo": "Redo",
       "remove": "Remove",
       "reset": "Reset",
       "retry": "Retry",
+      "rotate": "Rotate",
       "save": "Save",
+      "scale": "Scale",
       "select": "Select",
       "start": "Start",
       "stop": "Stop",
       "submit": "Submit",
-      "undo": "Undo"
+      "undo": "Undo",
+      "zoom": "Zoom"
     },
     "commands": {
       "calibrateCompass": "Calibrate compass",
@@ -1040,12 +1044,8 @@
           "boxSelect": "Box select",
           "boxUnselect": "Box unselect",
           "moveSelection": "Move selection",
-          "pan": "Pan",
-          "rotate": "Rotate",
           "rotateSelection": "Rotate selection",
-          "select": "Select",
-          "toggleSelect": "Toggle select",
-          "zoom": "Zoom"
+          "toggleSelect": "Toggle select"
         },
         "category": {
           "manipulation": "Manipulation",
