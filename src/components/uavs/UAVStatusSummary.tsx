@@ -95,7 +95,6 @@ const getStatusSummary = createShallowSelector(
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    fontSize: '1rem',
     cursor: 'pointer',
   },
 
@@ -127,7 +126,6 @@ const useStyles = makeStyles((theme) => ({
     color: 'white',
     display: 'flex',
     flexDirection: 'row',
-    fontSize: '1rem',
     fontWeight: 'normal',
     paddingLeft: 0,
     paddingRight: 0,

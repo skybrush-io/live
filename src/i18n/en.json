@@ -874,6 +874,7 @@
       "name": "Group name"
     },
     "newGroupNameTemplate": "Group {{id}}",
+    "selectedObjects": "Selected objects",
     "updated": "Updated"
   },
   "serverConnectionStatus": {
