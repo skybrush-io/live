@@ -103,7 +103,7 @@ const ImageLayerSettingsPresentation = ({
         startIcon={<Image />}
         onSelected={selectImage}
       >
-        Select
+        {t('general.action.select')}
       </FileButton>
       <Box sx={{ p: 0.75 }} />
       {parameters.image.name ? (
