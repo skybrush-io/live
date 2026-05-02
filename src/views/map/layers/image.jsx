@@ -346,7 +346,10 @@ const ImageLayerPresentation = ({
   image.data.startsWith('data:image/tiff') ? (
     devMode && (
       <layer.WebGLTile properties={{ id }} zIndex={zIndex}>
-        <source.GeoTIFF sources={[{ blob: base64DataURLToBlob(image.data) }]} />
+        <source.GeoTIFF
+          loadMissingProjection
+          sources={[{ blob: base64DataURLToBlob(image.data) }]}
+        />
       </layer.WebGLTile>
     )
   ) : position ? (
