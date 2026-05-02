@@ -21,6 +21,7 @@
   },
   "ImageLayer": {
     "geoTIFFOnlyInDevMode": "GeoTIFF rendering is currently restricted to developer mode.",
+    "navigationFailed": "Navigation failed, file might not be loaded properly",
     "selectImage": "Please select an image!"
   },
   "LicenseInfoDialog": {

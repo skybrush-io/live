@@ -31,6 +31,7 @@ import {
 } from '~/components/forms';
 import { setLayerParametersById } from '~/features/map/layers';
 import { isDeveloperModeEnabled } from '~/features/session/selectors';
+import { showError } from '~/features/snackbar/actions';
 import { getMapViewCenterPosition } from '~/selectors/map';
 import { mapReferenceRequestSignal, mapViewToExtentSignal } from '~/signals';
 import { readFileAsDataURL } from '~/utils/files';
@@ -64,6 +65,7 @@ const getDimensions = async (source) =>
   });
 
 const ImageLayerSettingsPresentation = ({
+  devMode,
   layer: { id, parameters },
   mapViewCenterPosition,
   selectImage,
@@ -126,17 +128,21 @@ const ImageLayerSettingsPresentation = ({
 
   const navigateToGeoTIFFLocation = useCallback(() => {
     mapReferenceRequestSignal.dispatch(async (map) => {
-      const source = map
-        .getLayers()
-        .getArray()
-        .find((l) => l.get('id') === id)
-        ?.getSource?.();
-      if (source) {
+      try {
+        const source = map
+          .getLayers()
+          .getArray()
+          .find((l) => l.get('id') === id)
+          .getSource();
+
         const projection = await fromEPSGCode(source.getProjection().getCode());
         const view = await source.getView();
         mapViewToExtentSignal.dispatch(
           transformExtent(view.extent, projection, 'EPSG:3857')
         );
+      } catch (e) {
+        console.error(e);
+        showError(t('ImageLayer.navigationFailed'));
       }
     });
   }, [id]);
@@ -248,6 +254,7 @@ const ImageLayerSettingsPresentation = ({
             alignItems='center'
           >
             <Button
+              disabled={!devMode}
               variant='contained'
               endIcon={<Navigation />}
               onClick={navigateToGeoTIFFLocation}
@@ -265,9 +272,11 @@ const ImageLayerSettingsPresentation = ({
             {filePicker}
           </Grid>
           <Grid size={12}>
-            <Alert severity='warning'>
-              {t('ImageLayer.geoTIFFOnlyInDevMode')}
-            </Alert>
+            <Collapse in={!devMode}>
+              <Alert severity='warning'>
+                {t('ImageLayer.geoTIFFOnlyInDevMode')}
+              </Alert>
+            </Collapse>
           </Grid>
         </Grid>
       </Collapse>
@@ -285,6 +294,7 @@ ImageLayerSettingsPresentation.propTypes = {
 export const ImageLayerSettings = connect(
   // mapStateToProps
   (state) => ({
+    devMode: isDeveloperModeEnabled(state),
     mapViewCenterPosition: getMapViewCenterPosition(state),
   }),
   // mapDispatchToProps
