@@ -28,7 +28,7 @@ const StartTimeButton = ({ formattedStartTime, onClick, status }) => {
           secondary={
             formattedStartTime
               ? t('show.startsAt', { time: formattedStartTime })
-              : t('show.chooseStartTimeNotSet', 'Not set yet')
+              : t('show.chooseStartTimeNotSet')
           }
         />
       </ListItemButton>

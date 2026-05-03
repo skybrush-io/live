@@ -45,8 +45,7 @@ const StartMethodExplanation = ({ hasScheduledStartTime, startMethod, t }) => (
         secondary={
           hasScheduledStartTime ? (
             <>
-              {t('show.clock', 'Show clock:')}{' '}
-              <ClockDisplayLabel clockId='show' />
+              {t('show.clock')} <ClockDisplayLabel clockId='show' />
             </>
           ) : (
             t('show.startTimeNotSet')

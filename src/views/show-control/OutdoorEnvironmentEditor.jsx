@@ -335,7 +335,7 @@ export default connect(
         showSuccess(message, {
           buttons: [
             {
-              label: i18n.t('general.action.navigate', 'Navigate'),
+              label: i18n.t('general.action.navigate'),
               endIcon: <Navigation />,
               action: () => scrollToMapLocation(location),
             },

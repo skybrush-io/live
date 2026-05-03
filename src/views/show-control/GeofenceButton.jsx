@@ -51,7 +51,7 @@ const GeofenceButton = ({ onClick, status, ...rest }) => {
       >
         <StatusLight status={status} />
         <ListItemText
-          primary={t('show.setupGeofence', 'Setup geofence')}
+          primary={t('show.setupGeofence')}
           secondary={formatStatusText(status)(t)}
         />
       </ListItemButton>
