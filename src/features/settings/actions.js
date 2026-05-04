@@ -1,12 +1,8 @@
 import isNil from 'lodash-es/isNil';
 import { UAVFilter } from '~/model/filtering';
-import { UAVSortKey } from '~/model/sorting';
 
-import {
-  getUAVListSortPreference,
-  isShowingMissionIds,
-} from './selectors';
-import { toggleMissionIds, updateAppSettings } from './slice';
+import { getUAVListSortPreference } from './selectors';
+import { updateAppSettings } from './slice';
 
 import { actions as dialogActions } from './dialog';
 
@@ -65,39 +61,6 @@ export function toggleUAVListSortDirection() {
         },
       })
     );
-  };
-}
-
-/**
- * Toggles the UAV list between "Normal view" (primary UAV IDs) and
- * "Mission view" (primary mission IDs). When the current UAV list sort key
- * is the other view's natural key (UAV ID <-> mission ID, or the legacy
- * DEFAULT value), it is swapped to match the new view's natural key so that
- * the first column in the list header always reflects the active sort.
- * Any other sort key (battery, RSSI, etc.) is preserved.
- */
-export function toggleMissionIdsAndSyncSort() {
-  return (dispatch, getState) => {
-    const willShowMissionIds = !isShowingMissionIds(getState());
-    dispatch(toggleMissionIds());
-
-    const currentSort = getUAVListSortPreference(getState());
-    const { key } = currentSort;
-    const naturalKey = willShowMissionIds
-      ? UAVSortKey.MISSION_ID
-      : UAVSortKey.UAV_ID;
-    const isNaturalOrderKey =
-      key === UAVSortKey.UAV_ID ||
-      key === UAVSortKey.MISSION_ID ||
-      key === UAVSortKey.DEFAULT;
-
-    if (isNaturalOrderKey && key !== naturalKey) {
-      dispatch(
-        updateAppSettings('display', {
-          uavListSortPreference: { ...currentSort, key: naturalKey },
-        })
-      );
-    }
   };
 }
 

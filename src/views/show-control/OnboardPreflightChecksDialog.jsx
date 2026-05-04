@@ -19,7 +19,6 @@ import {
 
 import { Colors } from '~/components/colors';
 import { Status } from '~/components/semantics';
-import { isShowingMissionIds } from '~/features/settings/selectors';
 import { signOffOnOnboardPreflightChecks } from '~/features/show/actions';
 import { areOnboardPreflightChecksSignedOff } from '~/features/show/selectors';
 import {
@@ -29,11 +28,7 @@ import {
 import { getErrorCodeSummaryForUAVsInMission } from '~/features/uavs/selectors';
 import { getSeverityOfErrorCode } from '~/flockwave/errors';
 import { describeUAVErrorCode } from '~/flockwave/UAVErrorCode';
-import {
-  formatMissionId,
-  formatIdsAndTruncateTrailingItems as formatUAVIds,
-} from '~/utils/formatting';
-import MappingToggleButton from '~/views/uavs/MappingToggleButton';
+import { formatIdsAndTruncateTrailingItems as formatUAVIds } from '~/utils/formatting';
 
 const severityToStatus = [
   Status.INFO,
@@ -47,7 +42,7 @@ const severityToStatus = [
  * failed on at least one of the drones, along with the IDs of the drones on
  * which the preflight checks have failed.
  */
-const PreflightCheckListPresentation = ({ items, showMissionIds, ...rest }) => {
+const PreflightCheckListPresentation = ({ items, ...rest }) => {
   const { t } = useTranslation();
 
   return items.length > 0 ? (
@@ -63,11 +58,7 @@ const PreflightCheckListPresentation = ({ items, showMissionIds, ...rest }) => {
                 id={itemId}
                 primary={describeUAVErrorCode(item.code, t)}
                 secondary={formatUAVIds(
-                  item.uavIdsAndIndices.map(
-                    showMissionIds
-                      ? (x) => formatMissionId(x[1])
-                      : (x) => String(x[0])
-                  )
+                  item.uavIdsAndIndices.map((x) => String(x[0]))
                 )}
               />
             </ListItemButton>
@@ -93,7 +84,6 @@ PreflightCheckListPresentation.propTypes = {
     })
   ),
   onToggle: PropTypes.func,
-  showMissionIds: PropTypes.bool,
   t: PropTypes.func,
 };
 
@@ -101,7 +91,6 @@ const PreflightCheckList = connect(
   // mapStateToProps
   (state) => ({
     items: getErrorCodeSummaryForUAVsInMission(state),
-    showMissionIds: isShowingMissionIds(state),
   }),
   // mapDispatchToProps
   {}
@@ -126,7 +115,6 @@ const OnboardPreflightChecksDialog = ({
       open={open}
       maxWidth='xs'
       title={t('show.onboardPreflightChecks')}
-      titleComponents={<MappingToggleButton />}
       onClose={onClose}
     >
       <DialogContent

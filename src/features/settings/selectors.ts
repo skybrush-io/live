@@ -263,13 +263,6 @@ export const isShowingEmptyMissionSlots = (state: RootState): boolean =>
   !state.settings.display?.hideEmptyMissionSlots;
 
 /**
- * Returns whether we are currently showing mission IDs on the screen
- * where possible.
- */
-export const isShowingMissionIds = (state: RootState): boolean =>
-  state.settings.display?.showMissionIds ?? false;
-
-/**
  * Returns whether the user is allowed to see experimental features that are
  * not ready for production use yet.
  */

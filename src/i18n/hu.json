@@ -397,8 +397,6 @@
     "reverseDirection": "Tartsa nyomva a <kbd>Shift</kbd>-et az irány megfordításához.",
     "selectNextEmptySlot": "Következő üres hely kiválasztása"
   },
-  "mappingToggleButton": {
-  },
   "measurementList": {
     "addDrone": "Adjon hozzá egy drónt a méréshez az eszköztár + gombjával",
     "copyToClipboard": "Másolás a vágólapra",

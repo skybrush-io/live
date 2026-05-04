@@ -498,9 +498,6 @@
     "reverseDirection": "Hold <kbd>Shift</kbd> to reverse direction.",
     "selectNextEmptySlot": "Select next empty slot"
   },
-  "mappingToggleButton": {
-    "mappingMode": "Mapping mode"
-  },
   "measurementList": {
     "addDrone": "Add a drone to measure with the + button in the toolbar",
     "copyToClipboard": "Copy to clipboard",

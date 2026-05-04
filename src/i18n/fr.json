@@ -224,8 +224,6 @@
     "reverseDirection": "Appuyer sur <kbd>Shift</kbd> pour inverser la direction.",
     "selectNextEmptySlot": "Sélectionne le prochain créneau vide"
   },
-  "mappingToggleButton": {
-  },
   "mission": {
     "planner": {
       "schema": {

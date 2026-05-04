@@ -88,8 +88,6 @@
   "map": {
     "resetRotation": "Rotation zurücksetzen"
   },
-  "mappingToggleButton": {
-  },
   "notifications": {
     "connectedToSkybrushServer": "Verbunden mit Skybrush Server"
   },

@@ -16,12 +16,9 @@ import { startMappingEditorSession } from '~/features/mission/slice';
 import {
   getUAVListLayout,
   isShowingEmptyMissionSlots,
-  isShowingMissionIds,
 } from '~/features/settings/selectors';
 import { updateAppSettings } from '~/features/settings/slice';
 import MissingSlot from '~/icons/MissingSlot';
-
-import MappingToggleButton from './MappingToggleButton';
 
 /**
  * Button on the UAV toolbar that allows the user to toggle whether the mission
@@ -34,24 +31,19 @@ const MappingButtonGroup = ({
   onToggleShowingEmptyMissionSlots,
   setUAVListLayout,
   showEmptyMissionSlots,
-  showMissionIds,
   startMappingEditorSession,
   t,
 }) => (
   <>
-    {showMissionIds && (
-      <Tooltip content={t('mappingButtonGroup.editMapping')}>
-        <IconButton
-          disabled={mappingEditable || !showMissionIds}
-          size='large'
-          onClick={startMappingEditorSession}
-        >
-          <Edit />
-        </IconButton>
-      </Tooltip>
-    )}
-
-    <MappingToggleButton />
+    <Tooltip content={t('mappingButtonGroup.editMapping')}>
+      <IconButton
+        disabled={mappingEditable}
+        size='large'
+        onClick={startMappingEditorSession}
+      >
+        <Edit />
+      </IconButton>
+    </Tooltip>
 
     <Tooltip
       content={
@@ -62,7 +54,6 @@ const MappingButtonGroup = ({
     >
       <ToggleButton
         value='showMissing'
-        disabled={!showMissionIds}
         selected={showEmptyMissionSlots}
         onClick={onToggleShowingEmptyMissionSlots}
       >
@@ -89,7 +80,6 @@ MappingButtonGroup.propTypes = {
   onToggleShowingEmptyMissionSlots: PropTypes.func,
   setUAVListLayout: PropTypes.func,
   showEmptyMissionSlots: PropTypes.bool,
-  showMissionIds: PropTypes.bool,
   startMappingEditorSession: PropTypes.func,
   t: PropTypes.func,
 };
@@ -100,7 +90,6 @@ export default connect(
     layout: getUAVListLayout(state),
     mappingEditable: isMappingEditable(state),
     showEmptyMissionSlots: isShowingEmptyMissionSlots(state),
-    showMissionIds: isShowingMissionIds(state),
   }),
   // mapDispatchToProps
   {

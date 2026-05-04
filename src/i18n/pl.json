@@ -265,8 +265,6 @@
     "reverseDirection": "Przytrzymaj <kbd>Shift</kbd>, aby odwrócić kierunek.",
     "selectNextEmptySlot": "Wybierz następny pusty slot"
   },
-  "mappingToggleButton": {
-  },
   "measurementList": {
     "addDrone": "Dodaj drona do pomiaru za pomocą przycisku + na pasku narzędzi",
     "copyToClipboard": "Kopiuj do schowka",
