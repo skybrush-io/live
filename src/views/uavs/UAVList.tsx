@@ -225,7 +225,6 @@ const createListItemRenderer = ({
   onSelectedItem,
   onStartEditing,
   selection,
-  showMissionIds,
 }: ItemRendererOptions) =>
   function ListItemRenderer(item: Item): React.JSX.Element | null {
     if (item === deletionMarker) {
@@ -252,13 +251,8 @@ const createListItemRenderer = ({
     const formattedMissionIndex = isInMission
       ? formatMissionId(missionIndex)
       : '';
-    const label =
-      proposedLabel ?? (showMissionIds ? formattedMissionIndex : uavId);
-    const secondaryLabel = editingThisItem
-      ? ''
-      : showMissionIds
-        ? uavId
-        : formattedMissionIndex;
+    const label = proposedLabel ?? formattedMissionIndex;
+    const secondaryLabel = uavId ?? '';
 
     return (
       <DroneListItem
