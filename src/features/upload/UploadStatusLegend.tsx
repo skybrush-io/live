@@ -1,74 +1,112 @@
 import Box from '@mui/material/Box';
-import type { TFunction } from 'i18next';
-import type React from 'react';
-import { withTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import { Status } from '~/components/semantics';
+import type { RootState } from '~/store/reducers';
 
-import { restartSuccessfulUploads, retryFailedUploads } from './actions';
-import { getUploadStatusCodeCounters } from './selectors';
+import {
+  enqueueFailedUploads,
+  enqueueItemsWithNoUploadStatus,
+  enqueueSuccessfulUploads,
+} from './actions';
+import { getUploadStatusCodeCounters, isUploadInProgress } from './selectors';
 import { clearUploadQueue } from './slice';
 import UploadStatusLegendButton from './UploadStatusLegendButton';
 
-type UploadStatusLegendProps = Readonly<{
+type StateProps = {
   failed: number;
   finished: number;
   inProgress: number;
+  isUploadInProgress: boolean;
   waiting: number;
-  onClearUploadQueue: () => void;
-  onRestartSuccessfulUploads: () => void;
-  onRetryFailedUploads: () => void;
-  t: TFunction;
-}>;
+};
+
+type DispatchProps = {
+  enqueueItemsWithNoUploadStatus: () => void;
+  clearUploadQueue: () => void;
+  enqueueSuccessfulUploads: () => void;
+  enqueueFailedUploads: () => void;
+};
+
+type UploadStatusLegendProps = StateProps & DispatchProps;
 
 const UploadStatusLegend = ({
   failed,
   finished,
   inProgress,
-  onClearUploadQueue,
-  onRestartSuccessfulUploads,
-  onRetryFailedUploads,
-  t,
+  isUploadInProgress,
+  clearUploadQueue,
+  enqueueSuccessfulUploads,
+  enqueueFailedUploads,
+  enqueueItemsWithNoUploadStatus,
   waiting,
-}: UploadStatusLegendProps): React.JSX.Element => (
-  <Box sx={{ display: 'flex', justifyContent: 'space-around' }}>
-    <UploadStatusLegendButton
-      counter={waiting}
-      label={t('general.status.waiting')}
-      status={Status.INFO}
-      tooltip={t('uploadStatusLegend.clearUploadQueue')}
-      onClick={onClearUploadQueue}
-    />
-    <UploadStatusLegendButton
-      counter={inProgress}
-      label={t('general.status.inProgress')}
-      status={Status.WARNING}
-    />
-    <UploadStatusLegendButton
-      counter={finished}
-      label={t('general.status.successful')}
-      tooltip={t('uploadStatusLegend.restartSuccessfulItems')}
-      status={Status.SUCCESS}
-      onClick={onRestartSuccessfulUploads}
-    />
-    <UploadStatusLegendButton
-      counter={failed}
-      label={t('general.status.failed')}
-      status={Status.ERROR}
-      tooltip={t('uploadStatusLegend.retryFailedItems')}
-      onClick={onRetryFailedUploads}
-    />
-  </Box>
-);
+}: UploadStatusLegendProps) => {
+  const { t } = useTranslation();
 
-export default connect(
+  return (
+    <Box sx={{ display: 'flex', justifyContent: 'space-around' }}>
+      <UploadStatusLegendButton
+        counter={waiting}
+        disabled={isUploadInProgress}
+        label={t('general.status.waiting')}
+        status={Status.INFO}
+        tooltip={
+          waiting === 0
+            ? t('uploadStatusLegend.enqueueItemsWithNoUploadStatus')
+            : t('uploadStatusLegend.clearUploadQueue')
+        }
+        onClick={() => {
+          if (waiting === 0) {
+            enqueueItemsWithNoUploadStatus();
+          } else {
+            clearUploadQueue();
+          }
+        }}
+      />
+      <UploadStatusLegendButton
+        disabled
+        counter={inProgress}
+        label={t('general.status.inProgress')}
+        status={Status.WARNING}
+      />
+      <UploadStatusLegendButton
+        counter={finished}
+        disabled={finished === 0}
+        label={t('general.status.successful')}
+        tooltip={t('uploadStatusLegend.restartSuccessfulItems')}
+        status={Status.SUCCESS}
+        onClick={() => {
+          enqueueSuccessfulUploads();
+        }}
+      />
+      <UploadStatusLegendButton
+        counter={failed}
+        disabled={failed === 0}
+        label={t('general.status.failed')}
+        status={Status.ERROR}
+        tooltip={t('uploadStatusLegend.retryFailedItems')}
+        onClick={() => {
+          enqueueFailedUploads();
+        }}
+      />
+    </Box>
+  );
+};
+
+const ConnectedUploadStatusLegend = connect(
   // mapStateToProps
-  getUploadStatusCodeCounters,
+  (state: RootState) => ({
+    ...getUploadStatusCodeCounters(state),
+    isUploadInProgress: isUploadInProgress(state),
+  }),
   // mapDispatchToProps
   {
-    onClearUploadQueue: clearUploadQueue,
-    onRestartSuccessfulUploads: restartSuccessfulUploads,
-    onRetryFailedUploads: retryFailedUploads,
+    clearUploadQueue,
+    enqueueFailedUploads,
+    enqueueItemsWithNoUploadStatus,
+    enqueueSuccessfulUploads,
   }
-)(withTranslation()(UploadStatusLegend));
+)(UploadStatusLegend);
+
+export default ConnectedUploadStatusLegend;

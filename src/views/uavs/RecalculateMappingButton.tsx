@@ -28,9 +28,7 @@ const RecalculateMappingButton = (
     <Button
       startIcon={<AutoFix />}
       disabled={calculating}
-      onClick={() => {
-        dispatch(recalculateMapping() as any);
-      }}
+      onClick={() => dispatch(recalculateMapping())}
       {...props}
     >
       {hasNonempty

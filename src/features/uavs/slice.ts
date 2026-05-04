@@ -22,11 +22,15 @@ import {
 import { UAVDetailsPanelTab, type StoredUAV } from './types';
 
 type UAVsSliceState = Collection<StoredUAV> & {
+  // State of the UAV details panel
   panel: {
     followMapSelection: boolean;
     selectedTab: UAVDetailsPanelTab;
     selectedUAVId?: StoredUAV['id'];
   };
+
+  // List of drones whose LEDs were overridden to specific colors
+  lights: Record<StoredUAV['id'], string>;
 };
 
 /**
@@ -40,6 +44,7 @@ const initialState: UAVsSliceState = {
     selectedTab: UAVDetailsPanelTab.PREFLIGHT,
     selectedUAVId: undefined,
   },
+  lights: {},
 };
 
 const { actions, reducer } = createSlice({
@@ -65,6 +70,22 @@ const { actions, reducer } = createSlice({
       // this reducer directly would result in some UAVs being present in the
       // flock but not here
       deleteItemsByIds(state, action.payload);
+    },
+
+    _setLEDColorOverride(
+      state,
+      action: PayloadAction<{ ids: string[]; color: string | null }>
+    ) {
+      const { ids, color } = action.payload;
+      if (color) {
+        for (const id of ids) {
+          state.lights[id] = color;
+        }
+      } else {
+        for (const id of ids) {
+          delete state.lights[id];
+        }
+      }
     },
 
     setSelectedTabInUAVDetailsPanel(
@@ -131,6 +152,7 @@ export const {
   updateAgesOfUAVs,
   updateUAVs,
   _removeUAVsByIds,
+  _setLEDColorOverride,
 } = actions;
 
 export default reducer;

@@ -25,6 +25,7 @@ import { getSelectedUAVIds, getUAVIdList } from '~/features/uavs/selectors';
 import { clearStoreAfterConfirmation } from '~/store';
 import { createUAVOperationThunks } from '~/utils/messaging';
 
+import { toggleFullScreen } from '~/utils/full-screen';
 import {
   appendToPendingUAVId,
   clearSelectionOrPendingUAVId,
@@ -67,14 +68,24 @@ configureHotkeys({
 // Luckily it is not a problem if we use GlobalHotKeys "outside" the workbench
 // and normal <HotKeys> "inside" the workbench.
 
-const AppHotkeys = ({ activeHotkeyScope, handlers }) => {
+const AppHotkeys = ({
+  activeHotkeyScope,
+  Component = GlobalHotKeys,
+  handlers,
+  ...rest
+}) => {
   const filteredKeyMap = Object.fromEntries(
     Object.entries(keyMap).filter(([, { scopes }]) =>
       scopes.includes(activeHotkeyScope)
     )
   );
   return (
-    <GlobalHotKeys allowChanges keyMap={filteredKeyMap} handlers={handlers} />
+    <Component
+      allowChanges
+      keyMap={filteredKeyMap}
+      handlers={handlers}
+      {...rest}
+    />
   );
 };
 
@@ -84,7 +95,7 @@ const bindHotkeyHandlers = (reduxHandlers, nonReduxHandlers, dispatch) => ({
     if (event.defaultPrevented) {
       return;
     }
-    // Prevent the default action of the event (e.g. scrolling the page
+    // Prevent the default action of the event (e.g. scrolling the page)
     event.preventDefault();
     dispatch(handler());
   }),
@@ -176,6 +187,7 @@ export default connect(
         TYPE_7: () => appendToPendingUAVId(7),
         TYPE_8: () => appendToPendingUAVId(8),
         TYPE_9: () => appendToPendingUAVId(9),
+        TYPE_G: () => appendToPendingUAVId('g'),
         TYPE_S: () => appendToPendingUAVId('s'),
         TYPE_MINUS: () => appendToPendingUAVId('-'),
         ...showConfiguratorHandlers,
@@ -191,6 +203,7 @@ export default connect(
         SELECT_UP: sendKeyboardNavigationSignal('SELECT_UP'),
         SELECT_LEFT: sendKeyboardNavigationSignal('SELECT_LEFT'),
         SELECT_RIGHT: sendKeyboardNavigationSignal('SELECT_RIGHT'),
+        TOGGLE_FULL_SCREEN: toggleFullScreen,
       },
       dispatch
     ),

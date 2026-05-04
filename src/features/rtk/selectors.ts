@@ -2,9 +2,25 @@ import sortBy from 'lodash-es/sortBy';
 
 import { createSelector } from '@reduxjs/toolkit';
 
+import { isConnected } from '~/features/servers/selectors';
 import { getPreferredCoordinateFormatter } from '~/selectors/formatting';
 import type { RootState } from '~/store/reducers';
-import { RTKAntennaPositionFormat } from './types';
+import {
+  RTKAntennaPositionFormat,
+  RTKCorrectionStatus,
+  type RTKSavedCoordinate,
+} from './types';
+
+const formatPositionECEF = (
+  positionECEF?: RTKSavedCoordinate['positionECEF']
+): string | undefined =>
+  positionECEF && Array.isArray(positionECEF)
+    ? `[${positionECEF.map((c) => (c / 1e3).toFixed(3)).join(', ')}]`
+    : undefined;
+
+const getAntennaInfo = (state: RootState) => state.rtk.stats.antenna;
+const getMessageInfo = (state: RootState) => state.rtk.stats.messages;
+const getSatelliteInfo = (state: RootState) => state.rtk.stats.satellites;
 
 /**
  * Returns whether the antenna position should be shown in ECEF coordinates.
@@ -17,17 +33,13 @@ export const isShowingAntennaPositionInECEF = (state: RootState): boolean =>
  * antenna position yet.
  */
 export const getFormattedAntennaPosition = createSelector(
-  (state: RootState) => state.rtk.stats.antenna,
+  getAntennaInfo,
   getPreferredCoordinateFormatter,
   isShowingAntennaPositionInECEF,
   (antennaInfo, formatter, isECEF) => {
     if (isECEF) {
       const { positionECEF } = antennaInfo || {};
-      return positionECEF && Array.isArray(positionECEF)
-        ? `[${(positionECEF[0] / 1e3).toFixed(3)}, ${(
-            positionECEF[1] / 1e3
-          ).toFixed(3)}, ${(positionECEF[2] / 1e3).toFixed(3)}]`
-        : undefined;
+      return formatPositionECEF(positionECEF);
     } else {
       const { position } = antennaInfo || {};
       return position ? formatter(position) : undefined;
@@ -40,7 +52,7 @@ export const getFormattedAntennaPosition = createSelector(
  * format they should appear on the UI.
  */
 export const getAntennaInfoSummary = createSelector(
-  (state: RootState) => state.rtk.stats.antenna,
+  getAntennaInfo,
   getFormattedAntennaPosition,
   (antennaInfo, formattedPosition) => {
     if (!antennaInfo) {
@@ -78,7 +90,7 @@ export const getAntennaInfoSummary = createSelector(
  * on the UI.
  */
 export const getDisplayedListOfMessages = createSelector(
-  (state: RootState) => state.rtk.stats.messages,
+  getMessageInfo,
   (messages) =>
     sortBy(
       Object.entries(messages || {}).map(([messageId, message]) => ({
@@ -94,7 +106,7 @@ export const getDisplayedListOfMessages = createSelector(
  * should appear on the UI.
  */
 export const getDisplayedSatelliteCNRValues = createSelector(
-  (state: RootState) => state.rtk.stats.satellites,
+  getSatelliteInfo,
   (satelliteInfos) =>
     sortBy(
       Object.entries(satelliteInfos || {}).map(
@@ -111,7 +123,7 @@ export const getDisplayedSatelliteCNRValues = createSelector(
  * Returns the IDs of the satellites for which we currently have a CNR value.
  */
 export const getSatelliteIds = createSelector(
-  (state: RootState) => state.rtk.stats.satellites,
+  getSatelliteInfo,
   (satelliteInfos) => Object.keys(satelliteInfos || {})
 );
 
@@ -127,7 +139,7 @@ export const getNumberOfSatellites = (state: RootState): number =>
  * above 40.
  */
 export const getNumberOfGoodSatellites = createSelector(
-  (state: RootState) => state.rtk.stats.satellites,
+  getSatelliteInfo,
   (satelliteInfos) => {
     let result = 0;
 
@@ -138,6 +150,29 @@ export const getNumberOfGoodSatellites = createSelector(
     }
 
     return result;
+  }
+);
+
+const RTCM_ANTENNA_POSITION_MESSAGE_IDS: string[] = [
+  'rtcm3/1005',
+  'rtcm3/1006',
+];
+
+/**
+ * Returns the timestamp of the most recent RTCM antenna position message.
+ */
+export const getAntennaPositionTimestamp = createSelector(
+  getMessageInfo,
+  (messages) => {
+    for (const messageId of RTCM_ANTENNA_POSITION_MESSAGE_IDS) {
+      const messageInfo = messages[messageId];
+      const lastUpdatedAt = messageInfo?.lastUpdatedAt;
+      if (typeof lastUpdatedAt === 'number') {
+        return lastUpdatedAt;
+      }
+    }
+
+    return undefined;
   }
 );
 
@@ -159,3 +194,158 @@ export const getSurveyStatus = createSelector(
  */
 export const shouldShowSurveySettings = (state: RootState): boolean =>
   state.rtk.dialog.surveySettingsEditorVisible;
+
+/**
+ * Returns whether there is a saved coordinate for the given RTK preset ID.
+ */
+export const hasSavedCoordinateForPreset = (
+  state: RootState,
+  presetId: string | undefined
+): boolean => {
+  if (!presetId) {
+    return false;
+  }
+
+  const coords = state.rtk.savedCoordinates[presetId];
+  return Boolean(coords) && coords.length > 0;
+};
+
+/**
+ * Returns the saved coordinates for the given RTK preset ID, or empty array if none exists.
+ */
+export const getSavedCoordinatesForPreset = (
+  state: RootState,
+  presetId: string
+): RTKSavedCoordinate[] => state.rtk.savedCoordinates[presetId] ?? [];
+
+/**
+ * Returns the full saved coordinates map keyed by preset ID.
+ */
+export const getSavedCoordinates = (
+  state: RootState
+): RootState['rtk']['savedCoordinates'] => state.rtk.savedCoordinates;
+
+/**
+ * Returns a formatter function that formats a saved coordinate position
+ * according to the current RTK display settings.
+ */
+export const getPreferredSavedRTKPositionFormatter = createSelector(
+  getPreferredCoordinateFormatter,
+  isShowingAntennaPositionInECEF,
+  (formatter, isECEF) =>
+    (savedCoordinate?: RTKSavedCoordinate): string | undefined => {
+      if (!savedCoordinate) {
+        return undefined;
+      }
+
+      if (isECEF) {
+        const { positionECEF } = savedCoordinate;
+        return formatPositionECEF(positionECEF);
+      } else {
+        const { position } = savedCoordinate;
+        return position ? formatter(position) : undefined;
+      }
+    }
+);
+
+/**
+ * Returns the current RTK preset ID.
+ */
+export const getCurrentRTKPresetId = (state: RootState): string | undefined =>
+  state.rtk.currentPreset.id;
+
+/**
+ * Returns the current RTK preset ID and the time when we switched to it, if available.
+ */
+export const getCurrentRTKPresetIdAndTimestamp = (
+  state: RootState
+): { id: string | undefined; lastUpdatedAt: number | undefined } =>
+  state.rtk.currentPreset;
+
+/**
+ * Returns the coordinate restoration dialog state.
+ */
+export const getCoordinateRestorationDialogState = (
+  state: RootState
+): { open: boolean; presetId?: string | undefined } =>
+  state.rtk.dialog.coordinateRestorationDialog;
+
+/**
+ * Returns an overall semantic status enum value that is intended to summarize the
+ * health of the RTK corrections in general. This is used by the RTK status header
+ * widget but may also be used in other parts of the application where no specific
+ * details are needed.
+ */
+export const getOverallRTKStatus = createSelector(
+  isConnected,
+  getCurrentRTKPresetIdAndTimestamp,
+  getNumberOfGoodSatellites,
+  getSurveyStatus,
+  getAntennaPositionTimestamp,
+  (
+    isConnected,
+    { id, lastUpdatedAt },
+    numGoodSatellites,
+    surveyStatus,
+    antennaPositionTimestamp
+  ): RTKCorrectionStatus => {
+    let result: RTKCorrectionStatus;
+
+    if (!isConnected) {
+      // Not connected to the server at all
+      return RTKCorrectionStatus.NOT_CONNECTED;
+    }
+
+    if (surveyStatus.supported) {
+      // If the RTK device supports surveying, show the survey status.
+      //
+      // Note that we don't check surveyStatus.valid because if the survey is not
+      // active and not valid either it could also mean that we have a fixed position.
+      //
+      // We will check the recency of RTK correction messages later below anyway.
+      result = surveyStatus.active
+        ? RTKCorrectionStatus.SURVEY_IN_PROGRESS
+        : RTKCorrectionStatus.OK;
+    } else {
+      // If the RTK device does not support surveying, simply show success
+      result = RTKCorrectionStatus.OK;
+    }
+
+    const now = Date.now();
+
+    // Check whether we have enough satellites
+    if (result === RTKCorrectionStatus.OK && numGoodSatellites < 7) {
+      result = RTKCorrectionStatus.NOT_ENOUGH_SATELLITES;
+    }
+
+    // Check recency of antenna position. We have seen RTK base stations in the wild
+    // that send antenna position only every 15 seconds, so we use a threshold of 30
+    // seconds here.
+    if (
+      result === RTKCorrectionStatus.OK &&
+      now - (antennaPositionTimestamp ?? 0) >= 30000
+    ) {
+      result = RTKCorrectionStatus.NO_ANTENNA_POSITION;
+    }
+
+    // If we would show a warning about the number of satellites or the antenna position,
+    // check whether we have an RTK preset selected and whether we have spent enough
+    // time watching the RTCM messages. Relax the error condition if this is not the
+    // case yet.
+    if (
+      result === RTKCorrectionStatus.NOT_ENOUGH_SATELLITES ||
+      result === RTKCorrectionStatus.NO_ANTENNA_POSITION
+    ) {
+      if (!id) {
+        result = RTKCorrectionStatus.INACTIVE;
+      } else {
+        const age = now - (lastUpdatedAt ?? 0);
+        if (age < 6000) {
+          result = RTKCorrectionStatus.CONNECTED_RECENTLY;
+        }
+      }
+    }
+
+    return result;
+  }
+);

@@ -44,7 +44,7 @@ export class TileServerLayerSettings extends React.Component {
 
     return (
       <div>
-        <FormControl fullWidth>
+        <FormControl fullWidth variant='filled'>
           <InputLabel htmlFor='tile-server-type'>Tile server type</InputLabel>
           <Select
             value={parameters.type}
@@ -58,6 +58,7 @@ export class TileServerLayerSettings extends React.Component {
         <TextField
           fullWidth
           label='Tile server URL'
+          variant='filled'
           margin='normal'
           value={url}
           onChange={this._onUrlChanged}
@@ -81,6 +82,7 @@ export class TileServerLayerSettings extends React.Component {
             margin='normal'
             placeholder='Layers to show (comma-separated)'
             value={layers}
+            variant='filled'
             onChange={this._onLayersChanged}
           />
         )}

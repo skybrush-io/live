@@ -21,6 +21,14 @@
     "passed": "飞机上的飞行前检查已通过。",
     "signOffOn": "签署机上飞行前检查"
   },
+  "RTKCoordinateRestorationDialog": {
+    "accuracyLabel": "精度",
+    "dateLabel": "保存",
+    "noSavedCoordinates": "未找到已保存的坐标。",
+    "positionLabel": "定位",
+    "title": "选择保存的坐标",
+    "useSaved": "使用坐标"
+  },
   "RTKCorrectionSourceSelector": {
     "RTKCorrections": "RTK校正",
     "error": "从服务器加载RTK源时出错",
@@ -29,6 +37,9 @@
   },
   "RTKMessage": {
     "noRTKMessagesYet": "尚未收到任何 RTK 信息"
+  },
+  "RTKSetupDialog": {
+    "title": "RTK 差分数据"
   },
   "RTKStatusMiniList": {
     "satelliteCount": "卫星数量",
@@ -65,15 +76,34 @@
     "clickToChange": "单击更改为{{altitudeType}}。",
     "showingCurrent": "显示最大值和最小值 {{altitudeType}}。"
   },
+  "altitudeSummaryType": {
+    "long": {
+      "agl": "离地高度",
+      "ahl": "相对起飞点高度",
+      "amsl": "海拔高度",
+      "xyz": "局部坐标系高度"
+    },
+    "short": {
+      "agl": "离地高度",
+      "ahl": "相对高度",
+      "amsl": "海拔高度"
+    }
+  },
   "antennaPositionIndicator": {
     "antennaPositionNotKnown": "天线位置未知",
     "clickToToggle": "点击切换经纬度与 ECEF 格式",
-    "copyToClipboard": "复制到剪贴板"
+    "copyToClipboard": "复制到剪贴板",
+    "useSavedCoordinate": "使用保存的坐标"
   },
   "augmentMappingButton": {
     "assignSparesToEmptySlots": "将备用无人机分配到空闲舞步上"
   },
   "authentication": "身份验证",
+  "batteryDisplayStyle": {
+    "forcedPercentage": "优先采用百分比显示，必要时依据电压进行估算",
+    "percentage": "优先百分比，未知则显示电压",
+    "voltage": "优先使用电压显示"
+  },
   "batteryStatusHeaderButton": "显示平均和最低电量水平。",
   "bearingCalculator": {
     "addAtLeastTwoItems": "添加至少两个项目以计算它们之间的方位角和距离",
@@ -85,6 +115,64 @@
   "broadcastButton": {
     "disable": "禁用广播",
     "enable": "启用广播{{time}}秒"
+  },
+  "collectiveRTHDialog": {
+    "action": {
+      "addCollectiveRTH": "生成返航方案"
+    },
+    "description": "在演出过程中多个时间点预先计算集体返航方案。在紧急情况下，集体返航可在避免碰撞的前提下，以尽可能快的速度将所有无人机带回。",
+    "existingInvalidRTHPlan": "未找到有效的集体返航方案。",
+    "existingValidRTHPlan": "已在 {{numPlans}} 个时间点生成有效的集体返航方案。",
+    "parameters": {
+      "form": {
+        "horizontalVelocity": {
+          "help": "在集体返航过程中",
+          "label": "水平速度"
+        },
+        "minDistance": {
+          "help": "返航过程中无人机之间",
+          "label": "最小距离"
+        },
+        "timeResolution": {
+          "help": "相邻返航方案之间",
+          "label": "时间分辨率"
+        },
+        "verticalVelocity": {
+          "help": "在集体返航过程中",
+          "label": "垂直速度"
+        }
+      },
+      "section": {
+        "parameters": "参数"
+      }
+    },
+    "status": {
+      "error": "返航方案计算失败，请重新尝试。",
+      "loading": "正在计算返航方案，可能需要一些时间。",
+      "success": "已成功计算返航方案。"
+    },
+    "summary": {
+      "firstTime": {
+        "message": "最早返航时间：{{firstTime}} 秒"
+      },
+      "lastTime": {
+        "message": "最晚返航时间：{{lastTime}}秒"
+      },
+      "numPlans": {
+        "message": "已在 {{numPlans}} 个时间点成功计算集体返航方案"
+      }
+    },
+    "title": "规划集体返航"
+  },
+  "collectiveRTHPanel": {
+    "error": {
+      "invalidPlan": "当前集体返航方案无效。",
+      "missingPlan": "本次飞行表演没有集体返航方案。",
+      "partialPlan": "{{withoutPlans}} 架无人机无返航方案。"
+    },
+    "message": {
+      "noDrones": "当前加载的演出中没有无人机。"
+    }
   },
   "coordinateAveragingDialogToolbar": {
     "addNewDrone": "添加新无人机",
@@ -518,7 +606,6 @@
       "fullCharge": "充满",
       "gone": "此后把无人机标记为离线",
       "lowTreshold": "低电压阈值",
-      "maxConcurrency": "最大并发上传数",
       "maxUploadConcurrency": "最大并发上传数",
       "minIndoorTakeoffSpacing": "最小起飞间距（室内）",
       "minOutdoorTakeoffSpacing": "最小起飞间距（室外）",
@@ -562,7 +649,7 @@
     "setupTakeoffArea": "分配无人机表演舞步",
     "showConfigurator": {
       "button": "根据场地调整演出",
-      "description": "如果需要，调整起飞网格并显示布局",
+      "description": "根据实际需要调整起飞阵列并查看布局效果",
       "interactionHints": {
         "action": {
           "boxSelect": "框选",

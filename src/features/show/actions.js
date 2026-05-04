@@ -11,9 +11,9 @@ import { loadShowSpecificationAndZip as processFile } from '@skybrush/show-forma
 
 import { getFeaturesInOrder } from '~/features/map-features/selectors';
 import { removeFeaturesByIds } from '~/features/map-features/slice';
+import { setMappingLength } from '~/features/mission/actions';
 import {
   setCommandsAreBroadcast,
-  setMappingLength,
   setMissionType,
   updateHomePositions,
   updateLandingPositions,
@@ -26,7 +26,7 @@ import {
   getActiveUAVIds,
   getCurrentGPSPositionByUavId,
 } from '~/features/uavs/selectors';
-import { clearLastUploadResultForJobType } from '~/features/upload/slice';
+import { clearUploadHistoryForJobType } from '~/features/upload/slice';
 import i18n from '~/i18n';
 import messageHub from '~/message-hub';
 import { MissionType } from '~/model/missions';
@@ -96,11 +96,9 @@ export const authorizeIfAndOnlyIfHasStartTime = () => (dispatch, getState) => {
 };
 
 /**
- * Returns an action that clears the last show upload result from the upload
- * history.
+ * Returns an action that clears the upload history of the show upload job.
  */
-export const clearLastUploadResult = () =>
-  clearLastUploadResultForJobType(JOB_TYPE);
+const clearShowUploadResult = () => clearUploadHistoryForJobType(JOB_TYPE);
 
 /**
  * Thunk that clears the currently loaded show and sets the type of the
@@ -220,7 +218,7 @@ export const updateOutdoorShowSettings =
     }
 
     if (changed) {
-      dispatch(clearLastUploadResult());
+      dispatch(clearShowUploadResult());
 
       if (setupMission) {
         dispatch(setupMissionFromShow());
@@ -255,7 +253,7 @@ const createShowLoaderThunkFactory = (
     }, 200);
 
     dispatch(setLastLoadingAttemptFailed(false));
-    dispatch(clearLastUploadResult());
+    dispatch(clearShowUploadResult());
 
     try {
       const promise = dispatch(
@@ -434,7 +432,7 @@ export const setOutdoorShowAltitudeReferenceType =
         type,
       })
     );
-    dispatch(clearLastUploadResult());
+    dispatch(clearShowUploadResult());
   };
 
 export const setOutdoorShowAltitudeReferenceValue =
@@ -447,7 +445,7 @@ export const setOutdoorShowAltitudeReferenceValue =
           value: altitude,
         })
       );
-      dispatch(clearLastUploadResult());
+      dispatch(clearShowUploadResult());
     }
   };
 

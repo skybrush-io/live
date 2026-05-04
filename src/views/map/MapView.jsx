@@ -38,7 +38,7 @@ import { getSelectedTool } from '~/features/map/tools';
 import { updateMapViewSettings } from '~/features/map/view';
 import { addNewMissionItem } from '~/features/mission/actions';
 import { getGeofencePolygonId } from '~/features/mission/selectors';
-import { getSelection } from '~/features/selection/selectors';
+import { getVirtualSelection } from '~/features/selection/selectors';
 import {
   addToSelection,
   removeFromSelection,
@@ -49,7 +49,12 @@ import NearestItemTooltip from '~/features/session/NearestItemTooltip';
 import { setFeatureIdForTooltip } from '~/features/session/slice';
 import { getFollowMapSelectionInUAVDetailsPanel } from '~/features/uavs/selectors';
 import mapViewManager from '~/mapViewManager';
-import { featureIdToGlobalId } from '~/model/identifiers';
+import {
+  areaIdToGlobalId,
+  featureIdToGlobalId,
+  GROSS_CONVEX_HULL_AREA_ID,
+  isHomePositionId,
+} from '~/model/identifiers';
 import {
   canLayerTriggerTooltip,
   getVisibleEditableLayers,
@@ -337,8 +342,6 @@ class MapViewPresentation extends React.Component {
     selectedTool: PropTypes.string,
     selection: PropTypes.arrayOf(PropTypes.string).isRequired,
     zoom: PropTypes.number,
-
-    glContainer: PropTypes.object,
   };
 
   static defaultProps = { ...config.map.view };
@@ -354,49 +357,16 @@ class MapViewPresentation extends React.Component {
     this._onSetSelectedFeatures = partial(this._onBoxDragEnded, 'set');
 
     this._map = React.createRef();
-    this._mapInnerDiv = React.createRef();
+    this._mapWrapper = React.createRef();
+
+    this._resizeObserver = new ResizeObserver(this._updateSize);
   }
 
   componentDidMount() {
-    const { glContainer } = this.props;
-    this.layoutManager = glContainer ? glContainer.layoutManager : undefined;
+    this._resizeObserver.observe(this._mapWrapper.current);
 
     mapViewManager.initialize();
     this._disableDefaultContextMenu();
-  }
-
-  componentDidUpdate() {
-    const { glContainer } = this.props;
-    this.layoutManager = glContainer ? glContainer.layoutManager : undefined;
-  }
-
-  /**
-   * Returns the layout manager that the map view currently participates in.
-   * @return {GoldenLayout} the layout manager
-   */
-  get layoutManager() {
-    return this._layoutManager;
-  }
-
-  /**
-   * Sets the layout manager that the map view currently participates in.
-   *
-   * @param {GoldenLayout} value  the new layout manager
-   */
-  set layoutManager(value) {
-    if (this._layoutManager === value) {
-      return;
-    }
-
-    if (this._layoutManager) {
-      this._layoutManager.off('stateChanged', this.updateSize, this);
-    }
-
-    this._layoutManager = value;
-
-    if (this._layoutManager) {
-      this._layoutManager.on('stateChanged', this.updateSize, this);
-    }
   }
 
   render() {
@@ -417,7 +387,7 @@ class MapViewPresentation extends React.Component {
     // give access to the underlying OpenLayers Map object instead.
     return (
       <NearestItemTooltip>
-        <div style={mapStyles.mapWrapper}>
+        <div ref={this._mapWrapper} style={mapStyles.mapWrapper}>
           <BaseMap
             ref={this._map}
             loadTilesWhileInteracting
@@ -646,7 +616,15 @@ class MapViewPresentation extends React.Component {
       toggle: toggleInSelection,
     };
     const action = actionMapping[mode] || setSelection;
-    const ids = features ? features.map((feature) => feature.getId()) : [];
+    const rawIds = features ? features.map((feature) => feature.getId()) : [];
+
+    const ids = rawIds.some(isHomePositionId)
+      ? [
+          ...rawIds.filter((id) => !isHomePositionId(id)),
+          areaIdToGlobalId(GROSS_CONVEX_HULL_AREA_ID),
+        ]
+      : rawIds;
+
     if (action === setSelection || (ids && ids.length > 0)) {
       this.props.dispatch(action(ids));
     }
@@ -709,12 +687,12 @@ class MapViewPresentation extends React.Component {
    * Method that must be called whenever the size of the container holding
    * the map view has changed.
    */
-  updateSize() {
+  _updateSize = () => {
     const map = this._map.current;
     if (map) {
       map.updateSize();
     }
-  }
+  };
 }
 
 /**
@@ -731,7 +709,7 @@ const MapView = connect(
 
     selectedFeatures: getSelectedFeatureIds(state),
     selectedTool: getSelectedTool(state),
-    selection: getSelection(state),
+    selection: getVirtualSelection(state),
 
     uavDetailsPanelFollowsSelection:
       getFollowMapSelectionInUAVDetailsPanel(state),

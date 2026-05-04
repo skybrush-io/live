@@ -2,7 +2,7 @@ import Terrain from '@mui/icons-material/Terrain';
 import isNil from 'lodash-es/isNil';
 import PropTypes from 'prop-types';
 import { useMemo } from 'react';
-import { Translation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import { GenericHeaderButton } from '@skybrush/mui-components';
@@ -100,25 +100,22 @@ const getNextTypeForAltitudeSummaryType = (type) => {
   }
 };
 
-const getTooltipForType = (type) => (
-  <Translation>
-    {(t) => (
-      <div>
-        {t('altitudeSummaryButton.showingCurrent', {
-          altitudeType: describeAltitudeSummaryType(type, { short: true }),
-        })}
-        <br />
-        {t('altitudeSummaryButton.clickToChange', {
-          altitudeType: describeAltitudeSummaryType(
-            getNextTypeForAltitudeSummaryType(type),
-            {
-              short: true,
-            }
-          ),
-        })}
-      </div>
-    )}
-  </Translation>
+const getTooltipForType = (type, t) => (
+  <div>
+    {t('altitudeSummaryButton.showingCurrent', {
+      altitudeType: describeAltitudeSummaryType(type, { short: true }, t),
+    })}
+    <br />
+    {t('altitudeSummaryButton.clickToChange', {
+      altitudeType: describeAltitudeSummaryType(
+        getNextTypeForAltitudeSummaryType(type),
+        {
+          short: true,
+        },
+        t
+      ),
+    })}
+  </div>
 );
 
 const AltitudeSummaryHeaderButton = ({
@@ -127,6 +124,7 @@ const AltitudeSummaryHeaderButton = ({
   type,
 }) => {
   const selector = useMemo(() => findAltitudeBounds(type), [type]);
+  const { t } = useTranslation();
   const { min, max } = usePeriodicSelector(selector, isConnected ? 1000 : null);
 
   return (
@@ -143,7 +141,7 @@ const AltitudeSummaryHeaderButton = ({
           : '—'
       }
       style={buttonStyle}
-      tooltip={getTooltipForType(type)}
+      tooltip={getTooltipForType(type, t)}
       onClick={() =>
         onRequestTypeChange(getNextTypeForAltitudeSummaryType(type))
       }

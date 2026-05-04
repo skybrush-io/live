@@ -95,7 +95,6 @@ const getStatusSummary = createShallowSelector(
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    fontSize: '1rem',
     cursor: 'pointer',
   },
 
@@ -124,9 +123,9 @@ const useStyles = makeStyles((theme) => ({
   },
 
   button: {
+    color: 'white',
     display: 'flex',
     flexDirection: 'row',
-    fontSize: '1rem',
     fontWeight: 'normal',
     paddingLeft: 0,
     paddingRight: 0,
@@ -175,7 +174,7 @@ const UAVStatusSummary = ({
         <div className={classes.inner}>
           {statusOrder.map((statusCode, index) => {
             const content = (
-              <React.Fragment key={statusCode?.toString() ?? 'total'}>
+              <React.Fragment>
                 {statusCode !== null ? (
                   <StatusLight
                     inline
@@ -197,13 +196,16 @@ const UAVStatusSummary = ({
 
             return statusCode === null ? (
               <Button
+                key='total'
                 className={classes.button}
                 onClick={() => selectAllUAVs()}
               >
                 {content}
               </Button>
             ) : (
-              <div className={classes.statusLight}>{content}</div>
+              <div key={statusCode.toString()} className={classes.statusLight}>
+                {content}
+              </div>
             );
           })}
         </div>

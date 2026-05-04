@@ -5,26 +5,100 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [main]
+## Unreleased
+
+### Added
+
+- Added RTH method parameter to the show adaptation dialog box.
+
+- Added selected item count to the Selection groups header widget.
+
+### Changed
+
+- Collective RTH plan calculation is fully enabled now.
+
+- Replaced the Show adapt stage with the collective RTH plan stage
+  in the control panel.
+
+## [2.13.2] - 2026-04-16
+
+### Fixed
+
+- Improved visibility of LED override buttons in the UAV toolbar, especially in
+  light mode.
+
+- LED override buttons now change the icon shape when clicking on them would
+  turn the override _off_.
+
+- Slightly tweaked the logic that decides whether clicking on the LED override
+  button would turn the override on or off to make it more intuitive.
+
+- Fixed a crash in the RTK details dialog when new messages started to appear.
+  This was introduced in 2.13.0 due to the usage of a translation hook in the
+  list item component.
+
+## [2.13.0] - 2026-04-15
 
 ### Added
 
 - Support for keeping the original light configuration when adapting the show in
   the show adaptation dialog.
-- Added a new dialog for planning collective RTH trajectories.
-- Added a pro control group to the Control panel with show suspend and resume actions.
 
-- It is now possible to set a UAV ID for parameters in the parameter upload dialog.
-  `PARAM=value` or `PARAM,value` can be used to target all UAVs, and `UAV_ID=PARAM=value`
-  or `UAV_ID,PARAM,value` can be used to target a single UAV.
+- Added a new dialog for planning collective RTH trajectories.
+
+- Added a pro control group to the Control panel with show suspend and resume
+  actions.
+
+- It is now possible to set a UAV ID for parameters in the parameter upload
+  dialog. `PARAM=value` or `PARAM,value` can be used to target all UAVs, and
+  `UAV_ID=PARAM=value` or `UAV_ID,PARAM,value` can be used to target a single UAV.
 
 - Added possibility to shift the net show vertically during show adaptation.
 
 - Add takeoff method selection to the show adaptation dialog.
 
+- The sum icon in the UAV status header selects all UAVs when clicked.
+
+- The application remembers per-UAV upload statuses from all previous upload jobs
+  for all upload job types. More details in the
+  [pull request](https://github.com/skybrush-io/live/pull/156).
+
+- The upload dialog has a "Clear history" button that erases the upload history
+  for the current upload job type.
+
+- RTK base station coordinates can now be restored from positions stored during
+  earlier surveys.
+
+- In the upload dialog, if there are no waiting items (the "waiting" counter is
+  zero), clicking the counter will now select all visible UAVs that have no
+  upload status.
+
+- The operator can now define selection groups with the "Selection groups" header
+  widget.
+
+- Added new buttons to the toolbar of the UAVs panel and the UAV details dialog
+  that allow the operator to set the color of the LED on a drone to a specific
+  color.
+
 ### Changed
 
 - Smaller headings in the Field Notes panel.
+
+- New notification UI.
+
+- The "successful" and "failed" counters/buttons in the upload dialog simply add
+  the UAVs with the corresponding statuses to the queue. The upload no longer
+  starts automatically.
+
+- Status buttons and counters in the upload dialog show the summary of all previous
+  job executions, using the latest known status for every UAV. Statuses from the
+  earlier uploads use a slightly different style.
+
+- The "Upload show data" button in the control panel displays success status only
+  when the show has been successfully uploaded to all UAVs.
+
+- The "Upload show data" button in the control panel only shows a progress indicator
+  for show upload jobs.
 
 ### Fixed
 
@@ -33,7 +107,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed and improved test progress reporting on the Tests panel of the UAV
   properties dialog.
 
-- Fixed double event handling on the Logs panel of the UAV properties dialog.
+- Fixed event handling of secondary action buttons on list items.
+
+- Several multi-monitor related issues were resolved. Context menus now appear
+  at the right position, hotkeys are triggered correctly in external windows,
+  and the map resizes properly when shown in a detached panel.
 
 ## [2.12.1] - 2025-12-15
 

@@ -9,8 +9,6 @@ import type {
   Request_PRMSETMANY,
 } from '@skybrush/flockwave-spec';
 
-import arrify from 'arrify';
-
 /**
  * @file Builder functions for commonly used Flockwave messages.
  *
@@ -30,7 +28,7 @@ export function createCancellationRequest(
 ): Request_ASYNCCANCEL {
   return {
     type: 'ASYNC-CANCEL',
-    ids: arrify(receiptIds),
+    ids: Array.isArray(receiptIds) ? receiptIds : [receiptIds],
   };
 }
 
@@ -49,7 +47,7 @@ export function createResumeRequest(
 ): Request_ASYNCRESUME {
   const result: Request_ASYNCRESUME = {
     type: 'ASYNC-RESUME',
-    ids: arrify(receiptIds),
+    ids: Array.isArray(receiptIds) ? receiptIds : [receiptIds],
   };
 
   if (values !== undefined) {
@@ -113,7 +111,7 @@ export function createFirmwareUploadRequest(
 ): Request_FWUPLOAD {
   return {
     type: 'FW-UPLOAD',
-    ids: arrify(objectIds),
+    ids: Array.isArray(objectIds) ? objectIds : [objectIds],
     target: String(target),
     blob,
   };
@@ -134,7 +132,7 @@ export function createParameterSettingRequest(
 ): Request_PRMSET {
   return {
     type: 'PRM-SET',
-    ids: arrify(uavIds),
+    ids: Array.isArray(uavIds) ? uavIds : [uavIds],
     name: String(name),
     value,
   };
@@ -153,7 +151,7 @@ export function createBulkParameterUploadRequest(
 ): Request_PRMSETMANY {
   return {
     type: 'PRM-SET-MANY',
-    ids: arrify(uavIds),
+    ids: Array.isArray(uavIds) ? uavIds : [uavIds],
     parameters,
   };
 }

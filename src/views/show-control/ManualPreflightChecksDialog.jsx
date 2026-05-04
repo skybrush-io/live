@@ -47,21 +47,19 @@ const PreflightCheckListPresentation = ({
 
       const itemId = `preflight-item-${item.id}`;
       return (
-        <ListItemButton
-          key={itemId}
-          disableRipple
-          onClick={() => onToggle(item.id)}
-        >
-          <ListItemIcon>
-            <Checkbox
-              checked={checkedItemIds.includes(item.id)}
-              edge='start'
-              slotProps={{ input: { 'aria-labelledby': itemId } }}
-              value={item.id}
-            />
-          </ListItemIcon>
-          <ListItemText id={itemId} primary={item.label} />
-        </ListItemButton>
+        <ListItem key={itemId} disablePadding>
+          <ListItemButton disableRipple onClick={() => onToggle(item.id)}>
+            <ListItemIcon>
+              <Checkbox
+                checked={checkedItemIds.includes(item.id)}
+                edge='start'
+                slotProps={{ input: { 'aria-labelledby': itemId } }}
+                value={item.id}
+              />
+            </ListItemIcon>
+            <ListItemText id={itemId} primary={item.label} />
+          </ListItemButton>
+        </ListItem>
       );
     })}
     {items.length === 0 && (

@@ -3,9 +3,10 @@
  * other measurements that the app allows to perform on the UAVs.
  */
 
-import intersection from 'lodash-es/intersection';
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import intersection from 'lodash-es/intersection';
 
+import { NULL_ISLAND } from '~/model/geography';
 import {
   addItemSortedUnlessExists,
   type Collection,
@@ -70,8 +71,8 @@ const { actions, reducer } = createSlice({
         numSamples: 0,
         extraSamplingTime: 0,
         sampling: true,
-        mean: { lat: 0, lon: 0, amsl: 0, ahl: 0 },
-        sqDiff: { lat: 0, lon: 0, amsl: 0, ahl: 0 },
+        mean: NULL_ISLAND,
+        sqDiff: NULL_ISLAND,
       });
     },
 
@@ -110,8 +111,8 @@ const { actions, reducer } = createSlice({
             numSamples: 0,
             extraSamplingTime: 0,
             sampling: true,
-            mean: { lat: 0, lon: 0, amsl: 0, ahl: 0 },
-            sqDiff: { lat: 0, lon: 0, amsl: 0, ahl: 0 },
+            mean: NULL_ISLAND,
+            sqDiff: NULL_ISLAND,
           };
         }
       }

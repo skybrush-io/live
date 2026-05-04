@@ -46,10 +46,13 @@ type BoundProgressHandlerOptions = {
   onProgress?: (id: string, status: ProgressStatus) => void;
 };
 
+export type StartAsyncOperationOptions = TimeoutOptions &
+  BoundProgressHandlerOptions;
+
 /**
  * Creates a new Flockwave message ID.
  *
- * @return {string} a new, random Flockwave message ID
+ * @return a new, random Flockwave message ID
  */
 const createMessageId = () => nanoid(8);
 
@@ -63,7 +66,8 @@ export function parseCommandFromString(string: string): {
   args: string[];
   kwds: Record<string, unknown>;
 } {
-  const parts = string && string.length > 0 ? string.split(/\s+/) : [''];
+  string = string.trim();
+  const parts = string.length > 0 ? string.split(/\s+/) : [''];
   return {
     command: parts[0] ?? '',
     args: parts.slice(1),
@@ -1537,7 +1541,7 @@ export default class MessageHub {
    */
   async startAsyncOperation(
     body: MessageBody,
-    responseHandlerOptions: TimeoutOptions & BoundProgressHandlerOptions = {}
+    responseHandlerOptions: StartAsyncOperationOptions = {}
   ) {
     const { type: expectedType } = body;
     if (!expectedType) {

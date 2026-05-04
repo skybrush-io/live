@@ -5,18 +5,39 @@
 
 import { type Action, createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
+import {
+  clearGeofencePolygonId,
+  notifyUAVsInMissionMappingChanged,
+  setGeofenceAction,
+  setGeofencePolygonId,
+} from '~/features/mission/slice';
+import { JOB_TYPE as PARAMETER_UPLOAD_JOB_TYPE } from '~/features/parameters/constants';
+import {
+  removeParameterFromManifest,
+  updateParametersInManifest,
+} from '~/features/parameters/slice';
+import {
+  updateGeofenceSettings,
+  updateSafetySettings,
+} from '~/features/safety/slice';
 import { SHOW_UPLOAD_JOB } from '~/features/show/constants';
 import { _clearLoadedShow } from '~/features/show/slice';
-import type UAV from '~/model/uav';
-import { type Collection, replaceItemOrAddToFront } from '~/utils/collections';
+import type { Identifier } from '~/utils/collections';
 import { noPayload } from '~/utils/redux';
 
-import type { JobData, JobPayload, UploadJob } from './types';
+import type {
+  HistoryItem,
+  JobData,
+  JobPayload,
+  MaybeOutdateUAVStatus,
+} from './types';
 import {
-  clearLastUploadResultForJobTypeHelper,
   clearQueues,
+  clearUploadHistoryForJobTypeHelper,
+  createHistoryItem,
   ensureItemsInQueue,
   moveItemsBetweenQueues,
+  pushItemToHistory,
 } from './utils';
 
 export type UploadSliceState = {
@@ -37,34 +58,28 @@ export type UploadSliceState = {
   };
 
   /**
-   * History of recent upload jobs. Each upload job has a _type_ and a
-   * _hash_; the type identifies the type of the job (e.g., show upload,
-   * parameter upload etc) while the key is a compact representation of the
-   * exact data that was uploaded such that different jobs of the same type
-   * have different keys. In the absence of such a hash, use a sequential
-   * counter. The ID of the job should be the type and we only keep the
-   * latest job from each type in the history.
+   * Record that maps job types to the corresponding upload history items.
    */
-  history: Collection<UploadJob>;
+  history: Record<string, HistoryItem[]>;
 
   queues: {
-    itemsInProgress: Array<UAV['id']>;
-    itemsWaitingToStart: Array<UAV['id']>;
-    itemsQueued: Array<UAV['id']>;
-    itemsFinished: Array<UAV['id']>;
-    failedItems: Array<UAV['id']>;
+    itemsInProgress: Identifier[];
+    itemsWaitingToStart: Identifier[];
+    itemsQueued: Identifier[];
+    itemsFinished: Identifier[];
+    failedItems: Identifier[];
   };
 
   // If you add a new queue above, make sure that the ALL_QUEUES array
   // is updated in features/upload/utils.js
 
   /** Errors corresponding to the individual UAVs in the current upload job */
-  errors: Record<UAV['id'], unknown>;
+  errors: Record<Identifier, string>;
 
   /** Progress information corresponding to the individual UAVs in the
    * current upload job.
    */
-  progresses: Record<UAV['id'], number>;
+  progresses: Record<Identifier, number>;
 
   /**
    * Timing information related to the current upload job, required to
@@ -109,10 +124,7 @@ const initialState: UploadSliceState = {
     running: false,
   },
 
-  history: {
-    order: [],
-    byId: {},
-  },
+  history: {},
   queues: {
     itemsInProgress: [],
     itemsWaitingToStart: [],
@@ -142,14 +154,36 @@ const initialState: UploadSliceState = {
   },
 };
 
+const historyCleaningActionMatchersByJobType = {
+  [SHOW_UPLOAD_JOB.type]: new Set<string>([
+    _clearLoadedShow.type,
+    clearGeofencePolygonId.type,
+    setGeofenceAction.type,
+    setGeofencePolygonId.type,
+    updateGeofenceSettings.type,
+    updateSafetySettings.type,
+  ]),
+  [PARAMETER_UPLOAD_JOB_TYPE]: new Set<string>([
+    removeParameterFromManifest.type,
+    updateParametersInManifest.type,
+  ]),
+};
+
 const { actions, reducer } = createSlice({
   name: 'upload',
   initialState,
   reducers: {
-    clearLastUploadResultForJobType(state, action: PayloadAction<string>) {
+    clearUploadHistoryForCurrentJobType(state) {
+      const jobType = state.dialog.selectedJob.type;
+      if (jobType) {
+        clearUploadHistoryForJobTypeHelper(state, jobType);
+      }
+    },
+
+    clearUploadHistoryForJobType(state, action: PayloadAction<string>) {
       const { payload: jobType } = action;
       if (jobType) {
-        clearLastUploadResultForJobTypeHelper(state, jobType);
+        clearUploadHistoryForJobTypeHelper(state, jobType);
       }
     },
 
@@ -180,7 +214,7 @@ const { actions, reducer } = createSlice({
       action: PayloadAction<{
         type: string;
         payload: JobPayload;
-        targets: Array<UAV['id']>;
+        targets: Identifier[];
       }>
     ) {
       const { payload } = action;
@@ -194,7 +228,7 @@ const { actions, reducer } = createSlice({
       state.currentJob.type = type;
       state.currentJob.payload = jobPayload;
 
-      clearQueues(state);
+      clearQueues(state, { showLastUploadResult: false });
 
       state.queues.itemsWaitingToStart = [...targets];
     },
@@ -224,29 +258,29 @@ const { actions, reducer } = createSlice({
       action: PayloadAction<{ success: boolean; cancelled: boolean }>
     ) {
       const { success, cancelled } = action.payload;
+      const jobType = state.currentJob.type;
 
       // Dispatched by the saga; should not be dispatched manually
 
-      // Clear the queues
-      state.queues.itemsWaitingToStart = [];
-      state.queues.itemsInProgress = [];
-      state.queues.itemsQueued = [];
+      // Store the data in history
+      if (jobType) {
+        pushItemToHistory(
+          state.history,
+          jobType,
+          createHistoryItem(
+            cancelled ? 'cancelled' : success ? 'success' : 'error',
+            state.queues,
+            state.errors
+          )
+        );
+      }
+
+      // Clear queues and show the last upload result in the dialog.
+      // Everything related to the job is persisted in the history.
+      clearQueues(state, { showLastUploadResult: true });
 
       // Reset the current job to an idle state
       state.currentJob.running = false;
-
-      // Store the upload result in the history
-      if (state.currentJob.type) {
-        const historyItem: UploadJob = {
-          id: state.currentJob.type,
-          payload: state.currentJob.payload,
-          result: cancelled ? 'cancelled' : success ? 'success' : 'error',
-        };
-        replaceItemOrAddToFront(state.history, historyItem);
-      }
-
-      // Trigger the dialog box to show the result
-      state.dialog.showLastUploadResult = true;
     },
 
     _notifyUploadStartedAt(state, action: PayloadAction<number>) {
@@ -288,7 +322,7 @@ const { actions, reducer } = createSlice({
     _setErrorMessageForUAV: {
       reducer(
         state,
-        action: PayloadAction<{ uavId: UAV['id']; message: string }>
+        action: PayloadAction<{ uavId: Identifier; message: string }>
       ) {
         const { uavId, message } = action.payload;
         if (message) {
@@ -298,7 +332,7 @@ const { actions, reducer } = createSlice({
         }
       },
 
-      prepare: (uavId: UAV['id'], message: string | Error) => ({
+      prepare: (uavId: Identifier, message: string | Error) => ({
         payload: { uavId, message: String(message) },
       }),
     },
@@ -315,7 +349,7 @@ const { actions, reducer } = createSlice({
     _setProgressInfoForUAV: {
       reducer(
         state,
-        action: PayloadAction<{ uavId: UAV['id']; progress: number }>
+        action: PayloadAction<{ uavId: Identifier; progress: number }>
       ) {
         const { uavId, progress } = action.payload;
         if (progress >= 0 && progress <= 1) {
@@ -325,7 +359,7 @@ const { actions, reducer } = createSlice({
         }
       },
 
-      prepare: (uavId: UAV['id'], progress: number) => ({
+      prepare: (uavId: Identifier, progress: number) => ({
         payload: { uavId, progress },
       }),
     },
@@ -368,7 +402,7 @@ const { actions, reducer } = createSlice({
         !state.currentJob.running &&
         state.dialog.selectedJob?.type !== newJobType
       ) {
-        clearQueues(state);
+        clearQueues(state, { showLastUploadResult: false });
       }
 
       state.dialog.backAction = backAction;
@@ -406,15 +440,63 @@ const { actions, reducer } = createSlice({
   },
 
   extraReducers(builder) {
-    builder.addCase(_clearLoadedShow, (state) => {
-      clearLastUploadResultForJobTypeHelper(state, SHOW_UPLOAD_JOB.type);
+    builder.addCase(notifyUAVsInMissionMappingChanged, (state, action) => {
+      if (state.history[SHOW_UPLOAD_JOB.type] === undefined) {
+        // No history, nothing to do. We must avoid creating a new history
+        // item, because that would affect the result of the
+        // `makeUploadStatusSelectorForMissionMappingByJobType()`
+        // factory!!
+        return;
+      }
+
+      const uavIds = action.payload;
+
+      if (uavIds === undefined) {
+        clearUploadHistoryForJobTypeHelper(state, SHOW_UPLOAD_JOB.type);
+        return;
+      }
+
+      pushItemToHistory(state.history, SHOW_UPLOAD_JOB.type, {
+        result: 'success',
+        perUavErrors: {},
+        perUavStatuses: uavIds.reduce(
+          (res, id) => {
+            res[id] = 'outdated';
+            return res;
+          },
+          {} as Record<string, MaybeOutdateUAVStatus>
+        ),
+      });
     });
+
+    builder.addMatcher(
+      // Clear show upload history
+      (action: Action) =>
+        historyCleaningActionMatchersByJobType[SHOW_UPLOAD_JOB.type].has(
+          action.type
+        ),
+      (state) => {
+        clearUploadHistoryForJobTypeHelper(state, SHOW_UPLOAD_JOB.type);
+      }
+    );
+
+    builder.addMatcher(
+      // Clear parameter upload history
+      (action: Action) =>
+        historyCleaningActionMatchersByJobType[PARAMETER_UPLOAD_JOB_TYPE].has(
+          action.type
+        ),
+      (state) => {
+        clearUploadHistoryForJobTypeHelper(state, PARAMETER_UPLOAD_JOB_TYPE);
+      }
+    );
   },
 });
 
 export const {
   cancelUpload,
-  clearLastUploadResultForJobType,
+  clearUploadHistoryForCurrentJobType,
+  clearUploadHistoryForJobType,
   clearUploadQueue,
   closeUploadDialog,
   dismissLastUploadResult,

@@ -48,6 +48,7 @@ function formatKeySequence(definition) {
       .replace(/^mod$/, platformModifierKey)
       .replace(/^cmd$/, '⌘')
       .replace(/^meta$/, '⌘')
+      .replace(/^ctrl/, isRunningOnMac ? '⌃' : 'Ctrl')
       .replace(/^alt$/, isRunningOnMac ? '⌥' : 'Alt')
       .replace(/^shift/, '⇧')
       .replace(/^del$/, isRunningOnMac ? '⌦' : 'Delete');

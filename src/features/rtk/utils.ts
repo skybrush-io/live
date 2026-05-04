@@ -1,4 +1,16 @@
+import { Status, colorForStatus } from '@skybrush/app-theme-mui';
+import type { ECEFCoordinate } from '@skybrush/flockwave-spec';
+import type { MiniListItemIconProps } from '@skybrush/mui-components';
+import isEqual from 'lodash-es/isEqual';
+
+import type { TranslateFn } from '~/i18n/types';
 import { formatDistance } from '~/utils/formatting';
+
+import {
+  RTKCorrectionStatus,
+  type RTKSavedCoordinate,
+  type RTKStatistics,
+} from './types';
 
 const descriptions: Record<string, string> = {
   'rtcm2/1': 'Differential GPS Corrections',
@@ -97,15 +109,18 @@ const descriptions: Record<string, string> = {
   'rtcm3/1230': 'GLONASS L1 and L2 code-phase biases',
 };
 
-export function describeMessageType(type: string): string {
-  return (
+export function describeMessageType(
+  type: string,
+  t: TranslateFn | undefined = undefined
+): string {
+  const description =
     descriptions[type] ??
     (type?.startsWith('rtcm2/')
       ? `RTCMv2 message, type ${type.slice(6)}`
       : type?.startsWith('rtcm3/')
         ? `RTCMv3 message, type ${type.slice(6)}`
-        : `Unknown message, type ${type}`)
-  );
+        : `Unknown message, type ${type}`);
+  return t ? t(`rtkMessageType.${type}`, description) : description;
 }
 
 export function formatSurveyAccuracy(value: number, { max = 20 } = {}): string {
@@ -118,4 +133,173 @@ export function formatSurveyAccuracy(value: number, { max = 20 } = {}): string {
   }
   const ceiled = Math.ceil(value * 1000) / 1000;
   return formatDistance(ceiled, 1);
+}
+
+/**
+ * Checks if the RTK status indicates a valid fix.
+ *
+ * @param status - The RTK statistics object.
+ * @returns True if a valid fix is present, false otherwise.
+ */
+export function hasValidFix(
+  status: Pick<RTKStatistics, 'antenna' | 'survey'>
+): boolean {
+  const hasECEF = Array.isArray(status?.antenna?.positionECEF);
+  const accuracy = status?.survey?.accuracy;
+  const flags = status?.survey?.flags;
+  const surveyedCoordinateValid =
+    typeof flags === 'number' && (flags & 0b100) !== 0;
+
+  // Consider fix valid only with ECEF position, valid-coordinate flag, and numeric accuracy.
+  return hasECEF && surveyedCoordinateValid && typeof accuracy === 'number';
+}
+
+/**
+ * Determines whether the current coordinate should be saved for a given preset.
+ *
+ * @param position - The current antenna position.
+ * @param savedCoordinates - The record of saved coordinates keyed by preset ID.
+ * @param presetId - The ID of the preset to check against.
+ * @returns True if the coordinate is new and should be saved, false otherwise.
+ */
+export function shouldSaveCoordinate(
+  position: ECEFCoordinate | undefined,
+  savedCoordinates: Record<string, RTKSavedCoordinate[]>,
+  presetId: string
+): boolean {
+  const incomingECEF = Array.isArray(position)
+    ? position.slice(0, 3).map((x) => Math.round(x))
+    : undefined;
+  const saved = savedCoordinates?.[presetId];
+  const savedECEF =
+    saved && saved.length > 0 && Array.isArray(saved[0]?.positionECEF)
+      ? saved[0]?.positionECEF.slice(0, 3)
+      : undefined;
+
+  const isSameECEF =
+    !!incomingECEF && !!savedECEF && isEqual(incomingECEF, savedECEF);
+
+  return !isSameECEF;
+}
+
+/**
+ * Converts the overall RTK correction status to a semantic status enum.
+ */
+export function getSemanticsOfRTKStatus(
+  status: RTKCorrectionStatus
+): Status | undefined {
+  switch (status) {
+    case RTKCorrectionStatus.OK:
+      return Status.SUCCESS;
+
+    case RTKCorrectionStatus.NOT_CONNECTED:
+    case RTKCorrectionStatus.INACTIVE:
+      return undefined;
+
+    case RTKCorrectionStatus.CONNECTED_RECENTLY:
+    case RTKCorrectionStatus.SURVEY_IN_PROGRESS:
+      return Status.NEXT;
+
+    case RTKCorrectionStatus.ERROR:
+    case RTKCorrectionStatus.NO_ANTENNA_POSITION:
+      return Status.ERROR;
+
+    case RTKCorrectionStatus.NOT_ENOUGH_SATELLITES:
+      return Status.WARNING;
+
+    default:
+      return Status.WARNING;
+  }
+}
+
+/**
+ * Converts the overall RTK correction status to a color.
+ */
+export function getColorOfRTKStatus(
+  status: RTKCorrectionStatus
+): string | undefined {
+  const semantics = getSemanticsOfRTKStatus(status);
+  return semantics ? colorForStatus(semantics) : undefined;
+}
+
+/**
+ * Returns an icon preset for the given overall RTK correction status that can be
+ * used in a MiniListItem component
+ */
+export function getIconPresetForRTKStatus(
+  status: RTKCorrectionStatus
+): MiniListItemIconProps['preset'] {
+  switch (status) {
+    case RTKCorrectionStatus.OK:
+      return 'success';
+
+    case RTKCorrectionStatus.ERROR:
+    case RTKCorrectionStatus.NO_ANTENNA_POSITION:
+      return 'error';
+
+    case RTKCorrectionStatus.NOT_ENOUGH_SATELLITES:
+      return 'warning';
+
+    case RTKCorrectionStatus.CONNECTED_RECENTLY:
+    case RTKCorrectionStatus.SURVEY_IN_PROGRESS:
+      return 'connecting';
+
+    case RTKCorrectionStatus.NOT_CONNECTED:
+    case RTKCorrectionStatus.INACTIVE:
+      return 'empty';
+
+    default:
+      return 'warning';
+  }
+}
+
+const rtkCorrectionStatusLongDescriptions: Record<RTKCorrectionStatus, string> =
+  {
+    [RTKCorrectionStatus.CONNECTED_RECENTLY]:
+      'Determining RTK correction status...',
+    [RTKCorrectionStatus.ERROR]: 'Unspecified error in RTK corrections',
+    [RTKCorrectionStatus.INACTIVE]: 'No selected RTK correction source',
+    [RTKCorrectionStatus.NO_ANTENNA_POSITION]: 'RTK antenna position unknown',
+    [RTKCorrectionStatus.NOT_CONNECTED]: 'Not connected to server',
+    [RTKCorrectionStatus.NOT_ENOUGH_SATELLITES]:
+      'Not enough satellites with valid RTK corrections',
+    [RTKCorrectionStatus.OK]: 'RTK corrections are valid',
+    [RTKCorrectionStatus.SURVEY_IN_PROGRESS]: 'Survey in progress',
+  };
+
+const rtkCorrectionStatusShortDescriptions: Record<
+  RTKCorrectionStatus,
+  string
+> = {
+  [RTKCorrectionStatus.CONNECTED_RECENTLY]: 'Waiting for data',
+  [RTKCorrectionStatus.ERROR]: 'Error',
+  [RTKCorrectionStatus.INACTIVE]: 'No source',
+  [RTKCorrectionStatus.NO_ANTENNA_POSITION]: 'No antenna position',
+  [RTKCorrectionStatus.NOT_CONNECTED]: 'Not connected',
+  [RTKCorrectionStatus.NOT_ENOUGH_SATELLITES]: 'Not enough satellites',
+  [RTKCorrectionStatus.OK]: 'Valid',
+  [RTKCorrectionStatus.SURVEY_IN_PROGRESS]: 'Surveying',
+};
+
+/**
+ * Converts the overall RTK correction status to a human-readable description.
+ */
+export function describeRTKStatus(
+  status: RTKCorrectionStatus,
+  options: Partial<{ format: 'short' | 'long' }> = {},
+  t: TranslateFn | undefined = undefined
+): string {
+  const { format = 'long' } = options;
+  const descriptions =
+    format === 'long'
+      ? rtkCorrectionStatusLongDescriptions
+      : rtkCorrectionStatusShortDescriptions;
+  const description =
+    descriptions[status] ||
+    (format === 'long' ? 'Unknown RTK correction status' : 'Unknown status');
+  const namespace =
+    format === 'long'
+      ? 'rtkCorrectionStatus.long'
+      : 'rtkCorrectionStatus.short';
+  return t ? t(`${namespace}.${status}`, description) : description;
 }
