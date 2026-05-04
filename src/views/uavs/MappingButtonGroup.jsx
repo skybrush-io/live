@@ -29,6 +29,7 @@ const MappingButtonGroup = ({
   layout,
   mappingEditable,
   onToggleShowingEmptyMissionSlots,
+  persistedShowEmptyMissionSlots,
   setUAVListLayout,
   showEmptyMissionSlots,
   startMappingEditorSession,
@@ -47,13 +48,16 @@ const MappingButtonGroup = ({
 
     <Tooltip
       content={
-        showEmptyMissionSlots
-          ? t('mappingButtonGroup.hideEmptyMissionSlots')
-          : t('mappingButtonGroup.showEmptyMissionSlots')
+        mappingEditable
+          ? t('mappingButtonGroup.emptySlotsShownWhileEditingMapping')
+          : persistedShowEmptyMissionSlots
+            ? t('mappingButtonGroup.hideEmptyMissionSlots')
+            : t('mappingButtonGroup.showEmptyMissionSlots')
       }
     >
       <ToggleButton
         value='showMissing'
+        disabled={mappingEditable}
         selected={showEmptyMissionSlots}
         onClick={onToggleShowingEmptyMissionSlots}
       >
@@ -78,6 +82,7 @@ MappingButtonGroup.propTypes = {
   layout: PropTypes.oneOf(['grid', 'list']),
   mappingEditable: PropTypes.bool,
   onToggleShowingEmptyMissionSlots: PropTypes.func,
+  persistedShowEmptyMissionSlots: PropTypes.bool,
   setUAVListLayout: PropTypes.func,
   showEmptyMissionSlots: PropTypes.bool,
   startMappingEditorSession: PropTypes.func,
@@ -86,11 +91,16 @@ MappingButtonGroup.propTypes = {
 
 export default connect(
   // mapStateToProps
-  (state) => ({
-    layout: getUAVListLayout(state),
-    mappingEditable: isMappingEditable(state),
-    showEmptyMissionSlots: isShowingEmptyMissionSlots(state),
-  }),
+  (state) => {
+    const persistedShowEmptyMissionSlots = isShowingEmptyMissionSlots(state);
+    return {
+      layout: getUAVListLayout(state),
+      mappingEditable: isMappingEditable(state),
+      persistedShowEmptyMissionSlots,
+      showEmptyMissionSlots:
+        persistedShowEmptyMissionSlots || isMappingEditable(state),
+    };
+  },
   // mapDispatchToProps
   {
     clearMapping,

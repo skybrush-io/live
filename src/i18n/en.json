@@ -481,6 +481,7 @@
   },
   "mappingButtonGroup": {
     "editMapping": "Edit mapping",
+    "emptySlotsShownWhileEditingMapping": "Empty mission slots stay visible while you edit the mapping.",
     "hideEmptyMissionSlots": "Hide empty mission slots",
     "showEmptyMissionSlots": "Show empty mission slots"
   },
