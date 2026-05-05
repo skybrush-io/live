@@ -201,7 +201,8 @@
       "automatic": "Automatic geofence in use",
       "error": "Show area lies outside the geofence",
       "manual": "Manual geofence in use",
-      "no": "No geofence defined yet"
+      "no": "No geofence defined yet",
+      "skipped": "Skipped (external upload)"
     }
   },
   "geofenceAction": {

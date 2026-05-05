@@ -28,8 +28,14 @@ const formatStatusText = (status) => {
     case Status.ERROR:
       return tt('geofence.statusText.error');
 
+    case Status.SKIPPED:
+      // External upload (path-planner) skips the local geofence stage.
+      return tt('geofence.statusText.skipped', 'Skipped (external upload)');
+
     default:
-      return '';
+      // Always return a callable so that consumers using
+      // ``formatStatusText(status)(t)`` never crash on unexpected statuses.
+      return () => '';
   }
 };
 

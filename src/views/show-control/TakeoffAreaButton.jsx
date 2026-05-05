@@ -43,7 +43,9 @@ const formatStatusText = (status, maxDistance) => {
       return tt('show.dronePlacementCheck');
 
     default:
-      return '';
+      // Always return a callable so that consumers using
+      // ``formatStatusText(status, ...)(t)`` never crash on unexpected statuses.
+      return () => '';
   }
 };
 

@@ -741,6 +741,14 @@ export const getShowTitle = createSelector(
 export const hasLoadedShowFile = (state) => Boolean(state.show.data);
 
 /**
+ * Returns whether an external producer (e.g. the path-planner extension)
+ * has already uploaded a show binary directly to the drones, bypassing the
+ * normal .skyc → upload pipeline.
+ */
+export const isExternalShowUploaded = (state) =>
+  Boolean(state.show.externalShowUploaded);
+
+/**
  * Returns whether the origin of the coordinate system of the show has been
  * set up.
  */

@@ -79,6 +79,7 @@ export const hasLoadedShowFile: (state: RootState) => boolean;
 export const hasScheduledStartTime: (state: RootState) => boolean;
 export const hasShowChangedExternallySinceLoaded: (state: RootState) => boolean;
 export const hasShowOrigin: (state: RootState) => boolean;
+export const isExternalShowUploaded: (state: RootState) => boolean;
 export const isLoadingShowFile: (state: RootState) => boolean;
 export const isShowAuthorizedToStart: (state: RootState) => boolean;
 export const isShowAuthorizedToStartLocally: (state: RootState) => boolean;

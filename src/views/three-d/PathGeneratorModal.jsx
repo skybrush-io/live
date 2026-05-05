@@ -1,5 +1,15 @@
 import PropTypes from 'prop-types';
 import React, { useMemo, useState } from 'react';
+import { useDispatch } from 'react-redux';
+
+import { replaceMapping, setMappingLength } from '~/features/mission/slice';
+import { StartMethod } from '~/features/show/enums';
+import {
+  setExternalShowUploaded,
+  setStartMethod,
+  setUAVIdsToStartAutomatically,
+  synchronizeShowSettings,
+} from '~/features/show/slice';
 
 const DEFAULT_PATH_PLANNER_URL = 'http://localhost:5001/api/v1/path-planner/plan';
 
@@ -217,6 +227,7 @@ MiniScene.propTypes = {
 };
 
 export default function PathGeneratorModal({ open, onClose }) {
+  const dispatch = useDispatch();
   const [rawInput, setRawInput] = useState('');
   const [error, setError] = useState('');
   const [requestUrl, setRequestUrl] = useState(DEFAULT_PATH_PLANNER_URL);
@@ -433,15 +444,53 @@ export default function PathGeneratorModal({ open, onClose }) {
                     );
                   }
 
+                  // Did the server actually push the show to at least one drone?
+                  // If yes, mark the show as externally uploaded so the launch
+                  // wizard skips the local .skyc → upload pipeline.
+                  const uploadedCount = Number(result?.upload?.uploaded ?? 0);
+                  if (uploadedCount > 0) {
+                    dispatch(setExternalShowUploaded(true));
+                    // External uploads typically run without a physical RC,
+                    // so default the start method to scheduled/auto. The
+                    // user can still flip this back from the start-time
+                    // dialog afterwards if they want RC-triggered start.
+                    dispatch(setStartMethod(StartMethod.AUTO));
+                    // Populate the auto-start UAV list from the drones that
+                    // the server actually uploaded the show to. Without this
+                    // the scheduled auto-start fires with an empty list and
+                    // no drone is triggered ("no UAVs to start automatically").
+                    const uploadDetails = result?.upload?.details || {};
+                    const uploadedUavIds = Object.keys(uploadDetails).filter(
+                      (uavId) => uploadDetails[uavId] === 'ok'
+                    );
+                    if (uploadedUavIds.length > 0) {
+                      // The server-side auto-start UAV list is derived from
+                      // the mission mapping (see show/saga.js -> pushSettingsToServer),
+                      // so we have to populate the mapping as well — just
+                      // setting start.uavIds locally is not enough.
+                      dispatch(setMappingLength(uploadedUavIds.length));
+                      dispatch(replaceMapping(uploadedUavIds));
+                      dispatch(setUAVIdsToStartAutomatically(uploadedUavIds));
+                      // Push the new start configuration (method + uavIds via
+                      // mapping) to the server so the scheduled auto-start has
+                      // drones to trigger.
+                      dispatch(synchronizeShowSettings('toServer'));
+                    }
+                  }
+
                   // Surface non-blocking validation warnings, if any.
                   const warnIssues = (result?.validation?.issues || []).filter(
                     (i) => i.severity === 'warning'
                   );
                   const warnText = formatValidationIssues(warnIssues);
+                  const uploadSummary =
+                    uploadedCount > 0
+                      ? ` (드론 ${uploadedCount}대 자동 업로드 완료)`
+                      : '';
                   setRequestStatus(
                     warnText
-                      ? `경로 요청 성공: ${result.drones.length}개 드론 반영됨\n경고:\n${warnText}`
-                      : `경로 요청 성공: ${result.drones.length}개 드론 반영됨`
+                      ? `경로 요청 성공: ${result.drones.length}개 드론 반영됨${uploadSummary}\n경고:\n${warnText}`
+                      : `경로 요청 성공: ${result.drones.length}개 드론 반영됨${uploadSummary}`
                   );
                 } catch (e) {
                   if (e instanceof TypeError) {

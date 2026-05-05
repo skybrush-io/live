@@ -17,6 +17,7 @@ import {
   hasScheduledStartTime,
   hasShowChangedExternallySinceLoaded,
   hasShowOrigin,
+  isExternalShowUploaded,
   isLoadingShowFile,
   isShowAuthorizedToStart,
   isShowAuthorizedToStartLocally,
@@ -71,6 +72,11 @@ type StageSpecification = {
 const stages: Record<Stage, StageSpecification> = {
   selectShowFile: {
     evaluate(state) {
+      // External upload (e.g. path-planner) bypasses local file selection.
+      if (isExternalShowUploaded(state)) {
+        return Status.SUCCESS;
+      }
+
       if (hasShowChangedExternallySinceLoaded(state)) {
         return Status.SKIPPED;
       }
@@ -95,7 +101,10 @@ const stages: Record<Stage, StageSpecification> = {
 
   setupEnvironment: {
     evaluate: (state) =>
-      hasLoadedShowFile(state) && (hasShowOrigin(state) || isShowIndoor(state)),
+      isExternalShowUploaded(state)
+        ? Status.SUCCESS
+        : hasLoadedShowFile(state) &&
+          (hasShowOrigin(state) || isShowIndoor(state)),
     requires: ['selectShowFile'],
   },
 
@@ -106,27 +115,38 @@ const stages: Record<Stage, StageSpecification> = {
 
   setupTakeoffArea: {
     evaluate: (state) =>
-      isTakeoffAreaApproved(state)
-        ? isEmpty(getEmptyMappingSlotIndices(state)) &&
-          isEmpty(getMissingUAVIdsInMapping(state))
-          ? Status.SUCCESS
-          : Status.SKIPPED
-        : Status.OFF,
+      isExternalShowUploaded(state)
+        ? Status.SKIPPED
+        : isTakeoffAreaApproved(state)
+          ? isEmpty(getEmptyMappingSlotIndices(state)) &&
+            isEmpty(getMissingUAVIdsInMapping(state))
+            ? Status.SUCCESS
+            : Status.SKIPPED
+          : Status.OFF,
     requires: ['setupEnvironment'],
   },
 
   setupGeofence: {
     evaluate: (state) =>
-      isShowOutdoor(state) && hasActiveGeofencePolygon(state)
-        ? isShowConvexHullInsideGeofence(state)
-          ? getGeofenceStatus(state)
-          : Status.ERROR
-        : Status.OFF,
+      isExternalShowUploaded(state)
+        ? Status.SKIPPED
+        : isShowOutdoor(state) && hasActiveGeofencePolygon(state)
+          ? isShowConvexHullInsideGeofence(state)
+            ? getGeofenceStatus(state)
+            : Status.ERROR
+          : Status.OFF,
     requires: ['selectShowFile', 'setupEnvironment'],
   },
 
   uploadShow: {
     evaluate(state) {
+      // The path-planner pushes the show binary directly to each drone, so
+      // the regular per-job upload pipeline is not used. Treat the upload
+      // step as already complete in that case.
+      if (isExternalShowUploaded(state)) {
+        return Status.SUCCESS;
+      }
+
       const result = getLastUploadResultByJobType(state, JOB_TYPE);
       return result === 'error'
         ? Status.ERROR
@@ -136,7 +156,13 @@ const stages: Record<Stage, StageSpecification> = {
             ? Status.SUCCESS
             : Status.OFF;
     },
-    requires: ['selectShowFile', 'setupEnvironment', hasNonemptyMappingSlot],
+    // ``hasNonemptyMappingSlot`` does not apply to external uploads (the
+    // path-planner uses the server-side UAV registry directly).
+    requires: [
+      'selectShowFile',
+      'setupEnvironment',
+      (state) => isExternalShowUploaded(state) || hasNonemptyMappingSlot(state),
+    ],
   },
 
   waitForOnboardPreflightChecks: {

@@ -44,6 +44,15 @@ type ShowSliceState = {
   changedSinceLoaded: boolean;
   lastLoadAttemptFailed: boolean;
 
+  /**
+   * True when an external producer (e.g. the path-planner extension) has
+   * uploaded a show binary directly to the drones, bypassing the regular
+   * .skyc → upload flow on the client. When set, the show launch wizard
+   * treats the file-loading and upload stages as already completed so the
+   * user can proceed to preflight checks and start authorization.
+   */
+  externalShowUploaded?: boolean;
+
   loadShowFromCloudDialog: {
     open: boolean;
   };
@@ -211,6 +220,7 @@ const { actions, reducer } = createSlice({
 
       state.sourceUrl = undefined;
       state.changedSinceLoaded = false;
+      state.externalShowUploaded = false;
 
       state.preflight.manualChecksSignedOffAt = undefined;
       state.preflight.onboardChecksSignedOffAt = undefined;
@@ -219,6 +229,14 @@ const { actions, reducer } = createSlice({
       // Last upload result cleared in the upload feature as it also handles
       // this action
     }),
+
+    /**
+     * Marks (or clears) that an external producer has already uploaded a
+     * show to the drones. See `externalShowUploaded` on the slice state.
+     */
+    setExternalShowUploaded(state, action: PayloadAction<boolean>) {
+      state.externalShowUploaded = Boolean(action.payload);
+    },
 
     clearManualPreflightChecks: noPayload<ShowSliceState>((state) => {
       state.preflight.manualChecksSignedOffAt = undefined;
@@ -572,6 +590,7 @@ export const {
   setStartMethod,
   setStartTime,
   setUAVIdsToStartAutomatically,
+  setExternalShowUploaded,
   signOffOnManualPreflightChecksAt,
   signOffOnOnboardPreflightChecksAt,
   synchronizeShowSettings,
