@@ -867,7 +867,7 @@
         }
       },
       "rth": {
-        "description": "Drones are returning to their home locations.",
+        "description": "Drones are returning to their home locations in a coordinated manner, without collisions.",
         "title": {
           "default": "Return to Home",
           "waiting": "Return to Home (in {{countdownSeconds}}s)"
@@ -1069,8 +1069,8 @@
     "setupGeofence": "Setup geofence",
     "setupTakeoffArea": "Assign drones to show",
     "showConfigurator": {
-      "button": "Adapt show to venue",
-      "description": "Adjust takeoff grid and show layout if needed",
+      "button": "Plan collective RTH",
+      "description": "Create collective return-to-home plans",
       "interactionHints": {
         "action": {
           "boxSelect": "Box select",
@@ -1448,8 +1448,8 @@
   "uploadStatusLegend": {
     "clearUploadQueue": "Clear upload queue",
     "enqueueItemsWithNoUploadStatus": "Enqueue unprocessed items",
-    "restartSuccessfulItems": "Restart successful items",
-    "retryFailedItems": "Retry failed items"
+    "restartSuccessfulItems": "Enqueue successful items",
+    "retryFailedItems": "Enqueue failed items"
   },
   "uploadStatusLights": {
     "noAvailableUAVs": "There are no available UAVs to upload to."
