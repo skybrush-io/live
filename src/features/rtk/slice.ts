@@ -15,7 +15,7 @@ import {
   type RTKStatistics,
 } from './types';
 
-type RTKPresetType = 'user' | 'builtin' | 'dynamic';
+export type RTKPresetType = 'user' | 'builtin' | 'dynamic';
 
 type RTKPresetDialogState = {
   open: boolean;

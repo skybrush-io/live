@@ -53,29 +53,26 @@ const RTKStatusHeaderButton = ({
 
   return (
     <LazyTooltip interactive content={<RTKStatusMiniList />}>
-      <div
+      <GenericHeaderButton
+        disabled={!isConnected}
+        label={isConnected && numSatellites > 0 ? String(numSatellites) : '—'}
+        secondaryLabel={
+          surveyStatus.supported && typeof surveyStatus.accuracy === 'number'
+            ? formatSurveyAccuracy(surveyStatus.accuracy, { max: 9 })
+            : null
+        }
         style={buttonStyle}
         onClick={isConnected ? showRTKSetupDialog : undefined}
       >
-        <GenericHeaderButton
-          disabled={!isConnected}
-          label={isConnected && numSatellites > 0 ? String(numSatellites) : '—'}
-          secondaryLabel={
-            surveyStatus.supported && typeof surveyStatus.accuracy === 'number'
-              ? formatSurveyAccuracy(surveyStatus.accuracy, { max: 9 })
-              : null
-          }
-        >
-          <Satellite />
-          <SidebarBadge
-            anchor='topLeft'
-            color={badgeColor}
-            offset={BADGE_OFFSET}
-            visible={Boolean(badgeColor)}
-          />
-          {isConnected && <RTKStatusUpdater />}
-        </GenericHeaderButton>
-      </div>
+        <Satellite />
+        <SidebarBadge
+          anchor='topLeft'
+          color={badgeColor}
+          offset={BADGE_OFFSET}
+          visible={Boolean(badgeColor)}
+        />
+        {isConnected && <RTKStatusUpdater />}
+      </GenericHeaderButton>
     </LazyTooltip>
   );
 };
