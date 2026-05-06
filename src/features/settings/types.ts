@@ -28,6 +28,11 @@ export enum UAVListOrientation {
   VERTICAL = 'vertical',
 }
 
+export enum RCOvertakeInputSource {
+  GAMEPAD = 'gamepad',
+  SERIAL = 'serial',
+}
+
 export type UAVSortKeyAndOrder = {
   key: UAVSortKey;
   reverse: boolean;
@@ -204,6 +209,36 @@ export type SettingsState = {
      * for older versions of the application (2.8.1 or earlier).
      */
     maxUploadConcurrency?: number;
+
+    /**
+     * Input source used by the RC overtake control.
+     */
+    rcOvertakeInputSource?: RCOvertakeInputSource;
+
+    /**
+     * MAVLink RC channel numbers to send from the USB joystick input.
+     */
+    rcOvertakeGamepadChannels?: number[];
+
+    /**
+     * Baud rate to use when reading RC channels from a serial COM port.
+     */
+    rcOvertakeSerialBaudRate?: number;
+
+    /**
+     * USB vendor ID of the selected RC serial COM port, if the browser exposes it.
+     */
+    rcOvertakeSerialUsbVendorId?: number;
+
+    /**
+     * USB product ID of the selected RC serial COM port, if the browser exposes it.
+     */
+    rcOvertakeSerialUsbProductId?: number;
+
+    /**
+     * Human-readable label of the selected RC serial COM port.
+     */
+    rcOvertakeSerialPortLabel?: string;
 
     /**
      * Minimum distance allowed between two UAVs for indoor shows, in meters.

@@ -235,6 +235,56 @@ export async function setShowLightConfiguration(
   }
 }
 
+/**
+ * Sends RC override channel values to the server, or releases RC override.
+ */
+export async function setRCOvertake(
+  hub: MessageHub,
+  {
+    active,
+    channels,
+    source = 'skybrush-live',
+    uavId,
+    waitForAck = true,
+  }: {
+    active: boolean;
+    channels?: number[];
+    source?: string;
+    uavId: string;
+    waitForAck?: boolean;
+  }
+) {
+  const message = active
+    ? {
+        type: 'X-RC-OVERRIDE',
+        active: true,
+        channels,
+        source,
+        uavId,
+      }
+    : {
+        type: 'X-RC-OVERRIDE',
+        active: false,
+        source,
+        uavId,
+      };
+
+  if (!waitForAck) {
+    hub.sendNotification(message);
+    return;
+  }
+
+  const response = await hub.sendMessage(message, { timeout: 5 });
+
+  if (response.body.type !== 'ACK-ACK') {
+    const reason =
+      'reason' in response.body && typeof response.body.reason === 'string'
+        ? response.body.reason
+        : 'Failed to update RC overtake';
+    throw new Error(reason);
+  }
+}
+
 export async function startCollectiveRTH(hub: MessageHub): Promise<Schedule> {
   let response: Message<MessageBody>;
   try {
@@ -471,6 +521,7 @@ const _operations = {
   resetUAV,
   resumeShow,
   sendDebugMessage,
+  setRCOvertake,
   setParameter,
   setParameters,
   setRTKAntennaPosition,

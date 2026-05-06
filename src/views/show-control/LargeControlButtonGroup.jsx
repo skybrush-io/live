@@ -33,6 +33,7 @@ import Pro from '~/icons/Pro';
 import { createUAVOperationThunks } from '~/utils/messaging';
 
 import ProControlButtonGroup from './ProControlButtonGroup';
+import RCOvertakeButton from './RCOvertakeButton';
 import StartMethodExplanation from './StartMethodExplanation';
 
 const useStyles = makeStyles((theme) => ({
@@ -106,6 +107,7 @@ const LargeControlButtonGroup = ({
           </Typography>
         </Box>
       </Box>
+      <RCOvertakeButton />
       <Box display='flex' flexDirection='row' flex={1}>
         <ColoredButton
           className={classes.button}

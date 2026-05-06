@@ -1,4 +1,5 @@
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
 import FormControl from '@mui/material/FormControl';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -6,8 +7,10 @@ import FormGroup from '@mui/material/FormGroup';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
+import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import PropTypes from 'prop-types';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
@@ -30,6 +33,7 @@ import {
   getMinimumOutdoorTakeoffSpacing,
 } from '~/features/settings/selectors';
 import { updateAppSettings } from '~/features/settings/slice';
+import { RCOvertakeInputSource } from '~/features/settings/types';
 import {
   BatteryDisplayStyle,
   describeBatteryDisplayStyle,
@@ -48,6 +52,56 @@ const uavOperationConfirmationStyleOrder = [
   UAVOperationConfirmationStyle.ONLY_MULTIPLE,
   UAVOperationConfirmationStyle.ALWAYS,
 ];
+
+const rcOvertakeInputSourceOrder = [
+  RCOvertakeInputSource.GAMEPAD,
+  RCOvertakeInputSource.SERIAL,
+];
+
+const describeRCOvertakeInputSource = (value) => {
+  switch (value) {
+    case RCOvertakeInputSource.SERIAL:
+      return 'COM port';
+
+    case RCOvertakeInputSource.GAMEPAD:
+    default:
+      return 'USB joystick';
+  }
+};
+
+const formatSerialPortLabel = (info = {}) => {
+  const vendorId = info.usbVendorId;
+  const productId = info.usbProductId;
+
+  if (vendorId || productId) {
+    return `USB ${vendorId ?? '?'}:${productId ?? '?'}`;
+  }
+
+  return 'Selected COM port';
+};
+
+const formatRCChannelList = (channels = [1, 2, 3, 4]) =>
+  channels.join(', ');
+
+const parseRCChannelList = (value) => {
+  const channels = String(value)
+    .split(/[,\s;]+/)
+    .map((part) => Number.parseInt(part, 10))
+    .filter((channel) => Number.isInteger(channel));
+  const uniqueChannels = [];
+
+  for (const channel of channels) {
+    if (
+      channel >= 1 &&
+      channel <= 18 &&
+      !uniqueChannels.includes(channel)
+    ) {
+      uniqueChannels.push(channel);
+    }
+  }
+
+  return uniqueChannels.length > 0 ? uniqueChannels : [1, 2, 3, 4];
+};
 
 const useStyles = makeStyles((theme) => ({
   gridFormControl: {
@@ -79,15 +133,35 @@ const UAVsTabPresentation = ({
   onDistanceFieldUpdated,
   onEnumFieldUpdated,
   onIntegerFieldUpdated,
+  onRCChannelListUpdated,
+  onSelectRCSerialPort,
   onVoltageFieldUpdated,
   placementAccuracy,
   preferredBatteryDisplayStyle = BatteryDisplayStyle.VOLTAGE,
+  rcOvertakeGamepadChannels = [1, 2, 3, 4],
+  rcOvertakeInputSource = RCOvertakeInputSource.GAMEPAD,
+  rcOvertakeSerialBaudRate = 115200,
+  rcOvertakeSerialPortLabel,
   takeoffHeadingAccuracy,
   uavOperationConfirmationStyle,
   warnThreshold,
 }) => {
   const styles = useStyles();
   const { t } = useTranslation();
+  const [rcChannelListText, setRCChannelListText] = useState(
+    formatRCChannelList(rcOvertakeGamepadChannels)
+  );
+
+  useEffect(() => {
+    setRCChannelListText(formatRCChannelList(rcOvertakeGamepadChannels));
+  }, [rcOvertakeGamepadChannels]);
+
+  const commitRCChannelListText = () => {
+    const parsedChannels = parseRCChannelList(rcChannelListText);
+    setRCChannelListText(formatRCChannelList(parsedChannels));
+    onRCChannelListUpdated(parsedChannels);
+  };
+
   return (
     <>
       <FormGroup sx={{ marginBottom: 2 }}>
@@ -182,6 +256,79 @@ const UAVsTabPresentation = ({
             onChange={onIntegerFieldUpdated}
           />
         </Box>
+
+        <Box sx={{ display: 'flex', flexDirection: 'row', mb: 1 }}>
+          <FormControl fullWidth variant='filled'>
+            <InputLabel id='rc-overtake-input-source'>
+              RC overtake input
+            </InputLabel>
+            <Select
+              labelId='rc-overtake-input-source'
+              name='rcOvertakeInputSource'
+              value={rcOvertakeInputSource}
+              onChange={onEnumFieldUpdated}
+            >
+              {rcOvertakeInputSourceOrder.map((value) => (
+                <MenuItem key={value} value={value}>
+                  {describeRCOvertakeInputSource(value)}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Box>
+
+        {rcOvertakeInputSource === RCOvertakeInputSource.SERIAL && (
+          <>
+            <Box sx={{ display: 'flex', flexDirection: 'row', mb: 1 }}>
+              <SimpleNumericField
+                fullWidth
+                label='RC serial baud rate'
+                name='rcOvertakeSerialBaudRate'
+                min={1200}
+                max={921600}
+                step={1}
+                value={rcOvertakeSerialBaudRate}
+                onChange={onIntegerFieldUpdated}
+              />
+            </Box>
+
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                mb: 1,
+              }}
+            >
+              <Button variant='outlined' onClick={onSelectRCSerialPort}>
+                Select COM port
+              </Button>
+              <Typography sx={{ ml: 2 }} variant='body2' color='textSecondary'>
+                {rcOvertakeSerialPortLabel ?? 'No COM port selected'}
+              </Typography>
+            </Box>
+          </>
+        )}
+
+        {rcOvertakeInputSource === RCOvertakeInputSource.GAMEPAD && (
+          <Box sx={{ display: 'flex', flexDirection: 'row', mb: 1 }}>
+            <TextField
+              fullWidth
+              helperText='Comma-separated MAVLink RC channels; axes are mapped in this order'
+              label='RC channels to send'
+              name='rcOvertakeGamepadChannels'
+              value={rcChannelListText}
+              variant='filled'
+              onBlur={commitRCChannelListText}
+              onChange={(event) => setRCChannelListText(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter') {
+                  commitRCChannelListText();
+                }
+              }}
+            />
+          </Box>
+        )}
       </Box>
 
       <Box sx={{ my: 2 }}>
@@ -331,9 +478,15 @@ UAVsTabPresentation.propTypes = {
   onDistanceFieldUpdated: PropTypes.func,
   onEnumFieldUpdated: PropTypes.func,
   onIntegerFieldUpdated: PropTypes.func,
+  onRCChannelListUpdated: PropTypes.func,
+  onSelectRCSerialPort: PropTypes.func,
   onVoltageFieldUpdated: PropTypes.func,
   placementAccuracy: PropTypes.number,
   preferredBatteryDisplayStyle: PropTypes.oneOf(batteryDisplayStyleOrder),
+  rcOvertakeGamepadChannels: PropTypes.arrayOf(PropTypes.number),
+  rcOvertakeInputSource: PropTypes.oneOf(rcOvertakeInputSourceOrder),
+  rcOvertakeSerialBaudRate: PropTypes.number,
+  rcOvertakeSerialPortLabel: PropTypes.string,
 
   takeoffHeadingAccuracy: PropTypes.number,
   uavOperationConfirmationStyle: PropTypes.oneOf(
@@ -392,6 +545,43 @@ export default connect(
             [event.target.name]: value,
           })
         );
+      }
+    },
+
+    onRCChannelListUpdated(channels) {
+      dispatch(
+        updateAppSettings('uavs', {
+          rcOvertakeGamepadChannels: channels,
+        })
+      );
+    },
+
+    async onSelectRCSerialPort() {
+      const serial = navigator.serial || navigator.webkitSerial;
+
+      if (!serial?.requestPort) {
+        window.alert(
+          'Web Serial is not available in this browser. Use Chrome or Edge on localhost/HTTPS.'
+        );
+        return;
+      }
+
+      try {
+        const port = await serial.requestPort();
+        const info = port.getInfo ? port.getInfo() : {};
+
+        dispatch(
+          updateAppSettings('uavs', {
+            rcOvertakeInputSource: RCOvertakeInputSource.SERIAL,
+            rcOvertakeSerialUsbVendorId: info.usbVendorId,
+            rcOvertakeSerialUsbProductId: info.usbProductId,
+            rcOvertakeSerialPortLabel: formatSerialPortLabel(info),
+          })
+        );
+      } catch (error) {
+        if (error?.name !== 'NotFoundError') {
+          console.error(error);
+        }
       }
     },
 

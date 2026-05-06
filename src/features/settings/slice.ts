@@ -25,7 +25,11 @@ import { UAVSortKey } from '~/model/sorting';
 import { isRunningOnTouch } from '~/utils/platform';
 import { noPayload } from '~/utils/redux';
 
-import { type SettingsState, UAVListLayout } from './types';
+import {
+  RCOvertakeInputSource,
+  type SettingsState,
+  UAVListLayout,
+} from './types';
 
 type SettingsSliceState = SettingsState;
 
@@ -86,6 +90,9 @@ const initialState: SettingsSliceState = {
     preferredBatteryDisplayStyle: BatteryDisplayStyle.VOLTAGE,
     uavOperationConfirmationStyle: UAVOperationConfirmationStyle.NEVER,
     maxUploadConcurrency: 8,
+    rcOvertakeInputSource: RCOvertakeInputSource.GAMEPAD,
+    rcOvertakeGamepadChannels: [1, 2, 3, 4],
+    rcOvertakeSerialBaudRate: 115200,
     minIndoorTakeoffSpacing: 200,
     minOutdoorTakeoffSpacing: 400,
   },

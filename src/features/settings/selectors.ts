@@ -12,6 +12,7 @@ import {
 import { UAVSortKey } from '~/model/sorting';
 import type { RootState } from '~/store/reducers';
 import {
+  RCOvertakeInputSource,
   UAVListLayout,
   UAVListOrientation,
   type UAVSortKeyAndOrder,
@@ -197,6 +198,7 @@ const DEFAULT_SORT: UAVSortKeyAndOrder = {
   key: UAVSortKey.DEFAULT,
   reverse: false,
 };
+const DEFAULT_RC_OVERTAKE_GAMEPAD_CHANNELS = [1, 2, 3, 4];
 
 /**
  * Returns the array of filters to apply for the list showing the UAVs.
@@ -246,6 +248,24 @@ export function getUAVOperationConfirmationStyle(
     UAVOperationConfirmationStyle.NEVER
   );
 }
+
+/**
+ * Returns the settings for RC overtake input.
+ */
+export const getRCOvertakeSettings = (state: RootState) => {
+  const settings = state.settings.uavs;
+
+  return {
+    inputSource:
+      settings.rcOvertakeInputSource ?? RCOvertakeInputSource.GAMEPAD,
+    gamepadChannels:
+      settings.rcOvertakeGamepadChannels ?? DEFAULT_RC_OVERTAKE_GAMEPAD_CHANNELS,
+    serialBaudRate: settings.rcOvertakeSerialBaudRate ?? 115200,
+    serialUsbVendorId: settings.rcOvertakeSerialUsbVendorId,
+    serialUsbProductId: settings.rcOvertakeSerialUsbProductId,
+    serialPortLabel: settings.rcOvertakeSerialPortLabel,
+  };
+};
 
 /**
  * Returns whether we are currently showing empty mission slots in the UAV list.
