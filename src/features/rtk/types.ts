@@ -41,7 +41,6 @@ export type RTKSavedCoordinate = {
   accuracy: number;
   savedAt: number;
 };
-
 export type RTKStatistics = {
   /**
    * Timestamp when the statistics was updated the last time,

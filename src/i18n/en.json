@@ -70,9 +70,12 @@
   },
   "RTKCorrectionSourceSelector": {
     "RTKCorrections": "RTK corrections",
+    "createPreset": "Create new RTK preset",
+    "editPreset": "View/Edit preset",
     "error": "Error while loading RTK sources from server",
     "noRTKData": "No RTK data sources on server",
-    "pleaseWait": "Please wait, loading RTK sources…"
+    "pleaseWait": "Please wait, loading RTK sources…",
+    "rtkDisabled": "RTK disabled"
   },
   "RTKMessage": {
     "noRTKMessagesYet": "No RTK messages have been received yet"
@@ -340,6 +343,7 @@
       "retry": "Retry",
       "rotate": "Rotate",
       "save": "Save",
+      "saving": "Saving...",
       "scale": "Scale",
       "select": "Select",
       "start": "Start",
@@ -737,6 +741,35 @@
     "rtcm3/1127": "BeiDou MSM7 (hi-res code, carrier, doppler, CNR)",
     "rtcm3/1230": "GLONASS L1 and L2 code-phase biases"
   },
+  "rtkPresetDialog": {
+    "addSource": "Add Source",
+    "createFailed": "Failed to create preset",
+    "createTitle": "Create RTK Preset",
+    "dataSources": "Data Sources",
+    "deleteConfirmation": "Are you sure you want to delete this preset?",
+    "deleteFailed": "Failed to delete preset",
+    "deletePreset": "Delete Preset",
+    "editTitle": "Edit RTK Preset",
+    "formatAuto": "Detect automatically",
+    "formatHelp": "Format of the GPS messages arriving in this configuration (supported formats: \"rtcm2\", \"rtcm3\", \"ubx\", and \"auto\" for auto detection)",
+    "id": "ID",
+    "messageFormat": "Message Format",
+    "presetName": "Preset Name",
+    "presetNameHelp": "A descriptive name for this RTK preset",
+    "presetNamePlaceholder": "My RTK Base Station",
+    "presetTypeBuiltin": "Built-in",
+    "presetTypeDynamic": "Dynamic",
+    "presetTypeUser": "User",
+    "readOnlyMessage": "Built-in/Dynamic presets cannot be edited",
+    "removeSource": "Remove source",
+    "sourcePlaceholder": "serial:/dev/ttyUSB0?baud=9600",
+    "sourcesHelp": "Connection URLs for RTK correction data. You can specify multiple sources.",
+    "type": "Type",
+    "updateFailed": "Failed to update preset"
+  },
+  "rtkSetupDialog": {
+    "startNewSurvey": "Start new survey"
+  },
   "rtkStatus": {
     "long": {
       "connectedRecently": "Determining RTK correction status...",
@@ -975,6 +1008,7 @@
       "fullCharge": "Full charge",
       "gone": "Mark drones as gone after",
       "lowTreshold": "Low threshold",
+      "maxConcurrency": "Maximum number of concurrent uploads",
       "maxUploadConcurrency": "Maximum number of concurrent uploads",
       "minIndoorTakeoffSpacing": "Minimum takeoff spacing (indoor)",
       "minOutdoorTakeoffSpacing": "Minimum takeoff spacing (outdoor)",
@@ -1045,8 +1079,12 @@
           "boxSelect": "Box select",
           "boxUnselect": "Box unselect",
           "moveSelection": "Move selection",
+          "pan": "Pan",
+          "rotate": "Rotate",
           "rotateSelection": "Rotate selection",
-          "toggleSelect": "Toggle select"
+          "select": "Select",
+          "toggleSelect": "Toggle select",
+          "zoom": "Zoom"
         },
         "category": {
           "manipulation": "Manipulation",
@@ -1059,11 +1097,14 @@
         "extension": "The studio extension must be enabled on the server",
         "loaded": "A show file must be loaded",
         "origin": "A show origin must be included or set manually",
+        "segments": "The show must be annotated with segment markers",
         "server": "Connection must be established to the server"
       },
       "tooltip": {
         "adaptShow": "Adapt show to venue",
-        "showSegmentsRequired": "The show must be annotated with segment markers"
+        "invalidRTHPlan": "The show has no valid collective RTH plans.",
+        "showSegmentsRequired": "The show must be annotated with segment markers",
+        "validRTHPlan": "The show has {{numPlans}} valid collective RTH plans."
       }
     },
     "startMethod": {
