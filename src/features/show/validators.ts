@@ -61,17 +61,9 @@ function calculateEntryDurationWithoutLanding(
 }
 
 function calculateLandingDuration(plan: RTHPlan, entry: RTHPlanEntry): number {
-  const targetZ =
-    Array.isArray(entry.target) &&
-    entry.target.length === 3 &&
-    typeof entry.target[2] === 'number'
-      ? entry.target[2]
-      : 0;
-  const landingAltitude =
-    typeof entry.landingAltitude === 'number'
-      ? entry.landingAltitude
-      : (plan.landingAltitude ?? 0);
-  const landingDistance = Math.abs(targetZ - landingAltitude);
+  const landingDistance = Math.abs(
+    entry.target[2] - (entry.landingAltitude ?? plan.landingAltitude ?? 0)
+  );
   return landingDistance / plan.landingSpeed;
 }
 
@@ -87,11 +79,7 @@ function isValidRTHPlanEntry(entry: RTHPlanEntry): boolean {
     return false;
   }
 
-  return (
-    Array.isArray(entry.target) &&
-    entry.target.length === 3 &&
-    entry.target.every((value) => typeof value === 'number')
-  );
+  return entry.target.length === 3;
 }
 
 /**
@@ -125,12 +113,10 @@ export function validateCollectiveRTHPlan(
 
   for (const drone of drones) {
     const rthPlan = drone.settings.rthPlan;
-    const landingSpeed =
-      typeof rthPlan?.landingSpeed === 'number' ? rthPlan.landingSpeed : 0;
     if (
       rthPlan === undefined ||
       rthPlan.entries.length === 0 ||
-      landingSpeed <= 0
+      rthPlan.landingSpeed <= 0
     ) {
       dronesWithoutRTHPlan++;
       continue;
