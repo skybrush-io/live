@@ -30,6 +30,23 @@ import { isSchedule, type Schedule } from './schedule';
 import type { Message, MessageBody } from './types';
 import { validateExtensionName, validateObjectId } from './validation';
 
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null;
+
+const getErrorMessageFromBody = (body: unknown, fallback: string): string => {
+  if (isRecord(body)) {
+    if (typeof body.reason === 'string' && body.reason.length > 0) {
+      return body.reason;
+    }
+
+    if (typeof body.error === 'string' && body.error.length > 0) {
+      return body.error;
+    }
+  }
+
+  return fallback;
+};
+
 /**
  * Asks the server to set a new configuration object for the extension with the
  * given name.
@@ -196,11 +213,10 @@ export async function setRTKCorrectionsSource(
   });
 
   if (response.body.type !== 'ACK-ACK') {
-    const body = response.body as any;
-    const errorMessage =
-      body.reason ||
-      body.error ||
-      'Failed to set new RTK correction source';
+    const errorMessage = getErrorMessageFromBody(
+      response.body,
+      'Failed to set new RTK correction source'
+    );
     throw new Error(errorMessage);
   }
 }
@@ -211,22 +227,25 @@ export async function setRTKCorrectionsSource(
 export async function createRTKPreset(
   hub: MessageHub,
   preset: Record<string, unknown>
-) {
+): Promise<string | undefined> {
   const response = await hub.sendMessage({
     type: 'X-RTK-NEW',
     preset,
   });
 
   if (response.body.type === 'X-RTK-NEW') {
-    return (response.body as any).id;
+    if ('id' in response.body && typeof response.body.id === 'string') {
+      return response.body.id;
+    }
+
+    throw new Error('Failed to create RTK preset: missing preset ID');
   }
 
   if (response.body.type !== 'ACK-ACK') {
-    const body = response.body as any;
-    const errorMessage =
-      body.reason ||
-      body.error ||
-      'Failed to create RTK preset';
+    const errorMessage = getErrorMessageFromBody(
+      response.body,
+      'Failed to create RTK preset'
+    );
     throw new Error(errorMessage);
   }
 }
@@ -251,11 +270,10 @@ export async function updateRTKPreset(
     response.body.type !== 'ACK-ACK' &&
     response.body.type !== 'X-RTK-UPDATE'
   ) {
-    const body = response.body as any;
-    const errorMessage =
-      body.reason ||
-      body.error ||
-      'Failed to update RTK preset';
+    const errorMessage = getErrorMessageFromBody(
+      response.body,
+      'Failed to update RTK preset'
+    );
     throw new Error(errorMessage);
   }
 }
@@ -270,11 +288,10 @@ export async function deleteRTKPreset(hub: MessageHub, presetId: string) {
   });
 
   if (response.body.type !== 'X-RTK-DEL') {
-    const body = response.body as any;
-    const errorMessage =
-      body.reason ||
-      body.error ||
-      'Failed to delete RTK preset';
+    const errorMessage = getErrorMessageFromBody(
+      response.body,
+      'Failed to delete RTK preset'
+    );
     throw new Error(errorMessage);
   }
 
@@ -290,11 +307,10 @@ export async function saveRTKPresets(hub: MessageHub) {
   });
 
   if (response.body.type !== 'ACK-ACK') {
-    const body = response.body as any;
-    const errorMessage =
-      body.reason ||
-      body.error ||
-      'Failed to save RTK presets';
+    const errorMessage = getErrorMessageFromBody(
+      response.body,
+      'Failed to save RTK presets'
+    );
     throw new Error(errorMessage);
   }
 }
@@ -370,11 +386,10 @@ export async function startRTKSurvey(
   });
 
   if (response.body.type !== 'ACK-ACK') {
-    const body = response.body as any;
-    const errorMessage =
-      body.reason ||
-      body.error ||
-      'Failed to start RTK survey on the server';
+    const errorMessage = getErrorMessageFromBody(
+      response.body,
+      'Failed to start RTK survey on the server'
+    );
     throw new Error(errorMessage);
   }
 }
@@ -396,11 +411,10 @@ export async function setRTKAntennaPosition(
   });
 
   if (response.body.type !== 'ACK-ACK') {
-    const body = response.body as any;
-    const errorMessage =
-      body.reason ||
-      body.error ||
-      'Failed to set RTK antenna position on the server';
+    const errorMessage = getErrorMessageFromBody(
+      response.body,
+      'Failed to set RTK antenna position on the server'
+    );
     throw new Error(errorMessage);
   }
 }

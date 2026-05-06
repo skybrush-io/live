@@ -155,7 +155,6 @@ const RTKPresetDialogFormPresentation = ({
 
     try {
       const selectedPresetId = await messageHub.query.getSelectedRTKPresetId();
-      
       // Disable RTK if the deleted preset was the active one
       if (selectedPresetId == presetId) {
         await messageHub.execute.setRTKCorrectionsSource(null);

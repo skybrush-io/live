@@ -30,6 +30,15 @@ type RTKPresetSource = {
   type?: string;
 };
 
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null;
+
+const isRTKPresetSource = (value: unknown): value is RTKPresetSource =>
+  isRecord(value) &&
+  typeof value.id === 'string' &&
+  typeof value.title === 'string' &&
+  (value.type === undefined || typeof value.type === 'string');
+
 const nullPreset: RTKPresetSource = {
   id: NULL_ID,
   title: 'RTK disabled',
@@ -52,11 +61,23 @@ const RTKCorrectionSourceSelector = ({
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const [selectedByUser, setSelectedByUser] = useState<RTKPresetID>();
-  const presetsState = useAsyncRetry(async () => messageHub.query.getRTKPresets(), [
-    presetsRefreshTrigger,
-  ]);
+  const presetsState = useAsyncRetry(async (): Promise<RTKPresetSource[]> => {
+    const result = await messageHub.query.getRTKPresets();
+    return Array.isArray(result) ? result.filter(isRTKPresetSource) : [];
+  }, [presetsRefreshTrigger]);
   const selectionState = useAsyncRetry(
-    async () => messageHub.query.getSelectedRTKPresetId(),
+    async (): Promise<RTKPresetID | null | undefined> => {
+      const result = await messageHub.query.getSelectedRTKPresetId();
+      if (typeof result === 'string') {
+        return result;
+      }
+
+      if (result === null) {
+        return null;
+      }
+
+      return undefined;
+    },
     [presetsRefreshTrigger]
   );
 
@@ -78,7 +99,7 @@ const RTKCorrectionSourceSelector = ({
   const hasPresets = presets && presets.length > 0;
 
   const handleChange = (event: SelectChangeEvent<string>) => {
-    const newPresetId = event.target.value as RTKPresetID;
+    const newPresetId = event.target.value;
 
     // We assume that the request will succeed so we eagerly select the new
     // value. If changing the RTK source fails, it will be changed back in the
@@ -145,7 +166,7 @@ const RTKCorrectionSourceSelector = ({
   };
 
   const normalizePresetType = (type: unknown): RTKPresetType => {
-    const presetType = String(type ?? '').toLowerCase();
+    const presetType = typeof type === 'string' ? type.toLowerCase() : '';
     if (
       presetType === 'user' ||
       presetType === 'builtin' ||

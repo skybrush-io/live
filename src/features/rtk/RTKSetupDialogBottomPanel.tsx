@@ -3,7 +3,7 @@ import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import clsx from 'clsx';
 import { useEffect } from 'react';
-import { withTranslation } from 'react-i18next';
+import { withTranslation, type WithTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import {
@@ -14,7 +14,6 @@ import {
 import { Tooltip } from '@skybrush/mui-components';
 
 import FadeAndSlide from '~/components/transitions/FadeAndSlide';
-import type { TranslateFn } from '~/i18n/types';
 import type { RootState } from '~/store/reducers';
 
 import {
@@ -67,14 +66,13 @@ type Props = {
   onShowSavedCoordinates?: (presetId: string) => void;
   onToggleSurveySettings?: () => void;
   surveySettingsVisible: boolean;
-  t: TranslateFn;
   surveyStatus: {
     accuracy?: number;
     supported: boolean;
     active: boolean;
     valid: boolean;
   };
-};
+} & WithTranslation;
 
 const RTKSetupDialogBottomPanel = ({
   chartHeight = 160,
