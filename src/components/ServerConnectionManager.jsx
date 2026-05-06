@@ -635,7 +635,6 @@ async function executeTasksAfterConnection(dispatch, getState) {
       });
     }
   } catch (error) {
-    console.error(error);
     handleError(error);
   }
 }

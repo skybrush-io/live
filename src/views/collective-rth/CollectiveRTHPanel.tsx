@@ -15,6 +15,7 @@ import {
 import type { Schedule } from '~/flockwave/schedule';
 import type { RootState } from '~/store/reducers';
 
+import { BackgroundHint } from '@skybrush/mui-components';
 import RTHPlanDetails from './RTHPlanDetails';
 
 type ErrorInfo = {
@@ -94,23 +95,11 @@ const CollectiveRTHPanel = ({
   }
 
   if (!hasLoadedShowFile) {
-    return (
-      <CenteredBox>
-        <Typography variant='h6'>
-          {t('collectiveRTHPanel.message.noShowFile')}
-        </Typography>
-      </CenteredBox>
-    );
+    return <BackgroundHint text={t('collectiveRTHPanel.message.noShowFile')} />;
   }
 
   if (numDrones === 0) {
-    return (
-      <CenteredBox>
-        <Typography variant='h6' color='warning'>
-          {t('collectiveRTHPanel.message.noDrones')}
-        </Typography>
-      </CenteredBox>
-    );
+    return <BackgroundHint text={t('collectiveRTHPanel.message.noDrones')} />;
   }
 
   if (!isValid) {

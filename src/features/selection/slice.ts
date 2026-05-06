@@ -12,20 +12,42 @@ import {
   featureIdToGlobalId,
   missionItemIdToGlobalId,
 } from '~/model/identifiers';
-import { type Identifier } from '~/utils/collections';
+import {
+  addItemSorted,
+  type Collection,
+  deleteItemById,
+  EMPTY_COLLECTION,
+  ensureNaturalSortOrder,
+  getItemById,
+  type Identifier,
+} from '~/utils/collections';
 
+import type { SelectionGroup, SelectionGroupData } from './types';
 import { findAllUAVFeatures, updateSelection } from './utils';
 
 type MapSelectionSliceState = {
+  /**
+   * The currently selected IDs.
+   */
   ids: Identifier[];
+
+  /**
+   * Collection of selection groups, always sorted by ID.
+   */
+  groups: Collection<SelectionGroup>;
 };
 
-const initialState: MapSelectionSliceState = { ids: [] };
+const initialState: MapSelectionSliceState = {
+  ids: [],
+  groups: EMPTY_COLLECTION,
+};
 
 const { actions, reducer } = createSlice({
   name: 'selection',
   initialState,
   reducers: {
+    // -- Selection
+
     addToSelection(state, action: PayloadAction<string[]>) {
       state.ids = updateSelection(state.ids, action.payload);
     },
@@ -48,6 +70,53 @@ const { actions, reducer } = createSlice({
 
     toggleInSelection(state, action: PayloadAction<string[]>) {
       state.ids = updateSelection([], xor(state.ids, action.payload));
+    },
+
+    // -- Groups
+
+    _addGroup(
+      state,
+      action: PayloadAction<{ id: Identifier; data: SelectionGroupData }>
+    ) {
+      // precondition: there is no group with the given ID yet; caller must check this
+      const { id, data } = action.payload;
+      addItemSorted(state.groups, { id, ...data });
+      ensureNaturalSortOrder(state.groups);
+    },
+
+    deleteGroup(state, action: PayloadAction<Identifier>) {
+      deleteItemById(state.groups, action.payload);
+    },
+
+    selectGroup(state, action: PayloadAction<Identifier>) {
+      const group = getItemById(state.groups, action.payload);
+      if (group !== undefined) {
+        state.ids = updateSelection([], group.ids);
+      }
+    },
+
+    updateGroup(
+      state,
+      action: PayloadAction<{
+        id: Identifier;
+        data: Partial<SelectionGroupData>;
+      }>
+    ) {
+      const { id, data } = action.payload;
+      const group = getItemById(state.groups, id);
+      if (group === undefined) {
+        return;
+      }
+
+      const name = data.name?.trim() ?? '';
+      if (name !== '') {
+        group.name = name;
+      }
+
+      const ids = data.ids;
+      if (ids !== undefined && ids.length > 0) {
+        group.ids = ids;
+      }
     },
   },
 
@@ -73,10 +142,14 @@ const { actions, reducer } = createSlice({
 export const {
   addToSelection,
   clearSelection,
+  deleteGroup,
   removeFromSelection,
   selectAllUAVs,
+  selectGroup,
   setSelection,
   toggleInSelection,
+  updateGroup,
+  _addGroup,
 } = actions;
 
 export default reducer;

@@ -297,8 +297,13 @@ type Meters = number;
 type MetersPerSecond = number;
 type Seconds = number;
 export type TakeoffMethodType = 'layered' | 'organic';
+export type ReturnToHomeMethodType = 'plain' | 'smart';
 
 export const TAKEOFF_METHODS: TakeoffMethodType[] = ['layered', 'organic'];
+export const RETURN_TO_HOME_METHODS: ReturnToHomeMethodType[] = [
+  'plain',
+  'smart',
+];
 
 export type OptionalShowAdaptParameters = {
   altitude?: Meters;
@@ -308,6 +313,7 @@ export type OptionalShowAdaptParameters = {
   verticalVelocity?: MetersPerSecond;
   takeoffDuration?: Seconds;
   takeoffMethod?: TakeoffMethodType;
+  returnToHomeMethod?: ReturnToHomeMethodType;
 };
 
 export type ShowAdaptParameters = Required<OptionalShowAdaptParameters>;
@@ -427,6 +433,7 @@ export const adaptShow =
       {
         type: 'rth',
         parameters: {
+          method: params.returnToHomeMethod,
           lights,
           ...common,
         },

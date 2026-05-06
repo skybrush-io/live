@@ -29,14 +29,12 @@ import FadeAndSlide from '~/components/transitions/FadeAndSlide';
 import DroneAvatar from '~/components/uavs/DroneAvatar';
 import DronePlaceholder from '~/components/uavs/DronePlaceholder';
 import { useKeyboardNavigation } from '~/features/hotkeys/hooks';
+import { adjustMissionMapping } from '~/features/mission/actions';
 import {
   getIndexOfMappingSlotBeingEdited,
   isMappingEditable,
 } from '~/features/mission/selectors';
-import {
-  adjustMissionMapping,
-  startMappingEditorSessionAtSlot,
-} from '~/features/mission/slice';
+import { startMappingEditorSessionAtSlot } from '~/features/mission/slice';
 import { getSelection } from '~/features/selection/selectors';
 import { setSelection } from '~/features/selection/slice';
 import {

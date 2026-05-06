@@ -8,7 +8,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import Typography from '@mui/material/Typography';
 import PropTypes from 'prop-types';
-import { withTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import { makeStyles } from '@skybrush/app-theme-mui';
@@ -82,12 +82,12 @@ const UAVsTabPresentation = ({
   onVoltageFieldUpdated,
   placementAccuracy,
   preferredBatteryDisplayStyle = BatteryDisplayStyle.VOLTAGE,
-  t,
   takeoffHeadingAccuracy,
   uavOperationConfirmationStyle,
   warnThreshold,
 }) => {
   const styles = useStyles();
+  const { t } = useTranslation();
   return (
     <>
       <FormGroup sx={{ marginBottom: 2 }}>
@@ -150,7 +150,7 @@ const UAVsTabPresentation = ({
         <Box sx={{ display: 'flex', flexDirection: 'row', mb: 1 }}>
           <FormControl fullWidth variant='filled'>
             <InputLabel id='uav-operation-confirmation-style'>
-              UAV operation confirmations
+              {t('settings.uavs.uavOperationConfirmations')}
             </InputLabel>
             <Select
               labelId='uav-operation-confirmation-style'
@@ -163,7 +163,7 @@ const UAVsTabPresentation = ({
             >
               {uavOperationConfirmationStyleOrder.map((value) => (
                 <MenuItem key={value} value={value}>
-                  {describeUAVOperationConfirmationStyle(value)}
+                  {describeUAVOperationConfirmationStyle(value, t)}
                 </MenuItem>
               ))}
             </Select>
@@ -249,7 +249,7 @@ const UAVsTabPresentation = ({
             >
               {batteryDisplayStyleOrder.map((value) => (
                 <MenuItem key={value} value={value}>
-                  {describeBatteryDisplayStyle(value)}
+                  {describeBatteryDisplayStyle(value, t)}
                 </MenuItem>
               ))}
             </Select>
@@ -334,7 +334,7 @@ UAVsTabPresentation.propTypes = {
   onVoltageFieldUpdated: PropTypes.func,
   placementAccuracy: PropTypes.number,
   preferredBatteryDisplayStyle: PropTypes.oneOf(batteryDisplayStyleOrder),
-  t: PropTypes.func,
+
   takeoffHeadingAccuracy: PropTypes.number,
   uavOperationConfirmationStyle: PropTypes.oneOf(
     uavOperationConfirmationStyleOrder
@@ -403,4 +403,4 @@ export default connect(
       }
     },
   })
-)(withTranslation()(UAVsTabPresentation));
+)(UAVsTabPresentation);

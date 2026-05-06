@@ -1,14 +1,25 @@
-import { layer, source } from '@collmot/ol-react';
-import Image from '@mui/icons-material/Image';
-import Box from '@mui/material/Box';
-import InputAdornment from '@mui/material/InputAdornment';
-import Skeleton from '@mui/material/Skeleton';
-import { getPointResolution } from 'ol/proj';
+import { Base64 } from 'js-base64';
+import isEqual from 'lodash-es/isEqual';
+import { getPointResolution, transformExtent } from 'ol/proj';
+import { fromEPSGCode, register } from 'ol/proj/proj4';
+import proj4 from 'proj4';
 import PropTypes from 'prop-types';
 import { useCallback, useEffect, useRef } from 'react';
 import { Form, FormSpy } from 'react-final-form';
+import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
-import { usePrevious } from 'react-use';
+
+import { layer, source } from '@collmot/ol-react';
+
+import Image from '@mui/icons-material/Image';
+import Navigation from '@mui/icons-material/Navigation';
+import Alert from '@mui/material/Alert';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Collapse from '@mui/material/Collapse';
+import Grid from '@mui/material/Grid';
+import InputAdornment from '@mui/material/InputAdornment';
+import Skeleton from '@mui/material/Skeleton';
 
 import FileButton from '~/components/FileButton';
 import {
@@ -19,24 +30,29 @@ import {
   forceFormSubmission,
 } from '~/components/forms';
 import { setLayerParametersById } from '~/features/map/layers';
+import { isDeveloperModeEnabled } from '~/features/session/selectors';
+import { showError } from '~/features/snackbar/actions';
 import { getMapViewCenterPosition } from '~/selectors/map';
+import { mapReferenceRequestSignal, mapViewToExtentSignal } from '~/signals';
 import { readFileAsDataURL } from '~/utils/files';
 import { mapViewCoordinateFromLonLat } from '~/utils/geography';
 import { toRadians } from '~/utils/math';
 import { finite, join, positive, required } from '~/utils/validation';
 
-const AutoSaveOnBlur = ({ active, save }) => {
-  const prevActive = usePrevious(active);
-  if (prevActive && prevActive !== active) {
-    setTimeout(save, 0);
-  }
+// TODO: Do this initialization call in a more appropriate part of the codebase!
+register(proj4);
 
-  return null;
-};
-
-AutoSaveOnBlur.propTypes = {
-  active: PropTypes.string,
-  save: PropTypes.func,
+// NOTE: This is more like a quick and dirty solution for a specific use case
+//       rather than a proper generic data url to blob converter, so I defined
+//       it here locally instead of putting it into a shared utility file.
+const base64DataURLToBlob = (base64DataURL) => {
+  // NOTE: `fetch` cannot be used due to the limit on the length of the URL
+  // const blob = await fetch(image.data).then((response) => response.blob());
+  const base64DataURLPattern = /^data:(?<type>.*?);base64,(?<data>.*)$/;
+  const { type, data } = base64DataURL.match(base64DataURLPattern).groups;
+  // NOTE: Alternative in case we would like to drop the `Base64` dependency:
+  // const part = Uint8Array.from(window.atob(data), (m) => m.codePointAt(0));
+  return new Blob([Base64.toUint8Array(data)], { type });
 };
 
 const getDimensions = async (source) =>
@@ -49,11 +65,14 @@ const getDimensions = async (source) =>
   });
 
 const ImageLayerSettingsPresentation = ({
-  layer: { parameters },
+  devMode,
+  layer: { id, parameters },
   mapViewCenterPosition,
   selectImage,
   updateTransform,
 }) => {
+  const { t } = useTranslation();
+
   const inputRef = useRef();
   const handleClick = useCallback(() => {
     if (inputRef.current) {
@@ -77,105 +96,191 @@ const ImageLayerSettingsPresentation = ({
     forceFormSubmission('ImageTransformEditor');
   }, []);
 
+  const filePicker = (
+    <>
+      <FileButton
+        ref={inputRef}
+        filter={['image/*']}
+        variant='contained'
+        startIcon={<Image />}
+        onSelected={selectImage}
+      >
+        {t('general.action.select')}
+      </FileButton>
+      <Box sx={{ p: 0.75 }} />
+      {parameters.image.name ? (
+        <>
+          <span>{parameters.image.name}</span>
+          {parameters.image.dimensions && (
+            <span style={{ fontStyle: 'italic' }}>
+              {parameters.image.dimensions.width}&nbsp;×&nbsp;
+              {parameters.image.dimensions.height}&nbsp;px
+            </span>
+          )}
+        </>
+      ) : (
+        t('ImageLayer.selectImage')
+      )}
+    </>
+  );
+
+  const isGeoTIFF = parameters.image.data.startsWith('data:image/tiff');
+
+  const navigateToGeoTIFFLocation = useCallback(() => {
+    mapReferenceRequestSignal.dispatch(async (map) => {
+      try {
+        const source = map
+          .getLayers()
+          .getArray()
+          .find((l) => l.get('id') === id)
+          .getSource();
+
+        const projection = await fromEPSGCode(source.getProjection().getCode());
+        const view = await source.getView();
+        mapViewToExtentSignal.dispatch(
+          transformExtent(view.extent, projection, 'EPSG:3857')
+        );
+      } catch (e) {
+        console.error(e);
+        showError(t('ImageLayer.navigationFailed'));
+      }
+    });
+  }, [id]);
+
   return (
-    <Form
-      initialValues={{ ...parameters.transform }}
-      onSubmit={updateTransform}
-    >
-      {({ handleSubmit }) => (
-        <form id='ImageTransformEditor' onSubmit={handleSubmit}>
-          <FormSpy
-            subscription={{ active: true, values: true }}
-            component={AutoSaveOnBlur}
-            save={_forceFormSubmission}
-          />
-          <Box sx={{ display: 'flex', flexDirection: 'row' }}>
-            {parameters.image.name ? (
-              <img
-                src={parameters.image.data}
-                style={{
-                  width: '100%',
-                  minWidth: '0', // Not needed in Firefox, not quite sure why.
-                  height: '10em',
-                  objectFit: 'contain',
+    <>
+      <Collapse in={!isGeoTIFF}>
+        <Form
+          initialValues={{ ...parameters.transform }}
+          onSubmit={updateTransform}
+        >
+          {({ handleSubmit, values }) => (
+            <form id='ImageTransformEditor' onSubmit={handleSubmit}>
+              <FormSpy
+                subscription={{ values: true }}
+                onChange={({ values: newValues }) => {
+                  if (!isEqual(values, newValues)) {
+                    _forceFormSubmission();
+                  }
                 }}
               />
-            ) : (
-              <Skeleton
-                variant='rectangular'
-                width='100%'
-                height='10em'
-                onClick={handleClick}
-              />
-            )}
-            <Box sx={{ p: 0.75 }} />
-            <Box sx={{ textAlign: 'center', margin: 'auto', width: '100%' }}>
-              <FileButton
-                ref={inputRef}
-                filter={['image/*']}
-                variant='contained'
-                startIcon={<Image />}
-                onSelected={selectImage}
-              >
-                Select
-              </FileButton>
-              <Box sx={{ p: 0.75 }} />
-              {parameters.image.name ? (
-                <>
-                  <span>{parameters.image.name}</span>
-                  <br />
-                  <span style={{ fontStyle: 'italic' }}>
-                    {parameters.image.dimensions.width}&nbsp;×&nbsp;
-                    {parameters.image.dimensions.height}&nbsp;px
-                  </span>
-                </>
-              ) : (
-                'Please select an image!'
-              )}
-            </Box>
-          </Box>
-          <Box sx={{ display: 'flex', flexDirection: 'row' }}>
-            <LatitudeField
-              fullWidth
-              size='small'
-              name='position.lat'
-              label='Latitude of center'
-            />
-            <Box sx={{ p: 0.75 }} />
-            <LongitudeField
-              fullWidth
-              size='small'
-              name='position.lon'
-              label='Longitude of center'
-            />
-          </Box>
-          <Box sx={{ display: 'flex', flexDirection: 'row' }}>
-            <HeadingField fullWidth size='small' name='angle' label='Angle' />
-            <Box sx={{ p: 0.75 }} />
-            <TextField
-              fullWidth
-              type='number'
-              fieldProps={{ validate: join([required, finite, positive]) }}
-              slotProps={{
-                htmlInput: {
-                  step: 0.1,
-                },
-                input: {
-                  endAdornment: (
-                    <InputAdornment position='end'>cm/px</InputAdornment>
-                  ),
-                },
-              }}
-              size='small'
-              name='scale'
-              label='Scale'
-              variant='filled'
-            />
-          </Box>
-          <input hidden type='submit' />
-        </form>
-      )}
-    </Form>
+              <Grid container spacing={1}>
+                <Grid
+                  size={6}
+                  display='flex'
+                  justifyContent='center'
+                  alignItems='center'
+                >
+                  {parameters.image.name ? (
+                    <img
+                      src={parameters.image.data}
+                      style={{
+                        width: '100%',
+                        height: '10em',
+                        objectFit: 'contain',
+                      }}
+                    />
+                  ) : (
+                    <Skeleton
+                      variant='rectangular'
+                      width='100%'
+                      height='10em'
+                      onClick={handleClick}
+                    />
+                  )}
+                </Grid>
+                <Grid
+                  size={6}
+                  display='flex'
+                  flexDirection='column'
+                  justifyContent='center'
+                  alignItems='center'
+                >
+                  {filePicker}
+                </Grid>
+                <Grid size={6}>
+                  <LatitudeField
+                    size='small'
+                    name='position.lat'
+                    label={t('general.geography.latitude')}
+                  />
+                </Grid>
+                <Grid size={6}>
+                  <LongitudeField
+                    size='small'
+                    name='position.lon'
+                    label={t('general.geography.longitude')}
+                  />
+                </Grid>
+                <Grid size={6}>
+                  <HeadingField
+                    size='small'
+                    name='angle'
+                    label={t('general.geometry.angle')}
+                  />
+                </Grid>
+                <Grid size={6}>
+                  <TextField
+                    type='number'
+                    fieldProps={{
+                      validate: join([required, finite, positive]),
+                    }}
+                    slotProps={{
+                      htmlInput: { step: 0.1 },
+                      input: {
+                        endAdornment: (
+                          <InputAdornment position='end'>cm/px</InputAdornment>
+                        ),
+                      },
+                    }}
+                    size='small'
+                    name='scale'
+                    label={t('general.geometry.scale')}
+                    variant='filled'
+                  />
+                </Grid>
+              </Grid>
+              <input hidden type='submit' />
+            </form>
+          )}
+        </Form>
+      </Collapse>
+      <Collapse in={isGeoTIFF}>
+        <Grid container spacing={1}>
+          <Grid
+            size={6}
+            display='flex'
+            justifyContent='center'
+            alignItems='center'
+          >
+            <Button
+              disabled={!devMode}
+              variant='contained'
+              endIcon={<Navigation />}
+              onClick={navigateToGeoTIFFLocation}
+            >
+              {t('general.action.navigate')}
+            </Button>
+          </Grid>
+          <Grid
+            size={6}
+            display='flex'
+            flexDirection='column'
+            justifyContent='center'
+            alignItems='center'
+          >
+            {filePicker}
+          </Grid>
+          <Grid size={12}>
+            <Collapse in={!devMode}>
+              <Alert severity='warning'>
+                {t('ImageLayer.geoTIFFOnlyInDevMode')}
+              </Alert>
+            </Collapse>
+          </Grid>
+        </Grid>
+      </Collapse>
+    </>
   );
 };
 
@@ -189,34 +294,38 @@ ImageLayerSettingsPresentation.propTypes = {
 export const ImageLayerSettings = connect(
   // mapStateToProps
   (state) => ({
+    devMode: isDeveloperModeEnabled(state),
     mapViewCenterPosition: getMapViewCenterPosition(state),
   }),
   // mapDispatchToProps
   (dispatch, ownProps) => ({
     async selectImage(file) {
+      // TODO: use `localforage` to persistently store images
+      //       as blobs and `URL.createOjectURL` to load them?
       const data = await readFileAsDataURL(file);
       dispatch(
         setLayerParametersById(ownProps.layerId, {
           image: {
             data,
             name: file.name,
-            dimensions: await getDimensions(data),
+            dimensions: data.startsWith('data:image/tiff')
+              ? undefined
+              : await getDimensions(data),
           },
         })
       );
     },
     updateTransform(transform) {
-      const parsedTransform = {
-        position: {
-          lon: Number(transform.position.lon),
-          lat: Number(transform.position.lat),
-        },
-        angle: Number(transform.angle),
-        scale: Number(transform.scale),
-      };
       dispatch(
         setLayerParametersById(ownProps.layerId, {
-          transform: parsedTransform,
+          transform: {
+            position: {
+              lon: Number(transform.position.lon),
+              lat: Number(transform.position.lat),
+            },
+            angle: Number(transform.angle),
+            scale: Number(transform.scale),
+          },
         })
       );
     },
@@ -224,7 +333,9 @@ export const ImageLayerSettings = connect(
 )(ImageLayerSettingsPresentation);
 
 const ImageLayerPresentation = ({
+  devMode,
   layer: {
+    id,
     parameters: {
       image,
       transform: { position, angle, scale },
@@ -232,7 +343,16 @@ const ImageLayerPresentation = ({
   },
   zIndex,
 }) =>
-  position ? (
+  image.data.startsWith('data:image/tiff') ? (
+    devMode && (
+      <layer.WebGLTile properties={{ id }} zIndex={zIndex}>
+        <source.GeoTIFF
+          loadMissingProjection
+          sources={[{ blob: base64DataURLToBlob(image.data) }]}
+        />
+      </layer.WebGLTile>
+    )
+  ) : position ? (
     <layer.GeoImage zIndex={zIndex}>
       <source.GeoImage
         url={image.data}
@@ -255,4 +375,11 @@ ImageLayerPresentation.propTypes = {
   zIndex: PropTypes.number,
 };
 
-export const ImageLayer = ImageLayerPresentation;
+export const ImageLayer = connect(
+  // mapStateToProps
+  (state) => ({
+    devMode: isDeveloperModeEnabled(state),
+  }),
+  // mapDispatchToProps
+  null
+)(ImageLayerPresentation);

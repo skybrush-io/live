@@ -46,7 +46,37 @@ import type { AppSelector, RootState } from '~/store/reducers';
 import { euclideanDistance2D, getMeanAngle } from '~/utils/math';
 import { EMPTY_ARRAY } from '~/utils/redux';
 import { createDeepResultSelector } from '~/utils/selectors';
-import type { StoredUAV } from './types';
+import type { StoredUAV, UAVDetailsPanelTab } from './types';
+
+/**
+ * Returns a mapping from color names to the list of UAV IDs whose color needs to be
+ * overridden to the given color.
+ */
+export const getColorOverrideToUAVIdsMap = createSelector(
+  (state: RootState) => state.uavs.lights,
+  (colorToUAVIds) =>
+    Object.groupBy(Object.keys(colorToUAVIds), (uavId) => colorToUAVIds[uavId])
+);
+
+/**
+ * Returns the IDs of the UAVs whose LED light color is currently being overridden to the
+ * given color.
+ */
+export const getUAVIdsWithColorOverride = (
+  state: RootState,
+  color: string
+): string[] => getColorOverrideToUAVIdsMap(state)[color] ?? EMPTY_ARRAY;
+
+/**
+ * Returns whether there is at least one UAV color override in effect.
+ */
+export const hasUAVColorOverride = (
+  state: RootState,
+  uavId?: string
+): boolean =>
+  uavId
+    ? Boolean(state.uavs.lights[uavId])
+    : Object.values(state.uavs.lights).some((x) => x.length > 0);
 
 /**
  * Returns the list of UAV IDs that should be shown on the UI, in the
@@ -882,8 +912,9 @@ export const getFollowMapSelectionInUAVDetailsPanel: AppSelector<boolean> = (
   state
 ) => state.uavs.panel.followMapSelection;
 
-export const getSelectedTabInUAVDetailsPanel: AppSelector<string> = (state) =>
-  state.uavs.panel.selectedTab;
+export const getSelectedTabInUAVDetailsPanel: AppSelector<
+  UAVDetailsPanelTab
+> = (state) => state.uavs.panel.selectedTab;
 
 export const getSelectedUAVIdInUAVDetailsPanel: AppSelector<
   string | undefined

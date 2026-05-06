@@ -1,3 +1,4 @@
+import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import PropTypes from 'prop-types';
@@ -55,17 +56,19 @@ const TakeoffAreaButton = ({ maxDistance, onClick, status, ...rest }) => {
   const { t } = useTranslation();
 
   return (
-    <ListItemButton
-      disabled={status === Status.OFF}
-      onClick={onClick}
-      {...rest}
-    >
-      <StatusLight status={status} />
-      <ListItemText
-        primary={t('show.setupTakeoffArea', 'Setup takeoff area')}
-        secondary={formatStatusText(status, maxDistance)(t)}
-      />
-    </ListItemButton>
+    <ListItem disablePadding>
+      <ListItemButton
+        disabled={status === Status.OFF}
+        onClick={onClick}
+        {...rest}
+      >
+        <StatusLight status={status} />
+        <ListItemText
+          primary={t('show.setupTakeoffArea')}
+          secondary={formatStatusText(status, maxDistance)(t)}
+        />
+      </ListItemButton>
+    </ListItem>
   );
 };
 

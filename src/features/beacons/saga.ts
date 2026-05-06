@@ -33,7 +33,7 @@ export default function* beaconSaga(): Generator {
           beaconIds
         );
       } catch (error) {
-        handleError(error, 'Fetching beacon properties');
+        handleError(error, { operation: 'Fetching beacon properties' });
       }
 
       if (props && !isEmpty(props)) {

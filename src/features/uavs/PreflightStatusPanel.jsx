@@ -6,6 +6,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import PropTypes from 'prop-types';
 import { memo, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { useAsyncRetry, useUnmount } from 'react-use';
 
@@ -30,6 +31,7 @@ import CustomPropTypes from '~/utils/prop-types';
 import { getUAVById } from './selectors';
 
 const ErrorList = ({ errorCodes }) => {
+  const { t } = useTranslation();
   const relevantErrorCodes = (errorCodes || []).filter(
     (code) =>
       code !== UAVErrorCode.PREARM_CHECK_IN_PROGRESS &&
@@ -45,7 +47,7 @@ const ErrorList = ({ errorCodes }) => {
         {relevantErrorCodes.map((code) => (
           <ListItem key={code}>
             <StatusLight status={errorCodeToSemantics(code)} />
-            <ListItemText primary={describeUAVErrorCode(code)} />
+            <ListItemText primary={describeUAVErrorCode(code, t)} />
           </ListItem>
         ))}
       </List>
@@ -59,13 +61,14 @@ ErrorList.propTypes = {
 };
 
 const PreflightStatusResults = ({ message, result, items }) => {
+  const { t } = useTranslation();
   return (
     <>
       <List dense>
         <ListItem>
           <StatusLight status={getSemanticsForPreflightCheckResult(result)} />
           <ListItemText
-            primary={describeOverallPreflightCheckResult(result)}
+            primary={describeOverallPreflightCheckResult(result, t)}
             secondary={message}
           />
         </ListItem>
@@ -86,7 +89,8 @@ const PreflightStatusResults = ({ message, result, items }) => {
                     (item.result === PreflightCheckResult.PASS
                       ? item.label
                       : `${item.label} — ${describePreflightCheckResult(
-                          item.result
+                          item.result,
+                          t
                         )}`)
                   }
                 />

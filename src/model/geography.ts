@@ -21,6 +21,13 @@ export type GPSPosition = {
   agl?: number;
 };
 
+export const NULL_ISLAND = Object.freeze({
+  lat: 0 as Latitude,
+  lon: 0 as Longitude,
+  amsl: 0,
+  ahl: 0,
+});
+
 /**
  * Returns whether the given GPS position is the null island.
  */

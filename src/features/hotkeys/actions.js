@@ -8,7 +8,7 @@ import {
   isMappingEditable,
 } from '~/features/mission/selectors';
 import { finishMappingEditorSession } from '~/features/mission/slice';
-import { clearSelection } from '~/features/selection/slice';
+import { clearSelection, selectGroup } from '~/features/selection/slice';
 import { showError, showNotification } from '~/features/snackbar/actions';
 import { setSelectedUAVIds } from '~/features/uavs/actions';
 import { getUAVById } from '~/features/uavs/selectors';
@@ -94,47 +94,64 @@ function droneIdsToSelectionIndex(value, missionMapping, state) {
   }
 }
 
+function getPendingUAVIdMode(pendingUAVId) {
+  return pendingUAVId.startsWith('g') ? 'group' : 'uav';
+}
+
 function handleAndClearPendingUAVId(dispatch, getState) {
   const state = getState();
   let pendingUAVId = getPendingUAVId(state);
 
   if (
-    pendingUAVId &&
-    typeof pendingUAVId === 'string' &&
-    pendingUAVId.length > 0
+    !(
+      pendingUAVId &&
+      typeof pendingUAVId === 'string' &&
+      pendingUAVId.length > 0
+    )
   ) {
-    const newSelection = [];
-    const mapping = getMissionMapping(state);
-
-    // Function that expects a single string identifier, the mission mapping, and the root redux state.
-    let resolveUAVId;
-    if (pendingUAVId.charAt(0) === 's') {
-      resolveUAVId = showIndexToSelectionIndex;
-      pendingUAVId = pendingUAVId.slice(1); // Remove the s prefix, keep the pure ID.
-    } else {
-      resolveUAVId = droneIdsToSelectionIndex;
-    }
-
-    for (const key of resolveRange(pendingUAVId, '-')) {
-      const uavId = resolveUAVId(key, mapping, state);
-      if (uavId !== undefined) {
-        newSelection.push(uavId);
-      }
-    }
-
-    dispatch(setSelectedUAVIds(newSelection));
-    dispatch(clearPendingUAVId());
-
-    if (newSelection.length > 0) {
-      scrollUAVListItemIntoView(newSelection[0]);
-    }
-
-    /* selection was handled, caller might want to skip its own default action */
-    return true;
+    // nothing was selected, caller can proceed with its own default action
+    return false;
   }
 
-  /* nothing was selected, caller can proceed with its own default action */
-  return false;
+  const mode = getPendingUAVIdMode(pendingUAVId);
+  if (mode === 'group') {
+    // Shortcut that updates the selection without ID conversions.
+    dispatch(selectGroup(pendingUAVId.slice(1)));
+    dispatch(clearPendingUAVId());
+    return true;
+  } else if (mode !== 'uav') {
+    // Only the group and uav modes are supported
+    return false;
+  }
+
+  const mapping = getMissionMapping(state);
+
+  const newSelection = [];
+  // Function that expects a single string identifier, the mission mapping, and the root redux state.
+  let resolveUAVId;
+  if (pendingUAVId.charAt(0) === 's') {
+    resolveUAVId = showIndexToSelectionIndex;
+    pendingUAVId = pendingUAVId.slice(1); // Remove the s prefix, keep the pure ID.
+  } else {
+    resolveUAVId = droneIdsToSelectionIndex;
+  }
+
+  for (const key of resolveRange(pendingUAVId, '-')) {
+    const uavId = resolveUAVId(key, mapping, state);
+    if (uavId !== undefined) {
+      newSelection.push(uavId);
+    }
+  }
+
+  dispatch(setSelectedUAVIds(newSelection));
+  dispatch(clearPendingUAVId());
+
+  if (newSelection.length > 0) {
+    scrollUAVListItemIntoView(newSelection[0]);
+  }
+
+  // selection was handled, caller might want to skip its own default action
+  return true;
 }
 
 /**
@@ -185,16 +202,73 @@ export function handlePendingUAVIdThenDispatch(
     };
 }
 
+function isValidPendingUAVIdChar(char) {
+  return typeof char === 'string' && char.length === 1;
+}
+
+function appendGroupIdChar(char) {
+  return (dispatch, getState) => {
+    if (!isValidPendingUAVIdChar(char)) {
+      return false;
+    }
+
+    let validCharacterTyped = false;
+    const pendingUAVId = getPendingUAVId(getState());
+    if (char >= '0' && char <= '9') {
+      // impose a length limit
+      if (pendingUAVId.length < 10) {
+        validCharacterTyped = true;
+        dispatch(setPendingUAVId(pendingUAVId + char));
+      }
+    }
+
+    return validCharacterTyped;
+  };
+}
+
+function appendUAVIdChar(char) {
+  return (dispatch, getState) => {
+    if (!isValidPendingUAVIdChar(char)) {
+      return false;
+    }
+
+    let validCharacterTyped = false;
+    const pendingUAVId = getPendingUAVId(getState());
+    const segment = pendingUAVId.split(':').pop();
+    if (char >= '0' && char <= '9') {
+      // impose a length limit on IDs
+      if (segment.length < 10) {
+        validCharacterTyped = true;
+        dispatch(setPendingUAVId(pendingUAVId + char));
+      }
+    } else if (char === '-') {
+      // Make sure pending UAV is:
+      // - not empty
+      // - does already contain a minus sign
+      // - ends with a number
+      if (pendingUAVId.length > 0 && !pendingUAVId.includes('-')) {
+        const lastChar = pendingUAVId.slice(-1);
+        if (lastChar >= '0' && lastChar <= '9') {
+          validCharacterTyped = true;
+          dispatch(setPendingUAVId(pendingUAVId + char));
+        }
+      }
+    }
+
+    return validCharacterTyped;
+  };
+}
+
 /**
  * Appends a new character to the end of the pending UAV ID string that allows
  * the user to select a UAV simply by typing.
  */
 export function appendToPendingUAVId(char) {
   return (dispatch, getState) => {
-    /* 's' is allowed at the beginning when the UAV ID is empty. Otherwise we
-     * allow 0-9 only */
-    if (char === 's') {
-      dispatch(setPendingUAVId('s'));
+    // 's' and `g` modifiers are only allowed at the beginning,
+    // when the pending UAV ID is empty.
+    if (char === 's' || char === 'g') {
+      dispatch(setPendingUAVId(char));
       dispatch(startPendingUAVIdTimeout());
       return;
     }
@@ -203,33 +277,16 @@ export function appendToPendingUAVId(char) {
       char = String(char);
     }
 
-    if (typeof char === 'string' && char.length === 1) {
-      const pendingUAVId = getPendingUAVId(getState());
-      const segment = pendingUAVId.split(':').pop();
-      let validCharacterTyped = false;
-      if (char >= '0' && char <= '9') {
-        validCharacterTyped = true;
-        /* impose a length limit on IDs */
-        if (segment.length < 10) {
-          dispatch(setPendingUAVId(pendingUAVId + char));
-        }
-      } else if (char === '-') {
-        validCharacterTyped = true;
-        // Make sure pending UAV is:
-        // - not empty
-        // - does already contain a minus sign
-        // - ends with a number
-        if (pendingUAVId.length > 0 && !pendingUAVId.includes('-')) {
-          const lastChar = pendingUAVId.slice(-1);
-          if (lastChar >= '0' && lastChar <= '9') {
-            dispatch(setPendingUAVId(pendingUAVId + char));
-          }
-        }
-      }
+    const mode = getPendingUAVIdMode(getPendingUAVId(getState()));
+    let characterAdded = false;
+    if (mode === 'uav') {
+      characterAdded = dispatch(appendUAVIdChar(char));
+    } else if (mode === 'group') {
+      characterAdded = dispatch(appendGroupIdChar(char));
+    }
 
-      if (validCharacterTyped) {
-        dispatch(startPendingUAVIdTimeout());
-      }
+    if (characterAdded) {
+      dispatch(startPendingUAVIdTimeout());
     }
   };
 }

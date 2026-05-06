@@ -86,11 +86,6 @@ export const componentRegistry = {
     component: views.ConnectionList,
     label: 'Connections',
   },
-  'dataset-list': {
-    component: views.DatasetList,
-    label: 'Datasets',
-    detachable: true,
-  },
   'dock-list': {
     component: views.DockList,
     label: 'Docks',

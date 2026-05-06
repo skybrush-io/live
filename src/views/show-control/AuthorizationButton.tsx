@@ -1,3 +1,4 @@
+import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import type { SxProps } from '@mui/material/styles';
@@ -46,37 +47,43 @@ const AuthorizationButton = ({
   const { t } = useTranslation();
 
   return (
-    <ListItemButton
-      /* disabled={!isAuthorized && status === Status.OFF} */
-      selected={isAuthorized}
-      sx={buttonStyle}
-      {...rest}
-    >
-      <StatusLight
-        status={isAuthorized && status === Status.OFF ? Status.SKIPPED : status}
-      />
-      <ListItemText
-        disableTypography
-        primary={
-          <Typography variant='button'>
-            {isAuthorized ? t('show.authorized') : t('show.authorizeTheStart')}
-          </Typography>
-        }
-        secondary={
-          <Typography variant='body2' color='textSecondary'>
-            {isAuthorized
-              ? numUAVsTakingOffAutomatically <= 0
-                ? t('show.revokeAuthorization')
-                : numUAVsTakingOffAutomatically === 1
-                  ? t('show.takeOffOne')
-                  : t('show.takeOffMore', {
-                      quantity: numUAVsTakingOffAutomatically,
-                    })
-              : t('show.authorizationReq')}
-          </Typography>
-        }
-      />
-    </ListItemButton>
+    <ListItem disablePadding>
+      <ListItemButton
+        /* disabled={!isAuthorized && status === Status.OFF} */
+        selected={isAuthorized}
+        sx={buttonStyle}
+        {...rest}
+      >
+        <StatusLight
+          status={
+            isAuthorized && status === Status.OFF ? Status.SKIPPED : status
+          }
+        />
+        <ListItemText
+          disableTypography
+          primary={
+            <Typography variant='button'>
+              {isAuthorized
+                ? t('show.authorized')
+                : t('show.authorizeTheStart')}
+            </Typography>
+          }
+          secondary={
+            <Typography variant='body2' color='textSecondary'>
+              {isAuthorized
+                ? numUAVsTakingOffAutomatically <= 0
+                  ? t('show.revokeAuthorization')
+                  : numUAVsTakingOffAutomatically === 1
+                    ? t('show.takeOffOne')
+                    : t('show.takeOffMore', {
+                        quantity: numUAVsTakingOffAutomatically,
+                      })
+                : t('show.authorizationReq')}
+            </Typography>
+          }
+        />
+      </ListItemButton>
+    </ListItem>
   );
 };
 

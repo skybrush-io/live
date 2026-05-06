@@ -1,7 +1,7 @@
 import Button from '@mui/material/Button';
 import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
-import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import ListItemText from '@mui/material/ListItemText';
 import Zoom from '@mui/material/Zoom';
 import isNil from 'lodash-es/isNil';
@@ -155,58 +155,64 @@ const UAVTestButton = ({
     }
   }, [clearPendingConfirmation, execute, resume, suspended]);
 
+  const confirmButton = (
+    <Zoom in={Boolean(pendingConfirmation)}>
+      {/* TODO: Change to `Slide` from right when switching to Material UI v5,
+                as that version supports setting a `container`. */}
+      <Button
+        style={{ color: Colors.seriousWarning }}
+        onClick={giveConfirmation}
+      >
+        Confirm
+      </Button>
+    </Zoom>
+  );
+
   return (
-    <ListItemButton
-      onClick={needsConfirmation ? askForConfirmation : giveConfirmation}
+    <ListItem
+      disablePadding
+      secondaryAction={needsConfirmation ? confirmButton : null}
     >
-      <StatusLight
-        status={
-          suspended
-            ? 'warning'
-            : executionState.loading
-              ? 'next'
-              : executionState.error
-                ? 'error'
-                : isNil(executionState.value)
-                  ? 'off'
-                  : executionState.value
-                    ? 'success'
-                    : 'error'
-        }
-      />
-      <ListItemText
-        primary={
-          suspended
-            ? `${progress.message || 'Operation suspended'}. Click to resume.`
-            : progress && (!executionState.error || executionState.loading)
-              ? `${progress.message || label}`
-              : label
-        }
-        secondary={
-          !executionState.loading && executionState.error ? (
-            errorToString(executionState.error)
-          ) : progress ? (
-            /* Prefer progress bars even in suspended state */
-            <ListItemProgressBar progress={progress} />
-          ) : suspended ? (
-            /* If we are suspended but we don't have progress info, show an indefinite progress bar */
-            <ListItemProgressBar />
-          ) : null
-        }
-      />
-      <ListItemSecondaryAction>
-        {/* TODO: Change to `Slide` from right when switching to Material UI v5,
-                  as that version supports setting a `container`. */}
-        <Zoom in={Boolean(pendingConfirmation)}>
-          <Button
-            style={{ color: Colors.seriousWarning }}
-            onClick={giveConfirmation}
-          >
-            Confirm
-          </Button>
-        </Zoom>
-      </ListItemSecondaryAction>
-    </ListItemButton>
+      <ListItemButton
+        onClick={needsConfirmation ? askForConfirmation : giveConfirmation}
+      >
+        <StatusLight
+          status={
+            suspended
+              ? 'warning'
+              : executionState.loading
+                ? 'next'
+                : executionState.error
+                  ? 'error'
+                  : isNil(executionState.value)
+                    ? 'off'
+                    : executionState.value
+                      ? 'success'
+                      : 'error'
+          }
+        />
+        <ListItemText
+          primary={
+            suspended
+              ? `${progress.message || 'Operation suspended'}. Click to resume.`
+              : progress && (!executionState.error || executionState.loading)
+                ? `${progress.message || label}`
+                : label
+          }
+          secondary={
+            !executionState.loading && executionState.error ? (
+              errorToString(executionState.error)
+            ) : progress ? (
+              /* Prefer progress bars even in suspended state */
+              <ListItemProgressBar progress={progress} />
+            ) : suspended ? (
+              /* If we are suspended but we don't have progress info, show an indefinite progress bar */
+              <ListItemProgressBar />
+            ) : null
+          }
+        />
+      </ListItemButton>
+    </ListItem>
   );
 };
 

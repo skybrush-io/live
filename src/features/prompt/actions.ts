@@ -2,8 +2,7 @@
  * @file Action factories related to the global prompt dialog.
  */
 
-import type { ThunkAction } from '@reduxjs/toolkit';
-
+import { type AppDispatch, type AppThunk } from '~/store/reducers';
 import {
   _cancelPromptDialog,
   _showPromptDialog,
@@ -14,11 +13,6 @@ import {
   type PromptOptions,
   type PromptResponse,
 } from './types';
-
-// TODO: replace this with the real AppDispatch once we have it in store.ts
-type AppDispatch = (action: any) => void;
-type AppState = any;
-type AppThunk<T = void> = ThunkAction<T, AppState, any, any>;
 
 /**
  * Function that must be called from the submission thunk to resolve the

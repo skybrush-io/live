@@ -1,3 +1,4 @@
+import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import PropTypes from 'prop-types';
@@ -42,17 +43,19 @@ const GeofenceButton = ({ onClick, status, ...rest }) => {
   const { t } = useTranslation();
 
   return (
-    <ListItemButton
-      disabled={status === Status.OFF}
-      onClick={onClick}
-      {...rest}
-    >
-      <StatusLight status={status} />
-      <ListItemText
-        primary={t('show.setupGeofence', 'Setup geofence')}
-        secondary={formatStatusText(status)(t)}
-      />
-    </ListItemButton>
+    <ListItem disablePadding>
+      <ListItemButton
+        disabled={status === Status.OFF}
+        onClick={onClick}
+        {...rest}
+      >
+        <StatusLight status={status} />
+        <ListItemText
+          primary={t('show.setupGeofence')}
+          secondary={formatStatusText(status)(t)}
+        />
+      </ListItemButton>
+    </ListItem>
   );
 };
 

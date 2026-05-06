@@ -10,11 +10,9 @@ import { connect } from 'react-redux';
 import ToggleButton from '~/components/ToggleButton';
 import ToolbarDivider from '~/components/ToolbarDivider';
 import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
+import { clearMapping } from '~/features/mission/actions';
 import { isMappingEditable } from '~/features/mission/selectors';
-import {
-  clearMapping,
-  startMappingEditorSession,
-} from '~/features/mission/slice';
+import { startMappingEditorSession } from '~/features/mission/slice';
 import {
   getUAVListLayout,
   isShowingEmptyMissionSlots,

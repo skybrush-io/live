@@ -1,5 +1,4 @@
-import type { RTHPlanEntry } from '@skybrush/file-formats-doc/skyc';
-
+import type { RTHPlan, RTHPlanEntry } from '@skybrush/file-formats-doc/skyc';
 import type { DroneSpecification } from '@skybrush/show-format';
 
 import type {
@@ -16,28 +15,35 @@ const VALID_RTH_ACTIONS: ReadonlySet<RTHAction> = new Set<RTHAction>([
 ]);
 
 /**
- * Returns the timestamp of the given RTH plan entry, or `undefined` if the entry
- * does not have a valid timestamp.
+ * Returns whether the timestamp of the given RTH plan entry is valid.
  */
-function validateEntryTimestamp(entry: RTHPlanEntry): number | undefined {
+function isEntryTimestampValid(entry: RTHPlanEntry): boolean {
   const time = entry.time;
-  return Number.isInteger(time) && time >= 0 ? time : undefined;
+  return Number.isInteger(time) && time >= 0;
 }
 
 /**
  * Returns the duration of the given RTH plan entry, or `undefined` if the entry
  * does not have a valid duration.
  */
-function calculateEntryDuration(entry: RTHPlanEntry): number | undefined {
-  if (entry.action === 'land') {
+function calculateEntryDurationWithoutLanding(
+  entry: RTHPlanEntry
+): number | undefined {
+  // Pre-delay is present in all entry types
+  const preDelay = entry.preDelay ?? 0;
+  if (preDelay < 0) {
     return undefined;
   }
 
+  // Shortcut for the simpler land entries.
+  if (entry.action === 'land') {
+    return preDelay;
+  }
+
   const duration = entry.duration;
-  const preDelay = entry.preDelay ?? 0;
   const postDelay = entry.postDelay ?? 0;
 
-  if (preDelay < 0 || duration < 0 || postDelay < 0) {
+  if (duration < 0 || postDelay < 0) {
     return undefined;
   }
 
@@ -54,11 +60,18 @@ function calculateEntryDuration(entry: RTHPlanEntry): number | undefined {
   return result + preNeckDuration;
 }
 
+function calculateLandingDuration(plan: RTHPlan, entry: RTHPlanEntry): number {
+  const landingDistance = Math.abs(
+    entry.target[2] - (entry.landingAltitude ?? plan.landingAltitude ?? 0)
+  );
+  return landingDistance / plan.landingSpeed;
+}
+
 /**
  * Returns whether the given RTH plan entry is valid.
  */
 function isValidRTHPlanEntry(entry: RTHPlanEntry): boolean {
-  if (validateEntryTimestamp(entry) === undefined) {
+  if (!isEntryTimestampValid(entry)) {
     return false;
   }
 
@@ -66,15 +79,7 @@ function isValidRTHPlanEntry(entry: RTHPlanEntry): boolean {
     return false;
   }
 
-  if (entry.action === 'goToKeepAlt' && entry.target.length !== 2) {
-    return false;
-  }
-
-  if (entry.action === 'goToStraight' && entry.target.length !== 3) {
-    return false;
-  }
-
-  return true;
+  return entry.target.length === 3;
 }
 
 /**
@@ -108,7 +113,11 @@ export function validateCollectiveRTHPlan(
 
   for (const drone of drones) {
     const rthPlan = drone.settings.rthPlan;
-    if (rthPlan === undefined || rthPlan.entries.length === 0) {
+    if (
+      rthPlan === undefined ||
+      rthPlan.entries.length === 0 ||
+      rthPlan.landingSpeed <= 0
+    ) {
       dronesWithoutRTHPlan++;
       continue;
     } else {
@@ -124,14 +133,18 @@ export function validateCollectiveRTHPlan(
         continue;
       }
 
-      const duration = calculateEntryDuration(entry);
-      if (duration === undefined && entry.action !== 'land') {
+      const durationWithoutLanding =
+        calculateEntryDurationWithoutLanding(entry);
+      if (durationWithoutLanding === undefined) {
         console.warn(
           'Invalid duration for RTH plan entry for drone at index',
           drones.indexOf(drone)
         );
         continue;
       }
+
+      const duration =
+        durationWithoutLanding + calculateLandingDuration(rthPlan, entry);
 
       const time = entry.time;
       if (time < firstTime) {

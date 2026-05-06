@@ -5,20 +5,22 @@
 import { bindActionCreators, configureStore, isPlain } from '@reduxjs/toolkit';
 
 import config from 'config';
+import { produce } from 'immer';
 import isPromise from 'is-promise';
 import localForage from 'localforage';
 import isError from 'lodash-es/isError';
 import isFunction from 'lodash-es/isFunction';
 import createDeferred from 'p-defer';
 import createDebounce from 'redux-debounce';
-import { createPromise } from 'redux-promise-middleware';
-import createSagaMiddleware from 'redux-saga';
-import { persistStore, persistReducer } from 'redux-persist';
+import { persistReducer, persistStore } from 'redux-persist';
 import {
   createBlacklistFilter,
   createFilter,
 } from 'redux-persist-transform-filter';
+import { createPromise } from 'redux-promise-middleware';
+import createSagaMiddleware from 'redux-saga';
 
+import { setLayerParametersById } from '~/features/map/layers';
 import { updateAveragingByIds } from '~/features/measurement/slice';
 import { shouldPreventSleepMode } from '~/features/power-saving/selectors';
 import { updateRTKStatistics } from '~/features/rtk/slice';
@@ -26,10 +28,11 @@ import { showAppSettingsDialog } from '~/features/settings/actions';
 import { loadingPromiseFulfilled } from '~/features/show/slice';
 import { updateAgesOfUAVs, updateUAVs } from '~/features/uavs/slice';
 import { saveWorkbenchState } from '~/features/workbench/slice';
-import reducer from './reducers';
+import { LayerType } from '~/model/layers';
 
 import migrations from './migrations';
 import { defaultStateReconciler, pristineReconciler } from './reconciler';
+import reducer from './reducers';
 import { bindSelectors } from './subscriptions';
 
 /**
@@ -54,7 +57,6 @@ const persistConfig = {
     'beacons',
     'clocks',
     'connections',
-    'datasets',
     'detachablePanels',
     'docks',
     'firmwareUpdate',
@@ -104,6 +106,9 @@ const persistConfig = {
 
     // We do not wish to save which preflight checks the user has ticked off
     createBlacklistFilter('preflight', ['checked']),
+
+    // We want to keep only the stored groups from the selection slice
+    createFilter('selection', ['groups']),
 
     // Most of the stuff in the 'show' slice is temporary as we unload the
     // show when refreshing the page
@@ -196,34 +201,44 @@ const store = configureStore({
             updateUAVs.type,
           ],
 
-          // make sure that the show object that we load is not cached / tracked by
-          // the Redux devtools
-          actionSanitizer: (action) =>
-            action.type === loadingPromiseFulfilled.type && action.payload
-              ? {
-                  ...action,
-                  payload: {
-                    ...action.payload,
-                    spec: '<<JSON_DATA>>',
-                    base64Blob: action.payload.base64Blob
-                      ? '<<BLOB>>'
-                      : action.payload.base64Blob,
-                  },
+          // Make sure the show objects and image layer
+          // data are not tracked by the Redux devtools
+          actionSanitizer: produce((action) => {
+            switch (action.type) {
+              case loadingPromiseFulfilled.type:
+                if (action.payload?.spec) {
+                  action.payload.spec = '<<JSON_DATA>>';
                 }
-              : action,
-          stateSanitizer: (state) =>
-            state.show
-              ? {
-                  ...state,
-                  show: {
-                    ...state.show,
-                    data: state.show.data ? '<<JSON_DATA>>' : state.show.data,
-                    base64Blob: state.show.base64Blob
-                      ? '<<BLOB>>'
-                      : state.show.base64Blob,
-                  },
+                if (action.payload?.base64Blob) {
+                  action.payload.base64Blob = '<<BLOB>>';
                 }
-              : state,
+                break;
+
+              case setLayerParametersById.type:
+                if (action.payload.parameters.image?.data) {
+                  action.payload.parameters.image.data = '<<BASE64_DATA_URL>>';
+                }
+                break;
+
+              // no default
+            }
+          }),
+          stateSanitizer: produce((state) => {
+            if (state.show?.data) {
+              state.show.data = '<<JSON_DATA>>';
+            }
+            if (state.show?.base64Blob) {
+              state.show.base64Blob = '<<BLOB>>';
+            }
+
+            for (const layer of Object.values(state.map.layers.byId).filter(
+              (layer) => layer.type === LayerType.IMAGE
+            )) {
+              if (layer.parameters.image?.data) {
+                layer.parameters.image.data = '<<BASE64_DATA_URL>>';
+              }
+            }
+          }),
         },
 });
 

@@ -6,19 +6,24 @@ import mapValues from 'lodash-es/mapValues';
 import { eventChannel } from 'redux-saga';
 import { all, call, delay, put, select, take } from 'redux-saga/effects';
 
-import { getUAVIdToStateMapping, getUAVIdList } from './selectors';
-import {
-  addUAVs,
-  updateAgesOfUAVs,
-  updateUAVs,
-  _removeUAVsByIds,
-} from './slice';
-
 import { dismissAlerts, triggerAlert } from '~/features/alert/slice';
 import { getRoundedClockSkewInMilliseconds } from '~/features/servers/selectors';
 import { getUAVAgingThresholds } from '~/features/settings/selectors';
 import { isErrorCodeOrMoreSevere } from '~/model/status-codes';
 import { UAVAge } from '~/model/uav';
+import { setColorOnUAVs } from '~/utils/messaging';
+
+import {
+  getColorOverrideToUAVIdsMap,
+  getUAVIdList,
+  getUAVIdToStateMapping,
+} from './selectors';
+import {
+  _removeUAVsByIds,
+  addUAVs,
+  updateAgesOfUAVs,
+  updateUAVs,
+} from './slice';
 
 /**
  * Helper function to convert a single UAV to its Redux representation.
@@ -317,11 +322,35 @@ function* uavAgingSaga(flock) {
 }
 
 /**
+ * Saga that takes care of regularly dispatching commands that set the LED color of a
+ * UAV. This is needed because the server can only set the LED color of a UAV for a
+ * specific duration for safety reasons. This saga takes care of repeating the commands
+ * as long as it is active.
+ *
+ * @param {number} interval  number of milliseconds to wait between consecutive dispatches
+ */
+function* uavColorOverrideSaga(interval = 2000) {
+  while (true) {
+    const colorMap = yield select(getColorOverrideToUAVIdsMap);
+
+    try {
+      for (const [color, uavIds] of Object.entries(colorMap)) {
+        yield call(setColorOnUAVs, uavIds, { color });
+      }
+    } catch (err) {
+      console.warn('Failed to set color override on UAVs', err);
+    }
+
+    yield delay(interval);
+  }
+}
+
+/**
  * Compound saga related to the management of UAVs.
  *
  * @param {Flock} flock  the UAV flock whose members should be synchronized with
  *        the Redux store
  */
 export default function* uavManagementSaga(flock) {
-  yield all([uavSyncSaga(flock), uavAgingSaga(flock)]);
+  yield all([uavSyncSaga(flock), uavAgingSaga(flock), uavColorOverrideSaga()]);
 }

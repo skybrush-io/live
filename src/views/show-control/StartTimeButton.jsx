@@ -1,3 +1,4 @@
+import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import PropTypes from 'prop-types';
@@ -19,17 +20,19 @@ const StartTimeButton = ({ formattedStartTime, onClick, status }) => {
   const { t } = useTranslation();
 
   return (
-    <ListItemButton onClick={onClick}>
-      <StatusLight status={status} />
-      <ListItemText
-        primary={t('show.chooseStartTime')}
-        secondary={
-          formattedStartTime
-            ? t('show.startsAt', { time: formattedStartTime })
-            : t('show.chooseStartTimeNotSet', 'Not set yet')
-        }
-      />
-    </ListItemButton>
+    <ListItem disablePadding>
+      <ListItemButton onClick={onClick}>
+        <StatusLight status={status} />
+        <ListItemText
+          primary={t('show.chooseStartTime')}
+          secondary={
+            formattedStartTime
+              ? t('show.startsAt', { time: formattedStartTime })
+              : t('show.chooseStartTimeNotSet')
+          }
+        />
+      </ListItemButton>
+    </ListItem>
   );
 };
 

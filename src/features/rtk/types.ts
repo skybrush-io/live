@@ -1,11 +1,46 @@
-import { type LonLat } from '~/utils/geography';
-import { type Coordinate3D } from '~/utils/math';
+import type { Response_RTKSTAT } from '@skybrush/flockwave-spec';
+import type { LonLat } from '~/utils/geography';
+import type { Coordinate3D } from '~/utils/math';
 
 export enum RTKAntennaPositionFormat {
   LON_LAT = 'lonLat',
   ECEF = 'ecef',
 }
 
+export enum RTKCorrectionStatus {
+  // We are not connected to the server at all
+  NOT_CONNECTED = 'notConnected',
+
+  // No RTK preset is selected
+  INACTIVE = 'inactive',
+
+  // We have connected to the RTK base station only recently so the status is not
+  // conclusive yet
+  CONNECTED_RECENTLY = 'connectedRecently',
+
+  // RTK base station is currently running a survey
+  SURVEY_IN_PROGRESS = 'surveyInProgress',
+
+  // RTK base station does not seem to provide correction data for a sufficient number
+  // of satellites
+  NOT_ENOUGH_SATELLITES = 'notEnoughSatellites',
+
+  // RTK base station has no recent antenna position information message
+  NO_ANTENNA_POSITION = 'noAntennaPosition',
+
+  // RTK corrections are sufficiently recent and contain enough satellites
+  OK = 'ok',
+
+  // Other unspecified error
+  ERROR = 'error',
+}
+
+export type RTKSavedCoordinate = {
+  position: LonLat;
+  positionECEF: Coordinate3D;
+  accuracy: number;
+  savedAt: number;
+};
 export type RTKStatistics = {
   /**
    * Timestamp when the statistics was updated the last time,
@@ -83,4 +118,8 @@ export type RTKStatistics = {
      */
     flags?: number;
   };
+};
+
+export type RTKStatisticsResponse = Omit<Response_RTKSTAT, 'messages_tx'> & {
+  messagesTx: Response_RTKSTAT['messages_tx'];
 };

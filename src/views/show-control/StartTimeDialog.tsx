@@ -30,6 +30,7 @@ import { connect } from 'react-redux';
 import { FormHeader as Header } from '@skybrush/mui-components';
 
 import { HMSDurationField } from '~/components/forms/fields';
+import { callAndHandleErrors } from '~/error-handling';
 import { CommonClockId } from '~/features/clocks/types';
 import { authorizeIfAndOnlyIfHasStartTime } from '~/features/show/actions';
 import { StartMethod } from '~/features/show/enums';
@@ -39,7 +40,7 @@ import {
   setStartTime,
   synchronizeShowSettings,
 } from '~/features/show/slice';
-import type { RootState } from '~/store/reducers';
+import type { AppDispatch, RootState } from '~/store/reducers';
 import { formatDurationHMS } from '~/utils/formatting';
 import { parseDurationHMS } from '~/utils/parsing';
 
@@ -61,7 +62,7 @@ type AllowedClockIdsForStartTime =
 
 /** Type guard for AllowedClockIdsForStartTime */
 const validateClockIdForStartTimeForm = (
-  clock: any
+  clock: unknown
 ): clock is AllowedClockIdsForStartTime => {
   return (
     clock === LocalClockId.ABSOLUTE ||
@@ -161,7 +162,12 @@ const StartTimeForm = ({
       onSubmit={onSubmit}
     >
       {({ dirty, form, handleSubmit, invalid, values }) => (
-        <form id='start-time-form' onSubmit={(e) => void handleSubmit(e)}>
+        <form
+          id='start-time-form'
+          onSubmit={(event) => {
+            void callAndHandleErrors(() => handleSubmit(event));
+          }}
+        >
           <DialogContent sx={{ paddingBottom: 0, paddingTop: 2 }}>
             <StartTimeDisplay />
 
@@ -367,7 +373,7 @@ export default connect(
   }),
 
   // mapDispatchToProps
-  (dispatch) => ({
+  (dispatch: AppDispatch) => ({
     onClose(): void {
       dispatch(closeStartTimeDialog());
     },
@@ -415,7 +421,7 @@ export default connect(
       }
 
       if (authorizeWhenSettingStartTime) {
-        dispatch(authorizeIfAndOnlyIfHasStartTime() as any);
+        dispatch(authorizeIfAndOnlyIfHasStartTime());
       }
 
       dispatch(synchronizeShowSettings('toServer'));

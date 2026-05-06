@@ -1,4 +1,6 @@
+import BlurCircular from '@mui/icons-material/BlurCircular';
 import IconButton from '@mui/material/IconButton';
+import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import { useCallback, useState } from 'react';
@@ -14,8 +16,7 @@ import {
   isConnected,
   supportsStudioInterop,
 } from '~/features/servers/selectors';
-import { isDeveloperModeEnabled } from '~/features/session/selectors';
-import { showDialogAndClearUndoHistory } from '~/features/show-configurator/actions';
+import { showDialogAndClearUndoHistory as showAdaptDialogAndClearUndoHistory } from '~/features/show-configurator/actions';
 import { selectShowConfiguratorDataFromShow } from '~/features/show-configurator/selectors';
 import { type ShowData } from '~/features/show-configurator/slice';
 import {
@@ -33,7 +34,6 @@ import {
   type Prerequisite,
 } from '~/hooks/useConstPrerequisites';
 import { tt } from '~/i18n';
-import HomeCircleOutlined from '~/icons/HomeCircleOutlined';
 import Pro from '~/icons/Pro';
 import type { RootState } from '~/store/reducers';
 import { type Nullable } from '~/utils/types';
@@ -44,16 +44,8 @@ const PREREQUISITES: readonly Prerequisite[] = Object.freeze([
     message: tt('show.showConfigurator.prerequisites.loaded'),
   },
   {
-    selector: (state: RootState) => getShowSegments(state)?.show !== undefined,
-    message: tt('show.showConfigurator.prerequisites.segments'),
-  },
-  {
     selector: isConnected,
     message: tt('show.showConfigurator.prerequisites.server'),
-  },
-  {
-    selector: supportsStudioInterop,
-    message: tt('show.showConfigurator.prerequisites.extension'),
   },
   {
     selector: (state: RootState) =>
@@ -63,28 +55,33 @@ const PREREQUISITES: readonly Prerequisite[] = Object.freeze([
       ].some((v) => v !== undefined),
     message: tt('show.showConfigurator.prerequisites.origin'),
   },
+  {
+    selector: supportsStudioInterop,
+    message: tt('show.showConfigurator.prerequisites.extension'),
+  },
 ]);
 
-type Props = Readonly<{
-  base64Blob?: string;
-  devModeEnabled: boolean;
-  partialShow: Partial<ShowData>;
+type StateProps = {
   rthPlanSummary: CollectiveRTHPlanSummary;
   show: ShowData | undefined;
-  showCollectiveRTHDialog: () => void;
-  // TODO: This should probably be a `ThunkActionDispatch`, but that doesn't
-  //       seem to be reexported from `redux-thunk` via `@reduxjs/toolkit`...
-  showDialogAndClearUndoHistory: (data?: ShowData) => void;
+  showHasSegments: boolean;
   status: Status;
-}>;
+};
+
+type DispatchProps = {
+  showAdaptDialogAndClearUndoHistory: (data?: ShowData) => void;
+  showCollectiveRTHDialog: () => void;
+};
+
+type Props = StateProps & DispatchProps;
 
 const ShowConfiguratorButton = (props: Props) => {
   const {
-    devModeEnabled,
     rthPlanSummary,
     show,
+    showAdaptDialogAndClearUndoHistory,
     showCollectiveRTHDialog,
-    showDialogAndClearUndoHistory,
+    showHasSegments,
     status,
   } = props;
 
@@ -93,26 +90,37 @@ const ShowConfiguratorButton = (props: Props) => {
   // NOTE: Using a `ref` here broke when rearranging the GolenLayout panels...
   //       (The popup wouldn't show up until something triggered a rerender.)
   const [tooltipTriggerTarget, setTooltipTriggerTarget] =
-    useState<Nullable<HTMLDivElement>>();
+    useState<Nullable<HTMLElement>>();
 
   const { prerequisites, prerequisitesFulfilled } =
     useConstPrerequisites(PREREQUISITES);
 
-  const openWithShow = useCallback(() => {
+  const openAdaptDialog = useCallback(() => {
     if (show) {
-      showDialogAndClearUndoHistory(show);
+      showAdaptDialogAndClearUndoHistory(show);
     } else {
       showError(t('show.showConfigurator.noShowData'));
     }
-  }, [show, showDialogAndClearUndoHistory, t]);
+  }, [show, showAdaptDialogAndClearUndoHistory, t]);
 
   const tooltipVisible = status !== Status.OFF && !prerequisitesFulfilled;
   const disabled = status === Status.OFF || !prerequisitesFulfilled;
 
   return (
-    <div ref={setTooltipTriggerTarget}>
-      <ListItemButton disabled={disabled} onClick={openWithShow}>
-        <StatusLight status={disabled ? Status.OFF : status} />
+    <ListItem disablePadding ref={setTooltipTriggerTarget}>
+      <ListItemButton
+        disabled={disabled}
+        onClick={() => showCollectiveRTHDialog()}
+      >
+        <StatusLight
+          status={
+            disabled
+              ? Status.OFF
+              : rthPlanSummary.isValid
+                ? Status.SUCCESS
+                : Status.WARNING
+          }
+        />
         <ListItemText
           primary={
             <Tooltip
@@ -130,51 +138,42 @@ const ShowConfiguratorButton = (props: Props) => {
           }
           secondary={t('show.showConfigurator.description')}
         />
-        {devModeEnabled && (
-          <Tooltip
-            content={
-              rthPlanSummary.isValid
-                ? t('show.showConfigurator.tooltip.validRTHPlan', {
-                    numPlans: Object.keys(rthPlanSummary.plans).length,
-                  })
-                : t('show.showConfigurator.tooltip.invalidRTHPlan')
-            }
-            placement='left'
-          >
+        <Tooltip
+          content={t(
+            showHasSegments
+              ? 'show.showConfigurator.tooltip.adaptShow'
+              : 'show.showConfigurator.tooltip.showSegmentsRequired'
+          )}
+          placement='left'
+        >
+          <span>
             <IconButton
               edge='end'
               size='large'
-              color={
-                rthPlanSummary.numDrones === 0
-                  ? 'default'
-                  : rthPlanSummary.isValid
-                    ? 'success'
-                    : 'warning'
-              }
               onClick={(evt) => {
                 evt.stopPropagation();
-                showCollectiveRTHDialog();
+                openAdaptDialog();
               }}
             >
-              <HomeCircleOutlined />
+              <BlurCircular />
             </IconButton>
-          </Tooltip>
-        )}
+          </span>
+        </Tooltip>
       </ListItemButton>
-    </div>
+    </ListItem>
   );
 };
 
 const ConnectedShowConfiguratorButton = connect(
   (state: RootState) => ({
-    devModeEnabled: isDeveloperModeEnabled(state),
     rthPlanSummary: selectCollectiveRTHPlanSummary(state),
     show: selectShowConfiguratorDataFromShow(state),
-    status: getSetupStageStatuses(state).showConfigurator,
+    showHasSegments: getShowSegments(state)?.show !== undefined,
+    status: getSetupStageStatuses(state).collectiveRTH,
   }),
   {
     showCollectiveRTHDialog,
-    showDialogAndClearUndoHistory,
+    showAdaptDialogAndClearUndoHistory,
   }
 )(ShowConfiguratorButton);
 

@@ -10,6 +10,7 @@ import Point from 'ol/geom/Point';
 import { getPointResolution } from 'ol/proj';
 import { Circle, Icon, Style, Text } from 'ol/style';
 import PropTypes from 'prop-types';
+import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import { Feature, geom, layer as olLayer, source } from '@collmot/ol-react';
@@ -41,7 +42,7 @@ import {
   getMissionItemsWithCoordinatesInOrder,
   getSelectedMissionIndicesForTrajectoryDisplay,
 } from '~/features/mission/selectors';
-import { getSelection } from '~/features/selection/selectors';
+import { getVirtualSelection } from '~/features/selection/selectors';
 import {
   getConvexHullOfShowInWorldCoordinates,
   getOutdoorShowOrientation,
@@ -83,6 +84,9 @@ const MissionInfoLayerSettingsPresentation = ({
   layer,
   setLayerParameters,
 }) => {
+  const { t } = useTranslation(undefined, {
+    keyPrefix: 'MissionInfoLayer.settings',
+  });
   const { parameters } = layer;
   const {
     showConvexHull,
@@ -107,7 +111,7 @@ const MissionInfoLayerSettingsPresentation = ({
             onChange={handleChange('showOrigin')}
           />
         }
-        label='Show map origin'
+        label={t('showMapOrigin')}
       />
       <FormControlLabel
         control={
@@ -117,7 +121,7 @@ const MissionInfoLayerSettingsPresentation = ({
             onChange={handleChange('showMissionOrigin')}
           />
         }
-        label='Show mission origin'
+        label={t('showMissionOrigin')}
       />
       <FormControlLabel
         control={
@@ -127,7 +131,7 @@ const MissionInfoLayerSettingsPresentation = ({
             onChange={handleChange('showHomePositions')}
           />
         }
-        label='Show home positions'
+        label={t('showHomePositions')}
       />
       <FormControlLabel
         control={
@@ -137,7 +141,7 @@ const MissionInfoLayerSettingsPresentation = ({
             onChange={handleChange('showLandingPositions')}
           />
         }
-        label='Show landing positions'
+        label={t('showLandingPositions')}
       />
       {hasFeature('showControl') && (
         <>
@@ -149,7 +153,7 @@ const MissionInfoLayerSettingsPresentation = ({
                 onChange={handleChange('showConvexHull')}
               />
             }
-            label='Show convex hull of trajectories'
+            label={t('showConvexHull')}
           />
           <FormControlLabel
             control={
@@ -159,7 +163,7 @@ const MissionInfoLayerSettingsPresentation = ({
                 onChange={handleChange('showTrajectoriesOfSelection')}
               />
             }
-            label='Show trajectories of selected drones'
+            label={t('showTrajectoriesOfSelection')}
           />
         </>
       )}
@@ -172,7 +176,7 @@ const MissionInfoLayerSettingsPresentation = ({
               onChange={handleChange('showMissionItems')}
             />
           }
-          label='Show mission items'
+          label={t('showMissionItems')}
         />
       )}
     </FormGroup>
@@ -638,6 +642,7 @@ const MissionInfoVectorSource = ({
           ? formatMissionId(homePositions.length - 1).length *
             TAKEOFF_LANDING_POSITION_CHARACTER_WIDTH
           : 0,
+        selection,
       }),
       landingPositionPoints(landingPositions, {
         minimumDistanceBetweenPositions: minimumDistanceBetweenLandingPositions,
@@ -752,7 +757,7 @@ export const MissionInfoLayer = connect(
       state,
       MissionItemType.RETURN_TO_HOME
     ),
-    selection: getSelection(state),
+    selection: getVirtualSelection(state),
     uavIdsForTrajectories: layer?.parameters?.showTrajectoriesOfSelection
       ? getSelectedUAVIdsForTrajectoryDisplay(state)
       : undefined,

@@ -24,15 +24,15 @@ const CATEGORIES = [
     hints: [
       {
         keys: ['Drag'],
-        action: tt('show.showConfigurator.interactionHints.action.pan'),
+        action: tt('general.action.pan'),
       },
       {
         keys: ['Scroll'],
-        action: tt('show.showConfigurator.interactionHints.action.zoom'),
+        action: tt('general.action.zoom'),
       },
       {
         keys: ['Shift', 'Alt', 'Drag'],
-        action: tt('show.showConfigurator.interactionHints.action.rotate'),
+        action: tt('general.action.rotate'),
       },
     ],
   },
@@ -42,7 +42,7 @@ const CATEGORIES = [
     hints: [
       {
         keys: ['Click'],
-        action: tt('show.showConfigurator.interactionHints.action.select'),
+        action: tt('general.action.select'),
       },
       {
         keys: ['Ctrl', 'Click'],
