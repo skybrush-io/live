@@ -31,16 +31,15 @@ const ToolboxButtonPresentation = ({ numberOfAveragingInProgress }: Props) => {
 
   return (
     <>
-      <div onClick={handleClick}>
-        <GenericHeaderButton
-          aria-controls='toolbox-menu'
-          aria-haspopup='true'
-          tooltip={t('toolbox.tooltip')}
-        >
-          <SidebarBadge color={Colors.warning} visible={needsBadge} />
-          <BusinessCenter />
-        </GenericHeaderButton>
-      </div>
+      <GenericHeaderButton
+        aria-controls='toolbox-menu'
+        aria-haspopup='true'
+        tooltip={t('toolbox.tooltip')}
+        onClick={handleClick}
+      >
+        <SidebarBadge color={Colors.warning} visible={needsBadge} />
+        <BusinessCenter />
+      </GenericHeaderButton>
       <ToolboxMenu
         id='toolbox-menu'
         anchorEl={anchorElement}

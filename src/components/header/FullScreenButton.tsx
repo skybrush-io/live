@@ -18,18 +18,12 @@ type Props = {
 const FullScreenButtonPresentation = ({ isFullscreen, ...rest }: Props) => (
   <Translation>
     {(t) => (
-      <div onClick={rest.disabled ? undefined : toggleFullScreen}>
-        <GenericHeaderButton
-          {...rest}
-          tooltip={isFullscreen ? t('fullScreen.exit') : t('fullScreen.on')}
-        >
-          {isFullscreen ? (
-            <NavigationFullscreenExit />
-          ) : (
-            <NavigationFullscreen />
-          )}
-        </GenericHeaderButton>
-      </div>
+      <GenericHeaderButton
+        {...rest}
+        tooltip={isFullscreen ? t('fullScreen.exit') : t('fullScreen.on')}
+      >
+        {isFullscreen ? <NavigationFullscreenExit /> : <NavigationFullscreen />}
+      </GenericHeaderButton>
     )}
   </Translation>
 );
@@ -44,6 +38,7 @@ const FullScreenButton = () => {
     <FullScreenButtonPresentation
       isFullscreen={ScreenFull.isFullscreen}
       disabled={!ScreenFull.isEnabled}
+      onClick={toggleFullScreen}
     />
   );
 };

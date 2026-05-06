@@ -7,11 +7,13 @@ import { isHelpAvailable, showHelp } from '~/utils/help';
 const HelpButton = () => (
   <Translation>
     {(t) => (
-      <div onClick={isHelpAvailable ? showHelp : undefined}>
-        <GenericHeaderButton tooltip={t('help')} disabled={!isHelpAvailable}>
-          <Help />
-        </GenericHeaderButton>
-      </div>
+      <GenericHeaderButton
+        tooltip={t('help')}
+        onClick={showHelp}
+        disabled={!isHelpAvailable}
+      >
+        <Help />
+      </GenericHeaderButton>
     )}
   </Translation>
 );
