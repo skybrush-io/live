@@ -137,14 +137,11 @@ const RTKPresetDialogFormPresentation = ({
   const handleDelete = useCallback(async () => {
     if (
       !(await dispatch(
-        showConfirmationDialog(
-          t('rtkPresetDialog.deleteConfirmation'),
-          {
-            title: t('rtkPresetDialog.deletePreset'),
-            submitButtonLabel: t('general.action.delete'),
-            cancelButtonLabel: t('general.action.cancel'),
-          }
-        )
+        showConfirmationDialog(t('rtkPresetDialog.deleteConfirmation'), {
+          title: t('rtkPresetDialog.deletePreset'),
+          submitButtonLabel: t('general.action.delete'),
+          cancelButtonLabel: t('general.action.cancel'),
+        })
       ))
     ) {
       return;
@@ -226,7 +223,9 @@ const RTKPresetDialogFormPresentation = ({
         const errorMessage =
           error_?.message ||
           error_?.reason ||
-          (isNew ? t('rtkPresetDialog.createFailed') : t('rtkPresetDialog.updateFailed'));
+          (isNew
+            ? t('rtkPresetDialog.createFailed')
+            : t('rtkPresetDialog.updateFailed'));
         setError(errorMessage);
       } finally {
         setSubmitting(false);
@@ -281,11 +280,7 @@ const RTKPresetDialogFormPresentation = ({
                   <Chip
                     label={displayType}
                     size='small'
-                    color={
-                      presetType === 'user'
-                        ? 'primary'
-                        : 'default'
-                    }
+                    color={presetType === 'user' ? 'primary' : 'default'}
                   />
                   {isReadOnly && (
                     <Typography variant='caption' color='textSecondary'>

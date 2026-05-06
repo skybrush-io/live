@@ -23,7 +23,11 @@ const FullScreenButtonPresentation = ({ isFullscreen, ...rest }: Props) => (
           {...rest}
           tooltip={isFullscreen ? t('fullScreen.exit') : t('fullScreen.on')}
         >
-          {isFullscreen ? <NavigationFullscreenExit /> : <NavigationFullscreen />}
+          {isFullscreen ? (
+            <NavigationFullscreenExit />
+          ) : (
+            <NavigationFullscreen />
+          )}
         </GenericHeaderButton>
       </div>
     )}

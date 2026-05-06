@@ -65,21 +65,20 @@ const RTKCorrectionSourceSelector = ({
     const result = await messageHub.query.getRTKPresets();
     return Array.isArray(result) ? result.filter(isRTKPresetSource) : [];
   }, [presetsRefreshTrigger]);
-  const selectionState = useAsyncRetry(
-    async (): Promise<RTKPresetID | null | undefined> => {
-      const result = await messageHub.query.getSelectedRTKPresetId();
-      if (typeof result === 'string') {
-        return result;
-      }
+  const selectionState = useAsyncRetry(async (): Promise<
+    RTKPresetID | null | undefined
+  > => {
+    const result = await messageHub.query.getSelectedRTKPresetId();
+    if (typeof result === 'string') {
+      return result;
+    }
 
-      if (result === null) {
-        return null;
-      }
+    if (result === null) {
+      return null;
+    }
 
-      return undefined;
-    },
-    [presetsRefreshTrigger]
-  );
+    return undefined;
+  }, [presetsRefreshTrigger]);
 
   const loading = presetsState.loading || selectionState.loading;
   const hasError = presetsState.error;
@@ -245,9 +244,7 @@ const RTKCorrectionSourceSelector = ({
             )}
           </Select>
         </FormControl>
-        <Tooltip
-          title={t('RTKCorrectionSourceSelector.editPreset')}
-        >
+        <Tooltip title={t('RTKCorrectionSourceSelector.editPreset')}>
           <span>
             <IconButton
               disabled={!canEdit}
@@ -258,9 +255,7 @@ const RTKCorrectionSourceSelector = ({
             </IconButton>
           </span>
         </Tooltip>
-        <Tooltip
-          title={t('RTKCorrectionSourceSelector.createPreset')}
-        >
+        <Tooltip title={t('RTKCorrectionSourceSelector.createPreset')}>
           <span>
             <IconButton
               disabled={loading}

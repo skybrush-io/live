@@ -71,9 +71,7 @@ function calculateLandingDuration(plan: RTHPlan, entry: RTHPlanEntry): number {
     typeof entry.landingAltitude === 'number'
       ? entry.landingAltitude
       : (plan.landingAltitude ?? 0);
-  const landingDistance = Math.abs(
-    targetZ - landingAltitude
-  );
+  const landingDistance = Math.abs(targetZ - landingAltitude);
   return landingDistance / plan.landingSpeed;
 }
 
