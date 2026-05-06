@@ -41,7 +41,26 @@ const RTKStatusUpdater = ({ onStatusChanged, period = 1000 }: Props) => {
 
     const checkAndAutosave = async (status: RTKStatisticsResponse) => {
       // Autosave base station coordinate on first valid fix per preset
-      if (!hasValidFix(status as RTKStatistics)) {
+      const rtkStatusForFixCheck: Pick<RTKStatistics, 'antenna' | 'survey'> = {
+        antenna: {
+          positionECEF: Array.isArray(status?.antenna?.positionECEF)
+            ? (status.antenna.positionECEF
+                .slice(0, 3)
+                .map((x) => Math.round(x)) as Coordinate3D)
+            : undefined,
+        },
+        survey: {
+          accuracy:
+            typeof status?.survey?.accuracy === 'number'
+              ? status.survey.accuracy
+              : undefined,
+          flags:
+            typeof status?.survey?.flags === 'number'
+              ? status.survey.flags
+              : undefined,
+        },
+      };
+      if (!hasValidFix(rtkStatusForFixCheck)) {
         return;
       }
 

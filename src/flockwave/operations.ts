@@ -385,7 +385,7 @@ export async function startRTKSurvey(
  */
 export async function setRTKAntennaPosition(
   hub: MessageHub,
-  { position, accuracy }: { position: [number, number, number]; accuracy: number }
+  { position, accuracy }: { position: Coordinate3D; accuracy: number }
 ) {
   const response = await hub.sendMessage({
     type: 'X-RTK-SURVEY',
@@ -402,27 +402,6 @@ export async function setRTKAntennaPosition(
       body.error ||
       'Failed to set RTK antenna position on the server';
     throw new Error(errorMessage);
-  }
-}
-
-/**
- * Sets the RTK antenna position on the server by submitting explicit
- * survey settings that contain a fixed position instead of starting a survey.
- */
-export async function setRTKAntennaPosition(
-  hub: MessageHub,
-  { position, accuracy }: { position: Coordinate3D; accuracy: number }
-) {
-  const response = await hub.sendMessage({
-    type: 'X-RTK-SURVEY',
-    settings: {
-      position,
-      accuracy,
-    },
-  });
-
-  if (response.body.type !== 'ACK-ACK') {
-    throw new Error('Failed to set RTK antenna position on the server');
   }
 }
 

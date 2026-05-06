@@ -30,21 +30,19 @@ const AuthenticationButtonPresentation = ({
   onDeauthenticate,
 }: Props) => {
   const { t } = useTranslation();
+  const onClick = isDisabled
+    ? undefined
+    : isAuthenticated
+      ? onDeauthenticate
+      : onAuthenticate;
+
   return (
-    <GenericHeaderButton
-      tooltip={t('authentication')}
-      disabled={isDisabled}
-      onClick={
-        isDisabled
-          ? undefined
-          : isAuthenticated
-            ? onDeauthenticate
-            : onAuthenticate
-      }
-    >
-      <AuthenticationStatusBadge />
-      <PersonIcon />
-    </GenericHeaderButton>
+    <div onClick={onClick}>
+      <GenericHeaderButton tooltip={t('authentication')} disabled={isDisabled}>
+        <AuthenticationStatusBadge />
+        <PersonIcon />
+      </GenericHeaderButton>
+    </div>
   );
 };
 

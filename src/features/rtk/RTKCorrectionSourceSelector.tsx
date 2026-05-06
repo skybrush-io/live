@@ -19,6 +19,7 @@ import handleError from '~/error-handling';
 import { setCurrentRTKPresetId } from '~/features/rtk/actions';
 import { openRTKPresetDialog, resetRTKStatistics } from '~/features/rtk/slice';
 import messageHub from '~/message-hub';
+import { useAppDispatch } from '~/store/hooks';
 import type { RootState } from '~/store/reducers';
 
 const NULL_ID: RTKPresetID = '__null__';
@@ -39,7 +40,6 @@ type Props = {
   onEditPreset: (presetId: RTKPresetID, presetType: RTKPresetType) => void;
   onSourceChanged?: () => void;
   presetsRefreshTrigger: number;
-  setCurrentRTKPresetId: (presetId?: RTKPresetID) => void;
 };
 type RTKPresetType = 'user' | 'builtin' | 'dynamic';
 
@@ -48,9 +48,9 @@ const RTKCorrectionSourceSelector = ({
   onEditPreset,
   onSourceChanged,
   presetsRefreshTrigger,
-  setCurrentRTKPresetId,
 }: Props) => {
   const { t } = useTranslation();
+  const dispatch = useAppDispatch();
   const [selectedByUser, setSelectedByUser] = useState<RTKPresetID>();
   const presetsState = useAsyncRetry(async () => messageHub.query.getRTKPresets(), [
     presetsRefreshTrigger,
@@ -67,7 +67,7 @@ const RTKCorrectionSourceSelector = ({
     console.warn('Failed to load RTK selection state:', selectionState.error);
   }
 
-  const presets = presetsState.value ?? [];
+  const presets: RTKPresetSource[] = presetsState.value ?? [];
   const hasSelectionFromServer = selectionState.value !== undefined;
   const selectedOnServer =
     selectionState.value !== undefined
@@ -96,8 +96,8 @@ const RTKCorrectionSourceSelector = ({
   useEffect(() => {
     const currentId = selectedByUser ?? selectedOnServer;
     const effectiveId = currentId === NULL_ID ? undefined : currentId;
-    setCurrentRTKPresetId(effectiveId);
-  }, [selectedByUser, selectedOnServer, setCurrentRTKPresetId]);
+    dispatch(setCurrentRTKPresetId(effectiveId));
+  }, [dispatch, selectedByUser, selectedOnServer]);
 
   // If the selection of the user differs from the selection on the server,
   // send the selection of the user to the server
@@ -269,7 +269,5 @@ export default connect(
       dispatch(openRTKPresetDialog({ mode: 'edit', presetId, presetType }));
     },
     onSourceChanged: () => dispatch(resetRTKStatistics()),
-    setCurrentRTKPresetId: (presetId?: RTKPresetID) =>
-      dispatch(setCurrentRTKPresetId(presetId)),
   })
 )(RTKCorrectionSourceSelector);

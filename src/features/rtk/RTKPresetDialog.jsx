@@ -27,7 +27,7 @@ import { withTranslation } from 'react-i18next';
 import { connect, useDispatch } from 'react-redux';
 import { nanoid } from 'nanoid';
 
-import DraggableDialog from '@skybrush/mui-components/lib/DraggableDialog';
+import { DraggableDialog } from '@skybrush/mui-components';
 
 import {
   Select as FormSelect,
