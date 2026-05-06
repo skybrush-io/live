@@ -370,10 +370,14 @@ function formatHeaderParts(
   classes: ReturnType<typeof useStyles>,
   onClick: (key: UAVSortKey) => void
 ): React.ReactNode {
+  const hasHeaderParts = (
+    value: string | readonly HeaderPart[] | undefined
+  ): value is readonly HeaderPart[] => Array.isArray(value);
+
   if (typeof parts === 'string') {
     // Whole header is a single item
     return parts;
-  } else if (Array.isArray(parts)) {
+  } else if (hasHeaderParts(parts)) {
     return parts.map(({ label, sortKey, style }) => (
       <div
         key={label}
