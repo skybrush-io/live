@@ -227,8 +227,8 @@ export const getUAVListOrientation = (state: RootState): UAVListOrientation =>
  * a value from the UAVSortKey enum, and <code>reverse</code>, which is
  * true if the UAVs are to be sorted in reverse order.
  *
- * Legacy persisted state that stores <code>UAVSortKey.DEFAULT</code> is
- * transparently mapped to <code>UAVSortKey.UAV_ID</code>.
+ * Legacy persisted state that stores <code>"default"</code> is transparently
+ * mapped to <code>UAVSortKey.UAV_ID</code>.
  */
 export function getUAVListSortPreference(state: RootState): UAVSortKeyAndOrder {
   const result = state.settings.display?.uavListSortPreference;
@@ -236,7 +236,8 @@ export function getUAVListSortPreference(state: RootState): UAVSortKeyAndOrder {
     return DEFAULT_SORT;
   }
 
-  if (result.key === UAVSortKey.DEFAULT) {
+  const persistedKey = (result as { key?: string }).key;
+  if (persistedKey === 'default') {
     return { ...result, key: UAVSortKey.UAV_ID };
   }
 

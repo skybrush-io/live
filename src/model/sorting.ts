@@ -13,11 +13,6 @@ export type Comparable = number | string;
  * UAVs.
  */
 export enum UAVSortKey {
-  /**
-   * Legacy value, kept for backwards compatibility with persisted user state.
-   * Treated as UAV_ID everywhere; not shown in the "Sort by" menu.
-   */
-  DEFAULT = 'default',
   UAV_ID = 'uavId',
   MISSION_ID = 'missionId',
   STATUS = 'status',
@@ -56,7 +51,6 @@ const idLabel: PreparedI18nKey = () => 'ID';
 const sidLabel: PreparedI18nKey = () => 'sID';
 
 export const labelsForUAVSortKey: Record<UAVSortKey, PreparedI18nKey> = {
-  [UAVSortKey.DEFAULT]: idLabel,
   [UAVSortKey.UAV_ID]: idLabel,
   [UAVSortKey.MISSION_ID]: sidLabel,
   [UAVSortKey.STATUS]: tt('sorting.label.status'),
@@ -75,7 +69,6 @@ export const labelsForUAVSortKey: Record<UAVSortKey, PreparedI18nKey> = {
  * on the UI to represent a UAV filter preset.
  */
 export const shortLabelsForUAVSortKey: Record<UAVSortKey, PreparedI18nKey> = {
-  [UAVSortKey.DEFAULT]: idLabel,
   [UAVSortKey.UAV_ID]: idLabel,
   [UAVSortKey.MISSION_ID]: sidLabel,
   [UAVSortKey.STATUS]: tt('sorting.shortLabel.status'),
@@ -175,7 +168,6 @@ export const getKeyFunctionForUAVSortKey = memoize(
         // enough. We make use of the fact that -1 means unknown RSSI.
         return (uav) => uav?.rssi?.[0] ?? -1;
 
-      case UAVSortKey.DEFAULT:
       case UAVSortKey.UAV_ID:
       case UAVSortKey.MISSION_ID:
         // These keys do not depend on the StoredUAV object; sorting for
