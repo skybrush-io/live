@@ -88,9 +88,6 @@
   "map": {
     "resetRotation": "Rotation zurücksetzen"
   },
-  "mappingToggleButton": {
-    "sortByMissionID": "Sortieren nach Mission IDs"
-  },
   "notifications": {
     "connectedToSkybrushServer": "Verbunden mit Skybrush Server"
   },

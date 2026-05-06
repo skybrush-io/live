@@ -16,12 +16,9 @@ import { startMappingEditorSession } from '~/features/mission/slice';
 import {
   getUAVListLayout,
   isShowingEmptyMissionSlots,
-  isShowingMissionIds,
 } from '~/features/settings/selectors';
 import { updateAppSettings } from '~/features/settings/slice';
 import MissingSlot from '~/icons/MissingSlot';
-
-import MappingToggleButton from './MappingToggleButton';
 
 /**
  * Button on the UAV toolbar that allows the user to toggle whether the mission
@@ -32,37 +29,35 @@ const MappingButtonGroup = ({
   layout,
   mappingEditable,
   onToggleShowingEmptyMissionSlots,
+  persistedShowEmptyMissionSlots,
   setUAVListLayout,
   showEmptyMissionSlots,
-  showMissionIds,
   startMappingEditorSession,
   t,
 }) => (
   <>
-    {showMissionIds && (
-      <Tooltip content={t('mappingButtonGroup.editMapping')}>
-        <IconButton
-          disabled={mappingEditable || !showMissionIds}
-          size='large'
-          onClick={startMappingEditorSession}
-        >
-          <Edit />
-        </IconButton>
-      </Tooltip>
-    )}
-
-    <MappingToggleButton />
+    <Tooltip content={t('mappingButtonGroup.editMapping')}>
+      <IconButton
+        disabled={mappingEditable}
+        size='large'
+        onClick={startMappingEditorSession}
+      >
+        <Edit />
+      </IconButton>
+    </Tooltip>
 
     <Tooltip
       content={
-        showEmptyMissionSlots
-          ? t('mappingButtonGroup.hideEmptyMissionSlots')
-          : t('mappingButtonGroup.showEmptyMissionSlots')
+        mappingEditable
+          ? t('mappingButtonGroup.emptySlotsShownWhileEditingMapping')
+          : persistedShowEmptyMissionSlots
+            ? t('mappingButtonGroup.hideEmptyMissionSlots')
+            : t('mappingButtonGroup.showEmptyMissionSlots')
       }
     >
       <ToggleButton
         value='showMissing'
-        disabled={!showMissionIds}
+        disabled={mappingEditable}
         selected={showEmptyMissionSlots}
         onClick={onToggleShowingEmptyMissionSlots}
       >
@@ -87,21 +82,25 @@ MappingButtonGroup.propTypes = {
   layout: PropTypes.oneOf(['grid', 'list']),
   mappingEditable: PropTypes.bool,
   onToggleShowingEmptyMissionSlots: PropTypes.func,
+  persistedShowEmptyMissionSlots: PropTypes.bool,
   setUAVListLayout: PropTypes.func,
   showEmptyMissionSlots: PropTypes.bool,
-  showMissionIds: PropTypes.bool,
   startMappingEditorSession: PropTypes.func,
   t: PropTypes.func,
 };
 
 export default connect(
   // mapStateToProps
-  (state) => ({
-    layout: getUAVListLayout(state),
-    mappingEditable: isMappingEditable(state),
-    showEmptyMissionSlots: isShowingEmptyMissionSlots(state),
-    showMissionIds: isShowingMissionIds(state),
-  }),
+  (state) => {
+    const persistedShowEmptyMissionSlots = isShowingEmptyMissionSlots(state);
+    return {
+      layout: getUAVListLayout(state),
+      mappingEditable: isMappingEditable(state),
+      persistedShowEmptyMissionSlots,
+      showEmptyMissionSlots:
+        persistedShowEmptyMissionSlots || isMappingEditable(state),
+    };
+  },
   // mapDispatchToProps
   {
     clearMapping,

@@ -37,10 +37,7 @@ import {
 import { startMappingEditorSessionAtSlot } from '~/features/mission/slice';
 import { getSelection } from '~/features/selection/selectors';
 import { setSelection } from '~/features/selection/slice';
-import {
-  getUAVListLayout,
-  isShowingMissionIds,
-} from '~/features/settings/selectors';
+import { getUAVListLayout } from '~/features/settings/selectors';
 import { UAVListLayout } from '~/features/settings/types';
 import type { AppDispatch, RootState } from '~/store/reducers';
 import { formatMissionId } from '~/utils/formatting';
@@ -108,7 +105,6 @@ type ItemRendererOptions = {
   onSelectedItem: (item: string) => void;
   onStartEditing: (missionIndex: number) => void;
   selection: string[];
-  showMissionIds: boolean;
 };
 
 /**
@@ -142,7 +138,6 @@ const createGridItemRenderer = ({
   onSelectedItem,
   onStartEditing,
   selection,
-  showMissionIds,
 }: ItemRendererOptions) =>
   function GridItemRenderer(item: Item): React.JSX.Element {
     const [uavId, missionIndex, proposedLabel] = item;
@@ -162,22 +157,13 @@ const createGridItemRenderer = ({
       selected,
     };
 
-    // Derive the main (large) label of the grid item. The rules are:
-    //
-    // - if we have a proposed label, use that
-    // - if we are not showing mission IDs, use the UAV ID
-    // - if we are showing mission IDs and we are not edit mode, format the
-    //   mission ID nicely and show that -- unless we don't have a mission ID
-    //   (we are in a spare slot), in which case use the UAV ID
-    // - if we are editing the mission mapping, show the UAV ID because that's
-    //   what we are going to allow the user to modify
+    // Grid primary label: proposed label, else formatted slot when assigned
+    // (unless editing an assigned UAV — show UAV ID), else UAV ID for spares.
 
     const label =
       proposedLabel ??
-      (showMissionIds
-        ? missionIndex !== undefined && (!isInEditMode || uavId === undefined)
-          ? formatMissionId(missionIndex)
-          : uavId
+      (missionIndex !== undefined && (!isInEditMode || uavId === undefined)
+        ? formatMissionId(missionIndex)
         : uavId);
 
     return uavId === undefined ? (
@@ -225,7 +211,6 @@ const createListItemRenderer = ({
   onSelectedItem,
   onStartEditing,
   selection,
-  showMissionIds,
 }: ItemRendererOptions) =>
   function ListItemRenderer(item: Item): React.JSX.Element | null {
     if (item === deletionMarker) {
@@ -252,13 +237,8 @@ const createListItemRenderer = ({
     const formattedMissionIndex = isInMission
       ? formatMissionId(missionIndex)
       : '';
-    const label =
-      proposedLabel ?? (showMissionIds ? formattedMissionIndex : uavId);
-    const secondaryLabel = editingThisItem
-      ? ''
-      : showMissionIds
-        ? uavId
-        : formattedMissionIndex;
+    const label = proposedLabel ?? formattedMissionIndex;
+    const secondaryLabel = uavId ?? '';
 
     return (
       <DroneListItem
@@ -288,7 +268,6 @@ type UAVListPresentationProps = Readonly<{
   onMappingAdjusted: (args: { uavId: string; to: Nullable<number> }) => void;
   onSelectItem: (id: string) => void;
   selection: string[];
-  showMissionIds: boolean;
 }>;
 
 /**
@@ -304,7 +283,6 @@ const UAVListPresentation = ({
   onMappingAdjusted,
   onSelectItem,
   selection,
-  showMissionIds,
 }: UAVListPresentationProps): React.JSX.Element => {
   // Regular styling stuff
   const classes = useListStyles();
@@ -391,7 +369,6 @@ const UAVListPresentation = ({
     onSelectedItem: onSelectItem,
     onStartEditing: onEditMappingSlot,
     selection,
-    showMissionIds,
   };
   const itemRenderer =
     layout === UAVListLayout.GRID
@@ -457,7 +434,6 @@ const UAVList = connect(
     mappingSlotBeingEdited: getIndexOfMappingSlotBeingEdited(state),
     layout: getUAVListLayout(state),
     selection: getSelection(state),
-    showMissionIds: isShowingMissionIds(state),
   }),
   // mapDispatchToProps
   () => {

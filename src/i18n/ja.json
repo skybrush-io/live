@@ -279,9 +279,6 @@
     "reverseDirection": "向きを反転するには<kbd>を押しながらShift</kbd>を押してください。",
     "selectNextEmptySlot": "次のからのスロットを選択してください"
   },
-  "mappingToggleButton": {
-    "sortByMissionID": "mission IDでソート"
-  },
   "measurementList": {
     "addDrone": "ツールバーの＋ボタンで測定するドローンを追加する",
     "copyToClipboard": "クリップボードにコピー",
