@@ -7,6 +7,11 @@ $ErrorActionPreference = "Stop"
 $repoRoot = Resolve-Path (Join-Path $PSScriptRoot "..")
 Set-Location $repoRoot
 
+$previousNodeEnv = $env:NODE_ENV
+$previousDeployment = $env:DEPLOYMENT
+$env:NODE_ENV = "production"
+$env:DEPLOYMENT = "1"
+
 function Invoke-Step {
   param(
     [string] $Name,
@@ -52,3 +57,15 @@ Invoke-Step "Packaging Windows installer" {
 Write-Host ""
 Write-Host "Windows packaging finished. Artifacts are in:"
 Write-Host (Join-Path $repoRoot "dist")
+
+if ($null -eq $previousNodeEnv) {
+  Remove-Item Env:NODE_ENV -ErrorAction SilentlyContinue
+} else {
+  $env:NODE_ENV = $previousNodeEnv
+}
+
+if ($null -eq $previousDeployment) {
+  Remove-Item Env:DEPLOYMENT -ErrorAction SilentlyContinue
+} else {
+  $env:DEPLOYMENT = $previousDeployment
+}

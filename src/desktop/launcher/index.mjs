@@ -1,6 +1,7 @@
 import { createRequire } from 'node:module';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import process from 'node:process';
 
 import { app, protocol } from 'electron';
 import ElectronStore from 'electron-store';
@@ -84,7 +85,10 @@ function run(argv) {
 
 const main = () => {
   const parser = setupCli();
-  parser.parse();
+  parser.allowUnknownOption(true);
+  parser.parse(process.argv, {
+    from: process.versions?.electron ? 'electron' : 'node',
+  });
   run(parser.opts());
 };
 
