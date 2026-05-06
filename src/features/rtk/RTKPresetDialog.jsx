@@ -48,6 +48,8 @@ const SourceInputField = ({
   error,
   helperText,
   disabled,
+  placeholder,
+  removeAriaLabel,
 }) => (
   <Box display='flex' alignItems='flex-start' mb={1} style={{ gap: 8 }}>
     <TextField
@@ -58,14 +60,14 @@ const SourceInputField = ({
       value={value}
       error={Boolean(error)}
       helperText={helperText}
-      placeholder='serial:/dev/ttyUSB0?baud=9600'
+      placeholder={placeholder}
       disabled={disabled}
       onChange={(e) => onChange(e.target.value)}
     />
     <IconButton
       size='small'
       style={{ marginTop: 4 }}
-      aria-label='Remove source'
+      aria-label={removeAriaLabel}
       disabled={disabled}
       onClick={onRemove}
     >
@@ -81,12 +83,14 @@ SourceInputField.propTypes = {
   error: PropTypes.bool,
   helperText: PropTypes.string,
   disabled: PropTypes.bool,
+  placeholder: PropTypes.string,
+  removeAriaLabel: PropTypes.string,
 };
 
-const PRESET_TYPE_LABELS = {
-  user: 'User',
-  builtin: 'Built-in',
-  dynamic: 'Dynamic',
+const PRESET_TYPE_I18N_KEYS = {
+  user: 'rtkPresetDialog.presetTypeUser',
+  builtin: 'rtkPresetDialog.presetTypeBuiltin',
+  dynamic: 'rtkPresetDialog.presetTypeDynamic',
 };
 
 /**
@@ -104,7 +108,9 @@ const RTKPresetDialogFormPresentation = ({
   presetType,
   t,
 }) => {
-  const displayType = PRESET_TYPE_LABELS[presetType] ?? PRESET_TYPE_LABELS.user;
+  const displayType = t(
+    PRESET_TYPE_I18N_KEYS[presetType] ?? PRESET_TYPE_I18N_KEYS.user
+  );
 
   const dispatch = useDispatch();
   const [sources, setSources] = useState(
@@ -326,6 +332,8 @@ const RTKPresetDialogFormPresentation = ({
                           : undefined
                       }
                       disabled={isReadOnly}
+                      placeholder={t('rtkPresetDialog.sourcePlaceholder')}
+                      removeAriaLabel={t('rtkPresetDialog.removeSource')}
                       onChange={(value) => handleSourceChange(index, value)}
                       onRemove={() => handleRemoveSource(index)}
                     />

@@ -39,11 +39,6 @@ const isRTKPresetSource = (value: unknown): value is RTKPresetSource =>
   typeof value.title === 'string' &&
   (value.type === undefined || typeof value.type === 'string');
 
-const nullPreset: RTKPresetSource = {
-  id: NULL_ID,
-  title: 'RTK disabled',
-};
-
 type Props = {
   onCreatePreset: () => void;
   onEditPreset: (presetId: RTKPresetID, presetType: RTKPresetType) => void;
@@ -202,6 +197,11 @@ const RTKCorrectionSourceSelector = ({
     hasPresets &&
     currentValue &&
     currentValue !== NULL_ID;
+
+  const nullPreset: RTKPresetSource = {
+    id: NULL_ID,
+    title: t('RTKCorrectionSourceSelector.rtkDisabled'),
+  };
 
   return (
     <FormGroup>

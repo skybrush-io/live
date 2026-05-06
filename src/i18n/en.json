@@ -77,7 +77,8 @@
     "new": "New",
     "noRTKData": "No RTK data sources on server",
     "pleaseWait": "Please wait, loading RTK sources…",
-    "refresh": "Refresh sources"
+    "refresh": "Refresh sources",
+    "rtkDisabled": "RTK disabled"
   },
   "RTKMessage": {
     "noRTKMessagesYet": "No RTK messages have been received yet"
@@ -759,7 +760,12 @@
     "presetName": "Preset Name",
     "presetNameHelp": "A descriptive name for this RTK preset",
     "presetNamePlaceholder": "My RTK Base Station",
+    "presetTypeBuiltin": "Built-in",
+    "presetTypeDynamic": "Dynamic",
+    "presetTypeUser": "User",
     "readOnlyMessage": "Built-in/Dynamic presets cannot be edited",
+    "removeSource": "Remove source",
+    "sourcePlaceholder": "serial:/dev/ttyUSB0?baud=9600",
     "sourcesHelp": "Connection URLs for RTK correction data. You can specify multiple sources.",
     "type": "Type",
     "updateFailed": "Failed to update preset"
