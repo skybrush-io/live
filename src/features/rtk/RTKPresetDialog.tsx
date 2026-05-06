@@ -239,9 +239,7 @@ const RTKPresetDialogFormPresentation = ({
 
     try {
       const selectedPresetId = await messageHub.query.getSelectedRTKPresetId();
-      // Disable RTK if the deleted preset was the active one. Loose comparison
-      // is intentional to treat null/undefined as equivalent.
-      // eslint-disable-next-line eqeqeq
+      // Disable RTK if the deleted preset was the active one.
       if (selectedPresetId == presetId) {
         await messageHub.execute.setRTKCorrectionsSource(null);
       }
@@ -331,7 +329,11 @@ const RTKPresetDialogFormPresentation = ({
         values,
         errors,
       }: FormRenderProps<FormValues>) => (
-        <form onSubmit={handleSubmit}>
+        <form
+          onSubmit={(event) => {
+            void handleSubmit(event);
+          }}
+        >
           <DialogContent>
             {error && (
               <Alert severity='error' style={{ marginBottom: 16 }}>
@@ -440,7 +442,9 @@ const RTKPresetDialogFormPresentation = ({
                 color='secondary'
                 disabled={submitting}
                 style={{ marginRight: 'auto' }}
-                onClick={handleDelete}
+                onClick={() => {
+                  void handleDelete();
+                }}
               >
                 {t('general.action.delete')}
               </Button>
