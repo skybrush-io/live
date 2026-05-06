@@ -53,8 +53,8 @@ module.exports = {
     // Resolve process.env in the code; the object below provides the default
     // values
     new webpack.EnvironmentPlugin({
-      NODE_ENV: 'development',
-      DEPLOYMENT: '0',
+      NODE_ENV: process.env.NODE_ENV || 'development',
+      DEPLOYMENT: process.env.DEPLOYMENT || '0',
     }),
 
     // Resolve the git version number and commit hash in the code

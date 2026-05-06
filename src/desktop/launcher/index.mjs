@@ -1,25 +1,34 @@
 import { createRequire } from 'node:module';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import process from 'node:process';
 
 import { app, protocol } from 'electron';
 import ElectronStore from 'electron-store';
 
-import {
-  setupApp,
-  setupCli,
-  usingWebpackDevServer,
-} from '@skybrush/electron-app-framework';
+import { setupApp, setupCli } from '@skybrush/electron-app-framework';
 
 import setupIpc from './ipc.mjs';
 import createAppMenu from './app-menu.mjs';
 import * as localServer from './local-server.mjs';
 
-const rootDir =
-  typeof __dirname === 'undefined'
-    ? path.dirname(fileURLToPath(import.meta.url))
-    : __dirname;
+const getMainWindowUrls = () => {
+  // __IS_PRODUCTION__ is replaced by webpack DefinePlugin at build time
+  if (!__IS_PRODUCTION__) {
+    const authority = process.env['WEBPACK_DEV_SERVER_URL'] ?? 'localhost:8080';
+    return {
+      url: `https://${authority}/index.html`,
+      preload: path.join(app.getAppPath(), 'preload/index.mjs'),
+    };
+  }
+
+  return {
+    url: pathToFileURL(path.join(app.getAppPath(), 'index.html')).href,
+    preload: path.join(app.getAppPath(), 'preload.bundle.mjs'),
+  };
+};
+
+const usingWebpackDevServer = !__IS_PRODUCTION__;
 
 /**
  * Main entry point of the application.
@@ -34,7 +43,7 @@ function run(argv) {
     appMenu: createAppMenu,
     mainWindow: {
       debug: argv.debug,
-      rootDir,
+      rootDir: getMainWindowUrls,
       showMenuBar: false,
       webPreferences: {
         backgroundThrottling: false,

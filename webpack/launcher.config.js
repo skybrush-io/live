@@ -1,21 +1,22 @@
 const webpack = require('webpack');
 const { merge } = require('webpack-merge');
 const baseConfig = require('./base.config.js');
-
-const plugins = [
-  new webpack.DefinePlugin({
-    // need to handle import.meta.url before Webpack does. Webpack would leak
-    // the name of the compilation folder and we don't want that, but we can't
-    // leave import.meta.url in the file as-is because Electron would choke
-    // on it.
-    'import.meta.url': '"file:///"',
-  }),
-];
+const { outputDir } = require('./helpers');
 
 module.exports = merge(baseConfig, {
   entry: './launcher.mjs',
+  experiments: {
+    outputModule: true,
+  },
+  externals: {
+    'electron/common': 'electron/common',
+    'electron/main': 'electron/main',
+  },
+  externalsType: 'module',
   output: {
-    filename: 'launcher.bundle.js',
+    path: outputDir,
+    filename: 'launcher.bundle.mjs',
+    module: true,
   },
 
   /* prevent evaluation of __dirname and __filename at build time in
@@ -25,7 +26,12 @@ module.exports = merge(baseConfig, {
     __filename: false,
   },
 
-  plugins,
+  plugins: [
+    new webpack.DefinePlugin({
+      'import.meta.url': '"file:///"',
+      '__IS_PRODUCTION__': process.env.NODE_ENV === 'production',
+    }),
+  ],
 
-  target: 'electron-main',
+  target: 'electron39-main',
 });

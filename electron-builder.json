@@ -2,12 +2,16 @@
   "appId": "com.collmot.skybrush.live",
   "productName": "Skybrush Live",
   "artifactName": "${productName} ${version}.${ext}",
+  "directories": {
+    "output": "dist"
+  },
   "files": [
-    "!**/*",
-    "package.json",
     {
-      "from": "build"
-    }
+      "from": "build",
+      "to": "",
+      "filter": ["**/*"]
+    },
+    "package.json"
   ],
   "linux": {
     "category": "Utility",
@@ -21,7 +25,8 @@
   "mac": {
     "category": "public.app-category.utilities",
     "target": "dmg",
-    "darkModeSupport": true
+    "darkModeSupport": true,
+    "asar": false
   },
   "win": {
     "target": {

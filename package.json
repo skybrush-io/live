@@ -2,9 +2,11 @@
   "name": "@skybrush/live",
   "version": "2.13.2",
   "description": "Ground control station of a Skybrush drone swarm",
-  "main": "launcher.bundle.js",
+  "main": "launcher.bundle.mjs",
   "scripts": {
-    "bundle": "rimraf build && cross-env NODE_ENV=production webpack --mode=production --progress --config webpack/dist.config.js",
+    "bundle": "rimraf build && cross-env NODE_ENV=production webpack --mode=production --progress --config webpack/dist.config.js && cross-env NODE_ENV=production webpack --mode=production --progress --config webpack/launcher.config.js && cross-env NODE_ENV=production webpack --mode=production --progress --config webpack/preload.config.js",
+    "prebuild:mac": "npm run bundle && npm run copy:build-files",
+    "copy:build-files": "cp -r build/* . 2>/dev/null || true",
     "format:check": "prettier --check .",
     "format:fix": "prettier --write .",
     "lint:check": "eslint .",
