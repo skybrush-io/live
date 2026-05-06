@@ -42,13 +42,10 @@ const SelectionGroupMiniList = () => {
       ))}
       {selectionGroups.length > 0 && <MiniListDivider />}
       <MiniListItemButton
-        onClick={
-          isSelectionNotEmpty
-            ? () => {
-                dispatch(saveCurrentSelectionAsGroupIfNotEmpty());
-              }
-            : undefined
-        }
+        disabled={!isSelectionNotEmpty}
+        onClick={() => {
+          dispatch(saveCurrentSelectionAsGroupIfNotEmpty());
+        }}
         iconPreset='add'
         primaryText={t('action.createNew')}
       />
