@@ -2,6 +2,8 @@ import { useEffect } from 'react';
 
 import { normalizeDroneForConfigIO } from '../utils/threeDViewUtils';
 
+const sameDroneId = (a, b) => String(a) === String(b);
+
 export default function useThreeDViewDroneEvents({
   droneConfigRef,
   setSelectedDrone,
@@ -54,7 +56,7 @@ export default function useThreeDViewDroneEvents({
 
       const currentConfig = droneConfigRef.current;
       if (currentConfig && Array.isArray(currentConfig.drones)) {
-        const found = currentConfig.drones.find((d) => d.id === base.id);
+        const found = currentConfig.drones.find((d) => sameDroneId(d.id, base.id));
         if (found) {
           base.path = found.path || [];
           if (!base.initialPosition && Array.isArray(found.initialPos) && found.initialPos.length >= 3) {
@@ -87,7 +89,7 @@ export default function useThreeDViewDroneEvents({
         if (!base || !Array.isArray(base.drones)) return base;
 
         const drones = base.drones.map((d) =>
-          d.id === id ? { ...d, path: path.slice() } : d
+          sameDroneId(d.id, id) ? { ...d, path: path.slice() } : d
         );
         return { ...base, drones };
       });
@@ -109,13 +111,15 @@ export default function useThreeDViewDroneEvents({
 
         if (!base || !Array.isArray(base.drones)) return base;
         const drones = base.drones.map((d) =>
-          d.id === id ? { ...d, initialPos: [nx, ny, nz], pos: Array.isArray(d.pos) ? d.pos : [0, 1, 1] } : d
+          sameDroneId(d.id, id)
+            ? { ...d, initialPos: [nx, ny, nz], pos: Array.isArray(d.pos) ? d.pos : [0, 1, 1] }
+            : d
         );
         return { ...base, drones };
       });
 
       setSelectedDrone((prev) => {
-        if (!prev || prev.id !== id) return prev;
+        if (!prev || !sameDroneId(prev.id, id)) return prev;
         return {
           ...prev,
           initialPosition: { x: nx, y: ny, z: nz },
@@ -133,7 +137,7 @@ export default function useThreeDViewDroneEvents({
       if (!Number.isFinite(nx) || !Number.isFinite(ny) || !Number.isFinite(nz)) return;
 
       setSelectedDrone((prev) => {
-        if (!prev || prev.id !== id) return prev;
+        if (!prev || !sameDroneId(prev.id, id)) return prev;
         return {
           ...prev,
           currentPosition: { x: nx, y: ny, z: nz },
@@ -142,8 +146,8 @@ export default function useThreeDViewDroneEvents({
     };
 
     const onDroneDeleteRequest = (e) => {
-      const { id } = e.detail || {};
-      if (!id) return;
+      const raw = e.detail?.id;
+      if (raw === undefined || raw === null || String(raw).trim() === '') return;
 
       setDroneConfig((prev) => {
         const base =
@@ -153,11 +157,19 @@ export default function useThreeDViewDroneEvents({
 
         if (!base || !Array.isArray(base.drones)) return base;
 
-        const drones = base.drones.filter((d) => d.id !== id);
+        const drones = base.drones.filter((d) => !sameDroneId(d.id, raw));
         return { ...base, drones };
       });
 
-      setSelectedDrone((prev) => (prev && prev.id === id ? null : prev));
+      setSelectedDrone((prev) => {
+        if (prev && sameDroneId(prev.id, raw)) {
+          queueMicrotask(() => {
+            window.dispatchEvent(new CustomEvent('drone-deselected'));
+          });
+          return null;
+        }
+        return prev;
+      });
     };
 
     const onPathGeneratorResponse = (e) => {

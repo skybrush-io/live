@@ -215,10 +215,13 @@ AFrame.registerComponent('drone-flock', {
 
     this._uavIdToEntity = {};
 
+    // mini-signals v2: detach()는 add()를 호출한 “그 MiniSignal 인스턴스”에서만 호출해야 한다.
+    // Golden Layout 등으로 씬이 바뀌면 this.system이 새 시스템을 가리켜 심볼 불일치 오류가 난다.
+    const droneRadiusChanged = this.system.droneRadiusChanged;
+    this._droneRadiusChangedSignal = droneRadiusChanged;
+
     this._signals = {
-      uavGeometryChanged: this.system.droneRadiusChanged.add(
-        this._onUAVGeometryChanged
-      ),
+      uavGeometryChanged: droneRadiusChanged.add(this._onUAVGeometryChanged),
       uavsAdded: flock.uavsAdded.add(this._onUAVsAdded),
       uavsRemoved: flock.uavsRemoved.add(this._onUAVsRemoved),
       uavsUpdated: flock.uavsUpdated.add(this._onUAVsUpdated),
@@ -228,10 +231,20 @@ AFrame.registerComponent('drone-flock', {
   },
 
   remove() {
-    flock.uavsAdded.detach(this._signals.uavsAdded);
-    flock.uavsRemoved.detach(this._signals.uavsRemoved);
-    flock.uavsUpdated.detach(this._signals.uavsUpdated);
-    this.system.droneRadiusChanged.detach(this._signals.uavGeometryChanged);
+    if (!this._signals) {
+      return;
+    }
+
+    const s = this._signals;
+    this._signals = null;
+
+    flock.uavsAdded.detach(s.uavsAdded);
+    flock.uavsRemoved.detach(s.uavsRemoved);
+    flock.uavsUpdated.detach(s.uavsUpdated);
+    if (this._droneRadiusChangedSignal) {
+      this._droneRadiusChangedSignal.detach(s.uavGeometryChanged);
+      this._droneRadiusChangedSignal = null;
+    }
   },
 
   tick() {

@@ -1,34 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { useMemo, useState } from 'react';
-import { useDispatch } from 'react-redux';
-
-import { replaceMapping, setMappingLength } from '~/features/mission/slice';
-import { StartMethod } from '~/features/show/enums';
-import {
-  setExternalShowUploaded,
-  setStartMethod,
-  setUAVIdsToStartAutomatically,
-  synchronizeShowSettings,
-} from '~/features/show/slice';
 
 const DEFAULT_PATH_PLANNER_URL = 'http://localhost:5001/api/v1/path-planner/plan';
-
-const parseResponseBodyAsText = async (response) => {
-  const contentType = response.headers.get('content-type') || '';
-  if (contentType.includes('application/json')) {
-    try {
-      const body = await response.json();
-      return JSON.stringify(body);
-    } catch (e) {
-      return '';
-    }
-  }
-  try {
-    return await response.text();
-  } catch (e) {
-    return '';
-  }
-};
 
 const tryParseJsonResponse = async (response) => {
   const contentType = response.headers.get('content-type') || '';
@@ -160,6 +133,23 @@ const parseInitialTargetInput = (rawText) => {
   return { initial, target };
 };
 
+const extractPlannerOptions = (rawText) => {
+  let step_size = 1;
+  let duration_ms = 5000;
+  try {
+    const j = JSON.parse(rawText);
+    if (j && typeof j === 'object') {
+      const ss = Number(j.step_size);
+      const dm = Number(j.duration_ms);
+      if (Number.isFinite(ss) && ss > 0) step_size = ss;
+      if (Number.isFinite(dm) && dm > 0) duration_ms = dm;
+    }
+  } catch (e) {
+    // 텍스트 전용 형식이면 기본값 유지
+  }
+  return { step_size, duration_ms };
+};
+
 const toPreviewPosition = (point) => {
   const [x, y, z] = point;
   // 앱 좌표계는 Z-up 기준이므로, A-Frame 미리보기(Y-up)로 변환한다.
@@ -227,7 +217,6 @@ MiniScene.propTypes = {
 };
 
 export default function PathGeneratorModal({ open, onClose }) {
-  const dispatch = useDispatch();
   const [rawInput, setRawInput] = useState('');
   const [error, setError] = useState('');
   const [requestUrl, setRequestUrl] = useState(DEFAULT_PATH_PLANNER_URL);
@@ -390,6 +379,7 @@ export default function PathGeneratorModal({ open, onClose }) {
 
                   const payload = parseInitialTargetInput(rawInput);
                   setPreviewData(payload);
+                  const { step_size, duration_ms } = extractPlannerOptions(rawInput);
 
                   if (!requestUrl || !requestUrl.trim()) {
                     throw new Error('요청 URL을 입력해주세요.');
@@ -402,12 +392,17 @@ export default function PathGeneratorModal({ open, onClose }) {
                     headers: {
                       'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify(payload),
+                    body: JSON.stringify({
+                      initial: payload.initial,
+                      target: payload.target,
+                      step_size,
+                      duration_ms,
+                      output: 'skyc',
+                      download: true,
+                    }),
                   });
 
                   if (!response.ok) {
-                    // Structured validation failure (422 from path-planner):
-                    // surface the issue list in a readable form.
                     if (response.status === 422) {
                       const json = await tryParseJsonResponse(response);
                       const issues = json?.validation?.issues || [];
@@ -419,78 +414,33 @@ export default function PathGeneratorModal({ open, onClose }) {
                       );
                     }
 
-                    const errorBody = await parseResponseBodyAsText(response);
                     if (response.status === 404 && usedUrl.startsWith('/api/')) {
                       throw new Error(
                         `요청 실패: 404 Not Found (URL: ${usedUrl})\n` +
                           '개발 서버 프록시가 아직 반영되지 않았을 수 있습니다. 프론트 dev 서버를 재시작해주세요.'
                       );
                     }
+
+                    const errJson = await response.json().catch(() => ({}));
+                    const msg =
+                      (typeof errJson.error === 'string' && errJson.error) ||
+                      (typeof errJson.message === 'string' && errJson.message) ||
+                      response.statusText;
                     throw new Error(
-                      `요청 실패: ${response.status} ${response.statusText} (URL: ${usedUrl})${
-                        errorBody ? `\n응답: ${errorBody}` : ''
-                      }`
+                      msg || `요청 실패: ${response.status} (URL: ${usedUrl})`
                     );
                   }
 
-                  const result = await response.json();
-                  if (!result || !Array.isArray(result.drones)) {
-                    throw new Error('응답 형식이 올바르지 않습니다. (drones 배열 필요)');
-                  }
+                  const blob = await response.blob();
+                  const objectUrl = URL.createObjectURL(blob);
+                  const a = document.createElement('a');
+                  a.href = objectUrl;
+                  a.download = 'path-planner.skyc';
+                  a.click();
+                  URL.revokeObjectURL(objectUrl);
 
-                  if (typeof window !== 'undefined') {
-                    window.dispatchEvent(
-                      new CustomEvent('path-generator-response', { detail: result })
-                    );
-                  }
-
-                  // Did the server actually push the show to at least one drone?
-                  // If yes, mark the show as externally uploaded so the launch
-                  // wizard skips the local .skyc → upload pipeline.
-                  const uploadedCount = Number(result?.upload?.uploaded ?? 0);
-                  if (uploadedCount > 0) {
-                    dispatch(setExternalShowUploaded(true));
-                    // External uploads typically run without a physical RC,
-                    // so default the start method to scheduled/auto. The
-                    // user can still flip this back from the start-time
-                    // dialog afterwards if they want RC-triggered start.
-                    dispatch(setStartMethod(StartMethod.AUTO));
-                    // Populate the auto-start UAV list from the drones that
-                    // the server actually uploaded the show to. Without this
-                    // the scheduled auto-start fires with an empty list and
-                    // no drone is triggered ("no UAVs to start automatically").
-                    const uploadDetails = result?.upload?.details || {};
-                    const uploadedUavIds = Object.keys(uploadDetails).filter(
-                      (uavId) => uploadDetails[uavId] === 'ok'
-                    );
-                    if (uploadedUavIds.length > 0) {
-                      // The server-side auto-start UAV list is derived from
-                      // the mission mapping (see show/saga.js -> pushSettingsToServer),
-                      // so we have to populate the mapping as well — just
-                      // setting start.uavIds locally is not enough.
-                      dispatch(setMappingLength(uploadedUavIds.length));
-                      dispatch(replaceMapping(uploadedUavIds));
-                      dispatch(setUAVIdsToStartAutomatically(uploadedUavIds));
-                      // Push the new start configuration (method + uavIds via
-                      // mapping) to the server so the scheduled auto-start has
-                      // drones to trigger.
-                      dispatch(synchronizeShowSettings('toServer'));
-                    }
-                  }
-
-                  // Surface non-blocking validation warnings, if any.
-                  const warnIssues = (result?.validation?.issues || []).filter(
-                    (i) => i.severity === 'warning'
-                  );
-                  const warnText = formatValidationIssues(warnIssues);
-                  const uploadSummary =
-                    uploadedCount > 0
-                      ? ` (드론 ${uploadedCount}대 자동 업로드 완료)`
-                      : '';
                   setRequestStatus(
-                    warnText
-                      ? `경로 요청 성공: ${result.drones.length}개 드론 반영됨${uploadSummary}\n경고:\n${warnText}`
-                      : `경로 요청 성공: ${result.drones.length}개 드론 반영됨${uploadSummary}`
+                    'path-planner.skyc 다운로드가 시작되었습니다. (바이너리 응답 / output: skyc)'
                   );
                 } catch (e) {
                   if (e instanceof TypeError) {

@@ -155,7 +155,11 @@ export const slicePathByElapsedMs = (path, elapsedMs) => {
 };
 
 export const normalizeDroneForConfigIO = (drone, index = 0) => {
-  const id = drone?.id || `drone-${index + 1}`;
+  const rawId = drone?.id;
+  const id =
+    rawId !== undefined && rawId !== null && String(rawId).trim() !== ''
+      ? String(rawId)
+      : `drone-${index + 1}`;
   const name = drone?.name || id;
   const batteryNum = Number(drone?.battery);
   const status = drone?.status || 'Idle';

@@ -9,6 +9,13 @@ if (!AFrame.components['click-pick']) {
       this._raycaster = new THREE.Raycaster();
       this._mouse = new THREE.Vector2();
       this._onPointerDown = this._onPointerDown.bind(this);
+      this._onExternalDeselect = () => {
+        if (selectedEl) {
+          selectedEl.components?.['fbx-model']?._deselect?.();
+          selectedEl = null;
+          this._requestRender();
+        }
+      };
 
       const sceneEl = this.el.sceneEl;
       const bind = () =>
@@ -16,9 +23,12 @@ if (!AFrame.components['click-pick']) {
 
       if (sceneEl.hasLoaded) bind();
       else sceneEl.addEventListener('loaded', bind);
+
+      window.addEventListener('drone-deselected', this._onExternalDeselect);
     },
 
     remove() {
+      window.removeEventListener('drone-deselected', this._onExternalDeselect);
       this.el.sceneEl?.canvas?.removeEventListener(
         'pointerdown',
         this._onPointerDown,

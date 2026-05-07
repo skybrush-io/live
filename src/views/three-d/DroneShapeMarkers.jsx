@@ -6,7 +6,10 @@ function normalizeDrones(drones) {
 
   return drones
     .map((d, index) => {
-      const id = d.id || `drone-${index + 1}`;
+      const id =
+        d.id !== undefined && d.id !== null && String(d.id).trim() !== ''
+          ? String(d.id)
+          : `drone-${index + 1}`;
       const name = d.name || id;
       const battery = Number.isFinite(Number(d.battery)) ? Number(d.battery) : 100;
       const status = d.status || 'Idle';
