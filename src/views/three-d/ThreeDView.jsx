@@ -5,6 +5,7 @@
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { connect } from 'react-redux';
+import { createSelector } from '@reduxjs/toolkit';
 
 import CoordinateSystemAxes from './CoordinateSystemAxes';
 import DroneShapeMarkers from './DroneShapeMarkers';
@@ -37,12 +38,167 @@ import {
   getSceneryForThreeDView,
 } from '~/features/settings/selectors';
 import { setViewRuntimeState } from '~/features/three-d/slice';
-import { isShowIndoor } from '~/features/show/selectors';
-import { isMapCoordinateSystemLeftHanded } from '~/selectors/map';
+import {
+  getDroneSwarmSpecification,
+  getOutdoorShowToWorldCoordinateSystemTransformation,
+  isShowIndoor,
+} from '~/features/show/selectors';
+import {
+  getFlatEarthCoordinateTransformer,
+  isMapCoordinateSystemLeftHanded,
+} from '~/selectors/map';
 
 const getEffectiveScenery = (state) => {
   return getEffectiveSceneryUtil(state, getSceneryForThreeDView, isShowIndoor);
 };
+
+const toFiniteShowCoordinate = (coordinate) => {
+  if (!Array.isArray(coordinate) || coordinate.length < 3) return null;
+  const x = Number(coordinate[0]);
+  const y = Number(coordinate[1]);
+  const z = Number(coordinate[2]);
+  return Number.isFinite(x) && Number.isFinite(y) && Number.isFinite(z)
+    ? [x, y, z]
+    : null;
+};
+
+const makeCoordinateTransformerForPlayback = ({
+  flatEarthCoordinateTransformer,
+  indoor,
+  showToWorldCoordinate,
+}) => {
+  if (indoor) {
+    return (coordinate) => toFiniteShowCoordinate(coordinate);
+  }
+
+  if (!showToWorldCoordinate || !flatEarthCoordinateTransformer) {
+    return () => null;
+  }
+
+  const flipY = flatEarthCoordinateTransformer.type !== 'nwu';
+  return (coordinate) => {
+    const point = toFiniteShowCoordinate(coordinate);
+    if (!point) return null;
+
+    const world = showToWorldCoordinate(point);
+    if (!world) return null;
+
+    const transformed = flatEarthCoordinateTransformer.fromLonLatAhl([
+      world.lon,
+      world.lat,
+      world.ahl,
+    ]);
+    if (!Array.isArray(transformed) || transformed.length < 3) return null;
+
+    if (flipY) {
+      transformed[1] = -transformed[1];
+    }
+
+    return transformed;
+  };
+};
+
+const convertTrajectoryToPlaybackPath = (trajectory, transformCoordinate) => {
+  if (!trajectory || !Array.isArray(trajectory.points) || !trajectory.points.length) {
+    return null;
+  }
+
+  const takeoffTimeMs = Math.max(0, Number(trajectory.takeoffTime) || 0) * 1000;
+  const rawPoints = trajectory.points
+    .map((keyframe) => {
+      if (!Array.isArray(keyframe) || keyframe.length < 2) return null;
+      const timestampMs = Math.max(0, Number(keyframe[0]) || 0) * 1000;
+      const position = transformCoordinate(keyframe[1]);
+      if (!position) return null;
+      return { timestampMs: takeoffTimeMs + timestampMs, position };
+    })
+    .filter(Boolean)
+    .sort((a, b) => a.timestampMs - b.timestampMs);
+
+  if (!rawPoints.length) return null;
+
+  const path = rawPoints.map((point, index) => {
+    const durationMs =
+      index === 0
+        ? 0
+        : Math.max(0, Math.round(point.timestampMs - rawPoints[index - 1].timestampMs));
+    const [x, y, z] = point.position;
+    return { x, y, z, durationMs };
+  });
+
+  if (rawPoints[0].timestampMs > 0) {
+    const [x, y, z] = rawPoints[0].position;
+    path.splice(1, 0, {
+      x,
+      y,
+      z,
+      durationMs: Math.round(rawPoints[0].timestampMs),
+    });
+  }
+
+  return {
+    initialPos: rawPoints[0].position,
+    path,
+  };
+};
+
+const buildDroneConfigFromShowSpec = ({
+  flatEarthCoordinateTransformer,
+  indoor,
+  showToWorldCoordinate,
+  swarm,
+}) => {
+  if (!Array.isArray(swarm) || !swarm.length) return null;
+
+  const transformCoordinate = makeCoordinateTransformerForPlayback({
+    flatEarthCoordinateTransformer,
+    indoor,
+    showToWorldCoordinate,
+  });
+
+  const drones = swarm
+    .map((drone, index) => {
+      const trajectory = drone?.settings?.trajectory;
+      const converted = convertTrajectoryToPlaybackPath(trajectory, transformCoordinate);
+      if (!converted) return null;
+
+      const id =
+        drone?.id !== undefined && drone?.id !== null && String(drone.id).trim() !== ''
+          ? String(drone.id)
+          : `show-drone-${index + 1}`;
+      return {
+        id,
+        name: drone?.name || `Show drone ${index + 1}`,
+        battery: 100,
+        status: 'Show',
+        pos: converted.initialPos,
+        initialPos: converted.initialPos,
+        path: converted.path,
+      };
+    })
+    .filter(Boolean);
+
+  return drones.length ? { drones, source: 'showSpec' } : null;
+};
+
+const getShowSpecDroneConfigForThreeDView = createSelector(
+  getFlatEarthCoordinateTransformer,
+  isShowIndoor,
+  getOutdoorShowToWorldCoordinateSystemTransformation,
+  getDroneSwarmSpecification,
+  (
+    flatEarthCoordinateTransformer,
+    indoor,
+    showToWorldCoordinate,
+    swarm
+  ) =>
+    buildDroneConfigFromShowSpec({
+      flatEarthCoordinateTransformer,
+      indoor,
+      showToWorldCoordinate,
+      swarm,
+    })
+);
 
 const ThreeDView = React.forwardRef((props, ref) => {
   const {
@@ -58,6 +214,7 @@ const ThreeDView = React.forwardRef((props, ref) => {
     showLandingPositions,
     showStatistics,
     showTrajectoriesOfSelection,
+    showSpecDroneConfig,
     viewRuntime,
     onSetViewRuntimeState,
   } = props;
@@ -86,6 +243,8 @@ const ThreeDView = React.forwardRef((props, ref) => {
   const [addDroneModalOpen, setAddDroneModalOpen] = useState(false);
   const [pathGeneratorModalOpen, setPathGeneratorModalOpen] = useState(false);
   const [pathProgress, setPathProgress] = useState(persistedPathProgress);
+  const [isPlaybackRunning, setIsPlaybackRunning] = useState(false);
+  const playbackClockRef = useRef({ startElapsedMs: 0, startedAt: 0 });
 
   useEffect(() => {
     if (ignorePersistedDroneConfigRef.current) {
@@ -293,11 +452,24 @@ const ThreeDView = React.forwardRef((props, ref) => {
 
   const [gizmoDragState, setGizmoDragState] = useState({ dragging: false, axis: null });
   const effectiveConfig = useMemo(() => {
+    if (
+      showSpecDroneConfig &&
+      Array.isArray(showSpecDroneConfig.drones) &&
+      showSpecDroneConfig.drones.length
+    ) {
+      return showSpecDroneConfig;
+    }
     if (droneConfig && Array.isArray(droneConfig.drones) && droneConfig.drones.length) {
       return droneConfig;
     }
     return collectConfigFromScene();
-  }, [droneConfig]);
+  }, [droneConfig, showSpecDroneConfig]);
+  droneConfigRef.current = effectiveConfig;
+
+  const playbackSourceLabel =
+    effectiveConfig?.source === 'showSpec'
+      ? '로드된 .skyc spec'
+      : '3D JSON/수동 경로';
 
   const maxPathDurationMs = useMemo(() => {
     if (!effectiveConfig || !Array.isArray(effectiveConfig.drones)) return 0;
@@ -312,10 +484,7 @@ const ThreeDView = React.forwardRef((props, ref) => {
     maxPathDurationMs * (Math.min(100, Math.max(0, Number(pathProgress) || 0)) / 100);
 
   const applyProgressToAll = (progressPercent) => {
-    const base =
-      droneConfig && Array.isArray(droneConfig.drones) && droneConfig.drones.length
-        ? droneConfig
-        : collectConfigFromScene();
+    const base = effectiveConfig;
 
     if (!base || !Array.isArray(base.drones) || !base.drones.length) return;
 
@@ -351,9 +520,36 @@ const ThreeDView = React.forwardRef((props, ref) => {
   };
 
   const handlePathProgressChange = (nextValue) => {
+    setIsPlaybackRunning(false);
     setPathProgress(nextValue);
     applyProgressToAll(nextValue);
   };
+
+  useEffect(() => {
+    if (!isPlaybackRunning || maxPathDurationMs <= 0) return undefined;
+
+    let rafId = null;
+    const tick = (now) => {
+      const elapsedMs =
+        playbackClockRef.current.startElapsedMs +
+        (now - playbackClockRef.current.startedAt);
+      const nextProgress = Math.min(100, (elapsedMs / maxPathDurationMs) * 100);
+
+      setPathProgress(nextProgress);
+
+      if (nextProgress >= 100) {
+        setIsPlaybackRunning(false);
+        return;
+      }
+
+      rafId = requestAnimationFrame(tick);
+    };
+
+    rafId = requestAnimationFrame(tick);
+    return () => {
+      if (rafId) cancelAnimationFrame(rafId);
+    };
+  }, [isPlaybackRunning, maxPathDurationMs]);
 
   useEffect(() => {
     const onGizmoDragState = (e) => {
@@ -369,15 +565,19 @@ const ThreeDView = React.forwardRef((props, ref) => {
   }, []);
 
   const handlePlayAll = () => {
-    const base =
-      droneConfig && Array.isArray(droneConfig.drones) && droneConfig.drones.length
-        ? droneConfig
-        : collectConfigFromScene();
+    const base = effectiveConfig;
 
     if (!base || !Array.isArray(base.drones) || !base.drones.length) return;
 
     const progress = Math.min(100, Math.max(0, Number(pathProgress) || 0)) / 100;
     const elapsedMs = maxPathDurationMs * progress;
+    if (maxPathDurationMs <= 0 || elapsedMs >= maxPathDurationMs) return;
+
+    playbackClockRef.current = {
+      startElapsedMs: elapsedMs,
+      startedAt: performance.now(),
+    };
+    setIsPlaybackRunning(true);
 
     base.drones.forEach((d) => {
       if (!Array.isArray(d.path) || !d.path.length || !d.id) return;
@@ -400,10 +600,9 @@ const ThreeDView = React.forwardRef((props, ref) => {
   };
 
   const handleResetAll = () => {
-    const base =
-      droneConfig && Array.isArray(droneConfig.drones) && droneConfig.drones.length
-        ? droneConfig
-        : collectConfigFromScene();
+    setIsPlaybackRunning(false);
+    setPathProgress(0);
+    const base = effectiveConfig;
 
     if (!base || !Array.isArray(base.drones) || !base.drones.length) return;
 
@@ -448,6 +647,13 @@ const ThreeDView = React.forwardRef((props, ref) => {
         onPathProgressChange={handlePathProgressChange}
         currentPositionMs={currentPositionMs}
         totalDurationMs={maxPathDurationMs}
+        playbackSourceLabel={playbackSourceLabel}
+        isPlaybackRunning={isPlaybackRunning}
+        droneCount={
+          effectiveConfig && Array.isArray(effectiveConfig.drones)
+            ? effectiveConfig.drones.length
+            : 0
+        }
         onPlayAll={handlePlayAll}
         onResetAll={handleResetAll}
         onResetPanelSettings={handleResetPanelSettings}
@@ -529,7 +735,7 @@ const ThreeDView = React.forwardRef((props, ref) => {
           {showLandingPositions && <LandingPositionMarkers />}
           {showTrajectoriesOfSelection && <SelectedTrajectories />}
 
-          <DroneShapeMarkers drones={droneConfig && Array.isArray(droneConfig.drones) ? droneConfig.drones : undefined} />
+          <DroneShapeMarkers drones={effectiveConfig && Array.isArray(effectiveConfig.drones) ? effectiveConfig.drones : undefined} />
           <a-drone-flock />
           <Room />
         </a-entity>
@@ -571,7 +777,6 @@ const ThreeDView = React.forwardRef((props, ref) => {
             fontSize: 12,
             letterSpacing: 0.2,
             backdropFilter: 'blur(8px)',
-            boxShadow: '0 6px 18px rgba(0,0,0,0.3)',
           }}
         >
           {gizmoDragState.dragging && gizmoDragState.axis
@@ -599,6 +804,10 @@ ThreeDView.propTypes = {
   showLandingPositions: PropTypes.bool,
   showStatistics: PropTypes.bool,
   showTrajectoriesOfSelection: PropTypes.bool,
+  showSpecDroneConfig: PropTypes.shape({
+    drones: PropTypes.array,
+    source: PropTypes.string,
+  }),
   viewRuntime: PropTypes.shape({
     droneConfig: PropTypes.any,
     pathProgress: PropTypes.number,
@@ -613,6 +822,7 @@ export default connect(
     ...state.threeD,
     scenery: getEffectiveScenery(state),
     lighting: getLightingConditionsForThreeDView(state),
+    showSpecDroneConfig: getShowSpecDroneConfigForThreeDView(state),
   }),
   {
     onSetViewRuntimeState: setViewRuntimeState,

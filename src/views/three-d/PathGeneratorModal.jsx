@@ -267,7 +267,6 @@ export default function PathGeneratorModal({ open, onClose }) {
           width: 980,
           maxWidth: 'calc(100vw - 56px)',
           border: '1px solid rgba(126, 200, 255, 0.26)',
-          boxShadow: '0 14px 32px rgba(0,0,0,0.42)',
         }}
       >
         <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 12 }}>경로 생성하기</div>

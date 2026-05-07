@@ -20,9 +20,10 @@ if (!AFrame.components['drone-move-bridge']) {
 
       if (this._currentPathCancels) {
         Object.values(this._currentPathCancels).forEach((cancel) => {
+          if (typeof cancel !== 'function') return;
           try {
             cancel();
-          } catch (e) {
+          } catch {
             // ignore
           }
         });
@@ -39,6 +40,11 @@ if (!AFrame.components['drone-move-bridge']) {
       if (!target) {
         console.warn('[drone-move-bridge] target not found:', id);
         return;
+      }
+
+      if (this._currentPathCancels[id]) {
+        this._currentPathCancels[id]();
+        this._currentPathCancels[id] = undefined;
       }
 
       // 단일 이동은 즉시 위치 변경
@@ -88,7 +94,7 @@ if (!AFrame.components['drone-move-bridge']) {
       // 기존 경로 애니메이션 정리 (해당 드론만)
       if (this._currentPathCancels[id]) {
         this._currentPathCancels[id]();
-        delete this._currentPathCancels[id];
+        this._currentPathCancels[id] = undefined;
       }
 
       const initialPosAttr = target.getAttribute('data-initial-pos');
@@ -155,7 +161,7 @@ if (!AFrame.components['drone-move-bridge']) {
       const playNext = () => {
         if (index >= points.length) {
           if (this._currentPathCancels[id]) {
-            delete this._currentPathCancels[id];
+            this._currentPathCancels[id] = undefined;
           }
           window.dispatchEvent(
             new CustomEvent('drone-path-finished', { detail: { id } })

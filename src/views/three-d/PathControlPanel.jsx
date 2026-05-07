@@ -7,6 +7,9 @@ export default function PathControlPanel({
   onPathProgressChange,
   currentPositionMs,
   totalDurationMs,
+  playbackSourceLabel,
+  isPlaybackRunning,
+  droneCount,
   onPlayAll,
   onResetAll,
   onResetPanelSettings,
@@ -62,7 +65,9 @@ export default function PathControlPanel({
         >
           <div>
             <div style={{ fontWeight: 700, fontSize: 13, letterSpacing: 0.2 }}>Path Control</div>
-            <div style={{ opacity: 0.66, fontSize: 11, marginTop: 1 }}>재생 및 JSON 관리</div>
+            <div style={{ opacity: 0.66, fontSize: 11, marginTop: 1 }}>
+              {playbackSourceLabel} · {droneCount}대
+            </div>
           </div>
           <button
             type="button"
@@ -116,7 +121,7 @@ export default function PathControlPanel({
               fontWeight: 600,
             }}
           >
-            전체 재생
+            {isPlaybackRunning ? '재생 중...' : '전체 재생'}
           </button>
           <button
             type="button"
@@ -211,6 +216,9 @@ PathControlPanel.propTypes = {
   onPathProgressChange: PropTypes.func.isRequired,
   currentPositionMs: PropTypes.number.isRequired,
   totalDurationMs: PropTypes.number.isRequired,
+  playbackSourceLabel: PropTypes.string.isRequired,
+  isPlaybackRunning: PropTypes.bool.isRequired,
+  droneCount: PropTypes.number.isRequired,
   onPlayAll: PropTypes.func.isRequired,
   onResetAll: PropTypes.func.isRequired,
   onResetPanelSettings: PropTypes.func.isRequired,
