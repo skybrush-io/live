@@ -286,7 +286,6 @@ export default function DroneInfoPanel({ open, drone, onClose }) {
         transition: 'transform 200ms ease',
         zIndex: 10000,
         borderLeft: '1px solid rgba(126, 200, 255, 0.25)',
-        boxShadow: '-12px 0 28px rgba(0,0,0,0.28)',
         backdropFilter: 'blur(8px)',
         overflowY: 'auto',
       }}
