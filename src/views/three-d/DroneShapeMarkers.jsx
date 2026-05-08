@@ -13,7 +13,21 @@ function normalizeDrones(drones) {
       const name = d.name || id;
       const battery = Number.isFinite(Number(d.battery)) ? Number(d.battery) : 100;
       const status = d.status || 'Idle';
-      const posArray = Array.isArray(d.pos) && d.pos.length === 3 ? d.pos : [0, 1, 1];
+      const firstPathPoint = Array.isArray(d.path) && d.path.length ? d.path[0] : null;
+      const fallbackPos =
+        firstPathPoint &&
+        Number.isFinite(Number(firstPathPoint.x)) &&
+        Number.isFinite(Number(firstPathPoint.y)) &&
+        Number.isFinite(Number(firstPathPoint.z))
+          ? [Number(firstPathPoint.x), Number(firstPathPoint.y), Number(firstPathPoint.z)]
+          : [0, 1, 1];
+      let initialPosArray = fallbackPos;
+      if (Array.isArray(d.initialPos) && d.initialPos.length === 3) {
+        initialPosArray = d.initialPos;
+      } else if (Array.isArray(d.initial_position) && d.initial_position.length === 3) {
+        initialPosArray = d.initial_position;
+      }
+      const posArray = Array.isArray(d.pos) && d.pos.length === 3 ? d.pos : initialPosArray;
 
       return {
         id,
@@ -21,6 +35,7 @@ function normalizeDrones(drones) {
         battery,
         status,
         pos: posArray,
+        initialPos: initialPosArray,
         path: Array.isArray(d.path) ? d.path : [],
       };
     })
@@ -41,7 +56,7 @@ const DroneShapeMarkers = ({ drones }) => {
       data-drone-name={d.name}
       data-battery={d.battery}
       data-status={d.status}
-      data-initial-pos={d.pos.join(' ')}
+      data-initial-pos={d.initialPos.join(' ')}
       data-path={d.path && d.path.length ? JSON.stringify(d.path) : undefined}
     />
   ));
@@ -55,6 +70,8 @@ DroneShapeMarkers.propTypes = {
       battery: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
       status: PropTypes.string,
       pos: PropTypes.arrayOf(PropTypes.number),
+      initialPos: PropTypes.arrayOf(PropTypes.number),
+      initial_position: PropTypes.arrayOf(PropTypes.number),
       path: PropTypes.array,
     })
   ),

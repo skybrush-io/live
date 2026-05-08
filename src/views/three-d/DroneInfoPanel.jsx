@@ -8,7 +8,7 @@ export default function DroneInfoPanel({ open, drone, onClose }) {
   const draggingPathIndexRef = useRef(null);
   const [dragOverPathIndex, setDragOverPathIndex] = useState(null);
   const [pathPoints, setPathPoints] = useState([
-    { x: '', y: '', z: '', durationMs: '1000' },
+    { x: '', y: '', z: '', durationMs: '1000', holdMs: '0' },
   ]);
 
   // 드론 바뀔 때 입력칸 및 경로 초기화 / JSON에서 path가 오면 반영
@@ -31,10 +31,11 @@ export default function DroneInfoPanel({ open, drone, onClose }) {
           y: String(p.y ?? ''),
           z: String(p.z ?? ''),
           durationMs: String(p.durationMs ?? '1000'),
+          holdMs: String(p.holdMs ?? '0'),
         }))
       );
     } else {
-      setPathPoints([{ x: '', y: '', z: '', durationMs: '1000' }]);
+      setPathPoints([{ x: '', y: '', z: '', durationMs: '1000', holdMs: '0' }]);
     }
   }, [drone?.id, drone?.path]);
 
@@ -109,7 +110,7 @@ export default function DroneInfoPanel({ open, drone, onClose }) {
   };
 
   const addPathPoint = () => {
-    setPathPoints((prev) => [...prev, { x: '', y: '', z: '', durationMs: '1000' }]);
+    setPathPoints((prev) => [...prev, { x: '', y: '', z: '', durationMs: '1000', holdMs: '0' }]);
   };
 
   const addCurrentPositionPathPoint = () => {
@@ -134,6 +135,7 @@ export default function DroneInfoPanel({ open, drone, onClose }) {
       y: formatCoord(ny),
       z: formatCoord(nz),
       durationMs: '1000',
+      holdMs: '0',
     };
 
     setPathPoints((prev) => [
@@ -151,12 +153,12 @@ export default function DroneInfoPanel({ open, drone, onClose }) {
   const removePathPoint = (index) => {
     setPathPoints((prev) => {
       if (!Array.isArray(prev) || !prev.length) {
-        return [{ x: '', y: '', z: '', durationMs: '1000' }];
+        return [{ x: '', y: '', z: '', durationMs: '1000', holdMs: '0' }];
       }
 
       const next = prev.filter((_, i) => i !== index);
       if (!next.length) {
-        return [{ x: '', y: '', z: '', durationMs: '1000' }];
+        return [{ x: '', y: '', z: '', durationMs: '1000', holdMs: '0' }];
       }
       return next;
     });
@@ -232,7 +234,12 @@ export default function DroneInfoPanel({ open, drone, onClose }) {
         x: Number(p.x),
         y: Number(p.y),
         z: Number(p.z),
-        durationMs: Number(p.durationMs),
+        durationMs: Number.isFinite(Number(p.durationMs)) && Number(p.durationMs) >= 0
+          ? Number(p.durationMs)
+          : 1000,
+        holdMs: Number.isFinite(Number(p.holdMs)) && Number(p.holdMs) >= 0
+          ? Number(p.holdMs)
+          : 0,
       }));
 
     if (!points.length) return;
@@ -423,7 +430,7 @@ export default function DroneInfoPanel({ open, drone, onClose }) {
                   onDragEnd={handlePathDragEnd}
                   style={{
                     display: 'grid',
-                    gridTemplateColumns: '28px 24px 1fr 1fr 1fr 72px 28px',
+                    gridTemplateColumns: '28px 24px 1fr 1fr 1fr 72px 72px 28px',
                     gap: 6,
                     alignItems: 'center',
                     marginBottom: 6,
@@ -480,7 +487,19 @@ export default function DroneInfoPanel({ open, drone, onClose }) {
                   <input
                     value={p.durationMs}
                     onChange={(e) => updatePathPoint(idx, 'durationMs', e.target.value)}
-                    placeholder="ms"
+                    placeholder="이동ms"
+                    title="이 지점까지 이동하는 시간(ms)"
+                    inputMode="numeric"
+                    style={{
+                      ...smallInputStyle,
+                      fontSize: 11,
+                    }}
+                  />
+                  <input
+                    value={p.holdMs}
+                    onChange={(e) => updatePathPoint(idx, 'holdMs', e.target.value)}
+                    placeholder="대기ms"
+                    title="이 지점 도착 후 머무는 시간(ms)"
                     inputMode="numeric"
                     style={{
                       ...smallInputStyle,

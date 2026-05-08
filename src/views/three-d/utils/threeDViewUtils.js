@@ -12,11 +12,18 @@ export const toFiniteDurationMs = (value, fallback = 1000) => {
   return fallback;
 };
 
+export const toFiniteHoldMs = (value, fallback = 0) => {
+  const n = Number(value);
+  if (Number.isFinite(n) && n >= 0) return n;
+  return fallback;
+};
+
 export const getPathTotalDurationMs = (path) => {
   if (!Array.isArray(path) || path.length < 2) return 0;
   let total = 0;
   for (let i = 1; i < path.length; i += 1) {
     total += toFiniteDurationMs(path[i]?.durationMs, 1000);
+    total += toFiniteHoldMs(path[i]?.holdMs, 0);
   }
   return total;
 };
@@ -42,6 +49,7 @@ export const toFinitePoint = (point) => {
     y,
     z,
     durationMs: toFiniteDurationMs(point.durationMs, 1000),
+    holdMs: toFiniteHoldMs(point.holdMs, 0),
   };
 };
 
@@ -119,6 +127,7 @@ export const slicePathByProgress = (path, progressRatio) => {
   let acc = 0;
   for (let i = 1; i < path.length; i += 1) {
     const segMs = toFiniteDurationMs(path[i]?.durationMs, 1000);
+    const holdMs = toFiniteHoldMs(path[i]?.holdMs, 0);
     if (acc + segMs >= targetMs) {
       const from = path[i - 1];
       const to = path[i];
@@ -132,15 +141,37 @@ export const slicePathByProgress = (path, progressRatio) => {
       };
 
       const firstRemainingMs = Math.max(0, Math.round(segMs * (1 - local)));
-      const remaining = [{ ...to, durationMs: firstRemainingMs }];
+      const remaining = [{ ...to, durationMs: firstRemainingMs, holdMs }];
 
       for (let j = i + 1; j < path.length; j += 1) {
-        remaining.push({ ...path[j], durationMs: toFiniteDurationMs(path[j]?.durationMs, 1000) });
+        remaining.push({
+          ...path[j],
+          durationMs: toFiniteDurationMs(path[j]?.durationMs, 1000),
+          holdMs: toFiniteHoldMs(path[j]?.holdMs, 0),
+        });
       }
 
       return [startPoint, ...remaining];
     }
     acc += segMs;
+
+    if (holdMs > 0) {
+      if (acc + holdMs >= targetMs) {
+        const remainingHoldMs = Math.max(0, Math.round(acc + holdMs - targetMs));
+        const remaining = [{ ...path[i], durationMs: 0, holdMs: remainingHoldMs }];
+
+        for (let j = i + 1; j < path.length; j += 1) {
+          remaining.push({
+            ...path[j],
+            durationMs: toFiniteDurationMs(path[j]?.durationMs, 1000),
+            holdMs: toFiniteHoldMs(path[j]?.holdMs, 0),
+          });
+        }
+
+        return remaining;
+      }
+      acc += holdMs;
+    }
   }
 
   return path.slice(path.length - 1);
@@ -163,8 +194,15 @@ export const normalizeDroneForConfigIO = (drone, index = 0) => {
   const name = drone?.name || id;
   const batteryNum = Number(drone?.battery);
   const status = drone?.status || 'Idle';
+  const path = Array.isArray(drone?.path) ? drone.path.map(toFinitePoint).filter(Boolean) : [];
+  const firstPathPoint = path[0];
 
-  const basePos = parsePositionLike(drone?.pos, [0, 1, 1]);
+  const fallbackPos = firstPathPoint
+    ? [firstPathPoint.x, firstPathPoint.y, firstPathPoint.z]
+    : [0, 1, 1];
+  const rawInitialPos = drone?.initialPos ?? drone?.initial_position ?? drone?.pos;
+  const initialPos = parsePositionLike(rawInitialPos, fallbackPos);
+  const basePos = parsePositionLike(drone?.pos, initialPos);
 
   return {
     id,
@@ -172,7 +210,8 @@ export const normalizeDroneForConfigIO = (drone, index = 0) => {
     battery: Number.isFinite(batteryNum) ? batteryNum : 100,
     status,
     pos: basePos,
-    path: Array.isArray(drone?.path) ? drone.path : [],
+    initialPos,
+    path,
   };
 };
 
@@ -206,7 +245,7 @@ export const collectConfigFromScene = () => {
         if (Array.isArray(parsed)) {
           path = parsed;
         }
-      } catch (e) {
+      } catch {
         // ignore
       }
     }

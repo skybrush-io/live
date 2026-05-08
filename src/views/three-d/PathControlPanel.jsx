@@ -16,8 +16,11 @@ export default function PathControlPanel({
   onLoadConfigClick,
   onSaveConfigClick,
   onOpenPathGenerator,
+  onSendPathsClick,
   onFileChange,
   onAddDroneClick,
+  isSendingPaths,
+  pathDeliveryStatus,
 }) {
   const formatMs = (ms) => {
     const safe = Math.max(0, Math.round(Number(ms) || 0));
@@ -187,7 +190,42 @@ export default function PathControlPanel({
           >
             경로 생성하기
           </button>
+          <button
+            type="button"
+            onClick={onSendPathsClick}
+            disabled={isSendingPaths}
+            style={{
+              flex: 1,
+              padding: '7px 8px',
+              borderRadius: 8,
+              border: '1px solid rgba(120, 255, 175, 0.42)',
+              background: isSendingPaths
+                ? 'rgba(80, 116, 97, 0.45)'
+                : 'rgba(25, 129, 76, 0.38)',
+              color: '#e8fff1',
+              cursor: isSendingPaths ? 'wait' : 'pointer',
+              opacity: isSendingPaths ? 0.75 : 1,
+            }}
+          >
+            {isSendingPaths ? '전달 중...' : '경로 전달하기'}
+          </button>
         </div>
+        {pathDeliveryStatus && (
+          <div
+            style={{
+              marginTop: 8,
+              padding: '7px 8px',
+              borderRadius: 8,
+              border: '1px solid rgba(126, 200, 255, 0.28)',
+              background: 'rgba(83, 170, 255, 0.12)',
+              color: '#cce8ff',
+              whiteSpace: 'pre-line',
+              fontSize: 11.5,
+            }}
+          >
+            {pathDeliveryStatus}
+          </div>
+        )}
         <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
           <button
             type="button"
@@ -225,6 +263,9 @@ PathControlPanel.propTypes = {
   onLoadConfigClick: PropTypes.func.isRequired,
   onSaveConfigClick: PropTypes.func.isRequired,
   onOpenPathGenerator: PropTypes.func.isRequired,
+  onSendPathsClick: PropTypes.func.isRequired,
   onFileChange: PropTypes.func.isRequired,
   onAddDroneClick: PropTypes.func.isRequired,
+  isSendingPaths: PropTypes.bool.isRequired,
+  pathDeliveryStatus: PropTypes.string.isRequired,
 };

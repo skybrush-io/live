@@ -52,6 +52,25 @@ const getEffectiveScenery = (state) => {
   return getEffectiveSceneryUtil(state, getSceneryForThreeDView, isShowIndoor);
 };
 
+const DEFAULT_PATH_DELIVERY_URL = '/api/v1/path-planner/plan';
+const PATH_DELIVERY_PROXY_TARGET = 'http://localhost:5001/api/v1/path-planner/plan';
+
+const getPathDeliveryErrorMessage = async (response) => {
+  const rawText = await response.text().catch(() => '');
+  if (!rawText) return response.statusText || `요청 실패: ${response.status}`;
+
+  try {
+    const json = JSON.parse(rawText);
+    return (
+      (typeof json.error === 'string' && json.error) ||
+      (typeof json.message === 'string' && json.message) ||
+      JSON.stringify(json, null, 2)
+    );
+  } catch {
+    return rawText;
+  }
+};
+
 const toFiniteShowCoordinate = (coordinate) => {
   if (!Array.isArray(coordinate) || coordinate.length < 3) return null;
   const x = Number(coordinate[0]);
@@ -62,43 +81,24 @@ const toFiniteShowCoordinate = (coordinate) => {
     : null;
 };
 
-const makeCoordinateTransformerForPlayback = ({
-  flatEarthCoordinateTransformer,
-  indoor,
-  showToWorldCoordinate,
-}) => {
-  if (indoor) {
-    return (coordinate) => toFiniteShowCoordinate(coordinate);
-  }
+const almostEqualCoordinate = (a, b) => (
+  Array.isArray(a) &&
+  Array.isArray(b) &&
+  a.length >= 3 &&
+  b.length >= 3 &&
+  Math.abs(Number(a[0]) - Number(b[0])) < 1e-6 &&
+  Math.abs(Number(a[1]) - Number(b[1])) < 1e-6 &&
+  Math.abs(Number(a[2]) - Number(b[2])) < 1e-6
+);
 
-  if (!showToWorldCoordinate || !flatEarthCoordinateTransformer) {
-    return () => null;
-  }
-
-  const flipY = flatEarthCoordinateTransformer.type !== 'nwu';
-  return (coordinate) => {
-    const point = toFiniteShowCoordinate(coordinate);
-    if (!point) return null;
-
-    const world = showToWorldCoordinate(point);
-    if (!world) return null;
-
-    const transformed = flatEarthCoordinateTransformer.fromLonLatAhl([
-      world.lon,
-      world.lat,
-      world.ahl,
-    ]);
-    if (!Array.isArray(transformed) || transformed.length < 3) return null;
-
-    if (flipY) {
-      transformed[1] = -transformed[1];
-    }
-
-    return transformed;
-  };
+const makeCoordinateTransformerForPlayback = () => {
+  // The 3D path preview/editor works in show-local coordinates. Imported .skyc
+  // trajectories already store these local NWU points, so do not re-project them
+  // through the map/world coordinate transformer here.
+  return (coordinate) => toFiniteShowCoordinate(coordinate);
 };
 
-const convertTrajectoryToPlaybackPath = (trajectory, transformCoordinate) => {
+const convertTrajectoryToPlaybackPath = (trajectory, transformCoordinate, initialCoordinate) => {
   if (!trajectory || !Array.isArray(trajectory.points) || !trajectory.points.length) {
     return null;
   }
@@ -117,16 +117,25 @@ const convertTrajectoryToPlaybackPath = (trajectory, transformCoordinate) => {
 
   if (!rawPoints.length) return null;
 
+  const transformedInitial = initialCoordinate
+    ? transformCoordinate(initialCoordinate)
+    : null;
+  const initialPos = transformedInitial || rawPoints[0].position;
+  const hasExplicitInitial = !!transformedInitial;
+  const firstStartsAtInitial = almostEqualCoordinate(rawPoints[0].position, initialPos);
+
   const path = rawPoints.map((point, index) => {
     const durationMs =
-      index === 0
+      index === 0 && !hasExplicitInitial
         ? 0
-        : Math.max(0, Math.round(point.timestampMs - rawPoints[index - 1].timestampMs));
+        : index === 0
+          ? Math.max(0, Math.round(firstStartsAtInitial ? 0 : point.timestampMs))
+          : Math.max(0, Math.round(point.timestampMs - rawPoints[index - 1].timestampMs));
     const [x, y, z] = point.position;
     return { x, y, z, durationMs };
   });
 
-  if (rawPoints[0].timestampMs > 0) {
+  if (!hasExplicitInitial && rawPoints[0].timestampMs > 0) {
     const [x, y, z] = rawPoints[0].position;
     path.splice(1, 0, {
       x,
@@ -137,7 +146,7 @@ const convertTrajectoryToPlaybackPath = (trajectory, transformCoordinate) => {
   }
 
   return {
-    initialPos: rawPoints[0].position,
+    initialPos,
     path,
   };
 };
@@ -158,8 +167,12 @@ const buildDroneConfigFromShowSpec = ({
 
   const drones = swarm
     .map((drone, index) => {
-      const trajectory = drone?.settings?.trajectory;
-      const converted = convertTrajectoryToPlaybackPath(trajectory, transformCoordinate);
+      const trajectory = drone?.settings?.trajectory ?? drone?.trajectory;
+      const converted = convertTrajectoryToPlaybackPath(
+        trajectory,
+        transformCoordinate,
+        drone?.settings?.home ?? drone?.home
+      );
       if (!converted) return null;
 
       const id =
@@ -242,6 +255,8 @@ const ThreeDView = React.forwardRef((props, ref) => {
   // 드론 추가 모달
   const [addDroneModalOpen, setAddDroneModalOpen] = useState(false);
   const [pathGeneratorModalOpen, setPathGeneratorModalOpen] = useState(false);
+  const [isSendingPaths, setIsSendingPaths] = useState(false);
+  const [pathDeliveryStatus, setPathDeliveryStatus] = useState('');
   const [pathProgress, setPathProgress] = useState(persistedPathProgress);
   const [isPlaybackRunning, setIsPlaybackRunning] = useState(false);
   const playbackClockRef = useRef({ startElapsedMs: 0, startedAt: 0 });
@@ -318,7 +333,7 @@ const ThreeDView = React.forwardRef((props, ref) => {
           const normalized = normalizeDroneForConfigIO(d, index);
           return {
             ...normalized,
-            initialPos: normalized.pos.slice(),
+            initialPos: normalized.initialPos.slice(),
           };
         });
 
@@ -355,7 +370,11 @@ const ThreeDView = React.forwardRef((props, ref) => {
                 },
                 index
               );
-              return normalized;
+              const { initialPos, ...exported } = normalized;
+              return {
+                ...exported,
+                initial_position: initialPos,
+              };
             }),
           }
         : { drones: [] };
@@ -377,6 +396,91 @@ const ThreeDView = React.forwardRef((props, ref) => {
       }
     }
     URL.revokeObjectURL(url);
+  };
+
+  const buildPathDeliveryPayload = (baseConfig) => {
+    const drones = Array.isArray(baseConfig?.drones) ? baseConfig.drones : [];
+    return {
+      drones: drones
+        .map((d, index) => normalizeDroneForConfigIO(d, index))
+        .filter((d) => d.id && Array.isArray(d.path) && d.path.length)
+        .map((d) => ({
+          id: d.id,
+          initial_position: d.initialPos,
+          path: d.path.map((point) => {
+            const nextPoint = {
+              x: point.x,
+              y: point.y,
+              z: point.z,
+              durationMs: point.durationMs,
+            };
+            if (Number(point.holdMs) > 0) {
+              nextPoint.holdMs = point.holdMs;
+            }
+            return nextPoint;
+          }),
+        })),
+      output: 'skyc',
+      download: true,
+    };
+  };
+
+  const handleSendPathsClick = async () => {
+    const baseConfig =
+      effectiveConfig && Array.isArray(effectiveConfig.drones) && effectiveConfig.drones.length
+        ? effectiveConfig
+        : collectConfigFromScene();
+    const payload = buildPathDeliveryPayload(baseConfig);
+
+    if (!payload.drones.length) {
+      setPathDeliveryStatus('전달할 드론 경로가 없습니다.');
+      return;
+    }
+
+    const usedUrl = DEFAULT_PATH_DELIVERY_URL;
+    setIsSendingPaths(true);
+    setPathDeliveryStatus('');
+
+    try {
+      const response = await fetch(usedUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const msg = await getPathDeliveryErrorMessage(response);
+        throw new Error(msg || `요청 실패: ${response.status}`);
+      }
+
+      const blob = await response.blob();
+      const objectUrl = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = objectUrl;
+      a.download = 'path-planner.skyc';
+      document.body.appendChild(a);
+      a.click();
+      if (a.parentNode === document.body) {
+        try {
+          document.body.removeChild(a);
+        } catch (error) {
+          if (error?.name !== 'NotFoundError') throw error;
+        }
+      }
+      URL.revokeObjectURL(objectUrl);
+
+      setPathDeliveryStatus(
+        `경로 전달 완료: ${payload.drones.length}대\npath-planner.skyc 다운로드가 시작되었습니다.\nURL: ${usedUrl}\nProxy target: ${PATH_DELIVERY_PROXY_TARGET}`
+      );
+    } catch (error) {
+      setPathDeliveryStatus(
+        `경로 전달 실패: ${error instanceof Error ? error.message : '알 수 없는 오류'}\nURL: ${usedUrl}\nProxy target: ${PATH_DELIVERY_PROXY_TARGET}`
+      );
+    } finally {
+      setIsSendingPaths(false);
+    }
   };
 
   const handleAddDrone = (newDrone) => {
@@ -660,8 +764,11 @@ const ThreeDView = React.forwardRef((props, ref) => {
         onLoadConfigClick={handleLoadConfigClick}
         onSaveConfigClick={handleSaveConfigClick}
         onOpenPathGenerator={() => setPathGeneratorModalOpen(true)}
+        onSendPathsClick={handleSendPathsClick}
         onFileChange={handleFileChange}
         onAddDroneClick={() => setAddDroneModalOpen(true)}
+        isSendingPaths={isSendingPaths}
+        pathDeliveryStatus={pathDeliveryStatus}
       />
       <AddDroneModal
         open={addDroneModalOpen}

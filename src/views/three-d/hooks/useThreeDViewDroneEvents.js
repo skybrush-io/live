@@ -180,7 +180,7 @@ export default function useThreeDViewDroneEvents({
         const normalized = normalizeDroneForConfigIO(d, index);
         return {
           ...normalized,
-          initialPos: normalized.pos.slice(),
+          initialPos: normalized.initialPos.slice(),
         };
       });
 

@@ -140,6 +140,7 @@ if (!AFrame.components['drone-move-bridge']) {
 
       const almostEqual = (a, b) => Math.abs(a - b) < 1e-6;
       const firstDuration = Number(firstPoint.durationMs);
+      const firstHold = Number(firstPoint.holdMs);
       const firstIsMarkerPoint = startFromInitial && Number.isFinite(firstDuration) && firstDuration === 0;
       const firstEqualsAnchor =
         startFromInitial &&
@@ -152,11 +153,39 @@ if (!AFrame.components['drone-move-bridge']) {
       // 시작점 마커(0ms) 또는 앵커와 동일한 첫 점은 건너뛰고 실제 이동 구간부터 재생
       let index = firstIsMarkerPoint || firstEqualsAnchor ? 1 : 0;
       let currentFrom = startAnchor || target.getAttribute('position') || { x: 0, y: 0, z: 0 };
+      let currentHoldTimer = null;
 
       const defaultDur =
         Number.isFinite(Number(durationPerSegment)) && Number(durationPerSegment) > 0
           ? Number(durationPerSegment)
           : 1000;
+
+      const toHoldMs = (value) => {
+        const parsed = Number(value);
+        return Number.isFinite(parsed) && parsed > 0 ? parsed : 0;
+      };
+
+      const continueAfterHold = (point) => {
+        const holdMs = toHoldMs(point?.holdMs);
+        if (holdMs <= 0) {
+          index += 1;
+          playNext();
+          return;
+        }
+
+        currentHoldTimer = window.setTimeout(() => {
+          currentHoldTimer = null;
+          index += 1;
+          playNext();
+        }, holdMs);
+        this._currentPathCancels[id] = () => {
+          if (currentHoldTimer) {
+            window.clearTimeout(currentHoldTimer);
+            currentHoldTimer = null;
+          }
+          target.removeAttribute('animation__path');
+        };
+      };
 
       const playNext = () => {
         if (index >= points.length) {
@@ -169,7 +198,8 @@ if (!AFrame.components['drone-move-bridge']) {
           return;
         }
 
-        const { x, y, z, durationMs } = points[index] || {};
+        const point = points[index] || {};
+        const { x, y, z, durationMs } = point;
         const from = `${currentFrom.x} ${currentFrom.y} ${currentFrom.z}`;
         const to = `${x} ${y} ${z}`;
 
@@ -185,11 +215,14 @@ if (!AFrame.components['drone-move-bridge']) {
 
         const onComplete = () => {
           target.removeEventListener('animationcomplete__path', onComplete);
-          index += 1;
-          playNext();
+          continueAfterHold(point);
         };
 
         this._currentPathCancels[id] = () => {
+          if (currentHoldTimer) {
+            window.clearTimeout(currentHoldTimer);
+            currentHoldTimer = null;
+          }
           target.removeEventListener('animationcomplete__path', onComplete);
           target.removeAttribute('animation__path');
         };
@@ -205,8 +238,7 @@ if (!AFrame.components['drone-move-bridge']) {
           target.setAttribute('position', to);
           currentFrom = { x, y, z };
           target.removeEventListener('animationcomplete__path', onComplete);
-          index += 1;
-          playNext();
+          continueAfterHold(point);
           return;
         }
 
@@ -221,7 +253,21 @@ if (!AFrame.components['drone-move-bridge']) {
         currentFrom = { x, y, z };
       };
 
-      playNext();
+      if (index > 0 && Number.isFinite(firstHold) && firstHold > 0) {
+        currentHoldTimer = window.setTimeout(() => {
+          currentHoldTimer = null;
+          playNext();
+        }, firstHold);
+        this._currentPathCancels[id] = () => {
+          if (currentHoldTimer) {
+            window.clearTimeout(currentHoldTimer);
+            currentHoldTimer = null;
+          }
+          target.removeAttribute('animation__path');
+        };
+      } else {
+        playNext();
+      }
     },
   });
 }
