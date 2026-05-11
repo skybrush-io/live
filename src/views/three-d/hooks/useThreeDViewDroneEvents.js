@@ -21,7 +21,21 @@ export default function useThreeDViewDroneEvents({
           drones.forEach((d) => {
             if (!d?.id) return;
 
-            const pos = Array.isArray(d.initialPos) && d.initialPos.length >= 3 ? d.initialPos : d.pos;
+            // path[0]이 곧 시작 위치. 없으면 기존 initialPos/pos로 fallback.
+            const firstPathPoint = Array.isArray(d.path) && d.path.length > 0 ? d.path[0] : null;
+            let pos = null;
+            if (firstPathPoint) {
+              const fx = Number(firstPathPoint.x);
+              const fy = Number(firstPathPoint.y);
+              const fz = Number(firstPathPoint.z);
+              if (Number.isFinite(fx) && Number.isFinite(fy) && Number.isFinite(fz)) {
+                pos = [fx, fy, fz];
+              }
+            }
+            if (!pos) {
+              pos = Array.isArray(d.initialPos) && d.initialPos.length >= 3 ? d.initialPos : d.pos;
+            }
+
             if (Array.isArray(pos) && pos.length >= 3) {
               const x = Number(pos[0]);
               const y = Number(pos[1]);
@@ -110,20 +124,33 @@ export default function useThreeDViewDroneEvents({
             : collectConfigFromScene();
 
         if (!base || !Array.isArray(base.drones)) return base;
-        const drones = base.drones.map((d) =>
-          sameDroneId(d.id, id)
-            ? { ...d, initialPos: [nx, ny, nz], pos: Array.isArray(d.pos) ? d.pos : [0, 1, 1] }
-            : d
-        );
+        const drones = base.drones.map((d) => {
+          if (!sameDroneId(d.id, id)) return d;
+          const next = {
+            ...d,
+            initialPos: [nx, ny, nz],
+            pos: Array.isArray(d.pos) ? d.pos : [0, 1, 1],
+          };
+          if (Array.isArray(d.path) && d.path.length > 0) {
+            const first = d.path[0];
+            next.path = [{ ...first, x: nx, y: ny, z: nz }, ...d.path.slice(1)];
+          }
+          return next;
+        });
         return { ...base, drones };
       });
 
       setSelectedDrone((prev) => {
         if (!prev || !sameDroneId(prev.id, id)) return prev;
-        return {
+        const next = {
           ...prev,
           initialPosition: { x: nx, y: ny, z: nz },
         };
+        if (Array.isArray(prev.path) && prev.path.length > 0) {
+          const first = prev.path[0];
+          next.path = [{ ...first, x: nx, y: ny, z: nz }, ...prev.path.slice(1)];
+        }
+        return next;
       });
     };
 

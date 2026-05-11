@@ -27,7 +27,7 @@ function normalizeDrones(drones) {
       } else if (Array.isArray(d.initial_position) && d.initial_position.length === 3) {
         initialPosArray = d.initial_position;
       }
-      const posArray = Array.isArray(d.pos) && d.pos.length === 3 ? d.pos : initialPosArray;
+      const posArray = firstPathPoint ? fallbackPos : (Array.isArray(d.pos) && d.pos.length === 3 ? d.pos : initialPosArray);
 
       return {
         id,

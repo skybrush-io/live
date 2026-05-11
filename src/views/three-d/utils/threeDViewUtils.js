@@ -19,9 +19,9 @@ export const toFiniteHoldMs = (value, fallback = 0) => {
 };
 
 export const getPathTotalDurationMs = (path) => {
-  if (!Array.isArray(path) || path.length < 2) return 0;
+  if (!Array.isArray(path) || path.length === 0) return 0;
   let total = 0;
-  for (let i = 1; i < path.length; i += 1) {
+  for (let i = 0; i < path.length; i += 1) {
     total += toFiniteDurationMs(path[i]?.durationMs, 1000);
     total += toFiniteHoldMs(path[i]?.holdMs, 0);
   }
@@ -52,8 +52,6 @@ export const toFinitePoint = (point) => {
     holdMs: toFiniteHoldMs(point.holdMs, 0),
   };
 };
-
-const almostEqual = (a, b) => Math.abs(Number(a) - Number(b)) < 1e-6;
 
 export const parsePositionLike = (positionAttr, fallback = [0, 1, 1]) => {
   let pos = fallback;
@@ -95,17 +93,9 @@ export const buildSeekPathWithInitial = (drone) => {
   const initial = getInitialPointFromDrone(drone);
   const raw = Array.isArray(drone?.path) ? drone.path.map(toFinitePoint).filter(Boolean) : [];
 
-  if (!initial) return raw;
-  if (!raw.length) return [initial];
-
-  const first = raw[0];
-  const sameAsInitial =
-    almostEqual(first.x, initial.x) &&
-    almostEqual(first.y, initial.y) &&
-    almostEqual(first.z, initial.z);
-
-  if (sameAsInitial) return raw;
-  return [initial, ...raw];
+  // path[0] is the start position. Do not prepend drone.pos / initialPos before it.
+  if (raw.length) return raw;
+  return initial ? [initial] : [];
 };
 
 export const slicePathByProgress = (path, progressRatio) => {
@@ -125,9 +115,18 @@ export const slicePathByProgress = (path, progressRatio) => {
   }
 
   let acc = 0;
-  for (let i = 1; i < path.length; i += 1) {
+  for (let i = 0; i < path.length; i += 1) {
     const segMs = toFiniteDurationMs(path[i]?.durationMs, 1000);
     const holdMs = toFiniteHoldMs(path[i]?.holdMs, 0);
+    if (i === 0) {
+      if (acc + segMs + holdMs >= targetMs) {
+        const remainingWaitMs = Math.max(0, Math.round(acc + segMs + holdMs - targetMs));
+        return [{ ...path[0], durationMs: remainingWaitMs, holdMs: 0 }, ...path.slice(1)];
+      }
+      acc += segMs + holdMs;
+      continue;
+    }
+
     if (acc + segMs >= targetMs) {
       const from = path[i - 1];
       const to = path[i];
@@ -202,7 +201,7 @@ export const normalizeDroneForConfigIO = (drone, index = 0) => {
     : [0, 1, 1];
   const rawInitialPos = drone?.initialPos ?? drone?.initial_position ?? drone?.pos;
   const initialPos = parsePositionLike(rawInitialPos, fallbackPos);
-  const basePos = parsePositionLike(drone?.pos, initialPos);
+  const basePos = firstPathPoint ? fallbackPos : parsePositionLike(drone?.pos, initialPos);
 
   return {
     id,

@@ -98,20 +98,6 @@ if (!AFrame.components['drone-move-bridge']) {
       }
 
       const initialPosAttr = target.getAttribute('data-initial-pos');
-      let hasInitialPos = false;
-      let startAnchor = null;
-      if (startFromInitial && typeof initialPosAttr === 'string' && initialPosAttr.trim()) {
-        const [sx, sy, sz] = initialPosAttr.trim().split(/\s+/);
-        const ix = Number(sx);
-        const iy = Number(sy);
-        const iz = Number(sz);
-        hasInitialPos = Number.isFinite(ix) && Number.isFinite(iy) && Number.isFinite(iz);
-        if (hasInitialPos) {
-          // 경로 재생은 항상 원위치(초기 position)부터 시작
-          target.setAttribute('position', `${ix} ${iy} ${iz}`);
-          startAnchor = { x: ix, y: iy, z: iz };
-        }
-      }
 
       const firstPoint = points[0] || {};
       const firstX = Number(firstPoint.x);
@@ -120,8 +106,36 @@ if (!AFrame.components['drone-move-bridge']) {
       const hasValidFirstPoint =
         Number.isFinite(firstX) && Number.isFinite(firstY) && Number.isFinite(firstZ);
 
-      // 초기 position 시작을 쓰지 않는 경우, 현재 위치를 시작 앵커로 사용
-      if (!startFromInitial) {
+      let startAnchor = null;
+      let index = 0;
+      // path[0]을 시작 위치로 사용할 때, 그 점의 durationMs/holdMs는 시작 후 대기 시간으로 사용한다.
+      let initialWaitMs = 0;
+
+      if (startFromInitial) {
+        // 경로 재생은 path[0]을 곧 시작 위치로 사용한다.
+        // path-planner 출력 컨벤션(첫 점 = 이륙/시작 지점)과 사용자의 직관적 기대에 맞춤.
+        if (hasValidFirstPoint) {
+          target.setAttribute('position', `${firstX} ${firstY} ${firstZ}`);
+          startAnchor = { x: firstX, y: firstY, z: firstZ };
+          index = 1;
+          const firstDur = Number(firstPoint.durationMs);
+          const firstHoldRaw = Number(firstPoint.holdMs);
+          initialWaitMs =
+            (Number.isFinite(firstDur) && firstDur > 0 ? firstDur : 0) +
+            (Number.isFinite(firstHoldRaw) && firstHoldRaw > 0 ? firstHoldRaw : 0);
+        } else if (typeof initialPosAttr === 'string' && initialPosAttr.trim()) {
+          // 첫 점이 유효하지 않은 경우 fallback: data-initial-pos.
+          const [sx, sy, sz] = initialPosAttr.trim().split(/\s+/);
+          const ix = Number(sx);
+          const iy = Number(sy);
+          const iz = Number(sz);
+          if (Number.isFinite(ix) && Number.isFinite(iy) && Number.isFinite(iz)) {
+            target.setAttribute('position', `${ix} ${iy} ${iz}`);
+            startAnchor = { x: ix, y: iy, z: iz };
+          }
+        }
+      } else {
+        // startFromInitial=false: 현재 위치에서 path[0]을 향해 애니메이션 (수동 단일 이동 등)
         const currentPos = target.getAttribute('position');
         if (currentPos && typeof currentPos === 'object') {
           startAnchor = {
@@ -130,28 +144,16 @@ if (!AFrame.components['drone-move-bridge']) {
             z: Number(currentPos.z) || 0,
           };
         }
+        index = 0;
       }
 
-      // 초기 position 정보가 없으면 경로 첫 점으로 폴백
+      // 시작 앵커가 여전히 없으면 첫 점으로 최후 폴백
       if (!startAnchor && hasValidFirstPoint) {
         target.setAttribute('position', `${firstX} ${firstY} ${firstZ}`);
         startAnchor = { x: firstX, y: firstY, z: firstZ };
+        index = 1;
       }
 
-      const almostEqual = (a, b) => Math.abs(a - b) < 1e-6;
-      const firstDuration = Number(firstPoint.durationMs);
-      const firstHold = Number(firstPoint.holdMs);
-      const firstIsMarkerPoint = startFromInitial && Number.isFinite(firstDuration) && firstDuration === 0;
-      const firstEqualsAnchor =
-        startFromInitial &&
-        !!startAnchor &&
-        hasValidFirstPoint &&
-        almostEqual(firstX, startAnchor.x) &&
-        almostEqual(firstY, startAnchor.y) &&
-        almostEqual(firstZ, startAnchor.z);
-
-      // 시작점 마커(0ms) 또는 앵커와 동일한 첫 점은 건너뛰고 실제 이동 구간부터 재생
-      let index = firstIsMarkerPoint || firstEqualsAnchor ? 1 : 0;
       let currentFrom = startAnchor || target.getAttribute('position') || { x: 0, y: 0, z: 0 };
       let currentHoldTimer = null;
 
@@ -253,11 +255,12 @@ if (!AFrame.components['drone-move-bridge']) {
         currentFrom = { x, y, z };
       };
 
-      if (index > 0 && Number.isFinite(firstHold) && firstHold > 0) {
+      // path[0]을 시작 위치로 사용한 경우, path[0]의 durationMs/holdMs 합계를 시작 후 대기 시간으로 사용
+      if (index > 0 && initialWaitMs > 0) {
         currentHoldTimer = window.setTimeout(() => {
           currentHoldTimer = null;
           playNext();
-        }, firstHold);
+        }, initialWaitMs);
         this._currentPathCancels[id] = () => {
           if (currentHoldTimer) {
             window.clearTimeout(currentHoldTimer);
