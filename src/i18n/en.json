@@ -280,7 +280,7 @@
     "follow": "Following another device",
     "guided": "Guided by companion computer",
     "land": "Autonomous landing",
-    "loiter": "Posiiton hold with manual velocity control",
+    "loiter": "Position hold with manual velocity control",
     "mission": "Following pre-programmed mission",
     "other": "Other, unspecified flight mode",
     "pos": "Position hold with manual attitude control",
