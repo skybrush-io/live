@@ -30,8 +30,8 @@ export enum UAVSortKey {
  * Order in which the UAV sort keys should appear on the UI.
  */
 export const UAVSortKeys = [
-  UAVSortKey.UAV_ID,
   UAVSortKey.MISSION_ID,
+  UAVSortKey.UAV_ID,
   UAVSortKey.STATUS,
   UAVSortKey.FLIGHT_MODE,
   UAVSortKey.BATTERY,
