@@ -227,7 +227,7 @@ export async function setRTKCorrectionsSource(
 export async function createRTKPreset(
   hub: MessageHub,
   preset: Record<string, unknown>
-): Promise<string | undefined> {
+): Promise<string> {
   const response = await hub.sendMessage({
     type: 'X-RTK-NEW',
     preset,
@@ -248,6 +248,8 @@ export async function createRTKPreset(
     );
     throw new Error(errorMessage);
   }
+
+  throw new Error('Failed to create RTK preset: missing preset ID');
 }
 
 /**
