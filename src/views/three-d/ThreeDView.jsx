@@ -134,6 +134,19 @@ const getDroneInitialPositionTuple = (drone) => {
   ];
 };
 
+/** 새로고침 후 복원 시: 패널의 초기 위치(initialPos)가 있으면 그것을, 없으면 기존 규칙(path 첫 점 등)을 사용 */
+const getDroneHomePositionTupleForReload = (drone) => {
+  if (Array.isArray(drone?.initialPos) && drone.initialPos.length >= 3) {
+    const x = Number(drone.initialPos[0]);
+    const y = Number(drone.initialPos[1]);
+    const z = Number(drone.initialPos[2]);
+    if (Number.isFinite(x) && Number.isFinite(y) && Number.isFinite(z)) {
+      return [x, y, z];
+    }
+  }
+  return getDroneInitialPositionTuple(drone);
+};
+
 const sanitizeFormationSettings = (settings) => {
   const merged = { ...DEFAULT_FORMATION_SETTINGS, ...(settings || {}) };
   const stepSize = Number(merged.step_size);
@@ -156,6 +169,150 @@ const sanitizeFormationSettings = (settings) => {
     auto_upload: !!merged.auto_upload,
     output,
   };
+};
+
+const generateImportedFormationPhaseId = (index) =>
+  `phase-import-${Date.now().toString(36)}-${index}-${Math.random().toString(36).slice(2, 8)}`;
+
+const normalizeFormationPhaseForImport = (raw, index) => {
+  const id =
+    raw?.id != null && String(raw.id).trim() !== ''
+      ? String(raw.id)
+      : generateImportedFormationPhaseId(index);
+  const name = String(raw?.name ?? '').trim() || `phase-${index + 1}`;
+  const holdMs = Math.max(0, Math.round(Number(raw?.holdMs) || 0));
+  const points = {};
+  const rawPoints = raw?.points;
+  if (rawPoints && typeof rawPoints === 'object' && !Array.isArray(rawPoints)) {
+    Object.entries(rawPoints).forEach(([droneId, pos]) => {
+      if (droneId == null || String(droneId).trim() === '') return;
+      const x = Number(pos?.x);
+      const y = Number(pos?.y);
+      const z = Number(pos?.z);
+      if (Number.isFinite(x) && Number.isFinite(y) && Number.isFinite(z)) {
+        points[String(droneId)] = { x, y, z };
+      }
+    });
+  }
+  return { id, name, holdMs, points };
+};
+
+const stripFormationFromDroneConfigRoot = (parsed) => {
+  if (!parsed || typeof parsed !== 'object') return {};
+  const next = { ...parsed };
+  delete next.formation;
+  delete next.formation_phases;
+  delete next.formation_settings;
+  delete next.formationPhases;
+  delete next.formationSettings;
+  delete next.drones;
+  return next;
+};
+
+/**
+ * JSON에 show-drone-N / drone-N 등 서로 다른 id 체계가 섞여 있을 때,
+ * phase.points 키를 현재 불러온 drones[].id와 맞춥니다.
+ */
+const remapFormationPhasesToDroneIds = (phases, drones) => {
+  if (!Array.isArray(phases) || !phases.length) return phases;
+  if (!Array.isArray(drones) || !drones.length) return phases;
+  const droneIds = drones.map((d) => String(d?.id || '')).filter(Boolean);
+  const droneIdSet = new Set(droneIds);
+  if (!droneIds.length) return phases;
+
+  const trailingNumber = (s) => {
+    const m = String(s).match(/(\d+)\s*$/);
+    return m ? Number(m[1]) : NaN;
+  };
+
+  return phases.map((phase) => {
+    const raw =
+      phase.points && typeof phase.points === 'object' && !Array.isArray(phase.points)
+        ? phase.points
+        : {};
+    const entries = Object.entries(raw);
+    if (!entries.length) return phase;
+    if (entries.every(([k]) => droneIdSet.has(String(k)))) return phase;
+
+    const newPoints = {};
+    entries.forEach(([k, pos], i) => {
+      const key = String(k);
+      if (droneIdSet.has(key)) {
+        newPoints[key] = pos;
+        return;
+      }
+      const n = trailingNumber(key);
+      if (Number.isFinite(n) && n >= 1) {
+        const byOrder = droneIds[n - 1];
+        if (byOrder) {
+          newPoints[byOrder] = pos;
+          return;
+        }
+        const candDrone = `drone-${n}`;
+        if (droneIdSet.has(candDrone)) {
+          newPoints[candDrone] = pos;
+          return;
+        }
+        const candShow = `show-drone-${n}`;
+        if (droneIdSet.has(candShow)) {
+          newPoints[candShow] = pos;
+          return;
+        }
+      }
+      if (droneIds.length === entries.length) {
+        newPoints[droneIds[i]] = pos;
+        return;
+      }
+      newPoints[key] = pos;
+    });
+    return { ...phase, points: newPoints };
+  });
+};
+
+const readFormationImportFromParsed = (parsed) => {
+  if (!parsed || typeof parsed !== 'object') return null;
+
+  if (parsed.formation && typeof parsed.formation === 'object') {
+    const { phases: phasesRaw, settings: settingsRaw } = parsed.formation;
+    const phases = Array.isArray(phasesRaw)
+      ? phasesRaw.map((p, i) => normalizeFormationPhaseForImport(p, i))
+      : [];
+    const settings =
+      settingsRaw && typeof settingsRaw === 'object'
+        ? sanitizeFormationSettings(settingsRaw)
+        : DEFAULT_FORMATION_SETTINGS;
+    return { phases, settings };
+  }
+
+  if (
+    Array.isArray(parsed.formationPhases) ||
+    (parsed.formationSettings && typeof parsed.formationSettings === 'object')
+  ) {
+    const phases = Array.isArray(parsed.formationPhases)
+      ? parsed.formationPhases.map((p, i) => normalizeFormationPhaseForImport(p, i))
+      : [];
+    const settings =
+      parsed.formationSettings && typeof parsed.formationSettings === 'object'
+        ? sanitizeFormationSettings(parsed.formationSettings)
+        : DEFAULT_FORMATION_SETTINGS;
+    return { phases, settings };
+  }
+
+  if (
+    Array.isArray(parsed.formation_phases) ||
+    (parsed.formation_settings && typeof parsed.formation_settings === 'object')
+  ) {
+    const phases = Array.isArray(parsed.formation_phases)
+      ? parsed.formation_phases.map((p, i) => normalizeFormationPhaseForImport(p, i))
+      : [];
+    const settings =
+      parsed.formation_settings && typeof parsed.formation_settings === 'object'
+        ? sanitizeFormationSettings(parsed.formation_settings)
+        : DEFAULT_FORMATION_SETTINGS;
+    return { phases, settings };
+  }
+
+  return null;
 };
 
 const getPathDeliveryErrorMessage = async (response) => {
@@ -372,11 +529,18 @@ const ThreeDView = React.forwardRef((props, ref) => {
     showTrajectoriesOfSelection,
     showSpecDroneConfig,
     viewRuntime,
+    persistRehydrated,
     onSetViewRuntimeState,
   } = props;
 
   const persistedDroneConfig =
     viewRuntime && typeof viewRuntime === 'object' ? viewRuntime.droneConfig : null;
+  const persistedFormationPhases =
+    viewRuntime && typeof viewRuntime === 'object' && Array.isArray(viewRuntime.formationPhases)
+      ? viewRuntime.formationPhases
+      : [];
+  const persistedFormationSettings =
+    viewRuntime && typeof viewRuntime === 'object' ? viewRuntime.formationSettings : null;
   const persistedPathProgressRaw =
     viewRuntime && typeof viewRuntime === 'object' ? viewRuntime.pathProgress : 0;
   const persistedPathProgress = Number.isFinite(Number(persistedPathProgressRaw))
@@ -394,6 +558,8 @@ const ThreeDView = React.forwardRef((props, ref) => {
   const droneConfigRef = useRef(null);
   droneConfigRef.current = droneConfig;
   const ignorePersistedDroneConfigRef = useRef(false);
+  const formationHydratedFromPersistRef = useRef(false);
+  const snapDronesToHomeAfterRehydrateRef = useRef(false);
 
   // 드론 추가 모달
   const [addDroneModalOpen, setAddDroneModalOpen] = useState(false);
@@ -418,9 +584,87 @@ const ThreeDView = React.forwardRef((props, ref) => {
     }
   }, [droneConfig, persistedDroneConfig]);
 
+  // persist 복원 직후 한 번: 저장된 마지막 좌표가 아니라 초기 위치로 정렬 (다음 저장에도 반영)
   useEffect(() => {
-    onSetViewRuntimeState({ droneConfig, pathProgress });
-  }, [droneConfig, pathProgress, onSetViewRuntimeState]);
+    if (!persistRehydrated) return;
+    if (ignorePersistedDroneConfigRef.current) return;
+    if (snapDronesToHomeAfterRehydrateRef.current) return;
+
+    if (
+      showSpecDroneConfig &&
+      Array.isArray(showSpecDroneConfig.drones) &&
+      showSpecDroneConfig.drones.length
+    ) {
+      snapDronesToHomeAfterRehydrateRef.current = true;
+      return;
+    }
+
+    const source =
+      droneConfig && Array.isArray(droneConfig.drones) && droneConfig.drones.length
+        ? droneConfig
+        : persistedDroneConfig &&
+            typeof persistedDroneConfig === 'object' &&
+            Array.isArray(persistedDroneConfig.drones) &&
+            persistedDroneConfig.drones.length
+          ? persistedDroneConfig
+          : null;
+
+    if (!source?.drones?.length) {
+      snapDronesToHomeAfterRehydrateRef.current = true;
+      return;
+    }
+
+    snapDronesToHomeAfterRehydrateRef.current = true;
+
+    const nextDrones = source.drones.map((d) => {
+      if (!d?.id) return d;
+      const [x, y, z] = getDroneHomePositionTupleForReload(d);
+      const out = { ...d, pos: [x, y, z] };
+      if (Array.isArray(d.path) && d.path.length > 0) {
+        out.path = [{ ...d.path[0], x, y, z }, ...d.path.slice(1)];
+      }
+      return out;
+    });
+
+    setDroneConfig({ ...source, drones: nextDrones });
+    setPathProgress(0);
+    setIsPlaybackRunning(false);
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        nextDrones.forEach((d) => {
+          if (!d.id) return;
+          const [x, y, z] = getDroneHomePositionTupleForReload(d);
+          if (!Number.isFinite(x) || !Number.isFinite(y) || !Number.isFinite(z)) return;
+          window.dispatchEvent(
+            new CustomEvent('drone-move-request', {
+              detail: { id: d.id, x, y, z },
+            })
+          );
+        });
+      });
+    });
+  }, [
+    persistRehydrated,
+    droneConfig,
+    persistedDroneConfig,
+    showSpecDroneConfig,
+  ]);
+
+  useEffect(() => {
+    onSetViewRuntimeState({
+      droneConfig,
+      pathProgress,
+      formationPhases,
+      formationSettings,
+    });
+  }, [
+    droneConfig,
+    pathProgress,
+    formationPhases,
+    formationSettings,
+    onSetViewRuntimeState,
+  ]);
 
   const collectConfigFromScene = useCallback(() => collectConfigFromSceneUtil(), []);
 
@@ -485,8 +729,16 @@ const ThreeDView = React.forwardRef((props, ref) => {
           };
         });
 
+        const formationImport = readFormationImportFromParsed(parsed);
+        if (formationImport) {
+          setFormationPhases(
+            remapFormationPhasesToDroneIds(formationImport.phases, normalizedDrones)
+          );
+          setFormationSettings(formationImport.settings);
+        }
+
         setDroneConfig({
-          ...parsed,
+          ...stripFormationFromDroneConfigRoot(parsed),
           drones: normalizedDrones,
         });
       } catch (err) {
@@ -503,29 +755,50 @@ const ThreeDView = React.forwardRef((props, ref) => {
         ? droneConfig
         : collectConfigFromScene();
 
-    const configToSave =
+    const droneRows =
       baseConfig && Array.isArray(baseConfig.drones)
-        ? {
-            drones: baseConfig.drones.map((d, index) => {
-              const normalized = normalizeDroneForConfigIO(
-                {
-                  ...d,
-                  // Export format uses pos as canonical initial position.
-                  pos:
-                    Array.isArray(d?.initialPos) && d.initialPos.length >= 3
-                      ? d.initialPos
-                      : d?.pos,
-                },
-                index
-              );
-              const { initialPos, ...exported } = normalized;
-              return {
-                ...exported,
-                initial_position: initialPos,
-              };
-            }),
-          }
-        : { drones: [] };
+        ? baseConfig.drones.map((d, index) => {
+            const normalized = normalizeDroneForConfigIO(
+              {
+                ...d,
+                // Export format uses pos as canonical initial position.
+                pos:
+                  Array.isArray(d?.initialPos) && d.initialPos.length >= 3
+                    ? d.initialPos
+                    : d?.pos,
+              },
+              index
+            );
+            const { initialPos, ...exported } = normalized;
+            return {
+              ...exported,
+              initial_position: initialPos,
+            };
+          })
+        : [];
+
+    const dronesForFormationKeys =
+      baseConfig && Array.isArray(baseConfig.drones) ? baseConfig.drones : [];
+    const phasesAligned = remapFormationPhasesToDroneIds(
+      formationPhases,
+      dronesForFormationKeys.map((d, index) => normalizeDroneForConfigIO(d, index))
+    );
+
+    const configToSave = {
+      drones: droneRows,
+      formation: {
+        phases: phasesAligned.map((p) => ({
+          id: p.id,
+          name: String(p.name || '').trim() || 'phase',
+          holdMs: Math.max(0, Math.round(Number(p.holdMs) || 0)),
+          points:
+            p.points && typeof p.points === 'object' && !Array.isArray(p.points)
+              ? { ...p.points }
+              : {},
+        })),
+        settings: sanitizeFormationSettings(formationSettings),
+      },
+    };
 
     const blob = new Blob([JSON.stringify(configToSave, null, 2)], {
       type: 'application/json',
@@ -718,6 +991,49 @@ const ThreeDView = React.forwardRef((props, ref) => {
   }, [droneConfig, showSpecDroneConfig]);
   droneConfigRef.current = effectiveConfig;
 
+  useEffect(() => {
+    if (ignorePersistedDroneConfigRef.current) {
+      return;
+    }
+    if (!persistRehydrated) {
+      return;
+    }
+    if (formationHydratedFromPersistRef.current) {
+      return;
+    }
+    if (!Array.isArray(persistedFormationPhases) || persistedFormationPhases.length === 0) {
+      formationHydratedFromPersistRef.current = true;
+      return;
+    }
+
+    const drones =
+      effectiveConfig && Array.isArray(effectiveConfig.drones) ? effectiveConfig.drones : [];
+    if (!drones.length) {
+      return;
+    }
+
+    const normPhases = persistedFormationPhases.map((p, i) =>
+      normalizeFormationPhaseForImport(p, i)
+    );
+    const normalizedDrones = drones.map((d, i) => normalizeDroneForConfigIO(d, i));
+    setFormationPhases(remapFormationPhasesToDroneIds(normPhases, normalizedDrones));
+    setFormationSettings(
+      sanitizeFormationSettings(
+        persistedFormationSettings &&
+          typeof persistedFormationSettings === 'object' &&
+          !Array.isArray(persistedFormationSettings)
+          ? persistedFormationSettings
+          : DEFAULT_FORMATION_SETTINGS
+      )
+    );
+    formationHydratedFromPersistRef.current = true;
+  }, [
+    persistRehydrated,
+    persistedFormationPhases,
+    persistedFormationSettings,
+    effectiveConfig,
+  ]);
+
   const playbackSourceLabel =
     effectiveConfig?.source === 'showSpec'
       ? '로드된 .skyc spec'
@@ -880,6 +1196,7 @@ const ThreeDView = React.forwardRef((props, ref) => {
   const handleResetPanelSettings = () => {
     // Prevent immediate re-hydration of old persisted runtime config.
     ignorePersistedDroneConfigRef.current = true;
+    formationHydratedFromPersistRef.current = true;
     setPathProgress(0);
     setSelectedDrone(null);
     setPendingAutoSelectDrone(null);
@@ -987,6 +1304,42 @@ const ThreeDView = React.forwardRef((props, ref) => {
       })
     );
   }, [formationPhases]);
+
+  /** phase별 저장 좌표(미캡처 드론은 초기/경로 첫 점)로 전체 드론을 한 번에 이동 */
+  const handleApplyAllDronesInPhase = useCallback(
+    (phaseId) => {
+      const phase = formationPhases.find((p) => p.id === phaseId);
+      if (!phase) return;
+      const drones = Array.isArray(effectiveConfig?.drones) ? effectiveConfig.drones : [];
+      drones.forEach((d) => {
+        if (!d?.id) return;
+        const id = String(d.id);
+        const captured = phase.points?.[id];
+        let x;
+        let y;
+        let z;
+        if (
+          captured &&
+          Number.isFinite(Number(captured.x)) &&
+          Number.isFinite(Number(captured.y)) &&
+          Number.isFinite(Number(captured.z))
+        ) {
+          x = Number(captured.x);
+          y = Number(captured.y);
+          z = Number(captured.z);
+        } else {
+          [x, y, z] = getDroneInitialPositionTuple(d);
+        }
+        if (!Number.isFinite(x) || !Number.isFinite(y) || !Number.isFinite(z)) return;
+        window.dispatchEvent(
+          new CustomEvent('drone-move-request', {
+            detail: { id: d.id, x, y, z },
+          })
+        );
+      });
+    },
+    [formationPhases, effectiveConfig]
+  );
 
   const buildFormationPayload = useCallback(() => {
     const drones = Array.isArray(effectiveConfig?.drones) ? effectiveConfig.drones : [];
@@ -1231,7 +1584,9 @@ const ThreeDView = React.forwardRef((props, ref) => {
               lineWidth={10}
             />
           )}
-          {showHomePositions && <HomePositionMarkers />}
+          {/* {showHomePositions && effectiveConfig?.source !== 'showSpec' && (
+            <HomePositionMarkers />
+          )} */}
           {showLandingPositions && <LandingPositionMarkers />}
           {showTrajectoriesOfSelection && <SelectedTrajectories />}
 
@@ -1265,6 +1620,7 @@ const ThreeDView = React.forwardRef((props, ref) => {
         onCaptureDronePositionInPhase={handleCaptureDronePositionInPhase}
         onCaptureAllPositionsInPhase={handleCaptureAllPositionsInPhase}
         onApplyDronePositionInPhase={handleApplyDronePositionInPhase}
+        onApplyAllDronesInPhase={handleApplyAllDronesInPhase}
         onUpdateFormationSettings={handleUpdateFormationSettings}
         onSendFormationPlan={handleSendFormationPlan}
       />
@@ -1330,13 +1686,17 @@ ThreeDView.propTypes = {
   viewRuntime: PropTypes.shape({
     droneConfig: PropTypes.any,
     pathProgress: PropTypes.number,
+    formationPhases: PropTypes.array,
+    formationSettings: PropTypes.object,
   }),
+  persistRehydrated: PropTypes.bool,
   onSetViewRuntimeState: PropTypes.func,
 };
 
 export default connect(
   (state) => ({
     isCoordinateSystemLeftHanded: isMapCoordinateSystemLeftHanded(state),
+    persistRehydrated: state._persist?.rehydrated === true,
     ...state.settings.threeD,
     ...state.threeD,
     scenery: getEffectiveScenery(state),

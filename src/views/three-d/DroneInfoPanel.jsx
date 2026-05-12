@@ -26,6 +26,7 @@ export default function DroneInfoPanel({
   onCaptureDronePositionInPhase = () => {},
   onCaptureAllPositionsInPhase = () => {},
   onApplyDronePositionInPhase = () => {},
+  onApplyAllDronesInPhase = () => {},
   onUpdateFormationSettings = () => {},
   onSendFormationPlan = () => {},
 }) {
@@ -673,6 +674,30 @@ export default function DroneInfoPanel({
                   </button>
                 </div>
 
+                <button
+                  type="button"
+                  disabled={droneCount === 0}
+                  onClick={() => onApplyAllDronesInPhase(phase.id)}
+                  style={{
+                    marginTop: 6,
+                    width: '100%',
+                    padding: '7px 10px',
+                    borderRadius: 8,
+                    border: '1px solid rgba(160, 200, 255, 0.45)',
+                    background:
+                      droneCount === 0
+                        ? 'rgba(60, 80, 100, 0.35)'
+                        : 'rgba(40, 90, 150, 0.38)',
+                    color: '#e8f4ff',
+                    cursor: droneCount === 0 ? 'not-allowed' : 'pointer',
+                    fontSize: 11.5,
+                    fontWeight: 700,
+                  }}
+                  title="이 phase에 저장된 좌표로 등록된 모든 드론 이동 (미캡처 드론은 초기 위치)"
+                >
+                  모든 드론 이 phase로 이동
+                </button>
+
                 <div
                   style={{
                     marginTop: 8,
@@ -1274,6 +1299,7 @@ DroneInfoPanel.propTypes = {
   onCaptureDronePositionInPhase: PropTypes.func,
   onCaptureAllPositionsInPhase: PropTypes.func,
   onApplyDronePositionInPhase: PropTypes.func,
+  onApplyAllDronesInPhase: PropTypes.func,
   onUpdateFormationSettings: PropTypes.func,
   onSendFormationPlan: PropTypes.func,
 };

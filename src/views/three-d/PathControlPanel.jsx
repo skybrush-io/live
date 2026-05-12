@@ -174,7 +174,7 @@ export default function PathControlPanel({
             저장
           </button>
         </div>
-        <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+        {/* <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
           <button
             type="button"
             onClick={onOpenPathGenerator}
@@ -209,7 +209,7 @@ export default function PathControlPanel({
           >
             {isSendingPaths ? '전달 중...' : '경로 전달하기'}
           </button>
-        </div>
+        </div> */}
         {pathDeliveryStatus && (
           <div
             style={{

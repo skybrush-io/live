@@ -26,6 +26,8 @@ type ThreeDSliceState = {
   viewRuntime: {
     droneConfig: unknown | null;
     pathProgress: number;
+    formationPhases: unknown[];
+    formationSettings: Record<string, unknown>;
   };
 };
 
@@ -47,6 +49,14 @@ const initialState: ThreeDSliceState = {
   viewRuntime: {
     droneConfig: null,
     pathProgress: 0,
+    formationPhases: [],
+    formationSettings: {
+      step_size: 1.0,
+      duration_ms: 1000,
+      takeoff_time: 0,
+      auto_upload: false,
+      output: '',
+    },
   },
 };
 
@@ -116,15 +126,32 @@ const { actions, reducer } = createSlice({
 
     setViewRuntimeState(
       state,
-      action: PayloadAction<{ droneConfig: unknown | null; pathProgress: number }>
+      action: PayloadAction<{
+        droneConfig: unknown | null;
+        pathProgress: number;
+        formationPhases?: unknown[];
+        formationSettings?: Record<string, unknown>;
+      }>
     ) {
-      const { droneConfig, pathProgress } = action.payload ?? {};
+      const { droneConfig, pathProgress, formationPhases, formationSettings } =
+        action.payload ?? {};
       const normalizedProgress = Number(pathProgress);
 
       state.viewRuntime.droneConfig = droneConfig ?? null;
       state.viewRuntime.pathProgress = Number.isFinite(normalizedProgress)
         ? Math.min(100, Math.max(0, normalizedProgress))
         : 0;
+
+      if (Array.isArray(formationPhases)) {
+        state.viewRuntime.formationPhases = formationPhases;
+      }
+      if (
+        formationSettings != null &&
+        typeof formationSettings === 'object' &&
+        !Array.isArray(formationSettings)
+      ) {
+        state.viewRuntime.formationSettings = formationSettings;
+      }
     },
   },
 });
