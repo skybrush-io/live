@@ -25,6 +25,7 @@ import { updateUAVVoltageThreshold } from '~/features/settings/actions';
 import {
   getDesiredPlacementAccuracyInMeters,
   getDesiredTakeoffHeadingAccuracy,
+  getGroundAMSLWarningThresholdInMeters,
   getMaximumConcurrentUploadTaskCount,
   getMinimumIndoorTakeoffSpacing,
   getMinimumOutdoorTakeoffSpacing,
@@ -71,6 +72,7 @@ const UAVsTabPresentation = ({
   forgetThreshold,
   fullChargeVoltage,
   goneThreshold,
+  groundAMSLWarningThreshold,
   lowVoltageThreshold,
   maxUploadConcurrency,
   minIndoorTakeoffSpacing,
@@ -308,6 +310,19 @@ const UAVsTabPresentation = ({
           />
         </Box>
 
+        <Box sx={{ display: 'flex', flexDirection: 'row', mb: 1 }}>
+          <SimpleDistanceField
+            fullWidth
+            name='groundAMSLWarningThreshold'
+            label={t('settings.uavs.groundAMSLWarningThreshold')}
+            min={0.1}
+            max={100}
+            step={0.1}
+            value={groundAMSLWarningThreshold}
+            onChange={onDistanceFieldUpdated}
+          />
+        </Box>
+
         <Typography variant='body2' color='textSecondary'>
           {t('settings.uavs.missionSetupDescription')}
         </Typography>
@@ -323,6 +338,7 @@ UAVsTabPresentation.propTypes = {
   forgetThreshold: PropTypes.number,
   fullChargeVoltage: PropTypes.number,
   goneThreshold: PropTypes.number,
+  groundAMSLWarningThreshold: PropTypes.number,
   lowVoltageThreshold: PropTypes.number,
   maxUploadConcurrency: PropTypes.number,
   minIndoorTakeoffSpacing: PropTypes.number,
@@ -346,6 +362,7 @@ export default connect(
   // mapStateToProps
   (state) => ({
     ...state.settings.uavs,
+    groundAMSLWarningThreshold: getGroundAMSLWarningThresholdInMeters(state),
     placementAccuracy: getDesiredPlacementAccuracyInMeters(state),
     takeoffHeadingAccuracy: getDesiredTakeoffHeadingAccuracy(state),
     maxUploadConcurrency: getMaximumConcurrentUploadTaskCount(state),

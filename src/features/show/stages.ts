@@ -20,6 +20,7 @@ import { isConnected as isConnectedToServer } from '~/features/servers/selectors
 import {
   areAllUAVsInMissionWithoutErrors,
   getMissingUAVIdsInMapping,
+  selectGroundAMSLWarning,
 } from '~/features/uavs/selectors';
 import { makeUploadStatusSelectorForMissionMappingByJobType } from '~/features/upload/selectors';
 import type { AppSelector, RootState } from '~/store/reducers';
@@ -99,8 +100,16 @@ const stages: Record<Stage, StageSpecification> = {
   },
 
   setupEnvironment: {
-    evaluate: (state) =>
-      hasLoadedShowFile(state) && (hasShowOrigin(state) || isShowIndoor(state)),
+    evaluate(state) {
+      if (
+        !hasLoadedShowFile(state) ||
+        (!hasShowOrigin(state) && !isShowIndoor(state))
+      ) {
+        return false;
+      }
+
+      return selectGroundAMSLWarning(state) ? Status.WARNING : Status.SUCCESS;
+    },
     requires: ['selectShowFile'],
   },
 

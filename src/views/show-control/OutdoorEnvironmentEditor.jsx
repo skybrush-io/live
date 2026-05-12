@@ -1,6 +1,7 @@
 import Navigation from '@mui/icons-material/Navigation';
 import VerticalAlignCenter from '@mui/icons-material/VerticalAlignCenter';
 import Warning from '@mui/icons-material/Warning';
+import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import FormControl from '@mui/material/FormControl';
@@ -44,7 +45,10 @@ import {
   getOutdoorShowTakeoffHeadingSpecification,
 } from '~/features/show/selectors';
 import { showSuccess } from '~/features/snackbar/actions';
-import { getAverageHeadingOfActiveUAVs } from '~/features/uavs/selectors';
+import {
+  getAverageHeadingOfActiveUAVs,
+  selectGroundAMSLWarning,
+} from '~/features/uavs/selectors';
 import i18n from '~/i18n';
 import AutoFix from '~/icons/AutoFix';
 import { scrollToMapLocation } from '~/signals';
@@ -61,6 +65,7 @@ const OutdoorEnvironmentEditor = ({
   canEstimateShowCoordinateSystem,
   environmentFromLoadedShowData,
   estimatingCoordinateSystem,
+  groundAMSLWarning,
   onAltitudeReferenceTypeChanged,
   onAltitudeReferenceValueChanged,
   onCopyCoordinateSystemToMap,
@@ -214,6 +219,18 @@ const OutdoorEnvironmentEditor = ({
         </Box>
       </Box>
 
+      {groundAMSLWarning && (
+        <Alert severity='warning' sx={{ mb: 2 }}>
+          {t('outdoorEnvironmentEditor.groundAMSLWarning', {
+            averageGroundAMSL: groundAMSLWarning.averageGroundAMSL.toFixed(1),
+            configuredAMSL: groundAMSLWarning.configuredAMSL.toFixed(1),
+            difference: groundAMSLWarning.difference.toFixed(1),
+            sampleCount: groundAMSLWarning.sampleCount,
+            threshold: groundAMSLWarning.threshold.toFixed(1),
+          })}
+        </Alert>
+      )}
+
       <RTKCorrectionSourceSelector />
 
       <Box sx={{ pt: 1, mb: -1 }}>
@@ -234,6 +251,13 @@ OutdoorEnvironmentEditor.propTypes = {
   canEstimateShowCoordinateSystem: PropTypes.bool,
   environmentFromLoadedShowData: PropTypes.object,
   estimatingCoordinateSystem: PropTypes.bool,
+  groundAMSLWarning: PropTypes.shape({
+    averageGroundAMSL: PropTypes.number.isRequired,
+    configuredAMSL: PropTypes.number.isRequired,
+    difference: PropTypes.number.isRequired,
+    sampleCount: PropTypes.number.isRequired,
+    threshold: PropTypes.number.isRequired,
+  }),
   onAltitudeReferenceTypeChanged: PropTypes.func,
   onAltitudeReferenceValueChanged: PropTypes.func,
   onCopyCoordinateSystemToMap: PropTypes.func,
@@ -266,6 +290,7 @@ export default connect(
     estimatingCoordinateSystem: Boolean(
       state.show.environment.estimatingCoordinateSystem
     ),
+    groundAMSLWarning: selectGroundAMSLWarning(state),
     showCoordinateSystem: state.show.environment.outdoor.coordinateSystem,
     mapCoordinateSystem: state.map.origin,
     takeoffHeading: getOutdoorShowTakeoffHeadingSpecification(state),

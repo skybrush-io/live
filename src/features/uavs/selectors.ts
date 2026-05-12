@@ -19,13 +19,17 @@ import { selectionForSubset } from '~/features/selection/selectors';
 import {
   getDesiredPlacementAccuracyInMeters,
   getDesiredTakeoffHeadingAccuracy,
+  getGroundAMSLWarningThresholdInMeters,
 } from '~/features/settings/selectors';
+import { AltitudeReference } from '~/features/show/constants';
 import {
   getFirstPointsOfTrajectories,
+  getOutdoorShowAltitudeReference,
   getOutdoorShowToWorldCoordinateSystemTransformation,
   getShowToFlatEarthCoordinateSystemTransformation,
   getTrajectories,
   isShowIndoor,
+  isShowOutdoor,
 } from '~/features/show/selectors';
 import {
   getPointsOfTrajectory,
@@ -47,6 +51,16 @@ import { euclideanDistance2D, getMeanAngle } from '~/utils/math';
 import { EMPTY_ARRAY } from '~/utils/redux';
 import { createDeepResultSelector } from '~/utils/selectors';
 import type { StoredUAV, UAVDetailsPanelTab } from './types';
+
+const GROUND_ALTITUDE_TOLERANCE_IN_METERS = 0.3;
+
+export type GroundAMSLWarning = {
+  averageGroundAMSL: number;
+  configuredAMSL: number;
+  difference: number;
+  sampleCount: number;
+  threshold: number;
+};
 
 /**
  * Returns a mapping from color names to the list of UAV IDs whose color needs to be
@@ -554,6 +568,93 @@ export const getActiveAndAwakeUAVIds = createSelector(
       const uav = uavsById[uavId];
       return uav ? !isUAVSleeping(uav) : false;
     })
+);
+
+const isUAVKnownToBeOnGround = (uav: StoredUAV): boolean => {
+  // Prefer explicit status codes from the UAV whenever they are available.
+  if (
+    uav.errors.includes(UAVErrorCode.ON_GROUND) ||
+    uav.errors.includes(UAVErrorCode.MOTORS_RUNNING_WHILE_ON_GROUND)
+  ) {
+    return true;
+  }
+
+  // Do not let the AHL fallback classify drones as grounded while they are in
+  // a known flight-related state.
+  if (
+    uav.errors.includes(UAVErrorCode.TAKEOFF) ||
+    uav.errors.includes(UAVErrorCode.LANDING) ||
+    uav.errors.includes(UAVErrorCode.RETURN_TO_HOME)
+  ) {
+    return false;
+  }
+
+  // Fall back to AHL only when the UAV does not provide a more explicit state.
+  const { ahl } = uav.position ?? {};
+  return (
+    typeof ahl === 'number' &&
+    Number.isFinite(ahl) &&
+    Math.abs(ahl) < GROUND_ALTITUDE_TOLERANCE_IN_METERS
+  );
+};
+
+export const selectGroundAMSLWarning = createSelector(
+  isShowOutdoor,
+  getOutdoorShowAltitudeReference,
+  getGroundAMSLWarningThresholdInMeters,
+  getActiveUAVIds,
+  getUAVIdToStateMapping,
+  (
+    outdoor,
+    altitudeReference,
+    threshold,
+    activeUAVIds,
+    uavsById
+  ): GroundAMSLWarning | undefined => {
+    // The check applies only to outdoor shows controlled against a fixed AMSL
+    // reference. AHL-based and indoor shows intentionally skip it.
+    const configuredAMSL =
+      outdoor &&
+      altitudeReference.type === AltitudeReference.AMSL &&
+      typeof altitudeReference.value === 'number' &&
+      Number.isFinite(altitudeReference.value)
+        ? altitudeReference.value
+        : undefined;
+
+    if (configuredAMSL === undefined) {
+      return undefined;
+    }
+
+    // Compare the configured reference only with active UAVs that are still on
+    // the ground and provide a usable AMSL reading.
+    const altitudes = activeUAVIds
+      .map((uavId) => uavsById[uavId])
+      .filter((uav): uav is StoredUAV => Boolean(uav))
+      .filter(isUAVKnownToBeOnGround)
+      .map((uav) => uav.position?.amsl)
+      .filter((amsl): amsl is number => typeof amsl === 'number')
+      .filter(Number.isFinite);
+
+    if (altitudes.length <= 0) {
+      return undefined;
+    }
+
+    // A warning report is returned only when the mismatch exceeds the user
+    // configured threshold; otherwise the setup stage remains successful.
+    const averageGroundAMSL =
+      altitudes.reduce((sum, altitude) => sum + altitude, 0) / altitudes.length;
+    const difference = Math.abs(configuredAMSL - averageGroundAMSL);
+
+    return difference > threshold
+      ? {
+          averageGroundAMSL,
+          configuredAMSL,
+          difference,
+          sampleCount: altitudes.length,
+          threshold,
+        }
+      : undefined;
+  }
 );
 
 /**
