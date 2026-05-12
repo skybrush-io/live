@@ -15,7 +15,7 @@ import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import { nanoid } from 'nanoid';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Form, type FormRenderProps } from 'react-final-form';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
@@ -191,6 +191,7 @@ const RTKPresetDialogFormPresentation = ({
   );
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const createdPresetIdRef = useRef<string | undefined>(undefined);
 
   const isNew = mode === 'create';
 
@@ -276,12 +277,22 @@ const RTKPresetDialogFormPresentation = ({
         };
 
         if (isNew) {
-          await messageHub.execute.createRTKPreset(presetData);
+          if (createdPresetIdRef.current) {
+            await messageHub.execute.updateRTKPreset(
+              createdPresetIdRef.current,
+              presetData
+            );
+          } else {
+            const createdPresetId =
+              await messageHub.execute.createRTKPreset(presetData);
+            createdPresetIdRef.current = createdPresetId;
+          }
         } else if (presetId) {
           await messageHub.execute.updateRTKPreset(presetId, presetData);
         }
 
         await messageHub.execute.saveRTKPresets();
+        createdPresetIdRef.current = undefined;
 
         if (onRefreshPresets) {
           onRefreshPresets();
@@ -319,6 +330,12 @@ const RTKPresetDialogFormPresentation = ({
       );
     }
   }, [initialValues]);
+
+  useEffect(() => {
+    if (!isNew) {
+      createdPresetIdRef.current = undefined;
+    }
+  }, [isNew]);
 
   return (
     <Form<FormValues>
