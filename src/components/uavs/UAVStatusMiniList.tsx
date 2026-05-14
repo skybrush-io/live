@@ -1,11 +1,10 @@
-import partial from 'lodash-es/partial';
+import { createSelector } from '@reduxjs/toolkit';
 import sortBy from 'lodash-es/sortBy';
 import unary from 'lodash-es/unary';
 import { orderBy } from 'natural-orderby';
 import React from 'react';
 import { Translation } from 'react-i18next';
 import { connect } from 'react-redux';
-import { createSelector } from '@reduxjs/toolkit';
 
 import { BackgroundHint, MiniList } from '@skybrush/mui-components';
 
@@ -14,13 +13,28 @@ import { Status, statusToPriority } from '~/components/semantics';
 import { setSelectedUAVIds } from '~/features/uavs/actions';
 import {
   getInactiveUAVIds,
-  getUAVIdToStateMapping,
-  getUAVIdList,
   getSingleUAVStatusSummary,
+  getUAVIdList,
   getUAVIdsMarkedAsGone,
+  getUAVIdToStateMapping,
 } from '~/features/uavs/selectors';
+import type { RootState } from '~/store/reducers';
 
 import UAVStatusMiniListEntry from './UAVStatusMiniListEntry';
+
+type UAVStatusMiniListItem = {
+  gone?: boolean;
+  id: string;
+  label: string;
+  priority: number;
+  status: Status;
+  uavIds: string[];
+};
+
+type UAVStatusMiniListProps = {
+  items: UAVStatusMiniListItem[];
+  onClick?: (uavIds: string[]) => void;
+};
 
 /**
  * Component-specific selector that creates the list of entries to show in the
@@ -31,8 +45,8 @@ const getListItems = createSelector(
   getUAVIdList,
   getInactiveUAVIds,
   getUAVIdsMarkedAsGone,
-  (byId, order, inactiveIds, goneIds) => {
-    const items = {};
+  (byId, order, inactiveIds, goneIds): UAVStatusMiniListItem[] => {
+    const items: Record<string, UAVStatusMiniListItem> = {};
 
     // Add UAV IDs grouped by their status
     for (const uavId of order) {
@@ -89,23 +103,23 @@ const getListItems = createSelector(
     }
 
     // Sort categories by priority
-    return sortBy(items, ['priority', 'label']);
+    return sortBy(Object.values(items), ['priority', 'label']);
   }
 );
 
-const UAVStatusMiniList = listOf(
+const UAVStatusMiniList = listOf<UAVStatusMiniListItem, UAVStatusMiniListProps>(
   (item, props) => (
     <UAVStatusMiniListEntry
       key={item.id}
       {...item}
       onClick={
         props.onClick
-          ? (event) => {
+          ? (event: React.SyntheticEvent) => {
               event.preventDefault();
               event.stopPropagation();
-              props.onClick(item?.uavIds, event);
+              props.onClick?.(item.uavIds);
             }
-          : null
+          : undefined
       }
     />
   ),
@@ -116,14 +130,19 @@ const UAVStatusMiniList = listOf(
         {(t) => <BackgroundHint text={t('UAVStatus.noConnected')} />}
       </Translation>
     ),
-    listFactory: partial(React.createElement, MiniList),
+    listFactory: (
+      { onClick, items, ...rest }: UAVStatusMiniListProps,
+      children: React.ReactNode[]
+    ) => React.createElement(MiniList, rest, children),
   }
 );
 
 export default connect(
-  (state) => ({
+  // mapStateToProps
+  (state: RootState) => ({
     items: getListItems(state),
   }),
+  // mapDispatchToProps
   {
     onClick: unary(setSelectedUAVIds),
   }
