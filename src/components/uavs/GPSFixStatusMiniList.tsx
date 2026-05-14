@@ -86,20 +86,20 @@ const getListItems = createSelector(
 );
 
 const GPSFixStatusMiniList = listOf<GPSFixListEntry, GPSFixStatusMiniListProps>(
-  (item, props) =>
+  (item, { onClick }) =>
     !isDivider(item) ? (
       <UAVStatusMiniListEntry
         key={item.id}
         {...item}
         pillWidth={48}
         onClick={
-          props.onClick
+          onClick
             ? (event: React.SyntheticEvent) => {
                 event.preventDefault();
                 event.stopPropagation();
-                props.onClick!(item.uavIds, event);
+                onClick(item.uavIds, event);
               }
-            : null
+            : undefined
         }
       />
     ) : (
