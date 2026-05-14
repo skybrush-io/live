@@ -108,16 +108,16 @@ const getListItems = createSelector(
 );
 
 const UAVStatusMiniList = listOf<UAVStatusMiniListItem, UAVStatusMiniListProps>(
-  (item, props) => (
+  (item, { onClick }) => (
     <UAVStatusMiniListEntry
       key={item.id}
       {...item}
       onClick={
-        props.onClick
+        onClick
           ? (event: React.SyntheticEvent) => {
               event.preventDefault();
               event.stopPropagation();
-              props.onClick?.(item.uavIds);
+              onClick(item.uavIds);
             }
           : undefined
       }
