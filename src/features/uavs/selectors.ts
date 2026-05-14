@@ -45,6 +45,7 @@ import { convertRGB565ToCSSNotation } from '~/flockwave/parsing';
 import UAVErrorCode, { abbreviateUAVErrorCode } from '~/flockwave/UAVErrorCode';
 import { isGPSPositionValid } from '~/model/geography';
 import { globalIdToUavId } from '~/model/identifiers';
+import { isErrorCodeOrMoreSevere } from '~/model/status-codes';
 import { UAVAge } from '~/model/uav';
 import type { AppSelector, RootState } from '~/store/reducers';
 import { euclideanDistance2D, getMeanAngle } from '~/utils/math';
@@ -571,6 +572,10 @@ export const getActiveAndAwakeUAVIds = createSelector(
 );
 
 const isUAVKnownToBeOnGround = (uav: StoredUAV): boolean => {
+  if (uav.errors.some(isErrorCodeOrMoreSevere)) {
+    return false;
+  }
+
   // Prefer explicit status codes from the UAV whenever they are available.
   if (
     uav.errors.includes(UAVErrorCode.ON_GROUND) ||
