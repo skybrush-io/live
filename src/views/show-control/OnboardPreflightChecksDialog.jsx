@@ -8,7 +8,7 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import Switch from '@mui/material/Switch';
 import PropTypes from 'prop-types';
-import { useTranslation, withTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import {
@@ -94,7 +94,6 @@ PreflightCheckListPresentation.propTypes = {
   ),
   onToggle: PropTypes.func,
   showMissionIds: PropTypes.bool,
-  t: PropTypes.func,
 };
 
 const PreflightCheckList = connect(
@@ -118,8 +117,9 @@ const OnboardPreflightChecksDialog = ({
   onClose,
   onSignOff,
   signedOff = false,
-  t,
 }) => {
+  const { t } = useTranslation();
+
   return (
     <DraggableDialog
       fullWidth
@@ -172,7 +172,6 @@ OnboardPreflightChecksDialog.propTypes = {
   onSignOff: PropTypes.func,
   open: PropTypes.bool,
   signedOff: PropTypes.bool,
-  t: PropTypes.func,
 };
 
 export default connect(
@@ -188,4 +187,4 @@ export default connect(
     onClose: closeOnboardPreflightChecksDialog,
     onSignOff: signOffOnOnboardPreflightChecks,
   }
-)(withTranslation()(OnboardPreflightChecksDialog));
+)(OnboardPreflightChecksDialog);

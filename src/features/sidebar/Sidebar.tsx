@@ -15,7 +15,7 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import type { Workbench } from 'react-flexible-workbench';
 import { Module, ModuleTray } from 'react-flexible-workbench';
-import { withTranslation, type WithTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import LogStatusBadge from '~/components/badges/LogStatusBadge';
@@ -61,15 +61,15 @@ type SidebarProps = {
   isOpen: boolean;
   missionType: MissionType | null;
   workbench: Workbench;
-} & WithTranslation;
+};
 
 const Sidebar: FunctionComponent<SidebarProps> = ({
   experimentalFeaturesEnabled,
   isOpen,
   missionType,
-  t,
   workbench,
 }) => {
+  const { t } = useTranslation();
   const moduleComponent = (component: string) =>
     component as unknown as React.ComponentType<any>;
 
@@ -229,6 +229,6 @@ const ConnectedSidebar = connect<StateProps, unknown, OwnProps, RootState>(
     missionType: getMissionType(state),
     workbench,
   })
-)(withTranslation()(Sidebar));
+)(Sidebar);
 
 export default ConnectedSidebar;

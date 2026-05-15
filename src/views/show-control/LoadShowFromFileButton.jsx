@@ -8,7 +8,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import isNil from 'lodash-es/isNil';
 import PropTypes from 'prop-types';
-import { withTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import { StatusLight } from '@skybrush/mui-components';
@@ -90,75 +90,78 @@ const LoadShowFromFileButton = ({
   onShowFileSelected,
   progress,
   status,
-  t,
   title,
   validationResult,
-}) => (
-  <ListItem
-    disablePadding
-    secondaryAction={
-      changedSinceLoaded ? (
-        <Tooltip content={t('show.reload')}>
-          <IconButton edge='end' size='large' onClick={onReloadShowFile}>
-            <Refresh />
-          </IconButton>
-        </Tooltip>
-      ) : hasLoadedShowFile ? (
-        <Tooltip content={t('show.clear')}>
-          <IconButton edge='end' size='large' onClick={onClearLoadedShow}>
-            <Clear />
-          </IconButton>
-        </Tooltip>
-      ) : hasFeature('loadShowFromCloud') ? (
-        <Tooltip content={t('show.fromCloud')}>
-          <IconButton edge='end' size='large' onClick={onLoadShowFromCloud}>
-            <CloudDownload />
-          </IconButton>
-        </Tooltip>
-      ) : undefined
-    }
-  >
-    <FileButton
-      accepts={isFile}
-      component={ListItemButton}
-      componentProps={{ sx: { paddingRight: 2 } }}
-      filter={EXTENSIONS}
-      id='show-file-upload'
-      onSelected={onShowFileSelected}
+}) => {
+  const { t } = useTranslation();
+
+  return (
+    <ListItem
+      disablePadding
+      secondaryAction={
+        changedSinceLoaded ? (
+          <Tooltip content={t('show.reload')}>
+            <IconButton edge='end' size='large' onClick={onReloadShowFile}>
+              <Refresh />
+            </IconButton>
+          </Tooltip>
+        ) : hasLoadedShowFile ? (
+          <Tooltip content={t('show.clear')}>
+            <IconButton edge='end' size='large' onClick={onClearLoadedShow}>
+              <Clear />
+            </IconButton>
+          </Tooltip>
+        ) : hasFeature('loadShowFromCloud') ? (
+          <Tooltip content={t('show.fromCloud')}>
+            <IconButton edge='end' size='large' onClick={onLoadShowFromCloud}>
+              <CloudDownload />
+            </IconButton>
+          </Tooltip>
+        ) : undefined
+      }
     >
-      <StatusLight status={status} />
-      <ListItemTextWithProgress
-        primary={
-          loading
-            ? t('show.loading')
-            : hasLoadedShowFile
-              ? truncate(title, 60)
-              : t('show.noFileLoaded')
-        }
-        secondary={
-          loading ? (
-            <LinearProgress
-              value={progress}
-              variant={isNil(progress) ? 'indeterminate' : 'determinate'}
-            />
-          ) : changedSinceLoaded ? (
-            <span style={{ color: Colors.warning }}>
-              {t('show.changedSinceLoaded')}
-            </span>
-          ) : !isValidationResultAcceptable(validationResult) ? (
-            <span style={{ color: Colors.warning }}>
-              {getDescriptionForValidationResult(validationResult, t)}
-            </span>
-          ) : hasLoadedShowFile ? (
-            description
-          ) : (
-            t('show.selectFile')
-          )
-        }
-      />
-    </FileButton>
-  </ListItem>
-);
+      <FileButton
+        accepts={isFile}
+        component={ListItemButton}
+        componentProps={{ sx: { paddingRight: 2 } }}
+        filter={EXTENSIONS}
+        id='show-file-upload'
+        onSelected={onShowFileSelected}
+      >
+        <StatusLight status={status} />
+        <ListItemTextWithProgress
+          primary={
+            loading
+              ? t('show.loading')
+              : hasLoadedShowFile
+                ? truncate(title, 60)
+                : t('show.noFileLoaded')
+          }
+          secondary={
+            loading ? (
+              <LinearProgress
+                value={progress}
+                variant={isNil(progress) ? 'indeterminate' : 'determinate'}
+              />
+            ) : changedSinceLoaded ? (
+              <span style={{ color: Colors.warning }}>
+                {t('show.changedSinceLoaded')}
+              </span>
+            ) : !isValidationResultAcceptable(validationResult) ? (
+              <span style={{ color: Colors.warning }}>
+                {getDescriptionForValidationResult(validationResult, t)}
+              </span>
+            ) : hasLoadedShowFile ? (
+              description
+            ) : (
+              t('show.selectFile')
+            )
+          }
+        />
+      </FileButton>
+    </ListItem>
+  );
+};
 
 LoadShowFromFileButton.propTypes = {
   changedSinceLoaded: PropTypes.bool,
@@ -171,7 +174,6 @@ LoadShowFromFileButton.propTypes = {
   onShowFileSelected: PropTypes.func,
   progress: PropTypes.number,
   status: PropTypes.oneOf(Object.values(Status)),
-  t: PropTypes.func,
   title: PropTypes.string,
 };
 
@@ -194,4 +196,4 @@ export default connect(
     onReloadShowFile: reloadCurrentShowFile,
     onShowFileSelected: loadShowFromFile,
   }
-)(withTranslation()(LoadShowFromFileButton));
+)(LoadShowFromFileButton);

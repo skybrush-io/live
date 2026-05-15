@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box';
 import PropTypes from 'prop-types';
 import { HexColorInput, HexColorPicker } from 'react-colorful';
-import { withTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import { makeStyles } from '@skybrush/app-theme-mui';
@@ -82,7 +82,8 @@ const useStyles = makeStyles((theme) => ({
  * Panel that shows the widgets that are needed to control the LED lights on
  * the drone swarm from the GCS before or during a drone show.
  */
-const LightControlGrid = ({ color, onSetColor, onSetColorAndActivate, t }) => {
+const LightControlGrid = ({ color, onSetColor, onSetColorAndActivate }) => {
+  const { t } = useTranslation();
   const classes = useStyles();
   return (
     <Box className={classes.root}>
@@ -135,7 +136,6 @@ LightControlGrid.propTypes = {
   color: PropTypes.string,
   onSetColor: PropTypes.func,
   onSetColorAndActivate: PropTypes.func,
-  t: PropTypes.func,
 };
 
 export default connect(
@@ -148,4 +148,4 @@ export default connect(
     onSetColor: setColorAndUpdateServerIfActive,
     onSetColorAndActivate: setColorAndActivate,
   }
-)(withTranslation()(LightControlGrid));
+)(LightControlGrid);
