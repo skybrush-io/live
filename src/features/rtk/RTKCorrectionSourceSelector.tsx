@@ -6,9 +6,9 @@ import FormGroup from '@mui/material/FormGroup';
 import IconButton from '@mui/material/IconButton';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
+import Select, { type SelectChangeEvent } from '@mui/material/Select';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
-import Select, { type SelectChangeEvent } from '@mui/material/Select';
 import type { RTKPresetID } from '@skybrush/flockwave-spec';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -17,7 +17,10 @@ import { useAsyncRetry } from 'react-use';
 
 import handleError from '~/error-handling';
 import { setCurrentRTKPresetId } from '~/features/rtk/actions';
-import { openRTKPresetDialog, resetRTKStatistics } from '~/features/rtk/slice';
+import {
+  openRTKPresetEditorDialog,
+  resetRTKStatistics,
+} from '~/features/rtk/slice';
 import messageHub from '~/message-hub';
 import { useAppDispatch } from '~/store/hooks';
 import type { RootState } from '~/store/reducers';
@@ -279,10 +282,12 @@ export default connect(
   // mapDispatchToProps
   (dispatch) => ({
     onCreatePreset() {
-      dispatch(openRTKPresetDialog({ mode: 'create' }));
+      dispatch(openRTKPresetEditorDialog({ mode: 'create' }));
     },
     onEditPreset(presetId: RTKPresetID, presetType: RTKPresetType) {
-      dispatch(openRTKPresetDialog({ mode: 'edit', presetId, presetType }));
+      dispatch(
+        openRTKPresetEditorDialog({ mode: 'edit', presetId, presetType })
+      );
     },
     onSourceChanged: () => dispatch(resetRTKStatistics()),
   })

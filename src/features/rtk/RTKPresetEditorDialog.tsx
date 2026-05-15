@@ -33,7 +33,7 @@ import type { RootState } from '~/store/reducers';
 import { required } from '~/utils/validation';
 
 import {
-  closeRTKPresetDialog,
+  closeRTKPresetEditorDialog,
   refreshRTKPresets,
   type RTKPresetType,
 } from './slice';
@@ -59,9 +59,9 @@ type FormValues = {
 };
 
 const PRESET_TYPE_I18N_KEYS: Record<RTKPresetType, string> = {
-  user: 'rtkPresetDialog.presetTypeUser',
-  builtin: 'rtkPresetDialog.presetTypeBuiltin',
-  dynamic: 'rtkPresetDialog.presetTypeDynamic',
+  user: 'rtkPresetEditor.presetTypeUser',
+  builtin: 'rtkPresetEditor.presetTypeBuiltin',
+  dynamic: 'rtkPresetEditor.presetTypeDynamic',
 };
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
@@ -158,7 +158,7 @@ const SourceInputField = ({
   </Box>
 );
 
-type RTKPresetDialogFormProps = {
+type RTKPresetEditorFormProps = {
   initialValues?: RTKPresetData | null;
   isEditMode: boolean;
   isReadOnly: boolean;
@@ -170,7 +170,7 @@ type RTKPresetDialogFormProps = {
   presetType?: RTKPresetType;
 };
 
-const RTKPresetDialogFormPresentation = ({
+const RTKPresetEditorFormPresentation = ({
   initialValues,
   isEditMode,
   isReadOnly,
@@ -180,7 +180,7 @@ const RTKPresetDialogFormPresentation = ({
   onSubmit,
   presetId,
   presetType,
-}: RTKPresetDialogFormProps) => {
+}: RTKPresetEditorFormProps) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const displayType = t(PRESET_TYPE_I18N_KEYS[presetType ?? 'user']);
@@ -225,8 +225,8 @@ const RTKPresetDialogFormPresentation = ({
 
     if (
       !(await dispatch(
-        showConfirmationDialog(t('rtkPresetDialog.deleteConfirmation'), {
-          title: t('rtkPresetDialog.deletePreset'),
+        showConfirmationDialog(t('rtkPresetEditor.deleteConfirmation'), {
+          title: t('rtkPresetEditor.deletePreset'),
           submitButtonLabel: t('general.action.delete'),
           cancelButtonLabel: t('general.action.cancel'),
         })
@@ -254,7 +254,7 @@ const RTKPresetDialogFormPresentation = ({
 
       onSubmit();
     } catch (error_) {
-      setError(getErrorMessage(error_, t('rtkPresetDialog.deleteFailed')));
+      setError(getErrorMessage(error_, t('rtkPresetEditor.deleteFailed')));
     } finally {
       setSubmitting(false);
     }
@@ -304,8 +304,8 @@ const RTKPresetDialogFormPresentation = ({
           getErrorMessage(
             error_,
             isNew
-              ? t('rtkPresetDialog.createFailed')
-              : t('rtkPresetDialog.updateFailed')
+              ? t('rtkPresetEditor.createFailed')
+              : t('rtkPresetEditor.updateFailed')
           )
         );
       } finally {
@@ -366,7 +366,7 @@ const RTKPresetDialogFormPresentation = ({
             >
               <Box display='flex' alignItems='center' style={{ gap: 8 }}>
                 <Typography variant='body2' color='textSecondary'>
-                  {t('rtkPresetDialog.type')}:
+                  {t('rtkPresetEditor.type')}:
                 </Typography>
                 <Chip
                   label={displayType}
@@ -375,13 +375,13 @@ const RTKPresetDialogFormPresentation = ({
                 />
                 {isReadOnly && (
                   <Typography variant='caption' color='textSecondary'>
-                    {t('rtkPresetDialog.readOnlyMessage')}
+                    {t('rtkPresetEditor.readOnlyMessage')}
                   </Typography>
                 )}
               </Box>
               {isEditMode && presetId && (
                 <Typography variant='body2' color='textSecondary'>
-                  {t('rtkPresetDialog.id')}: <code>{presetId}</code>
+                  {t('rtkPresetEditor.id')}: <code>{presetId}</code>
                 </Typography>
               )}
             </Box>
@@ -392,16 +392,16 @@ const RTKPresetDialogFormPresentation = ({
                 autoFocus
                 size='small'
                 name='title'
-                label={t('rtkPresetDialog.presetName')}
-                placeholder={t('rtkPresetDialog.presetNamePlaceholder')}
+                label={t('rtkPresetEditor.presetName')}
+                placeholder={t('rtkPresetEditor.presetNamePlaceholder')}
                 fieldProps={{ validate: required }}
-                helperText={t('rtkPresetDialog.presetNameHelp')}
+                helperText={t('rtkPresetEditor.presetNameHelp')}
                 disabled={isReadOnly}
               />
 
               <Box>
                 <Typography variant='body2' style={{ marginBottom: 8 }}>
-                  {t('rtkPresetDialog.dataSources')}
+                  {t('rtkPresetEditor.dataSources')}
                 </Typography>
                 {sources.map((source, index) => (
                   <SourceInputField
@@ -412,12 +412,12 @@ const RTKPresetDialogFormPresentation = ({
                       index === 0 &&
                       sources.length === 1 &&
                       !source.value.trim()
-                        ? t('rtkPresetDialog.sourcesHelp')
+                        ? t('rtkPresetEditor.sourcesHelp')
                         : undefined
                     }
                     disabled={isReadOnly}
-                    placeholder={t('rtkPresetDialog.sourcePlaceholder')}
-                    removeAriaLabel={t('rtkPresetDialog.removeSource')}
+                    placeholder={t('rtkPresetEditor.sourcePlaceholder')}
+                    removeAriaLabel={t('rtkPresetEditor.removeSource')}
                     onChange={(value) => handleSourceChange(index, value)}
                     onRemove={() => handleRemoveSource(index)}
                   />
@@ -430,7 +430,7 @@ const RTKPresetDialogFormPresentation = ({
                     style={{ marginTop: 8 }}
                     onClick={handleAddSource}
                   >
-                    {t('rtkPresetDialog.addSource')}
+                    {t('rtkPresetEditor.addSource')}
                   </Button>
                 )}
               </Box>
@@ -440,12 +440,12 @@ const RTKPresetDialogFormPresentation = ({
                 size='small'
                 margin='dense'
                 name='format'
-                label={t('rtkPresetDialog.messageFormat')}
-                helperText={t('rtkPresetDialog.formatHelp')}
+                label={t('rtkPresetEditor.messageFormat')}
+                helperText={t('rtkPresetEditor.formatHelp')}
                 disabled={isReadOnly}
               >
                 <MenuItem value='auto'>
-                  {t('rtkPresetDialog.formatAuto')}
+                  {t('rtkPresetEditor.formatAuto')}
                 </MenuItem>
                 <MenuItem value='rtcm2'>RTCM2</MenuItem>
                 <MenuItem value='rtcm3'>RTCM3</MenuItem>
@@ -493,7 +493,7 @@ const RTKPresetDialogFormPresentation = ({
   );
 };
 
-type RTKPresetDialogPresentationProps = {
+type RTKPresetEditorDialogPresentationProps = {
   initialPreset: RTKPresetData | null;
   mode: DialogMode | undefined;
   onClose: () => void;
@@ -503,7 +503,7 @@ type RTKPresetDialogPresentationProps = {
   presetType?: RTKPresetType;
 };
 
-const RTKPresetDialogPresentation = ({
+const RTKPresetEditorDialogPresentation = ({
   initialPreset,
   mode,
   onClose,
@@ -511,7 +511,7 @@ const RTKPresetDialogPresentation = ({
   open,
   presetId,
   presetType,
-}: RTKPresetDialogPresentationProps) => {
+}: RTKPresetEditorDialogPresentationProps) => {
   const { t } = useTranslation();
   const isEditMode = mode === 'edit';
   // Only builtin and dynamic presets are read-only
@@ -519,8 +519,8 @@ const RTKPresetDialogPresentation = ({
 
   const title =
     mode === 'create'
-      ? t('rtkPresetDialog.createTitle')
-      : t('rtkPresetDialog.editTitle');
+      ? t('rtkPresetEditor.createTitle')
+      : t('rtkPresetEditor.editTitle');
 
   return (
     <DraggableDialog
@@ -530,7 +530,7 @@ const RTKPresetDialogPresentation = ({
       title={title}
       onClose={onClose}
     >
-      <RTKPresetDialogFormPresentation
+      <RTKPresetEditorFormPresentation
         initialValues={initialPreset}
         isEditMode={isEditMode}
         isReadOnly={isReadOnly}
@@ -545,7 +545,7 @@ const RTKPresetDialogPresentation = ({
   );
 };
 
-type RTKPresetDialogContainerProps = {
+type RTKPresetEditorDialogContainerProps = {
   mode: DialogMode | undefined;
   onClose: () => void;
   onRefreshPresets?: () => void;
@@ -554,14 +554,14 @@ type RTKPresetDialogContainerProps = {
   presetType?: RTKPresetType;
 };
 
-const RTKPresetDialogContainer = ({
+const RTKPresetEditorDialogContainer = ({
   mode,
   onClose,
   onRefreshPresets,
   open,
   presetId,
   presetType,
-}: RTKPresetDialogContainerProps) => {
+}: RTKPresetEditorDialogContainerProps) => {
   const [initialPreset, setInitialPreset] = useState<RTKPresetData | null>(
     null
   );
@@ -590,7 +590,7 @@ const RTKPresetDialogContainer = ({
   }, [open, mode, presetId]);
 
   return (
-    <RTKPresetDialogPresentation
+    <RTKPresetEditorDialogPresentation
       initialPreset={initialPreset}
       mode={mode}
       open={open}
@@ -602,23 +602,14 @@ const RTKPresetDialogContainer = ({
   );
 };
 
-const RTKPresetDialog = connect(
+const RTKPresetEditorDialog = connect(
   // mapStateToProps
-  (state: RootState) => {
-    const { mode, open, presetId, presetType } = state.rtk.presetDialog;
-
-    return {
-      mode,
-      open,
-      presetId,
-      presetType,
-    };
-  },
+  (state: RootState) => state.rtk.presetEditorDialog,
   // mapDispatchToProps
   {
-    onClose: closeRTKPresetDialog,
+    onClose: closeRTKPresetEditorDialog,
     onRefreshPresets: refreshRTKPresets,
   }
-)(RTKPresetDialogContainer);
+)(RTKPresetEditorDialogContainer);
 
-export default RTKPresetDialog;
+export default RTKPresetEditorDialog;

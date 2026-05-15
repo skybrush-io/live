@@ -17,7 +17,7 @@ import {
 
 export type RTKPresetType = 'user' | 'builtin' | 'dynamic';
 
-type RTKPresetDialogState = {
+type RTKPresetEditorDialogState = {
   open: boolean;
   mode: 'create' | 'edit' | undefined;
   presetId: string | undefined;
@@ -45,7 +45,7 @@ type RTKSliceState = {
     };
   };
 
-  presetDialog: RTKPresetDialogState;
+  presetEditorDialog: RTKPresetEditorDialogState;
   presetsRefreshTrigger: number;
 };
 
@@ -84,7 +84,7 @@ const initialState: RTKSliceState = {
     },
   },
 
-  presetDialog: {
+  presetEditorDialog: {
     open: false,
     mode: undefined,
     presetId: undefined,
@@ -153,7 +153,7 @@ const { actions, reducer } = createSlice({
       }
     },
 
-    openRTKPresetDialog(
+    openRTKPresetEditorDialog(
       state,
       action: PayloadAction<{
         mode: 'create' | 'edit';
@@ -161,17 +161,17 @@ const { actions, reducer } = createSlice({
         presetType?: RTKPresetType;
       }>
     ) {
-      state.presetDialog.open = true;
-      state.presetDialog.mode = action.payload.mode;
-      state.presetDialog.presetId = action.payload.presetId;
-      state.presetDialog.presetType = action.payload.presetType ?? 'user';
+      state.presetEditorDialog.open = true;
+      state.presetEditorDialog.mode = action.payload.mode;
+      state.presetEditorDialog.presetId = action.payload.presetId;
+      state.presetEditorDialog.presetType = action.payload.presetType ?? 'user';
     },
 
-    closeRTKPresetDialog: noPayload<RTKSliceState>((state) => {
-      state.presetDialog.open = false;
-      state.presetDialog.mode = undefined;
-      state.presetDialog.presetId = undefined;
-      state.presetDialog.presetType = undefined;
+    closeRTKPresetEditorDialog: noPayload<RTKSliceState>((state) => {
+      state.presetEditorDialog.open = false;
+      state.presetEditorDialog.mode = undefined;
+      state.presetEditorDialog.presetId = undefined;
+      state.presetEditorDialog.presetType = undefined;
     }),
 
     refreshRTKPresets: noPayload<RTKSliceState>((state) => {
@@ -239,10 +239,10 @@ const { actions, reducer } = createSlice({
 });
 
 export const {
-  closeRTKPresetDialog,
+  closeRTKPresetEditorDialog,
   closeRTKSetupDialog,
   closeSurveySettingsPanel,
-  openRTKPresetDialog,
+  openRTKPresetEditorDialog,
   refreshRTKPresets,
   saveCoordinateForPreset,
   clearAllSavedCoordinates,

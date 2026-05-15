@@ -741,7 +741,7 @@
     "rtcm3/1127": "BeiDou MSM7 (hi-res code, carrier, doppler, CNR)",
     "rtcm3/1230": "GLONASS L1 and L2 code-phase biases"
   },
-  "rtkPresetDialog": {
+  "rtkPresetEditor": {
     "addSource": "Add Source",
     "createFailed": "Failed to create preset",
     "createTitle": "Create RTK Preset",
