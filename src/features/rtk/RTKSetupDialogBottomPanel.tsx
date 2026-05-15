@@ -3,7 +3,7 @@ import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import clsx from 'clsx';
 import { useEffect } from 'react';
-import { withTranslation, type WithTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import {
@@ -72,7 +72,7 @@ type Props = {
     active: boolean;
     valid: boolean;
   };
-} & WithTranslation;
+};
 
 const RTKSetupDialogBottomPanel = ({
   chartHeight = 160,
@@ -83,9 +83,9 @@ const RTKSetupDialogBottomPanel = ({
   onToggleSurveySettings,
   surveySettingsVisible,
   surveyStatus,
-  t,
 }: Props) => {
   const classes = useStyles();
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (
@@ -175,4 +175,4 @@ export default connect(
     onShowSavedCoordinates: showCoordinateRestorationDialog,
     onToggleSurveySettings: toggleSurveySettingsPanel,
   }
-)(withTranslation()(RTKSetupDialogBottomPanel));
+)(RTKSetupDialogBottomPanel);
