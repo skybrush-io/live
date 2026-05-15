@@ -1,15 +1,13 @@
+import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import List from '@mui/material/List';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
-import MultiPagePanel, { Page } from '~/components/MultiPagePanel';
-import {
-  getShowEnvironmentType,
-  isShowAuthorizedToStartLocally,
-} from '~/features/show/selectors';
+import { getShowEnvironmentType } from '~/features/show/selectors';
 
+import AuthorizationButton from './AuthorizationButton';
 import EnvironmentButton from './EnvironmentButton';
 import GeofenceButton from './GeofenceButton';
 import LargeControlButtonGroup from './LargeControlButtonGroup';
@@ -25,39 +23,38 @@ import TakeoffAreaButton from './TakeoffAreaButton';
  * Panel that shows the widgets that are needed to load and configure a drone
  * show.
  */
-const ShowControlPanelUpperSegment = ({ environmentType, isAuthorized }) => (
-  <MultiPagePanel flex={1} selectedPage={isAuthorized ? 'execution' : 'setup'}>
-    <Page scrollable id='setup'>
-      <List dense>
-        <LoadShowFromFileButton />
+const ShowControlPanelUpperSegment = ({ environmentType }) => (
+  <Box flex={1} sx={{ overflow: 'auto' }}>
+    <List dense>
+      <LoadShowFromFileButton />
 
-        <Divider />
+      <Divider />
 
-        <EnvironmentButton />
-        {environmentType === 'outdoor' && <ShowConfiguratorButton />}
-        <TakeoffAreaButton />
-        {environmentType === 'outdoor' && <GeofenceButton />}
-        <ShowUploadDialogButton />
+      <EnvironmentButton />
+      {environmentType === 'outdoor' && <ShowConfiguratorButton />}
+      <TakeoffAreaButton />
+      {environmentType === 'outdoor' && <GeofenceButton />}
+      <ShowUploadDialogButton />
 
-        <Divider />
+      <Divider />
 
-        <OnboardPreflightChecksButton />
-        <ManualPreflightChecksButton />
+      <OnboardPreflightChecksButton />
+      <ManualPreflightChecksButton />
 
-        <Divider />
+      <Divider />
 
-        <StartTimeButton />
-      </List>
-    </Page>
-    <Page scrollable id='execution' display='flex' flexDirection='column'>
+      <StartTimeButton />
+      <AuthorizationButton />
+    </List>
+
+    <Box display='flex' flexDirection='column'>
       <LargeControlButtonGroup />
-    </Page>
-  </MultiPagePanel>
+    </Box>
+  </Box>
 );
 
 ShowControlPanelUpperSegment.propTypes = {
   environmentType: PropTypes.oneOf(['indoor', 'outdoor']),
-  isAuthorized: PropTypes.bool,
 };
 
 export default connect(
@@ -65,6 +62,5 @@ export default connect(
   (state) => ({
     environmentType: getShowEnvironmentType(state),
     filename: null,
-    isAuthorized: isShowAuthorizedToStartLocally(state),
   })
 )(ShowControlPanelUpperSegment);

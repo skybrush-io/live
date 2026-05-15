@@ -1,10 +1,8 @@
 import Box from '@mui/material/Box';
-import List from '@mui/material/List';
 import React from 'react';
 
 import { hasFeature } from '~/utils/configuration';
 
-import AuthorizationButton from './AuthorizationButton';
 import EnvironmentEditorDialog from './EnvironmentEditorDialog';
 import LoadShowFromCloudDialog from './LoadShowFromCloudDialog';
 import ManualPreflightChecksDialog from './ManualPreflightChecksDialog';
@@ -20,12 +18,6 @@ import TakeoffAreaSetupDialog from './TakeoffAreaSetupDialog';
 const ShowControlPanel = () => (
   <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
     <ShowControlPanelUpperSegment />
-
-    <Box className='bottom-bar'>
-      <List dense disablePadding>
-        <AuthorizationButton />
-      </List>
-    </Box>
 
     {hasFeature('loadShowFromCloud') && <LoadShowFromCloudDialog />}
     <EnvironmentEditorDialog />

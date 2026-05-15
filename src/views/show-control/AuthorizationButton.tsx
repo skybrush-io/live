@@ -9,6 +9,7 @@ import { connect } from 'react-redux';
 import { StatusLight } from '@skybrush/mui-components';
 
 import { Status } from '~/components/semantics';
+import { getUAVIdsParticipatingInMission } from '~/features/mission/selectors';
 import { setCommandsAreBroadcast } from '~/features/mission/slice';
 import {
   countUAVsTakingOffAutomatically,
@@ -19,6 +20,7 @@ import {
   synchronizeShowSettings,
 } from '~/features/show/slice';
 import { getSetupStageStatuses } from '~/features/show/stages';
+import { getUAVById } from '~/features/uavs/selectors';
 import type { AppDispatch, RootState } from '~/store/reducers';
 
 const buttonStyle: SxProps<typeof ListItemButton> = {
@@ -30,8 +32,15 @@ const buttonStyle: SxProps<typeof ListItemButton> = {
 type Props = Readonly<{
   isAuthorized: boolean;
   numUAVsTakingOffAutomatically: number;
+  revocationDisabled: boolean;
   status: Status;
 }>;
+
+const isAnyMissionUAVAirborne = (state: RootState): boolean =>
+  getUAVIdsParticipatingInMission(state).some((uavId) => {
+    const ahl = getUAVById(state, uavId)?.position?.ahl;
+    return typeof ahl === 'number' && Math.abs(ahl) >= 0.3;
+  });
 
 /**
  * Button that allows the user to express her explicit consent to starting the
@@ -41,6 +50,7 @@ type Props = Readonly<{
 const AuthorizationButton = ({
   isAuthorized,
   numUAVsTakingOffAutomatically,
+  revocationDisabled,
   status,
   ...rest
 }: Props) => {
@@ -49,6 +59,7 @@ const AuthorizationButton = ({
   return (
     <ListItemButton
       /* disabled={!isAuthorized && status === Status.OFF} */
+      disabled={revocationDisabled}
       selected={isAuthorized}
       sx={buttonStyle}
       {...rest}
@@ -66,7 +77,12 @@ const AuthorizationButton = ({
         secondary={
           <Typography variant='body2' color='textSecondary'>
             {isAuthorized
-              ? numUAVsTakingOffAutomatically <= 0
+              ? revocationDisabled
+                ? t(
+                    'show.authorizationLockedDuringFlight',
+                    'Authorization cannot be revoked while drones are airborne'
+                  )
+                : numUAVsTakingOffAutomatically <= 0
                 ? t('show.revokeAuthorization')
                 : numUAVsTakingOffAutomatically === 1
                   ? t('show.takeOffOne')
@@ -86,6 +102,8 @@ export default connect(
   (state: RootState) => ({
     isAuthorized: isShowAuthorizedToStartLocally(state),
     numUAVsTakingOffAutomatically: countUAVsTakingOffAutomatically(state),
+    revocationDisabled:
+      isShowAuthorizedToStartLocally(state) && isAnyMissionUAVAirborne(state),
     status: getSetupStageStatuses(state).authorization,
   }),
   // mapDispatchToProps
@@ -93,6 +111,9 @@ export default connect(
     onClick: () => (dispatch: AppDispatch, getState: () => RootState) => {
       const state = getState();
       const newAuthorizationState = !isShowAuthorizedToStartLocally(state);
+      if (!newAuthorizationState && isAnyMissionUAVAirborne(state)) {
+        return;
+      }
       dispatch(setShowAuthorization(newAuthorizationState));
       dispatch(synchronizeShowSettings('toServer'));
       if (newAuthorizationState) {
