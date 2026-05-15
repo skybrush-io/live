@@ -34,6 +34,7 @@ type RTKSliceState = {
     id: string | undefined;
     lastUpdatedAt: number | undefined;
   };
+
   dialog: {
     open: boolean;
     antennaPositionFormat: RTKAntennaPositionFormat;
@@ -74,6 +75,7 @@ const initialState: RTKSliceState = {
     id: undefined,
     lastUpdatedAt: undefined,
   },
+
   dialog: {
     open: false,
     antennaPositionFormat: RTKAntennaPositionFormat.LON_LAT,
