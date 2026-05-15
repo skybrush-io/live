@@ -16,12 +16,13 @@ import { getSelectedUAVIds } from '~/features/uavs/selectors';
 import { setFeatureIdForTooltip } from '~/features/session/slice';
 import { getPreferredDroneRadius } from '~/features/three-d/selectors';
 import flock from '~/flock';
-import { convertRGB565ToHex } from '~/flockwave/parsing';
 import { uavIdToGlobalId } from '~/model/identifiers';
 import { getFlatEarthCoordinateTransformer } from '~/selectors/map';
 import store from '~/store';
 
 const { THREE } = AFrame;
+const DRONE_BODY_COLOR = 0xff8c00;
+const DRONE_HOVER_COLOR = 0xff0000;
 
 /**
  * Selector that takes the Redux state and returns a function that can be called
@@ -47,21 +48,6 @@ const getUpdatePositionFromGPSCoordinatesFunction = createSelector(
     }
   }
 );
-
-/**
- * Convenience function to create the props of a glowing material to use
- * with drones.
- *
- * Does not work yet; need to investigate why.
- */
-function createGlowingMaterialProps() {
-  return {
-    color: new THREE.Color('#0088ff'),
-    falloff: 1.5,
-    internalRadius: 5,
-    sharpness: 0,
-  };
-}
 
 AFrame.registerSystem('drone-flock', {
   init() {
@@ -104,18 +90,11 @@ AFrame.registerSystem('drone-flock', {
   createNewUAVEntity() {
     const element = document.createElement('a-entity');
     element.setAttribute('material', {
-      color: new THREE.Color('#0088ff'),
+      color: new THREE.Color(DRONE_BODY_COLOR),
       fog: false,
       shader: 'flat',
     });
     element.setAttribute('position', '0 0 0');
-
-    const glowElement = document.createElement('a-entity');
-    glowElement.setAttribute('geometry', this._droneGeometry);
-    glowElement.setAttribute('glow-material', createGlowingMaterialProps());
-    glowElement.setAttribute('scale', '3 3 3');
-
-    element.append(glowElement);
 
     this.updateEntityGeometry(element);
 
@@ -131,44 +110,31 @@ AFrame.registerSystem('drone-flock', {
     } else if (this._updatePositionFromGPSCoordinates) {
       this._updatePositionFromGPSCoordinates(uav, entity.object3D.position);
     }
+    entity.object3D.position.z += this._droneRadius;
 
-    const color = convertRGB565ToHex(uav.light | 0);
-    entity.originalColor = color;
-    entity.originalGlowColor = color;
+    entity.originalColor = DRONE_BODY_COLOR;
     const mesh = entity.getObject3D('mesh');
     if (mesh) {
-      mesh.material.color.setHex(color);
+      mesh.material.color.setHex(DRONE_BODY_COLOR);
     } else {
       // TODO(ntamas): sometimes it happens that we get here earlier than the
       // mesh is ready (it's an async process). In this case we should store
       // the color somewhere and attempt setting it again in case there will be
       // no further updates from the UAV for a while
     }
-
-    // TODO(ntamas): this is quite complex; we probably need to encapsulate the
-    // glow as a separate component so we can simplify both the cloning code and
-    // this part here.
-    //
-    // Also, we could cache the glow material somewhere so we don't need to look
-    // it up all the time.
-    const glowMesh = this._getGlowMeshFromEntity(entity);
-    if (glowMesh && glowMesh.material) {
-      glowMesh.material.color.setHex(color);
-    }
   },
 
   updateEntityGeometry(entity) {
     entity.setAttribute('geometry', this._droneGeometry);
 
-    const glowMesh = this._getGlowMeshFromEntity(entity);
-    if (glowMesh) {
-      glowMesh.scale.set(this._glowScale, this._glowScale, 1);
-    }
-
     // Update edges
     if (entity.edgesLine) {
       entity.object3D.remove(entity.edgesLine);
+      entity.edgesLine.geometry.dispose();
+      entity.edgesLine.material.dispose();
+      entity.edgesLine = null;
     }
+
     const mesh = entity.getObject3D('mesh');
     if (mesh) {
       const edges = new THREE.EdgesGeometry(mesh.geometry);
@@ -179,11 +145,6 @@ AFrame.registerSystem('drone-flock', {
     }
   },
 
-  _getGlowMeshFromEntity(entity) {
-    const glowEntity = entity.childNodes[0];
-    return glowEntity ? glowEntity.getObject3D('mesh') : undefined;
-  },
-
   _onDroneRadiusChanged(newValue) {
     this._droneRadius = newValue;
     this._droneGeometry = {
@@ -192,7 +153,6 @@ AFrame.registerSystem('drone-flock', {
       segmentsHeight: 9,
       segmentsWidth: 18,
     };
-    this._glowScale = this._droneRadius / 0.25;
 
     this.droneRadiusChanged.dispatch();
   },
@@ -282,12 +242,7 @@ AFrame.registerComponent('drone-flock', {
           const mesh = entity.getObject3D('mesh');
           if (mesh) {
             entity.originalColor = entity.originalColor || mesh.material.color.getHex();
-            mesh.material.color.setHex(0xff0000);
-          }
-          const glowMesh = this.system._getGlowMeshFromEntity(entity);
-          if (glowMesh && glowMesh.material) {
-            entity.originalGlowColor = entity.originalGlowColor || glowMesh.material.color.getHex();
-            glowMesh.material.color.setHex(0xff0000);
+            mesh.material.color.setHex(DRONE_HOVER_COLOR);
           }
           if (entity.edgesLine) {
             entity.edgesLine.visible = true;
@@ -298,10 +253,6 @@ AFrame.registerComponent('drone-flock', {
           const mesh = entity.getObject3D('mesh');
           if (mesh && entity.originalColor) {
             mesh.material.color.setHex(entity.originalColor);
-          }
-          const glowMesh = this.system._getGlowMeshFromEntity(entity);
-          if (glowMesh && glowMesh.material && entity.originalGlowColor) {
-            glowMesh.material.color.setHex(entity.originalGlowColor);
           }
           if (entity.edgesLine) {
             entity.edgesLine.visible = false;
