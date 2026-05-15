@@ -13,6 +13,7 @@ import type {
 } from '@skybrush/flockwave-spec';
 
 import { errorToString } from '~/error-handling';
+import { isRecord } from '~/utils/types';
 import type { Coordinate3D } from '~/utils/math';
 
 import {
@@ -29,9 +30,6 @@ import { extractResponseForId } from './parsing';
 import { isSchedule, type Schedule } from './schedule';
 import type { Message, MessageBody } from './types';
 import { validateExtensionName, validateObjectId } from './validation';
-
-const isRecord = (value: unknown): value is Record<string, unknown> =>
-  typeof value === 'object' && value !== null;
 
 const getErrorMessageFromBody = (body: unknown, fallback: string): string => {
   if (isRecord(body)) {

@@ -30,6 +30,7 @@ import { showConfirmationDialog } from '~/features/prompt/actions';
 import messageHub from '~/message-hub';
 import { useAppDispatch } from '~/store/hooks';
 import type { RootState } from '~/store/reducers';
+import { isRecord } from '~/utils/types';
 import { required } from '~/utils/validation';
 
 import {
@@ -63,9 +64,6 @@ const PRESET_TYPE_I18N_KEYS: Record<RTKPresetType, string> = {
   builtin: 'rtkPresetEditor.presetTypeBuiltin',
   dynamic: 'rtkPresetEditor.presetTypeDynamic',
 };
-
-const isRecord = (value: unknown): value is Record<string, unknown> =>
-  typeof value === 'object' && value !== null;
 
 const getErrorMessage = (error: unknown, fallback: string): string => {
   if (isRecord(error)) {
