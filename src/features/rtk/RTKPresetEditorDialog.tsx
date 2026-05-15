@@ -376,11 +376,6 @@ const RTKPresetEditorFormPresentation = ({
                   </Typography>
                 )}
               </Box>
-              {isEditMode && presetId && (
-                <Typography variant='body2' color='textSecondary'>
-                  {t('rtkPresetEditor.id')}: <code>{presetId}</code>
-                </Typography>
-              )}
             </Box>
 
             <Box display='flex' flexDirection='column' style={{ gap: 16 }}>
