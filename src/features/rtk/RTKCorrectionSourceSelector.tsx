@@ -7,9 +7,9 @@ import IconButton from '@mui/material/IconButton';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select, { type SelectChangeEvent } from '@mui/material/Select';
-import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import type { RTKPresetID } from '@skybrush/flockwave-spec';
+import { Tooltip } from '@skybrush/mui-components';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
@@ -247,27 +247,15 @@ const RTKCorrectionSourceSelector = ({
             )}
           </Select>
         </FormControl>
-        <Tooltip title={t('RTKCorrectionSourceSelector.editPreset')}>
-          <span>
-            <IconButton
-              disabled={!canEdit}
-              size='small'
-              onClick={handleEditCurrentPreset}
-            >
-              <EditIcon />
-            </IconButton>
-          </span>
+        <Tooltip content={t('RTKCorrectionSourceSelector.editPreset')}>
+          <IconButton disabled={!canEdit} onClick={handleEditCurrentPreset}>
+            <EditIcon />
+          </IconButton>
         </Tooltip>
-        <Tooltip title={t('RTKCorrectionSourceSelector.createPreset')}>
-          <span>
-            <IconButton
-              disabled={loading}
-              size='small'
-              onClick={handleCreatePreset}
-            >
-              <AddIcon />
-            </IconButton>
-          </span>
+        <Tooltip content={t('RTKCorrectionSourceSelector.createPreset')}>
+          <IconButton disabled={loading} onClick={handleCreatePreset}>
+            <AddIcon />
+          </IconButton>
         </Tooltip>
       </Box>
     </FormGroup>
