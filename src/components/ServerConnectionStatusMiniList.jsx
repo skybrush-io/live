@@ -1,6 +1,6 @@
 import isNil from 'lodash-es/isNil';
 import PropTypes from 'prop-types';
-import { withTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import {
@@ -57,50 +57,55 @@ const ServerConnectionStatusMiniList = ({
   roundTripTime,
   serverHostname,
   serverVersion,
-  t,
-}) => (
-  <MiniList>
-    <MiniListItem
-      iconPreset={connectionState}
-      primaryText={(
-        connectionStateToPrimaryText[connectionState] ||
-        unknownConnectionStateToPrimaryText
-      )(t)}
-      secondaryText={
-        connectionState === ConnectionState.CONNECTED ? serverHostname : null
-      }
-    />
-    {connectionState === ConnectionState.CONNECTED ? (
-      <>
-        <MiniListItem
-          iconPreset='empty'
-          primaryText={t('serverConnectionStatus.version')}
-          secondaryText={serverVersion}
-        />
-        <MiniListDivider />
-        {clockSkew === 0 ? (
+}) => {
+  const { t } = useTranslation();
+
+  return (
+    <MiniList>
+      <MiniListItem
+        iconPreset={connectionState}
+        primaryText={(
+          connectionStateToPrimaryText[connectionState] ||
+          unknownConnectionStateToPrimaryText
+        )(t)}
+        secondaryText={
+          connectionState === ConnectionState.CONNECTED ? serverHostname : null
+        }
+      />
+      {connectionState === ConnectionState.CONNECTED ? (
+        <>
           <MiniListItem
-            iconPreset='success'
-            primaryText={t('serverConnectionStatus.clocksSync')}
+            iconPreset='empty'
+            primaryText={t('serverConnectionStatus.version')}
+            secondaryText={serverVersion}
           />
-        ) : (
+          <MiniListDivider />
+          {clockSkew === 0 ? (
+            <MiniListItem
+              iconPreset='success'
+              primaryText={t('serverConnectionStatus.clocksSync')}
+            />
+          ) : (
+            <MiniListItem
+              iconPreset={
+                Math.abs(clockSkew) > roundTripTime / 2 ? 'warning' : 'empty'
+              }
+              primaryText={t('serverConnectionStatus.clockSkew')}
+              secondaryText={formatDurationInMsec(clockSkew)}
+            />
+          )}
           <MiniListItem
             iconPreset={
-              Math.abs(clockSkew) > roundTripTime / 2 ? 'warning' : 'empty'
+              roundTripTime > MAX_ROUNDTRIP_TIME ? 'warning' : 'empty'
             }
-            primaryText={t('serverConnectionStatus.clockSkew')}
-            secondaryText={formatDurationInMsec(clockSkew)}
+            primaryText={t('serverConnectionStatus.roundTripTime')}
+            secondaryText={formatDurationInMsec(roundTripTime)}
           />
-        )}
-        <MiniListItem
-          iconPreset={roundTripTime > MAX_ROUNDTRIP_TIME ? 'warning' : 'empty'}
-          primaryText={t('serverConnectionStatus.roundTripTime')}
-          secondaryText={formatDurationInMsec(roundTripTime)}
-        />
-      </>
-    ) : null}
-  </MiniList>
-);
+        </>
+      ) : null}
+    </MiniList>
+  );
+};
 
 ServerConnectionStatusMiniList.propTypes = {
   clockSkew: PropTypes.number,
@@ -108,7 +113,6 @@ ServerConnectionStatusMiniList.propTypes = {
   roundTripTime: PropTypes.number,
   serverHostname: PropTypes.string,
   serverVersion: PropTypes.string,
-  t: PropTypes.func,
 };
 
 export default connect(
@@ -120,4 +124,4 @@ export default connect(
     serverVersion: getServerVersion(state),
   }),
   {}
-)(withTranslation()(ServerConnectionStatusMiniList));
+)(ServerConnectionStatusMiniList);

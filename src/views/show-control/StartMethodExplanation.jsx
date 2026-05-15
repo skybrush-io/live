@@ -6,7 +6,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import PropTypes from 'prop-types';
-import { withTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import ClockDisplayLabel from '~/components/ClockDisplayLabel';
@@ -31,35 +31,38 @@ const iconForStartMethod = {
  * Component that explains to the user how the drones will start after the
  * authorization has been given.
  */
-const StartMethodExplanation = ({ hasScheduledStartTime, startMethod, t }) => (
-  <List dense>
-    <ListItem>
-      <ListItemIcon>
-        {iconForStartMethod[startMethod] || <HelpOutline />}
-      </ListItemIcon>
-      <ListItemText
-        primary={
-          primaryTextForStartMethod[startMethod]?.(t) ||
-          t('show.unknownStartMode')
-        }
-        secondary={
-          hasScheduledStartTime ? (
-            <>
-              {t('show.clock')} <ClockDisplayLabel clockId='show' />
-            </>
-          ) : (
-            t('show.startTimeNotSet')
-          )
-        }
-      />
-    </ListItem>
-  </List>
-);
+const StartMethodExplanation = ({ hasScheduledStartTime, startMethod }) => {
+  const { t } = useTranslation();
+
+  return (
+    <List dense>
+      <ListItem>
+        <ListItemIcon>
+          {iconForStartMethod[startMethod] || <HelpOutline />}
+        </ListItemIcon>
+        <ListItemText
+          primary={
+            primaryTextForStartMethod[startMethod]?.(t) ||
+            t('show.unknownStartMode')
+          }
+          secondary={
+            hasScheduledStartTime ? (
+              <>
+                {t('show.clock')} <ClockDisplayLabel clockId='show' />
+              </>
+            ) : (
+              t('show.startTimeNotSet')
+            )
+          }
+        />
+      </ListItem>
+    </List>
+  );
+};
 
 StartMethodExplanation.propTypes = {
   hasScheduledStartTime: PropTypes.bool,
   startMethod: PropTypes.oneOf(Object.values(StartMethod)),
-  t: PropTypes.func,
 };
 
 export default connect(
@@ -70,4 +73,4 @@ export default connect(
   }),
   // mapDispatchToProps
   {}
-)(withTranslation()(StartMethodExplanation));
+)(StartMethodExplanation);

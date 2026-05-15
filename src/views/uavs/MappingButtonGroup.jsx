@@ -4,7 +4,7 @@ import ViewModule from '@mui/icons-material/ViewModule';
 import IconButton from '@mui/material/IconButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import PropTypes from 'prop-types';
-import { withTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import ToggleButton from '~/components/ToggleButton';
@@ -36,9 +36,11 @@ const MappingButtonGroup = ({
   showEmptyMissionSlots,
   showMissionIds,
   startMappingEditorSession,
-  t,
-}) => (
-  <>
+}) => {
+  const { t } = useTranslation();
+
+  return (
+    <>
     {showMissionIds && (
       <Tooltip content={t('mappingButtonGroup.editMapping')}>
         <IconButton
@@ -80,8 +82,9 @@ const MappingButtonGroup = ({
         <ViewList />
       </ToggleButton>
     </ToggleButtonGroup>
-  </>
-);
+    </>
+  );
+};
 
 MappingButtonGroup.propTypes = {
   layout: PropTypes.oneOf(['grid', 'list']),
@@ -91,7 +94,6 @@ MappingButtonGroup.propTypes = {
   showEmptyMissionSlots: PropTypes.bool,
   showMissionIds: PropTypes.bool,
   startMappingEditorSession: PropTypes.func,
-  t: PropTypes.func,
 };
 
 export default connect(
@@ -124,4 +126,4 @@ export default connect(
       }
     },
   }
-)(withTranslation()(MappingButtonGroup));
+)(MappingButtonGroup);

@@ -10,7 +10,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import Typography from '@mui/material/Typography';
 import PropTypes from 'prop-types';
-import { Trans, withTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import {
@@ -73,9 +73,9 @@ const OutdoorEnvironmentEditor = ({
   onSetTakeoffHeading,
   onSetTakeoffHeadingToAverageActiveUAVHeading,
   showCoordinateSystem,
-  t,
   takeoffHeading,
 }) => {
+  const { t } = useTranslation();
   const usingAMSLReference =
     altitudeReference && altitudeReference.type === AltitudeReference.AMSL;
 
@@ -249,7 +249,6 @@ OutdoorEnvironmentEditor.propTypes = {
     orientation: PropTypes.string.isRequired,
     origin: PropTypes.arrayOf(PropTypes.number),
   }),
-  t: PropTypes.func,
   takeoffHeading: PropTypes.shape({
     type: PropTypes.oneOf(Object.values(TakeoffHeadingMode)),
     value: PropTypes.string.isRequired,
@@ -409,4 +408,4 @@ export default connect(
       );
     },
   })
-)(withTranslation()(OutdoorEnvironmentEditor));
+)(OutdoorEnvironmentEditor);

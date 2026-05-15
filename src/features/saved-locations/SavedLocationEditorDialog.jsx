@@ -9,7 +9,7 @@ import DialogContent from '@mui/material/DialogContent';
 import PropTypes from 'prop-types';
 import React, { useCallback, useRef } from 'react';
 import { Form } from 'react-final-form';
-import { Translation, withTranslation } from 'react-i18next';
+import { Translation, useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import { DraggableDialog } from '@skybrush/mui-components';
@@ -159,8 +159,8 @@ const SavedLocationEditorDialogPresentation = ({
   onDelete,
   onSubmit,
   open,
-  t,
 }) => {
+  const { t } = useTranslation();
   const form = useRef(null);
 
   const copyFromMapView = useCallback(() => {
@@ -243,7 +243,6 @@ SavedLocationEditorDialogPresentation.propTypes = {
   onDelete: PropTypes.func.isRequired,
   onSubmit: PropTypes.func.isRequired,
   open: PropTypes.bool.isRequired,
-  t: PropTypes.func,
 };
 
 /**
@@ -280,6 +279,6 @@ const SavedLocationEditorDialog = connect(
       dispatch(cancelLocationEditing());
     },
   })
-)(withTranslation()(SavedLocationEditorDialogPresentation));
+)(SavedLocationEditorDialogPresentation);
 
 export default SavedLocationEditorDialog;

@@ -8,7 +8,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import isNil from 'lodash-es/isNil';
 import PropTypes from 'prop-types';
-import { withTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import { StatusLight } from '@skybrush/mui-components';
@@ -90,11 +90,13 @@ const LoadShowFromFileButton = ({
   onShowFileSelected,
   progress,
   status,
-  t,
   title,
   validationResult,
-}) => (
-  <ListItem
+}) => {
+  const { t } = useTranslation();
+
+  return (
+    <ListItem
     disablePadding
     secondaryAction={
       changedSinceLoaded ? (
@@ -157,8 +159,9 @@ const LoadShowFromFileButton = ({
         }
       />
     </FileButton>
-  </ListItem>
-);
+    </ListItem>
+  );
+};
 
 LoadShowFromFileButton.propTypes = {
   changedSinceLoaded: PropTypes.bool,
@@ -171,7 +174,6 @@ LoadShowFromFileButton.propTypes = {
   onShowFileSelected: PropTypes.func,
   progress: PropTypes.number,
   status: PropTypes.oneOf(Object.values(Status)),
-  t: PropTypes.func,
   title: PropTypes.string,
 };
 
@@ -194,4 +196,4 @@ export default connect(
     onReloadShowFile: reloadCurrentShowFile,
     onShowFileSelected: loadShowFromFile,
   }
-)(withTranslation()(LoadShowFromFileButton));
+)(LoadShowFromFileButton);

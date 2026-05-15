@@ -16,7 +16,7 @@ import unary from 'lodash-es/unary';
 import { Checkboxes, Select, TextField } from 'mui-rff';
 import PropTypes from 'prop-types';
 import { Form } from 'react-final-form';
-import { withTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import { FormHeader } from '@skybrush/mui-components';
@@ -175,7 +175,8 @@ const SUPPORTED_GEOFENCE_ACTIONS = [
   GeofenceAction.LAND,
 ];
 
-const GeofenceSettingsFormPresentation = ({ onSubmit, t }) => {
+const GeofenceSettingsFormPresentation = ({ onSubmit }) => {
+  const { t } = useTranslation();
   const initialValues = useSelectorOnce((state) => ({
     // NOTE: This key was added later, so it might be missing from the state,
     //       thus a redundant default is provided here.
@@ -378,7 +379,6 @@ const GeofenceSettingsFormPresentation = ({ onSubmit, t }) => {
 
 GeofenceSettingsFormPresentation.propTypes = {
   onSubmit: PropTypes.func,
-  t: PropTypes.func,
 };
 
 /**
@@ -406,7 +406,7 @@ const GeofenceSettingsForm = connect(
       }
     },
   }
-)(withTranslation()(GeofenceSettingsFormPresentation));
+)(GeofenceSettingsFormPresentation);
 
 /**
  * Presentation component for the tab that shows the form that the user
@@ -416,29 +416,35 @@ const GeofenceSettingsTabPresentation = ({
   hasFence,
   onClose,
   onClearGeofence,
-  t,
-}) => (
-  <>
-    <DialogContent sx={dialogContentStyle}>
-      <GeofenceSettingsForm />
-    </DialogContent>
-    <DialogActions>
-      <Button color='secondary' disabled={!hasFence} onClick={onClearGeofence}>
-        {t('safetyDialog.geofenceTab.clear')}
-      </Button>
-      <Button form='geofenceSettings' type='submit' color='primary'>
-        {t('general.action.apply')}
-      </Button>
-      <Button onClick={onClose}>{t('general.action.close')}</Button>
-    </DialogActions>
-  </>
-);
+}) => {
+  const { t } = useTranslation();
+
+  return (
+    <>
+      <DialogContent sx={dialogContentStyle}>
+        <GeofenceSettingsForm />
+      </DialogContent>
+      <DialogActions>
+        <Button
+          color='secondary'
+          disabled={!hasFence}
+          onClick={onClearGeofence}
+        >
+          {t('safetyDialog.geofenceTab.clear')}
+        </Button>
+        <Button form='geofenceSettings' type='submit' color='primary'>
+          {t('general.action.apply')}
+        </Button>
+        <Button onClick={onClose}>{t('general.action.close')}</Button>
+      </DialogActions>
+    </>
+  );
+};
 
 GeofenceSettingsTabPresentation.propTypes = {
   hasFence: PropTypes.bool,
   onClearGeofence: PropTypes.func,
   onClose: PropTypes.func,
-  t: PropTypes.func,
 };
 
 /**
@@ -460,6 +466,6 @@ const GeofenceSettingsTab = connect(
       }
     },
   }
-)(withTranslation()(GeofenceSettingsTabPresentation));
+)(GeofenceSettingsTabPresentation);
 
 export default GeofenceSettingsTab;

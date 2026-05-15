@@ -3,7 +3,7 @@ import ZoomOut from '@mui/icons-material/ZoomOut';
 import IconButton from '@mui/material/IconButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import PropTypes from 'prop-types';
-import { withTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
 import { Tooltip } from '@skybrush/mui-components';
 
@@ -19,9 +19,11 @@ const NavigationButtonGroupPresentation = ({
   onChange,
   onResetZoom,
   onRotateCameraTowardsDrones,
-  t,
-}) => (
-  <>
+}) => {
+  const { t } = useTranslation();
+
+  return (
+    <>
     <ToggleButtonGroup size='small'>
       <ToggleButton
         selected={mode === 'walk'}
@@ -59,15 +61,15 @@ const NavigationButtonGroupPresentation = ({
         <CenterFocusStrong />
       </IconButton>
     </Tooltip>
-  </>
-);
+    </>
+  );
+};
 
 NavigationButtonGroupPresentation.propTypes = {
   mode: PropTypes.oneOf(['walk', 'fly']),
   onChange: PropTypes.func,
   onResetZoom: PropTypes.func,
   onRotateCameraTowardsDrones: PropTypes.func,
-  t: PropTypes.func,
 };
 
-export default withTranslation()(NavigationButtonGroupPresentation);
+export default NavigationButtonGroupPresentation;

@@ -5,7 +5,7 @@
 import DialogContent from '@mui/material/DialogContent';
 import Tab from '@mui/material/Tab';
 import PropTypes from 'prop-types';
-import { withTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import {
@@ -39,7 +39,8 @@ const tabs = [
 /**
  * Dialog for configuring safety related settings, including the geofence.
  */
-const SafetyDialog = ({ onClose, onTabSelected, open, selectedTab, t }) => {
+const SafetyDialog = ({ onClose, onTabSelected, open, selectedTab }) => {
+  const { t } = useTranslation();
   const SelectedTabComponent =
     tabs.find((tab) => tab.id === selectedTab)?.component ??
     (() => (
@@ -80,7 +81,6 @@ SafetyDialog.propTypes = {
   onTabSelected: PropTypes.func,
   open: PropTypes.bool.isRequired,
   selectedTab: PropTypes.oneOf(tabs.map((t) => t.id)),
-  t: PropTypes.func,
 };
 
 export default connect(
@@ -94,4 +94,4 @@ export default connect(
     onClose: closeSafetyDialog,
     onTabSelected: (_event, value) => setSafetyDialogTab(value),
   }
-)(withTranslation()(SafetyDialog));
+)(SafetyDialog);
