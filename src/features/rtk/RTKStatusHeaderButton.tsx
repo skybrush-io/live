@@ -62,7 +62,7 @@ const RTKStatusHeaderButton = ({
             : null
         }
         style={buttonStyle}
-        onClick={isConnected ? showRTKSetupDialog : undefined}
+        onClick={showRTKSetupDialog}
       >
         <Satellite />
         <SidebarBadge
