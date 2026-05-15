@@ -1,4 +1,4 @@
-/* eslint-disable complexity, max-depth */
+/* eslint-disable @typescript-eslint/no-dynamic-delete */
 
 import isEmpty from 'lodash-es/isEmpty';
 import isNil from 'lodash-es/isNil';
@@ -15,10 +15,86 @@ import {
 } from './slice';
 
 import { dismissAlerts, triggerAlert } from '~/features/alert/slice';
+import { setClockState } from '~/features/clocks/slice';
+import { CommonClockId } from '~/features/clocks/types';
+import { getTickCountOnClockAt } from '~/features/clocks/utils';
 import { getRoundedClockSkewInMilliseconds } from '~/features/servers/selectors';
 import { getUAVAgingThresholds } from '~/features/settings/selectors';
+import { getShowDuration } from '~/features/show/selectors';
+import UAVErrorCode from '~/flockwave/UAVErrorCode';
 import { isErrorCodeOrMoreSevere } from '~/model/status-codes';
 import { UAVAge } from '~/model/uav';
+
+const SHOW_END_TOLERANCE_SECONDS = 0.5;
+
+const GROUND_ERROR_CODES = new Set([
+  UAVErrorCode.ON_GROUND,
+  UAVErrorCode.LANDED,
+]);
+
+const getUAVAltitudeAboveHome = (uav) => {
+  const ahl = uav?.position?.ahl;
+  if (typeof ahl === 'number') {
+    return ahl;
+  }
+
+  const localAltitude = uav?.localPosition?.[2];
+  return typeof localAltitude === 'number' ? localAltitude : undefined;
+};
+
+const hasAnyErrorCode = (uav, codes) =>
+  (uav?.errors || []).some((code) => codes.has(code));
+
+const isUAVGrounded = (uav) => {
+  if (!uav) {
+    return false;
+  }
+
+  if (hasAnyErrorCode(uav, GROUND_ERROR_CODES)) {
+    return true;
+  }
+
+  const altitude = getUAVAltitudeAboveHome(uav);
+  return typeof altitude === 'number' && Math.abs(altitude) < 0.3;
+};
+
+const hasAnyGroundedUAV = (updates) => Object.values(updates).some(isUAVGrounded);
+
+function* hasShowClockReachedEnd() {
+  const clock = yield select((state) => state.clocks.byId[CommonClockId.SHOW]);
+  const duration = yield select(getShowDuration);
+
+  if (!clock?.running || !Number.isFinite(duration) || duration <= 0) {
+    return false;
+  }
+
+  const clockSkew = (yield select(getRoundedClockSkewInMilliseconds)) || 0;
+  const ticks = getTickCountOnClockAt(clock, Date.now() + clockSkew);
+  const elapsedSeconds = ticks / clock.ticksPerSecond;
+
+  return elapsedSeconds + SHOW_END_TOLERANCE_SECONDS >= duration;
+}
+
+function* stopShowClockIfRunning() {
+  const clock = yield select((state) => state.clocks.byId[CommonClockId.SHOW]);
+
+  if (!clock?.running) {
+    return;
+  }
+
+  const clockSkew = (yield select(getRoundedClockSkewInMilliseconds)) || 0;
+  const referenceTime = Date.now() + clockSkew;
+
+  yield put(
+    setClockState({
+      ...clock,
+      id: CommonClockId.SHOW,
+      referenceTime,
+      running: false,
+      ticks: getTickCountOnClockAt(clock, referenceTime),
+    })
+  );
+}
 
 /**
  * Helper function to convert a single UAV to its Redux representation.
@@ -222,6 +298,13 @@ function* uavSyncSaga(flock) {
       case 'updated':
         uavs = convertUAVsToRedux(args[0]);
         yield put(updateUAVs(uavs));
+
+        if (
+          hasAnyGroundedUAV(uavs) &&
+          (yield call(hasShowClockReachedEnd))
+        ) {
+          yield call(stopShowClockIfRunning);
+        }
         break;
 
       default:

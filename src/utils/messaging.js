@@ -9,6 +9,9 @@ import mapValues from 'lodash-es/mapValues';
 import values from 'lodash-es/values';
 
 import { showConfirmationDialog } from '~/features/prompt/actions';
+import { setClockState } from '~/features/clocks/slice';
+import { CommonClockId } from '~/features/clocks/types';
+import { getRoundedClockSkewInMilliseconds } from '~/features/servers/selectors';
 import { UAV_SIGNAL_DURATION } from '~/features/settings/constants';
 import { shouldConfirmUAVOperation } from '~/features/settings/selectors';
 import { showNotification } from '~/features/snackbar/actions';
@@ -20,6 +23,24 @@ import store from '~/store';
 import makeLogger from './logging';
 
 const logger = makeLogger('messaging');
+
+const getClockTimestamp = () => {
+  const clockSkew = getRoundedClockSkewInMilliseconds(store.getState()) || 0;
+  return Date.now() + clockSkew;
+};
+
+const startManualShowClock = () => {
+  store.dispatch(
+    setClockState({
+      id: CommonClockId.SHOW,
+      epoch: Number.NaN,
+      referenceTime: getClockTimestamp(),
+      running: true,
+      ticks: 0,
+      ticksPerSecond: 10,
+    })
+  );
+};
 
 const processResponses = (
   commandName,
@@ -91,6 +112,7 @@ const performMassOperation =
       name,
       mapper = undefined,
       omitIdsWhenEmpty = false,
+      onAccepted,
       reportFailure = true,
       reportSuccess = true,
       skipConfirmation = false,
@@ -131,7 +153,8 @@ const performMassOperation =
 
       const shouldOmitIds =
         omitIdsWhenEmpty && (!Array.isArray(uavs) || uavs.length === 0);
-      const responses = await messageHub.startAsyncOperation(
+
+      const operation = messageHub.startAsyncOperation(
         {
           type,
           ...(shouldOmitIds ? {} : { ids: uavs }),
@@ -139,6 +162,16 @@ const performMassOperation =
         },
         responseHandlerOptions
       );
+
+      if (typeof onAccepted === 'function') {
+        try {
+          onAccepted();
+        } catch (error) {
+          logger.error(`${name}: failed to update local state: ${String(error)}`);
+        }
+      }
+
+      const responses = await operation;
       processResponses(name, responses, { reportFailure, reportSuccess });
     } catch (error) {
       console.error(error);
@@ -200,6 +233,7 @@ export const startShowOnUAVs = performMassOperation({
   name: 'Manual show start command',
   mapper: ({ transport, ...options }) => options,
   omitIdsWhenEmpty: true,
+  onAccepted: startManualShowClock,
 });
 
 export const shutdownUAVs = performMassOperation({
