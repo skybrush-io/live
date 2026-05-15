@@ -125,8 +125,7 @@ type StateProps = Readonly<{
   dronesVisible: boolean;
 }>;
 
-type Props = StateProps &
-  DispatchProps;
+type Props = StateProps & DispatchProps;
 
 type AdaptStage = 'config' | 'review';
 

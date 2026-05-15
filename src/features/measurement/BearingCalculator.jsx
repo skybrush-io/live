@@ -55,7 +55,11 @@ const getCoordinatesOfSelectedUAVPair = createSelector(
   }
 );
 
-const BearingCalculator = ({ coordinates, hasEnoughMeasurements, selectedUAVIdPair }) => {
+const BearingCalculator = ({
+  coordinates,
+  hasEnoughMeasurements,
+  selectedUAVIdPair,
+}) => {
   const { t } = useTranslation();
 
   if (selectedUAVIdPair) {

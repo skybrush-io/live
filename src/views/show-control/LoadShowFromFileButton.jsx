@@ -97,68 +97,68 @@ const LoadShowFromFileButton = ({
 
   return (
     <ListItem
-    disablePadding
-    secondaryAction={
-      changedSinceLoaded ? (
-        <Tooltip content={t('show.reload')}>
-          <IconButton edge='end' size='large' onClick={onReloadShowFile}>
-            <Refresh />
-          </IconButton>
-        </Tooltip>
-      ) : hasLoadedShowFile ? (
-        <Tooltip content={t('show.clear')}>
-          <IconButton edge='end' size='large' onClick={onClearLoadedShow}>
-            <Clear />
-          </IconButton>
-        </Tooltip>
-      ) : hasFeature('loadShowFromCloud') ? (
-        <Tooltip content={t('show.fromCloud')}>
-          <IconButton edge='end' size='large' onClick={onLoadShowFromCloud}>
-            <CloudDownload />
-          </IconButton>
-        </Tooltip>
-      ) : undefined
-    }
-  >
-    <FileButton
-      accepts={isFile}
-      component={ListItemButton}
-      componentProps={{ sx: { paddingRight: 2 } }}
-      filter={EXTENSIONS}
-      id='show-file-upload'
-      onSelected={onShowFileSelected}
+      disablePadding
+      secondaryAction={
+        changedSinceLoaded ? (
+          <Tooltip content={t('show.reload')}>
+            <IconButton edge='end' size='large' onClick={onReloadShowFile}>
+              <Refresh />
+            </IconButton>
+          </Tooltip>
+        ) : hasLoadedShowFile ? (
+          <Tooltip content={t('show.clear')}>
+            <IconButton edge='end' size='large' onClick={onClearLoadedShow}>
+              <Clear />
+            </IconButton>
+          </Tooltip>
+        ) : hasFeature('loadShowFromCloud') ? (
+          <Tooltip content={t('show.fromCloud')}>
+            <IconButton edge='end' size='large' onClick={onLoadShowFromCloud}>
+              <CloudDownload />
+            </IconButton>
+          </Tooltip>
+        ) : undefined
+      }
     >
-      <StatusLight status={status} />
-      <ListItemTextWithProgress
-        primary={
-          loading
-            ? t('show.loading')
-            : hasLoadedShowFile
-              ? truncate(title, 60)
-              : t('show.noFileLoaded')
-        }
-        secondary={
-          loading ? (
-            <LinearProgress
-              value={progress}
-              variant={isNil(progress) ? 'indeterminate' : 'determinate'}
-            />
-          ) : changedSinceLoaded ? (
-            <span style={{ color: Colors.warning }}>
-              {t('show.changedSinceLoaded')}
-            </span>
-          ) : !isValidationResultAcceptable(validationResult) ? (
-            <span style={{ color: Colors.warning }}>
-              {getDescriptionForValidationResult(validationResult, t)}
-            </span>
-          ) : hasLoadedShowFile ? (
-            description
-          ) : (
-            t('show.selectFile')
-          )
-        }
-      />
-    </FileButton>
+      <FileButton
+        accepts={isFile}
+        component={ListItemButton}
+        componentProps={{ sx: { paddingRight: 2 } }}
+        filter={EXTENSIONS}
+        id='show-file-upload'
+        onSelected={onShowFileSelected}
+      >
+        <StatusLight status={status} />
+        <ListItemTextWithProgress
+          primary={
+            loading
+              ? t('show.loading')
+              : hasLoadedShowFile
+                ? truncate(title, 60)
+                : t('show.noFileLoaded')
+          }
+          secondary={
+            loading ? (
+              <LinearProgress
+                value={progress}
+                variant={isNil(progress) ? 'indeterminate' : 'determinate'}
+              />
+            ) : changedSinceLoaded ? (
+              <span style={{ color: Colors.warning }}>
+                {t('show.changedSinceLoaded')}
+              </span>
+            ) : !isValidationResultAcceptable(validationResult) ? (
+              <span style={{ color: Colors.warning }}>
+                {getDescriptionForValidationResult(validationResult, t)}
+              </span>
+            ) : hasLoadedShowFile ? (
+              description
+            ) : (
+              t('show.selectFile')
+            )
+          }
+        />
+      </FileButton>
     </ListItem>
   );
 };

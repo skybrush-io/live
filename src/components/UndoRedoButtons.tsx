@@ -32,7 +32,10 @@ const UndoRedoButtons: React.FC<UndoRedoButtonsProps> = ({
 
   return (
     <>
-      <Tooltip content={t('general.action.discard')} placement={tooltipPlacement}>
+      <Tooltip
+        content={t('general.action.discard')}
+        placement={tooltipPlacement}
+      >
         <IconButton disabled={!canDiscard} size='large' onClick={discard}>
           <Delete />
         </IconButton>

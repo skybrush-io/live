@@ -41,47 +41,47 @@ const MappingButtonGroup = ({
 
   return (
     <>
-    {showMissionIds && (
-      <Tooltip content={t('mappingButtonGroup.editMapping')}>
-        <IconButton
-          disabled={mappingEditable || !showMissionIds}
-          size='large'
-          onClick={startMappingEditorSession}
-        >
-          <Edit />
-        </IconButton>
-      </Tooltip>
-    )}
+      {showMissionIds && (
+        <Tooltip content={t('mappingButtonGroup.editMapping')}>
+          <IconButton
+            disabled={mappingEditable || !showMissionIds}
+            size='large'
+            onClick={startMappingEditorSession}
+          >
+            <Edit />
+          </IconButton>
+        </Tooltip>
+      )}
 
-    <MappingToggleButton />
+      <MappingToggleButton />
 
-    <Tooltip
-      content={
-        showEmptyMissionSlots
-          ? t('mappingButtonGroup.hideEmptyMissionSlots')
-          : t('mappingButtonGroup.showEmptyMissionSlots')
-      }
-    >
-      <ToggleButton
-        value='showMissing'
-        disabled={!showMissionIds}
-        selected={showEmptyMissionSlots}
-        onClick={onToggleShowingEmptyMissionSlots}
+      <Tooltip
+        content={
+          showEmptyMissionSlots
+            ? t('mappingButtonGroup.hideEmptyMissionSlots')
+            : t('mappingButtonGroup.showEmptyMissionSlots')
+        }
       >
-        <MissingSlot />
-      </ToggleButton>
-    </Tooltip>
+        <ToggleButton
+          value='showMissing'
+          disabled={!showMissionIds}
+          selected={showEmptyMissionSlots}
+          onClick={onToggleShowingEmptyMissionSlots}
+        >
+          <MissingSlot />
+        </ToggleButton>
+      </Tooltip>
 
-    <ToolbarDivider orientation='vertical' />
+      <ToolbarDivider orientation='vertical' />
 
-    <ToggleButtonGroup exclusive value={layout} onChange={setUAVListLayout}>
-      <ToggleButton size='small' value='grid'>
-        <ViewModule />
-      </ToggleButton>
-      <ToggleButton size='small' value='list'>
-        <ViewList />
-      </ToggleButton>
-    </ToggleButtonGroup>
+      <ToggleButtonGroup exclusive value={layout} onChange={setUAVListLayout}>
+        <ToggleButton size='small' value='grid'>
+          <ViewModule />
+        </ToggleButton>
+        <ToggleButton size='small' value='list'>
+          <ViewList />
+        </ToggleButton>
+      </ToggleButtonGroup>
     </>
   );
 };

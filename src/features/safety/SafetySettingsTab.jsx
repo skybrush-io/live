@@ -69,7 +69,11 @@ const SafetySettingsFormPresentation = ({ initialValues, onSubmit }) => {
   const { t } = useTranslation();
 
   return (
-    <Form initialValues={initialValues} validate={validator} onSubmit={onSubmit}>
+    <Form
+      initialValues={initialValues}
+      validate={validator}
+      onSubmit={onSubmit}
+    >
       {({ handleSubmit, values }) => (
         <form id='safetySettings' onSubmit={handleSubmit}>
           <Box
@@ -108,7 +112,9 @@ const SafetySettingsFormPresentation = ({ initialValues, onSubmit }) => {
                     {t('safetySettingsTab.lowBatteryThresholdType.disabled')}
                   </MenuItem>
                   <MenuItem value={BatteryThresholdType.VOLTAGE}>
-                    {t('safetySettingsTab.lowBatteryThresholdType.voltageBased')}
+                    {t(
+                      'safetySettingsTab.lowBatteryThresholdType.voltageBased'
+                    )}
                   </MenuItem>
                   <MenuItem value={BatteryThresholdType.PERCENTAGE}>
                     {t(
@@ -124,7 +130,9 @@ const SafetySettingsFormPresentation = ({ initialValues, onSubmit }) => {
                     <Box sx={{ p: 1 }} />
                     <NumericFieldWithUnit
                       name='lowBatteryThreshold.value'
-                      label={t('safetySettingsTab.lowBatteryThresholdValueLabel')}
+                      label={t(
+                        'safetySettingsTab.lowBatteryThresholdValueLabel'
+                      )}
                       unit={
                         unitForBatteryThresholdType[
                           values.lowBatteryThreshold?.type

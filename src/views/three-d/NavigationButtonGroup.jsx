@@ -24,43 +24,43 @@ const NavigationButtonGroupPresentation = ({
 
   return (
     <>
-    <ToggleButtonGroup size='small'>
-      <ToggleButton
-        selected={mode === 'walk'}
-        value='walk'
-        onClick={() => onChange('walk')}
-      >
-        {t('navigationButtonGroup.walk')}
-      </ToggleButton>
-      <ToggleButton
-        selected={mode === 'fly'}
-        value='fly'
-        onClick={() => onChange('fly')}
-      >
-        {t('navigationButtonGroup.fly')}
-      </ToggleButton>
-    </ToggleButtonGroup>
-    <ToolbarDivider orientation='vertical' />
-    <Tooltip content={t('navigationButtonGroup.resetZoom')}>
-      <IconButton
-        disableRipple
-        disabled={!onResetZoom}
-        size='large'
-        onClick={onResetZoom}
-      >
-        <ZoomOut />
-      </IconButton>
-    </Tooltip>
-    <Tooltip content={t('navigationButtonGroup.rotateCamera')}>
-      <IconButton
-        disableRipple
-        disabled={!onRotateCameraTowardsDrones}
-        size='large'
-        onClick={onRotateCameraTowardsDrones}
-      >
-        <CenterFocusStrong />
-      </IconButton>
-    </Tooltip>
+      <ToggleButtonGroup size='small'>
+        <ToggleButton
+          selected={mode === 'walk'}
+          value='walk'
+          onClick={() => onChange('walk')}
+        >
+          {t('navigationButtonGroup.walk')}
+        </ToggleButton>
+        <ToggleButton
+          selected={mode === 'fly'}
+          value='fly'
+          onClick={() => onChange('fly')}
+        >
+          {t('navigationButtonGroup.fly')}
+        </ToggleButton>
+      </ToggleButtonGroup>
+      <ToolbarDivider orientation='vertical' />
+      <Tooltip content={t('navigationButtonGroup.resetZoom')}>
+        <IconButton
+          disableRipple
+          disabled={!onResetZoom}
+          size='large'
+          onClick={onResetZoom}
+        >
+          <ZoomOut />
+        </IconButton>
+      </Tooltip>
+      <Tooltip content={t('navigationButtonGroup.rotateCamera')}>
+        <IconButton
+          disableRipple
+          disabled={!onRotateCameraTowardsDrones}
+          size='large'
+          onClick={onRotateCameraTowardsDrones}
+        >
+          <CenterFocusStrong />
+        </IconButton>
+      </Tooltip>
     </>
   );
 };
