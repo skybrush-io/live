@@ -20,7 +20,7 @@ import { Form, type FormRenderProps } from 'react-final-form';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import { DraggableDialog } from '@skybrush/mui-components';
+import { DraggableDialog, FormHeader } from '@skybrush/mui-components';
 
 import {
   Select as FormSelect,
@@ -357,91 +357,79 @@ const RTKPresetEditorFormPresentation = ({
             )}
 
             <Box
-              mb={2}
               display='flex'
-              flexDirection='column'
-              style={{ gap: 8 }}
+              flexDirection='row'
+              alignItems='center'
+              sx={{ gap: 1, mb: 1 }}
             >
-              <Box display='flex' alignItems='center' style={{ gap: 8 }}>
-                <Typography variant='body2' color='textSecondary'>
-                  {t('rtkPresetEditor.type')}:
-                </Typography>
-                <Chip
-                  label={displayType}
-                  color={presetType === 'user' ? 'primary' : 'default'}
-                />
-                {isReadOnly && (
-                  <Typography variant='caption' color='textSecondary'>
-                    {t('rtkPresetEditor.readOnlyMessage')}
-                  </Typography>
-                )}
-              </Box>
-            </Box>
-
-            <Box display='flex' flexDirection='column' style={{ gap: 16 }}>
-              <FormTextField
-                fullWidth
-                autoFocus
-                name='title'
-                label={t('rtkPresetEditor.presetName')}
-                placeholder={t('rtkPresetEditor.presetNamePlaceholder')}
-                fieldProps={{ validate: required }}
-                helperText={t('rtkPresetEditor.presetNameHelp')}
-                disabled={isReadOnly}
+              <Typography variant='body2' color='textSecondary'>
+                {t('rtkPresetEditor.type')}:
+              </Typography>
+              <Chip
+                label={displayType}
+                color={presetType === 'user' ? 'primary' : 'default'}
               />
-
-              <Box>
-                <Typography variant='body2' style={{ marginBottom: 8 }}>
-                  {t('rtkPresetEditor.dataSources')}
+              {isReadOnly && (
+                <Typography variant='caption' color='textSecondary'>
+                  {t('rtkPresetEditor.readOnlyMessage')}
                 </Typography>
-                {sources.map((source, index) => (
-                  <SourceInputField
-                    key={source.id}
-                    value={source.value}
-                    error={false}
-                    helperText={
-                      index === 0 &&
-                      sources.length === 1 &&
-                      !source.value.trim()
-                        ? t('rtkPresetEditor.sourcesHelp')
-                        : undefined
-                    }
-                    disabled={isReadOnly}
-                    placeholder={t('rtkPresetEditor.sourcePlaceholder')}
-                    removeAriaLabel={t('rtkPresetEditor.removeSource')}
-                    onChange={(value) => handleSourceChange(index, value)}
-                    onRemove={() => handleRemoveSource(index)}
-                  />
-                ))}
-                {!isReadOnly && (
-                  <Button
-                    startIcon={<AddIcon />}
-                    disabled={isReadOnly}
-                    style={{ marginTop: 8 }}
-                    onClick={handleAddSource}
-                  >
-                    {t('rtkPresetEditor.addSource')}
-                  </Button>
-                )}
-              </Box>
-
-              <FormSelect
-                fullWidth
-                margin='dense'
-                name='format'
-                label={t('rtkPresetEditor.messageFormat')}
-                helperText={t('rtkPresetEditor.formatHelp')}
-                disabled={isReadOnly}
-              >
-                <MenuItem value='auto'>
-                  {t('rtkPresetEditor.formatAuto')}
-                </MenuItem>
-                <MenuItem value='rtcm2'>RTCM2</MenuItem>
-                <MenuItem value='rtcm3'>RTCM3</MenuItem>
-                <MenuItem value='ubx'>UBX</MenuItem>
-              </FormSelect>
+              )}
             </Box>
+
+            <FormTextField
+              fullWidth
+              autoFocus
+              name='title'
+              label={t('rtkPresetEditor.presetName')}
+              placeholder={t('rtkPresetEditor.presetNamePlaceholder')}
+              fieldProps={{ validate: required }}
+              disabled={isReadOnly}
+            />
+
+            <FormHeader>{t('rtkPresetEditor.dataSources')}</FormHeader>
+            {sources.map((source, index) => (
+              <SourceInputField
+                key={source.id}
+                value={source.value}
+                error={false}
+                helperText={
+                  index === 0 && sources.length === 1 && !source.value.trim()
+                    ? t('rtkPresetEditor.sourcesHelp')
+                    : undefined
+                }
+                disabled={isReadOnly}
+                placeholder={t('rtkPresetEditor.sourcePlaceholder')}
+                removeAriaLabel={t('rtkPresetEditor.removeSource')}
+                onChange={(value) => handleSourceChange(index, value)}
+                onRemove={() => handleRemoveSource(index)}
+              />
+            ))}
+            {!isReadOnly && (
+              <Button
+                startIcon={<AddIcon />}
+                disabled={isReadOnly}
+                onClick={handleAddSource}
+              >
+                {t('rtkPresetEditor.addSource')}
+              </Button>
+            )}
+
+            <FormSelect
+              fullWidth
+              margin='dense'
+              name='format'
+              label={t('rtkPresetEditor.messageFormat')}
+              disabled={isReadOnly}
+            >
+              <MenuItem value='auto'>
+                {t('rtkPresetEditor.formatAuto')}
+              </MenuItem>
+              <MenuItem value='rtcm2'>RTCM2</MenuItem>
+              <MenuItem value='rtcm3'>RTCM3</MenuItem>
+              <MenuItem value='ubx'>UBX</MenuItem>
+            </FormSelect>
           </DialogContent>
+
           <DialogActions>
             {!isNew && !isReadOnly && (
               <Button
@@ -462,7 +450,6 @@ const RTKPresetEditorFormPresentation = ({
               <Button
                 type='submit'
                 color='primary'
-                variant='contained'
                 disabled={
                   submitting ||
                   !values?.title ||
