@@ -158,7 +158,6 @@ const SourceInputField = ({
 
 type RTKPresetEditorFormProps = {
   initialValues?: RTKPresetData | null;
-  isEditMode: boolean;
   isReadOnly: boolean;
   mode: DialogMode | undefined;
   onCancel: () => void;
@@ -170,7 +169,6 @@ type RTKPresetEditorFormProps = {
 
 const RTKPresetEditorFormPresentation = ({
   initialValues,
-  isEditMode,
   isReadOnly,
   mode,
   onCancel,
@@ -508,7 +506,6 @@ const RTKPresetEditorDialogPresentation = ({
     >
       <RTKPresetEditorFormPresentation
         initialValues={initialPreset}
-        isEditMode={isEditMode}
         isReadOnly={isReadOnly}
         mode={mode}
         presetId={presetId}
