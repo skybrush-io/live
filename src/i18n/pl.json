@@ -205,6 +205,8 @@
     "holdAll": "Utrzymaj pozycję - wszystkie",
     "land": "Lądowanie",
     "landAll": "Lądowanie - wszystkie",
+    "manualShowStart": "Ręczny start pokazu",
+    "manualShowStartAll": "Ręczny start pokazu - wszystkie",
     "selectionOnly": "Tylko wybrane",
     "shutdown": "Zamknięcie",
     "shutdownAll": "Zamknięcie - wszystkie"

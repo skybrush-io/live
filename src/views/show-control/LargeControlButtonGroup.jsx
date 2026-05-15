@@ -104,6 +104,18 @@ const LargeControlButtonGroup = ({
       <Box display='flex' flexDirection='row' flex={1}>
         <ColoredButton
           className={classes.button}
+          color={Colors.main}
+          icon={<PlayArrow fontSize='inherit' />}
+          onClick={uavActions.startShow}
+        >
+          {broadcast
+            ? t('largeControlButtonGroup.manualShowStartAll')
+            : t('largeControlButtonGroup.manualShowStart')}
+        </ColoredButton>
+      </Box>
+      <Box display='flex' flexDirection='row' flex={1}>
+        <ColoredButton
+          className={classes.button}
           color={Colors.positionHold}
           icon={<PositionHold fontSize='inherit' />}
           onClick={uavActions.holdPosition}

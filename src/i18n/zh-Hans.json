@@ -225,6 +225,8 @@
     "holdAll": "全体保持",
     "land": "降落",
     "landAll": "全体降落",
+    "manualShowStart": "手动开始表演",
+    "manualShowStartAll": "全体手动开始表演",
     "selectionOnly": "仅选择",
     "shutdown": "关机",
     "shutdownAll": "全体关机"

@@ -219,6 +219,8 @@
     "holdAll": "全機ホールド",
     "land": "着陸",
     "landAll": "全機着陸",
+    "manualShowStart": "手動ショー開始",
+    "manualShowStartAll": "全機手動ショー開始",
     "selectionOnly": "選択中のみ",
     "shutdown": "シャットダウン",
     "shutdownAll": "全機シャットダウン"

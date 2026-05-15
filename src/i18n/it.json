@@ -209,6 +209,8 @@
     "holdAll": "Mantieni tutti",
     "land": "Atterra",
     "landAll": "Atterra tutti",
+    "manualShowStart": "Avvio manuale show",
+    "manualShowStartAll": "Avvio manuale show tutti",
     "selectionOnly": "Solo i selezionati",
     "shutdown": "Spegni",
     "shutdownAll": "Spegni tutti"

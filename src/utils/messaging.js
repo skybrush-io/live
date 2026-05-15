@@ -90,6 +90,7 @@ const performMassOperation =
       type,
       name,
       mapper = undefined,
+      omitIdsWhenEmpty = false,
       reportFailure = true,
       reportSuccess = true,
       skipConfirmation = false,
@@ -128,10 +129,12 @@ const performMassOperation =
         }
       }
 
+      const shouldOmitIds =
+        omitIdsWhenEmpty && (!Array.isArray(uavs) || uavs.length === 0);
       const responses = await messageHub.startAsyncOperation(
         {
           type,
-          ids: uavs,
+          ...(shouldOmitIds ? {} : { ids: uavs }),
           ...finalArgs,
         },
         responseHandlerOptions
@@ -190,6 +193,13 @@ export const positionHoldUAVs = performMassOperation({
 export const returnToHomeUAVs = performMassOperation({
   type: 'UAV-RTH',
   name: 'Return to home command',
+});
+
+export const startShowOnUAVs = performMassOperation({
+  type: 'X-SHOW-START',
+  name: 'Manual show start command',
+  mapper: ({ transport, ...options }) => options,
+  omitIdsWhenEmpty: true,
 });
 
 export const shutdownUAVs = performMassOperation({
@@ -296,6 +306,7 @@ const OPERATION_MAP = {
   reset: resetUAVs,
   returnToHome: returnToHomeUAVs,
   sleep: sleepUAVs,
+  startShow: startShowOnUAVs,
   takeOff: takeoffUAVs,
   turnMotorsOff: turnMotorsOffForUAVs,
   turnMotorsOn: turnMotorsOnForUAVs,

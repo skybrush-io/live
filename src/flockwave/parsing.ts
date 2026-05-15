@@ -4,7 +4,6 @@
 
 import type { ErrorMap, Response_ACKNAK } from '@skybrush/flockwave-spec';
 import color from 'color';
-import get from 'lodash-es/get';
 import type { Message, MultiAsyncOperationResponseBody } from './types';
 
 /**
@@ -49,6 +48,7 @@ const MESSAGES_WITH_RECEIPTS: Record<string, boolean> = {
   'UAV-TAKEOFF': true,
   'UAV-TEST': true,
   'UAV-WAKEUP': true,
+  'X-SHOW-START': true,
 };
 
 /**
@@ -58,7 +58,7 @@ const MESSAGES_WITH_RECEIPTS: Record<string, boolean> = {
 export function ensureNotNAK<T>(message: Message<T>): Message<T> {
   const { body } = message || {};
 
-  /* @ts-ignore */
+  /* @ts-expect-error body can come from generic message types without a type */
   const { type } = body || {};
 
   if (!type) {

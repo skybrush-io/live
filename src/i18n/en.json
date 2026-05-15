@@ -235,6 +235,8 @@
     "holdAll": "Hold all",
     "land": "Land",
     "landAll": "Land all",
+    "manualShowStart": "Manual show start",
+    "manualShowStartAll": "Manual show start all",
     "selectionOnly": "Selection only",
     "shutdown": "Shut down",
     "shutdownAll": "Shut down all"
@@ -544,6 +546,7 @@
     "authorizationReq": "Authorization required before takeoff",
     "authorizeTheStart": "Authorize start of show",
     "authorized": "Show authorized to start",
+    "cannotAuthorizeInvalidMissionConfiguration": "Cannot authorize show start: at least one mapped drone reports an invalid mission configuration (error 69). Check path link, re-upload the show, or wait until the error clears.",
     "changedSinceLoaded": "Show changed since it was loaded",
     "chooseStartTime": "Choose start time",
     "chooseStartTimeNotSet": "Not set yet",

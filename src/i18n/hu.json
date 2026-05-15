@@ -212,6 +212,8 @@
     "holdAll": "Mind tartsa a pozíciót",
     "land": "Leszállás",
     "landAll": "Mind szálljon le",
+    "manualShowStart": "Műsor kézi indítása",
+    "manualShowStartAll": "Minden műsor kézi indítása",
     "selectionOnly": "Csak a kijelöltek",
     "shutdown": "Lekapcsolás",
     "shutdownAll": "Összes lekapcsolása"
