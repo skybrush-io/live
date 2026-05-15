@@ -230,19 +230,21 @@ export const getUAVListOrientation = (state: RootState): UAVListOrientation =>
  * Legacy persisted state that stores <code>"default"</code> is transparently
  * mapped to <code>UAVSortKey.UAV_ID</code>.
  */
-export function getUAVListSortPreference(state: RootState): UAVSortKeyAndOrder {
-  const result = state.settings.display?.uavListSortPreference;
-  if (!result) {
-    return DEFAULT_SORT;
-  }
+export const getUAVListSortPreference = createSelector(
+  (state: RootState) => state.settings.display?.uavListSortPreference,
+  (sortOrder: UAVSortKeyAndOrder | undefined) => {
+    if (!sortOrder) {
+      return DEFAULT_SORT;
+    }
 
-  const persistedKey = (result as { key?: string }).key;
-  if (persistedKey === 'default') {
-    return { ...result, key: UAVSortKey.UAV_ID };
-  }
+    const { key } = sortOrder;
+    if ((key as string) === 'default') {
+      return { ...sortOrder, key: UAVSortKey.UAV_ID };
+    }
 
-  return result;
-}
+    return sortOrder;
+  }
+);
 
 /**
  * Returns whether UAV operations dispatched from toolbars or buttons should
