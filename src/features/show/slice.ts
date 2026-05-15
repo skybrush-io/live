@@ -498,8 +498,8 @@ const { actions, reducer } = createSlice({
     setStartTime(
       state,
       action: PayloadAction<
-        | { clock: Clock['id']; time: number | undefined }
-        | { clock: undefined; time: Date | number | undefined }
+        | { clock: Clock['id']; time: number | undefined | null }
+        | { clock: undefined | null; time: Date | number | undefined | null }
       >
     ) {
       const { payload } = action;
