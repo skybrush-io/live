@@ -137,7 +137,7 @@ const pathsRelatedToAppLocation = Object.freeze(
  * @param {string[]} options.args    additional arguments to pass to the server
  *        when launching
  * @param {number}   options.port    the port to launch the server on
- * @return {[string, string[]]} a tuple consisting of the path and the arguments of the server to launch
+ * @return {Promise<[string, string[]]>} a tuple consisting of the path and the arguments of the server to launch
  */
 const deriveServerPathAndArgumentsFromOptions = async (options) => {
   const { args, timeout } = {
@@ -176,7 +176,7 @@ const deriveServerPathAndArgumentsFromOptions = async (options) => {
  */
 export const ensureRunning = async (options) => {
   const [serverPath, realArgs] =
-    deriveServerPathAndArgumentsFromOptions(options);
+    await deriveServerPathAndArgumentsFromOptions(options);
   const value = [serverPath, ...realArgs];
 
   if (
@@ -211,7 +211,7 @@ const launch = async (options) => {
   }
 
   const [serverPath, realArgs] =
-    deriveServerPathAndArgumentsFromOptions(options);
+    await deriveServerPathAndArgumentsFromOptions(options);
 
   /* on Windows we might use batch files for launching, and those need a shell */
   const needsShell =

@@ -1,3 +1,4 @@
+import type { DroneShowConfiguration } from '@skybrush/flockwave-spec';
 import get from 'lodash-es/get';
 import isNil from 'lodash-es/isNil';
 import isNumber from 'lodash-es/isNumber';
@@ -5,6 +6,12 @@ import isString from 'lodash-es/isString';
 import reject from 'lodash-es/reject';
 import { call, put, select } from 'redux-saga/effects';
 
+import { getMissionMapping } from '~/features/mission/selectors';
+import messageHub from '~/message-hub';
+import { createActionListenerSaga } from '~/utils/sagas';
+import type { Nullable } from '~/utils/types';
+
+import { SettingsSynchronizationStatus, StartMethod } from './enums';
 import {
   getShowClockReference,
   getShowDuration,
@@ -21,16 +28,14 @@ import {
   synchronizeShowSettings,
 } from './slice';
 
-import { getMissionMapping } from '~/features/mission/selectors';
-import messageHub from '~/message-hub';
-import { createActionListenerSaga } from '~/utils/sagas';
-
 /**
  * Saga that retrieves the current show settings from the server and updates
  * the local store accordingly.
  */
 function* pullSettingsFromServer() {
-  const config = yield call(messageHub.query.getShowConfiguration);
+  const config: DroneShowConfiguration = yield call(
+    messageHub.query.getShowConfiguration
+  );
   const { authorized, clock, time, method, uavIds } = get(config, 'start');
 
   if (
@@ -39,7 +44,7 @@ function* pullSettingsFromServer() {
     Array.isArray(uavIds)
   ) {
     yield put(setShowAuthorization(Boolean(authorized)));
-    yield put(setStartMethod(method));
+    yield put(setStartMethod(method as StartMethod));
     yield put(setUAVIdsToStartAutomatically(reject(uavIds || [], isNil)));
     yield put(setStartTime({ clock, time }));
   } else {
@@ -51,24 +56,28 @@ function* pullSettingsFromServer() {
  * Saga that sends the current show settings to the server.
  */
 function* pushSettingsToServer() {
-  const authorized = yield select(isShowAuthorizedToStartLocally);
-  const clock = yield select(getShowClockReference);
-  const mapping = yield select(getMissionMapping);
-  const method = yield select(getShowStartMethod);
-  const time = yield select(getShowStartTime);
-  const duration = yield select(getShowDuration);
-  const uavIdsToStartAutomatically =
-    method === 'auto' ? reject(mapping || [], isNil) : [];
-  yield call(messageHub.execute.setShowConfiguration, {
-    start: {
-      authorized,
-      clock,
-      time,
-      method,
-      uavIds: uavIdsToStartAutomatically,
-    },
-    duration,
-  });
+  const authorized: boolean = yield select(isShowAuthorizedToStartLocally);
+  const clock: string | null = yield select(getShowClockReference);
+  const mapping: Array<Nullable<string>> = yield select(getMissionMapping);
+  const method: StartMethod = yield select(getShowStartMethod);
+  const time: number | null = yield select(getShowStartTime);
+  const duration: number = yield select(getShowDuration);
+  const uavIdsToStartAutomatically: string[] =
+    method === StartMethod.AUTO
+      ? (reject(mapping || [], isNil) as string[])
+      : [];
+  yield call(() =>
+    messageHub.execute.setShowConfiguration({
+      start: {
+        authorized,
+        clock,
+        time,
+        method,
+        uavIds: uavIdsToStartAutomatically,
+      },
+      duration,
+    })
+  );
 
   // TODO(ntamas): it would be nicer to read the values back from the server
   // by explicitly pulling it
@@ -81,12 +90,18 @@ function* pushSettingsToServer() {
  *
  * The payload of the action specifies the direction of the synchronization
  */
-function* showSettingsSynchronizerSaga(action) {
+function* showSettingsSynchronizerSaga(
+  action: ReturnType<typeof synchronizeShowSettings>
+) {
   const { payload } = action;
 
   let success = false;
 
-  yield put(setShowSettingsSynchronizationStatus('inProgress'));
+  yield put(
+    setShowSettingsSynchronizationStatus(
+      SettingsSynchronizationStatus.IN_PROGRESS
+    )
+  );
 
   try {
     if (payload === 'fromServer' || payload === 'toClient') {
@@ -95,15 +110,19 @@ function* showSettingsSynchronizerSaga(action) {
     } else if (payload === 'toServer' || payload === 'fromClient') {
       yield pushSettingsToServer();
       success = true;
-    } else {
-      yield put(setShowSettingsSynchronizationStatus('syncInProgress'));
     }
   } catch (error) {
     console.error(error);
     success = false;
   }
 
-  yield put(setShowSettingsSynchronizationStatus(success ? 'synced' : 'error'));
+  yield put(
+    setShowSettingsSynchronizationStatus(
+      success
+        ? SettingsSynchronizationStatus.SYNCED
+        : SettingsSynchronizationStatus.ERROR
+    )
+  );
 }
 
 /**
@@ -111,5 +130,5 @@ function* showSettingsSynchronizerSaga(action) {
  * to drone shows; e.g., the uploading of a show to the drones.
  */
 export default createActionListenerSaga({
-  [synchronizeShowSettings]: showSettingsSynchronizerSaga,
+  [synchronizeShowSettings.type]: showSettingsSynchronizerSaga,
 });
