@@ -137,7 +137,6 @@ const SourceInputField = ({
     <TextField
       fullWidth
       hiddenLabel
-      size='small'
       variant='filled'
       value={value}
       error={Boolean(error)}
@@ -147,13 +146,12 @@ const SourceInputField = ({
       onChange={(e) => onChange(e.target.value)}
     />
     <IconButton
-      size='small'
       style={{ marginTop: 4 }}
       aria-label={removeAriaLabel}
       disabled={disabled}
       onClick={onRemove}
     >
-      <DeleteIcon fontSize='small' />
+      <DeleteIcon />
     </IconButton>
   </Box>
 );
@@ -370,7 +368,6 @@ const RTKPresetEditorFormPresentation = ({
                 </Typography>
                 <Chip
                   label={displayType}
-                  size='small'
                   color={presetType === 'user' ? 'primary' : 'default'}
                 />
                 {isReadOnly && (
@@ -390,7 +387,6 @@ const RTKPresetEditorFormPresentation = ({
               <FormTextField
                 fullWidth
                 autoFocus
-                size='small'
                 name='title'
                 label={t('rtkPresetEditor.presetName')}
                 placeholder={t('rtkPresetEditor.presetNamePlaceholder')}
@@ -424,7 +420,6 @@ const RTKPresetEditorFormPresentation = ({
                 ))}
                 {!isReadOnly && (
                   <Button
-                    size='small'
                     startIcon={<AddIcon />}
                     disabled={isReadOnly}
                     style={{ marginTop: 8 }}
@@ -437,7 +432,6 @@ const RTKPresetEditorFormPresentation = ({
 
               <FormSelect
                 fullWidth
-                size='small'
                 margin='dense'
                 name='format'
                 label={t('rtkPresetEditor.messageFormat')}
