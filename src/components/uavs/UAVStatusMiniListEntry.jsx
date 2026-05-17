@@ -1,4 +1,5 @@
 import Box from '@mui/material/Box';
+import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import PropTypes from 'prop-types';
 
@@ -18,17 +19,19 @@ const UAVStatusMiniListEntry = ({
   status,
   uavIds,
 }) => (
-  <ListItemButton key={id} disableGutters onClick={onClick}>
-    <Box sx={{ width: pillWidth }}>
-      <StatusPill hollow={gone} status={status}>
-        {label}
-      </StatusPill>
-    </Box>
-    <Box sx={{ width: 36, mx: 1 }}>
-      <StatusPill status={Status.OFF}>{uavIds.length}</StatusPill>
-    </Box>
-    {formatUAVIds(uavIds, { maxCount: 5 })}
-  </ListItemButton>
+  <ListItem key={id} disablePadding>
+    <ListItemButton disableGutters onClick={onClick}>
+      <Box sx={{ width: pillWidth }}>
+        <StatusPill hollow={gone} status={status}>
+          {label}
+        </StatusPill>
+      </Box>
+      <Box sx={{ width: 36, mx: 1 }}>
+        <StatusPill status={Status.OFF}>{uavIds.length}</StatusPill>
+      </Box>
+      {formatUAVIds(uavIds, { maxCount: 5 })}
+    </ListItemButton>
+  </ListItem>
 );
 
 UAVStatusMiniListEntry.propTypes = {

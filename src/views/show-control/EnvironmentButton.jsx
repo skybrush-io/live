@@ -1,3 +1,4 @@
+import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import { createSelector } from '@reduxjs/toolkit';
@@ -66,17 +67,19 @@ const EnvironmentButton = ({
   const { t } = useTranslation();
 
   return (
-    <ListItemButton
-      disabled={status === Status.OFF}
-      onClick={onEditEnvironment}
-      {...rest}
-    >
-      <StatusLight status={status} />
-      <ListItemText
-        primary={t('show.setupEnvironment')}
-        secondary={secondaryText(t)}
-      />
-    </ListItemButton>
+    <ListItem disablePadding>
+      <ListItemButton
+        disabled={status === Status.OFF}
+        onClick={onEditEnvironment}
+        {...rest}
+      >
+        <StatusLight status={status} />
+        <ListItemText
+          primary={t('show.setupEnvironment')}
+          secondary={secondaryText(t)}
+        />
+      </ListItemButton>
+    </ListItem>
   );
 };
 

@@ -4,7 +4,6 @@ import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import ListItemButton from '@mui/material/ListItemButton';
-import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import ListItemText from '@mui/material/ListItemText';
 import isEmpty from 'lodash-es/isEmpty';
 import isNumber from 'lodash-es/isNumber';
@@ -235,15 +234,8 @@ const MissionOverviewListItem = ({
         selected={selected}
         onClick={onClick}
         ContainerComponent='div'
-      >
-        {avatar && (
-          <ListItemAvatar>
-            <Avatar className={isValid ? null : classes.error}>{avatar}</Avatar>
-          </ListItemAvatar>
-        )}
-        <ListItemText primary={primaryText} secondary={secondaryText} />
-        {editMissionItemParameters && (
-          <ListItemSecondaryAction>
+        secondaryAction={
+          editMissionItemParameters ? (
             <IconButton
               edge='end'
               size='large'
@@ -251,8 +243,15 @@ const MissionOverviewListItem = ({
             >
               <Settings />
             </IconButton>
-          </ListItemSecondaryAction>
+          ) : undefined
+        }
+      >
+        {avatar && (
+          <ListItemAvatar>
+            <Avatar className={isValid ? null : classes.error}>{avatar}</Avatar>
+          </ListItemAvatar>
         )}
+        <ListItemText primary={primaryText} secondary={secondaryText} />
       </ListItemButton>
     </Box>
   );

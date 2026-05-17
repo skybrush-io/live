@@ -38,6 +38,7 @@ const UAVToolbar = React.forwardRef<HTMLDivElement, UAVToolbarProps>(
         <UAVOperationsButtonGroup
           broadcast={isBroadcast}
           selectedUAVIds={selectedUAVIds}
+          showColorOverrideBadges
         />
 
         <Box sx={{ flex: 1 }} />

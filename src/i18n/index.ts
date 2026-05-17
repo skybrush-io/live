@@ -1,6 +1,6 @@
 import config from 'config';
 
-import i18next, { type TOptions, type TFunction } from 'i18next';
+import i18next, { type TFunction, type TOptions } from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
 import { type NestedRecord } from '~/utils/types';

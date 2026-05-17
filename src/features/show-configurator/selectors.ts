@@ -12,7 +12,7 @@ import {
 import {
   makeSelectors as makeTrajectorySelectors,
   positionsToWorldCoordinatesCombiner,
-} from '~/features/show/trajectory-selectors';
+} from '~/features/show/selectors/trajectory';
 import { isOutdoorCoordinateSystemWithOrigin } from '~/features/show/types';
 import { getAllValidUAVPositions } from '~/features/uavs/selectors';
 import { type GPSPosition } from '~/model/geography';
@@ -28,7 +28,7 @@ import {
 import { convexHull2D, type Coordinate2D, getCentroid } from '~/utils/math';
 import { EMPTY_ARRAY } from '~/utils/redux';
 
-import type { AdaptResult, ShowConfiguratorState, ShowData } from './state';
+import type { AdaptResult, ShowConfiguratorState, ShowData } from './slice';
 
 const _defaultCoordinateSystem: ShowData['coordinateSystem'] = {
   type: 'nwu',

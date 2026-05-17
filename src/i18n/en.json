@@ -16,10 +16,52 @@
     "drawRectangle": "Draw rectangle",
     "editFeature": "Edit feature"
   },
+  "ImageLayer": {
+    "geoTIFFOnlyInDevMode": "GeoTIFF rendering is currently restricted to developer mode."
+  },
+  "LicenseInfoDialog": {
+    "title": "License information"
+  },
+  "LicenseInfoPanel": {
+    "errorWhileLoading": "Error while loading license information",
+    "expiryDate": "Expiry date",
+    "licenseId": "License ID",
+    "licensee": "Name of license holder",
+    "loading": "Retrieving license information…",
+    "neverExpires": "This license never expires",
+    "noLicenseActivated": "No license activated",
+    "tryAgain": "Try again"
+  },
+  "MissionInfoLayer": {
+    "settings": {
+      "showConvexHull": "Show convex hull of trajectories",
+      "showHomePositions": "Show home positions",
+      "showLandingPositions": "Show landing positions",
+      "showMapOrigin": "Show map origin",
+      "showMissionItems": "Show mission items",
+      "showMissionOrigin": "Show mission origin",
+      "showTrajectoriesOfSelection": "Show trajectories of selected drones"
+    }
+  },
   "OnboardPreflightChecksDialog": {
     "noError": "None of the UAVs indicated an error.",
     "passed": "Onboard preflight checks passed.",
     "signOffOn": "Sign off on onboard preflight checks"
+  },
+  "PathScanner": {
+    "notFound": "Server executable not found.",
+    "scanAgain": "'Click to scan again",
+    "scanning": "Please wait…",
+    "scanningSecondary": "Looking for server",
+    "success": "Server executable found successfully."
+  },
+  "RTKCoordinateRestorationDialog": {
+    "accuracyLabel": "Accuracy",
+    "dateLabel": "Saved",
+    "noSavedCoordinates": "No saved coordinates found.",
+    "positionLabel": "Position",
+    "title": "Choose a saved coordinate",
+    "useSaved": "Use coordinate"
   },
   "RTKCorrectionSourceSelector": {
     "RTKCorrections": "RTK corrections",
@@ -29,6 +71,9 @@
   },
   "RTKMessage": {
     "noRTKMessagesYet": "No RTK messages have been received yet"
+  },
+  "RTKSetupDialog": {
+    "title": "RTK corrections"
   },
   "RTKStatusMiniList": {
     "satelliteCount": "Satellite count",
@@ -64,15 +109,35 @@
     "clickToChange": "Click to change to {{altitudeType}}.",
     "showingCurrent": "Showing maximum and minimum {{altitudeType}}."
   },
+  "altitudeSummaryType": {
+    "long": {
+      "agl": "Altitude above ground level",
+      "ahl": "Altitude above home level",
+      "amsl": "Altitude above mean sea level",
+      "xyz": "Altitude in local coordinate system"
+    },
+    "short": {
+      "agl": "AGL",
+      "ahl": "AHL",
+      "amsl": "AMSL",
+      "xyz": "Z coordinate"
+    }
+  },
   "antennaPositionIndicator": {
     "antennaPositionNotKnown": "Antenna position not known",
     "clickToToggle": "Click to toggle between lon/lat and ECEF format",
-    "copyToClipboard": "Copy to clipboard"
+    "copyToClipboard": "Copy to clipboard",
+    "useSavedCoordinate": "Use saved coordinate"
   },
   "augmentMappingButton": {
     "assignSparesToEmptySlots": "Assign spares to empty slots"
   },
   "authentication": "Authentication",
+  "batteryDisplayStyle": {
+    "forcedPercentage": "Prefer percentage and estimate it from voltage if needed",
+    "percentage": "Prefer percentage and show voltage if unknown",
+    "voltage": "Prefer voltage"
+  },
   "batteryStatusHeaderButton": "Showing average and minimum charge levels.",
   "bearingCalculator": {
     "addAtLeastTwoItems": "Add at least two items to calculate the bearing and distance between them",
@@ -85,6 +150,86 @@
     "disable": "Disable broadcast",
     "enable": "Enable broadcast for {{time}} seconds"
   },
+  "collectiveRTHDialog": {
+    "action": {
+      "addCollectiveRTH": "Calculate RTH plans"
+    },
+    "description": "Precalculate collective RTH plans at multiple timestamps in the show. In case of emergency, collective RTH brings drones home as quickly as possible without collisions.",
+    "existingInvalidRTHPlan": "The show has no valid collective RTH plans.",
+    "existingValidRTHPlan": "The show has valid collective RTH plans at {{numPlans}} timestamps.",
+    "parameters": {
+      "form": {
+        "horizontalVelocity": {
+          "help": "during collective RTH",
+          "label": "Horizontal velocity"
+        },
+        "minDistance": {
+          "help": "between drones during RTH",
+          "label": "Minimum distance"
+        },
+        "timeResolution": {
+          "help": "between consecutive RTH plans",
+          "label": "Time resolution"
+        },
+        "verticalVelocity": {
+          "help": "during collective RTH",
+          "label": "Vertical velocity"
+        }
+      },
+      "section": {
+        "parameters": "Parameters"
+      }
+    },
+    "status": {
+      "error": "RTH plan calculation failed. Please try again.",
+      "loading": "Calculating RTH plans. It may take some time.",
+      "success": "RTH plans successfully calculated."
+    },
+    "summary": {
+      "firstTime": {
+        "message": "Earliest RTH time: {{firstTime}}s"
+      },
+      "lastTime": {
+        "message": "Last RTH time: {{lastTime}}s"
+      },
+      "numPlans": {
+        "message": "Collective RTH plans successfully calculated at {{numPlans}} timestamps"
+      }
+    },
+    "title": "Plan collective RTH"
+  },
+  "collectiveRTHPanel": {
+    "error": {
+      "invalidPlan": "The collective RTH plan is invalid.",
+      "missingPlan": "The show has no collective RTH plans.",
+      "partialPlan": "{{withoutPlans}} drones do not have RTH plans."
+    },
+    "message": {
+      "noDrones": "There are no drones in the loaded show.",
+      "noShowFile": "No show file loaded"
+    },
+    "rthPlanDetails": {
+      "column": {
+        "duration": "Duration",
+        "end": "End",
+        "endShow": "End (Show)",
+        "start": "Start",
+        "startShow": "Start (Show)"
+      },
+      "info": {
+        "rth": {
+          "numPlans": "Number of plans:",
+          "title": "Collective RTH"
+        },
+        "showSegment": {
+          "duration": "Duration:",
+          "end": "End:",
+          "start": "Start:",
+          "title": "Show segment"
+        }
+      }
+    }
+  },
   "coordinateAveragingDialogToolbar": {
     "addNewDrone": "Add new drone",
     "copyCentroid": "Copy centroid",
@@ -93,6 +238,14 @@
     "resetMeasurement": "Reset measurement",
     "resumeMeasurement": "Resume measurement",
     "setCentroidAsMapOrigin": "Set centroid as map origin"
+  },
+  "coordinateFormat": {
+    "-d": "Decimal degrees (signed)",
+    "-dm": "Degrees and minutes (signed)",
+    "-dms": "Degrees, minutes and seconds (signed)",
+    "d": "Decimal degrees",
+    "dm": "Degrees and minutes",
+    "dms": "Degrees, minutes and seconds"
   },
   "environmentEditorDialog": {
     "environmentSettings": "Environment settings",
@@ -125,6 +278,35 @@
     "fitAllDrones": "Fit all drones",
     "fitAllFeatures": "Fit all features"
   },
+  "flightLogKind": {
+    "ardupilot": "ArduPilot flight log",
+    "flockctrl": "FlockCtrl high-level flight log",
+    "text": "Plain text flight log",
+    "ulog": "PX4 ULog flight log",
+    "unknown": "Unknown flight log format"
+  },
+  "flightMode": {
+    "acro": "Acrobatic",
+    "alt": "Altitude hold",
+    "auto": "Automatic",
+    "circle": "Circling around point of interest",
+    "flow": "Optical flow hold",
+    "follow": "Following another device",
+    "guided": "Guided by companion computer",
+    "land": "Autonomous landing",
+    "loiter": "Posiiton hold with manual velocity control",
+    "manual": "Manual",
+    "mission": "Following pre-programmed mission",
+    "other": "Other, unspecified flight mode",
+    "pos": "Position hold with manual attitude control",
+    "precland": "Autonomous precision landing",
+    "rth": "Autonomous return to home",
+    "show": "Executing a drone show",
+    "simple": "Simplified aided flight mode",
+    "stab": "Roll and pitch stabilization",
+    "takeoff": "Autonomous takeoff",
+    "unknown": "Unknown flight mode"
+  },
   "fullScreen": {
     "exit": "Exit full screen mode",
     "on": "Full screen mode"
@@ -138,6 +320,7 @@
       "clear": "Clear",
       "click": "Click",
       "close": "Close",
+      "confirm": "Confirm",
       "delete": "Delete",
       "discard": "Discard",
       "drag": "Drag",
@@ -154,18 +337,19 @@
       "select": "Select",
       "start": "Start",
       "stop": "Stop",
+      "submit": "Submit",
       "undo": "Undo"
     },
     "commands": {
       "calibrateCompass": "Calibrate compass",
+      "clearLEDColor": "Clear LED color override",
       "land": "Land",
-      "loiter": "Loiter",
-      "manual": "Manual",
       "positionHold": "Position hold",
       "powerOff": "Power off",
       "powerOn": "Power on",
       "reboot": "Reboot",
       "returnToHome": "Return to home",
+      "setLEDColor": "Set color of LED",
       "sleep": "Sleep",
       "takeoff": "Takeoff"
     },
@@ -189,7 +373,8 @@
       "minutes_one": "{{count}} minute",
       "minutes_other": "{{count}} minutes",
       "seconds_one": "{{count}} second",
-      "seconds_other": "{{count}} seconds"
+      "seconds_other": "{{count}} seconds",
+      "seconds_short": "{{count}}s"
     }
   },
   "geofence": {
@@ -208,6 +393,17 @@
     "smartReturn": "Return to home with collision avoidance",
     "stop": "Stop and hover",
     "unknown": "Unknown action: {{action}}"
+  },
+  "gpsFixType": {
+    "0": "No GPS connected",
+    "1": "No GPS fix obtained",
+    "2": "2D GPS fix",
+    "3": "3D GPS fix",
+    "4": "3D GPS fix with DGPS/SBAS",
+    "5": "RTK float",
+    "6": "RTK fixed",
+    "7": "Static position",
+    "8": "Unknown GPS fix type"
   },
   "header": {
     "distanceSummary": "Maximum and minimum distance from home position",
@@ -369,15 +565,191 @@
     "uploadParameters": "Upload parameters"
   },
   "preferences": "Preferences",
+  "preflightCheckResult": {
+    "overall": {
+      "error": "Error while executing preflight checks",
+      "failure": "Preflight checks failed",
+      "off": "All preflight checks are disabled",
+      "pass": "Preflight checks passed",
+      "running": "Preflight checks are in progress...",
+      "softFailure": "Some preflight checks failed temporarily",
+      "unknown": "Unknown preflight test result",
+      "warning": "Some preflight check items need attention"
+    },
+    "short": {
+      "error": "Error while executing test",
+      "failure": "Failed",
+      "off": "Disabled",
+      "pass": "OK",
+      "running": "Check in progress...",
+      "softFailure": "Temporary failure",
+      "unknown": "Unknown test result",
+      "warning": "Needs attention"
+    }
+  },
   "preflightTab": {
     "enterCheckItems": "Enter your preferred manual preflight check items, one per line.",
     "headingsHint": "Lines ending with a colon (:) become headings.",
     "manualPreflightCheckItems": "Manual preflight check items",
     "preflightCheckItems": "Preflight check items"
   },
+  "proControlButtonGroup": {
+    "collectiveRTH": "Collective RTH",
+    "collectiveRTHPanelNotFound": "The Collective RTH panel was not found. Please try to open it manually from the sidebar.",
+    "prerequisites": {
+      "collectiveRTHNotTriggered": "Collective RTH has not been triggered yet",
+      "hasCollectiveRTHPlan": "The show contains a collective RTH plan",
+      "proFeaturesEnabled": "Pro features are enabled on the server",
+      "supportsSuspendResumeCRTH": "The server supports the suspend, resume, and collective RTH operations"
+    },
+    "resume": "Resume",
+    "suspend": "Suspend"
+  },
   "recalculateMappingButton": {
     "findOptimalMapping": "Find optimal mapping",
     "recalculateMapping": "Recalculate mapping"
+  },
+  "rtkCorrectionStatus": {
+    "long": {
+      "connectedRecently": "Determining RTK correction status...",
+      "error": "Unspecified error in RTK corrections",
+      "inactive": "No selected RTK correction source",
+      "noAntennaPosition": "RTK antenna position unknown",
+      "notConnected": "Not connected to server",
+      "notEnoughSatellites": "Not enough satellites with valid RTK corrections",
+      "ok": "RTK corrections are valid",
+      "surveyInProgress": "Survey in progress"
+    },
+    "short": {
+      "connectedRecently": "Waiting for data",
+      "error": "Error",
+      "inactive": "No source",
+      "noAntennaPosition": "No antenna position",
+      "notConnected": "Not connected",
+      "notEnoughSatellites": "Not enough satellites",
+      "ok": "Valid",
+      "surveyInProgress": "Surveying"
+    }
+  },
+  "rtkMessageType": {
+    "rtcm2/1": "Differential GPS Corrections",
+    "rtcm2/14": "GPS Time of Week",
+    "rtcm2/15": "Ionospheric Delay Message",
+    "rtcm2/16": "GPS Special Message",
+    "rtcm2/18": "RTK Uncorrected Carrier Phases",
+    "rtcm2/19": "RTK Uncorrected Pseudoranges",
+    "rtcm2/2": "Delta Differential GPS Corrections",
+    "rtcm2/22": "Extended Reference Station Parameters",
+    "rtcm2/23": "Antenna Type Definition Record",
+    "rtcm2/24": "Antenna Reference Point (ARP)",
+    "rtcm2/3": "GNSS Reference Station Parameters",
+    "rtcm2/36": "GLONASS Special Message",
+    "rtcm2/4": "Reference Station Datum",
+    "rtcm2/5": "GPS Constellation Health",
+    "rtcm2/6": "GPS Null Frame",
+    "rtcm2/7": "DGPS Radiobeacon Almanac",
+    "rtcm2/8": "Pseudolite Almanac",
+    "rtcm2/9": "GPS Partial Correction Set",
+    "rtcm3/1001": "L1-only GPS RTK",
+    "rtcm3/1002": "Extended L1-only GPS RTK",
+    "rtcm3/1003": "L1 & L2 GPS RTK",
+    "rtcm3/1004": "Extended L1 & L2 GPS RTK",
+    "rtcm3/1005": "RTK antenna position",
+    "rtcm3/1006": "RTK antenna pos with height",
+    "rtcm3/1007": "Antenna descriptor",
+    "rtcm3/1008": "Antenna descriptor & serial",
+    "rtcm3/1009": "L1-only GLONASS RTK",
+    "rtcm3/1010": "Extended L1-only GLONASS RTK",
+    "rtcm3/1011": "L1 & L2 GLONASS RTK",
+    "rtcm3/1012": "Extended L1 & L2 GLONASS RTK",
+    "rtcm3/1013": "System parameters",
+    "rtcm3/1014": "Network aux station data",
+    "rtcm3/1015": "GPS ionospheric correction",
+    "rtcm3/1016": "GPS geometric correction",
+    "rtcm3/1017": "GPS ionospheric & geometric correction",
+    "rtcm3/1019": "GPS ephemerides",
+    "rtcm3/1020": "GLONASS ephemerides",
+    "rtcm3/1029": "Unicode text string",
+    "rtcm3/1030": "GPS network RTK residual",
+    "rtcm3/1031": "GLONASS network RTK residual",
+    "rtcm3/1032": "Physical reference station position",
+    "rtcm3/1033": "Receiver and antenna descriptors",
+    "rtcm3/1034": "GPS FKP gradient",
+    "rtcm3/1035": "GLONASS FKP gradient",
+    "rtcm3/1037": "GLONASS ionospheric correction",
+    "rtcm3/1038": "GLONASS geometric correction",
+    "rtcm3/1039": "GLONASS ionospheric & geometric correction",
+    "rtcm3/1042": "BDS (BeiDou) ephemerides",
+    "rtcm3/1044": "QZSS ephemerides",
+    "rtcm3/1045": "GALILEO F/NAV ephemerides",
+    "rtcm3/1046": "GALILEO I/NAV ephemerides",
+    "rtcm3/1071": "GPS MSM1 (DGNSS pseudorange)",
+    "rtcm3/1072": "GPS MSM2 (RTK pseudorange)",
+    "rtcm3/1073": "GPS MSM3 (code, carrier)",
+    "rtcm3/1074": "GPS MSM4 (code, carrier, CNR)",
+    "rtcm3/1075": "GPS MSM5 (code, carrier, doppler, CNR)",
+    "rtcm3/1076": "GPS MSM6 (hi-res code, carrier, doppler)",
+    "rtcm3/1077": "GPS MSM7 (hi-res code, carrier, doppler, CNR)",
+    "rtcm3/1081": "GLONASS MSM1 (DGNSS pseudorange)",
+    "rtcm3/1082": "GLONASS MSM2 (RTK pseudorange)",
+    "rtcm3/1083": "GLONASS MSM3 (code, carrier)",
+    "rtcm3/1084": "GLONASS MSM4 (code, carrier, CNR)",
+    "rtcm3/1085": "GLONASS MSM5 (code, carrier, doppler, CNR)",
+    "rtcm3/1086": "GLONASS MSM6 (hi-res code, carrier, doppler)",
+    "rtcm3/1087": "GLONASS MSM7 (hi-res code, carrier, doppler, CNR)",
+    "rtcm3/1091": "Galileo MSM1 (DGNSS pseudorange)",
+    "rtcm3/1092": "Galileo MSM2 (RTK pseudorange)",
+    "rtcm3/1093": "Galileo MSM3 (code, carrier)",
+    "rtcm3/1094": "Galileo MSM4 (code, carrier, CNR)",
+    "rtcm3/1095": "Galileo MSM5 (code, carrier, doppler, CNR)",
+    "rtcm3/1096": "Galileo MSM6 (hi-res code, carrier, doppler)",
+    "rtcm3/1097": "Galileo MSM7 (hi-res code, carrier, doppler, CNR)",
+    "rtcm3/1101": "SBAS MSM1 (DGNSS pseudorange)",
+    "rtcm3/1102": "SBAS MSM2 (RTK pseudorange)",
+    "rtcm3/1103": "SBAS MSM3 (code, carrier)",
+    "rtcm3/1104": "SBAS MSM4 (code, carrier, CNR)",
+    "rtcm3/1105": "SBAS MSM5 (code, carrier, doppler, CNR)",
+    "rtcm3/1106": "SBAS MSM6 (hi-res code, carrier, doppler)",
+    "rtcm3/1107": "SBAS MSM7 (hi-res code, carrier, doppler, CNR)",
+    "rtcm3/1111": "QZSS MSM1 (DGNSS pseudorange)",
+    "rtcm3/1112": "QZSS MSM2 (RTK pseudorange)",
+    "rtcm3/1113": "QZSS MSM3 (code, carrier)",
+    "rtcm3/1114": "QZSS MSM4 (code, carrier, CNR)",
+    "rtcm3/1115": "QZSS MSM5 (code, carrier, doppler, CNR)",
+    "rtcm3/1116": "QZSS MSM6 (hi-res code, carrier, doppler)",
+    "rtcm3/1117": "QZSS MSM7 (hi-res code, carrier, doppler, CNR)",
+    "rtcm3/1121": "BeiDou MSM1 (DGNSS pseudorange)",
+    "rtcm3/1122": "BeiDou MSM2 (RTK pseudorange)",
+    "rtcm3/1123": "BeiDou MSM3 (code, carrier)",
+    "rtcm3/1124": "BeiDou MSM4 (code, carrier, CNR)",
+    "rtcm3/1125": "BeiDou MSM5 (code, carrier, doppler, CNR)",
+    "rtcm3/1126": "BeiDou MSM6 (hi-res code, carrier, doppler)",
+    "rtcm3/1127": "BeiDou MSM7 (hi-res code, carrier, doppler, CNR)",
+    "rtcm3/1230": "GLONASS L1 and L2 code-phase biases"
+  },
+  "rtkStatus": {
+    "long": {
+      "connectedRecently": "Determining RTK correction status...",
+      "error": "Unspecified error in RTK corrections",
+      "inactive": "No selected RTK correction source",
+      "noAntennaPosition": "RTK antenna position unknown",
+      "notConnected": "Not connected to server",
+      "notEnoughSatellites": "Not enough satellites with valid RTK corrections",
+      "ok": "RTK corrections are valid",
+      "surveyInProgress": "Survey in progress",
+      "unknown": "Unknown RTK correction status"
+    },
+    "short": {
+      "connectedRecently": "Waiting for data",
+      "error": "Error",
+      "inactive": "No source",
+      "noAntennaPosition": "No antenna position",
+      "notConnected": "Not connected",
+      "notEnoughSatellites": "Not enough satellites",
+      "ok": "Valid",
+      "surveyInProgress": "Surveying",
+      "unknown": "Unknown status"
+    }
   },
   "safetyDialog": {
     "geofence": "Geofence",
@@ -436,6 +808,72 @@
     "notes": "Notes",
     "zoomLevel": "Zoom level"
   },
+  "scheduleProgressIndicator": {
+    "empty": {
+      "description": "No operations are scheduled.",
+      "title": "Empty schedule"
+    },
+    "progress": {
+      "active": "{{elapsedSeconds}}s/{{durationSeconds}}s",
+      "completed": "Completed",
+      "waiting": "Waiting ..."
+    },
+    "segment": {
+      "preparation": {
+        "description": "Drones are being notified about the requested operation and they are getting ready to execute it.",
+        "title": {
+          "default": "Preparation",
+          "waiting": "Preparation (in {{countdownSeconds}}s)"
+        }
+      },
+      "rth": {
+        "description": "Drones are returning to their home locations in a coordinated manner, without collisions.",
+        "title": {
+          "default": "Return to Home",
+          "waiting": "Return to Home (in {{countdownSeconds}}s)"
+        }
+      },
+      "slowdown": {
+        "description": "Drones are slowing down. They remain on their original trajectories to avoid collisions.",
+        "title": {
+          "default": "Slowdown",
+          "waiting": "Slowdown (in {{countdownSeconds}}s)"
+        }
+      },
+      "speedup": {
+        "description": "Drones are speeding up. They continue their original trajectories to avoid collisions.",
+        "title": {
+          "default": "Speedup",
+          "waiting": "Speedup (in {{countdownSeconds}}s)"
+        }
+      }
+    },
+    "stage": {
+      "completed": {
+        "description": "The operation has completed.",
+        "title": "Completed"
+      },
+      "progress": {
+        "description": "The operation is in progress.",
+        "title": "In progress ({{remainingSeconds}}s)"
+      },
+      "waiting": {
+        "description": "The operation will start soon.",
+        "title": "Waiting to start ({{remainingSeconds}}s)"
+      }
+    }
+  },
+  "selectionGroups": {
+    "action": {
+      "createNew": "Create new group",
+      "rename": "Rename group"
+    },
+    "label": {
+      "name": "Group name"
+    },
+    "newGroupNameTemplate": "Group {{id}}",
+    "updated": "Updated"
+  },
   "serverConnectionStatus": {
     "clockSkew": "Clock skew",
     "clocksSync": "Clocks synchronized",
@@ -483,6 +921,7 @@
       "operationModes": "Operation modes",
       "optimizeForSingleUAV": "Optimize the interface for single UAV operation",
       "optimizeUIForTouch": "Optimize the interface for touchscreen devices",
+      "orientationXAxis": "Orientation (X+ axis)",
       "showMouseCoordinates": "Show mouse coordinates",
       "showScaleLine": "Show scale line"
     },
@@ -525,14 +964,13 @@
       "fullCharge": "Full charge",
       "gone": "Mark drones as gone after",
       "lowTreshold": "Low threshold",
-      "maxConcurrency": "Maximum number of concurrent uploads",
       "maxUploadConcurrency": "Maximum number of concurrent uploads",
       "minIndoorTakeoffSpacing": "Minimum takeoff spacing (indoor)",
       "minOutdoorTakeoffSpacing": "Minimum takeoff spacing (outdoor)",
       "missionSetup": "Mission setup",
       "missionSetupDescription": "Used before multi-drone missions to check whether each drone is at its prescribed takeoff position and is facing the right direction.",
       "operationSettings": "Operations",
-      "vehicleType": "Vehicle type",
+      "uavOperationConfirmations": "UAV operation confirmations",
       "warn": "Warn about drones not seen for at least"
     }
   },
@@ -545,6 +983,16 @@
     "chooseStartTimeNotSet": "Not set yet",
     "clear": "Clear loaded show",
     "clock": "Show clock:",
+    "collectiveRTH": {
+      "confirmation": {
+        "message": "Are you sure you want to trigger the collective RTH operation?",
+        "title": "Confirmation needed"
+      },
+      "notification": {
+        "error": "Collective RTH command failed",
+        "success": "Collective RTH command successfully sent"
+      }
+    },
     "dronePlacementApproved": "Drone placement approved",
     "dronePlacementCheck": "Checking drone placement…",
     "dronePlacementError": "Error in drone placement",
@@ -563,6 +1011,16 @@
     },
     "placementAccuracy": "Placement accuracy ≤ {{distance}}",
     "reload": "Reload show",
+    "resume": {
+      "confirmation": {
+        "message": "Are you sure you want to resume the show?",
+        "title": "Resume show"
+      },
+      "notification": {
+        "error": "Show resume command failed",
+        "success": "Show resume command successfully sent"
+      }
+    },
     "revokeAuthorization": "Click here to revoke authorization",
     "selectFile": "Select or drop a show file here",
     "setupEnvironment": "Setup environment",
@@ -596,6 +1054,10 @@
         "origin": "A show origin must be included or set manually",
         "segments": "The show must be annotated with segment markers",
         "server": "Connection must be established to the server"
+      },
+      "tooltip": {
+        "invalidRTHPlan": "The show has no valid collective RTH plans.",
+        "validRTHPlan": "The show has {{numPlans}} valid collective RTH plans."
       }
     },
     "startMethod": {
@@ -604,6 +1066,16 @@
     },
     "startTimeNotSet": "Start time not set yet",
     "startsAt": "Starts at {{time}}",
+    "suspend": {
+      "confirmation": {
+        "message": "Are you sure you want to suspend the show?",
+        "title": "Suspend show"
+      },
+      "notification": {
+        "error": "Show suspend command failed",
+        "success": "Show suspend command successfully sent"
+      }
+    },
     "takeOffMore": "{{quantity}} drones will take off automatically",
     "takeOffNoPosition": "No position yet for at least one drone",
     "takeOffOne": "One drone will take off automatically",
@@ -625,6 +1097,10 @@
           "help": "of vertical motion at takeoff & land",
           "label": "Altitude"
         },
+        "altitudeOffset": {
+          "help": "of the net show",
+          "label": "Altitude offset"
+        },
         "horizontalVelocity": {
           "help": "during takeoff & RTH phases",
           "label": "Horizontal velocity"
@@ -637,6 +1113,13 @@
           "help": "ensuring exact start of show phase (if nonzero)",
           "label": "Takeoff duration"
         },
+        "takeoffMethod": {
+          "label": "Takeoff method",
+          "type": {
+            "layered": "Layered",
+            "organic": "Organic"
+          }
+        },
         "verticalVelocity": {
           "help": "during takeoff & RTH phases",
           "label": "Vertical velocity"
@@ -644,6 +1127,7 @@
       },
       "panel": {
         "lights": "Lights",
+        "safety": "Safety",
         "trajectories": "Trajectories"
       }
     },
@@ -760,7 +1244,8 @@
     "tooltip": "Select individual targets by clicking their IDs to prepare a partial upload"
   },
   "surveyStatusIndicator": {
-    "noSurveyInformation": "No survey information"
+    "noSurveyInformation": "No survey information",
+    "notStartedYet": "Survey not started yet"
   },
   "takeoffAreaSetupDialog": {
     "allDroneOnline": "All drones in the mission are online.",
@@ -796,11 +1281,109 @@
     "tooltip": "Toolbox",
     "uploadInProgress": "Upload in progress"
   },
+  "uavErrorCode": {
+    "0": "No error",
+    "1": "Drone is on the ground with motors off",
+    "10": "Flight control is suspended",
+    "11": "Flight control is in slow mode",
+    "128": "Autopilot communication timeout",
+    "129": "Autopilot acknowledgment timeout",
+    "130": "Autopilot communication protocol error",
+    "131": "Prearm check failure",
+    "132": "RC signal lost",
+    "133": "GPS signal lost or GPS error",
+    "134": "Battery low",
+    "135": "Target not found",
+    "136": "Target is too far",
+    "137": "Configuration error",
+    "138": "RC not calibrated",
+    "139": "Wind speed is too high",
+    "140": "Payload error",
+    "141": "Proximity sensor error",
+    "142": "ESC error",
+    "188": "Simulated error",
+    "189": "Error in control algorithm",
+    "190": "Unspecified sensor failure",
+    "191": "Unspecified error",
+    "192": "Incompatible hardware or software",
+    "193": "Magnetometer error",
+    "194": "Gyroscope error",
+    "195": "Accelerometer error",
+    "196": "Pressure sensor or altimeter error",
+    "197": "GPS error or GPS signal lost",
+    "198": "Motor malfunction",
+    "199": "Battery critical",
+    "2": "Logging deactivated",
+    "200": "No GPS home position",
+    "201": "Geofence violation",
+    "202": "Internal clock error",
+    "203": "External clock error",
+    "204": "Required hardware component missing",
+    "205": "Autopilot initialization failed",
+    "206": "Autopilot communication failed",
+    "207": "Drone crashed",
+    "253": "Simulated critical error",
+    "254": "Unspecified critical sensor failure",
+    "255": "Unspecified critical error",
+    "3": "Prearm check in progress",
+    "4": "Autopilot initializing",
+    "5": "Drone is taking off",
+    "6": "Drone is landing",
+    "63": "Drone is returning home",
+    "64": "Low disk space",
+    "65": "RC lost",
+    "66": "Battery low",
+    "67": "Timesync error",
+    "68": "Drone is not at its designated takeoff position",
+    "69": "Mission configuration error or mission out of geofence",
+    "7": "Drone has landed successfully",
+    "70": "Radio channel offline",
+    "71": "Drone is outside geofence on ground",
+    "72": "Wind speed is high",
+    "73": "Drone not armed yet",
+    "74": "Drone requires a reboot",
+    "75": "Drift from desired position is large",
+    "8": "Motors are running while on ground",
+    "9": "Drone is in sleep mode"
+  },
+  "uavOperationConfirmationStyle": {
+    "always": "Always ask for confirmation",
+    "never": "Never ask for confirmation",
+    "onlyMultiple": "Confirm when the operation may affect multiple UAVs"
+  },
+  "unit": {
+    "degree": {
+      "long": "degree",
+      "longPlural": "degrees",
+      "short": "deg"
+    },
+    "meter": {
+      "long": "meter",
+      "longPlural": "meters",
+      "short": "m"
+    },
+    "meterPerSecond": {
+      "long": "meter/sec",
+      "longPlural": "meters/sec",
+      "short": "m/s"
+    },
+    "second": {
+      "long": "second",
+      "longPlural": "seconds",
+      "short": "s"
+    },
+    "volt": {
+      "long": "volt",
+      "longPlural": "volts",
+      "short": "V"
+    }
+  },
   "uploadDialog": {
     "restrictToGlobalSelection": "Show global selection only"
   },
   "uploadPanel": {
     "cancelUpload": "Cancel upload",
+    "clearHistory": "Clear history",
     "flashLightsWhereFailed": "Flash lights of UAVs where the upload failed",
     "hasHiddenTargets": "Some of the waiting UAVs may be filtered.",
     "retryFailedAttempts": "Retry failed attempts automatically",
@@ -813,14 +1396,16 @@
   },
   "uploadStatusLegend": {
     "clearUploadQueue": "Clear upload queue",
-    "restartSuccessfulItems": "Restart successful items",
-    "retryFailedItems": "Retry failed items"
+    "enqueueItemsWithNoUploadStatus": "Enqueue unprocessed items",
+    "restartSuccessfulItems": "Enqueue successful items",
+    "retryFailedItems": "Enqueue failed items"
   },
   "uploadStatusLights": {
     "noAvailableUAVs": "There are no available UAVs to upload to."
   },
   "view": {
     "beacon-list": "Beacons",
+    "collective-rth": "Collective RTH",
     "dock-list": "Docks",
     "feature-list": "Features",
     "field-notes": "Field notes",

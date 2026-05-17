@@ -8,7 +8,6 @@ import { combineReducers } from '@reduxjs/toolkit';
 
 import layersReducer from './layers';
 import originReducer from './origin';
-import selectionReducer from './selection';
 import toolsReducer from './tools';
 import viewReducer from './view';
 
@@ -19,7 +18,6 @@ import viewReducer from './view';
 const reducer = combineReducers({
   layers: layersReducer,
   origin: originReducer,
-  selection: selectionReducer,
   tools: toolsReducer,
   view: viewReducer,
 });

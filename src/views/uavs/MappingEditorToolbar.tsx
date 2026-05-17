@@ -15,6 +15,7 @@ import { connect } from 'react-redux';
 import Colors from '~/components/colors';
 import {
   augmentMappingAutomaticallyFromSpareDrones,
+  clearMapping,
   exportMapping,
   generateRandomMapping,
   importMapping,
@@ -24,10 +25,7 @@ import {
   canAugmentMappingAutomaticallyFromSpareDrones,
   isMappingBeingCalculated,
 } from '~/features/mission/selectors';
-import {
-  clearMapping,
-  finishMappingEditorSession,
-} from '~/features/mission/slice';
+import { finishMappingEditorSession } from '~/features/mission/slice';
 import { isDeveloperModeEnabled } from '~/features/session/selectors';
 import useDropdown from '~/hooks/useDropdown';
 import type { RootState } from '~/store/reducers';

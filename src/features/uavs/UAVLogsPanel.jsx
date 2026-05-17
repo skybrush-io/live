@@ -3,14 +3,15 @@ import GetApp from '@mui/icons-material/GetApp';
 import Save from '@mui/icons-material/Save';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
+import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
-import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
 import isNil from 'lodash-es/isNil';
 import prettyBytes from 'pretty-bytes';
 import PropTypes from 'prop-types';
 import { memo, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useAsyncRetry } from 'react-use';
 
@@ -61,6 +62,7 @@ const UAVLogListItem = ({ id, kind, size, timestamp, uavId }) => {
 
   const dispatch = useDispatch();
   const messageHub = useMessageHub();
+  const { t } = useTranslation();
   const classes = useStyles();
 
   const downloadState = useSelector(getLogDownloadState(uavId, id));
@@ -76,24 +78,20 @@ const UAVLogListItem = ({ id, kind, size, timestamp, uavId }) => {
       })
       .then((log) => {
         dispatch(storeDownloadedLog(uavId, id, log));
-        dispatch(
-          showNotification({
-            message: `Log ${id} of UAV ${uavId} downloaded successfully.`,
-            semantics: MessageSemantics.SUCCESS,
-            buttons: [{ label: 'Save', action: () => saveLogToFile(log) }],
-            timeout: 20000,
-          })
-        );
+        showNotification({
+          message: `Log ${id} of UAV ${uavId} downloaded successfully.`,
+          semantics: MessageSemantics.SUCCESS,
+          buttons: [{ label: 'Save', action: () => saveLogToFile(log) }],
+          timeout: 20000,
+        });
       })
       .catch(({ message }) => {
-        dispatch(
-          showNotification({
-            message: `Couldn't download log ${id} of UAV ${uavId}: ${message}`,
-            semantics: MessageSemantics.ERROR,
-            buttons: [{ label: 'Retry', action: download }],
-            timeout: 20000,
-          })
-        );
+        showNotification({
+          message: `Couldn't download log ${id} of UAV ${uavId}: ${message}`,
+          semantics: MessageSemantics.ERROR,
+          buttons: [{ label: 'Retry', action: download }],
+          timeout: 20000,
+        });
         dispatch(setLogDownloadError(uavId, id, message));
       });
   }, [dispatch, id, messageHub, uavId]);
@@ -118,7 +116,7 @@ const UAVLogListItem = ({ id, kind, size, timestamp, uavId }) => {
   if (downloadState?.status === LogDownloadStatus.ERROR) {
     secondaryParts.push(downloadState?.error);
   } else {
-    secondaryParts.push(describeFlightLogKind(kind));
+    secondaryParts.push(describeFlightLogKind(kind, t));
     if (!isNil(size)) {
       secondaryParts.push(prettyBytes(size));
     }
@@ -138,41 +136,39 @@ const UAVLogListItem = ({ id, kind, size, timestamp, uavId }) => {
   const isLoading = downloadState?.status === LogDownloadStatus.LOADING;
   const onClick = isLoading ? undefined : log ? save : download;
 
+  const saveOrDownloadButton = (
+    <IconButton edge='end' disabled={isLoading} onClick={onClick} size='large'>
+      {downloadState?.status === LogDownloadStatus.SUCCESS ? (
+        <Save />
+      ) : (
+        <GetApp />
+      )}
+    </IconButton>
+  );
+
   return (
-    <ListItemButton onClick={onClick}>
-      <StatusLight
-        status={
-          {
-            [LogDownloadStatus.LOADING]: 'next',
-            [LogDownloadStatus.ERROR]: 'error',
-            [LogDownloadStatus.SUCCESS]: 'success',
-          }[downloadState?.status] ?? 'off'
-        }
-      />
-      <ListItemText
-        disableTypography
-        primary={
-          <Typography variant='body2'>
-            {primaryParts.join(SEPARATOR)}
-          </Typography>
-        }
-        secondary={secondaryComponent}
-      />
-      <ListItemSecondaryAction>
-        <IconButton
-          edge='end'
-          disabled={isLoading}
-          size='large'
-          onClick={onClick}
-        >
-          {downloadState?.status === LogDownloadStatus.SUCCESS ? (
-            <Save />
-          ) : (
-            <GetApp />
-          )}
-        </IconButton>
-      </ListItemSecondaryAction>
-    </ListItemButton>
+    <ListItem disablePadding secondaryAction={saveOrDownloadButton}>
+      <ListItemButton onClick={onClick}>
+        <StatusLight
+          status={
+            {
+              [LogDownloadStatus.LOADING]: 'next',
+              [LogDownloadStatus.ERROR]: 'error',
+              [LogDownloadStatus.SUCCESS]: 'success',
+            }[downloadState?.status] ?? 'off'
+          }
+        />
+        <ListItemText
+          disableTypography
+          primary={
+            <Typography variant='body2'>
+              {primaryParts.join(SEPARATOR)}
+            </Typography>
+          }
+          secondary={secondaryComponent}
+        />
+      </ListItemButton>
+    </ListItem>
   );
 };
 

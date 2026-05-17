@@ -78,6 +78,7 @@ const initialState: SettingsSliceState = {
     goneThreshold: 60,
     forgetThreshold: 600,
     placementAccuracy: 1000,
+    takeoffHeadingAccuracy: 20,
     defaultBatteryCellCount: DEFAULT_BATTERY_CELL_COUNT,
     fullChargeVoltage: LIPO_FULL_CHARGE_VOLTAGE,
     lowVoltageThreshold: LIPO_LOW_VOLTAGE_THRESHOLD,
@@ -87,6 +88,7 @@ const initialState: SettingsSliceState = {
     maxUploadConcurrency: 8,
     minIndoorTakeoffSpacing: 200,
     minOutdoorTakeoffSpacing: 400,
+    vehicleType: 'Copter',
   },
 
   apiKeys: {},

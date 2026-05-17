@@ -2,6 +2,8 @@
  * @file UAV-related error codes.
  */
 
+import type { TranslateFn } from '~/i18n/types';
+
 enum UAVErrorCode {
   NO_ERROR = 0,
 
@@ -48,6 +50,7 @@ enum UAVErrorCode {
   WIND_SPEED_ERROR = 139,
   PAYLOAD_ERROR = 140,
   PROXIMITY_ERROR = 141,
+  ESC_ERROR = 142,
   SIMULATED_ERROR = 188,
   CONTROL_ALGORITHM_ERROR = 189,
   SENSOR_FAILURE = 190,
@@ -115,6 +118,7 @@ const abbreviations: Record<UAVErrorCode, string> = {
   [UAVErrorCode.WIND_SPEED_ERROR]: 'wind',
   [UAVErrorCode.PAYLOAD_ERROR]: 'payload',
   [UAVErrorCode.PROXIMITY_ERROR]: 'proximity',
+  [UAVErrorCode.ESC_ERROR]: 'ESC',
   [UAVErrorCode.SIMULATED_ERROR]: 'simerr',
   [UAVErrorCode.CONTROL_ALGORITHM_ERROR]: 'control',
   [UAVErrorCode.SENSOR_FAILURE]: 'sensor',
@@ -186,6 +190,7 @@ const descriptions: Record<UAVErrorCode, string> = {
   [UAVErrorCode.WIND_SPEED_ERROR]: 'Wind speed is too high',
   [UAVErrorCode.PAYLOAD_ERROR]: 'Payload error',
   [UAVErrorCode.PROXIMITY_ERROR]: 'Proximity sensor error',
+  [UAVErrorCode.ESC_ERROR]: 'ESC error',
   [UAVErrorCode.SIMULATED_ERROR]: 'Simulated error',
   [UAVErrorCode.CONTROL_ALGORITHM_ERROR]: 'Error in control algorithm',
   [UAVErrorCode.SENSOR_FAILURE]: 'Unspecified sensor failure',
@@ -224,8 +229,12 @@ export const abbreviateUAVErrorCode = (code: UAVErrorCode): string => {
 /**
  * Returns a human-readable description of the error code.
  */
-export const describeUAVErrorCode = (code: UAVErrorCode): string => {
-  return descriptions[code] || `Error ${code}`;
+export const describeUAVErrorCode = (
+  code: UAVErrorCode,
+  t: TranslateFn | undefined = undefined
+): string => {
+  const description = descriptions[code] || `Error ${code}`;
+  return t ? t(`uavErrorCode.${code}`, description) : description;
 };
 
 export default UAVErrorCode;

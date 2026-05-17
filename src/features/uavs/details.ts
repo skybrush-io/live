@@ -5,7 +5,7 @@
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
-import { setSelection } from '~/features/map/selection';
+import { setSelection } from '~/features/selection/slice';
 import { globalIdToUavId, isUavId } from '~/model/identifiers';
 import { type AppSelector } from '~/store/reducers';
 import { type Coordinate2DObject } from '~/utils/math';

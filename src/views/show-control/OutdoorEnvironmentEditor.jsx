@@ -43,8 +43,7 @@ import {
   getOutdoorShowOrientation,
   getOutdoorShowTakeoffHeadingSpecification,
 } from '~/features/show/selectors';
-import { showNotification } from '~/features/snackbar/actions';
-import { MessageSemantics } from '~/features/snackbar/types';
+import { showSuccess } from '~/features/snackbar/actions';
 import { getAverageHeadingOfActiveUAVs } from '~/features/uavs/selectors';
 import i18n from '~/i18n';
 import AutoFix from '~/icons/AutoFix';
@@ -331,11 +330,9 @@ export default connect(
         );
       },
 
-    showNotificationWithNavigationOption: (message, location) => (dispatch) => {
-      dispatch(
-        showNotification({
-          message,
-          semantics: MessageSemantics.SUCCESS,
+    showNotificationWithNavigationOption:
+      (message, location) => (_dispatch) => {
+        showSuccess(message, {
           buttons: [
             {
               label: i18n.t('general.action.navigate', 'Navigate'),
@@ -345,9 +342,8 @@ export default connect(
           ],
           timeout: 10000,
           topic: 'coordinate-system-updated',
-        })
-      );
-    },
+        });
+      },
 
     updateFlatEarthCoordinateSystem,
     updateOutdoorShowSettings,

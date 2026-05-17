@@ -3,6 +3,7 @@ import Done from '@mui/icons-material/Done';
 import Warning from '@mui/icons-material/Warning';
 import CircularProgress from '@mui/material/CircularProgress';
 import ListItem, { type ListItemProps } from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import { green, red, yellow } from '@mui/material/colors';
 import type { Theme } from '@mui/material/styles';
@@ -12,20 +13,41 @@ import { isThemeDark, makeStyles } from '@skybrush/app-theme-mui';
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
     backgroundColor: isThemeDark(theme) ? '#303030' : theme.palette.grey[200],
-    paddingTop: 6,
+    paddingTop: 0,
+    paddingBottom: 0,
+  },
+  button: {
+    '&:hover': {
+      backgroundColor: isThemeDark(theme) ? '#303030' : theme.palette.grey[200],
+    },
   },
 }));
+
+type Props = Omit<ListItemProps, 'divider' | 'className'> & {
+  onClick?: () => void;
+};
 
 /**
  * List item component that can be placed at the top of a dialog box, typically
  * below the dialog title or toolbar, to provide a single line of information
  * to the user in a prominent manner.
  */
-const DialogHeaderListItem = (
-  props: Omit<ListItemProps, 'divider' | 'className'>
-) => {
+const DialogHeaderListItem = ({ children, onClick, ...rest }: Props) => {
   const classes = useStyles();
-  return <ListItem divider className={classes.root} {...props} />;
+  return onClick ? (
+    <ListItem divider disableGutters className={classes.root} {...rest}>
+      <ListItemButton
+        disableRipple
+        disableTouchRipple
+        className={classes.button}
+        onClick={onClick}
+      >
+        {children}
+      </ListItemButton>
+    </ListItem>
+  ) : (
+    <ListItem divider className={classes.root} {...rest} />
+  );
 };
 
 /**

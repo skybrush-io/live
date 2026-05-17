@@ -16,7 +16,7 @@ export const rotateViewToDrones = () => (dispatch, getState) => {
   // See discussion in https://github.com/skybrush-io/live/issues/80
   const activeUAVIds = getActiveUAVIds(state);
   if (activeUAVIds.length === 0) {
-    dispatch(showError('No active UAVs to focus the view on.'));
+    showError('No active UAVs to focus the view on.');
     return;
   }
 

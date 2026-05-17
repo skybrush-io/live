@@ -3,6 +3,7 @@ import Box from '@mui/material/Box';
 import DialogContent from '@mui/material/DialogContent';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import Switch from '@mui/material/Switch';
@@ -55,20 +56,22 @@ const PreflightCheckListPresentation = ({ items, showMissionIds, ...rest }) => {
         const itemId = `preflight-item-${item.code}`;
         const status = severityToStatus[getSeverityOfErrorCode(item.code)];
         return (
-          <ListItemButton key={itemId} button disableRipple>
-            <StatusLight status={status} />
-            <ListItemText
-              id={itemId}
-              primary={describeUAVErrorCode(item.code)}
-              secondary={formatUAVIds(
-                item.uavIdsAndIndices.map(
-                  showMissionIds
-                    ? (x) => formatMissionId(x[1])
-                    : (x) => String(x[0])
-                )
-              )}
-            />
-          </ListItemButton>
+          <ListItem key={itemId} disablePadding>
+            <ListItemButton disableRipple>
+              <StatusLight status={status} />
+              <ListItemText
+                id={itemId}
+                primary={describeUAVErrorCode(item.code, t)}
+                secondary={formatUAVIds(
+                  item.uavIdsAndIndices.map(
+                    showMissionIds
+                      ? (x) => formatMissionId(x[1])
+                      : (x) => String(x[0])
+                  )
+                )}
+              />
+            </ListItemButton>
+          </ListItem>
         );
       })}
     </List>

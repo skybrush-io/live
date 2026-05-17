@@ -21,6 +21,7 @@ import { getCenterOfFirstPointsOfTrajectoriesInWorldCoordinates } from '~/featur
 import {
   GROSS_CONVEX_HULL_AREA_ID,
   globalIdToAreaId,
+  isHomePositionId,
   isOriginId,
 } from '~/model/identifiers';
 /**
@@ -141,7 +142,8 @@ export class TransformFeaturesInteraction extends PointerInteraction {
             // investigate whether there is a way around it
             if (
               globalIdToAreaId(this.lastFeature_.getId()) ===
-              GROSS_CONVEX_HULL_AREA_ID
+                GROSS_CONVEX_HULL_AREA_ID ||
+              isHomePositionId(this.lastFeature_.getId())
             ) {
               const state = store.getState();
 

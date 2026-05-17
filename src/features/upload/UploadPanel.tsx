@@ -1,4 +1,5 @@
 import Clear from '@mui/icons-material/Clear';
+import Delete from '@mui/icons-material/Delete';
 import NavigateBack from '@mui/icons-material/NavigateBefore';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
@@ -33,6 +34,7 @@ import {
 } from '~/features/upload/selectors';
 import {
   cancelUpload,
+  clearUploadHistoryForCurrentJobType,
   closeUploadDialog,
   dismissLastUploadResult,
   setFlashFailed,
@@ -136,6 +138,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 type UploadPanelProps = Readonly<{
   autoRetry: boolean;
+  clearUploadHistory: () => void;
   completionTime?: number;
   flashFailed: boolean;
   hasHiddenTargets: boolean;
@@ -158,6 +161,7 @@ type UploadPanelProps = Readonly<{
  */
 const UploadPanel = ({
   autoRetry,
+  clearUploadHistory,
   completionTime,
   flashFailed,
   hasHiddenTargets,
@@ -230,12 +234,17 @@ const UploadPanel = ({
             {t('uploadPanel.cancelUpload')}
           </Button>
         ) : (
-          <StartUploadButton
-            className={hasHiddenTargets ? classes.warningText : undefined}
-            disabled={!onStartUpload}
-            hasQueuedItems={hasQueuedItems}
-            onClick={onStartUpload}
-          />
+          <>
+            <Button startIcon={<Delete />} onClick={() => clearUploadHistory()}>
+              {t('uploadPanel.clearHistory')}
+            </Button>
+            <StartUploadButton
+              className={hasHiddenTargets ? classes.warningText : undefined}
+              disabled={!onStartUpload}
+              hasQueuedItems={hasQueuedItems}
+              onClick={onStartUpload}
+            />
+          </>
         )}
       </DialogActions>
     </>
@@ -260,6 +269,7 @@ export default connect(
 
   // mapDispatchToProps
   {
+    clearUploadHistory: clearUploadHistoryForCurrentJobType,
     onCancelUpload: cancelUpload,
     onClose: closeUploadDialog,
     onDismissLastUploadResult: dismissLastUploadResult,

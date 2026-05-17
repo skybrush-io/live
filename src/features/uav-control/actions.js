@@ -65,9 +65,9 @@ export const submitFlyToTargetDialog = (fields) => (dispatch, getState) => {
   const selectedUAVIds = getSelectedUAVIds(state);
 
   if (!parsedCoordinate) {
-    dispatch(showError('Coordinate format invalid'));
+    showError('Coordinate format invalid');
   } else if (selectedUAVIds.length === 0) {
-    dispatch(showError('Selection is empty'));
+    showError('Selection is empty');
   } else {
     const altitude = Number(fields.altitude);
     let target = {

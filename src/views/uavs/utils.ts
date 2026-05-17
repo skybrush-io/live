@@ -1,12 +1,12 @@
 import isNil from 'lodash-es/isNil';
 
+import { getSelection } from '~/features/selection/selectors';
 import {
   isMissionSlotId,
   isUavId,
   missionSlotIdToGlobalId,
   uavIdToGlobalId,
 } from '~/model/identifiers';
-import { getSelection } from '~/selectors/selection';
 import type { RootState } from '~/store/reducers';
 import { UAVGroupType, type Item, type UAVGroup } from './types';
 

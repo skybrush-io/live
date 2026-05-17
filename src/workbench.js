@@ -76,15 +76,15 @@ export const componentRegistry = {
     detachable: true,
     feature: 'beacons',
   },
+  'collective-rth': {
+    component: views.CollectiveRTHPanel,
+    label: 'Collective RTH',
+    detachable: true,
+  },
   'connection-list': {
     // deprecated, kept there for compatibility
     component: views.ConnectionList,
     label: 'Connections',
-  },
-  'dataset-list': {
-    component: views.DatasetList,
-    label: 'Datasets',
-    detachable: true,
   },
   'dock-list': {
     component: views.DockList,

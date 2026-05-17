@@ -41,10 +41,11 @@ type UploadStatusLegendButtonProps = Readonly<{
   tooltip?: Nullable<string>;
   onClick?: () => void;
 }> &
-  ButtonBaseProps;
+  Omit<ButtonBaseProps, 'className' | 'onClick'>;
 
 const UploadStatusLegendButton = ({
   counter,
+  disabled,
   label,
   onClick,
   status,
@@ -52,11 +53,10 @@ const UploadStatusLegendButton = ({
   ...rest
 }: UploadStatusLegendButtonProps): React.JSX.Element => {
   const classes = useStyles();
-  const enabled = onClick && counter > 0;
   const button = (
     <ButtonBase
-      className={clsx(classes.root, enabled && classes.selectable)}
-      disabled={!enabled}
+      className={clsx(classes.root, !disabled && classes.selectable)}
+      disabled={disabled}
       onClick={onClick}
       {...rest}
     >

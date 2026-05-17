@@ -1,8 +1,10 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { HotKeys } from 'react-hotkeys';
 
 import { ContainerContext } from '~/containerContext';
+import AppHotkeys from '~/features/hotkeys/AppHotkeys';
 
 export default class ExternalWindow extends React.Component {
   static propTypes = {
@@ -65,7 +67,7 @@ export default class ExternalWindow extends React.Component {
   render() {
     return ReactDOM.createPortal(
       <ContainerContext.Provider value={this._container}>
-        {this.props.children}
+        <AppHotkeys Component={HotKeys}>{this.props.children}</AppHotkeys>
       </ContainerContext.Provider>,
       this._container
     );

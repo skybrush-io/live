@@ -44,6 +44,26 @@ export async function adaptShow(hub, show, transformations, coordinateSystem) {
 }
 
 /**
+ * Adds collective RTH plans to drones using the given configuration.
+ */
+export async function addCollectiveRTH(hub, show, config) {
+  const response = await hub.sendMessage(
+    {
+      type: 'X-SHOW-CRTH-PLAN',
+      show,
+      config,
+    },
+    { timeout: 3600 }
+  );
+
+  if (response?.body?.type === 'X-SHOW-CRTH-PLAN') {
+    return response.body;
+  } else {
+    throw new Error(response?.body?.reason ?? 'Unknown error.');
+  }
+}
+
+/**
  * Returns the basic properties of the beacons with the given IDs.
  */
 export async function getBasicBeaconProperties(hub, ids) {
@@ -341,9 +361,16 @@ export async function getRTKStatus(hub) {
 
 /**
  * Returns the currently selected RTK data source ID.
+ *
+ * @return {Promise<string | null>}
  */
 export async function getSelectedRTKPresetId(hub) {
-  const response = await hub.sendMessage({ type: 'X-RTK-SOURCE' });
+  const response = await hub.sendMessage(
+    { type: 'X-RTK-SOURCE' },
+    // Use a longer timeout as the server might be busy reconfiguring the RTK
+    // source when we ask for it.
+    { timeout: 15 }
+  );
 
   if (response.body && response.body.type === 'X-RTK-SOURCE') {
     return get(response, 'body.id');
@@ -444,6 +471,7 @@ export async function isExtensionLoaded(hub, name) {
 export class QueryHandler {
   _queries = {
     adaptShow,
+    addCollectiveRTH,
     getBasicBeaconProperties,
     getConfigurationOfExtension,
     getFirmwareUpdateObjects,

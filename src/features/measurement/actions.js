@@ -117,7 +117,7 @@ export const addNewSamplesToAveraging = (samples) => (dispatch, getState) => {
  * clipboard.
  */
 export const copyCentroidOfAveragedCoordinatesToClipboard =
-  (uavIds) => (dispatch, getState) => {
+  (uavIds) => (_dispatch, getState) => {
     const state = getState();
     const centroid = getAveragedCentroidOfUAVsById(state, uavIds);
 
@@ -127,11 +127,9 @@ export const copyCentroidOfAveragedCoordinatesToClipboard =
       copy(formattedCoords);
 
       if (uavIds.length === 1) {
-        dispatch(showNotification('Coordinates copied to clipboard.'));
+        showNotification('Coordinates copied to clipboard.');
       } else {
-        dispatch(
-          showNotification('Coordinates of centroid copied to clipboard.')
-        );
+        showNotification('Coordinates of centroid copied to clipboard.');
       }
     }
   };
@@ -151,13 +149,11 @@ export const setCentroidOfAveragedCoordinatesAsMapOrigin =
     if (centroid) {
       dispatch(setFlatEarthCoordinateSystemOrigin(centroid));
       if (uavIds.length === 1) {
-        dispatch(
-          showNotification(
-            'Map origin set to the coordinates of the selected UAV.'
-          )
+        showNotification(
+          'Map origin set to the coordinates of the selected UAV.'
         );
       } else {
-        dispatch(showNotification('Map origin set to centroid of selection.'));
+        showNotification('Map origin set to centroid of selection.');
       }
     }
   };

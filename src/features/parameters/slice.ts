@@ -4,6 +4,7 @@
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
+import type { Identifier } from '~/utils/collections';
 import {
   addItemToFront,
   clearOrderedCollection,
@@ -13,7 +14,7 @@ import {
 } from '~/utils/collections';
 import { noPayload } from '~/utils/redux';
 
-import { type Parameter } from './types';
+import type { Parameter, ParameterData } from './types';
 
 type ParametersSliceState = {
   manifest: Collection<Parameter>;
@@ -45,7 +46,7 @@ const { actions, reducer } = createSlice({
       }
     ),
 
-    removeParameterFromManifest(state, action: PayloadAction<Parameter['id']>) {
+    removeParameterFromManifest(state, action: PayloadAction<Identifier>) {
       const { payload } = action;
       const { manifest } = state;
 
@@ -62,20 +63,23 @@ const { actions, reducer } = createSlice({
       state.dialog.open = true;
     }),
 
-    updateParametersInManifest(
-      state,
-      action: PayloadAction<Array<Omit<Parameter, 'id'>>>
-    ) {
+    updateParametersInManifest(state, action: PayloadAction<ParameterData[]>) {
       const { payload } = action;
       const { manifest } = state;
 
       if (Array.isArray(payload)) {
-        for (const { name, value } of payload) {
-          if (manifest.order.includes(name)) {
-            deleteItemById(manifest, name);
+        for (const { name, uavId, value } of payload) {
+          const id = uavId === undefined ? name : `${uavId}=${name}`;
+          if (manifest.order.includes(id)) {
+            deleteItemById(manifest, id);
           }
 
-          addItemToFront(manifest, { id: name, name, value });
+          addItemToFront(manifest, {
+            id,
+            name,
+            uavId,
+            value,
+          });
         }
       }
     },

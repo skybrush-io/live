@@ -6,7 +6,6 @@
  * in the mission.
  */
 
-import isNil from 'lodash-es/isNil';
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import { MAX_DRONE_COUNT } from '@skybrush/show-format';
 
@@ -19,12 +18,12 @@ import {
   type MissionItem,
   MissionType,
 } from '~/model/missions';
-import type UAV from '~/model/uav';
 import {
-  type Collection,
   addItemAt,
   addItemToBack,
+  type Collection,
   deleteItemsByIds,
+  type Identifier,
 } from '~/utils/collections';
 import { noPayload } from '~/utils/redux';
 import { type Nullable } from '~/utils/types';
@@ -59,7 +58,7 @@ export type MissionSliceState = {
    *
    * @see The `NOTE` at `MissionSliceState`
    */
-  mapping: Array<Nullable<UAV['id']>>;
+  mapping: Array<Nullable<Identifier>>;
 
   /**
    * Stores the desired home position (starting point) of each drone
@@ -231,26 +230,6 @@ const { actions, reducer } = createSlice({
       }
     },
 
-    adjustMissionMapping(
-      state,
-      action: PayloadAction<{
-        uavId: UAV['id'];
-        to: Nullable<MissionIndex>;
-      }>
-    ) {
-      const { uavId, to } = action.payload;
-      const from = state.mapping.indexOf(uavId);
-      const uavIdToReplace = isNil(to) ? null : state.mapping[to];
-
-      if (from >= 0) {
-        state.mapping[from] = uavIdToReplace ?? null;
-      }
-
-      if (!isNil(to)) {
-        state.mapping[to] = uavId;
-      }
-    },
-
     /**
      * Notifies the state store that we have started calculating, updating or
      * augmenting the current mission mapping.
@@ -293,23 +272,6 @@ const { actions, reducer } = createSlice({
     }),
 
     /**
-     * Clears the entire mission mapping.
-     */
-    clearMapping(state) {
-      state.mapping = Array.from({ length: state.mapping.length }, () => null);
-    },
-
-    /**
-     * Clears a single slot in the mission mapping.
-     */
-    clearMappingSlot(state, action: PayloadAction<MissionIndex>) {
-      const index = action.payload;
-      if (index >= 0 && index < state.mapping.length) {
-        state.mapping[index] = null;
-      }
-    },
-
-    /**
      * Closes the mission planner dialog.
      */
     closeMissionPlannerDialog: noPayload<MissionSliceState>((state) => {
@@ -323,43 +285,6 @@ const { actions, reducer } = createSlice({
       state.mappingEditor.enabled = false;
       state.mappingEditor.indexBeingEdited = -1;
     }),
-
-    /**
-     * Commits the new value in the mapping editor to the current slot being
-     * edited, and optionally continues with the next slot.
-     */
-    commitMappingEditorSessionAtCurrentSlot(
-      state,
-      action: PayloadAction<{
-        continuation: MissionMappingEditorContinuation;
-        value: string;
-      }>
-    ) {
-      const { continuation, value } = action.payload;
-      const validatedValue =
-        typeof value === 'string' && value.trim().length > 0 ? value : null;
-      const index = state.mappingEditor.indexBeingEdited;
-
-      if (index >= 0 && index < state.mapping.length) {
-        const oldValue = state.mapping[index];
-        const existingIndex =
-          validatedValue === null ? -1 : state.mapping.indexOf(validatedValue);
-
-        // Prevent duplicates: if the value being entered already exists
-        // elsewhere in the mapping, swap it with the old value of the
-        // slot being edited.
-        if (existingIndex >= 0) {
-          state.mapping[existingIndex] = oldValue ?? null;
-        }
-
-        state.mapping[index] = validatedValue;
-      }
-
-      state.mappingEditor.indexBeingEdited = getNewEditIndex(
-        state,
-        continuation
-      );
-    },
 
     moveMissionItem: {
       prepare: (oldIndex: number, newIndex: number) => ({
@@ -389,35 +314,6 @@ const { actions, reducer } = createSlice({
       action: PayloadAction<Array<MissionItem['id']>>
     ) {
       deleteItemsByIds(state.items, action.payload);
-    },
-
-    /**
-     * Removes some UAVs from the mission mapping.
-     */
-    removeUAVsFromMapping(state, action: PayloadAction<Array<UAV['id']>>) {
-      for (const uavId of action.payload) {
-        const index = state.mapping.indexOf(uavId);
-        if (index >= 0) {
-          state.mapping[index] = null;
-        }
-      }
-    },
-
-    /**
-     * Replaces the entire mission mapping with a new one.
-     */
-    replaceMapping(state, action: PayloadAction<Array<Nullable<UAV['id']>>>) {
-      const newMapping = action.payload;
-
-      if (!Array.isArray(newMapping)) {
-        throw new TypeError('New mapping must be an array');
-      }
-
-      if (newMapping.length !== state.mapping.length) {
-        throw new Error('Cannot change mapping length with replaceMapping()');
-      }
-
-      state.mapping = newMapping;
     },
 
     /**
@@ -453,12 +349,24 @@ const { actions, reducer } = createSlice({
     },
 
     /**
+     * Updates the mission mapping to the given value.
+     *
+     * The mapping must always be edited through actions that first execute
+     * this reducer, and then `notifyUAVsInMissionMappingChanged()`.
+     */
+    _setMapping(state, action: PayloadAction<Array<Nullable<Identifier>>>) {
+      state.mapping = action.payload;
+    },
+
+    /**
      * Sets the length of the mapping. When the new length is smaller than the
      * old length, the mapping will be truncated from the end. When the new
      * length is larger than the old length, empty slots will be added to the
      * end of the mapping.
+     *
+     * This reducer must always be used through the corresponding action!
      */
-    setMappingLength(state, action: PayloadAction<string | number>) {
+    _setMappingLength(state, action: PayloadAction<string | number>) {
       // TODO: Remove the string case.
       const desiredLength =
         typeof action.payload === 'string'
@@ -631,6 +539,20 @@ const { actions, reducer } = createSlice({
     },
 
     /**
+     * Updates the index being edited in the mapping editor based on
+     * requested continuation type.
+     */
+    updateEditedMappingIndex(
+      state,
+      action: PayloadAction<MissionMappingEditorContinuation>
+    ) {
+      state.mappingEditor.indexBeingEdited = getNewEditIndex(
+        state,
+        action.payload
+      );
+    },
+
+    /**
      * Updates the home positions of all the drones in the mission.
      */
     updateHomePositions(
@@ -680,6 +602,25 @@ const { actions, reducer } = createSlice({
     },
 
     /**
+     * Reducer whose only role is to let other slices register extra
+     * reducers to run after the mission mapping has changed.
+     *
+     * This reducer must be called by every action that changes the
+     * mission mapping, after the mission mapping has been updated.
+     *
+     * The payload can be an array of affected UAV IDs, or undefined
+     * if the entire mission mapping became invalid.
+     *
+     * It is NOT guaranteed that the IDs in the array are unique!
+     */
+    notifyUAVsInMissionMappingChanged(
+      _state,
+      _action: PayloadAction<Identifier[] | undefined>
+    ) {
+      // Noop
+    },
+
+    /**
      * Updates the takeoff headings of all the drones in the mission.
      */
     updateTakeoffHeadings(
@@ -711,26 +652,22 @@ const { actions, reducer } = createSlice({
 });
 
 export const {
+  _setMappingLength,
   addMissionItem,
-  adjustMissionMapping,
   cancelMappingEditorSessionAtCurrentSlot,
   clearGeofencePolygonId,
-  clearMapping,
-  clearMappingSlot,
   closeMissionPlannerDialog,
-  commitMappingEditorSessionAtCurrentSlot,
   finishMappingEditorSession,
   moveMissionItem,
+  notifyUAVsInMissionMappingChanged,
   removeMissionItemsByIds,
-  removeUAVsFromMapping,
-  replaceMapping,
   setCommandsAreBroadcast,
+  _setMapping,
   setEditorPanelFollowScroll,
   setGeofenceAction,
   setGeofencePolygonId,
   setLastClearedMissionData,
   setLastSuccessfulPlannerInvocationParameters,
-  setMappingLength,
   setMissionName,
   setMissionPlannerDialogApplyGeofence,
   setMissionPlannerDialogContextParameters,
@@ -743,6 +680,7 @@ export const {
   togglePreferredChannel,
   updateCurrentMissionItemId,
   updateCurrentMissionItemRatio,
+  updateEditedMappingIndex,
   updateHomePositions,
   updateLandingPositions,
   updateMissionItemParameters,

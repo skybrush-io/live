@@ -18,7 +18,14 @@ const supportsBulkUpload = getServerVersionValidator('>=2.34.1');
 function* runSingleParameterUpload({ uavId, payload }, options) {
   const { items, meta } = payload ?? {};
 
-  if (!Array.isArray(items) || items.length === 0) {
+  if (!Array.isArray(items)) {
+    return;
+  }
+
+  const uavItems = items.filter(
+    (param) => param.uavId === undefined || param.uavId === uavId
+  );
+  if (uavItems.length === 0) {
     return;
   }
 
@@ -26,7 +33,7 @@ function* runSingleParameterUpload({ uavId, payload }, options) {
 
   if (useBulkUpload) {
     const parameters = Object.fromEntries(
-      items.map(({ name, value }) => [name, value])
+      uavItems.map(({ name, value }) => [name, value])
     );
 
     // No need for a timeout here; it utilizes the message hub, which has its
@@ -37,7 +44,7 @@ function* runSingleParameterUpload({ uavId, payload }, options) {
       options
     );
   } else {
-    for (const { name, value } of items) {
+    for (const { name, value } of uavItems) {
       // No need for a timeout here; it utilizes the message hub, which has its
       // own timeout for failed command executions (although it is quite long)
       yield call(messageHub.execute.setParameter, {

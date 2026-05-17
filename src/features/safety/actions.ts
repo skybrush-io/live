@@ -8,8 +8,7 @@ import {
   getMissionType,
 } from '~/features/mission/selectors';
 import { setGeofencePolygonId } from '~/features/mission/slice';
-import { showNotification } from '~/features/snackbar/actions';
-import { MessageSemantics } from '~/features/snackbar/types';
+import { showError } from '~/features/snackbar/actions';
 import { type Feature, FeatureType } from '~/model/features';
 import { type AppThunk } from '~/store/reducers';
 import { type LonLat } from '~/utils/geography';
@@ -25,13 +24,9 @@ export const addGeofencePolygon =
     const state = getState();
 
     if (points.length < 3) {
-      dispatch(
-        showNotification({
-          message: 'Geofence to be added contains less than 3 points',
-          semantics: MessageSemantics.ERROR,
-          permanent: true,
-        })
-      );
+      showError('Geofence to be added contains less than 3 points', {
+        permanent: true,
+      });
       return;
     }
 
@@ -79,13 +74,7 @@ export const updateGeofencePolygon = (): AppThunk => (dispatch, getState) => {
       dispatch(addGeofencePolygon(value, missionType));
     },
     (error) => {
-      dispatch(
-        showNotification({
-          message: `Could not update geofence: ${error}`,
-          semantics: MessageSemantics.ERROR,
-          permanent: true,
-        })
-      );
+      showError(`Could not update geofence: ${error}`, { permanent: true });
     }
   );
 };

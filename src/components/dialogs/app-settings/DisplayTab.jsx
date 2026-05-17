@@ -9,7 +9,7 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import PropTypes from 'prop-types';
-import { withTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import { FormHeader as Header, ThemeSelector } from '@skybrush/mui-components';
@@ -37,141 +37,145 @@ const coordinateFormatOrder = [
 // default value for 'language' ensures that updating from a non-localized
 // version does not leave the "Language" dropdown empty
 
-const DisplayTabPresentation = ({ language = 'en', t, ...props }) => (
-  <>
-    <Box>
-      <FormControl fullWidth variant='filled'>
-        <InputLabel id='language-selector-label'>
-          {t('settings.display.language')}
-        </InputLabel>
-        <Select
-          labelId='language-selector-label'
-          name='language'
-          value={language}
-          onChange={props.onFieldChanged}
-        >
-          {enabledLanguages.map(({ code, label }) => (
-            <MenuItem key={code} value={code}>
-              {label}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-    </Box>
+const DisplayTabPresentation = ({ language = 'en', ...props }) => {
+  const { t } = useTranslation();
+  return (
+    <>
+      <Box>
+        <FormControl fullWidth variant='filled'>
+          <InputLabel id='language-selector-label'>
+            {t('settings.display.language')}
+          </InputLabel>
+          <Select
+            labelId='language-selector-label'
+            name='language'
+            value={language}
+            onChange={props.onFieldChanged}
+          >
+            {enabledLanguages.map(({ code, label }) => (
+              <MenuItem key={code} value={code}>
+                {label}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      </Box>
 
-    <Box sx={{ my: 2 }}>
-      {/* TODO(vp): gap should be used on the parent component instead... */}
-      <ThemeSelector value={props.theme} onChange={props.onFieldChanged} />
-    </Box>
+      <Box sx={{ my: 2 }}>
+        {/* TODO(vp): gap should be used on the parent component instead... */}
+        <ThemeSelector value={props.theme} onChange={props.onFieldChanged} />
+      </Box>
 
-    <Box>
-      <FormControl fullWidth variant='filled'>
-        <InputLabel id='coordinate-format-label'>
-          {t('settings.display.coordinateFormat')}
-        </InputLabel>
-        <Select
-          labelId='coordinate-format-label'
-          name='coordinateFormat'
-          value={props.coordinateFormat}
-          onChange={props.onFieldChanged}
-        >
-          {coordinateFormatOrder.map((coordinateFormat) => (
-            <MenuItem key={coordinateFormat} value={coordinateFormat}>
-              {describeCoordinateFormat(coordinateFormat)}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
+      <Box>
+        <FormControl fullWidth variant='filled'>
+          <InputLabel id='coordinate-format-label'>
+            {t('settings.display.coordinateFormat')}
+          </InputLabel>
+          <Select
+            labelId='coordinate-format-label'
+            name='coordinateFormat'
+            value={props.coordinateFormat}
+            onChange={props.onFieldChanged}
+          >
+            {coordinateFormatOrder.map((coordinateFormat) => (
+              <MenuItem key={coordinateFormat} value={coordinateFormat}>
+                {describeCoordinateFormat(coordinateFormat, t)}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
 
-      <FormGroup>
-        <Header>{t('settings.display.mapWidgets')}</Header>
-        <FormControlLabel
-          label={t('settings.display.showMouseCoordinates')}
-          control={
-            <Checkbox
-              checked={props.showMouseCoordinates}
-              name='showMouseCoordinates'
-              onChange={props.onCheckboxToggled}
-            />
-          }
-        />
-        <FormControlLabel
-          label={t('settings.display.showScaleLine')}
-          control={
-            <Checkbox
-              checked={props.showScaleLine}
-              name='showScaleLine'
-              onChange={props.onCheckboxToggled}
-            />
-          }
-        />
-      </FormGroup>
+        <FormGroup>
+          <Header>{t('settings.display.mapWidgets')}</Header>
+          <FormControlLabel
+            label={t('settings.display.showMouseCoordinates')}
+            control={
+              <Checkbox
+                checked={props.showMouseCoordinates}
+                name='showMouseCoordinates'
+                onChange={props.onCheckboxToggled}
+              />
+            }
+          />
+          <FormControlLabel
+            label={t('settings.display.showScaleLine')}
+            control={
+              <Checkbox
+                checked={props.showScaleLine}
+                name='showScaleLine'
+                onChange={props.onCheckboxToggled}
+              />
+            }
+          />
+        </FormGroup>
 
-      <FormGroup>
-        <Header>{t('settings.display.flatEarthCoordinateSystem')}</Header>
-        <CoordinateSystemFields
-          origin={props.origin}
-          originLabel={t('settings.display.mapOrigin')}
-          orientation={props.orientation}
-          type={props.coordinateSystemType}
-          onOrientationChanged={props.onOrientationChanged}
-          onOriginChanged={props.onOriginChanged}
-          onTypeChanged={props.onCoordinateSystemTypeChanged}
-        />
-      </FormGroup>
+        <FormGroup>
+          <Header>{t('settings.display.flatEarthCoordinateSystem')}</Header>
+          <CoordinateSystemFields
+            origin={props.origin}
+            originLabel={t('settings.display.mapOrigin')}
+            orientation={props.orientation}
+            orientationLabel={t('settings.display.orientationXAxis')}
+            type={props.coordinateSystemType}
+            onOrientationChanged={props.onOrientationChanged}
+            onOriginChanged={props.onOriginChanged}
+            onTypeChanged={props.onCoordinateSystemTypeChanged}
+          />
+        </FormGroup>
 
-      <FormGroup>
-        <Header>{t('settings.display.operationModes')}</Header>
-        <FormControlLabel
-          label={t('settings.display.optimizeForSingleUAV')}
-          control={
-            <Checkbox
-              checked={props.optimizeForSingleUAV}
-              disabled={config.optimizeForSingleUAV.force}
-              name='optimizeForSingleUAV'
-              onChange={props.onCheckboxToggled}
-            />
-          }
-        />
-        <FormControlLabel
-          label={t('settings.display.optimizeUIForTouch')}
-          control={
-            <Checkbox
-              checked={props.optimizeUIForTouch}
-              disabled={config.optimizeUIForTouch.force}
-              name='optimizeUIForTouch'
-              onChange={props.onCheckboxToggled}
-            />
-          }
-        />
-      </FormGroup>
+        <FormGroup>
+          <Header>{t('settings.display.operationModes')}</Header>
+          <FormControlLabel
+            label={t('settings.display.optimizeForSingleUAV')}
+            control={
+              <Checkbox
+                checked={props.optimizeForSingleUAV}
+                disabled={config.optimizeForSingleUAV.force}
+                name='optimizeForSingleUAV'
+                onChange={props.onCheckboxToggled}
+              />
+            }
+          />
+          <FormControlLabel
+            label={t('settings.display.optimizeUIForTouch')}
+            control={
+              <Checkbox
+                checked={props.optimizeUIForTouch}
+                disabled={config.optimizeUIForTouch.force}
+                name='optimizeUIForTouch'
+                onChange={props.onCheckboxToggled}
+              />
+            }
+          />
+        </FormGroup>
 
-      <FormGroup>
-        <Header>{t('settings.display.miscellaneous')}</Header>
-        <FormControlLabel
-          label={t('settings.display.hideInactiveSegmentsOnDarkLCD')}
-          control={
-            <Checkbox
-              checked={props.hideInactiveSegmentsOnDarkLCD}
-              name='hideInactiveSegmentsOnDarkLCD'
-              onChange={props.onCheckboxToggled}
-            />
-          }
-        />
-        <FormControlLabel
-          label={t('settings.display.enableExperimentalFeatures')}
-          control={
-            <Checkbox
-              checked={props.experimentalFeaturesEnabled}
-              name='experimentalFeaturesEnabled'
-              onChange={props.onCheckboxToggled}
-            />
-          }
-        />
-      </FormGroup>
-    </Box>
-  </>
-);
+        <FormGroup>
+          <Header>{t('settings.display.miscellaneous')}</Header>
+          <FormControlLabel
+            label={t('settings.display.hideInactiveSegmentsOnDarkLCD')}
+            control={
+              <Checkbox
+                checked={props.hideInactiveSegmentsOnDarkLCD}
+                name='hideInactiveSegmentsOnDarkLCD'
+                onChange={props.onCheckboxToggled}
+              />
+            }
+          />
+          <FormControlLabel
+            label={t('settings.display.enableExperimentalFeatures')}
+            control={
+              <Checkbox
+                checked={props.experimentalFeaturesEnabled}
+                name='experimentalFeaturesEnabled'
+                onChange={props.onCheckboxToggled}
+              />
+            }
+          />
+        </FormGroup>
+      </Box>
+    </>
+  );
+};
 
 DisplayTabPresentation.propTypes = {
   coordinateFormat: PropTypes.oneOf(coordinateFormatOrder),
@@ -190,7 +194,6 @@ DisplayTabPresentation.propTypes = {
   hideInactiveSegmentsOnDarkLCD: PropTypes.bool,
   showMouseCoordinates: PropTypes.bool,
   showScaleLine: PropTypes.bool,
-  t: PropTypes.func,
   theme: PropTypes.oneOf(['auto', 'dark', 'light']),
 };
 
@@ -232,4 +235,4 @@ export default connect(
       dispatch(setFlatEarthCoordinateSystemOrientation(value || 0));
     },
   })
-)(withTranslation()(DisplayTabPresentation));
+)(DisplayTabPresentation);

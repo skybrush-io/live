@@ -84,6 +84,7 @@ export type Latitude = number & { [_Latitude]: void };
 
 export type LonLat = [Longitude, Latitude];
 export type LatLon = [Latitude, Longitude];
+export type LatLonObject = { lat: Latitude; lon: Longitude };
 
 const _Easting: unique symbol = Symbol('Easting');
 export type Easting = number & { [_Easting]: void };
@@ -1018,10 +1019,9 @@ type ScaledJSONGPSCoordinate = [number, number];
  * @return the JSON representation, scaled up to 1e7 degrees. Note
  *         that it returns the <em>latitude</em> first
  */
-export const toScaledJSONFromObject = (coords: {
-  lat: Latitude;
-  lon: Longitude;
-}): ScaledJSONGPSCoordinate => [
+export const toScaledJSONFromObject = (
+  coords: LatLonObject
+): ScaledJSONGPSCoordinate => [
   Math.round(coords.lat * 1e7),
   Math.round(coords.lon * 1e7),
 ];

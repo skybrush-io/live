@@ -10,12 +10,14 @@ import undoable, { includeAction } from 'redux-undo';
  * Reducer functions for handling the part of the state object that stores the
  * state of the various dialogs.
  */
+import collectiveRTHReducer from '~/features/collective-rth/slice';
 import dockDetailsDialogReducer from '~/features/docks/details';
 import errorHandlingReducer from '~/features/error-handling/slice';
 import featureEditorReducer from '~/features/map-features/editor';
 import layerSettingsReducer from '~/features/map/layer-settings-dialog';
 import promptReducer from '~/features/prompt/slice';
 import savedLocationEditorReducer from '~/features/saved-locations/editor';
+import selectionReducer from '~/features/selection/slice';
 import authenticationReducer from '~/features/servers/authentication-dialog';
 import deauthenticationReducer from '~/features/servers/deauthentication-dialog';
 import serverSettingsReducer from '~/features/servers/server-settings-dialog';
@@ -26,9 +28,9 @@ import showConfiguratorReducer, {
   historyRedo,
   historySnap,
   historyUndo,
-  type ShowData,
   type ShowConfiguratorState,
-} from '~/features/show-configurator/state';
+  type ShowData,
+} from '~/features/show-configurator/slice';
 import uavDetailsDialogReducer from '~/features/uavs/details';
 
 /**
@@ -38,7 +40,6 @@ import alertReducer from '~/features/alert/slice';
 import beaconsReducer from '~/features/beacons/slice';
 import clocksReducer from '~/features/clocks/slice';
 import connectionsReducer from '~/features/connections/slice';
-import datasetsReducer from '~/features/datasets/slice';
 import detachablePanelsReducer from '~/features/detachable-panels/slice';
 import docksReducer from '~/features/docks/slice';
 import fieldNotesReducer from '~/features/field-notes/slice';
@@ -81,6 +82,7 @@ import workbenchReducer from '~/features/workbench/slice';
 const dialogsReducer = combineReducers({
   appSettings: appSettingsReducer,
   authentication: authenticationReducer,
+  collectiveRTH: collectiveRTHReducer,
   deauthentication: deauthenticationReducer,
   dockDetails: dockDetailsDialogReducer,
   error: errorHandlingReducer,
@@ -112,7 +114,6 @@ const reducer = combineReducers({
   beacons: beaconsReducer,
   clocks: clocksReducer,
   connections: connectionsReducer,
-  datasets: datasetsReducer,
   detachablePanels: detachablePanelsReducer,
   dialogs: dialogsReducer,
   docks: docksReducer,
@@ -136,6 +137,7 @@ const reducer = combineReducers({
   rtk: rtkReducer,
   safety: safetyReducer,
   savedLocations: savedLocationsReducer,
+  selection: selectionReducer,
   servers: serversReducer,
   session: sessionReducer,
   settings: settingsReducer,

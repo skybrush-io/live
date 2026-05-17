@@ -2,6 +2,7 @@ import config from 'config';
 
 import Dialog from '@mui/material/Dialog';
 import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import ListSubheader from '@mui/material/ListSubheader';
@@ -35,9 +36,11 @@ const LoadShowFromCloudDialog = ({
       <List>
         <ListSubheader>Shared with me</ListSubheader>
         {config.examples.shows.map(({ id, title, url }) => (
-          <ListItemButton key={id} onClick={() => onLoadShowFromUrl(url)}>
-            <ListItemText primary={title} />
-          </ListItemButton>
+          <ListItem key={id} disablePadding>
+            <ListItemButton onClick={() => onLoadShowFromUrl(url)}>
+              <ListItemText primary={title} />
+            </ListItemButton>
+          </ListItem>
         ))}
       </List>
     </Dialog>

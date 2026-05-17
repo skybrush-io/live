@@ -1,0 +1,20 @@
+import Divider, { type DividerProps } from '@mui/material/Divider';
+
+import { makeStyles } from '@skybrush/app-theme-mui';
+
+const useStyles = makeStyles((theme) => ({
+  divider: {
+    alignSelf: 'stretch',
+    height: 'auto',
+    margin: theme.spacing(1, 0.5),
+  },
+}));
+
+type Props = Omit<DividerProps, 'className'>;
+
+export const ToolbarDivider = (props: Props) => {
+  const classes = useStyles();
+  return <Divider className={classes.divider} {...props} />;
+};
+
+export default ToolbarDivider;

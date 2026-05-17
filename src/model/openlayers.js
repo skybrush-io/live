@@ -31,6 +31,7 @@ import {
   GROSS_CONVEX_HULL_AREA_ID,
   isAreaId,
   isFeatureId,
+  isHomePositionId,
   isMissionItemId,
   isOriginId,
   MAP_ORIGIN_ID,
@@ -66,7 +67,11 @@ export function isFeatureTransformable(object) {
 
   const id = object.getId();
   return (
-    isFeatureId(id) || isAreaId(id) || isOriginId(id) || isMissionItemId(id)
+    isFeatureId(id) ||
+    isAreaId(id) ||
+    isOriginId(id) ||
+    isMissionItemId(id) ||
+    isHomePositionId(id)
   );
 }
 

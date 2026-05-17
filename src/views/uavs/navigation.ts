@@ -5,7 +5,7 @@ import {
   createKeyboardNavigationHandlers as createKeyboardNavigationHandlers_,
   type KeyboardNavigationHandlers,
 } from '~/features/hotkeys/navigation';
-import { setSelection } from '~/features/map/selection';
+import { setSelection } from '~/features/selection/slice';
 import { getUAVListOrientation } from '~/features/settings/selectors';
 import { UAVListOrientation } from '~/features/settings/types';
 import { openUAVDetailsDialog } from '~/features/uavs/details';

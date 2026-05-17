@@ -147,7 +147,7 @@ export const makeDetachable = (name, label, Component) =>
       const { glContainer, ...rest } = this.props;
       return (
         <DetachablePanel {...{ glContainer, name, label }}>
-          <Component {...{ glContainer, ...rest }} />
+          <Component {...rest} />
         </DetachablePanel>
       );
     }

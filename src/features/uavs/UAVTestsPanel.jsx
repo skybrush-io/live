@@ -1,12 +1,12 @@
 import Button from '@mui/material/Button';
 import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
-import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import ListItemText from '@mui/material/ListItemText';
 import Zoom from '@mui/material/Zoom';
 import isNil from 'lodash-es/isNil';
 import PropTypes from 'prop-types';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useAsyncFn } from 'react-use';
 
 import { StatusLight } from '@skybrush/mui-components';
@@ -86,16 +86,65 @@ const UAVTestButton = ({
   const [progress, setProgress] = useState(null);
   const [suspended, setSuspended] = useState(false);
   const resumeCallback = useRef(null);
+  const lastExecutedUavIdRef = useRef(null);
+  const uavIdRef = useRef(uavId);
+  uavIdRef.current = uavId;
 
   const clearPendingConfirmation = useCallback(() => {
     clearTimeout(pendingConfirmation);
     setPendingConfirmation(null);
-  }, [pendingConfirmation, setPendingConfirmation]);
+  }, [pendingConfirmation]);
+
+  useEffect(() => {
+    clearPendingConfirmation();
+    setProgress(null);
+    setSuspended(false);
+    resumeCallback.current = null;
+  }, [uavId]);
 
   const askForConfirmation = useCallback(() => {
     clearPendingConfirmation();
     setPendingConfirmation(setTimeout(clearPendingConfirmation, 3000));
-  }, [clearPendingConfirmation, setPendingConfirmation]);
+  }, [clearPendingConfirmation]);
+
+  const progressHandler = useCallback(
+    (progressUAVId, { progress, resume, suspended }) => {
+      if (progressUAVId !== uavIdRef.current) {
+        return;
+      }
+      setProgress(progress);
+      setSuspended(Boolean(suspended));
+      resumeCallback.current = resume;
+    },
+    []
+  );
+
+  const [lastExecutionState, execute] = useAsyncFn(async () => {
+    lastExecutedUavIdRef.current = uavId;
+    // TODO(ntamas): use the proper UAV-TEST messages designated for this
+    await messageHub.sendCommandRequest(
+      {
+        uavId,
+        command: type === 'test' ? 'test' : 'calib',
+        args: [String(component)],
+      },
+      { onProgress: (progress) => progressHandler(uavId, progress), timeout }
+    );
+    return true;
+  }, [component, messageHub, progressHandler, timeout, type, uavId]);
+
+  const executionState =
+    lastExecutedUavIdRef.current === uavId
+      ? lastExecutionState
+      : { loading: false };
+
+  const [, resume] = useAsyncFn(async () => {
+    if (resumeCallback.current) {
+      return resumeCallback.current();
+    } else {
+      throw new Error('No resume callback has been provided');
+    }
+  }, []);
 
   const giveConfirmation = useCallback(() => {
     clearPendingConfirmation();
@@ -106,85 +155,64 @@ const UAVTestButton = ({
     }
   }, [clearPendingConfirmation, execute, resume, suspended]);
 
-  const progressHandler = useCallback(({ progress, resume, suspended }) => {
-    setProgress(progress);
-    setSuspended(Boolean(suspended));
-    resumeCallback.current = resume;
-  }, []);
-
-  const [executionState, execute] = useAsyncFn(async () => {
-    // TODO(ntamas): use the proper UAV-TEST messages designated for this
-    await messageHub.sendCommandRequest(
-      {
-        uavId,
-        command: type === 'test' ? 'test' : 'calib',
-        args: [String(component)],
-      },
-      { onProgress: progressHandler, timeout }
-    );
-    return true;
-  }, [messageHub, progressHandler]);
-
-  const [, resume] = useAsyncFn(async () => {
-    if (resumeCallback.current) {
-      return resumeCallback.current();
-    } else {
-      throw new Error('No resume callback has been provided');
-    }
-  }, []);
+  const confirmButton = (
+    <Zoom in={Boolean(pendingConfirmation)}>
+      {/* TODO: Change to `Slide` from right when switching to Material UI v5,
+                as that version supports setting a `container`. */}
+      <Button
+        style={{ color: Colors.seriousWarning }}
+        onClick={giveConfirmation}
+      >
+        Confirm
+      </Button>
+    </Zoom>
+  );
 
   return (
-    <ListItemButton
-      onClick={needsConfirmation ? askForConfirmation : giveConfirmation}
+    <ListItem
+      disablePadding
+      secondaryAction={needsConfirmation ? confirmButton : null}
     >
-      <StatusLight
-        status={
-          suspended
-            ? 'warning'
-            : executionState.loading
-              ? 'next'
-              : executionState.error
-                ? 'error'
-                : isNil(executionState.value)
-                  ? 'off'
-                  : executionState.value
-                    ? 'success'
-                    : 'error'
-        }
-      />
-      <ListItemText
-        primary={
-          suspended
-            ? `${progress.message || 'Operation suspended'}. Click to resume.`
-            : progress && (!executionState.error || executionState.loading)
-              ? `${progress.message || label}`
-              : label
-        }
-        secondary={
-          !executionState.loading && executionState.error ? (
-            errorToString(executionState.error)
-          ) : progress ? (
-            /* Prefer progress bars even in suspended state */
-            <ListItemProgressBar progress={progress} />
-          ) : suspended ? (
-            /* If we are suspended but we don't have progress info, show an indefinite progress bar */
-            <ListItemProgressBar />
-          ) : null
-        }
-      />
-      <ListItemSecondaryAction>
-        {/* TODO: Change to `Slide` from right when switching to Material UI v5,
-                  as that version supports setting a `container`. */}
-        <Zoom in={Boolean(pendingConfirmation)}>
-          <Button
-            style={{ color: Colors.seriousWarning }}
-            onClick={giveConfirmation}
-          >
-            Confirm
-          </Button>
-        </Zoom>
-      </ListItemSecondaryAction>
-    </ListItemButton>
+      <ListItemButton
+        onClick={needsConfirmation ? askForConfirmation : giveConfirmation}
+      >
+        <StatusLight
+          status={
+            suspended
+              ? 'warning'
+              : executionState.loading
+                ? 'next'
+                : executionState.error
+                  ? 'error'
+                  : isNil(executionState.value)
+                    ? 'off'
+                    : executionState.value
+                      ? 'success'
+                      : 'error'
+          }
+        />
+        <ListItemText
+          primary={
+            suspended
+              ? `${progress.message || 'Operation suspended'}. Click to resume.`
+              : progress && (!executionState.error || executionState.loading)
+                ? `${progress.message || label}`
+                : label
+          }
+          secondary={
+            !executionState.loading && executionState.error ? (
+              errorToString(executionState.error)
+            ) : progress ? (
+              /* Prefer progress bars even in suspended state */
+              <ListItemProgressBar progress={progress} />
+            ) : suspended ? (
+              /* If we are suspended but we don't have progress info, show an indefinite progress bar */
+              <ListItemProgressBar />
+            ) : null
+          }
+        />
+      </ListItemButton>
+    </ListItem>
   );
 };
 

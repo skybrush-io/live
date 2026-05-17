@@ -76,7 +76,7 @@ import {
   historyRedo,
   historyUndo,
   updateSelection,
-} from './state';
+} from './slice';
 
 // === Layers ===
 

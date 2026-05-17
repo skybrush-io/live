@@ -4,13 +4,13 @@ import map from 'lodash-es/map';
 
 import { createSelector } from '@reduxjs/toolkit';
 
+import { selectionForSubset } from '~/features/selection/selectors';
 import {
   type Feature,
   type FeatureType,
   getNameOfFeatureType,
 } from '~/model/features';
 import { globalIdToFeatureId } from '~/model/identifiers';
-import { selectionForSubset } from '~/selectors/selection';
 import { type AppSelector } from '~/store/reducers';
 import { rejectNullish } from '~/utils/arrays';
 import {

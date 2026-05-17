@@ -1,0 +1,252 @@
+import Battery20Icon from '@mui/icons-material/Battery20';
+import Battery30Icon from '@mui/icons-material/Battery30';
+import Battery50Icon from '@mui/icons-material/Battery50';
+import Battery60Icon from '@mui/icons-material/Battery60';
+import Battery80Icon from '@mui/icons-material/Battery80';
+import Battery90Icon from '@mui/icons-material/Battery90';
+import BatteryAlertIcon from '@mui/icons-material/BatteryAlert';
+import BatteryCharging20Icon from '@mui/icons-material/BatteryCharging20';
+import BatteryCharging30Icon from '@mui/icons-material/BatteryCharging30';
+import BatteryCharging50Icon from '@mui/icons-material/BatteryCharging50';
+import BatteryCharging60Icon from '@mui/icons-material/BatteryCharging60';
+import BatteryCharging80Icon from '@mui/icons-material/BatteryCharging80';
+import BatteryCharging90Icon from '@mui/icons-material/BatteryCharging90';
+import BatteryChargingFullIcon from '@mui/icons-material/BatteryChargingFull';
+import BatteryFullIcon from '@mui/icons-material/BatteryFull';
+import BatteryUnknownIcon from '@mui/icons-material/BatteryUnknown';
+import isNil from 'lodash-es/isNil';
+
+import { Status } from '@skybrush/app-theme-mui';
+
+import { BatterySettings, BatteryStatus } from '~/model/battery';
+import { BatteryDisplayStyle } from '~/model/settings';
+
+const batteryIconIndexByStatus = {
+  [BatteryStatus.FULL]: 10,
+  [BatteryStatus.NEAR_FULL]: 9,
+  [BatteryStatus.OK]: 8,
+  [BatteryStatus.WARNING]: 3,
+  [BatteryStatus.ERROR]: 0,
+  [BatteryStatus.UNKNOWN]: 11,
+};
+
+const iconStyle = {
+  marginLeft: -8,
+  marginTop: -2,
+  verticalAlign: 'bottom',
+};
+
+const unknownIconStyle = {};
+
+const batteryIcons = [
+  <BatteryAlertIcon key='batteryIcon' fontSize='small' style={iconStyle} />,
+  <BatteryAlertIcon key='batteryIcon' fontSize='small' style={iconStyle} />,
+  <Battery20Icon key='batteryIcon' fontSize='small' style={iconStyle} />,
+  <Battery30Icon key='batteryIcon' fontSize='small' style={iconStyle} />,
+  <Battery50Icon key='batteryIcon' fontSize='small' style={iconStyle} />,
+  <Battery50Icon key='batteryIcon' fontSize='small' style={iconStyle} />,
+  <Battery60Icon key='batteryIcon' fontSize='small' style={iconStyle} />,
+  <Battery80Icon key='batteryIcon' fontSize='small' style={iconStyle} />,
+  <Battery80Icon key='batteryIcon' fontSize='small' style={iconStyle} />,
+  <Battery90Icon key='batteryIcon' fontSize='small' style={iconStyle} />,
+  <BatteryFullIcon key='batteryIcon' fontSize='small' style={iconStyle} />,
+  <span key='batteryIcon' style={unknownIconStyle}>
+    {' '}
+  </span>,
+];
+
+const largeBatteryIcons = [
+  <BatteryAlertIcon key='batteryIcon' />,
+  <BatteryAlertIcon key='batteryIcon' />,
+  <Battery20Icon key='batteryIcon' />,
+  <Battery30Icon key='batteryIcon' />,
+  <Battery50Icon key='batteryIcon' />,
+  <Battery50Icon key='batteryIcon' />,
+  <Battery60Icon key='batteryIcon' />,
+  <Battery80Icon key='batteryIcon' />,
+  <Battery80Icon key='batteryIcon' />,
+  <Battery90Icon key='batteryIcon' />,
+  <BatteryFullIcon key='batteryIcon' />,
+  <BatteryUnknownIcon key='batteryIcon' />,
+];
+
+const chargingBatteryIcons = [
+  <BatteryCharging20Icon
+    key='batteryIcon'
+    fontSize='small'
+    style={iconStyle}
+  />,
+  <BatteryCharging20Icon
+    key='batteryIcon'
+    fontSize='small'
+    style={iconStyle}
+  />,
+  <BatteryCharging20Icon
+    key='batteryIcon'
+    fontSize='small'
+    style={iconStyle}
+  />,
+  <BatteryCharging30Icon
+    key='batteryIcon'
+    fontSize='small'
+    style={iconStyle}
+  />,
+  <BatteryCharging50Icon
+    key='batteryIcon'
+    fontSize='small'
+    style={iconStyle}
+  />,
+  <BatteryCharging50Icon
+    key='batteryIcon'
+    fontSize='small'
+    style={iconStyle}
+  />,
+  <BatteryCharging60Icon
+    key='batteryIcon'
+    fontSize='small'
+    style={iconStyle}
+  />,
+  <BatteryCharging80Icon
+    key='batteryIcon'
+    fontSize='small'
+    style={iconStyle}
+  />,
+  <BatteryCharging80Icon
+    key='batteryIcon'
+    fontSize='small'
+    style={iconStyle}
+  />,
+  <BatteryCharging90Icon
+    key='batteryIcon'
+    fontSize='small'
+    style={iconStyle}
+  />,
+  <BatteryChargingFullIcon
+    key='batteryIcon'
+    fontSize='small'
+    style={iconStyle}
+  />,
+  <span key='batteryIcon' style={unknownIconStyle} />,
+];
+
+const largeChargingBatteryIcons = [
+  <BatteryCharging20Icon key='batteryIcon' />,
+  <BatteryCharging20Icon key='batteryIcon' />,
+  <BatteryCharging20Icon key='batteryIcon' />,
+  <BatteryCharging30Icon key='batteryIcon' />,
+  <BatteryCharging50Icon key='batteryIcon' />,
+  <BatteryCharging50Icon key='batteryIcon' />,
+  <BatteryCharging60Icon key='batteryIcon' />,
+  <BatteryCharging80Icon key='batteryIcon' />,
+  <BatteryCharging80Icon key='batteryIcon' />,
+  <BatteryCharging90Icon key='batteryIcon' />,
+  <BatteryChargingFullIcon key='batteryIcon' />,
+  <BatteryUnknownIcon key='batteryIcon' />,
+];
+
+const safeToFixed = (number: unknown, digits: number) =>
+  typeof number === 'number' ? number.toFixed(digits) : String(number);
+
+/**
+ * Formatter that takes what we know about a battery (i.e. what its voltage is,
+ * what its charge percentage is, and whether it's charging), and returns a
+ * human-readable string, a status color and/or an icon for the battery.
+ *
+ * The formatter also holds a reference to a BatterySettings object so it knows
+ * what the voltage thresholds are.
+ */
+export class BatteryFormatter {
+  _settings: BatterySettings;
+  _style: BatteryDisplayStyle;
+
+  constructor({
+    settings,
+    style = BatteryDisplayStyle.VOLTAGE,
+  }: Partial<{ settings: BatterySettings; style: BatteryDisplayStyle }> = {}) {
+    if (settings instanceof BatterySettings) {
+      this._settings = settings;
+    } else {
+      this._settings = new BatterySettings(settings);
+    }
+
+    this._style = style;
+  }
+
+  getBatteryIcon = (
+    percentage: number | undefined,
+    status: BatteryStatus,
+    charging: boolean
+  ) => {
+    const index =
+      percentage === undefined
+        ? batteryIconIndexByStatus[status]
+        : Math.round(Math.min(Math.max(percentage, 0), 100) / 10);
+    const iconSet = charging ? chargingBatteryIcons : batteryIcons;
+    return iconSet[index];
+  };
+
+  getBatteryLabel = (
+    voltage: number | undefined,
+    percentage: number | undefined,
+    cellCount: number
+  ) => {
+    if (isNil(percentage)) {
+      if (isNil(voltage)) {
+        return '???';
+      } else if (this._style === BatteryDisplayStyle.FORCED_PERCENTAGE) {
+        // User wants percentage all the time so let's convert voltage to percentage
+        const estimatedPercentage =
+          this._settings.estimatePercentageFromVoltage(voltage, cellCount);
+        if (isNil(estimatedPercentage)) {
+          return `${safeToFixed(voltage, 1)}V`;
+        } else {
+          return `${safeToFixed(estimatedPercentage, 0)}%`;
+        }
+      } else {
+        // No percentage info but we have voltage
+        return `${safeToFixed(voltage, 1)}V`;
+      }
+    } else {
+      // We have percentage
+      if (this._style !== BatteryDisplayStyle.VOLTAGE || isNil(voltage)) {
+        return `${safeToFixed(percentage, 0)}%`;
+      } else {
+        // ...but the user prefers voltage and we have it, so show that one instead
+        return `${safeToFixed(voltage, 1)}V`;
+      }
+    }
+  };
+
+  getBatteryStatus = (
+    voltage: number | undefined,
+    percentage: number | undefined,
+    cellCount: number
+  ) =>
+    this._settings
+      ? this._settings.getBatteryStatus(voltage, percentage, cellCount)
+      : BatteryStatus.UNKNOWN;
+
+  getLargeBatteryIcon = (
+    percentage: number | undefined,
+    status: BatteryStatus,
+    charging: boolean
+  ) => {
+    const index =
+      percentage === undefined
+        ? batteryIconIndexByStatus[status]
+        : Math.round(Math.min(Math.max(percentage, 0), 100) / 10);
+    const iconSet = charging ? largeChargingBatteryIcons : largeBatteryIcons;
+    return iconSet[index];
+  };
+
+  getSemanticBatteryStatus = (
+    voltage: number | undefined,
+    percentage: number | undefined,
+    cellCount: number
+  ) =>
+    this._settings
+      ? this._settings.getSemanticBatteryStatus(voltage, percentage, cellCount)
+      : Status.OFF;
+}
+
+export const DEFAULT_BATTERY_FORMATTER = new BatteryFormatter();

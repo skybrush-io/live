@@ -13,3 +13,7 @@ export const updateOutdoorShowSettings: (payload: {
 }) => AppThunk;
 
 export const loadBase64EncodedShow: (base64Blob: string) => AppThunk;
+
+export const resumeShow: () => AppThunk;
+export const startCollectiveRTH: () => AppThunk;
+export const suspendShow: () => AppThunk;

@@ -8,7 +8,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import Typography from '@mui/material/Typography';
 import PropTypes from 'prop-types';
-import { withTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import { makeStyles } from '@skybrush/app-theme-mui';
@@ -84,13 +84,13 @@ const UAVsTabPresentation = ({
   onVoltageFieldUpdated,
   placementAccuracy,
   preferredBatteryDisplayStyle = BatteryDisplayStyle.VOLTAGE,
-  t,
   takeoffHeadingAccuracy,
   uavOperationConfirmationStyle,
   vehicleType,
   warnThreshold,
 }) => {
   const styles = useStyles();
+  const { t } = useTranslation();
   return (
     <>
       <FormGroup sx={{ marginBottom: 2 }}>
@@ -150,7 +150,7 @@ const UAVsTabPresentation = ({
       <Box sx={{ my: 2 }}>
         <Header>{t('settings.uavs.operationSettings')}</Header>
 
-        <Box display='flex' flexDirection='row' mb={1}>
+        <Box sx={{ display: 'flex', flexDirection: 'row', mb: 1 }}>
           <FormControl fullWidth variant='filled'>
             <InputLabel id='uav-vehicle-type'>
               {t('settings.uavs.vehicleType')}
@@ -184,7 +184,7 @@ const UAVsTabPresentation = ({
             >
               {uavOperationConfirmationStyleOrder.map((value) => (
                 <MenuItem key={value} value={value}>
-                  {describeUAVOperationConfirmationStyle(value)}
+                  {describeUAVOperationConfirmationStyle(value, t)}
                 </MenuItem>
               ))}
             </Select>
@@ -270,7 +270,7 @@ const UAVsTabPresentation = ({
             >
               {batteryDisplayStyleOrder.map((value) => (
                 <MenuItem key={value} value={value}>
-                  {describeBatteryDisplayStyle(value)}
+                  {describeBatteryDisplayStyle(value, t)}
                 </MenuItem>
               ))}
             </Select>
@@ -365,7 +365,6 @@ UAVsTabPresentation.propTypes = {
 };
 
 UAVsTabPresentation.defaultProps = {
-  preferredBatteryDisplayStyle: BatteryDisplayStyle.VOLTAGE,
   vehicleType: vehicleTypeOptions[0],
 };
 
@@ -430,4 +429,4 @@ export default connect(
       }
     },
   })
-)(withTranslation()(UAVsTabPresentation));
+)(UAVsTabPresentation);

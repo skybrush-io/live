@@ -31,10 +31,10 @@ export const UAV_DETAILS_DIALOG_HEIGHT =
   UAV_DETAILS_DIALOG_HEADER_HEIGHT + UAV_DETAILS_DIALOG_BODY_HEIGHT;
 
 /**
- * The maximum number of drones compass calibration should be
- * executed on in a single operation.
+ * The maximum number of drones to allow for operations triggered from the UAV toolbar
+ * that affects the entire selection.
  */
-export const COMPASS_CALIB_UAV_LIMIT = 100;
+export const UAV_TOOLBAR_MULTI_SELECTION_LIMIT = 100;
 
 /**
  * Timout for the async compass calibration operation.

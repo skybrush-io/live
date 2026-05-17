@@ -1,4 +1,5 @@
 import { createSelector } from '@reduxjs/toolkit';
+import { type ChangeEvent } from 'react';
 import { connect } from 'react-redux';
 
 import { isMapCachingEnabled } from '~/features/map-caching/selectors';
@@ -30,7 +31,7 @@ export const BaseLayerSettings = connect(
     dispatch,
     ownProps: Omit<BaseLayerSettingsProps, 'onLayerSourceChanged'>
   ) => ({
-    onLayerSourceChanged(_event: any, value: Source.Source) {
+    onLayerSourceChanged(_event: ChangeEvent, value: Source.Source) {
       dispatch(selectMapSource({ layerId: ownProps.layerId, source: value }));
     },
   })
