@@ -110,6 +110,7 @@ const propertiesForLayerTypes: Record<
     icon: React.ComponentType;
     parameters?: Record<string, unknown>;
     multiple?: boolean;
+    hidden?: boolean;
   }
 > = {
   [LayerType.BASE]: {
@@ -170,6 +171,7 @@ const propertiesForLayerTypes: Record<
       minDistance: 5,
       snapToGrid: false,
     },
+    hidden: true, // currently unmaintained
   },
   [LayerType.IMAGE]: {
     label: 'Image',
@@ -301,6 +303,13 @@ export function defaultParametersForLayerType(
   const props = propertiesForLayerTypes[layerType];
   const template = props?.parameters ?? {};
   return structuredClone(template);
+}
+
+/**
+ * Returns whether the given layer type is currently hidden from the user.
+ */
+export function isLayerTypeHidden(layerType: LayerType): boolean {
+  return propertiesForLayerTypes[layerType].hidden ?? false;
 }
 
 /**

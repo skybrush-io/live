@@ -9,7 +9,6 @@ import MenuItem, { type MenuItemProps } from '@mui/material/MenuItem';
 import type { Theme } from '@mui/material/styles';
 import clsx from 'clsx';
 import createColor from 'color';
-import type { TFunction } from 'i18next';
 import {
   bindMenu,
   bindTrigger,
@@ -17,7 +16,7 @@ import {
   type PopupState,
 } from 'material-ui-popup-state/hooks';
 import React, { useCallback, useRef, type SyntheticEvent } from 'react';
-import { withTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import {
@@ -431,7 +430,6 @@ type SortAndFilterHeaderProps = Readonly<{
   onToggleSortDirection: () => void;
   showMissionIds: boolean;
   sortBy: UAVSortKeyAndOrder;
-  t: TFunction;
 }>;
 
 const SortAndFilterHeader = ({
@@ -443,8 +441,8 @@ const SortAndFilterHeader = ({
   onToggleSortDirection,
   showMissionIds,
   sortBy,
-  t,
 }: SortAndFilterHeaderProps): React.JSX.Element => {
+  const { t } = useTranslation();
   const classes = useStyles();
   const sortChipRef = useRef<HTMLDivElement>(null);
   const sortPopupState = usePopupState({
@@ -630,4 +628,4 @@ export default connect(
     onSetSortBy: setUAVListSortPreference,
     onToggleSortDirection: toggleUAVListSortDirection,
   }
-)(withTranslation()(SortAndFilterHeader));
+)(SortAndFilterHeader);

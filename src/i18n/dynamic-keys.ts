@@ -85,6 +85,10 @@
  * t("preflightCheckResult.overall.error")
  * t("preflightCheckResult.overall.unknown")
  *
+ * Return to home methods
+ * t("form.returnToHomeMethod.type.plain")
+ * t("form.returnToHomeMethod.type.smart")
+ *
  * RTK correction status (long)
  * t("rtkCorrectionStatus.long.connectedRecently")
  * t("rtkCorrectionStatus.long.error")

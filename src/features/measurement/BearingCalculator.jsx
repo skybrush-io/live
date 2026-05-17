@@ -2,7 +2,7 @@ import Typography from '@mui/material/Typography';
 import { createSelector } from '@reduxjs/toolkit';
 import { getDistance as haversineDistance } from 'ol/sphere';
 import PropTypes from 'prop-types';
-import { withTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import { formatDistance } from '~/utils/formatting';
@@ -59,8 +59,9 @@ const BearingCalculator = ({
   coordinates,
   hasEnoughMeasurements,
   selectedUAVIdPair,
-  t,
 }) => {
+  const { t } = useTranslation();
+
   if (selectedUAVIdPair) {
     const bearing1 = bearing(coordinates[0], coordinates[1]).toFixed(1);
     const bearing2 = finalBearing(coordinates[0], coordinates[1]).toFixed(1);
@@ -115,7 +116,6 @@ BearingCalculator.propTypes = {
   coordinates: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number)),
   hasEnoughMeasurements: PropTypes.bool,
   selectedUAVIdPair: PropTypes.arrayOf(PropTypes.string),
-  t: PropTypes.func,
 };
 
 export default connect(
@@ -126,4 +126,4 @@ export default connect(
     hasEnoughMeasurements:
       getAllUAVIdsCurrentlyBeingAveragedEvenIfPaused(state).length >= 2,
   })
-)(withTranslation()(BearingCalculator));
+)(BearingCalculator);

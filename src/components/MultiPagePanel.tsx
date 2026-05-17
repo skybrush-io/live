@@ -1,11 +1,12 @@
-import Box from '@mui/material/Box';
+import Box, { type BoxProps } from '@mui/material/Box';
 import clsx from 'clsx';
-import PropTypes from 'prop-types';
 import React from 'react';
 
 import { makeStyles } from '@skybrush/app-theme-mui';
 
-import FadeAndSlide from './transitions/FadeAndSlide';
+import FadeAndSlide, {
+  type FadeAndSlideProps,
+} from './transitions/FadeAndSlide';
 
 const useStyles = makeStyles(() => ({
   page: {
@@ -20,16 +21,22 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
+type PageProps = BoxProps & {
+  id: string;
+  keepMounted?: boolean;
+  scrollable?: boolean;
+};
+
 /**
  * A single page in a multi-page panel component.
  */
-export const Page = ({ id }) => id;
+export const Page = ({ id }: PageProps) => id;
 
-Page.propTypes = {
-  children: PropTypes.node,
-  id: PropTypes.string,
-  keepMounted: PropTypes.bool,
-  scrollable: PropTypes.bool,
+type MultiPagePanelProps = Omit<BoxProps, 'children'> & {
+  children: Array<React.ReactElement<PageProps>>;
+  direction?: React.ComponentProps<typeof FadeAndSlide>['direction'];
+  onChange?: (newPageId: string) => void;
+  selectedPage: string;
 };
 
 /**
@@ -44,7 +51,7 @@ const MultiPagePanel = ({
   onChange,
   selectedPage,
   ...rest
-}) => {
+}: MultiPagePanelProps) => {
   const classes = useStyles();
 
   return (
@@ -58,12 +65,17 @@ const MultiPagePanel = ({
       ]}
     >
       {React.Children.map(children, (child) => {
-        const { className, id, keepMounted, scrollable, ...boxProps } =
-          child.props;
-        const transitionProps = {
+        const {
+          className,
+          id,
+          keepMounted,
+          scrollable,
+          ...boxProps
+        }: PageProps = child.props;
+        const transitionProps: FadeAndSlideProps = {
           in: id === selectedPage,
           direction,
-          children: child.children,
+          children: (child as any).children,
         };
         if (!keepMounted) {
           transitionProps.mountOnEnter = true;
@@ -83,13 +95,6 @@ const MultiPagePanel = ({
       })}
     </Box>
   );
-};
-
-MultiPagePanel.propTypes = {
-  children: PropTypes.arrayOf(Page),
-  direction: FadeAndSlide.propTypes?.direction,
-  onChange: PropTypes.func,
-  selectedPage: PropTypes.string,
 };
 
 export default MultiPagePanel;

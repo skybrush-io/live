@@ -4,7 +4,7 @@ import ViewModule from '@mui/icons-material/ViewModule';
 import IconButton from '@mui/material/IconButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import PropTypes from 'prop-types';
-import { withTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import ToggleButton from '~/components/ToggleButton';
@@ -36,52 +36,55 @@ const MappingButtonGroup = ({
   showEmptyMissionSlots,
   showMissionIds,
   startMappingEditorSession,
-  t,
-}) => (
-  <>
-    {showMissionIds && (
-      <Tooltip content={t('mappingButtonGroup.editMapping')}>
-        <IconButton
-          disabled={mappingEditable || !showMissionIds}
-          size='large'
-          onClick={startMappingEditorSession}
-        >
-          <Edit />
-        </IconButton>
-      </Tooltip>
-    )}
+}) => {
+  const { t } = useTranslation();
 
-    <MappingToggleButton />
+  return (
+    <>
+      {showMissionIds && (
+        <Tooltip content={t('mappingButtonGroup.editMapping')}>
+          <IconButton
+            disabled={mappingEditable || !showMissionIds}
+            size='large'
+            onClick={startMappingEditorSession}
+          >
+            <Edit />
+          </IconButton>
+        </Tooltip>
+      )}
 
-    <Tooltip
-      content={
-        showEmptyMissionSlots
-          ? t('mappingButtonGroup.hideEmptyMissionSlots')
-          : t('mappingButtonGroup.showEmptyMissionSlots')
-      }
-    >
-      <ToggleButton
-        value='showMissing'
-        disabled={!showMissionIds}
-        selected={showEmptyMissionSlots}
-        onClick={onToggleShowingEmptyMissionSlots}
+      <MappingToggleButton />
+
+      <Tooltip
+        content={
+          showEmptyMissionSlots
+            ? t('mappingButtonGroup.hideEmptyMissionSlots')
+            : t('mappingButtonGroup.showEmptyMissionSlots')
+        }
       >
-        <MissingSlot />
-      </ToggleButton>
-    </Tooltip>
+        <ToggleButton
+          value='showMissing'
+          disabled={!showMissionIds}
+          selected={showEmptyMissionSlots}
+          onClick={onToggleShowingEmptyMissionSlots}
+        >
+          <MissingSlot />
+        </ToggleButton>
+      </Tooltip>
 
-    <ToolbarDivider orientation='vertical' />
+      <ToolbarDivider orientation='vertical' />
 
-    <ToggleButtonGroup exclusive value={layout} onChange={setUAVListLayout}>
-      <ToggleButton size='small' value='grid'>
-        <ViewModule />
-      </ToggleButton>
-      <ToggleButton size='small' value='list'>
-        <ViewList />
-      </ToggleButton>
-    </ToggleButtonGroup>
-  </>
-);
+      <ToggleButtonGroup exclusive value={layout} onChange={setUAVListLayout}>
+        <ToggleButton size='small' value='grid'>
+          <ViewModule />
+        </ToggleButton>
+        <ToggleButton size='small' value='list'>
+          <ViewList />
+        </ToggleButton>
+      </ToggleButtonGroup>
+    </>
+  );
+};
 
 MappingButtonGroup.propTypes = {
   layout: PropTypes.oneOf(['grid', 'list']),
@@ -91,7 +94,6 @@ MappingButtonGroup.propTypes = {
   showEmptyMissionSlots: PropTypes.bool,
   showMissionIds: PropTypes.bool,
   startMappingEditorSession: PropTypes.func,
-  t: PropTypes.func,
 };
 
 export default connect(
@@ -124,4 +126,4 @@ export default connect(
       }
     },
   }
-)(withTranslation()(MappingButtonGroup));
+)(MappingButtonGroup);

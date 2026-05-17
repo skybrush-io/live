@@ -16,8 +16,13 @@
     "drawRectangle": "Draw rectangle",
     "editFeature": "Edit feature"
   },
+  "GlobalErrorDialog": {
+    "title": "An error happened"
+  },
   "ImageLayer": {
-    "geoTIFFOnlyInDevMode": "GeoTIFF rendering is currently restricted to developer mode."
+    "geoTIFFOnlyInDevMode": "GeoTIFF rendering is currently restricted to developer mode.",
+    "navigationFailed": "Navigation failed, file might not be loaded properly",
+    "selectImage": "Please select an image!"
   },
   "LicenseInfoDialog": {
     "title": "License information"
@@ -294,8 +299,7 @@
     "follow": "Following another device",
     "guided": "Guided by companion computer",
     "land": "Autonomous landing",
-    "loiter": "Posiiton hold with manual velocity control",
-    "manual": "Manual",
+    "loiter": "Position hold with manual velocity control",
     "mission": "Following pre-programmed mission",
     "other": "Other, unspecified flight mode",
     "pos": "Position hold with manual attitude control",
@@ -329,16 +333,20 @@
       "import": "Import",
       "navigate": "Navigate",
       "open": "Open",
+      "pan": "Pan",
       "redo": "Redo",
       "remove": "Remove",
       "reset": "Reset",
       "retry": "Retry",
+      "rotate": "Rotate",
       "save": "Save",
+      "scale": "Scale",
       "select": "Select",
       "start": "Start",
       "stop": "Stop",
       "submit": "Submit",
-      "undo": "Undo"
+      "undo": "Undo",
+      "zoom": "Zoom"
     },
     "commands": {
       "calibrateCompass": "Calibrate compass",
@@ -358,7 +366,9 @@
       "longitude": "Longitude"
     },
     "geometry": {
+      "angle": "Angle",
       "rotation": "Rotation",
+      "scale": "Scale",
       "zoom": "Zoom"
     },
     "status": {
@@ -872,6 +882,7 @@
       "name": "Group name"
     },
     "newGroupNameTemplate": "Group {{id}}",
+    "selectedObjects": "Selected objects",
     "updated": "Updated"
   },
   "serverConnectionStatus": {
@@ -1028,19 +1039,15 @@
     "setupGeofence": "Setup geofence",
     "setupTakeoffArea": "Assign drones to show",
     "showConfigurator": {
-      "button": "Adapt show to venue",
-      "description": "Adjust takeoff grid and show layout if needed",
+      "button": "Plan collective RTH",
+      "description": "Create collective return-to-home plans",
       "interactionHints": {
         "action": {
           "boxSelect": "Box select",
           "boxUnselect": "Box unselect",
           "moveSelection": "Move selection",
-          "pan": "Pan",
-          "rotate": "Rotate",
           "rotateSelection": "Rotate selection",
-          "select": "Select",
-          "toggleSelect": "Toggle select",
-          "zoom": "Zoom"
+          "toggleSelect": "Toggle select"
         },
         "category": {
           "manipulation": "Manipulation",
@@ -1053,12 +1060,11 @@
         "extension": "The studio extension must be enabled on the server",
         "loaded": "A show file must be loaded",
         "origin": "A show origin must be included or set manually",
-        "segments": "The show must be annotated with segment markers",
         "server": "Connection must be established to the server"
       },
       "tooltip": {
-        "invalidRTHPlan": "The show has no valid collective RTH plans.",
-        "validRTHPlan": "The show has {{numPlans}} valid collective RTH plans."
+        "adaptShow": "Adapt show to venue",
+        "showSegmentsRequired": "The show must be annotated with segment markers"
       }
     },
     "startMethod": {
@@ -1109,6 +1115,13 @@
         "minDistance": {
           "help": "between drones during takeoff & RTH",
           "label": "Minimum distance"
+        },
+        "returnToHomeMethod": {
+          "label": "RTH method",
+          "type": {
+            "plain": "Plain",
+            "smart": "Smart"
+          }
         },
         "takeoffDuration": {
           "help": "ensuring exact start of show phase (if nonzero)",

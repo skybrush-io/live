@@ -8,7 +8,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import { animated, useTransition } from '@react-spring/web';
 import PropTypes from 'prop-types';
-import { withTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import { makeStyles } from '@skybrush/app-theme-mui';
@@ -64,8 +64,8 @@ const ParameterListSidebar = ({
   onRemoveItem,
   onRemoveAllItems,
   onStart,
-  t,
 }) => {
+  const { t } = useTranslation();
   const classes = useStyles();
 
   const ITEM_HEIGHT = 28;
@@ -146,7 +146,6 @@ ParameterListSidebar.propTypes = {
   onRemoveAllItems: PropTypes.func,
   onRemoveItem: PropTypes.func,
   onStart: PropTypes.func,
-  t: PropTypes.func,
 };
 
 export default connect(
@@ -162,4 +161,4 @@ export default connect(
     onRemoveItem: removeParameterFromManifest,
     onStart: proceedToUpload,
   }
-)(withTranslation()(ParameterListSidebar));
+)(ParameterListSidebar);

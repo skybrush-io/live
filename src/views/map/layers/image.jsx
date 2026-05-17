@@ -31,6 +31,7 @@ import {
 } from '~/components/forms';
 import { setLayerParametersById } from '~/features/map/layers';
 import { isDeveloperModeEnabled } from '~/features/session/selectors';
+import { showError } from '~/features/snackbar/actions';
 import { getMapViewCenterPosition } from '~/selectors/map';
 import { mapReferenceRequestSignal, mapViewToExtentSignal } from '~/signals';
 import { readFileAsDataURL } from '~/utils/files';
@@ -64,6 +65,7 @@ const getDimensions = async (source) =>
   });
 
 const ImageLayerSettingsPresentation = ({
+  devMode,
   layer: { id, parameters },
   mapViewCenterPosition,
   selectImage,
@@ -103,7 +105,7 @@ const ImageLayerSettingsPresentation = ({
         startIcon={<Image />}
         onSelected={selectImage}
       >
-        Select
+        {t('general.action.select')}
       </FileButton>
       <Box sx={{ p: 0.75 }} />
       {parameters.image.name ? (
@@ -117,7 +119,7 @@ const ImageLayerSettingsPresentation = ({
           )}
         </>
       ) : (
-        'Please select an image!'
+        t('ImageLayer.selectImage')
       )}
     </>
   );
@@ -126,17 +128,21 @@ const ImageLayerSettingsPresentation = ({
 
   const navigateToGeoTIFFLocation = useCallback(() => {
     mapReferenceRequestSignal.dispatch(async (map) => {
-      const source = map
-        .getLayers()
-        .getArray()
-        .find((l) => l.get('id') === id)
-        ?.getSource?.();
-      if (source) {
+      try {
+        const source = map
+          .getLayers()
+          .getArray()
+          .find((l) => l.get('id') === id)
+          .getSource();
+
         const projection = await fromEPSGCode(source.getProjection().getCode());
         const view = await source.getView();
         mapViewToExtentSignal.dispatch(
           transformExtent(view.extent, projection, 'EPSG:3857')
         );
+      } catch (e) {
+        console.error(e);
+        showError(t('ImageLayer.navigationFailed'));
       }
     });
   }, [id]);
@@ -196,18 +202,22 @@ const ImageLayerSettingsPresentation = ({
                   <LatitudeField
                     size='small'
                     name='position.lat'
-                    label='Latitude of center'
+                    label={t('general.geography.latitude')}
                   />
                 </Grid>
                 <Grid size={6}>
                   <LongitudeField
                     size='small'
                     name='position.lon'
-                    label='Longitude of center'
+                    label={t('general.geography.longitude')}
                   />
                 </Grid>
                 <Grid size={6}>
-                  <HeadingField size='small' name='angle' label='Angle' />
+                  <HeadingField
+                    size='small'
+                    name='angle'
+                    label={t('general.geometry.angle')}
+                  />
                 </Grid>
                 <Grid size={6}>
                   <TextField
@@ -225,7 +235,7 @@ const ImageLayerSettingsPresentation = ({
                     }}
                     size='small'
                     name='scale'
-                    label='Scale'
+                    label={t('general.geometry.scale')}
                     variant='filled'
                   />
                 </Grid>
@@ -244,6 +254,7 @@ const ImageLayerSettingsPresentation = ({
             alignItems='center'
           >
             <Button
+              disabled={!devMode}
               variant='contained'
               endIcon={<Navigation />}
               onClick={navigateToGeoTIFFLocation}
@@ -261,9 +272,11 @@ const ImageLayerSettingsPresentation = ({
             {filePicker}
           </Grid>
           <Grid size={12}>
-            <Alert severity='warning'>
-              {t('ImageLayer.geoTIFFOnlyInDevMode')}
-            </Alert>
+            <Collapse in={!devMode}>
+              <Alert severity='warning'>
+                {t('ImageLayer.geoTIFFOnlyInDevMode')}
+              </Alert>
+            </Collapse>
           </Grid>
         </Grid>
       </Collapse>
@@ -281,6 +294,7 @@ ImageLayerSettingsPresentation.propTypes = {
 export const ImageLayerSettings = connect(
   // mapStateToProps
   (state) => ({
+    devMode: isDeveloperModeEnabled(state),
     mapViewCenterPosition: getMapViewCenterPosition(state),
   }),
   // mapDispatchToProps
@@ -332,7 +346,10 @@ const ImageLayerPresentation = ({
   image.data.startsWith('data:image/tiff') ? (
     devMode && (
       <layer.WebGLTile properties={{ id }} zIndex={zIndex}>
-        <source.GeoTIFF sources={[{ blob: base64DataURLToBlob(image.data) }]} />
+        <source.GeoTIFF
+          loadMissingProjection
+          sources={[{ blob: base64DataURLToBlob(image.data) }]}
+        />
       </layer.WebGLTile>
     )
   ) : position ? (

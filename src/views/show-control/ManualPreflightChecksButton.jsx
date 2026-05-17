@@ -35,9 +35,7 @@ const ManualPreflightChecksButton = ({
     <ListItem disablePadding>
       <ListItemButton disabled={status === Status.OFF} {...rest}>
         <StatusLight status={status} />
-        <ListItemText
-          primary={t('show.manualPreflightChecks', 'Manual preflight checks')}
-        />
+        <ListItemText primary={t('show.manualPreflightChecks')} />
       </ListItemButton>
     </ListItem>
   ) : null;

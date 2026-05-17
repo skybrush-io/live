@@ -64,6 +64,14 @@ export const hasSelection: AppSelector<boolean> = (state) =>
   state.selection.ids.length > 0;
 
 /**
+ * Returns the number of currently selected items.
+ */
+export const getNumberOfSelectedItems: AppSelector<number> = createSelector(
+  getSelection,
+  (selection) => selection.length
+);
+
+/**
  * Selector factory that creates a selector that returns true if and only if a
  * feature with the given ID is selected.
  */

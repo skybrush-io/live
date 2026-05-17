@@ -7,7 +7,7 @@ import { getSelection } from '~/features/selection/selectors';
 import { setSelection } from '~/features/selection/slice';
 import flock from '~/flock';
 import { isUavId, uavIdToGlobalId } from '~/model/identifiers';
-import type { AppThunk, RootState } from '~/store/reducers';
+import type { AppThunk } from '~/store/reducers';
 import { setColorOnUAVs, turnOffColorOverrideOnUAVs } from '~/utils/messaging';
 
 import {
@@ -49,17 +49,6 @@ export const clearAllUAVColorOverrides =
     const ids = Object.keys(state.uavs.lights);
     dispatch(clearUAVColorOverride(ids));
   };
-
-/**
- * Returns whether there is at least one UAV color override in effect.
- */
-export const hasUAVColorOverride = (
-  state: RootState,
-  uavId: string | undefined = undefined
-): boolean =>
-  uavId
-    ? Boolean(state.uavs.lights[uavId])
-    : Object.values(state.uavs.lights).some((x) => x.length > 0);
 
 /**
  * Overrides the color of the UAV with the given ID to the given color.

@@ -1,7 +1,6 @@
-import type { TFunction } from 'i18next';
 import partial from 'lodash-es/partial';
 import type React from 'react';
-import { withTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
 import CropSquare from '@mui/icons-material/CropSquare';
 import FiberManualRecord from '@mui/icons-material/FiberManualRecord';
@@ -97,7 +96,6 @@ type DrawingToolIdGroup = DrawingToolId[];
 type DrawingToolbarProps = {
   onToolSelected: (tool: Tool) => void;
   selectedTool: Tool;
-  t: TFunction;
   /**
    * Groups of drawing tool IDs.
    */
@@ -108,8 +106,8 @@ const DrawingToolbar = ({
   drawingTools,
   onToolSelected,
   selectedTool,
-  t,
 }: DrawingToolbarProps) => {
+  const { t } = useTranslation();
   const colorForTool = (tool: Tool): SvgIconProps['color'] =>
     selectedTool === tool ? 'primary' : undefined;
 
@@ -140,6 +138,4 @@ const DrawingToolbar = ({
 /**
  * Drawing toolbar on the map.
  */
-const TranslatedDrawingToolbar = withTranslation()(DrawingToolbar);
-
-export default TranslatedDrawingToolbar;
+export default DrawingToolbar;

@@ -64,7 +64,7 @@ const TakeoffAreaButton = ({ maxDistance, onClick, status, ...rest }) => {
       >
         <StatusLight status={status} />
         <ListItemText
-          primary={t('show.setupTakeoffArea', 'Setup takeoff area')}
+          primary={t('show.setupTakeoffArea')}
           secondary={formatStatusText(status, maxDistance)(t)}
         />
       </ListItemButton>

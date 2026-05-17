@@ -7,7 +7,7 @@ import FormControl from '@mui/material/FormControl';
 import FormGroup from '@mui/material/FormGroup';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';
+import Select, { type SelectChangeEvent } from '@mui/material/Select';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -20,8 +20,10 @@ import {
 } from '~/components/forms/fields';
 
 import {
+  RETURN_TO_HOME_METHODS,
   TAKEOFF_METHODS,
   type OptionalShowAdaptParameters,
+  type ReturnToHomeMethodType,
   type ShowAdaptParameters,
   type TakeoffMethodType,
 } from './actions';
@@ -37,6 +39,7 @@ const defaultAdaptParameters: ShowAdaptParameters = {
   verticalVelocity: 1.5,
   takeoffDuration: 0,
   takeoffMethod: 'layered',
+  returnToHomeMethod: 'smart',
 };
 
 const useStyles = makeStyles((theme) => ({
@@ -110,6 +113,9 @@ export function useAdaptParametersFormState(
       defaultAdaptParameters.takeoffDuration,
     takeoffMethod:
       defaultParameters?.takeoffMethod ?? defaultAdaptParameters.takeoffMethod,
+    returnToHomeMethod:
+      defaultParameters?.returnToHomeMethod ??
+      defaultAdaptParameters.returnToHomeMethod,
   });
   const [isValid, setIsValid] = useState(adaptParametersValid(parameters));
 
@@ -192,11 +198,7 @@ export function useAdaptParametersFormState(
     [onChange, parameters]
   );
   const onTakeoffMethodChanged = useCallback(
-    (
-      event:
-        | React.ChangeEvent<{ value: string }>
-        | { target: { value: string } }
-    ) => {
+    (event: SelectChangeEvent) => {
       const value: TakeoffMethodType = TAKEOFF_METHODS.includes(
         event.target.value as TakeoffMethodType
       )
@@ -205,6 +207,27 @@ export function useAdaptParametersFormState(
       const newParameters: ShowAdaptParameters = {
         ...parameters,
         takeoffMethod: value,
+      };
+      setParameters(newParameters);
+      setIsValid(adaptParametersValid(newParameters));
+      onChange?.();
+    },
+    [onChange, parameters]
+  );
+  const onReturnToHomeMethodChanged = useCallback(
+    (
+      event:
+        | React.ChangeEvent<{ value: string }>
+        | { target: { value: string } }
+    ) => {
+      const value: ReturnToHomeMethodType = RETURN_TO_HOME_METHODS.includes(
+        event.target.value as ReturnToHomeMethodType
+      )
+        ? (event.target.value as ReturnToHomeMethodType)
+        : 'smart';
+      const newParameters: ShowAdaptParameters = {
+        ...parameters,
+        returnToHomeMethod: value,
       };
       setParameters(newParameters);
       setIsValid(adaptParametersValid(newParameters));
@@ -223,6 +246,7 @@ export function useAdaptParametersFormState(
     onVerticalVelocityChanged,
     onTakeoffDurationChanged,
     onTakeoffMethodChanged,
+    onReturnToHomeMethodChanged,
   };
 }
 
@@ -244,6 +268,7 @@ const AdaptParametersForm = (props: Props): React.JSX.Element => {
     onVerticalVelocityChanged,
     onTakeoffDurationChanged,
     onTakeoffMethodChanged,
+    onReturnToHomeMethodChanged,
   } = props;
   const { t } = useTranslation(undefined, {
     keyPrefix: 'showConfiguratorDialog.adaptParameters',
@@ -348,6 +373,23 @@ const AdaptParametersForm = (props: Props): React.JSX.Element => {
                 {TAKEOFF_METHODS.map((value) => (
                   <MenuItem key={value} value={value}>
                     {t(`form.takeoffMethod.type.${value}`)}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControl fullWidth variant='filled'>
+              <InputLabel id='rth-method-label'>
+                {t('form.returnToHomeMethod.label')}
+              </InputLabel>
+              <Select
+                disabled={disabled}
+                labelId='rth-method-label'
+                value={parameters.returnToHomeMethod}
+                onChange={onReturnToHomeMethodChanged}
+              >
+                {RETURN_TO_HOME_METHODS.map((value) => (
+                  <MenuItem key={value} value={value}>
+                    {t(`form.returnToHomeMethod.type.${value}`)}
                   </MenuItem>
                 ))}
               </Select>

@@ -48,7 +48,7 @@ import {
 type Stage =
   | 'selectShowFile'
   | 'setupEnvironment'
-  | 'showConfigurator'
+  | 'collectiveRTH'
   | 'setupTakeoffArea'
   | 'setupGeofence'
   | 'uploadShow'
@@ -104,7 +104,7 @@ const stages: Record<Stage, StageSpecification> = {
     requires: ['selectShowFile'],
   },
 
-  showConfigurator: {
+  collectiveRTH: {
     evaluate: () => Status.OFF, // TODO(ntamas): add logic here!
     requires: ['selectShowFile'],
   },
@@ -200,7 +200,7 @@ const stages: Record<Stage, StageSpecification> = {
 const stageOrder: Stage[] = [
   'selectShowFile',
   'setupEnvironment',
-  'showConfigurator',
+  'collectiveRTH',
   'setupTakeoffArea',
   'setupGeofence',
   'uploadShow',

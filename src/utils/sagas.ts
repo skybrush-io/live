@@ -1,16 +1,20 @@
+import type { Action } from 'redux';
+import type { PuttableChannel, Saga, Task } from 'redux-saga';
 import { delay, fork, put, take, takeLeading } from 'redux-saga/effects';
 
 /**
  * Creates a saga that listens for a set of actions and forks new sagas when
  * one of the actions is dispatched.
  *
- * When a saga is already running for a given action, the action is ignored.
+ * When a saga is already running for a given action, the action is ignored. It is
+ * therefore advisable to use only those actions with this saga that have to parameters
+ * in the payload (to make each action semantically equivalent).
  *
- * @param {object} mapping  a mapping from action types to the sagas to start
- *        when the action is dispatched
+ * @param mapping  a mapping from action types to the sagas to start when the action is
+ *        dispatched
  * @returns
  */
-export function createActionListenerSaga(mapping) {
+export function createActionListenerSaga(mapping: Record<string, Saga>): Saga {
   return function* () {
     const actions = Object.keys(mapping);
 
@@ -18,10 +22,10 @@ export function createActionListenerSaga(mapping) {
       // This is the same as takeLeading() from redux-saga
       yield takeLeading(actions[0], mapping[actions[0]]);
     } else if (actions.length > 1) {
-      const tasks = {};
+      const tasks: Record<string, Task> = {};
 
       while (true) {
-        const action = yield take(actions);
+        const action: Action = yield take(actions);
 
         if (tasks[action.type]) {
           if (tasks[action.type].isRunning()) {
@@ -45,7 +49,11 @@ export function createActionListenerSaga(mapping) {
  * Helper function that tries to put a value in a channel with a limited buffer,
  * retrying it repeatedly if the channel is full.
  */
-export function* putWithRetry(chan, value, { retryDelay = 50 } = {}) {
+export function* putWithRetry<T>(
+  chan: PuttableChannel<T>,
+  value: T,
+  { retryDelay = 50 }: { retryDelay?: number } = {}
+) {
   while (true) {
     try {
       yield put(chan, value);
