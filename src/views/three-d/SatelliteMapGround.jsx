@@ -6,6 +6,12 @@ import SunCalc from 'suncalc';
 import { objectToString } from '~/aframe/utils';
 import { LayerType } from '~/model/layers';
 import { Source } from '~/model/sources';
+import {
+  getOutdoorShowOrigin,
+  getOutdoorShowToWorldCoordinateSystemTransformationObject,
+  hasShowOrigin,
+  isShowIndoor,
+} from '~/features/show/selectors';
 import { getFlatEarthCoordinateTransformer } from '~/selectors/map';
 
 const TILE_ZOOM = 19;
@@ -184,10 +190,18 @@ SatelliteMapGround.propTypes = {
 
 export default connect((state) => {
   const baseLayer = getBaseLayer(state.map.layers);
+  const showTransformer =
+    getOutdoorShowToWorldCoordinateSystemTransformationObject(state);
+  const useShowCoordinateFrame =
+    !isShowIndoor(state) && hasShowOrigin(state) && showTransformer;
 
   return {
     currentSource: baseLayer?.parameters?.source,
-    origin: state.map.origin.position,
-    transformer: getFlatEarthCoordinateTransformer(state),
+    origin: useShowCoordinateFrame
+      ? getOutdoorShowOrigin(state)
+      : state.map.origin.position,
+    transformer: useShowCoordinateFrame
+      ? showTransformer
+      : getFlatEarthCoordinateTransformer(state),
   };
 })(memo(SatelliteMapGround));

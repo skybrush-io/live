@@ -280,6 +280,11 @@
     "useAsExclusionZone": "Use as exclusion zone",
     "useAsGeofence": "Use as geofence"
   },
+  "mapSourceToggle": {
+    "label": "Map source",
+    "map": "Map",
+    "satellite": "Satellite"
+  },
   "mappingButtonGroup": {
     "editMapping": "Edit mapping",
     "hideEmptyMissionSlots": "Hide empty mission slots",
@@ -824,11 +829,6 @@
     "uploadInProgress": "Upload in progress…",
     "uploadInProgressWithEstimate": "Estimated time remaining: {{time}}",
     "uploadNotFinishedYet": "Upload not finished yet."
-  },
-  "mapSourceToggle": {
-    "label": "Map source",
-    "map": "Map",
-    "satellite": "Satellite"
   },
   "uploadStatusLegend": {
     "clearUploadQueue": "Clear upload queue",
