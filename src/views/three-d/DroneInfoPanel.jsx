@@ -1,6 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 
+import { toFiniteDurationMs, toFiniteHoldMs } from './utils/threeDViewUtils';
+
 // 첫 번째 항목 ''은 "백엔드 기본값(.skyc 다운로드) 사용". payload에서 output 키를 생략.
 const FORMATION_OUTPUT_OPTIONS = [
   { value: '', label: '(기본값) skyc 다운로드' },
@@ -32,7 +34,7 @@ export default function DroneInfoPanel({
 }) {
   const [activeTab, setActiveTab] = useState('path');
   const [pathPoints, setPathPoints] = useState([
-    { x: '', y: '', z: '', highlighted: false },
+    { x: '', y: '', z: '', durationMs: 0, holdMs: 0, highlighted: false },
   ]);
   const [initialFields, setInitialFields] = useState({ ix: '', iy: '', iz: '' });
 
@@ -40,15 +42,17 @@ export default function DroneInfoPanel({
   useEffect(() => {
     if (drone && Array.isArray(drone.path) && drone.path.length) {
       setPathPoints(
-        drone.path.map((p) => ({
+        drone.path.map((p, index) => ({
           x: String(p.x ?? ''),
           y: String(p.y ?? ''),
           z: String(p.z ?? ''),
+          durationMs: toFiniteDurationMs(p.durationMs, index === 0 ? 0 : 1000),
+          holdMs: toFiniteHoldMs(p.holdMs, 0),
           highlighted: Boolean(p.highlighted),
         }))
       );
     } else {
-      setPathPoints([{ x: '', y: '', z: '', highlighted: false }]);
+      setPathPoints([{ x: '', y: '', z: '', durationMs: 0, holdMs: 0, highlighted: false }]);
     }
   }, [drone?.id, drone?.path]);
 
@@ -122,10 +126,14 @@ export default function DroneInfoPanel({
   };
 
   const addPathPoint = () => {
-    setPathPoints((prev) => [
-      ...prev,
-      { x: '', y: '', z: '', highlighted: false },
-    ]);
+    setPathPoints((prev) => {
+      const last = Array.isArray(prev) && prev.length ? prev[prev.length - 1] : null;
+      const durationMs = last ? toFiniteDurationMs(last.durationMs, 1000) : 1000;
+      return [
+        ...prev,
+        { x: '', y: '', z: '', durationMs, holdMs: 0, highlighted: false },
+      ];
+    });
   };
 
   const addCurrentPositionPathPoint = () => {
@@ -145,34 +153,40 @@ export default function DroneInfoPanel({
     if (!Number.isFinite(nx) || !Number.isFinite(ny) || !Number.isFinite(nz)) return;
 
     const formatCoord = (value) => String(Math.round(value * 1000) / 1000);
-    const nextPoint = {
-      x: formatCoord(nx),
-      y: formatCoord(ny),
-      z: formatCoord(nz),
-      highlighted: false,
-    };
+    setPathPoints((prev) => {
+      const last = Array.isArray(prev) && prev.length ? prev[prev.length - 1] : null;
+      const nextPoint = {
+        x: formatCoord(nx),
+        y: formatCoord(ny),
+        z: formatCoord(nz),
+        durationMs: last ? toFiniteDurationMs(last.durationMs, 1000) : 1000,
+        holdMs: 0,
+        highlighted: false,
+      };
 
-    setPathPoints((prev) => [
       // 기본 빈 1행만 있는 경우에는 교체하고, 아니면 맨 뒤에 추가
-      ...(Array.isArray(prev) &&
-      prev.length === 1 &&
-      String(prev[0]?.x ?? '').trim() === '' &&
-      String(prev[0]?.y ?? '').trim() === '' &&
-      String(prev[0]?.z ?? '').trim() === ''
-        ? [nextPoint]
-        : [...(Array.isArray(prev) ? prev : []), nextPoint]),
-    ]);
+      if (
+        Array.isArray(prev) &&
+        prev.length === 1 &&
+        String(prev[0]?.x ?? '').trim() === '' &&
+        String(prev[0]?.y ?? '').trim() === '' &&
+        String(prev[0]?.z ?? '').trim() === ''
+      ) {
+        return [nextPoint];
+      }
+      return [...(Array.isArray(prev) ? prev : []), nextPoint];
+    });
   };
 
   const removePathPoint = (index) => {
     setPathPoints((prev) => {
       if (!Array.isArray(prev) || !prev.length) {
-        return [{ x: '', y: '', z: '', highlighted: false }];
+        return [{ x: '', y: '', z: '', durationMs: 0, holdMs: 0, highlighted: false }];
       }
 
       const next = prev.filter((_, i) => i !== index);
       if (!next.length) {
-        return [{ x: '', y: '', z: '', highlighted: false }];
+        return [{ x: '', y: '', z: '', durationMs: 0, holdMs: 0, highlighted: false }];
       }
       return next;
     });
@@ -198,14 +212,19 @@ export default function DroneInfoPanel({
 
         return Number.isFinite(nx) && Number.isFinite(ny) && Number.isFinite(nz);
       })
-      .map((p) => ({
-        x: Number(p.x),
-        y: Number(p.y),
-        z: Number(p.z),
-        durationMs: 1000,
-        holdMs: 0,
-        ...(p.highlighted ? { highlighted: true } : {}),
-      }));
+      .map((p, index) => {
+        const point = {
+          x: Number(p.x),
+          y: Number(p.y),
+          z: Number(p.z),
+          durationMs: toFiniteDurationMs(p.durationMs, index === 0 ? 0 : 1000),
+          holdMs: toFiniteHoldMs(p.holdMs, 0),
+        };
+        if (p.highlighted) {
+          point.highlighted = true;
+        }
+        return point;
+      });
 
   const syncPathToConfig = (source = pathPoints) => {
     if (!drone?.id) return;

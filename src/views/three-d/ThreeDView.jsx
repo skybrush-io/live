@@ -28,6 +28,7 @@ import {
   collectConfigFromScene as collectConfigFromSceneUtil,
   getEffectiveScenery as getEffectiveSceneryUtil,
   getPathTotalDurationMs,
+  mergePathOverridesIntoDrones,
   normalizeDroneForConfigIO,
   parsePositionLike,
   slicePathByElapsedMs,
@@ -449,6 +450,18 @@ const convertTrajectoryToPlaybackPath = (trajectory, transformCoordinate, initia
     });
   }
 
+  const landingTimeMs = Math.max(0, Number(trajectory.landingTime) || 0) * 1000;
+  if (landingTimeMs > 0 && path.length > 0) {
+    const lastIndex = path.length - 1;
+    const last = path[lastIndex];
+    path[lastIndex] = {
+      ...last,
+      holdMs: (Number.isFinite(Number(last.holdMs)) && Number(last.holdMs) > 0
+        ? Number(last.holdMs)
+        : 0) + landingTimeMs,
+    };
+  }
+
   return {
     initialPos,
     path,
@@ -594,6 +607,8 @@ const ThreeDView = React.forwardRef((props, ref) => {
   const [pathProgress, setPathProgress] = useState(persistedPathProgress);
   const [isPlaybackRunning, setIsPlaybackRunning] = useState(false);
   const playbackClockRef = useRef({ startElapsedMs: 0, startedAt: 0 });
+  const playbackActiveDroneIdsRef = useRef([]);
+  const playbackFinishedDroneIdsRef = useRef(new Set());
 
   const [formationPhases, setFormationPhases] = useState([]);
   const [formationSettings, setFormationSettings] = useState(DEFAULT_FORMATION_SETTINGS);
@@ -699,6 +714,7 @@ const ThreeDView = React.forwardRef((props, ref) => {
     setDroneConfig,
     setPathProgress,
     collectConfigFromScene,
+    showSpecDroneConfig,
   });
 
   const extraCameraProps = {
@@ -1014,18 +1030,31 @@ const ThreeDView = React.forwardRef((props, ref) => {
 
   const [gizmoDragState, setGizmoDragState] = useState({ dragging: false, axis: null });
   const effectiveConfig = useMemo(() => {
-    if (
+    const hasShowSpec =
       showSpecDroneConfig &&
       Array.isArray(showSpecDroneConfig.drones) &&
-      showSpecDroneConfig.drones.length
-    ) {
-      return showSpecDroneConfig;
+      showSpecDroneConfig.drones.length > 0;
+    const hasDroneConfig =
+      droneConfig &&
+      Array.isArray(droneConfig.drones) &&
+      droneConfig.drones.length > 0;
+
+    if (hasShowSpec) {
+      const mergedDrones = hasDroneConfig
+        ? mergePathOverridesIntoDrones(
+            showSpecDroneConfig.drones,
+            droneConfig.drones
+          )
+        : showSpecDroneConfig.drones;
+      return { ...showSpecDroneConfig, drones: mergedDrones };
     }
-    if (droneConfig && Array.isArray(droneConfig.drones) && droneConfig.drones.length) {
+
+    if (hasDroneConfig) {
       return droneConfig;
     }
+
     return collectConfigFromScene();
-  }, [droneConfig, showSpecDroneConfig]);
+  }, [droneConfig, showSpecDroneConfig, collectConfigFromScene]);
   droneConfigRef.current = effectiveConfig;
 
   const selectedPathDroneId = useMemo(() => {
@@ -1098,7 +1127,10 @@ const ThreeDView = React.forwardRef((props, ref) => {
     if (!effectiveConfig || !Array.isArray(effectiveConfig.drones)) return 0;
     return effectiveConfig.drones.reduce((max, d) => {
       const seekPath = buildSeekPathWithInitial(d);
-      const total = getPathTotalDurationMs(seekPath);
+      const total = getPathTotalDurationMs(seekPath, {
+        startFromInitial: true,
+        durationPerSegment: 1000,
+      });
       return Math.max(max, total);
     }, 0);
   }, [effectiveConfig]);
@@ -1152,6 +1184,24 @@ const ThreeDView = React.forwardRef((props, ref) => {
     if (!isPlaybackRunning || maxPathDurationMs <= 0) return undefined;
 
     let rafId = null;
+
+    const onPathFinished = (e) => {
+      const id = e.detail?.id;
+      if (id === undefined || id === null) return;
+      playbackFinishedDroneIdsRef.current.add(String(id));
+
+      const activeIds = playbackActiveDroneIdsRef.current;
+      if (
+        activeIds.length > 0 &&
+        activeIds.every((activeId) => playbackFinishedDroneIdsRef.current.has(String(activeId)))
+      ) {
+        setPathProgress(100);
+        setIsPlaybackRunning(false);
+      }
+    };
+
+    window.addEventListener('drone-path-finished', onPathFinished);
+
     const tick = (now) => {
       const elapsedMs =
         playbackClockRef.current.startElapsedMs +
@@ -1160,7 +1210,21 @@ const ThreeDView = React.forwardRef((props, ref) => {
 
       setPathProgress(nextProgress);
 
-      if (nextProgress >= 100) {
+      const allFinished =
+        playbackActiveDroneIdsRef.current.length > 0 &&
+        playbackActiveDroneIdsRef.current.every((activeId) =>
+          playbackFinishedDroneIdsRef.current.has(String(activeId))
+        );
+
+      if (allFinished) {
+        setPathProgress(100);
+        setIsPlaybackRunning(false);
+        return;
+      }
+
+      // 안전 타임아웃: 계산된 최대 길이의 2배를 넘기면 강제 종료
+      if (elapsedMs >= maxPathDurationMs * 2) {
+        setPathProgress(100);
         setIsPlaybackRunning(false);
         return;
       }
@@ -1170,6 +1234,7 @@ const ThreeDView = React.forwardRef((props, ref) => {
 
     rafId = requestAnimationFrame(tick);
     return () => {
+      window.removeEventListener('drone-path-finished', onPathFinished);
       if (rafId) cancelAnimationFrame(rafId);
     };
   }, [isPlaybackRunning, maxPathDurationMs]);
@@ -1196,11 +1261,8 @@ const ThreeDView = React.forwardRef((props, ref) => {
     const elapsedMs = maxPathDurationMs * progress;
     if (maxPathDurationMs <= 0 || elapsedMs >= maxPathDurationMs) return;
 
-    playbackClockRef.current = {
-      startElapsedMs: elapsedMs,
-      startedAt: performance.now(),
-    };
-    setIsPlaybackRunning(true);
+    const activeDroneIds = [];
+    playbackFinishedDroneIdsRef.current = new Set();
 
     base.drones.forEach((d) => {
       if (!Array.isArray(d.path) || !d.path.length || !d.id) return;
@@ -1208,6 +1270,8 @@ const ThreeDView = React.forwardRef((props, ref) => {
       if (!playPathBase.length) return;
       const remainingPath = slicePathByElapsedMs(playPathBase, elapsedMs);
       if (!remainingPath.length) return;
+
+      activeDroneIds.push(String(d.id));
 
       window.dispatchEvent(
         new CustomEvent('drone-path-request', {
@@ -1220,10 +1284,21 @@ const ThreeDView = React.forwardRef((props, ref) => {
         })
       );
     });
+
+    if (!activeDroneIds.length) return;
+
+    playbackActiveDroneIdsRef.current = activeDroneIds;
+    playbackClockRef.current = {
+      startElapsedMs: elapsedMs,
+      startedAt: performance.now(),
+    };
+    setIsPlaybackRunning(true);
   };
 
   const handleResetAll = () => {
     setIsPlaybackRunning(false);
+    playbackActiveDroneIdsRef.current = [];
+    playbackFinishedDroneIdsRef.current = new Set();
     setPathProgress(0);
     const base = effectiveConfig;
 

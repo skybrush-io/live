@@ -10,6 +10,7 @@ export default function useThreeDViewDroneEvents({
   setDroneConfig,
   setPathProgress,
   collectConfigFromScene,
+  showSpecDroneConfig,
 }) {
   useEffect(() => {
     const applyGeneratedConfigToScene = (drones) => {
@@ -94,7 +95,24 @@ export default function useThreeDViewDroneEvents({
       const { id, path } = e.detail || {};
       if (!id || !Array.isArray(path)) return;
 
+      const hasShowSpec =
+        showSpecDroneConfig &&
+        Array.isArray(showSpecDroneConfig.drones) &&
+        showSpecDroneConfig.drones.length > 0;
+
       setDroneConfig((prev) => {
+        if (hasShowSpec) {
+          const overrides = Array.isArray(prev?.drones) ? [...prev.drones] : [];
+          const idx = overrides.findIndex((d) => sameDroneId(d.id, id));
+          const entry = { id, path: path.slice() };
+          if (idx >= 0) {
+            overrides[idx] = { ...overrides[idx], ...entry };
+          } else {
+            overrides.push(entry);
+          }
+          return { ...(prev || {}), drones: overrides };
+        }
+
         const base =
           prev && Array.isArray(prev.drones) && prev.drones.length
             ? prev
@@ -255,5 +273,12 @@ export default function useThreeDViewDroneEvents({
       window.removeEventListener('drone-delete-request', onDroneDeleteRequest);
       window.removeEventListener('path-generator-response', onPathGeneratorResponse);
     };
-  }, [collectConfigFromScene, droneConfigRef, setDroneConfig, setPathProgress, setSelectedDrone]);
+  }, [
+    collectConfigFromScene,
+    droneConfigRef,
+    setDroneConfig,
+    setPathProgress,
+    setSelectedDrone,
+    showSpecDroneConfig,
+  ]);
 }

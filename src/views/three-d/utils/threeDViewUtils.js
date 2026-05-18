@@ -18,15 +18,67 @@ export const toFiniteHoldMs = (value, fallback = 0) => {
   return fallback;
 };
 
-export const getPathTotalDurationMs = (path) => {
+const segmentDurationMsForPlayback = (point, index, durationPerSegment) => {
+  const parsed = Number(point?.durationMs);
+  if (Number.isFinite(parsed) && parsed >= 0) return parsed;
+  return index === 0 ? 0 : durationPerSegment;
+};
+
+/**
+ * Returns how long drone-move-bridge will take to play a path (ms).
+ * Mirrors startFromInitial playback in drone-move-bridge.js.
+ */
+export const getPathPlaybackDurationMs = (
+  path,
+  { startFromInitial = true, durationPerSegment = 1000 } = {}
+) => {
   if (!Array.isArray(path) || path.length === 0) return 0;
-  let total = 0;
-  for (let i = 0; i < path.length; i += 1) {
-    total += toFiniteDurationMs(path[i]?.durationMs, 1000);
-    total += toFiniteHoldMs(path[i]?.holdMs, 0);
+
+  const defaultDur =
+    Number.isFinite(Number(durationPerSegment)) && Number(durationPerSegment) > 0
+      ? Number(durationPerSegment)
+      : 1000;
+
+  const holdMs = (point) => toFiniteHoldMs(point?.holdMs, 0);
+
+  if (!startFromInitial) {
+    let total = 0;
+    for (let i = 0; i < path.length; i += 1) {
+      total += segmentDurationMsForPlayback(path[i], i, defaultDur) + holdMs(path[i]);
+    }
+    return total;
+  }
+
+  const first = path[0] || {};
+  const firstX = Number(first.x);
+  const firstY = Number(first.y);
+  const firstZ = Number(first.z);
+  const hasValidFirst =
+    Number.isFinite(firstX) && Number.isFinite(firstY) && Number.isFinite(firstZ);
+
+  if (!hasValidFirst) {
+    let total = 0;
+    for (let i = 0; i < path.length; i += 1) {
+      total += segmentDurationMsForPlayback(path[i], i, defaultDur) + holdMs(path[i]);
+    }
+    return total;
+  }
+
+  const firstDur = Number(first.durationMs);
+  const firstHold = Number(first.holdMs);
+  let total =
+    (Number.isFinite(firstDur) && firstDur > 0 ? firstDur : 0) +
+    (Number.isFinite(firstHold) && firstHold > 0 ? firstHold : 0);
+
+  for (let i = 1; i < path.length; i += 1) {
+    total += segmentDurationMsForPlayback(path[i], i, defaultDur) + holdMs(path[i]);
   }
   return total;
 };
+
+/** Sum of segment durations; uses the same rules as path playback. */
+export const getPathTotalDurationMs = (path, options) =>
+  getPathPlaybackDurationMs(path, { startFromInitial: true, durationPerSegment: 1000, ...options });
 
 export const getInitialPointFromDrone = (drone) => {
   if (!drone || !Array.isArray(drone.pos) || drone.pos.length < 3) return null;
@@ -38,7 +90,7 @@ export const getInitialPointFromDrone = (drone) => {
   return { x, y, z, durationMs: 0 };
 };
 
-export const toFinitePoint = (point) => {
+export const toFinitePoint = (point, { isFirst = false } = {}) => {
   if (!point) return null;
   const x = Number(point.x);
   const y = Number(point.y);
@@ -48,7 +100,7 @@ export const toFinitePoint = (point) => {
     x,
     y,
     z,
-    durationMs: toFiniteDurationMs(point.durationMs, 1000),
+    durationMs: toFiniteDurationMs(point.durationMs, isFirst ? 0 : 1000),
     holdMs: toFiniteHoldMs(point.holdMs, 0),
   };
   if (point.highlighted) {
@@ -120,7 +172,7 @@ export const slicePathByProgress = (path, progressRatio) => {
 
   let acc = 0;
   for (let i = 0; i < path.length; i += 1) {
-    const segMs = toFiniteDurationMs(path[i]?.durationMs, 1000);
+    const segMs = segmentDurationMsForPlayback(path[i], i, 1000);
     const holdMs = toFiniteHoldMs(path[i]?.holdMs, 0);
     if (i === 0) {
       if (acc + segMs + holdMs >= targetMs) {
@@ -149,7 +201,7 @@ export const slicePathByProgress = (path, progressRatio) => {
       for (let j = i + 1; j < path.length; j += 1) {
         remaining.push({
           ...path[j],
-          durationMs: toFiniteDurationMs(path[j]?.durationMs, 1000),
+          durationMs: segmentDurationMsForPlayback(path[j], j, 1000),
           holdMs: toFiniteHoldMs(path[j]?.holdMs, 0),
         });
       }
@@ -166,7 +218,7 @@ export const slicePathByProgress = (path, progressRatio) => {
         for (let j = i + 1; j < path.length; j += 1) {
           remaining.push({
             ...path[j],
-            durationMs: toFiniteDurationMs(path[j]?.durationMs, 1000),
+            durationMs: segmentDurationMsForPlayback(path[j], j, 1000),
             holdMs: toFiniteHoldMs(path[j]?.holdMs, 0),
           });
         }
@@ -188,6 +240,29 @@ export const slicePathByElapsedMs = (path, elapsedMs) => {
   return slicePathByProgress(path, ratio);
 };
 
+/** Apply per-drone path overrides (e.g. highlight flags) onto a base drone list. */
+export const mergePathOverridesIntoDrones = (baseDrones, overrideDrones) => {
+  if (!Array.isArray(baseDrones) || !baseDrones.length) {
+    return Array.isArray(baseDrones) ? baseDrones : [];
+  }
+  if (!Array.isArray(overrideDrones) || !overrideDrones.length) {
+    return baseDrones;
+  }
+
+  const pathById = new Map();
+  overrideDrones.forEach((d) => {
+    if (d?.id == null || !Array.isArray(d.path)) return;
+    pathById.set(String(d.id), d.path);
+  });
+
+  if (!pathById.size) return baseDrones;
+
+  return baseDrones.map((d) => {
+    const overridePath = pathById.get(String(d?.id));
+    return overridePath ? { ...d, path: overridePath } : d;
+  });
+};
+
 export const normalizeDroneForConfigIO = (drone, index = 0) => {
   const rawId = drone?.id;
   const id =
@@ -197,7 +272,9 @@ export const normalizeDroneForConfigIO = (drone, index = 0) => {
   const name = drone?.name || id;
   const batteryNum = Number(drone?.battery);
   const status = drone?.status || 'Idle';
-  const path = Array.isArray(drone?.path) ? drone.path.map(toFinitePoint).filter(Boolean) : [];
+  const path = Array.isArray(drone?.path)
+    ? drone.path.map((p, index) => toFinitePoint(p, { isFirst: index === 0 })).filter(Boolean)
+    : [];
   const firstPathPoint = path[0];
 
   const fallbackPos = firstPathPoint
