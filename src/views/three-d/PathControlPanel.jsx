@@ -192,7 +192,7 @@ export default function PathControlPanel({
               opacity: isSendingPaths ? 0.75 : 1,
             }}
           >
-            {isSendingPaths ? '다운로드 중...' : '수정된 경로로 .skyc 다운로드'}
+            {isSendingPaths ? '다운로드 중...' : '수정된 경로로 .skyc 저장 (로컬)'}
           </button>
         </div>
         {pathDeliveryStatus && (

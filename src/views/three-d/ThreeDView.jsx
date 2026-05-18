@@ -37,6 +37,7 @@ import {
   parsePositionLike,
   slicePathByElapsedMs,
 } from './utils/threeDViewUtils';
+import { exportPatchedSkycFromShow } from './utils/skycExportUtils';
 
 // eslint-disable-next-line no-unused-vars
 import AFrame from '~/aframe';
@@ -49,6 +50,7 @@ import {
 import { getReverseMissionMapping } from '~/features/mission/selectors';
 import { setViewRuntimeState } from '~/features/three-d/slice';
 import {
+  getBase64ShowBlob,
   getDroneSwarmSpecification,
   getOutdoorShowToWorldCoordinateSystemTransformation,
   isShowIndoor,
@@ -564,6 +566,8 @@ const ThreeDView = React.forwardRef((props, ref) => {
     showStatistics,
     showTrajectoriesOfSelection,
     showSpecDroneConfig,
+    base64ShowBlob,
+    swarmSpecification,
     uavToMissionIndex,
     viewRuntime,
     persistRehydrated,
@@ -1068,18 +1072,43 @@ const ThreeDView = React.forwardRef((props, ref) => {
     await flushPendingPathEdits();
 
     const baseConfig = getConfigForPathDelivery();
-    const payload = buildPathDeliveryPayloadFromConfig(baseConfig);
+    const droneList = Array.isArray(baseConfig?.drones) ? baseConfig.drones : [];
 
-    if (!payload.drones.length) {
+    if (!droneList.length) {
       setPathDeliveryStatus('전달할 드론 경로가 없습니다.');
       return;
     }
 
-    const usedUrl = DEFAULT_PATH_DELIVERY_URL;
     setIsSendingPaths(true);
     setPathDeliveryStatus('');
 
+    const canExportLocally =
+      effectiveConfig?.source === 'showSpec' &&
+      Boolean(base64ShowBlob) &&
+      Array.isArray(swarmSpecification) &&
+      swarmSpecification.length > 0;
+
     try {
+      if (canExportLocally) {
+        await exportPatchedSkycFromShow({
+          base64Blob: base64ShowBlob,
+          swarmDrones: swarmSpecification,
+          editedDrones: droneList,
+          filename: 'updated-show.skyc',
+        });
+        setPathDeliveryStatus(
+          `로컬 SKYC 갱신 완료: ${droneList.length}대\n경로·타이밍만 반영했습니다. (lights/formation 등은 원본 유지)`
+        );
+        return;
+      }
+
+      const payload = buildPathDeliveryPayloadFromConfig(baseConfig);
+      if (!payload.drones.length) {
+        setPathDeliveryStatus('전달할 드론 경로가 없습니다.');
+        return;
+      }
+
+      const usedUrl = DEFAULT_PATH_DELIVERY_URL;
       const response = await fetch(usedUrl, {
         method: 'POST',
         headers: {
@@ -1113,13 +1142,22 @@ const ThreeDView = React.forwardRef((props, ref) => {
         `경로 전달 완료: ${payload.drones.length}대\npath-planner.skyc 다운로드가 시작되었습니다.\nURL: ${usedUrl}\nProxy target: ${PATH_DELIVERY_PROXY_TARGET}`
       );
     } catch (error) {
+      const usedUrl = DEFAULT_PATH_DELIVERY_URL;
       setPathDeliveryStatus(
-        `경로 전달 실패: ${error instanceof Error ? error.message : '알 수 없는 오류'}\nURL: ${usedUrl}\nProxy target: ${PATH_DELIVERY_PROXY_TARGET}`
+        canExportLocally
+          ? `SKYC 갱신 실패: ${error instanceof Error ? error.message : '알 수 없는 오류'}`
+          : `경로 전달 실패: ${error instanceof Error ? error.message : '알 수 없는 오류'}\nURL: ${usedUrl}\nProxy target: ${PATH_DELIVERY_PROXY_TARGET}`
       );
     } finally {
       setIsSendingPaths(false);
     }
-  }, [flushPendingPathEdits, getConfigForPathDelivery]);
+  }, [
+    base64ShowBlob,
+    effectiveConfig?.source,
+    flushPendingPathEdits,
+    getConfigForPathDelivery,
+    swarmSpecification,
+  ]);
 
   const selectedPathDroneId = useMemo(() => {
     if (!selectedDrone?.id || !Array.isArray(effectiveConfig?.drones)) return undefined;
@@ -1920,6 +1958,8 @@ ThreeDView.propTypes = {
     drones: PropTypes.array,
     source: PropTypes.string,
   }),
+  base64ShowBlob: PropTypes.string,
+  swarmSpecification: PropTypes.array,
   uavToMissionIndex: PropTypes.object,
   viewRuntime: PropTypes.shape({
     droneConfig: PropTypes.any,
@@ -1941,6 +1981,8 @@ export default connect(
     lighting: getLightingConditionsForThreeDView(state),
     naturalLighting: getNaturalLightingForThreeDView(state),
     showSpecDroneConfig: getShowSpecDroneConfigForThreeDView(state),
+    base64ShowBlob: getBase64ShowBlob(state),
+    swarmSpecification: getDroneSwarmSpecification(state),
     uavToMissionIndex: getReverseMissionMapping(state),
   }),
   {

@@ -595,7 +595,7 @@ export default function DroneInfoPanel({
             letterSpacing: 0.2,
           }}
         >
-          {isDownloadingSkyc ? '다운로드 중...' : '수정된 경로로 .skyc 다운로드'}
+          {isDownloadingSkyc ? '다운로드 중...' : '수정된 경로로 .skyc 저장 (로컬)'}
         </button>
 
         {skycDownloadStatus && (
