@@ -80,6 +80,51 @@ export const getPathPlaybackDurationMs = (
 export const getPathTotalDurationMs = (path, options) =>
   getPathPlaybackDurationMs(path, { startFromInitial: true, durationPerSegment: 1000, ...options });
 
+/**
+ * Cumulative arrival time (ms) at each path point when playing with startFromInitial.
+ * Mirrors drone-move-bridge.js snap-to-first-point + segment/hold sequencing.
+ */
+export const getPathPointArrivalTimesMs = (
+  path,
+  { startFromInitial = true, durationPerSegment = 1000 } = {}
+) => {
+  if (!Array.isArray(path) || path.length === 0) return [];
+
+  const defaultDur =
+    Number.isFinite(Number(durationPerSegment)) && Number(durationPerSegment) > 0
+      ? Number(durationPerSegment)
+      : 1000;
+
+  if (!startFromInitial) {
+    const times = [];
+    let acc = 0;
+    for (let i = 0; i < path.length; i += 1) {
+      times[i] = acc;
+      acc +=
+        segmentDurationMsForPlayback(path[i], i, defaultDur) + toFiniteHoldMs(path[i]?.holdMs, 0);
+    }
+    return times;
+  }
+
+  const times = [0];
+  if (path.length === 1) return times;
+
+  const first = path[0] || {};
+  const firstDur = Number(first.durationMs);
+  const firstHold = Number(first.holdMs);
+  let acc =
+    (Number.isFinite(firstDur) && firstDur > 0 ? firstDur : 0) +
+    (Number.isFinite(firstHold) && firstHold > 0 ? firstHold : 0);
+
+  for (let i = 1; i < path.length; i += 1) {
+    acc += segmentDurationMsForPlayback(path[i], i, defaultDur);
+    times[i] = acc;
+    acc += toFiniteHoldMs(path[i]?.holdMs, 0);
+  }
+
+  return times;
+};
+
 export const getInitialPointFromDrone = (drone) => {
   if (!drone || !Array.isArray(drone.pos) || drone.pos.length < 3) return null;
   const [px, py, pz] = drone.pos;

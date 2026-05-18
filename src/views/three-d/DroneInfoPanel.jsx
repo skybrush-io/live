@@ -1,7 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 
-import { toFiniteDurationMs, toFiniteHoldMs } from './utils/threeDViewUtils';
+import {
+  getPathPointArrivalTimesMs,
+  toFiniteDurationMs,
+  toFiniteHoldMs,
+} from './utils/threeDViewUtils';
 
 // 첫 번째 항목 ''은 "백엔드 기본값(.skyc 다운로드) 사용". payload에서 output 키를 생략.
 const FORMATION_OUTPUT_OPTIONS = [
@@ -99,6 +103,50 @@ export default function DroneInfoPanel({
     setInitialFields({ ix: '0', iy: '1', iz: '1' });
   }, [drone?.id, initialPositionSyncKey]);
 
+  const isPathPointRowValid = (p) => {
+    if (
+      p.x === undefined ||
+      p.y === undefined ||
+      p.z === undefined ||
+      String(p.x).trim() === '' ||
+      String(p.y).trim() === '' ||
+      String(p.z).trim() === ''
+    ) {
+      return false;
+    }
+
+    const nx = Number(p.x);
+    const ny = Number(p.y);
+    const nz = Number(p.z);
+
+    return Number.isFinite(nx) && Number.isFinite(ny) && Number.isFinite(nz);
+  };
+
+  const pathPointArrivalMsByRow = useMemo(() => {
+    const rows = Array.isArray(pathPoints) ? pathPoints : [];
+    const validRows = [];
+    const rowIndexMap = [];
+
+    rows.forEach((p, rowIdx) => {
+      if (!isPathPointRowValid(p)) return;
+      rowIndexMap.push(rowIdx);
+      validRows.push({
+        x: Number(p.x),
+        y: Number(p.y),
+        z: Number(p.z),
+        durationMs: toFiniteDurationMs(p.durationMs, validRows.length === 0 ? 0 : 1000),
+        holdMs: toFiniteHoldMs(p.holdMs, 0),
+      });
+    });
+
+    const arrivals = getPathPointArrivalTimesMs(validRows);
+    const result = rows.map(() => null);
+    rowIndexMap.forEach((rowIdx, validIdx) => {
+      result[rowIdx] = arrivals[validIdx];
+    });
+    return result;
+  }, [pathPoints]);
+
   const canPlayPath = useMemo(() => {
     if (!drone?.id) return false;
 
@@ -123,6 +171,15 @@ export default function DroneInfoPanel({
 
   const updatePathPoint = (index, key, value) => {
     setPathPoints((prev) => prev.map((p, i) => (i === index ? { ...p, [key]: value } : p)));
+  };
+
+  const updatePathPointMs = (index, key, raw) => {
+    if (raw === '') {
+      updatePathPoint(index, key, '');
+      return;
+    }
+    const n = Number(raw);
+    updatePathPoint(index, key, Number.isFinite(n) && n >= 0 ? n : raw);
   };
 
   const addPathPoint = () => {
@@ -194,24 +251,7 @@ export default function DroneInfoPanel({
 
   const buildPathPointsForConfig = (source = pathPoints) =>
     source
-      .filter((p) => {
-        if (
-          p.x === undefined ||
-          p.y === undefined ||
-          p.z === undefined ||
-          String(p.x).trim() === '' ||
-          String(p.y).trim() === '' ||
-          String(p.z).trim() === ''
-        ) {
-          return false;
-        }
-
-        const nx = Number(p.x);
-        const ny = Number(p.y);
-        const nz = Number(p.z);
-
-        return Number.isFinite(nx) && Number.isFinite(ny) && Number.isFinite(nz);
-      })
+      .filter((p) => isPathPointRowValid(p))
       .map((p, index) => {
         const point = {
           x: Number(p.x),
@@ -327,10 +367,33 @@ export default function DroneInfoPanel({
   const renderPathTab = () => (
     <>
       <div style={{ marginTop: 4 }}>
-        <div style={{ fontWeight: 700, marginBottom: 4 }}>Path (애니메이션)</div>
+        <div style={{ fontWeight: 700, marginBottom: 4 }}>ANIMATION PATH</div>
         <div style={{ fontSize: 11, opacity: 0.6, marginBottom: 8, lineHeight: 1.4 }}>
           첫 번째 점(#1)이 곧 시작 위치입니다. <b>경로 재생</b>을 누르면 #1로 즉시
           스냅한 뒤 #2부터 애니메이션됩니다.
+        </div>
+
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: PATH_ROW_GRID_COLUMNS,
+            gap: 6,
+            alignItems: 'center',
+            marginBottom: 4,
+            fontSize: 10,
+            opacity: 0.5,
+            padding: '0 4px',
+          }}
+        >
+          <span />
+          <span style={{ textAlign: 'center' }}>#</span>
+          <span>X</span>
+          <span>Y</span>
+          <span>Z</span>
+          <span style={{ textAlign: 'center' }}>이동(ms)</span>
+          <span style={{ textAlign: 'center' }}>대기(ms)</span>
+          <span style={{ textAlign: 'center' }}>재생</span>
+          <span />
         </div>
 
         {pathPoints.map((p, idx) => (
@@ -338,7 +401,7 @@ export default function DroneInfoPanel({
             key={idx}
             style={{
               display: 'grid',
-              gridTemplateColumns: '28px 24px 1fr 1fr 1fr 28px',
+              gridTemplateColumns: PATH_ROW_GRID_COLUMNS,
               gap: 6,
               alignItems: 'center',
               marginBottom: 6,
@@ -390,6 +453,40 @@ export default function DroneInfoPanel({
               inputMode="decimal"
               style={smallInputStyle}
             />
+            <input
+              value={p.durationMs === '' || p.durationMs === undefined ? '' : String(p.durationMs)}
+              onChange={(e) => updatePathPointMs(idx, 'durationMs', e.target.value)}
+              onBlur={() => queueMicrotask(() => syncPathToConfig())}
+              placeholder={idx === 0 ? '0' : '1000'}
+              inputMode="numeric"
+              title={
+                idx === 0
+                  ? '시작 위치에서 다음 점으로 이동하기 전 대기 시간(ms)'
+                  : '이전 점에서 이 점까지 이동 시간(ms)'
+              }
+              style={pathTimingInputStyle}
+            />
+            <input
+              value={p.holdMs === '' || p.holdMs === undefined ? '' : String(p.holdMs)}
+              onChange={(e) => updatePathPointMs(idx, 'holdMs', e.target.value)}
+              onBlur={() => queueMicrotask(() => syncPathToConfig())}
+              placeholder="0"
+              inputMode="numeric"
+              title="이 점 도착 후 머무는 시간(ms)"
+              style={pathTimingInputStyle}
+            />
+            <div
+              title="이 점에 도달하는 재생 시각 (mm:ss)"
+              style={{
+                fontSize: 11,
+                textAlign: 'center',
+                color: '#a9d4ff',
+                fontVariantNumeric: 'tabular-nums',
+                opacity: pathPointArrivalMsByRow[idx] == null ? 0.35 : 0.92,
+              }}
+            >
+              {formatPathPlaybackMs(pathPointArrivalMsByRow[idx])}
+            </div>
             <button
               type="button"
               onClick={() => removePathPoint(idx)}
@@ -1167,6 +1264,32 @@ export default function DroneInfoPanel({
     </div>
   );
 }
+
+const PATH_ROW_GRID_COLUMNS =
+  '28px 22px minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) 52px 48px 50px 24px';
+
+const pathTimingInputStyle = {
+  padding: '7px 6px',
+  borderRadius: 8,
+  border: '1px solid rgba(130,190,255,0.24)',
+  background: 'rgba(248,252,255,0.07)',
+  color: '#ecf5ff',
+  fontSize: 11,
+  width: '100%',
+  boxSizing: 'border-box',
+  outline: 'none',
+  textAlign: 'center',
+  fontVariantNumeric: 'tabular-nums',
+};
+
+const formatPathPlaybackMs = (ms) => {
+  if (ms == null || !Number.isFinite(Number(ms))) return '—';
+  const safe = Math.max(0, Math.round(Number(ms)));
+  const totalSec = Math.floor(safe / 1000);
+  const min = Math.floor(totalSec / 60);
+  const sec = totalSec % 60;
+  return `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+};
 
 const smallInputStyle = {
   padding: '7px 8px',
