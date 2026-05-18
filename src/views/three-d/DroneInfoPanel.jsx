@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 
 // 첫 번째 항목 ''은 "백엔드 기본값(.skyc 다운로드) 사용". payload에서 output 키를 생략.
@@ -31,10 +31,8 @@ export default function DroneInfoPanel({
   onSendFormationPlan = () => {},
 }) {
   const [activeTab, setActiveTab] = useState('path');
-  const draggingPathIndexRef = useRef(null);
-  const [dragOverPathIndex, setDragOverPathIndex] = useState(null);
   const [pathPoints, setPathPoints] = useState([
-    { x: '', y: '', z: '', durationMs: '1000', holdMs: '0' },
+    { x: '', y: '', z: '', highlighted: false },
   ]);
   const [initialFields, setInitialFields] = useState({ ix: '', iy: '', iz: '' });
 
@@ -46,12 +44,11 @@ export default function DroneInfoPanel({
           x: String(p.x ?? ''),
           y: String(p.y ?? ''),
           z: String(p.z ?? ''),
-          durationMs: String(p.durationMs ?? '1000'),
-          holdMs: String(p.holdMs ?? '0'),
+          highlighted: Boolean(p.highlighted),
         }))
       );
     } else {
-      setPathPoints([{ x: '', y: '', z: '', durationMs: '1000', holdMs: '0' }]);
+      setPathPoints([{ x: '', y: '', z: '', highlighted: false }]);
     }
   }, [drone?.id, drone?.path]);
 
@@ -125,7 +122,10 @@ export default function DroneInfoPanel({
   };
 
   const addPathPoint = () => {
-    setPathPoints((prev) => [...prev, { x: '', y: '', z: '', durationMs: '1000', holdMs: '0' }]);
+    setPathPoints((prev) => [
+      ...prev,
+      { x: '', y: '', z: '', highlighted: false },
+    ]);
   };
 
   const addCurrentPositionPathPoint = () => {
@@ -149,8 +149,7 @@ export default function DroneInfoPanel({
       x: formatCoord(nx),
       y: formatCoord(ny),
       z: formatCoord(nz),
-      durationMs: '1000',
-      holdMs: '0',
+      highlighted: false,
     };
 
     setPathPoints((prev) => [
@@ -168,65 +167,19 @@ export default function DroneInfoPanel({
   const removePathPoint = (index) => {
     setPathPoints((prev) => {
       if (!Array.isArray(prev) || !prev.length) {
-        return [{ x: '', y: '', z: '', durationMs: '1000', holdMs: '0' }];
+        return [{ x: '', y: '', z: '', highlighted: false }];
       }
 
       const next = prev.filter((_, i) => i !== index);
       if (!next.length) {
-        return [{ x: '', y: '', z: '', durationMs: '1000', holdMs: '0' }];
+        return [{ x: '', y: '', z: '', highlighted: false }];
       }
       return next;
     });
   };
 
-  const movePathPoint = (fromIndex, toIndex) => {
-    if (
-      fromIndex === toIndex ||
-      fromIndex < 0 ||
-      toIndex < 0 ||
-      fromIndex >= pathPoints.length ||
-      toIndex >= pathPoints.length
-    ) {
-      return;
-    }
-
-    setPathPoints((prev) => {
-      const next = [...prev];
-      const [moved] = next.splice(fromIndex, 1);
-      next.splice(toIndex, 0, moved);
-      return next;
-    });
-  };
-
-  const handlePathDragStart = (event, index) => {
-    draggingPathIndexRef.current = index;
-    event.dataTransfer.effectAllowed = 'move';
-    // 일부 브라우저에서 드래그 시작 인식을 위해 데이터 설정이 필요함
-    event.dataTransfer.setData('text/plain', String(index));
-    setDragOverPathIndex(index);
-  };
-
-  const handlePathDragOver = (event, index) => {
-    event.preventDefault();
-    setDragOverPathIndex(index);
-  };
-
-  const handlePathDrop = (index) => {
-    if (draggingPathIndexRef.current === null) return;
-    movePathPoint(draggingPathIndexRef.current, index);
-    draggingPathIndexRef.current = null;
-    setDragOverPathIndex(null);
-  };
-
-  const handlePathDragEnd = () => {
-    draggingPathIndexRef.current = null;
-    setDragOverPathIndex(null);
-  };
-
-  const requestPath = () => {
-    if (!drone?.id) return;
-
-    const points = pathPoints
+  const buildPathPointsForConfig = (source = pathPoints) =>
+    source
       .filter((p) => {
         if (
           p.x === undefined ||
@@ -249,14 +202,41 @@ export default function DroneInfoPanel({
         x: Number(p.x),
         y: Number(p.y),
         z: Number(p.z),
-        durationMs: Number.isFinite(Number(p.durationMs)) && Number(p.durationMs) >= 0
-          ? Number(p.durationMs)
-          : 1000,
-        holdMs: Number.isFinite(Number(p.holdMs)) && Number(p.holdMs) >= 0
-          ? Number(p.holdMs)
-          : 0,
+        durationMs: 1000,
+        holdMs: 0,
+        ...(p.highlighted ? { highlighted: true } : {}),
       }));
 
+  const syncPathToConfig = (source = pathPoints) => {
+    if (!drone?.id) return;
+
+    const points = buildPathPointsForConfig(source);
+    if (!points.length) return;
+
+    window.dispatchEvent(
+      new CustomEvent('drone-path-updated', {
+        detail: {
+          id: drone.id,
+          path: points,
+        },
+      })
+    );
+  };
+
+  const togglePathPointHighlight = (index) => {
+    setPathPoints((prev) => {
+      const next = prev.map((p, i) =>
+        i === index ? { ...p, highlighted: !p.highlighted } : p
+      );
+      queueMicrotask(() => syncPathToConfig(next));
+      return next;
+    });
+  };
+
+  const requestPath = () => {
+    if (!drone?.id) return;
+
+    const points = buildPathPointsForConfig();
     if (!points.length) return;
 
     window.dispatchEvent(
@@ -337,41 +317,35 @@ export default function DroneInfoPanel({
         {pathPoints.map((p, idx) => (
           <div
             key={idx}
-            onDragOver={(e) => handlePathDragOver(e, idx)}
-            onDrop={() => handlePathDrop(idx)}
-            onDragEnter={(e) => handlePathDragOver(e, idx)}
-            onDragEnd={handlePathDragEnd}
             style={{
               display: 'grid',
-              gridTemplateColumns: '28px 24px 1fr 1fr 1fr 72px 72px 28px',
+              gridTemplateColumns: '28px 24px 1fr 1fr 1fr 28px',
               gap: 6,
               alignItems: 'center',
               marginBottom: 6,
               fontSize: 12,
               borderRadius: 6,
               padding: '2px 4px',
-              border:
-                dragOverPathIndex === idx
-                  ? '1px dashed rgba(178,221,255,0.74)'
-                  : '1px dashed transparent',
+              border: '1px dashed transparent',
               background: 'rgba(255,255,255,0.03)',
             }}
           >
-            <div
-              draggable
-              onDragStart={(e) => handlePathDragStart(e, idx)}
+            <label
               style={{
-                textAlign: 'center',
-                opacity: 0.7,
-                cursor: 'grab',
-                userSelect: 'none',
-                fontSize: 14,
-                lineHeight: 1,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
               }}
-              title="드래그해서 순서 변경"
+              title="3D 경로에서 이 점을 빨간색으로 표시"
             >
-              ≡
-            </div>
+              <input
+                type="checkbox"
+                checked={!!p.highlighted}
+                onChange={() => togglePathPointHighlight(idx)}
+                style={{ width: 14, height: 14, cursor: 'pointer' }}
+              />
+            </label>
             <div style={{ fontSize: 11, opacity: 0.6, textAlign: 'center' }}>
               {idx + 1}
             </div>
@@ -396,28 +370,6 @@ export default function DroneInfoPanel({
               placeholder="Z"
               inputMode="decimal"
               style={smallInputStyle}
-            />
-            <input
-              value={p.durationMs}
-              onChange={(e) => updatePathPoint(idx, 'durationMs', e.target.value)}
-              placeholder="이동ms"
-              title="이 지점까지 이동하는 시간(ms)"
-              inputMode="numeric"
-              style={{
-                ...smallInputStyle,
-                fontSize: 11,
-              }}
-            />
-            <input
-              value={p.holdMs}
-              onChange={(e) => updatePathPoint(idx, 'holdMs', e.target.value)}
-              placeholder="대기ms"
-              title="이 지점 도착 후 머무는 시간(ms)"
-              inputMode="numeric"
-              style={{
-                ...smallInputStyle,
-                fontSize: 11,
-              }}
             />
             <button
               type="button"
@@ -479,7 +431,7 @@ export default function DroneInfoPanel({
         입력값은 ThreeDView 로컬 좌표계 기준입니다.
       </div>
       <div style={{ marginTop: 4, fontSize: 11, opacity: 0.5 }}>
-        경로 점 행을 드래그해서 순서를 변경할 수 있습니다.
+        체크한 점은 3D 경로에서 빨간색으로 표시됩니다.
       </div>
     </>
   );

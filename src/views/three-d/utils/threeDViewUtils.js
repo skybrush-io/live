@@ -44,13 +44,17 @@ export const toFinitePoint = (point) => {
   const y = Number(point.y);
   const z = Number(point.z);
   if (!Number.isFinite(x) || !Number.isFinite(y) || !Number.isFinite(z)) return null;
-  return {
+  const normalized = {
     x,
     y,
     z,
     durationMs: toFiniteDurationMs(point.durationMs, 1000),
     holdMs: toFiniteHoldMs(point.holdMs, 0),
   };
+  if (point.highlighted) {
+    normalized.highlighted = true;
+  }
+  return normalized;
 };
 
 export const parsePositionLike = (positionAttr, fallback = [0, 1, 1]) => {

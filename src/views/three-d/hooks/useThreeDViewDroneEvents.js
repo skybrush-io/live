@@ -107,6 +107,11 @@ export default function useThreeDViewDroneEvents({
         );
         return { ...base, drones };
       });
+
+      setSelectedDrone((prev) => {
+        if (!prev || !sameDroneId(prev.id, id)) return prev;
+        return { ...prev, path: path.slice() };
+      });
     };
 
     const onInitialPosUpdated = (e) => {

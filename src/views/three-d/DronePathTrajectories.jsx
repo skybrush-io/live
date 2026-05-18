@@ -26,10 +26,25 @@ const getWaypointRadius = (index, count) => {
   return WAYPOINT_RADIUS;
 };
 
-const getWaypointColor = (index, count) => {
+const getWaypointColor = (index, count, highlighted) => {
+  if (highlighted) return Colors.error;
   if (index === 0) return Colors.doneMissionItem;
   if (index === count - 1) return Colors.error;
   return Colors.selectedMissionItem;
+};
+
+const buildLineSegments = (points) => {
+  const segments = [];
+  for (let i = 0; i < points.length - 1; i += 1) {
+    const from = points[i];
+    const to = points[i + 1];
+    segments.push({
+      key: `seg-${i}`,
+      points: [from.tuple, to.tuple],
+      highlighted: Boolean(from.highlighted || to.highlighted),
+    });
+  }
+  return segments;
 };
 
 const pointsAreEqual = (a, b) =>
@@ -59,11 +74,16 @@ const DronePathTrajectories = ({
             return null;
           }
 
-          const rawPoints = Array.isArray(drone?.path)
-            ? drone.path.map(pathPointToTuple).filter(Boolean)
-            : [];
+          const rawPathPoints = Array.isArray(drone?.path) ? drone.path : [];
+          const rawPoints = rawPathPoints
+            .map((point) => ({
+              tuple: pathPointToTuple(point),
+              highlighted: Boolean(point?.highlighted),
+            }))
+            .filter((point) => point.tuple);
           const points = rawPoints.filter(
-            (point, pointIndex) => pointIndex === 0 || !pointsAreEqual(point, rawPoints[pointIndex - 1])
+            (point, pointIndex) =>
+              pointIndex === 0 || !pointsAreEqual(point.tuple, rawPoints[pointIndex - 1].tuple)
           );
 
           return {
@@ -78,13 +98,20 @@ const DronePathTrajectories = ({
 
   return trajectories.map(({ id, points }) => (
     <React.Fragment key={id}>
-      <Trajectory points={points} lineWidth={lineWidth} />
+      {buildLineSegments(points).map((segment) => (
+        <Trajectory
+          key={`${id}-${segment.key}-${segment.highlighted ? 'h' : 'n'}`}
+          points={segment.points}
+          lineWidth={lineWidth}
+          color={segment.highlighted ? Colors.error : Colors.plannedTrajectory}
+        />
+      ))}
       {points.map((point, index) => (
         <a-entity
-          key={`${id}-waypoint-${index}`}
-          position={point.join(' ')}
+          key={`${id}-waypoint-${index}-${point.highlighted ? 'h' : 'n'}`}
+          position={point.tuple.join(' ')}
           geometry={`primitive: sphere; radius: ${getWaypointRadius(index, points.length)}; segmentsWidth: 12; segmentsHeight: 8`}
-          material={`color: ${getWaypointColor(index, points.length)}; shader: flat; fog: false`}
+          material={`color: ${getWaypointColor(index, points.length, point.highlighted)}; shader: flat; fog: false`}
         />
       ))}
     </React.Fragment>

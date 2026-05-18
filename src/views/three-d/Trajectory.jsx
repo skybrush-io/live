@@ -26,11 +26,11 @@ function pointsToString(points) {
     .join(', ');
 }
 
-const Trajectory = ({ lineWidth = 5, points }) => {
+const Trajectory = ({ lineWidth = 5, points, color = Colors.plannedTrajectory }) => {
   const path = pointsToString(points);
   return path ? (
     <a-entity
-      meshline={`lineWidth: ${lineWidth}; path: ${path}; color: ${Colors.plannedTrajectory}`}
+      meshline={`lineWidth: ${lineWidth}; path: ${path}; color: ${color}`}
     />
   ) : null;
 };
@@ -38,6 +38,7 @@ const Trajectory = ({ lineWidth = 5, points }) => {
 Trajectory.propTypes = {
   lineWidth: PropTypes.number,
   points: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number)),
+  color: PropTypes.string,
 };
 
 export default memo(Trajectory);
