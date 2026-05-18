@@ -14,6 +14,7 @@ import { createSelectionHandlerThunk } from '~/components/helpers/lists';
 import { setSelectedUAVIds } from '~/features/uavs/actions';
 import { getSelectedUAVIds } from '~/features/uavs/selectors';
 import { setFeatureIdForTooltip } from '~/features/session/slice';
+import UAVErrorCode from '~/flockwave/UAVErrorCode';
 import { getPreferredDroneRadius } from '~/features/three-d/selectors';
 import flock from '~/flock';
 import { uavIdToGlobalId } from '~/model/identifiers';
@@ -22,7 +23,13 @@ import store from '~/store';
 
 const { THREE } = AFrame;
 const DRONE_BODY_COLOR = 0xff8c00;
+const DRONE_ARMED_COLOR = 0x00ff00;
 const DRONE_HOVER_COLOR = 0xff0000;
+
+const getDroneBodyColorFromUAV = (uav) =>
+  uav.errors.includes(UAVErrorCode.MOTORS_RUNNING_WHILE_ON_GROUND)
+    ? DRONE_ARMED_COLOR
+    : DRONE_BODY_COLOR;
 
 /**
  * Selector that takes the Redux state and returns a function that can be called
@@ -112,10 +119,11 @@ AFrame.registerSystem('drone-flock', {
     }
     entity.object3D.position.z += this._droneRadius;
 
-    entity.originalColor = DRONE_BODY_COLOR;
+    const bodyColor = getDroneBodyColorFromUAV(uav);
+    entity.originalColor = bodyColor;
     const mesh = entity.getObject3D('mesh');
     if (mesh) {
-      mesh.material.color.setHex(DRONE_BODY_COLOR);
+      mesh.material.color.setHex(bodyColor);
     } else {
       // TODO(ntamas): sometimes it happens that we get here earlier than the
       // mesh is ready (it's an async process). In this case we should store
