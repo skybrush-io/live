@@ -794,11 +794,11 @@
     "unspecified": "Unspecified"
   },
   "threeDInteractionMode": {
+    "create": "Edit",
+    "createTooltip": "Place drones and edit paths and formations",
     "label": "3D interaction mode",
     "view": "Navigate",
-    "viewTooltip": "Explore the 3D scene and inspect drone positions",
-    "create": "Edit",
-    "createTooltip": "Place drones and edit paths and formations"
+    "viewTooltip": "Explore the 3D scene and inspect drone positions"
   },
   "toolbox": {
     "averagingInProgress": "{{number}} in progress",
@@ -824,6 +824,11 @@
     "uploadInProgress": "Upload in progress…",
     "uploadInProgressWithEstimate": "Estimated time remaining: {{time}}",
     "uploadNotFinishedYet": "Upload not finished yet."
+  },
+  "mapSourceToggle": {
+    "label": "Map source",
+    "map": "Map",
+    "satellite": "Satellite"
   },
   "uploadStatusLegend": {
     "clearUploadQueue": "Clear upload queue",
