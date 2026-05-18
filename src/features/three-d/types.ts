@@ -6,3 +6,8 @@ export enum NavigationMode {
   FLY = 'fly',
   WALK = 'walk',
 }
+
+export enum ThreeDInteractionMode {
+  VIEW = 'view',
+  CREATE = 'create',
+}

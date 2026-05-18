@@ -27,8 +27,6 @@ const DRONE_BODY_COLOR = 0xff8c00;
 const DRONE_ARMED_COLOR = 0x00ff00;
 const DRONE_HOVER_COLOR = 0xff0000;
 const DRONE_SELECTION_BOX_COLOR = 0x58c7ff;
-const TOOLTIP_WIDTH = 440;
-const TOOLTIP_HEIGHT = 220;
 
 const getDroneBodyColorFromUAV = (uav) =>
   uav.errors.includes(UAVErrorCode.MOTORS_RUNNING_WHILE_ON_GROUND)
@@ -81,110 +79,6 @@ const getDroneTelemetryFromUAV = (uav) => {
     satellites,
     status: getDroneStatusTextFromUAV(uav),
   };
-};
-
-const formatTelemetryTooltipValue = (value, suffix = '') => {
-  const text = String(value ?? '').trim();
-  return text ? `${text}${suffix}` : '-';
-};
-
-const buildTelemetryTooltipLines = (id, telemetry) => [
-  {
-    kind: 'header',
-    text: `${id}  ${formatTelemetryTooltipValue(telemetry.battery)}  ${formatTelemetryTooltipValue(
-      telemetry.heading,
-      '°'
-    )}`,
-  },
-  { kind: 'status', text: formatTelemetryTooltipValue(telemetry.status).toUpperCase() },
-  {
-    kind: 'normal',
-    text: `${formatTelemetryTooltipValue(telemetry.mode)}    ${formatTelemetryTooltipValue(
-      telemetry.gpsFix
-    )}`,
-  },
-  {
-    kind: 'normal',
-    text: `${formatTelemetryTooltipValue(telemetry.ahl, ' m AHL')}    ${formatTelemetryTooltipValue(
-      telemetry.satellites,
-      ' sats'
-    )}`,
-  },
-  {
-    kind: 'muted',
-    text: `${formatTelemetryTooltipValue(telemetry.amsl, ' m AMSL')}    ${formatTelemetryTooltipValue(
-      telemetry.agl,
-      ' m AGL'
-    )}`,
-  },
-];
-
-const drawRoundedRect = (ctx, x, y, width, height, radius) => {
-  ctx.beginPath();
-  ctx.moveTo(x + radius, y);
-  ctx.lineTo(x + width - radius, y);
-  ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
-  ctx.lineTo(x + width, y + height - radius);
-  ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
-  ctx.lineTo(x + radius, y + height);
-  ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
-  ctx.lineTo(x, y + radius);
-  ctx.quadraticCurveTo(x, y, x + radius, y);
-  ctx.closePath();
-};
-
-const createTelemetryTooltipTexture = (id, telemetry) => {
-  const canvas = document.createElement('canvas');
-  canvas.width = TOOLTIP_WIDTH;
-  canvas.height = TOOLTIP_HEIGHT;
-  const ctx = canvas.getContext('2d');
-
-  ctx.clearRect(0, 0, TOOLTIP_WIDTH, TOOLTIP_HEIGHT);
-  ctx.shadowColor = 'rgba(0, 0, 0, 0.35)';
-  ctx.shadowBlur = 18;
-  ctx.shadowOffsetY = 8;
-  drawRoundedRect(ctx, 16, 14, TOOLTIP_WIDTH - 32, TOOLTIP_HEIGHT - 28, 18);
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
-  ctx.fill();
-  ctx.shadowColor = 'transparent';
-  ctx.lineWidth = 2;
-  ctx.strokeStyle = 'rgba(30, 40, 54, 0.16)';
-  ctx.stroke();
-
-  const lines = buildTelemetryTooltipLines(id, telemetry);
-  let y = 54;
-
-  for (const line of lines) {
-    if (line.kind === 'status') {
-      drawRoundedRect(ctx, 32, y - 24, TOOLTIP_WIDTH - 64, 34, 17);
-      ctx.fillStyle = 'rgba(0, 200, 83, 0.9)';
-      ctx.fill();
-      ctx.fillStyle = '#111827';
-      ctx.font = 'bold 24px sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText(line.text, TOOLTIP_WIDTH / 2, y);
-      y += 44;
-      continue;
-    }
-
-    ctx.textAlign = 'left';
-    if (line.kind === 'header') {
-      ctx.fillStyle = '#111827';
-      ctx.font = 'bold 28px sans-serif';
-    } else if (line.kind === 'muted') {
-      ctx.fillStyle = 'rgba(17, 24, 39, 0.55)';
-      ctx.font = '22px sans-serif';
-    } else {
-      ctx.fillStyle = '#111827';
-      ctx.font = '22px sans-serif';
-    }
-    ctx.fillText(line.text, 42, y);
-    y += line.kind === 'header' ? 42 : 34;
-  }
-
-  const texture = new THREE.CanvasTexture(canvas);
-  texture.needsUpdate = true;
-  return texture;
 };
 
 /**
@@ -264,50 +158,6 @@ AFrame.registerSystem('drone-flock', {
     return element;
   },
 
-  updateTelemetryTooltip(entity, id, telemetry) {
-    const signature = JSON.stringify({ id, ...telemetry });
-    if (entity.telemetryTooltipSignature === signature) {
-      return;
-    }
-
-    entity.telemetryTooltipSignature = signature;
-    const texture = createTelemetryTooltipTexture(id, telemetry);
-
-    if (!entity.telemetryTooltip) {
-      const material = new THREE.SpriteMaterial({
-        map: texture,
-        transparent: true,
-        depthTest: false,
-        depthWrite: false,
-      });
-      const sprite = new THREE.Sprite(material);
-      sprite.userData.clickPickIgnore = true;
-      sprite.position.set(0, 0, this._droneRadius * 3.5);
-      sprite.scale.set(this._droneRadius * 4.9, this._droneRadius * 2.45, 1);
-      sprite.renderOrder = 999;
-      sprite.visible = Boolean(entity.isHovered || entity.isSelected);
-      entity.object3D.add(sprite);
-      entity.telemetryTooltip = sprite;
-      return;
-    }
-
-    const oldMap = entity.telemetryTooltip.material.map;
-    entity.telemetryTooltip.material.map = texture;
-    entity.telemetryTooltip.material.needsUpdate = true;
-    if (oldMap) oldMap.dispose();
-  },
-
-  disposeTelemetryTooltip(entity) {
-    if (!entity?.telemetryTooltip) return;
-    entity.object3D.remove(entity.telemetryTooltip);
-    if (entity.telemetryTooltip.material.map) {
-      entity.telemetryTooltip.material.map.dispose();
-    }
-    entity.telemetryTooltip.material.dispose();
-    entity.telemetryTooltip = null;
-    entity.telemetryTooltipSignature = null;
-  },
-
   updateEntityFromUAV(entity, uav) {
     const telemetry = getDroneTelemetryFromUAV(uav);
 
@@ -325,8 +175,6 @@ AFrame.registerSystem('drone-flock', {
     entity.setAttribute('data-agl', telemetry.agl);
     entity.setAttribute('data-amsl', telemetry.amsl);
     entity.setAttribute('data-heading', telemetry.heading);
-    this.updateTelemetryTooltip(entity, uav.id, telemetry);
-
     if (uav.hasLocalPosition) {
       this._updatePositionFromLocalCoordinates(
         uav.localPosition,
@@ -396,10 +244,6 @@ AFrame.registerSystem('drone-flock', {
     entity.object3D.add(line);
     entity.selectionBox = line;
 
-    if (entity.telemetryTooltip) {
-      entity.telemetryTooltip.position.set(0, 0, this._droneRadius * 3.5);
-      entity.telemetryTooltip.scale.set(this._droneRadius * 4.9, this._droneRadius * 2.45, 1);
-    }
   },
 
   setEntityHovered(entity, hovered) {
@@ -415,9 +259,6 @@ AFrame.registerSystem('drone-flock', {
   updateSelectionBoxVisibility(entity) {
     if (entity?.selectionBox) {
       entity.selectionBox.visible = Boolean(entity.isHovered || entity.isSelected);
-    }
-    if (entity?.telemetryTooltip) {
-      entity.telemetryTooltip.visible = Boolean(entity.isHovered || entity.isSelected);
     }
   },
 
@@ -568,7 +409,6 @@ AFrame.registerComponent('drone-flock', {
   _ensureUAVEntityDoesNotExist(uav) {
     const existingEntity = this._getEntityForUAV(uav);
     if (existingEntity) {
-      this.system.disposeTelemetryTooltip(existingEntity);
       existingEntity.remove();
     }
 

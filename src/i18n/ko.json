@@ -20,5 +20,12 @@
     "label": "지도 소스",
     "map": "지도",
     "satellite": "위성"
+  },
+  "threeDInteractionMode": {
+    "label": "3D 상호작용 모드",
+    "view": "탐색",
+    "viewTooltip": "3D 장면을 둘러보고 드론 위치를 확인합니다",
+    "create": "편집",
+    "createTooltip": "드론을 배치하고 경로·포메이션을 편집합니다"
   }
 }

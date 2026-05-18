@@ -29,12 +29,14 @@ import { getLightingConditionsForThreeDView } from '~/features/settings/selector
 import { toggleLightingConditionsInThreeDView } from '~/features/settings/slice';
 import { resetZoom, rotateViewToDrones } from '~/features/three-d/actions';
 import { cameraRef } from '~/features/three-d/refs';
-import { setNavigationMode } from '~/features/three-d/slice';
+import { setInteractionMode, setNavigationMode } from '~/features/three-d/slice';
+import { ThreeDInteractionMode } from '~/features/three-d/types';
 import { isMapCoordinateSystemSpecified } from '~/selectors/map';
 
 import NavigationButtonGroup from './NavigationButtonGroup';
 import NavigationInstructions from './NavigationInstructions';
 import Overlay from './Overlay';
+import ThreeDInteractionModeToggle from './ThreeDInteractionModeToggle';
 
 const ThreeDView = loadable(
   () => import(/* webpackChunkName: "three-d" */ './ThreeDView')
@@ -57,15 +59,21 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const ThreeDTopLevelView = ({
+  forcedInteractionMode,
   hasMapCoordinateSystem,
+  hideInteractionModeToggle,
+  interactionMode,
   lighting,
   navigation,
   onResetZoom,
   onRotateCameraTowardsDrones,
+  onSetInteractionMode,
   onSetNavigationMode,
   onShowSettings,
   onToggleLightingConditions,
 }) => {
+  const effectiveInteractionMode = forcedInteractionMode || interactionMode;
+  const isCreateMode = effectiveInteractionMode === ThreeDInteractionMode.CREATE;
   const classes = useStyles();
 
   const threeDViewRef = useRef(null);
@@ -91,6 +99,16 @@ const ThreeDTopLevelView = ({
             />
             <ToolbarDivider orientation='vertical' />
             <NavigationInstructions mode={navigation.mode} />
+            {!hideInteractionModeToggle && (
+              <>
+                <ToolbarDivider orientation="vertical" />
+                <ThreeDInteractionModeToggle
+                  mode={effectiveInteractionMode}
+                  onChange={onSetInteractionMode}
+                />
+              </>
+            )}
+            <ToolbarDivider orientation="vertical" />
             <DarkModeSwitch
               value={lighting === 'dark'}
               onChange={onToggleLightingConditions}
@@ -99,7 +117,12 @@ const ThreeDTopLevelView = ({
         </AppBar>
         <Box ref={ref} sx={{ position: 'relative', flex: 1 }}>
           <NearestItemTooltip>
-            <ThreeDView ref={threeDViewRef} cameraRef={cameraRef} />
+            <ThreeDView
+              ref={threeDViewRef}
+              cameraRef={cameraRef}
+              interactionMode={effectiveInteractionMode}
+              isCreateMode={isCreateMode}
+            />
           </NearestItemTooltip>
           {!hasMapCoordinateSystem && (
             <Overlay left={8} right={8} top={8}>
@@ -130,7 +153,10 @@ const ThreeDTopLevelView = ({
 };
 
 ThreeDTopLevelView.propTypes = {
+  forcedInteractionMode: PropTypes.oneOf(['view', 'create']),
   hasMapCoordinateSystem: PropTypes.bool,
+  hideInteractionModeToggle: PropTypes.bool,
+  interactionMode: PropTypes.oneOf(['view', 'create']),
   lighting: PropTypes.string,
   navigation: PropTypes.shape({
     mode: PropTypes.string,
@@ -138,6 +164,7 @@ ThreeDTopLevelView.propTypes = {
   }),
   onResetZoom: PropTypes.func,
   onRotateCameraTowardsDrones: PropTypes.func,
+  onSetInteractionMode: PropTypes.func,
   onSetNavigationMode: PropTypes.func,
   onShowSettings: PropTypes.func,
   onToggleLightingConditions: PropTypes.func,
@@ -154,6 +181,7 @@ export default connect(
   {
     onResetZoom: resetZoom,
     onRotateCameraTowardsDrones: rotateViewToDrones,
+    onSetInteractionMode: setInteractionMode,
     onSetNavigationMode: setNavigationMode,
 
     onShowSettings: () => (dispatch) => {

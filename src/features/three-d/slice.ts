@@ -5,7 +5,7 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import { type Vector3Tuple } from 'three';
 
-import { type EulerTuple, NavigationMode } from './types';
+import { type EulerTuple, NavigationMode, ThreeDInteractionMode } from './types';
 
 type ThreeDSliceState = {
   camera: {
@@ -18,6 +18,8 @@ type ThreeDSliceState = {
     // TODO: Probably unused, verify this when it can be typechecked!
     parameters: Record<string, unknown>;
   };
+
+  interactionMode: ThreeDInteractionMode;
 
   tooltip?: string;
 
@@ -41,6 +43,8 @@ const initialState: ThreeDSliceState = {
     mode: NavigationMode.WALK,
     parameters: {},
   },
+
+  interactionMode: ThreeDInteractionMode.VIEW,
 
   tooltip: undefined,
 
@@ -92,6 +96,16 @@ const { actions, reducer } = createSlice({
       const { position, rotation } = action.payload;
       state.camera.position = position;
       state.camera.rotation = rotation;
+    },
+
+    setInteractionMode(state, action: PayloadAction<ThreeDInteractionMode>) {
+      const mode = action.payload;
+      if (
+        mode === ThreeDInteractionMode.VIEW ||
+        mode === ThreeDInteractionMode.CREATE
+      ) {
+        state.interactionMode = mode;
+      }
     },
 
     setNavigationMode(
@@ -162,6 +176,7 @@ export const {
   resetZoom,
   rotateViewTowards,
   setCameraPose,
+  setInteractionMode,
   setNavigationMode,
   setViewRuntimeState,
   showTooltip,

@@ -18,6 +18,7 @@ import SatelliteMapGround from './SatelliteMapGround';
 import Scenery from './Scenery';
 import SelectedTrajectories from './SelectedTrajectories';
 import DroneInfoPanel from './DroneInfoPanel';
+import DroneStatusOverlay from './DroneStatusOverlay';
 import PathControlPanel from './PathControlPanel';
 import AddDroneModal from './AddDroneModal';
 import PathGeneratorModal from './PathGeneratorModal';
@@ -532,6 +533,8 @@ const ThreeDView = React.forwardRef((props, ref) => {
   const {
     cameraRef,
     grid,
+    interactionMode,
+    isCreateMode: isCreateModeProp,
     isCoordinateSystemLeftHanded,
     lighting,
     navigation,
@@ -549,6 +552,11 @@ const ThreeDView = React.forwardRef((props, ref) => {
     persistRehydrated,
     onSetViewRuntimeState,
   } = props;
+
+  const isCreateMode =
+    typeof isCreateModeProp === 'boolean'
+      ? isCreateModeProp
+      : interactionMode === 'create';
 
   const persistedDroneConfig =
     viewRuntime && typeof viewRuntime === 'object' ? viewRuntime.droneConfig : null;
@@ -708,8 +716,19 @@ const ThreeDView = React.forwardRef((props, ref) => {
   const extraSceneProps = {};
   if (showStatistics) extraSceneProps.stats = 'true';
 
-  const panelOpen = !!selectedDrone && selectedDrone.source !== 'uav';
+  const panelOpen =
+    isCreateMode && !!selectedDrone && selectedDrone.source !== 'uav';
   const effectiveLighting = naturalLighting || lighting;
+
+  useEffect(() => {
+    if (isCreateMode) return;
+    setIsPlaybackRunning(false);
+    setAddDroneModalOpen(false);
+    setPathGeneratorModalOpen(false);
+    setSelectedDrone(null);
+    setPendingAutoSelectDrone(null);
+    window.dispatchEvent(new CustomEvent('drone-deselected'));
+  }, [isCreateMode]);
 
   const closePanel = () => {
     // ✅ 패널 닫기 = 선택 해제까지 같이 일어나게 (A-Frame도 정리되도록)
@@ -1525,8 +1544,13 @@ const ThreeDView = React.forwardRef((props, ref) => {
     }
   }, [buildFormationPayload, formationPhases]);
 
+  const sceneEditProps = isCreateMode
+    ? { 'drone-move-bridge': '', 'drone-axis-gizmo': '' }
+    : {};
+
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+      {isCreateMode && (
       <PathControlPanel
         fileInputRef={fileInputRef}
         pathProgress={pathProgress}
@@ -1552,6 +1576,8 @@ const ThreeDView = React.forwardRef((props, ref) => {
         isSendingPaths={isSendingPaths}
         pathDeliveryStatus={pathDeliveryStatus}
       />
+      )}
+      {isCreateMode && (
       <AddDroneModal
         open={addDroneModalOpen}
         onClose={() => setAddDroneModalOpen(false)}
@@ -1562,10 +1588,13 @@ const ThreeDView = React.forwardRef((props, ref) => {
             : []
         }
       />
+      )}
+      {isCreateMode && (
       <PathGeneratorModal
         open={pathGeneratorModalOpen}
         onClose={() => setPathGeneratorModalOpen(false)}
       />
+      )}
       <a-scene
         key={sceneId}
         ref={ref}
@@ -1578,12 +1607,16 @@ const ThreeDView = React.forwardRef((props, ref) => {
         device-orientation-permission-ui="enabled: false"
         tabIndex={-1}
         class="react-hotkeys-ignore no-focus-ring"
-        drone-move-bridge=""
-        drone-axis-gizmo=""
+        {...sceneEditProps}
         {...extraSceneProps}
       >
         <a-assets>
-          <a-asset-item id="drone-fbx" src="assets/fbx/drone.fbx" />
+          {isCreateMode && (
+            <>
+              <a-asset-item id="drone-fbx" src="assets/fbx/drone.fbx" />
+              <a-mixin id="drone-marker" fbx-model="src: #drone-fbx; scale: 0.01 0.01 0.01" />
+            </>
+          )}
           <a-mixin
             id="takeoff-marker"
             geometry="primitive: triangle; vertexA: 1 0 0; vertexB: -0.5 0.866 0; vertexC: -0.5 -0.866 0"
@@ -1594,7 +1627,6 @@ const ThreeDView = React.forwardRef((props, ref) => {
             geometry="primitive: triangle; vertexA: -1 0 0; vertexB: 0.5 -0.866 0; vertexC: 0.5 0.866 0"
             material={`color: ${Colors.markers.landing}; shader: flat; side: double`}
           />
-          <a-mixin id="drone-marker" fbx-model="src: #drone-fbx; scale: 0.01 0.01 0.01" />
         </a-assets>
 
         {/* ✅ 마우스 피킹/호버 커서 */}
@@ -1634,15 +1666,24 @@ const ThreeDView = React.forwardRef((props, ref) => {
             drones={effectiveConfig && Array.isArray(effectiveConfig.drones) ? effectiveConfig.drones : undefined}
             selectedDroneId={selectedPathDroneId}
           />
-          <DroneShapeMarkers drones={effectiveConfig && Array.isArray(effectiveConfig.drones) ? effectiveConfig.drones : undefined} />
-          <a-drone-flock />
+          {isCreateMode && (
+            <DroneShapeMarkers
+              drones={
+                effectiveConfig && Array.isArray(effectiveConfig.drones)
+                  ? effectiveConfig.drones
+                  : undefined
+              }
+            />
+          )}
+          {!isCreateMode && <a-drone-flock />}
           <Room />
         </a-entity>
 
         <Scenery type={`${scenery}-${effectiveLighting}`} grid={grid} />
       </a-scene>
 
-      {/* ✅ 우측 패널 */}
+      {/* ✅ 우측 패널 (Create 모드 전용) */}
+      {isCreateMode && (
       <DroneInfoPanel
         open={panelOpen}
         onClose={closePanel}
@@ -1668,6 +1709,11 @@ const ThreeDView = React.forwardRef((props, ref) => {
         onUpdateFormationSettings={handleUpdateFormationSettings}
         onSendFormationPlan={handleSendFormationPlan}
       />
+      )}
+
+      {selectedDrone && !isCreateMode && (
+        <DroneStatusOverlay drone={selectedDrone} />
+      )}
 
       {/* ✅ 커서에서 시작하는 레이를 그릴 2D 오버레이 */}
       <div
@@ -1710,6 +1756,8 @@ const ThreeDView = React.forwardRef((props, ref) => {
 ThreeDView.propTypes = {
   cameraRef: PropTypes.any,
   grid: PropTypes.string,
+  interactionMode: PropTypes.oneOf(['view', 'create']),
+  isCreateMode: PropTypes.bool,
   isCoordinateSystemLeftHanded: PropTypes.bool,
   lighting: PropTypes.oneOf(['dark', 'light']),
   naturalLighting: PropTypes.oneOf(['dark', 'light']),

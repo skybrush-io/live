@@ -256,11 +256,6 @@
   "map": {
     "resetRotation": "Reset rotation"
   },
-  "mapSourceToggle": {
-    "label": "Map source",
-    "map": "Map",
-    "satellite": "Satellite"
-  },
   "mapCachingDialog": {
     "offlineMaps": "Offline maps"
   },
@@ -798,6 +793,13 @@
     "specifiedRelativeToShowOrientation": "Specified relative to show orientation",
     "unspecified": "Unspecified"
   },
+  "threeDInteractionMode": {
+    "label": "3D interaction mode",
+    "view": "Navigate",
+    "viewTooltip": "Explore the 3D scene and inspect drone positions",
+    "create": "Edit",
+    "createTooltip": "Place drones and edit paths and formations"
+  },
   "toolbox": {
     "averagingInProgress": "{{number}} in progress",
     "coordinateAveraging": "Coordinate averaging",
@@ -842,6 +844,7 @@
     "log-panel": "Event log",
     "map": "Map",
     "mission-editor": "Mission editor",
+    "path-generator": "Path Generator",
     "saved-location-list": "Locations",
     "show-control": "Show control",
     "three-d-view": "3D View",
