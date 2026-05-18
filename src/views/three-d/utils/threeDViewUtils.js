@@ -285,7 +285,121 @@ export const slicePathByElapsedMs = (path, elapsedMs) => {
   return slicePathByProgress(path, ratio);
 };
 
+/** Stable fingerprint for show-spec drone paths (detect .skyc reload). */
+export const fingerprintShowSpecDroneConfig = (config) => {
+  if (!config || !Array.isArray(config.drones) || !config.drones.length) {
+    return '';
+  }
+  return config.drones
+    .map((d) => {
+      const path = Array.isArray(d.path) ? d.path : [];
+      const head = path[0];
+      const tail = path[path.length - 1];
+      const headKey = head
+        ? `${head.x},${head.y},${head.z},${head.durationMs},${head.holdMs}`
+        : '';
+      const tailKey = tail
+        ? `${tail.x},${tail.y},${tail.z},${tail.durationMs},${tail.holdMs}`
+        : '';
+      return `${d.id}:${path.length}:${headKey}:${tailKey}`;
+    })
+    .join('|');
+};
+
+/** Push drone paths/positions into the A-Frame bridge after React has rendered. */
+export const applyDronePathsToScene = (drones) => {
+  if (typeof window === 'undefined' || !Array.isArray(drones) || !drones.length) {
+    return;
+  }
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      drones.forEach((d) => {
+        if (!d?.id) return;
+
+        const firstPathPoint = Array.isArray(d.path) && d.path.length > 0 ? d.path[0] : null;
+        let pos = null;
+        if (firstPathPoint) {
+          const fx = Number(firstPathPoint.x);
+          const fy = Number(firstPathPoint.y);
+          const fz = Number(firstPathPoint.z);
+          if (Number.isFinite(fx) && Number.isFinite(fy) && Number.isFinite(fz)) {
+            pos = [fx, fy, fz];
+          }
+        }
+        if (!pos) {
+          pos = Array.isArray(d.initialPos) && d.initialPos.length >= 3 ? d.initialPos : d.pos;
+        }
+
+        if (Array.isArray(pos) && pos.length >= 3) {
+          const x = Number(pos[0]);
+          const y = Number(pos[1]);
+          const z = Number(pos[2]);
+          if (Number.isFinite(x) && Number.isFinite(y) && Number.isFinite(z)) {
+            window.dispatchEvent(
+              new CustomEvent('drone-move-request', {
+                detail: { id: d.id, x, y, z },
+              })
+            );
+          }
+        }
+
+        if (Array.isArray(d.path) && d.path.length) {
+          window.dispatchEvent(
+            new CustomEvent('drone-path-updated', {
+              detail: { id: d.id, path: d.path },
+            })
+          );
+        }
+      });
+    });
+  });
+};
+
 /** Apply per-drone path overrides (e.g. highlight flags) onto a base drone list. */
+/** Dispatched before SKYC export so open path editors flush pending edits. */
+export const DRONE_PATH_FLUSH_REQUEST = 'drone-path-flush-request';
+
+export const getInitialPositionForPathDelivery = (drone) => {
+  const first = Array.isArray(drone?.path) ? drone.path[0] : null;
+  if (first) {
+    const x = Number(first.x);
+    const y = Number(first.y);
+    const z = Number(first.z);
+    if (Number.isFinite(x) && Number.isFinite(y) && Number.isFinite(z)) {
+      return [x, y, z];
+    }
+  }
+  return parsePositionLike(drone?.initialPos, [0, 1, 1]);
+};
+
+export const buildPathDeliveryPayloadFromConfig = (baseConfig) => {
+  const drones = Array.isArray(baseConfig?.drones) ? baseConfig.drones : [];
+  return {
+    drones: drones
+      .map((d, index) => normalizeDroneForConfigIO(d, index))
+      .filter((d) => d.id && Array.isArray(d.path) && d.path.length)
+      .map((d) => ({
+        id: d.id,
+        initial_position: getInitialPositionForPathDelivery(d),
+        path: d.path.map((point) => {
+          const nextPoint = {
+            x: point.x,
+            y: point.y,
+            z: point.z,
+            durationMs: point.durationMs,
+          };
+          if (Number(point.holdMs) > 0) {
+            nextPoint.holdMs = point.holdMs;
+          }
+          return nextPoint;
+        }),
+      })),
+    output: 'skyc',
+    download: true,
+  };
+};
+
 export const mergePathOverridesIntoDrones = (baseDrones, overrideDrones) => {
   if (!Array.isArray(baseDrones) || !baseDrones.length) {
     return Array.isArray(baseDrones) ? baseDrones : [];

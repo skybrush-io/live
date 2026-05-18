@@ -1,11 +1,16 @@
 import { useEffect } from 'react';
 
-import { normalizeDroneForConfigIO } from '../utils/threeDViewUtils';
+import {
+  applyDronePathsToScene,
+  normalizeDroneForConfigIO,
+} from '../utils/threeDViewUtils';
 
 const sameDroneId = (a, b) => String(a) === String(b);
 
 export default function useThreeDViewDroneEvents({
   droneConfigRef,
+  pathOverridesByIdRef,
+  clearPathOverrides,
   setSelectedDrone,
   setDroneConfig,
   setPathProgress,
@@ -13,55 +18,6 @@ export default function useThreeDViewDroneEvents({
   showSpecDroneConfig,
 }) {
   useEffect(() => {
-    const applyGeneratedConfigToScene = (drones) => {
-      if (typeof window === 'undefined' || !Array.isArray(drones) || !drones.length) return;
-
-      // React 렌더로 엔티티 속성이 실제 DOM에 반영된 다음 브리지 이벤트를 보낸다.
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          drones.forEach((d) => {
-            if (!d?.id) return;
-
-            // path[0]이 곧 시작 위치. 없으면 기존 initialPos/pos로 fallback.
-            const firstPathPoint = Array.isArray(d.path) && d.path.length > 0 ? d.path[0] : null;
-            let pos = null;
-            if (firstPathPoint) {
-              const fx = Number(firstPathPoint.x);
-              const fy = Number(firstPathPoint.y);
-              const fz = Number(firstPathPoint.z);
-              if (Number.isFinite(fx) && Number.isFinite(fy) && Number.isFinite(fz)) {
-                pos = [fx, fy, fz];
-              }
-            }
-            if (!pos) {
-              pos = Array.isArray(d.initialPos) && d.initialPos.length >= 3 ? d.initialPos : d.pos;
-            }
-
-            if (Array.isArray(pos) && pos.length >= 3) {
-              const x = Number(pos[0]);
-              const y = Number(pos[1]);
-              const z = Number(pos[2]);
-              if (Number.isFinite(x) && Number.isFinite(y) && Number.isFinite(z)) {
-                window.dispatchEvent(
-                  new CustomEvent('drone-move-request', {
-                    detail: { id: d.id, x, y, z },
-                  })
-                );
-              }
-            }
-
-            if (Array.isArray(d.path) && d.path.length) {
-              window.dispatchEvent(
-                new CustomEvent('drone-path-updated', {
-                  detail: { id: d.id, path: d.path },
-                })
-              );
-            }
-          });
-        });
-      });
-    };
-
     const onSelected = (e) => {
       const base = e.detail ?? null;
       if (!base) {
@@ -94,6 +50,10 @@ export default function useThreeDViewDroneEvents({
     const onPathUpdated = (e) => {
       const { id, path } = e.detail || {};
       if (!id || !Array.isArray(path)) return;
+
+      if (pathOverridesByIdRef?.current) {
+        pathOverridesByIdRef.current.set(String(id), path.slice());
+      }
 
       const hasShowSpec =
         showSpecDroneConfig &&
@@ -248,10 +208,11 @@ export default function useThreeDViewDroneEvents({
       });
 
       setPathProgress(0);
+      clearPathOverrides?.();
       setDroneConfig({ drones: normalizedDrones });
       setSelectedDrone(null);
       window.dispatchEvent(new CustomEvent('drone-deselected'));
-      applyGeneratedConfigToScene(normalizedDrones);
+      applyDronePathsToScene(normalizedDrones);
     };
 
     window.addEventListener('drone-selected', onSelected);
@@ -274,8 +235,10 @@ export default function useThreeDViewDroneEvents({
       window.removeEventListener('path-generator-response', onPathGeneratorResponse);
     };
   }, [
+    clearPathOverrides,
     collectConfigFromScene,
     droneConfigRef,
+    pathOverridesByIdRef,
     setDroneConfig,
     setPathProgress,
     setSelectedDrone,

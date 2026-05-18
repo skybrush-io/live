@@ -1,7 +1,8 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 
 import {
+  DRONE_PATH_FLUSH_REQUEST,
   getPathPointArrivalTimesMs,
   toFiniteDurationMs,
   toFiniteHoldMs,
@@ -35,6 +36,9 @@ export default function DroneInfoPanel({
   onApplyAllDronesInPhase = () => {},
   onUpdateFormationSettings = () => {},
   onSendFormationPlan = () => {},
+  onDownloadSkyc = () => {},
+  isDownloadingSkyc = false,
+  skycDownloadStatus = '',
 }) {
   const [activeTab, setActiveTab] = useState('path');
   const [pathPoints, setPathPoints] = useState([
@@ -186,10 +190,12 @@ export default function DroneInfoPanel({
     setPathPoints((prev) => {
       const last = Array.isArray(prev) && prev.length ? prev[prev.length - 1] : null;
       const durationMs = last ? toFiniteDurationMs(last.durationMs, 1000) : 1000;
-      return [
+      const next = [
         ...prev,
         { x: '', y: '', z: '', durationMs, holdMs: 0, highlighted: false },
       ];
+      queueMicrotask(() => syncPathToConfig(next));
+      return next;
     });
   };
 
@@ -222,6 +228,7 @@ export default function DroneInfoPanel({
       };
 
       // 기본 빈 1행만 있는 경우에는 교체하고, 아니면 맨 뒤에 추가
+      let next;
       if (
         Array.isArray(prev) &&
         prev.length === 1 &&
@@ -229,58 +236,78 @@ export default function DroneInfoPanel({
         String(prev[0]?.y ?? '').trim() === '' &&
         String(prev[0]?.z ?? '').trim() === ''
       ) {
-        return [nextPoint];
+        next = [nextPoint];
+      } else {
+        next = [...(Array.isArray(prev) ? prev : []), nextPoint];
       }
-      return [...(Array.isArray(prev) ? prev : []), nextPoint];
+      queueMicrotask(() => syncPathToConfig(next));
+      return next;
     });
   };
 
   const removePathPoint = (index) => {
     setPathPoints((prev) => {
       if (!Array.isArray(prev) || !prev.length) {
-        return [{ x: '', y: '', z: '', durationMs: 0, holdMs: 0, highlighted: false }];
+        const empty = [{ x: '', y: '', z: '', durationMs: 0, holdMs: 0, highlighted: false }];
+        queueMicrotask(() => syncPathToConfig(empty));
+        return empty;
       }
 
       const next = prev.filter((_, i) => i !== index);
       if (!next.length) {
-        return [{ x: '', y: '', z: '', durationMs: 0, holdMs: 0, highlighted: false }];
+        const empty = [{ x: '', y: '', z: '', durationMs: 0, holdMs: 0, highlighted: false }];
+        queueMicrotask(() => syncPathToConfig(empty));
+        return empty;
       }
+      queueMicrotask(() => syncPathToConfig(next));
       return next;
     });
   };
 
-  const buildPathPointsForConfig = (source = pathPoints) =>
-    source
-      .filter((p) => isPathPointRowValid(p))
-      .map((p, index) => {
-        const point = {
-          x: Number(p.x),
-          y: Number(p.y),
-          z: Number(p.z),
-          durationMs: toFiniteDurationMs(p.durationMs, index === 0 ? 0 : 1000),
-          holdMs: toFiniteHoldMs(p.holdMs, 0),
-        };
-        if (p.highlighted) {
-          point.highlighted = true;
-        }
-        return point;
-      });
+  const buildPathPointsForConfig = useCallback(
+    (source = pathPoints) =>
+      source
+        .filter((p) => isPathPointRowValid(p))
+        .map((p, index) => {
+          const point = {
+            x: Number(p.x),
+            y: Number(p.y),
+            z: Number(p.z),
+            durationMs: toFiniteDurationMs(p.durationMs, index === 0 ? 0 : 1000),
+            holdMs: toFiniteHoldMs(p.holdMs, 0),
+          };
+          if (p.highlighted) {
+            point.highlighted = true;
+          }
+          return point;
+        }),
+    [pathPoints]
+  );
 
-  const syncPathToConfig = (source = pathPoints) => {
-    if (!drone?.id) return;
+  const syncPathToConfig = useCallback(
+    (source = pathPoints) => {
+      if (!drone?.id) return;
 
-    const points = buildPathPointsForConfig(source);
-    if (!points.length) return;
+      const points = buildPathPointsForConfig(source);
+      if (!points.length) return;
 
-    window.dispatchEvent(
-      new CustomEvent('drone-path-updated', {
-        detail: {
-          id: drone.id,
-          path: points,
-        },
-      })
-    );
-  };
+      window.dispatchEvent(
+        new CustomEvent('drone-path-updated', {
+          detail: {
+            id: drone.id,
+            path: points,
+          },
+        })
+      );
+    },
+    [buildPathPointsForConfig, drone?.id, pathPoints]
+  );
+
+  useEffect(() => {
+    const onFlush = () => syncPathToConfig();
+    window.addEventListener(DRONE_PATH_FLUSH_REQUEST, onFlush);
+    return () => window.removeEventListener(DRONE_PATH_FLUSH_REQUEST, onFlush);
+  }, [syncPathToConfig]);
 
   const togglePathPointHighlight = (index) => {
     setPathPoints((prev) => {
@@ -435,6 +462,7 @@ export default function DroneInfoPanel({
             <input
               value={p.x}
               onChange={(e) => updatePathPoint(idx, 'x', e.target.value)}
+              onBlur={() => queueMicrotask(() => syncPathToConfig())}
               placeholder="X"
               inputMode="decimal"
               style={smallInputStyle}
@@ -442,6 +470,7 @@ export default function DroneInfoPanel({
             <input
               value={p.y}
               onChange={(e) => updatePathPoint(idx, 'y', e.target.value)}
+              onBlur={() => queueMicrotask(() => syncPathToConfig())}
               placeholder="Y"
               inputMode="decimal"
               style={smallInputStyle}
@@ -449,6 +478,7 @@ export default function DroneInfoPanel({
             <input
               value={p.z}
               onChange={(e) => updatePathPoint(idx, 'z', e.target.value)}
+              onBlur={() => queueMicrotask(() => syncPathToConfig())}
               placeholder="Z"
               inputMode="decimal"
               style={smallInputStyle}
@@ -541,6 +571,49 @@ export default function DroneInfoPanel({
             경로 재생
           </button>
         </div>
+        <button
+          type="button"
+          disabled={!canPlayPath || isDownloadingSkyc}
+          onClick={() => {
+            syncPathToConfig();
+            onDownloadSkyc();
+          }}
+          style={{
+            marginTop: 10,
+            width: '100%',
+            padding: '10px 12px',
+            borderRadius: 8,
+            border: '1px solid rgba(120, 255, 175, 0.42)',
+            background:
+              !canPlayPath || isDownloadingSkyc
+                ? 'rgba(80, 116, 97, 0.45)'
+                : 'rgba(25, 129, 76, 0.42)',
+            color: '#e8fff1',
+            cursor: !canPlayPath || isDownloadingSkyc ? 'not-allowed' : 'pointer',
+            fontWeight: 700,
+            fontSize: 13,
+            letterSpacing: 0.2,
+          }}
+        >
+          {isDownloadingSkyc ? '다운로드 중...' : '수정된 경로로 .skyc 다운로드'}
+        </button>
+
+        {skycDownloadStatus && (
+          <div
+            style={{
+              marginTop: 10,
+              padding: '8px 10px',
+              borderRadius: 8,
+              border: '1px solid rgba(126, 200, 255, 0.28)',
+              background: 'rgba(83, 170, 255, 0.12)',
+              color: '#cce8ff',
+              whiteSpace: 'pre-line',
+              fontSize: 11.5,
+            }}
+          >
+            {skycDownloadStatus}
+          </div>
+        )}
       </div>
 
       <div style={{ marginTop: 10, fontSize: 12, opacity: 0.6 }}>
@@ -1392,4 +1465,7 @@ DroneInfoPanel.propTypes = {
   onApplyAllDronesInPhase: PropTypes.func,
   onUpdateFormationSettings: PropTypes.func,
   onSendFormationPlan: PropTypes.func,
+  onDownloadSkyc: PropTypes.func,
+  isDownloadingSkyc: PropTypes.bool,
+  skycDownloadStatus: PropTypes.string,
 };

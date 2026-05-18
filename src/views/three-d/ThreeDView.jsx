@@ -24,8 +24,12 @@ import AddDroneModal from './AddDroneModal';
 import PathGeneratorModal from './PathGeneratorModal';
 import useThreeDViewDroneEvents from './hooks/useThreeDViewDroneEvents';
 import {
+  applyDronePathsToScene,
+  buildPathDeliveryPayloadFromConfig,
   buildSeekPathWithInitial,
   collectConfigFromScene as collectConfigFromSceneUtil,
+  DRONE_PATH_FLUSH_REQUEST,
+  fingerprintShowSpecDroneConfig,
   getEffectiveScenery as getEffectiveSceneryUtil,
   getPathTotalDurationMs,
   mergePathOverridesIntoDrones,
@@ -595,6 +599,11 @@ const ThreeDView = React.forwardRef((props, ref) => {
   const [pendingAutoSelectDrone, setPendingAutoSelectDrone] = useState(null);
   const droneConfigRef = useRef(null);
   droneConfigRef.current = droneConfig;
+  const pathOverridesByIdRef = useRef(new Map());
+  const clearPathOverrides = useCallback(() => {
+    pathOverridesByIdRef.current.clear();
+  }, []);
+  const showSpecFingerprintRef = useRef('');
   const ignorePersistedDroneConfigRef = useRef(false);
   const formationHydratedFromPersistRef = useRef(false);
   const snapDronesToHomeAfterRehydrateRef = useRef(false);
@@ -710,12 +719,66 @@ const ThreeDView = React.forwardRef((props, ref) => {
 
   useThreeDViewDroneEvents({
     droneConfigRef,
+    pathOverridesByIdRef,
+    clearPathOverrides,
     setSelectedDrone,
     setDroneConfig,
     setPathProgress,
     collectConfigFromScene,
     showSpecDroneConfig,
   });
+
+  // .skyc 업로드/교체 시 이전 JSON·패널 경로 오버라이드를 버리고 spec 경로로 재설정
+  useEffect(() => {
+    const hasShowSpec =
+      showSpecDroneConfig &&
+      Array.isArray(showSpecDroneConfig.drones) &&
+      showSpecDroneConfig.drones.length > 0;
+
+    const nextFingerprint = hasShowSpec
+      ? fingerprintShowSpecDroneConfig(showSpecDroneConfig)
+      : '';
+
+    if (nextFingerprint === showSpecFingerprintRef.current) {
+      return;
+    }
+
+    showSpecFingerprintRef.current = nextFingerprint;
+
+    if (!hasShowSpec) {
+      return;
+    }
+
+    const drones = showSpecDroneConfig.drones;
+
+    ignorePersistedDroneConfigRef.current = true;
+    clearPathOverrides();
+    setDroneConfig(null);
+    setPathProgress(0);
+    setIsPlaybackRunning(false);
+    playbackActiveDroneIdsRef.current = [];
+    playbackFinishedDroneIdsRef.current = new Set();
+
+    setSelectedDrone((prev) => {
+      if (!prev?.id) return prev;
+      const found = drones.find((d) => String(d?.id) === String(prev.id));
+      if (!found) return prev;
+      const next = {
+        ...prev,
+        path: Array.isArray(found.path) ? found.path.slice() : [],
+      };
+      if (Array.isArray(found.initialPos) && found.initialPos.length >= 3) {
+        next.initialPosition = {
+          x: Number(found.initialPos[0]) || 0,
+          y: Number(found.initialPos[1]) || 0,
+          z: Number(found.initialPos[2]) || 0,
+        };
+      }
+      return next;
+    });
+
+    applyDronePathsToScene(drones);
+  }, [showSpecDroneConfig, clearPathOverrides]);
 
   const extraCameraProps = {
     'advanced-camera-controls': objectToString({
@@ -790,6 +853,7 @@ const ThreeDView = React.forwardRef((props, ref) => {
           setFormationSettings(formationImport.settings);
         }
 
+        clearPathOverrides();
         setDroneConfig({
           ...stripFormationFromDroneConfigRoot(parsed),
           drones: normalizedDrones,
@@ -870,91 +934,6 @@ const ThreeDView = React.forwardRef((props, ref) => {
       }
     }
     URL.revokeObjectURL(url);
-  };
-
-  const buildPathDeliveryPayload = (baseConfig) => {
-    const drones = Array.isArray(baseConfig?.drones) ? baseConfig.drones : [];
-    return {
-      drones: drones
-        .map((d, index) => normalizeDroneForConfigIO(d, index))
-        .filter((d) => d.id && Array.isArray(d.path) && d.path.length)
-        .map((d) => ({
-          id: d.id,
-          initial_position: d.initialPos,
-          path: d.path.map((point) => {
-            const nextPoint = {
-              x: point.x,
-              y: point.y,
-              z: point.z,
-              durationMs: point.durationMs,
-            };
-            if (Number(point.holdMs) > 0) {
-              nextPoint.holdMs = point.holdMs;
-            }
-            return nextPoint;
-          }),
-        })),
-      output: 'skyc',
-      download: true,
-    };
-  };
-
-  const handleSendPathsClick = async () => {
-    const baseConfig =
-      effectiveConfig && Array.isArray(effectiveConfig.drones) && effectiveConfig.drones.length
-        ? effectiveConfig
-        : collectConfigFromScene();
-    const payload = buildPathDeliveryPayload(baseConfig);
-
-    if (!payload.drones.length) {
-      setPathDeliveryStatus('전달할 드론 경로가 없습니다.');
-      return;
-    }
-
-    const usedUrl = DEFAULT_PATH_DELIVERY_URL;
-    setIsSendingPaths(true);
-    setPathDeliveryStatus('');
-
-    try {
-      const response = await fetch(usedUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) {
-        const msg = await getPathDeliveryErrorMessage(response);
-        throw new Error(msg || `요청 실패: ${response.status}`);
-      }
-
-      const blob = await response.blob();
-      const objectUrl = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = objectUrl;
-      a.download = 'path-planner.skyc';
-      document.body.appendChild(a);
-      a.click();
-      if (a.parentNode === document.body) {
-        try {
-          document.body.removeChild(a);
-        } catch (error) {
-          if (error?.name !== 'NotFoundError') throw error;
-        }
-      }
-      URL.revokeObjectURL(objectUrl);
-
-      setPathDeliveryStatus(
-        `경로 전달 완료: ${payload.drones.length}대\npath-planner.skyc 다운로드가 시작되었습니다.\nURL: ${usedUrl}\nProxy target: ${PATH_DELIVERY_PROXY_TARGET}`
-      );
-    } catch (error) {
-      setPathDeliveryStatus(
-        `경로 전달 실패: ${error instanceof Error ? error.message : '알 수 없는 오류'}\nURL: ${usedUrl}\nProxy target: ${PATH_DELIVERY_PROXY_TARGET}`
-      );
-    } finally {
-      setIsSendingPaths(false);
-    }
   };
 
   const handleAddDrone = (newDrone) => {
@@ -1056,6 +1035,91 @@ const ThreeDView = React.forwardRef((props, ref) => {
     return collectConfigFromScene();
   }, [droneConfig, showSpecDroneConfig, collectConfigFromScene]);
   droneConfigRef.current = effectiveConfig;
+
+  const getConfigForPathDelivery = useCallback(() => {
+    const base =
+      effectiveConfig && Array.isArray(effectiveConfig.drones) && effectiveConfig.drones.length
+        ? effectiveConfig
+        : collectConfigFromScene();
+
+    const overrideList = Array.from(pathOverridesByIdRef.current.entries()).map(
+      ([id, path]) => ({ id, path })
+    );
+    if (!overrideList.length) {
+      return base;
+    }
+
+    return {
+      ...base,
+      drones: mergePathOverridesIntoDrones(base.drones, overrideList),
+    };
+  }, [collectConfigFromScene, effectiveConfig]);
+
+  const flushPendingPathEdits = useCallback(
+    () =>
+      new Promise((resolve) => {
+        window.dispatchEvent(new CustomEvent(DRONE_PATH_FLUSH_REQUEST));
+        queueMicrotask(resolve);
+      }),
+    []
+  );
+
+  const handleSendPathsClick = useCallback(async () => {
+    await flushPendingPathEdits();
+
+    const baseConfig = getConfigForPathDelivery();
+    const payload = buildPathDeliveryPayloadFromConfig(baseConfig);
+
+    if (!payload.drones.length) {
+      setPathDeliveryStatus('전달할 드론 경로가 없습니다.');
+      return;
+    }
+
+    const usedUrl = DEFAULT_PATH_DELIVERY_URL;
+    setIsSendingPaths(true);
+    setPathDeliveryStatus('');
+
+    try {
+      const response = await fetch(usedUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const msg = await getPathDeliveryErrorMessage(response);
+        throw new Error(msg || `요청 실패: ${response.status}`);
+      }
+
+      const blob = await response.blob();
+      const objectUrl = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = objectUrl;
+      a.download = 'path-planner.skyc';
+      document.body.appendChild(a);
+      a.click();
+      if (a.parentNode === document.body) {
+        try {
+          document.body.removeChild(a);
+        } catch (error) {
+          if (error?.name !== 'NotFoundError') throw error;
+        }
+      }
+      URL.revokeObjectURL(objectUrl);
+
+      setPathDeliveryStatus(
+        `경로 전달 완료: ${payload.drones.length}대\npath-planner.skyc 다운로드가 시작되었습니다.\nURL: ${usedUrl}\nProxy target: ${PATH_DELIVERY_PROXY_TARGET}`
+      );
+    } catch (error) {
+      setPathDeliveryStatus(
+        `경로 전달 실패: ${error instanceof Error ? error.message : '알 수 없는 오류'}\nURL: ${usedUrl}\nProxy target: ${PATH_DELIVERY_PROXY_TARGET}`
+      );
+    } finally {
+      setIsSendingPaths(false);
+    }
+  }, [flushPendingPathEdits, getConfigForPathDelivery]);
 
   const selectedPathDroneId = useMemo(() => {
     if (!selectedDrone?.id || !Array.isArray(effectiveConfig?.drones)) return undefined;
@@ -1331,10 +1395,12 @@ const ThreeDView = React.forwardRef((props, ref) => {
     setSelectedDrone(null);
     setPendingAutoSelectDrone(null);
     window.dispatchEvent(new CustomEvent('drone-deselected'));
+    clearPathOverrides();
     setDroneConfig(null);
     setFormationPhases([]);
     setFormationSettings(DEFAULT_FORMATION_SETTINGS);
     setFormationDeliveryStatus('');
+    setPathDeliveryStatus('');
   };
 
   const generateFormationPhaseId = () =>
@@ -1783,6 +1849,9 @@ const ThreeDView = React.forwardRef((props, ref) => {
         onApplyAllDronesInPhase={handleApplyAllDronesInPhase}
         onUpdateFormationSettings={handleUpdateFormationSettings}
         onSendFormationPlan={handleSendFormationPlan}
+        onDownloadSkyc={handleSendPathsClick}
+        isDownloadingSkyc={isSendingPaths}
+        skycDownloadStatus={pathDeliveryStatus}
       />
       )}
 

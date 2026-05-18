@@ -174,22 +174,7 @@ export default function PathControlPanel({
             저장
           </button>
         </div>
-        {/* <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
-          <button
-            type="button"
-            onClick={onOpenPathGenerator}
-            style={{
-              flex: 1,
-              padding: '7px 8px',
-              borderRadius: 8,
-              border: '1px solid rgba(126, 200, 255, 0.36)',
-              background: 'rgba(22, 68, 110, 0.34)',
-              color: '#dcefff',
-              cursor: 'pointer',
-            }}
-          >
-            경로 생성하기
-          </button>
+        <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
           <button
             type="button"
             onClick={onSendPathsClick}
@@ -207,9 +192,9 @@ export default function PathControlPanel({
               opacity: isSendingPaths ? 0.75 : 1,
             }}
           >
-            {isSendingPaths ? '전달 중...' : '경로 전달하기'}
+            {isSendingPaths ? '다운로드 중...' : '수정된 경로로 .skyc 다운로드'}
           </button>
-        </div> */}
+        </div>
         {pathDeliveryStatus && (
           <div
             style={{
