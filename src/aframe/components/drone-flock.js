@@ -17,6 +17,7 @@ import { setFeatureIdForTooltip } from '~/features/session/slice';
 import UAVErrorCode from '~/flockwave/UAVErrorCode';
 import { getPreferredDroneRadius } from '~/features/three-d/selectors';
 import flock from '~/flock';
+import { abbreviateGPSFixType } from '~/model/enums';
 import { uavIdToGlobalId } from '~/model/identifiers';
 import { getFlatEarthCoordinateTransformer } from '~/selectors/map';
 import store from '~/store';
@@ -25,11 +26,166 @@ const { THREE } = AFrame;
 const DRONE_BODY_COLOR = 0xff8c00;
 const DRONE_ARMED_COLOR = 0x00ff00;
 const DRONE_HOVER_COLOR = 0xff0000;
+const DRONE_SELECTION_BOX_COLOR = 0x58c7ff;
+const TOOLTIP_WIDTH = 440;
+const TOOLTIP_HEIGHT = 220;
 
 const getDroneBodyColorFromUAV = (uav) =>
   uav.errors.includes(UAVErrorCode.MOTORS_RUNNING_WHILE_ON_GROUND)
     ? DRONE_ARMED_COLOR
     : DRONE_BODY_COLOR;
+
+const getDroneStatusTextFromUAV = (uav) => {
+  if (uav.errors?.includes(UAVErrorCode.ON_GROUND)) return 'ground';
+  if (uav.errors?.length > 0) return UAVErrorCode.abbreviate(Math.max(...uav.errors));
+  if (uav.position && Math.abs(uav.position.ahl ?? 0) >= 0.3) {
+    return `airborne ${(uav.position.ahl ?? 0).toFixed(2)}m`;
+  }
+  return uav.mode || uav.age || 'ready';
+};
+
+const getDroneBatteryTextFromUAV = (uav) => {
+  const voltage = Number(uav.battery?.voltage);
+  if (Number.isFinite(voltage) && voltage > 0) return `${voltage.toFixed(2)}V`;
+
+  const percentage = Number(uav.battery?.percentage);
+  if (Number.isFinite(percentage)) return `${Math.round(percentage)}%`;
+
+  return '';
+};
+
+const formatOptionalNumber = (value, digits = 1) => {
+  const numeric = Number(value);
+  return Number.isFinite(numeric) ? numeric.toFixed(digits) : '';
+};
+
+const getDroneTelemetryFromUAV = (uav) => {
+  const batteryVoltage = formatOptionalNumber(uav.battery?.voltage, 2);
+  const batteryPercentage = formatOptionalNumber(uav.battery?.percentage, 0);
+  const gpsFix = uav.gpsFix?.type === undefined
+    ? ''
+    : abbreviateGPSFixType(uav.gpsFix.type);
+  const satellites = formatOptionalNumber(uav.gpsFix?.numSatellites, 0);
+  const heading = formatOptionalNumber(uav.heading, 0);
+
+  return {
+    ahl: formatOptionalNumber(uav.position?.ahl, 1),
+    agl: formatOptionalNumber(uav.position?.agl, 1),
+    amsl: formatOptionalNumber(uav.position?.amsl, 1),
+    battery: getDroneBatteryTextFromUAV(uav),
+    batteryPercentage,
+    batteryVoltage,
+    gpsFix,
+    heading,
+    mode: uav.mode || '',
+    satellites,
+    status: getDroneStatusTextFromUAV(uav),
+  };
+};
+
+const formatTelemetryTooltipValue = (value, suffix = '') => {
+  const text = String(value ?? '').trim();
+  return text ? `${text}${suffix}` : '-';
+};
+
+const buildTelemetryTooltipLines = (id, telemetry) => [
+  {
+    kind: 'header',
+    text: `${id}  ${formatTelemetryTooltipValue(telemetry.battery)}  ${formatTelemetryTooltipValue(
+      telemetry.heading,
+      '°'
+    )}`,
+  },
+  { kind: 'status', text: formatTelemetryTooltipValue(telemetry.status).toUpperCase() },
+  {
+    kind: 'normal',
+    text: `${formatTelemetryTooltipValue(telemetry.mode)}    ${formatTelemetryTooltipValue(
+      telemetry.gpsFix
+    )}`,
+  },
+  {
+    kind: 'normal',
+    text: `${formatTelemetryTooltipValue(telemetry.ahl, ' m AHL')}    ${formatTelemetryTooltipValue(
+      telemetry.satellites,
+      ' sats'
+    )}`,
+  },
+  {
+    kind: 'muted',
+    text: `${formatTelemetryTooltipValue(telemetry.amsl, ' m AMSL')}    ${formatTelemetryTooltipValue(
+      telemetry.agl,
+      ' m AGL'
+    )}`,
+  },
+];
+
+const drawRoundedRect = (ctx, x, y, width, height, radius) => {
+  ctx.beginPath();
+  ctx.moveTo(x + radius, y);
+  ctx.lineTo(x + width - radius, y);
+  ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+  ctx.lineTo(x + width, y + height - radius);
+  ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+  ctx.lineTo(x + radius, y + height);
+  ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+  ctx.lineTo(x, y + radius);
+  ctx.quadraticCurveTo(x, y, x + radius, y);
+  ctx.closePath();
+};
+
+const createTelemetryTooltipTexture = (id, telemetry) => {
+  const canvas = document.createElement('canvas');
+  canvas.width = TOOLTIP_WIDTH;
+  canvas.height = TOOLTIP_HEIGHT;
+  const ctx = canvas.getContext('2d');
+
+  ctx.clearRect(0, 0, TOOLTIP_WIDTH, TOOLTIP_HEIGHT);
+  ctx.shadowColor = 'rgba(0, 0, 0, 0.35)';
+  ctx.shadowBlur = 18;
+  ctx.shadowOffsetY = 8;
+  drawRoundedRect(ctx, 16, 14, TOOLTIP_WIDTH - 32, TOOLTIP_HEIGHT - 28, 18);
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+  ctx.fill();
+  ctx.shadowColor = 'transparent';
+  ctx.lineWidth = 2;
+  ctx.strokeStyle = 'rgba(30, 40, 54, 0.16)';
+  ctx.stroke();
+
+  const lines = buildTelemetryTooltipLines(id, telemetry);
+  let y = 54;
+
+  for (const line of lines) {
+    if (line.kind === 'status') {
+      drawRoundedRect(ctx, 32, y - 24, TOOLTIP_WIDTH - 64, 34, 17);
+      ctx.fillStyle = 'rgba(0, 200, 83, 0.9)';
+      ctx.fill();
+      ctx.fillStyle = '#111827';
+      ctx.font = 'bold 24px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(line.text, TOOLTIP_WIDTH / 2, y);
+      y += 44;
+      continue;
+    }
+
+    ctx.textAlign = 'left';
+    if (line.kind === 'header') {
+      ctx.fillStyle = '#111827';
+      ctx.font = 'bold 28px sans-serif';
+    } else if (line.kind === 'muted') {
+      ctx.fillStyle = 'rgba(17, 24, 39, 0.55)';
+      ctx.font = '22px sans-serif';
+    } else {
+      ctx.fillStyle = '#111827';
+      ctx.font = '22px sans-serif';
+    }
+    ctx.fillText(line.text, 42, y);
+    y += line.kind === 'header' ? 42 : 34;
+  }
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.needsUpdate = true;
+  return texture;
+};
 
 /**
  * Selector that takes the Redux state and returns a function that can be called
@@ -108,7 +264,69 @@ AFrame.registerSystem('drone-flock', {
     return element;
   },
 
+  updateTelemetryTooltip(entity, id, telemetry) {
+    const signature = JSON.stringify({ id, ...telemetry });
+    if (entity.telemetryTooltipSignature === signature) {
+      return;
+    }
+
+    entity.telemetryTooltipSignature = signature;
+    const texture = createTelemetryTooltipTexture(id, telemetry);
+
+    if (!entity.telemetryTooltip) {
+      const material = new THREE.SpriteMaterial({
+        map: texture,
+        transparent: true,
+        depthTest: false,
+        depthWrite: false,
+      });
+      const sprite = new THREE.Sprite(material);
+      sprite.userData.clickPickIgnore = true;
+      sprite.position.set(0, 0, this._droneRadius * 3.5);
+      sprite.scale.set(this._droneRadius * 4.9, this._droneRadius * 2.45, 1);
+      sprite.renderOrder = 999;
+      sprite.visible = Boolean(entity.isHovered || entity.isSelected);
+      entity.object3D.add(sprite);
+      entity.telemetryTooltip = sprite;
+      return;
+    }
+
+    const oldMap = entity.telemetryTooltip.material.map;
+    entity.telemetryTooltip.material.map = texture;
+    entity.telemetryTooltip.material.needsUpdate = true;
+    if (oldMap) oldMap.dispose();
+  },
+
+  disposeTelemetryTooltip(entity) {
+    if (!entity?.telemetryTooltip) return;
+    entity.object3D.remove(entity.telemetryTooltip);
+    if (entity.telemetryTooltip.material.map) {
+      entity.telemetryTooltip.material.map.dispose();
+    }
+    entity.telemetryTooltip.material.dispose();
+    entity.telemetryTooltip = null;
+    entity.telemetryTooltipSignature = null;
+  },
+
   updateEntityFromUAV(entity, uav) {
+    const telemetry = getDroneTelemetryFromUAV(uav);
+
+    entity.setAttribute('data-drone-id', uav.id);
+    entity.setAttribute('data-drone-name', uav.id);
+    entity.setAttribute('data-drone-source', 'uav');
+    entity.setAttribute('data-status', telemetry.status);
+    entity.setAttribute('data-battery', telemetry.battery);
+    entity.setAttribute('data-battery-percentage', telemetry.batteryPercentage);
+    entity.setAttribute('data-battery-voltage', telemetry.batteryVoltage);
+    entity.setAttribute('data-mode', telemetry.mode);
+    entity.setAttribute('data-gps-fix', telemetry.gpsFix);
+    entity.setAttribute('data-satellites', telemetry.satellites);
+    entity.setAttribute('data-ahl', telemetry.ahl);
+    entity.setAttribute('data-agl', telemetry.agl);
+    entity.setAttribute('data-amsl', telemetry.amsl);
+    entity.setAttribute('data-heading', telemetry.heading);
+    this.updateTelemetryTooltip(entity, uav.id, telemetry);
+
     if (uav.hasLocalPosition) {
       this._updatePositionFromLocalCoordinates(
         uav.localPosition,
@@ -118,6 +336,11 @@ AFrame.registerSystem('drone-flock', {
       this._updatePositionFromGPSCoordinates(uav, entity.object3D.position);
     }
     entity.object3D.position.z += this._droneRadius;
+    entity.setAttribute('position', {
+      x: entity.object3D.position.x,
+      y: entity.object3D.position.y,
+      z: entity.object3D.position.z,
+    });
 
     const bodyColor = getDroneBodyColorFromUAV(uav);
     entity.originalColor = bodyColor;
@@ -130,26 +353,71 @@ AFrame.registerSystem('drone-flock', {
       // the color somewhere and attempt setting it again in case there will be
       // no further updates from the UAV for a while
     }
+
+    if (entity.isSelected) {
+      window.dispatchEvent(
+        new CustomEvent('drone-status-updated', {
+          detail: {
+            id: uav.id,
+            name: uav.id,
+            ...telemetry,
+          },
+        })
+      );
+    }
   },
 
   updateEntityGeometry(entity) {
     entity.setAttribute('geometry', this._droneGeometry);
 
-    // Update edges
-    if (entity.edgesLine) {
-      entity.object3D.remove(entity.edgesLine);
-      entity.edgesLine.geometry.dispose();
-      entity.edgesLine.material.dispose();
-      entity.edgesLine = null;
+    // Update selection box
+    if (entity.selectionBox) {
+      entity.object3D.remove(entity.selectionBox);
+      entity.selectionBox.geometry.dispose();
+      entity.selectionBox.material.dispose();
+      entity.selectionBox = null;
     }
 
-    const mesh = entity.getObject3D('mesh');
-    if (mesh) {
-      const edges = new THREE.EdgesGeometry(mesh.geometry);
-      const line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0xff0000 }));
-      line.visible = false;
-      entity.object3D.add(line);
-      entity.edgesLine = line;
+    const size = this._droneRadius * 2.8;
+    const boxGeometry = new THREE.BoxGeometry(size, size, size);
+    const edges = new THREE.EdgesGeometry(boxGeometry);
+    boxGeometry.dispose();
+    const line = new THREE.LineSegments(
+      edges,
+      new THREE.LineBasicMaterial({
+        color: DRONE_SELECTION_BOX_COLOR,
+        depthTest: false,
+        transparent: true,
+        opacity: 0.95,
+      })
+    );
+    line.userData.clickPickIgnore = true;
+    line.visible = Boolean(entity.isHovered || entity.isSelected);
+    entity.object3D.add(line);
+    entity.selectionBox = line;
+
+    if (entity.telemetryTooltip) {
+      entity.telemetryTooltip.position.set(0, 0, this._droneRadius * 3.5);
+      entity.telemetryTooltip.scale.set(this._droneRadius * 4.9, this._droneRadius * 2.45, 1);
+    }
+  },
+
+  setEntityHovered(entity, hovered) {
+    entity.isHovered = hovered;
+    this.updateSelectionBoxVisibility(entity);
+  },
+
+  setEntitySelected(entity, selected) {
+    entity.isSelected = selected;
+    this.updateSelectionBoxVisibility(entity);
+  },
+
+  updateSelectionBoxVisibility(entity) {
+    if (entity?.selectionBox) {
+      entity.selectionBox.visible = Boolean(entity.isHovered || entity.isSelected);
+    }
+    if (entity?.telemetryTooltip) {
+      entity.telemetryTooltip.visible = Boolean(entity.isHovered || entity.isSelected);
     }
   },
 
@@ -180,8 +448,12 @@ AFrame.registerComponent('drone-flock', {
     this._onUAVsRemoved = this._onUAVsRemoved.bind(this);
     this._onUAVsUpdated = this._onUAVsUpdated.bind(this);
     this._onUAVGeometryChanged = this._onUAVGeometryChanged.bind(this);
+    this._onDroneSelected = this._onDroneSelected.bind(this);
+    this._onDroneDeselected = this._onDroneDeselected.bind(this);
+    this._onSelectionChanged = this._onSelectionChanged.bind(this);
 
     this._uavIdToEntity = {};
+    this._selectedUAVIds = getSelectedUAVIds(store.getState());
 
     // mini-signals v2: detach()는 add()를 호출한 “그 MiniSignal 인스턴스”에서만 호출해야 한다.
     // Golden Layout 등으로 씬이 바뀌면 this.system이 새 시스템을 가리켜 심볼 불일치 오류가 난다.
@@ -194,11 +466,25 @@ AFrame.registerComponent('drone-flock', {
       uavsRemoved: flock.uavsRemoved.add(this._onUAVsRemoved),
       uavsUpdated: flock.uavsUpdated.add(this._onUAVsUpdated),
     };
+    const selectionGetter = () => getSelectedUAVIds(store.getState());
+    this._unsubscribeSelection = store.subscribe(
+      watch(selectionGetter)(this._onSelectionChanged)
+    );
 
     this._pendingUAVsToAdd = flock.getAllUAVIds();
+    window.addEventListener('drone-selected', this._onDroneSelected);
+    window.addEventListener('drone-deselected', this._onDroneDeselected);
   },
 
   remove() {
+    window.removeEventListener('drone-selected', this._onDroneSelected);
+    window.removeEventListener('drone-deselected', this._onDroneDeselected);
+
+    if (this._unsubscribeSelection) {
+      this._unsubscribeSelection();
+      this._unsubscribeSelection = null;
+    }
+
     if (!this._signals) {
       return;
     }
@@ -245,6 +531,9 @@ AFrame.registerComponent('drone-flock', {
         this.el.append(entity);
 
         entity.className = 'three-d-clickable';
+        entity.setAttribute('data-drone-id', id);
+        entity.setAttribute('data-drone-name', id);
+        entity.setAttribute('data-drone-source', 'uav');
         entity.addEventListener('mouseenter', () => {
           store.dispatch(setFeatureIdForTooltip(uavIdToGlobalId(id)));
           const mesh = entity.getObject3D('mesh');
@@ -252,9 +541,7 @@ AFrame.registerComponent('drone-flock', {
             entity.originalColor = entity.originalColor || mesh.material.color.getHex();
             mesh.material.color.setHex(DRONE_HOVER_COLOR);
           }
-          if (entity.edgesLine) {
-            entity.edgesLine.visible = true;
-          }
+          this.system.setEntityHovered(entity, true);
         });
         entity.addEventListener('mouseleave', () => {
           store.dispatch(setFeatureIdForTooltip(null));
@@ -262,16 +549,14 @@ AFrame.registerComponent('drone-flock', {
           if (mesh && entity.originalColor) {
             mesh.material.color.setHex(entity.originalColor);
           }
-          if (entity.edgesLine) {
-            entity.edgesLine.visible = false;
-          }
+          this.system.setEntityHovered(entity, false);
         });
         entity.addEventListener('click', (event) => {
           // TODO(ntamas): the click event we receive from A-Frame does not
           // contain the information about whether the Ctrl/Cmd key is pressed.
           // We need to subscribe to keydown/keyup events on our own to record
           // this information and use it.
-          store.dispatch(this.system._selectionThunk(event, id));
+          store.dispatch(this.system._selectionThunk(id, event));
         });
 
         this._uavIdToEntity[id] = entity;
@@ -283,14 +568,53 @@ AFrame.registerComponent('drone-flock', {
   _ensureUAVEntityDoesNotExist(uav) {
     const existingEntity = this._getEntityForUAV(uav);
     if (existingEntity) {
+      this.system.disposeTelemetryTooltip(existingEntity);
       existingEntity.remove();
     }
 
-    delete this._uavIdToEntity[uav.id];
+    const { [uav.id]: _removed, ...remainingEntities } = this._uavIdToEntity;
+    this._uavIdToEntity = remainingEntities;
   },
 
   _getEntityForUAV(uav) {
     return this._uavIdToEntity[uav ? uav.id : undefined];
+  },
+
+  _setSelectedUAVIds(ids) {
+    this._selectedUAVIds = Array.isArray(ids) ? ids.map(String) : [];
+    const selectedIds = new Set(this._selectedUAVIds);
+    for (const [id, entity] of Object.entries(this._uavIdToEntity)) {
+      this.system.setEntitySelected(entity, selectedIds.has(String(id)));
+    }
+  },
+
+  _onDroneSelected(event) {
+    const id = event.detail?.id;
+    if (!id || !this._uavIdToEntity[id]) {
+      const hadSelection = this._selectedUAVIds?.some(
+        (selectedId) => this._uavIdToEntity[selectedId]
+      );
+      this._setSelectedUAVIds([]);
+      if (hadSelection) {
+        store.dispatch(setSelectedUAVIds([]));
+      }
+      return;
+    }
+
+    this._setSelectedUAVIds([id]);
+    store.dispatch(setSelectedUAVIds([id]));
+  },
+
+  _onDroneDeselected() {
+    const hadSelection = this._selectedUAVIds?.some((id) => this._uavIdToEntity[id]);
+    this._setSelectedUAVIds([]);
+    if (hadSelection) {
+      store.dispatch(setSelectedUAVIds([]));
+    }
+  },
+
+  _onSelectionChanged(newValue) {
+    this._setSelectedUAVIds(newValue);
   },
 
   _onUAVsAdded(uavs) {
@@ -319,5 +643,6 @@ AFrame.registerComponent('drone-flock', {
     for (const entity of Object.values(this._uavIdToEntity)) {
       this.system.updateEntityGeometry(entity);
     }
+    this._setSelectedUAVIds(this._selectedUAVIds);
   },
 });

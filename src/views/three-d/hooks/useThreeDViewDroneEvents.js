@@ -172,6 +172,19 @@ export default function useThreeDViewDroneEvents({
       });
     };
 
+    const onDroneStatusUpdated = (e) => {
+      const { id, ...updates } = e.detail || {};
+      if (!id) return;
+
+      setSelectedDrone((prev) => {
+        if (!prev || !sameDroneId(prev.id, id)) return prev;
+        return {
+          ...prev,
+          ...updates,
+        };
+      });
+    };
+
     const onDroneDeleteRequest = (e) => {
       const raw = e.detail?.id;
       if (raw === undefined || raw === null || String(raw).trim() === '') return;
@@ -223,6 +236,7 @@ export default function useThreeDViewDroneEvents({
     window.addEventListener('drone-path-updated', onPathUpdated);
     window.addEventListener('drone-initial-pos-updated', onInitialPosUpdated);
     window.addEventListener('drone-moved', onDroneMoved);
+    window.addEventListener('drone-status-updated', onDroneStatusUpdated);
     window.addEventListener('drone-delete-request', onDroneDeleteRequest);
     window.addEventListener('path-generator-response', onPathGeneratorResponse);
 
@@ -232,6 +246,7 @@ export default function useThreeDViewDroneEvents({
       window.removeEventListener('drone-path-updated', onPathUpdated);
       window.removeEventListener('drone-initial-pos-updated', onInitialPosUpdated);
       window.removeEventListener('drone-moved', onDroneMoved);
+      window.removeEventListener('drone-status-updated', onDroneStatusUpdated);
       window.removeEventListener('drone-delete-request', onDroneDeleteRequest);
       window.removeEventListener('path-generator-response', onPathGeneratorResponse);
     };

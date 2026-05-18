@@ -6,12 +6,15 @@ import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { connect } from 'react-redux';
 import { createSelector } from '@reduxjs/toolkit';
+import SunCalc from 'suncalc';
 
 import CoordinateSystemAxes from './CoordinateSystemAxes';
 import DroneShapeMarkers from './DroneShapeMarkers';
+import DronePathTrajectories from './DronePathTrajectories';
 import HomePositionMarkers from './HomePositionMarkers';
 import LandingPositionMarkers from './LandingPositionMarkers';
 import Room from './Room';
+import SatelliteMapGround from './SatelliteMapGround';
 import Scenery from './Scenery';
 import SelectedTrajectories from './SelectedTrajectories';
 import DroneInfoPanel from './DroneInfoPanel';
@@ -37,6 +40,7 @@ import {
   getLightingConditionsForThreeDView,
   getSceneryForThreeDView,
 } from '~/features/settings/selectors';
+import { getReverseMissionMapping } from '~/features/mission/selectors';
 import { setViewRuntimeState } from '~/features/three-d/slice';
 import {
   getDroneSwarmSpecification,
@@ -50,6 +54,17 @@ import {
 
 const getEffectiveScenery = (state) => {
   return getEffectiveSceneryUtil(state, getSceneryForThreeDView, isShowIndoor);
+};
+
+const getNaturalLightingForThreeDView = (state) => {
+  const origin = state.map.origin.position;
+  if (!Array.isArray(origin)) {
+    return getLightingConditionsForThreeDView(state);
+  }
+
+  const [lon, lat] = origin;
+  const { altitude } = SunCalc.getPosition(new Date(), lat, lon);
+  return altitude < -0.05 ? 'dark' : 'light';
 };
 
 const DEFAULT_PATH_DELIVERY_URL = '/api/v1/path-planner/plan';
@@ -520,6 +535,7 @@ const ThreeDView = React.forwardRef((props, ref) => {
     isCoordinateSystemLeftHanded,
     lighting,
     navigation,
+    naturalLighting,
     sceneId,
     scenery,
     showAxes,
@@ -528,6 +544,7 @@ const ThreeDView = React.forwardRef((props, ref) => {
     showStatistics,
     showTrajectoriesOfSelection,
     showSpecDroneConfig,
+    uavToMissionIndex,
     viewRuntime,
     persistRehydrated,
     onSetViewRuntimeState,
@@ -691,7 +708,8 @@ const ThreeDView = React.forwardRef((props, ref) => {
   const extraSceneProps = {};
   if (showStatistics) extraSceneProps.stats = 'true';
 
-  const panelOpen = !!selectedDrone;
+  const panelOpen = !!selectedDrone && selectedDrone.source !== 'uav';
+  const effectiveLighting = naturalLighting || lighting;
 
   const closePanel = () => {
     // ✅ 패널 닫기 = 선택 해제까지 같이 일어나게 (A-Frame도 정리되도록)
@@ -990,6 +1008,24 @@ const ThreeDView = React.forwardRef((props, ref) => {
     return collectConfigFromScene();
   }, [droneConfig, showSpecDroneConfig]);
   droneConfigRef.current = effectiveConfig;
+
+  const selectedPathDroneId = useMemo(() => {
+    if (!selectedDrone?.id || !Array.isArray(effectiveConfig?.drones)) return undefined;
+
+    const selectedId = String(selectedDrone.id);
+    const directMatch = effectiveConfig.drones.find((d) => String(d?.id) === selectedId);
+    if (directMatch?.id) return directMatch.id;
+
+    if (selectedDrone.source === 'uav') {
+      const missionIndex = uavToMissionIndex?.[selectedId];
+      const mappedDrone = Number.isInteger(missionIndex)
+        ? effectiveConfig.drones[missionIndex]
+        : null;
+      if (mappedDrone?.id) return mappedDrone.id;
+    }
+
+    return undefined;
+  }, [effectiveConfig, selectedDrone, uavToMissionIndex]);
 
   useEffect(() => {
     if (ignorePersistedDroneConfigRef.current) {
@@ -1590,12 +1626,20 @@ const ThreeDView = React.forwardRef((props, ref) => {
           {showLandingPositions && <LandingPositionMarkers />}
           {showTrajectoriesOfSelection && <SelectedTrajectories />}
 
+          <SatelliteMapGround
+            enabled={scenery === 'outdoor'}
+            lighting={effectiveLighting}
+          />
+          <DronePathTrajectories
+            drones={effectiveConfig && Array.isArray(effectiveConfig.drones) ? effectiveConfig.drones : undefined}
+            selectedDroneId={selectedPathDroneId}
+          />
           <DroneShapeMarkers drones={effectiveConfig && Array.isArray(effectiveConfig.drones) ? effectiveConfig.drones : undefined} />
           <a-drone-flock />
           <Room />
         </a-entity>
 
-        <Scenery type={`${scenery}-${lighting}`} grid={grid} />
+        <Scenery type={`${scenery}-${effectiveLighting}`} grid={grid} />
       </a-scene>
 
       {/* ✅ 우측 패널 */}
@@ -1668,6 +1712,7 @@ ThreeDView.propTypes = {
   grid: PropTypes.string,
   isCoordinateSystemLeftHanded: PropTypes.bool,
   lighting: PropTypes.oneOf(['dark', 'light']),
+  naturalLighting: PropTypes.oneOf(['dark', 'light']),
   navigation: PropTypes.shape({
     mode: PropTypes.oneOf(['walk', 'fly']),
     parameters: PropTypes.object,
@@ -1683,6 +1728,7 @@ ThreeDView.propTypes = {
     drones: PropTypes.array,
     source: PropTypes.string,
   }),
+  uavToMissionIndex: PropTypes.object,
   viewRuntime: PropTypes.shape({
     droneConfig: PropTypes.any,
     pathProgress: PropTypes.number,
@@ -1701,7 +1747,9 @@ export default connect(
     ...state.threeD,
     scenery: getEffectiveScenery(state),
     lighting: getLightingConditionsForThreeDView(state),
+    naturalLighting: getNaturalLightingForThreeDView(state),
     showSpecDroneConfig: getShowSpecDroneConfigForThreeDView(state),
+    uavToMissionIndex: getReverseMissionMapping(state),
   }),
   {
     onSetViewRuntimeState: setViewRuntimeState,

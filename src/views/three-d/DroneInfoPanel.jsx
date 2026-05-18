@@ -291,6 +291,47 @@ export default function DroneInfoPanel({
     return `${px.toFixed(3)}, ${py.toFixed(3)}, ${pz.toFixed(3)}`;
   }, [drone?.currentPosition]);
 
+  const statusText = useMemo(() => {
+    const value = String(drone?.status ?? '').trim();
+    return value || '-';
+  }, [drone?.status]);
+
+  const batteryText = useMemo(() => {
+    const value = String(drone?.battery ?? '').trim();
+    return value || '-';
+  }, [drone?.battery]);
+
+  const telemetryItems = useMemo(() => {
+    const display = (value, suffix = '') => {
+      const text = String(value ?? '').trim();
+      return text ? `${text}${suffix}` : '-';
+    };
+
+    return [
+      { label: 'Status', value: statusText },
+      { label: 'Mode', value: display(drone?.mode) },
+      { label: 'GPS', value: display(drone?.gpsFix) },
+      { label: 'Sats', value: display(drone?.satellites) },
+      { label: 'Battery', value: batteryText },
+      { label: 'Battery %', value: display(drone?.batteryPercentage, '%') },
+      { label: 'Heading', value: display(drone?.heading, '°') },
+      { label: 'AHL', value: display(drone?.ahl, ' m') },
+      { label: 'AMSL', value: display(drone?.amsl, ' m') },
+      { label: 'AGL', value: display(drone?.agl, ' m') },
+    ];
+  }, [
+    batteryText,
+    drone?.agl,
+    drone?.ahl,
+    drone?.amsl,
+    drone?.batteryPercentage,
+    drone?.gpsFix,
+    drone?.heading,
+    drone?.mode,
+    drone?.satellites,
+    statusText,
+  ]);
+
   const fillInitialFromCurrentPosition = () => {
     const pos = drone?.currentPosition;
     if (!pos) return;
@@ -1031,6 +1072,28 @@ export default function DroneInfoPanel({
               <div style={{ fontSize: 11, opacity: 0.62 }}>ID</div>
               <div style={{ fontSize: 15.5, fontWeight: 600 }}>{drone.id}</div>
             </div>
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: '1fr 1fr',
+                gap: 8,
+                marginBottom: 12,
+              }}
+            >
+              {telemetryItems.map((item) => (
+                <div
+                  key={item.label}
+                  style={{
+                    padding: '8px 10px',
+                    borderRadius: 10,
+                    background: 'rgba(255,255,255,0.05)',
+                  }}
+                >
+                  <div style={{ fontSize: 11, opacity: 0.62 }}>{item.label}</div>
+                  <div style={{ fontSize: 14, fontWeight: 600 }}>{item.value}</div>
+                </div>
+              ))}
+            </div>
             <div style={{ marginBottom: 12, padding: '8px 10px', borderRadius: 10, background: 'rgba(255,255,255,0.05)' }}>
               <div style={{ fontSize: 11, opacity: 0.62 }}>Current Position (x, y, z)</div>
               <div style={{ fontSize: 13.5 }}>{currentPositionText}</div>
@@ -1265,12 +1328,23 @@ DroneInfoPanel.propTypes = {
   open: PropTypes.bool.isRequired,
   drone: PropTypes.shape({
     id: PropTypes.string,
+    battery: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    batteryPercentage: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    batteryVoltage: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    gpsFix: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    heading: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    ahl: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    agl: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    amsl: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    mode: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    satellites: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     currentPosition: PropTypes.shape({
       x: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
       y: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
       z: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     }),
     path: PropTypes.array,
+    status: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   }),
   onClose: PropTypes.func.isRequired,
   droneCount: PropTypes.number,

@@ -66,6 +66,15 @@ if (!AFrame.components['click-pick']) {
       return null;
     },
 
+    _isIgnoredHitObject(obj) {
+      let cur = obj;
+      while (cur) {
+        if (cur.userData?.clickPickIgnore) return true;
+        cur = cur.parent;
+      }
+      return false;
+    },
+
     _requestRender() {
       const sceneEl = this.el.sceneEl;
       if (!sceneEl) return;
@@ -111,8 +120,18 @@ if (!AFrame.components['click-pick']) {
           detail: {
             id: hitEl.getAttribute('data-drone-id'),
             name: hitEl.getAttribute('data-drone-name'),
+            source: hitEl.getAttribute('data-drone-source'),
             battery: hitEl.getAttribute('data-battery'),
+            batteryPercentage: hitEl.getAttribute('data-battery-percentage'),
+            batteryVoltage: hitEl.getAttribute('data-battery-voltage'),
             status: hitEl.getAttribute('data-status'),
+            mode: hitEl.getAttribute('data-mode'),
+            gpsFix: hitEl.getAttribute('data-gps-fix'),
+            satellites: hitEl.getAttribute('data-satellites'),
+            ahl: hitEl.getAttribute('data-ahl'),
+            agl: hitEl.getAttribute('data-agl'),
+            amsl: hitEl.getAttribute('data-amsl'),
+            heading: hitEl.getAttribute('data-heading'),
             currentPosition,
             initialPosition,
           },
@@ -152,7 +171,9 @@ if (!AFrame.components['click-pick']) {
       this._raycaster.setFromCamera(this._mouse, camera);
 
       const roots = this._collectClickableRoots();
-      const hits = this._raycaster.intersectObjects(roots, true); // 드론 hit
+      const hits = this._raycaster
+        .intersectObjects(roots, true)
+        .filter((hit) => !this._isIgnoredHitObject(hit.object)); // 드론 본체만 hit
 
       // 기즈모 축 핸들 클릭은 드론보다 앞에서 맞았을 때만 선택 토글에서 제외한다.
       const gizmoHandles = [];
