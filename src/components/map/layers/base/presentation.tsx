@@ -3,9 +3,9 @@ import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import MVTFormat from 'ol/format/MVT';
 import type ImageTile from 'ol/ImageTile';
-import React, { type ChangeEvent } from 'react';
+import type { ChangeEvent, ComponentType, ReactNode } from 'react';
 
-// @ts-expect-error: untyped
+// @ts-expect-error: @collmot/ol-react does not ship TypeScript declarations
 import { layer as olLayer, source } from '@collmot/ol-react';
 
 import type { APIKeysRecord } from '~/APIKeys';
@@ -60,7 +60,7 @@ export const BaseLayerSettings = ({
 // === Layer type ===
 
 type LayerTypeProps = {
-  children: React.ReactNode;
+  children: ReactNode;
   type: Source.Source;
   zIndex: number;
 };
@@ -111,6 +111,16 @@ export const LayerSource = ({
   const attributions = attributionsForSource(type);
 
   switch (type) {
+    case Source.ESRI_WORLD_IMAGERY:
+      return (
+        <source.XYZ
+          attributions={attributions}
+          maxZoom={19}
+          tileLoadFunction={tileLoadFunction}
+          url='https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
+        />
+      );
+
     case Source.MAPBOX.STATIC:
       return (
         <source.XYZ
@@ -274,7 +284,7 @@ export const LayerSource = ({
 export type BaseLayerProps = {
   layer: Layer;
   zIndex: number;
-  LayerSource: React.ComponentType<{ type: Source.Source }>;
+  LayerSource: ComponentType<{ type: Source.Source }>;
 };
 
 export const BaseLayer = ({ layer, zIndex, LayerSource }: BaseLayerProps) => {

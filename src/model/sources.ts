@@ -6,6 +6,8 @@
 import config from 'config';
 import APIKeys from '~/APIKeys';
 
+/* eslint-disable @typescript-eslint/no-namespace */
+
 /**
  * Multi-level enum containing constants for the
  * source types that the user can use on the map.
@@ -38,6 +40,7 @@ export namespace Source {
     STREETS = 'maptiler.streets',
   }
 
+  export const ESRI_WORLD_IMAGERY = 'esri.worldImagery';
   export const NEXTZEN = 'nextzen';
   export const OSM = 'osm';
 
@@ -49,6 +52,7 @@ export namespace Source {
 
   export type Source =
     | BING
+    | typeof ESRI_WORLD_IMAGERY
     | GOOGLE
     | MAPBOX
     | MAPTILER
@@ -60,7 +64,11 @@ export namespace Source {
 /**
  * Constant containing all the sources in the order preferred on the UI.
  */
-export const Sources: Source.Source[] = [Source.OSM, Source.STAMEN.TERRAIN];
+export const Sources: Source.Source[] = [
+  Source.OSM,
+  Source.ESRI_WORLD_IMAGERY,
+  Source.STAMEN.TERRAIN,
+];
 
 // We add Mapbox, Maptiler, Bing Maps and Google Maps map sources only if we
 // have at least a default API key for them. This might change in the future.
@@ -108,6 +116,8 @@ const attributions = {
     '© <a href="https://www.openstreetmap.org/copyright">' +
       'OpenStreetMap contributors</a>',
   ],
+  esri:
+    'Tiles © Esri - Source: Esri, Maxar, Earthstar Geographics, and the GIS User Community',
   nextzen:
     "Map data &copy; OpenStreetMap contributors, Who's On First, " +
     'Natural Earth, and openstreetmapdata.com',
@@ -133,6 +143,10 @@ const visualRepresentationsForSources: Record<
     label: 'Bing Maps (aerial with labels)',
   },
   [Source.BING.ROAD]: { label: 'Bing Maps (road)' },
+  [Source.ESRI_WORLD_IMAGERY]: {
+    label: 'Esri World Imagery',
+    attributions: attributions.esri,
+  },
   [Source.GOOGLE.DEFAULT]: { label: 'Google Maps' },
   [Source.GOOGLE.SATELLITE]: { label: 'Google Maps (satellite)' },
   [Source.GOOGLE.ROADS]: { label: 'Google Maps (roads)' },

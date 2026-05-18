@@ -15,5 +15,10 @@
   "largeControlButtonGroup": {
     "manualShowStart": "수동 쇼 시작",
     "manualShowStartAll": "전체 수동 쇼 시작"
+  },
+  "mapSourceToggle": {
+    "label": "지도 소스",
+    "map": "지도",
+    "satellite": "위성"
   }
 }

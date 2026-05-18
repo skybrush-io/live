@@ -256,6 +256,11 @@
   "map": {
     "resetRotation": "Reset rotation"
   },
+  "mapSourceToggle": {
+    "label": "Map source",
+    "map": "Map",
+    "satellite": "Satellite"
+  },
   "mapCachingDialog": {
     "offlineMaps": "Offline maps"
   },

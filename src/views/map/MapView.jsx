@@ -81,6 +81,7 @@ import DrawingToolbar from './DrawingToolbar';
 import { Layers } from './layers';
 import MapContextMenu from './MapContextMenu';
 import MapReferenceRequestHandler from './MapReferenceRequestHandler';
+import MapSourceToggleButton from './MapSourceToggleButton';
 
 import 'ol/ol.css';
 
@@ -435,7 +436,7 @@ class MapViewPresentation extends React.Component {
               top={
                 <>
                   <MapRotationTextBox resetDuration={500} fieldWidth='75px' />
-                  <ToolbarDivider orientation='vertical' />
+                  <MapSourceToggleButton />
                   {/* NOTE: Margin is calibrated such that the vertical      */}
                   {/*       drawing toolbar will not cover any of the drones */}
                   <ConnectedFitAllFeaturesButton duration={500} margin={80} />
