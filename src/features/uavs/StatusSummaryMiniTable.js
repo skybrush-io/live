@@ -6,6 +6,7 @@ import TimeAgo from 'react-timeago';
 import { StatusText } from '@skybrush/mui-components';
 
 import MiniTable, { naText } from '~/components/MiniTable';
+import { getDatalinkColor } from '~/features/uavs/datalink';
 import {
   abbreviateGPSFixType,
   getFlightModeLabel,
@@ -110,7 +111,10 @@ const StatusSummaryMiniTable = ({
   if (rssi && Array.isArray(rssi) && rssi.length > 0) {
     for (const rssiValue of rssi) {
       rssiLabels.push(
-        <StatusText status={getSemanticsForRSSI(rssiValue)}>
+        <StatusText
+          status={getSemanticsForRSSI(rssiValue)}
+          style={{ color: getDatalinkColor(rssiValue) }}
+        >
           {formatRSSI(rssiValue)}
         </StatusText>,
         ' / '

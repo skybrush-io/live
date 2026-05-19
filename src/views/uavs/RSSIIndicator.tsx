@@ -1,17 +1,28 @@
 import type { Theme } from '@mui/material/styles';
 import clsx from 'clsx';
-import React from 'react';
+import React, { type CSSProperties } from 'react';
 
 import { makeStyles } from '@skybrush/app-theme-mui';
-import { StatusPill } from '@skybrush/mui-components';
+import {
+  StatusPill,
+  type StatusPillProps,
+} from '@skybrush/mui-components';
 
-import { getSemanticsForRSSI } from '~/model/enums';
+import {
+  getDatalinkPillStyle,
+  getSemanticsForDatalink,
+} from '~/features/uavs/datalink';
 import { formatRSSI } from '~/utils/formatting';
 
 export type RSSIIndicatorProps = Readonly<{
   className: string;
   rssi: number[];
 }>;
+
+/** StatusPill forwards `style` at runtime but omits it from its public types. */
+const StatusPillWithStyle = StatusPill as React.FC<
+  StatusPillProps & { style?: CSSProperties }
+>;
 
 const useStyles = makeStyles((theme: Theme) => ({
   group: {
@@ -40,32 +51,35 @@ export const RSSIIndicator = ({
   if (rssi.length < 2) {
     // Show only one RSSI value in a full pill
     return (
-      <StatusPill
+      <StatusPillWithStyle
         inline
         className={clsx(className, classes.pill, classes.pillMargin)}
-        status={getSemanticsForRSSI(rssi[0])}
+        status={getSemanticsForDatalink(rssi[0])}
+        style={getDatalinkPillStyle(rssi[0])}
       >
         {formatRSSI(rssi[0])}
-      </StatusPill>
+      </StatusPillWithStyle>
     );
   } else {
     // Show two RSSI values in a split pill
     return (
       <div className={clsx(className, classes.group, classes.pillMargin)}>
-        <StatusPill
+        <StatusPillWithStyle
           className={classes.pill}
           position='left'
-          status={getSemanticsForRSSI(rssi[0])}
+          status={getSemanticsForDatalink(rssi[0])}
+          style={getDatalinkPillStyle(rssi[0])}
         >
           {formatRSSI(rssi[0])}
-        </StatusPill>
-        <StatusPill
+        </StatusPillWithStyle>
+        <StatusPillWithStyle
           className={classes.pill}
           position='right'
-          status={getSemanticsForRSSI(rssi[1])}
+          status={getSemanticsForDatalink(rssi[1])}
+          style={getDatalinkPillStyle(rssi[1])}
         >
           {formatRSSI(rssi[1])}
-        </StatusPill>
+        </StatusPillWithStyle>
       </div>
     );
   }

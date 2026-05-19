@@ -47,6 +47,11 @@ import { EMPTY_ARRAY } from '~/utils/redux';
 import { createDeepResultSelector } from '~/utils/selectors';
 import type { AppSelector, RootState } from '~/store/reducers';
 import type { StoredUAV } from './types';
+import {
+  getVehicleMode,
+  getVehicleModePillStyle,
+  getVehicleModeSemantics,
+} from './vehicleMode';
 
 /**
  * Returns the list of UAV IDs that should be shown on the UI, in the
@@ -710,38 +715,15 @@ export const areAllUAVsInMissionWithoutErrors = createSelector(
 );
 
 export function getSingleUAVStatusLevel(uav: StoredUAV): Status {
-  let severity: Severity | undefined;
-
   if (uav.age === UAVAge.GONE) {
     return Status.OFF;
-  }
-
-  if (uav.errors && uav.errors.length > 0) {
-    severity = getSeverityOfMostSevereErrorCode(uav.errors);
-    if (severity >= Severity.WARNING) {
-      return errorSeverityToSemantics(severity);
-    }
   }
 
   if (uav.age === UAVAge.INACTIVE) {
     return Status.MISSING;
   }
 
-  const maxError = Math.max(...uav.errors) as UAVErrorCode;
-
-  if (maxError === UAVErrorCode.RETURN_TO_HOME) {
-    return Status.RTH;
-  }
-
-  if (maxError === UAVErrorCode.ON_GROUND) {
-    return Status.SUCCESS;
-  }
-
-  if (severity !== undefined && severity >= Severity.INFO) {
-    return errorSeverityToSemantics(severity);
-  }
-
-  return Status.SUCCESS;
+  return getVehicleModeSemantics(getVehicleMode(uav));
 }
 
 export const isUAVSleeping = (uav: StoredUAV): boolean =>
@@ -781,6 +763,7 @@ export function getSingleUAVStatusSummary(uav?: StoredUAV) {
   let details;
   let text;
   let textSemantics;
+  let vehicleModePillStyle;
 
   if (!uav) {
     // No such UAV
@@ -838,6 +821,12 @@ export function getSingleUAVStatusSummary(uav?: StoredUAV) {
     }
   }
 
+  if (uav?.age === UAVAge.ACTIVE) {
+    const vehicleMode = getVehicleMode(uav);
+    textSemantics = getVehicleModeSemantics(vehicleMode);
+    vehicleModePillStyle = getVehicleModePillStyle(vehicleMode);
+  }
+
   if (uav) {
     status = getSingleUAVStatusLevel(uav);
   }
@@ -849,6 +838,7 @@ export function getSingleUAVStatusSummary(uav?: StoredUAV) {
     gone: uav ? uav.age === UAVAge.GONE || uav.age === UAVAge.INACTIVE : false,
     text,
     textSemantics,
+    vehicleModePillStyle,
     batteryStatus: uav?.battery,
   };
 }

@@ -96,6 +96,7 @@ const ComplexAvatar = ({
   status = 'off',
   text,
   textSemantics = 'info',
+  vehicleModePillStyle,
 }) => {
   const classes = useStyles();
 
@@ -116,6 +117,7 @@ const ComplexAvatar = ({
       >
         <SemanticAvatar
           status={editing ? Status.NEXT : status}
+          style={vehicleModePillStyle}
           {...AvatarProps}
         >
           <div className={classes.avatarContent}>
@@ -135,7 +137,9 @@ const ComplexAvatar = ({
         {secondaryStatus && <SecondaryStatusLight status={secondaryStatus} />}
       </div>
       {(details || text) && (
-        <StatusPill status={textSemantics}>{details || text}</StatusPill>
+        <StatusPill status={textSemantics} style={vehicleModePillStyle}>
+          {details || text}
+        </StatusPill>
       )}
       {batteryStatus && (
         <BatteryIndicator
@@ -193,6 +197,7 @@ ComplexAvatar.propTypes = {
     'error',
     'critical',
   ]),
+  vehicleModePillStyle: PropTypes.object,
 };
 
 export default ComplexAvatar;

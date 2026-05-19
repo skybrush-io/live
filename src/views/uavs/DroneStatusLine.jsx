@@ -13,6 +13,9 @@ import { BatteryFormatter } from '~/components/battery';
 import BatteryIndicator from '~/components/BatteryIndicator';
 import ColoredLight from '~/components/ColoredLight';
 import { getBatteryFormatter } from '~/features/settings/selectors';
+import { isExternalShowUploaded } from '~/features/show/selectors';
+import { getUploadStatusCodeMapping } from '~/features/upload/selectors';
+import { isPathUploadedForUav } from '~/features/uavs/pathUpload';
 import {
   createSingleUAVStatusSummarySelector,
   getDeviationFromTakeoffHeadingByUavId,
@@ -24,6 +27,7 @@ import { getPreferredCoordinateFormatter } from '~/selectors/formatting';
 import { formatCoordinateArray } from '~/utils/formatting';
 
 import GPSStatusPill from './GPSStatusPill';
+import PathUploadIndicator from './PathUploadIndicator';
 import RSSIIndicator from './RSSIIndicator';
 import FlightModeStatusPill from './FlightModeStatusPill';
 
@@ -77,6 +81,14 @@ const useStyles = makeStyles((theme) => ({
     width: 40,
     outline: 'none !important',
   },
+  pathPill: {
+    marginRight: theme.spacing(2),
+    width: 52,
+  },
+  positionCell: {
+    display: 'inline-block',
+    marginLeft: theme.spacing(1),
+  },
   rssiPills: {
     width: 72,
     paddingLeft: 2,
@@ -110,11 +122,13 @@ const DroneStatusLine = ({
   localPosition,
   missing,
   mode,
+  pathUploaded,
   position,
   rssi,
   secondaryLabel,
   text,
   textSemantics = 'info',
+  vehicleModePillStyle,
 }) => {
   const classes = useStyles();
   const { amsl, ahl, agl } = position || {};
@@ -127,6 +141,7 @@ const DroneStatusLine = ({
           inline
           className={clsx(classes.pill, classes.statusPill)}
           status={textSemantics}
+          style={vehicleModePillStyle}
           hollow={age === UAVAge.GONE}
         >
           {details || text}
@@ -149,12 +164,22 @@ const DroneStatusLine = ({
             className={clsx(classes.pill, classes.gpsPill)}
             fixType={gpsFixType}
           />
+          <PathUploadIndicator
+            className={clsx(classes.pill, classes.pathPill)}
+            uploaded={pathUploaded}
+          />
           {localPosition ? (
-            padEnd(localCoordinateFormatter(localPosition), 25)
+            <span className={classes.positionCell}>
+              {padEnd(localCoordinateFormatter(localPosition), 25)}
+            </span>
           ) : position ? (
-            padEnd(coordinateFormatter([position.lon, position.lat]), 25)
+            <span className={classes.positionCell}>
+              {padEnd(coordinateFormatter([position.lon, position.lat]), 25)}
+            </span>
           ) : (
-            <span className={classes.muted}>{padEnd('no position', 25)}</span>
+            <span className={clsx(classes.muted, classes.positionCell)}>
+              {padEnd('no position', 25)}
+            </span>
           )}
           {!isNil(amsl) ? (
             padStart(position.amsl.toFixed(1), 6) + 'm'
@@ -206,6 +231,7 @@ DroneStatusLine.propTypes = {
   localPosition: PropTypes.arrayOf(PropTypes.number),
   missing: PropTypes.bool,
   mode: PropTypes.string,
+  pathUploaded: PropTypes.bool,
   position: PropTypes.shape({
     lat: PropTypes.number,
     lon: PropTypes.number,
@@ -226,6 +252,7 @@ DroneStatusLine.propTypes = {
     'critical',
     'missing',
   ]),
+  vehicleModePillStyle: PropTypes.object,
 };
 
 export default connect(
@@ -241,9 +268,13 @@ export default connect(
       const color = uav
         ? getLightColorByUavIdInCSSNotation(state, uavId)
         : 'black';
+      const uploadStatus = getUploadStatusCodeMapping(state)[uavId];
       return {
         batteryFormatter: getBatteryFormatter(state),
         color,
+        pathUploaded: isPathUploadedForUav(uav, uploadStatus, {
+          externalShowUploaded: isExternalShowUploaded(state),
+        }),
         coordinateFormatter: getPreferredCoordinateFormatter(state),
         debugString: uav ? uav.debugString : undefined,
         gpsFixType: uav ? uav.gpsFix.type : undefined,
