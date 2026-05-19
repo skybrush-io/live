@@ -6,6 +6,10 @@ import React from 'react';
 import { makeStyles } from '@skybrush/app-theme-mui';
 
 import Colors from '~/components/colors';
+import {
+  getBatteryLevelStyle,
+  resolveBatteryPercentage,
+} from '~/features/uavs/batteryLevel';
 
 import { BatteryFormatter, DEFAULT_BATTERY_FORMATTER } from './battery';
 
@@ -45,6 +49,7 @@ const BatteryIndicator = ({
   className,
   cellCount,
   formatter = DEFAULT_BATTERY_FORMATTER,
+  listLevelColors = false,
   percentage,
   voltage,
 }) => {
@@ -53,10 +58,39 @@ const BatteryIndicator = ({
   const batteryIcon = formatter.getBatteryIcon(percentage, status, charging);
 
   const classes = useStyles();
-  const rootClass = clsx(className, classes.root, classes[`battery${status}`]);
+  const resolvedPercentage = listLevelColors
+    ? resolveBatteryPercentage(
+        percentage,
+        voltage,
+        formatter.estimatePercentageFromVoltage,
+        cellCount
+      )
+    : undefined;
+  const listLevelStyle = listLevelColors
+    ? getBatteryLevelStyle(resolvedPercentage)
+    : undefined;
+  const rootClass = clsx(
+    className,
+    classes.root,
+    !listLevelColors && classes[`battery${status}`]
+  );
+
+  const listCellSx = listLevelColors
+    ? {
+        ...listLevelStyle,
+        borderRadius: 0,
+        boxSizing: 'border-box',
+        display: 'inline-block',
+        fontWeight: 'bold',
+        lineHeight: '22px',
+        minHeight: '22px',
+        padding: '0 2px',
+        verticalAlign: 'top',
+      }
+    : { fontSize: 'small' };
 
   return (
-    <Box className={rootClass} sx={{ fontSize: 'small' }}>
+    <Box className={rootClass} sx={listCellSx}>
       {batteryIcon}
       {label}
     </Box>
@@ -68,6 +102,7 @@ BatteryIndicator.propTypes = {
   className: PropTypes.string,
   charging: PropTypes.bool,
   formatter: PropTypes.instanceOf(BatteryFormatter),
+  listLevelColors: PropTypes.bool,
   percentage: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   voltage: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
 };

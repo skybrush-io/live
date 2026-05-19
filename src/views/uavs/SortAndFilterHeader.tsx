@@ -100,7 +100,7 @@ const useStyles = makeStyles((theme: Theme) => ({
       ? 'rgba(36, 36, 36, 0.54)'
       : 'rgba(255, 255, 255, 0.8)',
     borderBottom: `1px solid ${theme.palette.divider}`,
-    minWidth: 868,
+    minWidth: 912,
     overflow: 'hidden',
     zIndex: 10,
     minHeight: HEADER_HEIGHT + 1 /* 1px for the border */,
@@ -187,6 +187,13 @@ const COMMON_HEADER_TEXT_PARTS: readonly HeaderPart[] = Object.freeze([
     style: {
       textAlign: 'center',
       width: 78,
+    },
+  },
+  {
+    label: 'Alert',
+    style: {
+      textAlign: 'center',
+      width: 44,
     },
   },
   {

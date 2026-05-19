@@ -1,35 +1,29 @@
 import clsx from 'clsx';
-import React, { type CSSProperties } from 'react';
+import React from 'react';
 
-import { StatusPill, type StatusPillProps } from '@skybrush/mui-components';
+import { getPathUploadPillStyle } from '~/features/uavs/pathUpload';
 
-import {
-  getPathUploadPillStyle,
-  getPathUploadSemantics,
-} from '~/features/uavs/pathUpload';
-
-/** StatusPill forwards `style` at runtime but omits it from its public types. */
-const StatusPillWithStyle = StatusPill as React.FC<
-  StatusPillProps & { style?: CSSProperties }
->;
+import FilledListCell from './FilledListCell';
 
 export type PathUploadIndicatorProps = Readonly<{
   className?: string;
   uploaded: boolean;
+  width?: number;
 }>;
 
 export const PathUploadIndicator = ({
   className,
   uploaded,
+  width,
 }: PathUploadIndicatorProps): React.JSX.Element => (
-  <StatusPillWithStyle
-    inline
+  <FilledListCell
     className={clsx(className)}
-    status={getPathUploadSemantics(uploaded)}
     style={getPathUploadPillStyle(uploaded)}
+    title={uploaded ? 'Path uploaded' : 'Path not uploaded'}
+    width={width}
   >
     {uploaded ? 'OK' : 'NO'}
-  </StatusPillWithStyle>
+  </FilledListCell>
 );
 
 export default PathUploadIndicator;

@@ -13,9 +13,18 @@ import { BatteryFormatter } from '~/components/battery';
 import BatteryIndicator from '~/components/BatteryIndicator';
 import ColoredLight from '~/components/ColoredLight';
 import { getBatteryFormatter } from '~/features/settings/selectors';
-import { isExternalShowUploaded } from '~/features/show/selectors';
+import { hasActiveGeofencePolygon } from '~/features/mission/selectors';
+import {
+  hasScheduledStartTime,
+  isExternalShowUploaded,
+  isShowOutdoor,
+} from '~/features/show/selectors';
 import { getUploadStatusCodeMapping } from '~/features/upload/selectors';
 import { isPathUploadedForUav } from '~/features/uavs/pathUpload';
+import {
+  getUavAlert,
+  resolveUavAlertBatteryPercentage,
+} from '~/features/uavs/uavAlert';
 import {
   createSingleUAVStatusSummarySelector,
   getDeviationFromTakeoffHeadingByUavId,
@@ -26,6 +35,8 @@ import { UAVAge } from '~/model/uav';
 import { getPreferredCoordinateFormatter } from '~/selectors/formatting';
 import { formatCoordinateArray } from '~/utils/formatting';
 
+import AlertIndicator from './AlertIndicator';
+import FilledListCell from './FilledListCell';
 import GPSStatusPill from './GPSStatusPill';
 import PathUploadIndicator from './PathUploadIndicator';
 import RSSIIndicator from './RSSIIndicator';
@@ -67,12 +78,17 @@ const useStyles = makeStyles((theme) => ({
     color: theme.palette.text.disabled,
   },
   pill: {
-    margin: theme.spacing(0, 0.5),
-    verticalAlign: 'text-top',
-    transform: 'translateY(-1px)',
+    margin: theme.spacing(0, 0.25),
+    verticalAlign: 'top',
   },
-  statusPill: {
+  filledCell: {
+    margin: theme.spacing(0, 0.25),
+  },
+  statusCell: {
     width: 80,
+  },
+  alertCell: {
+    width: 44,
   },
   modePill: {
     width: 48,
@@ -81,7 +97,7 @@ const useStyles = makeStyles((theme) => ({
     width: 40,
     outline: 'none !important',
   },
-  pathPill: {
+  pathCell: {
     marginRight: theme.spacing(2),
     width: 52,
   },
@@ -89,17 +105,13 @@ const useStyles = makeStyles((theme) => ({
     display: 'inline-block',
     marginLeft: theme.spacing(1),
   },
-  rssiPills: {
+  rssiCell: {
     width: 72,
-    paddingLeft: 2,
   },
-  batteryIndicator: {
-    display: 'inline-block',
+  batteryCell: {
     fontFamily: theme.typography.fontFamily,
-    textAlign: 'left',
-    padding: theme.spacing(0, 0.5),
-    margin: theme.spacing(0, 0.5),
-    width: '56px !important',
+    textAlign: 'center',
+    width: 62,
   },
 }));
 
@@ -108,6 +120,7 @@ const useStyles = makeStyles((theme) => ({
  */
 const DroneStatusLine = ({
   age,
+  alert,
   batteryFormatter,
   batteryStatus,
   color,
@@ -136,37 +149,58 @@ const DroneStatusLine = ({
     <div className={clsx(classes.root, gone && classes.gone)}>
       {padStart(label, 5)}
       <span className={classes.muted}>{padStart(secondaryLabel, 5)}</span>
-      {(details || text) && (
-        <StatusPill
-          inline
-          className={clsx(classes.pill, classes.statusPill)}
-          status={textSemantics}
-          style={vehicleModePillStyle}
-          hollow={age === UAVAge.GONE}
-        >
-          {details || text}
-        </StatusPill>
-      )}
+      {(details || text) &&
+        (vehicleModePillStyle ? (
+          <FilledListCell
+            className={clsx(classes.filledCell, classes.statusCell)}
+            style={{
+              ...vehicleModePillStyle,
+              opacity: age === UAVAge.GONE ? 0.7 : 1,
+            }}
+          >
+            {details || text}
+          </FilledListCell>
+        ) : (
+          <StatusPill
+            inline
+            className={clsx(classes.pill, classes.statusCell)}
+            status={textSemantics}
+            hollow={age === UAVAge.GONE}
+          >
+            {details || text}
+          </StatusPill>
+        ))}
       {!missing && (
         <>
+          <AlertIndicator
+            alert={alert}
+            className={classes.filledCell}
+            width={44}
+          />
           <FlightModeStatusPill
             mode={mode}
             className={clsx(classes.pill, classes.modePill)}
           />
           <BatteryIndicator
-            className={classes.batteryIndicator}
+            className={clsx(classes.filledCell, classes.batteryCell)}
             formatter={batteryFormatter}
+            listLevelColors
             {...batteryStatus}
           />
           <ColoredLight inline color={color} />
-          <RSSIIndicator className={classes.rssiPills} rssi={rssi} />
+          <RSSIIndicator
+            className={classes.filledCell}
+            rssi={rssi}
+            width={72}
+          />
           <GPSStatusPill
             className={clsx(classes.pill, classes.gpsPill)}
             fixType={gpsFixType}
           />
           <PathUploadIndicator
-            className={clsx(classes.pill, classes.pathPill)}
+            className={classes.filledCell}
             uploaded={pathUploaded}
+            width={52}
           />
           {localPosition ? (
             <span className={classes.positionCell}>
@@ -210,6 +244,11 @@ const DroneStatusLine = ({
 
 DroneStatusLine.propTypes = {
   age: PropTypes.oneOf(Object.values(UAVAge)),
+  alert: PropTypes.shape({
+    label: PropTypes.string,
+    level: PropTypes.string,
+    title: PropTypes.string,
+  }),
   batteryFormatter: PropTypes.instanceOf(BatteryFormatter),
   batteryStatus: PropTypes.shape({
     cellCount: PropTypes.number,
@@ -269,12 +308,30 @@ export default connect(
         ? getLightColorByUavIdInCSSNotation(state, uavId)
         : 'black';
       const uploadStatus = getUploadStatusCodeMapping(state)[uavId];
+      const batteryFormatter = getBatteryFormatter(state);
+      const pathUploadContext = {
+        externalShowUploaded: isExternalShowUploaded(state),
+      };
+      const batteryStatus = uav?.battery;
+
       return {
-        batteryFormatter: getBatteryFormatter(state),
-        color,
-        pathUploaded: isPathUploadedForUav(uav, uploadStatus, {
-          externalShowUploaded: isExternalShowUploaded(state),
+        alert: getUavAlert(uav, {
+          ...pathUploadContext,
+          uploadStatus,
+          batteryPercentage: resolveUavAlertBatteryPercentage({
+            cellCount: batteryStatus?.cellCount,
+            percentage: batteryStatus?.percentage,
+            voltage: batteryStatus?.voltage,
+            estimatePercentageFromVoltage:
+              batteryFormatter.estimatePercentageFromVoltage,
+          }),
+          geofenceRequired: isShowOutdoor(state),
+          geofenceSet: hasActiveGeofencePolygon(state),
+          showStartTimeSet: hasScheduledStartTime(state),
         }),
+        batteryFormatter,
+        color,
+        pathUploaded: isPathUploadedForUav(uav, uploadStatus, pathUploadContext),
         coordinateFormatter: getPreferredCoordinateFormatter(state),
         debugString: uav ? uav.debugString : undefined,
         gpsFixType: uav ? uav.gpsFix.type : undefined,
