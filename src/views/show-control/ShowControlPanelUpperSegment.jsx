@@ -10,12 +10,12 @@ import { getShowEnvironmentType } from '~/features/show/selectors';
 import AuthorizationButton from './AuthorizationButton';
 import EnvironmentButton from './EnvironmentButton';
 import GeofenceButton from './GeofenceButton';
-import LargeControlButtonGroup from './LargeControlButtonGroup';
 import LoadShowFromFileButton from './LoadShowFromFileButton';
 import ManualPreflightChecksButton from './ManualPreflightChecksButton';
 import OnboardPreflightChecksButton from './OnboardPreflightChecksButton';
 import ShowUploadDialogButton from './ShowUploadDialogButton';
 import ShowConfiguratorButton from './ShowConfiguratorButton';
+import StartMethodExplanation from './StartMethodExplanation';
 import StartTimeButton from './StartTimeButton';
 import TakeoffAreaButton from './TakeoffAreaButton';
 
@@ -44,12 +44,9 @@ const ShowControlPanelUpperSegment = ({ environmentType }) => (
       <Divider />
 
       <StartTimeButton />
+      <StartMethodExplanation />
       <AuthorizationButton />
     </List>
-
-    <Box display='flex' flexDirection='column'>
-      <LargeControlButtonGroup />
-    </Box>
   </Box>
 );
 

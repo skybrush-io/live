@@ -13,6 +13,13 @@
     "confirmFlightCommandMessageBroadcast": "모든 UAV에 \"{{command}}\" 명령을 브로드캐스트할까요?"
   },
   "largeControlButtonGroup": {
+    "collapseDeck": "비행 명령 패널 접기",
+    "expandDeck": "비행 명령 패널 펼치기",
+    "modeBroadcast": "브로드캐스트",
+    "modeSelection": "선택",
+    "modeToggleLabel": "명령 대상 모드",
+    "targetBroadcast": "미션에 참여한 모든 UAV에 명령을 적용합니다",
+    "targetSelection": "현재 선택한 UAV에만 명령을 적용합니다",
     "manualShowStart": "수동 쇼 시작",
     "manualShowStartAll": "전체 수동 쇼 시작"
   },

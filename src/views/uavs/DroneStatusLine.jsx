@@ -185,6 +185,7 @@ const DroneStatusLine = ({
             className={clsx(classes.filledCell, classes.batteryCell)}
             formatter={batteryFormatter}
             listLevelColors
+            width={62}
             {...batteryStatus}
           />
           <ColoredLight inline color={color} />

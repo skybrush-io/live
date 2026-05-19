@@ -42,6 +42,7 @@ import {
   isWorkbenchLayoutFixed,
   shouldSidebarBeShown,
 } from './features/workbench/selectors';
+import FloatingFlightCommandDeck from './views/show-control/FloatingFlightCommandDeck';
 import ShowFileWatcher from './views/show-control/ShowFileWatcher';
 
 import { ErrorHandler } from './error-handling';
@@ -190,6 +191,7 @@ const App = ({ onFirstRender }) => (
         <WorkbenchContainer />
         {config?.ribbon?.label && <CornerRibbon {...config.ribbon} />}
         <PendingUAVIdOverlay />
+        <FloatingFlightCommandDeck />
       </div>
 
       <DetachedPanelManager />

@@ -1,3 +1,5 @@
+import AdsClick from '@mui/icons-material/AdsClick';
+import Cast from '@mui/icons-material/Cast';
 import Clear from '@mui/icons-material/Clear';
 import PositionHold from '@mui/icons-material/Flag';
 import FlightLand from '@mui/icons-material/FlightLand';
@@ -6,8 +8,8 @@ import PlayArrow from '@mui/icons-material/PlayArrow';
 import PowerSettingsNew from '@mui/icons-material/PowerSettingsNew';
 import RocketLaunch from '@mui/icons-material/RocketLaunch';
 import Box from '@mui/material/Box';
-import Divider from '@mui/material/Divider';
-import Switch from '@mui/material/Switch';
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import Typography from '@mui/material/Typography';
 import { deepPurple } from '@mui/material/colors';
 import { bindActionCreators } from '@reduxjs/toolkit';
@@ -29,44 +31,37 @@ import { setCommandsAreBroadcast } from '~/features/mission/slice';
 import { getSelectedUAVIds } from '~/features/uavs/selectors';
 import { createUAVOperationThunks } from '~/utils/messaging';
 
-import StartMethodExplanation from './StartMethodExplanation';
-
 const useStyles = makeStyles((theme) => ({
-  root: {
-    position: 'absolute',
-    left: 0,
-    top: 0,
-    right: 0,
-    bottom: 0,
-  },
-
-  scrollable: {
-    overflow: 'auto',
-  },
-
   commandDeck: {
     display: 'flex',
     flexDirection: 'column',
     gap: theme.spacing(1),
-    padding: theme.spacing(1, 1.25, 1.25),
-    background:
-      'linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.015))',
-    borderTop: `1px solid ${theme.palette.divider}`,
-    boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.08)',
+    padding: theme.spacing(0, 1.25, 1.25),
   },
 
-  modeSwitch: {
-    alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.055)',
-    border: '1px solid rgba(255, 255, 255, 0.08)',
-    borderRadius: theme.spacing(5),
-    display: 'flex',
-    flexDirection: 'row',
-    padding: theme.spacing(0.25, 1),
+  modeHint: {
+    color: theme.palette.text.secondary,
+    letterSpacing: '0.01em',
+    lineHeight: 1.3,
+    minHeight: '2.6em',
+    textAlign: 'center',
   },
 
-  modeLabel: {
-    letterSpacing: '0.02em',
+  modeToggle: {
+    width: '100%',
+
+    '& .MuiToggleButton-root': {
+      flex: 1,
+      gap: theme.spacing(0.5),
+      letterSpacing: '0.02em',
+      lineHeight: 1.2,
+      padding: theme.spacing(0.75, 0.5),
+      textTransform: 'none',
+    },
+  },
+
+  modeToggleIcon: {
+    fontSize: '1.1rem',
   },
 
   buttonRow: {
@@ -115,12 +110,61 @@ const useStyles = makeStyles((theme) => ({
   },
 
   buttonText: {
+    display: 'block',
     fontSize: '0.76rem',
     letterSpacing: '0.08em',
+    lineHeight: 1.2,
+    minHeight: '2.4em',
     position: 'relative',
     textTransform: 'uppercase',
   },
 }));
+
+const COMMAND_BUTTONS = Object.freeze([
+  {
+    key: 'turnMotorsOn',
+    color: Colors.success,
+    icon: PlayArrow,
+    labelKey: 'arm',
+  },
+  {
+    key: 'turnMotorsOff',
+    color: Colors.info,
+    icon: Clear,
+    labelKey: 'disarm',
+  },
+  {
+    key: 'startShow',
+    color: deepPurple[500],
+    icon: RocketLaunch,
+    labelKey: 'manualShowStart',
+    fullWidth: true,
+  },
+  {
+    key: 'holdPosition',
+    color: Colors.positionHold,
+    icon: PositionHold,
+    labelKey: 'hold',
+  },
+  {
+    key: 'returnToHome',
+    color: Colors.warning,
+    icon: Home,
+    labelKey: 'RTH',
+  },
+  {
+    key: 'land',
+    color: Colors.seriousWarning,
+    icon: FlightLand,
+    labelKey: 'land',
+  },
+  {
+    key: 'shutdown',
+    color: Colors.error,
+    icon: PowerSettingsNew,
+    labelKey: 'shutdown',
+  },
+]);
 
 const LargeControlButtonGroup = ({
   broadcast,
@@ -129,130 +173,93 @@ const LargeControlButtonGroup = ({
   uavActions,
 }) => {
   const classes = useStyles();
+  const mode = broadcast ? 'broadcast' : 'selection';
+  const buttons = [];
+  let row = [];
+
+  COMMAND_BUTTONS.forEach((button) => {
+    const Icon = button.icon;
+    const element = (
+      <ColoredButton
+        key={button.key}
+        className={classes.button}
+        color={button.color}
+        icon={<Icon fontSize='inherit' />}
+        onClick={uavActions[button.key]}
+      >
+        <span className={classes.buttonText}>
+          {t(`largeControlButtonGroup.${button.labelKey}`)}
+        </span>
+      </ColoredButton>
+    );
+
+    if (button.fullWidth) {
+      if (row.length > 0) {
+        buttons.push(row);
+        row = [];
+      }
+
+      buttons.push([element]);
+      return;
+    }
+
+    row.push(element);
+
+    if (row.length === 2) {
+      buttons.push(row);
+      row = [];
+    }
+  });
+
+  if (row.length > 0) {
+    buttons.push(row);
+  }
+
   return (
-    <>
-      <StartMethodExplanation />
-      <Divider />
-      <Box className={classes.commandDeck}>
-        <Box className={classes.modeSwitch}>
-          <Box flex='1' textAlign='right'>
-            <Typography
-              className={classes.modeLabel}
-              variant='body2'
-              color={!broadcast ? 'textPrimary' : 'textSecondary'}
-            >
-              {t('largeControlButtonGroup.selectionOnly')}
-            </Typography>
-          </Box>
-          <Switch checked={broadcast} onChange={onChangeBroadcastMode} />
-          <Box flex='1'>
-            <Typography
-              className={classes.modeLabel}
-              variant='body2'
-              color={broadcast ? 'textPrimary' : 'textSecondary'}
-            >
-              {t('largeControlButtonGroup.broadcast')}
-            </Typography>
-          </Box>
-        </Box>
+    <Box className={classes.commandDeck}>
+      <ToggleButtonGroup
+        exclusive
+        fullWidth
+        aria-label={t('largeControlButtonGroup.modeToggleLabel')}
+        className={classes.modeToggle}
+        color='primary'
+        size='small'
+        value={mode}
+        onChange={onChangeBroadcastMode}
+      >
+        <ToggleButton
+          aria-label={t('largeControlButtonGroup.selectionOnly')}
+          value='selection'
+        >
+          <AdsClick className={classes.modeToggleIcon} />
+          {t('largeControlButtonGroup.modeSelection')}
+        </ToggleButton>
+        <ToggleButton
+          aria-label={t('largeControlButtonGroup.broadcast')}
+          value='broadcast'
+        >
+          <Cast className={classes.modeToggleIcon} />
+          {t('largeControlButtonGroup.modeBroadcast')}
+        </ToggleButton>
+      </ToggleButtonGroup>
 
-        <Box className={classes.buttonRow}>
-          <ColoredButton
-            className={classes.button}
-            color={Colors.success}
-            icon={<PlayArrow fontSize='inherit' />}
-            onClick={uavActions.turnMotorsOn}
-          >
-            <span className={classes.buttonText}>
-              {broadcast
-                ? t('largeControlButtonGroup.armAll')
-                : t('largeControlButtonGroup.arm')}
-            </span>
-          </ColoredButton>
-          <ColoredButton
-            className={classes.button}
-            color={Colors.info}
-            icon={<Clear fontSize='inherit' />}
-            onClick={uavActions.turnMotorsOff}
-          >
-            <span className={classes.buttonText}>
-              {broadcast
-                ? t('largeControlButtonGroup.disarmAll')
-                : t('largeControlButtonGroup.disarm')}
-            </span>
-          </ColoredButton>
-        </Box>
+      <Typography className={classes.modeHint} variant='caption'>
+        {broadcast
+          ? t('largeControlButtonGroup.targetBroadcast')
+          : t('largeControlButtonGroup.targetSelection')}
+      </Typography>
 
-        <Box className={`${classes.buttonRow} ${classes.singleButtonRow}`}>
-          <ColoredButton
-            className={classes.button}
-            color={deepPurple[500]}
-            icon={<RocketLaunch fontSize='inherit' />}
-            onClick={uavActions.startShow}
-          >
-            <span className={classes.buttonText}>
-              {broadcast
-                ? t('largeControlButtonGroup.manualShowStartAll')
-                : t('largeControlButtonGroup.manualShowStart')}
-            </span>
-          </ColoredButton>
+      {buttons.map((rowButtons, index) => (
+        <Box
+          key={index}
+          className={`${classes.buttonRow} ${
+            rowButtons.length === 1 ? classes.singleButtonRow : ''
+          }`}
+        >
+          {rowButtons}
         </Box>
-
-        <Box className={classes.buttonRow}>
-          <ColoredButton
-            className={classes.button}
-            color={Colors.positionHold}
-            icon={<PositionHold fontSize='inherit' />}
-            onClick={uavActions.holdPosition}
-          >
-            <span className={classes.buttonText}>
-              {broadcast
-                ? t('largeControlButtonGroup.holdAll')
-                : t('largeControlButtonGroup.hold')}
-            </span>
-          </ColoredButton>
-          <ColoredButton
-            className={classes.button}
-            color={Colors.warning}
-            icon={<Home fontSize='inherit' />}
-            onClick={uavActions.returnToHome}
-          >
-            <span className={classes.buttonText}>
-              {broadcast
-                ? t('largeControlButtonGroup.RTHAll')
-                : t('largeControlButtonGroup.RTH')}
-            </span>
-          </ColoredButton>
-        </Box>
-
-        <Box className={classes.buttonRow}>
-          <ColoredButton
-            className={classes.button}
-            color={Colors.seriousWarning}
-            icon={<FlightLand fontSize='inherit' />}
-            onClick={uavActions.land}
-          >
-            <span className={classes.buttonText}>
-              {broadcast
-                ? t('largeControlButtonGroup.landAll')
-                : t('largeControlButtonGroup.land')}
-            </span>
-          </ColoredButton>
-          <ColoredButton
-            className={classes.button}
-            color={Colors.error}
-            icon={<PowerSettingsNew fontSize='inherit' />}
-            onClick={uavActions.shutdown}
-          >
-            <span className={classes.buttonText}>
-              {broadcast
-                ? t('largeControlButtonGroup.shutdownAll')
-                : t('largeControlButtonGroup.shutdown')}
-            </span>
-          </ColoredButton>
-        </Box>
-      </Box>
-    </>
+      ))}
+    </Box>
   );
 };
 
@@ -273,8 +280,11 @@ export default connect(
   }),
   // mapDispatchToProps
   (dispatch) => ({
-    onChangeBroadcastMode: (event) =>
-      dispatch(setCommandsAreBroadcast(Boolean(event.target.checked))),
+    onChangeBroadcastMode: (_event, value) => {
+      if (value) {
+        dispatch(setCommandsAreBroadcast(value === 'broadcast'));
+      }
+    },
 
     uavActions: bindActionCreators(
       createUAVOperationThunks({

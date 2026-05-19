@@ -13,12 +13,16 @@ import {
 
 import { BatteryFormatter, DEFAULT_BATTERY_FORMATTER } from './battery';
 
+const DEFAULT_LIST_CELL_WIDTH = 62;
+
 const useStyles = makeStyles((theme) => ({
   root: {
-    // marginTop: theme.spacing(0.5),
     padding: '0 2px',
     textAlign: 'center',
     userSelect: 'none',
+  },
+
+  rootFullWidth: {
     width: '100%',
   },
 
@@ -52,6 +56,7 @@ const BatteryIndicator = ({
   listLevelColors = false,
   percentage,
   voltage,
+  width = DEFAULT_LIST_CELL_WIDTH,
 }) => {
   const status = formatter.getBatteryStatus(voltage, percentage, cellCount);
   const label = formatter.getBatteryLabel(voltage, percentage, cellCount);
@@ -72,6 +77,7 @@ const BatteryIndicator = ({
   const rootClass = clsx(
     className,
     classes.root,
+    !listLevelColors && classes.rootFullWidth,
     !listLevelColors && classes[`battery${status}`]
   );
 
@@ -83,9 +89,12 @@ const BatteryIndicator = ({
         display: 'inline-block',
         fontWeight: 'bold',
         lineHeight: '22px',
+        maxWidth: width,
         minHeight: '22px',
+        minWidth: width,
         padding: '0 2px',
         verticalAlign: 'top',
+        width,
       }
     : { fontSize: 'small' };
 
@@ -104,6 +113,7 @@ BatteryIndicator.propTypes = {
   formatter: PropTypes.instanceOf(BatteryFormatter),
   listLevelColors: PropTypes.bool,
   percentage: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  width: PropTypes.number,
   voltage: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
 };
 
