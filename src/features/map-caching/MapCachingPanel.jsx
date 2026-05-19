@@ -6,7 +6,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Switch from '@mui/material/Switch';
 import PropTypes from 'prop-types';
-import { withTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import DialogHeaderListItem, {
@@ -24,8 +24,9 @@ const MapCachingPanel = ({
   isMapCachingEnabled,
   isMapCachingSupported,
   setMapCachingEnabled,
-  t,
 }) => {
+  const { t } = useTranslation();
+
   return (
     <>
       <DialogHeaderListItem>
@@ -70,7 +71,6 @@ MapCachingPanel.propTypes = {
   setMapCachingEnabled: PropTypes.func,
   onClearCache: PropTypes.func,
   onClose: PropTypes.func,
-  t: PropTypes.func,
 };
 
 export default connect(
@@ -84,4 +84,4 @@ export default connect(
   {
     setMapCachingEnabled,
   }
-)(withTranslation()(MapCachingPanel));
+)(MapCachingPanel);

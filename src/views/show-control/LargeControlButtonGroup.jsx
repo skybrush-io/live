@@ -14,7 +14,7 @@ import Switch from '@mui/material/Switch';
 import Typography from '@mui/material/Typography';
 import { bindActionCreators } from '@reduxjs/toolkit';
 import PropTypes from 'prop-types';
-import { withTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import { makeStyles } from '@skybrush/app-theme-mui';
@@ -63,9 +63,9 @@ const LargeControlButtonGroup = ({
   broadcast,
   devModeEnabled,
   onChangeBroadcastMode,
-  t,
   uavActions,
 }) => {
+  const { t } = useTranslation();
   const classes = useStyles();
   return (
     <>
@@ -180,7 +180,6 @@ LargeControlButtonGroup.propTypes = {
   broadcast: PropTypes.bool,
   devModeEnabled: PropTypes.bool.isRequired,
   onChangeBroadcastMode: PropTypes.func,
-  t: PropTypes.func,
   uavActions: PropTypes.objectOf(PropTypes.func),
 };
 
@@ -224,4 +223,4 @@ export default connect(
       dispatch
     ),
   })
-)(withTranslation()(LargeControlButtonGroup));
+)(LargeControlButtonGroup);

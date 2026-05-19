@@ -2,7 +2,7 @@ import Button from '@mui/material/Button';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import PropTypes from 'prop-types';
-import { withTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import { makeStyles } from '@skybrush/app-theme-mui';
@@ -30,7 +30,8 @@ const useStyles = makeStyles({
  * Presentation component for the dialog that allows the user to assemble a
  * list of parameters to upload to the drones.
  */
-const ParameterUploadSetupDialog = ({ onClose, open, t }) => {
+const ParameterUploadSetupDialog = ({ onClose, open }) => {
+  const { t } = useTranslation();
   const classes = useStyles();
 
   return (
@@ -56,7 +57,6 @@ const ParameterUploadSetupDialog = ({ onClose, open, t }) => {
 ParameterUploadSetupDialog.propTypes = {
   open: PropTypes.bool,
   onClose: PropTypes.func,
-  t: PropTypes.func,
 };
 
 export default connect(
@@ -69,4 +69,4 @@ export default connect(
   {
     onClose: closeParameterUploadSetupDialog,
   }
-)(withTranslation()(ParameterUploadSetupDialog));
+)(ParameterUploadSetupDialog);

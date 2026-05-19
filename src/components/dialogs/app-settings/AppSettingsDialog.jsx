@@ -2,7 +2,7 @@ import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import Tab from '@mui/material/Tab';
 import PropTypes from 'prop-types';
-import { withTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import { DialogTabs } from '@skybrush/mui-components';
@@ -39,31 +39,37 @@ const AppSettingsDialogPresentation = ({
   onTabSelected,
   open = false,
   selectedTab = 'display',
-  t,
-}) => (
-  <Dialog fullWidth open={open} maxWidth='sm' onClose={onClose}>
-    <DialogTabs alignment='center' value={selectedTab} onChange={onTabSelected}>
-      <Tab value='display' label={t('settings.tabs.display')} />
-      <Tab value='threeD' label={t('settings.tabs.threeDView')} />
-      <Tab value='uavs' label={t('settings.tabs.uavs')} />
-      <Tab value='preflight' label={t('settings.tabs.preflight')} />
-      {window.bridge && window.bridge.isElectron ? (
-        <Tab value='server' label={t('settings.tabs.server')} />
-      ) : null}
-      <Tab value='apiKeys' label={t('settings.tabs.apiKeys')} />
-    </DialogTabs>
-    <DialogContent style={{ minHeight: 200 }}>
-      {tabNameToComponent[selectedTab]}
-    </DialogContent>
-  </Dialog>
-);
+}) => {
+  const { t } = useTranslation();
+
+  return (
+    <Dialog fullWidth open={open} maxWidth='sm' onClose={onClose}>
+      <DialogTabs
+        alignment='center'
+        value={selectedTab}
+        onChange={onTabSelected}
+      >
+        <Tab value='display' label={t('settings.tabs.display')} />
+        <Tab value='threeD' label={t('settings.tabs.threeDView')} />
+        <Tab value='uavs' label={t('settings.tabs.uavs')} />
+        <Tab value='preflight' label={t('settings.tabs.preflight')} />
+        {window.bridge && window.bridge.isElectron ? (
+          <Tab value='server' label={t('settings.tabs.server')} />
+        ) : null}
+        <Tab value='apiKeys' label={t('settings.tabs.apiKeys')} />
+      </DialogTabs>
+      <DialogContent style={{ minHeight: 200 }}>
+        {tabNameToComponent[selectedTab]}
+      </DialogContent>
+    </Dialog>
+  );
+};
 
 AppSettingsDialogPresentation.propTypes = {
   onClose: PropTypes.func,
   onTabSelected: PropTypes.func,
   open: PropTypes.bool,
   selectedTab: PropTypes.string,
-  t: PropTypes.func,
 };
 
 /**
@@ -82,6 +88,6 @@ const AppSettingsDialog = connect(
       dispatch(setAppSettingsDialogTab(value));
     },
   })
-)(withTranslation()(AppSettingsDialogPresentation));
+)(AppSettingsDialogPresentation);
 
 export default AppSettingsDialog;

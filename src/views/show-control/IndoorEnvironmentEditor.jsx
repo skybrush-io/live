@@ -3,7 +3,7 @@ import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormGroup from '@mui/material/FormGroup';
 import PropTypes from 'prop-types';
-import { withTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import { FormHeader } from '@skybrush/mui-components';
@@ -27,27 +27,30 @@ const IndoorEnvironmentEditor = ({
   onRoomVisibilityChanged,
   onFirstCornerChanged,
   onSecondCornerChanged,
-  t,
-}) => (
-  <FormGroup>
-    <FormHeader>
-      {t('indoorEnvironmentEditor.coordinatesOfTheCorners')}
-    </FormHeader>
-    <XYZFields value={firstCorner} onChange={onFirstCornerChanged} />
-    <Box sx={{ p: 1 }} />
-    <XYZFields value={secondCorner} onChange={onSecondCornerChanged} />
-    <Box sx={{ p: 1 }} />
-    <FormControlLabel
-      label={t('indoorEnvironmentEditor.roomVisibleIn3D')}
-      control={
-        <Checkbox
-          checked={Boolean(roomVisible)}
-          onChange={onRoomVisibilityChanged}
-        />
-      }
-    />
-  </FormGroup>
-);
+}) => {
+  const { t } = useTranslation();
+
+  return (
+    <FormGroup>
+      <FormHeader>
+        {t('indoorEnvironmentEditor.coordinatesOfTheCorners')}
+      </FormHeader>
+      <XYZFields value={firstCorner} onChange={onFirstCornerChanged} />
+      <Box sx={{ p: 1 }} />
+      <XYZFields value={secondCorner} onChange={onSecondCornerChanged} />
+      <Box sx={{ p: 1 }} />
+      <FormControlLabel
+        label={t('indoorEnvironmentEditor.roomVisibleIn3D')}
+        control={
+          <Checkbox
+            checked={Boolean(roomVisible)}
+            onChange={onRoomVisibilityChanged}
+          />
+        }
+      />
+    </FormGroup>
+  );
+};
 
 IndoorEnvironmentEditor.propTypes = {
   roomVisible: PropTypes.bool,
@@ -56,7 +59,6 @@ IndoorEnvironmentEditor.propTypes = {
   onFirstCornerChanged: PropTypes.func,
   onSecondCornerChanged: PropTypes.func,
   onRoomVisibilityChanged: PropTypes.func,
-  t: PropTypes.func,
 };
 
 export default connect(
@@ -76,4 +78,4 @@ export default connect(
     onFirstCornerChanged: setFirstCornerOfRoom,
     onSecondCornerChanged: setSecondCornerOfRoom,
   }
-)(withTranslation()(IndoorEnvironmentEditor));
+)(IndoorEnvironmentEditor);

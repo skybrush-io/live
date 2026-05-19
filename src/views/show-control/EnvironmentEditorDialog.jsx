@@ -2,7 +2,7 @@ import Box from '@mui/material/Box';
 import DialogContent from '@mui/material/DialogContent';
 import Typography from '@mui/material/Typography';
 import PropTypes from 'prop-types';
-import { withTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import { DraggableDialog } from '@skybrush/mui-components';
@@ -18,9 +18,11 @@ const instructionsByType = {
   outdoor: 'environmentEditorDialog.outdoor',
 };
 
-const Instructions = withTranslation()(({ type, t }) => (
-  <Typography variant='body1'>{t(instructionsByType[type])}</Typography>
-));
+const Instructions = ({ type }) => {
+  const { t } = useTranslation();
+
+  return <Typography variant='body1'>{t(instructionsByType[type])}</Typography>;
+};
 
 Instructions.propTypes = {
   type: PropTypes.oneOf(Object.keys(instructionsByType)),
@@ -30,29 +32,32 @@ Instructions.propTypes = {
  * Presentation component for the dialog that shows the form that the user
  * can use to edit the environment settings of a drone show.
  */
-const EnvironmentEditorDialog = ({ editing = false, onClose, type, t }) => (
-  <DraggableDialog
-    fullWidth
-    open={editing}
-    maxWidth='sm'
-    title={t('environmentEditorDialog.environmentSettings')}
-    onClose={onClose}
-  >
-    <DialogContent>
-      <Box>
-        <Instructions type={type} />
-        {type === 'outdoor' && <OutdoorEnvironmentEditor />}
-        {type === 'indoor' && <IndoorEnvironmentEditor />}
-      </Box>
-    </DialogContent>
-  </DraggableDialog>
-);
+const EnvironmentEditorDialog = ({ editing = false, onClose, type }) => {
+  const { t } = useTranslation();
+
+  return (
+    <DraggableDialog
+      fullWidth
+      open={editing}
+      maxWidth='sm'
+      title={t('environmentEditorDialog.environmentSettings')}
+      onClose={onClose}
+    >
+      <DialogContent>
+        <Box>
+          <Instructions type={type} />
+          {type === 'outdoor' && <OutdoorEnvironmentEditor />}
+          {type === 'indoor' && <IndoorEnvironmentEditor />}
+        </Box>
+      </DialogContent>
+    </DraggableDialog>
+  );
+};
 
 EnvironmentEditorDialog.propTypes = {
   editing: PropTypes.bool,
   onClose: PropTypes.func,
   type: PropTypes.oneOf(['indoor', 'outdoor']),
-  t: PropTypes.func,
 };
 
 export default connect(
@@ -66,4 +71,4 @@ export default connect(
   {
     onClose: closeEnvironmentEditorDialog,
   }
-)(withTranslation()(EnvironmentEditorDialog));
+)(EnvironmentEditorDialog);

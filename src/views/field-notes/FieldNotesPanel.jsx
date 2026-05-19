@@ -9,7 +9,7 @@ import 'easymde/dist/easymde.min.css';
 import debounce from 'lodash-es/debounce';
 import PropTypes from 'prop-types';
 import { useCallback } from 'react';
-import { withTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import SimpleMDE from 'react-simplemde-editor';
 
@@ -102,7 +102,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const FieldNotesPanel = ({ contents, t, updateFieldNotes }) => {
+const FieldNotesPanel = ({ contents, updateFieldNotes }) => {
+  const { t } = useTranslation();
   const classes = useStyles();
 
   const exportNotes = useCallback(async () => {
@@ -139,7 +140,6 @@ const FieldNotesPanel = ({ contents, t, updateFieldNotes }) => {
 
 FieldNotesPanel.propTypes = {
   contents: PropTypes.string,
-  t: PropTypes.func,
   updateFieldNotes: PropTypes.func,
 };
 
@@ -152,4 +152,4 @@ export default connect(
   {
     updateFieldNotes,
   }
-)(withTranslation()(FieldNotesPanel));
+)(FieldNotesPanel);

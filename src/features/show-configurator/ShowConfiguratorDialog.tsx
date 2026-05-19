@@ -5,9 +5,8 @@ import DialogActions from '@mui/material/DialogActions';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import type { Theme } from '@mui/material/styles';
-import type { TFunction } from 'i18next';
 import { useCallback, useState } from 'react';
-import { withTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import { makeStyles } from '@skybrush/app-theme-mui';
@@ -126,11 +125,7 @@ type StateProps = Readonly<{
   dronesVisible: boolean;
 }>;
 
-type Props = StateProps &
-  DispatchProps &
-  Readonly<{
-    t: TFunction;
-  }>;
+type Props = StateProps & DispatchProps;
 
 type AdaptStage = 'config' | 'review';
 
@@ -246,8 +241,8 @@ const ShowConfiguratorDialog = (props: Props): React.JSX.Element => {
     saveAdaptedShow,
     setDronesVisible,
     open,
-    t,
   } = props;
+  const { t } = useTranslation();
   const styles = useStyles();
   const { adaptParameters, back, lights, stage, submit, submitDisabled } =
     useOwnState(props);
@@ -399,6 +394,6 @@ const ConnectedShowConfiguratorDialogWrapper = connect(
       dispatch(setDronesVisible(value));
     },
   })
-)(withTranslation()(ShowConfiguratorDialogWrapper));
+)(ShowConfiguratorDialogWrapper);
 
 export default ConnectedShowConfiguratorDialogWrapper;

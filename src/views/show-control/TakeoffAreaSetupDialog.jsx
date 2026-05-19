@@ -6,7 +6,7 @@ import DialogContent from '@mui/material/DialogContent';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import PropTypes from 'prop-types';
-import { Translation, withTranslation } from 'react-i18next';
+import { Translation, useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import {
@@ -244,8 +244,8 @@ const TakeoffAreaSetupDialog = ({
   onApprove,
   onClose,
   onRevoke,
-  t,
 }) => {
+  const { t } = useTranslation();
   const titleComponents = hasVirtualDrones && (
     <Button
       color='inherit'
@@ -316,7 +316,6 @@ TakeoffAreaSetupDialog.propTypes = {
   onClose: PropTypes.func,
   onRevoke: PropTypes.func,
   open: PropTypes.bool,
-  t: PropTypes.func,
 };
 
 // TODO(ntamas): most selectors should return a combination of show and
@@ -350,4 +349,4 @@ export default connect(
       dispatch(revokeTakeoffAreaApproval());
     },
   })
-)(withTranslation()(TakeoffAreaSetupDialog));
+)(TakeoffAreaSetupDialog);
