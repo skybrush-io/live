@@ -247,6 +247,14 @@ export const getUAVListSortPreference = createSelector(
 );
 
 /**
+ * Returns whether the UAV list is currently sorted by mission-specific IDs
+ * (sID). The result drives whether UI components that show drone identifiers
+ * display the sID form or the physical UAV ID.
+ */
+export const isSortingByMissionId = (state: RootState): boolean =>
+  getUAVListSortPreference(state).key === UAVSortKey.MISSION_ID;
+
+/**
  * Returns whether UAV operations dispatched from toolbars or buttons should
  * be confirmed by the user.
  */

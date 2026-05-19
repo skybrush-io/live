@@ -19,6 +19,7 @@ import {
 
 import { Colors } from '~/components/colors';
 import { Status } from '~/components/semantics';
+import { isSortingByMissionId } from '~/features/settings/selectors';
 import { signOffOnOnboardPreflightChecks } from '~/features/show/actions';
 import { areOnboardPreflightChecksSignedOff } from '~/features/show/selectors';
 import {
@@ -28,7 +29,10 @@ import {
 import { getErrorCodeSummaryForUAVsInMission } from '~/features/uavs/selectors';
 import { getSeverityOfErrorCode } from '~/flockwave/errors';
 import { describeUAVErrorCode } from '~/flockwave/UAVErrorCode';
-import { formatIdsAndTruncateTrailingItems as formatUAVIds } from '~/utils/formatting';
+import {
+  formatMissionId,
+  formatIdsAndTruncateTrailingItems as formatUAVIds,
+} from '~/utils/formatting';
 
 const severityToStatus = [
   Status.INFO,
@@ -42,8 +46,12 @@ const severityToStatus = [
  * failed on at least one of the drones, along with the IDs of the drones on
  * which the preflight checks have failed.
  */
-const PreflightCheckListPresentation = ({ items, ...rest }) => {
+const PreflightCheckListPresentation = ({ items, showMissionIds, ...rest }) => {
   const { t } = useTranslation();
+
+  const formatEntry = showMissionIds
+    ? (x) => (x[1] == null ? String(x[0]) : formatMissionId(x[1]))
+    : (x) => String(x[0]);
 
   return items.length > 0 ? (
     <List dense disablePadding {...rest}>
@@ -57,9 +65,7 @@ const PreflightCheckListPresentation = ({ items, ...rest }) => {
               <ListItemText
                 id={itemId}
                 primary={describeUAVErrorCode(item.code, t)}
-                secondary={formatUAVIds(
-                  item.uavIdsAndIndices.map((x) => String(x[0]))
-                )}
+                secondary={formatUAVIds(item.uavIdsAndIndices.map(formatEntry))}
               />
             </ListItemButton>
           </ListItem>
@@ -84,6 +90,7 @@ PreflightCheckListPresentation.propTypes = {
     })
   ),
   onToggle: PropTypes.func,
+  showMissionIds: PropTypes.bool,
   t: PropTypes.func,
 };
 
@@ -91,6 +98,7 @@ const PreflightCheckList = connect(
   // mapStateToProps
   (state) => ({
     items: getErrorCodeSummaryForUAVsInMission(state),
+    showMissionIds: isSortingByMissionId(state),
   }),
   // mapDispatchToProps
   {}

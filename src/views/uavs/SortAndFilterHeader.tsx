@@ -37,6 +37,7 @@ import {
   getUAVListFilters,
   getUAVListLayout,
   getUAVListSortPreference,
+  isSortingByMissionId,
 } from '~/features/settings/selectors';
 import {
   UAVListLayout,
@@ -273,24 +274,35 @@ const COMMON_HEADER_TEXT_PARTS: readonly HeaderPart[] = Object.freeze([
   },
 ]);
 
-/** List header: mission slot (sID) column left, UAV ID column right. */
-const LIST_HEADER_TEXT_PARTS: readonly HeaderPart[] = Object.freeze([
-  {
-    label: 'sID',
-    sortKey: UAVSortKey.MISSION_ID,
-    style: {
-      textAlign: 'right',
-      width: 48,
-    },
+const SID_COLUMN: HeaderPart = {
+  label: 'sID',
+  sortKey: UAVSortKey.MISSION_ID,
+  style: {
+    textAlign: 'right',
+    width: 48,
   },
-  {
-    label: 'ID',
-    sortKey: UAVSortKey.UAV_ID,
-    style: {
-      textAlign: 'right',
-      width: 40,
-    },
+};
+
+const ID_COLUMN: HeaderPart = {
+  label: 'ID',
+  sortKey: UAVSortKey.UAV_ID,
+  style: {
+    textAlign: 'right',
+    width: 40,
   },
+};
+
+/** List header used when sorting by mission slot (sID column is leftmost). */
+const LIST_HEADER_PARTS_MISSION_FIRST: readonly HeaderPart[] = Object.freeze([
+  SID_COLUMN,
+  ID_COLUMN,
+  ...COMMON_HEADER_TEXT_PARTS,
+]);
+
+/** List header used otherwise (UAV ID column is leftmost). */
+const LIST_HEADER_PARTS_UAV_FIRST: readonly HeaderPart[] = Object.freeze([
+  ID_COLUMN,
+  SID_COLUMN,
   ...COMMON_HEADER_TEXT_PARTS,
 ]);
 
@@ -410,6 +422,7 @@ type SortAndFilterHeaderProps = Readonly<{
   onSetFilter: (filter: Nullable<UAVFilter>) => void;
   onSetSortBy: (sortBy: Partial<UAVSortKeyAndOrder>) => void;
   onToggleSortDirection: () => void;
+  showMissionIds: boolean;
   sortBy: UAVSortKeyAndOrder;
   t: TFunction;
 }>;
@@ -421,6 +434,7 @@ const SortAndFilterHeader = ({
   onSetFilter,
   onSetSortBy,
   onToggleSortDirection,
+  showMissionIds,
   sortBy,
   t,
 }: SortAndFilterHeaderProps): React.JSX.Element => {
@@ -585,7 +599,9 @@ const SortAndFilterHeader = ({
       <FadeAndSlide in={layout === UAVListLayout.LIST}>
         <div className={classes.headerLine}>
           {formatHeaderParts(
-            LIST_HEADER_TEXT_PARTS,
+            showMissionIds
+              ? LIST_HEADER_PARTS_MISSION_FIRST
+              : LIST_HEADER_PARTS_UAV_FIRST,
             sortBy,
             classes,
             onSetSortKeyOrToggleSortDirection
@@ -601,6 +617,7 @@ export default connect(
   (state: RootState) => ({
     filters: getUAVListFilters(state),
     layout: getUAVListLayout(state),
+    showMissionIds: isSortingByMissionId(state),
     sortBy: getUAVListSortPreference(state),
   }),
   // mapDispatchToProps
