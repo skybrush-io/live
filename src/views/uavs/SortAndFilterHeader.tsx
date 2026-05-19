@@ -36,7 +36,7 @@ import {
   getUAVListFilters,
   getUAVListLayout,
   getUAVListSortPreference,
-  isShowingMissionIds,
+  isSortingByMissionId,
 } from '~/features/settings/selectors';
 import {
   UAVListLayout,
@@ -273,46 +273,37 @@ const COMMON_HEADER_TEXT_PARTS: readonly HeaderPart[] = Object.freeze([
   },
 ]);
 
-const HEADER_TEXT_PARTS: Record<string, HeaderPart[]> = {
-  missionIds: [
-    {
-      label: 'sID',
-      sortKey: UAVSortKey.DEFAULT,
-      style: {
-        textAlign: 'right',
-        width: 48,
-      },
-    },
-    {
-      label: 'ID',
-      sortKey: UAVSortKey.DEFAULT,
-      style: {
-        textAlign: 'right',
-        width: 40,
-      },
-    },
-    ...COMMON_HEADER_TEXT_PARTS,
-  ],
-  droneIds: [
-    {
-      label: 'ID',
-      sortKey: UAVSortKey.DEFAULT,
-      style: {
-        textAlign: 'right',
-        width: 48,
-      },
-    },
-    {
-      label: 'sID',
-      sortKey: UAVSortKey.DEFAULT,
-      style: {
-        textAlign: 'right',
-        width: 40,
-      },
-    },
-    ...COMMON_HEADER_TEXT_PARTS,
-  ],
+const SID_COLUMN: HeaderPart = {
+  label: 'sID',
+  sortKey: UAVSortKey.MISSION_ID,
+  style: {
+    textAlign: 'right',
+    width: 48,
+  },
 };
+
+const ID_COLUMN: HeaderPart = {
+  label: 'ID',
+  sortKey: UAVSortKey.UAV_ID,
+  style: {
+    textAlign: 'right',
+    width: 40,
+  },
+};
+
+/** List header used when sorting by mission slot (sID column is leftmost). */
+const LIST_HEADER_PARTS_MISSION_FIRST: readonly HeaderPart[] = Object.freeze([
+  SID_COLUMN,
+  ID_COLUMN,
+  ...COMMON_HEADER_TEXT_PARTS,
+]);
+
+/** List header used otherwise (UAV ID column is leftmost). */
+const LIST_HEADER_PARTS_UAV_FIRST: readonly HeaderPart[] = Object.freeze([
+  ID_COLUMN,
+  SID_COLUMN,
+  ...COMMON_HEADER_TEXT_PARTS,
+]);
 
 const checkStyle = { fontSize: 'inherit', marginLeft: 8 };
 const check = <Check style={checkStyle} />;
@@ -385,24 +376,26 @@ function bindChip({
 }
 
 function formatHeaderParts(
-  parts: string | HeaderPart[] | undefined,
+  parts: string | readonly HeaderPart[] | undefined,
   sortBy: UAVSortKeyAndOrder,
   classes: ReturnType<typeof useStyles>,
   onClick: (key: UAVSortKey) => void
 ): React.ReactNode {
+  const hasHeaderParts = (
+    value: string | readonly HeaderPart[] | undefined
+  ): value is readonly HeaderPart[] => Array.isArray(value);
+
   if (typeof parts === 'string') {
     // Whole header is a single item
     return parts;
-  } else if (Array.isArray(parts)) {
+  } else if (hasHeaderParts(parts)) {
     return parts.map(({ label, sortKey, style }) => (
       <div
         key={label}
         className={clsx(
           classes.headerLineItem,
           sortKey && classes.sortable,
-          sortBy.key === sortKey &&
-            sortKey !== UAVSortKey.DEFAULT &&
-            classes.sortActive
+          sortKey !== undefined && sortBy.key === sortKey && classes.sortActive
         )}
         style={style}
         onClick={
@@ -500,7 +493,10 @@ const SortAndFilterHeader = ({
     [onSetSortBy, onToggleSortDirection, sortBy]
   );
 
-  const isSortActive = sortBy.key !== UAVSortKey.DEFAULT;
+  // Sorting by UAV ID or mission ID is considered the "natural" order and
+  // does not highlight the sort chip; other keys (battery, RSSI, etc.) do.
+  const isSortActive =
+    sortBy.key !== UAVSortKey.UAV_ID && sortBy.key !== UAVSortKey.MISSION_ID;
   const isFilterActive = Array.isArray(filters) && filters.length > 0;
 
   return (
@@ -602,8 +598,8 @@ const SortAndFilterHeader = ({
         <div className={classes.headerLine}>
           {formatHeaderParts(
             showMissionIds
-              ? HEADER_TEXT_PARTS['missionIds']
-              : HEADER_TEXT_PARTS['droneIds'],
+              ? LIST_HEADER_PARTS_MISSION_FIRST
+              : LIST_HEADER_PARTS_UAV_FIRST,
             sortBy,
             classes,
             onSetSortKeyOrToggleSortDirection
@@ -619,7 +615,7 @@ export default connect(
   (state: RootState) => ({
     filters: getUAVListFilters(state),
     layout: getUAVListLayout(state),
-    showMissionIds: isShowingMissionIds(state),
+    showMissionIds: isSortingByMissionId(state),
     sortBy: getUAVListSortPreference(state),
   }),
   // mapDispatchToProps

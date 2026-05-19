@@ -39,7 +39,7 @@ import { getSelection } from '~/features/selection/selectors';
 import { setSelection } from '~/features/selection/slice';
 import {
   getUAVListLayout,
-  isShowingMissionIds,
+  isSortingByMissionId,
 } from '~/features/settings/selectors';
 import { UAVListLayout } from '~/features/settings/types';
 import type { AppDispatch, RootState } from '~/store/reducers';
@@ -166,7 +166,7 @@ const createGridItemRenderer = ({
     //
     // - if we have a proposed label, use that
     // - if we are not showing mission IDs, use the UAV ID
-    // - if we are showing mission IDs and we are not edit mode, format the
+    // - if we are showing mission IDs and we are not in edit mode, format the
     //   mission ID nicely and show that -- unless we don't have a mission ID
     //   (we are in a spare slot), in which case use the UAV ID
     // - if we are editing the mission mapping, show the UAV ID because that's
@@ -257,7 +257,7 @@ const createListItemRenderer = ({
     const secondaryLabel = editingThisItem
       ? ''
       : showMissionIds
-        ? uavId
+        ? (uavId ?? '')
         : formattedMissionIndex;
 
     return (
@@ -457,7 +457,7 @@ const UAVList = connect(
     mappingSlotBeingEdited: getIndexOfMappingSlotBeingEdited(state),
     layout: getUAVListLayout(state),
     selection: getSelection(state),
-    showMissionIds: isShowingMissionIds(state),
+    showMissionIds: isSortingByMissionId(state),
   }),
   // mapDispatchToProps
   () => {

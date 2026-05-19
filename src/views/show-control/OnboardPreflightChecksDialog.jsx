@@ -19,7 +19,7 @@ import {
 
 import { Colors } from '~/components/colors';
 import { Status } from '~/components/semantics';
-import { isShowingMissionIds } from '~/features/settings/selectors';
+import { isSortingByMissionId } from '~/features/settings/selectors';
 import { signOffOnOnboardPreflightChecks } from '~/features/show/actions';
 import { areOnboardPreflightChecksSignedOff } from '~/features/show/selectors';
 import {
@@ -33,7 +33,6 @@ import {
   formatMissionId,
   formatIdsAndTruncateTrailingItems as formatUAVIds,
 } from '~/utils/formatting';
-import MappingToggleButton from '~/views/uavs/MappingToggleButton';
 
 const severityToStatus = [
   Status.INFO,
@@ -50,6 +49,10 @@ const severityToStatus = [
 const PreflightCheckListPresentation = ({ items, showMissionIds, ...rest }) => {
   const { t } = useTranslation();
 
+  const formatEntry = showMissionIds
+    ? (x) => (x[1] == null ? String(x[0]) : formatMissionId(x[1]))
+    : (x) => String(x[0]);
+
   return items.length > 0 ? (
     <List dense disablePadding {...rest}>
       {items.map((item) => {
@@ -62,13 +65,7 @@ const PreflightCheckListPresentation = ({ items, showMissionIds, ...rest }) => {
               <ListItemText
                 id={itemId}
                 primary={describeUAVErrorCode(item.code, t)}
-                secondary={formatUAVIds(
-                  item.uavIdsAndIndices.map(
-                    showMissionIds
-                      ? (x) => formatMissionId(x[1])
-                      : (x) => String(x[0])
-                  )
-                )}
+                secondary={formatUAVIds(item.uavIdsAndIndices.map(formatEntry))}
               />
             </ListItemButton>
           </ListItem>
@@ -100,7 +97,7 @@ const PreflightCheckList = connect(
   // mapStateToProps
   (state) => ({
     items: getErrorCodeSummaryForUAVsInMission(state),
-    showMissionIds: isShowingMissionIds(state),
+    showMissionIds: isSortingByMissionId(state),
   }),
   // mapDispatchToProps
   {}
@@ -126,7 +123,6 @@ const OnboardPreflightChecksDialog = ({
       open={open}
       maxWidth='xs'
       title={t('show.onboardPreflightChecks')}
-      titleComponents={<MappingToggleButton />}
       onClose={onClose}
     >
       <DialogContent

@@ -481,6 +481,7 @@
   },
   "mappingButtonGroup": {
     "editMapping": "Edit mapping",
+    "emptySlotsShownWhileEditingMapping": "Empty mission slots stay visible while you edit the mapping.",
     "hideEmptyMissionSlots": "Hide empty mission slots",
     "showEmptyMissionSlots": "Show empty mission slots"
   },
@@ -497,9 +498,6 @@
   "mappingSlotEditorToolbar": {
     "reverseDirection": "Hold <kbd>Shift</kbd> to reverse direction.",
     "selectNextEmptySlot": "Select next empty slot"
-  },
-  "mappingToggleButton": {
-    "sortByMissionID": "Sort by mission IDs"
   },
   "measurementList": {
     "addDrone": "Add a drone to measure with the + button in the toolbar",
