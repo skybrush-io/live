@@ -115,6 +115,7 @@ const flightCommandLabeledButtonSx = (bgColor, isSelectionEmpty) => ({
 const UAVOperationsButtonGroup = ({
   broadcast,
   dispatch,
+  hideFlightCommands = false,
   hideSeparators,
   openUAVDetailsDialog,
   requestRemovalOfUAVsByIds,
@@ -271,7 +272,8 @@ const UAVOperationsButtonGroup = ({
         <ToolbarDivider orientation='vertical' />
       )}
 
-      {size === 'small' ? (
+      {!hideFlightCommands &&
+        (size === 'small' ? (
         <>
           <Tooltip content={t('general.commands.takeoff')}>
             <IconButton
@@ -399,9 +401,11 @@ const UAVOperationsButtonGroup = ({
             </Button>
           </Tooltip>
         </>
-      )}
+        ))}
 
-      {!hideSeparators && <ToolbarDivider orientation='vertical' />}
+      {!hideFlightCommands && !hideSeparators && (
+        <ToolbarDivider orientation='vertical' />
+      )}
 
       {size !== 'small' && (
         <>
@@ -548,12 +552,14 @@ const UAVOperationsButtonGroup = ({
         </>
       )}
 
-      <ConfirmationDialog
-        open={flightConfirmOpen}
-        message={flightConfirmMessage}
-        onConfirm={handleFlightConfirmAction}
-        onCancel={handleFlightConfirmClose}
-      />
+      {!hideFlightCommands && (
+        <ConfirmationDialog
+          open={flightConfirmOpen}
+          message={flightConfirmMessage}
+          onConfirm={handleFlightConfirmAction}
+          onCancel={handleFlightConfirmClose}
+        />
+      )}
     </>
   );
 };
@@ -565,6 +571,7 @@ UAVOperationsButtonGroup.propTypes = {
   requestRemovalOfUAVsByIds: PropTypes.func,
   requestRemovalOfUAVsMarkedAsGone: PropTypes.func,
   selectedUAVIds: PropTypes.arrayOf(PropTypes.string),
+  hideFlightCommands: PropTypes.bool,
   hideSeparators: PropTypes.bool,
   size: PropTypes.oneOf(['small', 'medium']),
   startSeparator: PropTypes.bool,

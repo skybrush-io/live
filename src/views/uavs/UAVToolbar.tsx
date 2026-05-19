@@ -37,6 +37,7 @@ const UAVToolbar = React.forwardRef<HTMLDivElement, UAVToolbarProps>(
 
         <UAVOperationsButtonGroup
           broadcast={isBroadcast}
+          hideFlightCommands
           selectedUAVIds={selectedUAVIds}
         />
 
