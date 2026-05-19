@@ -29,6 +29,7 @@ import {
 
 import Colors from '~/components/colors';
 import FadeAndSlide from '~/components/transitions/FadeAndSlide';
+import { selectGpsFleetSummary } from '~/features/uavs/gpsFleetSummary';
 import {
   setSingleUAVListFilter,
   setUAVListSortPreference,
@@ -60,6 +61,12 @@ import type { RootState } from '~/store/reducers';
 import type { Nullable } from '~/utils/types';
 
 import { HEADER_HEIGHT } from './constants';
+import {
+  LIST_ID_COLUMNS,
+  LIST_MIN_WIDTH,
+  listDataColumnStyle,
+  listIdColumnStyle,
+} from './listColumnLayout';
 
 const createChipStyle = (
   color: string | null,
@@ -100,7 +107,7 @@ const useStyles = makeStyles((theme: Theme) => ({
       ? 'rgba(36, 36, 36, 0.54)'
       : 'rgba(255, 255, 255, 0.8)',
     borderBottom: `1px solid ${theme.palette.divider}`,
-    minWidth: 912,
+    minWidth: LIST_MIN_WIDTH,
     overflow: 'hidden',
     zIndex: 10,
     minHeight: HEADER_HEIGHT + 1 /* 1px for the border */,
@@ -142,8 +149,9 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 
   headerLineItem: {
+    boxSizing: 'border-box',
     lineHeight: HEADER_HEIGHT + 'px',
-    padding: theme.spacing(0, 0.5),
+    padding: 0,
     flexShrink: 0, // important, otherwise the fixed width will not be respected if the view is very narrow
 
     '&:last-child': {
@@ -184,108 +192,73 @@ const COMMON_HEADER_TEXT_PARTS: readonly HeaderPart[] = Object.freeze([
   {
     label: 'Status',
     sortKey: UAVSortKey.STATUS,
-    style: {
-      textAlign: 'center',
-      width: 78,
-    },
+    style: { ...listDataColumnStyle('status'), textAlign: 'center' },
   },
   {
     label: 'Alert',
-    style: {
-      textAlign: 'center',
-      width: 44,
-    },
+    style: { ...listDataColumnStyle('alert'), textAlign: 'center' },
   },
   {
     label: 'Mode',
     sortKey: UAVSortKey.FLIGHT_MODE,
-    style: {
-      textAlign: 'center',
-      width: 62,
-    },
+    style: { ...listDataColumnStyle('mode'), textAlign: 'center' },
   },
   {
     label: 'Battery',
     sortKey: UAVSortKey.BATTERY,
-    style: {
-      textAlign: 'right',
-      width: 62,
-    },
+    style: { ...listDataColumnStyle('battery'), textAlign: 'right' },
   },
   {
     label: '', // LED light
-    style: {
-      textAlign: 'center',
-      width: 12,
-    },
+    style: { ...listDataColumnStyle('led'), textAlign: 'center' },
   },
   {
     label: 'RSSI',
     sortKey: UAVSortKey.RSSI,
-    style: {
-      textAlign: 'center',
-      width: 82,
-    },
+    style: { ...listDataColumnStyle('rssi'), textAlign: 'center' },
   },
   {
     label: 'GPS',
     sortKey: UAVSortKey.GPS_FIX,
-    style: {
-      textAlign: 'center',
-      width: 44,
-    },
+    style: { ...listDataColumnStyle('gps'), textAlign: 'center' },
+  },
+  {
+    label: 'Sats',
+    style: { ...listDataColumnStyle('sats'), textAlign: 'center' },
   },
   {
     label: 'Path',
-    style: {
-      paddingRight: 8,
-      textAlign: 'center',
-      width: 60,
-    },
+    style: { ...listDataColumnStyle('path'), textAlign: 'center' },
   },
   {
     label: 'Position',
-    style: {
-      paddingLeft: 8,
-      textAlign: 'left',
-      width: 200,
-    },
+    style: { ...listDataColumnStyle('position'), textAlign: 'left' },
   },
   {
     label: 'AMSL',
     sortKey: UAVSortKey.ALTITUDE_MSL,
-    style: {
-      textAlign: 'right',
-      width: 58,
-    },
+    style: { ...listDataColumnStyle('amsl'), textAlign: 'right' },
   },
   {
     label: 'AHL',
     sortKey: UAVSortKey.ALTITUDE_HOME,
-    style: {
-      textAlign: 'right',
-      width: 56,
-    },
+    style: { ...listDataColumnStyle('ahl'), textAlign: 'right' },
   },
   {
     label: 'AGL',
     sortKey: UAVSortKey.ALTITUDE_GROUND,
-    style: {
-      textAlign: 'right',
-      width: 48,
-    },
+    style: { ...listDataColumnStyle('agl'), textAlign: 'right' },
   },
   {
     label: 'Hdg',
     sortKey: UAVSortKey.HEADING,
-    style: {
-      textAlign: 'center',
-      width: 40,
-    },
+    style: { ...listDataColumnStyle('heading'), textAlign: 'center' },
   },
   {
     label: 'Details',
     style: {
+      flex: 1,
+      minWidth: 0,
       textAlign: 'left',
     },
   },
@@ -296,18 +269,12 @@ const HEADER_TEXT_PARTS: Record<string, HeaderPart[]> = {
     {
       label: 'sID',
       sortKey: UAVSortKey.DEFAULT,
-      style: {
-        textAlign: 'right',
-        width: 48,
-      },
+      style: listIdColumnStyle(LIST_ID_COLUMNS.missionIds.primary),
     },
     {
       label: 'ID',
       sortKey: UAVSortKey.DEFAULT,
-      style: {
-        textAlign: 'right',
-        width: 40,
-      },
+      style: listIdColumnStyle(LIST_ID_COLUMNS.missionIds.secondary),
     },
     ...COMMON_HEADER_TEXT_PARTS,
   ],
@@ -315,18 +282,12 @@ const HEADER_TEXT_PARTS: Record<string, HeaderPart[]> = {
     {
       label: 'ID',
       sortKey: UAVSortKey.DEFAULT,
-      style: {
-        textAlign: 'right',
-        width: 48,
-      },
+      style: listIdColumnStyle(LIST_ID_COLUMNS.droneIds.primary),
     },
     {
       label: 'sID',
       sortKey: UAVSortKey.DEFAULT,
-      style: {
-        textAlign: 'right',
-        width: 40,
-      },
+      style: listIdColumnStyle(LIST_ID_COLUMNS.droneIds.secondary),
     },
     ...COMMON_HEADER_TEXT_PARTS,
   ],
@@ -439,9 +400,16 @@ function formatHeaderParts(
   }
 }
 
+type GpsFleetSummaryProps = Readonly<{
+  minSatellites?: number;
+  rtkFixed: number;
+  rtkFloat: number;
+}>;
+
 type SortAndFilterHeaderProps = Readonly<{
   filters: UAVFilter[];
   floating?: boolean;
+  gpsSummary: GpsFleetSummaryProps;
   layout: UAVListLayout;
   onSetFilter: (filter: Nullable<UAVFilter>) => void;
   onSetSortBy: (sortBy: Partial<UAVSortKeyAndOrder>) => void;
@@ -454,6 +422,7 @@ type SortAndFilterHeaderProps = Readonly<{
 const SortAndFilterHeader = ({
   filters,
   floating,
+  gpsSummary,
   layout,
   onSetFilter,
   onSetSortBy,
@@ -618,6 +587,32 @@ const SortAndFilterHeader = ({
             />
           ))}
         </Menu>
+
+        <Chip
+          className={classes.success}
+          variant='outlined'
+          size='small'
+          label={`RTK+ ${gpsSummary.rtkFixed}`}
+          title='RTK Fixed'
+        />
+        <Chip
+          className={classes.success}
+          variant='outlined'
+          size='small'
+          label={`RTK ${gpsSummary.rtkFloat}`}
+          title='RTK Float'
+        />
+        <Chip
+          className={classes.chip}
+          variant='outlined'
+          size='small'
+          label={
+            gpsSummary.minSatellites !== undefined
+              ? `GPS ${gpsSummary.minSatellites}`
+              : 'GPS —'
+          }
+          title='GPS 위성 수 (최소)'
+        />
       </div>
       <FadeAndSlide in={layout === UAVListLayout.LIST}>
         <div className={classes.headerLine}>
@@ -639,6 +634,7 @@ export default connect(
   // mapStateToProps
   (state: RootState) => ({
     filters: getUAVListFilters(state),
+    gpsSummary: selectGpsFleetSummary(state),
     layout: getUAVListLayout(state),
     showMissionIds: isShowingMissionIds(state),
     sortBy: getUAVListSortPreference(state),

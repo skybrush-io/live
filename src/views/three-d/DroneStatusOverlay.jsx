@@ -201,7 +201,7 @@ PillBadge.propTypes = {
 
 export const buildDroneTelemetryItems = (
   drone,
-  { batteryStyle, gpsFixType, mode, pathUploaded, linked }
+  { batteryStyle, gpsFixType, gpsNumSatellites, mode, pathUploaded, linked }
 ) => {
   const gpsLabel =
     linked && gpsFixType !== undefined
@@ -232,7 +232,11 @@ export const buildDroneTelemetryItems = (
       key: 'sats',
       icon: SatelliteAlt,
       label: '위성',
-      value: displayValue(drone?.satellites),
+      value: displayValue(
+        linked && gpsNumSatellites !== undefined
+          ? gpsNumSatellites
+          : drone?.satellites
+      ),
     },
     {
       key: 'battery',
@@ -277,6 +281,7 @@ const DroneStatusOverlayPresentation = ({
   batteryStyle,
   drone,
   gpsFixType,
+  gpsNumSatellites,
   linked,
   mode,
   pathUploaded,
@@ -288,11 +293,12 @@ const DroneStatusOverlayPresentation = ({
       buildDroneTelemetryItems(drone, {
         batteryStyle,
         gpsFixType,
+        gpsNumSatellites,
         mode,
         pathUploaded,
         linked,
       }),
-    [batteryStyle, drone, gpsFixType, mode, pathUploaded, linked]
+    [batteryStyle, drone, gpsFixType, gpsNumSatellites, mode, pathUploaded, linked]
   );
 
   const currentPositionText = useMemo(() => {
@@ -457,6 +463,7 @@ DroneStatusOverlayPresentation.propTypes = {
     }),
   }),
   gpsFixType: PropTypes.number,
+  gpsNumSatellites: PropTypes.number,
   linked: PropTypes.bool,
   mode: PropTypes.string,
   pathUploaded: PropTypes.bool,
@@ -507,6 +514,7 @@ export default connect((state, { drone }) => {
     }),
     batteryStyle: getBatteryLevelStyle(batteryPercentage),
     gpsFixType: uav.gpsFix?.type,
+    gpsNumSatellites: uav.gpsFix?.numSatellites,
     mode: uav.mode,
     pathUploaded: isPathUploadedForUav(uav, uploadStatus, pathUploadContext),
     statusLabel: summary.details || summary.text,

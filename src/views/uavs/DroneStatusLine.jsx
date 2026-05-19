@@ -12,7 +12,10 @@ import { StatusPill, StatusText } from '@skybrush/mui-components';
 import { BatteryFormatter } from '~/components/battery';
 import BatteryIndicator from '~/components/BatteryIndicator';
 import ColoredLight from '~/components/ColoredLight';
-import { getBatteryFormatter } from '~/features/settings/selectors';
+import {
+  getBatteryFormatter,
+  isShowingMissionIds,
+} from '~/features/settings/selectors';
 import { hasActiveGeofencePolygon } from '~/features/mission/selectors';
 import {
   hasScheduledStartTime,
@@ -38,6 +41,11 @@ import { formatCoordinateArray } from '~/utils/formatting';
 import AlertIndicator from './AlertIndicator';
 import FilledListCell from './FilledListCell';
 import GPSStatusPill from './GPSStatusPill';
+import {
+  LIST_ID_COLUMNS,
+  listDataColumnStyle,
+  listIdColumnStyle,
+} from './listColumnLayout';
 import PathUploadIndicator from './PathUploadIndicator';
 import RSSIIndicator from './RSSIIndicator';
 import FlightModeStatusPill from './FlightModeStatusPill';
@@ -64,12 +72,26 @@ const localCoordinateFormatter = formatCoordinateArray;
 
 const useStyles = makeStyles((theme) => ({
   root: {
+    alignItems: 'flex-start',
+    display: 'flex',
     flexGrow: 1,
+    flexWrap: 'nowrap',
     fontFamily: monospacedFont,
     fontSize: 'small',
     fontVariantNumeric: 'lining-nums tabular-nums',
     userSelect: 'none',
-    whiteSpace: 'pre',
+  },
+  col: {
+    boxSizing: 'border-box',
+    flexShrink: 0,
+    overflow: 'hidden',
+  },
+  colCenter: {
+    display: 'flex',
+    justifyContent: 'center',
+  },
+  colRight: {
+    textAlign: 'right',
   },
   gone: {
     opacity: 0.7,
@@ -97,13 +119,14 @@ const useStyles = makeStyles((theme) => ({
     width: 40,
     outline: 'none !important',
   },
-  pathCell: {
-    marginRight: theme.spacing(2),
-    width: 52,
+  gpsSatsValue: {
+    display: 'inline-block',
+    textAlign: 'center',
+    width: 28,
   },
   positionCell: {
     display: 'inline-block',
-    marginLeft: theme.spacing(1),
+    whiteSpace: 'pre',
   },
   rssiCell: {
     width: 72,
@@ -131,6 +154,7 @@ const DroneStatusLine = ({
   headingDeviation,
   gone,
   gpsFixType,
+  gpsNumSatellites,
   label,
   localPosition,
   missing,
@@ -142,101 +166,193 @@ const DroneStatusLine = ({
   text,
   textSemantics = 'info',
   vehicleModePillStyle,
+  showMissionIds = false,
 }) => {
   const classes = useStyles();
   const { amsl, ahl, agl } = position || {};
+  const idColumns = showMissionIds
+    ? LIST_ID_COLUMNS.missionIds
+    : LIST_ID_COLUMNS.droneIds;
+
   return (
     <div className={clsx(classes.root, gone && classes.gone)}>
-      {padStart(label, 5)}
-      <span className={classes.muted}>{padStart(secondaryLabel, 5)}</span>
-      {(details || text) &&
-        (vehicleModePillStyle ? (
-          <FilledListCell
-            className={clsx(classes.filledCell, classes.statusCell)}
-            style={{
-              ...vehicleModePillStyle,
-              opacity: age === UAVAge.GONE ? 0.7 : 1,
-            }}
-          >
-            {details || text}
-          </FilledListCell>
-        ) : (
-          <StatusPill
-            inline
-            className={clsx(classes.pill, classes.statusCell)}
-            status={textSemantics}
-            hollow={age === UAVAge.GONE}
-          >
-            {details || text}
-          </StatusPill>
-        ))}
+      <div
+        className={clsx(classes.col, classes.colRight)}
+        style={listIdColumnStyle(idColumns.primary)}
+      >
+        {padStart(label, 5)}
+      </div>
+      <div
+        className={clsx(classes.col, classes.colRight, classes.muted)}
+        style={listIdColumnStyle(idColumns.secondary)}
+      >
+        {padStart(secondaryLabel, 5)}
+      </div>
+      {(details || text) && (
+        <div
+          className={clsx(classes.col, classes.colCenter)}
+          style={listDataColumnStyle('status')}
+        >
+          {vehicleModePillStyle ? (
+            <FilledListCell
+              className={clsx(classes.filledCell, classes.statusCell)}
+              style={{
+                ...vehicleModePillStyle,
+                opacity: age === UAVAge.GONE ? 0.7 : 1,
+              }}
+            >
+              {details || text}
+            </FilledListCell>
+          ) : (
+            <StatusPill
+              inline
+              className={clsx(classes.pill, classes.statusCell)}
+              status={textSemantics}
+              hollow={age === UAVAge.GONE}
+            >
+              {details || text}
+            </StatusPill>
+          )}
+        </div>
+      )}
       {!missing && (
         <>
-          <AlertIndicator
-            alert={alert}
-            className={classes.filledCell}
-            width={44}
-          />
-          <FlightModeStatusPill
-            mode={mode}
-            className={clsx(classes.pill, classes.modePill)}
-          />
-          <BatteryIndicator
-            className={clsx(classes.filledCell, classes.batteryCell)}
-            formatter={batteryFormatter}
-            listLevelColors
-            width={62}
-            {...batteryStatus}
-          />
-          <ColoredLight inline color={color} />
-          <RSSIIndicator
-            className={classes.filledCell}
-            rssi={rssi}
-            width={72}
-          />
-          <GPSStatusPill
-            className={clsx(classes.pill, classes.gpsPill)}
-            fixType={gpsFixType}
-          />
-          <PathUploadIndicator
-            className={classes.filledCell}
-            uploaded={pathUploaded}
-            width={52}
-          />
-          {localPosition ? (
-            <span className={classes.positionCell}>
-              {padEnd(localCoordinateFormatter(localPosition), 25)}
+          <div
+            className={clsx(classes.col, classes.colCenter)}
+            style={listDataColumnStyle('alert')}
+          >
+            <AlertIndicator
+              alert={alert}
+              className={classes.filledCell}
+              width={44}
+            />
+          </div>
+          <div
+            className={clsx(classes.col, classes.colCenter)}
+            style={listDataColumnStyle('mode')}
+          >
+            <FlightModeStatusPill
+              mode={mode}
+              className={clsx(classes.pill, classes.modePill)}
+            />
+          </div>
+          <div
+            className={clsx(classes.col, classes.colCenter)}
+            style={listDataColumnStyle('battery')}
+          >
+            <BatteryIndicator
+              className={clsx(classes.filledCell, classes.batteryCell)}
+              formatter={batteryFormatter}
+              listLevelColors
+              width={62}
+              {...batteryStatus}
+            />
+          </div>
+          <div
+            className={clsx(classes.col, classes.colCenter)}
+            style={listDataColumnStyle('led')}
+          >
+            <ColoredLight inline color={color} />
+          </div>
+          <div
+            className={clsx(classes.col, classes.colCenter)}
+            style={listDataColumnStyle('rssi')}
+          >
+            <RSSIIndicator
+              className={classes.filledCell}
+              rssi={rssi}
+              width={72}
+            />
+          </div>
+          <div
+            className={clsx(classes.col, classes.colCenter)}
+            style={listDataColumnStyle('gps')}
+          >
+            <GPSStatusPill
+              className={clsx(classes.pill, classes.gpsPill)}
+              fixType={gpsFixType}
+            />
+          </div>
+          <div
+            className={clsx(classes.col, classes.colCenter)}
+            style={listDataColumnStyle('sats')}
+          >
+            <span className={classes.gpsSatsValue}>
+              {!isNil(gpsNumSatellites) ? (
+                padStart(Math.round(gpsNumSatellites), 2)
+              ) : (
+                <span className={classes.muted}>{' —'}</span>
+              )}
             </span>
-          ) : position ? (
-            <span className={classes.positionCell}>
-              {padEnd(coordinateFormatter([position.lon, position.lat]), 25)}
+          </div>
+          <div
+            className={clsx(classes.col, classes.colCenter)}
+            style={listDataColumnStyle('path')}
+          >
+            <PathUploadIndicator
+              className={classes.filledCell}
+              uploaded={pathUploaded}
+              width={52}
+            />
+          </div>
+          <div className={classes.col} style={listDataColumnStyle('position')}>
+            {localPosition ? (
+              <span className={classes.positionCell}>
+                {padEnd(localCoordinateFormatter(localPosition), 25)}
+              </span>
+            ) : position ? (
+              <span className={classes.positionCell}>
+                {padEnd(coordinateFormatter([position.lon, position.lat]), 25)}
+              </span>
+            ) : (
+              <span className={clsx(classes.muted, classes.positionCell)}>
+                {padEnd('no position', 25)}
+              </span>
+            )}
+          </div>
+          <div
+            className={clsx(classes.col, classes.colRight)}
+            style={listDataColumnStyle('amsl')}
+          >
+            {!isNil(amsl) ? (
+              padStart(position.amsl.toFixed(1), 6) + 'm'
+            ) : (
+              <span className={classes.muted}>{'    ———'}</span>
+            )}
+          </div>
+          <div
+            className={clsx(classes.col, classes.colRight)}
+            style={listDataColumnStyle('ahl')}
+          >
+            {!isNil(ahl) ? (
+              padStart(position.ahl.toFixed(1), 6) + 'm'
+            ) : (
+              <span className={classes.muted}>{'    ———'}</span>
+            )}
+          </div>
+          <div
+            className={clsx(classes.col, classes.colRight)}
+            style={listDataColumnStyle('agl')}
+          >
+            {!isNil(agl) ? (
+              padStart(position.agl.toFixed(1), 5) + 'm'
+            ) : (
+              <span className={classes.muted}>{'   ———'}</span>
+            )}
+          </div>
+          <div
+            className={clsx(classes.col, classes.colCenter)}
+            style={listDataColumnStyle('heading')}
+          >
+            <StatusText status={headingDeviationToStatus(headingDeviation)}>
+              {padStart(!isNil(heading) ? Math.round(heading) + '°' : '', 5)}
+            </StatusText>
+          </div>
+          <div className={classes.col} style={{ flex: 1, minWidth: 0 }}>
+            <span className={classes.debugString}>
+              {debugString ? ' ' + debugString : ''}
             </span>
-          ) : (
-            <span className={clsx(classes.muted, classes.positionCell)}>
-              {padEnd('no position', 25)}
-            </span>
-          )}
-          {!isNil(amsl) ? (
-            padStart(position.amsl.toFixed(1), 6) + 'm'
-          ) : (
-            <span className={classes.muted}>{'    ———'}</span>
-          )}
-          {!isNil(ahl) ? (
-            padStart(position.ahl.toFixed(1), 6) + 'm'
-          ) : (
-            <span className={classes.muted}>{'    ———'}</span>
-          )}
-          {!isNil(agl) ? (
-            padStart(position.agl.toFixed(1), 5) + 'm'
-          ) : (
-            <span className={classes.muted}>{'   ———'}</span>
-          )}
-          <StatusText status={headingDeviationToStatus(headingDeviation)}>
-            {padStart(!isNil(heading) ? Math.round(heading) + '°' : '', 5)}
-          </StatusText>
-          <span className={classes.debugString}>
-            {debugString ? ' ' + debugString : ''}
-          </span>
+          </div>
         </>
       )}
     </div>
@@ -264,6 +380,7 @@ DroneStatusLine.propTypes = {
   editing: PropTypes.bool,
   gone: PropTypes.bool,
   gpsFixType: PropTypes.number,
+  gpsNumSatellites: PropTypes.number,
   heading: PropTypes.number,
   headingDeviation: PropTypes.number,
   id: PropTypes.string,
@@ -293,6 +410,7 @@ DroneStatusLine.propTypes = {
     'missing',
   ]),
   vehicleModePillStyle: PropTypes.object,
+  showMissionIds: PropTypes.bool,
 };
 
 export default connect(
@@ -336,6 +454,7 @@ export default connect(
         coordinateFormatter: getPreferredCoordinateFormatter(state),
         debugString: uav ? uav.debugString : undefined,
         gpsFixType: uav ? uav.gpsFix.type : undefined,
+        gpsNumSatellites: uav?.gpsFix?.numSatellites,
         heading: uav ? uav.heading : undefined,
         headingDeviation,
         localPosition: uav ? uav.localPosition : undefined,
@@ -343,6 +462,7 @@ export default connect(
         mode: uav ? uav.mode : undefined,
         position: uav ? uav.position : undefined,
         rssi: uav ? uav.rssi : undefined,
+        showMissionIds: isShowingMissionIds(state),
         ...statusSummarySelector(state, ownProps.id),
       };
     };
