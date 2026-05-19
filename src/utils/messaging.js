@@ -14,15 +14,45 @@ import { CommonClockId } from '~/features/clocks/types';
 import { getRoundedClockSkewInMilliseconds } from '~/features/servers/selectors';
 import { UAV_SIGNAL_DURATION } from '~/features/settings/constants';
 import { shouldConfirmUAVOperation } from '~/features/settings/selectors';
-import { showNotification } from '~/features/snackbar/actions';
+import { showError, showNotification } from '~/features/snackbar/actions';
 import { MessageSemantics } from '~/features/snackbar/types';
 import { COMPASS_CALIB_TIMEOUT } from '~/features/uavs/constants';
+import { getCurrentGPSPositionByUavId } from '~/features/uavs/selectors';
 import messageHub from '~/message-hub';
 import store from '~/store';
 
 import makeLogger from './logging';
 
 const logger = makeLogger('messaging');
+
+/** Vertical climb for the Takeoff button (flight check only, not show takeoff). */
+const TAKEOFF_TEST_CLIMB_METERS = 3;
+
+const buildTakeoffTestTarget = (position) => {
+  if (
+    !position ||
+    !Number.isFinite(position.lat) ||
+    !Number.isFinite(position.lon)
+  ) {
+    return null;
+  }
+
+  const base = { lat: position.lat, lon: position.lon };
+
+  if (typeof position.amsl === 'number' && Number.isFinite(position.amsl)) {
+    return { ...base, amsl: position.amsl + TAKEOFF_TEST_CLIMB_METERS };
+  }
+
+  if (typeof position.ahl === 'number' && Number.isFinite(position.ahl)) {
+    return { ...base, ahl: position.ahl + TAKEOFF_TEST_CLIMB_METERS };
+  }
+
+  if (typeof position.agl === 'number' && Number.isFinite(position.agl)) {
+    return { ...base, agl: position.agl + TAKEOFF_TEST_CLIMB_METERS };
+  }
+
+  return { ...base, agl: TAKEOFF_TEST_CLIMB_METERS };
+};
 
 const getClockTimestamp = () => {
   const clockSkew = getRoundedClockSkewInMilliseconds(store.getState()) || 0;
@@ -208,10 +238,71 @@ export const flashLightOnUAVsAndHideFailures = performMassOperation({
   skipConfirmation: true,
 });
 
-export const takeoffUAVs = performMassOperation({
-  type: 'UAV-TAKEOFF',
-  name: 'Takeoff command',
-});
+/**
+ * Climb a few meters above the current position to verify flight. Uses UAV-FLY
+ * instead of UAV-TAKEOFF so a loaded show path is not started.
+ */
+export const takeoffUAVs = async (uavs, args = {}) => {
+  const commandName = `Takeoff test (${TAKEOFF_TEST_CLIMB_METERS} m climb)`;
+
+  try {
+    const userAlreadyConfirmed = args.skipUAVOperationConfirmation === true;
+    const argsForPayload = { ...args };
+    delete argsForPayload.skipUAVOperationConfirmation;
+
+    const isBroadcast = Boolean(argsForPayload?.transport?.broadcast);
+    const needsConfirmation =
+      !userAlreadyConfirmed &&
+      shouldConfirmUAVOperation(store.getState(), uavs, isBroadcast);
+
+    if (needsConfirmation) {
+      const confirmation = await store.dispatch(
+        showConfirmationDialog(
+          createConfirmationMessage(commandName, uavs, isBroadcast),
+          { title: 'Confirmation needed' }
+        )
+      );
+
+      if (!confirmation) {
+        return;
+      }
+    }
+
+    const state = store.getState();
+    const uavList = Array.isArray(uavs) ? uavs : [];
+    const withoutPosition = [];
+
+    for (const uavId of uavList) {
+      const position = getCurrentGPSPositionByUavId(state, uavId);
+      const target = buildTakeoffTestTarget(position);
+
+      if (!target) {
+        withoutPosition.push(uavId);
+        continue;
+      }
+
+      await moveUAVsLowLevel([uavId], {
+        ...argsForPayload,
+        target,
+      });
+    }
+
+    if (withoutPosition.length > 0) {
+      const label =
+        withoutPosition.length === 1
+          ? `UAV ${withoutPosition[0]}`
+          : `${withoutPosition.length} UAVs`;
+      store.dispatch(
+        showError(
+          `${commandName} skipped for ${label}: no valid GPS position yet`
+        )
+      );
+    }
+  } catch (error) {
+    console.error(error);
+    logger.error(`${commandName}: ${String(error)}`);
+  }
+};
 
 export const landUAVs = performMassOperation({
   type: 'UAV-LAND',

@@ -36,7 +36,7 @@ import { bindActionCreators } from '@reduxjs/toolkit';
 
 import PropTypes from 'prop-types';
 
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 
 import { withTranslation } from 'react-i18next';
 
@@ -49,6 +49,8 @@ import { makeStyles } from '@skybrush/app-theme-mui';
 
 
 import Colors from '~/components/colors';
+
+import ConfirmationDialog from '~/components/dialogs/ConfirmationDialog';
 
 import {
 
@@ -456,7 +458,16 @@ const COMMAND_SECTIONS = Object.freeze([
 
 ]);
 
-
+const COMMAND_CONFIRM_LABEL_KEYS = Object.freeze({
+  turnMotorsOn: 'arm',
+  turnMotorsOff: 'disarm',
+  takeOff: 'takeoff',
+  startShow: 'showStart',
+  holdPosition: 'hold',
+  returnToHome: 'RTH',
+  land: 'land',
+  shutdown: 'shutdown',
+});
 
 const chunkButtons = (buttons) => {
 
@@ -606,7 +617,71 @@ const LargeControlButtonGroup = ({
 
   const mode = broadcast ? 'broadcast' : 'selection';
 
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
+  const [pendingCommand, setPendingCommand] = useState(null);
+
+  const requestCommand = useCallback((commandKey) => {
+
+    setPendingCommand(commandKey);
+
+    setConfirmOpen(true);
+
+  }, []);
+
+  const handleConfirmClose = useCallback(() => {
+
+    setConfirmOpen(false);
+
+    setPendingCommand(null);
+
+  }, []);
+
+  const handleConfirmAction = useCallback(() => {
+
+    if (!pendingCommand || !uavActions[pendingCommand]) {
+
+      return;
+
+    }
+
+    uavActions[pendingCommand]({ skipUAVOperationConfirmation: true });
+
+    handleConfirmClose();
+
+  }, [pendingCommand, uavActions, handleConfirmClose]);
+
+  const confirmMessage = useMemo(() => {
+
+    if (!pendingCommand) {
+
+      return '';
+
+    }
+
+    const labelKey = COMMAND_CONFIRM_LABEL_KEYS[pendingCommand];
+
+    const commandLabel = labelKey
+
+      ? t(`largeControlButtonGroup.${labelKey}`)
+
+      : pendingCommand;
+
+    return broadcast
+
+      ? t('largeControlButtonGroup.confirmCommandMessageBroadcast', {
+
+          command: commandLabel,
+
+        })
+
+      : t('largeControlButtonGroup.confirmCommandMessage', {
+
+          command: commandLabel,
+
+        });
+
+  }, [broadcast, pendingCommand, t]);
 
   return (
 
@@ -706,7 +781,7 @@ const LargeControlButtonGroup = ({
 
                   label={t(`largeControlButtonGroup.${button.labelKey}`)}
 
-                  onClick={uavActions[button.key]}
+                  onClick={() => requestCommand(button.key)}
 
                 />
 
@@ -719,6 +794,18 @@ const LargeControlButtonGroup = ({
         </Box>
 
       ))}
+
+      <ConfirmationDialog
+
+        open={confirmOpen}
+
+        message={confirmMessage}
+
+        onConfirm={handleConfirmAction}
+
+        onCancel={handleConfirmClose}
+
+      />
 
     </Box>
 

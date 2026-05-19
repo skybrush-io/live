@@ -168,7 +168,7 @@
       "reboot": "Reboot",
       "returnToHome": "Return to home",
       "sleep": "Sleep",
-      "takeoff": "Takeoff"
+      "takeoff": "Takeoff test (3 m)"
     },
     "confirmDialog": {
       "title": "Confirm"
@@ -230,6 +230,8 @@
     "armAll": "Arm all",
     "broadcast": "Broadcast",
     "collapseDeck": "Collapse flight controls",
+    "confirmCommandMessage": "Run \"{{command}}\" on the selected UAVs?",
+    "confirmCommandMessageBroadcast": "Broadcast \"{{command}}\" to all UAVs in the mission?",
     "disarm": "Disarm",
     "disarmAll": "Disarm all",
     "dragDeck": "Drag to move",
@@ -241,7 +243,7 @@
     "hintRTH": "Return home",
     "hintShowStart": "Start show",
     "hintShutdown": "Power off",
-    "hintTakeoff": "Take off",
+    "hintTakeoff": "flight check",
     "hold": "Hold",
     "holdAll": "Hold all",
     "land": "Land",
