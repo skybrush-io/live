@@ -128,7 +128,7 @@ const SourceInputField = ({
   removeAriaLabel,
   value,
 }: SourceInputFieldProps) => (
-  <Box display='flex' alignItems='flex-start' mb={1} style={{ gap: 8 }}>
+  <Box display='flex' alignItems='center' mb={1} gap={1}>
     <TextField
       fullWidth
       hiddenLabel
@@ -141,7 +141,7 @@ const SourceInputField = ({
       onChange={(e) => onChange(e.target.value)}
     />
     <IconButton
-      style={{ marginTop: 4 }}
+      sx={{ mt: 1 }}
       aria-label={removeAriaLabel}
       disabled={disabled}
       onClick={onRemove}
@@ -344,7 +344,7 @@ const RTKPresetEditorFormPresentation = ({
         >
           <DialogContent>
             {error && (
-              <Alert severity='error' style={{ marginBottom: 16 }}>
+              <Alert severity='error' sx={{ mb: 4 }}>
                 {error}
               </Alert>
             )}
@@ -428,7 +428,7 @@ const RTKPresetEditorFormPresentation = ({
               <Button
                 color='secondary'
                 disabled={submitting}
-                style={{ marginRight: 'auto' }}
+                sx={{ mr: 'auto' }}
                 onClick={() => {
                   void handleDelete();
                 }}
