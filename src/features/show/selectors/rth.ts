@@ -1,7 +1,5 @@
 import { createSelector } from '@reduxjs/toolkit';
 
-import type { Timestamp } from '@skybrush/flockwave-spec';
-
 import type { Schedule } from '~/flockwave/schedule';
 import type { AppSelector } from '~/store/reducers';
 
@@ -10,9 +8,9 @@ import { getDroneSwarmSpecification } from './core';
 
 export type CollectiveRTHPlanSummaryItem = {
   /**
-   * The time stamp for which this summary item is calculated for.
+   * The timestamp for which this summary item is calculated for.
    */
-  time: Timestamp;
+  time: number;
 
   /**
    * Maximum duration of the collective RTH plan at this time.
@@ -24,10 +22,10 @@ export type CollectiveRTHPlanSummaryItem = {
 };
 
 export type CollectiveRTHPlanSummary = {
-  plans: Record<Timestamp, CollectiveRTHPlanSummaryItem>;
+  plans: Record<number, CollectiveRTHPlanSummaryItem>;
   isValid: boolean;
-  firstTime?: Timestamp;
-  lastTime?: Timestamp;
+  firstTime?: number;
+  lastTime?: number;
   numDrones: number;
   dronesWithRTHPlan: number;
   dronesWithoutRTHPlan: number;
