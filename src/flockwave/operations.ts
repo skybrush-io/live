@@ -13,8 +13,8 @@ import type {
 } from '@skybrush/flockwave-spec';
 
 import { errorToString } from '~/error-handling';
-import { isRecord } from '~/utils/types';
 import type { Coordinate3D } from '~/utils/math';
+import { isBoolean, isRecord } from '~/utils/types';
 
 import {
   createBulkParameterUploadRequest,
@@ -239,15 +239,11 @@ export async function createRTKPreset(
     throw new Error('Failed to create RTK preset: missing preset ID');
   }
 
-  if (response.body.type !== 'ACK-ACK') {
-    const errorMessage = getErrorMessageFromBody(
-      response.body,
-      'Failed to create RTK preset'
-    );
-    throw new Error(errorMessage);
-  }
-
-  throw new Error('Failed to create RTK preset: missing preset ID');
+  const errorMessage = getErrorMessageFromBody(
+    response.body,
+    'Failed to create RTK preset'
+  );
+  throw new Error(errorMessage);
 }
 
 /**
@@ -295,7 +291,14 @@ export async function deleteRTKPreset(hub: MessageHub, presetId: string) {
     throw new Error(errorMessage);
   }
 
-  extractResponseForId(response, presetId, { key: 'result' });
+  if (
+    !extractResponseForId(response, presetId, {
+      key: 'result',
+      typeGuard: isBoolean,
+    })
+  ) {
+    throw new Error('Failed to delete RTK preset: server rejected deletion');
+  }
 }
 
 /**

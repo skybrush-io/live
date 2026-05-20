@@ -12,6 +12,12 @@ export type NestedRecordField<T> = T | NestedRecord<T>;
 export type Nullable<T> = T | null;
 
 /**
+ * Type goard for booleans for cases where we need a function instead of a typeof check.
+ */
+export const isBoolean = (value: unknown): value is boolean =>
+  typeof value === 'boolean';
+
+/**
  * Type guard that checks whether a value is a plain object-like record.
  */
 export const isRecord = (value: unknown): value is Record<string, unknown> =>
