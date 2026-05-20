@@ -70,9 +70,12 @@
   },
   "RTKCorrectionSourceSelector": {
     "RTKCorrections": "RTK corrections",
+    "createPreset": "Create new RTK preset",
+    "editPreset": "Edit preset",
     "error": "Error while loading RTK sources from server",
     "noRTKData": "No RTK data sources on server",
-    "pleaseWait": "Please wait, loading RTK sources…"
+    "pleaseWait": "Please wait, loading RTK sources…",
+    "rtkDisabled": "RTK disabled"
   },
   "RTKMessage": {
     "noRTKMessagesYet": "No RTK messages have been received yet"
@@ -340,6 +343,7 @@
       "retry": "Retry",
       "rotate": "Rotate",
       "save": "Save",
+      "saving": "Saving...",
       "scale": "Scale",
       "select": "Select",
       "start": "Start",
@@ -734,6 +738,29 @@
     "rtcm3/1126": "BeiDou MSM6 (hi-res code, carrier, doppler)",
     "rtcm3/1127": "BeiDou MSM7 (hi-res code, carrier, doppler, CNR)",
     "rtcm3/1230": "GLONASS L1 and L2 code-phase biases"
+  },
+  "rtkPresetEditor": {
+    "addSource": "Add source",
+    "createFailed": "Failed to create preset",
+    "createTitle": "Create RTK preset",
+    "dataSources": "Data sources",
+    "deleteConfirmation": "Are you sure you want to delete this preset?",
+    "deleteFailed": "Failed to delete preset",
+    "deletePreset": "Delete preset",
+    "editTitle": "Edit RTK preset",
+    "formatAuto": "Detect automatically",
+    "messageFormat": "Message format",
+    "presetName": "Preset name",
+    "presetNamePlaceholder": "My RTK base station",
+    "readOnlyMessage": "This preset cannot be edited",
+    "removeSource": "Remove source",
+    "sourcePlaceholder": "ntrip://username:password@hostname/mountpoint",
+    "sourcesHelp": "Use serial:PORT?baud=BAUDRATE for serial ports, tcp://HOST:PORT for TCP connections, or ntrip://... for NTRIP servers.",
+    "type": "Type",
+    "updateFailed": "Failed to update preset"
+  },
+  "rtkSetupDialog": {
+    "startNewSurvey": "Start new survey"
   },
   "rtkStatus": {
     "long": {
