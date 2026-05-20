@@ -1,9 +1,4 @@
-import type {
-  ErrorMap,
-  MessageID,
-  ReceiptMap,
-  Version,
-} from '@skybrush/flockwave-spec';
+import type { ErrorMap, MessageID, ReceiptMap } from '@skybrush/flockwave-spec';
 
 /**
  * Type specification for a generic Flockwave message body. For these messages,
@@ -18,7 +13,7 @@ export type MessageBody<T extends string = string> = {
  * known.
  */
 export type Message<T = MessageBody> = {
-  '$fw.version': Version;
+  '$fw.version': number;
   id: MessageID;
   refs?: MessageID;
   body: T;
