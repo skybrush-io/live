@@ -38,7 +38,6 @@ const initialState: SettingsSliceState = {
     language: 'en',
     optimizeForSingleUAV: config.optimizeForSingleUAV.default,
     optimizeUIForTouch: config.optimizeUIForTouch.default ?? isRunningOnTouch,
-    showMissionIds: false,
     showMouseCoordinates: true,
     showScaleLine: true,
     theme: ThemeType.AUTO,
@@ -49,7 +48,7 @@ const initialState: SettingsSliceState = {
     ],
     uavListLayout: UAVListLayout.GRID,
     uavListSortPreference: {
-      key: UAVSortKey.DEFAULT,
+      key: UAVSortKey.UAV_ID,
       reverse: false,
     },
   },
@@ -127,10 +126,6 @@ const { actions, reducer } = createSlice({
       }
     ),
 
-    toggleMissionIds: noPayload<SettingsSliceState>((state) => {
-      state.display.showMissionIds = !state.display.showMissionIds;
-    }),
-
     updateAppSettings: {
       prepare: <Category extends keyof SettingsSliceState>(
         category: Category,
@@ -159,7 +154,6 @@ const { actions, reducer } = createSlice({
 export const {
   replaceAppSettings,
   toggleLightingConditionsInThreeDView,
-  toggleMissionIds,
   updateAppSettings,
 } = actions;
 
