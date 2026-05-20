@@ -20,6 +20,7 @@ import { Form, type FormRenderProps } from 'react-final-form';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
+import type { RTKPresetType } from '@skybrush/flockwave-spec';
 import { DraggableDialog, FormHeader } from '@skybrush/mui-components';
 
 import {
@@ -33,11 +34,7 @@ import type { RootState } from '~/store/reducers';
 import { isRecord } from '~/utils/types';
 import { required } from '~/utils/validation';
 
-import {
-  closeRTKPresetEditorDialog,
-  refreshRTKPresets,
-  type RTKPresetType,
-} from './slice';
+import { closeRTKPresetEditorDialog, refreshRTKPresets } from './slice';
 
 type DialogMode = 'create' | 'edit';
 

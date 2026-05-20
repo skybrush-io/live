@@ -8,7 +8,7 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select, { type SelectChangeEvent } from '@mui/material/Select';
 import Typography from '@mui/material/Typography';
-import type { RTKPresetID } from '@skybrush/flockwave-spec';
+import type { RTKPresetID, RTKPresetType } from '@skybrush/flockwave-spec';
 import { Tooltip } from '@skybrush/mui-components';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -48,7 +48,6 @@ type Props = {
   onSourceChanged?: () => void;
   presetsRefreshTrigger: number;
 };
-type RTKPresetType = 'user' | 'builtin' | 'dynamic';
 
 const RTKCorrectionSourceSelector = ({
   onCreatePreset,

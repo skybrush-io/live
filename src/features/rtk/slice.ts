@@ -4,6 +4,7 @@
  */
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import type { RTKPresetType } from '@skybrush/flockwave-spec';
 import isEqual from 'lodash-es/isEqual';
 import isNil from 'lodash-es/isNil';
 
@@ -14,8 +15,6 @@ import {
   type RTKSavedCoordinate,
   type RTKStatistics,
 } from './types';
-
-export type RTKPresetType = 'user' | 'builtin' | 'dynamic';
 
 type RTKPresetEditorDialogState = {
   open: boolean;
