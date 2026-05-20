@@ -181,8 +181,8 @@ const App = ({ onFirstRender }) => (
       <MissionPlannerDialog />
       <ParameterUploadSetupDialog />
       <PromptDialog />
-      <RTKPresetEditorDialog />
       <RTKCoordinateRestorationDialog />
+      <RTKPresetEditorDialog />
       <RTKSetupDialog />
       <SafetyDialog />
       <SavedLocationEditorDialog />
