@@ -7,13 +7,13 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Chip from '@mui/material/Chip';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import IconButton from '@mui/material/IconButton';
 import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
+
 import { nanoid } from 'nanoid';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Form, type FormRenderProps } from 'react-final-form';
@@ -54,12 +54,6 @@ type RTKPresetData = {
 type FormValues = {
   title: string;
   format: string;
-};
-
-const PRESET_TYPE_I18N_KEYS: Record<RTKPresetType, string> = {
-  user: 'rtkPresetEditor.presetTypeUser',
-  builtin: 'rtkPresetEditor.presetTypeBuiltin',
-  dynamic: 'rtkPresetEditor.presetTypeDynamic',
 };
 
 const getErrorMessage = (error: unknown, fallback: string): string => {
@@ -109,7 +103,6 @@ const parsePreset = (value: unknown): RTKPresetData | null => {
 
 type SourceInputFieldProps = {
   disabled?: boolean;
-  error?: boolean;
   helperText?: string;
   onChange: (value: string) => void;
   onRemove: () => void;
@@ -120,7 +113,6 @@ type SourceInputFieldProps = {
 
 const SourceInputField = ({
   disabled,
-  error,
   helperText,
   onChange,
   onRemove,
@@ -134,7 +126,6 @@ const SourceInputField = ({
       hiddenLabel
       variant='filled'
       value={value}
-      error={Boolean(error)}
       helperText={helperText}
       placeholder={placeholder}
       disabled={disabled}
@@ -174,7 +165,6 @@ const RTKPresetEditorFormPresentation = ({
 }: RTKPresetEditorFormProps) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const displayType = t(PRESET_TYPE_I18N_KEYS[presetType ?? 'user']);
   const [sources, setSources] = useState<SourceRow[]>(() =>
     initialValues?.sources && initialValues.sources.length > 0
       ? initialValues.sources.map((value) => ({ id: nanoid(), value }))
@@ -344,30 +334,16 @@ const RTKPresetEditorFormPresentation = ({
         >
           <DialogContent>
             {error && (
-              <Alert severity='error' sx={{ mb: 4 }}>
+              <Alert severity='error' sx={{ mb: 2 }}>
                 {error}
               </Alert>
             )}
 
-            <Box
-              display='flex'
-              flexDirection='row'
-              alignItems='center'
-              sx={{ gap: 1, mb: 1 }}
-            >
-              <Typography variant='body2' color='textSecondary'>
-                {t('rtkPresetEditor.type')}:
-              </Typography>
-              <Chip
-                label={displayType}
-                color={presetType === 'user' ? 'primary' : 'default'}
-              />
-              {isReadOnly && (
-                <Typography variant='caption' color='textSecondary'>
-                  {t('rtkPresetEditor.readOnlyMessage')}
-                </Typography>
-              )}
-            </Box>
+            {isReadOnly && (
+              <Alert severity='warning' sx={{ mb: 2 }}>
+                {t('rtkPresetEditor.readOnlyMessage')}
+              </Alert>
+            )}
 
             <FormTextField
               fullWidth
@@ -379,17 +355,29 @@ const RTKPresetEditorFormPresentation = ({
               disabled={isReadOnly}
             />
 
+            <FormSelect
+              fullWidth
+              margin='dense'
+              name='format'
+              label={t('rtkPresetEditor.messageFormat')}
+              disabled={isReadOnly}
+            >
+              <MenuItem value='auto'>
+                {t('rtkPresetEditor.formatAuto')}
+              </MenuItem>
+              <MenuItem value='rtcm2'>RTCM2</MenuItem>
+              <MenuItem value='rtcm3'>RTCM3</MenuItem>
+              <MenuItem value='ubx'>UBX</MenuItem>
+            </FormSelect>
+
             <FormHeader>{t('rtkPresetEditor.dataSources')}</FormHeader>
+            <Typography variant='body2' color='textSecondary' my={1}>
+              {t('rtkPresetEditor.sourcesHelp')}
+            </Typography>
             {sources.map((source, index) => (
               <SourceInputField
                 key={source.id}
                 value={source.value}
-                error={false}
-                helperText={
-                  index === 0 && sources.length === 1 && !source.value.trim()
-                    ? t('rtkPresetEditor.sourcesHelp')
-                    : undefined
-                }
                 disabled={isReadOnly}
                 placeholder={t('rtkPresetEditor.sourcePlaceholder')}
                 removeAriaLabel={t('rtkPresetEditor.removeSource')}
@@ -406,24 +394,9 @@ const RTKPresetEditorFormPresentation = ({
                 {t('rtkPresetEditor.addSource')}
               </Button>
             )}
-
-            <FormSelect
-              fullWidth
-              margin='dense'
-              name='format'
-              label={t('rtkPresetEditor.messageFormat')}
-              disabled={isReadOnly}
-            >
-              <MenuItem value='auto'>
-                {t('rtkPresetEditor.formatAuto')}
-              </MenuItem>
-              <MenuItem value='rtcm2'>RTCM2</MenuItem>
-              <MenuItem value='rtcm3'>RTCM3</MenuItem>
-              <MenuItem value='ubx'>UBX</MenuItem>
-            </FormSelect>
           </DialogContent>
 
-          <DialogActions>
+          <DialogActions sx={{ px: 2 }}>
             {!isNew && !isReadOnly && (
               <Button
                 color='secondary'
