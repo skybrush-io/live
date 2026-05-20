@@ -150,7 +150,6 @@ type RTKPresetEditorFormProps = {
   onRefreshPresets?: () => void;
   onSubmit: () => void;
   presetId?: string;
-  presetType?: RTKPresetType;
 };
 
 const RTKPresetEditorFormPresentation = ({
@@ -161,7 +160,6 @@ const RTKPresetEditorFormPresentation = ({
   onRefreshPresets,
   onSubmit,
   presetId,
-  presetType,
 }: RTKPresetEditorFormProps) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
@@ -455,9 +453,7 @@ const RTKPresetEditorDialogPresentation = ({
   presetType,
 }: RTKPresetEditorDialogPresentationProps) => {
   const { t } = useTranslation();
-  const isEditMode = mode === 'edit';
-  // Only builtin and dynamic presets are read-only
-  const isReadOnly = presetType !== 'user' && isEditMode;
+  const isReadOnly = presetType !== 'user' && mode === 'edit';
 
   const title =
     mode === 'create'
@@ -477,7 +473,6 @@ const RTKPresetEditorDialogPresentation = ({
         isReadOnly={isReadOnly}
         mode={mode}
         presetId={presetId}
-        presetType={presetType}
         onRefreshPresets={onRefreshPresets}
         onSubmit={onClose}
         onCancel={onClose}
