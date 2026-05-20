@@ -10,6 +10,7 @@ import isNil from 'lodash-es/isNil';
 
 import { noPayload } from '~/utils/redux';
 
+import type { RTKPresetEditorDialogMode } from './RTKPresetEditorDialog';
 import {
   RTKAntennaPositionFormat,
   type RTKSavedCoordinate,
@@ -18,7 +19,7 @@ import {
 
 type RTKPresetEditorDialogState = {
   open: boolean;
-  mode: 'create' | 'edit' | undefined;
+  mode: RTKPresetEditorDialogMode | undefined;
   presetId: string | undefined;
   presetType: RTKPresetType | undefined;
 };

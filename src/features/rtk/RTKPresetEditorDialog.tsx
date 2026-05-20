@@ -36,7 +36,7 @@ import { required } from '~/utils/validation';
 
 import { closeRTKPresetEditorDialog, refreshRTKPresets } from './slice';
 
-type DialogMode = 'create' | 'edit';
+export type RTKPresetEditorDialogMode = 'create' | 'edit';
 
 type SourceRow = {
   id: string;
@@ -154,7 +154,7 @@ const SourceInputField = ({
 type RTKPresetEditorFormProps = {
   initialValues?: RTKPresetData | null;
   isReadOnly: boolean;
-  mode: DialogMode | undefined;
+  mode: RTKPresetEditorDialogMode | undefined;
   onCancel: () => void;
   onRefreshPresets?: () => void;
   onSubmit: () => void;
@@ -464,7 +464,7 @@ const RTKPresetEditorFormPresentation = ({
 
 type RTKPresetEditorDialogPresentationProps = {
   initialPreset: RTKPresetData | null;
-  mode: DialogMode | undefined;
+  mode: RTKPresetEditorDialogMode | undefined;
   onClose: () => void;
   onRefreshPresets?: () => void;
   open: boolean;
@@ -514,7 +514,7 @@ const RTKPresetEditorDialogPresentation = ({
 };
 
 type RTKPresetEditorDialogContainerProps = {
-  mode: DialogMode | undefined;
+  mode: RTKPresetEditorDialogMode | undefined;
   onClose: () => void;
   onRefreshPresets?: () => void;
   open: boolean;
