@@ -1003,7 +1003,6 @@
       "fullCharge": "Full charge",
       "gone": "Mark drones as gone after",
       "lowTreshold": "Low threshold",
-      "maxConcurrency": "Maximum number of concurrent uploads",
       "maxUploadConcurrency": "Maximum number of concurrent uploads",
       "minIndoorTakeoffSpacing": "Minimum takeoff spacing (indoor)",
       "minOutdoorTakeoffSpacing": "Minimum takeoff spacing (outdoor)",
@@ -1074,12 +1073,8 @@
           "boxSelect": "Box select",
           "boxUnselect": "Box unselect",
           "moveSelection": "Move selection",
-          "pan": "Pan",
-          "rotate": "Rotate",
           "rotateSelection": "Rotate selection",
-          "select": "Select",
-          "toggleSelect": "Toggle select",
-          "zoom": "Zoom"
+          "toggleSelect": "Toggle select"
         },
         "category": {
           "manipulation": "Manipulation",
@@ -1092,14 +1087,11 @@
         "extension": "The studio extension must be enabled on the server",
         "loaded": "A show file must be loaded",
         "origin": "A show origin must be included or set manually",
-        "segments": "The show must be annotated with segment markers",
         "server": "Connection must be established to the server"
       },
       "tooltip": {
         "adaptShow": "Adapt show to venue",
-        "invalidRTHPlan": "The show has no valid collective RTH plans.",
-        "showSegmentsRequired": "The show must be annotated with segment markers",
-        "validRTHPlan": "The show has {{numPlans}} valid collective RTH plans."
+        "showSegmentsRequired": "The show must be annotated with segment markers"
       }
     },
     "startMethod": {
