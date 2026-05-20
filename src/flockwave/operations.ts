@@ -262,15 +262,23 @@ export async function updateRTKPreset(
     },
   });
 
-  if (
-    response.body.type !== 'ACK-ACK' &&
-    response.body.type !== 'X-RTK-UPDATE'
-  ) {
+  if (response.body.type !== 'X-RTK-UPDATE') {
     const errorMessage = getErrorMessageFromBody(
       response.body,
       'Failed to update RTK preset'
     );
     throw new Error(errorMessage);
+  }
+
+  if (
+    !extractResponseForId(response, presetId, {
+      key: 'result',
+      typeGuard: isBoolean,
+    })
+  ) {
+    throw new Error(
+      'Failed to update RTK preset: operation rejected by server'
+    );
   }
 }
 
