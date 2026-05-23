@@ -1,4 +1,5 @@
 import Error from '@mui/icons-material/Error';
+import FilterList from '@mui/icons-material/FilterList';
 import Info from '@mui/icons-material/Info';
 import Timeline from '@mui/icons-material/Timeline';
 import Timer from '@mui/icons-material/Timer';
@@ -15,15 +16,24 @@ import { makeStyles } from '@skybrush/app-theme-mui';
 
 import Colors from '~/components/colors';
 import ToggleButton from '~/components/ToggleButton';
+import { UAVSelectorWrapper } from '~/components/uavs/UAVSelector';
 import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
 import {
   getGPSBasedHomePositionsInMission,
   getMissionEstimates,
+  getSelectedMissionIdInMissionEditorPanel,
   shouldMissionEditorPanelFollowScroll,
 } from '~/features/mission/selectors';
-import { setEditorPanelFollowScroll } from '~/features/mission/slice';
+import {
+  setEditorPanelFollowScroll,
+  setEditorPanelSelectedMissionId,
+} from '~/features/mission/slice';
 import FollowScroll from '~/icons/FollowScroll';
-import { formatDistance, formatDuration } from '~/utils/formatting';
+import {
+  formatDistance,
+  formatDuration,
+  formatMissionId,
+} from '~/utils/formatting';
 import CustomPropTypes from '~/utils/prop-types';
 
 const useStyles = makeStyles((theme) => ({
@@ -50,6 +60,8 @@ const MissionOverviewPanelStatusBar = ({
     error,
   },
   onFollowScrollChanged,
+  onSelectMissionId,
+  selectedMissionId,
 }) => {
   const classes = useStyles();
   const warnings = [];
@@ -74,7 +86,7 @@ const MissionOverviewPanelStatusBar = ({
 
   return (
     <Paper square className={classes.root}>
-      <Toolbar disableGutters variant='dense' style={{ minHeight: 28 }}>
+      <Toolbar disableGutters variant='dense' style={{ minHeight: 28, gap: 8 }}>
         {estimatedDistance > 0 ? (
           <>
             {warnings.length > 0 && (
@@ -111,7 +123,7 @@ const MissionOverviewPanelStatusBar = ({
             icon={<Error style={{ color: Colors.error }} />}
             label={<span style={{ whiteSpace: 'normal' }}>{error}</span>}
             size='small'
-            style={{ height: 'auto', marginRight: 8 }}
+            style={{ height: 'auto' }}
             variant='outlined'
           />
         ) : (
@@ -124,11 +136,35 @@ const MissionOverviewPanelStatusBar = ({
               </span>
             }
             size='small'
-            style={{ height: 'auto', marginRight: 8 }}
+            style={{ height: 'auto' }}
             variant='outlined'
           />
         )}
         <Box component='div' sx={{ flex: 1 }} />
+        <UAVSelectorWrapper
+          useMissionIds
+          onSelect={({ missionIndex }) => onSelectMissionId(missionIndex)}
+        >
+          {(handleClick) => (
+            <Chip
+              clickable
+              color={selectedMissionId === undefined ? 'default' : 'primary'}
+              icon={<FilterList />}
+              label={
+                selectedMissionId === undefined
+                  ? 'Filter'
+                  : formatMissionId(selectedMissionId)
+              }
+              size='small'
+              onClick={handleClick}
+              onDelete={
+                selectedMissionId === undefined
+                  ? undefined
+                  : () => void onSelectMissionId()
+              }
+            />
+          )}
+        </UAVSelectorWrapper>
         <Tooltip content='Follow the active mission item'>
           <ToggleButton
             size='small'
@@ -154,6 +190,8 @@ MissionOverviewPanelStatusBar.propTypes = {
     error: PropTypes.string,
   }),
   onFollowScrollChanged: PropTypes.func,
+  onSelectMissionId: PropTypes.func,
+  selectedMissionId: PropTypes.number,
 };
 
 export default connect(
@@ -162,9 +200,11 @@ export default connect(
     followScroll: shouldMissionEditorPanelFollowScroll(state),
     homePositions: getGPSBasedHomePositionsInMission(state),
     missionEstimates: getMissionEstimates(state),
+    selectedMissionId: getSelectedMissionIdInMissionEditorPanel(state),
   }),
   // mapDispatchToProps
   {
     onFollowScrollChanged: setEditorPanelFollowScroll,
+    onSelectMissionId: setEditorPanelSelectedMissionId,
   }
 )(MissionOverviewPanelStatusBar);

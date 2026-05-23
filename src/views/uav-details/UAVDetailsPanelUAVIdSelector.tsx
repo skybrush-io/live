@@ -19,7 +19,7 @@ import type { RootState } from '~/store/reducers';
 type UAVDetailsPanelUAVIdSelectorProps = {
   followMapSelection: boolean;
   selectedUAVId?: string;
-  setSelectedUAVId: (uavId: string) => void;
+  setSelectedUAVId: (uavId?: string) => void;
   toggleFollowMapSelection: () => void;
 };
 
@@ -34,7 +34,10 @@ const UAVDetailsPanelUAVIdSelector = ({
   toggleFollowMapSelection,
 }: UAVDetailsPanelUAVIdSelectorProps) => (
   <Box sx={{ display: 'flex', alignItems: 'center', mx: 0.5 }}>
-    <UAVSelectorWrapper sortedByError onSelect={setSelectedUAVId}>
+    <UAVSelectorWrapper
+      sortedByError
+      onSelect={({ uavId }) => setSelectedUAVId(uavId)}
+    >
       {(handleClick) => (
         // NOTE: `DroneAvatar` renders a fragment, so we wrap it with a `div`
         <div>

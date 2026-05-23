@@ -1,5 +1,6 @@
 import Settings from '@mui/icons-material/Settings';
 import Avatar from '@mui/material/Avatar';
+import Badge from '@mui/material/Badge';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
@@ -29,6 +30,7 @@ import {
   schemaForMissionItemType,
   titleForMissionItemType,
 } from '~/model/missions';
+import { formatMissionId } from '~/utils/formatting';
 import {
   formatCoordinate,
   safelyFormatAltitudeWithReference,
@@ -248,7 +250,15 @@ const MissionOverviewListItem = ({
       >
         {avatar && (
           <ListItemAvatar>
-            <Avatar className={isValid ? null : classes.error}>{avatar}</Avatar>
+            <Badge
+              badgeContent={item.participants?.map(formatMissionId).join(', ')}
+              color='primary'
+              overlap='circular'
+            >
+              <Avatar className={isValid ? null : classes.error}>
+                {avatar}
+              </Avatar>
+            </Badge>
           </ListItemAvatar>
         )}
         <ListItemText primary={primaryText} secondary={secondaryText} />
@@ -264,6 +274,7 @@ MissionOverviewListItem.propTypes = {
   item: PropTypes.shape({
     type: PropTypes.string,
     parameters: PropTypes.object,
+    participants: PropTypes.arrayOf(PropTypes.number),
   }),
   missionGeofenceStatus: PropTypes.oneOf(Object.values(Status)),
   ratio: PropTypes.number,

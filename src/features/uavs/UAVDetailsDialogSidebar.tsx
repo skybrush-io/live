@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 type UAVDetailsDialogSidebarProps = {
-  setUAVId: (uavId: string) => void;
+  setUAVId: (uavId?: string) => void;
   uavId?: string;
 };
 
@@ -52,7 +52,10 @@ const UAVDetailsDialogSidebar = ({
   const classes = useStyles();
   return (
     <Box className={classes.root}>
-      <UAVSelectorWrapper sortedByError onSelect={setUAVId}>
+      <UAVSelectorWrapper
+        sortedByError
+        onSelect={({ uavId }) => setUAVId(uavId)}
+      >
         {(handleClick) => (
           <DroneAvatar
             id={uavId}

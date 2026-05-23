@@ -97,7 +97,7 @@ const { actions, reducer } = createSlice({
 
     setSelectedUAVIdInUAVDetailsPanel(
       state,
-      { payload }: PayloadAction<StoredUAV['id']>
+      { payload }: PayloadAction<StoredUAV['id'] | undefined>
     ) {
       state.panel.selectedUAVId = payload;
     },

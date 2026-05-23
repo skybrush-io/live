@@ -58,8 +58,15 @@ const useStyles = makeStyles((theme) => ({
  * Placeholder component that can be used in the UAV list for slots where we
  * don't want to display a drone avatar but want to show a placeholder
  * instead that is of the same size as the avatar.
+ *
+ * @type {React.FC<{
+ *   AvatarProps?: import('@mui/material').AvatarProps,
+ *   editing?: boolean,
+ *   label: import('react').ReactNode,
+ *   status?: 'off' | 'editing' | 'error' | 'success',
+ * }>}
  */
-const DronePlaceholder = ({ editing, label, status = 'off' }) => {
+const DronePlaceholder = ({ AvatarProps, editing, label, status = 'off' }) => {
   const classes = useStyles();
   return (
     <div className={classes.root}>
@@ -68,6 +75,7 @@ const DronePlaceholder = ({ editing, label, status = 'off' }) => {
           classes.avatar,
           classes[`avatar-${editing ? 'editing' : status}`]
         )}
+        {...AvatarProps}
       >
         {label}
       </Avatar>
@@ -76,6 +84,7 @@ const DronePlaceholder = ({ editing, label, status = 'off' }) => {
 };
 
 DronePlaceholder.propTypes = {
+  AvatarProps: PropTypes.object,
   editing: PropTypes.bool,
   label: PropTypes.node,
   status: PropTypes.oneOf(['off', 'editing', 'error', 'success']),
