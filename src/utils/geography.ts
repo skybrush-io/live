@@ -1031,6 +1031,20 @@ export const toScaledJSONFromLonLat = (
  *
  * @param  coords  the JSON representation, scaled up to 1e7 degrees.
  *         Note that it contains the <em>latitude</em> first
+ * @return the resulting latitude-longitude pair, represented as an object
+ */
+export const toObjectFromScaledJSON = (
+  coords: ScaledJSONGPSCoordinate
+): LatLonObject =>
+  // TODO: Eliminate or justify these type assertions
+  ({ lat: (coords[0] / 1e7) as Latitude, lon: (coords[1] / 1e7) as Longitude });
+
+/**
+ * Reverts a "JSON-safe" multiplier offset coordinate representation to a
+ * simple decimal longitude-latitude pair
+ *
+ * @param  coords  the JSON representation, scaled up to 1e7 degrees.
+ *         Note that it contains the <em>latitude</em> first
  * @return the resulting longitude-latitude pair, represented
  *         as an array in lon-lat order (<em>longitude</em> first, OpenLayers
  *         convention)
