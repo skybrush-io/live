@@ -25,7 +25,8 @@
     "RTKCorrections": "RTKコネクション",
     "error": "サーバーからRTKリソースを読み込み中のエラー",
     "noRTKData": "サーバーにRTKリソースがありません",
-    "pleaseWait": "RTKリソースを読み込み中。しばらくお待ちください…"
+    "pleaseWait": "RTKリソースを読み込み中。しばらくお待ちください…",
+    "refreshPorts": "シリアルポートを再スキャン"
   },
   "RTKMessage": {
     "noRTKMessagesYet": "受信済みのRTKメッセージはありません"

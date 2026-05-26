@@ -154,6 +154,37 @@ export async function setParameters(
   }
 }
 
+export type RTKSerialPortRefreshResult = {
+  added: string[];
+  removed: string[];
+};
+
+type Response_X_RTK_REFRESH = {
+  type: 'X-RTK-REFRESH';
+  added?: string[];
+  removed?: string[];
+};
+
+/**
+ * Rescans serial ports on the server and updates dynamic RTK presets.
+ */
+export async function refreshRTKSerialPorts(
+  hub: MessageHub
+): Promise<RTKSerialPortRefreshResult> {
+  const response: Message<Response_X_RTK_REFRESH> = await hub.sendMessage({
+    type: 'X-RTK-REFRESH',
+  });
+
+  if (response.body?.type === 'X-RTK-REFRESH') {
+    return {
+      added: response.body.added ?? [],
+      removed: response.body.removed ?? [],
+    };
+  }
+
+  throw new Error('Failed to refresh RTK serial ports');
+}
+
 /**
  * Sets the source of the RTK corrections that the server broadcasts to the
  * connected drones.
@@ -365,6 +396,7 @@ export async function planMission(
 const _operations = {
   configureExtension,
   planMission,
+  refreshRTKSerialPorts,
   reloadExtension,
   resetUAV,
   sendDebugMessage,

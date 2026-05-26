@@ -25,7 +25,8 @@
     "RTKCorrections": "Corrections RTK",
     "error": "Erreur lors du chargement des sources RTK à partir du serveur",
     "noRTKData": "Pas de données RTK sur le serveur",
-    "pleaseWait": "Merci de patienter, chargement des sources RTK…"
+    "pleaseWait": "Merci de patienter, chargement des sources RTK…",
+    "refreshPorts": "Rescanner les ports série"
   },
   "RTKStatusMiniList": {
     "satelliteCount": "Nombre de satellite",

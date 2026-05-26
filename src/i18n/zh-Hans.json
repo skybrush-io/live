@@ -25,7 +25,8 @@
     "RTKCorrections": "RTK校正",
     "error": "从服务器加载RTK源时出错",
     "noRTKData": "服务器上没有RTK数据源",
-    "pleaseWait": "请稍候，正在加载RTK源…"
+    "pleaseWait": "请稍候，正在加载RTK源…",
+    "refreshPorts": "重新扫描串口"
   },
   "RTKMessage": {
     "noRTKMessagesYet": "尚未收到任何 RTK 信息"

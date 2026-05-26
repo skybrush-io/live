@@ -1,5 +1,8 @@
+import Refresh from '@mui/icons-material/Refresh';
+import Box from '@mui/material/Box';
 import FormControl from '@mui/material/FormControl';
 import FormGroup from '@mui/material/FormGroup';
+import IconButton from '@mui/material/IconButton';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
@@ -8,6 +11,8 @@ import React, { useEffect, useState } from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { useAsync, useAsyncFn } from 'react-use';
+
+import { Tooltip } from '@skybrush/mui-components';
 
 import { resetRTKStatistics } from '~/features/rtk/slice';
 import messageHub from '~/message-hub';
@@ -30,7 +35,18 @@ const RTKCorrectionSourceSelector = ({ onSourceChanged, t }) => {
     []
   );
 
-  const loading = presetsState.loading || selectionState.loading;
+  const [refreshState, refreshSerialPorts] = useAsyncFn(async () => {
+    try {
+      await messageHub.execute.refreshRTKSerialPorts();
+    } catch (error) {
+      console.warn(error);
+    }
+
+    presetsState.retry();
+  });
+
+  const loading =
+    presetsState.loading || selectionState.loading || refreshState.loading;
   const hasError = presetsState.error || selectionState.error;
 
   const presets = presetsState.value ? presetsState.value : [];
@@ -102,41 +118,54 @@ const RTKCorrectionSourceSelector = ({ onSourceChanged, t }) => {
 
   return (
     <FormGroup>
-      <FormControl variant='filled' error={hasError && !loading}>
-        <InputLabel htmlFor='rtk-corrections'>
-          {t('RTKCorrectionSourceSelector.RTKCorrections')}
-        </InputLabel>
-        <Select
-          displayEmpty
-          disabled={Boolean(hasError || loading || !hasPresets)}
-          value={
-            selectedByUser ||
-            (hasSelectionFromServer ? selectedOnServer : NULL_ID)
-          }
-          inputProps={{ id: 'rtk-corrections' }}
-          onChange={handleChange}
-        >
-          {presetsState.loading ? (
-            <MenuItem disabled value={NULL_ID}>
-              {t('RTKCorrectionSourceSelector.pleaseWait')}
-            </MenuItem>
-          ) : hasError ? (
-            <MenuItem disabled value={NULL_ID}>
-              {t('RTKCorrectionSourceSelector.error')}
-            </MenuItem>
-          ) : hasPresets ? (
-            [nullPreset, ...presets].map((preset) => (
-              <MenuItem key={preset.id} value={preset.id}>
-                {preset.title}
+      <Box sx={{ display: 'flex', alignItems: 'flex-end', gap: 1 }}>
+        <FormControl variant='filled' error={hasError && !loading} sx={{ flex: 1 }}>
+          <InputLabel htmlFor='rtk-corrections'>
+            {t('RTKCorrectionSourceSelector.RTKCorrections')}
+          </InputLabel>
+          <Select
+            displayEmpty
+            disabled={Boolean(hasError || loading || !hasPresets)}
+            value={
+              selectedByUser ||
+              (hasSelectionFromServer ? selectedOnServer : NULL_ID)
+            }
+            inputProps={{ id: 'rtk-corrections' }}
+            onChange={handleChange}
+          >
+            {presetsState.loading ? (
+              <MenuItem disabled value={NULL_ID}>
+                {t('RTKCorrectionSourceSelector.pleaseWait')}
               </MenuItem>
-            ))
-          ) : (
-            <MenuItem disabled value='__null__'>
-              {t('RTKCorrectionSourceSelector.noRTKData')}
-            </MenuItem>
-          )}
-        </Select>
-      </FormControl>
+            ) : hasError ? (
+              <MenuItem disabled value={NULL_ID}>
+                {t('RTKCorrectionSourceSelector.error')}
+              </MenuItem>
+            ) : hasPresets ? (
+              [nullPreset, ...presets].map((preset) => (
+                <MenuItem key={preset.id} value={preset.id}>
+                  {preset.title}
+                </MenuItem>
+              ))
+            ) : (
+              <MenuItem disabled value='__null__'>
+                {t('RTKCorrectionSourceSelector.noRTKData')}
+              </MenuItem>
+            )}
+          </Select>
+        </FormControl>
+        <Tooltip content={t('RTKCorrectionSourceSelector.refreshPorts')}>
+          <span>
+            <IconButton
+              disabled={Boolean(loading)}
+              size='small'
+              onClick={refreshSerialPorts}
+            >
+              <Refresh fontSize='small' />
+            </IconButton>
+          </span>
+        </Tooltip>
+      </Box>
     </FormGroup>
   );
 };

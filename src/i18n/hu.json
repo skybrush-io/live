@@ -25,7 +25,8 @@
     "RTKCorrections": "RTK korrekciók",
     "error": "Hiba az RTK források szerverről történő betöltése közben",
     "noRTKData": "Nincsenek RTK adatforrások a szerveren",
-    "pleaseWait": "Kérem várjon, RTK források betöltése…"
+    "pleaseWait": "Kérem várjon, RTK források betöltése…",
+    "refreshPorts": "Soros portok újraszkennelése"
   },
   "RTKMessage": {
     "noRTKMessagesYet": "Még nem érkezett RTK üzenet"

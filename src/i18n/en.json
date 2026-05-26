@@ -25,7 +25,8 @@
     "RTKCorrections": "RTK corrections",
     "error": "Error while loading RTK sources from server",
     "noRTKData": "No RTK data sources on server",
-    "pleaseWait": "Please wait, loading RTK sources…"
+    "pleaseWait": "Please wait, loading RTK sources…",
+    "refreshPorts": "Rescan serial ports"
   },
   "RTKMessage": {
     "noRTKMessagesYet": "No RTK messages have been received yet"
