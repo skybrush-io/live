@@ -168,7 +168,7 @@ export const getTakeoffHeadingsInMission: AppSelector<
  * Returns the current mapping from mission-specific slots to the corresponding
  * UAV identifiers.
  */
-export const getMissionMapping: AppSelector<MissionSliceState['mapping']> = (
+export const getMissionMapping: AppSelector<Array<Nullable<Identifier>>> = (
   state
 ) => state.mission.mapping;
 

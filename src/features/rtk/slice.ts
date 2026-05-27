@@ -4,16 +4,25 @@
  */
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import type { RTKPresetType } from '@skybrush/flockwave-spec';
 import isEqual from 'lodash-es/isEqual';
 import isNil from 'lodash-es/isNil';
 
 import { noPayload } from '~/utils/redux';
 
+import type { RTKPresetEditorDialogMode } from './RTKPresetEditorDialog';
 import {
   RTKAntennaPositionFormat,
   type RTKSavedCoordinate,
   type RTKStatistics,
 } from './types';
+
+type RTKPresetEditorDialogState = {
+  open: boolean;
+  mode: RTKPresetEditorDialogMode | undefined;
+  presetId: string | undefined;
+  presetType: RTKPresetType | undefined;
+};
 
 type RTKSliceState = {
   stats: RTKStatistics;
@@ -36,6 +45,9 @@ type RTKSliceState = {
       presetId?: string;
     };
   };
+
+  presetEditorDialog: RTKPresetEditorDialogState;
+  presetsRefreshTrigger: number;
 };
 
 const initialState: RTKSliceState = {
@@ -73,6 +85,14 @@ const initialState: RTKSliceState = {
       presetId: undefined,
     },
   },
+
+  presetEditorDialog: {
+    open: false,
+    mode: undefined,
+    presetId: undefined,
+    presetType: undefined,
+  },
+  presetsRefreshTrigger: 0,
 };
 
 const { actions, reducer } = createSlice({
@@ -135,7 +155,31 @@ const { actions, reducer } = createSlice({
       }
     },
 
-    // Saved coordinates management
+    openRTKPresetEditorDialog(
+      state,
+      action: PayloadAction<{
+        mode: 'create' | 'edit';
+        presetId?: string;
+        presetType?: RTKPresetType;
+      }>
+    ) {
+      state.presetEditorDialog.open = true;
+      state.presetEditorDialog.mode = action.payload.mode;
+      state.presetEditorDialog.presetId = action.payload.presetId;
+      state.presetEditorDialog.presetType = action.payload.presetType ?? 'user';
+    },
+
+    closeRTKPresetEditorDialog: noPayload<RTKSliceState>((state) => {
+      state.presetEditorDialog.open = false;
+      state.presetEditorDialog.mode = undefined;
+      state.presetEditorDialog.presetId = undefined;
+      state.presetEditorDialog.presetType = undefined;
+    }),
+
+    refreshRTKPresets: noPayload<RTKSliceState>((state) => {
+      state.presetsRefreshTrigger += 1;
+    }),
+
     saveCoordinateForPreset(
       state,
       action: PayloadAction<{
@@ -197,12 +241,15 @@ const { actions, reducer } = createSlice({
 });
 
 export const {
-  clearAllSavedCoordinates,
-  closeCoordinateRestorationDialog,
+  closeRTKPresetEditorDialog,
   closeRTKSetupDialog,
   closeSurveySettingsPanel,
-  resetRTKStatistics,
+  openRTKPresetEditorDialog,
+  refreshRTKPresets,
   saveCoordinateForPreset,
+  clearAllSavedCoordinates,
+  closeCoordinateRestorationDialog,
+  resetRTKStatistics,
   setAntennaPositionFormat,
   showCoordinateRestorationDialog,
   showRTKSetupDialog,

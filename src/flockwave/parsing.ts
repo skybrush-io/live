@@ -129,7 +129,11 @@ export function extractResponseForId<T>(
     [k: string]: any;
   }>,
   id: string,
-  options: { error?: string; key?: string } = {}
+  options: {
+    error?: string;
+    key?: string;
+    typeGuard?: (value: unknown) => value is T;
+  } = {}
 ) {
   const errors = message?.body?.error;
 
@@ -153,7 +157,16 @@ export function extractResponseForId<T>(
     results !== null &&
     typeof results[id] !== 'undefined'
   ) {
-    return results[id] as T;
+    const { typeGuard } = options;
+    const result = results[id];
+    if (typeGuard) {
+      if (!typeGuard(result)) {
+        throw new Error(`Invalid type for ID ${id} in response`);
+      }
+      return result;
+    } else {
+      return result as T;
+    }
   }
 
   throw new Error(

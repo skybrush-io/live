@@ -22,6 +22,8 @@ export type Clock = {
   ticksPerSecond: number;
 };
 
+export type ClockWithUpdateInterval = Clock & { updateInterval: number };
+
 export enum CommonClockId {
   SYSTEM = 'system',
   MISSION = 'mission',

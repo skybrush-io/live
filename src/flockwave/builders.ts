@@ -1,5 +1,5 @@
 import type {
-  ObjectIDs,
+  ObjectID,
   ReceiptID,
   Request_ASYNCCANCEL,
   Request_ASYNCRESUME,
@@ -74,7 +74,7 @@ export function createResumeRequest(
  * @return the message
  */
 export function createCommandRequest(
-  uavIds: ObjectIDs,
+  uavIds: ObjectID[],
   command: string,
   args?: unknown[],
   kwds?: Record<string, unknown>

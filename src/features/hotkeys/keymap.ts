@@ -123,12 +123,6 @@ const toggleOptionKeyMap: KeyMap = {
     group: HotkeyGroup.HIDDEN,
     scopes: [HotkeyScope.GLOBAL],
   },
-
-  TOGGLE_SORT_BY_MISSION_ID: {
-    name: 'Toggle sorting UAVs by mission IDs',
-    sequence: 'mod+s',
-    scopes: [HotkeyScope.GLOBAL],
-  },
 };
 
 const sendCommandKeyMap: KeyMap = {

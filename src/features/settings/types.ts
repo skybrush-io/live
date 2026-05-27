@@ -59,9 +59,6 @@ export type SettingsState = {
     /** Whether the UI should be adjusted primarily for touchscreen experience. */
     optimizeUIForTouch: boolean;
 
-    /** Whether to show mission IDs or drone IDs in the UAV list */
-    showMissionIds: boolean;
-
     /** Whether to show the mouse coordinates on the map */
     showMouseCoordinates: boolean;
 

@@ -3,6 +3,7 @@ import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import clsx from 'clsx';
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import {
@@ -84,6 +85,7 @@ const RTKSetupDialogBottomPanel = ({
   surveyStatus,
 }: Props) => {
   const classes = useStyles();
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (
@@ -120,7 +122,7 @@ const RTKSetupDialogBottomPanel = ({
             }}
           >
             {onToggleSurveySettings && (
-              <Tooltip content='Start new survey'>
+              <Tooltip content={t('rtkSetupDialog.startNewSurvey')}>
                 <IconButton
                   disabled={!surveyStatus || !surveyStatus.supported}
                   edge='start'
