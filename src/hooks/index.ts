@@ -2,7 +2,6 @@ export { default as useDarkMode } from './useDarkMode';
 export { default as useDeviceOrientation } from './useDeviceOrientation';
 export { default as useDeviceTreeSubscription } from './useDeviceTreeSubscription';
 export { default as useDropdown } from './useDropdown';
-export { default as useFlock } from './useFlock';
 export { default as useMessageHub } from './useMessageHub';
 export { default as usePeriodicRefresh } from './usePeriodicRefresh';
 export { default as usePeriodicSelector } from './usePeriodicSelector';
