@@ -1,12 +1,20 @@
+import { createSelector } from '@reduxjs/toolkit';
 import countBy from 'lodash-es/countBy';
 import pickBy from 'lodash-es/pickBy';
-import { createSelector } from '@reduxjs/toolkit';
 
+import type { RootState } from '~/store/reducers';
 import { NUM_PRESETS } from './presets';
 
 import { getClocksInOrder } from '~/features/clocks/selectors';
 import { formatClockAbbreviation } from '~/features/clocks/utils';
 import { selectLast, selectOrdered } from '~/utils/collections';
+
+import type { LCDClock } from './types';
+
+type ClockIdWithLabel = {
+  id: string;
+  label: string;
+};
 
 /**
  * Returns the ID of the clock that is to be shown on the LCD clock display with
@@ -17,7 +25,10 @@ import { selectLast, selectOrdered } from '~/utils/collections';
  *         returned
  * @return {string} the ID of the clock that is to be shown on the given LCD clock display
  */
-export const getClockIdForLCDDisplayById = (state, displayId) => {
+export const getClockIdForLCDDisplayById = (
+  state: RootState,
+  displayId: string
+) => {
   const display = state.lcdClock.byId[displayId];
   return display ? display.clockId : undefined;
 };
@@ -32,7 +43,10 @@ export const getClockIdForLCDDisplayById = (state, displayId) => {
  * @return {number} the index of the color preset that is to be used for the
  *         given LCD clock display
  */
-export const getPresetIndexForLCDDisplayById = (state, displayId) => {
+export const getPresetIndexForLCDDisplayById = (
+  state: RootState,
+  displayId: string
+): LCDClock['preset'] => {
   const display = state.lcdClock.byId[displayId];
   return display ? display.preset : 0;
 };
@@ -43,13 +57,13 @@ export const getPresetIndexForLCDDisplayById = (state, displayId) => {
  */
 export const getClockIdsAndAbbreviations = createSelector(
   getClocksInOrder,
-  (clocks) => {
-    const result = clocks.map((clock) => ({
+  (clocks): ClockIdWithLabel[] => {
+    const result: ClockIdWithLabel[] = clocks.map((clock) => ({
       id: clock.id,
       label: formatClockAbbreviation(clock),
     }));
 
-    const counts = countBy(result, 'label');
+    const counts: Record<string, number> = countBy(result, 'label');
     for (const label of Object.keys(counts)) {
       if (counts[label] > 1) {
         let index = 1;
@@ -70,15 +84,16 @@ export const getClockIdsAndAbbreviations = createSelector(
 /**
  * Returns the last display in the list of LCD clock displays as shown on the UI.
  */
-export const getLastLCDClockDisplay = (state) => selectLast(state.lcdClock);
+export const getLastLCDClockDisplay = (state: RootState) =>
+  selectLast(state.lcdClock);
 
 /**
  * Selector that returns the LCD clock displays currently defined in the
  * client, in the order they should appear on the UI.
  */
 export const getLCDClockDisplaysInOrder = createSelector(
-  (state) => state.lcdClock,
-  selectOrdered
+  (state: RootState) => state.lcdClock,
+  selectOrdered<LCDClock>
 );
 
 /**
@@ -93,11 +108,11 @@ export const getLCDClockDisplaysInOrder = createSelector(
  *
  * Returns undefined if there are no clocks.
  */
-export const getLeastUsedClockId = (state) => {
+export const getLeastUsedClockId = (state: RootState): string | undefined => {
   const { byId, order } = state.lcdClock;
   const shownClockIds = order
-    .map((displayId) => (byId[displayId] ? byId[displayId].clockId : undefined))
-    .filter(Boolean);
+    .map((displayId) => byId[displayId]?.clockId)
+    .filter((clockId): clockId is string => Boolean(clockId));
 
   for (const clock of getClocksInOrder(state)) {
     if (!shownClockIds.includes(clock.id)) {
@@ -106,7 +121,7 @@ export const getLeastUsedClockId = (state) => {
   }
 
   // All the clocks are visible on at least one display
-  const counts = countBy(shownClockIds);
+  const counts: Record<string, number> = countBy(shownClockIds);
   const minCount = Math.min(...Object.values(counts));
   const candidates = Object.keys(pickBy(counts, (value) => value === minCount));
 
@@ -127,9 +142,9 @@ export const getLeastUsedClockId = (state) => {
  *
  * Returns zero if there are no presets yet.
  */
-export const getLeastUsedPreset = (state) => {
+export const getLeastUsedPreset = (state: RootState): LCDClock['preset'] => {
   const { byId, order } = state.lcdClock;
-  const counts = new Array(NUM_PRESETS).fill(0);
+  const counts = new Array<number>(NUM_PRESETS).fill(0);
   for (const displayId of order) {
     const display = byId[displayId];
     if (
