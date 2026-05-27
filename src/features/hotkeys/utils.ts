@@ -1,4 +1,11 @@
+import type { Action } from '@reduxjs/toolkit';
 import { getSelectedUAVIds } from '~/features/uavs/selectors';
+import type { AppThunk } from '~/store/reducers';
+
+type UavSelectionActionFactory<TArgs extends unknown[]> = (
+  uavIds: string[],
+  ...args: TArgs
+) => Action<string>;
 
 /**
  * Helper function that takes a Redux action factory that takes a list of UAV
@@ -13,8 +20,10 @@ import { getSelectedUAVIds } from '~/features/uavs/selectors';
  *          UAV selection
  */
 export const callOnSelection =
-  (actionFactory, ...args) =>
-  () =>
+  <TArgs extends unknown[]>(
+    actionFactory: UavSelectionActionFactory<TArgs>,
+    ...args: TArgs
+  ): AppThunk =>
   (dispatch, getState) => {
     dispatch(actionFactory(getSelectedUAVIds(getState()), ...args));
   };

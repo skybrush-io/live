@@ -1,3 +1,4 @@
+import type { Action } from '@reduxjs/toolkit';
 import isNil from 'lodash-es/isNil';
 
 import { copyDisplayedCoordinatesToClipboard } from '~/components/map/utils';
@@ -12,8 +13,10 @@ import { clearSelection, selectGroup } from '~/features/selection/slice';
 import { showError, showNotification } from '~/features/snackbar/actions';
 import { setSelectedUAVIds } from '~/features/uavs/actions';
 import { getUAVById } from '~/features/uavs/selectors';
+import type { AppDispatch, AppThunk, RootState } from '~/store/reducers';
 import { scrollUAVListItemIntoView } from '~/utils/navigation';
 
+import type { Nullable } from '~/utils/types';
 import { getPendingUAVId, isPendingUAVIdOverlayVisible } from './selectors';
 import { setPendingUAVId, startPendingUAVIdTimeout } from './slice';
 
@@ -29,17 +32,17 @@ const LEADING_ZEROS = ['', '0', '00', '000', '0000'];
  *
  * @yields {string} The identifiers of all items in the range.
  */
-function* resolveRange(desc, rangeSeparator = '-') {
+function* resolveRange(desc: string, rangeSeparator = '-'): Generator<string> {
   const split = desc.split(rangeSeparator);
   if (split.length > 2) {
-    return []; // Invalid input, return an empty array.
+    return; // Invalid input, return an empty array.
   }
 
   const [startStr, endStr] = split.length == 2 ? split : [split[0], split[0]];
   const start = Number.parseInt(startStr);
   const end = Number.parseInt(endStr);
   if (!(Number.isFinite(start) && Number.isFinite(end) && start <= end)) {
-    return []; // Invalid range, return an empty array.
+    return; // Invalid range, return an empty array.
   }
 
   for (let i = start; i <= end; i++) {
@@ -50,14 +53,17 @@ function* resolveRange(desc, rangeSeparator = '-') {
 /**
  * Resolves the given show index to a selection index.
  *
- * @param {string} value The ID to resolve.
- * @param {Nullable<string>[]} missionMapping Mapping from mission-specific
+ * @param value The ID to resolve.
+ * @param missionMapping Mapping from mission-specific
  *     slots to the corresponding UAV identifiers.
  *
- * @returns {number|undefined} The resolved ID or `undefined`
- *     if the ID could not be resolved.
+ * @returns The resolved ID or `undefined` if the ID could not be resolved.
  */
-function showIndexToSelectionIndex(value, missionMapping) {
+function showIndexToSelectionIndex(
+  value: string,
+  missionMapping: Array<Nullable<string>>,
+  _state?: RootState
+): string | undefined {
   const index = Number.parseInt(value);
   if (!Number.isFinite(index)) {
     return undefined;
@@ -70,15 +76,18 @@ function showIndexToSelectionIndex(value, missionMapping) {
 /**
  * Resolves the given drone ID to a selection index.
  *
- * @param {string} value The ID to resolve.
- * @param {Nullable<string>[]} missionMapping Mapping from mission-specific
+ * @param value The ID to resolve.
+ * @param missionMapping Mapping from mission-specific
  *     slots to the corresponding UAV identifiers.
- * @param {RootState} state The root redux state.
+ * @param state The root redux state.
  *
- * @returns {number|undefined} The resolved ID or `undefined`
- *     if the ID could not be resolved.
+ * @returns The resolved ID or `undefined` if the ID could not be resolved.
  */
-function droneIdsToSelectionIndex(value, missionMapping, state) {
+function droneIdsToSelectionIndex(
+  value: string,
+  missionMapping: Array<Nullable<string>>,
+  state: RootState
+): string | undefined {
   const allNumeric = /^\d+$/.test(value);
   const prefixes = allNumeric ? LEADING_ZEROS : [''];
   for (const prefix of prefixes) {
@@ -94,11 +103,14 @@ function droneIdsToSelectionIndex(value, missionMapping, state) {
   }
 }
 
-function getPendingUAVIdMode(pendingUAVId) {
+function getPendingUAVIdMode(pendingUAVId: string) {
   return pendingUAVId.startsWith('g') ? 'group' : 'uav';
 }
 
-function handleAndClearPendingUAVId(dispatch, getState) {
+function handleAndClearPendingUAVId(
+  dispatch: AppDispatch,
+  getState: () => RootState
+): boolean {
   const state = getState();
   let pendingUAVId = getPendingUAVId(state);
 
@@ -128,7 +140,11 @@ function handleAndClearPendingUAVId(dispatch, getState) {
 
   const newSelection = [];
   // Function that expects a single string identifier, the mission mapping, and the root redux state.
-  let resolveUAVId;
+  let resolveUAVId: (
+    key: string,
+    mapping: Array<Nullable<string>>,
+    state: RootState
+  ) => string | undefined;
   if (pendingUAVId.charAt(0) === 's') {
     resolveUAVId = showIndexToSelectionIndex;
     pendingUAVId = pendingUAVId.slice(1); // Remove the s prefix, keep the pure ID.
@@ -160,20 +176,23 @@ function handleAndClearPendingUAVId(dispatch, getState) {
  * a pending UAV ID typed in via the keyboard, and if so, selects the UAV, and
  * then 2) calls the given function with its original arguments
  *
- * @param {function}  func  the function to call
- * @param {bool} executeOnlyWithoutPendingUAVId  whether the function must be
+ * @param func  the function to call
+ * @param executeOnlyWithoutPendingUAVId  whether the function must be
  *        called _only_ if there was no pending UAV
  */
-export function handlePendingUAVIdThenCall(
-  func,
-  { executeOnlyWithoutPendingUAVId } = {}
-) {
-  return (...args) =>
-    (dispatch, getState) => {
+export function handlePendingUAVIdThenCall<TArgs extends unknown[], TResult>(
+  func: (...args: TArgs) => TResult,
+  { executeOnlyWithoutPendingUAVId } = {} as {
+    executeOnlyWithoutPendingUAVId?: boolean;
+  }
+): (...args: TArgs) => AppThunk<TResult | undefined> {
+  return (...args: TArgs) =>
+    (dispatch: AppDispatch, getState: () => RootState) => {
       const hadPendingUAVId = handleAndClearPendingUAVId(dispatch, getState);
       if (!hadPendingUAVId || !executeOnlyWithoutPendingUAVId) {
         return func(...args);
       }
+      return undefined;
     };
 }
 
@@ -184,29 +203,32 @@ export function handlePendingUAVIdThenCall(
  * then 2) dispatches the action returned by the original factory with its
  * original arguments
  *
- * @param {function}  actionFactory  the action factory to wrap
- * @param {bool} executeOnlyWithoutPendingUAVId  whether the function must be
+ * @param actionFactory  the action factory to wrap
+ * @param executeOnlyWithoutPendingUAVId  whether the function must be
  *        called _only_ if there was no pending UAV
  */
-export function handlePendingUAVIdThenDispatch(
-  actionFactory,
-  { executeOnlyWithoutPendingUAVId } = {}
-) {
-  return (...args) =>
-    (dispatch, getState) => {
+export function handlePendingUAVIdThenDispatch<TArgs extends unknown[]>(
+  actionFactory: (...args: TArgs) => Action<string>,
+  { executeOnlyWithoutPendingUAVId } = {} as {
+    executeOnlyWithoutPendingUAVId?: boolean;
+  }
+): (...args: TArgs) => AppThunk {
+  return (...args: TArgs) =>
+    (dispatch: AppDispatch, getState: () => RootState) => {
       const hadPendingUAVId = handleAndClearPendingUAVId(dispatch, getState);
       if (!hadPendingUAVId || !executeOnlyWithoutPendingUAVId) {
         const action = actionFactory(...args);
         return dispatch(action);
       }
+      return undefined;
     };
 }
 
-function isValidPendingUAVIdChar(char) {
+function isValidPendingUAVIdChar(char: string) {
   return typeof char === 'string' && char.length === 1;
 }
 
-function appendGroupIdChar(char) {
+function appendGroupIdChar(char: string): AppThunk<boolean> {
   return (dispatch, getState) => {
     if (!isValidPendingUAVIdChar(char)) {
       return false;
@@ -226,7 +248,7 @@ function appendGroupIdChar(char) {
   };
 }
 
-function appendUAVIdChar(char) {
+function appendUAVIdChar(char: string): AppThunk<boolean> {
   return (dispatch, getState) => {
     if (!isValidPendingUAVIdChar(char)) {
       return false;
@@ -234,7 +256,7 @@ function appendUAVIdChar(char) {
 
     let validCharacterTyped = false;
     const pendingUAVId = getPendingUAVId(getState());
-    const segment = pendingUAVId.split(':').pop();
+    const segment = pendingUAVId.split(':').pop() ?? '';
     if (char >= '0' && char <= '9') {
       // impose a length limit on IDs
       if (segment.length < 10) {
@@ -263,7 +285,7 @@ function appendUAVIdChar(char) {
  * Appends a new character to the end of the pending UAV ID string that allows
  * the user to select a UAV simply by typing.
  */
-export function appendToPendingUAVId(char) {
+export function appendToPendingUAVId(char: string | number): AppThunk<void> {
   return (dispatch, getState) => {
     // 's' and `g` modifiers are only allowed at the beginning,
     // when the pending UAV ID is empty.
@@ -305,7 +327,7 @@ export function clearPendingUAVId() {
  * editor if the user is currently editing the mapping; otherwise it clears the
  * selection.
  */
-export function clearSelectionOrPendingUAVId() {
+export function clearSelectionOrPendingUAVId(): AppThunk<void> {
   return (dispatch, getState) => {
     const state = getState();
     if (isPendingUAVIdOverlayVisible(state)) {
@@ -324,7 +346,7 @@ export function clearSelectionOrPendingUAVId() {
  * Thunk action that copies the currently displayed map coordinates to the
  * clipboard and then shows a notification to the user.
  */
-export const copyCoordinates = () => (_dispatch) => {
+export const copyCoordinates = (): AppThunk<void> => () => {
   if (copyDisplayedCoordinatesToClipboard()) {
     showNotification('Coordinates copied to clipboard.');
   } else {
@@ -335,7 +357,7 @@ export const copyCoordinates = () => (_dispatch) => {
 /**
  * Deletes the last character of the pending UAV ID.
  */
-export function deleteLastCharacterOfPendingUAVId() {
+export function deleteLastCharacterOfPendingUAVId(): AppThunk<void> {
   return (dispatch, getState) => {
     const pendingUAVId = getPendingUAVId(getState());
     if (pendingUAVId.length > 0) {
