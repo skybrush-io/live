@@ -28,9 +28,8 @@ const LEADING_ZEROS = ['', '0', '00', '000', '0000'];
  * Generator that resolves the string description of a range declaration
  * (inclusive on both ends) into an sequence of *string* identifiers.
  *
- * @param {string} The string description of the range.
- *
- * @yields {string} The identifiers of all items in the range.
+ * @param desc The string description of the range.
+ * @yields The identifiers of all items in the range.
  */
 function* resolveRange(desc: string, rangeSeparator = '-'): Generator<string> {
   const split = desc.split(rangeSeparator);
@@ -54,9 +53,8 @@ function* resolveRange(desc: string, rangeSeparator = '-'): Generator<string> {
  * Resolves the given show index to a selection index.
  *
  * @param value The ID to resolve.
- * @param missionMapping Mapping from mission-specific
- *     slots to the corresponding UAV identifiers.
- *
+ * @param missionMapping Mapping from mission-specific slots to the
+ *   corresponding UAV identifiers.
  * @returns The resolved ID or `undefined` if the ID could not be resolved.
  */
 function showIndexToSelectionIndex(
@@ -77,8 +75,8 @@ function showIndexToSelectionIndex(
  * Resolves the given drone ID to a selection index.
  *
  * @param value The ID to resolve.
- * @param missionMapping Mapping from mission-specific
- *     slots to the corresponding UAV identifiers.
+ * @param missionMapping Mapping from mission-specific slots to the
+ *   corresponding UAV identifiers.
  * @param state The root redux state.
  *
  * @returns The resolved ID or `undefined` if the ID could not be resolved.
@@ -176,9 +174,9 @@ function handleAndClearPendingUAVId(
  * a pending UAV ID typed in via the keyboard, and if so, selects the UAV, and
  * then 2) calls the given function with its original arguments
  *
- * @param func  the function to call
- * @param executeOnlyWithoutPendingUAVId  whether the function must be
- *        called _only_ if there was no pending UAV
+ * @param func The function to call.
+ * @param executeOnlyWithoutPendingUAVId Whether the function must be called
+ *   only if there was no pending UAV.
  */
 export function handlePendingUAVIdThenCall<TArgs extends unknown[], TResult>(
   func: (...args: TArgs) => TResult,
@@ -203,9 +201,9 @@ export function handlePendingUAVIdThenCall<TArgs extends unknown[], TResult>(
  * then 2) dispatches the action returned by the original factory with its
  * original arguments
  *
- * @param actionFactory  the action factory to wrap
- * @param executeOnlyWithoutPendingUAVId  whether the function must be
- *        called _only_ if there was no pending UAV
+ * @param actionFactory The action factory to wrap.
+ * @param executeOnlyWithoutPendingUAVId Whether the function must be called
+ *   only if there was no pending UAV.
  */
 export function handlePendingUAVIdThenDispatch<TArgs extends unknown[]>(
   actionFactory: (...args: TArgs) => Action<string>,

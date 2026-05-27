@@ -10,9 +10,7 @@ const CustomPropTypes = {
     lon: PropTypes.number.isRequired,
   }),
 
-  preflightCheckResult: PropTypes.oneOf(
-    Object.values(PreflightCheckResult)
-  ),
+  preflightCheckResult: PropTypes.oneOf(Object.values(PreflightCheckResult)),
 
   severity: PropTypes.oneOf(Object.values(Severity)),
 };

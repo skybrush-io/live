@@ -46,30 +46,27 @@ export type KeyboardNavigationHandlers<
  * action names to the corresponding handler functions in a way that is suitable
  * for managing the selection in a list-like view.
  *
- * @param {func} dispatch  the Redux action dispatcher function
- * @param {func} activateId Redux action factory that creates an action
- *        that handles the event when the user attempts to activate a _single_
- *        selected item. The factory is called with the ID of the selected item.
- *        When multiple items are selected, the _last_ item is activated.
- * @param {func} activateIds Redux action factory that creates an action
- *        that handles the event when the user attempts to activate the currently
- *        selected items. The factory is called with the currently selected IDs in
- *        an _array_.
- * @param {func} getVisibleIds  Redux selector that returns the array of IDs
- *        currently visible in the list, in the same order as they are displayed
- * @param {func} getSelectedIds Redux selector that returns the array of IDs
- *        that are currently selected in the list
- * @param {func} onItemFocused Plain function that is called when an item is
- *        about to be selected. The function receives the ID and index of the
- *        item being selected. It can be used to trigger a side-effect that
- *        scrolls a view to make the item visible. When it returns a string,
- *        it is interpreted as a CSS selector, and the first element matching
- *        the selector will be scrolled into view. Otherwise, the return value
- *        is ignored, but you can still perform any side effect inside the
- *        handler.
- * @param {func} setSelectedIds Redux action factory that creates an action that
- *        updates the currently selected IDs in the list when dispatched to the
- *        store
+ * @param dispatch The Redux action dispatcher function.
+ * @param activateId Redux action factory that creates an action that handles the
+ *   event when the user attempts to activate a single selected item. The factory
+ *   is called with the ID of the selected item. When multiple items are selected,
+ *   the last item is activated.
+ * @param activateIds Redux action factory that creates an action that handles the
+ *   event when the user attempts to activate the currently selected items. The
+ *   factory is called with the currently selected IDs in an array.
+ * @param getVisibleIds Redux selector that returns the array of IDs currently
+ *   visible in the list, in the same order as they are displayed.
+ * @param getSelectedIds Redux selector that returns the array of IDs that are
+ *   currently selected in the list.
+ * @param onItemFocused Plain function that is called when an item is about to be
+ *   selected. The function receives the ID and index of the item being selected.
+ *   It can be used to trigger a side-effect that scrolls a view to make the item
+ *   visible. When it returns a string, it is interpreted as a CSS selector, and
+ *   the first element matching the selector will be scrolled into view.
+ *   Otherwise, the return value is ignored, but you can still perform any side
+ *   effect inside the handler.
+ * @param setSelectedIds Redux action factory that creates an action that updates
+ *   the currently selected IDs in the list when dispatched to the store.
  */
 export function createKeyboardNavigationHandlers<
   S = RootState,

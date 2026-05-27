@@ -9,7 +9,10 @@ type GradientBackgroundOptions = {
   reverse?: boolean;
 };
 
-type GradientBackgroundSingleOptions = Omit<GradientBackgroundOptions, 'color'> & {
+type GradientBackgroundSingleOptions = Omit<
+  GradientBackgroundOptions,
+  'color'
+> & {
   color: string;
 };
 
@@ -29,10 +32,7 @@ export const NO_DATA = Object.freeze({
  * Creates a standard style for a single bar chart data series in a Chart.js
  * chart.
  */
-export function createBarChartStyle({
-  canvas,
-  color,
-}: BarChartStyleOptions) {
+export function createBarChartStyle({ canvas, color }: BarChartStyleOptions) {
   return {
     backgroundColor: createGradientBackground({ canvas, color }),
     borderColor: color,
@@ -44,14 +44,14 @@ export function createBarChartStyle({
  * Creates a gradient fill that could be used in a Chart.js background in a bar or
  * line chart.
  *
- * @param  {number}  options.alpha   the alpha component of the color
- * @param  {string}  options.color   the color; you may use an array here if you need
- *         multiple gradients
- * @param  {object}  options.ctx     the drawing context on which the gradient will be drawn
- * @param  {number}  options.height  the height of the gradient
- * @param  {boolean} options.reverse whether the gradient should go from top to bottom
- *         (false) or bottom to top (true)
- * @return {CanvasGradient}  the constructed gradient fill
+ * @param options.alpha The alpha component of the color.
+ * @param options.color The color; you may use an array here if you need multiple
+ *   gradients.
+ * @param options.ctx The drawing context on which the gradient will be drawn.
+ * @param options.height The height of the gradient.
+ * @param options.reverse Whether the gradient should go from top to bottom
+ *   (false) or bottom to top (true).
+ * @returns The constructed gradient fill.
  */
 const createGradientBackgroundSingle = (
   options: GradientBackgroundSingleOptions

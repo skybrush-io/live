@@ -20,10 +20,9 @@ type ClockIdWithLabel = {
  * Returns the ID of the clock that is to be shown on the LCD clock display with
  * the given ID.
  *
- * @param  {object} state      the global state object
- * @param  {string} displayId  the ID of the display whose clock is to be
- *         returned
- * @return {string} the ID of the clock that is to be shown on the given LCD clock display
+ * @param state The global state object.
+ * @param displayId The ID of the display whose clock is to be returned.
+ * @returns The ID of the clock that is to be shown on the given LCD clock display.
  */
 export const getClockIdForLCDDisplayById = (
   state: RootState,
@@ -37,11 +36,10 @@ export const getClockIdForLCDDisplayById = (
  * Returns the index of the preset that is to be used for the LCD clock display
  * with the given ID.
  *
- * @param  {object} state      the global state object
- * @param  {string} displayId  the ID of the display whose clock is to be
- *         returned
- * @return {number} the index of the color preset that is to be used for the
- *         given LCD clock display
+ * @param state The global state object.
+ * @param displayId The ID of the display whose clock is to be returned.
+ * @returns The index of the color preset that is to be used for the given LCD
+ *   clock display.
  */
 export const getPresetIndexForLCDDisplayById = (
   state: RootState,
