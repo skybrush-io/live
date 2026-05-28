@@ -1,4 +1,4 @@
-import type { RootState, AppSelector } from '~/store/reducers';
+import type { AppSelector } from '~/store/reducers';
 
-export const isSidebarOpen: AppSelector<boolean> = (state: RootState) =>
+export const isSidebarOpen: AppSelector<boolean> = (state) =>
   state.sidebar.open;
