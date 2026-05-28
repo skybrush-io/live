@@ -29,10 +29,6 @@ const ConnectionStatusButtonPresentation = (props: Props) => (
   </LazyTooltip>
 );
 
-ConnectionStatusButtonPresentation.propTypes = {
-  ...GenericHeaderButton.propTypes,
-};
-
 export default connect(
   // mapStateToProps
   (state: RootState) => ({
