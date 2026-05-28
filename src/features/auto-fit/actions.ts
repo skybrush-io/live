@@ -1,5 +1,5 @@
 import { errorToString } from '~/error-handling';
-import { showErrorMessage } from '~/features/error-handling/actions';
+import { showErrorMessage } from '~/features/error-handling/slice';
 import { updateFlatEarthCoordinateSystem } from '~/features/map/origin';
 import { recalculateMapping } from '~/features/mission/actions';
 import {

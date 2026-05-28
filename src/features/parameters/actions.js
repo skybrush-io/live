@@ -1,6 +1,6 @@
 import delay from 'delay';
 
-import { showErrorMessage } from '~/features/error-handling/actions';
+import { showErrorMessage } from '~/features/error-handling/slice';
 import { getRunningUploadJobType } from '~/features/upload/selectors';
 import {
   openUploadDialogForJob,
