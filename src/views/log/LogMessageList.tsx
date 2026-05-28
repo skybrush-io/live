@@ -1,6 +1,5 @@
 import ArrowDownward from '@mui/icons-material/ArrowDownward';
 import Fab from '@mui/material/Fab';
-import PropTypes from 'prop-types';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Virtuoso,
@@ -90,10 +89,6 @@ const LogMessageList = ({ items = [] }: LogMessageListProps) => {
       </FadeAndSlide>
     </>
   );
-};
-
-LogMessageList.propTypes = {
-  items: PropTypes.array,
 };
 
 export default LogMessageList;
