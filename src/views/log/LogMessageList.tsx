@@ -1,16 +1,23 @@
 import ArrowDownward from '@mui/icons-material/ArrowDownward';
-import { Fab } from '@mui/material';
+import Fab from '@mui/material/Fab';
 import PropTypes from 'prop-types';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Virtuoso } from 'react-virtuoso';
+import {
+  Virtuoso,
+  type FlatIndexLocationWithAlign,
+  type VirtuosoHandle,
+} from 'react-virtuoso';
 
 import { makeStyles } from '@skybrush/app-theme-mui';
 
 import FadeAndSlide from '~/components/transitions/FadeAndSlide';
+import type { LogItem } from '~/features/log/types';
 
 import LogMessageListItem from './LogMessageListItem';
 
-const renderLogMessage = (_index, item) => <LogMessageListItem item={item} />;
+const renderLogMessage = (_index: number, item: LogItem) => (
+  <LogMessageListItem item={item} />
+);
 
 const useStyles = makeStyles((theme) => ({
   scrollToBottomButton: {
@@ -20,9 +27,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const LogMessageList = ({ items }) => {
-  const listRef = useRef(null);
-  const previousLastItemId = useRef(null);
+type LogMessageListProps = {
+  items?: LogItem[];
+};
+
+const LogMessageList = ({ items = [] }: LogMessageListProps) => {
+  const listRef = useRef<VirtuosoHandle | null>(null);
+  const previousLastItemId = useRef<number | null>(null);
   const [isAtBottom, setAtBottom] = useState(true);
   const [isScrollToBottomButtonBlocked, setScrollToBottomButtonBlocked] =
     useState(false);
@@ -30,15 +41,16 @@ const LogMessageList = ({ items }) => {
 
   const scrollToBottom = useCallback(() => {
     if (listRef.current) {
-      listRef.current.scrollToIndex({
+      const scrollTarget: FlatIndexLocationWithAlign = {
         index: items.length,
-        behaviour: 'smooth',
-      });
+        behavior: 'smooth',
+      };
+      listRef.current.scrollToIndex(scrollTarget);
     }
   }, [listRef, items]);
 
   useEffect(() => {
-    if (items && items.length > 0) {
+    if (items.length > 0) {
       const lastItemId = items[items.length - 1].id;
       if (lastItemId !== previousLastItemId.current) {
         if (isAtBottom) {
