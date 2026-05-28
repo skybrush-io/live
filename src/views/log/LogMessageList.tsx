@@ -3,8 +3,8 @@ import Fab from '@mui/material/Fab';
 import PropTypes from 'prop-types';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
-  FlatIndexLocationWithAlign,
   Virtuoso,
+  type FlatIndexLocationWithAlign,
   type VirtuosoHandle,
 } from 'react-virtuoso';
 
