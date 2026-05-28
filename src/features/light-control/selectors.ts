@@ -1,6 +1,3 @@
-/**
- * Returns whether the light control panel is currently activated.
- */
 import type { AppSelector } from '~/store/reducers';
 
 /**
