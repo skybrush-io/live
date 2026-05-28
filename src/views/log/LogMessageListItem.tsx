@@ -1,21 +1,21 @@
 import format from 'date-fns/format';
-import PropTypes from 'prop-types';
 import React from 'react';
 
 import { Status, makeStyles } from '@skybrush/app-theme-mui';
 import { StatusLight } from '@skybrush/mui-components';
 
+import type { LogItem } from '~/features/log/types';
 import { LogLevel } from '~/utils/logging';
 
-const statusMap = {
-  [LogLevel.DEBUG]: Status.DEBUG,
-  [LogLevel.INFO]: null,
+const statusMap: Record<number, Status | undefined> = {
+  [LogLevel.DEBUG]: Status.INFO,
+  [LogLevel.INFO]: undefined,
   [LogLevel.WARNING]: Status.WARNING,
   [LogLevel.ERROR]: Status.ERROR,
-  [LogLevel.FATAL]: Status.FATAL,
+  [LogLevel.FATAL]: Status.CRITICAL,
 };
 
-function statusForLogLevel(level) {
+function statusForLogLevel(level: number) {
   if (level <= LogLevel.DEBUG) {
     return statusMap[LogLevel.DEBUG];
   }
@@ -39,7 +39,7 @@ function statusForLogLevel(level) {
   return Status.OFF;
 }
 
-function statusForLogItem(item) {
+function statusForLogItem(item: LogItem) {
   return item.semantics === 'success'
     ? Status.SUCCESS
     : statusForLogLevel(item.level);
@@ -71,7 +71,7 @@ const useStyles = makeStyles((theme) => ({
   },
 
   module: {
-    color: theme.palette.primary[500],
+    color: theme.palette.primary.main,
     overflow: 'hidden',
     paddingRight: theme.spacing(1),
     textOverflow: 'ellipsis',
@@ -87,7 +87,7 @@ const useStyles = makeStyles((theme) => ({
   },
 
   moduleExtended: {
-    color: theme.palette.primary[500],
+    color: theme.palette.primary.main,
     overflow: 'hidden',
     paddingRight: theme.spacing(1),
     textOverflow: 'ellipsis',
@@ -101,7 +101,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const LogMessageListItem = React.memo(({ item }) => {
+type LogMessageListItemProps = {
+  item: LogItem;
+};
+
+const LogMessageListItemBase = ({ item }: LogMessageListItemProps) => {
   const status = statusForLogItem(item);
   const classes = useStyles();
 
@@ -130,16 +134,8 @@ const LogMessageListItem = React.memo(({ item }) => {
       <div className={classes.message}>{item.message}</div>
     </div>
   );
-});
-
-LogMessageListItem.propTypes = {
-  item: PropTypes.shape({
-    level: PropTypes.number,
-    message: PropTypes.string,
-    module: PropTypes.string,
-    timestamp: PropTypes.number,
-    auxiliaryId: PropTypes.string,
-  }),
 };
+
+const LogMessageListItem = React.memo(LogMessageListItemBase);
 
 export default LogMessageListItem;

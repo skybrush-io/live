@@ -2,15 +2,21 @@
  * @file Component for displaying logged messages.
  */
 
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { useEffectOnce } from 'react-use';
 
 import { updateLogPanelVisibility } from '~/features/log/slice';
+import type { LogItem } from '~/features/log/types';
+import type { RootState } from '~/store/reducers';
 
 import LogMessageList from './LogMessageList';
 
-const LogPanel = ({ items, updateLogPanelVisibility }) => {
+type LogPanelProps = {
+  items: LogItem[];
+  updateLogPanelVisibility: (visible: boolean) => void;
+};
+
+const LogPanel = ({ items, updateLogPanelVisibility }: LogPanelProps) => {
   useEffectOnce(() => {
     updateLogPanelVisibility(true);
     return () => updateLogPanelVisibility(false);
@@ -19,14 +25,14 @@ const LogPanel = ({ items, updateLogPanelVisibility }) => {
   return <LogMessageList items={items} />;
 };
 
-LogPanel.propTypes = {
-  items: PropTypes.array,
-  updateLogPanelVisibility: PropTypes.func.isRequired,
-};
-
-export default connect(
+export default connect<
+  { items: LogItem[] },
+  { updateLogPanelVisibility: typeof updateLogPanelVisibility },
+  unknown,
+  RootState
+>(
   // mapStateToProps
-  (state) => ({
+  (state: RootState) => ({
     items: state.log.items,
   }),
   // mapDispatchToProps
