@@ -12,7 +12,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import { closeErrorDialog } from '~/features/error-handling/actions';
+import { closeErrorDialog } from '~/features/error-handling/slice';
 import type { RootState } from '~/store/reducers';
 
 type GlobalErrorDialogProps = {

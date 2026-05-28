@@ -6,7 +6,7 @@ import isNil from 'lodash-es/isNil';
 import pickBy from 'lodash-es/pickBy';
 import shuffle from 'lodash-es/shuffle';
 
-import { showErrorMessage } from '~/features/error-handling/actions';
+import { showErrorMessage } from '~/features/error-handling/slice';
 import {
   addFeatureIfMissing,
   selectSingleFeatureOfTypeUnlessAmbiguous,
