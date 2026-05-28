@@ -1,9 +1,7 @@
-import type { AppSelector, RootState } from '~/store/reducers';
+import type { AppSelector } from '~/store/reducers';
 
-export const detachedPanels: AppSelector<string[]> = (state: RootState) =>
+export const detachedPanels: AppSelector<string[]> = (state) =>
   state.detachablePanels.detachedPanels;
 
-export const isDetached: AppSelector<boolean, [string]> = (
-  state: RootState,
-  name
-) => state.detachablePanels.detachedPanels.includes(name);
+export const isDetached: AppSelector<boolean, [string]> = (state, name) =>
+  state.detachablePanels.detachedPanels.includes(name);
