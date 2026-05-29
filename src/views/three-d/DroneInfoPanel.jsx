@@ -16,6 +16,11 @@ const FORMATION_OUTPUT_OPTIONS = [
   { value: 'skyc', label: 'skyc (명시)' },
 ];
 
+const formationPositionDraftKey = (phaseId, droneId, axis) =>
+  `${phaseId}:${droneId}:${axis}`;
+
+const isPartialDecimalInput = (raw) => raw === '' || /^-?\d*\.?\d*$/.test(raw);
+
 export default function DroneInfoPanel({
   open,
   drone,
@@ -45,6 +50,7 @@ export default function DroneInfoPanel({
     { x: '', y: '', z: '', durationMs: 0, holdMs: 0, highlighted: false },
   ]);
   const [initialFields, setInitialFields] = useState({ ix: '', iy: '', iz: '' });
+  const [formationPositionDrafts, setFormationPositionDrafts] = useState({});
 
   // 드론 바뀔 때 경로 초기화 / JSON에서 path가 오면 반영
   useEffect(() => {
@@ -106,6 +112,10 @@ export default function DroneInfoPanel({
     }
     setInitialFields({ ix: '0', iy: '1', iz: '1' });
   }, [drone?.id, initialPositionSyncKey]);
+
+  useEffect(() => {
+    setFormationPositionDrafts({});
+  }, [drone?.id]);
 
   const isPathPointRowValid = (p) => {
     if (
@@ -861,35 +871,70 @@ export default function DroneInfoPanel({
                       { label: 'X', key: 'x', value: px },
                       { label: 'Y', key: 'y', value: py },
                       { label: 'Z', key: 'z', value: pz },
-                    ].map(({ label, key, value }) => (
-                      <input
-                        key={label}
-                        value={value === undefined || value === null ? '' : value}
-                        placeholder={label}
-                        inputMode="decimal"
-                        disabled={!droneId}
-                        onChange={(e) => {
-                          if (!droneId) return;
-                          const raw = e.target.value;
-                          if (raw === '' && !hasCaptured) return;
+                    ].map(({ label, key, value }) => {
+                      const draftKey = formationPositionDraftKey(phase.id, droneId, key);
+                      const displayValue =
+                        formationPositionDrafts[draftKey] ??
+                        (value === undefined || value === null ? '' : String(value));
 
-                          const next = {
-                            x: Number(captured?.x ?? 0),
-                            y: Number(captured?.y ?? 0),
-                            z: Number(captured?.z ?? 0),
-                          };
-                          if (raw === '') {
-                            next[key] = 0;
-                          } else {
+                      const commitFormationAxisValue = (raw) => {
+                        if (raw === '' && !hasCaptured) return;
+
+                        const next = {
+                          x: Number(captured?.x ?? 0),
+                          y: Number(captured?.y ?? 0),
+                          z: Number(captured?.z ?? 0),
+                        };
+                        if (raw === '') {
+                          next[key] = 0;
+                        } else {
+                          const parsed = Number(raw);
+                          if (!Number.isFinite(parsed)) return;
+                          next[key] = parsed;
+                        }
+                        onUpdateFormationDronePosition(phase.id, droneId, next);
+                      };
+
+                      return (
+                        <input
+                          key={label}
+                          value={displayValue}
+                          placeholder={label}
+                          inputMode="decimal"
+                          disabled={!droneId}
+                          onChange={(e) => {
+                            if (!droneId) return;
+                            const raw = e.target.value;
+                            if (!isPartialDecimalInput(raw)) return;
+
+                            setFormationPositionDrafts((prev) => ({
+                              ...prev,
+                              [draftKey]: raw,
+                            }));
+
+                            if (raw === '' || raw === '-' || raw.endsWith('.')) return;
+
                             const parsed = Number(raw);
                             if (!Number.isFinite(parsed)) return;
-                            next[key] = parsed;
-                          }
-                          onUpdateFormationDronePosition(phase.id, droneId, next);
-                        }}
-                        style={smallInputStyle}
-                      />
-                    ))}
+
+                            commitFormationAxisValue(raw);
+                          }}
+                          onBlur={() => {
+                            const raw = formationPositionDrafts[draftKey];
+                            if (raw === undefined) return;
+
+                            setFormationPositionDrafts((prev) => {
+                              const next = { ...prev };
+                              delete next[draftKey];
+                              return next;
+                            });
+
+                            commitFormationAxisValue(raw);
+                          }}
+                          style={smallInputStyle}
+                        />
+                      );
+                    })}
                   </div>
                   <div style={{ display: 'flex', gap: 5, marginTop: 6 }}>
                     <button
