@@ -166,6 +166,9 @@ export type SettingsState = {
     /**
      * Maximum allowed difference between the configured ground AMSL reference
      * and the average AMSL of grounded UAVs, in millimeters.
+     *
+     * Currently used for outdoor shows only. For indoor shows we would probably need
+     * a separate setting anyway, similarly to the minimum required takeoff spacing.
      */
     altitudeWarningThreshold: number;
 
