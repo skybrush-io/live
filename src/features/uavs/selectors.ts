@@ -17,9 +17,9 @@ import {
 } from '~/features/mission/selectors';
 import { selectionForSubset } from '~/features/selection/selectors';
 import {
+  getAltitudeWarningThresholdInMeters,
   getDesiredPlacementAccuracyInMeters,
   getDesiredTakeoffHeadingAccuracy,
-  getGroundAMSLWarningThresholdInMeters,
 } from '~/features/settings/selectors';
 import { AltitudeReference } from '~/features/show/constants';
 import {
@@ -606,7 +606,7 @@ const isUAVKnownToBeOnGround = (uav: StoredUAV): boolean => {
 export const selectGroundAMSLWarning = createSelector(
   isShowOutdoor,
   getOutdoorShowAltitudeReference,
-  getGroundAMSLWarningThresholdInMeters,
+  getAltitudeWarningThresholdInMeters,
   getActiveUAVIds,
   getUAVIdToStateMapping,
   (

@@ -991,6 +991,7 @@
       "showTrajectoriesOfSelection": "Show trajectories of selected UAVs"
     },
     "uavs": {
+      "altitudeWarningThreshold": "Ground AMSL warning threshold",
       "batteryDisplayStyle": "Battery display style",
       "cellCount": "Cell count",
       "criticalTreshold": "Critical threshold",
@@ -1000,7 +1001,6 @@
       "forget": "Forget unseen drones after",
       "fullCharge": "Full charge",
       "gone": "Mark drones as gone after",
-      "groundAMSLWarningThreshold": "Ground AMSL warning threshold",
       "lowTreshold": "Low threshold",
       "maxUploadConcurrency": "Maximum number of concurrent uploads",
       "minIndoorTakeoffSpacing": "Minimum takeoff spacing (indoor)",

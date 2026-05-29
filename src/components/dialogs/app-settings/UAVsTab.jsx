@@ -23,9 +23,9 @@ import {
 } from '~/components/forms';
 import { updateUAVVoltageThreshold } from '~/features/settings/actions';
 import {
+  getAltitudeWarningThresholdInMeters,
   getDesiredPlacementAccuracyInMeters,
   getDesiredTakeoffHeadingAccuracy,
-  getGroundAMSLWarningThresholdInMeters,
   getMaximumConcurrentUploadTaskCount,
   getMinimumIndoorTakeoffSpacing,
   getMinimumOutdoorTakeoffSpacing,
@@ -72,7 +72,7 @@ const UAVsTabPresentation = ({
   forgetThreshold,
   fullChargeVoltage,
   goneThreshold,
-  groundAMSLWarningThreshold,
+  altitudeWarningThreshold,
   lowVoltageThreshold,
   maxUploadConcurrency,
   minIndoorTakeoffSpacing,
@@ -313,12 +313,12 @@ const UAVsTabPresentation = ({
         <Box sx={{ display: 'flex', flexDirection: 'row', mb: 1 }}>
           <SimpleDistanceField
             fullWidth
-            name='groundAMSLWarningThreshold'
-            label={t('settings.uavs.groundAMSLWarningThreshold')}
+            name='altitudeWarningThreshold'
+            label={t('settings.uavs.altitudeWarningThreshold')}
             min={0.1}
             max={100}
             step={0.1}
-            value={groundAMSLWarningThreshold}
+            value={altitudeWarningThreshold}
             onChange={onDistanceFieldUpdated}
           />
         </Box>
@@ -338,7 +338,7 @@ UAVsTabPresentation.propTypes = {
   forgetThreshold: PropTypes.number,
   fullChargeVoltage: PropTypes.number,
   goneThreshold: PropTypes.number,
-  groundAMSLWarningThreshold: PropTypes.number,
+  altitudeWarningThreshold: PropTypes.number,
   lowVoltageThreshold: PropTypes.number,
   maxUploadConcurrency: PropTypes.number,
   minIndoorTakeoffSpacing: PropTypes.number,
@@ -362,7 +362,7 @@ export default connect(
   // mapStateToProps
   (state) => ({
     ...state.settings.uavs,
-    groundAMSLWarningThreshold: getGroundAMSLWarningThresholdInMeters(state),
+    altitudeWarningThreshold: getAltitudeWarningThresholdInMeters(state),
     placementAccuracy: getDesiredPlacementAccuracyInMeters(state),
     takeoffHeadingAccuracy: getDesiredTakeoffHeadingAccuracy(state),
     maxUploadConcurrency: getMaximumConcurrentUploadTaskCount(state),

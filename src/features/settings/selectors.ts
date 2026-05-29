@@ -81,9 +81,8 @@ export const getDesiredPlacementAccuracyInMeters = (state: RootState): number =>
  * Returns the ground AMSL warning threshold in meters. The state stores it in
  * millimeters to stay consistent with the other distance settings.
  */
-export const getGroundAMSLWarningThresholdInMeters = (
-  state: RootState
-): number => (state.settings.uavs.groundAMSLWarningThreshold ?? 3000) / 1000;
+export const getAltitudeWarningThresholdInMeters = (state: RootState): number =>
+  (state.settings.uavs.altitudeWarningThreshold ?? 3000) / 1000;
 
 /**
  * Returns the desired accuracy of UAV headings that the user wants to use to

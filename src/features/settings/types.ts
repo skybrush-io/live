@@ -167,7 +167,7 @@ export type SettingsState = {
      * Maximum allowed difference between the configured ground AMSL reference
      * and the average AMSL of grounded UAVs, in millimeters.
      */
-    groundAMSLWarningThreshold: number;
+    altitudeWarningThreshold: number;
 
     /**
      * Desired heading accuracy in preflight checks, in degrees,
