@@ -552,7 +552,7 @@
     "fileToShowTooltip": "Requires show file with embedded location data",
     "fitCoordinateSysToCurrentDrone": "Fit coordinate system to current drone positions",
     "mapToShow": "Map ➜ Show",
-    "preTakeoffAltitudeWarning": "The configured AMSL reference is {{configuredAMSL}} m, but the average AMSL of {{sampleCount}} grounded drones is {{averageGroundAMSL}} m. Difference: {{difference}} m (warning threshold: {{threshold}} m).",
+    "preTakeoffAltitudeWarning": "The configured AMSL reference is {{configuredAMSL}}, but the average AMSL of {{sampleCount}} grounded drones is {{averageGroundAMSL}}. Difference: {{difference}} < {{threshold}}.",
     "setToAverageAMSL": "Set to average AMSL of active drones",
     "showCoordinateSystemAppliedToMap": "Show coordinate system applied to map.",
     "showCoordinateSystemUpdatedFromFile": "Show coordinate system updated from file.",

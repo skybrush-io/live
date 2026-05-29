@@ -222,12 +222,15 @@ const OutdoorEnvironmentEditor = ({
       {preTakeoffAltitudeWarning && (
         <Alert severity='warning' sx={{ mb: 2 }}>
           {t('outdoorEnvironmentEditor.preTakeoffAltitudeWarning', {
-            averageGroundAMSL:
-              preTakeoffAltitudeWarning.averageGroundAMSL.toFixed(1),
-            amslReference: preTakeoffAltitudeWarning.amslReference.toFixed(1),
-            difference: preTakeoffAltitudeWarning.difference.toFixed(1),
+            averageGroundAMSL: formatAltitude(
+              preTakeoffAltitudeWarning.averageGroundAMSL
+            ),
+            amslReference: formatAltitude(
+              preTakeoffAltitudeWarning.amslReference
+            ),
+            difference: formatDistance(preTakeoffAltitudeWarning.difference),
             sampleCount: preTakeoffAltitudeWarning.sampleCount,
-            threshold: preTakeoffAltitudeWarning.threshold.toFixed(1),
+            threshold: formatDistance(preTakeoffAltitudeWarning.threshold),
           })}
         </Alert>
       )}

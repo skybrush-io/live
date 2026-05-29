@@ -231,6 +231,12 @@ export const formatDistance = (number: number, digits = 2): string =>
   formatNumberAndUnit(number, DISTANCE_UNITS, digits);
 
 /**
+ * Helper function that formats an altitude expressed in meters in a nice
+ * human-readable manner.
+ */
+export const formatAltitude = formatDistance;
+
+/**
  * Helper function that formats an area expressed in square meters in a nice
  * human-readable manner.
  */
