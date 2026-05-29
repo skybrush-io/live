@@ -58,10 +58,12 @@ type Stage =
   | 'setupStartTime'
   | 'authorization';
 
+type StageRequirement = Stage | AppSelector<boolean>;
+
 type StageSpecification = {
   evaluate: (state: RootState) => Status | boolean;
-  requires?: Array<Stage | AppSelector<boolean>>;
-  suggests?: Array<Stage | AppSelector<boolean>>;
+  requires?: StageRequirement[];
+  suggests?: StageRequirement[];
 };
 
 /**
@@ -235,7 +237,7 @@ const isDone = (status: Status | undefined): boolean =>
  */
 const allDone = (
   result: Partial<SetupStageStatusReport>,
-  deps: Array<Stage | AppSelector<boolean>> | undefined,
+  deps: StageRequirement[] | undefined,
   state: RootState
 ): boolean =>
   (deps ?? []).every((dep) =>
