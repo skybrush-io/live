@@ -196,6 +196,16 @@ export const formatNumberAndUnit = (
   digits = 0
 ): string => {
   if (Array.isArray(unit) && unit.length > 0) {
+    // If the number is zero, and we have a unit with a multiplier of 1, pick that unit.
+    // This prevents us from displaying "0 cm" instead of "0 m" for zero distances, for
+    // example.
+    if (number === 0) {
+      const exactUnit = unit.find(({ multiplier }) => multiplier === 1);
+      if (exactUnit) {
+        return joinUnit('0', exactUnit.unit);
+      }
+    }
+
     // Choose the largest possible unit that has a breakpoint below the number,
     // or the smallest unit if none of them satisfy this predicate
     const {

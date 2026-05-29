@@ -52,6 +52,7 @@ import {
 import i18n from '~/i18n';
 import AutoFix from '~/icons/AutoFix';
 import { scrollToMapLocation } from '~/signals';
+import { formatAltitude, formatDistance } from '~/utils/formatting';
 import { normalizeAngle, toLonLatFromScaledJSON } from '~/utils/geography';
 
 import { TakeoffHeadingSpecEditor } from './TakeoffHeadingSpecEditor';
