@@ -53,6 +53,10 @@ import { EMPTY_ARRAY } from '~/utils/redux';
 import { createDeepResultSelector } from '~/utils/selectors';
 import type { StoredUAV, UAVDetailsPanelTab } from './types';
 
+/**
+ * Constant that defines the maximum reported altitude above ground level (AGL) when we
+ * still consider a drone to be on the ground.
+ */
 const GROUND_ALTITUDE_TOLERANCE_IN_METERS = 0.3;
 
 export type GroundAMSLWarning = {
@@ -571,7 +575,18 @@ export const getActiveAndAwakeUAVIds = createSelector(
     })
 );
 
-const isUAVKnownToBeOnGround = (uav: StoredUAV): boolean => {
+/**
+ * Returns whether a UAV is known to stand safely on the ground based on its error codes
+ * and altitude readings.
+ *
+ * Note the wording: the function will return false when we know that the drone is _not_
+ * on the ground and also when we _cannot infer_ that the drone is safely on the ground.
+ * In other words, the function returns true only when we have a strong reason to
+ * believe that the drone is on the ground and there are no severe errors that would
+ * make us doubt the sensor readings.
+ */
+const isUAVKnownToBeSafelyOnGround = (uav: StoredUAV): boolean => {
+  // Check severe error codes first.
   if (uav.errors.some(isErrorCodeOrMoreSevere)) {
     return false;
   }
@@ -584,7 +599,7 @@ const isUAVKnownToBeOnGround = (uav: StoredUAV): boolean => {
     return true;
   }
 
-  // Do not let the AHL fallback classify drones as grounded while they are in
+  // Do not let the AGL fallback classify drones as grounded while they are in
   // a known flight-related state.
   if (
     uav.errors.includes(UAVErrorCode.TAKEOFF) ||
@@ -594,12 +609,25 @@ const isUAVKnownToBeOnGround = (uav: StoredUAV): boolean => {
     return false;
   }
 
-  // Fall back to AHL only when the UAV does not provide a more explicit state.
-  const { ahl } = uav.position ?? {};
+  // Maybe the drone has a local coordinate system where Z is assumed to be the ground
+  // level?
+  const z = uav.localPosition?.[2];
+  if (
+    typeof z === 'number' &&
+    Number.isFinite(z) &&
+    Math.abs(z) < GROUND_ALTITUDE_TOLERANCE_IN_METERS
+  ) {
+    return true;
+  }
+
+  // Fall back to AGL only when the UAV does not provide a more explicit state.
+  // Note that we do not use AHL because that is altitude above _home_ level, but the
+  // home altitude can be anywhere.
+  const agl = uav.position?.agl;
   return (
-    typeof ahl === 'number' &&
-    Number.isFinite(ahl) &&
-    Math.abs(ahl) < GROUND_ALTITUDE_TOLERANCE_IN_METERS
+    typeof agl === 'number' &&
+    Number.isFinite(agl) &&
+    Math.abs(agl) < GROUND_ALTITUDE_TOLERANCE_IN_METERS
   );
 };
 
@@ -635,7 +663,7 @@ export const selectGroundAMSLWarning = createSelector(
     const altitudes = activeUAVIds
       .map((uavId) => uavsById[uavId])
       .filter((uav): uav is StoredUAV => Boolean(uav))
-      .filter(isUAVKnownToBeOnGround)
+      .filter(isUAVKnownToBeSafelyOnGround)
       .map((uav) => uav.position?.amsl)
       .filter((amsl): amsl is number => typeof amsl === 'number')
       .filter(Number.isFinite);
