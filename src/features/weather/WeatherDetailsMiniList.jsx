@@ -2,7 +2,7 @@ import format from 'date-fns/format';
 import isAfter from 'date-fns/isAfter';
 import isNil from 'lodash-es/isNil';
 import PropTypes from 'prop-types';
-import { withTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import TimeAgo from 'react-timeago';
 
@@ -61,10 +61,10 @@ const WeatherDetailsMiniList = ({
   sunriseEnd,
   sunset,
   sunsetStart,
-  t,
   timezone,
   utcOffset,
 }) => {
+  const { t } = useTranslation();
   const items = [];
   let needSeparator;
 
@@ -213,7 +213,6 @@ WeatherDetailsMiniList.propTypes = {
   sunriseEnd: PropTypes.instanceOf(Date),
   sunsetStart: PropTypes.instanceOf(Date),
   sunset: PropTypes.instanceOf(Date),
-  t: PropTypes.func,
   timezone: PropTypes.string,
   utcOffset: PropTypes.number,
 };
@@ -230,4 +229,4 @@ export default connect(
   }),
   // mapDispatchToProps
   {}
-)(withTranslation()(WeatherDetailsMiniList));
+)(WeatherDetailsMiniList);

@@ -47,14 +47,14 @@ const { actions, reducer } = createSlice({
       addItemToBack(state, { id, clockId, preset });
     },
 
-    removeClockDisplay(state, action: PayloadAction<LCDClock['id']>) {
+    removeClockDisplay(state, action: PayloadAction<string>) {
       deleteItemById(state, action.payload);
     },
 
     setClockIdForClockDisplay(
       state,
       action: PayloadAction<{
-        id: LCDClock['id'];
+        id: string;
         clockId: LCDClock['clockId'];
       }>
     ) {
@@ -68,7 +68,7 @@ const { actions, reducer } = createSlice({
 
     setPresetIndexForClockDisplay(
       state,
-      action: PayloadAction<{ id: LCDClock['id']; preset: LCDClock['preset'] }>
+      action: PayloadAction<{ id: string; preset: LCDClock['preset'] }>
     ) {
       const { id, preset } = action.payload;
       const clock = state.byId[id];

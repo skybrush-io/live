@@ -1,13 +1,11 @@
-import Sum from '@mui/icons-material/Functions';
 import Box, { type BoxProps } from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import { createSelector } from '@reduxjs/toolkit';
 import clsx from 'clsx';
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 import { connect } from 'react-redux';
 
 import { makeStyles } from '@skybrush/app-theme-mui';
-import { LazyTooltip, StatusLight } from '@skybrush/mui-components';
+import { LazyTooltip } from '@skybrush/mui-components';
 
 import { Status } from '~/components/semantics';
 import { selectAllUAVs } from '~/features/selection/slice';
@@ -22,6 +20,8 @@ import { createShallowSelector } from '~/utils/selectors';
 import { Workbench } from '~/workbench';
 
 import UAVStatusMiniList from './UAVStatusMiniList';
+import UAVStatusSummaryLight from './UAVStatusSummaryLight';
+import UAVStatusSummaryTotal from './UAVStatusSummaryTotal';
 
 /* ************************************************************************ */
 
@@ -105,37 +105,6 @@ const useStyles = makeStyles((theme) => ({
     height: '100%',
     padding: theme.spacing(0, 1),
   },
-
-  counter: {
-    padding: theme.spacing(0, 0.5),
-    userSelect: 'none',
-    fontVariantNumeric: 'tabular-nums',
-  },
-
-  off: {
-    opacity: 0.5,
-  },
-
-  statusLight: {
-    display: 'flex',
-    alignItems: 'center',
-    flexDirection: 'row',
-  },
-
-  button: {
-    color: 'white',
-    display: 'flex',
-    flexDirection: 'row',
-    fontWeight: 'normal',
-    paddingLeft: 0,
-    paddingRight: 0,
-    minWidth: 48,
-    textShadow: '0 1px 2px rgba(0, 0, 0, 0.65)' /* copied from .wb-module */,
-
-    '&:hover': {
-      boxShadow: theme.shadows[2],
-    },
-  },
 }));
 
 const statusOrder: Array<Status | null> = [
@@ -172,42 +141,21 @@ const UAVStatusSummary = ({
         {...rest}
       >
         <div className={classes.inner}>
-          {statusOrder.map((statusCode, index) => {
-            const content = (
-              <React.Fragment>
-                {statusCode !== null ? (
-                  <StatusLight
-                    inline
-                    status={counts[index] > 0 ? statusCode : Status.OFF}
-                  />
-                ) : (
-                  <Sum />
-                )}
-                <div
-                  className={clsx(
-                    classes.counter,
-                    counts[index] <= 0 && classes.off
-                  )}
-                >
-                  {counts[index]}
-                </div>
-              </React.Fragment>
-            );
-
-            return statusCode === null ? (
-              <Button
+          {statusOrder.map((statusCode, index) =>
+            statusCode === null ? (
+              <UAVStatusSummaryTotal
                 key='total'
-                className={classes.button}
-                onClick={() => selectAllUAVs()}
-              >
-                {content}
-              </Button>
+                count={counts[index]}
+                onSelectAll={selectAllUAVs}
+              />
             ) : (
-              <div key={statusCode.toString()} className={classes.statusLight}>
-                {content}
-              </div>
-            );
-          })}
+              <UAVStatusSummaryLight
+                key={statusCode.toString()}
+                count={counts[index]}
+                statusCode={statusCode}
+              />
+            )
+          )}
         </div>
       </Box>
     </LazyTooltip>

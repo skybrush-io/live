@@ -14,14 +14,15 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import ListItemText from '@mui/material/ListItemText';
 import { green, grey, red, yellow } from '@mui/material/colors';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import TimeAgo from 'react-timeago';
 
 import { listOf } from '~/components/helpers/lists';
+import type { ConnectionProperties } from '~/features/connections/types';
 import { showServerSettingsDialog } from '~/features/servers/actions';
 import { ConnectionState } from '~/model/enums';
 import { getConnectionsInOrder } from '~/selectors/ordered';
+import type { AppDispatch, RootState } from '~/store/reducers';
 
 /**
  * Icons for the different connection states in the connection list.
@@ -72,11 +73,22 @@ const stateNames = {
 /**
  * Presentation component for a single entry in the connection list.
  *
- * @param  {Object} props  the properties of the component
- * @return {Object} the React presentation component
+ * @param props the properties of the component
+ * @return the React presentation component
  */
-const ConnectionListEntry = (props) => {
-  const { action, name, state, stateChangedAt } = props;
+type ConnectionListEntryProps = {
+  action?: () => void;
+  name: string;
+  state: ConnectionState;
+  stateChangedAt?: number;
+};
+
+const ConnectionListEntry = ({
+  action,
+  name,
+  state,
+  stateChangedAt,
+}: ConnectionListEntryProps) => {
   const avatar = iconsByState[state] || avatarForUnknownState;
   const timeAgoComponent = stateChangedAt ? (
     <TimeAgo date={stateChangedAt} />
@@ -86,15 +98,15 @@ const ConnectionListEntry = (props) => {
       <ActionSettings />
     </IconButton>
   ) : null;
-  let secondaryText = stateNames[state] || 'Unknown state';
+  const secondaryTextBase = stateNames[state] || 'Unknown state';
 
-  if (timeAgoComponent) {
-    secondaryText = (
-      <span>
-        {secondaryText} {timeAgoComponent}
-      </span>
-    );
-  }
+  const secondaryText = timeAgoComponent ? (
+    <span>
+      {secondaryTextBase} {timeAgoComponent}
+    </span>
+  ) : (
+    secondaryTextBase
+  );
 
   return (
     <ListItem>
@@ -105,20 +117,13 @@ const ConnectionListEntry = (props) => {
   );
 };
 
-ConnectionListEntry.propTypes = {
-  name: PropTypes.string.isRequired,
-  state: PropTypes.string.isRequired,
-  stateChangedAt: PropTypes.number,
-  action: PropTypes.func,
-};
-
 /**
  * Presentation component for the entire connection list.
  */
 export const ConnectionListPresentation = listOf(
-  (connection) => {
-    return <ConnectionListEntry key={connection.id} {...connection} />;
-  },
+  (connection: ConnectionProperties) => (
+    <ConnectionListEntry key={connection.id} {...connection} />
+  ),
   {
     backgroundHint: 'No connections',
     dataProvider: 'connections',
@@ -128,11 +133,11 @@ export const ConnectionListPresentation = listOf(
 
 const ConnectionList = connect(
   // mapStateToProps
-  (state) => ({
+  (state: RootState) => ({
     connections: getConnectionsInOrder(state),
   }),
   // mapDispatchToProps
-  (dispatch) => ({
+  (dispatch: AppDispatch) => ({
     onShowSettings() {
       dispatch(showServerSettingsDialog());
     },

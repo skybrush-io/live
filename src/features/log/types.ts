@@ -5,4 +5,5 @@ export type LogItem = {
   module: string;
   level: number;
   auxiliaryId: string;
+  semantics?: string;
 };

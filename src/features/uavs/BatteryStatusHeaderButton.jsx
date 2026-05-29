@@ -1,7 +1,7 @@
 import Battery from '@mui/icons-material/BatteryChargingFull';
 import PropTypes from 'prop-types';
 import { useState } from 'react';
-import { withTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import { colorForStatus, Status } from '@skybrush/app-theme-mui';
@@ -30,7 +30,8 @@ const INITIAL_STATE = {
   min: null,
 };
 
-const BatteryStatusHeaderButton = ({ formatter, isConnected, t }) => {
+const BatteryStatusHeaderButton = ({ formatter, isConnected }) => {
+  const { t } = useTranslation();
   const [{ avg, min }, setSummary] = useState(INITIAL_STATE);
   const batteryStatus = avg
     ? formatter.getBatteryStatus(avg.voltage, avg.percentage)
@@ -76,7 +77,6 @@ const BatteryStatusHeaderButton = ({ formatter, isConnected, t }) => {
 BatteryStatusHeaderButton.propTypes = {
   formatter: PropTypes.instanceOf(BatteryFormatter).isRequired,
   isConnected: PropTypes.bool,
-  t: PropTypes.func,
 };
 
 export default connect(
@@ -87,4 +87,4 @@ export default connect(
   }),
   // mapDispatchToProps
   {}
-)(withTranslation()(BatteryStatusHeaderButton));
+)(BatteryStatusHeaderButton);

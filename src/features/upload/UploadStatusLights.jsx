@@ -3,7 +3,7 @@ import identity from 'lodash-es/identity';
 import isNil from 'lodash-es/isNil';
 import PropTypes from 'prop-types';
 import React, { useMemo } from 'react';
-import { withTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import { makeStyles } from '@skybrush/app-theme-mui';
@@ -76,8 +76,8 @@ const UploadStatusLights = ({
   ids,
   itemFormatter = identity,
   onHeaderClick,
-  t,
 }) => {
+  const { t } = useTranslation();
   const classes = useStyles();
   const rows = useMemo(
     () =>
@@ -128,7 +128,6 @@ UploadStatusLights.propTypes = {
   idFormatter: PropTypes.func,
   ids: PropTypes.arrayOf(PropTypes.string),
   onHeaderClick: PropTypes.func,
-  t: PropTypes.func,
 };
 
 export default connect(
@@ -147,4 +146,4 @@ export default connect(
   {
     onHeaderClick: toggleUavsInWaitingQueue,
   }
-)(withTranslation()(UploadStatusLights));
+)(UploadStatusLights);

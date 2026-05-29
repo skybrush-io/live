@@ -202,7 +202,7 @@ export const getUAVAgingThresholds = createSelector(
 
 const DEFAULT_FILTER: UAVFilter[] = [];
 const DEFAULT_SORT: UAVSortKeyAndOrder = {
-  key: UAVSortKey.DEFAULT,
+  key: UAVSortKey.UAV_ID,
   reverse: false,
 };
 
@@ -229,18 +229,38 @@ export const getUAVListOrientation = (state: RootState): UAVListOrientation =>
     : UAVListOrientation.VERTICAL;
 
 /**
- * Returns the preferred sort order of the list showing the UAVs. This is the
- * _secondary_ sorting preference; the primary is whether to sort the UAVs by
- * UAV ID or mission ID first.
+ * Returns the preferred sort order of the list showing the UAVs.
  *
  * The returned value is an object with two keys: <code>key</code>, which is
  * a value from the UAVSortKey enum, and <code>reverse</code>, which is
  * true if the UAVs are to be sorted in reverse order.
+ *
+ * Legacy persisted state that stores <code>"default"</code> is transparently
+ * mapped to <code>UAVSortKey.UAV_ID</code>.
  */
-export function getUAVListSortPreference(state: RootState): UAVSortKeyAndOrder {
-  const result = state.settings.display?.uavListSortPreference;
-  return result || DEFAULT_SORT;
-}
+export const getUAVListSortPreference = createSelector(
+  (state: RootState) => state.settings.display?.uavListSortPreference,
+  (sortOrder: UAVSortKeyAndOrder | undefined) => {
+    if (!sortOrder) {
+      return DEFAULT_SORT;
+    }
+
+    const { key } = sortOrder;
+    if ((key as string) === 'default') {
+      return { ...sortOrder, key: UAVSortKey.UAV_ID };
+    }
+
+    return sortOrder;
+  }
+);
+
+/**
+ * Returns whether the UAV list is currently sorted by mission-specific IDs
+ * (sID). The result drives whether UI components that show drone identifiers
+ * display the sID form or the physical UAV ID.
+ */
+export const isSortingByMissionId = (state: RootState): boolean =>
+  getUAVListSortPreference(state).key === UAVSortKey.MISSION_ID;
 
 /**
  * Returns whether UAV operations dispatched from toolbars or buttons should
@@ -260,13 +280,6 @@ export function getUAVOperationConfirmationStyle(
  */
 export const isShowingEmptyMissionSlots = (state: RootState): boolean =>
   !state.settings.display?.hideEmptyMissionSlots;
-
-/**
- * Returns whether we are currently showing mission IDs on the screen
- * where possible.
- */
-export const isShowingMissionIds = (state: RootState): boolean =>
-  state.settings.display?.showMissionIds ?? false;
 
 /**
  * Returns whether the user is allowed to see experimental features that are

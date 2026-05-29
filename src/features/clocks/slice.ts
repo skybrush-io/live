@@ -32,7 +32,7 @@ const { actions, reducer } = createSlice({
 
     setClockStateMultiple(
       state,
-      { payload }: PayloadAction<Record<Clock['id'], Omit<Clock, 'id'>>>
+      { payload }: PayloadAction<Record<string, Omit<Clock, 'id'>>>
     ) {
       for (const [id, clock] of Object.entries(payload)) {
         updateStateOfClock(state, id, clock);

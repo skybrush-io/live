@@ -1,18 +1,25 @@
 import { createSelector } from '@reduxjs/toolkit';
 
-import { getPreferredUpdateIntervalOfClock } from './utils';
+import type { RootState } from '~/store/reducers';
 import { selectOrdered } from '~/utils/collections';
+
+import type { Clock, ClockWithUpdateInterval } from './types';
+import { getPreferredUpdateIntervalOfClock } from './utils';
 
 /**
  * Returns a single clock object by its ID.
  */
-export const getClockById = (state, id) => state.clocks.byId[id];
+export const getClockById = (state: RootState, id: string) =>
+  state.clocks.byId[id];
 
 /**
  * Returns a single clock object by its ID, augmented with its preferred
  * update interval.
  */
-export const getClockAndUpdateIntervalById = (state, id) => {
+export const getClockAndUpdateIntervalById = (
+  state: RootState,
+  id: string
+): ClockWithUpdateInterval | undefined => {
   const clock = state.clocks.byId[id];
   return clock
     ? {
@@ -28,8 +35,8 @@ export const getClockAndUpdateIntervalById = (state, id) => {
  * appear on the UI.
  */
 export const getClocksInOrder = createSelector(
-  (state) => state.clocks,
-  selectOrdered
+  (state: RootState) => state.clocks,
+  selectOrdered<Clock>
 );
 
 /**
@@ -39,7 +46,7 @@ export const getClocksInOrder = createSelector(
  */
 export const getClocksWithUpdateIntervalsInOrder = createSelector(
   getClocksInOrder,
-  (clocks) =>
+  (clocks): ClockWithUpdateInterval[] =>
     clocks.map((clock) => ({
       ...clock,
       updateInterval: getPreferredUpdateIntervalOfClock(clock),

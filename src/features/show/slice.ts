@@ -12,7 +12,6 @@ import getUnixTime from 'date-fns/getUnixTime';
 import isNil from 'lodash-es/isNil';
 import set from 'lodash-es/set';
 
-import { type Clock } from '~/features/clocks/types';
 import type { Schedule } from '~/flockwave/schedule';
 import type UAV from '~/model/uav';
 import { type LonLat } from '~/utils/geography';
@@ -71,7 +70,7 @@ type ShowSliceState = {
      * ID of the reference clock that the start time is based on; `undefined`
      * means UTC time
      */
-    clock?: Clock['id'];
+    clock?: string;
 
     /**
      * The start time of the show, in UTC time, used if and only if clock is
@@ -498,7 +497,7 @@ const { actions, reducer } = createSlice({
     setStartTime(
       state,
       action: PayloadAction<
-        | { clock: Clock['id']; time: number | undefined | null }
+        | { clock: string; time: number | undefined | null }
         | { clock: undefined | null; time: Date | number | undefined | null }
       >
     ) {

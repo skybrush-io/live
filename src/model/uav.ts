@@ -3,21 +3,21 @@
  * an UAV.
  */
 
-import { type RSSI, type UAVStatusInfo } from '@skybrush/flockwave-spec';
+import type { UAVStatusInfo } from '@skybrush/flockwave-spec';
 import { Base64 } from 'js-base64';
 import isEqual from 'lodash-es/isEqual';
 import isNil from 'lodash-es/isNil';
 import memoizeOne from 'memoize-one';
 import { shallowEqual } from 'react-redux';
 
-import { type StoredUAV } from '~/features/uavs/types';
+import type { StoredUAV } from '~/features/uavs/types';
 import type UAVErrorCode from '~/flockwave/UAVErrorCode';
-import { type Latitude, type Longitude } from '~/utils/geography';
-import { type Coordinate3D } from '~/utils/math';
+import type { Latitude, Longitude } from '~/utils/geography';
+import type { Coordinate3D } from '~/utils/math';
 
 import { GPSFixType } from './enums';
-import { type GPSFix, type GPSPosition } from './geography';
-import { type VelocityNED, type VelocityXYZ } from './velocity';
+import type { GPSFix, GPSPosition } from './geography';
+import type { VelocityNED, VelocityXYZ } from './velocity';
 
 /**
  * Age constants for a UAV. Used in the Redux store to mark UAVs for which we
@@ -59,7 +59,7 @@ export default class UAV {
   localVelocity?: VelocityXYZ;
   mode?: string;
   velocity?: VelocityNED;
-  rssi: RSSI;
+  rssi: number[];
 
   // TODO: This should be unnecessary if we can ensure that no mutation happens
   //       to the output later on, thus the object spread can be avoided.

@@ -42,6 +42,7 @@ const RTKSetupDialog = ({ onClose, open }: Props) => {
                 : theme.palette.primary.contrastText
             }
             format='short'
+            reversed
           />
         </Box>
       }

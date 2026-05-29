@@ -13,7 +13,7 @@ import MenuItem from '@mui/material/MenuItem';
 import { Select, TextField } from 'mui-rff';
 import PropTypes from 'prop-types';
 import { Form } from 'react-final-form';
-import { withTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import {
@@ -65,107 +65,118 @@ const validator = (values) => ({
   returnToHomeSpeed: optional(positive)(values.returnToHomeSpeed),
 });
 
-const SafetySettingsFormPresentation = ({ initialValues, onSubmit, t }) => (
-  <Form initialValues={initialValues} validate={validator} onSubmit={onSubmit}>
-    {({ handleSubmit, values }) => (
-      <form id='safetySettings' onSubmit={handleSubmit}>
-        <Box
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '8px',
-            paddingTop: 12,
-          }}
-        >
-          <DialogContentText>
-            {t('safetySettingsTab.emptyValues')}
-          </DialogContentText>
-          <Box>
-            <NumericFieldWithUnit
-              name='criticalBatteryVoltage'
-              label={t('safetySettingsTab.criticalBatteryVoltageLabel')}
-              unit='V'
-            />
-            <FormHelperText>
-              {t('safetySettingsTab.criticalBatteryVoltageHelperText')}
-            </FormHelperText>
-          </Box>
-          <Box>
-            <Box sx={{ display: 'flex' }}>
-              {/* TODO: Use `Select` from `~/components/forms/fields.jsx` */}
-              <Select
-                name='lowBatteryThreshold.type'
-                label={t('safetySettingsTab.lowBatteryThresholdTypeLabel')}
-                variant='filled'
-              >
-                <MenuItem>
-                  {t('safetySettingsTab.lowBatteryThresholdType.noOverride')}
-                </MenuItem>
-                <MenuItem value={BatteryThresholdType.OFF}>
-                  {t('safetySettingsTab.lowBatteryThresholdType.disabled')}
-                </MenuItem>
-                <MenuItem value={BatteryThresholdType.VOLTAGE}>
-                  {t('safetySettingsTab.lowBatteryThresholdType.voltageBased')}
-                </MenuItem>
-                <MenuItem value={BatteryThresholdType.PERCENTAGE}>
-                  {t(
-                    'safetySettingsTab.lowBatteryThresholdType.percentageBased'
-                  )}
-                </MenuItem>
-              </Select>
-              {[
-                BatteryThresholdType.VOLTAGE,
-                BatteryThresholdType.PERCENTAGE,
-              ].includes(values.lowBatteryThreshold?.type) && (
-                <>
-                  <Box sx={{ p: 1 }} />
-                  <NumericFieldWithUnit
-                    name='lowBatteryThreshold.value'
-                    label={t('safetySettingsTab.lowBatteryThresholdValueLabel')}
-                    unit={
-                      unitForBatteryThresholdType[
-                        values.lowBatteryThreshold?.type
-                      ]
-                    }
-                    style={{ flexShrink: 1.25 }}
-                  />
-                </>
-              )}
+const SafetySettingsFormPresentation = ({ initialValues, onSubmit }) => {
+  const { t } = useTranslation();
+
+  return (
+    <Form
+      initialValues={initialValues}
+      validate={validator}
+      onSubmit={onSubmit}
+    >
+      {({ handleSubmit, values }) => (
+        <form id='safetySettings' onSubmit={handleSubmit}>
+          <Box
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '8px',
+              paddingTop: 12,
+            }}
+          >
+            <DialogContentText>
+              {t('safetySettingsTab.emptyValues')}
+            </DialogContentText>
+            <Box>
+              <NumericFieldWithUnit
+                name='criticalBatteryVoltage'
+                label={t('safetySettingsTab.criticalBatteryVoltageLabel')}
+                unit='V'
+              />
+              <FormHelperText>
+                {t('safetySettingsTab.criticalBatteryVoltageHelperText')}
+              </FormHelperText>
             </Box>
-            <FormHelperText>
-              {t('safetySettingsTab.lowBatteryThresholdHelperText')}
-            </FormHelperText>
+            <Box>
+              <Box sx={{ display: 'flex' }}>
+                {/* TODO: Use `Select` from `~/components/forms/fields.jsx` */}
+                <Select
+                  name='lowBatteryThreshold.type'
+                  label={t('safetySettingsTab.lowBatteryThresholdTypeLabel')}
+                  variant='filled'
+                >
+                  <MenuItem>
+                    {t('safetySettingsTab.lowBatteryThresholdType.noOverride')}
+                  </MenuItem>
+                  <MenuItem value={BatteryThresholdType.OFF}>
+                    {t('safetySettingsTab.lowBatteryThresholdType.disabled')}
+                  </MenuItem>
+                  <MenuItem value={BatteryThresholdType.VOLTAGE}>
+                    {t(
+                      'safetySettingsTab.lowBatteryThresholdType.voltageBased'
+                    )}
+                  </MenuItem>
+                  <MenuItem value={BatteryThresholdType.PERCENTAGE}>
+                    {t(
+                      'safetySettingsTab.lowBatteryThresholdType.percentageBased'
+                    )}
+                  </MenuItem>
+                </Select>
+                {[
+                  BatteryThresholdType.VOLTAGE,
+                  BatteryThresholdType.PERCENTAGE,
+                ].includes(values.lowBatteryThreshold?.type) && (
+                  <>
+                    <Box sx={{ p: 1 }} />
+                    <NumericFieldWithUnit
+                      name='lowBatteryThreshold.value'
+                      label={t(
+                        'safetySettingsTab.lowBatteryThresholdValueLabel'
+                      )}
+                      unit={
+                        unitForBatteryThresholdType[
+                          values.lowBatteryThreshold?.type
+                        ]
+                      }
+                      style={{ flexShrink: 1.25 }}
+                    />
+                  </>
+                )}
+              </Box>
+              <FormHelperText>
+                {t('safetySettingsTab.lowBatteryThresholdHelperText')}
+              </FormHelperText>
+            </Box>
+            <Box>
+              <NumericFieldWithUnit
+                name='returnToHomeAltitude'
+                label={t('safetySettingsTab.returnToHomeAltitudeLabel')}
+                unit='m'
+              />
+              <FormHelperText>
+                {t('safetySettingsTab.returnToHomeAltitudeHelperText')}
+              </FormHelperText>
+            </Box>
+            <Box>
+              <NumericFieldWithUnit
+                name='returnToHomeSpeed'
+                label={t('safetySettingsTab.returnToHomeSpeedLabel')}
+                unit='m/s'
+              />
+              <FormHelperText>
+                {t('safetySettingsTab.returnToHomeSpeedHelperText')}
+              </FormHelperText>
+            </Box>
           </Box>
-          <Box>
-            <NumericFieldWithUnit
-              name='returnToHomeAltitude'
-              label={t('safetySettingsTab.returnToHomeAltitudeLabel')}
-              unit='m'
-            />
-            <FormHelperText>
-              {t('safetySettingsTab.returnToHomeAltitudeHelperText')}
-            </FormHelperText>
-          </Box>
-          <Box>
-            <NumericFieldWithUnit
-              name='returnToHomeSpeed'
-              label={t('safetySettingsTab.returnToHomeSpeedLabel')}
-              unit='m/s'
-            />
-            <FormHelperText>
-              {t('safetySettingsTab.returnToHomeSpeedHelperText')}
-            </FormHelperText>
-          </Box>
-        </Box>
-      </form>
-    )}
-  </Form>
-);
+        </form>
+      )}
+    </Form>
+  );
+};
 
 SafetySettingsFormPresentation.propTypes = {
   initialValues: PropTypes.object,
   onSubmit: PropTypes.func,
-  t: PropTypes.func,
 };
 
 const SafetySettingsForm = connect(
@@ -196,29 +207,32 @@ const SafetySettingsForm = connect(
       );
     },
   }
-)(withTranslation()(SafetySettingsFormPresentation));
+)(SafetySettingsFormPresentation);
 
 /**
  * Container of the tab that shows the form that the user can use to
  * edit the safety settings.
  */
-const SafetySettingsTabPresentation = ({ onClose, t }) => (
-  <>
-    <DialogContent sx={dialogContentStyle}>
-      <SafetySettingsForm />
-    </DialogContent>
-    <DialogActions>
-      <Button form='safetySettings' type='submit' color='primary'>
-        {t('general.action.save')}
-      </Button>
-      <Button onClick={onClose}>{t('general.action.close')}</Button>
-    </DialogActions>
-  </>
-);
+const SafetySettingsTabPresentation = ({ onClose }) => {
+  const { t } = useTranslation();
+
+  return (
+    <>
+      <DialogContent sx={dialogContentStyle}>
+        <SafetySettingsForm />
+      </DialogContent>
+      <DialogActions>
+        <Button form='safetySettings' type='submit' color='primary'>
+          {t('general.action.save')}
+        </Button>
+        <Button onClick={onClose}>{t('general.action.close')}</Button>
+      </DialogActions>
+    </>
+  );
+};
 
 SafetySettingsTabPresentation.propTypes = {
   onClose: PropTypes.func,
-  t: PropTypes.func,
 };
 
-export default withTranslation()(SafetySettingsTabPresentation);
+export default SafetySettingsTabPresentation;

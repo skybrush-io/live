@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import PropTypes from 'prop-types';
-import { withTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
 import { LabeledStatusLight } from '@skybrush/mui-components';
 
@@ -15,26 +15,29 @@ const FormSubmissionButtonRowPresentation = ({
   form,
   label,
   onSubmit,
-  t,
-}) => (
-  <Box sx={{ display: 'flex', flexDirection: 'row' }}>
-    <LabeledStatusLight status={dirty ? 'warning' : 'success'}>
-      {dirty
-        ? `${label || 'Form'} changed; do not forget to save.`
-        : `${label || 'Form'} saved.`}
-    </LabeledStatusLight>
-    {form && (
-      <>
-        <Button disabled={!dirty} onClick={() => form.reset()}>
-          {t('general.action.reset')}
-        </Button>
-        <Button color='primary' disabled={!dirty} onClick={onSubmit}>
-          {t('general.action.save')}
-        </Button>
-      </>
-    )}
-  </Box>
-);
+}) => {
+  const { t } = useTranslation();
+
+  return (
+    <Box sx={{ display: 'flex', flexDirection: 'row' }}>
+      <LabeledStatusLight status={dirty ? 'warning' : 'success'}>
+        {dirty
+          ? `${label || 'Form'} changed; do not forget to save.`
+          : `${label || 'Form'} saved.`}
+      </LabeledStatusLight>
+      {form && (
+        <>
+          <Button disabled={!dirty} onClick={() => form.reset()}>
+            {t('general.action.reset')}
+          </Button>
+          <Button color='primary' disabled={!dirty} onClick={onSubmit}>
+            {t('general.action.save')}
+          </Button>
+        </>
+      )}
+    </Box>
+  );
+};
 
 FormSubmissionButtonRowPresentation.propTypes = {
   dirty: PropTypes.bool.isRequired,
@@ -43,7 +46,6 @@ FormSubmissionButtonRowPresentation.propTypes = {
   }),
   label: PropTypes.string,
   onSubmit: PropTypes.func,
-  t: PropTypes.func,
 };
 
-export default withTranslation()(FormSubmissionButtonRowPresentation);
+export default FormSubmissionButtonRowPresentation;

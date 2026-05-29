@@ -14,6 +14,7 @@ import type {
 
 import { errorToString } from '~/error-handling';
 import type { Coordinate3D } from '~/utils/math';
+import { isBoolean, isRecord } from '~/utils/types';
 
 import {
   createBulkParameterUploadRequest,
@@ -29,6 +30,20 @@ import { extractResponseForId } from './parsing';
 import { isSchedule, type Schedule } from './schedule';
 import type { Message, MessageBody } from './types';
 import { validateExtensionName, validateObjectId } from './validation';
+
+const getErrorMessageFromBody = (body: unknown, fallback: string): string => {
+  if (isRecord(body)) {
+    if (typeof body.reason === 'string' && body.reason.length > 0) {
+      return body.reason;
+    }
+
+    if (typeof body.error === 'string' && body.error.length > 0) {
+      return body.error;
+    }
+  }
+
+  return fallback;
+};
 
 /**
  * Asks the server to set a new configuration object for the extension with the
@@ -196,7 +211,118 @@ export async function setRTKCorrectionsSource(
   });
 
   if (response.body.type !== 'ACK-ACK') {
-    throw new Error('Failed to set new RTK correction source');
+    const errorMessage = getErrorMessageFromBody(
+      response.body,
+      'Failed to set new RTK correction source'
+    );
+    throw new Error(errorMessage);
+  }
+}
+
+/**
+ * Creates a new RTK preset on the server.
+ */
+export async function createRTKPreset(
+  hub: MessageHub,
+  preset: Record<string, unknown>
+): Promise<string> {
+  const response = await hub.sendMessage({
+    type: 'X-RTK-NEW',
+    preset,
+  });
+
+  if (response.body.type === 'X-RTK-NEW') {
+    if ('id' in response.body && typeof response.body.id === 'string') {
+      return response.body.id;
+    }
+
+    throw new Error('Failed to create RTK preset: missing preset ID');
+  }
+
+  const errorMessage = getErrorMessageFromBody(
+    response.body,
+    'Failed to create RTK preset'
+  );
+  throw new Error(errorMessage);
+}
+
+/**
+ * Updates an existing RTK preset on the server.
+ */
+export async function updateRTKPreset(
+  hub: MessageHub,
+  presetId: string,
+  preset: Record<string, unknown>
+) {
+  const response = await hub.sendMessage({
+    type: 'X-RTK-UPDATE',
+    ids: [presetId],
+    updates: {
+      [presetId]: preset,
+    },
+  });
+
+  if (response.body.type !== 'X-RTK-UPDATE') {
+    const errorMessage = getErrorMessageFromBody(
+      response.body,
+      'Failed to update RTK preset'
+    );
+    throw new Error(errorMessage);
+  }
+
+  if (
+    !extractResponseForId(response, presetId, {
+      key: 'result',
+      typeGuard: isBoolean,
+    })
+  ) {
+    throw new Error(
+      'Failed to update RTK preset: operation rejected by server'
+    );
+  }
+}
+
+/**
+ * Deletes an existing RTK preset from the server.
+ */
+export async function deleteRTKPreset(hub: MessageHub, presetId: string) {
+  const response = await hub.sendMessage({
+    type: 'X-RTK-DEL',
+    ids: [presetId],
+  });
+
+  if (response.body.type !== 'X-RTK-DEL') {
+    const errorMessage = getErrorMessageFromBody(
+      response.body,
+      'Failed to delete RTK preset'
+    );
+    throw new Error(errorMessage);
+  }
+
+  if (
+    !extractResponseForId(response, presetId, {
+      key: 'result',
+      typeGuard: isBoolean,
+    })
+  ) {
+    throw new Error('Failed to delete RTK preset: server rejected deletion');
+  }
+}
+
+/**
+ * Persists all current user presets to disk on the server.
+ */
+export async function saveRTKPresets(hub: MessageHub) {
+  const response = await hub.sendMessage({
+    type: 'X-RTK-SAVE',
+  });
+
+  if (response.body.type !== 'ACK-ACK') {
+    const errorMessage = getErrorMessageFromBody(
+      response.body,
+      'Failed to save RTK presets'
+    );
+    throw new Error(errorMessage);
   }
 }
 
@@ -271,7 +397,11 @@ export async function startRTKSurvey(
   });
 
   if (response.body.type !== 'ACK-ACK') {
-    throw new Error('Failed to start RTK survey on the server');
+    const errorMessage = getErrorMessageFromBody(
+      response.body,
+      'Failed to start RTK survey on the server'
+    );
+    throw new Error(errorMessage);
   }
 }
 
@@ -292,7 +422,11 @@ export async function setRTKAntennaPosition(
   });
 
   if (response.body.type !== 'ACK-ACK') {
-    throw new Error('Failed to set RTK antenna position on the server');
+    const errorMessage = getErrorMessageFromBody(
+      response.body,
+      'Failed to set RTK antenna position on the server'
+    );
+    throw new Error(errorMessage);
   }
 }
 
@@ -466,10 +600,13 @@ export async function planMission(
 
 const _operations = {
   configureExtension,
+  createRTKPreset,
+  deleteRTKPreset,
   planMission,
   reloadExtension,
   resetUAV,
   resumeShow,
+  saveRTKPresets,
   sendDebugMessage,
   setParameter,
   setParameters,
@@ -480,6 +617,7 @@ const _operations = {
   startCollectiveRTH,
   startRTKSurvey,
   suspendShow,
+  updateRTKPreset,
   uploadDroneShow,
   uploadFirmware,
   uploadMission,

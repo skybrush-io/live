@@ -138,7 +138,8 @@ const ImageLayerSettingsPresentation = ({
         const projection = await fromEPSGCode(source.getProjection().getCode());
         const view = await source.getView();
         mapViewToExtentSignal.dispatch(
-          transformExtent(view.extent, projection, 'EPSG:3857')
+          transformExtent(view.extent, projection, 'EPSG:3857'),
+          {}
         );
       } catch (e) {
         console.error(e);
