@@ -45,7 +45,11 @@ const { actions, reducer } = createSlice({
   reducers: {
     addErrorMessage(
       state,
-      action: PayloadAction<{ message: string; refs?: Message['id']; uavId: string }>
+      action: PayloadAction<{
+        message: string;
+        refs?: Message['id'];
+        uavId: string;
+      }>
     ) {
       const { message, refs, uavId } = action.payload;
 
