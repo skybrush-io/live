@@ -1,12 +1,14 @@
 import { createSelector } from '@reduxjs/toolkit';
 
-import { reorder, selectOrdered } from '~/utils/collections';
+import { reorder, selectOrdered, type Identifier } from '~/utils/collections';
 import { EMPTY_ARRAY } from '~/utils/redux';
+
+import type { AppSelector, RootState } from '~/store/reducers';
 
 export function createMessageListSelector() {
   return createSelector(
-    (state) => state.messages,
-    (state, uavId) =>
+    (state: RootState) => state.messages,
+    (state: RootState, uavId: Identifier) =>
       state.messages.uavIdsToMessageIds
         ? state.messages.uavIdsToMessageIds[uavId]
         : undefined,
@@ -17,4 +19,5 @@ export function createMessageListSelector() {
   );
 }
 
-export const getCommandHistory = (state) => state.messages.commandHistory;
+export const getCommandHistory: AppSelector<string[]> = (state) =>
+  state.messages.commandHistory;

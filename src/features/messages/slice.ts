@@ -45,7 +45,7 @@ const { actions, reducer } = createSlice({
   reducers: {
     addErrorMessage(
       state,
-      action: PayloadAction<{ message: string; refs?: number; uavId: string }>
+      action: PayloadAction<{ message: string; refs?: Message['id']; uavId: string }>
     ) {
       const { message, refs, uavId } = action.payload;
 
@@ -67,7 +67,7 @@ const { actions, reducer } = createSlice({
       state,
       action: PayloadAction<{
         message: string;
-        refs?: number;
+        refs?: Message['id'];
         severity?: Severity;
         uavId: string;
       }>
@@ -97,7 +97,7 @@ const { actions, reducer } = createSlice({
       action: PayloadAction<
         Array<{
           message: string;
-          refs?: number;
+          refs?: Message['id'];
           severity?: Severity;
           uavId: string;
         }>

@@ -1,10 +1,11 @@
-import { type MessageType, type Severity } from '~/model/enums';
+import type { MessageType, Severity } from '~/model/enums';
+import type { Identifier } from '~/utils/collections';
 
 export type Message = {
   author?: string;
   body: string;
   date: number;
-  id: number;
+  id: Identifier;
   message?: string;
   percentage?: number;
   raw?: boolean;
