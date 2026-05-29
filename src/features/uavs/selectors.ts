@@ -59,11 +59,14 @@ import type { StoredUAV, UAVDetailsPanelTab } from './types';
  */
 const GROUND_ALTITUDE_TOLERANCE_IN_METERS = 0.3;
 
-export type GroundAMSLWarning = {
+/**
+ * Properties of a pre-takeoff altitude warning that is shown when the drones do not
+ * seem to be placed on or near the AMSL altitude reference.
+ */
+export type PreTakeoffAltitudeWarningProps = {
   averageGroundAMSL: number;
   configuredAMSL: number;
   difference: number;
-  sampleCount: number;
   threshold: number;
 };
 
@@ -631,7 +634,12 @@ const isUAVKnownToBeSafelyOnGround = (uav: StoredUAV): boolean => {
   );
 };
 
-export const selectGroundAMSLWarning = createSelector(
+/**
+ * Returns the warning that should be shown when the average AMSL of grounded drones
+ * before a show is significantly different from the AMSL reference that is configured
+ * for the show. Returns undefined if no warning should be shown.
+ */
+export const selectPreTakeoffAltitudeWarningProps = createSelector(
   isShowOutdoor,
   getOutdoorShowAltitudeReference,
   getAltitudeWarningThresholdInMeters,
@@ -643,7 +651,7 @@ export const selectGroundAMSLWarning = createSelector(
     threshold,
     activeUAVIds,
     uavsById
-  ): GroundAMSLWarning | undefined => {
+  ): PreTakeoffAltitudeWarningProps | undefined => {
     // The check applies only to outdoor shows controlled against a fixed AMSL
     // reference. AHL-based and indoor shows intentionally skip it.
     const configuredAMSL =
@@ -683,7 +691,6 @@ export const selectGroundAMSLWarning = createSelector(
           averageGroundAMSL,
           configuredAMSL,
           difference,
-          sampleCount: altitudes.length,
           threshold,
         }
       : undefined;

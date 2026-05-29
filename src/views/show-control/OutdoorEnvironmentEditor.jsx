@@ -47,7 +47,7 @@ import {
 import { showSuccess } from '~/features/snackbar/actions';
 import {
   getAverageHeadingOfActiveUAVs,
-  selectGroundAMSLWarning,
+  selectPreTakeoffAltitudeWarningProps,
 } from '~/features/uavs/selectors';
 import i18n from '~/i18n';
 import AutoFix from '~/icons/AutoFix';
@@ -289,7 +289,7 @@ export default connect(
     estimatingCoordinateSystem: Boolean(
       state.show.environment.estimatingCoordinateSystem
     ),
-    groundAMSLWarning: selectGroundAMSLWarning(state),
+    groundAMSLWarning: selectPreTakeoffAltitudeWarningProps(state),
     showCoordinateSystem: state.show.environment.outdoor.coordinateSystem,
     mapCoordinateSystem: state.map.origin,
     takeoffHeading: getOutdoorShowTakeoffHeadingSpecification(state),

@@ -20,7 +20,7 @@ import { isConnected as isConnectedToServer } from '~/features/servers/selectors
 import {
   areAllUAVsInMissionWithoutErrors,
   getMissingUAVIdsInMapping,
-  selectGroundAMSLWarning,
+  selectPreTakeoffAltitudeWarningProps,
 } from '~/features/uavs/selectors';
 import { makeUploadStatusSelectorForMissionMappingByJobType } from '~/features/upload/selectors';
 import type { AppSelector, RootState } from '~/store/reducers';
@@ -108,7 +108,9 @@ const stages: Record<Stage, StageSpecification> = {
         return false;
       }
 
-      return selectGroundAMSLWarning(state) ? Status.WARNING : Status.SUCCESS;
+      return selectPreTakeoffAltitudeWarningProps(state)
+        ? Status.WARNING
+        : Status.SUCCESS;
     },
     requires: ['selectShowFile'],
   },
