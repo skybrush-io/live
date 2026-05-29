@@ -21,15 +21,13 @@ import {
   getDesiredPlacementAccuracyInMeters,
   getDesiredTakeoffHeadingAccuracy,
 } from '~/features/settings/selectors';
-import { AltitudeReference } from '~/features/show/constants';
 import {
   getFirstPointsOfTrajectories,
-  getOutdoorShowAltitudeReference,
+  getMeanSeaLevelReferenceOfShowCoordinatesOrNull,
   getOutdoorShowToWorldCoordinateSystemTransformation,
   getShowToFlatEarthCoordinateSystemTransformation,
   getTrajectories,
   isShowIndoor,
-  isShowOutdoor,
 } from '~/features/show/selectors';
 import {
   getPointsOfTrajectory,
@@ -65,7 +63,7 @@ const GROUND_ALTITUDE_TOLERANCE_IN_METERS = 0.3;
  */
 export type PreTakeoffAltitudeWarningProps = {
   averageGroundAMSL: number;
-  configuredAMSL: number;
+  amslReference: number;
   difference: number;
   threshold: number;
 };
@@ -640,29 +638,19 @@ const isUAVKnownToBeSafelyOnGround = (uav: StoredUAV): boolean => {
  * for the show. Returns undefined if no warning should be shown.
  */
 export const selectPreTakeoffAltitudeWarningProps = createSelector(
-  isShowOutdoor,
-  getOutdoorShowAltitudeReference,
+  getMeanSeaLevelReferenceOfShowCoordinatesOrNull,
   getAltitudeWarningThresholdInMeters,
   getActiveUAVIds,
   getUAVIdToStateMapping,
   (
-    outdoor,
-    altitudeReference,
+    amslReference,
     threshold,
     activeUAVIds,
     uavsById
   ): PreTakeoffAltitudeWarningProps | undefined => {
     // The check applies only to outdoor shows controlled against a fixed AMSL
     // reference. AHL-based and indoor shows intentionally skip it.
-    const configuredAMSL =
-      outdoor &&
-      altitudeReference.type === AltitudeReference.AMSL &&
-      typeof altitudeReference.value === 'number' &&
-      Number.isFinite(altitudeReference.value)
-        ? altitudeReference.value
-        : undefined;
-
-    if (configuredAMSL === undefined) {
+    if (typeof amslReference !== 'number') {
       return undefined;
     }
 
@@ -673,8 +661,10 @@ export const selectPreTakeoffAltitudeWarningProps = createSelector(
       .filter((uav): uav is StoredUAV => Boolean(uav))
       .filter(isUAVKnownToBeSafelyOnGround)
       .map((uav) => uav.position?.amsl)
-      .filter((amsl): amsl is number => typeof amsl === 'number')
-      .filter(Number.isFinite);
+      .filter(
+        (amsl): amsl is number =>
+          typeof amsl === 'number' && Number.isFinite(amsl)
+      );
 
     if (altitudes.length <= 0) {
       return undefined;
@@ -684,12 +674,12 @@ export const selectPreTakeoffAltitudeWarningProps = createSelector(
     // configured threshold; otherwise the setup stage remains successful.
     const averageGroundAMSL =
       altitudes.reduce((sum, altitude) => sum + altitude, 0) / altitudes.length;
-    const difference = Math.abs(configuredAMSL - averageGroundAMSL);
+    const difference = Math.abs(amslReference - averageGroundAMSL);
 
     return difference > threshold
       ? {
           averageGroundAMSL,
-          configuredAMSL,
+          amslReference,
           difference,
           threshold,
         }

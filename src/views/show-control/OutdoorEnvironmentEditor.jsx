@@ -65,7 +65,7 @@ const OutdoorEnvironmentEditor = ({
   canEstimateShowCoordinateSystem,
   environmentFromLoadedShowData,
   estimatingCoordinateSystem,
-  groundAMSLWarning,
+  preTakeoffAltitudeWarning,
   onAltitudeReferenceTypeChanged,
   onAltitudeReferenceValueChanged,
   onCopyCoordinateSystemToMap,
@@ -219,14 +219,15 @@ const OutdoorEnvironmentEditor = ({
         </Box>
       </Box>
 
-      {groundAMSLWarning && (
+      {preTakeoffAltitudeWarning && (
         <Alert severity='warning' sx={{ mb: 2 }}>
-          {t('outdoorEnvironmentEditor.groundAMSLWarning', {
-            averageGroundAMSL: groundAMSLWarning.averageGroundAMSL.toFixed(1),
-            configuredAMSL: groundAMSLWarning.configuredAMSL.toFixed(1),
-            difference: groundAMSLWarning.difference.toFixed(1),
-            sampleCount: groundAMSLWarning.sampleCount,
-            threshold: groundAMSLWarning.threshold.toFixed(1),
+          {t('outdoorEnvironmentEditor.preTakeoffAltitudeWarning', {
+            averageGroundAMSL:
+              preTakeoffAltitudeWarning.averageGroundAMSL.toFixed(1),
+            amslReference: preTakeoffAltitudeWarning.amslReference.toFixed(1),
+            difference: preTakeoffAltitudeWarning.difference.toFixed(1),
+            sampleCount: preTakeoffAltitudeWarning.sampleCount,
+            threshold: preTakeoffAltitudeWarning.threshold.toFixed(1),
           })}
         </Alert>
       )}
@@ -251,13 +252,6 @@ OutdoorEnvironmentEditor.propTypes = {
   canEstimateShowCoordinateSystem: PropTypes.bool,
   environmentFromLoadedShowData: PropTypes.object,
   estimatingCoordinateSystem: PropTypes.bool,
-  groundAMSLWarning: PropTypes.shape({
-    averageGroundAMSL: PropTypes.number.isRequired,
-    configuredAMSL: PropTypes.number.isRequired,
-    difference: PropTypes.number.isRequired,
-    sampleCount: PropTypes.number.isRequired,
-    threshold: PropTypes.number.isRequired,
-  }),
   onAltitudeReferenceTypeChanged: PropTypes.func,
   onAltitudeReferenceValueChanged: PropTypes.func,
   onCopyCoordinateSystemToMap: PropTypes.func,
@@ -269,6 +263,13 @@ OutdoorEnvironmentEditor.propTypes = {
   onSetCoordinateSystemFromMap: PropTypes.func,
   onSetTakeoffHeading: PropTypes.func,
   onSetTakeoffHeadingToAverageActiveUAVHeading: PropTypes.func,
+  preTakeoffWarning: PropTypes.shape({
+    averageGroundAMSL: PropTypes.number.isRequired,
+    amslReference: PropTypes.number.isRequired,
+    difference: PropTypes.number.isRequired,
+    sampleCount: PropTypes.number.isRequired,
+    threshold: PropTypes.number.isRequired,
+  }),
   showCoordinateSystem: PropTypes.shape({
     orientation: PropTypes.string.isRequired,
     origin: PropTypes.arrayOf(PropTypes.number),
@@ -289,7 +290,7 @@ export default connect(
     estimatingCoordinateSystem: Boolean(
       state.show.environment.estimatingCoordinateSystem
     ),
-    groundAMSLWarning: selectPreTakeoffAltitudeWarningProps(state),
+    preTakeoffAltitudeWarning: selectPreTakeoffAltitudeWarningProps(state),
     showCoordinateSystem: state.show.environment.outdoor.coordinateSystem,
     mapCoordinateSystem: state.map.origin,
     takeoffHeading: getOutdoorShowTakeoffHeadingSpecification(state),
