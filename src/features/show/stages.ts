@@ -20,6 +20,7 @@ import { isConnected as isConnectedToServer } from '~/features/servers/selectors
 import {
   areAllUAVsInMissionWithoutErrors,
   getMissingUAVIdsInMapping,
+  selectPreTakeoffAltitudeWarningProps,
 } from '~/features/uavs/selectors';
 import { makeUploadStatusSelectorForMissionMappingByJobType } from '~/features/upload/selectors';
 import type { AppSelector, RootState } from '~/store/reducers';
@@ -57,10 +58,13 @@ type Stage =
   | 'setupStartTime'
   | 'authorization';
 
+type StageRequirement = Stage | AppSelector<boolean>;
+
 type StageSpecification = {
   evaluate: (state: RootState) => Status | boolean;
-  requires?: Array<Stage | AppSelector<boolean>>;
-  suggests?: Array<Stage | AppSelector<boolean>>;
+  isDone?: (status: Status | undefined) => boolean;
+  requires?: StageRequirement[];
+  suggests?: StageRequirement[];
 };
 
 /**
@@ -99,9 +103,22 @@ const stages: Record<Stage, StageSpecification> = {
   },
 
   setupEnvironment: {
-    evaluate: (state) =>
-      hasLoadedShowFile(state) && (hasShowOrigin(state) || isShowIndoor(state)),
+    evaluate(state) {
+      if (
+        !hasLoadedShowFile(state) ||
+        (!hasShowOrigin(state) && !isShowIndoor(state))
+      ) {
+        return false;
+      }
+
+      return selectPreTakeoffAltitudeWarningProps(state)
+        ? Status.WARNING
+        : Status.SUCCESS;
+    },
     requires: ['selectShowFile'],
+
+    // warning are okey when setupEnvironment is used as a dependency
+    isDone: (status) => isDone(status) || status === Status.WARNING,
   },
 
   collectiveRTH: {
@@ -213,8 +230,8 @@ const stageOrder: Stage[] = [
 type SetupStageStatusReport = Record<Stage, Status>;
 
 /**
- * Returns whether the status code is treated as "done" from the point of view
- * of inspecting dependencies between stages.
+ * Returns whether the status code for the given stage is treated as "done" from the
+ * point of view of inspecting dependencies between stages, unless specified otherwise.
  */
 const isDone = (status: Status | undefined): boolean =>
   status === Status.SUCCESS || status === Status.SKIPPED;
@@ -224,11 +241,13 @@ const isDone = (status: Status | undefined): boolean =>
  */
 const allDone = (
   result: Partial<SetupStageStatusReport>,
-  deps: Array<Stage | AppSelector<boolean>> | undefined,
+  deps: StageRequirement[] | undefined,
   state: RootState
 ): boolean =>
   (deps ?? []).every((dep) =>
-    typeof dep === 'function' ? dep(state) : isDone(result[dep])
+    typeof dep === 'function'
+      ? dep(state)
+      : (stages[dep]?.isDone ?? isDone)(result[dep])
   );
 
 /**

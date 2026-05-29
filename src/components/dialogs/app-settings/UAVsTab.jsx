@@ -23,6 +23,7 @@ import {
 } from '~/components/forms';
 import { updateUAVVoltageThreshold } from '~/features/settings/actions';
 import {
+  getAltitudeWarningThresholdInMeters,
   getDesiredPlacementAccuracyInMeters,
   getDesiredTakeoffHeadingAccuracy,
   getMaximumConcurrentUploadTaskCount,
@@ -71,6 +72,7 @@ const UAVsTabPresentation = ({
   forgetThreshold,
   fullChargeVoltage,
   goneThreshold,
+  altitudeWarningThreshold,
   lowVoltageThreshold,
   maxUploadConcurrency,
   minIndoorTakeoffSpacing,
@@ -308,6 +310,19 @@ const UAVsTabPresentation = ({
           />
         </Box>
 
+        <Box sx={{ display: 'flex', flexDirection: 'row', mb: 1 }}>
+          <SimpleDistanceField
+            fullWidth
+            name='altitudeWarningThreshold'
+            label={t('settings.uavs.altitudeWarningThreshold')}
+            min={0.1}
+            max={100}
+            step={0.1}
+            value={altitudeWarningThreshold}
+            onChange={onDistanceFieldUpdated}
+          />
+        </Box>
+
         <Typography variant='body2' color='textSecondary'>
           {t('settings.uavs.missionSetupDescription')}
         </Typography>
@@ -323,6 +338,7 @@ UAVsTabPresentation.propTypes = {
   forgetThreshold: PropTypes.number,
   fullChargeVoltage: PropTypes.number,
   goneThreshold: PropTypes.number,
+  altitudeWarningThreshold: PropTypes.number,
   lowVoltageThreshold: PropTypes.number,
   maxUploadConcurrency: PropTypes.number,
   minIndoorTakeoffSpacing: PropTypes.number,
@@ -346,6 +362,7 @@ export default connect(
   // mapStateToProps
   (state) => ({
     ...state.settings.uavs,
+    altitudeWarningThreshold: getAltitudeWarningThresholdInMeters(state),
     placementAccuracy: getDesiredPlacementAccuracyInMeters(state),
     takeoffHeadingAccuracy: getDesiredTakeoffHeadingAccuracy(state),
     maxUploadConcurrency: getMaximumConcurrentUploadTaskCount(state),

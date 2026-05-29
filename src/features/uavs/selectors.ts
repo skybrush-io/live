@@ -17,11 +17,13 @@ import {
 } from '~/features/mission/selectors';
 import { selectionForSubset } from '~/features/selection/selectors';
 import {
+  getAltitudeWarningThresholdInMeters,
   getDesiredPlacementAccuracyInMeters,
   getDesiredTakeoffHeadingAccuracy,
 } from '~/features/settings/selectors';
 import {
   getFirstPointsOfTrajectories,
+  getMeanSeaLevelReferenceOfShowCoordinatesOrNull,
   getOutdoorShowToWorldCoordinateSystemTransformation,
   getShowToFlatEarthCoordinateSystemTransformation,
   getTrajectories,
@@ -41,12 +43,30 @@ import { convertRGB565ToCSSNotation } from '~/flockwave/parsing';
 import UAVErrorCode, { abbreviateUAVErrorCode } from '~/flockwave/UAVErrorCode';
 import { isGPSPositionValid } from '~/model/geography';
 import { globalIdToUavId } from '~/model/identifiers';
+import { isErrorCodeOrMoreSevere } from '~/model/status-codes';
 import { UAVAge } from '~/model/uav';
 import type { AppSelector, RootState } from '~/store/reducers';
 import { euclideanDistance2D, getMeanAngle } from '~/utils/math';
 import { EMPTY_ARRAY } from '~/utils/redux';
 import { createDeepResultSelector } from '~/utils/selectors';
 import type { StoredUAV, UAVDetailsPanelTab } from './types';
+
+/**
+ * Constant that defines the maximum reported altitude above ground level (AGL) when we
+ * still consider a drone to be on the ground.
+ */
+const GROUND_ALTITUDE_TOLERANCE_IN_METERS = 0.3;
+
+/**
+ * Properties of a pre-takeoff altitude warning that is shown when the drones do not
+ * seem to be placed on or near the AMSL altitude reference.
+ */
+export type PreTakeoffAltitudeWarningProps = {
+  averageGroundAMSL: number;
+  amslReference: number;
+  difference: number;
+  threshold: number;
+};
 
 /**
  * Returns a mapping from color names to the list of UAV IDs whose color needs to be
@@ -554,6 +574,117 @@ export const getActiveAndAwakeUAVIds = createSelector(
       const uav = uavsById[uavId];
       return uav ? !isUAVSleeping(uav) : false;
     })
+);
+
+/**
+ * Returns whether a UAV is known to stand safely on the ground based on its error codes
+ * and altitude readings.
+ *
+ * Note the wording: the function will return false when we know that the drone is _not_
+ * on the ground and also when we _cannot infer_ that the drone is safely on the ground.
+ * In other words, the function returns true only when we have a strong reason to
+ * believe that the drone is on the ground and there are no severe errors that would
+ * make us doubt the sensor readings.
+ */
+const isUAVKnownToBeSafelyOnGround = (uav: StoredUAV): boolean => {
+  // Check severe error codes first.
+  if (uav.errors.some(isErrorCodeOrMoreSevere)) {
+    return false;
+  }
+
+  // Prefer explicit status codes from the UAV whenever they are available.
+  if (
+    uav.errors.includes(UAVErrorCode.ON_GROUND) ||
+    uav.errors.includes(UAVErrorCode.MOTORS_RUNNING_WHILE_ON_GROUND)
+  ) {
+    return true;
+  }
+
+  // Do not let the AGL fallback classify drones as grounded while they are in
+  // a known flight-related state.
+  if (
+    uav.errors.includes(UAVErrorCode.TAKEOFF) ||
+    uav.errors.includes(UAVErrorCode.LANDING) ||
+    uav.errors.includes(UAVErrorCode.RETURN_TO_HOME)
+  ) {
+    return false;
+  }
+
+  // Maybe the drone has a local coordinate system where Z is assumed to be the ground
+  // level?
+  const z = uav.localPosition?.[2];
+  if (
+    typeof z === 'number' &&
+    Number.isFinite(z) &&
+    Math.abs(z) < GROUND_ALTITUDE_TOLERANCE_IN_METERS
+  ) {
+    return true;
+  }
+
+  // Fall back to AGL only when the UAV does not provide a more explicit state.
+  // Note that we do not use AHL because that is altitude above _home_ level, but the
+  // home altitude can be anywhere.
+  const agl = uav.position?.agl;
+  return (
+    typeof agl === 'number' &&
+    Number.isFinite(agl) &&
+    Math.abs(agl) < GROUND_ALTITUDE_TOLERANCE_IN_METERS
+  );
+};
+
+/**
+ * Returns the warning that should be shown when the average AMSL of grounded drones
+ * before a show is significantly different from the AMSL reference that is configured
+ * for the show. Returns undefined if no warning should be shown.
+ */
+export const selectPreTakeoffAltitudeWarningProps = createSelector(
+  getMeanSeaLevelReferenceOfShowCoordinatesOrNull,
+  getAltitudeWarningThresholdInMeters,
+  getActiveUAVIds,
+  getUAVIdToStateMapping,
+  (
+    amslReference,
+    threshold,
+    activeUAVIds,
+    uavsById
+  ): PreTakeoffAltitudeWarningProps | undefined => {
+    // The check applies only to outdoor shows controlled against a fixed AMSL
+    // reference. AHL-based and indoor shows intentionally skip it.
+    if (typeof amslReference !== 'number') {
+      return undefined;
+    }
+
+    // Compare the configured reference only with active UAVs that are still on
+    // the ground and provide a usable AMSL reading.
+    const altitudes = activeUAVIds
+      .map((uavId) => uavsById[uavId])
+      .filter((uav): uav is StoredUAV => Boolean(uav))
+      .filter(isUAVKnownToBeSafelyOnGround)
+      .map((uav) => uav.position?.amsl)
+      .filter(
+        (amsl): amsl is number =>
+          typeof amsl === 'number' && Number.isFinite(amsl)
+      );
+
+    if (altitudes.length <= 0) {
+      return undefined;
+    }
+
+    // A warning report is returned only when the mismatch exceeds the user
+    // configured threshold; otherwise the setup stage remains successful.
+    const averageGroundAMSL =
+      altitudes.reduce((sum, altitude) => sum + altitude, 0) / altitudes.length;
+    const difference = Math.abs(amslReference - averageGroundAMSL);
+
+    return difference > threshold
+      ? {
+          averageGroundAMSL,
+          amslReference,
+          difference,
+          threshold,
+        }
+      : undefined;
+  }
 );
 
 /**
