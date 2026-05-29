@@ -62,6 +62,7 @@ type StageRequirement = Stage | AppSelector<boolean>;
 
 type StageSpecification = {
   evaluate: (state: RootState) => Status | boolean;
+  isDone?: (status: Status | undefined) => boolean;
   requires?: StageRequirement[];
   suggests?: StageRequirement[];
 };
@@ -115,6 +116,9 @@ const stages: Record<Stage, StageSpecification> = {
         : Status.SUCCESS;
     },
     requires: ['selectShowFile'],
+
+    // warning are okey when setupEnvironment is used as a dependency
+    isDone: (status) => isDone(status) || status === Status.WARNING,
   },
 
   collectiveRTH: {
@@ -226,8 +230,8 @@ const stageOrder: Stage[] = [
 type SetupStageStatusReport = Record<Stage, Status>;
 
 /**
- * Returns whether the status code is treated as "done" from the point of view
- * of inspecting dependencies between stages.
+ * Returns whether the status code for the given stage is treated as "done" from the
+ * point of view of inspecting dependencies between stages, unless specified otherwise.
  */
 const isDone = (status: Status | undefined): boolean =>
   status === Status.SUCCESS || status === Status.SKIPPED;
@@ -241,7 +245,9 @@ const allDone = (
   state: RootState
 ): boolean =>
   (deps ?? []).every((dep) =>
-    typeof dep === 'function' ? dep(state) : isDone(result[dep])
+    typeof dep === 'function'
+      ? dep(state)
+      : (stages[dep]?.isDone ?? isDone)(result[dep])
   );
 
 /**
