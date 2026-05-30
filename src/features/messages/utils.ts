@@ -7,9 +7,12 @@ export function addMessage(
   state: Draft<MessagesSliceState>,
   messageStub: Omit<Message, 'id'>,
   peer: string,
-  refs?: number
+  refs?: Message['id']
 ): Message['id'] {
-  const message: Message = { id: state.nextMessageId++, ...messageStub };
+  const message: Message = {
+    id: (state.nextMessageId++).toFixed(),
+    ...messageStub,
+  };
 
   if (refs !== undefined) {
     const originalMessage = state.byId[refs];
