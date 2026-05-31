@@ -35,8 +35,13 @@ const { actions, reducer } = createSlice({
      * Updates the state of a single beacon, creating the beacon if it does not
      * exist yet.
      */
-    setBeaconState(state, { payload: { id, ...rest } }: PayloadAction<Beacon>) {
-      updateStateOfBeacon(state, id, rest);
+    setBeaconState(
+      state,
+      { payload: { id, ...rest } }: PayloadAction<Partial<Beacon>>
+    ) {
+      if (id) {
+        updateStateOfBeacon(state, id, rest);
+      }
     },
 
     /**
@@ -45,7 +50,9 @@ const { actions, reducer } = createSlice({
      */
     setBeaconStateMultiple(
       state,
-      { payload }: PayloadAction<Record<Beacon['id'], Omit<Beacon, 'id'>>>
+      {
+        payload,
+      }: PayloadAction<Record<Beacon['id'], Partial<Omit<Beacon, 'id'>>>>
     ) {
       for (const [id, beacon] of Object.entries(payload)) {
         updateStateOfBeacon(state, id, beacon);
