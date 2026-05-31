@@ -27,9 +27,9 @@ import type {
 } from '~/store/reducers';
 
 import handleError from '~/error-handling';
-import makeLogger from './logging';
+import createLogger from './logging';
 
-const logger = makeLogger('messaging');
+const logger = createLogger('messaging');
 
 const processResponses = (
   commandName: string,
