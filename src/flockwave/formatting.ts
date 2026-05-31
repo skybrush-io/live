@@ -1,5 +1,4 @@
 import escape from 'lodash-es/escape';
-import isString from 'lodash-es/isString';
 import trimEnd from 'lodash-es/trimEnd';
 
 /**
@@ -14,7 +13,7 @@ import trimEnd from 'lodash-es/trimEnd';
 export function formatCommandResponseAsHTML(
   response: string | { type: string; data: string }
 ): string {
-  if (isString(response)) {
+  if (typeof response === 'string') {
     response = {
       type: 'plain',
       data: response,

@@ -4,7 +4,6 @@
 
 import parseISO from 'date-fns/parseISO';
 import has from 'lodash-es/has';
-import isString from 'lodash-es/isString';
 
 /**
  * Object mapping known epoch names to their corresponding timestamps (number
@@ -65,7 +64,7 @@ export function parseDurationHMS(value: string): number {
  * @returns The parsed date as a timestamp
  */
 export const parseEpochIdentifierOrISODate = (value: string): number => {
-  if (isString(value) && has(knownEpochs, value)) {
+  if (typeof value === 'string' && has(knownEpochs, value)) {
     return knownEpochs[value];
   }
 
