@@ -42,6 +42,10 @@ if (!AFrame.components['fbx-model']) {
       this._tmpUpW = new THREE.Vector3();
       this._tmpPos = new THREE.Vector3();
       this._tmpQuat = new THREE.Quaternion();
+      this._tmpBaseQuat = new THREE.Quaternion();
+      this._tmpInvBaseQuat = new THREE.Quaternion();
+      this._tmpYawQuat = new THREE.Quaternion();
+      this._worldZAxis = new THREE.Vector3(0, 0, 1);
 
       this.el.classList.add('three-d-clickable');
     },
@@ -68,6 +72,7 @@ if (!AFrame.components['fbx-model']) {
         fbx.scale.set(scale.x, scale.y, scale.z);
         this.model = fbx;
         this.el.object3D.add(fbx);
+        this.setHeadingYaw(this.el.getAttribute('data-heading'));
 
         this._ensureLight();
         if (this._isSelected) this._applyRedColorsOnly();
@@ -77,6 +82,36 @@ if (!AFrame.components['fbx-model']) {
     tick() {
       if (!this._light || !this._glow || !this.model) return;
       this._updateLightPose();
+    },
+
+    setHeadingYaw(yaw) {
+      const parsed = Number(yaw);
+      this._headingYaw = Number.isFinite(parsed) ? parsed : null;
+      this._applyHeadingYaw();
+    },
+
+    _applyHeadingYaw() {
+      if (!this.model) return;
+
+      if (!Number.isFinite(this._headingYaw)) {
+        this.model.quaternion.identity();
+        return;
+      }
+
+      this.el.object3D.updateMatrixWorld(true);
+      this.el.object3D.getWorldQuaternion(this._tmpBaseQuat);
+      this._tmpInvBaseQuat.copy(this._tmpBaseQuat).invert();
+      this._tmpYawQuat.setFromAxisAngle(
+        this._worldZAxis,
+        THREE.MathUtils.degToRad(this._headingYaw)
+      );
+
+      // Keep the marker entity's 90-degree leveling rotation intact, and rotate
+      // only the loaded model around the scene's Z axis.
+      this.model.quaternion
+        .copy(this._tmpInvBaseQuat)
+        .multiply(this._tmpYawQuat)
+        .multiply(this._tmpBaseQuat);
     },
 
     // -------------------------

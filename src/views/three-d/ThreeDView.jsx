@@ -113,7 +113,12 @@ const readDronePositionFromDom = (droneId) => {
   if (!Number.isFinite(x) || !Number.isFinite(y) || !Number.isFinite(z)) {
     return null;
   }
-  return { x: roundCoord(x), y: roundCoord(y), z: roundCoord(z) };
+  const point = { x: roundCoord(x), y: roundCoord(y), z: roundCoord(z) };
+  const yaw = Number(target.getAttribute('data-heading'));
+  if (Number.isFinite(yaw)) {
+    point.yaw = roundCoord(yaw);
+  }
+  return point;
 };
 
 const readAllDronePositionsFromDom = () => {
@@ -212,9 +217,21 @@ const normalizeFormationPhaseForImport = (raw, index) => {
       const x = Number(pos?.x);
       const y = Number(pos?.y);
       const z = Number(pos?.z);
-      if (Number.isFinite(x) && Number.isFinite(y) && Number.isFinite(z)) {
-        points[String(droneId)] = { x, y, z };
+      const yaw = Number(pos?.yaw);
+      const hasPosition =
+        Number.isFinite(x) && Number.isFinite(y) && Number.isFinite(z);
+      const hasYaw = Number.isFinite(yaw);
+      if (!hasPosition && !hasYaw) return;
+      const point = {};
+      if (hasPosition) {
+        point.x = x;
+        point.y = y;
+        point.z = z;
       }
+      if (hasYaw) {
+        point.yaw = yaw;
+      }
+      points[String(droneId)] = point;
     });
   }
   return { id, name, holdMs, points };
@@ -1531,10 +1548,15 @@ const ThreeDView = React.forwardRef((props, ref) => {
     const x = Number(position.x);
     const y = Number(position.y);
     const z = Number(position.z);
+    const yaw = Number(position.yaw);
     if (!Number.isFinite(x) || !Number.isFinite(y) || !Number.isFinite(z)) return;
+    const detail = { id: droneId, x, y, z };
+    if (Number.isFinite(yaw)) {
+      detail.yaw = yaw;
+    }
     window.dispatchEvent(
       new CustomEvent('drone-move-request', {
-        detail: { id: droneId, x, y, z },
+        detail,
       })
     );
   }, [formationPhases]);
@@ -1565,9 +1587,14 @@ const ThreeDView = React.forwardRef((props, ref) => {
           [x, y, z] = getDroneInitialPositionTuple(d);
         }
         if (!Number.isFinite(x) || !Number.isFinite(y) || !Number.isFinite(z)) return;
+        const yaw = Number(captured?.yaw);
+        const detail = { id: d.id, x, y, z };
+        if (Number.isFinite(yaw)) {
+          detail.yaw = yaw;
+        }
         window.dispatchEvent(
           new CustomEvent('drone-move-request', {
-            detail: { id: d.id, x, y, z },
+            detail,
           })
         );
       });
@@ -1590,21 +1617,30 @@ const ThreeDView = React.forwardRef((props, ref) => {
         .map((d) => {
           const id = String(d.id);
           const captured = phase.points?.[id];
+          const yaw = Number(captured?.yaw);
           if (
             captured &&
             Number.isFinite(Number(captured.x)) &&
             Number.isFinite(Number(captured.y)) &&
             Number.isFinite(Number(captured.z))
           ) {
-            return {
+            const point = {
               droneId: id,
               x: Number(captured.x),
               y: Number(captured.y),
               z: Number(captured.z),
             };
+            if (Number.isFinite(yaw)) {
+              point.yaw = yaw;
+            }
+            return point;
           }
           const [x, y, z] = getDroneInitialPositionTuple(d);
-          return { droneId: id, x, y, z };
+          const point = { droneId: id, x, y, z };
+          if (Number.isFinite(yaw)) {
+            point.yaw = yaw;
+          }
+          return point;
         });
 
       const holdMs = Math.max(0, Math.round(Number(phase.holdMs) || 0));

@@ -700,10 +700,18 @@ export default function DroneInfoPanel({
         ) : (
           formationPhases.map((phase, idx) => {
             const captured = phase.points?.[droneId];
-            const hasCaptured = !!captured;
+            const hasCapturedPosition =
+              captured &&
+              Number.isFinite(Number(captured.x)) &&
+              Number.isFinite(Number(captured.y)) &&
+              Number.isFinite(Number(captured.z));
+            const hasCapturedYaw =
+              captured && Number.isFinite(Number(captured.yaw));
+            const hasCaptured = !!captured && (hasCapturedPosition || hasCapturedYaw);
             const px = captured?.x;
             const py = captured?.y;
             const pz = captured?.z;
+            const pyaw = captured?.yaw;
             return (
               <div
                 key={phase.id}
@@ -857,13 +865,17 @@ export default function DroneInfoPanel({
                   >
                     <span>이 드론({droneId || '-'}) 위치</span>
                     <span style={{ opacity: hasCaptured ? 0.8 : 0.45 }}>
-                      {hasCaptured ? '캡처됨' : '미캡처 → 초기 위치 사용'}
+                      {hasCapturedPosition
+                        ? '캡처됨'
+                        : hasCapturedYaw
+                          ? 'yaw 지정됨 → 위치는 초기 위치 사용'
+                          : '미캡처 → 초기 위치 사용'}
                     </span>
                   </div>
                   <div
                     style={{
                       display: 'grid',
-                      gridTemplateColumns: '1fr 1fr 1fr',
+                      gridTemplateColumns: '1fr 1fr 1fr 1fr',
                       gap: 5,
                     }}
                   >
@@ -871,6 +883,7 @@ export default function DroneInfoPanel({
                       { label: 'X', key: 'x', value: px },
                       { label: 'Y', key: 'y', value: py },
                       { label: 'Z', key: 'z', value: pz },
+                      { label: 'Yaw', key: 'yaw', value: pyaw },
                     ].map(({ label, key, value }) => {
                       const draftKey = formationPositionDraftKey(phase.id, droneId, key);
                       const displayValue =
@@ -880,19 +893,42 @@ export default function DroneInfoPanel({
                       const commitFormationAxisValue = (raw) => {
                         if (raw === '' && !hasCaptured) return;
 
-                        const next = {
-                          x: Number(captured?.x ?? 0),
-                          y: Number(captured?.y ?? 0),
-                          z: Number(captured?.z ?? 0),
-                        };
+                        const next = hasCapturedPosition
+                          ? {
+                              x: Number(captured.x),
+                              y: Number(captured.y),
+                              z: Number(captured.z),
+                            }
+                          : {};
+                        if (hasCapturedYaw) {
+                          next.yaw = Number(captured.yaw);
+                        }
                         if (raw === '') {
-                          next[key] = 0;
+                          if (key === 'yaw') {
+                            delete next.yaw;
+                          } else {
+                            next[key] = 0;
+                          }
                         } else {
                           const parsed = Number(raw);
                           if (!Number.isFinite(parsed)) return;
                           next[key] = parsed;
                         }
-                        onUpdateFormationDronePosition(phase.id, droneId, next);
+                        onUpdateFormationDronePosition(
+                          phase.id,
+                          droneId,
+                          Object.keys(next).length ? next : null
+                        );
+                        if (key === 'yaw') {
+                          window.dispatchEvent(
+                            new CustomEvent('drone-yaw-set', {
+                              detail: {
+                                id: droneId,
+                                yaw: Number.isFinite(Number(next.yaw)) ? Number(next.yaw) : null,
+                              },
+                            })
+                          );
+                        }
                       };
 
                       return (
@@ -953,13 +989,13 @@ export default function DroneInfoPanel({
                     </button>
                     <button
                       type="button"
-                      disabled={!droneId || !hasCaptured}
+                      disabled={!droneId || !hasCapturedPosition}
                       onClick={() => droneId && onApplyDronePositionInPhase(phase.id, droneId)}
                       style={{
                         ...phaseSmallBtnStyle,
                         flex: 1,
-                        opacity: droneId && hasCaptured ? 1 : 0.5,
-                        cursor: droneId && hasCaptured ? 'pointer' : 'not-allowed',
+                        opacity: droneId && hasCapturedPosition ? 1 : 0.5,
+                        cursor: droneId && hasCapturedPosition ? 'pointer' : 'not-allowed',
                       }}
                       title="이 phase의 위치로 드론을 이동"
                     >

@@ -6,17 +6,20 @@ if (!AFrame.components['drone-move-bridge']) {
       this._onMove = this._onMove.bind(this);
       this._onPath = this._onPath.bind(this);
       this._onInitialPosSet = this._onInitialPosSet.bind(this);
+      this._onYawSet = this._onYawSet.bind(this);
       // 드론별로 경로 애니메이션 취소 함수를 따로 관리
       this._currentPathCancels = {};
       window.addEventListener('drone-move-request', this._onMove);
       window.addEventListener('drone-path-request', this._onPath);
       window.addEventListener('drone-initial-pos-set', this._onInitialPosSet);
+      window.addEventListener('drone-yaw-set', this._onYawSet);
     },
 
     remove() {
       window.removeEventListener('drone-move-request', this._onMove);
       window.removeEventListener('drone-path-request', this._onPath);
       window.removeEventListener('drone-initial-pos-set', this._onInitialPosSet);
+      window.removeEventListener('drone-yaw-set', this._onYawSet);
 
       if (this._currentPathCancels) {
         Object.values(this._currentPathCancels).forEach((cancel) => {
@@ -31,12 +34,33 @@ if (!AFrame.components['drone-move-bridge']) {
       }
     },
 
+    _findDrone(id) {
+      const sceneEl = this.el.sceneEl || this.el;
+      return sceneEl.querySelector(`[data-drone-id="${CSS.escape(id)}"]`);
+    },
+
+    _setYaw(target, yaw) {
+      const parsed = Number(yaw);
+      const fbxModel = target.components?.['fbx-model'];
+      if (Number.isFinite(parsed)) {
+        target.setAttribute('data-heading', String(parsed));
+        if (typeof fbxModel?.setHeadingYaw === 'function') {
+          fbxModel.setHeadingYaw(parsed);
+        }
+        return;
+      }
+
+      target.removeAttribute('data-heading');
+      if (typeof fbxModel?.setHeadingYaw === 'function') {
+        fbxModel.setHeadingYaw(null);
+      }
+    },
+
     _onMove(e) {
-      const { id, x, y, z } = e.detail || {};
+      const { id, x, y, z, yaw } = e.detail || {};
       if (!id) return;
 
-      const sceneEl = this.el.sceneEl || this.el; // scene에 붙여도 되고 entity에 붙여도 됨
-      const target = sceneEl.querySelector(`[data-drone-id="${CSS.escape(id)}"]`);
+      const target = this._findDrone(id);
       if (!target) {
         console.warn('[drone-move-bridge] target not found:', id);
         return;
@@ -49,10 +73,29 @@ if (!AFrame.components['drone-move-bridge']) {
 
       // 단일 이동은 즉시 위치 변경
       target.setAttribute('position', `${x} ${y} ${z}`);
+      if (yaw !== undefined) {
+        this._setYaw(target, yaw);
+      }
 
       // 선택적으로: 패널 값 갱신용 이벤트
       window.dispatchEvent(
         new CustomEvent('drone-moved', { detail: { id, x, y, z } })
+      );
+    },
+
+    _onYawSet(e) {
+      const { id, yaw } = e.detail || {};
+      if (!id) return;
+
+      const target = this._findDrone(id);
+      if (!target) {
+        console.warn('[drone-move-bridge] yaw target not found:', id);
+        return;
+      }
+
+      this._setYaw(target, yaw);
+      window.dispatchEvent(
+        new CustomEvent('drone-status-updated', { detail: { id, heading: yaw } })
       );
     },
 

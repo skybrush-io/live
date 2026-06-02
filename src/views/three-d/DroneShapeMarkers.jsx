@@ -28,6 +28,11 @@ function normalizeDrones(drones) {
         initialPosArray = d.initial_position;
       }
       const posArray = firstPathPoint ? fallbackPos : (Array.isArray(d.pos) && d.pos.length === 3 ? d.pos : initialPosArray);
+      const yaw = Number.isFinite(Number(d.yaw))
+        ? Number(d.yaw)
+        : Number.isFinite(Number(d.heading))
+          ? Number(d.heading)
+          : 0;
 
       return {
         id,
@@ -37,6 +42,7 @@ function normalizeDrones(drones) {
         pos: posArray,
         initialPos: initialPosArray,
         path: Array.isArray(d.path) ? d.path : [],
+        yaw,
       };
     })
     .filter((d) => d.id);
@@ -56,6 +62,7 @@ const DroneShapeMarkers = ({ drones }) => {
       data-drone-name={d.name}
       data-battery={d.battery}
       data-status={d.status}
+      data-heading={d.yaw}
       data-initial-pos={d.initialPos.join(' ')}
       data-path={d.path && d.path.length ? JSON.stringify(d.path) : undefined}
     />
@@ -69,6 +76,8 @@ DroneShapeMarkers.propTypes = {
       name: PropTypes.string,
       battery: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
       status: PropTypes.string,
+      yaw: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+      heading: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
       pos: PropTypes.arrayOf(PropTypes.number),
       initialPos: PropTypes.arrayOf(PropTypes.number),
       initial_position: PropTypes.arrayOf(PropTypes.number),
