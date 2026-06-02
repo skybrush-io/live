@@ -42,10 +42,10 @@ if (!AFrame.components['fbx-model']) {
       this._tmpUpW = new THREE.Vector3();
       this._tmpPos = new THREE.Vector3();
       this._tmpQuat = new THREE.Quaternion();
-      this._tmpBaseQuat = new THREE.Quaternion();
-      this._tmpInvBaseQuat = new THREE.Quaternion();
+      this._entityBaseQuat = new THREE.Quaternion();
       this._tmpYawQuat = new THREE.Quaternion();
-      this._worldZAxis = new THREE.Vector3(0, 0, 1);
+      this._localZAxis = new THREE.Vector3(0, 0, 1);
+      this._hasEntityBaseQuat = false;
 
       this.el.classList.add('three-d-clickable');
     },
@@ -90,28 +90,32 @@ if (!AFrame.components['fbx-model']) {
       this._applyHeadingYaw();
     },
 
+    _captureEntityBaseRotation() {
+      if (this._hasEntityBaseQuat) return;
+
+      this.el.object3D.updateMatrixWorld(true);
+      this._entityBaseQuat.copy(this.el.object3D.quaternion);
+      this._hasEntityBaseQuat = true;
+    },
+
     _applyHeadingYaw() {
-      if (!this.model) return;
+      this._captureEntityBaseRotation();
 
       if (!Number.isFinite(this._headingYaw)) {
-        this.model.quaternion.identity();
+        this.el.object3D.quaternion.copy(this._entityBaseQuat);
         return;
       }
 
-      this.el.object3D.updateMatrixWorld(true);
-      this.el.object3D.getWorldQuaternion(this._tmpBaseQuat);
-      this._tmpInvBaseQuat.copy(this._tmpBaseQuat).invert();
       this._tmpYawQuat.setFromAxisAngle(
-        this._worldZAxis,
+        this._localZAxis,
         THREE.MathUtils.degToRad(this._headingYaw)
       );
 
-      // Keep the marker entity's 90-degree leveling rotation intact, and rotate
-      // only the loaded model around the scene's Z axis.
-      this.model.quaternion
-        .copy(this._tmpInvBaseQuat)
-        .multiply(this._tmpYawQuat)
-        .multiply(this._tmpBaseQuat);
+      // Parent-space Z yaw first, then the fixed leveling rotation. This keeps
+      // the drone horizontal while changing only its left/right heading.
+      this.el.object3D.quaternion
+        .copy(this._tmpYawQuat)
+        .multiply(this._entityBaseQuat);
     },
 
     // -------------------------
