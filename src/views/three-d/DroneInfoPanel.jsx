@@ -21,11 +21,42 @@ const formationPositionDraftKey = (phaseId, droneId, axis) =>
 
 const isPartialDecimalInput = (raw) => raw === '' || /^-?\d*\.?\d*$/.test(raw);
 
+/** phase.points에 이미 들어 있는 축만 복사 (부분 입력 시 다른 축이 사라지지 않게) */
+const copyCapturedFormationAxes = (captured) => {
+  const next = {};
+  if (!captured || typeof captured !== 'object') return next;
+  const x = Number(captured.x);
+  const y = Number(captured.y);
+  const z = Number(captured.z);
+  const yaw = Number(captured.yaw);
+  if (Number.isFinite(x)) next.x = x;
+  if (Number.isFinite(y)) next.y = y;
+  if (Number.isFinite(z)) next.z = z;
+  if (Number.isFinite(yaw)) next.yaw = yaw;
+  return next;
+};
+
+const resolveFormationDroneId = (drone, droneIds, formationPhases) => {
+  const fromSelection =
+    drone?.id != null && String(drone.id).trim() !== '' ? String(drone.id) : '';
+  if (fromSelection) return fromSelection;
+  if (Array.isArray(droneIds) && droneIds.length) {
+    const first = droneIds.find((id) => id != null && String(id).trim() !== '');
+    if (first != null) return String(first);
+  }
+  for (const phase of formationPhases) {
+    const keys = Object.keys(phase?.points || {});
+    if (keys.length) return String(keys[0]);
+  }
+  return '';
+};
+
 export default function DroneInfoPanel({
   open,
   drone,
   onClose,
   droneCount = 0,
+  droneIds = [],
   formationPhases = [],
   formationSettings = null,
   isSendingFormation = false,
@@ -51,6 +82,7 @@ export default function DroneInfoPanel({
   ]);
   const [initialFields, setInitialFields] = useState({ ix: '', iy: '', iz: '' });
   const [formationPositionDrafts, setFormationPositionDrafts] = useState({});
+  const [formationSettingsDrafts, setFormationSettingsDrafts] = useState({});
 
   // 드론 바뀔 때 경로 초기화 / JSON에서 path가 오면 반영
   useEffect(() => {
@@ -121,6 +153,7 @@ export default function DroneInfoPanel({
 
   useEffect(() => {
     setFormationPositionDrafts({});
+    setFormationSettingsDrafts({});
   }, [drone?.id]);
 
   const isPathPointRowValid = (p) => {
@@ -645,8 +678,17 @@ export default function DroneInfoPanel({
     </>
   );
 
+  const commitFormationSetting = (key, raw) => {
+    if (raw === '' || raw === '-' || raw.endsWith('.')) return;
+    const parsed = Number(raw);
+    if (!Number.isFinite(parsed)) return;
+    onUpdateFormationSettings({ [key]: parsed });
+  };
+
   const renderFormationTab = () => {
-    const droneId = drone?.id;
+    const droneId = resolveFormationDroneId(drone, droneIds, formationPhases);
+    const selectionMissing =
+      !drone?.id || String(drone.id).trim() === '';
     return (
       <>
         <div
@@ -690,6 +732,22 @@ export default function DroneInfoPanel({
           <br />
           phase 데이터는 모든 드론이 공유합니다.
         </div>
+        {selectionMissing && droneId && (
+          <div
+            style={{
+              marginBottom: 8,
+              padding: '8px 10px',
+              borderRadius: 8,
+              border: '1px solid rgba(255, 200, 80, 0.35)',
+              background: 'rgba(255, 180, 40, 0.1)',
+              fontSize: 11,
+              lineHeight: 1.45,
+            }}
+          >
+            3D에서 드론을 다시 클릭해 선택하세요. 지금은 <b>{droneId}</b> 기준 좌표를
+            표시합니다.
+          </div>
+        )}
 
         {formationPhases.length === 0 ? (
           <div
@@ -903,16 +961,7 @@ export default function DroneInfoPanel({
                       const commitFormationAxisValue = (raw) => {
                         if (raw === '' && !hasCaptured) return;
 
-                        const next = hasCapturedPosition
-                          ? {
-                              x: Number(captured.x),
-                              y: Number(captured.y),
-                              z: Number(captured.z),
-                            }
-                          : {};
-                        if (hasCapturedYaw) {
-                          next.yaw = Number(captured.yaw);
-                        }
+                        const next = copyCapturedFormationAxes(captured);
                         if (raw === '') {
                           if (key === 'yaw') {
                             delete next.yaw;
@@ -1051,49 +1100,52 @@ export default function DroneInfoPanel({
               gap: 6,
             }}
           >
-            <div>
-              <div style={settingLabelStyle}>step_size</div>
-              <input
-                value={safeFormationSettings.step_size}
-                onChange={(e) =>
-                  onUpdateFormationSettings({
-                    step_size: e.target.value === '' ? 0 : Number(e.target.value),
-                  })
-                }
-                inputMode="decimal"
-                placeholder="1.0"
-                style={smallInputStyle}
-              />
-            </div>
-            <div>
-              <div style={settingLabelStyle}>duration_ms</div>
-              <input
-                value={safeFormationSettings.duration_ms}
-                onChange={(e) =>
-                  onUpdateFormationSettings({
-                    duration_ms: e.target.value === '' ? 0 : Number(e.target.value),
-                  })
-                }
-                inputMode="numeric"
-                placeholder="1000"
-                style={smallInputStyle}
-              />
-            </div>
-            <div>
-              <div style={settingLabelStyle}>takeoff_time</div>
-              <input
-                value={safeFormationSettings.takeoff_time}
-                onChange={(e) =>
-                  onUpdateFormationSettings({
-                    takeoff_time: e.target.value === '' ? 0 : Number(e.target.value),
-                  })
-                }
-                inputMode="numeric"
-                placeholder="0 = 생략"
-                title="0이면 페이로드에 포함되지 않습니다 (옵션값)"
-                style={smallInputStyle}
-              />
-            </div>
+            {[
+              { key: 'step_size', label: 'step_size', placeholder: '1.0' },
+              { key: 'duration_ms', label: 'duration_ms', placeholder: '1000' },
+              {
+                key: 'takeoff_time',
+                label: 'takeoff_time',
+                placeholder: '0 = 생략',
+                title: '0이면 페이로드에 포함되지 않습니다 (옵션값)',
+              },
+            ].map(({ key, label, placeholder, title }) => {
+              const displayValue =
+                formationSettingsDrafts[key] ??
+                String(safeFormationSettings[key] ?? '');
+              return (
+                <div key={key}>
+                  <div style={settingLabelStyle}>{label}</div>
+                  <input
+                    value={displayValue}
+                    onChange={(e) => {
+                      const raw = e.target.value;
+                      if (!isPartialDecimalInput(raw)) return;
+                      setFormationSettingsDrafts((prev) => ({
+                        ...prev,
+                        [key]: raw,
+                      }));
+                      if (raw === '' || raw === '-' || raw.endsWith('.')) return;
+                      commitFormationSetting(key, raw);
+                    }}
+                    onBlur={() => {
+                      const raw = formationSettingsDrafts[key];
+                      if (raw === undefined) return;
+                      setFormationSettingsDrafts((prev) => {
+                        const next = { ...prev };
+                        delete next[key];
+                        return next;
+                      });
+                      commitFormationSetting(key, raw);
+                    }}
+                    inputMode={key === 'step_size' ? 'decimal' : 'numeric'}
+                    placeholder={placeholder}
+                    title={title}
+                    style={smallInputStyle}
+                  />
+                </div>
+              );
+            })}
           </div>
 
           <div
@@ -1528,6 +1580,7 @@ DroneInfoPanel.propTypes = {
   }),
   onClose: PropTypes.func.isRequired,
   droneCount: PropTypes.number,
+  droneIds: PropTypes.arrayOf(PropTypes.string),
   formationPhases: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.string.isRequired,

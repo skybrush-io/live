@@ -30,7 +30,6 @@ import {
   collectConfigFromScene as collectConfigFromSceneUtil,
   convertTrajectoryToPlaybackPath,
   DRONE_PATH_FLUSH_REQUEST,
-  fingerprintShowSpecDroneConfig,
   getEffectiveScenery as getEffectiveSceneryUtil,
   getPathTotalDurationMs,
   makeShowLocalCoordinateTransformer,
@@ -402,6 +401,32 @@ const getPathDeliveryErrorMessage = async (response) => {
   }
 };
 
+const buildSelectedDroneFromShowSpec = (drone) => {
+  if (!drone?.id) return null;
+  const next = {
+    id: drone.id,
+    name: drone.name || String(drone.id),
+    battery: drone.battery,
+    status: drone.status,
+    path: Array.isArray(drone.path) ? drone.path.slice() : [],
+  };
+  if (Array.isArray(drone.initialPos) && drone.initialPos.length >= 3) {
+    next.initialPosition = {
+      x: Number(drone.initialPos[0]) || 0,
+      y: Number(drone.initialPos[1]) || 0,
+      z: Number(drone.initialPos[2]) || 0,
+    };
+  } else if (Array.isArray(drone.path) && drone.path.length > 0) {
+    const p0 = drone.path[0];
+    next.initialPosition = {
+      x: Number(p0.x) || 0,
+      y: Number(p0.y) || 0,
+      z: Number(p0.z) || 0,
+    };
+  }
+  return next;
+};
+
 const buildDroneConfigFromShowSpec = ({
   flatEarthCoordinateTransformer,
   indoor,
@@ -496,6 +521,7 @@ const ThreeDView = React.forwardRef((props, ref) => {
     showTrajectoriesOfSelection,
     showSpecDroneConfig,
     base64ShowBlob,
+    showData,
     swarmSpecification,
     uavToMissionIndex,
     viewRuntime,
@@ -536,7 +562,6 @@ const ThreeDView = React.forwardRef((props, ref) => {
   const clearPathOverrides = useCallback(() => {
     pathOverridesByIdRef.current.clear();
   }, []);
-  const showSpecFingerprintRef = useRef('');
   const ignorePersistedDroneConfigRef = useRef(false);
   const formationHydratedFromPersistRef = useRef(false);
   const snapDronesToHomeAfterRehydrateRef = useRef(false);
@@ -668,16 +693,6 @@ const ThreeDView = React.forwardRef((props, ref) => {
       Array.isArray(showSpecDroneConfig.drones) &&
       showSpecDroneConfig.drones.length > 0;
 
-    const nextFingerprint = hasShowSpec
-      ? fingerprintShowSpecDroneConfig(showSpecDroneConfig)
-      : '';
-
-    if (nextFingerprint === showSpecFingerprintRef.current) {
-      return;
-    }
-
-    showSpecFingerprintRef.current = nextFingerprint;
-
     if (!hasShowSpec) {
       return;
     }
@@ -693,25 +708,20 @@ const ThreeDView = React.forwardRef((props, ref) => {
     playbackFinishedDroneIdsRef.current = new Set();
 
     setSelectedDrone((prev) => {
-      if (!prev?.id) return prev;
-      const found = drones.find((d) => String(d?.id) === String(prev.id));
-      if (!found) return prev;
-      const next = {
-        ...prev,
-        path: Array.isArray(found.path) ? found.path.slice() : [],
-      };
-      if (Array.isArray(found.initialPos) && found.initialPos.length >= 3) {
-        next.initialPosition = {
-          x: Number(found.initialPos[0]) || 0,
-          y: Number(found.initialPos[1]) || 0,
-          z: Number(found.initialPos[2]) || 0,
-        };
+      if (prev?.id) {
+        const found = drones.find((d) => String(d?.id) === String(prev.id));
+        if (found) {
+          return {
+            ...prev,
+            ...buildSelectedDroneFromShowSpec(found),
+          };
+        }
       }
-      return next;
+      return buildSelectedDroneFromShowSpec(drones[0]) ?? prev;
     });
 
     applyDronePathsToScene(drones);
-  }, [showSpecDroneConfig, clearPathOverrides]);
+  }, [showSpecDroneConfig, base64ShowBlob, showData, clearPathOverrides]);
 
   const extraCameraProps = {
     'advanced-camera-controls': objectToString({
@@ -1399,15 +1409,17 @@ const ThreeDView = React.forwardRef((props, ref) => {
 
   const handleUpdateFormationDronePosition = useCallback(
     (phaseId, droneId, position) => {
-      if (!phaseId || !droneId) return;
+      const pid = phaseId != null ? String(phaseId) : '';
+      const did = droneId != null ? String(droneId) : '';
+      if (!pid || !did) return;
       setFormationPhases((prev) =>
         prev.map((phase) => {
-          if (phase.id !== phaseId) return phase;
+          if (String(phase.id) !== pid) return phase;
           const nextPoints = { ...(phase.points || {}) };
           if (position === null) {
-            delete nextPoints[droneId];
+            delete nextPoints[did];
           } else {
-            nextPoints[droneId] = position;
+            nextPoints[did] = position;
           }
           return { ...phase, points: nextPoints };
         })
@@ -1822,6 +1834,15 @@ const ThreeDView = React.forwardRef((props, ref) => {
             ? effectiveConfig.drones.length
             : 0
         }
+        droneIds={
+          effectiveConfig && Array.isArray(effectiveConfig.drones)
+            ? effectiveConfig.drones
+                .map((d) =>
+                  d?.id != null && String(d.id).trim() !== '' ? String(d.id) : null
+                )
+                .filter(Boolean)
+            : []
+        }
         formationPhases={formationPhases}
         formationSettings={formationSettings}
         isSendingFormation={isSendingFormation}
@@ -1909,6 +1930,7 @@ ThreeDView.propTypes = {
     source: PropTypes.string,
   }),
   base64ShowBlob: PropTypes.string,
+  showData: PropTypes.object,
   swarmSpecification: PropTypes.array,
   uavToMissionIndex: PropTypes.object,
   viewRuntime: PropTypes.shape({
@@ -1932,6 +1954,7 @@ export default connect(
     naturalLighting: getNaturalLightingForThreeDView(state),
     showSpecDroneConfig: getShowSpecDroneConfigForThreeDView(state),
     base64ShowBlob: getBase64ShowBlob(state),
+    showData: state.show.data,
     swarmSpecification: getDroneSwarmSpecification(state),
     uavToMissionIndex: getReverseMissionMapping(state),
   }),

@@ -66,6 +66,17 @@ if (!AFrame.components['click-pick']) {
       return null;
     },
 
+    /** fbx-model 자식 엔티티에서 data-drone-id가 있는 루트(부모)로 올라감 */
+    _resolveDroneRootEl(el) {
+      if (!el) return el;
+      let cur = el;
+      while (cur) {
+        if (cur.hasAttribute?.('data-drone-id')) return cur;
+        cur = cur.parentEl;
+      }
+      return el;
+    },
+
     _isIgnoredHitObject(obj) {
       let cur = obj;
       while (cur) {
@@ -113,25 +124,26 @@ if (!AFrame.components['click-pick']) {
     },
 
     _emitSelected(hitEl) {
-      const currentPosition = this._readPosition(hitEl, 'position');
-      const initialPosition = this._readPosition(hitEl, 'data-initial-pos');
+      const root = this._resolveDroneRootEl(hitEl);
+      const currentPosition = this._readPosition(root, 'position');
+      const initialPosition = this._readPosition(root, 'data-initial-pos');
       window.dispatchEvent(
         new CustomEvent('drone-selected', {
           detail: {
-            id: hitEl.getAttribute('data-drone-id'),
-            name: hitEl.getAttribute('data-drone-name'),
-            source: hitEl.getAttribute('data-drone-source'),
-            battery: hitEl.getAttribute('data-battery'),
-            batteryPercentage: hitEl.getAttribute('data-battery-percentage'),
-            batteryVoltage: hitEl.getAttribute('data-battery-voltage'),
-            status: hitEl.getAttribute('data-status'),
-            mode: hitEl.getAttribute('data-mode'),
-            gpsFix: hitEl.getAttribute('data-gps-fix'),
-            satellites: hitEl.getAttribute('data-satellites'),
-            ahl: hitEl.getAttribute('data-ahl'),
-            agl: hitEl.getAttribute('data-agl'),
-            amsl: hitEl.getAttribute('data-amsl'),
-            heading: hitEl.getAttribute('data-heading'),
+            id: root.getAttribute('data-drone-id'),
+            name: root.getAttribute('data-drone-name'),
+            source: root.getAttribute('data-drone-source'),
+            battery: root.getAttribute('data-battery'),
+            batteryPercentage: root.getAttribute('data-battery-percentage'),
+            batteryVoltage: root.getAttribute('data-battery-voltage'),
+            status: root.getAttribute('data-status'),
+            mode: root.getAttribute('data-mode'),
+            gpsFix: root.getAttribute('data-gps-fix'),
+            satellites: root.getAttribute('data-satellites'),
+            ahl: root.getAttribute('data-ahl'),
+            agl: root.getAttribute('data-agl'),
+            amsl: root.getAttribute('data-amsl'),
+            heading: root.getAttribute('data-heading'),
             currentPosition,
             initialPosition,
           },

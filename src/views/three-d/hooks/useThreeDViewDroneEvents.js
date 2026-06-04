@@ -25,6 +25,10 @@ export default function useThreeDViewDroneEvents({
         return;
       }
 
+      if (base.id != null && String(base.id).trim() !== '') {
+        base.id = String(base.id);
+      }
+
       const currentConfig = droneConfigRef.current;
       if (currentConfig && Array.isArray(currentConfig.drones)) {
         const found = currentConfig.drones.find((d) => sameDroneId(d.id, base.id));
