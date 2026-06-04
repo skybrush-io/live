@@ -28,11 +28,14 @@ function normalizeDrones(drones) {
         initialPosArray = d.initial_position;
       }
       const posArray = firstPathPoint ? fallbackPos : (Array.isArray(d.pos) && d.pos.length === 3 ? d.pos : initialPosArray);
+      const pathYaw = firstPathPoint && Number.isFinite(Number(firstPathPoint.yaw))
+        ? Number(firstPathPoint.yaw)
+        : null;
       const yaw = Number.isFinite(Number(d.yaw))
         ? Number(d.yaw)
         : Number.isFinite(Number(d.heading))
           ? Number(d.heading)
-          : 0;
+          : pathYaw ?? 0;
 
       return {
         id,
@@ -54,10 +57,8 @@ const DroneShapeMarkers = ({ drones }) => {
   return items.map((d) => (
     <a-entity
       key={d.id}
-      mixin="drone-marker"
       position={d.pos.join(' ')}
-      rotation="90 0 0"
-      class="three-d-clickable"
+      rotation={`0 0 ${d.yaw}`}
       data-drone-id={d.id}
       data-drone-name={d.name}
       data-battery={d.battery}
@@ -65,7 +66,13 @@ const DroneShapeMarkers = ({ drones }) => {
       data-heading={d.yaw}
       data-initial-pos={d.initialPos.join(' ')}
       data-path={d.path && d.path.length ? JSON.stringify(d.path) : undefined}
-    />
+    >
+      <a-entity
+        mixin="drone-marker"
+        rotation="90 0 0"
+        class="three-d-clickable"
+      />
+    </a-entity>
   ));
 };
 

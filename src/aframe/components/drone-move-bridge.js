@@ -9,6 +9,7 @@ if (!AFrame.components['drone-move-bridge']) {
       this._onYawSet = this._onYawSet.bind(this);
       // 드론별로 경로 애니메이션 취소 함수를 따로 관리
       this._currentPathCancels = {};
+      this._currentYawAnimationFrames = {};
       window.addEventListener('drone-move-request', this._onMove);
       window.addEventListener('drone-path-request', this._onPath);
       window.addEventListener('drone-initial-pos-set', this._onInitialPosSet);
@@ -32,6 +33,13 @@ if (!AFrame.components['drone-move-bridge']) {
         });
         this._currentPathCancels = {};
       }
+
+      if (this._currentYawAnimationFrames) {
+        Object.values(this._currentYawAnimationFrames).forEach((frameId) => {
+          if (frameId) window.cancelAnimationFrame(frameId);
+        });
+        this._currentYawAnimationFrames = {};
+      }
     },
 
     _findDrone(id) {
@@ -41,19 +49,75 @@ if (!AFrame.components['drone-move-bridge']) {
 
     _setYaw(target, yaw) {
       const parsed = Number(yaw);
-      const fbxModel = target.components?.['fbx-model'];
       if (Number.isFinite(parsed)) {
         target.setAttribute('data-heading', String(parsed));
-        if (typeof fbxModel?.setHeadingYaw === 'function') {
-          fbxModel.setHeadingYaw(parsed);
-        }
+        // Yaw on the root entity only (show Z / vertical axis). Model pitch stays on child.
+        target.setAttribute('rotation', `0 0 ${parsed}`);
         return;
       }
 
       target.removeAttribute('data-heading');
-      if (typeof fbxModel?.setHeadingYaw === 'function') {
-        fbxModel.setHeadingYaw(null);
+      target.setAttribute('rotation', '0 0 0');
+    },
+
+    _getCurrentYaw(target) {
+      const parsed = Number(target?.getAttribute?.('data-heading'));
+      return Number.isFinite(parsed) ? parsed : null;
+    },
+
+    _getPointYaw(point) {
+      const parsed = Number(point?.yaw);
+      return Number.isFinite(parsed) ? parsed : null;
+    },
+
+    _normalizeYawDelta(delta) {
+      let result = delta;
+      while (result > 180) result -= 360;
+      while (result < -180) result += 360;
+      return result;
+    },
+
+    _easeInOutQuad(t) {
+      return t < 0.5 ? 2 * t * t : 1 - ((-2 * t + 2) ** 2) / 2;
+    },
+
+    _cancelYawAnimation(id) {
+      const frameId = this._currentYawAnimationFrames?.[id];
+      if (frameId) {
+        window.cancelAnimationFrame(frameId);
+        this._currentYawAnimationFrames[id] = undefined;
       }
+    },
+
+    _animateYaw(id, target, fromYaw, toYaw, durationMs) {
+      if (!Number.isFinite(toYaw)) return;
+
+      this._cancelYawAnimation(id);
+
+      const startYaw = Number.isFinite(fromYaw) ? fromYaw : toYaw;
+      const duration = Math.max(0, Number(durationMs) || 0);
+      if (duration <= 0 || startYaw === toYaw) {
+        this._setYaw(target, toYaw);
+        return;
+      }
+
+      const startedAt = performance.now();
+      const delta = this._normalizeYawDelta(toYaw - startYaw);
+
+      const step = (now) => {
+        const ratio = Math.min(1, Math.max(0, (now - startedAt) / duration));
+        const eased = this._easeInOutQuad(ratio);
+        this._setYaw(target, startYaw + delta * eased);
+
+        if (ratio < 1) {
+          this._currentYawAnimationFrames[id] = window.requestAnimationFrame(step);
+        } else {
+          this._currentYawAnimationFrames[id] = undefined;
+          this._setYaw(target, toYaw);
+        }
+      };
+
+      this._currentYawAnimationFrames[id] = window.requestAnimationFrame(step);
     },
 
     _onMove(e) {
@@ -70,6 +134,7 @@ if (!AFrame.components['drone-move-bridge']) {
         this._currentPathCancels[id]();
         this._currentPathCancels[id] = undefined;
       }
+      this._cancelYawAnimation(id);
 
       // 단일 이동은 즉시 위치 변경
       target.setAttribute('position', `${x} ${y} ${z}`);
@@ -153,12 +218,18 @@ if (!AFrame.components['drone-move-bridge']) {
       let index = 0;
       // path[0]을 시작 위치로 사용할 때, 그 점의 durationMs/holdMs는 시작 후 대기 시간으로 사용한다.
       let initialWaitMs = 0;
+      let currentYaw = this._getCurrentYaw(target);
 
       if (startFromInitial) {
         // 경로 재생은 path[0]을 곧 시작 위치로 사용한다.
         // path-planner 출력 컨벤션(첫 점 = 이륙/시작 지점)과 사용자의 직관적 기대에 맞춤.
         if (hasValidFirstPoint) {
           target.setAttribute('position', `${firstX} ${firstY} ${firstZ}`);
+          const firstYaw = this._getPointYaw(firstPoint);
+          if (firstYaw != null) {
+            this._setYaw(target, firstYaw);
+            currentYaw = firstYaw;
+          }
           startAnchor = { x: firstX, y: firstY, z: firstZ };
           index = 1;
           const firstDur = Number(firstPoint.durationMs);
@@ -193,6 +264,11 @@ if (!AFrame.components['drone-move-bridge']) {
       // 시작 앵커가 여전히 없으면 첫 점으로 최후 폴백
       if (!startAnchor && hasValidFirstPoint) {
         target.setAttribute('position', `${firstX} ${firstY} ${firstZ}`);
+        const firstYaw = this._getPointYaw(firstPoint);
+        if (firstYaw != null) {
+          this._setYaw(target, firstYaw);
+          currentYaw = firstYaw;
+        }
         startAnchor = { x: firstX, y: firstY, z: firstZ };
         index = 1;
       }
@@ -229,6 +305,7 @@ if (!AFrame.components['drone-move-bridge']) {
             currentHoldTimer = null;
           }
           target.removeAttribute('animation__path');
+          this._cancelYawAnimation(id);
         };
       };
 
@@ -245,6 +322,7 @@ if (!AFrame.components['drone-move-bridge']) {
 
         const point = points[index] || {};
         const { x, y, z, durationMs } = point;
+        const targetYaw = this._getPointYaw(point);
         const from = `${currentFrom.x} ${currentFrom.y} ${currentFrom.z}`;
         const to = `${x} ${y} ${z}`;
 
@@ -260,6 +338,11 @@ if (!AFrame.components['drone-move-bridge']) {
 
         const onComplete = () => {
           target.removeEventListener('animationcomplete__path', onComplete);
+          if (targetYaw != null) {
+            this._cancelYawAnimation(id);
+            this._setYaw(target, targetYaw);
+            currentYaw = targetYaw;
+          }
           continueAfterHold(point);
         };
 
@@ -270,6 +353,7 @@ if (!AFrame.components['drone-move-bridge']) {
           }
           target.removeEventListener('animationcomplete__path', onComplete);
           target.removeAttribute('animation__path');
+          this._cancelYawAnimation(id);
         };
 
         target.addEventListener('animationcomplete__path', onComplete);
@@ -282,9 +366,17 @@ if (!AFrame.components['drone-move-bridge']) {
         if (segDur === 0) {
           target.setAttribute('position', to);
           currentFrom = { x, y, z };
+          if (targetYaw != null) {
+            this._setYaw(target, targetYaw);
+            currentYaw = targetYaw;
+          }
           target.removeEventListener('animationcomplete__path', onComplete);
           continueAfterHold(point);
           return;
+        }
+
+        if (targetYaw != null) {
+          this._animateYaw(id, target, currentYaw, targetYaw, segDur);
         }
 
         target.setAttribute('animation__path', {
@@ -310,6 +402,7 @@ if (!AFrame.components['drone-move-bridge']) {
             currentHoldTimer = null;
           }
           target.removeAttribute('animation__path');
+          this._cancelYawAnimation(id);
         };
       } else {
         playNext();

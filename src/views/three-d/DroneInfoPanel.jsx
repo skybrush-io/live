@@ -56,14 +56,20 @@ export default function DroneInfoPanel({
   useEffect(() => {
     if (drone && Array.isArray(drone.path) && drone.path.length) {
       setPathPoints(
-        drone.path.map((p, index) => ({
-          x: String(p.x ?? ''),
-          y: String(p.y ?? ''),
-          z: String(p.z ?? ''),
-          durationMs: toFiniteDurationMs(p.durationMs, index === 0 ? 0 : 1000),
-          holdMs: toFiniteHoldMs(p.holdMs, 0),
-          highlighted: Boolean(p.highlighted),
-        }))
+        drone.path.map((p, index) => {
+          const row = {
+            x: String(p.x ?? ''),
+            y: String(p.y ?? ''),
+            z: String(p.z ?? ''),
+            durationMs: toFiniteDurationMs(p.durationMs, index === 0 ? 0 : 1000),
+            holdMs: toFiniteHoldMs(p.holdMs, 0),
+            highlighted: Boolean(p.highlighted),
+          };
+          if (Number.isFinite(Number(p.yaw))) {
+            row.yaw = String(p.yaw);
+          }
+          return row;
+        })
       );
     } else {
       setPathPoints([{ x: '', y: '', z: '', durationMs: 0, holdMs: 0, highlighted: false }]);
@@ -286,6 +292,10 @@ export default function DroneInfoPanel({
             durationMs: toFiniteDurationMs(p.durationMs, index === 0 ? 0 : 1000),
             holdMs: toFiniteHoldMs(p.holdMs, 0),
           };
+          const yaw = Number(p.yaw);
+          if (Number.isFinite(yaw)) {
+            point.yaw = yaw;
+          }
           if (p.highlighted) {
             point.highlighted = true;
           }

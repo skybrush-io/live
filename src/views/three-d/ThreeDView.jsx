@@ -28,12 +28,15 @@ import {
   buildPathDeliveryPayloadFromConfig,
   buildSeekPathWithInitial,
   collectConfigFromScene as collectConfigFromSceneUtil,
+  convertTrajectoryToPlaybackPath,
   DRONE_PATH_FLUSH_REQUEST,
   fingerprintShowSpecDroneConfig,
   getEffectiveScenery as getEffectiveSceneryUtil,
   getPathTotalDurationMs,
+  makeShowLocalCoordinateTransformer,
   mergePathOverridesIntoDrones,
   normalizeDroneForConfigIO,
+  normalizeDronesFromConfigImport,
   parsePositionLike,
   slicePathByElapsedMs,
 } from './utils/threeDViewUtils';
@@ -399,98 +402,6 @@ const getPathDeliveryErrorMessage = async (response) => {
   }
 };
 
-const toFiniteShowCoordinate = (coordinate) => {
-  if (!Array.isArray(coordinate) || coordinate.length < 3) return null;
-  const x = Number(coordinate[0]);
-  const y = Number(coordinate[1]);
-  const z = Number(coordinate[2]);
-  return Number.isFinite(x) && Number.isFinite(y) && Number.isFinite(z)
-    ? [x, y, z]
-    : null;
-};
-
-const almostEqualCoordinate = (a, b) => (
-  Array.isArray(a) &&
-  Array.isArray(b) &&
-  a.length >= 3 &&
-  b.length >= 3 &&
-  Math.abs(Number(a[0]) - Number(b[0])) < 1e-6 &&
-  Math.abs(Number(a[1]) - Number(b[1])) < 1e-6 &&
-  Math.abs(Number(a[2]) - Number(b[2])) < 1e-6
-);
-
-const makeCoordinateTransformerForPlayback = () => {
-  // The 3D path preview/editor works in show-local coordinates. Imported .skyc
-  // trajectories already store these local NWU points, so do not re-project them
-  // through the map/world coordinate transformer here.
-  return (coordinate) => toFiniteShowCoordinate(coordinate);
-};
-
-const convertTrajectoryToPlaybackPath = (trajectory, transformCoordinate, initialCoordinate) => {
-  if (!trajectory || !Array.isArray(trajectory.points) || !trajectory.points.length) {
-    return null;
-  }
-
-  const takeoffTimeMs = Math.max(0, Number(trajectory.takeoffTime) || 0) * 1000;
-  const rawPoints = trajectory.points
-    .map((keyframe) => {
-      if (!Array.isArray(keyframe) || keyframe.length < 2) return null;
-      const timestampMs = Math.max(0, Number(keyframe[0]) || 0) * 1000;
-      const position = transformCoordinate(keyframe[1]);
-      if (!position) return null;
-      return { timestampMs: takeoffTimeMs + timestampMs, position };
-    })
-    .filter(Boolean)
-    .sort((a, b) => a.timestampMs - b.timestampMs);
-
-  if (!rawPoints.length) return null;
-
-  const transformedInitial = initialCoordinate
-    ? transformCoordinate(initialCoordinate)
-    : null;
-  const initialPos = transformedInitial || rawPoints[0].position;
-  const hasExplicitInitial = !!transformedInitial;
-  const firstStartsAtInitial = almostEqualCoordinate(rawPoints[0].position, initialPos);
-
-  const path = rawPoints.map((point, index) => {
-    const durationMs =
-      index === 0 && !hasExplicitInitial
-        ? 0
-        : index === 0
-          ? Math.max(0, Math.round(firstStartsAtInitial ? 0 : point.timestampMs))
-          : Math.max(0, Math.round(point.timestampMs - rawPoints[index - 1].timestampMs));
-    const [x, y, z] = point.position;
-    return { x, y, z, durationMs };
-  });
-
-  if (!hasExplicitInitial && rawPoints[0].timestampMs > 0) {
-    const [x, y, z] = rawPoints[0].position;
-    path.splice(1, 0, {
-      x,
-      y,
-      z,
-      durationMs: Math.round(rawPoints[0].timestampMs),
-    });
-  }
-
-  const landingTimeMs = Math.max(0, Number(trajectory.landingTime) || 0) * 1000;
-  if (landingTimeMs > 0 && path.length > 0) {
-    const lastIndex = path.length - 1;
-    const last = path[lastIndex];
-    path[lastIndex] = {
-      ...last,
-      holdMs: (Number.isFinite(Number(last.holdMs)) && Number(last.holdMs) > 0
-        ? Number(last.holdMs)
-        : 0) + landingTimeMs,
-    };
-  }
-
-  return {
-    initialPos,
-    path,
-  };
-};
-
 const buildDroneConfigFromShowSpec = ({
   flatEarthCoordinateTransformer,
   indoor,
@@ -499,19 +410,17 @@ const buildDroneConfigFromShowSpec = ({
 }) => {
   if (!Array.isArray(swarm) || !swarm.length) return null;
 
-  const transformCoordinate = makeCoordinateTransformerForPlayback({
-    flatEarthCoordinateTransformer,
-    indoor,
-    showToWorldCoordinate,
-  });
+  const transformCoordinate = makeShowLocalCoordinateTransformer();
 
   const drones = swarm
     .map((drone, index) => {
       const trajectory = drone?.settings?.trajectory ?? drone?.trajectory;
+      const yawControl = drone?.settings?.yawControl ?? drone?.yawControl;
       const converted = convertTrajectoryToPlaybackPath(
         trajectory,
         transformCoordinate,
-        drone?.settings?.home ?? drone?.home
+        drone?.settings?.home ?? drone?.home,
+        yawControl
       );
       if (!converted) return null;
 
@@ -539,6 +448,9 @@ const buildDroneConfigFromShowSpec = ({
         pos: initialPos,
         initialPos,
         path,
+        yaw: Array.isArray(path) && path.length > 0 && Number.isFinite(Number(path[0].yaw))
+          ? Number(path[0].yaw)
+          : 0,
       };
     })
     .filter(Boolean);
@@ -853,12 +765,13 @@ const ThreeDView = React.forwardRef((props, ref) => {
     reader.onload = () => {
       try {
         const parsed = JSON.parse(reader.result);
-        if (!parsed || !Array.isArray(parsed.drones)) {
+        const importedDrones = normalizeDronesFromConfigImport(parsed);
+        if (!importedDrones.length) {
           // eslint-disable-next-line no-console
-          console.warn('[ThreeDView] invalid drone config JSON (missing "drones" array)');
+          console.warn('[ThreeDView] invalid drone config JSON (missing "drones")');
           return;
         }
-        const normalizedDrones = parsed.drones.map((d, index) => {
+        const normalizedDrones = importedDrones.map((d, index) => {
           const normalized = normalizeDroneForConfigIO(d, index);
           return {
             ...normalized,
@@ -1279,15 +1192,16 @@ const ThreeDView = React.forwardRef((props, ref) => {
       const z = Number(point.z);
       if (!Number.isFinite(x) || !Number.isFinite(y) || !Number.isFinite(z)) return;
 
+      const detail = { id: d.id, x, y, z };
+      const yaw = Number(point.yaw);
+      if (Number.isFinite(yaw)) {
+        detail.yaw = yaw;
+      }
+
       // 슬라이더 이동 시 즉시 해당 진행 위치로 점프(기존 애니메이션은 브리지에서 취소)
       window.dispatchEvent(
         new CustomEvent('drone-move-request', {
-          detail: {
-            id: d.id,
-            x,
-            y,
-            z,
-          },
+          detail,
         })
       );
     });

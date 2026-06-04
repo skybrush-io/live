@@ -42,10 +42,6 @@ if (!AFrame.components['fbx-model']) {
       this._tmpUpW = new THREE.Vector3();
       this._tmpPos = new THREE.Vector3();
       this._tmpQuat = new THREE.Quaternion();
-      this._entityBaseQuat = new THREE.Quaternion();
-      this._tmpYawQuat = new THREE.Quaternion();
-      this._localZAxis = new THREE.Vector3(0, 0, 1);
-      this._hasEntityBaseQuat = false;
 
       this.el.classList.add('three-d-clickable');
     },
@@ -72,7 +68,6 @@ if (!AFrame.components['fbx-model']) {
         fbx.scale.set(scale.x, scale.y, scale.z);
         this.model = fbx;
         this.el.object3D.add(fbx);
-        this.setHeadingYaw(this.el.getAttribute('data-heading'));
 
         this._ensureLight();
         if (this._isSelected) this._applyRedColorsOnly();
@@ -84,39 +79,8 @@ if (!AFrame.components['fbx-model']) {
       this._updateLightPose();
     },
 
-    setHeadingYaw(yaw) {
-      const parsed = Number(yaw);
-      this._headingYaw = Number.isFinite(parsed) ? parsed : null;
-      this._applyHeadingYaw();
-    },
-
-    _captureEntityBaseRotation() {
-      if (this._hasEntityBaseQuat) return;
-
-      this.el.object3D.updateMatrixWorld(true);
-      this._entityBaseQuat.copy(this.el.object3D.quaternion);
-      this._hasEntityBaseQuat = true;
-    },
-
-    _applyHeadingYaw() {
-      this._captureEntityBaseRotation();
-
-      if (!Number.isFinite(this._headingYaw)) {
-        this.el.object3D.quaternion.copy(this._entityBaseQuat);
-        return;
-      }
-
-      this._tmpYawQuat.setFromAxisAngle(
-        this._localZAxis,
-        THREE.MathUtils.degToRad(this._headingYaw)
-      );
-
-      // Parent-space Z yaw first, then the fixed leveling rotation. This keeps
-      // the drone horizontal while changing only its left/right heading.
-      this.el.object3D.quaternion
-        .copy(this._tmpYawQuat)
-        .multiply(this._entityBaseQuat);
-    },
+    // Heading is applied on the parent drone root (rotation 0 0 yaw). Child keeps 90 0 0.
+    setHeadingYaw() {},
 
     // -------------------------
     // Light helpers
