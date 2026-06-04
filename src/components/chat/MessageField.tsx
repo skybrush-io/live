@@ -2,15 +2,34 @@
  * @file React component for message input with history.
  */
 
-import TextField from '@mui/material/TextField';
-import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useState } from 'react';
+import TextField, { type TextFieldProps } from '@mui/material/TextField';
+import React, {
+  useCallback,
+  useEffect,
+  useState,
+  type ChangeEvent,
+  type FocusEvent,
+  type KeyboardEvent,
+} from 'react';
 
-const MessageField = React.forwardRef(
-  ({ history, onEscape, onSubmit, ...rest }, ref) => {
+type ElementWithFocusRestorationTarget = Element & {
+  focusRestorationTarget?: HTMLElement | null;
+};
+
+type MessageFieldProps = Omit<
+  TextFieldProps,
+  'onBlur' | 'onChange' | 'onKeyDown' | 'value'
+> & {
+  history?: string[];
+  onEscape: (event: KeyboardEvent<HTMLInputElement>) => void;
+  onSubmit: (message: string) => void;
+};
+
+const MessageField = React.forwardRef<HTMLDivElement, MessageFieldProps>(
+  ({ history = [], onEscape, onSubmit, ...rest }, ref) => {
     const [message, setMessage] = useState('');
     const handleChange = useCallback(
-      (event) => {
+      (event: ChangeEvent<HTMLInputElement>) => {
         setMessage(event.target.value);
       },
       [setMessage]
@@ -22,7 +41,7 @@ const MessageField = React.forwardRef(
     }, [history, historyIndex]);
 
     const handleKeyDown = useCallback(
-      (event) => {
+      (event: KeyboardEvent<HTMLInputElement>) => {
         switch (event.key) {
           case 'Enter': {
             if (message.length > 0) {
@@ -58,11 +77,16 @@ const MessageField = React.forwardRef(
       [history, message, onEscape, onSubmit]
     );
 
-    const handleBlur = useCallback((event) => {
-      if (event.relatedTarget) {
-        event.relatedTarget.focusRestorationTarget = event.target;
-      }
-    }, []);
+    const handleBlur = useCallback(
+      (
+        event: FocusEvent<HTMLInputElement, ElementWithFocusRestorationTarget>
+      ) => {
+        if (event.relatedTarget) {
+          event.relatedTarget.focusRestorationTarget = event.target;
+        }
+      },
+      []
+    );
 
     return (
       <TextField
@@ -77,10 +101,6 @@ const MessageField = React.forwardRef(
   }
 );
 
-MessageField.propTypes = {
-  history: PropTypes.arrayOf(PropTypes.string),
-  onEscape: PropTypes.func,
-  onSubmit: PropTypes.func,
-};
+MessageField.displayName = 'MessageField';
 
 export default MessageField;

@@ -3,7 +3,6 @@
  */
 
 import clsx from 'clsx';
-import PropTypes from 'prop-types';
 import TimeAgo from 'react-timeago';
 
 import { makeStyles } from '@skybrush/app-theme-mui';
@@ -30,17 +29,22 @@ const useStyles = makeStyles((theme) => ({
       color: theme.palette.warning.main,
     },
   },
+
+  'level-info': {},
 }));
+
+type MarkerProps = {
+  date?: Date;
+  level?: 'error' | 'info' | 'warning';
+  message?: string;
+};
 
 /**
  * Stateless React component showing a marker line in a chat session.
  */
-export const Marker = ({ date, level = 'info', message = '' }) => {
+export const Marker = ({ date, level = 'info', message = '' }: MarkerProps) => {
   const classes = useStyles();
-  const className = clsx(
-    classes.root,
-    classes[`level-${level}`] || classes['level-info']
-  );
+  const className = clsx(classes.root, classes[`level-${level}`]);
   const dateComponent = date && (
     <span className='date'>
       <TimeAgo date={date} />
@@ -51,12 +55,6 @@ export const Marker = ({ date, level = 'info', message = '' }) => {
       <span className='message'>{message}</span> {dateComponent}
     </div>
   );
-};
-
-Marker.propTypes = {
-  level: PropTypes.string,
-  message: PropTypes.string,
-  date: PropTypes.instanceOf(Date),
 };
 
 export default Marker;

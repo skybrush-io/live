@@ -5,13 +5,12 @@
 import { blue, grey } from '@mui/material/colors';
 import clsx from 'clsx';
 import { Markup } from 'interweave';
-import PropTypes from 'prop-types';
+import type { ReactNode } from 'react';
 
 import { isThemeDark, makeStyles } from '@skybrush/app-theme-mui';
 
 import { colorForSeverity } from '~/components/colors';
 import { Severity } from '~/model/enums';
-import CustomPropTypes from '~/utils/prop-types';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -88,6 +87,18 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+type ChatBubbleProps = {
+  author?: string;
+  body?: string;
+  date?: string;
+  leftComponent?: ReactNode;
+  own?: boolean;
+  raw?: boolean;
+  rightComponent?: ReactNode;
+  severity?: Severity;
+  showMeta?: boolean;
+};
+
 /**
  * Stateless React component showing a single chat bubble in a chat
  * session.
@@ -102,7 +113,7 @@ const ChatBubble = ({
   rightComponent,
   severity,
   showMeta,
-}) => {
+}: ChatBubbleProps) => {
   const classes = useStyles();
   const dateComponent = date && showMeta && (
     <span className='date'>{date}</span>
@@ -124,7 +135,7 @@ const ChatBubble = ({
     </div>
   );
   return (
-    <div className={clsx(classes.root, own ? classes.own : classes.other)}>
+    <div className={classes.root}>
       {leftComponentWrapper}
       <div style={{ flex: 1, maxWidth: '100%' }}>
         {showMeta && (
@@ -137,24 +148,6 @@ const ChatBubble = ({
       {rightComponentWrapper}
     </div>
   );
-};
-
-ChatBubble.propTypes = {
-  author: PropTypes.string,
-  body: PropTypes.string,
-  date: PropTypes.string,
-  own: PropTypes.bool,
-  raw: PropTypes.bool,
-  leftComponent: PropTypes.oneOfType([
-    PropTypes.node,
-    PropTypes.arrayOf(PropTypes.node),
-  ]),
-  rightComponent: PropTypes.oneOfType([
-    PropTypes.node,
-    PropTypes.arrayOf(PropTypes.node),
-  ]),
-  severity: CustomPropTypes.severity,
-  showMeta: PropTypes.bool,
 };
 
 export default ChatBubble;
