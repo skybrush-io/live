@@ -44,10 +44,7 @@ type MarkerProps = {
  */
 export const Marker = ({ date, level = 'info', message = '' }: MarkerProps) => {
   const classes = useStyles();
-  const className = clsx(
-    classes.root,
-    classes[`level-${level}`]
-  );
+  const className = clsx(classes.root, classes[`level-${level}`]);
   const dateComponent = date && (
     <span className='date'>
       <TimeAgo date={date} />
