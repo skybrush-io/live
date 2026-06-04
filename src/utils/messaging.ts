@@ -19,12 +19,7 @@ import type { StartAsyncOperationOptions } from '~/flockwave/messages';
 import messageHub from '~/message-hub';
 import { NULL_ISLAND, type GPSPosition } from '~/model/geography';
 import store from '~/store';
-import type {
-  AppDispatch,
-  AppSelector,
-  AppThunk,
-  RootState,
-} from '~/store/reducers';
+import type { AppDispatch, AppSelector, AppThunk } from '~/store/reducers';
 
 import handleError from '~/error-handling';
 import createLogger from './logging';
@@ -133,11 +128,7 @@ function performMassOperation<T, U>(
       );
       const needsConfirmation =
         !skipConfirmation &&
-        shouldConfirmUAVOperation(
-          store.getState() as RootState,
-          uavs,
-          isBroadcast
-        );
+        shouldConfirmUAVOperation(store.getState(), uavs, isBroadcast);
 
       if (needsConfirmation) {
         // This operation needs confirmation, so instead of executing it, show
