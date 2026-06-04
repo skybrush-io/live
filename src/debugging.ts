@@ -1,13 +1,13 @@
 import { Base64 } from 'js-base64';
 
-function decodeUTF8(array) {
+function decodeUTF8(array: Uint8Array): string {
   const length = array.length;
 
-  let out;
-  let i;
-  let c;
-  let char2;
-  let char3;
+  let out: string;
+  let i: number;
+  let c: number;
+  let char2: number;
+  let char3: number;
 
   out = '';
   i = 0;
@@ -47,8 +47,8 @@ function decodeUTF8(array) {
   return out;
 }
 
-function encodeUTF8(string_) {
-  const utf8 = [];
+function encodeUTF8(string_: string): Uint8Array {
+  const utf8: number[] = [];
   for (let i = 0; i < string_.length; i++) {
     let charcode = string_.charCodeAt(i);
     if (charcode < 0x80) utf8.push(charcode);
@@ -82,9 +82,12 @@ function encodeUTF8(string_) {
   return new Uint8Array(utf8);
 }
 
-export async function handleDebugRequest(body, respond) {
+export async function handleDebugRequest(
+  body: { data?: string },
+  respond?: (response: string) => Promise<void>
+): Promise<void> {
   const { data } = body || {};
-  let i;
+  let i: number;
 
   if (!data) {
     return;
@@ -101,7 +104,7 @@ export async function handleDebugRequest(body, respond) {
   }
 
   const index = decoded.indexOf(' ');
-  let response;
+  let response: string;
 
   if (index === 0) {
     response = 'err Invalid command';
@@ -128,12 +131,15 @@ export async function handleDebugRequest(body, respond) {
 
 // Insert custom debugging commands here as needed, on a per-session basis.
 // Do not commit stuff that you inserted here into the repo.
-const handlers = {};
+const handlers: Record<string, (args?: string) => unknown> = {};
 
-async function handleDebugCommand(command, args) {
+async function handleDebugCommand(
+  command: string,
+  args?: string
+): Promise<string> {
   const handler = handlers[command];
 
-  let response;
+  let response: unknown;
   let success = false;
 
   try {
@@ -145,10 +151,10 @@ async function handleDebugCommand(command, args) {
 
     success = true;
   } catch (error) {
-    response = error.toString();
+    response = error instanceof Error ? error.toString() : String(error);
   } finally {
     response = JSON.stringify(response);
   }
 
-  return `${success ? 'ok' : 'err'} ${response}`;
+  return `${success ? 'ok' : 'err'} ${String(response)}`;
 }
