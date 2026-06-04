@@ -6,7 +6,7 @@ import { MessageSemantics } from './types';
  * Converts a message severity level in the Flockwave protocol to a message
  * semantics value.
  */
-export function semanticsFromSeverity(severity: Severity): MessageSemantics {
+export function semanticsFromSeverity(severity?: string): MessageSemantics {
   switch (severity) {
     case Severity.ERROR:
     case Severity.CRITICAL:
