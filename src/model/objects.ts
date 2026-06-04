@@ -3,15 +3,19 @@
  * objects..
  */
 
+import type { Notification_OBJDEL } from '@skybrush/flockwave-spec';
 import { notifyObjectsDeletedOnServer } from '~/features/objects/actions';
 import type { AppDispatch } from '~/store/reducers';
 
 /**
  * Handles an OBJ-DEL message from a server and updates the state of the Redux
  * store appropriately.
+ *
+ * @param  body  the body of the OBJ-DEL message
+ * @param  dispatch  the dispatch function of the Redux store
  */
 export function handleObjectDeletionMessage(
-  body: { ids: string[] },
+  body: Notification_OBJDEL,
   dispatch: AppDispatch
 ): void {
   /* TODO(ntamas): we have to decide whether deleting the object from the client

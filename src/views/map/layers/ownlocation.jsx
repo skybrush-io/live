@@ -10,10 +10,10 @@ import { Feature, Geolocation, geom, layer, source } from '@collmot/ol-react';
 
 import { setLayerParametersById } from '~/features/map/layers';
 import useDeviceOrientation from '~/hooks/useDeviceOrientation';
-import makeLogger from '~/utils/logging';
+import createLogger from '~/utils/logging';
 import { toRadians } from '~/utils/math';
 
-const logger = makeLogger('OwnLocationLayer');
+const logger = createLogger('OwnLocationLayer');
 
 // === Settings for this particular layer type ===
 

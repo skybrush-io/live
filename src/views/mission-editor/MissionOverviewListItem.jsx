@@ -6,7 +6,6 @@ import ListItemAvatar from '@mui/material/ListItemAvatar';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import isEmpty from 'lodash-es/isEmpty';
-import isNumber from 'lodash-es/isNumber';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
@@ -79,7 +78,8 @@ const formatMarkerStatusText = (marker, ratio) => {
 
   const markerText =
     marker in descriptions ? descriptions[marker] : `Unknown marker: ${marker}`;
-  const ratioText = isNumber(ratio) ? ` (ratio=${ratio.toFixed(4)})` : '';
+  const ratioText =
+    typeof ratio === 'number' ? ` (ratio=${ratio.toFixed(4)})` : '';
 
   return markerText + ratioText;
 };

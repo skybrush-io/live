@@ -1,8 +1,6 @@
 import type { DroneShowConfiguration } from '@skybrush/flockwave-spec';
 import get from 'lodash-es/get';
 import isNil from 'lodash-es/isNil';
-import isNumber from 'lodash-es/isNumber';
-import isString from 'lodash-es/isString';
 import reject from 'lodash-es/reject';
 import { call, put, select } from 'redux-saga/effects';
 
@@ -39,8 +37,8 @@ function* pullSettingsFromServer() {
   const { authorized, clock, time, method, uavIds } = get(config, 'start');
 
   if (
-    (isNumber(time) || isNil(time)) &&
-    isString(method) &&
+    (typeof time === 'number' || isNil(time)) &&
+    typeof method === 'string' &&
     Array.isArray(uavIds)
   ) {
     yield put(setShowAuthorization(Boolean(authorized)));

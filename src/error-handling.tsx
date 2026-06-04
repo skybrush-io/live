@@ -8,9 +8,9 @@ import isPromise from 'is-promise';
 import AlertWarning from '@mui/icons-material/Warning';
 
 import { showError, showWarning } from '~/features/snackbar/actions';
-import makeLogger from '~/utils/logging';
+import createLogger from '~/utils/logging';
 
-const logger = makeLogger('error');
+const logger = createLogger('error');
 
 const reloadApp = () => {
   window.location.reload();

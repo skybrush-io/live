@@ -495,7 +495,7 @@ export const selectOrdered = <T extends ItemLike>({
  * @returns The reordered collection
  */
 export const reorder = <T extends ItemLike>(
-  collection: Collection<T>,
+  collection: Omit<Collection<T>, 'order'>,
   newOrder: Identifier[]
 ): Collection<T> => ({
   ...collection,

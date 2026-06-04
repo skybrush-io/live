@@ -1,6 +1,7 @@
 import Navigation from '@mui/icons-material/Navigation';
 import VerticalAlignCenter from '@mui/icons-material/VerticalAlignCenter';
 import Warning from '@mui/icons-material/Warning';
+import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import FormControl from '@mui/material/FormControl';
@@ -44,10 +45,14 @@ import {
   getOutdoorShowTakeoffHeadingSpecification,
 } from '~/features/show/selectors';
 import { showSuccess } from '~/features/snackbar/actions';
-import { getAverageHeadingOfActiveUAVs } from '~/features/uavs/selectors';
+import {
+  getAverageHeadingOfActiveUAVs,
+  selectPreTakeoffAltitudeWarningProps,
+} from '~/features/uavs/selectors';
 import i18n from '~/i18n';
 import AutoFix from '~/icons/AutoFix';
 import { scrollToMapLocation } from '~/signals';
+import { formatAltitude, formatDistance } from '~/utils/formatting';
 import { normalizeAngle, toLonLatFromScaledJSON } from '~/utils/geography';
 
 import { TakeoffHeadingSpecEditor } from './TakeoffHeadingSpecEditor';
@@ -61,6 +66,7 @@ const OutdoorEnvironmentEditor = ({
   canEstimateShowCoordinateSystem,
   environmentFromLoadedShowData,
   estimatingCoordinateSystem,
+  preTakeoffAltitudeWarning,
   onAltitudeReferenceTypeChanged,
   onAltitudeReferenceValueChanged,
   onCopyCoordinateSystemToMap,
@@ -214,6 +220,22 @@ const OutdoorEnvironmentEditor = ({
         </Box>
       </Box>
 
+      {preTakeoffAltitudeWarning && (
+        <Alert severity='warning' sx={{ mb: 2 }}>
+          {t('outdoorEnvironmentEditor.preTakeoffAltitudeWarning', {
+            averageGroundAMSL: formatAltitude(
+              preTakeoffAltitudeWarning.averageGroundAMSL
+            ),
+            amslReference: formatAltitude(
+              preTakeoffAltitudeWarning.amslReference
+            ),
+            difference: formatDistance(preTakeoffAltitudeWarning.difference),
+            sampleCount: preTakeoffAltitudeWarning.sampleCount,
+            threshold: formatDistance(preTakeoffAltitudeWarning.threshold),
+          })}
+        </Alert>
+      )}
+
       <RTKCorrectionSourceSelector />
 
       <Box sx={{ pt: 1, mb: -1 }}>
@@ -245,6 +267,13 @@ OutdoorEnvironmentEditor.propTypes = {
   onSetCoordinateSystemFromMap: PropTypes.func,
   onSetTakeoffHeading: PropTypes.func,
   onSetTakeoffHeadingToAverageActiveUAVHeading: PropTypes.func,
+  preTakeoffWarning: PropTypes.shape({
+    averageGroundAMSL: PropTypes.number.isRequired,
+    amslReference: PropTypes.number.isRequired,
+    difference: PropTypes.number.isRequired,
+    sampleCount: PropTypes.number.isRequired,
+    threshold: PropTypes.number.isRequired,
+  }),
   showCoordinateSystem: PropTypes.shape({
     orientation: PropTypes.string.isRequired,
     origin: PropTypes.arrayOf(PropTypes.number),
@@ -265,6 +294,7 @@ export default connect(
     estimatingCoordinateSystem: Boolean(
       state.show.environment.estimatingCoordinateSystem
     ),
+    preTakeoffAltitudeWarning: selectPreTakeoffAltitudeWarningProps(state),
     showCoordinateSystem: state.show.environment.outdoor.coordinateSystem,
     mapCoordinateSystem: state.map.origin,
     takeoffHeading: getOutdoorShowTakeoffHeadingSpecification(state),
