@@ -1196,10 +1196,7 @@ export default class MessageHub {
    * @param timeout  number of seconds to wait for a response for a message from
    *        the server before we consider it as a timeout
    */
-  constructor(
-    emitter: Emitter | undefined,
-    { timeout = 5 }: TimeoutOptions = {}
-  ) {
+  constructor(emitter?: Emitter, { timeout = 5 }: TimeoutOptions = {}) {
     this.emitter = emitter;
     this.timeout = timeout;
 
