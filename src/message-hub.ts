@@ -5,6 +5,7 @@
  */
 
 import type {
+  Notification_CONNDEL,
   Notification_OBJDEL,
   Notification_SYSCLOSE,
   Notification_SYSMSG,
@@ -53,7 +54,7 @@ messageHub.registerNotificationHandlers({
     handleBeaconInformationMessage(message.body, dispatch),
   'CLK-INF': (message: Message<Response_CLKINF>) =>
     handleClockInformationMessage(message.body, dispatch),
-  'CONN-DEL': (message: Message<{ ids: string[] }>) =>
+  'CONN-DEL': (message: Message<Notification_CONNDEL>) =>
     handleConnectionDeletionMessage(message.body, dispatch),
   'CONN-INF': (message: Message<Response_CONNINF>) =>
     handleConnectionInformationMessage(message.body, dispatch),
