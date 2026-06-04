@@ -3,35 +3,36 @@
  * chat bubbles.
  */
 
-import Box from '@mui/material/Box';
-import PropTypes from 'prop-types';
+import Box, { type BoxProps } from '@mui/material/Box';
 import React from 'react';
+
+type ChatAreaProps = Omit<BoxProps, 'ref'>;
+
+type ChatAreaSnapshot = {
+  shouldScrollToBottom: boolean;
+};
 
 /**
  * Stateless React component showing a chat area that may host one or
  * more chat bubbles.
  */
-export default class ChatArea extends React.Component {
-  static propTypes = {
-    children: PropTypes.oneOfType([
-      PropTypes.arrayOf(PropTypes.node),
-      PropTypes.node,
-    ]),
-    style: PropTypes.object,
-  };
-
-  constructor(props) {
-    super(props);
-
-    this._domNode = React.createRef();
-    this._endNode = React.createRef();
-  }
+export default class ChatArea extends React.Component<
+  ChatAreaProps,
+  never,
+  ChatAreaSnapshot
+> {
+  private readonly _domNode = React.createRef<HTMLDivElement>();
+  private readonly _endNode = React.createRef<HTMLDivElement>();
 
   componentDidMount() {
     this.scrollToBottom();
   }
 
-  componentDidUpdate(_previousProps, _previousState, snapshot) {
+  componentDidUpdate(
+    _previousProps: ChatAreaProps,
+    _previousState: never,
+    snapshot?: ChatAreaSnapshot
+  ) {
     if (snapshot && snapshot.shouldScrollToBottom) {
       this.scrollToBottom();
     }
@@ -41,7 +42,8 @@ export default class ChatArea extends React.Component {
     const node = this._domNode.current;
     return {
       shouldScrollToBottom:
-        node && node.scrollTop + node.clientHeight >= node.scrollHeight - 20,
+        node !== null &&
+        node.scrollTop + node.clientHeight >= node.scrollHeight - 20,
     };
   }
 
@@ -73,7 +75,7 @@ export default class ChatArea extends React.Component {
   scrollToBottom() {
     const node = this._endNode.current;
     if (node) {
-      node.scrollIntoView({ behaviour: 'smooth' });
+      node.scrollIntoView({ behavior: 'smooth' });
     }
   }
 }
