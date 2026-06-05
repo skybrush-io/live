@@ -9,11 +9,13 @@ import CircularProgress from '@mui/material/CircularProgress';
 import IconButton from '@mui/material/IconButton';
 import formatDate from 'date-fns/format';
 import isNil from 'lodash-es/isNil';
-import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
-import { BackgroundHint } from '@skybrush/mui-components';
+import {
+  BackgroundHint,
+  type BackgroundHintProps,
+} from '@skybrush/mui-components';
 
 import {
   createMessageListSelector,
@@ -26,47 +28,60 @@ import {
   clearMessagesOfUAVById,
   updateProgressByMessageId,
 } from '~/features/messages/slice';
+import type { Message } from '~/features/messages/types';
 import { shouldOptimizeUIForTouch } from '~/features/settings/selectors';
-import { formatCommandResponseAsHTML } from '~/flockwave/formatting';
+import {
+  formatCommandResponseAsHTML,
+  type PlainOrPreformattedResponse,
+} from '~/flockwave/formatting';
 import { parseCommandFromString } from '~/flockwave/messages';
 import messageHub from '~/message-hub';
 import { MessageType } from '~/model/enums';
+import type { RootState } from '~/store/reducers';
 
 import ChatArea from './ChatArea';
 import ChatBubble from './ChatBubble';
 import Marker from './Marker';
 import MessageField from './MessageField';
 
-const dateFormatter = (x) => formatDate(x, 'H:mm');
+const dateFormatter = (x: number | Date) => formatDate(x, 'H:mm');
+
+type FormatterState = {
+  author?: string;
+  date?: number;
+  formattedDate?: string;
+};
 
 /**
  * Converts a message object from the Redux store into React components
  * that can render it nicely.
- *
- * @param {Object} message  the message to convert
- * @return {React.Component[]}  the React components that render the message
  */
-function convertMessageToComponent(message, state = {}) {
+function convertMessageToComponent(
+  message: Message,
+  state: FormatterState = {}
+): React.ReactNode {
   const keyBase = `message${message.id}`;
   const inProgress = !message.responseId;
-  const dateIsNumber = typeof message?.date === 'number';
+  const dateIsNumber = typeof message.date === 'number';
   const formattedDate = dateIsNumber ? dateFormatter(message.date) : '';
-  const author = message?.author;
+  const author = message.author;
+  // state.date may be undefined on the first call, but the subtraction
+  // yields NaN and Math.abs(NaN) < 500 is false, so this is safe.
   const isCloseToPreviousEntry =
-    dateIsNumber && Math.abs(state.date - message.date) < 500;
+    dateIsNumber && Math.abs(state.date! - message.date) < 500;
   const showMeta =
     state.author !== author ||
     (state.formattedDate !== formattedDate && !isCloseToPreviousEntry);
 
   state.author = author;
-  state.date = message?.date;
+  state.date = message.date;
   if (!isCloseToPreviousEntry) {
     state.formattedDate = formattedDate;
   }
 
   switch (message.type) {
     case MessageType.OUTBOUND:
-      return [
+      return (
         <ChatBubble
           key={keyBase}
           own
@@ -89,15 +104,13 @@ function convertMessageToComponent(message, state = {}) {
                     : 'indeterminate'
                 }
               />
-            ) : (
-              false
-            )
+            ) : undefined
           }
-        />,
-      ];
+        />
+      );
 
     case MessageType.INBOUND:
-      return [
+      return (
         <ChatBubble
           key={keyBase}
           showMeta={showMeta}
@@ -107,28 +120,29 @@ function convertMessageToComponent(message, state = {}) {
           date={formattedDate}
           body={message.body}
           severity={message.severity}
-        />,
-      ];
+        />
+      );
 
     case MessageType.ERROR:
-      return [
-        <Marker
-          key={keyBase + 'Marker'}
-          level='error'
-          message={message.body}
-        />,
-      ];
+      return (
+        <Marker key={keyBase + 'Marker'} level='error' message={message.body} />
+      );
 
     default:
-      return [
+      return (
         <Marker
           key={keyBase + 'Marker'}
           level='error'
           message={`Invalid message type: ${message.type}`}
-        />,
-      ];
+        />
+      );
   }
 }
+
+type ChatAreaBackgroundHintProps = {
+  hasSelectedUAV: boolean;
+  textFieldPlacement: 'bottom' | 'top';
+} & Omit<BackgroundHintProps, 'header' | 'text'>;
 
 /**
  * Specialized background hint for the chat area.
@@ -137,7 +151,7 @@ const ChatAreaBackgroundHint = ({
   hasSelectedUAV,
   textFieldPlacement,
   ...rest
-}) =>
+}: ChatAreaBackgroundHintProps) =>
   hasSelectedUAV ? (
     <BackgroundHint
       key='backgroundHint'
@@ -156,54 +170,37 @@ const ChatAreaBackgroundHint = ({
     />
   );
 
-ChatAreaBackgroundHint.propTypes = {
-  hasSelectedUAV: PropTypes.bool,
-  textFieldPlacement: PropTypes.oneOf(['bottom', 'top']),
+type MessagesPanelOwnProps = {
+  hideClearButton?: boolean;
+  style?: React.CSSProperties;
+  textFieldPlacement?: 'bottom' | 'top';
+  uavId?: string;
 };
+
+type MessagesPanelStateProps = {
+  chatEntries: Message[];
+  commandHistory: string[];
+  optimizeUIForTouch: boolean;
+};
+
+type MessagesPanelDispatchProps = {
+  onClearMessages: () => void;
+  onSend: (message: string) => void;
+};
+
+type MessagesPanelProps = MessagesPanelOwnProps &
+  MessagesPanelStateProps &
+  MessagesPanelDispatchProps;
 
 /**
  * Presentation component for the "Messages" panel, containing a text field
  * to type the messages into, and a target UAV selector.
  */
-class MessagesPanel extends React.Component {
-  static propTypes = {
-    chatEntries: PropTypes.arrayOf(PropTypes.object),
-    commandHistory: PropTypes.arrayOf(PropTypes.string),
-    hideClearButton: PropTypes.bool,
-    onClearMessages: PropTypes.func,
-    onSend: PropTypes.func,
-    optimizeUIForTouch: PropTypes.bool,
-    style: PropTypes.object,
-    textFieldPlacement: PropTypes.oneOf(['bottom', 'top']),
-    uavId: PropTypes.string,
-  };
-
-  static defaultProps = {
-    textFieldPlacement: 'bottom',
-  };
-
-  constructor() {
-    super();
-
-    this._chatAreaRef = React.createRef();
-    this._messageFieldRef = React.createRef();
-    this._messageFieldContainerRef = React.createRef();
-    this._uavSelectorFieldRef = React.createRef();
-
-    this.focusOnTextField = this.focusOnTextField.bind(this);
-  }
-
-  focusOnUAVSelectorField() {
-    if (this._uavSelectorFieldRef.current) {
-      this._uavSelectorFieldRef.current.focus();
-    }
-  }
-
-  focusOnTextField() {
-    if (this._messageFieldRef.current) {
-      this._messageFieldRef.current.focus();
-    }
-  }
+class MessagesPanel extends React.Component<MessagesPanelProps, never> {
+  private readonly _chatAreaRef = React.createRef<ChatArea>();
+  private readonly _messageFieldRef = React.createRef<HTMLInputElement>();
+  private readonly _messageFieldContainerRef =
+    React.createRef<HTMLDivElement>();
 
   render() {
     const {
@@ -213,15 +210,15 @@ class MessagesPanel extends React.Component {
       onClearMessages,
       optimizeUIForTouch,
       style,
-      textFieldPlacement,
+      textFieldPlacement = 'bottom',
       uavId,
     } = this.props;
 
-    const formatterState = {};
+    const formatterState: FormatterState = {};
     const chatComponents = chatEntries.map((entry) =>
       convertMessageToComponent(entry, formatterState)
     );
-    const contentStyle = {
+    const contentStyle: React.CSSProperties = {
       display: 'flex',
       flexDirection: 'column',
       height: '100%',
@@ -240,16 +237,16 @@ class MessagesPanel extends React.Component {
           p={1}
         />
       );
-    const isClearButtonVisible = onClearMessages && !hideClearButton;
+    const isClearButtonVisible = !hideClearButton;
     const textFields = (
       <Box
         ref={this._messageFieldContainerRef}
         key='textFieldContainer'
         className='bottom-bar'
-        tabIndex='-1'
-        onKeyDown={(e) => {
+        tabIndex={-1}
+        onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => {
           if (e.code === 'Enter') {
-            this._messageFieldRef.current.focus();
+            this._messageFieldRef.current?.focus();
           }
         }}
         sx={{
@@ -270,8 +267,8 @@ class MessagesPanel extends React.Component {
           inputRef={this._messageFieldRef}
           variant='standard'
           onSubmit={this._onSubmit}
-          onEscape={(e) => {
-            this._messageFieldContainerRef.current.focus();
+          onEscape={(e: React.KeyboardEvent<HTMLInputElement>) => {
+            this._messageFieldContainerRef.current?.focus();
             e.stopPropagation();
           }}
         />
@@ -300,7 +297,7 @@ class MessagesPanel extends React.Component {
     }
   }
 
-  _onSubmit = (message) => {
+  _onSubmit = (message: string) => {
     this.props.onSend(message);
     this.scrollToBottom();
   };
@@ -313,7 +310,7 @@ export default connect(
   // mapStateToProps
   () => {
     const messageListSelector = createMessageListSelector();
-    return (state, ownProps) => ({
+    return (state: RootState, ownProps: MessagesPanelOwnProps) => ({
       chatEntries: messageListSelector(state, ownProps.uavId),
       commandHistory: getCommandHistory(state),
       optimizeUIForTouch: shouldOptimizeUIForTouch(state),
@@ -321,14 +318,15 @@ export default connect(
   },
 
   // mapDispatchToProps
-  (dispatch, ownProps) => ({
+  (dispatch, ownProps: MessagesPanelOwnProps) => ({
     onClearMessages() {
-      dispatch(clearMessagesOfUAVById(ownProps.uavId));
+      if (ownProps.uavId !== undefined) {
+        dispatch(clearMessagesOfUAVById(ownProps.uavId));
+      }
     },
 
-    async onSend(message) {
+    async onSend(message: string) {
       const { uavId } = ownProps;
-
       if (!uavId) {
         return;
       }
@@ -341,8 +339,12 @@ export default connect(
       // Parse the message and extract positional and keyword arguments
       const { command, args, kwds } = parseCommandFromString(message);
 
+      // addOutboundMessage() added the ID of the newly created message to the
+      // { messageId } field of the action so we need to cast the type of the action
+      // below.
+      //
       // Now also send the message via the message hub
-      const { messageId } = action;
+      const { messageId } = action as typeof action & { messageId: string };
 
       try {
         const result = await messageHub.sendCommandRequest(
@@ -362,7 +364,9 @@ export default connect(
         );
 
         if (!isNil(result)) {
-          const formattedMessage = formatCommandResponseAsHTML(result);
+          const formattedMessage = formatCommandResponseAsHTML(
+            result as PlainOrPreformattedResponse
+          );
           dispatch(
             addInboundMessage({
               message: formattedMessage,
@@ -372,7 +376,9 @@ export default connect(
           );
         }
       } catch (error) {
-        const errorMessage = error.userMessage || error.message;
+        const errorMessage =
+          (error as { userMessage?: string }).userMessage ||
+          (error as Error).message;
         dispatch(
           addErrorMessage({ message: errorMessage, uavId, refs: messageId })
         );
@@ -385,7 +391,4 @@ export default connect(
 
   // options
   { forwardRef: true }
-
-  // ref is needed because we want to access the scrollToBottom() method
-  // from the outside
 )(MessagesPanel);

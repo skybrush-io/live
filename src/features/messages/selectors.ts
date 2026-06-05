@@ -8,10 +8,8 @@ import type { AppSelector, RootState } from '~/store/reducers';
 export function createMessageListSelector() {
   return createSelector(
     (state: RootState) => state.messages,
-    (state: RootState, uavId: Identifier) =>
-      state.messages.uavIdsToMessageIds
-        ? state.messages.uavIdsToMessageIds[uavId]
-        : undefined,
+    (state: RootState, uavId?: Identifier) =>
+      uavId ? state.messages.uavIdsToMessageIds[uavId] : undefined,
     (messages, messageIds) =>
       !messageIds || messageIds.length === 0
         ? EMPTY_ARRAY

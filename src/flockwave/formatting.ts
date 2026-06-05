@@ -1,6 +1,13 @@
 import escape from 'lodash-es/escape';
 import trimEnd from 'lodash-es/trimEnd';
 
+export type PlainOrPreformattedResponse =
+  | string
+  | {
+      type: string;
+      data: string;
+    };
+
 /**
  * Formats a Flockwave command response object found in an OBJ-CMD message
  * or its asynchronous response variant in ASYNC-RESP into HTML.
@@ -11,7 +18,7 @@ import trimEnd from 'lodash-es/trimEnd';
  * @return the formatted response with HTML markup
  */
 export function formatCommandResponseAsHTML(
-  response: string | { type: string; data: string }
+  response: PlainOrPreformattedResponse
 ): string {
   if (typeof response === 'string') {
     response = {

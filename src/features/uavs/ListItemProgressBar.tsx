@@ -1,12 +1,17 @@
 import LinearProgress from '@mui/material/LinearProgress';
 import isNil from 'lodash-es/isNil';
-import PropTypes from 'prop-types';
 
-const ListItemProgressBar = ({ progress }) => {
+type ListItemProgressBarProps = {
+  progress?: {
+    percentage?: number;
+  };
+};
+
+const ListItemProgressBar = ({ progress }: ListItemProgressBarProps) => {
   const { percentage } = progress || {};
 
   if (isNil(percentage)) {
-    return <LinearProgress value={null} variant='indeterminate' />;
+    return <LinearProgress variant='indeterminate' />;
   } else if (
     typeof percentage === 'number' &&
     percentage >= 0 &&
@@ -16,13 +21,6 @@ const ListItemProgressBar = ({ progress }) => {
   } else {
     return null;
   }
-};
-
-ListItemProgressBar.propTypes = {
-  progress: PropTypes.shape({
-    percentage: PropTypes.number,
-    message: PropTypes.string,
-  }),
 };
 
 export default ListItemProgressBar;
