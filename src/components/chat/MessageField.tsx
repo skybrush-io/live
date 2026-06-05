@@ -18,7 +18,7 @@ type ElementWithFocusRestorationTarget = Element & {
 
 type MessageFieldProps = Omit<
   TextFieldProps,
-  'onBlur' | 'onChange' | 'onKeyDown' | 'value'
+  'onBlur' | 'onChange' | 'onKeyDown' | 'onSubmit' | 'value'
 > & {
   history?: string[];
   onEscape: (event: KeyboardEvent<HTMLInputElement>) => void;
