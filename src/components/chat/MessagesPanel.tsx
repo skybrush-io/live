@@ -30,7 +30,10 @@ import {
 } from '~/features/messages/slice';
 import type { Message } from '~/features/messages/types';
 import { shouldOptimizeUIForTouch } from '~/features/settings/selectors';
-import { formatCommandResponseAsHTML } from '~/flockwave/formatting';
+import {
+  formatCommandResponseAsHTML,
+  type PlainOrPreformattedResponse,
+} from '~/flockwave/formatting';
 import { parseCommandFromString } from '~/flockwave/messages';
 import messageHub from '~/message-hub';
 import { MessageType } from '~/model/enums';
@@ -358,7 +361,7 @@ export default connect(
 
         if (!isNil(result)) {
           const formattedMessage = formatCommandResponseAsHTML(
-            result as Parameters<typeof formatCommandResponseAsHTML>[0]
+            result as PlainOrPreformattedResponse
           );
           dispatch(
             addInboundMessage({
