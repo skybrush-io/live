@@ -99,7 +99,12 @@ export function formatTicksOnClock(
   const { format = clock.format } = options;
   let seconds = ticks / ticksPerSecond;
 
-  if (Number.isNaN(epoch)) {
+  // TODO: remove the `Number(epoch)` conversion when everything is converted
+  // to TypeScript.
+  // Convert to number, apparently it may happen that clock.epoch is null
+  // and we would then get an exception. This happens for example when Live
+  // connects to the server.
+  if (Number.isNaN(Number(epoch))) {
     if (clock.id === String(CommonClockId.MTC)) {
       // No epoch, so we just simply show a HH:MM:SS:FF SMPTE-style
       // timestamp. We (ab)use the millisecond part of the timestamp
