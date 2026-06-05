@@ -339,6 +339,10 @@ export default connect(
       // Parse the message and extract positional and keyword arguments
       const { command, args, kwds } = parseCommandFromString(message);
 
+      // addOutboundMessage() added the ID of the newly created message to the
+      // { messageId } field of the action so we need to cast the type of the action
+      // below.
+      //
       // Now also send the message via the message hub
       const { messageId } = action as typeof action & { messageId: string };
 
