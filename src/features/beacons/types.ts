@@ -1,6 +1,14 @@
 import { type GPSPosition } from '~/model/geography';
 import { type Identifier } from '~/utils/collections';
 
+export type BeaconProperties = {
+  position?: GPSPosition;
+  heading?: number;
+  active?: boolean;
+  name?: string;
+};
+export type BeaconPropertiesMap = Record<Identifier, BeaconProperties>;
+
 /**
  * @example
  * {
@@ -11,10 +19,6 @@ import { type Identifier } from '~/utils/collections';
  *   name: 'GPS beacon'
  * }
  */
-export type Beacon = {
+export type Beacon = BeaconProperties & {
   id: Identifier;
-  position?: GPSPosition;
-  heading?: number;
-  active: boolean;
-  name?: string;
 };

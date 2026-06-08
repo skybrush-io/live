@@ -22,6 +22,7 @@ import {
   setOutdoorShowOrigin,
 } from '~/features/show/slice';
 import type { OutdoorCoordinateSystemWithOrigin } from '~/features/show/types';
+import type { LightEffectConfiguration } from '~/flockwave/types';
 import type { AppDispatch, RootState } from '~/store/reducers';
 import { type LonLat } from '~/utils/geography';
 
@@ -35,7 +36,6 @@ import Map from './ShowConfiguratorMap';
 import {
   adaptShow,
   adjustHomePositionsToDronePositions,
-  type LightEffectConfiguration,
   saveAdaptedShow,
   type ShowAdaptParameters,
 } from './actions';

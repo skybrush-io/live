@@ -9,6 +9,12 @@ import { errorToString } from '~/error-handling';
 import { getBase64ShowBlob } from '~/features/show/selectors';
 import { showError } from '~/features/snackbar/actions';
 import { getAllValidUAVPositions } from '~/features/uavs/selectors';
+import type {
+  LightEffectConfiguration,
+  ReturnToHomeMethodType,
+  ShowAdaptTransformation,
+  TakeoffMethodType,
+} from '~/flockwave/types';
 import messageHub from '~/message-hub';
 import { type GPSPosition } from '~/model/geography';
 import {
@@ -296,8 +302,6 @@ export const adjustHomePositionsToDronePositions =
 type Meters = number;
 type MetersPerSecond = number;
 type Seconds = number;
-export type TakeoffMethodType = 'layered' | 'organic';
-export type ReturnToHomeMethodType = 'plain' | 'smart';
 
 export const TAKEOFF_METHODS: TakeoffMethodType[] = ['layered', 'organic'];
 export const RETURN_TO_HOME_METHODS: ReturnToHomeMethodType[] = [
@@ -318,79 +322,6 @@ export type OptionalShowAdaptParameters = {
 
 export type ShowAdaptParameters = Required<OptionalShowAdaptParameters>;
 
-/**
- * Default light configuration.
- */
-type DefaultConfiguration = {
-  type: 'default';
-
-  /**
-   * Brightness in the [0,1] interval.
-   */
-  brightness: number;
-};
-
-/**
- * "Off" configuration, no lights.
- */
-type OffConfiguration = {
-  type: 'off';
-};
-
-/**
- * "Original" configuration that attempts to keep the
- * existing light configuration.
- */
-type OriginalConfiguration = {
-  type: 'original';
-};
-
-/**
- * Solid colored lights configuration.
- */
-type SolidConfiguration = {
-  type: 'solid';
-
-  /**
-   * RGB color code.
-   */
-  color: string;
-};
-
-/**
- * Sparks with an off duration between them.
- */
-type SparksConfiguration = {
-  type: 'sparks';
-
-  /**
-   * RGB color code.
-   */
-  color: string;
-
-  off_duration: number;
-};
-
-/**
- * Light effect types.
- */
-export type LightEffectType =
-  | DefaultConfiguration['type']
-  | OffConfiguration['type']
-  | OriginalConfiguration['type']
-  | SolidConfiguration['type']
-  | SparksConfiguration['type'];
-
-/**
- * Light effect configurations.
- */
-export type LightEffectConfiguration =
-  | DefaultConfiguration
-  | OffConfiguration
-  | OriginalConfiguration
-  | SolidConfiguration
-  | SparksConfiguration;
-
 export const adaptShow =
   (params: ShowAdaptParameters, lights: LightEffectConfiguration): AppThunk =>
   async (dispatch, getState) => {
@@ -401,6 +332,11 @@ export const adaptShow =
     // background so this way we can save some memory. Maybe store and compare a hash
     // if this becomes an issue.
     const base64ShowBlob = getBase64ShowBlob(state);
+    if (base64ShowBlob === undefined) {
+      dispatch(setAdaptResult({ error: 'Missing show data.' }));
+      return;
+    }
+
     const positions = getHomePositions(state);
     const coordinateSystem = selectCoordinateSystem(state);
 
@@ -410,9 +346,9 @@ export const adaptShow =
       velocity_z: params.verticalVelocity,
       altitude: params.altitude,
       replace: true,
-    };
+    } as const;
 
-    const transformations = [
+    const transformations: ShowAdaptTransformation[] = [
       {
         type: 'takeoff',
         parameters: {
@@ -441,7 +377,7 @@ export const adaptShow =
       ...(params.altitudeOffset
         ? [
             {
-              type: 'shift',
+              type: 'shift' as const,
               parameters: {
                 z: params.altitudeOffset,
               },
