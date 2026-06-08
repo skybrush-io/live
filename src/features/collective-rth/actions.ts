@@ -89,6 +89,11 @@ export const addCollectiveRTH =
   async (dispatch, getState): Promise<void> => {
     const state = getState();
     const base64ShowBlob = getBase64ShowBlob(state);
+    if (base64ShowBlob === undefined) {
+      dispatch(setResult({ state: 'error', error: 'Missing show data.' }));
+      return;
+    }
+
     dispatch(setResult({ state: 'loading' }));
 
     try {

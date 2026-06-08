@@ -18,14 +18,16 @@ import {
   SimpleDurationField,
   SimpleVelocityField,
 } from '~/components/forms/fields';
+import type {
+  ReturnToHomeMethodType,
+  TakeoffMethodType,
+} from '~/flockwave/types';
 
 import {
   RETURN_TO_HOME_METHODS,
   TAKEOFF_METHODS,
   type OptionalShowAdaptParameters,
-  type ReturnToHomeMethodType,
   type ShowAdaptParameters,
-  type TakeoffMethodType,
 } from './actions';
 import LightConfigurationForm, {
   type LightConfigurationProps,

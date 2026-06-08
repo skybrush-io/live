@@ -7,10 +7,7 @@ import type { Identifier } from '~/utils/collections';
 
 import { getBeaconIdsWithoutBasicInformation } from './selectors';
 import { setBeaconStateMultiple } from './slice';
-import type { Beacon } from './types';
-
-type BeaconProperties = Omit<Beacon, 'id'>;
-type BeaconPropertiesMap = Record<Identifier, BeaconProperties>;
+import type { BeaconPropertiesMap } from './types';
 
 /**
  * Saga that periodically fetches basic properties for beacons that don't have
@@ -26,7 +23,7 @@ export default function* beaconSaga(): Generator {
     );
 
     if (beaconIds.length > 0) {
-      let props: BeaconPropertiesMap | null = null;
+      let props: BeaconPropertiesMap | undefined = undefined;
       try {
         props = yield call(
           messageHub.query.getBasicBeaconProperties,
