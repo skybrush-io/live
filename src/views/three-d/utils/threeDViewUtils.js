@@ -106,14 +106,19 @@ const getYawAtTimestamp = (points, timestampMs) => {
   return interpolateYaw(fromYaw, toYaw, segment.ratio);
 };
 
-const normalizeYawSetpoints = (yawControl, takeoffTimeMs) => {
+/**
+ * Yaw setpoint times use Skybrush View semantics: times are already on the show
+ * timeline (path-planner bakes takeoffTime in). Trajectory points still add
+ * takeoffTime at playback; yaw setpoints do not.
+ */
+const normalizeYawSetpoints = (yawControl) => {
   const setpoints = Array.isArray(yawControl?.setpoints) ? yawControl.setpoints : [];
   return setpoints
     .map((setpoint) => {
       if (!Array.isArray(setpoint) || setpoint.length < 2) return null;
       const yaw = toFiniteYaw(setpoint[1]);
       if (yaw == null) return null;
-      const timestampMs = takeoffTimeMs + Math.max(0, Number(setpoint[0]) || 0) * 1000;
+      const timestampMs = Math.max(0, Number(setpoint[0]) || 0) * 1000;
       return { timestampMs, yaw };
     })
     .filter(Boolean)
@@ -151,7 +156,7 @@ export const convertTrajectoryToPlaybackPath = (
 
   if (!rawPoints.length) return null;
 
-  const yawPoints = normalizeYawSetpoints(yawControl, takeoffTimeMs);
+  const yawPoints = normalizeYawSetpoints(yawControl);
   const timelineMs = Array.from(new Set([
     ...rawPoints.map((point) => Math.round(point.timestampMs)),
     ...yawPoints.map((point) => Math.round(point.timestampMs)),

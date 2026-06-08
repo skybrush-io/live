@@ -336,6 +336,53 @@ if (!AFrame.components['drone-move-bridge']) {
           target.removeAttribute('animation__path');
         }
 
+        const parsedDuration = Number(durationMs);
+        const hasDuration = Number.isFinite(parsedDuration) && parsedDuration >= 0;
+        const segDur = hasDuration ? parsedDuration : defaultDur;
+        const isStationarySegment =
+          Math.abs(currentFrom.x - x) < 1e-6 &&
+          Math.abs(currentFrom.y - y) < 1e-6 &&
+          Math.abs(currentFrom.z - z) < 1e-6;
+
+        // 0ms 구간은 즉시 이동으로 처리해 다음 구간 계산 오차를 줄인다.
+        if (segDur === 0) {
+          target.setAttribute('position', to);
+          currentFrom = { x, y, z };
+          if (targetYaw != null) {
+            this._setYaw(target, targetYaw);
+            currentYaw = targetYaw;
+          }
+          continueAfterHold(point);
+          return;
+        }
+
+        // 위치 변화 없이 yaw만 바뀌는 구간: A-Frame position 애니메이션은 즉시 끝나므로 타이머로 재생
+        if (isStationarySegment) {
+          if (targetYaw != null) {
+            this._animateYaw(id, target, currentYaw, targetYaw, segDur);
+          }
+
+          currentHoldTimer = window.setTimeout(() => {
+            currentHoldTimer = null;
+            if (targetYaw != null) {
+              this._cancelYawAnimation(id);
+              this._setYaw(target, targetYaw);
+              currentYaw = targetYaw;
+            }
+            continueAfterHold(point);
+          }, segDur);
+
+          this._currentPathCancels[id] = () => {
+            if (currentHoldTimer) {
+              window.clearTimeout(currentHoldTimer);
+              currentHoldTimer = null;
+            }
+            this._cancelYawAnimation(id);
+          };
+          currentFrom = { x, y, z };
+          return;
+        }
+
         const onComplete = () => {
           target.removeEventListener('animationcomplete__path', onComplete);
           if (targetYaw != null) {
@@ -357,23 +404,6 @@ if (!AFrame.components['drone-move-bridge']) {
         };
 
         target.addEventListener('animationcomplete__path', onComplete);
-
-        const parsedDuration = Number(durationMs);
-        const hasDuration = Number.isFinite(parsedDuration) && parsedDuration >= 0;
-        const segDur = hasDuration ? parsedDuration : defaultDur;
-
-        // 0ms 구간은 즉시 이동으로 처리해 다음 구간 계산 오차를 줄인다.
-        if (segDur === 0) {
-          target.setAttribute('position', to);
-          currentFrom = { x, y, z };
-          if (targetYaw != null) {
-            this._setYaw(target, targetYaw);
-            currentYaw = targetYaw;
-          }
-          target.removeEventListener('animationcomplete__path', onComplete);
-          continueAfterHold(point);
-          return;
-        }
 
         if (targetYaw != null) {
           this._animateYaw(id, target, currentYaw, targetYaw, segDur);
