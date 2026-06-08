@@ -366,10 +366,15 @@ class PendingResponse<T = unknown> {
   };
 }
 
+export type ProgressInfo = {
+  percentage?: number;
+  message?: string;
+};
+
 export type ProgressStatus = {
-  progress: { percentage?: number; message?: string };
+  progress: ProgressInfo;
   suspended: boolean;
-  resume?: (value: unknown) => Promise<void>;
+  resume?: (value?: unknown) => Promise<void>;
 };
 
 type PendingCommandExecutionOptions = TimeoutOptions & {

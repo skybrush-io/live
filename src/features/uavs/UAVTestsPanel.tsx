@@ -5,20 +5,31 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import Zoom from '@mui/material/Zoom';
 import isNil from 'lodash-es/isNil';
-import PropTypes from 'prop-types';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useAsyncFn } from 'react-use';
 
+import { Status } from '@skybrush/app-theme-mui';
 import { StatusLight } from '@skybrush/mui-components';
 
 import Colors from '~/components/colors';
 import { errorToString } from '~/error-handling';
+import type { ProgressInfo, ProgressStatus } from '~/flockwave/messages';
 import { useMessageHub } from '~/hooks';
 
 import { COMPASS_CALIB_TIMEOUT } from './constants';
 import ListItemProgressBar from './ListItemProgressBar';
 
-const tests = [
+type UAVTestType = 'calib' | 'test';
+
+type UAVTestItem = {
+  component: string;
+  label: string;
+  type: UAVTestType;
+  timeout?: number;
+  needsConfirmation?: boolean;
+};
+
+const tests: UAVTestItem[] = [
   {
     component: 'compass',
     label: 'Calibrate compass',
@@ -68,6 +79,15 @@ const tests = [
   },
 ];
 
+type UAVTestButtonProps = {
+  component: string;
+  label: string;
+  needsConfirmation?: boolean;
+  timeout?: number;
+  type: UAVTestType;
+  uavId: string;
+};
+
 const UAVTestButton = ({
   component,
   label,
@@ -75,31 +95,33 @@ const UAVTestButton = ({
   timeout,
   type,
   uavId,
-}) => {
+}: UAVTestButtonProps) => {
   const messageHub = useMessageHub();
 
   // We can store the timeout ID of the pending confirmation in this state and
-  // use it to determine whethere there is a currently pending confirmation,
+  // use it to determine whether there is a currently pending confirmation,
   // as setTimeout returns *positive* integers only.
   // https://developer.mozilla.org/en-US/docs/Web/API/setTimeout#return_value
-  const [pendingConfirmation, setPendingConfirmation] = useState(null);
-  const [progress, setProgress] = useState(null);
+  const [pendingConfirmation, setPendingConfirmation] = useState<
+    ReturnType<typeof setTimeout> | undefined
+  >();
+  const [progress, setProgress] = useState<ProgressInfo | undefined>();
   const [suspended, setSuspended] = useState(false);
-  const resumeCallback = useRef(null);
-  const lastExecutedUavIdRef = useRef(null);
+  const resumeCallback = useRef<(() => Promise<void>) | undefined>(undefined);
+  const lastExecutedUavIdRef = useRef<string | undefined>();
   const uavIdRef = useRef(uavId);
   uavIdRef.current = uavId;
 
   const clearPendingConfirmation = useCallback(() => {
     clearTimeout(pendingConfirmation);
-    setPendingConfirmation(null);
+    setPendingConfirmation(undefined);
   }, [pendingConfirmation]);
 
   useEffect(() => {
     clearPendingConfirmation();
-    setProgress(null);
+    setProgress(undefined);
     setSuspended(false);
-    resumeCallback.current = null;
+    resumeCallback.current = undefined;
   }, [uavId]);
 
   const askForConfirmation = useCallback(() => {
@@ -108,7 +130,10 @@ const UAVTestButton = ({
   }, [clearPendingConfirmation]);
 
   const progressHandler = useCallback(
-    (progressUAVId, { progress, resume, suspended }) => {
+    (
+      progressUAVId: string,
+      { progress, resume, suspended }: ProgressStatus
+    ) => {
       if (progressUAVId !== uavIdRef.current) {
         return;
       }
@@ -149,9 +174,9 @@ const UAVTestButton = ({
   const giveConfirmation = useCallback(() => {
     clearPendingConfirmation();
     if (suspended) {
-      resume();
+      void resume();
     } else {
-      execute();
+      void execute();
     }
   }, [clearPendingConfirmation, execute, resume, suspended]);
 
@@ -179,22 +204,22 @@ const UAVTestButton = ({
         <StatusLight
           status={
             suspended
-              ? 'warning'
+              ? Status.WARNING
               : executionState.loading
-                ? 'next'
+                ? Status.NEXT
                 : executionState.error
-                  ? 'error'
+                  ? Status.ERROR
                   : isNil(executionState.value)
-                    ? 'off'
+                    ? Status.OFF
                     : executionState.value
-                      ? 'success'
-                      : 'error'
+                      ? Status.SUCCESS
+                      : Status.ERROR
           }
         />
         <ListItemText
           primary={
             suspended
-              ? `${progress.message || 'Operation suspended'}. Click to resume.`
+              ? `${progress?.message || 'Operation suspended'}. Click to resume.`
               : progress && (!executionState.error || executionState.loading)
                 ? `${progress.message || label}`
                 : label
@@ -216,16 +241,11 @@ const UAVTestButton = ({
   );
 };
 
-UAVTestButton.propTypes = {
-  component: PropTypes.string,
-  label: PropTypes.string,
-  needsConfirmation: PropTypes.bool,
-  uavId: PropTypes.string,
-  timeout: PropTypes.number,
-  type: PropTypes.oneOf(['calib', 'test']),
+type UAVTestsPanelProps = {
+  uavId: string;
 };
 
-const UAVTestsPanel = ({ uavId }) => {
+const UAVTestsPanel = ({ uavId }: UAVTestsPanelProps) => {
   return (
     <List dense>
       {tests.map(({ component, ...props }) => (
@@ -238,10 +258,6 @@ const UAVTestsPanel = ({ uavId }) => {
       ))}
     </List>
   );
-};
-
-UAVTestsPanel.propTypes = {
-  uavId: PropTypes.string,
 };
 
 export default UAVTestsPanel;
