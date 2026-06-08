@@ -18,6 +18,7 @@ import type {
   Response_LCNINF,
   Response_RTKINF,
   Response_RTKLIST,
+  Response_RTKSOURCE,
   Response_RTKSTAT,
   Response_RTKSURVEY,
   Response_SHOWCFG,
@@ -48,7 +49,6 @@ import type {
   Response_XMSNTYPEINF,
   Response_XMSNTYPELIST,
   Response_XMSNTYPESCHEMA,
-  Response_XRTKSOURCE,
   Response_XSHOWADAPT,
   Response_XSHOWCRTHPLAN,
   ShowAdaptTransformation,
@@ -455,14 +455,14 @@ export async function getRTKStatus(hub: MessageHub): Promise<
 export async function getSelectedRTKPresetId(
   hub: MessageHub
 ): Promise<string | null> {
-  const response = await hub.sendMessage<Response_XRTKSOURCE>(
-    { type: 'X-RTK-SOURCE' },
+  const response = await hub.sendMessage<Response_RTKSOURCE>(
+    { type: 'RTK-SOURCE' },
     // Use a longer timeout as the server might be busy reconfiguring the RTK
     // source when we ask for it.
     { timeout: 15 }
   );
 
-  if (response.body && response.body.type === 'X-RTK-SOURCE') {
+  if (response.body && response.body.type === 'RTK-SOURCE') {
     return response.body.id ?? null;
   }
 
