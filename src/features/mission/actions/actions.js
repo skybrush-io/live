@@ -42,7 +42,6 @@ import {
   getUAVIdList,
   getUnmappedUAVIds,
 } from '~/features/uavs/selectors';
-import { openUploadDialogForJob } from '~/features/upload/slice';
 import { ServerPlanError } from '~/flockwave/operations';
 import messageHub from '~/message-hub';
 import { FeatureType } from '~/model/features';
@@ -68,7 +67,6 @@ import { chooseUniqueId } from '~/utils/naming';
 import { createAsyncAction } from '~/utils/redux';
 import workers from '~/workers';
 
-import { JOB_TYPE } from '../constants';
 import {
   contextVolatilities,
   ContextVolatility,
@@ -111,7 +109,6 @@ import {
   updateHomePositions,
   updateMissionItemParameters,
 } from '../slice';
-import { getMissionItemUploadJobPayload } from '../upload';
 import {
   clearMapping,
   removeUAVsFromMapping,
@@ -599,18 +596,6 @@ export const setMissionItemsFromArray = (items) => (dispatch) => {
   }
 
   dispatch(_setMissionItemsFromValidatedArray(validItems));
-};
-
-/**
- * Thunk that uploads the current list of mission items to the selected UAV.
- */
-export const uploadMissionItemsToSelectedUAV = () => (dispatch, getState) => {
-  const state = getState();
-  const selectedUAVId = getSingleSelectedUAVId(state);
-  if (selectedUAVId !== undefined) {
-    const payload = getMissionItemUploadJobPayload(state);
-    dispatch(openUploadDialogForJob({ job: { type: JOB_TYPE, payload } }));
-  }
 };
 
 /**
