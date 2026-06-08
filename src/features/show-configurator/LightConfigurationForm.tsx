@@ -12,8 +12,10 @@ import { useSelector } from 'react-redux';
 import { SimpleDurationField } from '~/components/forms';
 import { HexColorInput, HexColorPicker } from '~/components/HexColorPicker';
 import { getServerVersionValidator } from '~/features/servers/selectors';
-
-import type { LightEffectConfiguration, LightEffectType } from './actions';
+import type {
+  LightEffectConfiguration,
+  LightEffectType,
+} from '~/flockwave/types';
 
 const lightEffectTypes: LightEffectType[] = [
   'default',

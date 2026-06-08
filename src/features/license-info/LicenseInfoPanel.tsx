@@ -13,6 +13,7 @@ import ListItemText from '@mui/material/ListItemText';
 import { useTranslation } from 'react-i18next';
 import { useAsyncRetry } from 'react-use';
 
+import type { License } from '@skybrush/flockwave-spec';
 import {
   BackgroundHint,
   LargeProgressIndicator,
@@ -20,29 +21,13 @@ import {
 
 import useMessageHub from '~/hooks/useMessageHub';
 
-type Props = {
-  id?: string;
-  licensee?: string;
-  expiryDate?: string;
-  features?: Array<{
-    type: string;
-    label: string;
-    secondaryLabel?: string;
-  }>;
-  restrictions?: Array<{
-    type: string;
-    label: string;
-    secondaryLabel?: string;
-  }>;
-};
-
 const LicenseInfoPanelPresentation = ({
   expiryDate,
   features,
   id,
   licensee,
   restrictions,
-}: Props) => {
+}: License) => {
   const { t } = useTranslation(undefined, { keyPrefix: 'LicenseInfoPanel' });
 
   const featureItems = [];

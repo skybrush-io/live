@@ -31,7 +31,7 @@ import {
   ensureNotNAK,
   extractResultOrReceiptFromMaybeAsyncResponse,
 } from './parsing';
-import { ConstructedQueryHandler as QueryHandler } from './queries';
+import { createQueryHandler, type QueryHandler } from './queries';
 import type {
   Message,
   MessageBody,
@@ -1263,7 +1263,7 @@ export default class MessageHub {
    * server via the message hub.
    */
   get query(): QueryHandler {
-    return (this._query ??= new QueryHandler(this));
+    return (this._query ??= createQueryHandler(this));
   }
 
   /**
@@ -1594,6 +1594,8 @@ export default class MessageHub {
 
     validateObjectId(id);
 
+    // TODO: idProp is string | undefined based on its typing. Fix typing and
+    // implementation is a consistent way. Validate every call if possible.
     if (idProp !== null) {
       message[idProp ?? (single ? 'id' : 'ids')] = [id];
     }
