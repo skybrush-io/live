@@ -25,6 +25,7 @@ import type MessageHub from './messages';
 import type {
   AsyncOperationOptions,
   AsyncResponseHandlerOptions,
+  ProgressStatus,
 } from './messages';
 import { extractResponseForId } from './parsing';
 import { isSchedule, type Schedule } from './schedule';
@@ -502,11 +503,14 @@ export async function uploadFirmware(
     target,
     blob,
   }: { objectId: string; target: string; blob: string },
-  options: Pick<AsyncOperationOptions, 'onProgress'>
+  options: { onProgress?: (id: string, status: ProgressStatus) => void }
 ) {
   const command = createFirmwareUploadRequest(objectId, target, blob);
   try {
-    await hub.startAsyncOperationForSingleId(objectId, command, options);
+    await hub.startAsyncOperationForSingleId(objectId, command, {
+      ...options,
+      single: false,
+    });
   } catch (error) {
     const errorString = errorToString(error);
     // Currently we assume that we can only post a firmware update to a UAV;

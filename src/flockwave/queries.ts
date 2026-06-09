@@ -42,7 +42,7 @@ import type { LonLat } from '~/utils/geography';
 import { toScaledJSONFromLonLat } from '~/utils/geography';
 
 import type MessageHub from './messages';
-import type { AsyncOperationOptions } from './messages';
+import type { ProgressStatus } from './messages';
 import { extractResponseForId } from './parsing';
 import type {
   CollectiveRTHConfig,
@@ -211,7 +211,7 @@ export async function getFlightLog(
   hub: MessageHub,
   uavId: string,
   logId: string,
-  { onProgress }: Pick<AsyncOperationOptions, 'onProgress'> = {}
+  { onProgress }: { onProgress?: (status: ProgressStatus) => void } = {}
 ): Promise<FlightLog> {
   if (!uavId || typeof uavId !== 'string') {
     throw new Error('Expected non-empty UAV ID');
