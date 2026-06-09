@@ -8,7 +8,8 @@ import {
   type PayloadAction,
 } from '@reduxjs/toolkit';
 
-import type UAV from '~/model/uav';
+import type { ProgressInfo } from '~/flockwave/messages';
+import type { Identifier } from '~/utils/collections';
 import { type AppDispatch, type AppSelector } from '~/store/reducers';
 
 // Poor man's content-addressable store for keeping the downloaded logs
@@ -40,7 +41,7 @@ export enum LogDownloadStatus {
 type LogDownloadState =
   | {
       status: LogDownloadStatus.LOADING;
-      progress?: number;
+      progress?: ProgressInfo;
     }
   | {
       status: LogDownloadStatus.ERROR;
@@ -53,7 +54,7 @@ type LogDownloadState =
 
 type LogId = string;
 type LogDownloadSliceState = Record<
-  UAV['id'],
+  Identifier,
   Record<LogId, LogDownloadState | undefined> | undefined
 >;
 
@@ -66,14 +67,18 @@ const { actions, reducer } = createSlice({
   // TODO: Reduce the repetitiveness of these!
   reducers: {
     setLogDownloadProgress: {
-      prepare: (uavId: UAV['id'], logId: LogId, progress?: number) => ({
+      prepare: (uavId: Identifier, logId: LogId, progress?: ProgressInfo) => ({
         payload: { uavId, logId, progress },
       }),
       reducer(
         state,
         {
           payload: { uavId, logId, progress },
-        }: PayloadAction<{ uavId: UAV['id']; logId: LogId; progress?: number }>
+        }: PayloadAction<{
+          uavId: Identifier;
+          logId: LogId;
+          progress?: ProgressInfo;
+        }>
       ) {
         (state[uavId] ??= {})[logId] = {
           status: LogDownloadStatus.LOADING,
@@ -83,14 +88,14 @@ const { actions, reducer } = createSlice({
     },
 
     setLogDownloadError: {
-      prepare: (uavId: UAV['id'], logId: LogId, error: string) => ({
+      prepare: (uavId: Identifier, logId: LogId, error: string) => ({
         payload: { uavId, logId, error },
       }),
       reducer(
         state,
         {
           payload: { uavId, logId, error },
-        }: PayloadAction<{ uavId: UAV['id']; logId: LogId; error: string }>
+        }: PayloadAction<{ uavId: Identifier; logId: LogId; error: string }>
       ) {
         (state[uavId] ??= {})[logId] = {
           status: LogDownloadStatus.ERROR,
@@ -100,14 +105,14 @@ const { actions, reducer } = createSlice({
     },
 
     setLogDownloadValue: {
-      prepare: (uavId: UAV['id'], logId: LogId, value: string) => ({
+      prepare: (uavId: Identifier, logId: LogId, value: string) => ({
         payload: { uavId, logId, value },
       }),
       reducer(
         state,
         {
           payload: { uavId, logId, value },
-        }: PayloadAction<{ uavId: UAV['id']; logId: LogId; value: string }>
+        }: PayloadAction<{ uavId: Identifier; logId: LogId; value: string }>
       ) {
         (state[uavId] ??= {})[logId] = {
           status: LogDownloadStatus.SUCCESS,
@@ -127,12 +132,12 @@ export const {
 } = actions;
 
 export const initiateLogDownload =
-  (uavId: UAV['id'], logId: LogId) => (dispatch: AppDispatch) => {
+  (uavId: Identifier, logId: LogId) => (dispatch: AppDispatch) => {
     dispatch(setLogDownloadProgress(uavId, logId));
   };
 
 export const storeDownloadedLog =
-  (uavId: UAV['id'], logId: LogId, log: string) =>
+  (uavId: Identifier, logId: LogId, log: string) =>
   async (dispatch: AppDispatch) => {
     const value = await logContents.write(log);
     dispatch(setLogDownloadValue(uavId, logId, value));
@@ -141,12 +146,15 @@ export const storeDownloadedLog =
 /* Selectors */
 
 export const getLogDownloadState =
-  (uavId: UAV['id'], logId: LogId): AppSelector<LogDownloadState | undefined> =>
+  (
+    uavId: Identifier,
+    logId: LogId
+  ): AppSelector<LogDownloadState | undefined> =>
   (state) =>
     state.logDownload[uavId]?.[logId];
 
 export const retrieveDownloadedLog = (
-  uavId: UAV['id'],
+  uavId: Identifier,
   logId: LogId
 ): AppSelector<string | undefined> =>
   createSelector(getLogDownloadState(uavId, logId), (state) => {

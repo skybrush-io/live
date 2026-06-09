@@ -5,10 +5,10 @@ import LinearProgress from '@mui/material/LinearProgress';
 import { styled } from '@mui/material/styles';
 import { type ReactNode } from 'react';
 import toast from 'react-hot-toast';
-import { useDispatch } from 'react-redux';
 
 import Countdown from '~/components/Countdown';
 import { useCountdown } from '~/hooks/useCountdown';
+import { useAppDispatch } from '~/store/hooks';
 
 import { TOAST_WIDTH } from './constants';
 import { MessageSemantics, type Notification } from './types';
@@ -55,7 +55,7 @@ type ToastContentProps = {
 };
 
 const ToastContent = ({ notification }: ToastContentProps) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const { message, buttons, countdown, timeout } = notification;
 
   let result: ReactNode = message;
@@ -75,7 +75,7 @@ const ToastContent = ({ notification }: ToastContentProps) => {
           key={index}
           size='small'
           variant='outlined'
-          onClick={() => dispatch(action as never)}
+          onClick={() => dispatch(action)}
           {...rest}
         >
           {label}

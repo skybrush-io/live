@@ -366,10 +366,15 @@ class PendingResponse<T = unknown> {
   };
 }
 
+export type ProgressInfo = {
+  percentage?: number;
+  message?: string;
+};
+
 export type ProgressStatus = {
-  progress: { percentage?: number; message?: string };
+  progress: ProgressInfo;
   suspended: boolean;
-  resume?: (value: unknown) => Promise<void>;
+  resume?: (value?: unknown) => Promise<void>;
 };
 
 type PendingCommandExecutionOptions = TimeoutOptions & {
@@ -1165,11 +1170,21 @@ class DeviceTreeSubscriptionManager extends MessageHubRelatedComponent {
 type Emitter = (event: string, message: unknown) => void;
 type NotificationHandler<T = any> = (message: T) => void;
 
-export type AsyncOperationOptions = {
-  single?: boolean;
+type MultiAsyncOperationOptions = {
+  single?: false;
   idProp?: string;
   onProgress?: (id: string, progress: ProgressStatus) => void;
 };
+
+type SingleAsyncOperationOptions = {
+  single: true;
+  idProp?: string;
+  onProgress?: (progress: ProgressStatus) => void;
+};
+
+export type AsyncOperationOptions =
+  | MultiAsyncOperationOptions
+  | SingleAsyncOperationOptions;
 
 /**
  * Message hub class that can be used to send Flockwave messages and get
@@ -1577,7 +1592,7 @@ export default class MessageHub {
     options: AsyncOperationOptions = {}
   ): Promise<T> {
     const { ids, type: expectedType } = message;
-    const { idProp, onProgress, single = false } = options;
+    const { idProp } = options;
 
     if (!expectedType) {
       throw new Error('Message must have a type');
@@ -1592,13 +1607,17 @@ export default class MessageHub {
     // TODO: idProp is string | undefined based on its typing. Fix typing and
     // implementation is a consistent way. Validate every call if possible.
     if (idProp !== null) {
-      message[idProp ?? (single ? 'id' : 'ids')] = [id];
+      message[idProp ?? (options.single === true ? 'id' : 'ids')] = [id];
     }
 
     let response: Message<MessageBody & Record<string, unknown>> =
       await this.sendMessage(message);
 
-    if (single) {
+    let progressHandler:
+      | ((id: string, status: ProgressStatus) => void)
+      | undefined;
+
+    if (options.single === true) {
       // Object takes a single ID and returns a single result, error or
       // receipt object. Pretend that we received a mapping for them instead so
       // we could use the same processing routine for both
@@ -1611,14 +1630,15 @@ export default class MessageHub {
       }
 
       response = responseWithMaps;
-    }
 
-    const progressHandler = (onProgress
-      ? single
-        ? (_id: string, ...args: Parameters<typeof onProgress>) =>
-            onProgress(...args)
-        : onProgress
-      : undefined) as any as typeof onProgress;
+      const { onProgress } = options;
+      if (onProgress) {
+        progressHandler = (_unusedId: string, status: ProgressStatus) =>
+          onProgress(status);
+      }
+    } else {
+      progressHandler = options.onProgress;
+    }
 
     const parsedResponse = await this._processMultiAsyncOperationResponse(
       response as Message<MultiAsyncOperationResponseBody<unknown>>,
