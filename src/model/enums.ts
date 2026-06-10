@@ -273,8 +273,8 @@ export function describeFlightMode(
 /**
  * Returns the label of the given flight mode.
  */
-export function getFlightModeLabel(mode: FlightMode): string {
-  const props = propertiesForFlightModes[mode];
+export function getFlightModeLabel(mode: FlightMode | string): string {
+  const props = propertiesForFlightModes[mode as FlightMode];
   return props ? props.label : String(mode).toUpperCase();
 }
 
@@ -282,10 +282,10 @@ export function getFlightModeLabel(mode: FlightMode): string {
  * Returns the semantic status code of the given flight mode.
  */
 export function getSemanticsForFlightMode(
-  mode: FlightMode
+  mode: FlightMode | string
 ): Status | undefined {
   const props =
-    propertiesForFlightModes[mode] ??
+    propertiesForFlightModes[mode as FlightMode] ??
     propertiesForFlightModes[FlightMode.UNKNOWN];
   return props.status;
 }
