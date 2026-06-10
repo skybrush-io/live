@@ -85,7 +85,7 @@ type UAVTestButtonProps = {
   needsConfirmation?: boolean;
   timeout?: number;
   type: UAVTestType;
-  uavId: string;
+  uavId?: string;
 };
 
 const UAVTestButton = ({
@@ -146,6 +146,9 @@ const UAVTestButton = ({
 
   const [lastExecutionState, execute] = useAsyncFn(async () => {
     lastExecutedUavIdRef.current = uavId;
+    if (uavId === undefined) {
+      return;
+    }
     // TODO(ntamas): use the proper UAV-TEST messages designated for this
     await messageHub.sendCommandRequest(
       {
@@ -242,7 +245,7 @@ const UAVTestButton = ({
 };
 
 type UAVTestsPanelProps = {
-  uavId: string;
+  uavId?: string;
 };
 
 const UAVTestsPanel = ({ uavId }: UAVTestsPanelProps) => {

@@ -4,12 +4,12 @@ import Divider from '@mui/material/Divider';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
-import PropTypes from 'prop-types';
 import { memo, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { useAsyncRetry, useUnmount } from 'react-use';
 
+import type { UAVPreflightCheckInfo } from '@skybrush/flockwave-spec';
 import {
   BackgroundHint,
   FormHeader as Header,
@@ -24,13 +24,16 @@ import {
   describeOverallPreflightCheckResult,
   describePreflightCheckResult,
   getSemanticsForPreflightCheckResult,
-  PreflightCheckResult,
 } from '~/model/enums';
-import CustomPropTypes from '~/utils/prop-types';
+import type { RootState } from '~/store/reducers';
 
 import { getUAVById } from './selectors';
 
-const ErrorList = ({ errorCodes }) => {
+type ErrorListProps = {
+  errorCodes?: UAVErrorCode[];
+};
+
+const ErrorList = ({ errorCodes }: ErrorListProps) => {
   const { t } = useTranslation();
   const relevantErrorCodes = (errorCodes || []).filter(
     (code) =>
@@ -56,11 +59,13 @@ const ErrorList = ({ errorCodes }) => {
   );
 };
 
-ErrorList.propTypes = {
-  errorCodes: PropTypes.arrayOf(PropTypes.number),
-};
+type PreflightStatusResultsProps = UAVPreflightCheckInfo;
 
-const PreflightStatusResults = ({ message, result, items }) => {
+const PreflightStatusResults = ({
+  items,
+  message,
+  result,
+}: PreflightStatusResultsProps) => {
   const { t } = useTranslation();
   return (
     <>
@@ -86,7 +91,7 @@ const PreflightStatusResults = ({ message, result, items }) => {
                 <ListItemText
                   primary={
                     message ||
-                    (item.result === PreflightCheckResult.PASS
+                    (item.result === 'pass'
                       ? item.label
                       : `${item.label} — ${describePreflightCheckResult(
                           item.result,
@@ -103,103 +108,111 @@ const PreflightStatusResults = ({ message, result, items }) => {
   );
 };
 
-PreflightStatusResults.propTypes = {
-  items: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.string,
-      label: PropTypes.string,
-      message: PropTypes.string,
-      result: CustomPropTypes.preflightCheckResult,
-    })
-  ),
-  message: PropTypes.string,
-  result: CustomPropTypes.preflightCheckResult,
+type PreflightStatusPanelLowerSegmentProps = {
+  uavId?: string;
 };
 
-const PreflightStatusPanelLowerSegment = memo(({ uavId }) => {
-  const messageHub = useMessageHub();
-  const state = useAsyncRetry(
-    () => (uavId ? messageHub.query.getPreflightStatus(uavId) : {}),
-    [messageHub, uavId]
-  );
-  const scheduledRefresh = useRef();
+const missingUAVCheckInfo: UAVPreflightCheckInfo = {
+  items: [],
+  result: 'off',
+};
 
-  // Refresh the status every second
-  useEffect(() => {
-    const isResultReady =
-      uavId && !state.loading && !state.error && Boolean(state.value);
-    if (isResultReady && !scheduledRefresh.current) {
-      scheduledRefresh.current = setTimeout(() => {
-        scheduledRefresh.current = undefined;
-        state.retry();
-      }, 1000);
+const PreflightStatusPanelLowerSegment = memo(
+  ({ uavId }: PreflightStatusPanelLowerSegmentProps) => {
+    const messageHub = useMessageHub();
+    const state = useAsyncRetry(
+      () =>
+        uavId
+          ? messageHub.query.getPreflightStatus(uavId)
+          : Promise.resolve(missingUAVCheckInfo),
+      [messageHub, uavId]
+    );
+    const scheduledRefresh = useRef<ReturnType<typeof setTimeout>>();
+
+    // Refresh the status every second
+    useEffect(() => {
+      const isResultReady =
+        uavId && !state.loading && !state.error && Boolean(state.value);
+      if (isResultReady && !scheduledRefresh.current) {
+        scheduledRefresh.current = setTimeout(() => {
+          scheduledRefresh.current = undefined;
+          state.retry();
+        }, 1000);
+      }
+    }, [state, uavId]);
+
+    // Cancel scheduled refreshes when unmounting
+    useUnmount(() => {
+      if (scheduledRefresh.current) {
+        clearTimeout(scheduledRefresh.current);
+      }
+    });
+
+    if (state.error && !state.loading) {
+      return (
+        <BackgroundHint
+          icon={<Error />}
+          text='Error while loading preflight status report'
+          button={<Button onClick={state.retry}>Try again</Button>}
+        />
+      );
     }
-  }, [state, uavId]);
 
-  // Cancel scheduled refreshes when unmounting
-  useUnmount(() => {
-    if (scheduledRefresh.current) {
-      clearTimeout(scheduledRefresh.current);
+    if (state.value) {
+      return (
+        <PreflightStatusResults
+          message={state.value.message}
+          result={state.value.result}
+          items={state.value.items}
+        />
+      );
     }
-  });
 
-  if (state.error && !state.loading) {
+    if (state.loading) {
+      return (
+        <LargeProgressIndicator
+          fullHeight
+          label='Retrieving status report...'
+        />
+      );
+    }
+
     return (
       <BackgroundHint
-        icon={<Error />}
-        text='Error while loading preflight status report'
+        text='Preflight status report not loaded yet'
         button={<Button onClick={state.retry}>Try again</Button>}
       />
     );
   }
+);
 
-  if (state.value) {
-    return (
-      <PreflightStatusResults
-        message={state.value.message}
-        result={state.value.result}
-        items={state.value.items}
-      />
-    );
-  }
+PreflightStatusPanelLowerSegment.displayName =
+  'PreflightStatusPanelLowerSegment';
 
-  if (state.loading) {
-    return (
-      <LargeProgressIndicator fullHeight label='Retrieving status report...' />
-    );
-  }
-
-  return (
-    <BackgroundHint
-      text='Preflight status report not loaded yet'
-      button={<Button onClick={state.retry}>Try again</Button>}
-    />
-  );
-});
-
-PreflightStatusPanelLowerSegment.propTypes = {
-  uavId: PropTypes.string,
+type PreflightStatusPanelOwnProps = {
+  uavId?: string;
 };
+type PreflightStatusPanelDiospatchProps = {
+  errorCodes?: UAVErrorCode[];
+};
+type PreflightStatusPanelProps = PreflightStatusPanelOwnProps &
+  PreflightStatusPanelDiospatchProps;
 
-const PreflightStatusPanel = ({ errorCodes, uavId }) => (
+const PreflightStatusPanel = ({
+  errorCodes,
+  uavId,
+}: PreflightStatusPanelProps) => (
   <>
     <ErrorList errorCodes={errorCodes} />
     <PreflightStatusPanelLowerSegment uavId={uavId} />
   </>
 );
 
-PreflightStatusPanel.propTypes = {
-  errorCodes: PropTypes.arrayOf(PropTypes.number),
-  uavId: PropTypes.string,
-};
-
 export default connect(
   // mapStateToProps
-  (state, ownProps) => ({
+  (state: RootState, ownProps: PreflightStatusPanelOwnProps) => ({
     errorCodes: ownProps.uavId
       ? getUAVById(state, ownProps.uavId)?.errors
-      : null,
-  }),
-  // mapDispatchToProps
-  {}
+      : undefined,
+  })
 )(PreflightStatusPanel);

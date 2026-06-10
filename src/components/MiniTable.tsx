@@ -1,5 +1,5 @@
 import isNil from 'lodash-es/isNil';
-import PropTypes from 'prop-types';
+import type React from 'react';
 
 import { makeStyles } from '@skybrush/app-theme-mui';
 
@@ -22,13 +22,17 @@ const useStyles = makeStyles((theme) => ({
   value: {
     textAlign: 'right',
   },
-
-  separator: {},
 }));
 
 export const naText = <span className='muted'>—</span>;
 
-const MiniTable = ({ items }) => {
+export type MiniTableItem = string | [string, React.ReactNode];
+
+type MiniTableProps = {
+  items: MiniTableItem[];
+};
+
+const MiniTable = ({ items }: MiniTableProps) => {
   const classes = useStyles();
 
   return (
@@ -44,19 +48,13 @@ const MiniTable = ({ items }) => {
             </tr>
           ) : (
             <tr key={row}>
-              <td className={classes.separator} colSpan={2} />
+              <td colSpan={2} />
             </tr>
           )
         )}
       </tbody>
     </table>
   );
-};
-
-MiniTable.propTypes = {
-  items: PropTypes.arrayOf(
-    PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.node)])
-  ),
 };
 
 export default MiniTable;
