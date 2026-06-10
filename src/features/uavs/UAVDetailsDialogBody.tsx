@@ -1,29 +1,37 @@
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import MessagesPanel from '~/components/chat/MessagesPanel';
+import type { RootState } from '~/store/reducers';
 
 import PreflightStatusPanel from './PreflightStatusPanel';
 import UAVLogsPanel from './UAVLogsPanel';
 import UAVTestsPanel from './UAVTestsPanel';
-
 import {
   getSelectedTabInUAVDetailsDialog,
   getSelectedUAVIdInUAVDetailsDialog,
 } from './details';
+import { UAVDetailsDialogTab } from './types';
 
-const UAVDetailsDialogBody = ({ selectedTab, uavId }) => {
+type UAVDetailsDialogBodyProps = {
+  selectedTab: UAVDetailsDialogTab;
+  uavId?: string;
+};
+
+const UAVDetailsDialogBody = ({
+  selectedTab,
+  uavId,
+}: UAVDetailsDialogBodyProps) => {
   switch (selectedTab) {
-    case 'messages':
+    case UAVDetailsDialogTab.MESSAGES:
       return <MessagesPanel uavId={uavId} />;
 
-    case 'preflight':
+    case UAVDetailsDialogTab.PREFLIGHT:
       return <PreflightStatusPanel uavId={uavId} />;
 
-    case 'tests':
+    case UAVDetailsDialogTab.TESTS:
       return <UAVTestsPanel uavId={uavId} />;
 
-    case 'logs':
+    case UAVDetailsDialogTab.LOGS:
       return <UAVLogsPanel uavId={uavId} />;
 
     default:
@@ -31,14 +39,9 @@ const UAVDetailsDialogBody = ({ selectedTab, uavId }) => {
   }
 };
 
-UAVDetailsDialogBody.propTypes = {
-  selectedTab: PropTypes.oneOf(['messages', 'preflight', 'tests', 'logs']),
-  uavId: PropTypes.string,
-};
-
 export default connect(
   // mapStateToProps
-  (state) => ({
+  (state: RootState) => ({
     selectedTab: getSelectedTabInUAVDetailsDialog(state),
     uavId: getSelectedUAVIdInUAVDetailsDialog(state),
   })
