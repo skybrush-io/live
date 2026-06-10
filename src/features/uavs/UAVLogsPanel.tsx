@@ -245,4 +245,6 @@ const UAVLogsPanel = memo(({ uavId }: UAVLogsPanelProps) => {
   return <UAVLogList dense uavId={uavId!} items={state.value} />;
 });
 
+UAVLogsPanel.displayName = 'UAVLogsPanel';
+
 export default UAVLogsPanel;
