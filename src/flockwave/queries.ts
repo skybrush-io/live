@@ -6,8 +6,6 @@
 import type {
   DroneShowConfiguration,
   FirmwareUpdateTarget,
-  FlightLog,
-  FlightLogMetadata,
   License,
   Response_BCNPROPS,
   Response_EXTCFG,
@@ -37,6 +35,12 @@ import memoize from 'memoizee';
 import { errorToString } from '~/error-handling';
 import type { BeaconPropertiesMap } from '~/features/beacons/types';
 import type { OutdoorCoordinateSystemWithOrigin } from '~/features/show/types';
+import {
+  type FlightLog,
+  type FlightLogMetadata,
+  validateFlightLogMetadata,
+  validateFlockwaveFlightLog,
+} from '~/model/flight-logs';
 import type { ItemLike } from '~/utils/collections';
 import type { LonLat } from '~/utils/geography';
 import { toScaledJSONFromLonLat } from '~/utils/geography';
@@ -222,7 +226,7 @@ export async function getFlightLog(
   }
 
   try {
-    return await hub.startAsyncOperationForSingleId<FlightLog>(
+    const log = await hub.startAsyncOperationForSingleId<FlightLog>(
       uavId,
       {
         type: 'LOG-DATA',
@@ -233,6 +237,7 @@ export async function getFlightLog(
       //                  it as string | undefined only
       { idProp: null, onProgress, single: true }
     );
+    return validateFlockwaveFlightLog(log);
   } catch (error) {
     const errorString = errorToString(error);
     throw new Error(
@@ -253,10 +258,10 @@ export async function getFlightLogList(
   }
 
   try {
-    return await hub.startAsyncOperationForSingleId<FlightLogMetadata[]>(
-      uavId,
-      { type: 'LOG-INF' }
-    );
+    const response = await hub.startAsyncOperationForSingleId<
+      FlightLogMetadata[]
+    >(uavId, { type: 'LOG-INF' });
+    return response.map(validateFlightLogMetadata);
   } catch (error) {
     const errorString = errorToString(error);
     throw new Error(

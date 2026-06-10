@@ -9,6 +9,7 @@ import {
 } from '@reduxjs/toolkit';
 
 import type { ProgressInfo } from '~/flockwave/messages';
+import type { FlightLog } from '~/model/flight-logs';
 import type { Identifier } from '~/utils/collections';
 import { type AppDispatch, type AppSelector } from '~/store/reducers';
 
@@ -17,13 +18,14 @@ import { type AppDispatch, type AppSelector } from '~/store/reducers';
 //       it. If we need a reusable version it should be cleaned up and moved to
 //       `~/utils`. (Or, rather, a proper CAS package should be included.)
 const logContents = new (class {
-  #data: Record<string, string> = {};
+  #data: Record<string, FlightLog> = {};
   #encoder = new TextEncoder();
-  write = async (item: string) => {
+  write = async (item: FlightLog) => {
+    const payload = JSON.stringify(item);
     // prettier-ignore
     const hash = (
       Array.from(new Uint8Array(
-        await window.crypto.subtle.digest('SHA-1', this.#encoder.encode(item))
+        await window.crypto.subtle.digest('SHA-1', this.#encoder.encode(payload))
       ), (byte) => byte.toString(16).padStart(2, '0')).join('')
     );
     this.#data[hash] = item;
@@ -137,7 +139,7 @@ export const initiateLogDownload =
   };
 
 export const storeDownloadedLog =
-  (uavId: Identifier, logId: LogId, log: string) =>
+  (uavId: Identifier, logId: LogId, log: FlightLog) =>
   async (dispatch: AppDispatch) => {
     const value = await logContents.write(log);
     dispatch(setLogDownloadValue(uavId, logId, value));
@@ -156,7 +158,7 @@ export const getLogDownloadState =
 export const retrieveDownloadedLog = (
   uavId: Identifier,
   logId: LogId
-): AppSelector<string | undefined> =>
+): AppSelector<FlightLog | undefined> =>
   createSelector(getLogDownloadState(uavId, logId), (state) => {
     if (state?.status === LogDownloadStatus.SUCCESS) {
       return logContents.read(state.value);

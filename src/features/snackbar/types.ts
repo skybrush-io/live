@@ -14,7 +14,7 @@ export enum MessageSemantics {
 
 type ToastButton = {
   label: string;
-  action: Action;
+  action: Action | (() => void);
 };
 
 /**
