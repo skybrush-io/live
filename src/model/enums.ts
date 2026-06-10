@@ -1,3 +1,5 @@
+import type { PreflightCheckResult as FlockwavePreflightCheckResult } from '@skybrush/flockwave-spec';
+
 import { Status } from '~/components/semantics';
 import type { TranslateFn } from '~/i18n/types';
 
@@ -283,7 +285,7 @@ export function getSemanticsForFlightMode(
   mode: FlightMode
 ): Status | undefined {
   const props =
-    propertiesForFlightModes[mode] ||
+    propertiesForFlightModes[mode] ??
     propertiesForFlightModes[FlightMode.UNKNOWN];
   return props.status;
 }
@@ -374,7 +376,7 @@ const propertiesForGPSFixTypes: Record<
  */
 export function abbreviateGPSFixType(fixType: GPSFixType): string {
   const props =
-    propertiesForGPSFixTypes[fixType] ||
+    propertiesForGPSFixTypes[fixType] ??
     propertiesForGPSFixTypes[GPSFixType.UNKNOWN];
   return props.abbreviation;
 }
@@ -398,7 +400,7 @@ export function describeGPSFixType(
  */
 export function getSemanticsForGPSFixType(fixType: GPSFixType): Status {
   const props =
-    propertiesForGPSFixTypes[fixType] ||
+    propertiesForGPSFixTypes[fixType] ??
     propertiesForGPSFixTypes[GPSFixType.UNKNOWN];
   return props.status;
 }
@@ -423,19 +425,7 @@ export function getSemanticsForRSSI(rssi?: number): Status {
 
 /* ************************************************************************* */
 
-/**
- * Enum representing the possible preflight check results on a UAV.
- */
-export enum PreflightCheckResult {
-  OFF = 'off',
-  PASS = 'pass',
-  WARNING = 'warning',
-  RUNNING = 'running',
-  SOFT_FAILURE = 'softFailure',
-  FAILURE = 'failure',
-  ERROR = 'error',
-  UNKNOWN = 'unknown',
-}
+export type PreflightCheckResult = FlockwavePreflightCheckResult | 'unknown';
 
 /**
  * Object mapping preflight check result constants to their properties (human
@@ -451,42 +441,42 @@ const propertiesForPreflightCheckResults: Record<
     status: Status;
   }
 > = {
-  [PreflightCheckResult.OFF]: {
+  off: {
     description: 'Disabled',
     overallDescription: 'All preflight checks are disabled',
     status: Status.OFF,
   },
-  [PreflightCheckResult.PASS]: {
+  pass: {
     description: 'OK',
     overallDescription: 'Preflight checks passed',
     status: Status.SUCCESS,
   },
-  [PreflightCheckResult.WARNING]: {
+  warning: {
     description: 'Needs attention',
     overallDescription: 'Some preflight check items need attention',
     status: Status.WARNING,
   },
-  [PreflightCheckResult.RUNNING]: {
+  running: {
     description: 'Check in progress...',
     overallDescription: 'Preflight checks are in progress...',
     status: Status.WAITING,
   },
-  [PreflightCheckResult.SOFT_FAILURE]: {
+  softFailure: {
     description: 'Temporary failure',
     overallDescription: 'Some preflight checks failed temporarily',
     status: Status.WARNING,
   },
-  [PreflightCheckResult.FAILURE]: {
+  failure: {
     description: 'Failed',
     overallDescription: 'Preflight checks failed',
     status: Status.ERROR,
   },
-  [PreflightCheckResult.ERROR]: {
+  error: {
     description: 'Error while executing test',
     overallDescription: 'Error while executing preflight checks',
     status: Status.CRITICAL,
   },
-  [PreflightCheckResult.UNKNOWN]: {
+  unknown: {
     description: 'Unknown test result',
     overallDescription: 'Unknown preflight test result',
     status: Status.OFF,
@@ -502,7 +492,7 @@ export function describePreflightCheckResult(
 ): string {
   const resolvedResult = propertiesForPreflightCheckResults[result]
     ? result
-    : PreflightCheckResult.UNKNOWN;
+    : 'unknown';
   const description =
     propertiesForPreflightCheckResults[resolvedResult].description;
   return t
@@ -519,7 +509,7 @@ export function describeOverallPreflightCheckResult(
 ): string {
   const resolvedResult = propertiesForPreflightCheckResults[result]
     ? result
-    : PreflightCheckResult.UNKNOWN;
+    : 'unknown';
   const description =
     propertiesForPreflightCheckResults[resolvedResult].overallDescription;
   return t
@@ -534,7 +524,7 @@ export function getSemanticsForPreflightCheckResult(
   result: PreflightCheckResult
 ): Status {
   const props =
-    propertiesForPreflightCheckResults[result] ||
-    propertiesForPreflightCheckResults[PreflightCheckResult.UNKNOWN];
+    propertiesForPreflightCheckResults[result] ??
+    propertiesForPreflightCheckResults['unknown'];
   return props.status;
 }
