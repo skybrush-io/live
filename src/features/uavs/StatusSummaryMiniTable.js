@@ -162,8 +162,5 @@ StatusSummaryMiniTable.propTypes = {
 
 export default connect(
   // mapStateToProps
-  (state, ownProps) => getUAVById(state, ownProps.uavId),
-
-  // mapDispatchToProps
-  {}
+  (state, ownProps) => getUAVById(state, ownProps.uavId) ?? {}
 )(StatusSummaryMiniTable);
