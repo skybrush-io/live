@@ -9,13 +9,12 @@ import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
 import isNil from 'lodash-es/isNil';
 import prettyBytes from 'pretty-bytes';
-import PropTypes from 'prop-types';
 import { memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useAsyncRetry } from 'react-use';
 
-import { makeStyles } from '@skybrush/app-theme-mui';
+import { makeStyles, Status } from '@skybrush/app-theme-mui';
 import {
   BackgroundHint,
   LargeProgressIndicator,
@@ -34,9 +33,15 @@ import {
   setLogDownloadProgress,
   storeDownloadedLog,
 } from '~/features/uavs/log-download';
+import type { ProgressStatus } from '~/flockwave/messages';
 import useMessageHub from '~/hooks/useMessageHub';
 import { describeFlightLogKind } from '~/model/enums';
-import { convertFlightLogToBlob } from '~/model/flight-logs';
+import {
+  convertFlightLogToBlob,
+  type FlightLog,
+  type FlightLogMetadata,
+} from '~/model/flight-logs';
+import { useAppDispatch } from '~/store/hooks';
 import { writeBlobToFile } from '~/utils/filesystem';
 import { formatUnixTimestamp } from '~/utils/formatting';
 
@@ -52,15 +57,25 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const saveLogToFile = (log) => {
+const saveLogToFile = (log: FlightLog) => {
   const { filename, blob } = convertFlightLogToBlob(log);
-  writeBlobToFile(blob, filename);
+  void writeBlobToFile(blob, filename);
 };
 
-const UAVLogListItem = ({ id, kind, size, timestamp, uavId }) => {
+type UAVLogListItemProps = FlightLogMetadata & {
+  uavId: string;
+};
+
+const UAVLogListItem = ({
+  id,
+  kind,
+  size,
+  timestamp,
+  uavId,
+}: UAVLogListItemProps) => {
   /* Hooks */
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const messageHub = useMessageHub();
   const { t } = useTranslation();
   const classes = useStyles();
@@ -72,12 +87,12 @@ const UAVLogListItem = ({ id, kind, size, timestamp, uavId }) => {
     dispatch(initiateLogDownload(uavId, id));
     messageHub.query
       .getFlightLog(uavId, id, {
-        onProgress({ progress }) {
+        onProgress({ progress }: ProgressStatus) {
           dispatch(setLogDownloadProgress(uavId, id, progress));
         },
       })
       .then((log) => {
-        dispatch(storeDownloadedLog(uavId, id, log));
+        void dispatch(storeDownloadedLog(uavId, id, log));
         showNotification({
           message: `Log ${id} of UAV ${uavId} downloaded successfully.`,
           semantics: MessageSemantics.SUCCESS,
@@ -85,7 +100,7 @@ const UAVLogListItem = ({ id, kind, size, timestamp, uavId }) => {
           timeout: 20000,
         });
       })
-      .catch(({ message }) => {
+      .catch(({ message }: { message: string }) => {
         showNotification({
           message: `Couldn't download log ${id} of UAV ${uavId}: ${message}`,
           semantics: MessageSemantics.ERROR,
@@ -97,13 +112,15 @@ const UAVLogListItem = ({ id, kind, size, timestamp, uavId }) => {
   }, [dispatch, id, messageHub, uavId]);
 
   const save = useCallback(() => {
-    saveLogToFile(log);
+    if (log) {
+      saveLogToFile(log);
+    }
   }, [log]);
 
   /* Display */
 
-  const primaryParts = [];
-  const secondaryParts = [];
+  const primaryParts: string[] = [];
+  const secondaryParts: string[] = [];
 
   if (!isNil(id)) {
     primaryParts.push(id);
@@ -151,11 +168,13 @@ const UAVLogListItem = ({ id, kind, size, timestamp, uavId }) => {
       <ListItemButton onClick={onClick}>
         <StatusLight
           status={
-            {
-              [LogDownloadStatus.LOADING]: 'next',
-              [LogDownloadStatus.ERROR]: 'error',
-              [LogDownloadStatus.SUCCESS]: 'success',
-            }[downloadState?.status] ?? 'off'
+            downloadState?.status
+              ? {
+                  [LogDownloadStatus.LOADING]: Status.NEXT,
+                  [LogDownloadStatus.ERROR]: Status.ERROR,
+                  [LogDownloadStatus.SUCCESS]: Status.SUCCESS,
+                }[downloadState.status]
+              : Status.OFF
           }
         />
         <ListItemText
@@ -172,16 +191,14 @@ const UAVLogListItem = ({ id, kind, size, timestamp, uavId }) => {
   );
 };
 
-UAVLogListItem.propTypes = {
-  id: PropTypes.string,
-  kind: PropTypes.string,
-  size: PropTypes.number,
-  timestamp: PropTypes.number,
-  uavId: PropTypes.string,
+type UAVLogListProps = {
+  uavId: string;
+  items: FlightLogMetadata[];
+  dense?: boolean;
 };
 
 const UAVLogList = listOf(
-  (item, props) => (
+  (item: FlightLogMetadata, props: UAVLogListProps) => (
     <UAVLogListItem key={item.id} uavId={props.uavId} {...item} />
   ),
   {
@@ -190,10 +207,15 @@ const UAVLogList = listOf(
   }
 );
 
-const UAVLogsPanel = memo(({ uavId }) => {
+type UAVLogsPanelProps = {
+  uavId?: string;
+};
+
+const UAVLogsPanel = memo(({ uavId }: UAVLogsPanelProps) => {
   const messageHub = useMessageHub();
   const state = useAsyncRetry(
-    () => (uavId ? messageHub.query.getFlightLogList(uavId) : {}),
+    () =>
+      uavId ? messageHub.query.getFlightLogList(uavId) : Promise.resolve({}),
     [messageHub, uavId]
   );
 
@@ -220,11 +242,7 @@ const UAVLogsPanel = memo(({ uavId }) => {
     );
   }
 
-  return <UAVLogList dense uavId={uavId} items={state.value} />;
+  return <UAVLogList dense uavId={uavId!} items={state.value} />;
 });
-
-UAVLogsPanel.propTypes = {
-  uavId: PropTypes.string,
-};
 
 export default UAVLogsPanel;
