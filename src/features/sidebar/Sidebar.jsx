@@ -7,8 +7,11 @@ import Typography from '@mui/material/Typography';
 import Assignment from '@mui/icons-material/Assignment';
 import Flight from '@mui/icons-material/Flight';
 import FormatListBulleted from '@mui/icons-material/FormatListBulleted';
+import Animation from '@mui/icons-material/Animation';
+import DeveloperBoard from '@mui/icons-material/DeveloperBoard';
 import Gamepad from '@mui/icons-material/Gamepad';
 import Grain from '@mui/icons-material/Grain';
+import GridOn from '@mui/icons-material/GridOn';
 import Layers from '@mui/icons-material/Layers';
 import Map from '@mui/icons-material/Map';
 import Place from '@mui/icons-material/Place';
@@ -55,6 +58,7 @@ const innerStyle = {
 
 const hasMissionEditor = hasFeature('missionEditor');
 const hasShowControl = hasFeature('showControl');
+const hasLedShow = hasFeature('ledShow');
 
 /**
  * Presentation component for the sidebar at the left edge of the main
@@ -154,6 +158,31 @@ const Sidebar = ({
           />
         )}
         {(hasShowControl || hasMissionEditor) && <hr />}
+        {hasLedShow && (
+          <Module
+            id='ledEditor'
+            icon={<GridOn />}
+            label={t('view.led-editor')}
+            component='led-editor'
+          />
+        )}
+        {hasLedShow && (
+          <Module
+            id='jrControl'
+            icon={<DeveloperBoard />}
+            label={t('view.jr-control')}
+            component='jr-control'
+          />
+        )}
+        {hasLedShow && (
+          <Module
+            id='ledSimulation'
+            icon={<Animation />}
+            label={t('view.led-simulation')}
+            component='led-simulation'
+          />
+        )}
+        {hasLedShow && <hr />}
         <Module
           id='clocks'
           icon={<Alarm />}

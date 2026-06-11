@@ -122,6 +122,24 @@ export const componentRegistry = {
     label: 'Clocks',
     detachable: true,
   },
+  'led-editor': {
+    component: views.LEDEditorPanel,
+    label: 'LED editor',
+    detachable: true,
+    feature: 'ledShow',
+  },
+  'led-simulation': {
+    component: views.LedSimulationPanel,
+    label: 'LED simulation',
+    detachable: true,
+    feature: 'ledShow',
+  },
+  'jr-control': {
+    component: views.JRControlPanel,
+    label: 'JR control',
+    detachable: true,
+    feature: 'ledShow',
+  },
   'log-panel': {
     component: views.LogPanel,
     label: 'Event log',

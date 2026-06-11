@@ -58,6 +58,8 @@ const persistConfig = {
     'detachablePanels',
     'docks',
     'firmwareUpdate',
+    'jrControl',
+    'ledEditor',
     'localServer',
     'log',
     'logDownload',

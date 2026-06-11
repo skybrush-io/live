@@ -115,6 +115,7 @@ declare module 'config' {
         | 'beacons'
         | 'docks'
         | 'geofence'
+        | 'ledShow' // (LED-show editor, JR-board control and simulation panels.)
         | 'loadShowFromCloud'
         | 'mapFeatures' // (Objects that can be drawn and edited on the map.)
         | 'missionEditor'

@@ -44,7 +44,9 @@ import docksReducer from '~/features/docks/slice';
 import fieldNotesReducer from '~/features/field-notes/slice';
 import firmwareUpdateReducer from '~/features/firmware-update/slice';
 import hotkeysReducer from '~/features/hotkeys/slice';
+import jrControlReducer from '~/features/jr-control/slice';
 import lcdClockReducer from '~/features/lcd-clock/slice';
+import ledEditorReducer from '~/features/led-editor/slice';
 import licenseInfoReducer from '~/features/license-info/slice';
 import lightControlReducer from '~/features/light-control/slice';
 import localServerReducer from '~/features/local-server/slice';
@@ -120,7 +122,9 @@ const reducer = combineReducers({
   fieldNotes: fieldNotesReducer,
   firmwareUpdate: firmwareUpdateReducer,
   hotkeys: hotkeysReducer,
+  jrControl: jrControlReducer,
   lcdClock: lcdClockReducer,
+  ledEditor: ledEditorReducer,
   licenseInfo: licenseInfoReducer,
   lightControl: lightControlReducer,
   localServer: localServerReducer,

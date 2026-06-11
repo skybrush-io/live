@@ -30,6 +30,7 @@ const baseline: Config = {
   },
 
   features: {
+    ledShow: false,
     loadShowFromCloud: false,
     missionEditor: false,
     safetySettings: false,

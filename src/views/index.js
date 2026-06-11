@@ -9,8 +9,11 @@ import ConnectionList from './connections';
 import DatasetList from './datasets';
 import DockList from './docks';
 import FeaturePanel from './features';
+import JRControlPanel from './jr-control';
 import LayerList from './layers';
 import LCDClockPanel from './lcd-clock';
+import LEDEditorPanel from './led-editor';
+import LedSimulationPanel from './led-simulation';
 import LightControlPanel from './light-control';
 import SavedLocationList from './locations';
 import LogPanel from './log';
@@ -30,8 +33,11 @@ const views = {
   DatasetList,
   DockList,
   FeaturePanel,
+  JRControlPanel,
   LayerList,
   LCDClockPanel,
+  LEDEditorPanel,
+  LedSimulationPanel,
   LightControlPanel,
   LogPanel,
   MessagesPanelView,
