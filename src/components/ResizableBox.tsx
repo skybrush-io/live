@@ -1,12 +1,28 @@
-import Box from '@mui/material/Box';
+import Box, { type BoxProps } from '@mui/material/Box';
+import type { Theme } from '@mui/material/styles';
 import clsx from 'clsx';
-import PropTypes from 'prop-types';
 import React, { useCallback, useState } from 'react';
-import { Resizable } from 'react-resizable';
+import {
+  Resizable,
+  type Props as ResizableProps,
+  type ResizeHandleAxis,
+} from 'react-resizable';
 
 import { makeStyles } from '@skybrush/app-theme-mui';
 
-const makeSideClass = (major, minor, edge, across, cursor, theme) => ({
+type SideAxis = 'width' | 'height';
+type Edge = 'top' | 'right' | 'bottom' | 'left';
+type SideCursor = 'ns' | 'ew';
+type CornerCursor = 'nesw' | 'nwse';
+
+const makeSideClass = (
+  major: SideAxis,
+  minor: SideAxis,
+  edge: Edge,
+  across: Edge,
+  cursor: SideCursor,
+  theme: Theme
+) => ({
   [major]: 50,
   [minor]: 15,
   [edge]: 5,
@@ -21,7 +37,12 @@ const makeSideClass = (major, minor, edge, across, cursor, theme) => ({
   },
 });
 
-const makeCornerClass = (edge1, edge2, cursor, theme) => ({
+const makeCornerClass = (
+  edge1: Edge,
+  edge2: Edge,
+  cursor: CornerCursor,
+  theme: Theme
+) => ({
   width: 20,
   height: 20,
 
@@ -65,7 +86,13 @@ const useStyles = makeStyles((theme) => ({
   'handle-nw': makeCornerClass('top', 'left', 'nwse', theme),
 }));
 
-const ResizeHandle = React.forwardRef(({ handleAxis, ...rest }, ref) => {
+const ResizeHandle = React.forwardRef<
+  HTMLDivElement,
+  { handleAxis: ResizeHandleAxis } & Omit<
+    React.HTMLAttributes<HTMLDivElement>,
+    'ref'
+  >
+>(({ handleAxis, ...rest }, ref) => {
   const classes = useStyles();
   return (
     <Box
@@ -75,28 +102,44 @@ const ResizeHandle = React.forwardRef(({ handleAxis, ...rest }, ref) => {
     />
   );
 });
+ResizeHandle.displayName = 'ResizeHandle';
 
-ResizeHandle.propTypes = {
-  handleAxis: PropTypes.string,
+type Size = { width: number; height: number };
+
+type ResizableBoxProps = Omit<
+  ResizableProps,
+  'children' | 'handle' | 'height' | 'onResize' | 'width'
+> & {
+  boxProps?: BoxProps;
+  children?: React.ReactNode;
+  initialSize: Size;
 };
 
 /**
  * Resizable box component, copied over from v1 of `@skysbrush/mui-components`
  * and updated to be compatible with MUI v5.
  */
-const ResizableBox = ({ boxProps, children, initialSize, ...rest }) => {
+const ResizableBox = ({
+  boxProps,
+  children,
+  initialSize,
+  ...rest
+}: ResizableBoxProps) => {
   const [size, setSize] = useState(initialSize);
 
   // TODO: Call the external `onResize` handler if present.
-  const onResize = useCallback((_event, { size }) => {
-    setSize(size);
-  }, []);
+  const onResize = useCallback(
+    (_event: React.SyntheticEvent, { size }: { size: Size }) => {
+      setSize(size);
+    },
+    []
+  );
 
   return (
     <Resizable
       width={size.width}
       height={size.height}
-      handle={<ResizeHandle />}
+      handle={<ResizeHandle handleAxis='se' />}
       // TODO: Prevent the external `onResize` handler from overriding this.
       onResize={onResize}
       {...rest}
@@ -109,22 +152,13 @@ const ResizableBox = ({ boxProps, children, initialSize, ...rest }) => {
             height: size.height,
             position: 'relative',
           },
-          ...(Array.isArray(boxProps.sx) ? boxProps.sx : [boxProps.sx]),
+          ...(Array.isArray(boxProps?.sx) ? boxProps.sx : [boxProps?.sx]),
         ]}
       >
         {children}
       </Box>
     </Resizable>
   );
-};
-
-ResizableBox.propTypes = {
-  boxProps: PropTypes.object,
-  children: PropTypes.oneOfType([
-    PropTypes.node,
-    PropTypes.arrayOf(PropTypes.node),
-  ]),
-  initialSize: PropTypes.object,
 };
 
 export default ResizableBox;

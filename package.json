@@ -140,7 +140,7 @@
     "react-i18next": "^16.5.0",
     "react-is": "^18.3.1",
     "react-redux": "^9.2.0",
-    "react-resizable": "^3.0.5",
+    "react-resizable": "^4.0.1",
     "react-shapeshifter": "^1.0.32",
     "react-simplemde-editor": "^5.2.0",
     "react-timeago": "^8.3.0",

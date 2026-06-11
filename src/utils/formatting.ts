@@ -2,6 +2,7 @@ import formatISO9075 from 'date-fns/formatISO9075';
 import fromUnixTime from 'date-fns/fromUnixTime';
 import type { TFunction } from 'i18next';
 import isNil from 'lodash-es/isNil';
+import type { ReactNode } from 'react';
 
 /**
  * Formats a coordinate array as (X, Y, Z).
@@ -318,12 +319,11 @@ export function formatIdsAndTruncateTrailingItems(
  * @param naText - Text to return when the input is nil or NaN
  */
 export const formatNumberSafely = (
-  x: number,
+  x: number | undefined,
   digits = 0,
   unit = '',
-  naText = '—'
-): string =>
-  // TODO: `isNil` check will be superfluous once argument types are enforced.
+  naText: ReactNode = '—'
+): ReactNode =>
   isNil(x) || Number.isNaN(x)
     ? naText
     : typeof x === 'number'

@@ -1,4 +1,5 @@
 import type UAVErrorCode from '~/flockwave/UAVErrorCode';
+import type { FlightMode } from '~/model/enums';
 import { type GPSFix, type GPSPosition } from '~/model/geography';
 import { type UAVAge, type UAVBattery } from '~/model/uav';
 import { type VelocityNED, type VelocityXYZ } from '~/model/velocity';
@@ -46,7 +47,7 @@ export type StoredUAV = {
   light: number /* RGB565 */;
   localPosition?: Coordinate3D;
   localVelocity?: VelocityXYZ;
-  mode?: string;
+  mode?: FlightMode | string;
   position?: GPSPosition;
   velocity?: VelocityNED;
   rssi: number[];

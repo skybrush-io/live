@@ -1,10 +1,11 @@
-import PropTypes from 'prop-types';
+import type React from 'react';
 import { connect } from 'react-redux';
 import TimeAgo from 'react-timeago';
 
+import { Status } from '@skybrush/app-theme-mui';
 import { StatusText } from '@skybrush/mui-components';
 
-import MiniTable, { naText } from '~/components/MiniTable';
+import MiniTable, { naText, type MiniTableItem } from '~/components/MiniTable';
 import {
   abbreviateGPSFixType,
   getFlightModeLabel,
@@ -12,6 +13,7 @@ import {
   getSemanticsForGPSFixType,
   getSemanticsForRSSI,
 } from '~/model/enums';
+import type { RootState } from '~/store/reducers';
 import {
   formatNumberSafely,
   formatRSSI,
@@ -19,6 +21,12 @@ import {
 } from '~/utils/formatting';
 
 import { getUAVById } from './selectors';
+import type { StoredUAV } from './types';
+
+type StatusSummaryMiniTableOwnProps = { uavId?: string };
+type StatusSummaryMiniTableStatProps = Partial<StoredUAV>;
+type StatusSummaryMiniTableProps = StatusSummaryMiniTableOwnProps &
+  StatusSummaryMiniTableStatProps;
 
 const StatusSummaryMiniTable = ({
   gpsFix,
@@ -28,11 +36,11 @@ const StatusSummaryMiniTable = ({
   mode,
   position,
   rssi,
-}) => {
+}: StatusSummaryMiniTableProps) => {
   const { lat, lon, amsl, ahl, agl } = position || {};
   const hasLocalPosition = localPosition && Array.isArray(localPosition);
   const flightModeLabel = mode ? (
-    <StatusText status={getSemanticsForFlightMode(mode)}>
+    <StatusText status={getSemanticsForFlightMode(mode) ?? Status.WARNING}>
       {getFlightModeLabel(mode)}
     </StatusText>
   ) : (
@@ -41,7 +49,7 @@ const StatusSummaryMiniTable = ({
   const gpsFixType = gpsFix?.type;
   const shouldShowGlobalPositionInfo = !hasLocalPosition || gpsFixType;
 
-  const rows = [['Mode', flightModeLabel], 'sep0'];
+  const rows: MiniTableItem[] = [['Mode', flightModeLabel], 'sep0'];
 
   if (shouldShowGlobalPositionInfo) {
     const gpsFixLabel = gpsFixType ? (
@@ -55,7 +63,9 @@ const StatusSummaryMiniTable = ({
       naText
     );
 
-    let { horizontalAccuracy, verticalAccuracy } = gpsFix || {};
+    let horizontalAccuracy: number | React.ReactNode =
+      gpsFix?.horizontalAccuracy;
+    let verticalAccuracy: number | React.ReactNode = gpsFix?.verticalAccuracy;
 
     if (typeof horizontalAccuracy === 'number' && horizontalAccuracy > 50) {
       horizontalAccuracy = '50+';
@@ -104,7 +114,7 @@ const StatusSummaryMiniTable = ({
     );
   }
 
-  const rssiLabels = [];
+  const rssiLabels: React.ReactNode[] = [];
 
   if (rssi && Array.isArray(rssi) && rssi.length > 0) {
     for (const [index, rssiValue] of Object.entries(rssi)) {
@@ -139,28 +149,8 @@ const StatusSummaryMiniTable = ({
   return <MiniTable items={rows} />;
 };
 
-StatusSummaryMiniTable.propTypes = {
-  gpsFix: PropTypes.shape({
-    type: PropTypes.number,
-    numSatellites: PropTypes.number,
-    horizontalAccuracy: PropTypes.number,
-    verticalAccuracy: PropTypes.number,
-  }),
-  heading: PropTypes.number,
-  lastUpdated: PropTypes.number,
-  localPosition: PropTypes.arrayOf(PropTypes.number),
-  mode: PropTypes.string,
-  position: PropTypes.shape({
-    lat: PropTypes.number,
-    lon: PropTypes.number,
-    amsl: PropTypes.number,
-    ahl: PropTypes.number,
-    agl: PropTypes.number,
-  }),
-  rssi: PropTypes.arrayOf(PropTypes.number),
-};
-
 export default connect(
   // mapStateToProps
-  (state, ownProps) => getUAVById(state, ownProps.uavId) ?? {}
+  (state: RootState, { uavId }: StatusSummaryMiniTableOwnProps) =>
+    uavId === undefined ? {} : (getUAVById(state, uavId) ?? {})
 )(StatusSummaryMiniTable);
