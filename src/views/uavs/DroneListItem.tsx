@@ -55,7 +55,9 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 
   stretch: {
-    alignItems: 'stretch !important',
+    alignItems: 'center',
+    flexDirection: 'row',
+    width: '100%',
   },
 }));
 

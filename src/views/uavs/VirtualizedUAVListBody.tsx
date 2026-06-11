@@ -10,7 +10,12 @@ import type { RootState } from '~/store/reducers';
 import type { VirtualizedScrollFunctions } from '~/utils/navigation';
 
 import type { UAVListSectionProps } from './UAVListSection';
-import { GRID_ITEM_WIDTH, GRID_ROW_HEIGHT, HEADER_HEIGHT } from './constants';
+import {
+  GRID_ITEM_WIDTH,
+  GRID_ROW_HEIGHT,
+  HEADER_HEIGHT,
+  LIST_ROW_HEIGHT,
+} from './constants';
 import { getDisplayedItems } from './selectors';
 import type { Item } from './types';
 
@@ -25,7 +30,6 @@ const useStyles = makeStyles({
   gridItem: {},
 
   list: {
-    alignItems: 'stretch',
     fontSize: '12px',
   },
 });
@@ -78,6 +82,8 @@ const VirtualizedUAVListBody = React.forwardRef<
         // eslint-disable-next-line @typescript-eslint/naming-convention
         Header: GridHeaderPadding,
       }}
+      defaultItemHeight={LIST_ROW_HEIGHT}
+      fixedItemHeight={LIST_ROW_HEIGHT}
       itemContent={(index) => itemRenderer(items[index]!)}
       totalCount={items.length}
       {...rest}

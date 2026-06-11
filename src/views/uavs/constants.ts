@@ -15,3 +15,8 @@ export const GRID_ROW_HEIGHT = 100;
  * Height of the sort/filter header.
  */
 export const HEADER_HEIGHT = 38;
+
+/**
+ * Fixed height of a single row in the list-based UAV layout.
+ */
+export const LIST_ROW_HEIGHT = 28;

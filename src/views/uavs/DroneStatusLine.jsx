@@ -39,7 +39,7 @@ import { getPreferredCoordinateFormatter } from '~/selectors/formatting';
 import { formatCoordinateArray } from '~/utils/formatting';
 
 import AlertIndicator from './AlertIndicator';
-import FilledListCell from './FilledListCell';
+import FilledListCell, { FILLED_LIST_CELL_HEIGHT } from './FilledListCell';
 import GPSStatusPill from './GPSStatusPill';
 import {
   LIST_ID_COLUMNS,
@@ -70,15 +70,32 @@ const headingDeviationToStatus = (deviation) => {
 
 const localCoordinateFormatter = formatCoordinateArray;
 
+const formatDetailColumnText = (details, text, debugString) => {
+  const parts = [];
+
+  if (details && text && details !== text) {
+    parts.push(details);
+  }
+
+  if (debugString) {
+    parts.push(debugString);
+  }
+
+  return parts.join(' ');
+};
+
 const useStyles = makeStyles((theme) => ({
   root: {
-    alignItems: 'flex-start',
+    alignItems: 'center',
     display: 'flex',
     flexGrow: 1,
     flexWrap: 'nowrap',
     fontFamily: monospacedFont,
     fontSize: 'small',
     fontVariantNumeric: 'lining-nums tabular-nums',
+    height: FILLED_LIST_CELL_HEIGHT,
+    maxHeight: FILLED_LIST_CELL_HEIGHT,
+    minHeight: FILLED_LIST_CELL_HEIGHT,
     userSelect: 'none',
   },
   col: {
@@ -87,6 +104,7 @@ const useStyles = makeStyles((theme) => ({
     overflow: 'hidden',
   },
   colCenter: {
+    alignItems: 'center',
     display: 'flex',
     justifyContent: 'center',
   },
@@ -136,6 +154,14 @@ const useStyles = makeStyles((theme) => ({
     textAlign: 'center',
     width: 62,
   },
+  detailsCell: {
+    flex: '1 1 0',
+    lineHeight: `${FILLED_LIST_CELL_HEIGHT}px`,
+    minWidth: 0,
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+  },
 }));
 
 /**
@@ -173,6 +199,8 @@ const DroneStatusLine = ({
   const idColumns = showMissionIds
     ? LIST_ID_COLUMNS.missionIds
     : LIST_ID_COLUMNS.droneIds;
+  const statusLabel = text || details;
+  const detailColumnText = formatDetailColumnText(details, text, debugString);
 
   return (
     <div className={clsx(classes.root, gone && classes.gone)}>
@@ -188,7 +216,7 @@ const DroneStatusLine = ({
       >
         {padStart(secondaryLabel, 5)}
       </div>
-      {(details || text) && (
+      {statusLabel && (
         <div
           className={clsx(classes.col, classes.colCenter)}
           style={listDataColumnStyle('status')}
@@ -200,8 +228,9 @@ const DroneStatusLine = ({
                 ...vehicleModePillStyle,
                 opacity: age === UAVAge.GONE ? 0.7 : 1,
               }}
+              width={80}
             >
-              {details || text}
+              {statusLabel}
             </FilledListCell>
           ) : (
             <StatusPill
@@ -210,7 +239,7 @@ const DroneStatusLine = ({
               status={textSemantics}
               hollow={age === UAVAge.GONE}
             >
-              {details || text}
+              {statusLabel}
             </StatusPill>
           )}
         </div>
@@ -348,10 +377,8 @@ const DroneStatusLine = ({
               {padStart(!isNil(heading) ? Math.round(heading) + '°' : '', 5)}
             </StatusText>
           </div>
-          <div className={classes.col} style={{ flex: 1, minWidth: 0 }}>
-            <span className={classes.debugString}>
-              {debugString ? ' ' + debugString : ''}
-            </span>
+          <div className={clsx(classes.col, classes.detailsCell)}>
+            {detailColumnText}
           </div>
         </>
       )}

@@ -64,7 +64,7 @@ import MappingSlotEditorToolbar from './MappingSlotEditorToolbar';
 import SortAndFilterHeader from './SortAndFilterHeader';
 import UAVToolbar from './UAVToolbar';
 import VirtualizedUAVListBody from './VirtualizedUAVListBody';
-import { HEADER_HEIGHT } from './constants';
+import { HEADER_HEIGHT, LIST_ROW_HEIGHT } from './constants';
 import createKeyboardNavigationHandlers, {
   maybeOpenUAVDetailsDialog,
 } from './navigation';
@@ -95,6 +95,10 @@ const useListStyles = makeStyles((theme: Theme) => ({
 
   listItem: {
     borderBottom: `1px solid ${theme.palette.divider}`,
+    boxSizing: 'border-box',
+    height: LIST_ROW_HEIGHT,
+    maxHeight: LIST_ROW_HEIGHT,
+    minHeight: LIST_ROW_HEIGHT,
   },
 }));
 
