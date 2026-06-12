@@ -8,6 +8,7 @@ import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import type { Theme } from '@mui/material/styles';
 import { bindActionCreators, type AnyAction } from '@reduxjs/toolkit';
+import clsx from 'clsx';
 import isNil from 'lodash-es/isNil';
 import { nanoid } from 'nanoid';
 import React, {
@@ -55,6 +56,7 @@ import {
 } from '~/utils/navigation';
 import type { Nullable } from '~/utils/types';
 
+import DroneGridCard from './DroneGridCard';
 import DroneListItem, { type DroneListItemProps } from './DroneListItem';
 import DroneStatusLine from './DroneStatusLine';
 import MappingEditorToolbar from './MappingEditorToolbar';
@@ -74,16 +76,23 @@ import { getSelectedUAVIdsAndMissionSlotIds, itemToGlobalId } from './utils';
 
 const useListStyles = makeStyles((theme: Theme) => ({
   appBar: {
-    backgroundColor: isThemeDark(theme)
-      ? '#424242'
+    background: isThemeDark(theme)
+      ? 'linear-gradient(180deg, #1c2230 0%, #141820 100%)'
       : theme.palette.background.paper,
+    borderBottom: `1px solid ${
+      isThemeDark(theme) ? 'rgba(110, 182, 255, 0.12)' : theme.palette.divider
+    }`,
+    boxShadow: isThemeDark(theme)
+      ? '0 2px 14px rgba(0, 0, 0, 0.35)'
+      : '0 1px 6px rgba(15, 23, 42, 0.08)',
     height: 48,
   },
 
   toolbar: {
-    position: 'absolute',
-    gap: theme.spacing(0.75),
+    gap: theme.spacing(0.5),
     left: 0,
+    minHeight: 48,
+    position: 'absolute',
     right: 0,
     top: 0,
   },
@@ -94,16 +103,25 @@ const useListStyles = makeStyles((theme: Theme) => ({
   },
 
   listItem: {
-    borderBottom: `1px solid ${theme.palette.divider}`,
+    borderBottom: `1px solid ${
+      isThemeDark(theme) ? 'rgba(255, 255, 255, 0.06)' : theme.palette.divider
+    }`,
     boxSizing: 'border-box',
     height: LIST_ROW_HEIGHT,
     maxHeight: LIST_ROW_HEIGHT,
     minHeight: LIST_ROW_HEIGHT,
   },
+
+  listItemAlt: {
+    backgroundColor: isThemeDark(theme)
+      ? 'rgba(255, 255, 255, 0.025)'
+      : 'rgba(0, 0, 0, 0.025)',
+  },
 }));
 
 type ItemRendererOptions = {
   className?: string;
+  altClassName?: string;
   draggable: boolean;
   isInEditMode: boolean;
   mappingSlotBeingEdited: number;
@@ -176,19 +194,35 @@ const createGridItemRenderer =
 
     const key = uavId ?? `placeholder-${String(label) || 'null'}`;
 
+    const card = (
+      <DroneGridCard selected={selected}>
+        {uavId === undefined ? (
+          <DronePlaceholder
+            editing={editingThisItem}
+            label={editingThisItem ? '' : label}
+            status={missionIndex === undefined ? 'error' : 'off'}
+          />
+        ) : (
+          <DroneAvatar
+            id={uavId}
+            editing={editingThisItem}
+            label={editingThisItem ? '' : label}
+            selected={selected}
+          />
+        )}
+      </DroneGridCard>
+    );
+
     return uavId === undefined ? (
       <DroneListItem
         key={key}
         className={className}
         onDrop={onDropped ? onDropped(missionIndex) : undefined}
+        variant='grid'
         {...listItemProps}
       >
         {editingThisItem && <MappingSlotEditorForGrid />}
-        <DronePlaceholder
-          editing={editingThisItem}
-          label={editingThisItem ? '' : label}
-          status={missionIndex === undefined ? 'error' : 'off'}
-        />
+        {card}
       </DroneListItem>
     ) : (
       <DroneListItem
@@ -196,15 +230,11 @@ const createGridItemRenderer =
         className={className}
         draggable={draggable}
         uavId={uavId}
+        variant='grid'
         {...listItemProps}
       >
         {editingThisItem && <MappingSlotEditorForGrid />}
-        <DroneAvatar
-          id={uavId}
-          editing={editingThisItem}
-          label={editingThisItem ? '' : label}
-          selected={selected}
-        />
+        {card}
       </DroneListItem>
     );
   };
@@ -215,6 +245,7 @@ const createGridItemRenderer =
  */
 const createListItemRenderer =
   ({
+    altClassName,
     className,
     isInEditMode,
     mappingSlotBeingEdited,
@@ -224,7 +255,7 @@ const createListItemRenderer =
     selection,
     showMissionIds,
   }: ItemRendererOptions) =>
-  (item: Item): React.JSX.Element | null => {
+  (item: Item, index = 0): React.JSX.Element | null => {
     if (item === deletionMarker) {
       return null;
     }
@@ -235,7 +266,7 @@ const createListItemRenderer =
       isInEditMode && missionIndex === mappingSlotBeingEdited;
     const selected = selection.includes(itemId!);
     const listItemProps = {
-      className,
+      className: clsx(className, index % 2 === 1 && altClassName),
       onClick: isInEditMode
         ? onStartEditing.bind(null, missionIndex!)
         : itemId
@@ -327,7 +358,7 @@ const UAVListPresentation = ({
   ) => {
     scrollToIndex.current = createScrollerToIndex({
       functions: value,
-      headerHeight: HEADER_HEIGHT,
+      headerHeight: 0,
     });
   };
 
@@ -375,6 +406,7 @@ const UAVListPresentation = ({
 
   // Create the item renderer
   const itemRendererOptions: ItemRendererOptions = {
+    altClassName: classes.listItemAlt,
     className:
       layout === UAVListLayout.GRID ? classes.gridItem : classes.listItem,
     draggable: editingMapping,
@@ -394,7 +426,10 @@ const UAVListPresentation = ({
   // Finally, render time!
   return (
     <DndProvider backend={HTML5Backend}>
-      <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+      <Box
+        data-uav-list-root
+        sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}
+      >
         <AppBar color='default' position='static' className={classes.appBar}>
           <FadeAndSlide mountOnEnter unmountOnExit in={!editingMapping}>
             <UAVToolbar className={classes.toolbar} />
@@ -414,17 +449,27 @@ const UAVListPresentation = ({
             <MappingSlotEditorToolbar className={classes.toolbar} />
           </FadeAndSlide>
         </AppBar>
-        <Box sx={{ flex: 1, position: 'relative' }}>
-          <SortAndFilterHeader floating />
+        <Box
+          sx={{
+            display: 'flex',
+            flex: 1,
+            flexDirection: 'column',
+            minHeight: 0,
+            position: 'relative',
+          }}
+        >
+          <SortAndFilterHeader />
           {/* We assume that each grid item is a <div> in the <Box> when we
            * calculate how many columns there are in the grid. Revise the
            * layout functions in connect() if this is not the case any more */}
-          <VirtualizedUAVListBody
-            ref={scrollFunctionsRef}
-            id={containerDOMNodeId}
-            itemRenderer={itemRenderer}
-            layout={layout}
-          />
+          <Box sx={{ flex: 1, minHeight: 0 }}>
+            <VirtualizedUAVListBody
+              ref={scrollFunctionsRef}
+              id={containerDOMNodeId}
+              itemRenderer={itemRenderer}
+              layout={layout}
+            />
+          </Box>
         </Box>
         {editingMapping && layout === UAVListLayout.GRID ? (
           <Box className='bottom-bar'>

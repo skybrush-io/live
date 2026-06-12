@@ -1,0 +1,257 @@
+/* SkyControl-style application shell */
+
+:root {
+  --sky-shell-bg: #0a0e14;
+  --sky-shell-surface: #12151a;
+  --sky-shell-border: rgba(255, 255, 255, 0.08);
+  --sky-shell-header-height: 52px;
+  --sky-sidebar-width: 72px;
+}
+
+.skycontrol-app {
+  background-color: var(--sky-shell-bg);
+}
+
+/* Header */
+.skycontrol-app #header {
+  background: linear-gradient(180deg, #141820 0%, var(--sky-shell-surface) 100%);
+  border-bottom: 1px solid var(--sky-shell-border);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
+  min-height: var(--sky-shell-header-height);
+}
+
+.skycontrol-app #header-inner {
+  align-items: center;
+  flex: 1;
+  gap: 4px;
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.skycontrol-header-brand {
+  align-items: center;
+  display: flex;
+  flex-shrink: 0;
+  gap: 10px;
+  padding-left: 8px;
+  padding-right: 12px;
+}
+
+.skycontrol-header-brand-title {
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+
+.skycontrol-header-badge {
+  border-radius: 999px;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  line-height: 1;
+  padding: 5px 10px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.skycontrol-header-badge--operational {
+  background: rgba(62, 207, 110, 0.16);
+  border: 1px solid rgba(62, 207, 110, 0.45);
+  color: #8ef0b0;
+}
+
+.skycontrol-header-badge--degraded {
+  background: rgba(232, 179, 57, 0.14);
+  border: 1px solid rgba(232, 179, 57, 0.4);
+  color: #f0c96a;
+}
+
+.skycontrol-header-badge--offline {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.skycontrol-header-telemetry {
+  align-items: center;
+  display: flex;
+  flex: 1;
+  gap: 2px;
+  justify-content: center;
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.skycontrol-header-actions {
+  align-items: center;
+  display: flex;
+  flex-shrink: 0;
+  gap: 2px;
+  margin-left: auto;
+  padding-right: 6px;
+}
+
+.skycontrol-header-clock {
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 0.9rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  line-height: 1;
+  padding: 0 8px;
+  white-space: nowrap;
+}
+
+.skycontrol-app #header-inner > hr {
+  align-self: stretch;
+  background: var(--sky-shell-border);
+  box-shadow: none;
+  height: 24px;
+  margin: 0 2px;
+  width: 1px;
+}
+
+.skycontrol-app .wb-perspective-bar {
+  display: none;
+}
+
+/* Sidebar */
+.skycontrol-app #sidebar {
+  background: var(--sky-shell-bg);
+  border-right: 1px solid var(--sky-shell-border);
+  box-shadow: none;
+  height: 100%;
+  width: var(--sky-sidebar-width) !important;
+}
+
+.skycontrol-app #sidebar > div:first-child {
+  width: var(--sky-sidebar-width) !important;
+}
+
+.skycontrol-app #sidebar .wb-module {
+  align-items: center;
+  border-radius: 10px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  height: auto;
+  justify-content: center;
+  margin: 2px 6px;
+  min-height: 56px;
+  padding: 8px 4px !important;
+  transition: background-color 0.15s ease;
+  width: calc(var(--sky-sidebar-width) - 12px);
+}
+
+.skycontrol-app #sidebar .wb-module:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.skycontrol-app #sidebar .wb-module.wb-module-selected {
+  background: rgba(47, 128, 237, 0.18);
+  box-shadow: inset 0 0 0 1px rgba(110, 182, 255, 0.35);
+}
+
+.skycontrol-app #sidebar .wb-module .wb-icon {
+  height: 28px;
+  padding: 0;
+  width: 28px;
+}
+
+.skycontrol-app #sidebar .wb-module .wb-module-label {
+  display: block;
+  font-size: 0.58rem;
+  font-weight: 600;
+  line-height: 1.15;
+  margin-right: 0;
+  max-width: 100%;
+  overflow: hidden;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: normal;
+}
+
+.skycontrol-app #sidebar hr {
+  background: var(--sky-shell-border);
+  box-shadow: none;
+  margin: 6px 10px;
+  width: calc(100% - 20px);
+}
+
+.skycontrol-app #sidebar.skycontrol-sidebar-collapsed {
+  width: 48px !important;
+}
+
+.skycontrol-app #sidebar.skycontrol-sidebar-collapsed > div:first-child {
+  width: 48px !important;
+}
+
+.skycontrol-app #sidebar.skycontrol-sidebar-collapsed .wb-module-label {
+  display: none;
+}
+
+.skycontrol-app #sidebar.skycontrol-sidebar-collapsed .wb-module {
+  margin: 2px 4px;
+  min-height: 44px;
+  width: 40px;
+}
+
+/* Workbench panels */
+.skycontrol-app .lm_goldenlayout {
+  background: var(--sky-shell-bg);
+}
+
+.skycontrol-app body .lm_content,
+.skycontrol-app .lm_content {
+  background-color: var(--sky-shell-surface);
+  border: 1px solid var(--sky-shell-border);
+}
+
+.skycontrol-app body .lm_header .lm_tab,
+.skycontrol-app .lm_header .lm_tab {
+  background-color: #161b22;
+  border-color: var(--sky-shell-border);
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.skycontrol-app body .lm_header .lm_tab:hover,
+.skycontrol-app .lm_header .lm_tab:hover {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.skycontrol-app body .lm_header .lm_tab.lm_active,
+.skycontrol-app .lm_header .lm_tab.lm_active {
+  background-color: var(--sky-shell-surface);
+  border-bottom-color: var(--sky-shell-surface);
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.skycontrol-app .lm_splitter {
+  background: var(--sky-shell-bg);
+}
+
+.skycontrol-app .lm_splitter:hover,
+.skycontrol-app .lm_splitter.lm_dragging {
+  background: rgba(110, 182, 255, 0.35);
+}
+
+/* UAV / drone list panel */
+.skycontrol-app .lm_content:has([data-uav-list-root]) {
+  background: linear-gradient(180deg, #0e1218 0%, var(--sky-shell-surface) 100%);
+}
+
+.skycontrol-app [data-uav-list-root] .MuiAppBar-root {
+  background: rgba(18, 21, 26, 0.95) !important;
+  border-bottom: 1px solid rgba(110, 182, 255, 0.15);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}

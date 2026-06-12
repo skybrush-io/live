@@ -17,6 +17,11 @@ export const GRID_ROW_HEIGHT = 100;
 export const HEADER_HEIGHT = 38;
 
 /**
+ * Height of the sort/filter chip toolbar above the UAV list.
+ */
+export const FILTER_BAR_HEIGHT = 44;
+
+/**
  * Fixed height of a single row in the list-based UAV layout.
  */
-export const LIST_ROW_HEIGHT = 28;
+export const LIST_ROW_HEIGHT = 32;

@@ -1,7 +1,7 @@
-import Box from '@mui/material/Box';
-import React from 'react';
+import TableRow from '@mui/material/TableRow';
+import React, { useMemo } from 'react';
 import { connect } from 'react-redux';
-import { Virtuoso, VirtuosoGrid } from 'react-virtuoso';
+import { TableVirtuoso, VirtuosoGrid } from 'react-virtuoso';
 
 import { makeStyles } from '@skybrush/app-theme-mui';
 
@@ -9,100 +9,93 @@ import { UAVListLayout } from '~/features/settings/types';
 import type { RootState } from '~/store/reducers';
 import type { VirtualizedScrollFunctions } from '~/utils/navigation';
 
-import type { UAVListSectionProps } from './UAVListSection';
+import UAVListColumnHeaderRow from './UAVListColumnHeaderRow';
+import {
+  createUAVListTableComponents,
+  UAVListTableCell,
+  UAVListTableHeaderCell,
+} from './uavListTableComponents';
 import {
   GRID_ITEM_WIDTH,
   GRID_ROW_HEIGHT,
-  HEADER_HEIGHT,
   LIST_ROW_HEIGHT,
 } from './constants';
 import { getDisplayedItems } from './selectors';
 import type { Item } from './types';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   grid: {
     display: 'grid',
-    gridTemplateColumns: `repeat(auto-fill, ${GRID_ITEM_WIDTH}px)`,
+    gap: theme.spacing(1),
+    gridTemplateColumns: `repeat(auto-fill, minmax(${GRID_ITEM_WIDTH}px, 1fr))`,
     gridTemplateRows: GRID_ROW_HEIGHT,
     gridAutoRows: GRID_ROW_HEIGHT,
+    padding: theme.spacing(1, 1, 2),
   },
 
   gridItem: {},
 
-  list: {
-    fontSize: '12px',
+  tableVirtuoso: {
+    height: '100%',
   },
-});
+}));
 
 type VirtualizedUAVListBodyProps = Readonly<{
   id?: string;
   items: Item[];
-  itemRenderer: UAVListSectionProps['itemRenderer'];
+  itemRenderer: (item: Item, index: number) => React.ReactNode;
   layout: UAVListLayout;
 }>;
 
-/**
- * Padding that is placed as the topmost item in the virtual grid layout to
- * ensure that the real grid starts "below" the SortAndFilterHeader component
- * that is supposed to float above the grid.
- */
-const GridHeaderPadding = (): React.JSX.Element => (
-  <Box sx={{ height: HEADER_HEIGHT }} />
-);
-
-/**
- * Presentation component for showing the drone show configuration view.
- */
 const VirtualizedUAVListBody = React.forwardRef<
   VirtualizedScrollFunctions | undefined,
   VirtualizedUAVListBodyProps
 >((props, ref): React.JSX.Element => {
   const { items, itemRenderer, layout, ...rest } = props;
   const classes = useStyles();
+  const tableComponents = useMemo(() => createUAVListTableComponents(), []);
 
-  return layout === UAVListLayout.GRID ? (
-    <VirtuosoGrid
-      ref={ref}
-      components={{
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        Header: GridHeaderPadding,
-      }}
-      itemClassName={classes.gridItem}
-      itemContent={(index) => itemRenderer(items[index]!)}
-      listClassName={classes.grid}
-      totalCount={items.length}
-      {...(rest as any)}
-    />
-  ) : (
-    <Virtuoso
+  if (layout === UAVListLayout.GRID) {
+    return (
+      <VirtuosoGrid
+        ref={ref}
+        itemClassName={classes.gridItem}
+        itemContent={(index) => itemRenderer(items[index]!, index)}
+        listClassName={classes.grid}
+        totalCount={items.length}
+        {...(rest as any)}
+      />
+    );
+  }
+
+  return (
+    <TableVirtuoso<Item>
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       ref={ref as any}
-      className={classes.list}
-      components={{
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        Header: GridHeaderPadding,
-      }}
-      defaultItemHeight={LIST_ROW_HEIGHT}
+      className={classes.tableVirtuoso}
+      components={tableComponents}
+      data={items}
+      fixedHeaderContent={() => (
+        <TableRow>
+          <UAVListTableHeaderCell>
+            <UAVListColumnHeaderRow />
+          </UAVListTableHeaderCell>
+        </TableRow>
+      )}
       fixedItemHeight={LIST_ROW_HEIGHT}
-      itemContent={(index) => itemRenderer(items[index]!)}
-      totalCount={items.length}
+      itemContent={(index, item) => (
+        <UAVListTableCell>{itemRenderer(item, index)}</UAVListTableCell>
+      )}
       {...rest}
     />
   );
 });
 
 export default connect(
-  // mapStateToProps
   (state: RootState) => ({
-    // items are extracted here from the state and not in UAVList to avoid
-    // re-rendering UAVList constantly when the list is sorted and thus the items
-    // array changes frequently
     items: getDisplayedItems(state),
   }),
-  // mapDispatchToProps
   {},
-  // mergeProps
   null,
-  // options
   { forwardRef: true }
 )(VirtualizedUAVListBody);

@@ -26,10 +26,11 @@ const DroneAvatar = connect(
         batteryFormatter,
         reverseMissionMapping,
         statusSummary,
-        { hint, id, label, variant = 'full' }
+        { hint, id, label, selected, variant = 'full' }
       ) => {
         const props = {
           batteryFormatter,
+          selected,
           ...statusSummary,
         };
 

@@ -1,6 +1,7 @@
 import Edit from '@mui/icons-material/Edit';
 import ViewList from '@mui/icons-material/ViewList';
 import ViewModule from '@mui/icons-material/ViewModule';
+import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import PropTypes from 'prop-types';
@@ -75,14 +76,34 @@ const MappingButtonGroup = ({
 
     <ToolbarDivider orientation='vertical' />
 
-    <ToggleButtonGroup exclusive value={layout} onChange={setUAVListLayout}>
-      <ToggleButton size='small' value='grid'>
-        <ViewModule />
-      </ToggleButton>
-      <ToggleButton size='small' value='list'>
-        <ViewList />
-      </ToggleButton>
-    </ToggleButtonGroup>
+    <Box
+      sx={{
+        alignItems: 'center',
+        backgroundColor: (theme) =>
+          theme.palette.mode === 'dark'
+            ? 'rgba(255, 255, 255, 0.06)'
+            : 'rgba(15, 23, 42, 0.05)',
+        border: (theme) =>
+          `1px solid ${
+            theme.palette.mode === 'dark'
+              ? 'rgba(255, 255, 255, 0.1)'
+              : theme.palette.divider
+          }`,
+        borderRadius: 999,
+        display: 'inline-flex',
+        ml: 0.5,
+        p: 0.25,
+      }}
+    >
+      <ToggleButtonGroup exclusive value={layout} onChange={setUAVListLayout}>
+        <ToggleButton size='small' value='grid'>
+          <ViewModule fontSize='small' />
+        </ToggleButton>
+        <ToggleButton size='small' value='list'>
+          <ViewList fontSize='small' />
+        </ToggleButton>
+      </ToggleButtonGroup>
+    </Box>
   </>
 );
 

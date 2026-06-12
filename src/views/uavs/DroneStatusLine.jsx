@@ -91,7 +91,7 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
     flexWrap: 'nowrap',
     fontFamily: monospacedFont,
-    fontSize: 'small',
+    fontSize: '0.82rem',
     fontVariantNumeric: 'lining-nums tabular-nums',
     height: FILLED_LIST_CELL_HEIGHT,
     maxHeight: FILLED_LIST_CELL_HEIGHT,
@@ -113,6 +113,17 @@ const useStyles = makeStyles((theme) => ({
   },
   gone: {
     opacity: 0.7,
+  },
+  idLabel: {
+    color: theme.palette.text.primary,
+    fontSize: '0.82rem',
+    fontWeight: 700,
+    letterSpacing: '0.02em',
+  },
+  secondaryIdLabel: {
+    color: theme.palette.text.secondary,
+    fontSize: '0.78rem',
+    fontWeight: 600,
   },
   muted: {
     color: theme.palette.text.disabled,
@@ -205,13 +216,13 @@ const DroneStatusLine = ({
   return (
     <div className={clsx(classes.root, gone && classes.gone)}>
       <div
-        className={clsx(classes.col, classes.colRight)}
+        className={clsx(classes.col, classes.colRight, classes.idLabel)}
         style={listIdColumnStyle(idColumns.primary)}
       >
         {padStart(label, 5)}
       </div>
       <div
-        className={clsx(classes.col, classes.colRight, classes.muted)}
+        className={clsx(classes.col, classes.colRight, classes.secondaryIdLabel)}
         style={listIdColumnStyle(idColumns.secondary)}
       >
         {padStart(secondaryLabel, 5)}

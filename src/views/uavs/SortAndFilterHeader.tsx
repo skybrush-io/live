@@ -3,13 +3,15 @@ import SortAscending from '@mui/icons-material/ArrowDownward';
 import SortDescending from '@mui/icons-material/ArrowUpward';
 import Check from '@mui/icons-material/Check';
 import Filter from '@mui/icons-material/FilterList';
+import GpsFixed from '@mui/icons-material/GpsFixed';
+import SatelliteAlt from '@mui/icons-material/SatelliteAlt';
+import Sort from '@mui/icons-material/Sort';
 import Chip, { type ChipProps } from '@mui/material/Chip';
 import Divider from '@mui/material/Divider';
 import Menu from '@mui/material/Menu';
 import MenuItem, { type MenuItemProps } from '@mui/material/MenuItem';
 import type { Theme } from '@mui/material/styles';
 import clsx from 'clsx';
-import createColor from 'color';
 import type { TFunction } from 'i18next';
 import {
   bindMenu,
@@ -21,14 +23,9 @@ import React, { useCallback, useRef, type SyntheticEvent } from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import {
-  isThemeDark,
-  makeStyles,
-  monospacedFont,
-} from '@skybrush/app-theme-mui';
+import { isThemeDark, makeStyles } from '@skybrush/app-theme-mui';
 
 import Colors from '~/components/colors';
-import FadeAndSlide from '~/components/transitions/FadeAndSlide';
 import { selectGpsFleetSummary } from '~/features/uavs/gpsFleetSummary';
 import {
   setSingleUAVListFilter,
@@ -60,238 +57,142 @@ import {
 import type { RootState } from '~/store/reducers';
 import type { Nullable } from '~/utils/types';
 
-import { HEADER_HEIGHT } from './constants';
-import {
-  LIST_ID_COLUMNS,
-  LIST_MIN_WIDTH,
-  listDataColumnStyle,
-  listIdColumnStyle,
-} from './listColumnLayout';
+import { FILTER_BAR_HEIGHT } from './constants';
 
-const createChipStyle = (
-  color: string | null,
-  theme: Theme
-): Record<string, any> => {
-  const result: Record<string, any> = {
-    cursor: 'hand',
+const menuPaperProps = {
+  elevation: 8,
+  sx: {
+    borderRadius: 2,
+    minWidth: 180,
+    mt: 0.5,
+  },
+};
+
+const useStyles = makeStyles((theme: Theme) => {
+  const dark = isThemeDark(theme);
+  const chipBase = {
+    borderRadius: 999,
+    fontSize: '0.72rem',
+    fontWeight: 600,
+    height: 30,
+    letterSpacing: '0.02em',
+    transition: theme.transitions.create(
+      ['background-color', 'border-color', 'box-shadow', 'color'],
+      { duration: theme.transitions.duration.short }
+    ),
     '& .MuiChip-deleteIcon': {
       color: 'inherit',
+      fontSize: '1rem',
+      opacity: 0.85,
+    },
+    '& .MuiChip-icon': {
+      color: 'inherit',
+      fontSize: '0.95rem',
+      marginLeft: theme.spacing(1),
+      opacity: 0.9,
+    },
+    '& .MuiChip-label': {
+      paddingLeft: theme.spacing(0.75),
+      paddingRight: theme.spacing(1.25),
     },
   };
 
-  if (color) {
-    const lighter = createColor(color).hsl().lighten(0.08).string();
-    result['color'] = theme.palette.getContrastText(color);
-    result['backgroundColor'] = color;
-    result['boxShadow'] = `0 0 4px 2px ${color}`;
-    result['&:focus'] = {
-      color: theme.palette.getContrastText(color),
-      backgroundColor: `${lighter} !important`,
-    };
-    result['&:hover'] = {
-      color: theme.palette.getContrastText(color),
-      backgroundColor: `${lighter} !important`,
-    };
-    result['& svg'] = {
-      color: `${theme.palette.getContrastText(color)} '!important'`,
-    };
-  }
-
-  return result;
-};
-
-const useStyles = makeStyles((theme: Theme) => ({
-  root: {
-    backdropFilter: 'blur(5px)',
-    background: isThemeDark(theme)
-      ? 'rgba(36, 36, 36, 0.54)'
-      : 'rgba(255, 255, 255, 0.8)',
-    borderBottom: `1px solid ${theme.palette.divider}`,
-    minWidth: LIST_MIN_WIDTH,
-    overflow: 'hidden',
-    zIndex: 10,
-    minHeight: HEADER_HEIGHT + 1 /* 1px for the border */,
-  },
-
-  floating: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-  },
-
-  widgets: {
-    display: 'flex',
-    position: 'absolute',
-    right: theme.spacing(0.5),
-    top: theme.spacing(1),
-    margin: 'auto',
-    zIndex: 20,
-
-    '& div': {
-      margin: theme.spacing(0, 0, 0, 0.5),
-    },
-  },
-
-  headerLine: {
-    alignItems: 'stretch',
-    cursor: 'default',
-    display: 'flex',
-    flexWrap: 'nowrap',
-    fontFamily: monospacedFont,
-    fontSize: 'small',
-    height: HEADER_HEIGHT,
-    overflow: 'hidden',
-    userSelect: 'none',
-    whiteSpace: 'pre',
-    width: '100%',
-    zIndex: 10,
-  },
-
-  headerLineItem: {
-    boxSizing: 'border-box',
-    lineHeight: HEADER_HEIGHT + 'px',
-    padding: 0,
-    flexShrink: 0, // important, otherwise the fixed width will not be respected if the view is very narrow
-
-    '&:last-child': {
-      flex: 1,
-    },
-  },
-
-  sortable: {
-    cursor: 'pointer',
-    '&:hover': {
-      backgroundColor: theme.palette.action.hover,
-    },
-    transition: theme.transitions.create(['background-color'], {
-      duration: theme.transitions.duration.short,
-    }),
-  },
-
-  sortActive: {
-    textDecoration: 'underline',
-    textUnderlineOffset: '4px',
-  },
-
-  success: createChipStyle(Colors.success, theme),
-  warning: createChipStyle(Colors.warning, theme),
-  error: createChipStyle(Colors.error, theme),
-
-  chip: createChipStyle(null, theme),
-  chipActive: createChipStyle(Colors.info, theme),
-}));
-
-type HeaderPart = {
-  sortKey?: UAVSortKey;
-  label: string;
-  style: React.CSSProperties;
-};
-
-const COMMON_HEADER_TEXT_PARTS: readonly HeaderPart[] = Object.freeze([
-  {
-    label: 'Status',
-    sortKey: UAVSortKey.STATUS,
-    style: { ...listDataColumnStyle('status'), textAlign: 'center' },
-  },
-  {
-    label: 'Alert',
-    style: { ...listDataColumnStyle('alert'), textAlign: 'center' },
-  },
-  {
-    label: 'Mode',
-    sortKey: UAVSortKey.FLIGHT_MODE,
-    style: { ...listDataColumnStyle('mode'), textAlign: 'center' },
-  },
-  {
-    label: 'Battery',
-    sortKey: UAVSortKey.BATTERY,
-    style: { ...listDataColumnStyle('battery'), textAlign: 'right' },
-  },
-  {
-    label: '', // LED light
-    style: { ...listDataColumnStyle('led'), textAlign: 'center' },
-  },
-  {
-    label: 'RSSI',
-    sortKey: UAVSortKey.RSSI,
-    style: { ...listDataColumnStyle('rssi'), textAlign: 'center' },
-  },
-  {
-    label: 'GPS',
-    sortKey: UAVSortKey.GPS_FIX,
-    style: { ...listDataColumnStyle('gps'), textAlign: 'center' },
-  },
-  {
-    label: 'Sats',
-    style: { ...listDataColumnStyle('sats'), textAlign: 'center' },
-  },
-  {
-    label: 'Path',
-    style: { ...listDataColumnStyle('path'), textAlign: 'center' },
-  },
-  {
-    label: 'Position',
-    style: { ...listDataColumnStyle('position'), textAlign: 'left' },
-  },
-  {
-    label: 'AMSL',
-    sortKey: UAVSortKey.ALTITUDE_MSL,
-    style: { ...listDataColumnStyle('amsl'), textAlign: 'right' },
-  },
-  {
-    label: 'AHL',
-    sortKey: UAVSortKey.ALTITUDE_HOME,
-    style: { ...listDataColumnStyle('ahl'), textAlign: 'right' },
-  },
-  {
-    label: 'AGL',
-    sortKey: UAVSortKey.ALTITUDE_GROUND,
-    style: { ...listDataColumnStyle('agl'), textAlign: 'right' },
-  },
-  {
-    label: 'Hdg',
-    sortKey: UAVSortKey.HEADING,
-    style: { ...listDataColumnStyle('heading'), textAlign: 'center' },
-  },
-  {
-    label: 'Details',
-    style: {
-      flex: 1,
+  return {
+    root: {
+      backdropFilter: 'blur(10px)',
+      background: dark
+        ? 'linear-gradient(180deg, rgba(20, 24, 32, 0.96) 0%, rgba(14, 18, 24, 0.92) 100%)'
+        : 'linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(248,250,252,0.95) 100%)',
+      borderBottom: `1px solid ${
+        dark ? 'rgba(110, 182, 255, 0.16)' : theme.palette.divider
+      }`,
+      boxShadow: dark
+        ? '0 4px 16px rgba(0, 0, 0, 0.28)'
+        : '0 2px 10px rgba(15, 23, 42, 0.06)',
       minWidth: 0,
-      textAlign: 'left',
+      overflowX: 'auto',
+      overflowY: 'visible',
+      width: '100%',
+      zIndex: 10,
     },
-  },
-]);
 
-const HEADER_TEXT_PARTS: Record<string, HeaderPart[]> = {
-  missionIds: [
-    {
-      label: 'sID',
-      sortKey: UAVSortKey.DEFAULT,
-      style: listIdColumnStyle(LIST_ID_COLUMNS.missionIds.primary),
+    rootEmbedded: {
+      flexShrink: 0,
     },
-    {
-      label: 'ID',
-      sortKey: UAVSortKey.DEFAULT,
-      style: listIdColumnStyle(LIST_ID_COLUMNS.missionIds.secondary),
+
+    toolbarInner: {
+      alignItems: 'center',
+      display: 'flex',
+      flexWrap: 'wrap',
+      gap: theme.spacing(0.75),
+      justifyContent: 'flex-start',
+      minHeight: FILTER_BAR_HEIGHT,
+      minWidth: 'min-content',
+      padding: theme.spacing(0.75, 1.25),
+      width: '100%',
     },
-    ...COMMON_HEADER_TEXT_PARTS,
-  ],
-  droneIds: [
-    {
-      label: 'ID',
-      sortKey: UAVSortKey.DEFAULT,
-      style: listIdColumnStyle(LIST_ID_COLUMNS.droneIds.primary),
+
+    group: {
+      alignItems: 'center',
+      background: dark ? 'rgba(255, 255, 255, 0.04)' : 'rgba(15, 23, 42, 0.04)',
+      border: `1px solid ${dark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(15, 23, 42, 0.08)'}`,
+      borderRadius: 999,
+      display: 'flex',
+      flex: '0 1 auto',
+      flexWrap: 'wrap',
+      gap: theme.spacing(0.5),
+      maxWidth: '100%',
+      padding: theme.spacing(0.35, 0.5),
     },
-    {
-      label: 'sID',
-      sortKey: UAVSortKey.DEFAULT,
-      style: listIdColumnStyle(LIST_ID_COLUMNS.droneIds.secondary),
+
+    chip: {
+      ...chipBase,
+      backgroundColor: dark ? 'rgba(255, 255, 255, 0.06)' : theme.palette.common.white,
+      border: `1px solid ${dark ? 'rgba(255, 255, 255, 0.1)' : theme.palette.divider}`,
+      color: dark ? 'rgba(255, 255, 255, 0.82)' : theme.palette.text.primary,
+      '&:hover': {
+        backgroundColor: dark ? 'rgba(255, 255, 255, 0.1)' : theme.palette.grey[50],
+        borderColor: dark ? 'rgba(110, 182, 255, 0.35)' : theme.palette.primary.light,
+      },
     },
-    ...COMMON_HEADER_TEXT_PARTS,
-  ],
-};
+
+    chipActive: {
+      ...chipBase,
+      backgroundColor: dark ? 'rgba(47, 128, 237, 0.2)' : 'rgba(47, 128, 237, 0.1)',
+      border: `1px solid ${dark ? 'rgba(110, 182, 255, 0.45)' : theme.palette.primary.main}`,
+      boxShadow: dark ? '0 0 12px rgba(47, 128, 237, 0.18)' : 'none',
+      color: dark ? '#a8d4ff' : theme.palette.primary.main,
+    },
+
+    chipWarning: {
+      ...chipBase,
+      backgroundColor: dark ? 'rgba(232, 179, 57, 0.14)' : 'rgba(232, 179, 57, 0.12)',
+      border: `1px solid ${dark ? 'rgba(232, 179, 57, 0.4)' : Colors.warning}`,
+      color: dark ? '#f0c96a' : Colors.warning,
+    },
+
+    chipError: {
+      ...chipBase,
+      backgroundColor: dark ? 'rgba(244, 67, 54, 0.14)' : 'rgba(244, 67, 54, 0.1)',
+      border: `1px solid ${dark ? 'rgba(244, 67, 54, 0.4)' : Colors.error}`,
+      color: dark ? '#ff9a8f' : Colors.error,
+    },
+
+    chipSuccess: {
+      ...chipBase,
+      backgroundColor: dark ? 'rgba(62, 207, 110, 0.12)' : 'rgba(62, 207, 110, 0.1)',
+      border: `1px solid ${dark ? 'rgba(62, 207, 110, 0.35)' : Colors.success}`,
+      color: dark ? '#8ef0b0' : Colors.success,
+    },
+
+    chipMuted: {
+      ...chipBase,
+      backgroundColor: dark ? 'rgba(255, 255, 255, 0.04)' : theme.palette.grey[50],
+      border: `1px solid ${dark ? 'rgba(255, 255, 255, 0.08)' : theme.palette.divider}`,
+      color: dark ? 'rgba(255, 255, 255, 0.55)' : theme.palette.text.secondary,
+    },
+  };
+});
 
 const checkStyle = { fontSize: 'inherit', marginLeft: 8 };
 const check = <Check style={checkStyle} />;
@@ -302,20 +203,20 @@ const getFilterChipClass = (
 ): string => {
   const isFilterActive = Array.isArray(filters) && filters.length > 0;
 
-  if (isFilterActive) {
-    switch (filters[0]) {
-      case UAVFilter.WITH_WARNINGS:
-      case UAVFilter.INACTIVE_ONLY:
-        return classes.warning;
-
-      case UAVFilter.WITH_ERRORS:
-        return classes.error;
-
-      default:
-        return classes.chipActive;
-    }
-  } else {
+  if (!isFilterActive) {
     return classes.chip;
+  }
+
+  switch (filters[0]) {
+    case UAVFilter.WITH_WARNINGS:
+    case UAVFilter.INACTIVE_ONLY:
+      return classes.chipWarning;
+
+    case UAVFilter.WITH_ERRORS:
+      return classes.chipError;
+
+    default:
+      return classes.chipActive;
   }
 };
 
@@ -328,6 +229,7 @@ const CheckableMenuItem = React.forwardRef<
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   <MenuItem ref={ref as any} dense {...(rest as any)}>
     {label}
+    {selected ? check : null}
   </MenuItem>
 ));
 
@@ -350,54 +252,15 @@ function bindChip({
   result.onContextMenu = result.onClick;
 
   if (popupTrigger === 'icon') {
-    // The whole chip triggers the default action, the right icon opens the popup
     result.onDelete = opener;
     if (action) {
       result.onClick = action;
     }
   } else {
-    // Right icon triggers special action (if any), the whole chip opens the popup
     result.onDelete = action ?? opener;
   }
 
   return result;
-}
-
-function formatHeaderParts(
-  parts: string | HeaderPart[] | undefined,
-  sortBy: UAVSortKeyAndOrder,
-  classes: ReturnType<typeof useStyles>,
-  onClick: (key: UAVSortKey) => void
-): React.ReactNode {
-  if (typeof parts === 'string') {
-    // Whole header is a single item
-    return parts;
-  } else if (Array.isArray(parts)) {
-    return parts.map(({ label, sortKey, style }) => (
-      <div
-        key={label}
-        className={clsx(
-          classes.headerLineItem,
-          sortKey && classes.sortable,
-          sortBy.key === sortKey &&
-            sortKey !== UAVSortKey.DEFAULT &&
-            classes.sortActive
-        )}
-        style={style}
-        onClick={
-          sortKey
-            ? (): void => {
-                onClick(sortKey);
-              }
-            : undefined
-        }
-      >
-        {label}
-      </div>
-    ));
-  } else {
-    return '';
-  }
 }
 
 type GpsFleetSummaryProps = Readonly<{
@@ -408,7 +271,6 @@ type GpsFleetSummaryProps = Readonly<{
 
 type SortAndFilterHeaderProps = Readonly<{
   filters: UAVFilter[];
-  floating?: boolean;
   gpsSummary: GpsFleetSummaryProps;
   layout: UAVListLayout;
   onSetFilter: (filter: Nullable<UAVFilter>) => void;
@@ -421,13 +283,11 @@ type SortAndFilterHeaderProps = Readonly<{
 
 const SortAndFilterHeader = ({
   filters,
-  floating,
   gpsSummary,
   layout,
   onSetFilter,
   onSetSortBy,
   onToggleSortDirection,
-  showMissionIds,
   sortBy,
   t,
 }: SortAndFilterHeaderProps): React.JSX.Element => {
@@ -473,165 +333,140 @@ const SortAndFilterHeader = ({
     },
     [onSetSortBy, sortPopupState]
   );
-  const onSetSortKeyOrToggleSortDirection = useCallback(
-    (value: UAVSortKey) => {
-      if (sortBy.key === value) {
-        if (onToggleSortDirection) {
-          onToggleSortDirection();
-        }
-      } else {
-        if (onSetSortBy) {
-          onSetSortBy({ key: value });
-        }
-      }
-    },
-    [onSetSortBy, onToggleSortDirection, sortBy]
-  );
-
   const isSortActive = sortBy.key !== UAVSortKey.DEFAULT;
   const isFilterActive = Array.isArray(filters) && filters.length > 0;
 
   return (
-    <div className={clsx(classes.root, floating && classes.floating)}>
-      <div className={classes.widgets}>
-        <Chip
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          ref={sortChipRef as any}
-          className={isSortActive ? classes.chipActive : classes.chip}
-          variant='outlined'
-          label={shortLabelsForUAVSortKey[sortBy.key](t)}
-          size='small'
-          deleteIcon={sortBy?.reverse ? <SortDescending /> : <SortAscending />}
-          {...bindChip({
-            state: sortPopupState,
-            ref: sortChipRef.current,
-            action: onToggleSortDirection,
-          })}
-        />
-        <Menu {...bindMenu(sortPopupState)}>
-          <MenuItem dense disabled>
-            {t('sorting.sortBy')}
-          </MenuItem>
-          {UAVSortKeys.map((sortKey) => (
+    <div className={clsx(classes.root, classes.rootEmbedded)}>
+      <div className={classes.toolbarInner}>
+        <div className={classes.group}>
+          <Chip
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            ref={sortChipRef as any}
+            className={isSortActive ? classes.chipActive : classes.chip}
+            deleteIcon={sortBy?.reverse ? <SortDescending /> : <SortAscending />}
+            icon={<Sort fontSize='small' />}
+            label={shortLabelsForUAVSortKey[sortBy.key](t)}
+            size='small'
+            variant='outlined'
+            {...bindChip({
+              state: sortPopupState,
+              ref: sortChipRef.current,
+              action: onToggleSortDirection,
+            })}
+          />
+          <Menu {...bindMenu(sortPopupState)} slotProps={{ paper: menuPaperProps }}>
+            <MenuItem dense disabled>
+              {t('sorting.sortBy')}
+            </MenuItem>
+            {UAVSortKeys.map((sortKey) => (
+              <CheckableMenuItem
+                key={sortKey}
+                label={labelsForUAVSortKey[sortKey](t)}
+                selected={sortBy.key === sortKey}
+                onClick={() => {
+                  setSortKey(sortKey);
+                }}
+              />
+            ))}
+            <Divider style={{ margin: '4px 0' }} />
             <CheckableMenuItem
-              key={sortKey}
-              label={labelsForUAVSortKey[sortKey](t)}
-              selected={sortBy.key === sortKey}
+              label={t('sorting.ascending')}
+              selected={!sortBy?.reverse}
               onClick={() => {
-                setSortKey(sortKey);
+                setSortReversed(false);
               }}
             />
-          ))}
-          <Divider style={{ margin: '4px 0' }} />
-          <MenuItem
-            dense
-            onClick={() => {
-              setSortReversed(false);
-            }}
-          >
-            {t('sorting.ascending')}
-            {!sortBy?.reverse && check}
-          </MenuItem>
-          <MenuItem
-            dense
-            onClick={() => {
-              setSortReversed(true);
-            }}
-          >
-            {t('sorting.descending')}
-            {sortBy?.reverse && check}
-          </MenuItem>
-        </Menu>
+            <CheckableMenuItem
+              label={t('sorting.descending')}
+              selected={Boolean(sortBy?.reverse)}
+              onClick={() => {
+                setSortReversed(true);
+              }}
+            />
+          </Menu>
 
-        <Chip
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          ref={filterChipRef as any}
-          className={getFilterChipClass(filters, classes)}
-          variant='outlined'
-          label={
-            isFilterActive
-              ? filters.length > 1
-                ? t('filtering.composite')
-                : shortLabelsForUAVFilter[filters[0]!](t)
-              : t('filtering.filter')
-          }
-          size='small'
-          deleteIcon={
-            isFilterActive ? undefined /* default X icon */ : <Filter />
-          }
-          {...bindChip({
-            state: filterPopupState,
-            ref: filterChipRef.current,
-            action: isFilterActive
-              ? (): void => {
-                  setFilter(null);
+          <Chip
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            ref={filterChipRef as any}
+            className={getFilterChipClass(filters, classes)}
+            deleteIcon={isFilterActive ? undefined : <Filter fontSize='small' />}
+            icon={isFilterActive ? undefined : <Filter fontSize='small' />}
+            label={
+              isFilterActive
+                ? filters.length > 1
+                  ? t('filtering.composite')
+                  : shortLabelsForUAVFilter[filters[0]!](t)
+                : t('filtering.filter')
+            }
+            size='small'
+            variant='outlined'
+            {...bindChip({
+              state: filterPopupState,
+              ref: filterChipRef.current,
+              action: isFilterActive
+                ? (): void => {
+                    setFilter(null);
+                  }
+                : undefined,
+            })}
+          />
+          <Menu {...bindMenu(filterPopupState)} slotProps={{ paper: menuPaperProps }}>
+            <MenuItem dense disabled>
+              {t('filtering.filterBy')}
+            </MenuItem>
+            {UAVFilters.map((filter) => (
+              <CheckableMenuItem
+                key={filter}
+                label={labelsForUAVFilter[filter](t)}
+                selected={
+                  (filters.length === 1 && filters[0] === filter) ||
+                  (filter === UAVFilter.DEFAULT && filters.length === 0)
                 }
-              : undefined,
-          })}
-        />
-        <Menu {...bindMenu(filterPopupState)}>
-          <MenuItem dense disabled>
-            {t('filtering.filterBy')}
-          </MenuItem>
-          {UAVFilters.map((filter) => (
-            <CheckableMenuItem
-              key={filter}
-              label={labelsForUAVFilter[filter](t)}
-              selected={
-                (filters.length === 1 && filters[0] === filter) ||
-                (filter === UAVFilter.DEFAULT && filters.length === 0)
-              }
-              onClick={() => {
-                setFilter(filter);
-              }}
-            />
-          ))}
-        </Menu>
-
-        <Chip
-          className={classes.success}
-          variant='outlined'
-          size='small'
-          label={`RTK+ ${gpsSummary.rtkFixed}`}
-          title='RTK Fixed'
-        />
-        <Chip
-          className={classes.success}
-          variant='outlined'
-          size='small'
-          label={`RTK ${gpsSummary.rtkFloat}`}
-          title='RTK Float'
-        />
-        <Chip
-          className={classes.chip}
-          variant='outlined'
-          size='small'
-          label={
-            gpsSummary.minSatellites !== undefined
-              ? `GPS ${gpsSummary.minSatellites}`
-              : 'GPS —'
-          }
-          title='GPS 위성 수 (최소)'
-        />
-      </div>
-      <FadeAndSlide in={layout === UAVListLayout.LIST}>
-        <div className={classes.headerLine}>
-          {formatHeaderParts(
-            showMissionIds
-              ? HEADER_TEXT_PARTS['missionIds']
-              : HEADER_TEXT_PARTS['droneIds'],
-            sortBy,
-            classes,
-            onSetSortKeyOrToggleSortDirection
-          )}
+                onClick={() => {
+                  setFilter(filter);
+                }}
+              />
+            ))}
+          </Menu>
         </div>
-      </FadeAndSlide>
+
+        <div className={classes.group}>
+          <Chip
+            className={classes.chipSuccess}
+            icon={<GpsFixed fontSize='small' />}
+            label={`RTK+ ${gpsSummary.rtkFixed}`}
+            size='small'
+            title='RTK Fixed'
+            variant='outlined'
+          />
+          <Chip
+            className={classes.chipSuccess}
+            icon={<GpsFixed fontSize='small' />}
+            label={`RTK ${gpsSummary.rtkFloat}`}
+            size='small'
+            title='RTK Float'
+            variant='outlined'
+          />
+          <Chip
+            className={classes.chipMuted}
+            icon={<SatelliteAlt fontSize='small' />}
+            label={
+              gpsSummary.minSatellites !== undefined
+                ? `GPS ${gpsSummary.minSatellites}`
+                : 'GPS —'
+            }
+            size='small'
+            title='GPS 위성 수 (최소)'
+            variant='outlined'
+          />
+        </div>
+      </div>
     </div>
   );
 };
 
 export default connect(
-  // mapStateToProps
   (state: RootState) => ({
     filters: getUAVListFilters(state),
     gpsSummary: selectGpsFleetSummary(state),
@@ -639,7 +474,6 @@ export default connect(
     showMissionIds: isShowingMissionIds(state),
     sortBy: getUAVListSortPreference(state),
   }),
-  // mapDispatchToProps
   {
     onSetFilter: setSingleUAVListFilter,
     onSetSortBy: setUAVListSortPreference,

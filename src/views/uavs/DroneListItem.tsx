@@ -4,62 +4,89 @@ import clsx from 'clsx';
 import React, { useCallback } from 'react';
 import { useDrag, useDrop, type ConnectableElement } from 'react-dnd';
 
-import { makeStyles } from '@skybrush/app-theme-mui';
+import { isThemeDark, makeStyles } from '@skybrush/app-theme-mui';
 
 import Colors from '~/components/colors';
 
 import { GRID_ITEM_WIDTH } from './constants';
 import { uavIdToDOMNodeId } from './utils';
 
-const useStyles = makeStyles((theme: Theme) => ({
-  root: {
-    alignItems: 'center',
-    cursor: 'pointer',
-    display: 'flex',
-    flexDirection: 'column',
-    minWidth: GRID_ITEM_WIDTH,
-    padding: theme.spacing(0.25, 0.5),
-    position: 'relative',
+const accentColor = '#6eb6ff';
+const accentGlow = 'rgba(110, 182, 255, 0.35)';
 
-    scrollMarginTop:
-      '3em' /* to account for the hovering header in the list view */,
+const useStyles = makeStyles((theme: Theme) => {
+  const dark = isThemeDark(theme);
+  const selectedBg = dark ? 'rgba(47, 128, 237, 0.14)' : 'rgba(47, 128, 237, 0.1)';
+  const hoverBg = dark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.03)';
 
-    // Transitions disabled because it makes hard to follow which item is
-    // selected when the user is holding down a keyboard navigation key
-    // continuously.
-    // transition: theme.transitions.create(['background-color', 'box-shadow']),
-  },
+  return {
+    root: {
+      alignItems: 'center',
+      border: '1px solid transparent',
+      borderRadius: theme.spacing(1),
+      cursor: 'pointer',
+      display: 'flex',
+      flexDirection: 'column',
+      minWidth: GRID_ITEM_WIDTH,
+      padding: theme.spacing(0.5, 0.75),
+      position: 'relative',
 
-  draggable: {
-    '&:hover': {
-      boxShadow: theme.shadows[4],
+      scrollMarginTop:
+        '3em' /* to account for the hovering header in the list view */,
     },
-  },
 
-  selectable: {
-    '&:hover': {
-      backgroundColor: theme.palette.action.hover,
+    draggable: {
+      '&:hover': {
+        borderColor: dark ? 'rgba(255, 255, 255, 0.12)' : theme.palette.divider,
+        boxShadow: theme.shadows[4],
+      },
     },
-  },
 
-  selected: {
-    backgroundColor: theme.palette.action.selected,
-    '&:hover': {
-      backgroundColor: theme.palette.action.selected,
+    selectable: {
+      '&:hover': {
+        backgroundColor: hoverBg,
+        borderColor: dark ? 'rgba(255, 255, 255, 0.1)' : theme.palette.divider,
+      },
     },
-  },
 
-  fill: {
-    flexGrow: 1,
-    padding: theme.spacing(2, 0),
-  },
+    selected: {
+      backgroundColor: selectedBg,
+      borderColor: dark ? 'rgba(110, 182, 255, 0.45)' : theme.palette.primary.main,
+      boxShadow: `0 0 0 1px ${accentGlow}, 0 4px 14px rgba(0, 0, 0, 0.18)`,
+      '&:hover': {
+        backgroundColor: selectedBg,
+        borderColor: dark ? accentColor : theme.palette.primary.main,
+      },
+    },
 
-  stretch: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    width: '100%',
-  },
-}));
+    selectedStretch: {
+      boxShadow: `inset 3px 0 0 ${accentColor}, 0 0 0 1px ${accentGlow}`,
+    },
+
+    fill: {
+      flexGrow: 1,
+      padding: theme.spacing(2, 0),
+    },
+
+    stretch: {
+      alignItems: 'center',
+      borderRadius: 0,
+      flexDirection: 'row',
+      minWidth: 0,
+      padding: theme.spacing(0, 1),
+      width: '100%',
+    },
+
+    gridHost: {
+      background: 'transparent',
+      border: 'none',
+      boxShadow: 'none',
+      minWidth: 0,
+      padding: 0,
+      width: '100%',
+    },
+  };
+});
 
 const hideItem = { style: { opacity: 0 } };
 const addDropIndicator = {
@@ -133,6 +160,7 @@ export type DroneListItemProps = React.PropsWithChildren<
     selected?: boolean;
     stretch?: boolean;
     uavId?: string;
+    variant?: 'default' | 'grid';
   }>
 >;
 
@@ -146,14 +174,18 @@ const DroneListItem = ({
   selected,
   stretch,
   uavId,
+  variant = 'default',
 }: DroneListItemProps): React.JSX.Element => {
   const classes = useStyles();
+  const isGrid = variant === 'grid';
   const mergedClassNames = clsx(
     classes.root,
     className,
+    isGrid && classes.gridHost,
     onClick && classes.selectable,
     draggable && classes.draggable,
-    selected && classes.selected,
+    selected && !isGrid && classes.selected,
+    selected && stretch && classes.selectedStretch,
     fill && classes.fill,
     stretch && classes.stretch
   );

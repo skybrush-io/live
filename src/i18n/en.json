@@ -77,6 +77,13 @@
   },
   "authentication": "Authentication",
   "batteryStatusHeaderButton": "Showing average and minimum charge levels.",
+  "bearingCalculator": {
+    "addAtLeastTwoItems": "Add at least two items to calculate the bearing and distance between them",
+    "bearing": ", bearing: ",
+    "finalBearing": ", final bearing: ",
+    "initialBearing": ", initial bearing: ",
+    "selectTwoItems": "Select exactly two items to calculate the bearing and distance between them"
+  },
   "bottomBar": {
     "aircraftPreflightCheck": "Aircraft preflight check",
     "collapse": "Collapse flight control panel",
@@ -100,13 +107,6 @@
     "tapToUpload": "Tap to upload",
     "uploadData": "Upload data",
     "waiting": "Waiting"
-  },
-  "bearingCalculator": {
-    "addAtLeastTwoItems": "Add at least two items to calculate the bearing and distance between them",
-    "bearing": ", bearing: ",
-    "finalBearing": ", final bearing: ",
-    "initialBearing": ", initial bearing: ",
-    "selectTwoItems": "Select exactly two items to calculate the bearing and distance between them"
   },
   "broadcastButton": {
     "disable": "Disable broadcast",

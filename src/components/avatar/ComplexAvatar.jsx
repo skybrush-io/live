@@ -14,6 +14,7 @@ import SecondaryStatusLight from './SecondaryStatusLight';
 const useStyles = makeStyles((theme) => ({
   avatarWrapper: {
     position: 'relative',
+    borderRadius: '25%',
     '&:not(:last-child)': {
       marginBottom: theme.spacing(0.5),
     },
@@ -36,6 +37,11 @@ const useStyles = makeStyles((theme) => ({
       left: '-20%',
       width: '140%',
     },
+  },
+
+  avatarSelected: {
+    boxShadow:
+      '0 0 0 2px rgba(110, 182, 255, 0.85), 0 0 16px 4px rgba(110, 182, 255, 0.35)',
   },
 
   avatarContent: {
@@ -93,6 +99,7 @@ const ComplexAvatar = ({
   label,
   progress,
   secondaryStatus,
+  selected,
   status = 'off',
   text,
   textSemantics = 'info',
@@ -112,7 +119,8 @@ const ComplexAvatar = ({
         className={clsx(
           classes.avatarWrapper,
           crossed && 'crossed',
-          gone && classes.gone
+          gone && classes.gone,
+          selected && classes.avatarSelected
         )}
       >
         <SemanticAvatar
