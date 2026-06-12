@@ -3,6 +3,7 @@ import Avatar from '@mui/material/Avatar';
 import Badge from '@mui/material/Badge';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
+import ListItem from '@mui/material/ListItem';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
@@ -231,11 +232,8 @@ const MissionOverviewListItem = ({
           width: `${(ratio ?? 0) * 100}%`,
         }}
       />
-      <ListItemButton
-        dense
-        selected={selected}
-        onClick={onClick}
-        ContainerComponent='div'
+      <ListItem
+        disablePadding
         secondaryAction={
           editMissionItemParameters ? (
             <IconButton
@@ -248,21 +246,25 @@ const MissionOverviewListItem = ({
           ) : undefined
         }
       >
-        {avatar && (
-          <ListItemAvatar>
-            <Badge
-              badgeContent={item.participants?.map(formatMissionId).join(', ')}
-              color='primary'
-              overlap='circular'
-            >
-              <Avatar className={isValid ? null : classes.error}>
-                {avatar}
-              </Avatar>
-            </Badge>
-          </ListItemAvatar>
-        )}
-        <ListItemText primary={primaryText} secondary={secondaryText} />
-      </ListItemButton>
+        <ListItemButton dense selected={selected} onClick={onClick}>
+          {avatar && (
+            <ListItemAvatar>
+              <Badge
+                badgeContent={item.participants
+                  ?.map(formatMissionId)
+                  .join(', ')}
+                color='primary'
+                overlap='circular'
+              >
+                <Avatar className={isValid ? null : classes.error}>
+                  {avatar}
+                </Avatar>
+              </Badge>
+            </ListItemAvatar>
+          )}
+          <ListItemText primary={primaryText} secondary={secondaryText} />
+        </ListItemButton>
+      </ListItem>
     </Box>
   );
 };
