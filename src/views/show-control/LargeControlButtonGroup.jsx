@@ -308,9 +308,118 @@ const useStyles = makeStyles((theme) => ({
 
   },
 
+  bottomBarDeck: {
+    display: 'flex',
+    flex: '0 0 auto',
+    flexDirection: 'column',
+    minWidth: 0,
+    padding: theme.spacing(0, 1, 0.875),
+  },
+
+  bottomBarGrid: {
+    display: 'grid',
+    flex: '0 0 auto',
+    gap: 'clamp(4px, 0.5vw, 6px)',
+    gridTemplateColumns: 'repeat(4, minmax(0, 1fr))',
+    gridTemplateRows: 'repeat(2, auto)',
+    width: '100%',
+  },
+
+  bottomBarButton: {
+    alignItems: 'center',
+    borderRadius: theme.spacing(0.75),
+    boxShadow: '0 2px 0 rgba(0, 0, 0, 0.2)',
+    boxSizing: 'border-box',
+    display: 'flex',
+    gap: 'clamp(3px, 0.4vw, 6px)',
+    justifyContent: 'flex-start',
+    minHeight: 'clamp(36px, 4.5vh, 44px)',
+    minWidth: 0,
+    overflow: 'hidden',
+    padding: 'clamp(4px, 0.5vw, 6px) clamp(5px, 0.6vw, 8px)',
+    textAlign: 'left',
+    transition: theme.transitions.create(['filter', 'transform'], {
+      duration: theme.transitions.duration.short,
+    }),
+    width: '100%',
+
+    '&:hover': {
+      filter: 'brightness(1.06)',
+      transform: 'translateY(-1px)',
+    },
+  },
+
+  bottomBarButtonIcon: {
+    flexShrink: 0,
+    fontSize: 'clamp(0.9rem, 1.1vw, 1.05rem)',
+  },
+
+  bottomBarButtonLabel: {
+    fontSize: 'clamp(0.52rem, 0.72vw, 0.6rem)',
+    fontWeight: 700,
+    letterSpacing: '0.03em',
+    lineHeight: 1.1,
+    minWidth: 0,
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    textTransform: 'uppercase',
+    whiteSpace: 'nowrap',
+  },
+
 }));
 
 
+
+const BOTTOM_BAR_BUTTONS = Object.freeze([
+  {
+    key: 'turnMotorsOn',
+    color: Colors.success,
+    icon: PlayArrow,
+    labelKey: 'arm',
+  },
+  {
+    key: 'turnMotorsOff',
+    color: Colors.info,
+    icon: Clear,
+    labelKey: 'disarm',
+  },
+  {
+    key: 'takeOff',
+    color: Colors.success,
+    icon: FlightTakeoff,
+    labelKey: 'takeoff',
+  },
+  {
+    key: 'startShow',
+    color: deepPurple[500],
+    icon: RocketLaunch,
+    labelKey: 'showStart',
+  },
+  {
+    key: 'holdPosition',
+    color: Colors.positionHold,
+    icon: PositionHold,
+    labelKey: 'hold',
+  },
+  {
+    key: 'returnToHome',
+    color: Colors.warning,
+    icon: Home,
+    labelKey: 'RTH',
+  },
+  {
+    key: 'land',
+    color: Colors.seriousWarning,
+    icon: FlightLand,
+    labelKey: 'land',
+  },
+  {
+    key: 'shutdown',
+    color: Colors.error,
+    icon: PowerSettingsNew,
+    labelKey: 'shutdown',
+  },
+]);
 
 const COMMAND_SECTIONS = Object.freeze([
 
@@ -601,6 +710,46 @@ FlightDeckButton.propTypes = {
 
 
 
+const BottomBarCommandButton = ({ button, classes, label, onClick }) => {
+  const Icon = button.icon;
+  const parsedColor = useMemo(() => createColor(button.color), [button.color]);
+  const foreground = parsedColor.isLight()
+    ? 'rgba(0, 0, 0, 0.87)'
+    : 'rgba(255, 255, 255, 0.95)';
+
+  return (
+    <ButtonBase
+      aria-label={label}
+      className={classes.bottomBarButton}
+      onClick={onClick}
+      sx={{
+        backgroundColor: button.color,
+        border: `1px solid ${parsedColor.darken(0.18).alpha(0.35).string()}`,
+        color: foreground,
+        '&:hover': {
+          backgroundColor: parsedColor.darken(0.06).string(),
+        },
+      }}
+    >
+      <Icon className={classes.bottomBarButtonIcon} />
+      <Typography className={classes.bottomBarButtonLabel} component='span'>
+        {label}
+      </Typography>
+    </ButtonBase>
+  );
+};
+
+BottomBarCommandButton.propTypes = {
+  button: PropTypes.shape({
+    color: PropTypes.string.isRequired,
+    icon: PropTypes.elementType.isRequired,
+    key: PropTypes.string.isRequired,
+  }).isRequired,
+  classes: PropTypes.object.isRequired,
+  label: PropTypes.string.isRequired,
+  onClick: PropTypes.func.isRequired,
+};
+
 const LargeControlButtonGroup = ({
 
   broadcast,
@@ -610,6 +759,8 @@ const LargeControlButtonGroup = ({
   t,
 
   uavActions,
+
+  variant = 'deck',
 
 }) => {
 
@@ -682,6 +833,31 @@ const LargeControlButtonGroup = ({
         });
 
   }, [broadcast, pendingCommand, t]);
+
+  if (variant === 'bottomBar') {
+    return (
+      <Box className={classes.bottomBarDeck}>
+        <Box className={classes.bottomBarGrid}>
+          {BOTTOM_BAR_BUTTONS.map((button) => (
+            <BottomBarCommandButton
+              key={button.key}
+              button={button}
+              classes={classes}
+              label={t(`largeControlButtonGroup.${button.labelKey}`)}
+              onClick={() => requestCommand(button.key)}
+            />
+          ))}
+        </Box>
+
+        <ConfirmationDialog
+          open={confirmOpen}
+          message={confirmMessage}
+          onConfirm={handleConfirmAction}
+          onCancel={handleConfirmClose}
+        />
+      </Box>
+    );
+  }
 
   return (
 
@@ -824,6 +1000,8 @@ LargeControlButtonGroup.propTypes = {
   t: PropTypes.func,
 
   uavActions: PropTypes.objectOf(PropTypes.func),
+
+  variant: PropTypes.oneOf(['deck', 'bottomBar']),
 
 };
 

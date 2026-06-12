@@ -42,7 +42,7 @@ import {
   isWorkbenchLayoutFixed,
   shouldSidebarBeShown,
 } from './features/workbench/selectors';
-import FloatingFlightCommandDeck from './views/show-control/FloatingFlightCommandDeck';
+import BottomFlightControlBar from './views/show-control/BottomFlightControlBar';
 import ShowFileWatcher from './views/show-control/ShowFileWatcher';
 
 import { ErrorHandler } from './error-handling';
@@ -77,10 +77,11 @@ const rootStyle = {
 };
 
 const rootInnerStyle = {
-  display: 'flex',
   alignItems: 'stretch',
-  flexGrow: 1,
   contain: 'size',
+  display: 'flex',
+  flexGrow: 1,
+  minHeight: 0,
 };
 
 /**
@@ -191,7 +192,7 @@ const App = ({ onFirstRender }) => (
         <WorkbenchContainer />
         {config?.ribbon?.label && <CornerRibbon {...config.ribbon} />}
         <PendingUAVIdOverlay />
-        <FloatingFlightCommandDeck />
+        <BottomFlightControlBar />
       </div>
 
       <DetachedPanelManager />

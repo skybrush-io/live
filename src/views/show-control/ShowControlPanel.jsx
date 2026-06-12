@@ -1,31 +1,31 @@
 import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 import React from 'react';
-
-import { hasFeature } from '~/utils/configuration';
-
-import EnvironmentEditorDialog from './EnvironmentEditorDialog';
-import LoadShowFromCloudDialog from './LoadShowFromCloudDialog';
-import ManualPreflightChecksDialog from './ManualPreflightChecksDialog';
-import OnboardPreflightChecksDialog from './OnboardPreflightChecksDialog';
-import ShowControlPanelUpperSegment from './ShowControlPanelUpperSegment';
-import StartTimeDialog from './StartTimeDialog';
-import TakeoffAreaSetupDialog from './TakeoffAreaSetupDialog';
+import { useTranslation } from 'react-i18next';
 
 /**
- * Panel that shows the widgets that are needed to load and configure a drone
- * show.
+ * Detached show-control panel. Primary controls live in the bottom bar.
  */
-const ShowControlPanel = () => (
-  <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-    <ShowControlPanelUpperSegment />
+const ShowControlPanel = () => {
+  const { t } = useTranslation();
 
-    {hasFeature('loadShowFromCloud') && <LoadShowFromCloudDialog />}
-    <EnvironmentEditorDialog />
-    <StartTimeDialog />
-    <TakeoffAreaSetupDialog />
-    <OnboardPreflightChecksDialog />
-    <ManualPreflightChecksDialog />
-  </Box>
-);
+  return (
+    <Box
+      sx={{
+        alignItems: 'center',
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+        justifyContent: 'center',
+        p: 2,
+        textAlign: 'center',
+      }}
+    >
+      <Typography color='textSecondary' variant='body2'>
+        {t('bottomBar.detachedPanelHint')}
+      </Typography>
+    </Box>
+  );
+};
 
 export default ShowControlPanel;
