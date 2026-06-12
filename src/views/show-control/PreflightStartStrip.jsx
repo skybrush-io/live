@@ -362,21 +362,22 @@ export default connect(
     startMethod: getShowStartMethod(state),
     startTimeStatus: getSetupStageStatuses(state).setupStartTime,
   }),
-  (dispatch, getState) => ({
-    onAuthorizeToggle: () => {
-      const state = getState();
-      const newAuthorizationState = !isShowAuthorizedToStartLocally(state);
-      if (!newAuthorizationState && isAnyMissionUAVAirborne(state)) {
-        return;
-      }
-      dispatch(setShowAuthorization(newAuthorizationState));
-      dispatch(synchronizeShowSettings('toServer'));
-      if (newAuthorizationState) {
-        dispatch(setCommandsAreBroadcast(true));
-      }
-    },
-    onOpenManualChecks: () => dispatch(openManualPreflightChecksDialog()),
-    onOpenOnboardChecks: () => dispatch(openOnboardPreflightChecksDialog()),
-    onOpenStartTime: () => dispatch(openStartTimeDialog()),
-  })
+  {
+    onAuthorizeToggle:
+      () => (dispatch, getState) => {
+        const state = getState();
+        const newAuthorizationState = !isShowAuthorizedToStartLocally(state);
+        if (!newAuthorizationState && isAnyMissionUAVAirborne(state)) {
+          return;
+        }
+        dispatch(setShowAuthorization(newAuthorizationState));
+        dispatch(synchronizeShowSettings('toServer'));
+        if (newAuthorizationState) {
+          dispatch(setCommandsAreBroadcast(true));
+        }
+      },
+    onOpenManualChecks: openManualPreflightChecksDialog,
+    onOpenOnboardChecks: openOnboardPreflightChecksDialog,
+    onOpenStartTime: openStartTimeDialog,
+  }
 )(PreflightStartStrip);
