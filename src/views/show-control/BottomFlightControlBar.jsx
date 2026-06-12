@@ -27,13 +27,9 @@ const readCollapsedPreference = () => {
 
 const useStyles = makeStyles((theme) => ({
   shell: {
-    bottom: 0,
     boxSizing: 'border-box',
-    left: 0,
-    pointerEvents: 'none',
-    position: 'fixed',
-    right: 0,
-    zIndex: theme.zIndex.drawer + 2,
+    flexShrink: 0,
+    width: '100%',
   },
   root: {
     backgroundColor: '#12151a',

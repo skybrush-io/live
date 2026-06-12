@@ -94,6 +94,7 @@ const drawingToolRegistry: Record<DrawingToolId, ToolConfig> = {
 type DrawingToolIdGroup = DrawingToolId[];
 
 type DrawingToolbarProps = {
+  dense?: boolean;
   onToolSelected: (tool: Tool) => void;
   selectedTool: Tool;
   t: TFunction;
@@ -104,6 +105,7 @@ type DrawingToolbarProps = {
 };
 
 const DrawingToolbar = ({
+  dense = false,
   drawingTools,
   onToolSelected,
   selectedTool,
@@ -122,7 +124,7 @@ const DrawingToolbar = ({
             return (
               <Tooltip key={toolId} content={label(t)} placement='right'>
                 <IconButton
-                  size='large'
+                  size={dense ? 'small' : 'large'}
                   onClick={partial(onToolSelected, tool)}
                 >
                   <Icon color={colorForTool(tool)} />

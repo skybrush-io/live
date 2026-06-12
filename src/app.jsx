@@ -80,7 +80,7 @@ const rootInnerStyle = {
   alignItems: 'stretch',
   contain: 'size',
   display: 'flex',
-  flexGrow: 1,
+  flex: '1 1 auto',
   minHeight: 0,
 };
 
@@ -190,9 +190,9 @@ const App = ({ onFirstRender }) => (
       <div style={rootStyle}>
         <Header perspectives={perspectives} workbench={workbench} />
         <WorkbenchContainer />
+        <BottomFlightControlBar />
         {config?.ribbon?.label && <CornerRibbon {...config.ribbon} />}
         <PendingUAVIdOverlay />
-        <BottomFlightControlBar />
       </div>
 
       <DetachedPanelManager />

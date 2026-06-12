@@ -82,8 +82,28 @@ import { Layers } from './layers';
 import MapContextMenu from './MapContextMenu';
 import MapReferenceRequestHandler from './MapReferenceRequestHandler';
 import MapSourceToggleButton from './MapSourceToggleButton';
+import { MAP_PANEL_BG } from './mapPanelStyles';
 
 import 'ol/ol.css';
+
+const skycontrolMapWrapperStyle = {
+  backgroundColor: '#12151a',
+  boxSizing: 'border-box',
+  display: 'flex',
+  flexDirection: 'column',
+  height: '100%',
+  padding: 6,
+  position: 'relative',
+};
+
+const skycontrolMapFrameStyle = {
+  border: '1px solid rgba(255, 255, 255, 0.1)',
+  borderRadius: 10,
+  flex: 1,
+  minHeight: 0,
+  overflow: 'hidden',
+  position: 'relative',
+};
 
 /* ********************************************************************** */
 
@@ -418,31 +438,33 @@ class MapViewPresentation extends React.Component {
     // give access to the underlying OpenLayers Map object instead.
     return (
       <NearestItemTooltip>
-        <div style={mapStyles.mapWrapper}>
-          <BaseMap
-            ref={this._map}
-            loadTilesWhileInteracting
-            id='main-map-view'
-            view={view}
-            useDefaultControls={false}
-            className={toolClasses[selectedTool]}
-            style={mapStyles.map}
-            onMoveEnd={this._onMapMoved}
-          >
-            <MapReferenceRequestHandler />
+        <div className='skycontrol-map-panel' style={skycontrolMapWrapperStyle}>
+          <div style={skycontrolMapFrameStyle}>
+            <BaseMap
+              ref={this._map}
+              loadTilesWhileInteracting
+              id='main-map-view'
+              view={view}
+              useDefaultControls={false}
+              className={`skycontrol-map-canvas ${toolClasses[selectedTool] || ''}`}
+              style={{ ...mapStyles.map, background: MAP_PANEL_BG, height: '100%' }}
+              onMoveEnd={this._onMapMoved}
+            >
+              <MapReferenceRequestHandler />
 
-            <MapToolbars
-              left={<DrawingToolbar drawingTools={config.map.drawingTools} />}
-              top={
-                <>
-                  <MapRotationTextBox resetDuration={500} fieldWidth='75px' />
-                  <MapSourceToggleButton />
-                  {/* NOTE: Margin is calibrated such that the vertical      */}
-                  {/*       drawing toolbar will not cover any of the drones */}
-                  <ConnectedFitAllFeaturesButton duration={500} margin={80} />
-                </>
-              }
-            />
+              <MapToolbars
+                variant='skycontrol'
+                left={
+                  <DrawingToolbar dense drawingTools={config.map.drawingTools} />
+                }
+                top={
+                  <>
+                    <MapRotationTextBox resetDuration={500} fieldWidth='75px' />
+                    <ConnectedFitAllFeaturesButton duration={500} margin={80} />
+                  </>
+                }
+                topRight={<MapSourceToggleButton variant='skycontrol' />}
+              />
             <MapViewLayers onFeaturesModified={this._onFeaturesModified} />
             <MapControls />
             <MapViewInteractions
@@ -473,7 +495,8 @@ class MapViewPresentation extends React.Component {
               {/* The context menu that appears on the map when the user right-clicks */}
               <MapContextMenu />
             </ShowContextMenu>
-          </BaseMap>
+            </BaseMap>
+          </div>
         </div>
       </NearestItemTooltip>
     );
