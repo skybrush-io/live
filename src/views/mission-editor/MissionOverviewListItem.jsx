@@ -7,6 +7,8 @@ import ListItem from '@mui/material/ListItem';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
+import { useTheme } from '@mui/material/styles';
+import createColor from 'color';
 import isEmpty from 'lodash-es/isEmpty';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
@@ -16,6 +18,7 @@ import { makeStyles, Status } from '@skybrush/app-theme-mui';
 import Colors from '~/components/colors';
 import { editMissionItemParameters } from '~/features/mission/actions';
 import {
+  getCompletionRatiosForMissionItemById,
   getGeofencePolygon,
   getMissionItemById,
   hasActiveGeofencePolygon,
@@ -87,6 +90,24 @@ const formatMarkerStatusText = (marker, ratio) => {
   return markerText + ratioText;
 };
 
+const ItemProgress = ({ color, ratio }) => {
+  const theme = useTheme();
+
+  return (
+    <div
+      style={{
+        position: 'absolute',
+        height: '100%',
+        transition: '0.25s',
+        backgroundColor: createColor(theme.palette.background.paper)
+          .mix(createColor(color), 0.25)
+          .string(),
+        width: `${ratio * 100}%`,
+      }}
+    />
+  );
+};
+
 const MissionOverviewListItem = ({
   editMissionItemParameters,
   id,
@@ -94,7 +115,9 @@ const MissionOverviewListItem = ({
   item,
   missionGeofenceStatus,
   ratio,
+  ratios,
   selected,
+  selectedMissionId,
   onSelectItem,
   openGeofenceSettingsTab,
   openSafetySettingsTab,
@@ -109,7 +132,7 @@ const MissionOverviewListItem = ({
 
   switch (item.type) {
     case MissionItemType.GO_TO:
-      avatar = index;
+      avatar = String(index + 1);
       secondaryText = isValid
         ? formatCoordinate([item.parameters?.lon, item.parameters?.lat])
         : 'Invalid mission item';
@@ -220,18 +243,18 @@ const MissionOverviewListItem = ({
 
   return (
     <Box sx={{ position: 'relative' }}>
-      <div
-        style={{
-          position: 'absolute',
-          height: '100%',
-
-          backgroundColor: ratio === 1 ? Colors.success : Colors.info,
-          opacity: 0.25,
-
-          transition: '0.25s',
-          width: `${(ratio ?? 0) * 100}%`,
-        }}
-      />
+      {selectedMissionId === undefined ? (
+        <>
+          <ItemProgress color={Colors.missionItem} ratio={ratios.max} />
+          <ItemProgress color={Colors.currentMissionItem} ratio={ratios.avg} />
+          <ItemProgress color={Colors.doneMissionItem} ratio={ratios.min} />
+        </>
+      ) : (
+        <ItemProgress
+          color={ratio === 1 ? Colors.doneMissionItem : Colors.missionItem}
+          ratio={ratio}
+        />
+      )}
       <ListItem
         disablePadding
         secondaryAction={
@@ -280,12 +303,22 @@ MissionOverviewListItem.propTypes = {
   }),
   missionGeofenceStatus: PropTypes.oneOf(Object.values(Status)),
   ratio: PropTypes.number,
+  ratios: PropTypes.shape({
+    avg: PropTypes.number,
+    max: PropTypes.number,
+    min: PropTypes.number,
+  }),
   selected: PropTypes.bool,
+  selectedMissionId: PropTypes.number,
   onSelectItem: PropTypes.func,
   openGeofenceSettingsTab: PropTypes.func,
   openSafetySettingsTab: PropTypes.func,
 };
 
+// TODO: This should really be cleaned up by making sure that Virtuoso only
+//       renders items that are actually present in the store, or at least by
+//       introducing a wrapper component to check whether a given mission item
+//       exists before trying to render it
 export default connect(
   // mapStateToProps
   (state, ownProps) => ({
@@ -301,6 +334,10 @@ export default connect(
           : Status.WARNING
         : Status.ERROR
       : Status.OFF,
+    // HACK: The only thing preventing this from crashing on no longer existing
+    //       mission items is the fallback in case of missing participant
+    //       information to belonging to all mission indices
+    ratios: getCompletionRatiosForMissionItemById(state, ownProps.id),
   }),
   // mapDispatchToProps
   {

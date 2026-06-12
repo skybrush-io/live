@@ -7,8 +7,9 @@ import { createSelectionHandlerThunk } from '~/components/helpers/lists';
 
 import { setSelectedMissionItemIds } from '~/features/mission/actions';
 import {
-  getCurrentMissionItemIndex,
-  getCurrentMissionItemRatio,
+  getCurrentMissionItemIdForMissionIndex,
+  getCurrentMissionItemIndexForMissionIndex,
+  getCurrentMissionItemRatioForMissionIndex,
   getMissionItemIds,
   getMissionItemIdsWithIndices,
   getParticipantsForMissionItemIds,
@@ -20,26 +21,36 @@ import { setEditorPanelFollowScroll } from '~/features/mission/slice';
 
 import MissionOverviewListItem from './MissionOverviewListItem';
 
-const renderMissionListItem = (_index, { id, index }, context) => (
+const renderMissionListItem = (
+  _index,
+  // Item
+  { id, index },
+  // Context
+  {
+    currentItemIndex = -1,
+    currentItemRatio,
+    onSelectItem,
+    selectedMissionId,
+    selection,
+  }
+) => (
   <MissionOverviewListItem
-    done={index < context.currentItemIndex}
-    // prettier-ignore
     ratio={
-      // The item is done
-      index < context.currentItemIndex ? 1 :
-      // The item is in progress
-      index === context.currentItemIndex ? context.currentItemRatio :
-      // The item is to be done
-      0
+      // prettier-ignore
+      currentItemIndex < index ? 0 : // Todo
+      currentItemIndex > index ? 1 : // Done
+      currentItemRatio // In progress
     }
     id={id}
-    index={index + 1}
-    selected={context.selection.includes(id)}
-    onSelectItem={context.onSelectItem}
+    index={index}
+    selected={selection.includes(id)}
+    selectedMissionId={selectedMissionId}
+    onSelectItem={onSelectItem}
   />
 );
 
 const MissionOverviewList = ({
+  currentItemId,
   currentItemIndex,
   currentItemRatio,
   followScroll,
@@ -52,9 +63,20 @@ const MissionOverviewList = ({
   const context = {
     currentItemIndex,
     currentItemRatio,
-    selection: Array.isArray(selectedItemIds) ? selectedItemIds : [],
     onSelectItem,
+    selectedMissionId,
+    selection: Array.isArray(selectedItemIds) ? selectedItemIds : [],
   };
+
+  // FIXME: Range selection with filtering can have unexpected results.
+  const filteredItemIdsWithIndices = itemIdsWithIndices.filter(
+    ({ id }) =>
+      selectedMissionId === undefined ||
+      // TODO: This is redundant, as `getParticipantsOfMissionItemId`, and thus
+      //       `getParticipantsForMissionItemIds` already handle `undefined`...
+      participantsForItemIds[id] === undefined ||
+      participantsForItemIds[id].includes(selectedMissionId)
+  );
 
   const virtuosoRef = useRef(null);
 
@@ -64,33 +86,27 @@ const MissionOverviewList = ({
       // and the item with the given index is available!
       // (This is required for correct behavior when e.g., restoring backups.)
       setTimeout(() => {
-        virtuosoRef.current.scrollToIndex({
-          index: currentItemIndex,
+        virtuosoRef?.current?.scrollToIndex({
+          index: filteredItemIdsWithIndices.findIndex(
+            ({ id }) => id === currentItemId
+          ),
           align: 'center',
           behavior: 'smooth',
         });
       }, 0),
-    [currentItemIndex, virtuosoRef]
+    [currentItemId, filteredItemIdsWithIndices, virtuosoRef]
   );
 
   useEffect(() => {
-    if (followScroll) {
+    if (selectedMissionId !== undefined && followScroll) {
       scrollToCurrent();
     }
-  }, [followScroll, scrollToCurrent]);
-
-  // FIXME: Range selection with filtering can have unexpected results.
-  const filteredItemIds = itemIdsWithIndices.filter(
-    ({ id }) =>
-      selectedMissionId === undefined ||
-      participantsForItemIds[id] === undefined ||
-      participantsForItemIds[id].includes(selectedMissionId)
-  );
+  }, [followScroll, scrollToCurrent, selectedMissionId]);
 
   return (
     <Virtuoso
       ref={virtuosoRef}
-      data={filteredItemIds}
+      data={filteredItemIdsWithIndices}
       context={context}
       itemContent={renderMissionListItem}
     />
@@ -98,6 +114,7 @@ const MissionOverviewList = ({
 };
 
 MissionOverviewList.propTypes = {
+  currentItemId: PropTypes.string,
   currentItemIndex: PropTypes.number,
   currentItemRatio: PropTypes.number,
   followScroll: PropTypes.bool,
@@ -111,8 +128,18 @@ MissionOverviewList.propTypes = {
 export default connect(
   // mapStateToProps
   (state) => ({
-    currentItemIndex: getCurrentMissionItemIndex(state),
-    currentItemRatio: getCurrentMissionItemRatio(state),
+    currentItemId: getCurrentMissionItemIdForMissionIndex(
+      state,
+      getSelectedMissionIdInMissionEditorPanel(state)
+    ),
+    currentItemIndex: getCurrentMissionItemIndexForMissionIndex(
+      state,
+      getSelectedMissionIdInMissionEditorPanel(state)
+    ),
+    currentItemRatio: getCurrentMissionItemRatioForMissionIndex(
+      state,
+      getSelectedMissionIdInMissionEditorPanel(state)
+    ),
     followScroll: shouldMissionEditorPanelFollowScroll(state),
     itemIdsWithIndices: getMissionItemIdsWithIndices(state),
     participantsForItemIds: getParticipantsForMissionItemIds(state),
