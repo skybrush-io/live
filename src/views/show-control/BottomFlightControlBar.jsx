@@ -75,7 +75,7 @@ const useStyles = makeStyles((theme) => ({
   },
   collapsedLabel: {
     color: 'rgba(255,255,255,0.55)',
-    fontSize: '0.62rem',
+    fontSize: '0.76rem',
     fontWeight: 700,
     letterSpacing: '0.12em',
     textTransform: 'uppercase',
@@ -122,7 +122,7 @@ const useStyles = makeStyles((theme) => ({
   },
   panelTitle: {
     color: 'rgba(255,255,255,0.55)',
-    fontSize: 'clamp(0.58rem, 0.7vw, 0.62rem)',
+    fontSize: 'clamp(0.72rem, 0.88vw, 0.78rem)',
     fontWeight: 700,
     letterSpacing: '0.14em',
     lineHeight: 1,

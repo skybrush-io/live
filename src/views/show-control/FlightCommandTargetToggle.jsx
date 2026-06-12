@@ -30,13 +30,13 @@ const useStyles = makeStyles((theme) => ({
       border: '1px solid transparent',
       borderRadius: '999px !important',
       color: 'rgba(255, 255, 255, 0.9)',
-      fontSize: '0.6rem',
+      fontSize: '0.74rem',
       fontWeight: 600,
       gap: theme.spacing(0.375),
       letterSpacing: '0.02em',
       lineHeight: 1,
-      minHeight: 26,
-      padding: theme.spacing(0.35, 0.75),
+      minHeight: 30,
+      padding: theme.spacing(0.45, 0.875),
       textTransform: 'none',
 
       '&:hover': {
@@ -63,7 +63,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   modeIcon: {
-    fontSize: '0.95rem',
+    fontSize: '1.15rem',
   },
 }));
 

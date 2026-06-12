@@ -84,7 +84,7 @@ const useStyles = makeStyles((theme) => ({
   },
   checkIcon: {
     flexShrink: 0,
-    fontSize: '1rem',
+    fontSize: '1.2rem',
     marginTop: 1,
   },
   checkText: {
@@ -95,7 +95,7 @@ const useStyles = makeStyles((theme) => ({
   },
   checkPrimary: {
     color: 'rgba(255,255,255,0.9)',
-    fontSize: 'clamp(0.62rem, 0.75vw, 0.68rem)',
+    fontSize: 'clamp(0.78rem, 0.95vw, 0.84rem)',
     fontWeight: 600,
     lineHeight: 1.2,
     overflow: 'hidden',
@@ -104,7 +104,7 @@ const useStyles = makeStyles((theme) => ({
   },
   checkSecondary: {
     color: 'rgba(255,255,255,0.42)',
-    fontSize: 'clamp(0.54rem, 0.65vw, 0.58rem)',
+    fontSize: 'clamp(0.68rem, 0.82vw, 0.74rem)',
     lineHeight: 1.2,
     overflow: 'hidden',
     textOverflow: 'ellipsis',
@@ -128,7 +128,7 @@ const useStyles = makeStyles((theme) => ({
   },
   rcIcon: {
     color: 'rgba(255,255,255,0.55)',
-    fontSize: '1.2rem',
+    fontSize: '1.35rem',
   },
   rcText: {
     display: 'flex',
@@ -138,13 +138,13 @@ const useStyles = makeStyles((theme) => ({
   },
   rcPrimary: {
     color: 'rgba(255,255,255,0.82)',
-    fontSize: '0.62rem',
+    fontSize: '0.78rem',
     fontWeight: 600,
     lineHeight: 1.2,
   },
   rcSecondary: {
     color: 'rgba(255,255,255,0.42)',
-    fontSize: '0.58rem',
+    fontSize: '0.72rem',
     lineHeight: 1.2,
   },
   authorizeButton: {
@@ -171,7 +171,7 @@ const useStyles = makeStyles((theme) => ({
     color: '#8ef0b0',
   },
   authorizeLabel: {
-    fontSize: 'clamp(0.58rem, 0.72vw, 0.68rem)',
+    fontSize: 'clamp(0.74rem, 0.9vw, 0.84rem)',
     fontWeight: 700,
     letterSpacing: '0.03em',
     lineHeight: 1.25,

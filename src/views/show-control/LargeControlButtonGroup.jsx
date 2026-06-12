@@ -333,7 +333,7 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     gap: 'clamp(3px, 0.4vw, 6px)',
     justifyContent: 'flex-start',
-    minHeight: 'clamp(36px, 4.5vh, 44px)',
+    minHeight: 'clamp(40px, 5vh, 48px)',
     minWidth: 0,
     overflow: 'hidden',
     padding: 'clamp(4px, 0.5vw, 6px) clamp(5px, 0.6vw, 8px)',
@@ -351,11 +351,11 @@ const useStyles = makeStyles((theme) => ({
 
   bottomBarButtonIcon: {
     flexShrink: 0,
-    fontSize: 'clamp(0.9rem, 1.1vw, 1.05rem)',
+    fontSize: 'clamp(1.1rem, 1.35vw, 1.25rem)',
   },
 
   bottomBarButtonLabel: {
-    fontSize: 'clamp(0.52rem, 0.72vw, 0.6rem)',
+    fontSize: 'clamp(0.68rem, 0.9vw, 0.76rem)',
     fontWeight: 700,
     letterSpacing: '0.03em',
     lineHeight: 1.1,

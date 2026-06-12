@@ -90,7 +90,7 @@ const useStyles = makeStyles((theme) => ({
   },
   title: {
     color: 'rgba(255,255,255,0.55)',
-    fontSize: '0.62rem',
+    fontSize: '0.76rem',
     fontWeight: 700,
     letterSpacing: '0.14em',
     lineHeight: 1,
@@ -161,7 +161,7 @@ const useStyles = makeStyles((theme) => ({
   },
   stepLabel: {
     color: 'rgba(255,255,255,0.88)',
-    fontSize: 'clamp(0.56rem, 0.75vw, 0.62rem)',
+    fontSize: 'clamp(0.72rem, 0.92vw, 0.78rem)',
     fontWeight: 600,
     lineHeight: 1.2,
     marginBottom: theme.spacing(0.75),
@@ -184,11 +184,11 @@ const useStyles = makeStyles((theme) => ({
     zIndex: 1,
   },
   stepIcon: {
-    fontSize: '1.1rem',
+    fontSize: '1.3rem',
   },
   stepSub: {
     color: 'rgba(255,255,255,0.45)',
-    fontSize: 'clamp(0.52rem, 0.65vw, 0.58rem)',
+    fontSize: 'clamp(0.66rem, 0.82vw, 0.74rem)',
     lineHeight: 1.25,
     marginTop: theme.spacing(0.75),
     maxWidth: '100%',
