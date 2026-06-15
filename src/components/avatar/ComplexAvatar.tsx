@@ -1,12 +1,14 @@
 import CircularProgress from '@mui/material/CircularProgress';
 import clsx from 'clsx';
-import PropTypes from 'prop-types';
 
 import { Colors, Status, makeStyles } from '@skybrush/app-theme-mui';
+import type { SemanticAvatarProps } from '@skybrush/mui-components';
 import { SemanticAvatar, StatusPill } from '@skybrush/mui-components';
 
-import { BatteryFormatter } from '~/components/battery';
-import BatteryIndicator from '~/components/BatteryIndicator';
+import type { BatteryFormatter } from '~/components/battery';
+import BatteryIndicator, {
+  type BatteryIndicatorProps,
+} from '~/components/BatteryIndicator';
 
 const useStyles = makeStyles((theme) => ({
   avatarWrapper: {
@@ -73,6 +75,24 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+type ComplexAvatarProps = {
+  AvatarProps?: Omit<SemanticAvatarProps, 'children' | 'status'>;
+  batteryFormatter?: BatteryFormatter;
+  batteryStatus?: Omit<BatteryIndicatorProps, 'className' | 'formatter'>;
+  crossed?: boolean;
+  details?: string;
+  editing?: boolean;
+  gone?: boolean;
+  hint?: string;
+  id?: string;
+  label?: string;
+  progress?: number;
+  selected?: boolean;
+  status?: Status;
+  text?: string;
+  textSemantics?: Status;
+};
+
 /**
  * Avatar that represents a single drone, docking station or some other object
  * in the system that has an ID.
@@ -81,24 +101,20 @@ const ComplexAvatar = ({
   AvatarProps,
   batteryFormatter,
   batteryStatus,
-  hint,
   crossed,
   details,
   editing,
   gone,
+  hint,
   id,
   label,
   progress,
-  status = 'off',
+  status = Status.OFF,
   text,
-  textSemantics = 'info',
-}) => {
+  textSemantics = Status.INFO,
+}: ComplexAvatarProps) => {
   const classes = useStyles();
-
-  if (status === Status.INFO) {
-    status = Status.SUCCESS;
-  }
-
+  const effectiveStatus = status === Status.INFO ? Status.SUCCESS : status;
   const effectiveHint = hint || (label === undefined || label === id ? '' : id);
 
   return (
@@ -111,7 +127,7 @@ const ComplexAvatar = ({
         )}
       >
         <SemanticAvatar
-          status={editing ? Status.NEXT : status}
+          status={editing ? Status.NEXT : effectiveStatus}
           {...AvatarProps}
         >
           <div className={classes.avatarContent}>
@@ -120,7 +136,7 @@ const ComplexAvatar = ({
             <div className={classes.hint}>{effectiveHint || '—'}</div>
           </div>
         </SemanticAvatar>
-        {progress > 0 && (
+        {progress !== undefined && progress > 0 && (
           <CircularProgress
             className={classes.progress}
             size={44}
@@ -141,44 +157,6 @@ const ComplexAvatar = ({
       )}
     </>
   );
-};
-
-ComplexAvatar.propTypes = {
-  AvatarProps: PropTypes.object,
-  batteryFormatter: PropTypes.instanceOf(BatteryFormatter),
-  batteryStatus: PropTypes.shape({
-    cellCount: PropTypes.number,
-    voltage: PropTypes.number,
-    percentage: PropTypes.number,
-  }),
-  hint: PropTypes.string,
-  crossed: PropTypes.bool,
-  details: PropTypes.string,
-  editing: PropTypes.bool,
-  gone: PropTypes.bool,
-  id: PropTypes.string,
-  label: PropTypes.string,
-  progress: PropTypes.number,
-  selected: PropTypes.bool,
-  status: PropTypes.oneOf([
-    'off',
-    'info',
-    'success',
-    'warning',
-    'rth',
-    'error',
-    'critical',
-  ]),
-  text: PropTypes.string,
-  textSemantics: PropTypes.oneOf([
-    'off',
-    'info',
-    'success',
-    'warning',
-    'rth',
-    'error',
-    'critical',
-  ]),
 };
 
 export default ComplexAvatar;

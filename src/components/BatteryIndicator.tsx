@@ -35,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-type BatteryIndicatorProps = {
+export type BatteryIndicatorProps = {
   cellCount?: number;
   className?: string;
   charging?: boolean;
