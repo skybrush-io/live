@@ -20,6 +20,7 @@ import { AltitudeReference } from '~/features/show/constants';
 import { loadShowFromFile } from '~/features/show/actions';
 import {
   getOutdoorShowAltitudeReference,
+  getAbsolutePathOfShowFile,
   getShowDescription,
   getShowEnvironmentType,
   getShowStartTimeAsString,
@@ -39,10 +40,17 @@ import { getFarthestDistanceFromHome } from '~/features/uavs/selectors';
 import { isUploadInProgress } from '~/features/upload/selectors';
 import { openUploadDialogForJob } from '~/features/upload/slice';
 import { hasFeature } from '~/utils/configuration';
-import { formatDistance, truncate } from '~/utils/formatting';
+import { formatDistance } from '~/utils/formatting';
 
 const EXTENSIONS = ['.skyc'];
 const isFile = (item) => item?.size > 0;
+
+const getFileNameFromPath = (path) => {
+  if (!path) return null;
+  const normalized = String(path).replace(/\\/g, '/');
+  const name = normalized.slice(normalized.lastIndexOf('/') + 1);
+  return name || null;
+};
 
 const getEnvironmentDescription = createSelector(
   getShowEnvironmentType,
@@ -198,6 +206,24 @@ const useStyles = makeStyles((theme) => ({
     textOverflow: 'ellipsis',
     whiteSpace: 'nowrap',
   },
+  stepSubWrap: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: theme.spacing(0.25),
+    marginTop: theme.spacing(0.75),
+    maxWidth: '100%',
+    minHeight: '2.6em',
+    paddingInline: theme.spacing(0.25),
+    width: '100%',
+  },
+  stepSubLine: {
+    color: 'rgba(255,255,255,0.45)',
+    fontSize: 'clamp(0.66rem, 0.82vw, 0.74rem)',
+    lineHeight: 1.25,
+    textAlign: 'center',
+    whiteSpace: 'normal',
+    wordBreak: 'break-word',
+  },
   addButton: {
     alignSelf: 'center',
     backgroundColor: 'rgba(255,255,255,0.06)',
@@ -217,6 +243,7 @@ const MissionStepContent = ({
   label,
   status,
   sublabel,
+  sublabelLines,
 }) => (
   <>
     <Typography className={classes.stepLabel} component='span' title={label}>
@@ -233,9 +260,24 @@ const MissionStepContent = ({
     >
       <Icon className={classes.stepIcon} />
     </Box>
-    <Typography className={classes.stepSub} component='span' title={sublabel}>
-      {sublabel}
-    </Typography>
+    {Array.isArray(sublabelLines) && sublabelLines.length > 0 ? (
+      <Box className={classes.stepSubWrap}>
+        {sublabelLines.map((line) => (
+          <Typography
+            key={line}
+            className={classes.stepSubLine}
+            component='span'
+            title={line}
+          >
+            {line}
+          </Typography>
+        ))}
+      </Box>
+    ) : (
+      <Typography className={classes.stepSub} component='span' title={sublabel}>
+        {sublabel}
+      </Typography>
+    )}
   </>
 );
 
@@ -245,6 +287,7 @@ MissionStepContent.propTypes = {
   label: PropTypes.string.isRequired,
   status: PropTypes.string,
   sublabel: PropTypes.string,
+  sublabelLines: PropTypes.arrayOf(PropTypes.string),
 };
 
 const MissionStep = ({
@@ -255,6 +298,7 @@ const MissionStep = ({
   onClick,
   status,
   sublabel,
+  sublabelLines,
 }) => (
   <button
     className={classes.step}
@@ -268,6 +312,7 @@ const MissionStep = ({
       label={label}
       status={status}
       sublabel={sublabel}
+      sublabelLines={sublabelLines}
     />
   </button>
 );
@@ -280,6 +325,7 @@ MissionStep.propTypes = {
   onClick: PropTypes.func,
   status: PropTypes.string,
   sublabel: PropTypes.string,
+  sublabelLines: PropTypes.arrayOf(PropTypes.string),
 };
 
 const MissionSetupStrip = ({
@@ -296,6 +342,7 @@ const MissionSetupStrip = ({
   onOpenUpload,
   onShowFileSelected,
   showDescription,
+  showFilePath,
   showTitle,
   stageStatuses,
 }) => {
@@ -321,21 +368,33 @@ const MissionSetupStrip = ({
     [onShowFileSelected]
   );
 
-  const exportSub = useMemo(() => {
+  const exportSubLines = useMemo(() => {
+    if (hasLoadedFile) {
+      const lines = [];
+      const fileName = getFileNameFromPath(showFilePath);
+      if (fileName) {
+        lines.push(fileName);
+      } else if (showTitle) {
+        lines.push(showTitle);
+      }
+      if (showDescription) {
+        lines.push(showDescription);
+      }
+      if (lines.length > 0) {
+        return lines;
+      }
+    }
+
     if (missionDroneCount > 0) {
-      return t('bottomBar.droneCount', { count: missionDroneCount });
+      return [t('bottomBar.droneCount', { count: missionDroneCount })];
     }
-    if (hasLoadedFile && showTitle) {
-      return truncate(showTitle, 18);
-    }
-    if (hasLoadedFile && showDescription) {
-      return truncate(showDescription, 18);
-    }
-    return t('bottomBar.noShowLoaded');
+
+    return [t('bottomBar.noShowLoaded')];
   }, [
     hasLoadedFile,
     missionDroneCount,
     showDescription,
+    showFilePath,
     showTitle,
     t,
   ]);
@@ -393,7 +452,7 @@ const MissionSetupStrip = ({
       label: t('bottomBar.exportPath'),
       icon: CloudDownload,
       status: stageStatuses.selectShowFile,
-      sublabel: exportSub,
+      sublabelLines: exportSubLines,
       disabled: false,
       onClick: handleExportPathClick,
     },
@@ -463,6 +522,7 @@ const MissionSetupStrip = ({
             onClick={step.onClick}
             status={step.status}
             sublabel={step.sublabel}
+            sublabelLines={step.sublabelLines}
           />
         ))}
         {hasFeature('loadShowFromCloud') ? (
@@ -494,6 +554,7 @@ MissionSetupStrip.propTypes = {
   onOpenUpload: PropTypes.func,
   onShowFileSelected: PropTypes.func,
   showDescription: PropTypes.string,
+  showFilePath: PropTypes.string,
   showTitle: PropTypes.string,
   stageStatuses: PropTypes.object,
 };
@@ -507,6 +568,7 @@ export default connect(
     maxDistance: getFarthestDistanceFromHome(state),
     missionDroneCount: getUAVIdsParticipatingInMission(state).length,
     showDescription: getShowDescription(state),
+    showFilePath: getAbsolutePathOfShowFile(state),
     showTitle: getShowTitle(state),
     stageStatuses: getSetupStageStatuses(state),
   }),
