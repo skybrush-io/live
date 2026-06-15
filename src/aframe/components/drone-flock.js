@@ -15,12 +15,15 @@ import { setSelectedUAVIds } from '~/features/uavs/actions';
 import { getSelectedUAVIds } from '~/features/uavs/selectors';
 import { setFeatureIdForTooltip } from '~/features/session/slice';
 import UAVErrorCode from '~/flockwave/UAVErrorCode';
+import { getClockById } from '~/features/clocks/selectors';
+import { CommonClockId } from '~/features/clocks/types';
 import { getPreferredDroneRadius } from '~/features/three-d/selectors';
 import flock from '~/flock';
 import { abbreviateGPSFixType } from '~/model/enums';
 import { uavIdToGlobalId } from '~/model/identifiers';
 import { getFlatEarthCoordinateTransformer } from '~/selectors/map';
 import store from '~/store';
+import { resolveShowYawForUav } from '~/views/three-d/showYawUtils';
 
 const { THREE } = AFrame;
 const DRONE_BODY_COLOR = 0xff8c00;
@@ -158,6 +161,28 @@ AFrame.registerSystem('drone-flock', {
     return element;
   },
 
+  _applyEntityYaw(entity, yaw) {
+    const parsed = Number(yaw);
+    if (!Number.isFinite(parsed)) return;
+
+    entity.setAttribute('data-heading', String(parsed));
+    // Match drone-move-bridge / DroneShapeMarkers: yaw on scene Z axis.
+    entity.setAttribute('rotation', `0 0 ${parsed}`);
+    entity.object3D.rotation.set(0, 0, THREE.MathUtils.degToRad(parsed));
+  },
+
+  _resolveEntityYaw(uav) {
+    const state = store.getState();
+    const showYaw = resolveShowYawForUav(state, uav.id);
+    if (showYaw != null) return showYaw;
+
+    const showClock = getClockById(state, CommonClockId.SHOW);
+    if (showClock?.running) return null;
+
+    const heading = Number(uav.heading);
+    return Number.isFinite(heading) ? heading : null;
+  },
+
   updateEntityFromUAV(entity, uav) {
     const telemetry = getDroneTelemetryFromUAV(uav);
 
@@ -175,6 +200,12 @@ AFrame.registerSystem('drone-flock', {
     entity.setAttribute('data-agl', telemetry.agl);
     entity.setAttribute('data-amsl', telemetry.amsl);
     entity.setAttribute('data-heading', telemetry.heading);
+
+    const yaw = this._resolveEntityYaw(uav);
+    if (yaw != null) {
+      this._applyEntityYaw(entity, yaw);
+    }
+
     if (uav.hasLocalPosition) {
       this._updatePositionFromLocalCoordinates(
         uav.localPosition,
@@ -345,6 +376,16 @@ AFrame.registerComponent('drone-flock', {
       }
 
       this._pendingUAVsToAdd = undefined;
+    }
+
+    const showClock = getClockById(store.getState(), CommonClockId.SHOW);
+    if (!showClock?.running) return;
+
+    for (const [uavId, entity] of Object.entries(this._uavIdToEntity)) {
+      const yaw = resolveShowYawForUav(store.getState(), uavId);
+      if (yaw != null) {
+        this.system._applyEntityYaw(entity, yaw);
+      }
     }
   },
 
