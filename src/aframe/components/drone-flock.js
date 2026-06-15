@@ -146,12 +146,12 @@ AFrame.registerSystem('drone-flock', {
 
   createNewUAVEntity() {
     const element = document.createElement('a-entity');
-    element.setAttribute('material', {
-      color: new THREE.Color(DRONE_BODY_COLOR),
-      fog: false,
-      shader: 'flat',
-    });
     element.setAttribute('position', '0 0 0');
+
+    const visual = document.createElement('a-entity');
+    visual.setAttribute('mixin', 'drone-marker');
+    visual.classList.add('three-d-clickable');
+    element.appendChild(visual);
 
     this.updateEntityGeometry(element);
 
@@ -183,7 +183,6 @@ AFrame.registerSystem('drone-flock', {
     } else if (this._updatePositionFromGPSCoordinates) {
       this._updatePositionFromGPSCoordinates(uav, entity.object3D.position);
     }
-    entity.object3D.position.z += this._droneRadius;
     entity.setAttribute('position', {
       x: entity.object3D.position.x,
       y: entity.object3D.position.y,
@@ -193,13 +192,8 @@ AFrame.registerSystem('drone-flock', {
     const bodyColor = getDroneBodyColorFromUAV(uav);
     entity.originalColor = bodyColor;
     const mesh = entity.getObject3D('mesh');
-    if (mesh) {
+    if (mesh?.material?.color) {
       mesh.material.color.setHex(bodyColor);
-    } else {
-      // TODO(ntamas): sometimes it happens that we get here earlier than the
-      // mesh is ready (it's an async process). In this case we should store
-      // the color somewhere and attempt setting it again in case there will be
-      // no further updates from the UAV for a while
     }
 
     if (entity.isSelected) {
@@ -216,7 +210,8 @@ AFrame.registerSystem('drone-flock', {
   },
 
   updateEntityGeometry(entity) {
-    entity.setAttribute('geometry', this._droneGeometry);
+    entity.removeAttribute('geometry');
+    entity.removeAttribute('material');
 
     // Update selection box
     if (entity.selectionBox) {

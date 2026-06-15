@@ -1,6 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import { DEFAULT_DRONE_GROUND_POSITION } from './utils/threeDViewUtils';
+
 function normalizeDrones(drones) {
   if (!Array.isArray(drones) || !drones.length) return [];
 
@@ -20,7 +22,7 @@ function normalizeDrones(drones) {
         Number.isFinite(Number(firstPathPoint.y)) &&
         Number.isFinite(Number(firstPathPoint.z))
           ? [Number(firstPathPoint.x), Number(firstPathPoint.y), Number(firstPathPoint.z)]
-          : [0, 1, 1];
+          : DEFAULT_DRONE_GROUND_POSITION;
       let initialPosArray = fallbackPos;
       if (Array.isArray(d.initialPos) && d.initialPos.length === 3) {
         initialPosArray = d.initialPos;
@@ -67,11 +69,7 @@ const DroneShapeMarkers = ({ drones }) => {
       data-initial-pos={d.initialPos.join(' ')}
       data-path={d.path && d.path.length ? JSON.stringify(d.path) : undefined}
     >
-      <a-entity
-        mixin="drone-marker"
-        rotation="90 0 0"
-        class="three-d-clickable"
-      />
+      <a-entity mixin="drone-marker" class="three-d-clickable" />
     </a-entity>
   ));
 };

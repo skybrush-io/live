@@ -18,7 +18,6 @@ import SatelliteMapGround from './SatelliteMapGround';
 import Scenery from './Scenery';
 import SelectedTrajectories from './SelectedTrajectories';
 import DroneInfoPanel from './DroneInfoPanel';
-import DroneStatusOverlay from './DroneStatusOverlay';
 import PathControlPanel from './PathControlPanel';
 import AddDroneModal from './AddDroneModal';
 import PathGeneratorModal from './PathGeneratorModal';
@@ -36,6 +35,7 @@ import {
   mergePathOverridesIntoDrones,
   normalizeDroneForConfigIO,
   normalizeDronesFromConfigImport,
+  DEFAULT_DRONE_GROUND_POSITION,
   parsePositionLike,
   slicePathByElapsedMs,
 } from './utils/threeDViewUtils';
@@ -918,7 +918,7 @@ const ThreeDView = React.forwardRef((props, ref) => {
       const target = sceneEl?.querySelector?.(`[data-drone-id="${safeId}"]`);
 
       if (target) {
-        const position = parsePositionLike(target.getAttribute('position'), [0, 1, 1]);
+        const position = parsePositionLike(target.getAttribute('position'), DEFAULT_DRONE_GROUND_POSITION);
         const initialPos = parsePositionLike(target.getAttribute('data-initial-pos'), position);
         window.dispatchEvent(
           new CustomEvent('drone-selected', {
@@ -1752,12 +1752,11 @@ const ThreeDView = React.forwardRef((props, ref) => {
         {...extraSceneProps}
       >
         <a-assets>
-          {isCreateMode && (
-            <>
-              <a-asset-item id="drone-fbx" src="assets/fbx/drone.fbx" />
-              <a-mixin id="drone-marker" fbx-model="src: #drone-fbx; scale: 0.01 0.01 0.01" />
-            </>
-          )}
+          <a-asset-item id="drone-obj" src="assets/obj/ur9.obj" />
+          <a-mixin
+            id="drone-marker"
+            fbx-model="src: assets/obj/ur9.obj; modelRotation: 0 0 0"
+          />
           <a-mixin
             id="takeoff-marker"
             geometry="primitive: triangle; vertexA: 1 0 0; vertexB: -0.5 0.866 0; vertexC: -0.5 -0.866 0"
@@ -1862,10 +1861,6 @@ const ThreeDView = React.forwardRef((props, ref) => {
         isDownloadingSkyc={isSendingPaths}
         skycDownloadStatus={pathDeliveryStatus}
       />
-      )}
-
-      {selectedDrone && !isCreateMode && (
-        <DroneStatusOverlay drone={selectedDrone} />
       )}
 
       {/* ✅ 커서에서 시작하는 레이를 그릴 2D 오버레이 */}

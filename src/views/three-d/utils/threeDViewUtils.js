@@ -414,7 +414,10 @@ export const toFinitePoint = (point, { isFirst = false } = {}) => {
   return normalized;
 };
 
-export const parsePositionLike = (positionAttr, fallback = [0, 1, 1]) => {
+/** Scene Z=0 바닥에 드론 바닥면이 닿도록 하는 기본 위치 */
+export const DEFAULT_DRONE_GROUND_POSITION = [0, 0, 0];
+
+export const parsePositionLike = (positionAttr, fallback = DEFAULT_DRONE_GROUND_POSITION) => {
   let pos = fallback;
   if (!positionAttr) return pos;
 
@@ -640,7 +643,7 @@ export const getInitialPositionForPathDelivery = (drone) => {
       return [x, y, z];
     }
   }
-  return parsePositionLike(drone?.initialPos, [0, 1, 1]);
+  return parsePositionLike(drone?.initialPos, DEFAULT_DRONE_GROUND_POSITION);
 };
 
 export const buildPathDeliveryPayloadFromConfig = (baseConfig) => {
@@ -728,7 +731,7 @@ export const normalizeDroneForConfigIO = (drone, index = 0) => {
 
   const fallbackPos = firstPathPoint
     ? [firstPathPoint.x, firstPathPoint.y, firstPathPoint.z]
-    : [0, 1, 1];
+    : DEFAULT_DRONE_GROUND_POSITION;
   const rawInitialPos = drone?.initialPos ?? drone?.initial_position ?? drone?.pos;
   const initialPos = parsePositionLike(rawInitialPos, fallbackPos);
   const basePos = firstPathPoint ? fallbackPos : parsePositionLike(drone?.pos, initialPos);
@@ -763,7 +766,7 @@ export const collectConfigFromScene = () => {
     const positionAttr = el.getAttribute('position');
     const initialPosAttr = el.getAttribute('data-initial-pos');
 
-    const pos = parsePositionLike(positionAttr, [0, 1, 1]);
+    const pos = parsePositionLike(positionAttr, DEFAULT_DRONE_GROUND_POSITION);
     const initialPos = parsePositionLike(initialPosAttr, pos);
 
     let path = [];

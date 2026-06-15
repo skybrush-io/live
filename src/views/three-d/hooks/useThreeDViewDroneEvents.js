@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 
 import {
   applyDronePathsToScene,
+  DEFAULT_DRONE_GROUND_POSITION,
   normalizeDroneForConfigIO,
 } from '../utils/threeDViewUtils';
 
@@ -116,7 +117,7 @@ export default function useThreeDViewDroneEvents({
           const next = {
             ...d,
             initialPos: [nx, ny, nz],
-            pos: Array.isArray(d.pos) ? d.pos : [0, 1, 1],
+            pos: Array.isArray(d.pos) ? d.pos : DEFAULT_DRONE_GROUND_POSITION,
           };
           if (Array.isArray(d.path) && d.path.length > 0) {
             const first = d.path[0];

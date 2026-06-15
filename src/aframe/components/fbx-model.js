@@ -1,32 +1,98 @@
 import AFrame from '@skybrush/aframe-components';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
+import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader.js';
+import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 import * as THREE from 'three';
+
+/** UR-9 OBJ 바운딩 박스 (mm): X=폭, Y=길이, Z=높이 */
+const UR9_MODEL_EXTENT_MM = { x: 525.074671, y: 373.200002, z: 523.599718 };
+
+/** 목표 실물 치수 (m): 폭 500mm, 길이 350mm, 높이 500mm */
+const UR9_TARGET_SIZE_M = { x: 0.5, y: 0.35, z: 0.5 };
+
+const DRONE_MODEL_SCALE = {
+  x: UR9_TARGET_SIZE_M.x / UR9_MODEL_EXTENT_MM.x,
+  y: UR9_TARGET_SIZE_M.y / UR9_MODEL_EXTENT_MM.y,
+  z: UR9_TARGET_SIZE_M.z / UR9_MODEL_EXTENT_MM.z,
+};
+
+/** UR-9 OBJ 정면: X=가로, Z=높이(기둥), Y=깊이. 장면 Z-up과 동일 — 회전 불필요 */
+const DRONE_MODEL_ROTATION = { x: 0, y: 0, z: 0 };
+
+const resolveAssetUrl = (el, src) => {
+  if (!src) return '';
+  if (!src.startsWith('#')) return src;
+
+  const assetId = src.slice(1);
+  const assetItem = el.sceneEl.querySelector(`a-asset-item[id="${assetId}"]`);
+  return assetItem ? assetItem.getAttribute('src') : '';
+};
+
+const centerModelAtOrigin = (model) => {
+  const box = new THREE.Box3().setFromObject(model);
+  const center = box.getCenter(new THREE.Vector3());
+  model.position.x -= center.x;
+  model.position.y -= center.y;
+  model.position.z -= box.min.z;
+};
+
+const applyModelScale = (model, scale) => {
+  model.scale.set(scale.x, scale.y, scale.z);
+};
+
+const prepareLoadedModel = (model, scale, rotation) => {
+  model.position.set(0, 0, 0);
+  model.rotation.set(0, 0, 0);
+  model.scale.set(1, 1, 1);
+
+  applyModelScale(model, scale);
+  model.rotation.set(
+    THREE.MathUtils.degToRad(rotation.x),
+    THREE.MathUtils.degToRad(rotation.y),
+    THREE.MathUtils.degToRad(rotation.z)
+  );
+  centerModelAtOrigin(model);
+
+  model.traverse((child) => {
+    if (!child?.isMesh) return;
+    child.castShadow = true;
+    child.receiveShadow = true;
+    const mats = Array.isArray(child.material) ? child.material : [child.material];
+    mats.forEach((mat) => {
+      if (!mat) return;
+      mat.side = THREE.DoubleSide;
+      mat.needsUpdate = true;
+    });
+  });
+};
+
+const getTransformKey = (url, scale, rotation) =>
+  `${url}|${scale.x},${scale.y},${scale.z}|${rotation.x},${rotation.y},${rotation.z}`;
 
 if (!AFrame.components['fbx-model']) {
   AFrame.registerComponent('fbx-model', {
     schema: {
       src: { type: 'asset', default: '' },
-      scale: { type: 'vec3', default: { x: 1, y: 1, z: 1 } },
+      scale: { type: 'vec3', default: DRONE_MODEL_SCALE },
+      modelRotation: { type: 'vec3', default: DRONE_MODEL_ROTATION },
 
-      // ✅ 라이트 세팅
       lightColor: { default: '#ffffff' },
       lightIntensity: { default: 2.0 },
       lightDistance: { default: 30 },
 
-      // ✅ 드론 기준 오프셋(드론이 회전해도 같이 회전)
-      // forward: 드론 전방(-Z), right: 드론 우측(+X), up: 드론 위(+Y)
-      offsetForward: { default: 20 }, // 앞(+면 전방으로)
-      offsetRight: { default: 3 },   // 오른쪽(+면 우측으로)
-      offsetUp: { default: 0 },      // 위(+면 위로)
+      offsetForward: { default: 0.2 },
+      offsetRight: { default: 0.03 },
+      offsetUp: { default: 0.05 },
 
-      // ✅ 글로우(발광 구체)
-      glowRadius: { default: 20 }, // 빛이 닿는 범위(거리 아님)
-      glowOpacity: { default: 0.5}, // ⚠️ 0~1 권장
+      glowRadius: { default: 0.02 },
+      glowOpacity: { default: 0.5 },
     },
 
     init() {
       this.model = null;
-      this.loader = new FBXLoader();
+      this.fbxLoader = new FBXLoader();
+      this.objLoader = new OBJLoader();
+      this.mtlLoader = new MTLLoader();
 
       this._origMatColors = new Map();
       this._tintedMats = new Set();
@@ -35,7 +101,6 @@ if (!AFrame.components['fbx-model']) {
       this._light = null;
       this._glow = null;
 
-      // 캐시
       this._tmpCenter = new THREE.Vector3();
       this._tmpForwardW = new THREE.Vector3();
       this._tmpRightW = new THREE.Vector3();
@@ -47,31 +112,93 @@ if (!AFrame.components['fbx-model']) {
     },
 
     update() {
-      const { src, scale } = this.data;
+      const { modelRotation, scale, src } = this.data;
       if (!src) return;
 
-      let finalUrl = src;
-      if (src.startsWith('#')) {
-        const assetId = src.slice(1);
-        const assetItem = this.el.sceneEl.querySelector(`a-asset-item[id="${assetId}"]`);
-        if (!assetItem) return;
-        finalUrl = assetItem.getAttribute('src');
+      const finalUrl = resolveAssetUrl(this.el, src);
+      if (!finalUrl) {
+        if (src.startsWith('#')) {
+          const assetId = src.slice(1);
+          const assetItem = this.el.sceneEl?.querySelector(
+            `a-asset-item[id="${assetId}"]`
+          );
+          if (assetItem && !assetItem._droneModelLoadBound) {
+            assetItem._droneModelLoadBound = true;
+            const retry = () => this.update();
+            assetItem.addEventListener('loaded', retry);
+            assetItem.addEventListener('error', () => {
+              console.error('[fbx-model] asset failed to load:', assetId);
+            });
+          }
+        }
+        return;
       }
 
-      this.loader.load(finalUrl, (fbx) => {
+      const transformKey = getTransformKey(finalUrl, scale, modelRotation);
+
+      if (this.model && this._transformKey === transformKey) {
+        return;
+      }
+
+      if (this.model && this._loadedUrl === finalUrl) {
+        prepareLoadedModel(this.model, scale, modelRotation);
+        this._transformKey = transformKey;
+        this._ensureLight();
+        return;
+      }
+
+      if (this._loadingUrl === finalUrl) {
+        return;
+      }
+      this._loadingUrl = finalUrl;
+
+      const onLoaded = (model) => {
+        this._loadingUrl = null;
+        this._loadedUrl = finalUrl;
+
         if (this.model) {
           this._restoreColorsOnly();
           this._removeLight();
           this.el.object3D.remove(this.model);
         }
 
-        fbx.scale.set(scale.x, scale.y, scale.z);
-        this.model = fbx;
-        this.el.object3D.add(fbx);
+        prepareLoadedModel(model, scale, modelRotation);
+        this.model = model;
+        this.el.object3D.add(model);
+        this._transformKey = transformKey;
 
         this._ensureLight();
         if (this._isSelected) this._applyRedColorsOnly();
-      });
+      };
+
+      const onError = (error) => {
+        this._loadingUrl = null;
+        console.error('[fbx-model] failed to load model:', finalUrl, error);
+      };
+
+      if (/\.obj$/i.test(finalUrl)) {
+        const basePath = finalUrl.slice(0, finalUrl.lastIndexOf('/') + 1);
+        const objFile = finalUrl.slice(finalUrl.lastIndexOf('/') + 1);
+        const mtlFile = objFile.replace(/\.obj$/i, '.mtl');
+
+        this.mtlLoader.setPath(basePath);
+        this.mtlLoader.load(
+          mtlFile,
+          (materials) => {
+            materials.preload();
+            const loader = new OBJLoader();
+            loader.setMaterials(materials);
+            loader.load(finalUrl, onLoaded, undefined, onError);
+          },
+          undefined,
+          () => {
+            this.objLoader.load(finalUrl, onLoaded, undefined, onError);
+          }
+        );
+        return;
+      }
+
+      this.fbxLoader.load(finalUrl, onLoaded, undefined, onError);
     },
 
     tick() {
@@ -79,12 +206,7 @@ if (!AFrame.components['fbx-model']) {
       this._updateLightPose();
     },
 
-    // Heading is applied on the parent drone root (rotation 0 0 yaw). Child keeps 90 0 0.
     setHeadingYaw() {},
-
-    // -------------------------
-    // Light helpers
-    // -------------------------
 
     _getModelCenter(out) {
       if (!this.model) return out.set(0, 0, 0);
@@ -94,25 +216,16 @@ if (!AFrame.components['fbx-model']) {
     },
 
     _getAxesWorld() {
-      // 드론 기준 축을 "월드 방향"으로 얻기
-      // forward는 el.object3D.getWorldDirection()로 구하면 됨(= -Z)
       this.el.object3D.getWorldDirection(this._tmpForwardW).normalize();
-
-      // right(+X), up(+Y)는 엔티티 월드쿼터니언 적용
       this.el.object3D.getWorldQuaternion(this._tmpQuat);
-
       this._tmpRightW.set(1, 0, 0).applyQuaternion(this._tmpQuat).normalize();
       this._tmpUpW.set(0, 1, 0).applyQuaternion(this._tmpQuat).normalize();
     },
 
     _getLightPos(out) {
       const center = this._getModelCenter(this._tmpCenter);
-
-      // 1) 드론 축을 월드에서 구함
       this._getAxesWorld();
 
-      // 2) light/glow는 model(local)에 붙어있으니
-      //    world 방향 벡터들을 model local로 변환
       const modelWorldQuat = new THREE.Quaternion();
       this.model.getWorldQuaternion(modelWorldQuat);
       const inv = modelWorldQuat.clone().invert();
@@ -121,8 +234,8 @@ if (!AFrame.components['fbx-model']) {
       const rightL = this._tmpRightW.clone().applyQuaternion(inv).normalize();
       const upL = this._tmpUpW.clone().applyQuaternion(inv).normalize();
 
-      // 3) center + (forward/right/up) * offsets
-      out.copy(center)
+      out
+        .copy(center)
         .addScaledVector(forwardL, this.data.offsetForward)
         .addScaledVector(rightL, this.data.offsetRight)
         .addScaledVector(upL, this.data.offsetUp);
@@ -133,9 +246,9 @@ if (!AFrame.components['fbx-model']) {
     _ensureLight() {
       if (!this.model) return;
 
-      const { lightColor, lightIntensity, lightDistance, glowRadius, glowOpacity } = this.data;
+      const { lightColor, lightIntensity, lightDistance, glowRadius, glowOpacity } =
+        this.data;
 
-      // 이미 있으면 업데이트만
       if (this._light || this._glow) {
         if (this._light) {
           this._light.color.set(lightColor);
@@ -150,15 +263,13 @@ if (!AFrame.components['fbx-model']) {
         return;
       }
 
-      // ✅ PointLight
       this._light = new THREE.PointLight(lightColor, lightIntensity, lightDistance);
 
-      // ✅ Glow sphere (보이는 발광점)
       const geo = new THREE.SphereGeometry(glowRadius, 16, 16);
       const mat = new THREE.MeshBasicMaterial({
         color: lightColor,
         transparent: true,
-        opacity: glowOpacity, // 0~1
+        opacity: glowOpacity,
         depthWrite: false,
       });
       this._glow = new THREE.Mesh(geo, mat);
@@ -193,10 +304,6 @@ if (!AFrame.components['fbx-model']) {
       }
     },
 
-    // -------------------------
-    // Selection color (optional)
-    // -------------------------
-
     _applyRedColorsOnly() {
       if (!this.model) return;
 
@@ -205,7 +312,9 @@ if (!AFrame.components['fbx-model']) {
         const mats = Array.isArray(child.material) ? child.material : [child.material];
         mats.forEach((mat) => {
           if (!mat?.color) return;
-          if (!this._origMatColors.has(mat)) this._origMatColors.set(mat, mat.color.getHex());
+          if (!this._origMatColors.has(mat)) {
+            this._origMatColors.set(mat, mat.color.getHex());
+          }
           mat.color.setHex(0xff0000);
           mat.needsUpdate = true;
           this._tintedMats.add(mat);
@@ -241,3 +350,5 @@ if (!AFrame.components['fbx-model']) {
     },
   });
 }
+
+export { DRONE_MODEL_ROTATION, DRONE_MODEL_SCALE, UR9_TARGET_SIZE_M };
