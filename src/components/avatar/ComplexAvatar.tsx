@@ -3,8 +3,11 @@ import clsx from 'clsx';
 import type { ReactNode } from 'react';
 
 import { Colors, Status, makeStyles } from '@skybrush/app-theme-mui';
-import type { SemanticAvatarProps } from '@skybrush/mui-components';
-import { SemanticAvatar, StatusPill } from '@skybrush/mui-components';
+import {
+  SemanticAvatar,
+  StatusPill,
+  type SemanticAvatarProps,
+} from '@skybrush/mui-components';
 
 import type { BatteryFormatter } from '~/components/battery';
 import BatteryIndicator, {
