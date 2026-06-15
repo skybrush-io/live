@@ -188,7 +188,7 @@ export class BatteryFormatter {
   getBatteryLabel = (
     voltage: number | undefined,
     percentage: number | undefined,
-    cellCount: number
+    cellCount?: number
   ) => {
     if (isNil(percentage)) {
       if (isNil(voltage)) {
@@ -220,7 +220,7 @@ export class BatteryFormatter {
   getBatteryStatus = (
     voltage: number | undefined,
     percentage: number | undefined,
-    cellCount: number
+    cellCount?: number
   ) =>
     this._settings
       ? this._settings.getBatteryStatus(voltage, percentage, cellCount)
