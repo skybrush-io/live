@@ -1,12 +1,11 @@
 import Box from '@mui/material/Box';
 import clsx from 'clsx';
-import PropTypes from 'prop-types';
 
 import { makeStyles } from '@skybrush/app-theme-mui';
 
 import Colors from '~/components/colors';
 
-import { BatteryFormatter, DEFAULT_BATTERY_FORMATTER } from './battery';
+import { DEFAULT_BATTERY_FORMATTER, type BatteryFormatter } from './battery';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -24,35 +23,48 @@ const useStyles = makeStyles((theme) => ({
 
   batteryWarning: {
     backgroundColor: Colors.warning,
-    borderRadius: `${theme.shape.borderRadius * 2}px`,
+    borderRadius: `${Number(theme.shape.borderRadius) * 2}px`,
     color: theme.palette.getContrastText(Colors.warning),
   },
 
   batteryError: {
     backgroundColor: Colors.error,
-    borderRadius: `${theme.shape.borderRadius * 2}px`,
+    borderRadius: `${Number(theme.shape.borderRadius) * 2}px`,
     color: theme.palette.getContrastText(Colors.error),
     fontWeight: 'bold',
   },
 }));
 
+export type BatteryIndicatorProps = {
+  cellCount?: number;
+  className?: string;
+  charging?: boolean;
+  formatter?: BatteryFormatter;
+  percentage?: number;
+  voltage?: number;
+};
+
 /**
  * Presentational component for a battery charge indicator.
  */
 const BatteryIndicator = ({
-  charging,
+  charging = false,
   className,
   cellCount,
   formatter = DEFAULT_BATTERY_FORMATTER,
   percentage,
   voltage,
-}) => {
+}: BatteryIndicatorProps) => {
   const status = formatter.getBatteryStatus(voltage, percentage, cellCount);
   const label = formatter.getBatteryLabel(voltage, percentage, cellCount);
   const batteryIcon = formatter.getBatteryIcon(percentage, status, charging);
 
   const classes = useStyles();
-  const rootClass = clsx(className, classes.root, classes[`battery${status}`]);
+  const rootClass = clsx(
+    className,
+    classes.root,
+    classes[`battery${status}` as keyof ReturnType<typeof useStyles>]
+  );
 
   return (
     <Box className={rootClass} sx={{ fontSize: 'small' }}>
@@ -60,15 +72,6 @@ const BatteryIndicator = ({
       {label}
     </Box>
   );
-};
-
-BatteryIndicator.propTypes = {
-  cellCount: PropTypes.number,
-  className: PropTypes.string,
-  charging: PropTypes.bool,
-  formatter: PropTypes.instanceOf(BatteryFormatter),
-  percentage: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-  voltage: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
 };
 
 export default BatteryIndicator;

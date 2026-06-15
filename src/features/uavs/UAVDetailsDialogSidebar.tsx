@@ -1,6 +1,5 @@
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import { makeStyles } from '@skybrush/app-theme-mui';
@@ -8,6 +7,7 @@ import { makeStyles } from '@skybrush/app-theme-mui';
 import DroneAvatar from '~/components/uavs/DroneAvatar';
 import UAVOperationsButtonGroup from '~/components/uavs/UAVOperationsButtonGroup';
 import { UAVSelectorWrapper } from '~/components/uavs/UAVSelector';
+import type { RootState } from '~/store/reducers';
 
 import { UAV_DETAILS_DIALOG_SIDEBAR_WIDTH as WIDTH } from './constants';
 import {
@@ -37,10 +37,18 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+type UAVDetailsDialogSidebarProps = {
+  setUAVId: (uavId: string) => void;
+  uavId?: string;
+};
+
 /**
  * Sidebar of the UAV details dialog.
  */
-const UAVDetailsDialogSidebar = ({ uavId, setUAVId }) => {
+const UAVDetailsDialogSidebar = ({
+  uavId,
+  setUAVId,
+}: UAVDetailsDialogSidebarProps) => {
   const classes = useStyles();
   return (
     <Box className={classes.root}>
@@ -56,7 +64,8 @@ const UAVDetailsDialogSidebar = ({ uavId, setUAVId }) => {
         <Box className={classes.toolbarInner}>
           <UAVOperationsButtonGroup
             hideSeparators
-            selectedUAVIds={[uavId]}
+            broadcast={false}
+            selectedUAVIds={uavId ? [uavId] : []}
             size='small'
           />
         </Box>
@@ -66,14 +75,9 @@ const UAVDetailsDialogSidebar = ({ uavId, setUAVId }) => {
   );
 };
 
-UAVDetailsDialogSidebar.propTypes = {
-  setUAVId: PropTypes.func,
-  uavId: PropTypes.string,
-};
-
 export default connect(
   // mapStateToProps
-  (state) => ({
+  (state: RootState) => ({
     uavId: getSelectedUAVIdInUAVDetailsDialog(state),
   }),
   // mapDispatchToProps
