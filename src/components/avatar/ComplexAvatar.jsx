@@ -8,8 +8,6 @@ import { SemanticAvatar, StatusPill } from '@skybrush/mui-components';
 import { BatteryFormatter } from '~/components/battery';
 import BatteryIndicator from '~/components/BatteryIndicator';
 
-import SecondaryStatusLight from './SecondaryStatusLight';
-
 const useStyles = makeStyles((theme) => ({
   avatarWrapper: {
     position: 'relative',
@@ -91,7 +89,6 @@ const ComplexAvatar = ({
   id,
   label,
   progress,
-  secondaryStatus,
   status = 'off',
   text,
   textSemantics = 'info',
@@ -131,7 +128,6 @@ const ComplexAvatar = ({
             variant='determinate'
           />
         )}
-        {secondaryStatus && <SecondaryStatusLight status={secondaryStatus} />}
       </div>
       {(details || text) && (
         <StatusPill status={textSemantics}>{details || text}</StatusPill>
@@ -163,15 +159,6 @@ ComplexAvatar.propTypes = {
   id: PropTypes.string,
   label: PropTypes.string,
   progress: PropTypes.number,
-  secondaryStatus: PropTypes.oneOf([
-    'off',
-    'info',
-    'success',
-    'warning',
-    'rth',
-    'error',
-    'critical',
-  ]),
   selected: PropTypes.bool,
   status: PropTypes.oneOf([
     'off',
