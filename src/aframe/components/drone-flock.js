@@ -23,6 +23,7 @@ import { abbreviateGPSFixType } from '~/model/enums';
 import { uavIdToGlobalId } from '~/model/identifiers';
 import { getFlatEarthCoordinateTransformer } from '~/selectors/map';
 import store from '~/store';
+import { showYawToModelRotationZ } from '~/aframe/components/fbx-model';
 import { resolveShowYawForUav } from '~/views/three-d/showYawUtils';
 
 const { THREE } = AFrame;
@@ -165,10 +166,13 @@ AFrame.registerSystem('drone-flock', {
     const parsed = Number(yaw);
     if (!Number.isFinite(parsed)) return;
 
+    const modelZ = showYawToModelRotationZ(parsed);
+    if (modelZ == null) return;
+
     entity.setAttribute('data-heading', String(parsed));
-    // Match drone-move-bridge / DroneShapeMarkers: yaw on scene Z axis.
-    entity.setAttribute('rotation', `0 0 ${parsed}`);
-    entity.object3D.rotation.set(0, 0, THREE.MathUtils.degToRad(parsed));
+    // Match drone-move-bridge / DroneShapeMarkers: show yaw → model rotation on Z.
+    entity.setAttribute('rotation', `0 0 ${modelZ}`);
+    entity.object3D.rotation.set(0, 0, THREE.MathUtils.degToRad(modelZ));
   },
 
   _resolveEntityYaw(uav) {

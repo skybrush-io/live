@@ -1707,6 +1707,10 @@ const ThreeDView = React.forwardRef((props, ref) => {
         />
 
         <a-entity rotation="-90 0 90">
+          <SatelliteMapGround
+            enabled={scenery === 'outdoor'}
+            lighting={effectiveLighting}
+          />
           {showAxes && (
             <CoordinateSystemAxes
               leftHanded={isCoordinateSystemLeftHanded}
@@ -1720,10 +1724,6 @@ const ThreeDView = React.forwardRef((props, ref) => {
           {showLandingPositions && <LandingPositionMarkers />}
           {showTrajectoriesOfSelection && <SelectedTrajectories />}
 
-          <SatelliteMapGround
-            enabled={scenery === 'outdoor'}
-            lighting={effectiveLighting}
-          />
           <DronePathTrajectories
             drones={effectiveConfig && Array.isArray(effectiveConfig.drones) ? effectiveConfig.drones : undefined}
             selectedDroneId={selectedPathDroneId}

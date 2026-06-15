@@ -1,5 +1,7 @@
 import AFrame from '@skybrush/aframe-components';
 
+import { showYawToModelRotationZ } from '~/aframe/components/fbx-model';
+
 if (!AFrame.components['drone-move-bridge']) {
   AFrame.registerComponent('drone-move-bridge', {
     init() {
@@ -51,8 +53,9 @@ if (!AFrame.components['drone-move-bridge']) {
       const parsed = Number(yaw);
       if (Number.isFinite(parsed)) {
         target.setAttribute('data-heading', String(parsed));
+        const modelZ = showYawToModelRotationZ(parsed);
         // Yaw on the root entity only (show Z / vertical axis). Model pitch stays on child.
-        target.setAttribute('rotation', `0 0 ${parsed}`);
+        target.setAttribute('rotation', `0 0 ${modelZ}`);
         return;
       }
 

@@ -16,8 +16,20 @@ const DRONE_MODEL_SCALE = {
   z: UR9_TARGET_SIZE_M.z / UR9_MODEL_EXTENT_MM.z,
 };
 
-/** UR-9 OBJ 정면: X=가로, Z=높이(기둥), Y=깊이. 장면 Z-up과 동일 — 회전 불필요 */
+/** UR-9 OBJ 정면: X=가로, Z=높이(기둥), Y=깊이(앞). 장면 Z-up과 동일 — pitch/roll 회전 불필요 */
 const DRONE_MODEL_ROTATION = { x: 0, y: 0, z: 0 };
+
+/**
+ * Show / Skybrush View yaw: 0° = +X, CCW positive.
+ * UR-9 OBJ default nose = +Y → offset 90°. Negate yaw so heading matches View
+ * (without negation, ±yaw pairs face outward instead of inward).
+ */
+const DRONE_MODEL_YAW_OFFSET = 90;
+
+const showYawToModelRotationZ = (showYaw) => {
+  const parsed = Number(showYaw);
+  return Number.isFinite(parsed) ? DRONE_MODEL_YAW_OFFSET - parsed : null;
+};
 
 const resolveAssetUrl = (el, src) => {
   if (!src) return '';
@@ -351,4 +363,10 @@ if (!AFrame.components['fbx-model']) {
   });
 }
 
-export { DRONE_MODEL_ROTATION, DRONE_MODEL_SCALE, UR9_TARGET_SIZE_M };
+export {
+  DRONE_MODEL_ROTATION,
+  DRONE_MODEL_SCALE,
+  DRONE_MODEL_YAW_OFFSET,
+  showYawToModelRotationZ,
+  UR9_TARGET_SIZE_M,
+};

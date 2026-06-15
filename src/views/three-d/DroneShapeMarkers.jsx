@@ -1,6 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import { showYawToModelRotationZ } from '~/aframe/components/fbx-model';
+
 import { DEFAULT_DRONE_GROUND_POSITION } from './utils/threeDViewUtils';
 
 function normalizeDrones(drones) {
@@ -60,7 +62,7 @@ const DroneShapeMarkers = ({ drones }) => {
     <a-entity
       key={d.id}
       position={d.pos.join(' ')}
-      rotation={`0 0 ${d.yaw}`}
+      rotation={`0 0 ${showYawToModelRotationZ(d.yaw) ?? 0}`}
       data-drone-id={d.id}
       data-drone-name={d.name}
       data-battery={d.battery}
