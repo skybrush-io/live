@@ -381,12 +381,13 @@
   },
   "navigationInstructions": {
     "altitude": "Altitude",
-    "arrows": "Arrows",
-    "flyForwardBackward": "Fly forward / backward",
-    "lookAround": "Look around",
-    "moveSideways": "Move sideways",
+    "flyMove": "Fly / strafe",
+    "leftDragLook": "Left drag: look around",
+    "middleDrag": "Middle drag",
     "noInstruction": "No instructions for this navigation mode",
-    "run": "Run",
+    "rightDrag": "Right drag",
+    "run": "Faster move",
+    "shiftDrag": "Shift + drag",
     "walkAround": "Walk around"
   },
   "notifications": {

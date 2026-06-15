@@ -17,25 +17,38 @@ const noWrap = {
   whiteSpace: 'nowrap',
 };
 
+const mouseButtonStyle = {
+  display: 'inline-block',
+  minWidth: 18,
+  padding: '0 5px',
+  marginRight: 4,
+  borderRadius: 4,
+  border: '1px solid rgba(255,255,255,0.25)',
+  background: 'rgba(255,255,255,0.08)',
+  fontSize: 11,
+  lineHeight: '18px',
+  textAlign: 'center',
+  verticalAlign: 'middle',
+};
+
 const instructionsByMode = {
   walk: (
     <Translation>
       {(t) => (
         <div style={noWrap}>
           <div style={divStyle}>
-            <kbd>{t('navigationInstructions.arrows')}</kbd>
+            <span style={mouseButtonStyle}>{t('navigationInstructions.rightDrag')}</span>
             <span> {t('navigationInstructions.walkAround')} </span>
-            <kbd>E</kbd>
-            <kbd>C</kbd>
+            <span style={mouseButtonStyle}>{t('navigationInstructions.middleDrag')}</span>
             <span> {t('navigationInstructions.altitude')} </span>
-            <kbd>Shift</kbd>
+            <span style={mouseButtonStyle}>{t('navigationInstructions.shiftDrag')}</span>
             <span> {t('navigationInstructions.run')} </span>
           </div>
           <IconButton disabled size='large'>
             <Mouse />
           </IconButton>
           <div style={{ ...divStyle, marginLeft: -8 }}>
-            {t('navigationInstructions.lookAround')}
+            {t('navigationInstructions.leftDragLook')}
           </div>
         </div>
       )}
@@ -47,21 +60,16 @@ const instructionsByMode = {
       {(t) => (
         <div style={noWrap}>
           <div style={divStyle}>
-            <kbd>↑</kbd>
-            <kbd>↓</kbd>
-            <span> {t('navigationInstructions.flyForwardBackward')} </span>
-            <kbd>←</kbd>
-            <kbd>→</kbd>
-            <span> {t('navigationInstructions.moveSideways')} </span>
-            <kbd>E</kbd>
-            <kbd>C</kbd>
+            <span style={mouseButtonStyle}>{t('navigationInstructions.rightDrag')}</span>
+            <span> {t('navigationInstructions.flyMove')} </span>
+            <span style={mouseButtonStyle}>{t('navigationInstructions.middleDrag')}</span>
             <span> {t('navigationInstructions.altitude')} </span>
           </div>
           <IconButton disabled size='large'>
             <Mouse />
           </IconButton>
           <div style={{ ...divStyle, marginLeft: -8 }}>
-            {t('navigationInstructions.lookAround')}
+            {t('navigationInstructions.leftDragLook')}
           </div>
         </div>
       )}
@@ -70,8 +78,8 @@ const instructionsByMode = {
 };
 
 /**
- * Component that shows some short textual instructions about the hotkeys of the
- * current navigation mode.
+ * Component that shows short textual instructions about mouse navigation
+ * in the current navigation mode.
  */
 const NavigationInstructionsPresentation = ({ mode, t }) => (
   <Box sx={{ mx: 1, flex: 1, alignSelf: 'stretch', position: 'relative' }}>

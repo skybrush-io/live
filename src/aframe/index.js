@@ -155,6 +155,7 @@ patchRemoveChildSafety();
 patchAFrameComponentRemoveSafety(AFrame);
 
 import '@skybrush/aframe-components/advanced-camera-controls';
+import patchAdvancedCameraControlsMouse from './components/advanced-camera-controls-mouse-patch';
 import '@skybrush/aframe-components/meshline';
 
 import 'aframe-environment-component';
@@ -175,6 +176,7 @@ import './primitives/drone-flock';
 import './components/drone-move-bridge';
 import './components/click-select-on-cursor';
 patchAdvancedCameraControlsSafety(AFrame);
+patchAdvancedCameraControlsMouse(AFrame);
 
 // eslint-disable-next-line unicorn/prefer-export-from
 export default AFrame;

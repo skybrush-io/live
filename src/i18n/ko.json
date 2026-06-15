@@ -76,6 +76,17 @@
     "map": "지도",
     "satellite": "위성"
   },
+  "navigationInstructions": {
+    "altitude": "고도",
+    "flyMove": "비행 / 좌우 이동",
+    "leftDragLook": "좌클릭 드래그: 시점 회전",
+    "middleDrag": "휠 클릭 드래그",
+    "noInstruction": "이 탐색 모드에 대한 안내가 없습니다",
+    "rightDrag": "우클릭 드래그",
+    "run": "빠른 이동",
+    "shiftDrag": "Shift + 드래그",
+    "walkAround": "이동"
+  },
   "threeDInteractionMode": {
     "label": "3D 상호작용 모드",
     "view": "탐색",
