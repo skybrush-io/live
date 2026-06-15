@@ -1,5 +1,6 @@
 import CircularProgress from '@mui/material/CircularProgress';
 import clsx from 'clsx';
+import type { ReactNode } from 'react';
 
 import { Colors, Status, makeStyles } from '@skybrush/app-theme-mui';
 import type { SemanticAvatarProps } from '@skybrush/mui-components';
@@ -75,7 +76,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-type ComplexAvatarProps = {
+export type ComplexAvatarProps = {
   AvatarProps?: Omit<SemanticAvatarProps, 'children' | 'status'>;
   batteryFormatter?: BatteryFormatter;
   batteryStatus?: Omit<BatteryIndicatorProps, 'className' | 'formatter'>;
@@ -85,7 +86,7 @@ type ComplexAvatarProps = {
   gone?: boolean;
   hint?: string;
   id?: string;
-  label?: string;
+  label?: ReactNode;
   progress?: number;
   selected?: boolean;
   status?: Status;
