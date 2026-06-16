@@ -43,6 +43,7 @@ import {
   getMissionItemsWithAreasInOrder,
   getMissionItemsWithCoordinatesInOrder,
   getMissionMapping,
+  getSelectedMissionIdInMissionEditorPanel,
   getSelectedMissionIndicesForTrajectoryDisplay,
 } from '~/features/mission/selectors';
 import { doesMissionIndexParticipateInMissionItem } from '~/features/mission/utils';
@@ -447,9 +448,22 @@ const WaypointMarker = connect(
   })
 )(WaypointMarkerPresentation);
 
-const missionWaypointMarkers = (missionItemsWithCoordinates, selection) =>
+const missionWaypointMarkers = (
+  missionItemsWithCoordinates,
+  selection,
+  selectedMissionIdInMissionEditorPanel
+) =>
   missionItemsWithCoordinates
-    ? missionItemsWithCoordinates.map(({ index, id, coordinate }) => {
+    ? missionItemsWithCoordinates.map(({ coordinate, id, index, item }) => {
+        if (
+          selectedMissionIdInMissionEditorPanel !== undefined &&
+          !doesMissionIndexParticipateInMissionItem(
+            selectedMissionIdInMissionEditorPanel
+          )(item)
+        ) {
+          return null;
+        }
+
         const globalIdOfMissionItem = missionItemIdToGlobalId(id);
         const selected = selection.includes(globalIdOfMissionItem);
         const center = mapViewCoordinateFromLonLat([
@@ -473,10 +487,18 @@ const missionTrajectoryLine = (
   currentItemIndices,
   currentItemRatios,
   allMissionItemsWithCoordinates,
-  missionMapping
+  missionMapping,
+  selectedMissionIdInMissionEditorPanel
 ) => {
   if (allMissionItemsWithCoordinates) {
     return missionMapping.flatMap((_, missionIndex) => {
+      if (
+        selectedMissionIdInMissionEditorPanel !== undefined &&
+        selectedMissionIdInMissionEditorPanel !== missionIndex
+      ) {
+        return [];
+      }
+
       const missionItemsWithCoordinates = allMissionItemsWithCoordinates.filter(
         ({ item }) =>
           doesMissionIndexParticipateInMissionItem(missionIndex)(item)
@@ -555,10 +577,18 @@ const auxiliaryMissionLines = (
   homePositions,
   allMissionItemsWithCoordinates,
   missionMapping,
-  returnToHomeItems
+  returnToHomeItems,
+  selectedMissionIdInMissionEditorPanel
 ) => {
   if (allMissionItemsWithCoordinates) {
     return missionMapping.flatMap((_, missionIndex) => {
+      if (
+        selectedMissionIdInMissionEditorPanel !== undefined &&
+        selectedMissionIdInMissionEditorPanel !== missionIndex
+      ) {
+        return [];
+      }
+
       const missionItemsWithCoordinates = allMissionItemsWithCoordinates.filter(
         ({ item }) =>
           doesMissionIndexParticipateInMissionItem(missionIndex)(item)
@@ -708,41 +738,67 @@ const MissionInfoVectorSource = ({
   missionIndicesForTrajectories,
   orientation = 0,
   returnToHomeItems,
+  selectedMissionIdInMissionEditorPanel,
   selectedTool,
   selection,
   uavIdsForTrajectories,
 }) => (
   <source.Vector>
     {[].concat(
-      homePositionPoints(homePositions, {
-        minimumDistanceBetweenPositions: minimumDistanceBetweenHomePositions,
-        estimatedLabelWidth: homePositions
-          ? formatMissionId(homePositions.length - 1).length *
-            TAKEOFF_LANDING_POSITION_CHARACTER_WIDTH
-          : 0,
-        selection,
-      }),
-      landingPositionPoints(landingPositions, {
-        minimumDistanceBetweenPositions: minimumDistanceBetweenLandingPositions,
-        estimatedLabelWidth: landingPositions
-          ? formatMissionId(landingPositions.length - 1).length *
-            TAKEOFF_LANDING_POSITION_CHARACTER_WIDTH
-          : 0,
-      }),
+      homePositionPoints(
+        // HACK: Add support for filtering in `homePositionPoints` instead of
+        //       hiding them by replacing the values with `null`...
+        selectedMissionIdInMissionEditorPanel !== undefined
+          ? homePositions?.map?.((hp, missionIndex) =>
+              missionIndex === selectedMissionIdInMissionEditorPanel ? hp : null
+            )
+          : homePositions,
+        {
+          minimumDistanceBetweenPositions: minimumDistanceBetweenHomePositions,
+          estimatedLabelWidth: homePositions
+            ? formatMissionId(homePositions.length - 1).length *
+              TAKEOFF_LANDING_POSITION_CHARACTER_WIDTH
+            : 0,
+          selection,
+        }
+      ),
+      landingPositionPoints(
+        // HACK: Add support for filtering in `landingPositionPoints` instead of
+        //       hiding them by replacing the values with `null`...
+        selectedMissionIdInMissionEditorPanel !== undefined
+          ? landingPositions?.map?.((lp, missionIndex) =>
+              missionIndex === selectedMissionIdInMissionEditorPanel ? lp : null
+            )
+          : landingPositions,
+        {
+          minimumDistanceBetweenPositions:
+            minimumDistanceBetweenLandingPositions,
+          estimatedLabelWidth: landingPositions
+            ? formatMissionId(landingPositions.length - 1).length *
+              TAKEOFF_LANDING_POSITION_CHARACTER_WIDTH
+            : 0,
+        }
+      ),
       mapOriginMarker(coordinateSystemType, mapOrigin, orientation, selection),
       missionAreaBoundaries(missionItemsWithAreas, selection, selectedTool),
-      missionWaypointMarkers(missionItemsWithCoordinates, selection),
+      missionWaypointMarkers(
+        missionItemsWithCoordinates,
+        selection,
+        selectedMissionIdInMissionEditorPanel
+      ),
       missionTrajectoryLine(
         currentItemIndices,
         currentItemRatios,
         missionItemsWithCoordinates,
-        missionMapping
+        missionMapping,
+        selectedMissionIdInMissionEditorPanel
       ),
       auxiliaryMissionLines(
         homePositions,
         missionItemsWithCoordinates,
         missionMapping,
-        returnToHomeItems
+        returnToHomeItems,
+        selectedMissionIdInMissionEditorPanel
       ),
       missionOriginMarker(missionOrientation, missionOrigin),
       convexHullPolygon(convexHull, selection, ConvexHullVariant.GROSS),
@@ -774,6 +830,7 @@ MissionInfoVectorSource.propTypes = {
   missionIndicesForTrajectories: PropTypes.arrayOf(PropTypes.number),
   orientation: CustomPropTypes.angle,
   returnToHomeItems: PropTypes.arrayOf(PropTypes.object),
+  selectedMissionIdInMissionEditorPanel: PropTypes.number,
   selectedTool: PropTypes.string,
   selection: PropTypes.arrayOf(PropTypes.string),
   uavIdsForTrajectories: PropTypes.arrayOf(PropTypes.string),
@@ -836,6 +893,8 @@ export const MissionInfoLayer = connect(
       state,
       MissionItemType.RETURN_TO_HOME
     ),
+    selectedMissionIdInMissionEditorPanel:
+      getSelectedMissionIdInMissionEditorPanel(state),
     selection: getVirtualSelection(state),
     uavIdsForTrajectories: layer?.parameters?.showTrajectoriesOfSelection
       ? getSelectedUAVIdsForTrajectoryDisplay(state)
