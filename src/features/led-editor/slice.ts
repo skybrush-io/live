@@ -44,6 +44,7 @@ const initialState: LedEditorState = {
   boardClipboard: undefined,
   activeColor: [255, 255, 255],
   playheadSec: 0,
+  playing: false,
   upload: { state: 'idle' },
 };
 
@@ -386,6 +387,10 @@ const { actions, reducer } = createSlice({
       state.playheadSec = Math.max(0, action.payload);
     },
 
+    setPlaying(state, action: PayloadAction<boolean>) {
+      state.playing = action.payload;
+    },
+
     setUploadStatus(state, action: PayloadAction<UploadStatus>) {
       state.upload = action.payload;
     },
@@ -414,6 +419,7 @@ export const {
   copySelection,
   pasteClipboard,
   setPlayhead,
+  setPlaying,
   setUploadStatus,
 } = actions;
 

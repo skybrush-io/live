@@ -163,6 +163,7 @@ import './components/deallocate';
 import './components/drone-flock';
 import './components/fbx-model';
 import './components/glow-material';
+import './components/led-show-grid';
 import './components/sync-pose-with-store';
 import './components/click-select';
 import './components/mouse-ray-visualizer';

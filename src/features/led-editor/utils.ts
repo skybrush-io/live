@@ -120,6 +120,56 @@ export const boardPixelAt = (
 export const timelineDurationSec = (boards: Board[]): number =>
   boards.reduce((max, b) => Math.max(max, b.startSec + b.durationSec), 0);
 
+/** The board whose span covers time `t`, or undefined (a gap). */
+export const boardActiveAt = (boards: Board[], t: number): Board | undefined =>
+  boards.find((b) => t >= b.startSec && t < b.startSec + b.durationSec);
+
+/**
+ * The board that defines the *formation* shown at time `t`: the active board,
+ * or — during a gap — the most recent board to have started, so drones keep
+ * their layout (and just go dark) rather than jumping around.
+ */
+export const formationBoardAt = (
+  boards: Board[],
+  t: number
+): Board | undefined => {
+  const active = boardActiveAt(boards, t);
+  if (active) {
+    return active;
+  }
+  let best: Board | undefined;
+  for (const b of boards) {
+    if (b.startSec <= t && (!best || b.startSec > best.startSec)) {
+      best = b;
+    }
+  }
+  return best ?? boards[0];
+};
+
+/** A sampled frame of the show: formation + per-drone colours (undefined = dark). */
+export type PlaybackFrame = {
+  rows: number;
+  cols: number;
+  /** Per-drone colour sets at this time, or undefined during a gap (all dark). */
+  drones: DronePixels[] | undefined;
+};
+
+/** Sample the show at time `t` for playback in the simulator / 3D view. */
+export const computePlaybackFrame = (
+  boards: Board[],
+  droneCount: number,
+  ledsPerDrone: LedsPerDrone,
+  t: number
+): PlaybackFrame => {
+  const formation = formationBoardAt(boards, t);
+  const fit = defaultFormation(droneCount);
+  return {
+    rows: formation?.rows ?? fit.rows,
+    cols: formation?.cols ?? fit.cols,
+    drones: boardActiveAt(boards, t)?.drones,
+  };
+};
+
 const spansOverlap = (a: Board, b: Board): boolean =>
   a.startSec < b.startSec + b.durationSec &&
   b.startSec < a.startSec + a.durationSec;

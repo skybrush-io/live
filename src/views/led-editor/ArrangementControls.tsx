@@ -4,6 +4,8 @@
  * header instead, because it can differ from board to board.
  */
 
+import Slideshow from '@mui/icons-material/Slideshow';
+import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
@@ -11,6 +13,7 @@ import Typography from '@mui/material/Typography';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
+import { openLedSimulator } from '~/features/led-editor/openSimulator';
 import {
   getActiveGridDimensions,
   getDroneCount,
@@ -64,6 +67,15 @@ const ArrangementControls = (): JSX.Element => {
         value={fps}
         onCommit={(value) => dispatch(setFps(value))}
       />
+
+      <Button
+        size='small'
+        variant='outlined'
+        startIcon={<Slideshow />}
+        onClick={() => openLedSimulator()}
+      >
+        View in Simulator
+      </Button>
 
       <Typography variant='caption' color='text.secondary'>
         Drones numbered left→right, top→bottom · each board sets its own

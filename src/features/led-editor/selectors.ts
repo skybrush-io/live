@@ -59,6 +59,8 @@ export const getBoardClipboard = (state: RootState) =>
 
 export const getPlayheadSec = (state: RootState) => state.ledEditor.playheadSec;
 
+export const getPlaying = (state: RootState) => state.ledEditor.playing;
+
 export const getUploadStatus = (state: RootState) => state.ledEditor.upload;
 
 export const getTimelineDuration = (state: RootState) =>

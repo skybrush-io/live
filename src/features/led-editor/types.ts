@@ -86,6 +86,9 @@ export type LedEditorState = {
   /** Boards copied from the timeline. */
   boardClipboard: Board[] | undefined;
   activeColor: RGB;
+  /** Shared playback time (seconds) for the timeline scrubber and simulator. */
   playheadSec: number;
+  /** Whether the show is currently playing back. */
+  playing: boolean;
   upload: UploadStatus;
 };

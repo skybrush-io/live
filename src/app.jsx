@@ -19,6 +19,7 @@ import DetachedPanelManager from './features/detachable-panels/DetachedPanelMana
 import DockDetailsDialog from './features/docks/DockDetailsDialog';
 import FirmwareUpdateSetupDialog from './features/firmware-update/FirmwareUpdateSetupDialog';
 import AppHotkeys from './features/hotkeys/AppHotkeys';
+import LedPlaybackDriver from './features/led-editor/LedPlaybackDriver';
 import HotkeyDialog from './features/hotkeys/HotkeyDialog';
 import PendingUAVIdOverlay from './features/hotkeys/PendingUAVIdOverlay';
 import LicenseInfoDialog from './features/license-info/LicenseInfoDialog';
@@ -58,7 +59,7 @@ import store, {
 } from './store';
 import ThemeProvider, { DarkModeExtraCSSProvider } from './theme';
 import registerUploadJobTypes from './upload-jobs';
-import { hasTimeLimitedSession } from './utils/configuration';
+import { hasFeature, hasTimeLimitedSession } from './utils/configuration';
 import workbench from './workbench';
 
 import 'tippy.js/dist/tippy.css';
@@ -201,6 +202,7 @@ const App = ({ onFirstRender }) => (
       <LanguageWatcher />
       <MissionProgressObserver />
       <ShowFileWatcher />
+      {hasFeature('ledShow') && <LedPlaybackDriver />}
 
       <dialogs.AppSettingsDialog />
       <dialogs.AuthenticationDialog />
