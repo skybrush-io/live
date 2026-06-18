@@ -1,7 +1,7 @@
 import { createSelector } from '@reduxjs/toolkit';
 import addDays from 'date-fns/addDays';
 import isAfter from 'date-fns/isAfter';
-import SunCalc, { type GetTimesResult } from 'suncalc';
+import * as SunCalc from 'suncalc-ts';
 
 import { Status } from '@skybrush/app-theme-mui';
 import { type Degrees, toDegrees, type Vector2PlusTuple } from '@skybrush/math';
@@ -21,14 +21,13 @@ const getRoundedMapViewCenterPosition = createSelector(
 export const getSunriseSunsetTimesForMapViewCenterPosition =
   createShallowSelector(getRoundedMapViewCenterPosition, (position) => {
     const now = new Date();
-    const result: { [P in keyof GetTimesResult]?: Date | undefined } = position
-      ? SunCalc.getTimes(now, position[1], position[0])
-      : {};
+    const result: { [P in keyof SunCalc.TimesData]?: Date | undefined } =
+      position ? SunCalc.getTimes(now, position[1], position[0]) : {};
 
     // Replace invalid dates with undefined
     for (const [key, date] of Object.entries(result)) {
       if (date instanceof Date && Number.isNaN(date.valueOf())) {
-        result[key as keyof GetTimesResult] = undefined;
+        result[key as keyof SunCalc.TimesData] = undefined;
       }
     }
 
