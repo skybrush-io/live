@@ -7,9 +7,11 @@ import {
   createSlice,
   type PayloadAction,
 } from '@reduxjs/toolkit';
-import type { SwarmSpecification } from '@skybrush/show-format';
 import xor from 'lodash-es/xor';
 import { Point } from 'ol/geom';
+
+import { toRadians } from '@skybrush/math';
+import type { SwarmSpecification } from '@skybrush/show-format';
 
 import { type FeatureSelectionMode } from '~/components/map/interactions/types';
 import { updateSelection as updateSelectedIds } from '~/features/selection/utils';
@@ -23,7 +25,7 @@ import {
   mapViewCoordinateFromLonLat,
   translateLonLatWithMapViewDelta,
 } from '~/utils/geography';
-import { type Coordinate3D, toRadians } from '~/utils/math';
+import type { Coordinate3D } from '~/utils/math';
 import { EMPTY_ARRAY } from '~/utils/redux';
 
 export type ShowData = {

@@ -9,6 +9,8 @@ import isNil from 'lodash-es/isNil';
 import max from 'lodash-es/max';
 import { createCachedSelector } from 're-reselect';
 
+import { convexHull2D, getCentroid } from '@skybrush/math';
+
 import { CommonClockId } from '~/features/clocks/types';
 import {
   getGeofencePolygonInWorldCoordinates,
@@ -20,11 +22,7 @@ import {
   formatDurationHMS,
 } from '~/utils/formatting';
 import { FlatEarthCoordinateSystem } from '~/utils/geography';
-import {
-  convexHull2D,
-  createGeometryFromPoints,
-  getCentroid,
-} from '~/utils/math';
+import { createGeometryFromPoints } from '~/utils/math';
 import { findNearestNeighborsDistance } from '~/utils/nearestNeighbors';
 
 import {

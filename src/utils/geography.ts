@@ -34,6 +34,8 @@ import VectorSource from 'ol/source/Vector';
 import { getArea, getLength } from 'ol/sphere';
 import { type Vector3 } from 'three';
 
+import { euclideanDistance2D, toRadians } from '@skybrush/math';
+
 import { type Feature, FeatureType } from '~/model/features';
 import {
   type Altitude,
@@ -52,10 +54,7 @@ import {
   type Coordinate2D,
   type Coordinate3D,
   createGeometryFromPoints,
-  euclideanDistance2D,
   isCoordinate2D,
-  toDegrees,
-  toRadians,
 } from './math';
 import { isRunningOnMac } from './platform';
 
@@ -897,24 +896,6 @@ export class FlatEarthCoordinateSystem {
     Coordinate.rotate(result, -this._orientation);
     result[1] *= this._yMul;
   }
-}
-
-/**
- * Converts a pair of Cartesian coordinates into polar coordinates, assuming
- * that the X axis points towards zero degrees.
- *
- * @param coords - The Cartesian coordinates to convert
- * @returns The polar coordinates, angle being expressed in degrees
- *          between 0 and 360
- */
-export function toPolar(coords: [number, number]): [number, number] {
-  const dist = Math.hypot(coords[0], coords[1]);
-  if (dist > 0) {
-    const angle = toDegrees(Math.atan2(coords[1], coords[0]));
-    return [dist, angle < 0 ? angle + 360 : angle];
-  }
-
-  return [0, 0];
 }
 
 /**

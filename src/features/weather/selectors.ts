@@ -1,12 +1,13 @@
 import { createSelector } from '@reduxjs/toolkit';
 import addDays from 'date-fns/addDays';
 import isAfter from 'date-fns/isAfter';
-import SunCalc from 'suncalc';
+import SunCalc, { type GetTimesResult } from 'suncalc';
 
 import { Status } from '@skybrush/app-theme-mui';
+import { type Degrees, toDegrees, type Vector2PlusTuple } from '@skybrush/math';
 
 import { getMapViewCenterPosition } from '~/selectors/map';
-import { toDegrees } from '~/utils/math';
+import type { AppSelector, RootState } from '~/store/reducers';
 import { createShallowSelector } from '~/utils/selectors';
 
 const getRoundedMapViewCenterPosition = createSelector(
@@ -20,14 +21,14 @@ const getRoundedMapViewCenterPosition = createSelector(
 export const getSunriseSunsetTimesForMapViewCenterPosition =
   createShallowSelector(getRoundedMapViewCenterPosition, (position) => {
     const now = new Date();
-    const result = position
+    const result: { [P in keyof GetTimesResult]?: Date | undefined } = position
       ? SunCalc.getTimes(now, position[1], position[0])
       : {};
 
     // Replace invalid dates with undefined
     for (const [key, date] of Object.entries(result)) {
       if (date instanceof Date && Number.isNaN(date.valueOf())) {
-        result[key] = undefined;
+        result[key as keyof GetTimesResult] = undefined;
       }
     }
 
@@ -46,7 +47,9 @@ export const getSunriseSunsetTimesForMapViewCenterPosition =
     return result;
   });
 
-export function getDeclinationFromMagneticVector(magneticVector) {
+export function getDeclinationFromMagneticVector(
+  magneticVector: Vector2PlusTuple
+): Degrees | null {
   if (!Array.isArray(magneticVector) || magneticVector.length !== 3) {
     return null;
   } else {
@@ -54,7 +57,9 @@ export function getDeclinationFromMagneticVector(magneticVector) {
   }
 }
 
-export function getStatusForKpIndex(kpIndex) {
+export function getStatusForKpIndex(
+  kpIndex: number | null | undefined
+): Status | null {
   if (typeof kpIndex === 'number') {
     if (kpIndex >= 5) {
       return Status.ERROR;
@@ -63,17 +68,18 @@ export function getStatusForKpIndex(kpIndex) {
     } else {
       return null;
     }
+  } else {
+    return null;
   }
 }
 
-export function isWeatherDataLoading(state) {
-  return state.weather.loading;
-}
+export const isWeatherDataLoading: AppSelector<boolean> = (state: RootState) =>
+  state.weather.loading;
 
-export function getWeatherDataLastUpdateTimestamp(state) {
-  return state.weather.lastUpdatedAt;
-}
+export const getWeatherDataLastUpdateTimestamp: AppSelector<
+  number | undefined
+> = (state: RootState) => state.weather.lastUpdatedAt;
 
-export function getWeatherBadgeStatus(state) {
-  return getStatusForKpIndex(state.weather.data?.kpIndex);
-}
+export const getWeatherBadgeStatus: AppSelector<Status | null> = (
+  state: RootState
+) => getStatusForKpIndex(state.weather.data?.kpIndex);

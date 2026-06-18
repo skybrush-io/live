@@ -1,6 +1,7 @@
 import isObject from 'lodash-es/isObject';
 import max from 'lodash-es/max';
 
+import { convexHull2D, euclideanDistance2D } from '@skybrush/math';
 import {
   type TimeWindow,
   type Trajectory,
@@ -8,12 +9,7 @@ import {
   trajectorySegmentsInTimeWindow,
 } from '@skybrush/show-format';
 
-import {
-  convexHull2D,
-  type Coordinate2D,
-  type Coordinate3D,
-  euclideanDistance2D,
-} from '~/utils/math';
+import type { Coordinate2D, Coordinate3D } from '~/utils/math';
 
 const vector3Dto2D: (c: Coordinate3D) => Coordinate2D = ([x, y, _z]) => [x, y];
 

@@ -5,7 +5,6 @@
  */
 
 import partial from 'lodash-es/partial';
-
 import * as Condition from 'ol/events/condition';
 import { MultiLineString, Polygon } from 'ol/geom';
 import Interaction from 'ol/interaction/Interaction';
@@ -14,9 +13,9 @@ import VectorLayer from 'ol/layer/Vector';
 import PropTypes from 'prop-types';
 
 import { createOLInteractionComponent } from '@collmot/ol-react/lib/interaction';
+import { euclideanDistance2D } from '@skybrush/math';
 
 import { getExactClosestPointOf } from '~/utils/geography';
-import { euclideanDistance2D } from '~/utils/math';
 
 import { createLayerSelectorFunction } from './utils';
 

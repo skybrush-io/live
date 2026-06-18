@@ -8,6 +8,7 @@ import React, { useCallback } from 'react';
 import { connect } from 'react-redux';
 
 import { interaction, View, withMap } from '@collmot/ol-react';
+import { toDegrees } from '@skybrush/math';
 
 import { BaseMap, MapControls, MapToolbars } from '~/components/map';
 import FitAllFeaturesButton from '~/components/map/buttons/FitAllFeaturesButton';
@@ -79,7 +80,6 @@ import {
   lonLatFromMapViewCoordinate,
   mapViewCoordinateFromLonLat,
 } from '~/utils/geography';
-import { toDegrees } from '~/utils/math';
 import { forwardCollectionChanges } from '~/utils/openlayers';
 
 import DrawingToolbar from './DrawingToolbar';

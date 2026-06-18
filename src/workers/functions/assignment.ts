@@ -1,12 +1,13 @@
 import { getDistance as haversineDistance } from 'ol/sphere';
 
+import { euclideanDistance2D } from '@skybrush/math';
+
 import {
   findAssignmentBetweenPoints,
   type Assignment,
   type GreedyMatchingOptions,
 } from '~/algorithms/matching';
 import type { LonLat } from '~/utils/geography';
-import { euclideanDistance2D } from '~/utils/math';
 
 export type DistanceMetric = 'euclidean' | 'geodetic';
 

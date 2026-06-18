@@ -1,5 +1,6 @@
 import { createSelector } from 'reselect';
 
+import { convexHull2D } from '@skybrush/math';
 import type {
   DroneSpecification,
   ShowSegmentId,
@@ -10,11 +11,7 @@ import type {
 import { type GPSPosition } from '~/model/geography';
 import { type AppSelector } from '~/store/reducers';
 import { FlatEarthCoordinateSystem } from '~/utils/geography';
-import {
-  convexHull2D,
-  type Coordinate2DPlus,
-  type Coordinate3D,
-} from '~/utils/math';
+import type { Coordinate2DPlus, Coordinate3D } from '~/utils/math';
 import { EMPTY_ARRAY } from '~/utils/redux';
 
 import {

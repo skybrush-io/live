@@ -7,6 +7,7 @@ import Point from 'ol/geom/Point';
 
 import { freeze } from '@reduxjs/toolkit';
 
+import { toRadians } from '@skybrush/math';
 import { loadShowSpecificationAndZip as processFile } from '@skybrush/show-format';
 
 import { getFeaturesInOrder } from '~/features/map-features/selectors';
@@ -36,7 +37,6 @@ import {
   mapViewCoordinateFromLonLat,
   translateLonLatWithMapViewDelta,
 } from '~/utils/geography';
-import { toRadians } from '~/utils/math';
 import { createAsyncAction } from '~/utils/redux';
 import workers from '~/workers';
 

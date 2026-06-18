@@ -1,10 +1,9 @@
 import { describe, expect, test } from '@jest/globals';
-
 import {
   calculateMinimumDistanceBetweenPairs,
   euclideanDistance2D,
-  type Coordinate2D,
-} from '~/utils/math';
+} from '@skybrush/math';
+import type { Coordinate2D } from '~/utils/math';
 import { findNearestNeighborsDistance } from '~/utils/nearestNeighbors';
 
 type DataConfig = {
@@ -90,7 +89,7 @@ test.skip('with fixed test points', () => {
 
 const testPoints: Record<string, Coordinate2D[]> = {
   // Large data set where nearest neighbor calculation could go wrong if
-  // the nearesst neighbors are in the strip.
+  // the nearest neighbors are in the strip.
   errorIfStripIsNotCorrectlyHandled: [
     [20.812818516677677, 0],
     [2.513052759873091, 0.8221299304820151],

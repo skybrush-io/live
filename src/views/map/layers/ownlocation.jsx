@@ -7,11 +7,11 @@ import { useCallback, useMemo, useState } from 'react';
 import { connect } from 'react-redux';
 
 import { Feature, Geolocation, geom, layer, source } from '@collmot/ol-react';
+import { toRadians } from '@skybrush/math';
 
 import { setLayerParametersById } from '~/features/map/layers';
 import useDeviceOrientation from '~/hooks/useDeviceOrientation';
 import createLogger from '~/utils/logging';
-import { toRadians } from '~/utils/math';
 
 const logger = createLogger('OwnLocationLayer');
 

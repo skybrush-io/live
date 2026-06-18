@@ -6,6 +6,8 @@ import max from 'lodash-es/max';
 import range from 'lodash-es/range';
 import unary from 'lodash-es/unary';
 
+import { convexHull2D, estimatePathDuration } from '@skybrush/math';
+
 import { GeofenceAction, isValidGeofenceAction } from '~/features/safety/model';
 import {
   type Altitude,
@@ -37,7 +39,6 @@ import {
   mapViewCoordinateFromLonLat,
   turfDistanceInMeters,
 } from '~/utils/geography';
-import { convexHull2D, estimatePathDuration } from '~/utils/math';
 import { findNearestNeighborsDistance } from '~/utils/nearestNeighbors';
 import { type Nullable } from '~/utils/types';
 
@@ -838,7 +839,11 @@ export const getMissionEstimates: AppSelector<{
       duration:
         duration +
         (s.distance !== undefined && s.velocity !== undefined
-          ? estimatePathDuration(s.distance, s.velocity)
+          ? estimatePathDuration({
+              distance: s.distance,
+              targetVelocity: s.velocity,
+              acceleration: 2.5,
+            })
           : 0),
     }),
     { distance: 0, duration: 0 }

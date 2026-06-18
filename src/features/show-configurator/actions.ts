@@ -3,6 +3,8 @@ import type { Feature as OLFeature } from 'ol';
 import { ModifyEvent } from 'ol/interaction/Modify';
 import { getDistance as haversineDistance } from 'ol/sphere';
 
+import { toDegrees } from '@skybrush/math';
+
 import { findAssignmentBetweenPoints } from '~/algorithms/matching';
 import type { TransformFeaturesInteractionEvent } from '~/components/map/interactions/TransformFeatures';
 import { errorToString } from '~/error-handling';
@@ -30,7 +32,6 @@ import type { AppThunk } from '~/store/reducers';
 import type { Identifier } from '~/utils/collections';
 import { writeBlobToFile } from '~/utils/filesystem';
 import type { EasNor, Easting, LonLat, Northing } from '~/utils/geography';
-import { toDegrees } from '~/utils/math';
 
 import {
   getHomePositions,

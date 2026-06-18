@@ -6,13 +6,14 @@ import Feature, { type ObjectWithGeometry } from 'ol/Feature';
 import type Point from 'ol/geom/Point';
 import { Fill, Icon, Style, Text } from 'ol/style';
 
+import { toRadians } from '@skybrush/math';
+
 import SelectionGlow from '~/../assets/img/drone-selection-glow.png';
 import DroneImage from '~/../assets/img/drone-x-black-32x32.png';
 import DroneImageError from '~/../assets/img/drone-x-black-error-32x32.png';
 import DroneImageInfo from '~/../assets/img/drone-x-black-info-32x32.png';
 import DroneImageWarning from '~/../assets/img/drone-x-black-warning-32x32.png';
 import { Status } from '~/components/semantics';
-import { toRadians } from '~/utils/math';
 
 const droneImages: Record<string, string> = {
   // Non-exhaustive mapping so we cannot type they key as Status

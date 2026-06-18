@@ -11,6 +11,8 @@ import type Map from 'ol/Map';
 import type { ObjectEvent } from 'ol/Object';
 import type View from 'ol/View';
 
+import { toDegrees, toRadians } from '@skybrush/math';
+
 import {
   mapReferenceRequestSignal,
   mapViewToExtentSignal,
@@ -25,7 +27,6 @@ import {
   type LatLonObject,
   type LonLat,
 } from '~/utils/geography';
-import { toDegrees, toRadians } from '~/utils/math';
 
 type MapViewListener = {
   center: (center: LatLonObject) => void;

@@ -10,6 +10,7 @@ import { Icon, RegularShape, Style, Text } from 'ol/style';
 import { type StyleFunction } from 'ol/style/Style';
 
 import { Feature, geom, layer as olLayer, source } from '@collmot/ol-react';
+import { closePolygon, toRadians } from '@skybrush/math';
 
 import Colors from '~/components/colors';
 import { type GPSPosition } from '~/model/geography';
@@ -26,7 +27,6 @@ import { setLayerEditable, setLayerSelectable } from '~/model/layers';
 import type { Identifier } from '~/utils/collections';
 import { formatMissionId } from '~/utils/formatting';
 import { type LonLat, mapViewCoordinateFromLonLat } from '~/utils/geography';
-import { closePolygon, toRadians } from '~/utils/math';
 import {
   blackVeryThinOutline,
   fill,

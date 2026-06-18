@@ -1,10 +1,10 @@
-import hungarianAlgorithm, { type Assignment } from 'hungarian-on3';
-import sortBy from 'lodash-es/sortBy';
 import {
   calculateDistanceMatrix,
-  type Coordinate2D,
   type DistanceCalculationOptions,
-} from '~/utils/math';
+} from '@skybrush/math';
+import hungarianAlgorithm, { type Assignment } from 'hungarian-on3';
+import sortBy from 'lodash-es/sortBy';
+import type { Coordinate2D } from '~/utils/math';
 
 export { type Assignment } from 'hungarian-on3';
 

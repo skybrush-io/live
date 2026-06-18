@@ -2,6 +2,7 @@ import { Base64 } from 'js-base64';
 import { boundingExtent } from 'ol/extent';
 import { createSelector } from 'reselect';
 
+import { convexHull2D, getCentroid } from '@skybrush/math';
 import { type DroneSpecification } from '@skybrush/show-format';
 
 import {
@@ -25,7 +26,7 @@ import {
   type LonLat,
   toLonLatFromScaledJSON,
 } from '~/utils/geography';
-import { convexHull2D, type Coordinate2D, getCentroid } from '~/utils/math';
+import type { Coordinate2D } from '~/utils/math';
 import { EMPTY_ARRAY } from '~/utils/redux';
 
 import type { AdaptResult, ShowConfiguratorState, ShowData } from './slice';

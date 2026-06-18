@@ -4,6 +4,7 @@
  */
 
 import { createSelector } from '@reduxjs/toolkit';
+import { toPolar } from '@skybrush/math';
 import formatCoords from 'formatcoords';
 
 import { CoordinateFormat } from '~/model/settings';
@@ -13,7 +14,6 @@ import {
   type LonLat,
   makeDecimalCoordinateFormatter,
   makePolarCoordinateFormatter,
-  toPolar,
 } from '~/utils/geography';
 
 import { getFlatEarthCoordinateTransformer } from './map';

@@ -1,7 +1,8 @@
 import { ok, type Result } from 'neverthrow';
 
+import { simplifyPolygon } from '@skybrush/math';
+
 import { bufferPolygon, type EasNor } from '~/utils/geography';
-import { simplifyPolygon } from '~/utils/math';
 
 export const makeGeofenceGenerationSettingsApplicator =
   ({

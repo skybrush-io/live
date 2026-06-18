@@ -6,6 +6,11 @@ import { getDistance as haversineDistance } from 'ol/sphere';
 import { createCachedSelector } from 're-reselect';
 
 import { createSelector } from '@reduxjs/toolkit';
+import {
+  type Degrees,
+  euclideanDistance2D,
+  getMeanAngle,
+} from '@skybrush/math';
 
 import { Status } from '~/components/semantics';
 import {
@@ -46,7 +51,6 @@ import { globalIdToUavId } from '~/model/identifiers';
 import { isErrorCodeOrMoreSevere } from '~/model/status-codes';
 import { UAVAge } from '~/model/uav';
 import type { AppSelector, RootState } from '~/store/reducers';
-import { euclideanDistance2D, getMeanAngle } from '~/utils/math';
 import { EMPTY_ARRAY } from '~/utils/redux';
 import { createDeepResultSelector } from '~/utils/selectors';
 import type { StoredUAV, UAVDetailsPanelTab } from './types';
@@ -168,7 +172,7 @@ export const getAverageHeadingOfActiveUAVs = (state: RootState) => {
   const activeUAVIds = getActiveAndAwakeUAVIds(state);
   const headings = activeUAVIds
     .map((uavId) => getCurrentHeadingByUavId(state, uavId))
-    .filter((x) => typeof x === 'number');
+    .filter((x): x is Degrees => typeof x === 'number');
   return getMeanAngle(headings);
 };
 

@@ -13,6 +13,7 @@ import {
   layer,
   source,
 } from '@collmot/ol-react';
+import { closePolygon, euclideanDistance2D } from '@skybrush/math';
 
 import { escapeKeyDown } from '~/components/map/conditions';
 import { markAsSelectableAndEditable } from '~/components/map/layers/utils';
@@ -31,7 +32,6 @@ import { showError } from '~/features/snackbar/actions';
 import { FeatureType, LabelStyle } from '~/model/features';
 import { featureIdToGlobalId } from '~/model/identifiers';
 import { mapViewCoordinateFromLonLat, measureFeature } from '~/utils/geography';
-import { closePolygon, euclideanDistance2D } from '~/utils/math';
 import {
   dashedThickOutline,
   dottedThinOutline,

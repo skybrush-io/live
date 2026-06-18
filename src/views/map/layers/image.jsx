@@ -10,6 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import { layer, source } from '@collmot/ol-react';
+import { toRadians } from '@skybrush/math';
 
 import Image from '@mui/icons-material/Image';
 import Navigation from '@mui/icons-material/Navigation';
@@ -36,7 +37,6 @@ import { getMapViewCenterPosition } from '~/selectors/map';
 import { mapReferenceRequestSignal, mapViewToExtentSignal } from '~/signals';
 import { readFileAsDataURL } from '~/utils/files';
 import { mapViewCoordinateFromLonLat } from '~/utils/geography';
-import { toRadians } from '~/utils/math';
 import { finite, join, positive, required } from '~/utils/validation';
 
 // TODO: Do this initialization call in a more appropriate part of the codebase!

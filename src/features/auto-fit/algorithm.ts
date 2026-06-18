@@ -6,6 +6,14 @@
 import isEqual from 'lodash-es/isEqual';
 import { SVD as computeSVD } from 'svd-js';
 
+import {
+  euclideanDistance2D,
+  getCentroid,
+  getMeanAngle,
+  toDegrees,
+  toRadians,
+  type Degrees,
+} from '@skybrush/math';
 import { COORDINATE_SYSTEM_TYPE } from '@skybrush/show-format';
 
 import {
@@ -14,14 +22,7 @@ import {
 } from '~/algorithms/matching';
 import { OriginType } from '~/features/map/types';
 import { FlatEarthCoordinateSystem, type LonLat } from '~/utils/geography';
-import {
-  euclideanDistance2D,
-  getCentroid,
-  getMeanAngle,
-  toDegrees,
-  toRadians,
-  type Coordinate2D,
-} from '~/utils/math';
+import type { Coordinate2D } from '~/utils/math';
 
 import type {
   CoordinateSystemEstimate,
@@ -75,7 +76,7 @@ function calculateInitialEstimate(
 ): CoordinateSystemEstimate {
   const { uavGPSCoordinates, uavHeadings, takeoffCoordinates } = problem;
   const filteredHeadings = uavHeadings.filter(
-    (heading): heading is number => typeof heading === 'number'
+    (heading): heading is Degrees => typeof heading === 'number'
   );
 
   if (uavGPSCoordinates.length === 0) {

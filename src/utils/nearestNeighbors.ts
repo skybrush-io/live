@@ -1,4 +1,5 @@
-import { type Coordinate2D, squaredEuclideanDistance2D } from './math';
+import { squaredEuclideanDistance2D } from '@skybrush/math';
+import type { Coordinate2D } from './math';
 
 /**
  * Axis index.

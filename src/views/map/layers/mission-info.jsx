@@ -14,6 +14,7 @@ import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import { Feature, geom, layer as olLayer, source } from '@collmot/ol-react';
+import { closePolygon, toRadians } from '@skybrush/math';
 
 import mapMarkerOutline from '~/../assets/img/map-marker-outline.svg';
 import mapMarker from '~/../assets/img/map-marker.svg';
@@ -62,7 +63,6 @@ import { getMapOriginRotationAngle } from '~/selectors/map';
 import { hasFeature } from '~/utils/configuration';
 import { formatMissionId } from '~/utils/formatting';
 import { mapViewCoordinateFromLonLat } from '~/utils/geography';
-import { closePolygon, toRadians } from '~/utils/math';
 import CustomPropTypes from '~/utils/prop-types';
 import {
   dashedThinOutline,
