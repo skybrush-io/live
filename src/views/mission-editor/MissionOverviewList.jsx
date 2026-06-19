@@ -51,7 +51,7 @@ const MissionOverviewList = ({
     onSelectItem,
   };
 
-  const virtuoso = useRef(null);
+  const virtuosoRef = useRef(null);
 
   const scrollToCurrent = useCallback(
     () =>
@@ -59,13 +59,13 @@ const MissionOverviewList = ({
       // and the item with the given index is available!
       // (This is required for correct behavior when e.g., restoring backups.)
       setTimeout(() => {
-        virtuoso.current.scrollToIndex({
+        virtuosoRef.current.scrollToIndex({
           index: currentItemIndex,
           align: 'center',
           behavior: 'smooth',
         });
       }, 0),
-    [currentItemIndex, virtuoso]
+    [currentItemIndex, virtuosoRef]
   );
 
   useEffect(() => {
@@ -76,7 +76,7 @@ const MissionOverviewList = ({
 
   return (
     <Virtuoso
-      ref={virtuoso}
+      ref={virtuosoRef}
       data={itemIds}
       context={context}
       itemContent={renderMissionListItem}

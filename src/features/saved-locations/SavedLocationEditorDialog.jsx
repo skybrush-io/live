@@ -161,17 +161,17 @@ const SavedLocationEditorDialogPresentation = ({
   open,
 }) => {
   const { t } = useTranslation();
-  const form = useRef(null);
+  const formRef = useRef(null);
 
   const copyFromMapView = useCallback(() => {
-    form.current.initialize({
-      ...form.current.getState().values,
+    formRef.current.initialize({
+      ...formRef.current.getState().values,
       ...currentMapViewAsSavedLocation,
     });
   }, [currentMapViewAsSavedLocation]);
 
   const submit = useCallback(() => {
-    form.current.submit();
+    formRef.current.submit();
   }, []);
 
   const isNew = editedLocationId === NEW_ITEM_ID;
@@ -229,7 +229,7 @@ const SavedLocationEditorDialogPresentation = ({
       onClose={onClose}
     >
       <DialogContent>
-        <SavedLocationEditorForm ref={form} onSubmit={onSubmit} />
+        <SavedLocationEditorForm ref={formRef} onSubmit={onSubmit} />
       </DialogContent>
       <DialogActions>{actions}</DialogActions>
     </DraggableDialog>

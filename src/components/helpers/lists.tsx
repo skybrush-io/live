@@ -578,7 +578,6 @@ function validateListFactory<P>(
   listFactory: undefined | React.ComponentType<P> | ListFactory<P>
 ): ListFactory<P> {
   if (listFactory === undefined) {
-    // eslint-disable-next-line react/display-name
     return (
       props: P,
       children: React.ReactElement[],

@@ -49,16 +49,16 @@ const Underlay = styled('div')(({ active, timeoutLength }) => ({
 
 const BroadcastButton = ({ isBroadcast, setBroadcast, timeoutLength }) => {
   const { t } = useTranslation();
-  const timeout = useRef(undefined);
+  const timeoutRef = useRef(undefined);
 
   useEffect(() => {
     if (isBroadcast && isValidTimeoutLength(timeoutLength)) {
-      timeout.current = setTimeout(() => {
+      timeoutRef.current = setTimeout(() => {
         setBroadcast(false);
       }, timeoutLength * 1000);
-    } else if (!isBroadcast && timeout.current) {
-      clearTimeout(timeout.current);
-      timeout.current = undefined;
+    } else if (!isBroadcast && timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = undefined;
     }
   }, [isBroadcast, setBroadcast, timeoutLength]);
 

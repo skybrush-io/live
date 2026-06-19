@@ -32,7 +32,7 @@ type LogMessageListProps = {
 
 const LogMessageList = ({ items = [] }: LogMessageListProps) => {
   const listRef = useRef<VirtuosoHandle | null>(null);
-  const previousLastItemId = useRef<number | null>(null);
+  const previousLastItemIdRef = useRef<number | null>(null);
   const [isAtBottom, setAtBottom] = useState(true);
   const [isScrollToBottomButtonBlocked, setScrollToBottomButtonBlocked] =
     useState(false);
@@ -51,7 +51,7 @@ const LogMessageList = ({ items = [] }: LogMessageListProps) => {
   useEffect(() => {
     if (items.length > 0) {
       const lastItemId = items[items.length - 1].id;
-      if (lastItemId !== previousLastItemId.current) {
+      if (lastItemId !== previousLastItemIdRef.current) {
         if (isAtBottom) {
           // New item was added, scroll to bottom. This is used to work around
           // a bug in react-virtuoso when two new items are added in quick
@@ -61,10 +61,10 @@ const LogMessageList = ({ items = [] }: LogMessageListProps) => {
           setTimeout(() => setScrollToBottomButtonBlocked(false), 500);
         }
 
-        previousLastItemId.current = lastItemId;
+        previousLastItemIdRef.current = lastItemId;
       }
     } else {
-      previousLastItemId.current = null;
+      previousLastItemIdRef.current = null;
     }
   }, [isAtBottom, items, scrollToBottom]);
 

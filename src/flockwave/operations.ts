@@ -102,7 +102,9 @@ export async function resetUAV(hub: MessageHub, uavId: string): Promise<void> {
     await hub.startAsyncOperationForSingleId(uavId, { type: 'UAV-RST' });
   } catch (error) {
     const errorString = errorToString(error);
-    throw new Error(`Failed to reset UAV ${uavId}: ${errorString}`);
+    throw new Error(`Failed to reset UAV ${uavId}: ${errorString}`, {
+      cause: error,
+    });
   }
 }
 
@@ -115,7 +117,7 @@ export async function resumeShow(hub: MessageHub): Promise<Schedule> {
     response = await hub.sendMessage({ type: 'X-SHOW-RESUME' });
   } catch (error) {
     const errorString = errorToString(error);
-    throw new Error(`Failed to resume show. ${errorString}`);
+    throw new Error(`Failed to resume show. ${errorString}`, { cause: error });
   }
 
   if (response.body.type !== 'X-SHOW-RESUME') {

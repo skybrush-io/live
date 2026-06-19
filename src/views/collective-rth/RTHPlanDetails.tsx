@@ -189,14 +189,12 @@ const RTHPlanDetails = ({ plans, showSegments, showStartTime }: Props) => {
         <TableVirtuoso
           data={plans}
           components={{
-            // eslint-disable-next-line react/display-name
             Scroller: React.forwardRef<HTMLDivElement>((props, ref) => (
               <TableContainer component={Paper} {...props} ref={ref} />
             )),
             Table: ({ style, ...props }: TableProps) => (
               <Table {...props} sx={{ ...style, width: '100%' }} />
             ),
-            // eslint-disable-next-line react/display-name
             TableBody: React.forwardRef<HTMLTableSectionElement>(
               (props, ref) => <TableBody {...props} ref={ref} />
             ),
