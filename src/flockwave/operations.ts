@@ -159,7 +159,8 @@ export async function setParameter(
   } catch (error) {
     const errorString = errorToString(error);
     throw new Error(
-      `Failed to set parameter ${name} on UAV ${uavId}: ${errorString}`
+      `Failed to set parameter ${name} on UAV ${uavId}: ${errorString}`,
+      { cause: error }
     );
   }
 }
@@ -185,7 +186,12 @@ export async function setParameters(
     );
   } catch (error) {
     const errorString = errorToString(error);
-    throw new Error(`Failed to set parameters on UAV ${uavId}: ${errorString}`);
+    throw new Error(
+      `Failed to set parameters on UAV ${uavId}: ${errorString}`,
+      {
+        cause: error,
+      }
+    );
   }
 
   const { failed = [], success = false } = response as any;
@@ -370,7 +376,9 @@ export async function startCollectiveRTH(hub: MessageHub): Promise<Schedule> {
     response = await hub.sendMessage({ type: 'X-SHOW-CRTH-START' });
   } catch (error) {
     const errorString = errorToString(error);
-    throw new Error(`Failed to start collective RTH. ${errorString}`);
+    throw new Error(`Failed to start collective RTH. ${errorString}`, {
+      cause: error,
+    });
   }
 
   if (response.body.type !== 'X-SHOW-CRTH-START') {
@@ -442,7 +450,9 @@ export async function suspendShow(hub: MessageHub): Promise<Schedule> {
     response = await hub.sendMessage({ type: 'X-SHOW-SUSPEND' });
   } catch (error) {
     const errorString = errorToString(error);
-    throw new Error(`Failed to suspend show. ${errorString}`);
+    throw new Error(`Failed to suspend show. ${errorString}`, {
+      cause: error,
+    });
   }
 
   if (response.body.type !== 'X-SHOW-SUSPEND') {
@@ -490,7 +500,8 @@ export async function uploadDroneShow(
       errorToString(
         (error as any).message || error,
         `Failed to upload show data to UAV ${uavId}`
-      )
+      ),
+      { cause: error }
     );
   }
 }
@@ -518,7 +529,8 @@ export async function uploadFirmware(
     // Currently we assume that we can only post a firmware update to a UAV;
     // this might change in the future but so far we are okay
     throw new Error(
-      `Failed to upload firmware update to UAV ${objectId}: ${errorString}`
+      `Failed to upload firmware update to UAV ${objectId}: ${errorString}`,
+      { cause: error }
     );
   }
 }
@@ -553,7 +565,8 @@ export async function uploadMission(
       errorToString(
         (error as any).message || error,
         `Failed to upload mission to UAV ${uavId}`
-      )
+      ),
+      { cause: error }
     );
   }
 }

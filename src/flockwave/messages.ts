@@ -1641,7 +1641,7 @@ export default class MessageHub {
     }
 
     const parsedResponse = await this._processMultiAsyncOperationResponse(
-      response as Message<MultiAsyncOperationResponseBody<unknown>>,
+      response,
       expectedType,
       { onProgress: progressHandler }
     );

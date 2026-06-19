@@ -107,7 +107,9 @@ const UAVTestButton = ({
   >();
   const [progress, setProgress] = useState<ProgressInfo | undefined>();
   const [suspended, setSuspended] = useState(false);
-  const resumeCallback = useRef<(() => Promise<void>) | undefined>(undefined);
+  const resumeCallbackRef = useRef<(() => Promise<void>) | undefined>(
+    undefined
+  );
   const lastExecutedUavIdRef = useRef<string | undefined>();
   const uavIdRef = useRef(uavId);
   uavIdRef.current = uavId;
@@ -121,7 +123,7 @@ const UAVTestButton = ({
     clearPendingConfirmation();
     setProgress(undefined);
     setSuspended(false);
-    resumeCallback.current = undefined;
+    resumeCallbackRef.current = undefined;
   }, [uavId]);
 
   const askForConfirmation = useCallback(() => {
@@ -139,7 +141,7 @@ const UAVTestButton = ({
       }
       setProgress(progress);
       setSuspended(Boolean(suspended));
-      resumeCallback.current = resume;
+      resumeCallbackRef.current = resume;
     },
     []
   );
@@ -167,8 +169,8 @@ const UAVTestButton = ({
       : { loading: false };
 
   const [, resume] = useAsyncFn(async () => {
-    if (resumeCallback.current) {
-      return resumeCallback.current();
+    if (resumeCallbackRef.current) {
+      return resumeCallbackRef.current();
     } else {
       throw new Error('No resume callback has been provided');
     }

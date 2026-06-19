@@ -241,7 +241,8 @@ export async function getFlightLog(
   } catch (error) {
     const errorString = errorToString(error);
     throw new Error(
-      `Failed to retrieve log ${logId} for UAV ${uavId}: ${errorString}`
+      `Failed to retrieve log ${logId} for UAV ${uavId}: ${errorString}`,
+      { cause: error }
     );
   }
 }
@@ -265,7 +266,8 @@ export async function getFlightLogList(
   } catch (error) {
     const errorString = errorToString(error);
     throw new Error(
-      `Failed to retrieve log list for UAV ${uavId}: ${errorString}`
+      `Failed to retrieve log list for UAV ${uavId}: ${errorString}`,
+      { cause: error }
     );
   }
 }
