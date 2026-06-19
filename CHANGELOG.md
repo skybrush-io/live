@@ -9,11 +9,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added RTK source preset management to the RTK dialog, allowing users to permanently
+  store their custom RTK presets, without the need for server configuration.
+
+- Added a warning if show ground AMSL differs from average altitudes of drones on ground.
+
 - Added RTH method parameter to the show adaptation dialog box.
 
 - Added selected item count to the Selection groups header widget.
 
 ### Changed
+
+- The header of the UAVs panel got simplified. The "Sort by mission IDs" button got 
+  removed, and the ID and show ID columns now behave as all other ones in terms of 
+  ordering. The only exception is that the one that is selected from these two will 
+  become the first column on the left. Columns are properly underlined now if ordering 
+  is according to them.
+
+- The rangefinder tab on the UAV details panel is hidden now, it is not needed for shows.
 
 - Collective RTH plan calculation is fully enabled now.
 
