@@ -180,7 +180,6 @@
   "devDependencies": {
     "@babel/core": "^7.28.3",
     "@babel/eslint-parser": "^7.28.0",
-    "@babel/plugin-proposal-class-properties": "^7.18.6",
     "@babel/plugin-proposal-decorators": "^7.28.0",
     "@babel/preset-env": "^7.28.3",
     "@babel/preset-react": "^7.26.3",
@@ -210,7 +209,7 @@
     "cross-env": "^10.1.0",
     "css-loader": "^7.1.2",
     "dotenv-webpack": "^8.1.1",
-    "electron": "^39.2.7",
+    "electron": "^42.4.1",
     "eslint": "^10.5.0",
     "git-revision-webpack-plugin": "^5.0.0",
     "html-webpack-plugin": "^5.6.5",
@@ -237,9 +236,8 @@
     "worker-url": "^1.1.0"
   },
   "overrides": {
-    "@pmmmwh/react-refresh-webpack-plugin": {
-      "type-fest": "^5.0.1",
-      "webpack-dev-server": "^5.0.2"
+    "@babel/eslint-parser": {
+      "eslint": "^10.5.0"
     },
     "@rjsf/mui": {
       "@mui/icons-material": "^7.3.2",
@@ -254,5 +252,13 @@
     "singleQuote": true,
     "trailingComma": "es5"
   },
-  "packageManager": "npm"
+  "allowScripts": {
+    "core-js@3.47.0": true,
+    "core-js-pure@3.47.0": true,
+    "electron@42.4.1": true,
+    "es5-ext@0.10.64": true,
+    "fsevents@2.3.3": true,
+    "less@4.5.1": true,
+    "unrs-resolver@1.12.2": true
+  }
 }
