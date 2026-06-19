@@ -20,10 +20,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- The header of the UAVs panel got simplified. The "Sort by mission IDs" button got 
-  removed, and the ID and show ID columns now behave as all other ones in terms of 
-  ordering. The only exception is that the one that is selected from these two will 
-  become the first column on the left. Columns are properly underlined now if ordering 
+- The header of the UAVs panel got simplified. The "Sort by mission IDs" button got
+  removed, and the ID and show ID columns now behave as all other ones in terms of
+  ordering. The only exception is that the one that is selected from these two will
+  become the first column on the left. Columns are properly underlined now if ordering
   is according to them.
 
 - The rangefinder tab on the UAV details panel is hidden now, it is not needed for shows.
