@@ -139,7 +139,11 @@ const StatusSummaryMiniTable = ({
     [
       'Last seen',
       lastUpdated ? (
-        <TimeAgo formatter={shortTimeAgoFormatter} date={lastUpdated} />
+        <TimeAgo
+          key='lastSeen'
+          formatter={shortTimeAgoFormatter}
+          date={lastUpdated}
+        />
       ) : (
         naText
       ),

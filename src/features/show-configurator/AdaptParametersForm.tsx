@@ -119,7 +119,9 @@ export function useAdaptParametersFormState(
       defaultParameters?.returnToHomeMethod ??
       defaultAdaptParameters.returnToHomeMethod,
   });
-  const [isValid, setIsValid] = useState(adaptParametersValid(parameters));
+  const [isValid, setIsValid] = useState(() =>
+    adaptParametersValid(parameters)
+  );
 
   const onMinDistanceChanged = useCallback(
     (evt: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {

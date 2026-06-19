@@ -40,14 +40,17 @@ import { type Nullable } from '~/utils/types';
 
 const PREREQUISITES: readonly Prerequisite[] = Object.freeze([
   {
+    id: 'hasLoadedShowFile',
     selector: hasLoadedShowFile,
     message: tt('show.showConfigurator.prerequisites.loaded'),
   },
   {
+    id: 'isConnected',
     selector: isConnected,
     message: tt('show.showConfigurator.prerequisites.server'),
   },
   {
+    id: 'hasOrigin',
     selector: (state: RootState) =>
       [
         getOutdoorShowOrigin(state),
@@ -56,6 +59,7 @@ const PREREQUISITES: readonly Prerequisite[] = Object.freeze([
     message: tt('show.showConfigurator.prerequisites.origin'),
   },
   {
+    id: 'supportsStudioInterop',
     selector: supportsStudioInterop,
     message: tt('show.showConfigurator.prerequisites.extension'),
   },

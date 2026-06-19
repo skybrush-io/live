@@ -149,6 +149,7 @@ const RTKCorrectionSourceSelector = ({
   // Cleanup optimistic state when server state catches up
   useEffect(() => {
     if (selectedByUser !== undefined && selectedByUser === selectedOnServer) {
+      // eslint-disable-next-line @eslint-react/set-state-in-effect
       setSelectedByUser(undefined);
     }
   }, [selectedByUser, selectedOnServer]);

@@ -86,6 +86,7 @@ const UAVSelector = ({
   // Clear the filter each time the popover is opened.
   useEffect(() => {
     if (open) {
+      // eslint-disable-next-line @eslint-react/set-state-in-effect
       setFilter('');
     }
   }, [open]);
@@ -160,6 +161,7 @@ const UAVSelector = ({
               left: `calc(50% - ${theme.spacing(1)} + ${
                 // Adjust arrow position when the `Popover` is pushed against the
                 // edge of the viewport, thus isn't centered on the anchor element
+                // eslint-disable-next-line @eslint-react/unsupported-syntax
                 (() => {
                   const margin = Number.parseInt(theme.spacing(2));
                   const width =

@@ -37,6 +37,7 @@ const LCDText = ({
   off,
   offSegments,
   variant = 'default',
+  sx,
   ...rest
 }) => {
   const textStyle = useMemo(() => {
@@ -92,14 +93,12 @@ const LCDText = ({
   return (
     <Box
       {...rest}
-      sx={[
-        {
-          position: 'relative',
-          display: 'inline-block',
-          fontFamily: variants[variant].fontFamily,
-        },
-        ...(Array.isArray(rest.sx) ? rest.sx : [rest.sx]),
-      ]}
+      sx={{
+        position: 'relative',
+        display: 'inline-block',
+        fontFamily: variants[variant].fontFamily,
+        ...sx,
+      }}
     >
       {offSegments && variant !== 'default' && (
         <div style={offSegmentStyle}>

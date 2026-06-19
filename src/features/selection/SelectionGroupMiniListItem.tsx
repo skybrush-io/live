@@ -54,7 +54,7 @@ const SelectionGroupMiniListItem = ({ group }: Props) => {
   const handleUpdate = useCallback(() => {
     dispatch(saveCurrentSelectionAsGroupIfNotEmpty(id));
     setRecentlyUpdated(true);
-  }, [id, name, dispatch, setRecentlyUpdated]);
+  }, [id, dispatch, setRecentlyUpdated]);
 
   const handleDelete = useCallback(() => {
     dispatch(deleteGroup(id));

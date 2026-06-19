@@ -36,16 +36,19 @@ import { Workbench } from '~/workbench';
 
 const GENERAL_PREREQUISITES: readonly Prerequisite[] = Object.freeze([
   {
+    id: 'proFeaturesEnabled',
     selector: (state: RootState) => hasLicenseWithProFeatures(state) ?? false,
     message: tt('proControlButtonGroup.prerequisites.proFeaturesEnabled'),
   },
   {
+    id: 'supportsSuspendResumeCRTH',
     selector: supportsSuspendResumeCRTH,
     message: tt(
       'proControlButtonGroup.prerequisites.supportsSuspendResumeCRTH'
     ),
   },
   {
+    id: 'collectiveRTHNotTriggered',
     selector: (state: RootState) => !selectIsCollectiveRTHTriggered(state),
     message: tt(
       'proControlButtonGroup.prerequisites.collectiveRTHNotTriggered'
@@ -55,6 +58,7 @@ const GENERAL_PREREQUISITES: readonly Prerequisite[] = Object.freeze([
 
 const CRTH_PREREQUISITES: readonly Prerequisite[] = Object.freeze([
   {
+    id: 'hasCollectiveRTHPlan',
     selector: (state: RootState) =>
       selectCollectiveRTHPlanSummary(state).isValid,
     message: tt('proControlButtonGroup.prerequisites.hasCollectiveRTHPlan'),

@@ -20,7 +20,7 @@ type Props = Omit<BoxProps, 'onClose' | 'onSubmit'> & {
   onSubmit: (values: { accuracy: number; duration: number }) => void;
 };
 
-const SurveySettingsEditor = ({ onClose, onSubmit, ...rest }: Props) => {
+const SurveySettingsEditor = ({ onClose, onSubmit, sx, ...rest }: Props) => {
   const settings = useAsync(async () => {
     const settingsFromServer = await messageHub.query.getRTKSurveySettings();
     return settingsFromServer
@@ -37,14 +37,12 @@ const SurveySettingsEditor = ({ onClose, onSubmit, ...rest }: Props) => {
   return (
     <Box
       {...rest}
-      sx={[
-        {
-          display: 'flex',
-          flexDirection: 'row',
-          alignItems: 'center',
-        },
-        ...(Array.isArray(rest.sx) ? rest.sx : [rest.sx]),
-      ]}
+      sx={{
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        ...sx,
+      }}
     >
       <IconButton size='large' onClick={onClose}>
         <ArrowBack />

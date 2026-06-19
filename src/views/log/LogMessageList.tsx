@@ -33,8 +33,8 @@ type LogMessageListProps = {
 const LogMessageList = ({ items = [] }: LogMessageListProps) => {
   const listRef = useRef<VirtuosoHandle | null>(null);
   const previousLastItemIdRef = useRef<number | null>(null);
-  const [isAtBottom, setAtBottom] = useState(true);
-  const [isScrollToBottomButtonBlocked, setScrollToBottomButtonBlocked] =
+  const [scrolledToBottom, setScrolledToBottom] = useState(true);
+  const [scrollToBottomButtonBlocked, setScrollToBottomButtonBlocked] =
     useState(false);
   const classes = useStyles();
 
@@ -49,16 +49,25 @@ const LogMessageList = ({ items = [] }: LogMessageListProps) => {
   }, [listRef, items]);
 
   useEffect(() => {
+    let delayedScrollToBottomTimeout: ReturnType<typeof setTimeout> | undefined;
+    let delayedUnblockScrollToBottomButtonTimeout:
+      | ReturnType<typeof setTimeout>
+      | undefined;
+
     if (items.length > 0) {
       const lastItemId = items[items.length - 1].id;
+
       if (lastItemId !== previousLastItemIdRef.current) {
-        if (isAtBottom) {
+        if (scrolledToBottom) {
           // New item was added, scroll to bottom. This is used to work around
           // a bug in react-virtuoso when two new items are added in quick
           // succession but in _different_ frames
           setScrollToBottomButtonBlocked(true);
-          setTimeout(scrollToBottom, 100);
-          setTimeout(() => setScrollToBottomButtonBlocked(false), 500);
+          delayedScrollToBottomTimeout = setTimeout(scrollToBottom, 100);
+          delayedUnblockScrollToBottomButtonTimeout = setTimeout(
+            () => setScrollToBottomButtonBlocked(false),
+            500
+          );
         }
 
         previousLastItemIdRef.current = lastItemId;
@@ -66,7 +75,17 @@ const LogMessageList = ({ items = [] }: LogMessageListProps) => {
     } else {
       previousLastItemIdRef.current = null;
     }
-  }, [isAtBottom, items, scrollToBottom]);
+
+    return () => {
+      if (delayedScrollToBottomTimeout) {
+        clearTimeout(delayedScrollToBottomTimeout);
+      }
+
+      if (delayedUnblockScrollToBottomButtonTimeout) {
+        clearTimeout(delayedUnblockScrollToBottomButtonTimeout);
+      }
+    };
+  }, [scrolledToBottom, items, scrollToBottom]);
 
   return (
     <>
@@ -75,9 +94,9 @@ const LogMessageList = ({ items = [] }: LogMessageListProps) => {
         followOutput
         data={items}
         itemContent={renderLogMessage}
-        atBottomStateChange={setAtBottom}
+        atBottomStateChange={setScrolledToBottom}
       />
-      <FadeAndSlide in={!isAtBottom && !isScrollToBottomButtonBlocked}>
+      <FadeAndSlide in={!scrolledToBottom && !scrollToBottomButtonBlocked}>
         <Fab
           color='secondary'
           size='small'

@@ -5,11 +5,13 @@ import type { PreparedI18nKey } from '~/i18n';
 import type { AppSelector } from '~/store/reducers';
 
 export type Prerequisite = Readonly<{
+  id: string;
   selector: AppSelector<boolean>;
   message: PreparedI18nKey;
 }>;
 
 export type ResolvedPrerequisite = Readonly<{
+  id: string;
   result: boolean;
   message: string;
 }>;
@@ -27,7 +29,13 @@ export const useConstPrerequisites = (
 ) => {
   const { t } = useTranslation();
   const prerequisites: readonly ResolvedPrerequisite[] = constPrerequisites.map(
-    ({ selector, message }) => ({
+    ({ id, selector, message }) => ({
+      id,
+      // ESLint rule is disabled because the length of `constPrerequisites` must never
+      // change, so the number of hook calls is constant. See the comment above the
+      // hook for more details.
+      //
+      // eslint-disable-next-line @eslint-react/rules-of-hooks
       result: useSelector(selector),
       message: message(t),
     })

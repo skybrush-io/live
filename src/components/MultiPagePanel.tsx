@@ -50,49 +50,51 @@ const MultiPagePanel = ({
   direction = 'left',
   onChange,
   selectedPage,
+  sx,
   ...rest
 }: MultiPagePanelProps) => {
   const classes = useStyles();
 
   return (
-    <Box
-      {...rest}
-      sx={[
-        {
-          position: 'relative',
-        },
-        ...(Array.isArray(rest.sx) ? rest.sx : [rest.sx]),
-      ]}
-    >
-      {React.Children.map(children, (child) => {
-        const {
-          className,
-          id,
-          keepMounted,
-          scrollable,
-          ...boxProps
-        }: PageProps = child.props;
-        const transitionProps: FadeAndSlideProps = {
-          in: id === selectedPage,
-          direction,
-          children: (child as any).children,
-        };
-        if (!keepMounted) {
-          transitionProps.mountOnEnter = true;
-          transitionProps.unmountOnExit = true;
-        }
+    <Box {...rest} sx={{ position: 'relative', ...sx }}>
+      {
+        // eslint-disable-next-line @eslint-react/no-children-map
+        React.Children.map(children, (child) => {
+          const {
+            className,
+            id,
+            keepMounted,
+            scrollable,
+            ...boxProps
+          }: PageProps = child.props;
+          const transitionProps: FadeAndSlideProps = {
+            in: id === selectedPage,
+            direction,
+            children: (child as any).children,
+          };
+          if (!keepMounted) {
+            transitionProps.mountOnEnter = true;
+            transitionProps.unmountOnExit = true;
+          }
 
-        const effectiveClassName = clsx(
-          classes.page,
-          scrollable && classes.scrollable,
-          className
-        );
-        return (
-          <FadeAndSlide {...transitionProps}>
-            <Box className={effectiveClassName} {...boxProps} />
-          </FadeAndSlide>
-        );
-      })}
+          const effectiveClassName = clsx(
+            classes.page,
+            scrollable && classes.scrollable,
+            className
+          );
+          return (
+            // Reason for disabling: yes, I know this code is horrible and it should
+            // not work -- but it does, and I broke it when I tried to "fix" it by
+            // removing the children prop from transitionProps and moving it inside
+            // the <Box> component below.
+            //
+            // eslint-disable-next-line @eslint-react/jsx-no-children-prop-with-children, @eslint-react/jsx-no-children-prop
+            <FadeAndSlide {...transitionProps}>
+              <Box className={effectiveClassName} {...boxProps} />
+            </FadeAndSlide>
+          );
+        })
+      }
     </Box>
   );
 };

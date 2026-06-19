@@ -1,3 +1,4 @@
+/* eslint-disable @eslint-react/no-nested-component-definitions */
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import type { Theme } from '@mui/material/styles';

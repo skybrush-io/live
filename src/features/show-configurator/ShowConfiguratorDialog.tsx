@@ -304,6 +304,7 @@ const ShowConfiguratorDialog = (props: Props): React.JSX.Element => {
           content={t(`showConfiguratorDialog.help.${stage}`)
             .split('\n')
             .map((item, idx) => (
+              // eslint-disable-next-line @eslint-react/no-array-index-key
               <p key={idx}>{item}</p>
             ))}
         />

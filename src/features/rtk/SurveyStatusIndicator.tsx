@@ -40,6 +40,7 @@ const SurveyStatusIndicator = ({
   active,
   supported,
   valid,
+  sx,
   ...rest
 }: Props) => {
   const { t } = useTranslation();
@@ -48,15 +49,13 @@ const SurveyStatusIndicator = ({
     <Fade in={supported || true}>
       <Box
         {...rest}
-        sx={[
-          {
-            alignItems: 'center',
-            flex: 1,
-            display: 'flex',
-            flexDirection: 'row',
-          },
-          ...(Array.isArray(rest.sx) ? rest.sx : [rest.sx]),
-        ]}
+        sx={{
+          alignItems: 'center',
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'row',
+          ...sx,
+        }}
       >
         <LabeledStatusLight
           size='small'

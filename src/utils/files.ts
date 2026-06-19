@@ -5,8 +5,8 @@
 /**
  * Allows the user to pick one or more files via the browser's selection dialog.
  *
- * @param {object} options - Additional options to be set on the input field
- * @returns {Promise} A promise that resolves to the list of selected files
+ * @param options - Additional options to be set on the input field
+ * @returns A promise that resolves to the list of selected files
  */
 export const getFilesFromUser = async (
   options: ElementCreationOptions
@@ -18,7 +18,7 @@ export const getFilesFromUser = async (
         type: 'file',
         ...options,
       }
-    ) as HTMLInputElement;
+    );
 
     input.addEventListener('change', (event) => {
       if (event.target) {
@@ -36,8 +36,8 @@ export const getFilesFromUser = async (
 /**
  * Tries to get exactly one file from the user, fails otherwise.
  *
- * @param {object} options - Additional options to be set on the input field
- * @returns {Promise} A promise that resolves to the single selected file
+ * @param options - Additional options to be set on the input field
+ * @returns A promise that resolves to the single selected file
  */
 export const getFileFromUser = async (
   options: ElementCreationOptions = {}

@@ -14,7 +14,7 @@ const flock = new FlockModel();
 /**
  * React context that exposes the flock instance to components.
  */
-export const Flock = React.createContext<FlockModel>(flock);
+export const FlockContext = React.createContext<FlockModel>(flock);
 
 /**
  * Higher order component that propagates the flock passed in the context
@@ -29,9 +29,9 @@ export const injectFlockFromContext = <
   React.PropsWithoutRef<TProps> & React.RefAttributes<TElement>
 > =>
   React.forwardRef<TElement, TProps>((props, ref) => (
-    <Flock.Consumer>
+    <FlockContext.Consumer>
       {(flock) => <Component {...(props as TProps)} ref={ref} flock={flock} />}
-    </Flock.Consumer>
+    </FlockContext.Consumer>
   ));
 
 export default flock;

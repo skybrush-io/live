@@ -328,11 +328,11 @@ const UAVListPresentation = ({
 
   // Get a ref to the virtualized list or grid and create a scroll-to-index
   // function for it
-  const scrollToIndex = useRef<ScrollerToIndex>(() => false);
+  const scrollToIndexRef = useRef<ScrollerToIndex>(() => false);
   const scrollFunctionsRef: RefCallback<VirtualizedScrollFunctions> = (
     value
   ) => {
-    scrollToIndex.current = createScrollerToIndex({
+    scrollToIndexRef.current = createScrollerToIndex({
       functions: value,
       headerHeight: HEADER_HEIGHT,
     });
@@ -344,7 +344,7 @@ const UAVListPresentation = ({
     (): VirtualizedScrollableComponentRegistration => ({
       id: VirtualizedScrollableComponentId.UAV_LIST,
       getIndexOfItem: getIndexOfUavId,
-      scrollToIndex: (index) => scrollToIndex.current(index),
+      scrollToIndex: (index) => scrollToIndexRef.current(index),
     }),
     [getIndexOfUavId]
   );
@@ -360,7 +360,7 @@ const UAVListPresentation = ({
         dispatch,
         containerDOMNodeId,
         (index) => {
-          scrollToIndex.current(index);
+          scrollToIndexRef.current(index);
         }
       ),
     [dispatch, containerDOMNodeId]

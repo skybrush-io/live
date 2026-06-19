@@ -891,7 +891,7 @@ export function getSingleUAVStatusLevel(uav: StoredUAV): Status {
     return Status.MISSING;
   }
 
-  const maxError = Math.max(...uav.errors) as UAVErrorCode;
+  const maxError: UAVErrorCode = Math.max(...uav.errors);
 
   if (maxError === UAVErrorCode.RETURN_TO_HOME) {
     return Status.RTH;

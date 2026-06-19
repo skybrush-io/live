@@ -46,7 +46,7 @@ import {
 import ShowFileWatcher from './views/show-control/ShowFileWatcher';
 
 import { ErrorHandler } from './error-handling';
-import flock, { Flock } from './flock';
+import flock, { FlockContext } from './flock';
 import LanguageWatcher from './i18n/LanguageWatcher';
 import perspectives from './perspectives';
 import rootSaga from './sagas';
@@ -245,9 +245,9 @@ const enhancer = (Component) =>
               speedy={false}
             >
               <ThemeProvider>
-                <Flock.Provider value={flock}>
+                <FlockContext.Provider value={flock}>
                   <Component {...this.props} />
-                </Flock.Provider>
+                </FlockContext.Provider>
               </ThemeProvider>
             </StyledEngineProvider>
           </StoreProvider>

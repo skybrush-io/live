@@ -127,24 +127,32 @@ const PreflightStatusPanelLowerSegment = memo(
           : Promise.resolve(missingUAVCheckInfo),
       [messageHub, uavId]
     );
-    const scheduledRefresh = useRef<ReturnType<typeof setTimeout>>();
+    const scheduledRefreshRef = useRef<ReturnType<typeof setTimeout>>();
 
     // Refresh the status every second
     useEffect(() => {
       const isResultReady =
         uavId && !state.loading && !state.error && Boolean(state.value);
-      if (isResultReady && !scheduledRefresh.current) {
-        scheduledRefresh.current = setTimeout(() => {
-          scheduledRefresh.current = undefined;
+      if (isResultReady && !scheduledRefreshRef.current) {
+        scheduledRefreshRef.current = setTimeout(() => {
+          scheduledRefreshRef.current = undefined;
           state.retry();
         }, 1000);
       }
+
+      return () => {
+        if (scheduledRefreshRef.current) {
+          clearTimeout(scheduledRefreshRef.current);
+          scheduledRefreshRef.current = undefined;
+        }
+      };
     }, [state, uavId]);
 
     // Cancel scheduled refreshes when unmounting
     useUnmount(() => {
-      if (scheduledRefresh.current) {
-        clearTimeout(scheduledRefresh.current);
+      if (scheduledRefreshRef.current) {
+        clearTimeout(scheduledRefreshRef.current);
+        scheduledRefreshRef.current = undefined;
       }
     });
 

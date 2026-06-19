@@ -9,9 +9,9 @@ type Props = {
 const PrerequisiteList = ({ prerequisites }: Props) => {
   return (
     <MiniList>
-      {prerequisites.map(({ result, message }, idx) => (
+      {prerequisites.map(({ id, result, message }) => (
         <MiniListItem
-          key={idx}
+          key={id}
           iconPreset={result ? 'success' : 'error'}
           primaryText={message}
         />

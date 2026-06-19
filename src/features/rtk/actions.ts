@@ -65,7 +65,14 @@ export const toggleAntennaPositionFormat =
     );
   };
 
-export const useSavedCoordinateForPreset =
+/**
+ * Restores the saved coordinate from a preset and sets it as the current antenna
+ * position.
+ *
+ * @param presetId  the ID of the preset, for logging purposes
+ * @param savedCoordinate  the saved coordinates in the preset
+ */
+export const restoreSavedCoordinateFromPreset =
   (
     presetId: string | undefined,
     savedCoordinate: RTKSavedCoordinate

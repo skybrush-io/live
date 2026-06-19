@@ -534,6 +534,7 @@ const createNumericField = ({
     );
 
     useEffect(() => {
+      // eslint-disable-next-line @eslint-react/set-state-in-effect
       setDisplayedValue(formatter(value));
     }, [value]);
 

@@ -16,7 +16,7 @@ import ListItemText from '@mui/material/ListItemText';
 import { BackgroundHint } from '@skybrush/mui-components';
 
 import { callAndHandleErrors } from '~/error-handling';
-import { useSavedCoordinateForPreset } from '~/features/rtk/actions';
+import { restoreSavedCoordinateFromPreset } from '~/features/rtk/actions';
 import {
   getCoordinateRestorationDialogState,
   getPreferredSavedRTKPositionFormatter,
@@ -144,6 +144,6 @@ export default connect(
   },
   {
     onClose: closeCoordinateRestorationDialog,
-    onUseSaved: useSavedCoordinateForPreset,
+    onUseSaved: restoreSavedCoordinateFromPreset,
   }
 )(RTKCoordinateRestorationDialog);

@@ -117,7 +117,7 @@ export function createKeyboardNavigationHandlers<
 
     const selectedIds = getSelectedIds(state);
     let caretIndex = -1;
-    let newIndex = 0;
+    let newIndex: number;
 
     // We don't really have the concept of a "caret" in the list, but the
     // navigation keys are expected to move as if we had one. If we had no

@@ -37,6 +37,7 @@ const MessageField = React.forwardRef<HTMLDivElement, MessageFieldProps>(
 
     const [historyIndex, setHistoryIndex] = useState(0);
     useEffect(() => {
+      // eslint-disable-next-line @eslint-react/set-state-in-effect
       setMessage(history[history.length - historyIndex] ?? '');
     }, [history, historyIndex]);
 

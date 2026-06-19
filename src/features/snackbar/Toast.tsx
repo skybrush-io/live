@@ -69,19 +69,17 @@ const ToastContent = ({ notification }: ToastContentProps) => {
   }
 
   if (Array.isArray(buttons) && buttons.length > 0) {
-    const buttonComponents = buttons.map(
-      ({ action, label, ...rest }, index) => (
-        <ToastNotificationButton
-          key={index}
-          size='small'
-          variant='outlined'
-          onClick={() => dispatch(action)}
-          {...rest}
-        >
-          {label}
-        </ToastNotificationButton>
-      )
-    );
+    const buttonComponents = buttons.map(({ action, label, ...rest }) => (
+      <ToastNotificationButton
+        key={label}
+        size='small'
+        variant='outlined'
+        onClick={() => dispatch(action)}
+        {...rest}
+      >
+        {label}
+      </ToastNotificationButton>
+    ));
 
     result = (
       <Box

@@ -1,3 +1,4 @@
+/* eslint-disable @eslint-react/set-state-in-effect */
 import Button from '@mui/material/Button';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -124,7 +125,7 @@ const UAVTestButton = ({
     setProgress(undefined);
     setSuspended(false);
     resumeCallbackRef.current = undefined;
-  }, [uavId]);
+  }, [clearPendingConfirmation, uavId]);
 
   const askForConfirmation = useCallback(() => {
     clearPendingConfirmation();

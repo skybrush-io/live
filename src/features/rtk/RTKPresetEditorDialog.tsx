@@ -304,6 +304,7 @@ const RTKPresetEditorFormPresentation = ({
 
   useEffect(() => {
     if (initialValues?.sources && initialValues.sources.length > 0) {
+      // eslint-disable-next-line @eslint-react/set-state-in-effect
       setSources(
         initialValues.sources.map((value) => ({ id: nanoid(), value }))
       );
@@ -521,6 +522,7 @@ const RTKPresetEditorDialogContainer = ({
     if (open && mode === 'edit' && presetId) {
       void fetchPresets();
     } else {
+      // eslint-disable-next-line @eslint-react/set-state-in-effect
       setInitialPreset(null);
     }
   }, [open, mode, presetId]);

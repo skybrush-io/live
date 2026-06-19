@@ -20,6 +20,7 @@ const DronePlaceholderList = ({
   preferEmptyMessage,
   successMessage,
   title,
+  sx,
   ...rest
 }) => {
   const formattedAndSortedIds = orderBy(
@@ -30,15 +31,7 @@ const DronePlaceholderList = ({
       )
   );
   return (
-    <Box
-      {...rest}
-      sx={[
-        {
-          mt: 1,
-        },
-        ...(Array.isArray(rest.sx) ? rest.sx : [rest.sx]),
-      ]}
-    >
+    <Box {...rest} sx={{ mt: 1, ...sx }}>
       <Box
         sx={{
           display: 'flex',
