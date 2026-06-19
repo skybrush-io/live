@@ -16,22 +16,4 @@ const flock = new FlockModel();
  */
 export const FlockContext = React.createContext<FlockModel>(flock);
 
-/**
- * Higher order component that propagates the flock passed in the context
- * as props into the wrapped component.
- */
-export const injectFlockFromContext = <
-  TElement,
-  TProps extends { ref?: React.Ref<TElement>; flock: FlockModel },
->(
-  Component: React.ComponentType<TProps>
-): React.ForwardRefExoticComponent<
-  React.PropsWithoutRef<TProps> & React.RefAttributes<TElement>
-> =>
-  React.forwardRef<TElement, TProps>((props, ref) => (
-    <FlockContext.Consumer>
-      {(flock) => <Component {...(props as TProps)} ref={ref} flock={flock} />}
-    </FlockContext.Consumer>
-  ));
-
 export default flock;

@@ -35,6 +35,7 @@ import { showError, showNotification } from './features/snackbar/actions';
 import { semanticsFromSeverity } from './features/snackbar/utils';
 import type { Severity } from './model/enums';
 
+import React from 'react';
 import flock from './flock';
 import store from './store';
 
@@ -104,5 +105,10 @@ messageHub.registerNotificationHandlers({
     void handleDebugRequest(message.body, messageHub.execute.sendDebugMessage);
   },
 });
+
+/**
+ * React context that exposes the workbench instance to components.
+ */
+export const MessageHubContext = React.createContext(messageHub);
 
 export default messageHub;

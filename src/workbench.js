@@ -21,7 +21,6 @@ import {
   setWorkbenchHasHeaders,
   setWorkbenchIsFixed,
 } from './features/workbench/slice';
-import { injectFlockFromContext } from './flock';
 import i18n from './i18n';
 import store from './store';
 import {
@@ -102,10 +101,6 @@ export const componentRegistry = {
     component: FieldNotesPanel,
     label: 'Field notes',
   },
-  'ground-control-view': {
-    component: injectFlockFromContext(views.GroundControlView),
-    label: 'Ground control',
-  },
   'layer-list': {
     component: views.LayerList,
     label: 'Layers',
@@ -169,7 +164,7 @@ export const componentRegistry = {
     detachable: true,
   },
   'uav-list': {
-    component: injectFlockFromContext(views.UAVList),
+    component: views.UAVList,
     label: 'UAVs',
     detachable: true,
   },
@@ -230,6 +225,6 @@ i18n.on('languageChanged', () => {
 /**
  * React context that exposes the workbench instance to components.
  */
-export const Workbench = React.createContext(workbench);
+export const WorkbenchContext = React.createContext(workbench);
 
 export default workbench;

@@ -17,7 +17,7 @@ import {
 } from '~/features/uavs/selectors';
 import type { RootState } from '~/store/reducers';
 import { createShallowSelector } from '~/utils/selectors';
-import { Workbench } from '~/workbench';
+import { WorkbenchContext } from '~/workbench';
 
 import UAVStatusMiniList from './UAVStatusMiniList';
 import UAVStatusSummaryLight from './UAVStatusSummaryLight';
@@ -127,7 +127,7 @@ const UAVStatusSummary = ({
   ...rest
 }: UAVStatusSummaryProps) => {
   const classes = useStyles();
-  const workbench = useContext(Workbench);
+  const workbench = useContext(WorkbenchContext);
 
   return (
     <LazyTooltip interactive content={<UAVStatusMiniList />}>

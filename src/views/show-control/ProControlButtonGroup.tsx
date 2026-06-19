@@ -32,7 +32,7 @@ import {
 import { tt } from '~/i18n';
 import HomeCircleOutlined from '~/icons/HomeCircleOutlined';
 import { type RootState } from '~/store/reducers';
-import { Workbench } from '~/workbench';
+import { WorkbenchContext } from '~/workbench';
 
 const GENERAL_PREREQUISITES: readonly Prerequisite[] = Object.freeze([
   {
@@ -93,7 +93,7 @@ type Props = DispatchProps;
 
 const ProControlButtonGroup = (props: Props) => {
   const { resumeShow, startCollectiveRTH, suspendShow } = props;
-  const workbench = useContext(Workbench);
+  const workbench = useContext(WorkbenchContext);
   const classes = useStyles();
   const { t } = useTranslation();
 
