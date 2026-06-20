@@ -1,13 +1,12 @@
 import Box from '@mui/material/Box';
-import React from 'react';
+import React, { type Ref } from 'react';
 import { connect } from 'react-redux';
-import { Virtuoso, VirtuosoGrid } from 'react-virtuoso';
+import { Virtuoso, VirtuosoGrid, type VirtuosoHandle } from 'react-virtuoso';
 
 import { makeStyles } from '@skybrush/app-theme-mui';
 
 import { UAVListLayout } from '~/features/settings/types';
 import type { RootState } from '~/store/reducers';
-import type { VirtualizedScrollFunctions } from '~/utils/navigation';
 
 import type { UAVListSectionProps } from './UAVListSection';
 import { GRID_ITEM_WIDTH, GRID_ROW_HEIGHT, HEADER_HEIGHT } from './constants';
@@ -35,6 +34,7 @@ type VirtualizedUAVListBodyProps = Readonly<{
   items: Item[];
   itemRenderer: UAVListSectionProps['itemRenderer'];
   layout: UAVListLayout;
+  ref?: Ref<VirtuosoHandle>;
 }>;
 
 /**
@@ -49,11 +49,10 @@ const GridHeaderPadding = (): React.JSX.Element => (
 /**
  * Presentation component for showing the drone show configuration view.
  */
-const VirtualizedUAVListBody = React.forwardRef<
-  VirtualizedScrollFunctions | undefined,
-  VirtualizedUAVListBodyProps
->((props, ref): React.JSX.Element => {
-  const { items, itemRenderer, layout, ...rest } = props;
+const VirtualizedUAVListBody = (
+  props: VirtualizedUAVListBodyProps
+): React.JSX.Element => {
+  const { items, itemRenderer, layout, ref, ...rest } = props;
   const classes = useStyles();
 
   return layout === UAVListLayout.GRID ? (
@@ -70,7 +69,7 @@ const VirtualizedUAVListBody = React.forwardRef<
     />
   ) : (
     <Virtuoso
-      ref={ref as any}
+      ref={ref}
       className={classes.list}
       components={{
         Header: GridHeaderPadding,
@@ -80,8 +79,7 @@ const VirtualizedUAVListBody = React.forwardRef<
       {...rest}
     />
   );
-});
-VirtualizedUAVListBody.displayName = 'VirtualizedUAVListBody';
+};
 
 export default connect(
   // mapStateToProps

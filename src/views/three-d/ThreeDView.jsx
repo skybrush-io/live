@@ -3,7 +3,6 @@
  */
 
 import PropTypes from 'prop-types';
-import React from 'react';
 import { connect } from 'react-redux';
 
 import CoordinateSystemAxes from './CoordinateSystemAxes';
@@ -14,7 +13,6 @@ import Scenery from './Scenery';
 import SelectedTrajectories from './SelectedTrajectories';
 
 // eslint-disable-next-line no-unused-vars
-import AFrame from '~/aframe';
 import { objectToString } from '~/aframe/utils';
 import Colors from '~/components/colors';
 import {
@@ -41,7 +39,7 @@ const getEffectiveScenery = (state) => {
   }
 };
 
-const ThreeDView = React.forwardRef((props, ref) => {
+const ThreeDView = ({ ref, ...props }) => {
   const {
     cameraRef,
     grid,
@@ -138,7 +136,7 @@ const ThreeDView = React.forwardRef((props, ref) => {
       <Scenery type={`${scenery}-${lighting}`} grid={grid} />
     </a-scene>
   );
-});
+};
 
 ThreeDView.propTypes = {
   cameraRef: PropTypes.any,

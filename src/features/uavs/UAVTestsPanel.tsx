@@ -111,7 +111,7 @@ const UAVTestButton = ({
   const resumeCallbackRef = useRef<(() => Promise<void>) | undefined>(
     undefined
   );
-  const lastExecutedUavIdRef = useRef<string | undefined>();
+  const lastExecutedUavIdRef = useRef<string | undefined>(undefined);
   const uavIdRef = useRef(uavId);
   uavIdRef.current = uavId;
 

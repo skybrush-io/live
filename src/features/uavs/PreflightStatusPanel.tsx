@@ -127,7 +127,8 @@ const PreflightStatusPanelLowerSegment = memo(
           : Promise.resolve(missingUAVCheckInfo),
       [messageHub, uavId]
     );
-    const scheduledRefreshRef = useRef<ReturnType<typeof setTimeout>>();
+    const scheduledRefreshRef =
+      useRef<ReturnType<typeof setTimeout>>(undefined);
 
     // Refresh the status every second
     useEffect(() => {
@@ -193,9 +194,6 @@ const PreflightStatusPanelLowerSegment = memo(
     );
   }
 );
-
-PreflightStatusPanelLowerSegment.displayName =
-  'PreflightStatusPanelLowerSegment';
 
 type PreflightStatusPanelOwnProps = {
   uavId?: string;

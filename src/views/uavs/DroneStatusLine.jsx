@@ -105,6 +105,7 @@ const DroneStatusLine = ({
   headingDeviation,
   gone,
   gpsFixType,
+  id,
   label,
   localPosition,
   missing,

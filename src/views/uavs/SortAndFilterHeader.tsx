@@ -333,15 +333,16 @@ const getFilterChipClass = (
 
 type CheckableMenuItemProps = MenuItemProps & Readonly<{ label: string }>;
 
-const CheckableMenuItem = React.forwardRef<
-  HTMLLIElement,
-  CheckableMenuItemProps
->(({ label, selected, ...rest }, ref) => (
+const CheckableMenuItem = ({
+  ref,
+  label,
+  selected,
+  ...rest
+}: CheckableMenuItemProps) => (
   <MenuItem ref={ref} dense {...rest}>
     {label}
   </MenuItem>
-));
-CheckableMenuItem.displayName = 'CheckableMenuItem';
+);
 
 function bindChip({
   state,

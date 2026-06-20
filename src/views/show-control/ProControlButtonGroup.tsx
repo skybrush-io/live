@@ -1,7 +1,7 @@
 import PauseCircleOutlined from '@mui/icons-material/PauseCircleOutlined';
 import PlayCircleOutlined from '@mui/icons-material/PlayCircleOutlined';
 import Box from '@mui/material/Box';
-import { useContext } from 'react';
+import { use } from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
@@ -94,7 +94,7 @@ type Props = DispatchProps;
 
 const ProControlButtonGroup = (props: Props) => {
   const { resumeShow, startCollectiveRTH, suspendShow } = props;
-  const workbench = useContext(WorkbenchContext);
+  const workbench = use(WorkbenchContext);
   const classes = useStyles();
   const { t } = useTranslation();
 

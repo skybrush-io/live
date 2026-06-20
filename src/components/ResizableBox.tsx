@@ -2,11 +2,7 @@ import Box, { type BoxProps } from '@mui/material/Box';
 import type { Theme } from '@mui/material/styles';
 import clsx from 'clsx';
 import React, { useCallback, useState } from 'react';
-import {
-  Resizable,
-  type Props as ResizableProps,
-  type ResizeHandleAxis,
-} from 'react-resizable';
+import { Resizable, type Props as ResizableProps } from 'react-resizable';
 
 import { makeStyles } from '@skybrush/app-theme-mui';
 
@@ -86,13 +82,11 @@ const useStyles = makeStyles((theme) => ({
   'handle-nw': makeCornerClass('top', 'left', 'nwse', theme),
 }));
 
-const ResizeHandle = React.forwardRef<
-  HTMLDivElement,
-  { handleAxis: ResizeHandleAxis } & Omit<
-    React.HTMLAttributes<HTMLDivElement>,
-    'ref'
-  >
->(({ handleAxis, ...rest }, ref) => {
+type ResizeHandleProps = {
+  handleAxis: 'n' | 'e' | 's' | 'w' | 'ne' | 'se' | 'sw' | 'nw';
+} & BoxProps;
+
+const ResizeHandle = ({ ref, handleAxis, ...rest }: ResizeHandleProps) => {
   const classes = useStyles();
   return (
     <Box
@@ -101,8 +95,7 @@ const ResizeHandle = React.forwardRef<
       {...rest}
     />
   );
-});
-ResizeHandle.displayName = 'ResizeHandle';
+};
 
 type Size = { width: number; height: number };
 

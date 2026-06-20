@@ -7,7 +7,7 @@ import Button from '@mui/material/Button';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import PropTypes from 'prop-types';
-import React, { useCallback, useRef } from 'react';
+import { useCallback, useRef } from 'react';
 import { Form } from 'react-final-form';
 import { Translation, useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
@@ -34,90 +34,93 @@ import { shouldOptimizeUIForTouch } from '~/features/settings/selectors';
 import { NEW_ITEM_ID } from '~/utils/collections';
 import { between, integer, join, required } from '~/utils/validation';
 
-const SavedLocationEditorFormPresentation = React.forwardRef(
-  ({ initialValues, onSubmit, optimizeUIForTouch }, ref) => (
-    <Translation>
-      {(t) => (
-        <Form initialValues={initialValues} onSubmit={onSubmit}>
-          {({ form, handleSubmit }) => {
-            ref.current = form;
+const SavedLocationEditorFormPresentation = ({
+  ref,
+  initialValues,
+  onSubmit,
+  optimizeUIForTouch,
+}) => (
+  <Translation>
+    {(t) => (
+      <Form initialValues={initialValues} onSubmit={onSubmit}>
+        {({ form, handleSubmit }) => {
+          ref.current = form;
 
-            return (
-              <form
-                id='SavedLocationEditor'
-                style={{
-                  // TODO(vp): use mui styling utilities and theme. Grid would simplify the DOM.
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: 8,
-                  marginTop: 8,
-                  marginBottom: 0,
-                }}
-                onSubmit={handleSubmit}
-              >
-                <TextField
-                  autoFocus={!optimizeUIForTouch}
+          return (
+            <form
+              id='SavedLocationEditor'
+              style={{
+                // TODO(vp): use mui styling utilities and theme. Grid would simplify the DOM.
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 8,
+                marginTop: 8,
+                marginBottom: 0,
+              }}
+              onSubmit={handleSubmit}
+            >
+              <TextField
+                autoFocus={!optimizeUIForTouch}
+                fullWidth
+                size='small'
+                name='name'
+                label={t('savedLocationEditor.name')}
+                fieldProps={{ validate: required }}
+              />
+              <Box sx={{ display: 'flex', flexDirection: 'row', gap: 1 }}>
+                <LatitudeField
                   fullWidth
                   size='small'
-                  name='name'
-                  label={t('savedLocationEditor.name')}
-                  fieldProps={{ validate: required }}
+                  name='center.lat'
+                  label={t('general.geography.latitude')}
                 />
-                <Box sx={{ display: 'flex', flexDirection: 'row', gap: 1 }}>
-                  <LatitudeField
-                    fullWidth
-                    size='small'
-                    name='center.lat'
-                    label={t('general.geography.latitude')}
-                  />
-                  <LongitudeField
-                    fullWidth
-                    size='small'
-                    name='center.lon'
-                    label={t('general.geography.longitude')}
-                  />
-                </Box>
-                <Box sx={{ display: 'flex', flexDirection: 'row', gap: 1 }}>
-                  <HeadingField
-                    fullWidth
-                    size='small'
-                    name='rotation'
-                    label={t('general.geometry.rotation')}
-                  />
-                  <TextField
-                    fullWidth
-                    type='number'
-                    size='small'
-                    name='zoom'
-                    label={t('savedLocationEditor.zoomLevel')}
-                    fieldProps={{
-                      validate: join([required, integer, between(1, 30)]),
-                    }}
-                    slotProps={{
-                      htmlInput: {
-                        min: 1,
-                        max: 30,
-                      },
-                    }}
-                  />
-                </Box>
+                <LongitudeField
+                  fullWidth
+                  size='small'
+                  name='center.lon'
+                  label={t('general.geography.longitude')}
+                />
+              </Box>
+              <Box sx={{ display: 'flex', flexDirection: 'row', gap: 1 }}>
+                <HeadingField
+                  fullWidth
+                  size='small'
+                  name='rotation'
+                  label={t('general.geometry.rotation')}
+                />
                 <TextField
                   fullWidth
-                  multiline
+                  type='number'
                   size='small'
-                  name='notes'
-                  label={t('savedLocationEditor.notes')}
-                  minRows={3}
-                  maxRows={3}
+                  name='zoom'
+                  label={t('savedLocationEditor.zoomLevel')}
+                  fieldProps={{
+                    validate: join([required, integer, between(1, 30)]),
+                  }}
+                  slotProps={{
+                    htmlInput: {
+                      min: 1,
+                      max: 30,
+                    },
+                  }}
                 />
-                <input hidden type='submit' />
-              </form>
-            );
-          }}
-        </Form>
-      )}
-    </Translation>
-  )
+              </Box>
+              <TextField
+                fullWidth
+                multiline
+                size='small'
+                name='notes'
+                label={t('savedLocationEditor.notes')}
+                minRows={3}
+                maxRows={3}
+              />
+              <input hidden type='submit' />
+            </form>
+          );
+        }}
+      </Form>
+    )}
+  </Translation>
 );
 
 SavedLocationEditorFormPresentation.propTypes = {

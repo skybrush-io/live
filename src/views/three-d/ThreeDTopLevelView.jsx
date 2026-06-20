@@ -14,7 +14,7 @@ import PropTypes from 'prop-types';
 import { useRef } from 'react';
 import { IgnoreKeys } from 'react-hotkeys';
 import { connect } from 'react-redux';
-import useResizeObserver from 'use-resize-observer';
+import { useResizeObserver } from 'usehooks-ts';
 
 import { isThemeDark, makeStyles } from '@skybrush/app-theme-mui';
 

@@ -1,7 +1,6 @@
 import Box, { type BoxProps } from '@mui/material/Box';
 import { createSelector } from '@reduxjs/toolkit';
 import clsx from 'clsx';
-import { useContext } from 'react';
 import { connect } from 'react-redux';
 
 import { makeStyles } from '@skybrush/app-theme-mui';
@@ -19,6 +18,7 @@ import type { RootState } from '~/store/reducers';
 import { createShallowSelector } from '~/utils/selectors';
 import { WorkbenchContext } from '~/workbench';
 
+import { use } from 'react';
 import UAVStatusMiniList from './UAVStatusMiniList';
 import UAVStatusSummaryLight from './UAVStatusSummaryLight';
 import UAVStatusSummaryTotal from './UAVStatusSummaryTotal';
@@ -127,7 +127,7 @@ const UAVStatusSummary = ({
   ...rest
 }: UAVStatusSummaryProps) => {
   const classes = useStyles();
-  const workbench = useContext(WorkbenchContext);
+  const workbench = use(WorkbenchContext);
 
   return (
     <LazyTooltip interactive content={<UAVStatusMiniList />}>

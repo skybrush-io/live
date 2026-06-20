@@ -1,11 +1,11 @@
 import Box from '@mui/material/Box';
-import type React from 'react';
+import type { ReactNode } from 'react';
 
 import Widget from '~/components/Widget';
 
 type MapToolbarsProps = Readonly<{
-  left?: React.ReactChild;
-  top?: React.ReactChild;
+  left?: ReactNode;
+  top?: ReactNode;
 }>;
 
 /**

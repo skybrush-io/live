@@ -114,7 +114,7 @@ const StatusSummaryMiniTable = ({
     );
   }
 
-  const rssiLabels: React.ReactNode[] = [];
+  const rssiLabels: Array<React.ReactElement | string> = [];
 
   if (rssi && Array.isArray(rssi) && rssi.length > 0) {
     for (const [index, rssiValue] of Object.entries(rssi)) {

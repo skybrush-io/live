@@ -8,7 +8,7 @@ export default function usePersistentScrollPosition(): [
   RefObject<HTMLDivElement | undefined>,
   (event: React.SyntheticEvent) => void,
 ] {
-  const elementRef = useRef<HTMLDivElement>();
+  const elementRef = useRef<HTMLDivElement>(undefined);
   const scrollPositionRef = useRef(0);
   const onScroll = useCallback(
     (event: React.SyntheticEvent) => {

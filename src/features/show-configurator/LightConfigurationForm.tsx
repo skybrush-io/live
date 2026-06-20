@@ -70,10 +70,7 @@ const SolidConfigurationForm = ({
   const { t } = useTranslation(undefined, {
     keyPrefix: 'showConfiguratorDialog.lights',
   });
-  // TODO: update when upgrading to React 19 which recognizes the
-  // inert as a boolean attribute. Hopefully TS also won't complain
-  // if we set the attribute directly on the picker...
-  const extraProps = disabled ? { inert: '' } : {};
+  const extraProps = disabled ? { inert: false } : {};
   return (
     <>
       <FormHelperText>{t('solid.color')}</FormHelperText>
@@ -106,10 +103,7 @@ const SparksConfigurationForm = ({
   const { t } = useTranslation(undefined, {
     keyPrefix: 'showConfiguratorDialog.lights',
   });
-  // TODO: update when upgrading to React 19 which recognizes the
-  // inert as a boolean attribute. Hopefully TS also won't complain
-  // if we set the attribute directly on the picker...
-  const extraProps = disabled ? { inert: '' } : {};
+  const extraProps = disabled ? { inert: false } : {};
   return (
     <>
       <SimpleDurationField

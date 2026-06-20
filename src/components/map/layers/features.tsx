@@ -1,19 +1,33 @@
 import createColor from 'color';
 import unary from 'lodash-es/unary';
 import FillPattern from 'ol-ext/style/FillPattern';
-import { MultiPoint, MultiPolygon, Polygon } from 'ol/geom';
-import { Circle, Style, Text } from 'ol/style';
-import PropTypes from 'prop-types';
+import type OLFeature from 'ol/Feature';
+import {
+  type Geometry,
+  type LineString,
+  MultiPoint,
+  MultiPolygon,
+  Polygon,
+} from 'ol/geom';
+import type { ModifyEvent } from 'ol/interaction/Modify';
+import type { Layer } from 'ol/layer';
+import { Circle, type Stroke, Style, Text } from 'ol/style';
+import type { GeometryFunction } from 'ol/style/Style';
+import type { Ref } from 'react';
 import { connect } from 'react-redux';
 
 import {
-  Feature as OLFeature,
   geom,
   interaction,
   layer,
+  Feature as OLReactFeature,
   source,
 } from '@collmot/ol-react';
-import { closePolygon, euclideanDistance2D } from '@skybrush/math';
+import {
+  closePolygon,
+  euclideanDistance2D,
+  type Vector2PlusTuple,
+} from '@skybrush/math';
 
 import { escapeKeyDown } from '~/components/map/conditions';
 import { markAsSelectableAndEditable } from '~/components/map/layers/utils';
@@ -27,10 +41,12 @@ import {
   shouldShowPointsOfFeature,
   suggestedColorForFeature,
 } from '~/features/map-features/selectors-style-suggestions';
+import type { FeatureWithProperties } from '~/features/map-features/types';
 import { getGeofencePolygonId } from '~/features/mission/selectors';
 import { showError } from '~/features/snackbar/actions';
 import { FeatureType, LabelStyle } from '~/model/features';
 import { featureIdToGlobalId } from '~/model/identifiers';
+import type { RootState } from '~/store/reducers';
 import { mapViewCoordinateFromLonLat, measureFeature } from '~/utils/geography';
 import {
   dashedThickOutline,
@@ -47,9 +63,11 @@ import {
  * Returns an OpenLayers geometry representation of the given _Redux_
  * feature, using ol-react tags.
  */
-const geometryForFeature = (feature) => {
+const geometryForFeature = (feature: FeatureWithProperties) => {
   const { points, type } = feature;
-  const coordinates = points.map(unary(mapViewCoordinateFromLonLat));
+  const coordinates = points.map(
+    unary(mapViewCoordinateFromLonLat)
+  ) as Vector2PlusTuple[];
 
   switch (type) {
     case FeatureType.CIRCLE:
@@ -81,7 +99,7 @@ const geometryForFeature = (feature) => {
       );
 
       for (const hole of holes) {
-        closePolygon(hole);
+        closePolygon(hole as Vector2PlusTuple[]);
       }
 
       return <geom.Polygon coordinates={coordinates} holes={holes} />;
@@ -93,45 +111,58 @@ const geometryForFeature = (feature) => {
 };
 
 const whiteThickOutlineStyle = new Style({ stroke: whiteThickOutline });
-const labelStrokes = {
+const labelStrokes: Record<LabelStyle, Stroke | undefined> = {
+  [LabelStyle.HIDDEN]: undefined,
+  [LabelStyle.NORMAL]: undefined,
   [LabelStyle.THIN_OUTLINE]: whiteThinOutline,
   [LabelStyle.THICK_OUTLINE]: whiteThickOutline,
+} as const;
+
+const extractPointsFromLineString = (feature: OLFeature): Geometry =>
+  new MultiPoint((feature.getGeometry() as LineString).getCoordinates());
+const extractPointsFromPolygon = (feature: OLFeature): Geometry =>
+  new MultiPoint((feature.getGeometry() as Polygon).getCoordinates().flat());
+
+export const styleForPointsOfLineString = (
+  selected: boolean,
+  color: number[]
+) =>
+  new Style({
+    image: new Circle({
+      ...(selected && { stroke: whiteThinOutline }),
+      fill: fill(color),
+      radius: 5,
+    }),
+    geometry: extractPointsFromLineString as GeometryFunction,
+  });
+export const styleForPointsOfPolygon = (selected: boolean, color: number[]) =>
+  new Style({
+    image: new Circle({
+      ...(selected && { stroke: whiteThinOutline }),
+      fill: fill(color),
+      radius: 5,
+    }),
+    geometry: extractPointsFromPolygon as GeometryFunction,
+  });
+
+type StyleForFeatureOptions = {
+  isGeofence?: boolean;
+  isSelected?: boolean;
+  shouldShowPoints?: boolean;
+  suggestedColor?: string;
+  shouldFill?: boolean;
 };
-
-const extractPointsFromLineString = (feature) =>
-  new MultiPoint(feature.getGeometry().getCoordinates());
-const extractPointsFromPolygon = (feature) =>
-  new MultiPoint(feature.getGeometry().getCoordinates().flat());
-
-export const styleForPointsOfLineString = (selected, color) =>
-  new Style({
-    image: new Circle({
-      ...(selected && { stroke: whiteThinOutline }),
-      fill: fill(color),
-      radius: 5,
-    }),
-    geometry: extractPointsFromLineString,
-  });
-export const styleForPointsOfPolygon = (selected, color) =>
-  new Style({
-    image: new Circle({
-      ...(selected && { stroke: whiteThinOutline }),
-      fill: fill(color),
-      radius: 5,
-    }),
-    geometry: extractPointsFromPolygon,
-  });
 
 // TODO: cache the style somewhere?
 const styleForFeature = (
-  feature,
+  feature: FeatureWithProperties,
   {
-    isGeofence = false,
+    isGeofence,
     isSelected = false,
     shouldShowPoints,
     suggestedColor,
     shouldFill,
-  }
+  }: StyleForFeatureOptions
 ) => {
   const { label, labelStyle, measure, showPoints, type } = feature;
   const parsedColor = createColor(suggestedColor);
@@ -179,7 +210,9 @@ const styleForFeature = (
         new Style({
           stroke: dottedThinOutline(parsedColor.rgb().array()),
           geometry(olFeature) {
-            const [, ...holes] = olFeature.getGeometry().getCoordinates();
+            const [, ...holes] = (
+              olFeature.getGeometry() as Polygon
+            ).getCoordinates();
             return new MultiPolygon(holes.map((hole) => [hole]));
           },
           zIndex: 1,
@@ -240,7 +273,9 @@ const styleForFeature = (
           geometry(olFeature) {
             switch (type) {
               case FeatureType.POLYGON: {
-                const boundary = olFeature.getGeometry().getCoordinates()[0];
+                const boundary = (
+                  olFeature.getGeometry() as Polygon
+                ).getCoordinates()[0];
                 return new Polygon([boundary]);
               }
               default: {
@@ -259,7 +294,7 @@ const styleForFeature = (
           font: '12px sans-serif',
           offsetY: type === FeatureType.POINTS ? radius + 10 : 0,
           placement: type === FeatureType.LINE_STRING ? 'line' : 'point',
-          stroke: labelStrokes[labelStyle],
+          stroke: labelStyle ? labelStrokes[labelStyle] : undefined,
           text: label,
           textAlign: 'center',
           textBaseline: type === FeatureType.LINE_STRING ? 'bottom' : 'middle',
@@ -274,8 +309,8 @@ const styleForFeature = (
         text: new Text({
           font: '12px sans-serif',
           offsetY: type === FeatureType.LINE_STRING ? 3 : 15,
-          placement: type === 'lineString' ? 'line' : 'point',
-          stroke: labelStrokes[labelStyle],
+          placement: type === FeatureType.LINE_STRING ? 'line' : 'point',
+          stroke: labelStyle ? labelStrokes[labelStyle] : undefined,
           text: `(${measureFeature(feature)})`,
           textAlign: 'center',
           textBaseline: type === FeatureType.LINE_STRING ? 'top' : 'middle',
@@ -287,6 +322,15 @@ const styleForFeature = (
   return styles;
 };
 
+type FeaturePresentationProps = {
+  feature: FeatureWithProperties;
+  isSelected?: boolean;
+  isGeofence?: boolean;
+  shouldFill?: boolean;
+  shouldShowPoints?: boolean;
+  suggestedColor?: string;
+};
+
 const FeaturePresentation = ({
   feature,
   isSelected,
@@ -295,8 +339,8 @@ const FeaturePresentation = ({
   shouldShowPoints,
   suggestedColor,
   ...rest
-}) => (
-  <OLFeature
+}: FeaturePresentationProps) => (
+  <OLReactFeature
     id={featureIdToGlobalId(feature.id)}
     style={styleForFeature(feature, {
       isGeofence,
@@ -308,21 +352,15 @@ const FeaturePresentation = ({
     {...rest}
   >
     {geometryForFeature(feature)}
-  </OLFeature>
+  </OLReactFeature>
 );
-
-FeaturePresentation.propTypes = {
-  feature: PropTypes.object.isRequired,
-  isGeofence: PropTypes.bool,
-  isSelected: PropTypes.bool,
-  shouldFill: PropTypes.bool,
-  shouldShowPoints: PropTypes.bool,
-  suggestedColor: PropTypes.string,
-};
 
 const Feature = connect(
   // mapStateToProps
-  (state, { feature }) => ({
+  (
+    state: RootState,
+    { feature }: Pick<FeaturePresentationProps, 'feature'>
+  ) => ({
     isGeofence: getGeofencePolygonId(state) === feature.id,
     isSelected: getSelectedFeatureIds(state).includes(feature.id),
     shouldFill: shouldFillFeature(state, feature.id),
@@ -333,6 +371,15 @@ const Feature = connect(
 
 // === The actual layer to be rendered ===
 
+type FeaturesLayerPresentationProps = {
+  features: FeatureWithProperties[];
+  onFeatureModificationStarted?: (event: ModifyEvent) => void;
+  onFeaturesModified?: (event: ModifyEvent) => void;
+  selectedTool?: Tool;
+  layerRefHandler?: Ref<{ layer: Layer }>;
+  zIndex?: number;
+};
+
 const FeaturesLayerPresentation = ({
   features,
   onFeatureModificationStarted,
@@ -340,7 +387,7 @@ const FeaturesLayerPresentation = ({
   selectedTool,
   layerRefHandler = markAsSelectableAndEditable,
   zIndex,
-}) => (
+}: FeaturesLayerPresentationProps) => (
   <layer.Vector
     ref={layerRefHandler}
     updateWhileAnimating
@@ -365,22 +412,11 @@ const FeaturesLayerPresentation = ({
   </layer.Vector>
 );
 
-FeaturesLayerPresentation.propTypes = {
-  selectedTool: PropTypes.string,
-  zIndex: PropTypes.number,
-  layerRefHandler: PropTypes.func,
-
-  features: PropTypes.arrayOf(PropTypes.object).isRequired,
-
-  onFeatureModificationStarted: PropTypes.func,
-  onFeaturesModified: PropTypes.func,
-};
-
 // NOTE: The props `onFeaturesModified`, `selectedTool` and `zIndex` are
 //       passed down through `stateObjectToLayer` from `MapViewLayers`
 export const FeaturesLayer = connect(
   // mapStateToProps
-  (state) => ({
+  (state: RootState) => ({
     features: getFeaturesInOrder(state),
   })
 )(FeaturesLayerPresentation);

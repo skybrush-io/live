@@ -58,7 +58,7 @@ const defaultTimeout = {
   exit: 195, // TODO: this is the value from v4, upgrade
 };
 
-const FadeAndSlide = React.forwardRef((props, ref) => {
+const FadeAndSlide = ({ ref, ...props }) => {
   const {
     children,
     direction = 'up',
@@ -139,7 +139,7 @@ const FadeAndSlide = React.forwardRef((props, ref) => {
       }}
     </Transition>
   );
-});
+};
 
 FadeAndSlide.propTypes = {
   /**

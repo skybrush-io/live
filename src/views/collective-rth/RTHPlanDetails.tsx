@@ -8,7 +8,6 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableRow, { type TableRowProps } from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { type TableProps, TableVirtuoso } from 'react-virtuoso';
@@ -190,14 +189,14 @@ const RTHPlanDetails = ({ plans, showSegments, showStartTime }: Props) => {
         <TableVirtuoso
           data={plans}
           components={{
-            Scroller: React.forwardRef<HTMLDivElement>((props, ref) => (
+            Scroller: ({ ref, ...props }) => (
               <TableContainer component={Paper} {...props} ref={ref} />
-            )),
+            ),
             Table: ({ style, ...props }: TableProps) => (
               <Table {...props} sx={{ ...style, width: '100%' }} />
             ),
-            TableBody: React.forwardRef<HTMLTableSectionElement>(
-              (props, ref) => <TableBody {...props} ref={ref} />
+            TableBody: ({ ref, ...props }) => (
+              <TableBody {...props} ref={ref} />
             ),
             TableRow: ({
               item,

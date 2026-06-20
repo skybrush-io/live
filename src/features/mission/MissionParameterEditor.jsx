@@ -8,7 +8,7 @@ import omitBy from 'lodash-es/omitBy';
 import pickBy from 'lodash-es/pickBy';
 import uniq from 'lodash-es/uniq';
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { makeStyles } from '@skybrush/app-theme-mui';
@@ -50,7 +50,7 @@ const isUIProperty = (_value, key) => key.startsWith('ui:');
 const getUIGroupOfProperty = (p) => p['ui:group'] ?? 'default';
 
 const TextWidget = getDefaultRegistry().widgets.TextWidget;
-const TextWidgetThatBlursOnWheel = React.forwardRef((props, ref) => (
+const TextWidgetThatBlursOnWheel = ({ ref, ...props }) => (
   <TextWidget
     ref={ref}
     {...props}
@@ -58,7 +58,7 @@ const TextWidgetThatBlursOnWheel = React.forwardRef((props, ref) => (
       target.blur();
     }}
   />
-));
+);
 
 const MissionParameterEditorPresentation = ({
   onChange,

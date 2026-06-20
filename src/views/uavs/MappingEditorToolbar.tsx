@@ -69,94 +69,82 @@ const Instructions = () => {
   );
 };
 
-const MappingEditorToolbar = React.forwardRef<
-  HTMLDivElement,
-  MappingEditorToolbarProps
->(
-  (
-    {
-      augmentMapping,
-      calculating,
-      canAugmentMapping,
-      clearMapping,
-      devMode,
-      exportMapping,
-      finishMappingEditorSession,
-      generateRandomMapping,
-      importMapping,
-      removeMissingUAVsFromMapping,
-      ...rest
-    },
-    ref
-  ) => {
-    const [
-      menuAnchorElement,
-      openMappingMenu,
-      closeMappingMenu,
-      closeMappingMenuWith,
-    ] = useDropdown();
-    const { t } = useTranslation();
+const MappingEditorToolbar = ({
+  ref,
+  augmentMapping,
+  calculating,
+  canAugmentMapping,
+  clearMapping,
+  devMode,
+  exportMapping,
+  finishMappingEditorSession,
+  generateRandomMapping,
+  importMapping,
+  removeMissingUAVsFromMapping,
+  ...rest
+}: MappingEditorToolbarProps) => {
+  const [
+    menuAnchorElement,
+    openMappingMenu,
+    closeMappingMenu,
+    closeMappingMenuWith,
+  ] = useDropdown();
+  const { t } = useTranslation();
 
-    return (
-      <Toolbar ref={ref} disableGutters variant='dense' {...rest}>
-        {calculating ? (
-          <Box pl={2}>
-            <MappingCalculationInProgress size='small' />
-          </Box>
-        ) : (
-          <Instructions />
-        )}
-        <Box sx={{ flex: 1 }} />
-        <IconButton size='large' onClick={finishMappingEditorSession}>
-          <Check htmlColor={Colors.success} />
-        </IconButton>
-        <IconButton size='large' onClick={openMappingMenu}>
-          <MoreVert />
-        </IconButton>
-        <Menu
-          anchorEl={menuAnchorElement}
-          open={menuAnchorElement !== null}
-          variant='menu'
-          onClose={closeMappingMenu}
+  return (
+    <Toolbar ref={ref} disableGutters variant='dense' {...rest}>
+      {calculating ? (
+        <Box pl={2}>
+          <MappingCalculationInProgress size='small' />
+        </Box>
+      ) : (
+        <Instructions />
+      )}
+      <Box sx={{ flex: 1 }} />
+      <IconButton size='large' onClick={finishMappingEditorSession}>
+        <Check htmlColor={Colors.success} />
+      </IconButton>
+      <IconButton size='large' onClick={openMappingMenu}>
+        <MoreVert />
+      </IconButton>
+      <Menu
+        anchorEl={menuAnchorElement}
+        open={menuAnchorElement !== null}
+        variant='menu'
+        onClose={closeMappingMenu}
+      >
+        <MenuItem
+          disabled={!canAugmentMapping}
+          onClick={
+            canAugmentMapping ? closeMappingMenuWith(augmentMapping) : undefined
+          }
         >
-          <MenuItem
-            disabled={!canAugmentMapping}
-            onClick={
-              canAugmentMapping
-                ? closeMappingMenuWith(augmentMapping)
-                : undefined
-            }
-          >
-            {t('mappingEditorToolbar.assignSpares')}
+          {t('mappingEditorToolbar.assignSpares')}
+        </MenuItem>
+        <Divider />
+        <MenuItem onClick={closeMappingMenuWith(importMapping)}>
+          {t('mappingEditorToolbar.importMapping')}
+        </MenuItem>
+        <MenuItem onClick={closeMappingMenuWith(exportMapping)}>
+          {t('mappingEditorToolbar.exportMapping')}
+        </MenuItem>
+        <Divider />
+        {devMode && (
+          <MenuItem onClick={closeMappingMenuWith(generateRandomMapping)}>
+            {t('mappingEditorToolbar.generateRandomMapping')}
           </MenuItem>
-          <Divider />
-          <MenuItem onClick={closeMappingMenuWith(importMapping)}>
-            {t('mappingEditorToolbar.importMapping')}
-          </MenuItem>
-          <MenuItem onClick={closeMappingMenuWith(exportMapping)}>
-            {t('mappingEditorToolbar.exportMapping')}
-          </MenuItem>
-          <Divider />
-          {devMode && (
-            <MenuItem onClick={closeMappingMenuWith(generateRandomMapping)}>
-              {t('mappingEditorToolbar.generateRandomMapping')}
-            </MenuItem>
-          )}
-          {devMode && <Divider />}
-          <MenuItem onClick={closeMappingMenuWith(clearMapping)}>
-            {t('general.action.clear')}
-          </MenuItem>
-          <MenuItem
-            onClick={closeMappingMenuWith(removeMissingUAVsFromMapping)}
-          >
-            {t('mappingEditorToolbar.clearMissing')}
-          </MenuItem>
-        </Menu>
-      </Toolbar>
-    );
-  }
-);
-MappingEditorToolbar.displayName = 'MappingEditorToolbar';
+        )}
+        {devMode && <Divider />}
+        <MenuItem onClick={closeMappingMenuWith(clearMapping)}>
+          {t('general.action.clear')}
+        </MenuItem>
+        <MenuItem onClick={closeMappingMenuWith(removeMissingUAVsFromMapping)}>
+          {t('mappingEditorToolbar.clearMissing')}
+        </MenuItem>
+      </Menu>
+    </Toolbar>
+  );
+};
 
 export default connect(
   // mapStateToProps

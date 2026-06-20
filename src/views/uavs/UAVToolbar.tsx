@@ -4,7 +4,6 @@ import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import Toolbar, { type ToolbarProps } from '@mui/material/Toolbar';
 import isEmpty from 'lodash-es/isEmpty';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
@@ -26,47 +25,50 @@ type UAVToolbarProps = ToolbarProps &
 /**
  * Main toolbar for controlling the UAVs.
  */
-const UAVToolbar = React.forwardRef<HTMLDivElement, UAVToolbarProps>(
-  ({ fitSelectedUAVs, isBroadcast, selectedUAVIds, ...rest }, ref) => {
-    const isSelectionEmpty = isEmpty(selectedUAVIds);
-    const { t } = useTranslation();
+const UAVToolbar = ({
+  ref,
+  fitSelectedUAVs,
+  isBroadcast,
+  selectedUAVIds,
+  ...rest
+}: UAVToolbarProps) => {
+  const isSelectionEmpty = isEmpty(selectedUAVIds);
+  const { t } = useTranslation();
 
-    return (
-      <Toolbar ref={ref} disableGutters variant='dense' {...rest}>
-        <Box sx={{ width: '4px' }} />
+  return (
+    <Toolbar ref={ref} disableGutters variant='dense' {...rest}>
+      <Box sx={{ width: '4px' }} />
 
-        <UAVOperationsButtonGroup
-          broadcast={isBroadcast}
-          selectedUAVIds={selectedUAVIds}
-          showColorOverrideBadges
-        />
+      <UAVOperationsButtonGroup
+        broadcast={isBroadcast}
+        selectedUAVIds={selectedUAVIds}
+        showColorOverrideBadges
+      />
 
-        <Box sx={{ flex: 1 }} />
+      <Box sx={{ flex: 1 }} />
 
-        {fitSelectedUAVs && (
-          <Tooltip
-            content={
-              isSelectionEmpty
-                ? t('uavToolbar.fitAllFeaturesIntoView')
-                : t('uavToolbar.fitSelectionIntoView')
-            }
+      {fitSelectedUAVs && (
+        <Tooltip
+          content={
+            isSelectionEmpty
+              ? t('uavToolbar.fitAllFeaturesIntoView')
+              : t('uavToolbar.fitSelectionIntoView')
+          }
+        >
+          <IconButton
+            style={{ float: 'right' }}
+            size='large'
+            onClick={fitSelectedUAVs}
           >
-            <IconButton
-              style={{ float: 'right' }}
-              size='large'
-              onClick={fitSelectedUAVs}
-            >
-              {isSelectionEmpty ? <ImageBlurOn /> : <ImageBlurCircular />}
-            </IconButton>
-          </Tooltip>
-        )}
+            {isSelectionEmpty ? <ImageBlurOn /> : <ImageBlurCircular />}
+          </IconButton>
+        </Tooltip>
+      )}
 
-        <MappingButtonGroup />
-      </Toolbar>
-    );
-  }
-);
-UAVToolbar.displayName = 'UAVToolbar';
+      <MappingButtonGroup />
+    </Toolbar>
+  );
+};
 
 export default connect(
   // mapStateToProps

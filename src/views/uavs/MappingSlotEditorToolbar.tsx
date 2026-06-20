@@ -5,7 +5,6 @@ import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import Toolbar, { type ToolbarProps } from '@mui/material/Toolbar';
 import type { Theme } from '@mui/material/styles';
-import React from 'react';
 import { Trans, Translation } from 'react-i18next';
 import { connect } from 'react-redux';
 
@@ -30,10 +29,11 @@ type MappingSlotEditorToolbarProps = ToolbarProps &
     cancelMappingEditorSessionAtCurrentSlot: () => void;
   }>;
 
-const MappingSlotEditorToolbar = React.forwardRef<
-  HTMLDivElement,
-  MappingSlotEditorToolbarProps
->(({ cancelMappingEditorSessionAtCurrentSlot, ...rest }, ref) => {
+const MappingSlotEditorToolbar = ({
+  ref,
+  cancelMappingEditorSessionAtCurrentSlot,
+  ...rest
+}: MappingSlotEditorToolbarProps) => {
   const classes = useStyles();
   return (
     <Translation>
@@ -67,8 +67,7 @@ const MappingSlotEditorToolbar = React.forwardRef<
       )}
     </Translation>
   );
-});
-MappingSlotEditorToolbar.displayName = 'MappingSlotEditorToolbar';
+};
 
 export default connect(
   // mapStateToProps
