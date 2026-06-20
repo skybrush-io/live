@@ -1,6 +1,6 @@
 import { take } from 'redux-saga/effects';
 
-import { skybrushToThreeJsPosition } from '@skybrush/aframe-components/lib/spatial';
+import { skybrushToThreeJsPosition } from '@skybrush/aframe-components/spatial';
 
 import { cameraRef, getSceneDOMNode } from './refs';
 import { resetZoom, rotateViewTowards } from './slice';

@@ -1,5 +1,4 @@
 import { Base64 } from 'js-base64';
-import ky from 'ky';
 import get from 'lodash-es/get';
 import sum from 'lodash-es/sum';
 import throttle from 'lodash-es/throttle';

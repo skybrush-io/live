@@ -1,11 +1,15 @@
 import Box from '@mui/material/Box';
-import Switch from '@mui/material/Switch';
+import Switch, { type SwitchProps } from '@mui/material/Switch';
 import Typography from '@mui/material/Typography';
-import PropTypes from 'prop-types';
 import React from 'react';
 
+type Props = {
+  label: string;
+  labelColor?: string;
+} & SwitchProps;
+
 const SmallToolbarSwitch = React.forwardRef(
-  ({ label, labelColor, ...rest }, ref) => (
+  ({ label, labelColor, ...rest }: Props, ref) => (
     /* Ref is forwarded to the box and not the switch so tooltips appear when
      * hovering over the label as well */
     <Box ref={ref} display='flex' flexDirection='column' alignItems='center'>
@@ -24,10 +28,5 @@ const SmallToolbarSwitch = React.forwardRef(
     </Box>
   )
 );
-
-SmallToolbarSwitch.propTypes = {
-  label: PropTypes.string,
-  labelColor: PropTypes.string,
-};
 
 export default SmallToolbarSwitch;

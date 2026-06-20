@@ -1,14 +1,18 @@
 import config from 'config';
 import overrides from 'config-overrides';
 
-import PropTypes from 'prop-types';
 import { CoverPagePresentation as CoverPage } from 'react-cover-page';
 
 import 'react-cover-page/themes/default.css';
 
 import skybrushLogo from '~/../assets/img/skybrush-logo.svg';
 
-const SplashScreen = ({ loading, visible }) => {
+type Props = {
+  loading?: boolean;
+  visible?: boolean;
+};
+
+const SplashScreen = ({ loading, visible }: Props) => {
   let iconWidth = 96;
   let iconHeight = 96;
   let srcSet = '';
@@ -53,11 +57,6 @@ const SplashScreen = ({ loading, visible }) => {
       visible={visible}
     />
   );
-};
-
-SplashScreen.propTypes = {
-  loading: PropTypes.bool,
-  visible: PropTypes.bool,
 };
 
 export default SplashScreen;
