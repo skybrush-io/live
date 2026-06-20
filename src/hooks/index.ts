@@ -1,3 +1,5 @@
+export { default as useCurrentDate } from './useCurrentDate';
+export { default as useCurrentTimestamp } from './useCurrentTimestamp';
 export { default as useDarkMode } from './useDarkMode';
 export { default as useDeviceOrientation } from './useDeviceOrientation';
 export { default as useDeviceTreeSubscription } from './useDeviceTreeSubscription';

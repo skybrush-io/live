@@ -44,7 +44,7 @@ import StartUploadButton from '~/features/upload/StartUploadButton';
 import UploadProgressBar from '~/features/upload/UploadProgressBar';
 import UploadStatusLegend from '~/features/upload/UploadStatusLegend';
 import UploadStatusLights from '~/features/upload/UploadStatusLights';
-import { usePeriodicRefresh } from '~/hooks';
+import useCurrentTimestamp from '~/hooks/useCurrentTimestamp';
 import type { AppThunk, RootState } from '~/store/reducers';
 import { formatDurationAsText } from '~/utils/formatting';
 
@@ -70,13 +70,12 @@ const UploadResultIndicator = ({
   let status;
   let message;
 
-  const now = Date.now();
+  const now = useCurrentTimestamp(500);
   const timeRemaining = completionTime
     ? completionTime > now
       ? (completionTime - now) / 1000
       : undefined
     : undefined;
-  usePeriodicRefresh(timeRemaining ? 500 : null);
 
   switch (result) {
     case 'success':

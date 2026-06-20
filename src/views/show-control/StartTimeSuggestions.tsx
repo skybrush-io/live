@@ -8,7 +8,7 @@ import getSeconds from 'date-fns/getSeconds';
 import startOfMinute from 'date-fns/startOfMinute';
 import type React from 'react';
 
-import usePeriodicRefresh from '~/hooks/usePeriodicRefresh';
+import useCurrentTimestamp from '~/hooks/useCurrentTimestamp';
 
 // TODO(mui): migrate to emotion
 const BorderlessButton = styled(Button)({
@@ -96,11 +96,8 @@ const StartTimeSuggestions = ({
   startTimes = defaultCreateStartTimeSuggestions,
   ...rest
 }: StartTimeSuggestionsProps): React.JSX.Element => {
-  const items =
-    typeof startTimes === 'function' ? startTimes(Date.now()) : startTimes;
-
-  /* re-render every 10 seconds */
-  usePeriodicRefresh(10000);
+  const now = useCurrentTimestamp(10_000); // update every 10 seconds
+  const items = typeof startTimes === 'function' ? startTimes(now) : startTimes;
 
   return (
     <ButtonGroup variant='text' {...rest}>

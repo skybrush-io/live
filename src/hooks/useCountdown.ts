@@ -6,7 +6,7 @@ export const useCountdown = (durationMs?: number) => {
   const startMs = useMemo(() => Date.now(), []);
   const [endMs, setEndMs] = useState(() => startMs + (durationMs ?? 0));
   const [pausedAtMs, setPausedAtMs] = useState<number | undefined>(undefined);
-  const [nowMs, setNowMs] = useState(Date.now());
+  const [nowMs, setNowMs] = useState(Date.now);
   const done = nowMs >= endMs;
 
   const pause = useCallback(() => {

@@ -44,6 +44,7 @@ import type { AppDispatch, RootState } from '~/store/reducers';
 import { formatDurationHMS } from '~/utils/formatting';
 import { parseDurationHMS } from '~/utils/parsing';
 
+import { useCurrentDate } from '~/hooks';
 import StartTimeDisplay from './StartTimeDisplay';
 import type { StartTimeSuggestion } from './StartTimeSuggestions';
 import StartTimeSuggestionsBox from './StartTimeSuggestionsBox';
@@ -334,9 +335,10 @@ const StartTimeDialog = ({
 }: StartTimeDialogProps): React.JSX.Element => {
   const hasUtcStartTime = typeof utcTime === 'number';
   const hasStartTimeOnClock = typeof timeOnClock === 'number';
+  const now = useCurrentDate(0); // do not update automatically
   const startDateTimeInUtc = hasUtcStartTime
     ? fromUnixTime(utcTime)
-    : setSeconds(add(new Date(), { minutes: 30 }), 0);
+    : setSeconds(add(now, { minutes: 30 }), 0);
   const initialStartTimeOnClock = hasStartTimeOnClock ? timeOnClock : 0;
   const initialClock = validateClockIdForStartTimeForm(clock)
     ? clock
