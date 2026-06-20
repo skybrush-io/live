@@ -71,15 +71,16 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     flexDirection: 'row',
     flex: 1,
+    maxHeight: 100,
   },
   buttonWrapper: {
     display: 'flex',
     flex: 1,
-    margin: theme.spacing(0.5),
-    lineHeight: '1 !important',
   },
   button: {
     flex: 1,
+    margin: theme.spacing(0.5),
+    lineHeight: '1 !important',
   },
 }));
 
