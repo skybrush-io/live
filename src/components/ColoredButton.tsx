@@ -36,6 +36,7 @@ const ColoredButton = ({
   className,
   color,
   dense = false,
+  disabled,
   icon,
   ...rest
 }: ColoredButtonProps) => {
@@ -46,17 +47,26 @@ const ColoredButton = ({
     <ButtonBase
       focusRipple
       className={clsx(classes.root, className)}
-      sx={(theme) => ({
-        backgroundColor: color,
-        color: parsedColor.isLight()
-          ? 'rgba(0, 0, 0, 0.87)'
-          : 'rgba(255, 255, 255, 0.87)',
-        padding: theme.spacing(1, dense ? 1 : 3),
-        '&:hover': {
-          backgroundColor: parsedColor.darken(0.16).string(),
-          boxShadow: theme.shadows[4],
-        },
-      })}
+      sx={(theme) => {
+        const backgroundColor = disabled
+          ? theme.palette.action.disabledBackground
+          : color;
+        const textColor = disabled
+          ? theme.palette.action.disabled
+          : parsedColor.isLight()
+            ? 'rgba(0, 0, 0, 0.87)'
+            : 'rgba(255, 255, 255, 0.87)';
+        return {
+          backgroundColor,
+          color: textColor,
+          padding: theme.spacing(1, dense ? 1 : 3),
+          '&:hover': {
+            backgroundColor: parsedColor.darken(0.16).string(),
+            boxShadow: theme.shadows[4],
+          },
+        };
+      }}
+      disabled={disabled}
       {...rest}
     >
       {icon && <div className={classes.icon}>{icon}</div>}
