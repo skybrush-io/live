@@ -14,7 +14,11 @@ import type { ChangeEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import { createSecondaryAreaStyle, makeStyles } from '@skybrush/app-theme-mui';
+import {
+  createSecondaryAreaStyle,
+  isThemeDark,
+  makeStyles,
+} from '@skybrush/app-theme-mui';
 
 import ColoredButton from '~/components/ColoredButton';
 import Colors from '~/components/colors';
@@ -66,6 +70,10 @@ const useStyles = makeStyles((theme) => ({
     ...createSecondaryAreaStyle(theme),
     padding: theme.spacing(1),
     margin: theme.spacing(0),
+    border: `1px solid ${
+      isThemeDark(theme) ? 'rgba(0, 0, 0, 0.54)' : 'rgba(255, 255, 255, 0.54)'
+    }`,
+    boxShadow: '0 0 4px 2px inset rgba(0, 0, 0, 0.54)',
   },
 }));
 
