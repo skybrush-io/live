@@ -6,6 +6,7 @@ import PlayArrow from '@mui/icons-material/PlayArrow';
 import PowerSettingsNew from '@mui/icons-material/PowerSettingsNew';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
+import Stack from '@mui/material/Stack';
 import Switch from '@mui/material/Switch';
 import Typography from '@mui/material/Typography';
 import { bindActionCreators } from '@reduxjs/toolkit';
@@ -28,7 +29,6 @@ import { getSelectedUAVIds } from '~/features/uavs/selectors';
 import type { AppDispatch, RootState } from '~/store/reducers';
 import { createUAVOperationThunks } from '~/utils/messaging';
 
-import { Stack } from '@mui/material';
 import ProControlButtonGroup from './ProControlButtonGroup';
 import StartMethodExplanation from './StartMethodExplanation';
 
