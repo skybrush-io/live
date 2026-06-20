@@ -33,11 +33,15 @@ export const setCurrentRTKPresetId =
   };
 
 export const copyAntennaPositionToClipboard =
-  (): AppThunk => (_dispatch, getState) => {
+  (): AppThunk => async (_dispatch, getState) => {
     const position = getFormattedAntennaPosition(getState());
     if (position) {
-      copy(position);
-      showNotification('Coordinates copied to clipboard.');
+      const success = await copy(position);
+      if (success) {
+        showNotification('Coordinates copied to clipboard.');
+      } else {
+        showError('Failed to copy coordinates to clipboard.');
+      }
     }
   };
 

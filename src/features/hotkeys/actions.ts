@@ -344,8 +344,8 @@ export function clearSelectionOrPendingUAVId(): AppThunk<void> {
  * Thunk action that copies the currently displayed map coordinates to the
  * clipboard and then shows a notification to the user.
  */
-export const copyCoordinates = (): AppThunk<void> => () => {
-  if (copyDisplayedCoordinatesToClipboard()) {
+export const copyCoordinates = (): AppThunk<void> => async () => {
+  if (await copyDisplayedCoordinatesToClipboard()) {
     showNotification('Coordinates copied to clipboard.');
   } else {
     showError('Failed to copy coordinates; are you hovering over the map?');

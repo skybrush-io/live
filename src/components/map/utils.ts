@@ -7,7 +7,7 @@ import copy from 'copy-to-clipboard';
  * @returns True if the coordinates were copied successfully,
  *          false if the box is not visible
  */
-export function copyDisplayedCoordinatesToClipboard(): boolean {
+export async function copyDisplayedCoordinatesToClipboard(): Promise<boolean> {
   const display = document.querySelector('.ol-mouse-position');
   const textNodes = display
     ? [...display.childNodes].filter((node) => node.nodeType === Node.TEXT_NODE)
@@ -15,8 +15,7 @@ export function copyDisplayedCoordinatesToClipboard(): boolean {
   const text = textNodes[0]?.textContent;
 
   if (text) {
-    copy(text);
-    return true;
+    return await copy(text);
   } else {
     return false;
   }

@@ -1,5 +1,11 @@
+import type { ActionCreatorWithPayload } from '@reduxjs/toolkit';
 import copy from 'copy-to-clipboard';
 import isNil from 'lodash-es/isNil';
+
+import { setFlatEarthCoordinateSystemOrigin } from '~/features/map/origin';
+import { showError, showNotification } from '~/features/snackbar/actions';
+import { getPreferredCoordinateFormatter } from '~/selectors/formatting';
+import type { AppThunk } from '~/store/reducers';
 
 import {
   getAllUAVIdsCurrentlyBeingAveragedEvenIfPaused,
@@ -13,10 +19,7 @@ import {
   stopAveragingUAVCoordinatesByIds,
   updateAveragingByIds,
 } from './slice';
-
-import { setFlatEarthCoordinateSystemOrigin } from '~/features/map/origin';
-import { showNotification } from '~/features/snackbar/actions';
-import { getPreferredCoordinateFormatter } from '~/selectors/formatting';
+import type { AveragingResult } from './types';
 
 /**
  * Helper function that converts an action factory with a single argument
@@ -24,8 +27,13 @@ import { getPreferredCoordinateFormatter } from '~/selectors/formatting';
  * and always acts on the current selection.
  */
 const applyToSelection =
-  (actionFactory, { whenEmpty = 'nop' } = {}) =>
-  () =>
+  (
+    actionFactory:
+      | ActionCreatorWithPayload<string[]>
+      | ((uavIds: string[]) => AppThunk),
+    { whenEmpty = 'nop' }: { whenEmpty?: 'nop' | 'useAll' } = {}
+  ) =>
+  (): AppThunk =>
   (dispatch, getState) => {
     const state = getState();
 
@@ -77,56 +85,66 @@ export const stopAveragingSelectedUAVs = applyToSelection(
   stopAveragingUAVCoordinatesByIds
 );
 
+type SampleKeys = 'lat' | 'lon' | 'amsl' | 'ahl';
+
 /**
  * Adds new samples to the averaging process of multiple UAVs.
  */
-export const addNewSamplesToAveraging = (samples) => (dispatch, getState) => {
-  const state = getState();
-  const keys = ['lat', 'lon', 'amsl', 'ahl'];
-  const updates = {};
+export const addNewSamplesToAveraging =
+  (samples: Record<string, AveragingResult['mean']>): AppThunk =>
+  (dispatch, getState) => {
+    const state = getState();
+    const keys: SampleKeys[] = ['lat', 'lon', 'amsl', 'ahl'] as const;
+    const updates: Record<
+      AveragingResult['id'],
+      Omit<AveragingResult, 'id'>
+    > = {};
 
-  for (const [uavId, sample] of Object.entries(samples)) {
-    const averagingState = state.measurement.averagingResults.byId[uavId];
-    const newCount = averagingState.numSamples + 1;
+    for (const [uavId, sample] of Object.entries(samples)) {
+      const averagingState = state.measurement.averagingResults.byId[uavId];
+      const newCount = averagingState.numSamples + 1;
 
-    if (averagingState) {
-      updates[uavId] = {
-        lastSampleAt: Date.now(),
-        numSamples: newCount,
-        mean: {},
-        sqDiff: {},
-      };
-      for (const key of keys) {
-        if (!isNil(sample[key])) {
-          const difference = sample[key] - averagingState.mean[key];
-          const newMean = averagingState.mean[key] + difference / newCount;
-          const sqDiffIncrement = (sample[key] - newMean) * difference;
-          const newSqDiff = averagingState.sqDiff[key] + sqDiffIncrement;
-          updates[uavId].mean[key] = newMean;
-          updates[uavId].sqDiff[key] = newSqDiff;
+      if (averagingState) {
+        updates[uavId] = {
+          lastSampleAt: Date.now(),
+          numSamples: newCount,
+          mean: {} as any,
+          sqDiff: {} as any,
+        } as Omit<AveragingResult, 'id'>;
+        for (const key of keys) {
+          if (!isNil(sample[key])) {
+            const difference = sample[key] - averagingState.mean[key];
+            const newMean = averagingState.mean[key] + difference / newCount;
+            const sqDiffIncrement = (sample[key] - newMean) * difference;
+            const newSqDiff = averagingState.sqDiff[key] + sqDiffIncrement;
+            updates[uavId].mean[key] = newMean as any;
+            updates[uavId].sqDiff[key] = newSqDiff as any;
+          }
         }
       }
     }
-  }
 
-  dispatch(updateAveragingByIds(updates));
-};
+    dispatch(updateAveragingByIds(updates));
+  };
 
 /**
  * Copies the coordinates of the centroid of a given set of UAV IDs to the
  * clipboard.
  */
 export const copyCentroidOfAveragedCoordinatesToClipboard =
-  (uavIds) => (_dispatch, getState) => {
+  (uavIds: string[]): AppThunk =>
+  async (_dispatch, getState) => {
     const state = getState();
     const centroid = getAveragedCentroidOfUAVsById(state, uavIds);
 
     if (centroid) {
       const formatter = getPreferredCoordinateFormatter(state);
       const formattedCoords = formatter(centroid);
-      copy(formattedCoords);
+      const success = await copy(formattedCoords);
 
-      if (uavIds.length === 1) {
+      if (!success) {
+        showError('Failed to copy coordinates to clipboard.');
+      } else if (uavIds.length === 1) {
         showNotification('Coordinates copied to clipboard.');
       } else {
         showNotification('Coordinates of centroid copied to clipboard.');
@@ -143,7 +161,8 @@ export const copyAveragedCentroidOfSelectedUAVsToClipboard = applyToSelection(
  * Sets the map origin to the centroid of the given set of UAV IDs.
  */
 export const setCentroidOfAveragedCoordinatesAsMapOrigin =
-  (uavIds) => (dispatch, getState) => {
+  (uavIds: string[]): AppThunk =>
+  (dispatch, getState) => {
     const centroid = getAveragedCentroidOfUAVsById(getState(), uavIds);
 
     if (centroid) {

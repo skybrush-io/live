@@ -68,7 +68,7 @@
     "clsx": "^2.1.1",
     "color": "^5.0.3",
     "coordinate-parser": "^1.0.7",
-    "copy-to-clipboard": "^3.3.3",
+    "copy-to-clipboard": "^4.0.2",
     "core-js": "^3.49.0",
     "crypto-browserify": "^3.12.1",
     "date-fns": "^2.30.0",

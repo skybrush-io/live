@@ -78,7 +78,7 @@ const { actions, reducer } = createSlice({
 
     pauseAveragingUAVCoordinatesByIds(
       state,
-      action: PayloadAction<AveragingResult['id']>
+      action: PayloadAction<Array<AveragingResult['id']>>
     ) {
       const uavIds = action.payload;
       const results = state.averagingResults;
@@ -96,7 +96,7 @@ const { actions, reducer } = createSlice({
 
     restartAveragingUAVCoordinatesByIds(
       state,
-      action: PayloadAction<AveragingResult['id']>
+      action: PayloadAction<Array<AveragingResult['id']>>
     ) {
       const uavIds = action.payload;
       const results = state.averagingResults;
