@@ -91,10 +91,6 @@ const CollectiveRTHPanelMainPart = ({
   const { numDrones, isValid } = planSummary;
   const { errorInfo, sortedPlanEntries, t } = useOwnState(planSummary);
 
-  if (rthSchedule !== undefined) {
-    return <ScheduleProgressIndicator schedule={rthSchedule.schedule} />;
-  }
-
   if (!hasLoadedShowFile) {
     return <BackgroundHint text={t('collectiveRTHPanel.message.noShowFile')} />;
   }
