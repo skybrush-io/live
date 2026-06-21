@@ -1,3 +1,5 @@
+import Box from '@mui/material/Box';
+import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -82,10 +84,9 @@ const useOwnState = ({
   };
 };
 
-const CollectiveRTHPanel = ({
+const CollectiveRTHPanelMainPart = ({
   hasLoadedShowFile,
   planSummary,
-  rthSchedule,
 }: Props) => {
   const { numDrones, isValid } = planSummary;
   const { errorInfo, sortedPlanEntries, t } = useOwnState(planSummary);
@@ -114,6 +115,26 @@ const CollectiveRTHPanel = ({
 
   return <RTHPlanDetails plans={sortedPlanEntries} />;
 };
+
+const CollectiveRTHPanel = ({
+  hasLoadedShowFile,
+  planSummary,
+  rthSchedule,
+}: Props) => (
+  <Stack direction='row' sx={{ flex: 1, overflow: 'hidden', height: '100%' }}>
+    <Box sx={{ flex: 1, overflow: 'hidden' }}>
+      <CollectiveRTHPanelMainPart
+        hasLoadedShowFile={hasLoadedShowFile}
+        planSummary={planSummary}
+      />
+    </Box>
+    {rthSchedule && (
+      <Box sx={{ maxWidth: 320, overflowY: 'auto' }}>
+        <ScheduleProgressIndicator schedule={rthSchedule.schedule} />
+      </Box>
+    )}
+  </Stack>
+);
 
 const ConnectedCollectiveRTHPanel = connect((state: RootState) => ({
   hasLoadedShowFile: hasLoadedShowFile(state),
