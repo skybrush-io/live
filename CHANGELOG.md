@@ -33,6 +33,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Replaced the Show adapt stage with the collective RTH plan stage
   in the control panel.
 
+- The connections widget in the header now shows at most 10 connections in the tooltip,
+  grouping connections in similar states together if there are more than 10.
+
 ### Fixed
 
 - Fixed the automatic launch of the server in the background that was accidentally

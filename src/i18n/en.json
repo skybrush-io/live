@@ -4,7 +4,13 @@
   },
   "ConnectionStatusMiniList": {
     "noConnections": "This server uses no connections.",
-    "useSecondaryChannel": "Use secondary channel"
+    "useSecondaryChannel": "Use secondary channel",
+    "summaryItem": {
+      "connected": "+ {{count}} connections not shown",
+      "connecting": "+ {{count}} connecting and not shown",
+      "disconnecting": "+ {{count}} disconnecting and not shown",
+      "disconnected": "+ {{count}} closed connections not shown"
+    }
   },
   "DrawingToolbar": {
     "addMarker": "Add marker",

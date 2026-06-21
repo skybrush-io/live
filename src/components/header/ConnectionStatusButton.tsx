@@ -18,7 +18,7 @@ type Props = GenericHeaderButtonProps;
 const ConnectionStatusButtonPresentation = (props: Props) => (
   <LazyTooltip
     interactive
-    content={<ConnectionStatusMiniList />}
+    content={<ConnectionStatusMiniList limit={10} />}
     disabled={props.disabled}
   >
     <GenericHeaderButton {...props}>
