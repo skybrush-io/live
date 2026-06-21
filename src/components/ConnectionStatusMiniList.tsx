@@ -2,7 +2,6 @@ import Box from '@mui/material/Box';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import Typography from '@mui/material/Typography';
-import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import TimeAgo from 'react-timeago';
@@ -13,34 +12,49 @@ import {
   MiniListItem,
 } from '@skybrush/mui-components';
 
+import type { ConnectionProperties } from '~/features/connections/types';
 import { getPreferredCommunicationChannelIndex } from '~/features/mission/selectors';
 import { togglePreferredChannel } from '~/features/mission/slice';
 import { getConnectionsInOrder } from '~/selectors/ordered';
+import type { RootState } from '~/store/reducers';
 import { shortTimeAgoFormatter } from '~/utils/formatting';
 
-const ConnectionStatusMiniListEntry = ({ id, name, state, stateChangedAt }) => (
+type ConnectionStatusMiniListEntryProps = {
+  id: string;
+  name: string;
+  state: string;
+  stateChangedAt?: number;
+};
+
+const ConnectionStatusMiniListEntry = ({
+  id,
+  name,
+  state,
+  stateChangedAt,
+}: ConnectionStatusMiniListEntryProps) => (
   <MiniListItem
     key={id}
     iconPreset={state}
     primaryText={name}
     secondaryText={
-      <TimeAgo formatter={shortTimeAgoFormatter} date={stateChangedAt} />
+      stateChangedAt ? (
+        <TimeAgo formatter={shortTimeAgoFormatter} date={stateChangedAt} />
+      ) : undefined
     }
   />
 );
 
-ConnectionStatusMiniListEntry.propTypes = {
-  id: PropTypes.string,
-  name: PropTypes.string,
-  state: PropTypes.string,
-  stateChangedAt: PropTypes.number,
+type ConnectionStatusMiniListAndButtonsProps = {
+  connections: ConnectionProperties[];
+  onSwitchSecondaryChannel: () => void;
+  useSecondaryChannel: boolean;
 };
 
 const ConnectionStatusMiniListAndButtons = ({
   connections,
   onSwitchSecondaryChannel,
   useSecondaryChannel,
-}) => {
+}: ConnectionStatusMiniListAndButtonsProps) => {
   const { t } = useTranslation();
 
   return (
@@ -74,14 +88,8 @@ const ConnectionStatusMiniListAndButtons = ({
   );
 };
 
-ConnectionStatusMiniListAndButtons.propTypes = {
-  connections: PropTypes.arrayOf(PropTypes.any),
-  onSwitchSecondaryChannel: PropTypes.func,
-  useSecondaryChannel: PropTypes.bool,
-};
-
 export default connect(
-  (state) => ({
+  (state: RootState) => ({
     connections: getConnectionsInOrder(state),
     useSecondaryChannel: getPreferredCommunicationChannelIndex(state) !== 0,
   }),

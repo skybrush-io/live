@@ -1,6 +1,5 @@
 import Error from '@mui/icons-material/Error';
 import Button from '@mui/material/Button';
-import PropTypes from 'prop-types';
 import { useAsyncRetry } from 'react-use';
 
 import {
@@ -8,17 +7,24 @@ import {
   LargeProgressIndicator,
 } from '@skybrush/mui-components';
 
-const AsyncGuard = ({
+type Props<T> = {
+  children?: (value: T | undefined) => React.ReactNode;
+  func?: () => Promise<T>;
+  errorMessage?: string;
+  loadingMessage?: string;
+  style?: React.CSSProperties;
+};
+
+function AsyncGuard<T>({
   children,
   func,
   errorMessage,
   loadingMessage,
   style,
-}) => {
+}: Props<T>) {
   // style prop is forwarded to make this component play nicely when it is used
   // as a top-level component in a transition
-
-  const state = useAsyncRetry(() => (func ? func() : undefined), [func]);
+  const state = useAsyncRetry(async () => (func ? func() : undefined), [func]);
 
   if (state.error && !state.loading) {
     return (
@@ -42,14 +48,6 @@ const AsyncGuard = ({
   }
 
   return children ? children(state.value) : null;
-};
-
-AsyncGuard.propTypes = {
-  children: PropTypes.func,
-  func: PropTypes.func,
-  errorMessage: PropTypes.string,
-  loadingMessage: PropTypes.string,
-  style: PropTypes.object,
-};
+}
 
 export default AsyncGuard;
