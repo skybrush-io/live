@@ -42,14 +42,7 @@ type Props = {
 };
 
 const ProgressCard = (props: Props) => {
-  const {
-    caption,
-    description,
-    descriptionMinHeight = '2lh',
-    icon,
-    title,
-    value,
-  } = props;
+  const { caption, description, icon, title, value } = props;
   return (
     <Paper
       elevation={4}
@@ -67,9 +60,7 @@ const ProgressCard = (props: Props) => {
         {icon}
         <Typography variant='h6'>{title}</Typography>
       </Box>
-      <Typography variant='body2' minHeight={descriptionMinHeight}>
-        {description}
-      </Typography>
+      {description && <Typography variant='body2'>{description}</Typography>}
       <Box>
         {caption && (
           <Typography variant='caption' textAlign='center'>

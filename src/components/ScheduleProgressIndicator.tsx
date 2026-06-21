@@ -94,7 +94,7 @@ const SegmentProgressCard = ({ segment }: SegmentProgressCardProps) => {
     <ProgressCard
       value={progress}
       title={title}
-      description={description}
+      description={stage !== 'completed' ? description : undefined}
       caption={caption}
       icon={SEGMENT_TYPE_ICONS[segment.type]}
     />
@@ -117,7 +117,6 @@ const ScheduleProgressIndicator = ({
         flexDirection: 'column',
         minHeight: '100%',
         alignItems: 'center',
-        justifyContent: 'center',
         gap: 2,
         p: 2,
       }}
