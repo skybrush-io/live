@@ -1,7 +1,7 @@
 import PauseCircleOutlined from '@mui/icons-material/PauseCircleOutlined';
 import PlayCircleOutlined from '@mui/icons-material/PlayCircleOutlined';
 import Webhook from '@mui/icons-material/Webhook';
-import Box from '@mui/material/Box';
+import Stack, { type StackProps } from '@mui/material/Stack';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -89,12 +89,13 @@ const SegmentProgressCard = ({ segment }: SegmentProgressCardProps) => {
     elapsedSeconds: Math.floor(elapsedMs / 1000),
     durationSeconds: Math.ceil(durationMs / 1000),
   });
+  const isCompleted = stage === 'completed';
 
   return (
     <ProgressCard
       value={progress}
       title={title}
-      description={stage !== 'completed' ? description : undefined}
+      description={!isCompleted ? description : undefined}
       caption={caption}
       icon={SEGMENT_TYPE_ICONS[segment.type]}
     />
@@ -103,24 +104,17 @@ const SegmentProgressCard = ({ segment }: SegmentProgressCardProps) => {
 
 type ScheduleProgressIndicatorProps = {
   schedule: TimeSegment[];
-};
+} & StackProps;
 
 const ScheduleProgressIndicator = ({
   schedule,
+  sx,
+  ...rest
 }: ScheduleProgressIndicatorProps) => {
   const { t } = useTranslation();
 
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        minHeight: '100%',
-        alignItems: 'center',
-        gap: 2,
-        p: 2,
-      }}
-    >
+    <Stack gap={2} sx={{ p: 2, ...sx }} {...rest}>
       {schedule.length === 0 ? (
         <ProgressCard
           value={100}
@@ -135,7 +129,7 @@ const ScheduleProgressIndicator = ({
           />
         ))
       )}
-    </Box>
+    </Stack>
   );
 };
 

@@ -126,12 +126,13 @@ const useStyles = makeStyles((theme) => ({
 
   sidebar: {
     ...createSecondaryAreaStyle(theme),
-    maxWidth: 320,
+    width: 320,
     overflowY: 'auto',
+    border: undefined,
     borderLeft: `1px solid ${
       isThemeDark(theme) ? 'rgba(0, 0, 0, 0.54)' : 'rgba(255, 255, 255, 0.54)'
     }`,
-    boxShadow: '0 0 4px 2px inset rgba(0, 0, 0, 0.54)',
+    boxShadow: '0 0px 6px -2px inset rgba(0, 0, 0, 0.54)',
   },
 }));
 
@@ -151,9 +152,10 @@ const CollectiveRTHPanel = ({
         />
       </Box>
       {rthSchedule && (
-        <Box className={classes.sidebar}>
-          <ScheduleProgressIndicator schedule={rthSchedule.schedule} />
-        </Box>
+        <ScheduleProgressIndicator
+          className={classes.sidebar}
+          schedule={rthSchedule.schedule}
+        />
       )}
     </Stack>
   );

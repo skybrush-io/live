@@ -1,6 +1,7 @@
-import Box from '@mui/material/Box';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import CardHeader from '@mui/material/CardHeader';
 import LinearProgress from '@mui/material/LinearProgress';
-import Paper from '@mui/material/Paper';
 import Typography, { type TypographyProps } from '@mui/material/Typography';
 
 type Props = {
@@ -44,37 +45,20 @@ type Props = {
 const ProgressCard = (props: Props) => {
   const { caption, description, icon, title, value } = props;
   return (
-    <Paper
-      elevation={4}
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 2,
-        pt: 2,
-        px: 2,
-        width: 'min(100%, 45ch)',
-        textAlign: 'start',
-      }}
-    >
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-        {icon}
-        <Typography variant='h6'>{title}</Typography>
-      </Box>
-      {description && <Typography variant='body2'>{description}</Typography>}
-      <Box>
-        {caption && (
-          <Typography variant='caption' textAlign='center'>
-            {caption}
-          </Typography>
-        )}
-        <LinearProgress
-          value={value}
-          variant='determinate'
-          color={value >= 100 ? 'success' : 'primary'}
-          sx={{ borderRadius: '0px 0px 4px 4px', height: 8, mx: -2 }}
-        />
-      </Box>
-    </Paper>
+    <Card elevation={3} sx={{ overflow: 'visible' }}>
+      <CardHeader title={title} avatar={icon} subheader={caption} />
+      {description && (
+        <CardContent sx={{ overflow: 'hidden', pt: 0 }}>
+          <Typography variant='body2'>{description}</Typography>
+        </CardContent>
+      )}
+      <LinearProgress
+        value={value}
+        variant='determinate'
+        color={value >= 100 ? 'success' : 'primary'}
+        sx={{ borderRadius: '0px 0px 4px 4px', height: 4 }}
+      />
+    </Card>
   );
 };
 
