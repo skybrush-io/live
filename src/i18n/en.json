@@ -903,7 +903,8 @@
         "description": "The operation will start soon.",
         "title": "Waiting to start ({{remainingSeconds}}s)"
       }
-    }
+    },
+    "title": "Schedule"
   },
   "selectionGroups": {
     "action": {

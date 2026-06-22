@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import type { TimeSegment, TimeSegmentType } from '~/flockwave/schedule';
 import HomeCircleOutlined from '~/icons/HomeCircleOutlined';
 
+import Typography from '@mui/material/Typography';
 import ProgressCard from './ProgressCard';
 
 const UPDATE_INTERVAL_MS = 100;
@@ -115,6 +116,9 @@ const ScheduleProgressIndicator = ({
 
   return (
     <Stack gap={2} sx={{ p: 2, ...sx }} {...rest}>
+      <Typography variant='button' color='textSecondary'>
+        {t('scheduleProgressIndicator.title')}
+      </Typography>
       {schedule.length === 0 ? (
         <ProgressCard
           value={100}
