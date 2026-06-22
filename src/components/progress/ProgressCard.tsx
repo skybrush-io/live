@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box';
 import LinearProgress from '@mui/material/LinearProgress';
 import Paper from '@mui/material/Paper';
-import Typography from '@mui/material/Typography';
+import Typography, { type TypographyProps } from '@mui/material/Typography';
 
 type Props = {
   /**
@@ -18,7 +18,7 @@ type Props = {
   /**
    * A potentially longer description to show.
    */
-  description: React.ReactNode;
+  description?: React.ReactNode;
 
   /**
    * Optional caption to show above the progress bar.
@@ -33,7 +33,7 @@ type Props = {
    *
    * Defaults to '2lh'.
    */
-  descriptionMinHeight?: React.ComponentProps<typeof Typography>['minHeight'];
+  descriptionMinHeight?: TypographyProps['minHeight'];
 
   /**
    * An optional icon to show next to the title.

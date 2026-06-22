@@ -13,12 +13,12 @@ import { Status } from '@skybrush/app-theme-mui';
 import { StatusLight } from '@skybrush/mui-components';
 
 import Colors from '~/components/colors';
+import ListItemProgressBar from '~/components/progress/ListItemProgressBar';
 import { errorToString } from '~/error-handling';
 import type { ProgressInfo, ProgressStatus } from '~/flockwave/messages';
 import { useMessageHub } from '~/hooks';
 
 import { COMPASS_CALIB_TIMEOUT } from './constants';
-import ListItemProgressBar from './ListItemProgressBar';
 
 type UAVTestType = 'calib' | 'test';
 

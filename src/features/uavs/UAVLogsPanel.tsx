@@ -22,6 +22,7 @@ import {
 } from '@skybrush/mui-components';
 
 import { listOf } from '~/components/helpers/lists';
+import ListItemProgressBar from '~/components/progress/ListItemProgressBar';
 import { showNotification } from '~/features/snackbar/actions';
 import { MessageSemantics } from '~/features/snackbar/types';
 import {
@@ -44,8 +45,6 @@ import {
 import { useAppDispatch } from '~/store/hooks';
 import { writeBlobToFile } from '~/utils/filesystem';
 import { formatUnixTimestamp } from '~/utils/formatting';
-
-import ListItemProgressBar from './ListItemProgressBar';
 
 const SEPARATOR = ' · ';
 

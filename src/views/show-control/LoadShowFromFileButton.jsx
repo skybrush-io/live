@@ -15,7 +15,7 @@ import { StatusLight } from '@skybrush/mui-components';
 
 import Colors from '~/components/colors';
 import FileButton from '~/components/FileButton';
-import ListItemTextWithProgress from '~/components/ListItemTextWithProgress';
+import ListItemTextWithProgress from '~/components/progress/ListItemTextWithProgress';
 import { Status } from '~/components/semantics';
 import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
 import {
