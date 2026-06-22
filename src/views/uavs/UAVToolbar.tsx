@@ -26,7 +26,6 @@ type UAVToolbarProps = ToolbarProps &
  * Main toolbar for controlling the UAVs.
  */
 const UAVToolbar = ({
-  ref,
   fitSelectedUAVs,
   isBroadcast,
   selectedUAVIds,
@@ -36,7 +35,7 @@ const UAVToolbar = ({
   const { t } = useTranslation();
 
   return (
-    <Toolbar ref={ref} disableGutters variant='dense' {...rest}>
+    <Toolbar disableGutters variant='dense' {...rest}>
       <Box sx={{ width: '4px' }} />
 
       <UAVOperationsButtonGroup
@@ -77,5 +76,9 @@ export default connect(
     selectedUAVIds: getSelectedUAVIds(state),
   }),
   // mapDispatchToProps
-  {}
+  {},
+  null,
+  {
+    forwardRef: true,
+  }
 )(UAVToolbar);
