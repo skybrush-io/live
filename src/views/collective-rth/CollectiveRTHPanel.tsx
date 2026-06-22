@@ -5,6 +5,13 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
+import {
+  createSecondaryAreaStyle,
+  isThemeDark,
+  makeStyles,
+} from '@skybrush/app-theme-mui';
+import { BackgroundHint } from '@skybrush/mui-components';
+
 import CenteredBox from '~/components/CenteredBox';
 import ScheduleProgressIndicator from '~/components/ScheduleProgressIndicator';
 import {
@@ -17,7 +24,6 @@ import {
 import type { Schedule } from '~/flockwave/schedule';
 import type { RootState } from '~/store/reducers';
 
-import { BackgroundHint } from '@skybrush/mui-components';
 import RTHPlanDetails from './RTHPlanDetails';
 
 type ErrorInfo = {
@@ -112,25 +118,46 @@ const CollectiveRTHPanelMainPart = ({
   return <RTHPlanDetails plans={sortedPlanEntries} />;
 };
 
+const useStyles = makeStyles((theme) => ({
+  main: {
+    flex: 1,
+    overflowY: 'hidden',
+  },
+
+  sidebar: {
+    ...createSecondaryAreaStyle(theme),
+    maxWidth: 320,
+    overflowY: 'auto',
+    borderLeft: `1px solid ${
+      isThemeDark(theme) ? 'rgba(0, 0, 0, 0.54)' : 'rgba(255, 255, 255, 0.54)'
+    }`,
+    boxShadow: '0 0 4px 2px inset rgba(0, 0, 0, 0.54)',
+  },
+}));
+
 const CollectiveRTHPanel = ({
   hasLoadedShowFile,
   planSummary,
   rthSchedule,
-}: Props) => (
-  <Stack direction='row' sx={{ flex: 1, overflow: 'hidden', height: '100%' }}>
-    <Box sx={{ flex: 1, overflow: 'hidden' }}>
-      <CollectiveRTHPanelMainPart
-        hasLoadedShowFile={hasLoadedShowFile}
-        planSummary={planSummary}
-      />
-    </Box>
-    {rthSchedule && (
-      <Box sx={{ maxWidth: 320, overflowY: 'auto' }}>
-        <ScheduleProgressIndicator schedule={rthSchedule.schedule} />
+}: Props) => {
+  const classes = useStyles();
+
+  return (
+    <Stack direction='row' sx={{ flex: 1, overflow: 'hidden', height: '100%' }}>
+      <Box className={classes.main}>
+        <CollectiveRTHPanelMainPart
+          hasLoadedShowFile={hasLoadedShowFile}
+          planSummary={planSummary}
+        />
       </Box>
-    )}
-  </Stack>
-);
+      {rthSchedule && (
+        <Box className={classes.sidebar}>
+          <ScheduleProgressIndicator schedule={rthSchedule.schedule} />
+        </Box>
+      )}
+    </Stack>
+  );
+};
 
 const ConnectedCollectiveRTHPanel = connect((state: RootState) => ({
   hasLoadedShowFile: hasLoadedShowFile(state),
