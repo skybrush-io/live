@@ -5,6 +5,7 @@ import React from 'react';
 import { makeStyles } from '@skybrush/app-theme-mui';
 
 import FadeAndSlide, {
+  type Direction,
   type FadeAndSlideProps,
 } from './transitions/FadeAndSlide';
 
@@ -34,7 +35,7 @@ export const Page = ({ id }: PageProps) => id;
 
 type MultiPagePanelProps = Omit<BoxProps, 'children'> & {
   children: Array<React.ReactElement<PageProps>>;
-  direction?: React.ComponentProps<typeof FadeAndSlide>['direction'];
+  direction?: Direction;
   onChange?: (newPageId: string) => void;
   selectedPage: string;
 };
