@@ -1,6 +1,7 @@
+import ErrorIcon from '@mui/icons-material/Error';
+import Warning from '@mui/icons-material/Warning';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
-import Typography from '@mui/material/Typography';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
@@ -12,7 +13,6 @@ import {
 } from '@skybrush/app-theme-mui';
 import { BackgroundHint } from '@skybrush/mui-components';
 
-import CenteredBox from '~/components/CenteredBox';
 import ScheduleProgressIndicator from '~/components/progress/ScheduleProgressIndicator';
 import {
   hasLoadedShowFile,
@@ -107,11 +107,10 @@ const CollectiveRTHPanelMainPart = ({
 
   if (!isValid) {
     return (
-      <CenteredBox>
-        <Typography variant='h6' color={errorInfo?.severity ?? 'error'}>
-          {errorInfo?.message ?? t('collectiveRTHPanel.error.invalidPlan')}
-        </Typography>
-      </CenteredBox>
+      <BackgroundHint
+        text={errorInfo?.message ?? t('collectiveRTHPanel.error.invalidPlan')}
+        icon={errorInfo?.severity === 'error' ? <ErrorIcon /> : <Warning />}
+      />
     );
   }
 
