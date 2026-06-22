@@ -7,7 +7,7 @@ import ListItemText from '@mui/material/ListItemText';
 import Zoom from '@mui/material/Zoom';
 import isNil from 'lodash-es/isNil';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useAsyncFn } from 'react-use';
+import { useAsyncFn, useUpdate } from 'react-use';
 
 import { Status } from '@skybrush/app-theme-mui';
 import { StatusLight } from '@skybrush/mui-components';
@@ -98,14 +98,14 @@ const UAVTestButton = ({
   uavId,
 }: UAVTestButtonProps) => {
   const messageHub = useMessageHub();
+  const update = useUpdate();
 
   // We can store the timeout ID of the pending confirmation in this state and
   // use it to determine whether there is a currently pending confirmation,
   // as setTimeout returns *positive* integers only.
   // https://developer.mozilla.org/en-US/docs/Web/API/setTimeout#return_value
-  const [pendingConfirmation, setPendingConfirmation] = useState<
-    ReturnType<typeof setTimeout> | undefined
-  >();
+  const pendingConfirmationRef =
+    useRef<ReturnType<typeof setTimeout>>(undefined);
   const [progress, setProgress] = useState<ProgressInfo | undefined>();
   const [suspended, setSuspended] = useState(false);
   const resumeCallbackRef = useRef<(() => Promise<void>) | undefined>(
@@ -116,21 +116,25 @@ const UAVTestButton = ({
   uavIdRef.current = uavId;
 
   const clearPendingConfirmation = useCallback(() => {
-    clearTimeout(pendingConfirmation);
-    setPendingConfirmation(undefined);
-  }, [pendingConfirmation]);
+    if (pendingConfirmationRef.current) {
+      clearTimeout(pendingConfirmationRef.current);
+      pendingConfirmationRef.current = undefined;
+      update();
+    }
+  }, [update]);
 
   useEffect(() => {
     clearPendingConfirmation();
     setProgress(undefined);
     setSuspended(false);
     resumeCallbackRef.current = undefined;
-  }, [clearPendingConfirmation, uavId]);
+  }, [uavId, clearPendingConfirmation]);
 
   const askForConfirmation = useCallback(() => {
     clearPendingConfirmation();
-    setPendingConfirmation(setTimeout(clearPendingConfirmation, 3000));
-  }, [clearPendingConfirmation]);
+    pendingConfirmationRef.current = setTimeout(clearPendingConfirmation, 3000);
+    update();
+  }, [clearPendingConfirmation, update]);
 
   const progressHandler = useCallback(
     (
@@ -187,9 +191,7 @@ const UAVTestButton = ({
   }, [clearPendingConfirmation, execute, resume, suspended]);
 
   const confirmButton = (
-    <Zoom in={Boolean(pendingConfirmation)}>
-      {/* TODO: Change to `Slide` from right when switching to Material UI v5,
-                as that version supports setting a `container`. */}
+    <Zoom in={Boolean(pendingConfirmationRef.current)}>
       <Button
         style={{ color: Colors.seriousWarning }}
         onClick={giveConfirmation}
