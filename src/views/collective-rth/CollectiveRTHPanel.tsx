@@ -13,7 +13,7 @@ import {
 import { BackgroundHint } from '@skybrush/mui-components';
 
 import CenteredBox from '~/components/CenteredBox';
-import ScheduleProgressIndicator from '~/components/ScheduleProgressIndicator';
+import ScheduleProgressIndicator from '~/components/progress/ScheduleProgressIndicator';
 import {
   hasLoadedShowFile,
   selectCollectiveRTHPlanSummary,
