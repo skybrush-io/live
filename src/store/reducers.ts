@@ -32,6 +32,7 @@ import showConfiguratorReducer, {
   type ShowData,
 } from '~/features/show-configurator/slice';
 import uavDetailsDialogReducer from '~/features/uavs/details';
+import tasksReducer from '~/features/tasks/slice';
 
 /**
  * Reducer functions for handling the top-level keys of the state object.
@@ -68,7 +69,6 @@ import showReducer from '~/features/show/slice';
 import sidebarReducer from '~/features/sidebar/slice';
 import threeDReducer from '~/features/three-d/slice';
 import uavControlReducer from '~/features/uav-control/slice';
-import logDownloadReducer from '~/features/uavs/log-download';
 import uavReducer from '~/features/uavs/slice';
 import uploadReducer from '~/features/upload/slice';
 import versionCheckReducer from '~/features/version-check/slice';
@@ -126,7 +126,6 @@ const reducer = combineReducers({
   lightControl: lightControlReducer,
   localServer: localServerReducer,
   log: logReducer,
-  logDownload: logDownloadReducer,
   map: mapReducer,
   mapCaching: mapCachingReducer,
   measurement: measurementReducer,
@@ -145,6 +144,7 @@ const reducer = combineReducers({
   sidebar: sidebarReducer,
   threeD: threeDReducer,
   uavs: uavReducer,
+  tasks: tasksReducer,
   uavControl: uavControlReducer,
   upload: uploadReducer,
   versionCheck: versionCheckReducer,
