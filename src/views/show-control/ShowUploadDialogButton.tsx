@@ -7,7 +7,7 @@ import { connect } from 'react-redux';
 
 import { StatusLight } from '@skybrush/mui-components';
 
-import ListItemTextWithProgress from '~/components/ListItemTextWithProgress';
+import ListItemTextWithProgress from '~/components/progress/ListItemTextWithProgress';
 import { Status } from '~/components/semantics';
 import { JOB_TYPE, SHOW_UPLOAD_JOB } from '~/features/show/constants';
 import { getSetupStageStatuses } from '~/features/show/stages';

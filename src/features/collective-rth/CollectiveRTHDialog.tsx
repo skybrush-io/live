@@ -1,7 +1,10 @@
+import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import DialogActions from '@mui/material/DialogActions';
+import Divider from '@mui/material/Divider';
 import Fade from '@mui/material/Fade';
+import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
@@ -15,6 +18,7 @@ import {
   type CollectiveRTHPlanSummary,
 } from '~/features/show/selectors';
 import type { RootState } from '~/store/reducers';
+import { formatDuration } from '~/utils/formatting';
 
 import {
   addCollectiveRTH,
@@ -82,7 +86,7 @@ const CollectiveRTHDialog = (props: Props) => {
           : '';
 
   const parametersForm = (
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, padding: 2 }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column' }}>
       <CollectiveRTHParametersForm
         disabled={inProgress}
         {...parametersFormState}
@@ -114,26 +118,25 @@ const CollectiveRTHDialog = (props: Props) => {
           flexDirection: 'column',
           paddingTop: 2,
           paddingX: 4,
-          gap: 2,
+          gap: 1,
         }}
       >
         {transformationResult !== undefined && (
           <>
-            <Typography>
+            <Alert severity='success' variant='filled' sx={{ mt: 1 }}>
               {t('collectiveRTHDialog.summary.numPlans.message', {
                 numPlans: transformationResult.stats.length,
               })}
-            </Typography>
-            <Typography>
+            </Alert>
+            <Stack direction='row' spacing={2} sx={{ alignItems: 'center' }}>
               {t('collectiveRTHDialog.summary.firstTime.message', {
-                firstTime: transformationResult.firstTime,
+                firstTime: formatDuration(transformationResult.firstTime),
               })}
-            </Typography>
-            <Typography>
+              <Divider sx={{ flex: 1 }} />
               {t('collectiveRTHDialog.summary.lastTime.message', {
-                lastTime: transformationResult.lastTime,
+                lastTime: formatDuration(transformationResult.lastTime),
               })}
-            </Typography>
+            </Stack>
           </>
         )}
         {transformationResult === undefined &&
@@ -141,14 +144,17 @@ const CollectiveRTHDialog = (props: Props) => {
           error === undefined && (
             <>
               <Typography>{t('collectiveRTHDialog.description')}</Typography>
-              <Typography>
-                {existingRTHPlanSummary.isValid
-                  ? t('collectiveRTHDialog.existingValidRTHPlan', {
-                      numPlans: Object.keys(existingRTHPlanSummary.plans)
-                        .length,
-                    })
-                  : t('collectiveRTHDialog.existingInvalidRTHPlan')}
-              </Typography>
+              {existingRTHPlanSummary.isValid ? (
+                <Typography>
+                  {t('collectiveRTHDialog.existingValidRTHPlan', {
+                    numPlans: Object.keys(existingRTHPlanSummary.plans).length,
+                  })}
+                </Typography>
+              ) : (
+                <Alert severity='warning' variant='filled'>
+                  {t('collectiveRTHDialog.existingInvalidRTHPlan')}
+                </Alert>
+              )}
             </>
           )}
         {parametersForm}

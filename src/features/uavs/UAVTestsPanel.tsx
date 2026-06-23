@@ -1,23 +1,23 @@
-/* eslint-disable @eslint-react/set-state-in-effect */
 import Button from '@mui/material/Button';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import Zoom from '@mui/material/Zoom';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { connect } from 'react-redux';
+import { useUpdate } from 'react-use';
 
 import { Status } from '@skybrush/app-theme-mui';
 import { StatusLight } from '@skybrush/mui-components';
 
 import Colors from '~/components/colors';
+import ListItemProgressBar from '~/components/progress/ListItemProgressBar';
 import type { UAVTestTaskData, UAVTestTaskState } from '~/features/tasks';
 import { getTaskState, resumeTask, startTask } from '~/features/tasks';
 import type { AppDispatch, RootState } from '~/store/reducers';
 
 import { COMPASS_CALIB_TIMEOUT } from './constants';
-import ListItemProgressBar from './ListItemProgressBar';
 
 type UAVTestType = 'calib' | 'test';
 
@@ -110,27 +110,32 @@ const UAVTestButton = (props: UAVTestButtonProps) => {
     task,
     uavId,
   } = props;
+  const update = useUpdate();
+
   // We can store the timeout ID of the pending confirmation in this state and
   // use it to determine whether there is a currently pending confirmation,
   // as setTimeout returns *positive* integers only.
   // https://developer.mozilla.org/en-US/docs/Web/API/setTimeout#return_value
-  const [pendingConfirmation, setPendingConfirmation] = useState<
-    ReturnType<typeof setTimeout> | undefined
-  >();
+  const pendingConfirmationRef =
+    useRef<ReturnType<typeof setTimeout>>(undefined);
 
   const clearPendingConfirmation = useCallback(() => {
-    clearTimeout(pendingConfirmation);
-    setPendingConfirmation(undefined);
-  }, [pendingConfirmation]);
+    if (pendingConfirmationRef.current) {
+      clearTimeout(pendingConfirmationRef.current);
+      pendingConfirmationRef.current = undefined;
+      update();
+    }
+  }, [update]);
 
   useEffect(() => {
     clearPendingConfirmation();
-  }, [clearPendingConfirmation, uavId]);
+  }, [uavId, clearPendingConfirmation]);
 
   const askForConfirmation = useCallback(() => {
     clearPendingConfirmation();
-    setPendingConfirmation(setTimeout(clearPendingConfirmation, 3000));
-  }, [clearPendingConfirmation]);
+    pendingConfirmationRef.current = setTimeout(clearPendingConfirmation, 3000);
+    update();
+  }, [clearPendingConfirmation, update]);
 
   const giveConfirmation = useCallback(() => {
     clearPendingConfirmation();
@@ -158,10 +163,8 @@ const UAVTestButton = (props: UAVTestButtonProps) => {
     status = Status.SUCCESS;
   }
 
-  const confirmButton = needsConfirmation ? (
-    <Zoom in={Boolean(pendingConfirmation)}>
-      {/* TODO: Change to `Slide` from right when switching to Material UI v5,
-                as that version supports setting a `container`. */}
+  const confirmButton = (
+    <Zoom in={Boolean(pendingConfirmationRef.current)}>
       <Button
         style={{ color: Colors.seriousWarning }}
         onClick={giveConfirmation}
@@ -169,7 +172,7 @@ const UAVTestButton = (props: UAVTestButtonProps) => {
         Confirm
       </Button>
     </Zoom>
-  ) : null;
+  );
 
   const primary = suspended
     ? `${progress?.message || 'Operation suspended'}. Click to resume.`
@@ -189,7 +192,10 @@ const UAVTestButton = (props: UAVTestButtonProps) => {
     ) : null;
 
   return (
-    <ListItem disablePadding secondaryAction={confirmButton}>
+    <ListItem
+      disablePadding
+      secondaryAction={needsConfirmation ? confirmButton : null}
+    >
       <ListItemButton
         onClick={needsConfirmation ? askForConfirmation : giveConfirmation}
       >

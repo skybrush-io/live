@@ -13,6 +13,7 @@ import { connect } from 'react-redux';
 import { makeStyles, Status } from '@skybrush/app-theme-mui';
 import { StatusLight } from '@skybrush/mui-components';
 
+import ListItemProgressBar from '~/components/progress/ListItemProgressBar';
 import type { LogDownloadTaskData, TaskState } from '~/features/tasks';
 import { getDownloadedLog, getTaskState, startTask } from '~/features/tasks';
 import { describeFlightLogKind } from '~/model/enums';
@@ -21,8 +22,6 @@ import { convertFlightLogToBlob } from '~/model/flight-logs';
 import type { AppDispatch, RootState } from '~/store/reducers';
 import { writeBlobToFile } from '~/utils/filesystem';
 import { formatUnixTimestamp } from '~/utils/formatting';
-
-import ListItemProgressBar from './ListItemProgressBar';
 
 const SEPARATOR = ' · ';
 
