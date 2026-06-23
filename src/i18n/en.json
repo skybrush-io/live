@@ -201,10 +201,10 @@
     },
     "summary": {
       "firstTime": {
-        "message": "Earliest RTH time: {{firstTime}}s"
+        "message": "Earliest RTH time: {{firstTime}}"
       },
       "lastTime": {
-        "message": "Last RTH time: {{lastTime}}s"
+        "message": "Last RTH time: {{lastTime}}"
       },
       "numPlans": {
         "message": "Collective RTH plans successfully calculated at {{numPlans}} timestamps"

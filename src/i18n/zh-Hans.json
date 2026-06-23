@@ -161,10 +161,10 @@
     },
     "summary": {
       "firstTime": {
-        "message": "最早返航时间：{{firstTime}} 秒"
+        "message": "最早返航时间：{{firstTime}}"
       },
       "lastTime": {
-        "message": "最晚返航时间：{{lastTime}}秒"
+        "message": "最晚返航时间：{{lastTime}}"
       },
       "numPlans": {
         "message": "已在 {{numPlans}} 个时间点成功计算集体返航方案"
