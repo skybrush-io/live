@@ -246,14 +246,14 @@ const TakeoffAreaSetupDialog = ({
   onRevoke,
 }) => {
   const { t } = useTranslation();
-  const titleComponents = hasVirtualDrones && (
-    <Button
-      color='inherit'
-      startIcon={<VerticalAlignBottom />}
-      onClick={onAddVirtualDrones}
-    >
-      {t('takeoffAreaSetupDialog.placeVirtualDrones')}
-    </Button>
+  const titleComponents = (
+    <Box>
+      <SmallProgressIndicator
+        label={t('mappingEditorToolbar.calculatingMapping')}
+        visible={calculating}
+        sx={{ textAlign: 'right' }}
+      />
+    </Box>
   );
   return (
     <DraggableDialog
@@ -268,7 +268,7 @@ const TakeoffAreaSetupDialog = ({
         <TakeoffAreaSetupDialogIndicators />
         <Box
           sx={{
-            pt: 2,
+            py: 2,
             display: 'flex',
             flexDirection: 'row',
             justifyContent: 'center',
@@ -277,19 +277,24 @@ const TakeoffAreaSetupDialog = ({
           <RecalculateMappingButton />
           <AugmentMappingButton />
         </Box>
-        <Box
-          sx={{
-            pb: 1,
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'center',
-          }}
-        >
-          <SmallProgressIndicator
-            label={t('mappingEditorToolbar.calculatingMapping')}
-            visible={calculating}
-          />
-        </Box>
+        {hasVirtualDrones && (
+          <Box
+            sx={{
+              pb: 2,
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'center',
+            }}
+          >
+            <Button
+              color='inherit'
+              startIcon={<VerticalAlignBottom />}
+              onClick={onAddVirtualDrones}
+            >
+              {t('takeoffAreaSetupDialog.placeVirtualDrones')}
+            </Button>
+          </Box>
+        )}
         <Box className='bottom-bar' sx={{ textAlign: 'center', pt: 2 }}>
           <FormControlLabel
             control={
