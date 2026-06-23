@@ -129,7 +129,7 @@ const UAVTestButton = (props: UAVTestButtonProps) => {
 
   useEffect(() => {
     clearPendingConfirmation();
-  }, [uavId, clearPendingConfirmation]);
+  }, [clearPendingConfirmation, uavId]);
 
   const askForConfirmation = useCallback(() => {
     clearPendingConfirmation();
@@ -163,7 +163,7 @@ const UAVTestButton = (props: UAVTestButtonProps) => {
     status = Status.SUCCESS;
   }
 
-  const confirmButton = (
+  const confirmButton = needsConfirmation ? (
     <Zoom in={Boolean(pendingConfirmationRef.current)}>
       <Button
         style={{ color: Colors.seriousWarning }}
@@ -172,7 +172,7 @@ const UAVTestButton = (props: UAVTestButtonProps) => {
         Confirm
       </Button>
     </Zoom>
-  );
+  ) : null;
 
   const primary = suspended
     ? `${progress?.message || 'Operation suspended'}. Click to resume.`
@@ -192,10 +192,7 @@ const UAVTestButton = (props: UAVTestButtonProps) => {
     ) : null;
 
   return (
-    <ListItem
-      disablePadding
-      secondaryAction={needsConfirmation ? confirmButton : null}
-    >
+    <ListItem disablePadding secondaryAction={confirmButton}>
       <ListItemButton
         onClick={needsConfirmation ? askForConfirmation : giveConfirmation}
       >
