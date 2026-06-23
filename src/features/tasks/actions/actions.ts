@@ -26,7 +26,9 @@ export const startTask =
 
     switch (spec.type) {
       case 'log-download':
-        void dispatch(runLogDownloadTask(spec));
+        void dispatch(
+          runLogDownloadTask(spec, { retry: () => dispatch(startTask(spec)) })
+        );
         return;
       case 'uav-test':
         void dispatch(runUAVTestTask(spec));

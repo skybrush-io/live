@@ -3,13 +3,14 @@ import { showNotification } from '~/features/snackbar/actions';
 import { MessageSemantics } from '~/features/snackbar/types';
 import type { ProgressStatus } from '~/flockwave/messages';
 import messageHub from '~/message-hub';
-import { convertFlightLogToBlob } from '~/model/flight-logs';
 import type { FlightLog } from '~/model/flight-logs';
+import { convertFlightLogToBlob } from '~/model/flight-logs';
 import type { AppThunk } from '~/store/reducers';
 import { writeBlobToFile } from '~/utils/filesystem';
 
 import { _completeTask, _failTask, _setTaskProgress } from '../slice';
 import type { LogDownloadTaskSpec } from '../types';
+import { getTaskKey } from '../utils';
 
 const logContents = new (class {
   #data: Record<string, FlightLog> = {};
@@ -45,10 +46,11 @@ const saveLogToFile = (log: FlightLog) => {
 };
 
 export const runLogDownloadTask =
-  (spec: LogDownloadTaskSpec): AppThunk =>
+  (spec: LogDownloadTaskSpec, { retry }: { retry: () => void }): AppThunk =>
   async (dispatch) => {
     const { uavId, type, taskId, params } = spec;
     const { logId } = params;
+    const topic = getTaskKey(spec);
 
     const onProgress = ({ progress }: ProgressStatus) => {
       dispatch(_setTaskProgress({ uavId, type, taskId, progress }));
@@ -70,6 +72,7 @@ export const runLogDownloadTask =
           },
         ],
         timeout: 20000,
+        topic,
       });
     } catch (error: unknown) {
       const errorMessage = errorToString(error);
@@ -77,7 +80,9 @@ export const runLogDownloadTask =
       showNotification({
         message: `Couldn't download log ${logId} of UAV ${uavId}: ${errorMessage}`,
         semantics: MessageSemantics.ERROR,
+        buttons: [{ label: 'Retry', action: retry }],
         timeout: 20000,
+        topic,
       });
     }
   };
