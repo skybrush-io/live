@@ -1,15 +1,15 @@
 import PauseCircleOutlined from '@mui/icons-material/PauseCircleOutlined';
 import PlayCircleOutlined from '@mui/icons-material/PlayCircleOutlined';
 import Webhook from '@mui/icons-material/Webhook';
-import Stack, { type StackProps } from '@mui/material/Stack';
+import { type StackProps } from '@mui/material/Stack';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { TimeSegment, TimeSegmentType } from '~/flockwave/schedule';
 import HomeCircleOutlined from '~/icons/HomeCircleOutlined';
 
-import Typography from '@mui/material/Typography';
 import ProgressCard from './ProgressCard';
+import ProgressCardContainer from './ProgressCardContainer';
 
 const UPDATE_INTERVAL_MS = 100;
 
@@ -109,16 +109,15 @@ type ScheduleProgressIndicatorProps = {
 
 const ScheduleProgressIndicator = ({
   schedule,
-  sx,
   ...rest
 }: ScheduleProgressIndicatorProps) => {
   const { t } = useTranslation();
 
   return (
-    <Stack gap={2} sx={{ p: 2, ...sx }} {...rest}>
-      <Typography variant='button' color='textSecondary'>
-        {t('scheduleProgressIndicator.title')}
-      </Typography>
+    <ProgressCardContainer
+      title={t('scheduleProgressIndicator.title')}
+      {...rest}
+    >
       {schedule.length === 0 ? (
         <ProgressCard
           value={100}
@@ -133,7 +132,7 @@ const ScheduleProgressIndicator = ({
           />
         ))
       )}
-    </Stack>
+    </ProgressCardContainer>
   );
 };
 
