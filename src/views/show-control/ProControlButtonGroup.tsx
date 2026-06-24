@@ -1,7 +1,6 @@
 import PauseCircleOutlined from '@mui/icons-material/PauseCircleOutlined';
 import PlayCircleOutlined from '@mui/icons-material/PlayCircleOutlined';
 import Box from '@mui/material/Box';
-import { use } from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
@@ -24,7 +23,6 @@ import {
   selectCollectiveRTHPlanSummary,
   selectIsCollectiveRTHTriggered,
 } from '~/features/show/selectors';
-import { showWarning } from '~/features/snackbar/actions';
 import {
   useConstPrerequisites,
   type Prerequisite,
@@ -32,7 +30,6 @@ import {
 import { tt } from '~/i18n';
 import HomeCircleOutlined from '~/icons/HomeCircleOutlined';
 import { type RootState } from '~/store/reducers';
-import { WorkbenchContext } from '~/workbench';
 
 const GENERAL_PREREQUISITES: readonly Prerequisite[] = Object.freeze([
   {
@@ -72,6 +69,7 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'row',
     flex: 1,
     maxHeight: 100,
+    gap: theme.spacing(1),
   },
   buttonWrapper: {
     display: 'flex',
@@ -79,7 +77,6 @@ const useStyles = makeStyles((theme) => ({
   },
   button: {
     flex: 1,
-    margin: theme.spacing(0.5),
     lineHeight: '1 !important',
   },
 }));
@@ -94,7 +91,6 @@ type Props = DispatchProps;
 
 const ProControlButtonGroup = (props: Props) => {
   const { resumeShow, startCollectiveRTH, suspendShow } = props;
-  const workbench = use(WorkbenchContext);
   const classes = useStyles();
   const { t } = useTranslation();
 
@@ -152,11 +148,6 @@ const ProControlButtonGroup = (props: Props) => {
             icon={<HomeCircleOutlined fontSize='inherit' />}
             onClick={() => {
               startCollectiveRTH();
-              if (!workbench.bringToFront('collectiveRTH')) {
-                showWarning(
-                  t('proControlButtonGroup.collectiveRTHPanelNotFound')
-                );
-              }
             }}
           >
             {t('proControlButtonGroup.collectiveRTH')}

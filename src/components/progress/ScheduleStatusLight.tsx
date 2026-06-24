@@ -22,7 +22,7 @@ import { shortTimeAgoFormatter } from '~/utils/formatting';
 import { useRefreshTimestampWhile } from './ScheduleProgressCards';
 
 type Props = {
-  schedule: TimeSegment[];
+  schedule?: TimeSegment[];
   emptyTitle?: string;
 } & StackProps &
   Pick<LabeledStatusLightProps, 'color' | 'size'>;
@@ -47,7 +47,8 @@ const ScheduleStatusLight = ({
 }: Props) => {
   const { t } = useTranslation();
   const [nowMs, setNowMs] = useState(() => Date.now());
-  const segment = findCurrentOrNextTimeSegment(schedule, nowMs); // ?? schedule.at(-1);
+  const segment =
+    findCurrentOrNextTimeSegment(schedule ?? [], nowMs) ?? schedule?.at(-1);
   const { progress, stage } = calculateSegmentProgress(
     segment ?? EMPTY_SEGMENT,
     nowMs
@@ -106,7 +107,7 @@ const ScheduleStatusLight = ({
             sx={{ height: 4 }}
           />
         ) : (
-          <Box sx={{ height: 4, color: colorForStatus(status) }} />
+          <Box sx={{ height: 4, backgroundColor: colorForStatus(status) }} />
         )}
       </Stack>
     </Tooltip>

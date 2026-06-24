@@ -33,6 +33,9 @@ import { getSelectedUAVIds } from '~/features/uavs/selectors';
 import type { AppDispatch, RootState } from '~/store/reducers';
 import { createUAVOperationThunks } from '~/utils/messaging';
 
+import ScheduleStatusLight from '~/components/progress/ScheduleStatusLight';
+import { selectCollectiveRTHSchedule } from '~/features/show/selectors';
+import { Schedule } from '~/flockwave/schedule';
 import ProControlButtonGroup from './ProControlButtonGroup';
 import StartMethodExplanation from './StartMethodExplanation';
 
@@ -68,12 +71,15 @@ const useStyles = makeStyles((theme) => ({
 
   secondaryBox: {
     ...createSecondaryAreaStyle(theme),
-    padding: theme.spacing(1),
+    padding: theme.spacing(2, 2),
     margin: theme.spacing(0),
     border: `1px solid ${
       isThemeDark(theme) ? 'rgba(0, 0, 0, 0.54)' : 'rgba(255, 255, 255, 0.54)'
     }`,
     boxShadow: '0 0 4px 2px inset rgba(0, 0, 0, 0.54)',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: theme.spacing(1),
   },
 }));
 
@@ -84,6 +90,7 @@ type Props = {
     event: ChangeEvent<HTMLInputElement>,
     checked: boolean
   ) => void;
+  schedule?: Schedule;
   uavActions: ReturnType<typeof createUAVOperationThunks>;
 };
 
@@ -91,6 +98,7 @@ const LargeControlButtonGroup = ({
   broadcast,
   devModeEnabled,
   onChangeBroadcastMode,
+  schedule,
   uavActions,
 }: Props) => {
   const { t } = useTranslation();
@@ -105,6 +113,7 @@ const LargeControlButtonGroup = ({
           <>
             <Box className={classes.secondaryBox}>
               <ProControlButtonGroup />
+              <ScheduleStatusLight schedule={schedule?.schedule} size='small' />
             </Box>
             <Divider className={classes.divider} />
           </>
@@ -208,6 +217,7 @@ export default connect(
     broadcast: areFlightCommandsBroadcast(state),
     channel: getPreferredCommunicationChannelIndex(state),
     devModeEnabled: isDeveloperModeEnabled(state),
+    schedule: selectCollectiveRTHSchedule(state),
     selectedUAVIds: getSelectedUAVIds(state),
   }),
   // mapDispatchToProps
