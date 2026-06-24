@@ -45,29 +45,30 @@ type Props = {
 /**
  * Component that shows the progress of a long-running operation in a card.
  *
- * The card has a title, an optional longer description, a progress bar at the bottom,
- * and an optional
- * @param props
- * @returns C
+ * The card has a title (with an optional subheader), an optional longer description
+ * and a progress bar at the bottom.
  */
-const ProgressCard = (props: Props) => {
-  const { description, icon, subheader, title, value } = props;
-  return (
-    <Card elevation={3} sx={{ overflow: 'visible' }}>
-      <CardHeader title={title} avatar={icon} subheader={subheader} />
-      {description && (
-        <CardContent sx={{ overflow: 'hidden', pt: 0 }}>
-          <Typography variant='body2'>{description}</Typography>
-        </CardContent>
-      )}
-      <LinearProgress
-        value={value}
-        variant='determinate'
-        color={value >= 100 ? 'success' : 'primary'}
-        sx={{ borderRadius: '0px 0px 4px 4px', height: 4 }}
-      />
-    </Card>
-  );
-};
+const ProgressCard = ({
+  description,
+  icon,
+  subheader,
+  title,
+  value,
+}: Props) => (
+  <Card elevation={3} sx={{ overflow: 'visible' }}>
+    <CardHeader title={title} avatar={icon} subheader={subheader} />
+    {description && (
+      <CardContent sx={{ overflow: 'hidden', pt: 0 }}>
+        <Typography variant='body2'>{description}</Typography>
+      </CardContent>
+    )}
+    <LinearProgress
+      value={value}
+      variant='determinate'
+      color={value >= 100 ? 'success' : 'primary'}
+      sx={{ borderRadius: '0px 0px 4px 4px', height: 4 }}
+    />
+  </Card>
+);
 
 export default ProgressCard;
