@@ -23,7 +23,7 @@ import { useRefreshTimestampWhile } from './ScheduleProgressCards';
 
 type Props = {
   schedule?: TimeSegment[];
-  emptyTitle?: string;
+  emptyType?: string;
 } & StackProps &
   Pick<LabeledStatusLightProps, 'color' | 'size'>;
 
@@ -38,7 +38,7 @@ const EMPTY_SEGMENT: TimeSegment = {
  * with a single labeled status light only.
  */
 const ScheduleStatusLight = ({
-  emptyTitle,
+  emptyType = 'empty',
   schedule,
   color,
   size,
@@ -55,9 +55,9 @@ const ScheduleStatusLight = ({
   );
   useRefreshTimestampWhile(stage !== 'completed', setNowMs);
 
-  const segmentType = segment ? `segment.${segment.type}` : 'empty';
-  const title = t(`scheduleProgressIndicator.${segmentType}.title`);
-  const tooltip = t(`scheduleProgressIndicator.${segmentType}.description`);
+  const segmentType = segment ? `segment.${segment.type}` : emptyType;
+  const title = t(`showControlSchedule.${segmentType}.title`);
+  const tooltip = t(`showControlSchedule.${segmentType}.description`);
   const timestamp = segment
     ? stage === 'waiting'
       ? segment.startMs
@@ -74,7 +74,7 @@ const ScheduleStatusLight = ({
     : Status.OFF;
 
   return (
-    <Tooltip content={tooltip} placement='top'>
+    <Tooltip content={tooltip} placement='bottom'>
       <Stack direction='column' spacing={1} sx={{ ...sx }} {...rest}>
         <Stack direction='row' spacing={2} sx={{ alignItems: 'center' }}>
           <LabeledStatusLight
@@ -100,7 +100,7 @@ const ScheduleStatusLight = ({
 
         {segment ? (
           <LinearProgress
-            key={`${segment.type}-${segment.startMs}`}
+            key={`${segmentType}-${segment.startMs}`}
             value={progress}
             variant='determinate'
             color={stage === 'completed' ? 'success' : 'primary'}

@@ -14,15 +14,10 @@ import type { ChangeEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import {
-  createSecondaryAreaStyle,
-  isThemeDark,
-  makeStyles,
-} from '@skybrush/app-theme-mui';
+import { createSecondaryAreaStyle, makeStyles } from '@skybrush/app-theme-mui';
 
 import ColoredButton from '~/components/ColoredButton';
 import Colors from '~/components/colors';
-import ScheduleStatusLight from '~/components/progress/ScheduleStatusLight';
 import {
   areFlightCommandsBroadcast,
   getPreferredCommunicationChannelIndex,
@@ -30,13 +25,12 @@ import {
 } from '~/features/mission/selectors';
 import { setCommandsAreBroadcast } from '~/features/mission/slice';
 import { isDeveloperModeEnabled } from '~/features/session/selectors';
-import { selectCollectiveRTHSchedule } from '~/features/show/selectors';
 import { getSelectedUAVIds } from '~/features/uavs/selectors';
-import type { Schedule } from '~/flockwave/schedule';
 import type { AppDispatch, RootState } from '~/store/reducers';
 import { createUAVOperationThunks } from '~/utils/messaging';
 
 import ProControlButtonGroup from './ProControlButtonGroup';
+import ShowControlScheduleStatusLight from './ShowControlScheduleStatusLight';
 import StartMethodExplanation from './StartMethodExplanation';
 
 const useStyles = makeStyles((theme) => ({
@@ -73,10 +67,8 @@ const useStyles = makeStyles((theme) => ({
     ...createSecondaryAreaStyle(theme),
     padding: theme.spacing(2, 2),
     margin: theme.spacing(0),
-    border: `1px solid ${
-      isThemeDark(theme) ? 'rgba(0, 0, 0, 0.54)' : 'rgba(255, 255, 255, 0.54)'
-    }`,
-    boxShadow: '0 0 4px 2px inset rgba(0, 0, 0, 0.54)',
+    border: undefined,
+    boxShadow: '0 0 6px -2px inset rgba(0, 0, 0, 0.54)',
     display: 'flex',
     flexDirection: 'column',
     gap: theme.spacing(1),
@@ -90,7 +82,6 @@ type Props = {
     event: ChangeEvent<HTMLInputElement>,
     checked: boolean
   ) => void;
-  schedule?: Schedule;
   uavActions: ReturnType<typeof createUAVOperationThunks>;
 };
 
@@ -98,7 +89,6 @@ const LargeControlButtonGroup = ({
   broadcast,
   devModeEnabled,
   onChangeBroadcastMode,
-  schedule,
   uavActions,
 }: Props) => {
   const { t } = useTranslation();
@@ -113,7 +103,7 @@ const LargeControlButtonGroup = ({
           <>
             <Box className={classes.secondaryBox}>
               <ProControlButtonGroup />
-              <ScheduleStatusLight schedule={schedule?.schedule} size='small' />
+              <ShowControlScheduleStatusLight />
             </Box>
             <Divider className={classes.divider} />
           </>
@@ -217,7 +207,6 @@ export default connect(
     broadcast: areFlightCommandsBroadcast(state),
     channel: getPreferredCommunicationChannelIndex(state),
     devModeEnabled: isDeveloperModeEnabled(state),
-    schedule: selectCollectiveRTHSchedule(state),
     selectedUAVIds: getSelectedUAVIds(state),
   }),
   // mapDispatchToProps

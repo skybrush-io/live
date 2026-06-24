@@ -54,11 +54,11 @@ const SegmentProgressCard = ({ segment }: SegmentProgressCardProps) => {
   const isCompleted = stage === 'completed';
   useRefreshTimestampWhile(!isCompleted, setNowMs);
 
-  const title = t(`scheduleProgressIndicator.segment.${segment.type}.title`);
+  const title = t(`showControlSchedule.segment.${segment.type}.title`);
   const description = t(
-    `scheduleProgressIndicator.segment.${segment.type}.description`
+    `showControlSchedule.segment.${segment.type}.description`
   );
-  const subheader = t(`scheduleProgressIndicator.progress.${stage}`, {
+  const subheader = t(`showControlSchedule.progress.${stage}`, {
     elapsedSeconds: Math.floor(elapsedMs / 1000),
     durationSeconds: Math.ceil(durationMs / 1000),
     countdownSeconds: Math.ceil(waitingMs / 1000),
@@ -87,15 +87,12 @@ const ScheduleProgressCards = ({ schedule, ...rest }: Props) => {
   const { t } = useTranslation();
 
   return (
-    <ProgressCardContainer
-      title={t('scheduleProgressIndicator.title')}
-      {...rest}
-    >
+    <ProgressCardContainer title={t('showControlSchedule.title')} {...rest}>
       {schedule.length === 0 ? (
         <ProgressCard
           value={100}
-          title={t('scheduleProgressIndicator.empty.title')}
-          description={t('scheduleProgressIndicator.empty.description')}
+          title={t('showControlSchedule.empty.title')}
+          description={t('showControlSchedule.empty.description')}
         />
       ) : (
         schedule.map((segment) => (

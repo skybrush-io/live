@@ -850,10 +850,14 @@
     "notes": "Notes",
     "zoomLevel": "Zoom level"
   },
-  "scheduleProgressIndicator": {
+  "showControlSchedule": {
     "empty": {
       "description": "No operations are scheduled.",
       "title": "Empty schedule"
+    },
+    "normalShow": {
+      "description": "Show will be performed according to the planned schedule.",
+      "title": "No modifications to show schedule"
     },
     "progress": {
       "active": "{{elapsedSeconds}}s/{{durationSeconds}}s",

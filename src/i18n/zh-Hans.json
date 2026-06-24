@@ -775,7 +775,7 @@
     "notes": "备注",
     "zoomLevel": "缩放级别"
   },
-  "scheduleProgressIndicator": {
+  "showControlSchedule": {
     "empty": {
       "description": "没有计划中的操作。",
       "title": "空日程"
