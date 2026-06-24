@@ -33,6 +33,12 @@ export type UAVTestTaskSpec = UAVTestTaskData & {
 
 export type TaskSpec = LogDownloadTaskSpec | UAVTestTaskSpec;
 
+// ---- Task start options ----
+
+export type StartOptions = {
+  silent?: boolean;
+};
+
 // -- Task result
 
 export type LogDownloadTaskResult = LogDownloadTaskData & {
@@ -68,3 +74,10 @@ export type UAVTestTaskState = TaskStateBase &
   };
 
 export type TaskState = LogDownloadTaskState | UAVTestTaskState;
+
+export type AggregatedTaskState = {
+  loading: boolean;
+  numItems: number;
+  numSuccess: number;
+  numError: number;
+};

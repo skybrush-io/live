@@ -9,7 +9,7 @@ import type { AppThunk } from '~/store/reducers';
 import { writeBlobToFile } from '~/utils/filesystem';
 
 import { _completeTask, _failTask, _setTaskProgress } from '../slice';
-import type { LogDownloadTaskSpec } from '../types';
+import type { LogDownloadTaskSpec, StartOptions } from '../types';
 import { getTaskKey } from '../utils';
 
 const logContents = new (class {
@@ -46,7 +46,11 @@ const saveLogToFile = (log: FlightLog) => {
 };
 
 export const runLogDownloadTask =
-  (spec: LogDownloadTaskSpec, { retry }: { retry: () => void }): AppThunk =>
+  (
+    spec: LogDownloadTaskSpec,
+    { retry }: { retry: () => void },
+    { silent = false }: StartOptions = {}
+  ): AppThunk<Promise<void>> =>
   async (dispatch) => {
     const { uavId, type, taskId, params } = spec;
     const { logId } = params;
@@ -62,27 +66,31 @@ export const runLogDownloadTask =
       });
       const hash = await logContents.write(log);
       dispatch(_completeTask({ uavId, type, taskId, result: { hash } }));
-      showNotification({
-        message: `Log ${logId} of UAV ${uavId} downloaded successfully.`,
-        semantics: MessageSemantics.SUCCESS,
-        buttons: [
-          {
-            label: 'Save',
-            action: () => saveLogToFile(log),
-          },
-        ],
-        timeout: 20000,
-        topic,
-      });
+      if (!silent) {
+        showNotification({
+          message: `Log ${logId} of UAV ${uavId} downloaded successfully.`,
+          semantics: MessageSemantics.SUCCESS,
+          buttons: [
+            {
+              label: 'Save',
+              action: () => saveLogToFile(log),
+            },
+          ],
+          timeout: 20000,
+          topic,
+        });
+      }
     } catch (error: unknown) {
       const errorMessage = errorToString(error);
       dispatch(_failTask({ uavId, type, taskId, error: errorMessage }));
-      showNotification({
-        message: `Couldn't download log ${logId} of UAV ${uavId}: ${errorMessage}`,
-        semantics: MessageSemantics.ERROR,
-        buttons: [{ label: 'Retry', action: retry }],
-        timeout: 20000,
-        topic,
-      });
+      if (!silent) {
+        showNotification({
+          message: `Couldn't download log ${logId} of UAV ${uavId}: ${errorMessage}`,
+          semantics: MessageSemantics.ERROR,
+          buttons: [{ label: 'Retry', action: retry }],
+          timeout: 20000,
+          topic,
+        });
+      }
     }
   };

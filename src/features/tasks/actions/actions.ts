@@ -1,8 +1,8 @@
 import type { AppThunk } from '~/store/reducers';
 
 import { _clearTask, _startTask } from '../slice';
-import type { TaskData, TaskSpec } from '../types';
-import { getTaskKey } from '../utils';
+import type { StartOptions, TaskData, TaskSpec } from '../types';
+import { getTaskKey, isTaskInProgress } from '../utils';
 import { runLogDownloadTask } from './log-download-actions';
 import {
   clearUAVTestTask,
@@ -10,15 +10,21 @@ import {
   runUAVTestTask,
 } from './uav-test-actions';
 
+/**
+ * Starts the given task unless it is already in progress.
+ *
+ * Returns `undefined` if the task is already in progress, otherwise returns a
+ * `Promise` that resolves when the task completes.
+ */
 export const startTask =
-  (spec: TaskSpec): AppThunk =>
+  (
+    spec: TaskSpec,
+    { silent = false }: StartOptions = {}
+  ): AppThunk<Promise<void> | undefined> =>
   (dispatch, getState) => {
     // Ignore duplicate starts if the task is already running or suspended.
     const existing = getState().tasks[getTaskKey(spec)];
-    if (
-      existing &&
-      (existing.status === 'running' || existing.status === 'suspended')
-    ) {
+    if (isTaskInProgress(existing)) {
       return;
     }
 
@@ -26,13 +32,13 @@ export const startTask =
 
     switch (spec.type) {
       case 'log-download':
-        void dispatch(
-          runLogDownloadTask(spec, { retry: () => dispatch(startTask(spec)) })
+        return dispatch(
+          runLogDownloadTask(spec, {
+            retry: () => void dispatch(startTask(spec, { silent })),
+          })
         );
-        return;
       case 'uav-test':
-        void dispatch(runUAVTestTask(spec));
-        return;
+        return dispatch(runUAVTestTask(spec, { silent }));
     }
   };
 
