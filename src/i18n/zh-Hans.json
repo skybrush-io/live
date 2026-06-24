@@ -783,36 +783,24 @@
     "progress": {
       "active": "{{elapsedSeconds}}秒/{{durationSeconds}}秒",
       "completed": "已完成",
-      "waiting": "正在等待..."
+      "waiting": "正在等待... ({{countdownSeconds}}秒后)"
     },
     "segment": {
       "preparation": {
         "description": "无人机已收到操作请求，正准备执行。",
-        "title": {
-          "default": "准备中",
-          "waiting": "准备中 ({{countdownSeconds}}秒后)"
-        }
+        "title": "准备中"
       },
       "rth": {
         "description": "无人机正在以协同且无碰撞的方式返航。",
-        "title": {
-          "default": "一键返航",
-          "waiting": "一键返航 ({{countdownSeconds}}秒后)"
-        }
+        "title": "一键返航"
       },
       "slowdown": {
         "description": "无人机正在减速。它们保持在原始航迹上以避免碰撞。",
-        "title": {
-          "default": "减速中",
-          "waiting": "减速中 ({{countdownSeconds}}秒后)"
-        }
+        "title": "减速中"
       },
       "speedup": {
         "description": "无人机正在加速。它们保持在原始航迹上以避免碰撞。",
-        "title": {
-          "default": "加速中",
-          "waiting": "加速中 ({{countdownSeconds}}秒后)"
-        }
+        "title": "加速中"
       }
     },
     "stage": {

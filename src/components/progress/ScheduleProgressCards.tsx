@@ -30,6 +30,21 @@ type SegmentProgressCardProps = {
   segment: TimeSegment;
 };
 
+export const useRefreshTimestampWhile = (
+  condition: boolean,
+  setter: (value: number) => void
+) => {
+  useEffect(() => {
+    if (condition) {
+      const intervalId = setInterval(() => {
+        setter(Date.now());
+      }, UPDATE_INTERVAL_MS);
+
+      return () => clearInterval(intervalId);
+    }
+  }, [condition, setter]);
+};
+
 const SegmentProgressCard = ({ segment }: SegmentProgressCardProps) => {
   const { t } = useTranslation();
 
@@ -37,31 +52,16 @@ const SegmentProgressCard = ({ segment }: SegmentProgressCardProps) => {
   const { durationMs, elapsedMs, progress, stage, waitingMs } =
     calculateSegmentProgress(segment, nowMs);
   const isCompleted = stage === 'completed';
+  useRefreshTimestampWhile(!isCompleted, setNowMs);
 
-  useEffect(() => {
-    if (isCompleted) {
-      return;
-    }
-
-    const intervalId = setInterval(() => {
-      setNowMs(Date.now());
-    }, UPDATE_INTERVAL_MS);
-
-    return () => clearInterval(intervalId);
-  }, [isCompleted]);
-
-  const title = t(
-    `scheduleProgressIndicator.segment.${segment.type}.title.${
-      stage === 'waiting' ? 'waiting' : 'default'
-    }`,
-    { countdownSeconds: Math.ceil(waitingMs / 1000) }
-  );
+  const title = t(`scheduleProgressIndicator.segment.${segment.type}.title`);
   const description = t(
     `scheduleProgressIndicator.segment.${segment.type}.description`
   );
   const subheader = t(`scheduleProgressIndicator.progress.${stage}`, {
     elapsedSeconds: Math.floor(elapsedMs / 1000),
     durationSeconds: Math.ceil(durationMs / 1000),
+    countdownSeconds: Math.ceil(waitingMs / 1000),
   });
 
   return (

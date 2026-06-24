@@ -82,6 +82,7 @@ export type SegmentStage = 'waiting' | 'active' | 'completed';
 export type SegmentProgress = {
   durationMs: number;
   elapsedMs: number;
+  remainingMs: number;
   progress: number;
   stage: SegmentStage;
   waitingMs: number;
@@ -100,6 +101,7 @@ export function calculateSegmentProgress(
 ): SegmentProgress {
   const durationMs = Math.max(segment.endMs - segment.startMs, 0);
   const elapsedMs = Math.max(Math.min(nowMs - segment.startMs, durationMs), 0);
+  const remainingMs = Math.max(segment.endMs - nowMs, 0);
   const progress =
     durationMs > 0
       ? Math.min(Math.floor((elapsedMs / durationMs) * 100), 100)
@@ -116,5 +118,22 @@ export function calculateSegmentProgress(
     stage = 'completed';
   }
 
-  return { durationMs, elapsedMs, progress, stage, waitingMs };
+  return { durationMs, elapsedMs, remainingMs, progress, stage, waitingMs };
+}
+
+/**
+ * Given a list of time segments ordered by their start time, returns the first one
+ * that is either active right now or that will be active in the future. If all segments
+ * are completed, returns undefined.
+ */
+export function findCurrentOrNextTimeSegment(
+  schedule: TimeSegment[],
+  nowMs: number
+): TimeSegment | undefined {
+  for (const segment of schedule) {
+    if (nowMs < segment.endMs) {
+      return segment;
+    }
+  }
+  return undefined;
 }
