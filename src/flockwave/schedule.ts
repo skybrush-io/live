@@ -76,3 +76,45 @@ export const isSchedule = (data: unknown): data is Schedule =>
   && 'schedule' in data
   && Array.isArray(data.schedule)
   && data.schedule.every(isTimeSegment);
+
+export type SegmentStage = 'waiting' | 'active' | 'completed';
+
+export type SegmentProgress = {
+  durationMs: number;
+  elapsedMs: number;
+  progress: number;
+  stage: SegmentStage;
+  waitingMs: number;
+};
+
+/**
+ * Calculates detailed progress information about a time segment in a drone show
+ * schedule based on the current timestamp.
+ *
+ * @param segment  the time segment for which to calculate progress
+ * @param nowMs  the current timestamp in milliseconds
+ */
+export function calculateSegmentProgress(
+  segment: TimeSegment,
+  nowMs: number
+): SegmentProgress {
+  const durationMs = Math.max(segment.endMs - segment.startMs, 0);
+  const elapsedMs = Math.max(Math.min(nowMs - segment.startMs, durationMs), 0);
+  const progress =
+    durationMs > 0
+      ? Math.min(Math.floor((elapsedMs / durationMs) * 100), 100)
+      : 100;
+  let waitingMs = 0;
+
+  let stage: SegmentStage;
+  if (nowMs < segment.startMs) {
+    stage = 'waiting';
+    waitingMs = segment.startMs - nowMs;
+  } else if (progress < 100) {
+    stage = 'active';
+  } else {
+    stage = 'completed';
+  }
+
+  return { durationMs, elapsedMs, progress, stage, waitingMs };
+}

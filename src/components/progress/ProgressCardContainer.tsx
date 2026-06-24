@@ -6,8 +6,11 @@ type Props = {
   title?: string;
 } & StackProps;
 
+/**
+ * A stacked container that is suitable to hold a list of progress cards.
+ */
 const ProgressCardContainer = ({ children, title, sx, ...rest }: Props) => (
-  <Stack gap={2} sx={{ p: 2, ...sx }} {...rest}>
+  <Stack spacing={2} sx={{ p: 2, ...sx }} {...rest}>
     {title ? (
       <Typography variant='button' color='textSecondary'>
         {title}

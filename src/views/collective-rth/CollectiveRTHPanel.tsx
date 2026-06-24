@@ -13,7 +13,7 @@ import {
 } from '@skybrush/app-theme-mui';
 import { BackgroundHint } from '@skybrush/mui-components';
 
-import ScheduleProgressIndicator from '~/components/progress/ScheduleProgressIndicator';
+import ScheduleProgressCards from '~/components/progress/ScheduleProgressCards';
 import {
   hasLoadedShowFile,
   selectCollectiveRTHPlanSummary,
@@ -151,7 +151,7 @@ const CollectiveRTHPanel = ({
         />
       </Box>
       {rthSchedule && (
-        <ScheduleProgressIndicator
+        <ScheduleProgressCards
           className={classes.sidebar}
           schedule={rthSchedule.schedule}
         />

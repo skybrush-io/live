@@ -7,7 +7,11 @@ import { type StackProps } from '@mui/material/Stack';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import type { TimeSegment, TimeSegmentType } from '~/flockwave/schedule';
+import {
+  calculateSegmentProgress,
+  type TimeSegment,
+  type TimeSegmentType,
+} from '~/flockwave/schedule';
 
 import ProgressCard from './ProgressCard';
 import ProgressCardContainer from './ProgressCardContainer';
@@ -22,53 +26,20 @@ const SEGMENT_TYPE_ICONS: Record<TimeSegmentType, React.ReactNode> = {
   show: <PlayArrowIcon />,
 };
 
-type SegmentStage = 'waiting' | 'active' | 'completed';
-
-type SegmentProgress = {
-  durationMs: number;
-  elapsedMs: number;
-  progress: number;
-  stage: SegmentStage;
-  waitingMs: number;
-};
-
-function calculateSegmentProgress(
-  segment: TimeSegment,
-  nowMs: number
-): SegmentProgress {
-  const durationMs = Math.max(segment.endMs - segment.startMs, 0);
-  const elapsedMs = Math.max(Math.min(nowMs - segment.startMs, durationMs), 0);
-  const progress =
-    durationMs > 0
-      ? Math.min(Math.floor((elapsedMs / durationMs) * 100), 100)
-      : 100;
-  let waitingMs = 0;
-
-  let stage: SegmentStage;
-  if (nowMs < segment.startMs) {
-    stage = 'waiting';
-    waitingMs = segment.startMs - nowMs;
-  } else if (progress < 100) {
-    stage = 'active';
-  } else {
-    stage = 'completed';
-  }
-
-  return { durationMs, elapsedMs, progress, stage, waitingMs };
-}
-
 type SegmentProgressCardProps = {
   segment: TimeSegment;
 };
 
 const SegmentProgressCard = ({ segment }: SegmentProgressCardProps) => {
   const { t } = useTranslation();
+
   const [nowMs, setNowMs] = useState(() => Date.now());
   const { durationMs, elapsedMs, progress, stage, waitingMs } =
     calculateSegmentProgress(segment, nowMs);
+  const isCompleted = stage === 'completed';
 
   useEffect(() => {
-    if (stage === 'completed') {
+    if (isCompleted) {
       return;
     }
 
@@ -77,7 +48,7 @@ const SegmentProgressCard = ({ segment }: SegmentProgressCardProps) => {
     }, UPDATE_INTERVAL_MS);
 
     return () => clearInterval(intervalId);
-  }, [stage]);
+  }, [isCompleted]);
 
   const title = t(
     `scheduleProgressIndicator.segment.${segment.type}.title.${
@@ -92,7 +63,6 @@ const SegmentProgressCard = ({ segment }: SegmentProgressCardProps) => {
     elapsedSeconds: Math.floor(elapsedMs / 1000),
     durationSeconds: Math.ceil(durationMs / 1000),
   });
-  const isCompleted = stage === 'completed';
 
   return (
     <ProgressCard
@@ -105,14 +75,15 @@ const SegmentProgressCard = ({ segment }: SegmentProgressCardProps) => {
   );
 };
 
-type ScheduleProgressIndicatorProps = {
+type Props = {
   schedule: TimeSegment[];
 } & StackProps;
 
-const ScheduleProgressIndicator = ({
-  schedule,
-  ...rest
-}: ScheduleProgressIndicatorProps) => {
+/**
+ * Component that shows the status of a drone show schedule using progress cards for
+ * each segment.
+ */
+const ScheduleProgressCards = ({ schedule, ...rest }: Props) => {
   const { t } = useTranslation();
 
   return (
@@ -138,4 +109,4 @@ const ScheduleProgressIndicator = ({
   );
 };
 
-export default ScheduleProgressIndicator;
+export default ScheduleProgressCards;
