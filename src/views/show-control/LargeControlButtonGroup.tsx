@@ -22,6 +22,7 @@ import {
 
 import ColoredButton from '~/components/ColoredButton';
 import Colors from '~/components/colors';
+import ScheduleStatusLight from '~/components/progress/ScheduleStatusLight';
 import {
   areFlightCommandsBroadcast,
   getPreferredCommunicationChannelIndex,
@@ -29,13 +30,12 @@ import {
 } from '~/features/mission/selectors';
 import { setCommandsAreBroadcast } from '~/features/mission/slice';
 import { isDeveloperModeEnabled } from '~/features/session/selectors';
+import { selectCollectiveRTHSchedule } from '~/features/show/selectors';
 import { getSelectedUAVIds } from '~/features/uavs/selectors';
+import type { Schedule } from '~/flockwave/schedule';
 import type { AppDispatch, RootState } from '~/store/reducers';
 import { createUAVOperationThunks } from '~/utils/messaging';
 
-import ScheduleStatusLight from '~/components/progress/ScheduleStatusLight';
-import { selectCollectiveRTHSchedule } from '~/features/show/selectors';
-import { Schedule } from '~/flockwave/schedule';
 import ProControlButtonGroup from './ProControlButtonGroup';
 import StartMethodExplanation from './StartMethodExplanation';
 
