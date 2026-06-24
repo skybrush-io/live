@@ -199,45 +199,63 @@ const StartTimeForm = ({
                 </Select>
               </Box>
 
-              {values?.clock === LocalClockId.ABSOLUTE ? (
-                <>
-                  {/* we use separate pickers for the date and the time; this is
-                   * because in most cases the date should default to the current
-                   * day, but the time needs to be adjusted by the user */}
-
-                  <Box
-                    sx={{ alignContent: 'center', minWidth: '160px', flex: 1 }}
-                  >
-                    <DatePicker
-                      disablePast
-                      format='yyyy-MM-dd'
-                      label={t('startTimeDialog.startDate')}
-                      name='utcDate'
-                      textFieldProps={{ variant: 'filled' }}
-                    />
-                  </Box>
-                  <Box
-                    sx={{ alignContent: 'center', minWidth: '160px', flex: 1 }}
-                  >
-                    <TimePicker
-                      ampm={false}
-                      format='HH:mm:ss'
-                      label={t('startTimeDialog.startTime')}
-                      name='utcTime'
-                      textFieldProps={{ variant: 'filled' }}
-                    />
-                  </Box>
-                </>
-              ) : (
-                <Box sx={{ alignContent: 'center', flex: 1 }}>
-                  <HMSDurationField
-                    label={t('startTimeDialog.startTimeHms')}
-                    size='small'
-                    name='timeOnClock'
-                    variant='filled'
-                  />
-                </Box>
-              )}
+              {/* we use separate pickers for the date and the time; this is
+               * because in most cases the date should default to the current
+               * day, but the time needs to be adjusted by the user. However, we
+               * need to keep _all_ pickers in the DOM all the time, otherwise
+               * 'mui-rff' becomes confused when we change the type programmatically
+               * _and_ then we change the value of the picker (because the picker
+               * that would be added to the DOM is not in the DOM yet)
+               */}
+              <Box
+                sx={{
+                  alignContent: 'center',
+                  minWidth: '160px',
+                  flex: 1,
+                  display:
+                    values.clock === LocalClockId.ABSOLUTE ? 'block' : 'none',
+                }}
+              >
+                <DatePicker
+                  disablePast
+                  format='yyyy-MM-dd'
+                  label={t('startTimeDialog.startDate')}
+                  name='utcDate'
+                  textFieldProps={{ variant: 'filled' }}
+                />
+              </Box>
+              <Box
+                sx={{
+                  alignContent: 'center',
+                  minWidth: '160px',
+                  flex: 1,
+                  display:
+                    values.clock === LocalClockId.ABSOLUTE ? 'block' : 'none',
+                }}
+              >
+                <TimePicker
+                  ampm={false}
+                  format='HH:mm:ss'
+                  label={t('startTimeDialog.startTime')}
+                  name='utcTime'
+                  textFieldProps={{ variant: 'filled' }}
+                />
+              </Box>
+              <Box
+                sx={{
+                  alignContent: 'center',
+                  flex: 1,
+                  display:
+                    values.clock !== LocalClockId.ABSOLUTE ? 'block' : 'none',
+                }}
+              >
+                <HMSDurationField
+                  label={t('startTimeDialog.startTimeHms')}
+                  size='small'
+                  name='timeOnClock'
+                  variant='filled'
+                />
+              </Box>
             </FormGroup>
 
             {(values?.clock === LocalClockId.ABSOLUTE ||
