@@ -1,12 +1,13 @@
-import PauseCircleOutlined from '@mui/icons-material/PauseCircleOutlined';
-import PlayCircleOutlined from '@mui/icons-material/PlayCircleOutlined';
-import Webhook from '@mui/icons-material/Webhook';
+import CampaignIcon from '@mui/icons-material/Campaign';
+import FastForwardIcon from '@mui/icons-material/FastForward';
+import HomeIcon from '@mui/icons-material/Home';
+import PauseIcon from '@mui/icons-material/Pause';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import { type StackProps } from '@mui/material/Stack';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { TimeSegment, TimeSegmentType } from '~/flockwave/schedule';
-import HomeCircleOutlined from '~/icons/HomeCircleOutlined';
 
 import ProgressCard from './ProgressCard';
 import ProgressCardContainer from './ProgressCardContainer';
@@ -14,10 +15,11 @@ import ProgressCardContainer from './ProgressCardContainer';
 const UPDATE_INTERVAL_MS = 100;
 
 const SEGMENT_TYPE_ICONS: Record<TimeSegmentType, React.ReactNode> = {
-  preparation: <Webhook />,
-  rth: <HomeCircleOutlined />,
-  slowdown: <PauseCircleOutlined />,
-  speedup: <PlayCircleOutlined />,
+  preparation: <CampaignIcon />,
+  rth: <HomeIcon />,
+  slowdown: <PauseIcon />,
+  speedup: <FastForwardIcon />,
+  show: <PlayArrowIcon />,
 };
 
 type SegmentStage = 'waiting' | 'active' | 'completed';
