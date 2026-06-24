@@ -17,14 +17,14 @@ type Props = {
   title: React.ReactNode;
 
   /**
+   * The subheader of the progress card.
+   */
+  subheader?: React.ReactNode;
+
+  /**
    * A potentially longer description to show.
    */
   description?: React.ReactNode;
-
-  /**
-   * Optional caption to show above the progress bar.
-   */
-  caption?: React.ReactNode;
 
   /**
    * The minimum height of the description text, usually in lh units.
@@ -42,11 +42,19 @@ type Props = {
   icon?: React.ReactNode;
 };
 
+/**
+ * Component that shows the progress of a long-running operation in a card.
+ *
+ * The card has a title, an optional longer description, a progress bar at the bottom,
+ * and an optional
+ * @param props
+ * @returns C
+ */
 const ProgressCard = (props: Props) => {
-  const { caption, description, icon, title, value } = props;
+  const { description, icon, subheader, title, value } = props;
   return (
     <Card elevation={3} sx={{ overflow: 'visible' }}>
-      <CardHeader title={title} avatar={icon} subheader={caption} />
+      <CardHeader title={title} avatar={icon} subheader={subheader} />
       {description && (
         <CardContent sx={{ overflow: 'hidden', pt: 0 }}>
           <Typography variant='body2'>{description}</Typography>

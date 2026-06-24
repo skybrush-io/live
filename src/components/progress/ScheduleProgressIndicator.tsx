@@ -86,7 +86,7 @@ const SegmentProgressCard = ({ segment }: SegmentProgressCardProps) => {
   const description = t(
     `scheduleProgressIndicator.segment.${segment.type}.description`
   );
-  const caption = t(`scheduleProgressIndicator.progress.${stage}`, {
+  const subheader = t(`scheduleProgressIndicator.progress.${stage}`, {
     elapsedSeconds: Math.floor(elapsedMs / 1000),
     durationSeconds: Math.ceil(durationMs / 1000),
   });
@@ -97,7 +97,7 @@ const SegmentProgressCard = ({ segment }: SegmentProgressCardProps) => {
       value={progress}
       title={title}
       description={!isCompleted ? description : undefined}
-      caption={caption}
+      subheader={subheader}
       icon={SEGMENT_TYPE_ICONS[segment.type]}
     />
   );
