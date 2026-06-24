@@ -14,11 +14,7 @@ import type { ChangeEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import {
-  createSecondaryAreaStyle,
-  isThemeDark,
-  makeStyles,
-} from '@skybrush/app-theme-mui';
+import { createSecondaryAreaStyle, makeStyles } from '@skybrush/app-theme-mui';
 
 import ColoredButton from '~/components/ColoredButton';
 import Colors from '~/components/colors';
@@ -34,6 +30,7 @@ import type { AppDispatch, RootState } from '~/store/reducers';
 import { createUAVOperationThunks } from '~/utils/messaging';
 
 import ProControlButtonGroup from './ProControlButtonGroup';
+import ShowControlScheduleStatusLight from './ShowControlScheduleStatusLight';
 import StartMethodExplanation from './StartMethodExplanation';
 
 const useStyles = makeStyles((theme) => ({
@@ -68,12 +65,13 @@ const useStyles = makeStyles((theme) => ({
 
   secondaryBox: {
     ...createSecondaryAreaStyle(theme),
-    padding: theme.spacing(1),
+    padding: theme.spacing(2, 2),
     margin: theme.spacing(0),
-    border: `1px solid ${
-      isThemeDark(theme) ? 'rgba(0, 0, 0, 0.54)' : 'rgba(255, 255, 255, 0.54)'
-    }`,
-    boxShadow: '0 0 4px 2px inset rgba(0, 0, 0, 0.54)',
+    border: undefined,
+    boxShadow: '0 0 6px -2px inset rgba(0, 0, 0, 0.54)',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: theme.spacing(1),
   },
 }));
 
@@ -105,6 +103,7 @@ const LargeControlButtonGroup = ({
           <>
             <Box className={classes.secondaryBox}>
               <ProControlButtonGroup />
+              <ShowControlScheduleStatusLight />
             </Box>
             <Divider className={classes.divider} />
           </>

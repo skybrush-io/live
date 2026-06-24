@@ -33,9 +33,9 @@ const UAVDetailsPanelBody = ({
   uavId,
 }: UABDetailsPanelBodyProps) =>
   !uavId ? (
-    <BackgroundHint text='Please select a UAV id!' />
+    <BackgroundHint text='No UAV is selected' />
   ) : !selectedTab || !(selectedTab in views) ? (
-    <BackgroundHint text='Please select a view!' />
+    <BackgroundHint text='No tab is selected' />
   ) : (
     ((SelectedView) => <SelectedView uavId={uavId} />)(views[selectedTab])
   );
