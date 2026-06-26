@@ -971,6 +971,7 @@
     "chooseStartTime": "Choose start time",
     "chooseStartTimeNotSet": "Not set yet",
     "clear": "Clear loaded show",
+    "clearStartTime": "Clear start time",
     "clock": "Show clock:",
     "collectiveRTH": {
       "confirmation": {
@@ -1186,43 +1187,43 @@
     },
     "segment": {
       "preparation": {
-        "running": {
-          "description": "Drones are being notified about the requested operation and they are getting ready to execute it.",
-          "title": "Preparation"
-        },
         "completed": {
           "description": "Drones have been notified about the requested operation and are now executing it.",
           "title": "Preparation completed"
+        },
+        "running": {
+          "description": "Drones are being notified about the requested operation and they are getting ready to execute it.",
+          "title": "Preparation"
         }
       },
       "rth": {
-        "running": {
-          "description": "Drones are returning to their home locations in a coordinated manner, without collisions.",
-          "title": "Return to home"
-        },
         "completed": {
           "description": "Drones have returned to their home locations.",
           "title": "Returned to home"
+        },
+        "running": {
+          "description": "Drones are returning to their home locations in a coordinated manner, without collisions.",
+          "title": "Return to home"
         }
       },
       "slowdown": {
-        "running": {
-          "description": "Drones are slowing down. They remain on their original trajectories to avoid collisions.",
-          "title": "Slowdown"
-        },
         "completed": {
           "description": "Drones have slowed down to a standstill.",
           "title": "Show suspended"
+        },
+        "running": {
+          "description": "Drones are slowing down. They remain on their original trajectories to avoid collisions.",
+          "title": "Slowdown"
         }
       },
       "speedup": {
-        "running": {
-          "description": "Drones are speeding up. They continue their original trajectories to avoid collisions.",
-          "title": "Speedup"
-        },
         "completed": {
           "description": "Drones have resumed flying their original trajectories at a normal speed.",
           "title": "Show resumed"
+        },
+        "running": {
+          "description": "Drones are speeding up. They continue their original trajectories to avoid collisions.",
+          "title": "Speedup"
         }
       }
     },
