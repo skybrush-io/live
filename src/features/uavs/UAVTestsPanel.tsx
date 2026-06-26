@@ -1,22 +1,21 @@
-/* eslint-disable @eslint-react/set-state-in-effect */
 import Button from '@mui/material/Button';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import Zoom from '@mui/material/Zoom';
-import isNil from 'lodash-es/isNil';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { useAsyncFn, useUpdate } from 'react-use';
+import { useCallback, useEffect, useRef } from 'react';
+import { connect } from 'react-redux';
+import { useUpdate } from 'react-use';
 
 import { Status } from '@skybrush/app-theme-mui';
 import { StatusLight } from '@skybrush/mui-components';
 
 import Colors from '~/components/colors';
 import ListItemProgressBar from '~/components/progress/ListItemProgressBar';
-import { errorToString } from '~/error-handling';
-import type { ProgressInfo, ProgressStatus } from '~/flockwave/messages';
-import { useMessageHub } from '~/hooks';
+import type { UAVTestTaskData, UAVTestTaskState } from '~/features/tasks';
+import { getTaskState, resumeTask, startTask } from '~/features/tasks';
+import type { AppDispatch, RootState } from '~/store/reducers';
 
 import { COMPASS_CALIB_TIMEOUT } from './constants';
 
@@ -80,7 +79,7 @@ const tests: UAVTestItem[] = [
   },
 ];
 
-type UAVTestButtonProps = {
+type UAVTestButtonOwnProps = {
   component: string;
   label: string;
   needsConfirmation?: boolean;
@@ -89,15 +88,28 @@ type UAVTestButtonProps = {
   uavId?: string;
 };
 
-const UAVTestButton = ({
-  component,
-  label,
-  needsConfirmation = false,
-  timeout,
-  type,
-  uavId,
-}: UAVTestButtonProps) => {
-  const messageHub = useMessageHub();
+type UAVTestButtonStateProps = {
+  task?: UAVTestTaskState;
+};
+
+type UAVTestButtonDispatchProps = {
+  resume: () => void;
+  start: () => void;
+};
+
+type UAVTestButtonProps = UAVTestButtonOwnProps &
+  UAVTestButtonStateProps &
+  UAVTestButtonDispatchProps;
+
+const UAVTestButton = (props: UAVTestButtonProps) => {
+  const {
+    label,
+    needsConfirmation = false,
+    resume,
+    start,
+    task,
+    uavId,
+  } = props;
   const update = useUpdate();
 
   // We can store the timeout ID of the pending confirmation in this state and
@@ -106,14 +118,6 @@ const UAVTestButton = ({
   // https://developer.mozilla.org/en-US/docs/Web/API/setTimeout#return_value
   const pendingConfirmationRef =
     useRef<ReturnType<typeof setTimeout>>(undefined);
-  const [progress, setProgress] = useState<ProgressInfo | undefined>();
-  const [suspended, setSuspended] = useState(false);
-  const resumeCallbackRef = useRef<(() => Promise<void>) | undefined>(
-    undefined
-  );
-  const lastExecutedUavIdRef = useRef<string | undefined>(undefined);
-  const uavIdRef = useRef(uavId);
-  uavIdRef.current = uavId;
 
   const clearPendingConfirmation = useCallback(() => {
     if (pendingConfirmationRef.current) {
@@ -125,10 +129,7 @@ const UAVTestButton = ({
 
   useEffect(() => {
     clearPendingConfirmation();
-    setProgress(undefined);
-    setSuspended(false);
-    resumeCallbackRef.current = undefined;
-  }, [uavId, clearPendingConfirmation]);
+  }, [clearPendingConfirmation, uavId]);
 
   const askForConfirmation = useCallback(() => {
     clearPendingConfirmation();
@@ -136,61 +137,33 @@ const UAVTestButton = ({
     update();
   }, [clearPendingConfirmation, update]);
 
-  const progressHandler = useCallback(
-    (
-      progressUAVId: string,
-      { progress, resume, suspended }: ProgressStatus
-    ) => {
-      if (progressUAVId !== uavIdRef.current) {
-        return;
-      }
-      setProgress(progress);
-      setSuspended(Boolean(suspended));
-      resumeCallbackRef.current = resume;
-    },
-    []
-  );
-
-  const [lastExecutionState, execute] = useAsyncFn(async () => {
-    lastExecutedUavIdRef.current = uavId;
-    if (uavId === undefined) {
-      return;
-    }
-    // TODO(ntamas): use the proper UAV-TEST messages designated for this
-    await messageHub.sendCommandRequest(
-      {
-        uavId,
-        command: type === 'test' ? 'test' : 'calib',
-        args: [String(component)],
-      },
-      { onProgress: (progress) => progressHandler(uavId, progress), timeout }
-    );
-    return true;
-  }, [component, messageHub, progressHandler, timeout, type, uavId]);
-
-  const executionState =
-    lastExecutedUavIdRef.current === uavId
-      ? lastExecutionState
-      : { loading: false };
-
-  const [, resume] = useAsyncFn(async () => {
-    if (resumeCallbackRef.current) {
-      return resumeCallbackRef.current();
-    } else {
-      throw new Error('No resume callback has been provided');
-    }
-  }, []);
-
   const giveConfirmation = useCallback(() => {
     clearPendingConfirmation();
-    if (suspended) {
-      void resume();
+    if (task?.status === 'suspended') {
+      resume();
     } else {
-      void execute();
+      start();
     }
-  }, [clearPendingConfirmation, execute, resume, suspended]);
+  }, [clearPendingConfirmation, resume, start, task?.status]);
 
-  const confirmButton = (
+  const suspended = task?.status === 'suspended';
+  const running = task?.status === 'running';
+  const error = task?.status === 'error';
+  const success = task?.status === 'success';
+  const progress = task?.progress;
+
+  let status = Status.OFF;
+  if (suspended) {
+    status = Status.WARNING;
+  } else if (running) {
+    status = Status.NEXT;
+  } else if (error) {
+    status = Status.ERROR;
+  } else if (success) {
+    status = Status.SUCCESS;
+  }
+
+  const confirmButton = needsConfirmation ? (
     <Zoom in={Boolean(pendingConfirmationRef.current)}>
       <Button
         style={{ color: Colors.seriousWarning }}
@@ -199,55 +172,87 @@ const UAVTestButton = ({
         Confirm
       </Button>
     </Zoom>
-  );
+  ) : null;
+
+  const primary = suspended
+    ? `${progress?.message || 'Operation suspended'}. Click to resume.`
+    : progress && (!error || running)
+      ? `${progress.message || label}`
+      : label;
+
+  const secondary =
+    !running && error ? (
+      task?.error
+    ) : progress ? (
+      /* Prefer progress bars even in suspended state */
+      <ListItemProgressBar progress={progress} />
+    ) : suspended ? (
+      /* If we are suspended but we don't have progress info, show an indefinite progress bar */
+      <ListItemProgressBar />
+    ) : null;
 
   return (
-    <ListItem
-      disablePadding
-      secondaryAction={needsConfirmation ? confirmButton : null}
-    >
+    <ListItem disablePadding secondaryAction={confirmButton}>
       <ListItemButton
         onClick={needsConfirmation ? askForConfirmation : giveConfirmation}
       >
-        <StatusLight
-          status={
-            suspended
-              ? Status.WARNING
-              : executionState.loading
-                ? Status.NEXT
-                : executionState.error
-                  ? Status.ERROR
-                  : isNil(executionState.value)
-                    ? Status.OFF
-                    : executionState.value
-                      ? Status.SUCCESS
-                      : Status.ERROR
-          }
-        />
-        <ListItemText
-          primary={
-            suspended
-              ? `${progress?.message || 'Operation suspended'}. Click to resume.`
-              : progress && (!executionState.error || executionState.loading)
-                ? `${progress.message || label}`
-                : label
-          }
-          secondary={
-            !executionState.loading && executionState.error ? (
-              errorToString(executionState.error)
-            ) : progress ? (
-              /* Prefer progress bars even in suspended state */
-              <ListItemProgressBar progress={progress} />
-            ) : suspended ? (
-              /* If we are suspended but we don't have progress info, show an indefinite progress bar */
-              <ListItemProgressBar />
-            ) : null
-          }
-        />
+        <StatusLight status={status} />
+        <ListItemText primary={primary} secondary={secondary} />
       </ListItemButton>
     </ListItem>
   );
 };
+
+const ConnectedUAVTestButton = connect(
+  (state: RootState, ownProps: UAVTestButtonOwnProps) => {
+    const { uavId, component } = ownProps;
+    if (uavId === undefined) {
+      return { task: undefined };
+    }
+
+    const taskData: UAVTestTaskData = {
+      uavId,
+      type: 'uav-test',
+      taskId: component,
+    };
+    return { task: getTaskState(state, taskData) };
+  },
+  (dispatch: AppDispatch, ownProps: UAVTestButtonOwnProps) => ({
+    resume() {
+      const { uavId, component } = ownProps;
+      if (uavId === undefined) {
+        return;
+      }
+
+      dispatch(
+        resumeTask({
+          uavId,
+          type: 'uav-test',
+          taskId: component,
+        })
+      );
+    },
+    start() {
+      const { uavId, component, type, timeout } = ownProps;
+      if (uavId === undefined) {
+        return;
+      }
+
+      dispatch(
+        startTask({
+          uavId,
+          type: 'uav-test',
+          taskId: component,
+          params: {
+            component,
+            command: type === 'test' ? 'test' : 'calib',
+            timeout,
+          },
+        })
+      );
+    },
+  })
+)(UAVTestButton);
 
 type UAVTestsPanelProps = {
   uavId?: string;
@@ -257,7 +262,7 @@ const UAVTestsPanel = ({ uavId }: UAVTestsPanelProps) => {
   return (
     <List dense>
       {tests.map(({ component, ...props }) => (
-        <UAVTestButton
+        <ConnectedUAVTestButton
           key={component}
           component={component}
           uavId={uavId}

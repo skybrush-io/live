@@ -31,6 +31,7 @@ import showConfiguratorReducer, {
   type ShowConfiguratorState,
   type ShowData,
 } from '~/features/show-configurator/slice';
+import tasksReducer from '~/features/tasks/slice';
 import uavDetailsDialogReducer from '~/features/uavs/details';
 
 /**
@@ -68,7 +69,6 @@ import showReducer from '~/features/show/slice';
 import sidebarReducer from '~/features/sidebar/slice';
 import threeDReducer from '~/features/three-d/slice';
 import uavControlReducer from '~/features/uav-control/slice';
-import logDownloadReducer from '~/features/uavs/log-download';
 import uavReducer from '~/features/uavs/slice';
 import uploadReducer from '~/features/upload/slice';
 import versionCheckReducer from '~/features/version-check/slice';
@@ -126,7 +126,6 @@ const reducer = combineReducers({
   lightControl: lightControlReducer,
   localServer: localServerReducer,
   log: logReducer,
-  logDownload: logDownloadReducer,
   map: mapReducer,
   mapCaching: mapCachingReducer,
   measurement: measurementReducer,
@@ -143,6 +142,7 @@ const reducer = combineReducers({
   settings: settingsReducer,
   show: showReducer,
   sidebar: sidebarReducer,
+  tasks: tasksReducer,
   threeD: threeDReducer,
   uavs: uavReducer,
   uavControl: uavControlReducer,
