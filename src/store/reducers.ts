@@ -31,8 +31,8 @@ import showConfiguratorReducer, {
   type ShowConfiguratorState,
   type ShowData,
 } from '~/features/show-configurator/slice';
-import uavDetailsDialogReducer from '~/features/uavs/details';
 import tasksReducer from '~/features/tasks/slice';
+import uavDetailsDialogReducer from '~/features/uavs/details';
 
 /**
  * Reducer functions for handling the top-level keys of the state object.
@@ -142,9 +142,9 @@ const reducer = combineReducers({
   settings: settingsReducer,
   show: showReducer,
   sidebar: sidebarReducer,
+  tasks: tasksReducer,
   threeD: threeDReducer,
   uavs: uavReducer,
-  tasks: tasksReducer,
   uavControl: uavControlReducer,
   upload: uploadReducer,
   versionCheck: versionCheckReducer,

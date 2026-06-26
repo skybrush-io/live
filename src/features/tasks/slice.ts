@@ -35,6 +35,9 @@ const { actions, reducer } = createSlice({
       const key = getTaskKey(action.payload);
       const entry = state[key];
       if (entry) {
+        if (entry.status === 'suspended') {
+          entry.status = 'running';
+        }
         entry.progress = progress;
       }
     },
