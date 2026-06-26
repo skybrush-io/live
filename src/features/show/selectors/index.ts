@@ -2,8 +2,8 @@ export * from './core';
 export * from './js-core';
 export {
   selectCollectiveRTHPlanSummary,
-  selectCollectiveRTHSchedule,
   selectIsCollectiveRTHTriggered,
+  selectShowControlSchedule,
   type CollectiveRTHPlanSummary,
   type CollectiveRTHPlanSummaryItem,
 } from './rth';

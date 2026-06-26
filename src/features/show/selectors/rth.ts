@@ -36,9 +36,19 @@ export const selectCollectiveRTHPlanSummary: AppSelector<CollectiveRTHPlanSummar
     validateCollectiveRTHPlan(drones)
   );
 
-export const selectCollectiveRTHSchedule: AppSelector<Schedule | undefined> = (
+export const selectShowControlSchedule: AppSelector<Schedule | undefined> = (
   state
-) => state.show.collectiveRTHSchedule;
+) => state.show.showControlSchedule;
 
-export const selectIsCollectiveRTHTriggered: AppSelector<boolean> = (state) =>
-  state.show.collectiveRTHSchedule !== undefined;
+/**
+ * Returns whether a collective RTH operation has been triggered by the operator
+ * according to the current show control schedule.
+ *
+ * @returns whether the show control schedule contains at least one segment of type 'rth'
+ */
+export const selectIsCollectiveRTHTriggered: AppSelector<boolean> = (state) => {
+  const { showControlSchedule } = state.show;
+  return showControlSchedule
+    ? showControlSchedule.schedule.some((entry) => entry.type === 'rth')
+    : false;
+};
