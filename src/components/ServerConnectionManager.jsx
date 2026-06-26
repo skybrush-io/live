@@ -48,7 +48,7 @@ import {
 import { Protocol } from '~/features/servers/types';
 import {
   clearStartTimeAndMethod,
-  setCollectiveRTHSchedule,
+  setShowControlSchedule,
   synchronizeShowSettings,
 } from '~/features/show/slice';
 import { showError, showNotification } from '~/features/snackbar/actions';
@@ -488,7 +488,7 @@ async function executeTasksAfterConnection(dispatch, getState) {
 
   // Clear the collective RTH schedule if it exists. We can not be sure
   // it is synchronized with the state of server we connected to.
-  dispatch(setCollectiveRTHSchedule(undefined));
+  dispatch(setShowControlSchedule(undefined));
 
   try {
     const {

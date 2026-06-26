@@ -1,12 +1,14 @@
 import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
+import ListItemButton, {
+  type ListItemButtonProps,
+} from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import { createSelector } from '@reduxjs/toolkit';
-import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import { StatusLight } from '@skybrush/mui-components';
+import { EnvironmentType } from '@skybrush/show-format';
 
 import { Status } from '~/components/semantics';
 import { AltitudeReference } from '~/features/show/constants';
@@ -16,7 +18,8 @@ import {
 } from '~/features/show/selectors';
 import { openEnvironmentEditorDialog } from '~/features/show/slice';
 import { getSetupStageStatuses } from '~/features/show/stages';
-import { tt } from '~/i18n';
+import { type PreparedI18nKey, tt } from '~/i18n';
+import type { RootState } from '~/store/reducers';
 
 /**
  * Specialized selector to format the secondary text on the button.
@@ -24,12 +27,12 @@ import { tt } from '~/i18n';
 const getEnvironmentDescription = createSelector(
   getShowEnvironmentType,
   getOutdoorShowAltitudeReference,
-  (environmentType, outdoorAltitudeReference) => {
+  (environmentType, outdoorAltitudeReference): PreparedI18nKey => {
     switch (environmentType) {
-      case 'indoor':
+      case EnvironmentType.INDOOR:
         return tt('show.indoor');
 
-      case 'outdoor': {
+      case EnvironmentType.OUTDOOR: {
         const { type, value } = outdoorAltitudeReference;
         if (type === AltitudeReference.AMSL) {
           if (Number.isFinite(value)) {
@@ -53,6 +56,12 @@ const getEnvironmentDescription = createSelector(
   }
 );
 
+type Props = {
+  onEditEnvironment: () => void;
+  secondaryText: PreparedI18nKey;
+  status: Status;
+} & ListItemButtonProps;
+
 /**
  * Component that shows a button that allows the user to change the type of the
  * show environment and to customize the origin of the show (for outdoor shows)
@@ -63,7 +72,7 @@ const EnvironmentButton = ({
   secondaryText,
   status,
   ...rest
-}) => {
+}: Props) => {
   const { t } = useTranslation();
 
   return (
@@ -83,15 +92,9 @@ const EnvironmentButton = ({
   );
 };
 
-EnvironmentButton.propTypes = {
-  onEditEnvironment: PropTypes.func,
-  secondaryText: PropTypes.func,
-  status: PropTypes.oneOf(Object.values(Status)),
-};
-
 export default connect(
   // mapStateToProps
-  (state) => ({
+  (state: RootState) => ({
     status: getSetupStageStatuses(state).setupEnvironment,
     secondaryText: getEnvironmentDescription(state),
   }),

@@ -850,54 +850,6 @@
     "notes": "Notes",
     "zoomLevel": "Zoom level"
   },
-  "showControlSchedule": {
-    "empty": {
-      "description": "No operations are scheduled.",
-      "title": "Empty schedule"
-    },
-    "normalShow": {
-      "description": "Show will be performed according to the planned schedule.",
-      "title": "No modifications to show schedule"
-    },
-    "progress": {
-      "active": "{{elapsedSeconds}}s/{{durationSeconds}}s",
-      "completed": "Completed",
-      "waiting": "Starting in {{countdownSeconds}}s..."
-    },
-    "segment": {
-      "preparation": {
-        "description": "Drones are being notified about the requested operation and they are getting ready to execute it.",
-        "title": "Preparation"
-      },
-      "rth": {
-        "description": "Drones are returning to their home locations in a coordinated manner, without collisions.",
-        "title": "Return to home"
-      },
-      "slowdown": {
-        "description": "Drones are slowing down. They remain on their original trajectories to avoid collisions.",
-        "title": "Slowdown"
-      },
-      "speedup": {
-        "description": "Drones are speeding up. They continue their original trajectories to avoid collisions.",
-        "title": "Speedup"
-      }
-    },
-    "stage": {
-      "completed": {
-        "description": "The operation has completed.",
-        "title": "Completed"
-      },
-      "progress": {
-        "description": "The operation is in progress.",
-        "title": "In progress ({{remainingSeconds}}s)"
-      },
-      "waiting": {
-        "description": "The operation will start soon.",
-        "title": "Waiting to start ({{remainingSeconds}}s)"
-      }
-    },
-    "title": "Schedule"
-  },
   "selectionGroups": {
     "action": {
       "createNew": "Create new group",
@@ -1019,6 +971,7 @@
     "chooseStartTime": "Choose start time",
     "chooseStartTimeNotSet": "Not set yet",
     "clear": "Clear loaded show",
+    "clearStartTime": "Clear start time",
     "clock": "Show clock:",
     "collectiveRTH": {
       "confirmation": {
@@ -1217,6 +1170,78 @@
       "dronesVisible": "Show drones"
     },
     "title": "Adapt show to venue"
+  },
+  "showControlSchedule": {
+    "empty": {
+      "description": "No operations are scheduled.",
+      "title": "Empty schedule"
+    },
+    "normalShow": {
+      "description": "Show will be performed according to the planned schedule.",
+      "title": "No modifications to show schedule"
+    },
+    "progress": {
+      "active": "{{elapsedSeconds}}s/{{durationSeconds}}s",
+      "completed": "Completed",
+      "waiting": "Starting in {{countdownSeconds}}s..."
+    },
+    "segment": {
+      "preparation": {
+        "completed": {
+          "description": "Drones have been notified about the requested operation and are now executing it.",
+          "title": "Preparation completed"
+        },
+        "running": {
+          "description": "Drones are being notified about the requested operation and they are getting ready to execute it.",
+          "title": "Preparation"
+        }
+      },
+      "rth": {
+        "completed": {
+          "description": "Drones have returned to their home locations.",
+          "title": "Returned to home"
+        },
+        "running": {
+          "description": "Drones are returning to their home locations in a coordinated manner, without collisions.",
+          "title": "Return to home"
+        }
+      },
+      "slowdown": {
+        "completed": {
+          "description": "Drones have slowed down to a standstill.",
+          "title": "Show suspended"
+        },
+        "running": {
+          "description": "Drones are slowing down. They remain on their original trajectories to avoid collisions.",
+          "title": "Slowdown"
+        }
+      },
+      "speedup": {
+        "completed": {
+          "description": "Drones have resumed flying their original trajectories at a normal speed.",
+          "title": "Show resumed"
+        },
+        "running": {
+          "description": "Drones are speeding up. They continue their original trajectories to avoid collisions.",
+          "title": "Speedup"
+        }
+      }
+    },
+    "stage": {
+      "completed": {
+        "description": "The operation has completed.",
+        "title": "Completed"
+      },
+      "progress": {
+        "description": "The operation is in progress.",
+        "title": "In progress ({{remainingSeconds}}s)"
+      },
+      "waiting": {
+        "description": "The operation will start soon.",
+        "title": "Waiting to start ({{remainingSeconds}}s)"
+      }
+    },
+    "title": "Schedule"
   },
   "sidebar": {
     "missionType": "Mission type: ({{missionType}})"

@@ -54,9 +54,10 @@ const SegmentProgressCard = ({ segment }: SegmentProgressCardProps) => {
   const isCompleted = stage === 'completed';
   useRefreshTimestampWhile(!isCompleted, setNowMs);
 
-  const title = t(`showControlSchedule.segment.${segment.type}.title`);
+  const segmentType = `segment.${segment.type}.${isCompleted ? 'completed' : 'running'}`;
+  const title = t(`showControlSchedule.segment.${segmentType}.title`);
   const description = t(
-    `showControlSchedule.segment.${segment.type}.description`
+    `showControlSchedule.segment.${segmentType}.description`
   );
   const subheader = t(`showControlSchedule.progress.${stage}`, {
     elapsedSeconds: Math.floor(elapsedMs / 1000),

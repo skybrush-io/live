@@ -2,6 +2,8 @@ import Divider from '@mui/material/Divider';
 import List from '@mui/material/List';
 import { connect } from 'react-redux';
 
+import { EnvironmentType } from '@skybrush/show-format';
+
 import MultiPagePanel, { Page } from '~/components/MultiPagePanel';
 import {
   getShowEnvironmentType,
@@ -21,7 +23,7 @@ import StartTimeButton from './StartTimeButton';
 import TakeoffAreaButton from './TakeoffAreaButton';
 
 type Props = {
-  environmentType: 'indoor' | 'outdoor';
+  environmentType: EnvironmentType;
   isAuthorized: boolean;
 };
 
@@ -41,9 +43,11 @@ const ShowControlPanelUpperSegment = ({
         <Divider />
 
         <EnvironmentButton />
-        {environmentType === 'outdoor' && <ShowConfiguratorButton />}
+        {environmentType === EnvironmentType.OUTDOOR && (
+          <ShowConfiguratorButton />
+        )}
         <TakeoffAreaButton />
-        {environmentType === 'outdoor' && <GeofenceButton />}
+        {environmentType === EnvironmentType.OUTDOOR && <GeofenceButton />}
         <ShowUploadDialogButton />
 
         <Divider />

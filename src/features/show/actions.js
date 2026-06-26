@@ -60,7 +60,6 @@ import {
   approveTakeoffAreaAt,
   loadingProgress,
   revokeTakeoffAreaApproval,
-  setCollectiveRTHSchedule,
   setEnvironmentType,
   setLastLoadingAttemptFailed,
   setOutdoorShowOrientation,
@@ -68,6 +67,7 @@ import {
   setOutdoorShowTakeoffHeadingSpecification,
   setRoomCorners,
   setShowAuthorization,
+  setShowControlSchedule,
   setStartMethod,
   setStartTime,
   signOffOnManualPreflightChecksAt,
@@ -514,7 +514,7 @@ export const startCollectiveRTH = () => async (dispatch, getState) => {
     const rthSegment = schedule.schedule.find(
       (segment) => segment.type === 'rth'
     );
-    dispatch(setCollectiveRTHSchedule(schedule));
+    dispatch(setShowControlSchedule(schedule));
     showSuccess(
       i18n.t('show.collectiveRTH.notification.success'),
       rthSegment === undefined
@@ -542,11 +542,12 @@ export const suspendShow = () => async (dispatch, getState) => {
   }
 
   try {
-    const result = await messageHub.execute.suspendShow();
-    const timeout = result.schedule.at(-1)?.endMs - Date.now();
+    const schedule = await messageHub.execute.suspendShow();
+    const timeout = schedule.schedule.at(-1)?.endMs - Date.now();
     const notificationOptions = Number.isNaN(timeout)
       ? undefined
       : { countdown: true, timeout };
+    dispatch(setShowControlSchedule(schedule));
     showSuccess(
       i18n.t('show.suspend.notification.success'),
       notificationOptions
@@ -568,11 +569,12 @@ export const resumeShow = () => async (dispatch, getState) => {
   }
 
   try {
-    const result = await messageHub.execute.resumeShow();
-    const timeout = result.schedule.at(-1)?.endMs - Date.now();
+    const schedule = await messageHub.execute.resumeShow();
+    const timeout = schedule.schedule.at(-1)?.endMs - Date.now();
     const notificationOptions = Number.isNaN(timeout)
       ? undefined
       : { countdown: true, timeout };
+    dispatch(setShowControlSchedule(schedule));
     showSuccess(
       i18n.t('show.resume.notification.success'),
       notificationOptions

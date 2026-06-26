@@ -1,7 +1,8 @@
 import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
+import ListItemButton, {
+  type ListItemButtonProps,
+} from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
-import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
@@ -9,26 +10,25 @@ import { StatusLight } from '@skybrush/mui-components';
 
 import { Status } from '~/components/semantics';
 import { hasManualPreflightChecks } from '~/features/preflight/selectors';
-import { signOffOnManualPreflightChecks } from '~/features/show/actions';
 import { areManualPreflightChecksSignedOff } from '~/features/show/selectors';
-import {
-  clearManualPreflightChecks,
-  openManualPreflightChecksDialog,
-} from '~/features/show/slice';
+import { openManualPreflightChecksDialog } from '~/features/show/slice';
 import { getSetupStageStatuses } from '~/features/show/stages';
+import type { RootState } from '~/store/reducers';
+
+type Props = {
+  hasManualChecks: boolean;
+  status: Status;
+} & ListItemButtonProps;
 
 /**
  * Component with a button that shows a dialog that allows the user to verify
  * the fulfillment of the manual preflight criteria.
  */
 const ManualPreflightChecksButton = ({
-  areChecksSignedOff,
   hasManualChecks,
-  onApprove,
-  onRevoke,
   status,
   ...rest
-}) => {
+}: Props) => {
   const { t } = useTranslation();
 
   return hasManualChecks ? (
@@ -41,26 +41,15 @@ const ManualPreflightChecksButton = ({
   ) : null;
 };
 
-ManualPreflightChecksButton.propTypes = {
-  areChecksSignedOff: PropTypes.bool,
-  hasManualChecks: PropTypes.bool,
-  onApprove: PropTypes.func,
-  onClick: PropTypes.func,
-  onRevoke: PropTypes.func,
-  status: PropTypes.oneOf(Object.values(Status)),
-};
-
 export default connect(
   // mapStateToProps
-  (state) => ({
+  (state: RootState) => ({
     areChecksSignedOff: areManualPreflightChecksSignedOff(state),
     hasManualChecks: hasManualPreflightChecks(state),
     status: getSetupStageStatuses(state).performManualPreflightChecks,
   }),
   // mapDispatchToProps
   {
-    onApprove: signOffOnManualPreflightChecks,
     onClick: openManualPreflightChecksDialog,
-    onRevoke: clearManualPreflightChecks,
   }
 )(ManualPreflightChecksButton);

@@ -1,7 +1,8 @@
 import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
+import ListItemButton, {
+  type ListItemButtonProps,
+} from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
-import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
@@ -11,18 +12,22 @@ import { Status } from '~/components/semantics';
 import { openTakeoffAreaSetupDialog } from '~/features/show/slice';
 import { getSetupStageStatuses } from '~/features/show/stages';
 import { getFarthestDistanceFromHome } from '~/features/uavs/selectors';
-import { tt } from '~/i18n';
+import { type PreparedI18nKey, tt } from '~/i18n';
+import type { RootState } from '~/store/reducers';
 import { formatDistance } from '~/utils/formatting';
 
-const formatStatusText = (status, maxDistance) => {
+const formatStatusText = (
+  status: Status,
+  maxDistance: number | undefined
+): PreparedI18nKey => {
   if (typeof maxDistance === 'number') {
     if (Number.isFinite(maxDistance)) {
       return tt('show.placementAccuracy', {
         distance: formatDistance(maxDistance),
       });
-    } else {
-      return tt('show.takeOffNoPosition');
     }
+
+    return tt('show.takeOffNoPosition');
   }
 
   switch (status) {
@@ -43,25 +48,26 @@ const formatStatusText = (status, maxDistance) => {
       return tt('show.dronePlacementCheck');
 
     default:
-      return '';
+      return () => '';
   }
 };
+
+type Props = {
+  maxDistance: number | undefined;
+  status: Status;
+} & ListItemButtonProps;
 
 /**
  * Component with a button that shows a dialog that allows the user to check how
  * accurately the drones are placed in the takeoff area. The dialog also allows
  * the user to create virtual drones if needed.
  */
-const TakeoffAreaButton = ({ maxDistance, onClick, status, ...rest }) => {
+const TakeoffAreaButton = ({ maxDistance, status, ...rest }: Props) => {
   const { t } = useTranslation();
 
   return (
     <ListItem disablePadding>
-      <ListItemButton
-        disabled={status === Status.OFF}
-        onClick={onClick}
-        {...rest}
-      >
+      <ListItemButton disabled={status === Status.OFF} {...rest}>
         <StatusLight status={status} />
         <ListItemText
           primary={t('show.setupTakeoffArea')}
@@ -72,15 +78,9 @@ const TakeoffAreaButton = ({ maxDistance, onClick, status, ...rest }) => {
   );
 };
 
-TakeoffAreaButton.propTypes = {
-  maxDistance: PropTypes.number,
-  onClick: PropTypes.func,
-  status: PropTypes.oneOf(Object.values(Status)),
-};
-
 export default connect(
   // mapStateToProps
-  (state) => ({
+  (state: RootState) => ({
     // TODO(ntamas): getFarthestDistanceFromHome() is recalculated all the time;
     // we need to fix this
     maxDistance:

@@ -17,7 +17,7 @@ import ScheduleProgressCards from '~/components/progress/ScheduleProgressCards';
 import {
   hasLoadedShowFile,
   selectCollectiveRTHPlanSummary,
-  selectCollectiveRTHSchedule,
+  selectShowControlSchedule,
   type CollectiveRTHPlanSummary,
   type CollectiveRTHPlanSummaryItem,
 } from '~/features/show/selectors';
@@ -163,7 +163,7 @@ const CollectiveRTHPanel = ({
 const ConnectedCollectiveRTHPanel = connect((state: RootState) => ({
   hasLoadedShowFile: hasLoadedShowFile(state),
   planSummary: selectCollectiveRTHPlanSummary(state),
-  rthSchedule: selectCollectiveRTHSchedule(state),
+  rthSchedule: selectShowControlSchedule(state),
 }))(CollectiveRTHPanel);
 
 export default ConnectedCollectiveRTHPanel;
