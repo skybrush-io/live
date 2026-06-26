@@ -53,9 +53,12 @@ const ScheduleStatusLight = ({
     segment ?? EMPTY_SEGMENT,
     nowMs
   );
-  useRefreshTimestampWhile(stage !== 'completed', setNowMs);
+  const isCompleted = stage === 'completed';
+  useRefreshTimestampWhile(!isCompleted, setNowMs);
 
-  const segmentType = segment ? `segment.${segment.type}` : emptyType;
+  const segmentType = segment
+    ? `segment.${segment.type}.${isCompleted ? 'completed' : 'running'}`
+    : emptyType;
   const title = t(`showControlSchedule.${segmentType}.title`);
   const tooltip = t(`showControlSchedule.${segmentType}.description`);
   const timestamp = segment

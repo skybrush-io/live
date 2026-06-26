@@ -103,7 +103,7 @@ type ShowSliceState = {
    * The schedule of the collective RTH being executed or `undefined` if
    * collective RTH was not triggered.
    */
-  collectiveRTHSchedule?: Schedule;
+  showControlSchedule?: Schedule;
 
   startTimeDialog: {
     open: boolean;
@@ -194,7 +194,7 @@ const initialState: ShowSliceState = {
     syncStatusWithServer: SettingsSynchronizationStatus.NOT_SYNCED,
   },
 
-  collectiveRTHSchedule: undefined,
+  showControlSchedule: undefined,
 
   startTimeDialog: {
     open: false,
@@ -227,8 +227,8 @@ const { actions, reducer } = createSlice({
       // Last upload result cleared in the upload feature as it also handles
       // this action
 
-      // Reset collective RTH schedule
-      state.collectiveRTHSchedule = undefined;
+      // Reset show control schedule
+      state.showControlSchedule = undefined;
     }),
 
     clearManualPreflightChecks: noPayload<ShowSliceState>((state) => {
@@ -320,8 +320,8 @@ const { actions, reducer } = createSlice({
       // to load it...
       state.changedSinceLoaded = false;
 
-      // Reset collective RTH schedule
-      state.collectiveRTHSchedule = undefined;
+      // Reset show control schedule
+      state.showControlSchedule = undefined;
     },
 
     loadingPromiseRejected(state) {
@@ -374,13 +374,6 @@ const { actions, reducer } = createSlice({
     revokeTakeoffAreaApproval: noPayload<ShowSliceState>((state) => {
       state.preflight.takeoffAreaApprovedAt = undefined;
     }),
-
-    setCollectiveRTHSchedule(
-      state,
-      action: PayloadAction<Schedule | undefined>
-    ) {
-      state.collectiveRTHSchedule = action.payload;
-    },
 
     setEnvironmentType(state, action: PayloadAction<EnvironmentType>) {
       state.environment.type = action.payload;
@@ -477,6 +470,10 @@ const { actions, reducer } = createSlice({
       state.start.authorized = (action.payload as unknown) === true;
     },
 
+    setShowControlSchedule(state, action: PayloadAction<Schedule | undefined>) {
+      state.showControlSchedule = action.payload;
+    },
+
     setShowSettingsSynchronizationStatus(
       state,
       action: PayloadAction<SettingsSynchronizationStatus>
@@ -526,8 +523,8 @@ const { actions, reducer } = createSlice({
         }
       }
 
-      // Reset collective RTH schedule
-      state.collectiveRTHSchedule = undefined;
+      // Reset show control schedule
+      state.showControlSchedule = undefined;
     },
 
     setUAVIdsToStartAutomatically(
@@ -581,7 +578,7 @@ export const {
   openStartTimeDialog,
   openTakeoffAreaSetupDialog,
   revokeTakeoffAreaApproval,
-  setCollectiveRTHSchedule,
+  setShowControlSchedule,
   setEnvironmentType,
   setIndoorShowOrientation,
   setIndoorShowTakeoffHeadingSpecification,

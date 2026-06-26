@@ -1,10 +1,10 @@
 import { useSelector } from 'react-redux';
 
 import ScheduleStatusLight from '~/components/progress/ScheduleStatusLight';
-import { selectCollectiveRTHSchedule } from '~/features/show/selectors';
+import { selectShowControlSchedule } from '~/features/show/selectors';
 
 const ShowControlScheduleStatusLight = () => {
-  const schedule = useSelector(selectCollectiveRTHSchedule);
+  const schedule = useSelector(selectShowControlSchedule);
   return (
     <ScheduleStatusLight
       emptyType='normalShow'
