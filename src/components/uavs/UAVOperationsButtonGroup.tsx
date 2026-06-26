@@ -6,7 +6,9 @@ import PositionHold from '@mui/icons-material/Flag';
 import FlightLand from '@mui/icons-material/FlightLand';
 import FlightTakeoff from '@mui/icons-material/FlightTakeoff';
 import Home from '@mui/icons-material/Home';
+import Manual from '@mui/icons-material/VideogameAsset';
 import Moon from '@mui/icons-material/NightsStay';
+import Pause from '@mui/icons-material/Pause';
 import PlayArrow from '@mui/icons-material/PlayArrow';
 import PowerSettingsNew from '@mui/icons-material/PowerSettingsNew';
 import Refresh from '@mui/icons-material/Refresh';
@@ -26,6 +28,7 @@ import ToolbarDivider from '~/components/ToolbarDivider';
 import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
 import { getPreferredCommunicationChannelIndex } from '~/features/mission/selectors';
 import { UAV_SIGNAL_DURATION } from '~/features/settings/constants';
+import { getVehicleType } from '~/features/settings/selectors';
 import {
   requestRemovalOfUAVsByIds,
   requestRemovalOfUAVsMarkedAsGone,
@@ -50,6 +53,7 @@ type Props = {
   showColorOverrideBadges?: boolean;
   size?: 'small' | 'medium';
   startSeparator?: boolean;
+  vehicleType: string,
 };
 
 // Must be valid CSS color names that are _also_ understood by the server in the
@@ -70,6 +74,7 @@ const UAVOperationsButtonGroup = ({
   size,
   showColorOverrideBadges,
   startSeparator,
+  vehicleType,
 }: Props) => {
   const { t } = useTranslation();
   const isSelectionEmpty = isEmpty(selectedUAVIds) && !broadcast;
@@ -99,6 +104,8 @@ const UAVOperationsButtonGroup = ({
     flashLight,
     holdPosition,
     land,
+	loiter,
+	manual,
     reset,
     returnToHome,
     shutdown,
@@ -163,41 +170,89 @@ const UAVOperationsButtonGroup = ({
         <ToolbarDivider orientation='vertical' />
       )}
 
-      <Tooltip content={t('general.commands.takeoff')}>
-        <IconButton
-          disabled={isSelectionEmpty}
-          size={iconSize}
-          onClick={takeOff}
-        >
-          <FlightTakeoff fontSize={fontSize} />
-        </IconButton>
-      </Tooltip>
-
-      <Tooltip content={t('general.commands.positionHold')}>
-        <IconButton
-          disabled={isSelectionEmpty}
-          size={iconSize}
-          onClick={holdPosition}
-        >
-          <PositionHold fontSize={fontSize} />
-        </IconButton>
-      </Tooltip>
-
-      <Tooltip content={t('general.commands.returnToHome')}>
-        <IconButton
-          disabled={isSelectionEmpty}
-          size={iconSize}
-          onClick={returnToHome}
-        >
-          <Home fontSize={fontSize} />
-        </IconButton>
-      </Tooltip>
-
-      <Tooltip content={t('general.commands.land')}>
-        <IconButton disabled={isSelectionEmpty} size={iconSize} onClick={land}>
-          <FlightLand fontSize={fontSize} />
-        </IconButton>
-      </Tooltip>
+      {vehicleType === 'Boat' && (
+            <>
+              <Tooltip content={t('general.commands.manual')}>
+                <IconButton
+                  disabled={isSelectionEmpty}
+                  size={iconSize}
+                  onClick={manual}
+                >
+                  <Manual fontSize={fontSize} />
+                </IconButton>
+              </Tooltip>
+    
+              <Tooltip content={t('general.commands.positionHold')}>
+                <IconButton
+                  disabled={isSelectionEmpty}
+                  size={iconSize}
+                  onClick={holdPosition}
+                >
+                  <Pause fontSize={fontSize} />
+                </IconButton>
+              </Tooltip>
+    
+              <Tooltip content={t('general.commands.loiter')}>
+                <IconButton disabled={isSelectionEmpty} size={iconSize} onClick={loiter}>
+                  <PositionHold fontSize={fontSize} />
+                </IconButton>
+              </Tooltip>
+    
+              <Tooltip content={t('general.commands.returnToHome')}>
+                <IconButton
+                  disabled={isSelectionEmpty}
+                  size={iconSize}
+                  onClick={returnToHome}
+                >
+                  <Home fontSize={fontSize} />
+                </IconButton>
+              </Tooltip>
+            </>
+          )}
+          
+          {vehicleType === 'Copter' && (
+            <>
+              <Tooltip content={t('general.commands.takeoff')}>
+                <IconButton
+                  disabled={isSelectionEmpty}
+                  size={iconSize}
+                  onClick={takeOff}
+                >
+                  <FlightTakeoff fontSize={fontSize} />
+                </IconButton>
+              </Tooltip>
+    
+              <Tooltip content={t('general.commands.positionHold')}>
+                <IconButton
+                  disabled={isSelectionEmpty}
+                  size={iconSize}
+                  onClick={holdPosition}
+                >
+                  <PositionHold fontSize={fontSize} />
+                </IconButton>
+              </Tooltip>
+    
+              <Tooltip content={t('general.commands.returnToHome')}>
+                <IconButton
+                  disabled={isSelectionEmpty}
+                  size={iconSize}
+                  onClick={returnToHome}
+                >
+                  <Home fontSize={fontSize} />
+                </IconButton>
+              </Tooltip>
+    
+              <Tooltip content={t('general.commands.land')}>
+                <IconButton
+                  disabled={isSelectionEmpty}
+                  size={iconSize}
+                  onClick={land}
+                >
+                  <FlightLand fontSize={fontSize} />
+                </IconButton>
+              </Tooltip>
+            </>
+          )}
 
       {!hideSeparators && <ToolbarDivider orientation='vertical' />}
 
@@ -343,7 +398,9 @@ const UAVOperationsButtonGroup = ({
 
 export default connect(
   // mapStateToProps
-  () => ({}),
+  (state: RootState) => ({
+    vehicleType: getVehicleType(state),
+  }),
   // mapDispatchToProps
   (dispatch) => ({
     ...bindActionCreators(

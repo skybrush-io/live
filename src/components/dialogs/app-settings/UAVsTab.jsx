@@ -50,6 +50,8 @@ const uavOperationConfirmationStyleOrder = [
   UAVOperationConfirmationStyle.ALWAYS,
 ];
 
+const vehicleTypeOptions = ['Copter', 'Boat'];
+
 const useStyles = makeStyles((theme) => ({
   gridFormControl: {
     display: 'grid',
@@ -86,6 +88,7 @@ const UAVsTabPresentation = ({
   preferredBatteryDisplayStyle = BatteryDisplayStyle.VOLTAGE,
   takeoffHeadingAccuracy,
   uavOperationConfirmationStyle,
+  vehicleType,
   warnThreshold,
 }) => {
   const styles = useStyles();
@@ -151,8 +154,26 @@ const UAVsTabPresentation = ({
 
         <Box sx={{ display: 'flex', flexDirection: 'row', mb: 1 }}>
           <FormControl fullWidth variant='filled'>
-            <InputLabel id='uav-operation-confirmation-style'>
-              {t('settings.uavs.uavOperationConfirmations')}
+            <InputLabel id='uav-vehicle-type'>
+              {t('settings.uavs.vehicleType')}
+            </InputLabel>
+            <Select
+              labelId='uav-vehicle-type'
+              name='vehicleType'
+              value={vehicleType || vehicleTypeOptions[0]}
+              onChange={onEnumFieldUpdated}
+            >
+              {vehicleTypeOptions.map((v) => (
+                <MenuItem key={v} value={v}>
+                  {v}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Box>
+       
+        <Box sx={{ display: 'flex', flexDirection: 'row', mb: 1 }}>          <FormControl fullWidth variant='filled'>            <InputLabel id='uav-operation-confirmation-style'>
+              UAV operation confirmations
             </InputLabel>
             <Select
               labelId='uav-operation-confirmation-style'
@@ -350,12 +371,17 @@ UAVsTabPresentation.propTypes = {
   onVoltageFieldUpdated: PropTypes.func,
   placementAccuracy: PropTypes.number,
   preferredBatteryDisplayStyle: PropTypes.oneOf(batteryDisplayStyleOrder),
-
+  vehicleType: PropTypes.oneOf(vehicleTypeOptions),
+  t: PropTypes.func,
   takeoffHeadingAccuracy: PropTypes.number,
   uavOperationConfirmationStyle: PropTypes.oneOf(
     uavOperationConfirmationStyleOrder
   ),
   warnThreshold: PropTypes.number,
+};
+
+UAVsTabPresentation.defaultProps = {
+  vehicleType: vehicleTypeOptions[0],
 };
 
 export default connect(

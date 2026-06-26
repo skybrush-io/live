@@ -154,6 +154,12 @@ export const getPreferredBatteryDisplayStyle = (
 ): BatteryDisplayStyle => state.settings.uavs.preferredBatteryDisplayStyle;
 
 /**
+ * Returns the currently selected vehicle type (Copter, Boat, etc.).
+ */
+export const getVehicleType = (state: RootState): string =>
+  state.settings.uavs.vehicleType ?? 'Copter';
+
+/**
  * Returns the name of the scenery preset for the 3D view.
  */
 export const getSceneryForThreeDView = (

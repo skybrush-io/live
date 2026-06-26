@@ -960,6 +960,7 @@
       "missionSetupDescription": "Used before multi-drone missions to check whether each drone is at its prescribed takeoff position and is facing the right direction.",
       "operationSettings": "Operations",
       "uavOperationConfirmations": "UAV operation confirmations",
+      "vehicleType": "Vehicle type",
       "warn": "Warn about drones not seen for at least"
     }
   },

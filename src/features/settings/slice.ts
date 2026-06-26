@@ -88,6 +88,7 @@ const initialState: SettingsSliceState = {
     maxUploadConcurrency: 8,
     minIndoorTakeoffSpacing: 200,
     minOutdoorTakeoffSpacing: 400,
+    vehicleType: 'Copter',
   },
 
   apiKeys: {},

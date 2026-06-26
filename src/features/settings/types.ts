@@ -220,6 +220,11 @@ export type SettingsState = {
      * Minimum distance allowed between two UAVs for outdoor shows, in meters.
      */
     minOutdoorTakeoffSpacing?: number;
+
+    /**
+     * Type of vehicle (Copter or Boat)
+     */
+    vehicleType: string;
   };
 
   apiKeys: Record<string, string>;
