@@ -12,6 +12,8 @@ import getUnixTime from 'date-fns/getUnixTime';
 import isNil from 'lodash-es/isNil';
 import set from 'lodash-es/set';
 
+import { EnvironmentType } from '@skybrush/show-format';
+
 import type { Schedule } from '~/flockwave/schedule';
 import type UAV from '~/model/uav';
 import { type LonLat } from '~/utils/geography';
@@ -25,11 +27,7 @@ import {
   type AltitudeReferenceSpecification,
   type TakeoffHeadingSpecification,
 } from './constants';
-import {
-  EnvironmentType,
-  SettingsSynchronizationStatus,
-  StartMethod,
-} from './enums';
+import { SettingsSynchronizationStatus, StartMethod } from './enums';
 import type { EnvironmentState } from './types';
 
 type ShowSliceState = {

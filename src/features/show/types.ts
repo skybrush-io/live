@@ -1,6 +1,10 @@
 import { type SetRequired } from 'type-fest';
 
-import type { ShowSegment, ShowSegmentId } from '@skybrush/show-format';
+import type {
+  EnvironmentType,
+  ShowSegment,
+  ShowSegmentId,
+} from '@skybrush/show-format';
 
 import { type LonLat } from '~/utils/geography';
 import type { Coordinate3D } from '~/utils/math';
@@ -9,7 +13,6 @@ import type {
   AltitudeReferenceSpecification,
   TakeoffHeadingSpecification,
 } from './constants';
-import { type EnvironmentType } from './enums';
 
 export type CoordinateSystem = {
   orientation: string; // stored as a string to avoid rounding errors

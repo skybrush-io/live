@@ -1,8 +1,3 @@
-export enum EnvironmentType {
-  INDOOR = 'indoor',
-  OUTDOOR = 'outdoor',
-}
-
 export enum SettingsSynchronizationStatus {
   SYNCED = 'synced',
   NOT_SYNCED = 'notSynced',

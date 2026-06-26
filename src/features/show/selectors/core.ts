@@ -12,6 +12,7 @@ import type {
   Trajectory,
   ValidationSettings,
 } from '@skybrush/show-format';
+import { EnvironmentType } from '@skybrush/show-format';
 
 import {
   getMinimumIndoorTakeoffSpacing,
@@ -29,7 +30,7 @@ import {
   TakeoffHeadingMode,
   type TakeoffHeadingSpecification,
 } from '../constants';
-import { EnvironmentType, SettingsSynchronizationStatus } from '../enums';
+import { SettingsSynchronizationStatus } from '../enums';
 import { getDurationOfTrajectory, isValidTrajectory } from '../trajectory';
 import type {
   CoordinateSystem,
