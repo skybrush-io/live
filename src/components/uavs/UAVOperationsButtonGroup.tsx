@@ -38,7 +38,7 @@ import {
 } from '~/features/uavs/actions';
 import { UAV_TOOLBAR_MULTI_SELECTION_LIMIT } from '~/features/uavs/constants';
 import { openUAVDetailsDialog } from '~/features/uavs/details';
-import { getUAVIdList } from '~/features/uavs/selectors';
+import { getSelectedUAVIds, getUAVIdList } from '~/features/uavs/selectors';
 import Bolt from '~/icons/Bolt';
 import type { AppDispatch, RootState } from '~/store/reducers';
 import { createUAVOperationThunks } from '~/utils/messaging';
@@ -88,22 +88,6 @@ const UAVOperationsButtonGroup = ({
   const isSelectionEmpty = isEmpty(selectedUAVIds) && !broadcast;
   const isSelectionSingle = selectedUAVIds.length === 1 && !broadcast;
 
-  const thunkOptions = {
-    getTargetedUAVIds,
-    getTransportOptions(state: RootState) {
-      const result: TransportOptions = {
-        channel: getPreferredCommunicationChannelIndex(state),
-      };
-
-      if (broadcast) {
-        result.broadcast = true;
-        result.ignoreIds = true;
-      }
-
-      return result;
-    },
-  };
-
   const {
     flashLight,
     holdPosition,
@@ -116,9 +100,26 @@ const UAVOperationsButtonGroup = ({
     turnMotorsOff,
     turnMotorsOn,
     wakeUp,
-  } = bindActionCreators(createUAVOperationThunks(thunkOptions), dispatch);
+  } = bindActionCreators(
+    createUAVOperationThunks({
+      getTargetedUAVIds,
+      getTransportOptions(state: RootState) {
+        const result: TransportOptions = {
+          channel: getPreferredCommunicationChannelIndex(state),
+        };
+
+        if (broadcast) {
+          result.broadcast = true;
+          result.ignoreIds = true;
+        }
+
+        return result;
+      },
+    }),
+    dispatch
+  );
   const { calibrateCompass } = bindActionCreators(
-    createTaskOperationThunks(thunkOptions),
+    createTaskOperationThunks({ getTargetedUAVIds: getSelectedUAVIds }),
     dispatch
   );
 
