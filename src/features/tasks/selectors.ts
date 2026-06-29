@@ -3,7 +3,7 @@ import { createSelector } from '@reduxjs/toolkit';
 import type { FlightLog } from '~/model/flight-logs';
 import type { AppSelector, RootState } from '~/store/reducers';
 
-import { readDownloadedLog } from './actions/log-download-actions';
+import { readDownloadedLog } from './actions/log-download';
 import type {
   AggregatedTaskState,
   LogDownloadTaskData,

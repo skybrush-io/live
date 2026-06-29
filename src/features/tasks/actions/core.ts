@@ -3,12 +3,12 @@ import type { AppThunk } from '~/store/reducers';
 import { _clearTask, _startTask } from '../slice';
 import type { StartOptions, TaskData, TaskSpec } from '../types';
 import { getTaskKey, isTaskInProgress } from '../utils';
-import { runLogDownloadTask } from './log-download-actions';
+import { runLogDownloadTask } from './log-download';
 import {
   clearUAVTestTask,
   resumeUAVTestTask,
   runUAVTestTask,
-} from './uav-test-actions';
+} from './uav-test';
 
 /**
  * Starts the given task unless it is already in progress.
