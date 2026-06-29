@@ -16,6 +16,7 @@ const { actions, reducer } = createSlice({
   name: 'tasks',
   initialState,
   reducers: {
+    clearTasks: () => initialState,
     _startTask(state, action: PayloadAction<TaskData>) {
       const { uavId, type, taskId } = action.payload;
       const key = getTaskKey(action.payload);
@@ -83,6 +84,7 @@ const { actions, reducer } = createSlice({
 });
 
 export const {
+  clearTasks,
   _startTask,
   _setTaskProgress,
   _suspendTask,

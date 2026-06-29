@@ -53,6 +53,7 @@ import {
 } from '~/features/show/slice';
 import { showError, showNotification } from '~/features/snackbar/actions';
 import { MessageSemantics } from '~/features/snackbar/types';
+import { clearTasks } from '~/features/tasks/slice';
 import { clearWeatherData } from '~/features/weather/slice';
 import i18n from '~/i18n';
 import messageHub from '~/message-hub';
@@ -660,6 +661,7 @@ async function executeTasksAfterDisconnection(dispatch) {
   dispatch(clearStartTimeAndMethod());
   dispatch(clearTimeSyncStatistics());
   dispatch(clearWeatherData());
+  dispatch(clearTasks());
 }
 
 const createCommonDisconnectionAndErrorHandlerThunk =
