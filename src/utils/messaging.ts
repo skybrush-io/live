@@ -14,31 +14,39 @@ import { UAV_SIGNAL_DURATION } from '~/features/settings/constants';
 import { shouldConfirmUAVOperation } from '~/features/settings/selectors';
 import { showNotification } from '~/features/snackbar/actions';
 import { MessageSemantics } from '~/features/snackbar/types';
-import { COMPASS_CALIB_TIMEOUT } from '~/features/uavs/constants';
 import type { StartAsyncOperationOptions } from '~/flockwave/messages';
 import messageHub from '~/message-hub';
 import { NULL_ISLAND, type GPSPosition } from '~/model/geography';
 import store from '~/store';
-import type { AppDispatch, AppSelector, AppThunk } from '~/store/reducers';
+import type {
+  AppDispatch,
+  AppSelector,
+  AppThunk,
+  RootState,
+} from '~/store/reducers';
 
 import handleError from '~/error-handling';
 import createLogger from './logging';
 
 const logger = createLogger('messaging');
 
-const processResponses = (
+/**
+ * UAV ID to outcome mapping.
+ */
+export type Outcomes = Record<string, 'success' | 'failure' | 'skipped'>;
+
+export const notifyFromResults = (
   commandName: string,
-  responseMap: Record<string, unknown>,
+  outcomes: Outcomes,
   {
     reportSuccess = true,
     reportFailure = true,
   }: { reportSuccess?: boolean; reportFailure?: boolean } = {}
 ) => {
-  const responses = values(responseMap);
-
-  const errorCounts = countBy(responses, isError);
-  const numberOfFailures = errorCounts.true || 0;
-  const numberOfSuccesses = responses.length - numberOfFailures;
+  const counts = countBy(values(outcomes));
+  const numberOfSuccesses = counts.success || 0;
+  const numberOfFailures = counts.failure || 0;
+  const numberOfSkipped = counts.skipped || 0;
 
   let message;
   let semantics;
@@ -64,6 +72,9 @@ const processResponses = (
   }
 
   if (message) {
+    if (numberOfSkipped > 0) {
+      message += `, skipped ${numberOfSkipped}`;
+    }
     showNotification({
       message,
       semantics,
@@ -94,6 +105,74 @@ const createConfirmationMessage = (
   return `Are you sure you want to execute ${lowercasedOperation}${target}?`;
 };
 
+export const confirmUAVOperationIfNeeded = async (
+  dispatch: AppDispatch,
+  getState: () => RootState,
+  name: string,
+  uavIds: string[],
+  isBroadcast: boolean
+): Promise<boolean> => {
+  if (!shouldConfirmUAVOperation(getState(), uavIds, isBroadcast)) {
+    return true;
+  }
+
+  const confirmation = await dispatch(
+    showConfirmationDialog(
+      createConfirmationMessage(name, uavIds, isBroadcast),
+      {
+        title: 'Confirmation needed',
+      }
+    )
+  );
+
+  return confirmation !== undefined;
+};
+
+type RunMassOperationOptions = {
+  name: string;
+  uavIds: string[];
+  isBroadcast: boolean;
+  reportSuccess?: boolean;
+  reportFailure?: boolean;
+  skipConfirmation?: boolean;
+  run: (dispatch: AppDispatch, getState: () => RootState) => Promise<Outcomes>;
+};
+
+export const runMassOperation = async (
+  dispatch: AppDispatch,
+  getState: () => RootState,
+  {
+    name,
+    uavIds,
+    isBroadcast,
+    reportSuccess = true,
+    reportFailure = true,
+    skipConfirmation = false,
+    run,
+  }: RunMassOperationOptions
+): Promise<void> => {
+  if (!skipConfirmation) {
+    const confirmed = await confirmUAVOperationIfNeeded(
+      dispatch,
+      getState,
+      name,
+      uavIds,
+      isBroadcast
+    );
+    if (!confirmed) {
+      return;
+    }
+  }
+
+  try {
+    const outcomes = await run(dispatch, getState);
+    notifyFromResults(name, outcomes, { reportSuccess, reportFailure });
+  } catch (error) {
+    console.error(error);
+    logger.error(`${name}: ${String(error)}`);
+  }
+};
+
 type MassOperationOptions<T = unknown, U = unknown> = {
   type: string;
   name: string;
@@ -121,43 +200,39 @@ function performMassOperation<T, U>(
     // Do not bail out early if uavs is empty because in the args there might be
     // an option that intructs the server to do a broadcast to all UAVs.
 
-    try {
-      const finalArgs = mapper ? mapper(args) : args;
-      const isBroadcast = Boolean(
-        (finalArgs as { transport?: TransportOptions })?.transport?.broadcast
-      );
-      const needsConfirmation =
-        !skipConfirmation &&
-        shouldConfirmUAVOperation(store.getState(), uavs, isBroadcast);
+    const finalArgs = mapper ? mapper(args) : args;
+    const isBroadcast = Boolean(
+      (finalArgs as { transport?: TransportOptions })?.transport?.broadcast
+    );
 
-      if (needsConfirmation) {
-        // This operation needs confirmation, so instead of executing it, show
-        // a confirmation dialog
-        const confirmation = await (store.dispatch as AppDispatch)(
-          showConfirmationDialog(
-            createConfirmationMessage(name, uavs, isBroadcast),
-            { title: 'Confirmation needed' }
-          )
-        );
+    await runMassOperation(
+      store.dispatch as AppDispatch,
+      () => store.getState(),
+      {
+        name,
+        uavIds: uavs,
+        isBroadcast,
+        reportSuccess,
+        reportFailure,
+        skipConfirmation,
+        run: async () => {
+          const responses = await messageHub.startAsyncOperation(
+            {
+              type,
+              ids: uavs,
+              ...finalArgs,
+            },
+            responseHandlerOptions
+          );
 
-        if (!confirmation) {
-          return;
-        }
-      }
-
-      const responses = await messageHub.startAsyncOperation(
-        {
-          type,
-          ids: uavs,
-          ...finalArgs,
+          const outcomes: Outcomes = {};
+          for (const [id, response] of Object.entries(responses)) {
+            outcomes[id] = isError(response) ? 'failure' : 'success';
+          }
+          return outcomes;
         },
-        responseHandlerOptions
-      );
-      processResponses(name, responses, { reportFailure, reportSuccess });
-    } catch (error) {
-      console.error(error);
-      logger.error(`${name}: ${String(error)}`);
-    }
+      }
+    );
   };
 }
 
@@ -324,22 +399,6 @@ export const turnMotorsOnForUAVs = performMassOperation({
   }),
 });
 
-export const calibrateCompassOnUAVs = performMassOperation(
-  {
-    type: 'UAV-CALIB',
-    name: 'Calibrate compass',
-    mapper: ({
-      transport,
-      ...options
-    }: { transport?: TransportOptions } = {}) => ({
-      // Ignore transport, it's not a valid argument.
-      ...options,
-      component: 'compass',
-    }),
-  },
-  { timeout: COMPASS_CALIB_TIMEOUT }
-);
-
 type OperationHandler<T extends object = object> = (
   uavs: string[],
   args: T & { transport?: TransportOptions }
@@ -347,7 +406,6 @@ type OperationHandler<T extends object = object> = (
 
 // moveUAVs() and setColor() are not in this map because they require extra args
 const OPERATION_MAP: Record<string, OperationHandler<object>> = {
-  calibrateCompass: calibrateCompassOnUAVs,
   flashLight: flashLightOnUAVs,
   holdPosition: positionHoldUAVs,
   land: landUAVs,

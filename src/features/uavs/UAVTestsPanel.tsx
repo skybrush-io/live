@@ -238,7 +238,7 @@ const ConnectedUAVTestButton = connect(
         return;
       }
 
-      dispatch(
+      void dispatch(
         startTask({
           uavId,
           type: 'uav-test',

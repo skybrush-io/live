@@ -1,4 +1,4 @@
-import type { TaskData } from './types';
+import type { TaskData, TaskState } from './types';
 
 /**
  * Returns a string that uniquely identifies a task based on its type,task ID, and the
@@ -6,3 +6,10 @@ import type { TaskData } from './types';
  */
 export const getTaskKey = (data: TaskData): string =>
   `${data.type}:${data.uavId}:${data.taskId}`;
+
+/**
+ * Returns whether the given task is currently in progress
+ * (running or suspended).
+ */
+export const isTaskInProgress = (task?: TaskState): boolean =>
+  task?.status === 'running' || task?.status === 'suspended';

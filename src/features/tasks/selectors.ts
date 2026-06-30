@@ -1,9 +1,16 @@
-import type { FlightLog } from '~/model/flight-logs';
-import type { RootState } from '~/store/reducers';
+import { createSelector } from '@reduxjs/toolkit';
 
-import { readDownloadedLog } from './actions/log-download-actions';
-import type { LogDownloadTaskData, TaskData, TaskState } from './types';
-import { getTaskKey } from './utils';
+import type { FlightLog } from '~/model/flight-logs';
+import type { AppSelector, RootState } from '~/store/reducers';
+
+import { readDownloadedLog } from './actions/log-download';
+import type {
+  AggregatedTaskState,
+  LogDownloadTaskData,
+  TaskData,
+  TaskState,
+} from './types';
+import { getTaskKey, isTaskInProgress } from './utils';
 
 export const getTaskState = <T extends TaskData>(
   state: RootState,
@@ -36,3 +43,39 @@ export const getDownloadedLog = (
 
   return readDownloadedLog(task.result.hash);
 };
+
+/**
+ * Factory that creates a memoized selector returning an aggregation of
+ * task states for the UAV IDs produced by `getUAVIds`.
+ */
+export const createAggregatedTaskStateSelector = (
+  getUAVIds: AppSelector<string[]>,
+  taskData: Omit<TaskData, 'uavId'>
+): AppSelector<AggregatedTaskState> =>
+  createSelector(
+    getUAVIds,
+    (state: RootState) => state.tasks,
+    (uavIds, tasks): AggregatedTaskState => {
+      let loading = false;
+      let numSuccess = 0;
+      let numError = 0;
+      const numItems = uavIds.length;
+
+      for (const uavId of uavIds) {
+        const task = tasks[getTaskKey({ uavId, ...taskData })];
+        if (task === undefined) {
+          continue;
+        }
+
+        if (isTaskInProgress(task)) {
+          loading = true;
+        } else if (task.status === 'success') {
+          numSuccess++;
+        } else if (task.status === 'error') {
+          numError++;
+        }
+      }
+
+      return { loading, numItems, numSuccess, numError };
+    }
+  );

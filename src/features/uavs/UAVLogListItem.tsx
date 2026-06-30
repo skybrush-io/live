@@ -157,7 +157,7 @@ const ConnectedUAVLogListItem = connect(
   },
   (dispatch: AppDispatch, ownProps: UAVLogListItemOwnProps) => ({
     download() {
-      dispatch(
+      void dispatch(
         startTask({
           uavId: ownProps.uavId,
           type: 'log-download',

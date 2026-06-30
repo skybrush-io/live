@@ -9,7 +9,7 @@ import {
   _setTaskProgress,
   _suspendTask,
 } from '../slice';
-import type { UAVTestTaskData, UAVTestTaskSpec } from '../types';
+import type { StartOptions, UAVTestTaskData, UAVTestTaskSpec } from '../types';
 import { getTaskKey } from '../utils';
 
 type ActiveOperation = {
@@ -19,7 +19,7 @@ type ActiveOperation = {
 const activeOperations = new Map<string, ActiveOperation>();
 
 export const runUAVTestTask =
-  (spec: UAVTestTaskSpec): AppThunk =>
+  (spec: UAVTestTaskSpec, _opts: StartOptions = {}): AppThunk<Promise<void>> =>
   async (dispatch) => {
     const { uavId, type, taskId, params } = spec;
     const { component, command, timeout } = params;

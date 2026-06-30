@@ -27,29 +27,40 @@ import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
 import { getPreferredCommunicationChannelIndex } from '~/features/mission/selectors';
 import { UAV_SIGNAL_DURATION } from '~/features/settings/constants';
 import {
+  type AggregatedTaskState,
+  createAggregatedTaskStateSelector,
+  createTaskOperationThunks,
+  TASK_SPECS,
+} from '~/features/tasks';
+import {
   requestRemovalOfUAVsByIds,
   requestRemovalOfUAVsMarkedAsGone,
 } from '~/features/uavs/actions';
 import { UAV_TOOLBAR_MULTI_SELECTION_LIMIT } from '~/features/uavs/constants';
 import { openUAVDetailsDialog } from '~/features/uavs/details';
-import { getUAVIdList } from '~/features/uavs/selectors';
+import { getSelectedUAVIds, getUAVIdList } from '~/features/uavs/selectors';
 import Bolt from '~/icons/Bolt';
 import type { AppDispatch, RootState } from '~/store/reducers';
 import { createUAVOperationThunks } from '~/utils/messaging';
 
 import OverrideUAVColorButton from './OverrideUAVColorButton';
 
-type Props = {
+type OwnProps = {
   broadcast: boolean;
-  dispatch: AppDispatch;
   hideSeparators?: boolean;
-  openUAVDetailsDialog: (id: string) => void;
-  requestRemovalOfUAVsByIds: (ids: string[]) => void;
-  requestRemovalOfUAVsMarkedAsGone: () => void;
   selectedUAVIds: string[];
   showColorOverrideBadges?: boolean;
   size?: 'small' | 'medium';
   startSeparator?: boolean;
+};
+
+type Props = OwnProps & {
+  compassCalibrationStatus: AggregatedTaskState;
+  dispatch: AppDispatch;
+  getTargetedUAVIds: (state: RootState) => string[];
+  openUAVDetailsDialog: (id: string) => void;
+  requestRemovalOfUAVsByIds: (ids: string[]) => void;
+  requestRemovalOfUAVsMarkedAsGone: () => void;
 };
 
 // Must be valid CSS color names that are _also_ understood by the server in the
@@ -61,7 +72,9 @@ const COLORS: string[] = ['#ff0000', '#00ff00', '#0000ff', '#ffffff'];
  */
 const UAVOperationsButtonGroup = ({
   broadcast,
+  compassCalibrationStatus,
   dispatch,
+  getTargetedUAVIds,
   hideSeparators,
   openUAVDetailsDialog,
   requestRemovalOfUAVsByIds,
@@ -75,27 +88,7 @@ const UAVOperationsButtonGroup = ({
   const isSelectionEmpty = isEmpty(selectedUAVIds) && !broadcast;
   const isSelectionSingle = selectedUAVIds.length === 1 && !broadcast;
 
-  const thunkOptions = {
-    getTargetedUAVIds(state: RootState) {
-      return broadcast ? getUAVIdList(state) : selectedUAVIds;
-    },
-
-    getTransportOptions(state: RootState) {
-      const result: TransportOptions = {
-        channel: getPreferredCommunicationChannelIndex(state),
-      };
-
-      if (broadcast) {
-        result.broadcast = true;
-        result.ignoreIds = true;
-      }
-
-      return result;
-    },
-  };
-
   const {
-    calibrateCompass,
     flashLight,
     holdPosition,
     land,
@@ -107,7 +100,28 @@ const UAVOperationsButtonGroup = ({
     turnMotorsOff,
     turnMotorsOn,
     wakeUp,
-  } = bindActionCreators(createUAVOperationThunks(thunkOptions), dispatch);
+  } = bindActionCreators(
+    createUAVOperationThunks({
+      getTargetedUAVIds,
+      getTransportOptions(state: RootState) {
+        const result: TransportOptions = {
+          channel: getPreferredCommunicationChannelIndex(state),
+        };
+
+        if (broadcast) {
+          result.broadcast = true;
+          result.ignoreIds = true;
+        }
+
+        return result;
+      },
+    }),
+    dispatch
+  );
+  const { calibrateCompass } = bindActionCreators(
+    createTaskOperationThunks({ getTargetedUAVIds: getSelectedUAVIds }),
+    dispatch
+  );
 
   const [keepFlashing, setKeepFlashing] = useState(false);
   const flashLightsButtonOnClick = useCallback(
@@ -218,6 +232,19 @@ const UAVOperationsButtonGroup = ({
               size={iconSize}
               disabled={!allowOperationForMultipleSelection}
               onClick={() => calibrateCompass()}
+              loading={compassCalibrationStatus.loading}
+              color={
+                compassCalibrationStatus.numItems === 0
+                  ? undefined // No UAVs targeted
+                  : compassCalibrationStatus.numError > 0
+                    ? 'error' // At least one task failed
+                    : compassCalibrationStatus.numSuccess ===
+                        compassCalibrationStatus.numItems
+                      ? 'success' // All tasks succeeded
+                      : compassCalibrationStatus.numSuccess === 0
+                        ? undefined // No tasks were run
+                        : 'info' // Partial result
+              }
             >
               <Explore />
             </IconButton>
@@ -342,8 +369,25 @@ const UAVOperationsButtonGroup = ({
 };
 
 export default connect(
-  // mapStateToProps
-  () => ({}),
+  // mapStateToProps factory
+  () => {
+    let current: OwnProps;
+    const getTargetedUAVIds = (state: RootState): string[] =>
+      current.broadcast ? getUAVIdList(state) : current.selectedUAVIds;
+
+    const getCompassCalibrationStatus = createAggregatedTaskStateSelector(
+      getTargetedUAVIds,
+      TASK_SPECS.compassCalibration
+    );
+
+    return (state: RootState, ownProps: OwnProps) => {
+      current = ownProps;
+      return {
+        getTargetedUAVIds,
+        compassCalibrationStatus: getCompassCalibrationStatus(state),
+      };
+    };
+  },
   // mapDispatchToProps
   (dispatch) => ({
     ...bindActionCreators(
