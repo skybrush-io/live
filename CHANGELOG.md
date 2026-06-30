@@ -35,8 +35,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The connections widget in the header now shows at most 10 connections in the tooltip,
   grouping connections in similar states together if there are more than 10.
 
-- Log download and UAV test progress is now tracked in a centralized Redux tasks
-  slice, so test progress survives switching between UAVs in the details dialog.
+- Log download and UAV test progress is now kept and restored even if the dialog box
+  triggering these functions is closed or the user switches between UAVs in the details
+  dialog.
 
 - The compass calibration button in the UAV toolbar now shows progress and aggregate
   task status with color feedback.
