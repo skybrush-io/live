@@ -7,7 +7,7 @@ import Delete from '@mui/icons-material/Delete';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import type { Theme } from '@mui/material/styles';
-import { bindActionCreators, type AnyAction } from '@reduxjs/toolkit';
+import { bindActionCreators, type ActionCreator } from '@reduxjs/toolkit';
 import isNil from 'lodash-es/isNil';
 import { nanoid } from 'nanoid';
 import type React from 'react';
@@ -475,7 +475,7 @@ const UAVList = connect(
             getSelection: getSelectedUAVIdsAndMissionSlotIds,
             setSelection,
             getListItems: getGlobalIdsOfDisplayedItems,
-          }) as any as (id: string) => AnyAction,
+          }) as ActionCreator<void>,
         },
         dispatch
       ),

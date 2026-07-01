@@ -371,7 +371,7 @@ export const createCollectionFromArray = <T extends ItemLike>(
  */
 export const createNewItemInFrontOf = <T extends ItemLike>(
   collection: Collection<T>,
-  idStore?: ((id: Identifier) => void) | Record<string, unknown>
+  idStore?: ((id: Identifier) => void) | { id?: Identifier }
 ): void => {
   const id = NEW_ITEM_ID;
 

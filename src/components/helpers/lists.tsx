@@ -15,7 +15,7 @@ import React, { type PropsWithoutRef, type RefAttributes } from 'react';
 
 import { BackgroundHint } from '@skybrush/mui-components';
 
-import type { AppDispatch, RootState } from '~/store/reducers';
+import type { AppDispatch, AppThunk, RootState } from '~/store/reducers';
 import { eventHasShiftKey } from '~/utils/events';
 import { eventHasPlatformModifierKey } from '~/utils/platform';
 
@@ -228,9 +228,15 @@ export function createSelectionHandlerThunk<T = string>({
   getSelection,
   setSelection,
   getListItems,
-}: SelectionHandlerReduxFunctions<T>) {
+}: SelectionHandlerReduxFunctions<T>): (
+  id: T,
+  event: React.UIEvent
+) => AppThunk {
   if (!setSelection && !activateItem) {
-    return null;
+    return (_id: T, _event: React.UIEvent) =>
+      (_dispatch: AppDispatch, _getState: () => RootState) => {
+        /* nop */
+      };
   }
 
   return (id: T, event: React.UIEvent) =>
