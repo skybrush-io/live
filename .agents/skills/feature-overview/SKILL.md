@@ -1,13 +1,13 @@
 ---
 name: feature-overview
-description: Write concise architecture overview documents for features. Use when creating or updating docs that describe a feature's structure, design rationale, invariants, and extension points for agents and humans.
+description: Write concise architecture overview documents for features. Use when creating or updating docs about feature structure, design rationale, extension points for agents and humans
 ---
 
 # Feature overview documents
 
 ## When to create one
 
-When a feature spans multiple files and has non-obvious design decisions, relationships, or invariants that an agent working on related changes would need to understand but cannot easily discover by reading a single file.
+When a feature spans multiple files and has non-obvious design decisions, relationships, or invariants that an agent working on related changes would need to understand but cannot easily discover by reading a single file
 
 ## File
 
@@ -15,7 +15,11 @@ When a feature spans multiple files and has non-obvious design decisions, relati
 
 ## Purpose
 
-Give agents the **mental model** — structure, relationships, rationale, invariants. Not a catalog of what each file contains. The goal is to save context and time: an agent reads this, then knows where to look and what to watch for.
+Give agents the **mental model** — structure, relationships, rationale, invariants
+
+Not a catalog of what each file contains
+
+The goal is to save context and time: an agent reads this, then knows where to look and what to watch for
 
 ## Content rules
 
@@ -31,18 +35,18 @@ Give agents the **mental model** — structure, relationships, rationale, invari
 
 ### Exclude
 
-- Implementation details discoverable by reading one file (how a key is constructed, what a function returns).
-- Copy-pasted code snippets.
-- File indexes / directory listings.
-- Consumer/UI component lists (unless a specific integration point is architecturally significant).
-- Anything an agent can find with a quick grep or by reading the file referenced.
+- Implementation details discoverable by reading one file (how a key is constructed, what a function returns)
+- Copy-pasted code snippets
+- File indexes / directory listings
+- Consumer/UI component lists (unless a specific integration point is architecturally significant)
+- Anything an agent can find with a quick grep or by reading the file referenced
 
 ### Style
 
-- Dense, no filler. ~80 lines is a good target.
-- Inline file references with concepts (e.g. "the active-operations Map in `actions/uav-test-actions.ts`") — agents shouldn't need to search for the file.
-- Tables only for comparing alternatives or backends.
-- Headings for navigation, not hierarchy for its own sake.
+- Dense, no filler, ~80 lines is a good target
+- Inline file references with concepts (e.g. "the active-operations Map in `actions/uav-test.ts`") — agents shouldn't need to search for the file
+- Tables only for comparing alternatives or backends
+- Headings for navigation, not hierarchy for its own sake
 
 ## Process
 
