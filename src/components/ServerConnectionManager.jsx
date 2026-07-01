@@ -55,6 +55,7 @@ import { showError, showNotification } from '~/features/snackbar/actions';
 import { MessageSemantics } from '~/features/snackbar/types';
 import { clearTasks } from '~/features/tasks/slice';
 import { clearWeatherData } from '~/features/weather/slice';
+import { ConnectionLostError } from '~/flockwave/messages';
 import i18n from '~/i18n';
 import messageHub from '~/message-hub';
 import {
@@ -669,6 +670,13 @@ const createCommonDisconnectionAndErrorHandlerThunk =
     const { url, reason, wasConnected, willReconnect } = event;
 
     dispatch(setCurrentServerConnectionState(ConnectionState.DISCONNECTED));
+
+    // With the server gone, in-flight operations can no longer complete.
+    // We must reject all pending operations, so promises don't need to
+    // wait until the timeout is reached.
+    messageHub.cancelAllPendingOperationsAndResponses(
+      new ConnectionLostError()
+    );
 
     switch (reason) {
       case 'connection error':

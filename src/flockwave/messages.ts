@@ -108,6 +108,16 @@ export class EmitterChangedError extends Error {
 }
 
 /**
+ * Error class thrown by promises when the connection to the server is lost
+ * while waiting for a response from the server.
+ */
+export class ConnectionLostError extends Error {
+  constructor(message?: string) {
+    super(message ?? 'Connection to the server was lost');
+  }
+}
+
+/**
  * Error class thrown when the user attempts to send a message without an
  * emitter being associated to the hub.
  */
@@ -1248,9 +1258,7 @@ export default class MessageHub {
       return;
     }
 
-    const error = new EmitterChangedError();
-    this._asyncOperationManager.cancelAll(error);
-    this.cancelAllPendingResponses();
+    this.cancelAllPendingOperationsAndResponses(new EmitterChangedError());
 
     this._emitter = value;
 
@@ -1277,12 +1285,16 @@ export default class MessageHub {
   }
 
   /**
-   * Cancels all pending responses by rejecting the corresponding promises
-   * with an error.
+   * Cancels all pending operations and responses by rejecting the
+   * corresponding promises with the given error.
+   *
+   * @param error  the error to reject the promises with
    */
-  cancelAllPendingResponses(): void {
+  cancelAllPendingOperationsAndResponses(error: Error): void {
+    this._asyncOperationManager.cancelAll(error);
+
     for (const pendingResponse of Object.values(this._pendingResponses)) {
-      pendingResponse.reject(new EmitterChangedError());
+      pendingResponse.reject(error);
     }
 
     this._pendingResponses = {};
