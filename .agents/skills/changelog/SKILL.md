@@ -30,5 +30,6 @@ description: Update the changelog from recent changes
 - Each changelist item has exactly one new list item
 - Descriptions are short (preferably 1 line, max 3), but informative
 - Descriptions are full sentences
+- Descriptions are user-facing, they avoid technical jargon and implementation details
 - **Avoid**: bold and italic text, unnecessary hyphenation and punctuation, filler text and AI slop in general
 - Max 80 chars per line
