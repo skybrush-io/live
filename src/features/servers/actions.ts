@@ -2,11 +2,6 @@ import { Base64 } from 'js-base64';
 import isNil from 'lodash-es/isNil';
 import { TimeoutError } from 'p-timeout';
 
-import type {
-  Response_AUTHRESP_MultiStep,
-  Response_AUTHRESP_SingleStep,
-} from '@skybrush/flockwave-spec';
-
 import { errorToString, wrapInErrorHandler } from '~/error-handling';
 import type MessageHub from '~/flockwave/messages';
 import {
@@ -20,6 +15,11 @@ import { actions as authenticationDialogActions } from './authentication-dialog'
 import { actions as deauthenticationDialogActions } from './deauthentication-dialog';
 import { getClockSkewInMilliseconds } from './selectors';
 import { actions as serverSettingsDialogActions } from './server-settings-dialog';
+import type {
+  AuthResponseBody,
+  AuthenticateParams,
+  AuthenticationResult,
+} from './types';
 
 export const {
   closeServerSettingsDialog,
@@ -34,23 +34,6 @@ export const { closeAuthenticationDialog, showAuthenticationDialog } =
 
 export const { closeDeauthenticationDialog, showDeauthenticationDialog } =
   deauthenticationDialogActions;
-
-type AuthResponseBody =
-  | Response_AUTHRESP_SingleStep
-  | Response_AUTHRESP_MultiStep
-  | { type: string; reason?: unknown };
-
-type AuthenticationResult = {
-  result: boolean;
-  user?: string;
-  reason?: string;
-};
-
-type AuthenticateParams = {
-  method: string;
-  data: string;
-  messageHub: MessageHub;
-};
 
 /**
  * Action factory that creates an action that starts an authentication attempt.

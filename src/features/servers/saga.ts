@@ -1,3 +1,4 @@
+import { type PayloadAction } from '@reduxjs/toolkit';
 import {
   all,
   call,
@@ -8,7 +9,16 @@ import {
   take,
 } from 'redux-saga/effects';
 
-import { authenticateToServer } from './actions';
+import {
+  type Response_AUTHINF,
+  type Response_AUTHWHOAMI,
+} from '@skybrush/flockwave-spec';
+
+import { showError, showSuccess } from '~/features/snackbar/actions';
+import messageHub from '~/message-hub';
+import { isAuthenticationDialogOpen } from '~/selectors/dialogs';
+
+import { authenticateToServer, showAuthenticationDialog } from './actions';
 import {
   areServerAuthenticationSettingsValid,
   getAuthenticationToken,
@@ -23,39 +33,43 @@ import {
   setCurrentServerConnectionState,
   updateCurrentServerAuthenticationSettings,
 } from './slice';
+import type { AuthenticationResult } from './types';
 
-import { showAuthenticationDialog } from '~/features/servers/actions';
-import { showError, showSuccess } from '~/features/snackbar/actions';
-import messageHub from '~/message-hub';
-import { isAuthenticationDialogOpen } from '~/selectors/dialogs';
+type AuthenticationSettings = Pick<Response_AUTHINF, 'methods' | 'required'>;
 
 /**
  * Saga that detects when the authentication-related information of the
  * current server we are connected to becomes invalid, and initiates a query
  * of the supported authentication methods.
  */
-function* serverAuthenticationSettingsUpdaterSaga() {
+function* serverAuthenticationSettingsUpdaterSaga(): Generator {
   while (true) {
-    const isConnectedToServer = yield select(isConnected);
-    const settingsValid = yield select(areServerAuthenticationSettingsValid);
+    const isConnectedToServer: boolean = yield select(isConnected);
+    const settingsValid: boolean = yield select(
+      areServerAuthenticationSettingsValid
+    );
 
     if (isConnectedToServer && !settingsValid) {
       // Settings were invalidated, force a query
-      const result = yield call(async () => {
-        try {
-          const { body } = await messageHub.sendMessage('AUTH-INF');
-          return {
-            methods: body.methods || [],
-            required: body.required || false,
-          };
-        } catch {
-          return undefined;
+      const result: AuthenticationSettings | undefined = yield call(
+        async (): Promise<AuthenticationSettings | undefined> => {
+          try {
+            const { body } =
+              await messageHub.sendMessage<Response_AUTHINF>('AUTH-INF');
+            return {
+              methods: body.methods || [],
+              required: body.required || false,
+            };
+          } catch {
+            return undefined;
+          }
         }
-      });
+      );
 
-      const user = yield call(async () => {
+      const user: string = yield call(async (): Promise<string> => {
         try {
-          const { body } = await messageHub.sendMessage('AUTH-WHOAMI');
+          const { body } =
+            await messageHub.sendMessage<Response_AUTHWHOAMI>('AUTH-WHOAMI');
           return body.user || '';
         } catch {
           return '';
@@ -63,8 +77,9 @@ function* serverAuthenticationSettingsUpdaterSaga() {
       });
 
       if (result) {
-        result.user = user;
-        yield put(updateCurrentServerAuthenticationSettings(result));
+        yield put(
+          updateCurrentServerAuthenticationSettings({ ...result, user })
+        );
       }
     }
 
@@ -77,9 +92,11 @@ function* serverAuthenticationSettingsUpdaterSaga() {
  * Saga that detects successful or failed authentications and shows an
  * appropriate message in the snackbar.
  */
-function* authenticationResultNotifierSaga() {
+function* authenticationResultNotifierSaga(): Generator {
   while (true) {
-    const { payload } = yield take(authenticateToServerPromiseFulfilled.type);
+    const { payload }: PayloadAction<AuthenticationResult> = yield take(
+      authenticateToServerPromiseFulfilled.type
+    );
     const { result, reason, user } = payload;
 
     if (result) {
@@ -100,9 +117,9 @@ function* authenticationResultNotifierSaga() {
  * user is not authenticated yet and is not authenticating at the moment.
  * Returns if the connection breaks.
  */
-function* ensureUserIsAuthenticated() {
+function* ensureUserIsAuthenticated(): Generator {
   while (true) {
-    const stillConnected = yield select(isConnected);
+    const stillConnected: boolean = yield select(isConnected);
     if (!stillConnected) {
       break;
     }
@@ -116,9 +133,9 @@ function* ensureUserIsAuthenticated() {
       let unsupervisedAuthenticationSuccessful = false;
 
       try {
-        unsupervisedAuthenticationSuccessful = yield call(
+        unsupervisedAuthenticationSuccessful = (yield call(
           authenticateWithoutSupervision
-        );
+        )) as boolean;
       } catch (error) {
         console.error(error);
       }
@@ -136,14 +153,16 @@ function* ensureUserIsAuthenticated() {
  * Saga that enforces authentication if the server declares that it is
  * authentication-only.
  */
-function* enforceAuthenticationIfNeededSaga() {
+function* enforceAuthenticationIfNeededSaga(): Generator {
   while (true) {
-    const isConnectedToServer = yield select(isConnected);
-    const settingsValid = yield select(areServerAuthenticationSettingsValid);
+    const isConnectedToServer: boolean = yield select(isConnected);
+    const settingsValid: boolean = yield select(
+      areServerAuthenticationSettingsValid
+    );
 
     if (isConnectedToServer && settingsValid) {
       // We are connected; does the server need authentication?
-      const requiresAuth = yield select(requiresAuthentication);
+      const requiresAuth: boolean = yield select(requiresAuthentication);
       if (requiresAuth) {
         // Yes, it does. Attempt to authenticate with a non-interactive method
         // if we can, or show the authentication dialog -- but only if we are
@@ -166,11 +185,11 @@ function* enforceAuthenticationIfNeededSaga() {
  * performs authentication if the user is in possession of a JWT token that the
  * server can digest.
  */
-function* authenticateWithoutSupervision() {
-  const token = yield select(getAuthenticationToken);
+function* authenticateWithoutSupervision(): Generator {
+  const token: string | undefined = yield select(getAuthenticationToken);
 
   if (token) {
-    const { value } = yield putResolve(
+    const { value }: { value: AuthenticationResult } = yield putResolve(
       authenticateToServer({
         method: 'jwt',
         data: token,
@@ -192,7 +211,7 @@ function* authenticateWithoutSupervision() {
  * Compound saga related to the management of the connection to the upstream
  * Skybrush server.
  */
-export default function* serversSaga() {
+export default function* serversSaga(): Generator {
   const sagas = [
     serverAuthenticationSettingsUpdaterSaga(),
     enforceAuthenticationIfNeededSaga(),
