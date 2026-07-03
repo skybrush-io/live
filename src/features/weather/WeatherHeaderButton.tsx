@@ -13,7 +13,7 @@ import {
   SidebarBadge,
 } from '@skybrush/mui-components';
 
-import { usePeriodicRefresh } from '~/hooks';
+import { useCurrentDate } from '~/hooks';
 import Sunrise from '~/icons/Sunrise';
 import Sunset from '~/icons/Sunset';
 import type { RootState } from '~/store/reducers';
@@ -45,8 +45,7 @@ const WeatherHeaderButton = ({
   sunset,
 }: WeatherHeaderButtonProps) => {
   /* Show sunset time if we are closer to the sunset than to the sunrise */
-  // eslint-disable-next-line @eslint-react/purity
-  const now = new Date();
+  const now = useCurrentDate(30_000);
   const [negate, toggleNegate] = useToggle(false);
   let shouldShowSunset =
     !sunrise ||
@@ -58,9 +57,6 @@ const WeatherHeaderButton = ({
   }
 
   const referenceTime = shouldShowSunset ? sunset : sunrise;
-
-  /* refresh every 30s */
-  usePeriodicRefresh(30000);
 
   return (
     <LazyTooltip content={<WeatherDetailsMiniList />}>
