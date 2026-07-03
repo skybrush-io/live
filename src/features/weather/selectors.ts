@@ -4,7 +4,7 @@ import isAfter from 'date-fns/isAfter';
 import * as SunCalc from 'suncalc-ts';
 
 import { Status } from '@skybrush/app-theme-mui';
-import { type Degrees, toDegrees, type Vector2PlusTuple } from '@skybrush/math';
+import { type Degrees, toDegrees } from '@skybrush/math';
 
 import { getMapViewCenterPosition } from '~/selectors/map';
 import type { AppSelector, RootState } from '~/store/reducers';
@@ -47,7 +47,7 @@ export const getSunriseSunsetTimesForMapViewCenterPosition =
   });
 
 export function getDeclinationFromMagneticVector(
-  magneticVector: Vector2PlusTuple
+  magneticVector: number[]
 ): Degrees | null {
   if (!Array.isArray(magneticVector) || magneticVector.length !== 3) {
     return null;

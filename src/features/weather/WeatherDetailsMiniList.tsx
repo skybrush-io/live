@@ -1,18 +1,13 @@
 import format from 'date-fns/format';
 import isAfter from 'date-fns/isAfter';
 import isNil from 'lodash-es/isNil';
-import PropTypes from 'prop-types';
+import type { CSSProperties, ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import TimeAgo from 'react-timeago';
 
-import { colorForSeverity } from '~/components/colors';
-import { Severity } from '~/model/enums';
-import {
-  formatNumberSafely,
-  shortRelativeTimeFormatter,
-} from '~/utils/formatting';
-
+import { Status } from '@skybrush/app-theme-mui';
+import type { WeatherInfo } from '@skybrush/flockwave-spec';
 import {
   MiniList,
   MiniListDivider,
@@ -21,13 +16,21 @@ import {
   StatusText,
 } from '@skybrush/mui-components';
 
+import { colorForSeverity } from '~/components/colors';
+import { Severity } from '~/model/enums';
+import type { RootState } from '~/store/reducers';
+import {
+  formatNumberSafely,
+  shortRelativeTimeFormatter,
+} from '~/utils/formatting';
+
 import {
   getDeclinationFromMagneticVector,
   getStatusForKpIndex,
   getSunriseSunsetTimesForMapViewCenterPosition,
 } from './selectors';
 
-function safelyFormat(time, formatString) {
+function safelyFormat(time: Date | number, formatString: string): string {
   try {
     return format(time, formatString);
   } catch {
@@ -35,21 +38,34 @@ function safelyFormat(time, formatString) {
   }
 }
 
-function formatInterval(start, end) {
-  start = start ? safelyFormat(start, 'H:mm') : '';
-  end = end ? safelyFormat(end, 'H:mm') : '';
+function formatInterval(start?: Date, end?: Date): string {
+  const startText = start ? safelyFormat(start, 'H:mm') : '';
+  const endText = end ? safelyFormat(end, 'H:mm') : '';
 
-  if (start === end || (start && !end)) {
-    return start;
-  } else if (start && end) {
-    return `${start} – ${end}`;
+  if (startText === endText || (startText && !endText)) {
+    return startText;
+  } else if (startText && endText) {
+    return `${startText} – ${endText}`;
   } else {
-    return end;
+    return endText;
   }
 }
 
-const listStyle = {
+const listStyle: CSSProperties = {
   minWidth: 150,
+};
+
+type WeatherDetailsMiniListProps = {
+  data?: WeatherInfo;
+  error?: string;
+  lastUpdatedAt?: number;
+  loading: boolean;
+  sunrise?: Date;
+  sunriseEnd?: Date;
+  sunset?: Date;
+  sunsetStart?: Date;
+  timezone?: string;
+  utcOffset?: number;
 };
 
 const WeatherDetailsMiniList = ({
@@ -63,10 +79,10 @@ const WeatherDetailsMiniList = ({
   sunsetStart,
   timezone,
   utcOffset,
-}) => {
+}: WeatherDetailsMiniListProps) => {
   const { t } = useTranslation();
-  const items = [];
-  let needSeparator;
+  const items: ReactElement[] = [];
+  let needSeparator: boolean;
 
   if (timezone) {
     items.push(
@@ -79,11 +95,15 @@ const WeatherDetailsMiniList = ({
   }
 
   if (utcOffset) {
-    const remainder = String(Math.abs(utcOffset) % 60);
-    const fraction = String((Math.abs(utcOffset) - remainder) / 60);
+    const absOffset = Math.abs(utcOffset);
+    const hours = Math.floor(absOffset / 60);
+    const minutes = absOffset % 60;
     const sign = utcOffset < 0 ? '+' : utcOffset > 0 ? '-' : ''; // sign reversal is correct, not a mistake
     const formattedUtcOffset =
-      sign + fraction.padStart(2, '0') + ':' + remainder.padStart(2, '0');
+      sign +
+      String(hours).padStart(2, '0') +
+      ':' +
+      String(minutes).padStart(2, '0');
     items.push(
       <MiniListItem
         key='utcOffset'
@@ -118,7 +138,7 @@ const WeatherDetailsMiniList = ({
         secondaryText={formatInterval(sunrise, sunriseEnd)}
       />
     );
-    if (sunset && isAfter(sunset, sunrise)) {
+    if (sunrise && sunset && isAfter(sunset, sunrise)) {
       items.splice(items.length - 1, 0, item);
     } else {
       items.push(item);
@@ -131,14 +151,17 @@ const WeatherDetailsMiniList = ({
   }
 
   const { kpIndex, magneticVector } = data || {};
-  const declination = getDeclinationFromMagneticVector(magneticVector);
+  const declination = magneticVector
+    ? getDeclinationFromMagneticVector(magneticVector)
+    : null;
+
   if (!isNil(kpIndex)) {
     items.push(
       <MiniListItem
         key='kpIndex'
         primaryText={t('weatherMiniList.kpIndex')}
         secondaryText={
-          <StatusText status={getStatusForKpIndex(kpIndex)}>
+          <StatusText status={getStatusForKpIndex(kpIndex) ?? Status.OFF}>
             {formatNumberSafely(kpIndex, 1)}
           </StatusText>
         }
@@ -146,20 +169,14 @@ const WeatherDetailsMiniList = ({
     );
   }
 
-  if (!isNil(declination)) {
+  if (declination !== null) {
     items.push(
       <MiniListItem
         key='declination'
         primaryText={t('weatherMiniList.compassDeclination')}
-        secondaryText={
-          !isNil(declination)
-            ? formatNumberSafely(Math.abs(declination), 2, '°') +
-              ' ' +
-              (declination >= 0 ? 'E' : 'W')
-            : /* formats null nicely with a dash: */ formatNumberSafely(
-                declination
-              )
-        }
+        secondaryText={`${Math.abs(declination).toFixed(2)}° ${
+          declination >= 0 ? 'E' : 'W'
+        }`}
       />
     );
   }
@@ -207,26 +224,19 @@ const WeatherDetailsMiniList = ({
   }
 };
 
-WeatherDetailsMiniList.propTypes = {
-  error: PropTypes.any,
-  sunrise: PropTypes.instanceOf(Date),
-  sunriseEnd: PropTypes.instanceOf(Date),
-  sunsetStart: PropTypes.instanceOf(Date),
-  sunset: PropTypes.instanceOf(Date),
-  timezone: PropTypes.string,
-  utcOffset: PropTypes.number,
-};
-
-export default connect(
+const ConnectedWeatherDetailsMiniList = connect(
   // mapStateToProps
-  (state) => ({
+  (state: RootState) => ({
     ...getSunriseSunsetTimesForMapViewCenterPosition(state),
-    /* eslint-disable: new-cap */
     timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-    /* eslint-enable: new-cap */
     utcOffset: new Date().getTimezoneOffset(),
-    ...state.weather,
+    data: state.weather.data,
+    error: state.weather.error,
+    lastUpdatedAt: state.weather.lastUpdatedAt,
+    loading: state.weather.loading,
   }),
   // mapDispatchToProps
   {}
 )(WeatherDetailsMiniList);
+
+export default ConnectedWeatherDetailsMiniList;
