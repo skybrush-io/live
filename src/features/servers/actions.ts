@@ -2,17 +2,24 @@ import { Base64 } from 'js-base64';
 import isNil from 'lodash-es/isNil';
 import { TimeoutError } from 'p-timeout';
 
+import type {
+  Response_AUTHRESP_MultiStep,
+  Response_AUTHRESP_SingleStep,
+} from '@skybrush/flockwave-spec';
+
 import { errorToString, wrapInErrorHandler } from '~/error-handling';
+import type MessageHub from '~/flockwave/messages';
 import {
   adjustServerTimeToMatchLocalTime as adjustServerTimeToMatchLocalTime_,
   estimateClockSkewAndRoundTripTime,
 } from '~/flockwave/timesync';
+import type { AppDispatch, RootState } from '~/store/reducers';
 import { createAsyncAction } from '~/utils/redux';
 
 import { actions as authenticationDialogActions } from './authentication-dialog';
 import { actions as deauthenticationDialogActions } from './deauthentication-dialog';
-import { actions as serverSettingsDialogActions } from './server-settings-dialog';
 import { getClockSkewInMilliseconds } from './selectors';
+import { actions as serverSettingsDialogActions } from './server-settings-dialog';
 
 export const {
   closeServerSettingsDialog,
@@ -28,28 +35,49 @@ export const { closeAuthenticationDialog, showAuthenticationDialog } =
 export const { closeDeauthenticationDialog, showDeauthenticationDialog } =
   deauthenticationDialogActions;
 
+type AuthResponseBody =
+  | Response_AUTHRESP_SingleStep
+  | Response_AUTHRESP_MultiStep
+  | { type: string; reason?: unknown };
+
+type AuthenticationResult = {
+  result: boolean;
+  user?: string;
+  reason?: string;
+};
+
+type AuthenticateParams = {
+  method: string;
+  data: string;
+  messageHub: MessageHub;
+};
+
 /**
  * Action factory that creates an action that starts an authentication attempt.
  *
  * The action factory must be invoked with an object with three keys:
- * `messageHub, ``method` and `data`, where `method` is the authentication
+ * `messageHub`, `method` and `data`, where `method` is the authentication
  * method to use, `data` is the authentication data to submit, and
- * `messageHub` is the message hub used to dispatch messages to the hserver.
+ * `messageHub` is the message hub used to dispatch messages to the server.
  */
 export const authenticateToServer = createAsyncAction(
   'servers/authenticateToServer',
-  async ({ method, data, messageHub }) => {
+  async ({
+    method,
+    data,
+    messageHub,
+  }: AuthenticateParams): Promise<AuthenticationResult> => {
     try {
-      const { body } = await messageHub.sendMessage({
+      const { body } = await messageHub.sendMessage<AuthResponseBody>({
         type: 'AUTH-REQ',
         method,
         data,
       });
 
       if (body.type === 'AUTH-RESP') {
-        if (body.data) {
+        if ('data' in body) {
           throw new Error('Multi-step authentication not supported');
-        } else if (body.result) {
+        } else if ('result' in body) {
           return {
             result: true,
             user: body.user,
@@ -60,11 +88,14 @@ export const authenticateToServer = createAsyncAction(
       } else {
         console.warn(`Expected AUTH-RESP, got ${body.type}`);
         throw new Error(
-          String(body.reason) || 'Unexpected message received from server'
+          // Need casting, TS can't properly narrow down the type,
+          // and we don't know the actualy response shape anyway.
+          String((body as { reason?: unknown }).reason) ||
+            'Unexpected message received from server'
         );
       }
     } catch (error) {
-      let reason;
+      let reason: string;
 
       if (error instanceof TimeoutError) {
         reason = 'Authentication timeout; try again later';
@@ -80,18 +111,24 @@ export const authenticateToServer = createAsyncAction(
   }
 );
 
+type BasicAuthParams = {
+  username: string;
+  password: string;
+  messageHub: MessageHub;
+};
+
 /**
  * Action factory that creates an action that submits the data from the
  * authentication dialog and starts a basic authentication attempt.
  *
  * The action factory must be invoked with an object with three keys:
- * `messageHub, ``username` and `password`.
+ * `messageHub`, `username` and `password`.
  */
 export function authenticateToServerWithBasicAuthentication({
   username,
   password,
   messageHub,
-}) {
+}: BasicAuthParams) {
   return authenticateToServer({
     method: 'basic',
     data: Base64.encode(`${username}:${password}`),
@@ -103,8 +140,8 @@ export function authenticateToServerWithBasicAuthentication({
  * Calculates the clock skew and round-trip time to the server, and stores the
  * result in the Redux store.
  *
- * @param {string} method  the method to use for the calculation; one of
- *        `simple`, `threshold` and `accurate`. `simple` sends a single SYS-TIME
+ * @param method  the method to use for the calculation; one of
+ *        `single`, `threshold` and `accurate`. `single` sends a single SYS-TIME
  *        message to the server, estimates the clock skew and the round-trip
  *        time from that single message and stores the result in the state store.
  *        `threshold` repeats the measurement until the round-trip time falls
@@ -131,8 +168,8 @@ const adjustServerTimeToMatchLocalTimeWithKnownDelay = createAsyncAction(
   { minDelay: 1000 }
 );
 
-export const adjustServerTimeToMatchLocalTime = (messageHub) =>
-  wrapInErrorHandler((dispatch, getState) => {
+export const adjustServerTimeToMatchLocalTime = (messageHub: MessageHub) =>
+  wrapInErrorHandler((dispatch: AppDispatch, getState: () => RootState) => {
     const clockSkew = getClockSkewInMilliseconds(getState());
 
     if (isNil(clockSkew)) {
