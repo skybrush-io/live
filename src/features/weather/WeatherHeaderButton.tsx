@@ -1,11 +1,12 @@
 import differenceInMinutes from 'date-fns/differenceInMinutes';
 import format from 'date-fns/format';
-import PropTypes from 'prop-types';
+import type { CSSProperties } from 'react';
 import { connect } from 'react-redux';
 import TimeAgo from 'react-timeago';
 import { useToggle } from 'react-use';
 
-import { colorForStatus, Status } from '@skybrush/app-theme-mui';
+import type { Status } from '@skybrush/app-theme-mui';
+import { colorForStatus } from '@skybrush/app-theme-mui';
 import {
   GenericHeaderButton,
   LazyTooltip,
@@ -15,6 +16,7 @@ import {
 import { usePeriodicRefresh } from '~/hooks';
 import Sunrise from '~/icons/Sunrise';
 import Sunset from '~/icons/Sunset';
+import type { RootState } from '~/store/reducers';
 import { shortRelativeTimeFormatter } from '~/utils/formatting';
 
 import {
@@ -25,16 +27,27 @@ import WeatherDetailsMiniList from './WeatherDetailsMiniList';
 
 const BADGE_OFFSET = [24, 8];
 
-const buttonStyle = {
+const buttonStyle: CSSProperties = {
   justifyContent: 'space-between',
   textAlign: 'right',
   width: 90,
 };
 
-const WeatherHeaderButton = ({ badgeStatus, sunrise, sunset }) => {
+type WeatherHeaderButtonProps = {
+  badgeStatus: Status | null;
+  sunrise?: Date;
+  sunset?: Date;
+};
+
+const WeatherHeaderButton = ({
+  badgeStatus,
+  sunrise,
+  sunset,
+}: WeatherHeaderButtonProps) => {
   /* Show sunset time if we are closer to the sunset than to the sunrise */
+  // eslint-disable-next-line @eslint-react/purity
   const now = new Date();
-  const [negate, toggleNegate] = useToggle();
+  const [negate, toggleNegate] = useToggle(false);
   let shouldShowSunset =
     !sunrise ||
     (sunset &&
@@ -67,7 +80,7 @@ const WeatherHeaderButton = ({ badgeStatus, sunrise, sunset }) => {
         {shouldShowSunset ? <Sunset /> : <Sunrise />}
         <SidebarBadge
           anchor='topLeft'
-          color={badgeStatus ? colorForStatus(badgeStatus) : null}
+          color={badgeStatus ? colorForStatus(badgeStatus) : undefined}
           offset={BADGE_OFFSET}
           visible={Boolean(badgeStatus)}
         />
@@ -76,15 +89,9 @@ const WeatherHeaderButton = ({ badgeStatus, sunrise, sunset }) => {
   );
 };
 
-WeatherHeaderButton.propTypes = {
-  badgeStatus: PropTypes.oneOf(Object.values(Status)),
-  sunrise: PropTypes.instanceOf(Date),
-  sunset: PropTypes.instanceOf(Date),
-};
-
 export default connect(
   // mapStateToProps
-  (state) => ({
+  (state: RootState) => ({
     ...getSunriseSunsetTimesForMapViewCenterPosition(state),
     badgeStatus: getWeatherBadgeStatus(state),
   }),
