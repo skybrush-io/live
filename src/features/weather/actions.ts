@@ -1,4 +1,5 @@
 import messageHub from '~/message-hub';
+import type { LonLat } from '~/utils/geography';
 import { createAsyncAction } from '~/utils/redux';
 
 /**
@@ -7,6 +8,6 @@ import { createAsyncAction } from '~/utils/redux';
  */
 export const updateWeatherData = createAsyncAction(
   'weather/loading',
-  (location) => messageHub.query.getWeatherInformation(location),
+  (location: LonLat) => messageHub.query.getWeatherInformation(location),
   { minDelay: 500 }
 );
