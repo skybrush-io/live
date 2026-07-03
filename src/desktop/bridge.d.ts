@@ -2,6 +2,7 @@ import type { FileOptions } from 'tempy';
 
 export type Bridge = {
   createTCPSocket: unknown;
+  localServer?: unknown;
   openPath: (path: string) => Promise<void>;
   readBufferFromFile: (options?: {
     maxSize?: number;

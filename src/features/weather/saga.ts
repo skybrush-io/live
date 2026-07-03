@@ -4,6 +4,7 @@ import { updateMapViewSettings } from '~/features/map/view';
 import { isConnected } from '~/features/servers/selectors';
 import { setCurrentServerConnectionState } from '~/features/servers/slice';
 import { getMapViewCenterPosition } from '~/selectors/map';
+import type { LonLat } from '~/utils/geography';
 
 import { updateWeatherData } from './actions';
 import { getWeatherDataLastUpdateTimestamp } from './selectors';
@@ -15,16 +16,16 @@ const MINUTES = 60 * 1000;
  * Saga related to the background update of the weather information from the
  * upstream Skybrush server.
  */
-export default function* weatherSaga() {
+export default function* weatherSaga(): Generator {
   while (true) {
-    let successful;
-    const connected = yield select(isConnected);
+    let successful: boolean | undefined;
+    const connected: boolean = yield select(isConnected);
 
     if (connected) {
       successful = false;
       try {
         yield put(setLastUpdateAttemptTimestamp(Date.now()));
-        const center = yield select(getMapViewCenterPosition);
+        const center: LonLat = yield select(getMapViewCenterPosition);
         yield putResolve(updateWeatherData(center));
         successful = true;
       } catch {
@@ -40,7 +41,9 @@ export default function* weatherSaga() {
     // update the weather info every 30 minutes; however, if 30 minutes has
     // elapsed and there are still errors while querying, we try again once
     // every minute only
-    const lastUpdatedAt = yield select(getWeatherDataLastUpdateTimestamp);
+    const lastUpdatedAt: number | undefined = yield select(
+      getWeatherDataLastUpdateTimestamp
+    );
     const timeUntilNextRefresh = lastUpdatedAt
       ? lastUpdatedAt + 30 * MINUTES - Date.now()
       : 0;
