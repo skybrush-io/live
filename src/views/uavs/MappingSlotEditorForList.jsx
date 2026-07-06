@@ -12,7 +12,7 @@ import { getUAVIdForMappingSlotBeingEdited } from '~/features/mission/selectors'
 import { cancelMappingEditorSessionAtCurrentSlot } from '~/features/mission/slice';
 import { shouldOptimizeUIForTouch } from '~/features/settings/selectors';
 
-const WIDTH = 80;
+const WIDTH = 48;
 
 const useStyles = makeStyles((theme) => ({
   root: {

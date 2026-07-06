@@ -36,7 +36,6 @@ import {
   getUAVListFilters,
   getUAVListLayout,
   getUAVListSortPreference,
-  isSortingByMissionId,
 } from '~/features/settings/selectors';
 import {
   UAVListLayout,
@@ -291,15 +290,8 @@ const ID_COLUMN: HeaderPart = {
   },
 };
 
-/** List header used when sorting by mission slot (sID column is leftmost). */
-const LIST_HEADER_PARTS_MISSION_FIRST: readonly HeaderPart[] = Object.freeze([
-  SID_COLUMN,
-  ID_COLUMN,
-  ...COMMON_HEADER_TEXT_PARTS,
-]);
-
-/** List header used otherwise (UAV ID column is leftmost). */
-const LIST_HEADER_PARTS_UAV_FIRST: readonly HeaderPart[] = Object.freeze([
+/** List header: UAV ID column left, mission slot (sID) column right. */
+const LIST_HEADER_PARTS: readonly HeaderPart[] = Object.freeze([
   ID_COLUMN,
   SID_COLUMN,
   ...COMMON_HEADER_TEXT_PARTS,
@@ -422,7 +414,6 @@ type SortAndFilterHeaderProps = Readonly<{
   onSetFilter: (filter: Nullable<UAVFilter>) => void;
   onSetSortBy: (sortBy: Partial<UAVSortKeyAndOrder>) => void;
   onToggleSortDirection: () => void;
-  showMissionIds: boolean;
   sortBy: UAVSortKeyAndOrder;
 }>;
 
@@ -433,7 +424,6 @@ const SortAndFilterHeader = ({
   onSetFilter,
   onSetSortBy,
   onToggleSortDirection,
-  showMissionIds,
   sortBy,
 }: SortAndFilterHeaderProps): React.JSX.Element => {
   const { t } = useTranslation();
@@ -598,9 +588,7 @@ const SortAndFilterHeader = ({
       <FadeAndSlide in={layout === UAVListLayout.LIST}>
         <div className={classes.headerLine}>
           {formatHeaderParts(
-            showMissionIds
-              ? LIST_HEADER_PARTS_MISSION_FIRST
-              : LIST_HEADER_PARTS_UAV_FIRST,
+            LIST_HEADER_PARTS,
             sortBy,
             classes,
             onSetSortKeyOrToggleSortDirection
@@ -616,7 +604,6 @@ export default connect(
   (state: RootState) => ({
     filters: getUAVListFilters(state),
     layout: getUAVListLayout(state),
-    showMissionIds: isSortingByMissionId(state),
     sortBy: getUAVListSortPreference(state),
   }),
   // mapDispatchToProps

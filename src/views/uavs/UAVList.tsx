@@ -97,7 +97,7 @@ const useListStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-type ItemRendererOptions = {
+type BaseItemRendererOptions = {
   className?: string;
   draggable: boolean;
   isInEditMode: boolean;
@@ -108,6 +108,9 @@ type ItemRendererOptions = {
   onSelectedItem: (item: string) => void;
   onStartEditing: (missionIndex: number) => void;
   selection: string[];
+};
+
+type GridItemRendererOptions = BaseItemRendererOptions & {
   showMissionIds: boolean;
 };
 
@@ -143,7 +146,7 @@ const createGridItemRenderer = ({
   onStartEditing,
   selection,
   showMissionIds,
-}: ItemRendererOptions) =>
+}: GridItemRendererOptions) =>
   function GridItemRenderer(item: Item): React.JSX.Element {
     const [uavId, missionIndex, proposedLabel] = item;
     const itemId = itemToGlobalId(item);
@@ -225,8 +228,7 @@ const createListItemRenderer = ({
   onSelectedItem,
   onStartEditing,
   selection,
-  showMissionIds,
-}: ItemRendererOptions) =>
+}: BaseItemRendererOptions) =>
   function ListItemRenderer(item: Item): React.JSX.Element | null {
     if (item === deletionMarker) {
       return null;
@@ -252,13 +254,8 @@ const createListItemRenderer = ({
     const formattedMissionIndex = isInMission
       ? formatMissionId(missionIndex)
       : '';
-    const label =
-      proposedLabel ?? (showMissionIds ? formattedMissionIndex : uavId);
-    const secondaryLabel = editingThisItem
-      ? ''
-      : showMissionIds
-        ? (uavId ?? '')
-        : formattedMissionIndex;
+    const label = proposedLabel ?? (editingThisItem ? '' : (uavId ?? ''));
+    const secondaryLabel = formattedMissionIndex;
 
     return (
       <DroneListItem
@@ -381,7 +378,7 @@ const UAVListPresentation = ({
   );
 
   // Create the item renderer
-  const itemRendererOptions: ItemRendererOptions = {
+  const baseItemRendererOptions: BaseItemRendererOptions = {
     className:
       layout === UAVListLayout.GRID ? classes.gridItem : classes.listItem,
     draggable: editingMapping,
@@ -391,12 +388,14 @@ const UAVListPresentation = ({
     onSelectedItem: onSelectItem,
     onStartEditing: onEditMappingSlot,
     selection,
-    showMissionIds,
   };
   const itemRenderer =
     layout === UAVListLayout.GRID
-      ? createGridItemRenderer(itemRendererOptions)
-      : createListItemRenderer(itemRendererOptions);
+      ? createGridItemRenderer({
+          ...baseItemRendererOptions,
+          showMissionIds,
+        })
+      : createListItemRenderer(baseItemRendererOptions);
 
   // Finally, render time!
   return (
