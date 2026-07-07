@@ -110,6 +110,8 @@ type BaseItemRendererOptions = {
   selection: string[];
 };
 
+type ListItemRendererOptions = BaseItemRendererOptions;
+
 type GridItemRendererOptions = BaseItemRendererOptions & {
   showMissionIds: boolean;
 };
@@ -230,7 +232,7 @@ const createListItemRenderer = ({
   onSelectedItem,
   onStartEditing,
   selection,
-}: BaseItemRendererOptions) =>
+}: ListItemRendererOptions) =>
   function ListItemRenderer(item: Item): React.JSX.Element | null {
     if (item === deletionMarker) {
       return null;
