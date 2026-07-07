@@ -185,6 +185,7 @@ const createGridItemRenderer = ({
         key={keyForItem(item)}
         className={className}
         onDrop={onDropped ? onDropped(missionIndex) : undefined}
+        verticalPadding
         {...listItemProps}
       >
         {editingThisItem && <MappingSlotEditorForGrid />}
@@ -200,6 +201,7 @@ const createGridItemRenderer = ({
         className={className}
         draggable={draggable}
         uavId={uavId}
+        verticalPadding
         {...listItemProps}
       >
         {editingThisItem && <MappingSlotEditorForGrid />}

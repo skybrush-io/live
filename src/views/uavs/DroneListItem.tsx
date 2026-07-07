@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     display: 'flex',
     flexDirection: 'column',
     minWidth: GRID_ITEM_WIDTH,
-    padding: theme.spacing(1, 0.5),
+    padding: theme.spacing(0.25, 0.5),
     position: 'relative',
 
     scrollMarginTop:
@@ -56,6 +56,11 @@ const useStyles = makeStyles((theme: Theme) => ({
 
   stretch: {
     alignItems: 'stretch !important',
+  },
+
+  verticalPadding: {
+    paddingTop: theme.spacing(1),
+    paddingBottom: theme.spacing(1),
   },
 }));
 
@@ -130,6 +135,7 @@ export type DroneListItemProps = React.PropsWithChildren<
     onDrop?: (id: string) => void;
     selected?: boolean;
     stretch?: boolean;
+    verticalPadding?: boolean;
     uavId?: string;
   }>
 >;
@@ -144,6 +150,7 @@ const DroneListItem = ({
   selected,
   stretch,
   uavId,
+  verticalPadding,
 }: DroneListItemProps): React.JSX.Element => {
   const classes = useStyles();
   const mergedClassNames = clsx(
@@ -153,7 +160,8 @@ const DroneListItem = ({
     draggable && classes.draggable,
     selected && classes.selected,
     fill && classes.fill,
-    stretch && classes.stretch
+    stretch && classes.stretch,
+    verticalPadding && classes.verticalPadding
   );
   return draggable || onDrop ? (
     <DragDropArea
