@@ -177,7 +177,24 @@ type HeaderPart = {
   style: React.CSSProperties;
 };
 
-const COMMON_HEADER_TEXT_PARTS: readonly HeaderPart[] = Object.freeze([
+/** List header: UAV ID column left, mission slot (sID) column right. */
+const LIST_HEADER_PARTS: readonly HeaderPart[] = Object.freeze([
+  {
+    label: 'ID',
+    sortKey: UAVSortKey.UAV_ID,
+    style: {
+      textAlign: 'right',
+      width: 40,
+    },
+  },
+  {
+    label: 'sID',
+    sortKey: UAVSortKey.MISSION_ID,
+    style: {
+      textAlign: 'right',
+      width: 48,
+    },
+  },
   {
     label: 'Status',
     sortKey: UAVSortKey.STATUS,
@@ -270,31 +287,6 @@ const COMMON_HEADER_TEXT_PARTS: readonly HeaderPart[] = Object.freeze([
       textAlign: 'left',
     },
   },
-]);
-
-const SID_COLUMN: HeaderPart = {
-  label: 'sID',
-  sortKey: UAVSortKey.MISSION_ID,
-  style: {
-    textAlign: 'right',
-    width: 48,
-  },
-};
-
-const ID_COLUMN: HeaderPart = {
-  label: 'ID',
-  sortKey: UAVSortKey.UAV_ID,
-  style: {
-    textAlign: 'right',
-    width: 40,
-  },
-};
-
-/** List header: UAV ID column left, mission slot (sID) column right. */
-const LIST_HEADER_PARTS: readonly HeaderPart[] = Object.freeze([
-  ID_COLUMN,
-  SID_COLUMN,
-  ...COMMON_HEADER_TEXT_PARTS,
 ]);
 
 const checkStyle = { fontSize: 'inherit', marginLeft: 8 };
