@@ -12,7 +12,7 @@ import { getUAVIdForMappingSlotBeingEdited } from '~/features/mission/selectors'
 import { cancelMappingEditorSessionAtCurrentSlot } from '~/features/mission/slice';
 import { shouldOptimizeUIForTouch } from '~/features/settings/selectors';
 
-const WIDTH = 48;
+const WIDTH = 80;
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -20,7 +20,7 @@ const useStyles = makeStyles((theme) => ({
 
     boxSizing: 'border-box',
     width: WIDTH,
-    left: theme.spacing(1),
+    left: 5,
     top: -5,
     bottom: -6,
     zIndex: 1000,
@@ -37,11 +37,11 @@ const useStyles = makeStyles((theme) => ({
     fontFamily: monospacedFont,
     fontSize: 'small',
 
-    padding: theme.spacing(0, 0.5),
+    padding: 0,
     position: 'absolute',
     top: '50%',
-    left: 0,
-    right: 0,
+    left: -3,
+    width: WIDTH / 2,
     transform: 'translateY(-50%)',
 
     '& input': {
@@ -103,7 +103,6 @@ const MappingSlotEditorForList = ({
   return (
     <Box className={classes.root}>
       <InputBase
-        fullWidth
         autoFocus={!optimizeUIForTouch}
         className={classes.input}
         defaultValue={defaultValue}
