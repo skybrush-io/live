@@ -1,20 +1,40 @@
-import { PerspectiveBuilder } from 'react-flexible-workbench';
+import type {
+  PerspectiveLayout,
+  PerspectiveName,
+  PerspectiveObject,
+} from 'perspective';
+import {
+  PerspectiveBuilder as PerspectiveBuilder_,
+  type Workbench,
+} from 'react-flexible-workbench';
+
+import type { ComponentRegistry } from '~/features/workbench/types';
 
 import commonLayouts from './common';
+import type { Perspective } from './types';
 
-const addLayoutToPerspective = (layout, context) => {
-  const typeMapping = {
-    rows: 'makeRows',
-    columns: 'makeColumns',
-    stack: 'makeStack',
-  };
+type AddLayoutContext = {
+  perspectiveBuilder: PerspectiveBuilder_;
+  componentRegistry: ComponentRegistry;
+};
+
+const addLayoutToPerspective = (
+  layout: PerspectiveLayout,
+  context: AddLayoutContext
+) => {
   const { perspectiveBuilder, componentRegistry } = context;
 
   switch (layout.type) {
     case 'columns':
     case 'rows':
     case 'stack': {
-      perspectiveBuilder[typeMapping[layout.type]]();
+      if (layout.type === 'columns') {
+        perspectiveBuilder.makeColumns();
+      } else if (layout.type === 'rows') {
+        perspectiveBuilder.makeRows();
+      } else if (layout.type === 'stack') {
+        perspectiveBuilder.makeStack();
+      }
       for (const c of layout.contents) {
         addLayoutToPerspective(c, context);
       }
@@ -27,7 +47,7 @@ const addLayoutToPerspective = (layout, context) => {
     case 'panel': {
       perspectiveBuilder
         .add(layout.component)
-        .setTitle(componentRegistry[layout.component].label);
+        .setTitle(componentRegistry[layout.component].label ?? '');
 
       if (layout.id) {
         perspectiveBuilder.setId(layout.id);
@@ -37,7 +57,9 @@ const addLayoutToPerspective = (layout, context) => {
     }
 
     default: {
-      throw new Error(`Unknown layout type: ${layout.type}`);
+      throw new Error(
+        `Unknown layout type: ${(layout as PerspectiveLayout).type}`
+      );
     }
   }
 
@@ -50,6 +72,14 @@ const addLayoutToPerspective = (layout, context) => {
   }
 };
 
+type PerspectiveObjectWithInheritance = PerspectiveObject & {
+  inherits?: string;
+};
+
+type PerspectiveBuilder = (
+  nameOrSpec: PerspectiveName | PerspectiveObjectWithInheritance
+) => Perspective;
+
 /**
  * Creates a perspective builder function that takes perspective specifications.
  *
@@ -59,16 +89,20 @@ const addLayoutToPerspective = (layout, context) => {
  * Inheritance is supported with a top-level `inherits` keyword that refers to
  * the name of a common layout to inherit from.
  *
- * @param {object} componentRegsitry  the component registry that associates
+ * @param componentRegsitry  the component registry that associates
  *        component IDs to React components, labels and other visual properties
- * @param {object} workbench  the workbench that the builder function will operate on
+ * @param workbench  the workbench that the builder function will operate on
  */
 export const createPerspectiveBuilder =
-  (componentRegistry, workbench) => (nameOrOptions) => {
-    let options =
-      (typeof nameOrOptions === 'string'
-        ? { inherits: nameOrOptions }
-        : nameOrOptions) || {};
+  (
+    componentRegistry: ComponentRegistry,
+    workbench: Workbench
+  ): PerspectiveBuilder =>
+  (nameOrSpec: PerspectiveName | PerspectiveObjectWithInheritance) => {
+    let options: PerspectiveObjectWithInheritance =
+      (typeof nameOrSpec === 'string'
+        ? ({ inherits: nameOrSpec } as PerspectiveObjectWithInheritance)
+        : nameOrSpec) || {};
 
     // Resolve inheritance
     while (options.inherits) {
@@ -79,13 +113,13 @@ export const createPerspectiveBuilder =
     }
 
     const { hideHeaders, isFixed, label, layout } = options;
-    const perspectiveBuilder = new PerspectiveBuilder(workbench);
+    const perspectiveBuilder = new PerspectiveBuilder_(workbench);
 
     addLayoutToPerspective(layout, { perspectiveBuilder, componentRegistry });
 
     return {
       label,
-      isFixed,
+      isFixed: Boolean(isFixed),
       state: {
         content: perspectiveBuilder.build(),
         settings: { hasHeaders: !hideHeaders },

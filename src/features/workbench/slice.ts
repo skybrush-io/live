@@ -2,8 +2,8 @@
  * @file State slice for mirroring the current workbench layout.
  */
 
-import { type IWorkbenchState, type Workbench } from 'react-flexible-workbench';
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import { type IWorkbenchState, type Workbench } from 'react-flexible-workbench';
 
 type WorkbenchSliceState = {
   /** Stores whether the panel headers are hidden on the workbench */

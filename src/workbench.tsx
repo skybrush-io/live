@@ -8,8 +8,10 @@
  */
 
 import loadable from '@loadable/component';
+import type { Store } from '@reduxjs/toolkit';
+import type { ReactComponentConfig } from 'golden-layout';
 import debounce from 'lodash-es/debounce';
-import React from 'react';
+import React, { type ComponentType } from 'react';
 import { WorkbenchBuilder } from 'react-flexible-workbench';
 
 import { BackgroundHint } from '@skybrush/mui-components';
@@ -21,11 +23,13 @@ import {
   setWorkbenchHasHeaders,
   setWorkbenchIsFixed,
 } from './features/workbench/slice';
+import type { ComponentRegistry } from './features/workbench/types';
 import i18n from './i18n';
 import store from './store';
 import {
   getDefaultWorkbenchPerspectiveSpecification,
   hasFeature,
+  type FeatureName,
 } from './utils/configuration';
 import views from './views';
 
@@ -40,7 +44,7 @@ const MapView = loadable(
   () => import(/* webpackChunkName: "map" */ './views/map/MapView')
 );
 
-require('../assets/css/workbench.less');
+import '~/../assets/css/workbench.less';
 
 /**
  * Dummy component that renders nothing.
@@ -58,7 +62,7 @@ const FallbackComponent = () => (
  * Helper function that returns the given value if and only if the given
  * feature is present in the configuration.
  */
-const onlyWithFeature = (featureName, component) =>
+const onlyWithFeature = (featureName: FeatureName, component: ComponentType) =>
   hasFeature(featureName) ? component : FallbackComponent;
 
 /**
@@ -68,7 +72,7 @@ const onlyWithFeature = (featureName, component) =>
  * The React components will be created without any props. If you need the
  * components to have props, use a wrapper HOC.
  */
-export const componentRegistry = {
+export const componentRegistry: ComponentRegistry = {
   'beacon-list': {
     component: views.BeaconList,
     label: 'Beacons',
@@ -95,7 +99,7 @@ export const componentRegistry = {
     component: views.FeaturePanel,
     label: 'Features',
     detachable: true,
-    feature: 'features',
+    feature: 'mapFeatures',
   },
   'field-notes': {
     component: FieldNotesPanel,
@@ -170,14 +174,14 @@ export const componentRegistry = {
   },
 };
 
-function constructDefaultWorkbench(store) {
+function constructDefaultWorkbench(store: Store) {
   const workbenchBuilder = new WorkbenchBuilder();
 
   // Register all our supported components in the workbench builder
   for (const [name, entry] of Object.entries(componentRegistry)) {
-    const featureModifier = (c) =>
+    const featureModifier = (c: ComponentType) =>
       entry.feature ? onlyWithFeature(entry.feature, c) : c;
-    const detachModifier = (c) =>
+    const detachModifier = (c: ComponentType) =>
       entry.detachable ? makeDetachable(name, entry.label, c) : c;
     workbenchBuilder.registerComponent(
       name,
@@ -217,7 +221,9 @@ i18n.on('languageChanged', () => {
   workbench.forEach((view) => {
     if (view.isComponent) {
       /* i18next-extract-disable-next-line */
-      view.setTitle(i18n.t(`view.${view.config.component}`));
+      view.setTitle(
+        i18n.t(`view.${(view.config as ReactComponentConfig).component}`)
+      );
     }
   });
 });

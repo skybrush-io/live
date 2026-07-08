@@ -1,15 +1,26 @@
 import Button from '@mui/material/Button';
 import PropTypes from 'prop-types';
-import React, { useEffect, useState } from 'react';
+import React, { type PropsWithChildren, useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 import { connect } from 'react-redux';
 
 import RestoreWindow from '~/icons/RestoreWindow';
+import type { RootState } from '~/store/reducers';
 
 import { isDetached } from './selectors';
 import { attachPanel, detachPanel } from './slice';
 
-const getOrCreatePortalContainer = (tab) => {
+type Tab = {
+  element: HTMLElement[];
+  titleElement: HTMLElement[];
+};
+type GLContainer = {
+  tab: Tab;
+  on: (event: string, handler: (tab: Tab) => void) => void;
+  off: (event: string, handler: (tab: Tab) => void) => void;
+};
+
+const getOrCreatePortalContainer = (tab: Tab) => {
   const found = tab.element[0].querySelector('.portal-container');
   if (found !== null) {
     return found;
@@ -22,13 +33,24 @@ const getOrCreatePortalContainer = (tab) => {
   }
 };
 
-const DetachButtonPortal = ({ glContainer, label, onClick }) => {
-  const [container, setContainer] = useState(
+type DetachButtonPortalProps = {
+  glContainer: GLContainer;
+  label: string | undefined;
+  onClick: () => void;
+};
+
+const DetachButtonPortal = ({
+  glContainer,
+  label,
+  onClick,
+}: DetachButtonPortalProps) => {
+  const [container, setContainer] = useState(() =>
     getOrCreatePortalContainer(glContainer.tab)
   );
 
   useEffect(() => {
-    const tabHandler = (tab) => setContainer(getOrCreatePortalContainer(tab));
+    const tabHandler = (tab: Tab) =>
+      setContainer(getOrCreatePortalContainer(tab));
     glContainer.on('tab', tabHandler);
     return () => {
       glContainer.off('tab', tabHandler);
@@ -62,11 +84,13 @@ const DetachButtonPortal = ({ glContainer, label, onClick }) => {
   return ReactDOM.createPortal(detachButton, container);
 };
 
-DetachButtonPortal.propTypes = {
-  glContainer: PropTypes.object.isRequired,
-  label: PropTypes.string.isRequired,
-  onClick: PropTypes.func,
-};
+type DetachablePanelPresentationProps = PropsWithChildren<{
+  detached: boolean;
+  glContainer: GLContainer;
+  label: string | undefined;
+  onAttach: () => void;
+  onDetach: () => void;
+}>;
 
 const DetachablePanelPresentation = ({
   children,
@@ -75,7 +99,7 @@ const DetachablePanelPresentation = ({
   label,
   onAttach,
   onDetach,
-}) => {
+}: DetachablePanelPresentationProps) => {
   return detached ? (
     <div
       style={{
@@ -110,18 +134,13 @@ const DetachablePanelPresentation = ({
   );
 };
 
-DetachablePanelPresentation.propTypes = {
-  children: PropTypes.node.isRequired,
-  detached: PropTypes.bool.isRequired,
-  glContainer: PropTypes.object.isRequired,
-  label: PropTypes.string.isRequired,
-  onAttach: PropTypes.func.isRequired,
-  onDetach: PropTypes.func.isRequired,
+type DetachablePanelProps = {
+  name: string;
 };
 
 const DetachablePanel = connect(
   // mapStateToProps
-  (state, ownProps) => ({
+  (state: RootState, ownProps: DetachablePanelProps) => ({
     detached: isDetached(state, ownProps.name),
   }),
   // mapDispatchToProps
@@ -137,18 +156,28 @@ const DetachablePanel = connect(
 
 export default DetachablePanel;
 
-export const makeDetachable = (name, label, Component) =>
-  class extends React.Component {
+export function makeDetachable<P>(
+  name: string,
+  label: string | undefined,
+  Component: React.ComponentType<P>
+): React.ComponentType<P> {
+  return class extends React.Component<P> {
     static propTypes = {
       glContainer: PropTypes.object.isRequired,
     };
 
     render() {
-      const { glContainer, ...rest } = this.props;
+      // glContainer injected by react-flexible-workbenc
+      const { glContainer, ...rest } = this.props as P & {
+        glContainer: any;
+      };
       return (
         <DetachablePanel {...{ glContainer, name, label }}>
-          <Component {...rest} />
+          <Component
+            {...(rest as unknown as P & React.JSX.IntrinsicAttributes)}
+          />
         </DetachablePanel>
       );
     }
   };
+}
