@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import { PerspectiveBar as WbPerspectiveBar } from 'react-flexible-workbench';
 import { connect } from 'react-redux';
 
@@ -8,14 +7,21 @@ import {
   setWorkbenchIsFixed,
 } from '~/features/workbench/slice';
 import perspectives from '~/perspectives';
+import type { AppDispatch } from '~/store/reducers';
 import workbench from '~/workbench';
+
+import type { Perspective } from './types';
 
 const BADGE_PROPS = {
   color: Colors.info,
   offset: [3, 3],
 };
 
-const PerspectiveBar = ({ switchToPerspective }) => (
+type Props = {
+  switchToPerspective: (id: string) => void;
+};
+
+const PerspectiveBar = ({ switchToPerspective }: Props) => (
   <WbPerspectiveBar
     badgeProps={BADGE_PROPS}
     editable={false}
@@ -28,20 +34,21 @@ const PerspectiveBar = ({ switchToPerspective }) => (
   />
 );
 
-PerspectiveBar.propTypes = {
-  switchToPerspective: PropTypes.func.isRequired,
-};
-
 export default connect(
   // mapStateToProps
   () => ({}),
   // mapDispatchToProps
   {
-    switchToPerspective(id) {
-      return async (dispatch) => {
+    switchToPerspective(id: string) {
+      return async (dispatch: AppDispatch) => {
         const perspective = await perspectives.get(id);
-        dispatch(setWorkbenchHasHeaders(perspective.state.settings.hasHeaders));
-        dispatch(setWorkbenchIsFixed(perspective.isFixed));
+        if (perspective) {
+          const ourPerspective = perspective as Perspective;
+          dispatch(
+            setWorkbenchHasHeaders(ourPerspective.state.settings.hasHeaders)
+          );
+          dispatch(setWorkbenchIsFixed(ourPerspective.isFixed));
+        }
 
         // rest is done by the WbPerspectiveBar component
       };
