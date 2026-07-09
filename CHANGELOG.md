@@ -18,6 +18,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added selected item count to the Selection groups header widget.
 
+- The tooltips of the UAV status, Selection groups and RTK status header widgets can
+  now be pinned permanently to the workbench as a separate panel.
+
 ### Changed
 
 - The header of the UAVs panel was simplified. The "Sort by mission IDs" button was
