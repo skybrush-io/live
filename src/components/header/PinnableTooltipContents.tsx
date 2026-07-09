@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
-import Stack, { StackProps } from '@mui/material/Stack';
+import Stack, { type StackProps } from '@mui/material/Stack';
 import { use } from 'react';
 import type { ItemConfigType, Workbench } from 'react-flexible-workbench';
 
