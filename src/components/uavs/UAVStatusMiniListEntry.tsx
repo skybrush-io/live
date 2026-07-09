@@ -27,7 +27,7 @@ const UAVStatusMiniListEntry = ({
   uavIds,
 }: UAVStatusMiniListEntryProps) => (
   <ListItem key={id} disablePadding>
-    <ListItemButton disableGutters onClick={onClick ?? undefined}>
+    <ListItemButton disableGutters onClick={onClick ?? undefined} sx={{ px: 1 }}>
       <Box sx={{ width: pillWidth }}>
         <StatusPill hollow={gone} status={status}>
           {label}
