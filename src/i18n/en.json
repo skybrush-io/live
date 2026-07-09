@@ -112,7 +112,11 @@
     "noMatchingUAVs": "No matching UAVs for: \"{{filter}}\""
   },
   "UAVStatus": {
-    "noConnected": "There are no connected UAVs at the moment"
+    "error": {
+      "notInWorkbench": "UAVs panel is not added to the workbench yet"
+    },
+    "noConnected": "There are no connected UAVs at the moment",
+    "pinnedTitle": "UAV status summary"
   },
   "alerts": {
     "acknowledgeAlerts": "Click to acknowledge alerts",

@@ -45,6 +45,7 @@ const MapView = loadable(
 );
 
 import '~/../assets/css/workbench.less';
+import UAVStatusMiniList from './components/uavs/UAVStatusMiniList';
 
 /**
  * Dummy component that renders nothing.
@@ -170,6 +171,13 @@ export const componentRegistry: ComponentRegistry = {
   'uav-list': {
     component: views.UAVList,
     label: 'UAVs',
+    detachable: true,
+  },
+
+  // The following panels are only used when a header widget is pinned to the workbench
+  'uav-status-mini-list': {
+    component: UAVStatusMiniList,
+    label: 'UAV status summary',
     detachable: true,
   },
 };

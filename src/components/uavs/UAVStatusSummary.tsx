@@ -19,9 +19,11 @@ import { createShallowSelector } from '~/utils/selectors';
 import { WorkbenchContext } from '~/workbench';
 
 import { use } from 'react';
+import PinnableTooltipContents from '../header/PinnableTooltipContents';
 import UAVStatusMiniList from './UAVStatusMiniList';
 import UAVStatusSummaryLight from './UAVStatusSummaryLight';
 import UAVStatusSummaryTotal from './UAVStatusSummaryTotal';
+import { useTranslation } from 'react-i18next';
 
 /* ************************************************************************ */
 
@@ -128,14 +130,22 @@ const UAVStatusSummary = ({
 }: UAVStatusSummaryProps) => {
   const classes = useStyles();
   const workbench = use(WorkbenchContext);
+  const { t } = useTranslation();
 
   return (
-    <LazyTooltip interactive content={<UAVStatusMiniList />}>
+    <LazyTooltip
+      interactive
+      content={
+        <PinnableTooltipContents component='uav-status-mini-list' title={t('UAVStatus.pinnedTitle')} sx={{ marginLeft: -1 }}>
+          <UAVStatusMiniList />
+        </PinnableTooltipContents>
+      }
+    >
       <Box
         className={clsx(classes.root, 'wb-module')}
         onClick={() => {
           if (!workbench.bringToFront('uavList')) {
-            showWarning('UAVs panel is not added to the workbench yet');
+            showWarning(t('UAVStatus.error.notInWorkbench'));
           }
         }}
         {...rest}
