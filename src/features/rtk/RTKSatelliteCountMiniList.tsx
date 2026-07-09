@@ -67,6 +67,7 @@ const RTKSatelliteCountMiniList = ({ satelliteIds }: Props) => {
   return (
     <>
       <MiniListItem
+        inset={1}
         primaryText={
           '\u00A0🌍\u00A0\u00A0\u00A0' + t('RTKStatusMiniList.satelliteCount')
         }
@@ -77,6 +78,7 @@ const RTKSatelliteCountMiniList = ({ satelliteIds }: Props) => {
         (code) =>
           counts[code] && (
             <MiniListItem
+              inset={1}
               key={code}
               primaryText={`\u00A0${gnssSystems[code].flag}\u00A0\u00A0\u00A0${gnssSystems[code].name}`}
               secondaryText={counts[code]}

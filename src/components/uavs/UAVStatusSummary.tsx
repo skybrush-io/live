@@ -1,6 +1,8 @@
 import Box, { type BoxProps } from '@mui/material/Box';
 import { createSelector } from '@reduxjs/toolkit';
 import clsx from 'clsx';
+import { use } from 'react';
+import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import { makeStyles } from '@skybrush/app-theme-mui';
@@ -18,12 +20,10 @@ import type { RootState } from '~/store/reducers';
 import { createShallowSelector } from '~/utils/selectors';
 import { WorkbenchContext } from '~/workbench';
 
-import { use } from 'react';
 import PinnableTooltipContents from '../header/PinnableTooltipContents';
 import UAVStatusMiniList from './UAVStatusMiniList';
 import UAVStatusSummaryLight from './UAVStatusSummaryLight';
 import UAVStatusSummaryTotal from './UAVStatusSummaryTotal';
-import { useTranslation } from 'react-i18next';
 
 /* ************************************************************************ */
 
@@ -136,7 +136,7 @@ const UAVStatusSummary = ({
     <LazyTooltip
       interactive
       content={
-        <PinnableTooltipContents component='uav-status-mini-list' title={t('UAVStatus.pinnedTitle')} sx={{ marginLeft: -1 }}>
+        <PinnableTooltipContents component='uav-status-mini-list'>
           <UAVStatusMiniList />
         </PinnableTooltipContents>
       }

@@ -79,6 +79,7 @@ const SelectionGroupMiniListItem = ({ group }: Props) => {
     <MiniListItemButton
       key={id}
       iconPreset={recentlyUpdated ? 'success' : `number${id}`}
+      inset={1}
       primaryText={recentlyUpdated ? t('updated') : name}
       secondaryActions={
         recentlyUpdated ? (

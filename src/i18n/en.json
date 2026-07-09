@@ -115,8 +115,7 @@
     "error": {
       "notInWorkbench": "UAVs panel is not added to the workbench yet"
     },
-    "noConnected": "There are no connected UAVs at the moment",
-    "pinnedTitle": "UAV status summary"
+    "noConnected": "There are no connected UAVs at the moment"
   },
   "alerts": {
     "acknowledgeAlerts": "Click to acknowledge alerts",
@@ -1483,11 +1482,14 @@
     "log-panel": "Event log",
     "map": "Map",
     "mission-editor": "Mission editor",
+    "rtk-status-mini-list": "RTK status",
     "saved-location-list": "Locations",
+    "selection-group-mini-list": "Selection groups",
     "show-control": "Show control",
     "three-d-view": "3D View",
     "uav-details": "UAV details",
-    "uav-list": "UAVs"
+    "uav-list": "UAVs",
+    "uav-status-mini-list": "UAV status summary"
   },
   "weatherMiniList": {
     "compassDeclination": "Compass declination",

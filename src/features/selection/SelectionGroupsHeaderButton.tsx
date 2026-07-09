@@ -3,6 +3,8 @@ import { useSelector } from 'react-redux';
 
 import { GenericHeaderButton, LazyTooltip } from '@skybrush/mui-components';
 
+import PinnableTooltipContents from '~/components/header/PinnableTooltipContents';
+
 import SelectionGroupMiniList from './SelectionGroupMiniList';
 import { getNumberOfSelectedItems } from './selectors';
 
@@ -16,7 +18,14 @@ const SelectionGroupMenuButton = () => {
   const numberOfSelectedItems = useSelector(getNumberOfSelectedItems);
 
   return (
-    <LazyTooltip interactive content={<SelectionGroupMiniList />}>
+    <LazyTooltip
+      interactive
+      content={
+        <PinnableTooltipContents component='selection-group-mini-list'>
+          <SelectionGroupMiniList />
+        </PinnableTooltipContents>
+      }
+    >
       <GenericHeaderButton
         label={numberOfSelectedItems > 0 ? String(numberOfSelectedItems) : '—'}
         style={buttonStyle}

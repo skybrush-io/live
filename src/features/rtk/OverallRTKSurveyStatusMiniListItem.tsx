@@ -25,8 +25,9 @@ const OverallRTKSurveyStatusMiniListItem = ({ overallStatus }: Props) => {
 
   return (
     <MiniListItem
+      inset={1}
       iconPreset={getIconPresetForRTKStatus(overallStatus)}
-      primaryText={describeRTKStatus(overallStatus, {}, t)}
+      primaryText={'\u00A0' + describeRTKStatus(overallStatus, {}, t)}
     />
   );
 };
