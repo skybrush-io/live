@@ -48,3 +48,24 @@ export type HistoryItem = {
   perUavStatuses: Record<Identifier, MaybeOutdateUAVStatus>;
   perUavErrors: Record<Identifier, ErrorMessage>;
 };
+
+/**
+ * Type describing the outcome of a long-running operation (a job or a task), with
+ * distinction between temporary and permanent failures.
+ */
+export type Outcome<T, E = unknown> =
+  | {
+      type: 'success';
+      result: T;
+    }
+  | {
+      type: 'failure';
+      error: E;
+    }
+  | {
+      type: 'permanent-failure';
+      error: E;
+    }
+  | {
+      type: 'cancelled';
+    };

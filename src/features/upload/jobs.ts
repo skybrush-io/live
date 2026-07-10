@@ -1,7 +1,7 @@
 import type { ProgressStatus } from '~/flockwave/messages';
 import type { RootState } from '~/store/reducers';
 
-import type { JobData, JobPayload } from './types';
+import type { JobData, JobPayload, Outcome } from './types';
 
 export enum JobScope {
   ALL = 'all',
@@ -25,7 +25,7 @@ export type JobExecutorParams<T> = {
  * but other job types also exist: firmware updates, parameter uploads, parameter
  * consistency checks and so on.
  */
-export type JobSpecification<T> = {
+export type JobSpecification<T, ResultPiece = void, Result = unknown> = {
   /**
    * The type of the job, i.e. a unique string identifier.
    */
@@ -84,7 +84,46 @@ export type JobSpecification<T> = {
     options: {
       onProgress: (id: string, status: ProgressStatus) => void;
     }
-  ) => Promise<void>;
+  ) => Promise<ResultPiece>;
+
+  /**
+   * Object describing how the final job result is created from the individual result
+   * pieces returned by the executed tasks.
+   *
+   * If not specified, it is assumed that the job produces no result.
+   */
+  result?: {
+    /**
+     * Creates a new result object from scratch.
+     */
+    create: () => Result;
+
+    /**
+     * Updates a result object with a result piece returned by a task.
+     *
+     * Defaults to a no-op if not specified.
+     *
+     * @param result - the result to update
+     * @param piece - the result piece to merge into the result
+     * @returns - a new (or the same) result object to use in subsequent updates.
+     *     `undefined` means to keep on using the same result object.
+     */
+    update?: (result: Result, piece: ResultPiece) => Result | undefined;
+
+    /**
+     * Finalizes a result object when all tasks have been executed.
+     *
+     * Defaults to a no-op if not specified.
+     *
+     * Called even if some of the tasks in the job failed or have been cancelled.
+     *
+     * @param result - the result to finalize
+     * @param piece - the result piece to merge into the result
+     * @returns - a new (or the same) result object to use in subsequent updates.
+     *     `undefined` means to keep on using the same result object.
+     */
+    finalize?: (result: Result) => Result | undefined;
+  };
 
   /**
    * A saga that is responsible for the top-level scheduling of the tasks in the job,
@@ -96,49 +135,17 @@ export type JobSpecification<T> = {
    *
    * @param spec - the specification of the job (i.e. this object)
    * @param job - the current job data (consisting of a type and a payload).
+   * @returns - the aggregated result object from all the pieces yielded by the
+   *      UAV-specific tasks in the job
    */
-  workerManager?: (spec: JobSpecification<T>, job: JobData) => Promise<void>;
+  workerManager?: (
+    spec: JobSpecification<T>,
+    job: JobData
+  ) => Promise<Outcome<Result>>;
 };
 
 /**
  * Mapping from known job types to the async functions that handle them.
- *
- * Each entry in this map consists of:
- *
- * - `type`: the type of the job, i.e. a unique string identifier
- * - `title`: the title of the job, used in dialog boxes
- * - `scope`: the scope of the job, i.e. the set of UAVs that the job can
- *   operate on. Must be one of `all` (all UAVs, irrespectively of whether they
- *   are mapped in the current mission or not), `compatible` (subset of UAVs
- *   that support a given upload type, e.g. firmware update target), `mission`
- *   (UAVs that are in the current mission mapping) or `single` (single
- *   selected UAV in the UAVs list). The default is `all`. Use the `JobScope`
- *   enum when referring to these strings from code.
- * - `selector`: a Redux selector that is called before executing the job for a
- *   single UAV. The selector is called with the Redux state and the ID of the
- *   UAV that the job is targeting, and it can return an arbitrary object that
- *   will be forwarded to the executor (see below in the `executor` for more
- *   details).
- * - `executor`: an asynchronous function or saga that executes the job for a
- *   single UAV (e.g., uploads a drone show specification to a single UAV). This
- *   function runs in the context of a worker saga, which is blocked until the
- *   promise returned from the executor resolves or rejects. The function will
- *   be called with an object having three keys: `uavId` is the ID of the UAV
- *   that is targeted by the job, `payload` is the payload of the original job
- *   specification, and `data` is the state slice that was extracted by the
- *   selector associated to the job type. The semantics of the payload and the
- *   data object depends solely on the type of the job being executed.
- *
- * It is recommended to use an executor _saga_ or to make the executor return a
- * _cancellable_ promise to facilitate the cancellation of uploads.
- *
- * Additionally, each entry may contain:
- *
- * - `workerManager`: a saga that should be responsible for the top-level
- *   scheduling of the tasks in the job, related to the individual UAVs.
- *   The saga takes two parameters: the specification from this map and the
- *   current job (consisting of a type and a payload). The executor defaults
- *   to `forkingWorkerManagementSaga`.
  *
  * You can register new entries in this map from other modules with
  * `registerUploadJobType()`.

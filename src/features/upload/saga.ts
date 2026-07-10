@@ -47,7 +47,7 @@ import {
   cancelUpload,
   startUpload,
 } from './slice';
-import type { JobData, JobPayload } from './types';
+import type { JobData, JobPayload, Outcome } from './types';
 
 /* ----- Progress handling -------------------------------------------------- */
 
@@ -77,97 +77,108 @@ const uploadProgressCallback = (
 
 /* ----- Worker management -------------------------------------------------- */
 
-type JobExecutionOutcome =
-  | 'success'
-  | 'failure'
-  | 'cancelled'
-  | 'permanent-failure';
-
 /**
  * Special symbol used to make a worker task quit.
  */
 const STOP = Symbol('STOP');
 
-type JobExecutionRequest<T = unknown> =
-  | {
-      executor: JobSpecification<T>['executor'];
-      payload: JobPayload;
-      selector?: (state: RootState, uavId: string) => T;
-      target: string;
-    }
+type JobExecutionRequest<T, ResultPiece> = {
+  executor: JobSpecification<T, ResultPiece>['executor'];
+  payload: JobPayload;
+  selector?: (state: RootState, uavId: string) => T;
+  target: string;
+};
+
+type JobExecutionRequestOrStop<T = unknown, ResultPiece = unknown> =
+  | JobExecutionRequest<T, ResultPiece>
   | typeof STOP;
+
+type JobExecutionRequestCompletionHandler<T, ResultPiece> = (
+  req: JobExecutionRequest<T, ResultPiece>,
+  outcome: Outcome<ResultPiece>
+) => void;
 
 /**
  * Saga that runs a single upload worker.
+ *
+ * @param chan - channel that yields jobs that need to be executed
  */
-function* runUploadWorker(
-  chan: Channel<JobExecutionRequest>,
-  failed: string[]
+function* runWorker<T, ResultPiece>(
+  chan: Channel<JobExecutionRequestOrStop<T, ResultPiece>>,
+  onCompleted: JobExecutionRequestCompletionHandler<T, ResultPiece>
 ) {
-  let outcome: JobExecutionOutcome | undefined;
-  let storedError;
+  let outcome: Outcome<ResultPiece> | undefined;
 
   while (true) {
-    const job: JobExecutionRequest = yield take(chan);
+    const req: JobExecutionRequestOrStop<T, ResultPiece> = yield take(chan);
 
-    if (job === STOP) {
+    if (req === STOP) {
       break;
     }
 
-    const { executor, payload, selector, target: uavId } = job;
+    const { executor, payload, selector, target: uavId } = req;
     outcome = undefined;
-    storedError = undefined;
 
-    let data: unknown = undefined;
+    let data: T | undefined = undefined;
 
     try {
       yield put(_notifyUploadOnUavStarted(uavId));
       data = selector ? yield select(selector, uavId) : undefined;
     } catch (error) {
-      outcome = 'permanent-failure';
-      storedError = error;
+      outcome = { type: 'permanent-failure', error };
     }
 
     if (outcome === undefined) {
       try {
-        yield call(
+        const result: ResultPiece = yield call(
           executor,
-          { uavId, payload, data } as JobExecutorParams<unknown>,
+          { uavId, payload, data } as JobExecutorParams<T>,
           {
             onProgress: uploadProgressCallback,
           }
         );
-        outcome = 'success';
+        outcome = { type: 'success', result };
       } catch (error) {
-        outcome = 'failure';
-        storedError = error;
+        outcome = { type: 'failure', error };
       } finally {
         const wasCancelled: boolean = yield cancelled();
         if (wasCancelled && !outcome) {
-          outcome = 'cancelled';
+          outcome = { type: 'cancelled' };
         }
       }
     }
 
-    switch (outcome) {
+    try {
+      onCompleted(req, outcome);
+    } catch (error) {
+      console.error(
+        'Error while executing onCompleted callback, assuming permanent failure'
+      );
+      outcome = {
+        type: 'permanent-failure',
+        error,
+      };
+    }
+
+    switch (outcome.type) {
       case 'success':
         yield put(_notifyUploadOnUavSucceeded(uavId));
         break;
 
       case 'permanent-failure':
       case 'failure':
-        // Only add normal failures to the failed list. Other failures must
-        // not be retried, because they could cause an infinite loop.
-        if (outcome === 'failure') {
-          failed.push(uavId);
+        {
+          // Only add normal failures to the failed list. Other failures must
+          // not be retried, because they could cause an infinite loop.
+          const { error } = outcome;
+          yield put(_notifyUploadOnUavFailed(uavId));
+          yield put(
+            _setErrorMessageForUAV(
+              uavId,
+              errorToString((error as any)?.message || error)
+            )
+          );
         }
-        yield put(_notifyUploadOnUavFailed(uavId));
-        yield put(
-          _setErrorMessageForUAV(
-            uavId,
-            errorToString((storedError as any)?.message || storedError)
-          )
-        );
         break;
 
       case 'cancelled':
@@ -175,7 +186,7 @@ function* runUploadWorker(
         break;
 
       default:
-        console.warn(`Unknown outcome: ${outcome}`);
+        console.warn(`Unknown outcome: ${(outcome as any).type}`);
         break;
     }
 
@@ -187,38 +198,76 @@ function* runUploadWorker(
  * Saga that manages the execution of an upload operation to multiple drones
  * with a set of worker sagas forked off from the main uploader saga.
  */
-function* forkingWorkerManagementSaga(
-  spec: JobSpecification<unknown>,
+function* forkingWorkerManagementSaga<
+  Result,
+  T = unknown,
+  ResultPiece = unknown,
+>(
+  spec: JobSpecification<T, ResultPiece, Result>,
   job: JobData
-) {
+): Generator<any, Outcome<Result | undefined>> {
   const { executor, selector } = spec;
+  const hasResult = !!spec.result;
+  let result: Result | undefined = spec.result?.create?.();
+
   if (!executor) {
     console.warn(
       `Job type ${job.type} has no executor in its job specification, skipping job`
     );
-    return;
+    return {
+      type: 'success',
+      result,
+    };
   }
 
-  const chan: Channel<JobExecutionRequest> = yield call(
+  const chan: Channel<JobExecutionRequestOrStop<T, ResultPiece>> = yield call(
     channel,
     buffers.fixed(1)
   );
   const workerCount: number = yield select(getMaximumConcurrentUploadTaskCount);
-  const failed: string[] = [];
+  const failedAndShouldRetry: string[] = [];
+  const permanentlyFailed: string[] = [];
   const workers: Task[] = [];
 
-  let finished = false;
-  let success = false;
+  let aggregatedOutcome: Outcome<Result | undefined> | undefined;
+
+  // create the completion handler function for tasks
+  const onCompleted: JobExecutionRequestCompletionHandler<T, ResultPiece> = (
+    req,
+    outcome
+  ) => {
+    // If the job failed, put its target in the failed queue so we can retry it later.
+    // Note that we do not do it for permanent failures.
+    switch (outcome.type) {
+      case 'failure':
+        failedAndShouldRetry.push(req.target);
+        break;
+
+      case 'permanent-failure':
+        permanentlyFailed.push(req.target);
+        break;
+
+      case 'success':
+        if (hasResult && outcome.type === 'success') {
+          result = spec.result?.update?.(result!, outcome.result) ?? result;
+        }
+        break;
+
+      case 'cancelled':
+        // Nothing to do.
+        break;
+    }
+  };
 
   // create a given number of worker tasks, depending on the max concurrency
   // that we allow for the uploads
   for (let i = 0; i < workerCount; i++) {
-    const worker: Task = yield fork(runUploadWorker, chan, failed);
+    const worker: Task = yield fork(runWorker as any, chan, onCompleted);
     workers.push(worker);
   }
 
   // feed the workers with upload jobs
-  while (!finished) {
+  while (!aggregatedOutcome) {
     const uavId: string = yield select(getNextDroneFromUploadQueue);
     const hasMore = !isNil(uavId);
 
@@ -236,8 +285,8 @@ function* forkingWorkerManagementSaga(
       const shouldFlashLights: boolean = yield select(
         shouldFlashLightsOfFailedUploads
       );
-      if (shouldFlashLights && failed.length > 0) {
-        void flashLightOnUAVsAndHideFailures(failed, {});
+      if (shouldFlashLights && failedAndShouldRetry.length > 0) {
+        void flashLightOnUAVsAndHideFailures(failedAndShouldRetry, {});
       }
 
       // No job in the upload queue. If there are jobs that failed _in this
@@ -246,9 +295,9 @@ function* forkingWorkerManagementSaga(
       const shouldRetry: boolean = yield select(
         shouldRetryFailedUploadsAutomatically
       );
-      if (shouldRetry && failed.length > 0) {
-        const toEnqueue = [...failed];
-        failed.length = 0;
+      if (shouldRetry && failedAndShouldRetry.length > 0) {
+        const toEnqueue = [...failedAndShouldRetry];
+        failedAndShouldRetry.length = 0;
 
         // Do not call retryFailedUploads() here because that would retry
         // _all_ failed uploads, even the ones that failed in a previous
@@ -266,8 +315,25 @@ function* forkingWorkerManagementSaga(
           // Wait a bit; there's no point in busy waiting.
           yield delay(500);
         } else {
-          finished = true;
-          success = failed.length === 0;
+          if (permanentlyFailed.length > 0) {
+            aggregatedOutcome = {
+              type: 'permanent-failure',
+              error: undefined,
+            };
+          } else if (failedAndShouldRetry.length > 0) {
+            aggregatedOutcome = {
+              type: 'failure',
+              error: undefined,
+            };
+          } else {
+            aggregatedOutcome = {
+              type: 'success',
+              result,
+            };
+          }
+
+          // will break out from the main loop now because aggregatedOutcome is not
+          // undefined any mor
         }
       }
     }
@@ -281,7 +347,15 @@ function* forkingWorkerManagementSaga(
   // wait for all workers to terminate
   yield join(workers);
 
-  return success;
+  // finalize the result
+  if (hasResult) {
+    result = spec.result?.finalize?.(result!) ?? result;
+    if (aggregatedOutcome.type === 'success') {
+      aggregatedOutcome.result = result;
+    }
+  }
+
+  return aggregatedOutcome;
 }
 
 /**
@@ -289,6 +363,8 @@ function* forkingWorkerManagementSaga(
  * finish, or a cancellation action.
  */
 function* uploaderSagaWithCancellation() {
+  let outcome: Outcome<unknown>;
+
   const job: JobData = yield select(getCurrentUploadJob);
   if (!job.type) {
     console.warn('No job type was specified for upload job, skipping');
@@ -304,24 +380,35 @@ function* uploaderSagaWithCancellation() {
 
   yield put(_notifyUploadStartedAt(Date.now()));
 
-  // yield put(recalculateEstimatedCompletionTime());
-
   try {
     const { workerManager = forkingWorkerManagementSaga } = spec;
-    const { cancelled, success } = yield race({
-      success: call(workerManager, spec, job),
+    const {
+      cancelled,
+      jobOutcome,
+    }: {
+      cancelled: boolean;
+      jobOutcome: Outcome<unknown>;
+    } = yield race({
+      jobOutcome: call(workerManager, spec, job),
       cancelled: take(cancelUpload),
     });
-    yield put(
-      _notifyUploadFinished({
-        cancelled: Boolean(cancelled),
-        success: Boolean(success),
-      })
-    );
+
+    if (cancelled) {
+      outcome = { type: 'cancelled' };
+    } else {
+      outcome = jobOutcome;
+    }
   } catch (error) {
     handleError(error, { operation: 'Upload operation' });
-    yield put(_notifyUploadFinished({ cancelled: false, success: false }));
+    outcome = { type: 'failure', error };
   }
+
+  yield put(
+    _notifyUploadFinished({
+      cancelled: outcome.type === 'cancelled',
+      success: outcome.type === 'success',
+    })
+  );
 }
 
 const startUploadActionListenerSaga = createActionListenerSaga({
