@@ -10,7 +10,6 @@ import { StatusLight } from '@skybrush/mui-components';
 
 import { Status } from '~/components/semantics';
 import { hasManualPreflightChecks } from '~/features/preflight/selectors';
-import { areManualPreflightChecksSignedOff } from '~/features/show/selectors';
 import { openManualPreflightChecksDialog } from '~/features/show/slice';
 import { getSetupStageStatuses } from '~/features/show/stages';
 import type { RootState } from '~/store/reducers';
@@ -44,7 +43,6 @@ const ManualPreflightChecksButton = ({
 export default connect(
   // mapStateToProps
   (state: RootState) => ({
-    areChecksSignedOff: areManualPreflightChecksSignedOff(state),
     hasManualChecks: hasManualPreflightChecks(state),
     status: getSetupStageStatuses(state).performManualPreflightChecks,
   }),
