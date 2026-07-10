@@ -1,5 +1,5 @@
 import type { ProgressStatus } from '~/flockwave/messages';
-import type { RootState } from '~/store/reducers';
+import type { AppThunk, RootState } from '~/store/reducers';
 
 import type { JobData, JobPayload, Outcome } from './types';
 
@@ -110,10 +110,15 @@ export type JobSpecification<
      *
      * @param result - the result to update
      * @param piece - the result piece to merge into the result
+     * @param uavId - ID of the UAV that produced the piece
      * @returns - a new (or the same) result object to use in subsequent updates.
      *     `undefined` means to keep on using the same result object.
      */
-    update?: (result: Result, piece: ResultPiece) => Result | undefined;
+    update?: (
+      result: Result,
+      piece: ResultPiece,
+      uavId: string
+    ) => Result | undefined;
 
     /**
      * Finalizes a result object when all tasks have been executed.
@@ -129,6 +134,12 @@ export type JobSpecification<
      */
     finalize?: (result: Result) => Result | undefined;
   };
+
+  /**
+   * Function that returns an optional Redux thunk to dispatch at the end of the job,
+   * after having produced the final result object.
+   */
+  postAction?: (result: Result | undefined) => AppThunk;
 
   /**
    * A saga that is responsible for the top-level scheduling of the tasks in the job,

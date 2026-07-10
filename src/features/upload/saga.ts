@@ -210,7 +210,7 @@ function* forkingWorkerManagementSaga<
   spec: JobSpecification<Payload, Data, ResultPiece, Result>,
   job: JobData
 ): Generator<any, Outcome<Result | undefined>> {
-  const { executor, selector } = spec;
+  const { executor, selector, postAction } = spec;
   const hasResult = !!spec.result;
   let result: Result | undefined = spec.result?.create?.();
 
@@ -252,7 +252,9 @@ function* forkingWorkerManagementSaga<
 
       case 'success':
         if (hasResult && outcome.type === 'success') {
-          result = spec.result?.update?.(result!, outcome.result) ?? result;
+          result =
+            spec.result?.update?.(result!, outcome.result, req.target) ??
+            result;
         }
         break;
 
@@ -356,6 +358,11 @@ function* forkingWorkerManagementSaga<
     if (aggregatedOutcome.type === 'success') {
       aggregatedOutcome.result = result;
     }
+  }
+
+  // call the post-job action
+  if (postAction) {
+    yield put(postAction(result));
   }
 
   return aggregatedOutcome;

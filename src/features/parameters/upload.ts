@@ -8,7 +8,7 @@ import type {
 import type { AsyncOperationOptions } from '~/flockwave/messages';
 import messageHub from '~/message-hub';
 
-import { JOB_TYPE } from './constants';
+import { UPLOAD_JOB_TYPE } from './constants';
 import type { ParameterData } from './types';
 
 const supportsBulkUpload = getServerVersionValidator('>=2.34.1');
@@ -21,9 +21,7 @@ type Payload = {
 };
 
 /**
- * Handles a parameter upload session to a single drone. Returns a promise that
- * resolves when all the parameters have been uploaded. The promise is extended
- * with a cancellation callback for Redux-saga.
+ * Handles a parameter upload session to a single drone.
  *
  * @param uavId    the ID of the UAV to upload the parameters to
  * @param payload  the parameters to upload
@@ -80,7 +78,7 @@ function* runSingleParameterUpload(
 const spec: JobSpecification<Payload> = {
   executor: runSingleParameterUpload,
   title: 'Upload parameters',
-  type: JOB_TYPE,
+  type: UPLOAD_JOB_TYPE,
 };
 
 export default spec;

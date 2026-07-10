@@ -7,7 +7,7 @@ import {
   openUploadDialogKeepingCurrentJob,
 } from '~/features/upload/slice';
 
-import { JOB_TYPE } from './constants';
+import { CONSISTENCY_CHECK_JOB_TYPE, UPLOAD_JOB_TYPE } from './constants';
 import { parseParameters } from './formatting';
 import { getParameterUploadJobPayloadFromManifest } from './selectors';
 import {
@@ -23,11 +23,23 @@ export function proceedToUpload() {
     await delay(150);
     dispatch(
       openUploadDialogForJob({
-        job: { type: JOB_TYPE, payload },
+        job: { type: UPLOAD_JOB_TYPE, payload },
         options: { backAction: showParameterUploadSetupDialog() },
       })
     );
   };
+}
+
+export function runParameterConsistencyCheck() {
+  const payload = [
+    'SHOW_ORIGIN_AMSL',
+    'SHOW_ORIGIN_LAT',
+    'SHOW_ORIGIN_LNG',
+    'SHOW_ORIENTATION',
+  ];
+  return openUploadDialogForJob({
+    job: { type: CONSISTENCY_CHECK_JOB_TYPE, payload },
+  });
 }
 
 /**
@@ -37,7 +49,7 @@ export function proceedToUpload() {
 export function showParameterUploadDialog() {
   return (dispatch, getState) => {
     const isUploadingParameters =
-      getRunningUploadJobType(getState()) === JOB_TYPE;
+      getRunningUploadJobType(getState()) === UPLOAD_JOB_TYPE;
     if (isUploadingParameters) {
       dispatch(
         openUploadDialogKeepingCurrentJob({

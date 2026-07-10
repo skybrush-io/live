@@ -18,8 +18,14 @@ import { showLicenseInfoDialog } from '~/features/license-info/slice';
 import { showMapCachingDialog } from '~/features/map-caching/slice';
 import { getActiveUAVIdsBeingAveraged } from '~/features/measurement/selectors';
 import { showAveragingDialog } from '~/features/measurement/slice';
-import { showParameterUploadDialog } from '~/features/parameters/actions';
-import { JOB_TYPE as PARAMETER_UPLOAD_JOB_TYPE } from '~/features/parameters/constants';
+import {
+  runParameterConsistencyCheck,
+  showParameterUploadDialog,
+} from '~/features/parameters/actions';
+import {
+  CONSISTENCY_CHECK_JOB_TYPE as PARAMETER_CONSISTENCY_CHECK_JOB_TYPE,
+  UPLOAD_JOB_TYPE as PARAMETER_UPLOAD_JOB_TYPE,
+} from '~/features/parameters/constants';
 import { isConnected } from '~/features/servers/selectors';
 import { isDeveloperModeEnabled } from '~/features/session/selectors';
 import { getRunningUploadJobType } from '~/features/upload/selectors';
@@ -37,6 +43,7 @@ type ToolboxMenuPresentationProps = Readonly<{
   numberOfAveragingInProgress: number;
   runningUploadJobType?: string;
   requestClose: () => void;
+  runParameterConsistencyCheck: () => void;
   showAveragingDialog: () => void;
   showFirmwareUpdateDialog: () => void;
   showLicenseInfoDialog: () => void;
@@ -50,6 +57,7 @@ const ToolboxMenuPresentation = ({
   devMode,
   isConnected,
   numberOfAveragingInProgress,
+  runParameterConsistencyCheck,
   runningUploadJobType,
   showAveragingDialog,
   showFirmwareUpdateDialog,
@@ -114,6 +122,18 @@ const ToolboxMenuPresentation = ({
           }
         />
       </MenuItem>
+      <MenuItem onClick={createClickListener(runParameterConsistencyCheck)}>
+        <ListItemIcon>
+          <Tune />
+        </ListItemIcon>
+        <ListItemText
+          primary={'Parameter check'}
+          secondary={
+            runningUploadJobType === PARAMETER_CONSISTENCY_CHECK_JOB_TYPE &&
+            'Check in progress...'
+          }
+        />
+      </MenuItem>
       <MenuItem onClick={createClickListener(showParameterUploadDialog)}>
         <ListItemIcon>
           <Tune />
@@ -166,6 +186,7 @@ export default connect(
   }),
   // mapDispatchToProps
   {
+    runParameterConsistencyCheck,
     showAveragingDialog,
     showFirmwareUpdateDialog,
     showLicenseInfoDialog,

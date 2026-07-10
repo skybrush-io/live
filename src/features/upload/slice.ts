@@ -11,7 +11,7 @@ import {
   setGeofenceAction,
   setGeofencePolygonId,
 } from '~/features/mission/slice';
-import { JOB_TYPE as PARAMETER_UPLOAD_JOB_TYPE } from '~/features/parameters/constants';
+import { UPLOAD_JOB_TYPE as PARAMETER_UPLOAD_JOB_TYPE } from '~/features/parameters/constants';
 import {
   removeParameterFromManifest,
   updateParametersInManifest,
