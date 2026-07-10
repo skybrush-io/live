@@ -348,10 +348,7 @@ const { actions, reducer } = createSlice({
     },
 
     _setProgressInfoForUAV: {
-      reducer(
-        state,
-        action: PayloadAction<UAVProgressInfo>
-      ) {
+      reducer(state, action: PayloadAction<UAVProgressInfo>) {
         const { uavId, progress } = action.payload;
         if (progress >= 0 && progress <= 1) {
           state.progresses[uavId] = progress;
