@@ -1,5 +1,5 @@
 import isNil from 'lodash-es/isNil';
-import { buffers, channel } from 'redux-saga';
+import { buffers, type Channel, channel, type Task } from 'redux-saga';
 import {
   all,
   call,
@@ -15,11 +15,17 @@ import {
 
 import { errorToString, handleError } from '~/error-handling';
 import { getMaximumConcurrentUploadTaskCount } from '~/features/settings/selectors';
+import type { ProgressStatus } from '~/flockwave/messages';
+import type { RootState } from '~/store/reducers';
 import { flashLightOnUAVsAndHideFailures } from '~/utils/messaging';
 import { createActionListenerSaga, putWithRetry } from '~/utils/sagas';
 
 import { recalculateEstimatedCompletionTime } from './actions';
-import { getSpecificationForJobType } from './jobs';
+import {
+  getSpecificationForJobType,
+  type JobExecutorParams,
+  type JobSpecification,
+} from './jobs';
 import {
   getCurrentUploadJob,
   getNextDroneFromUploadQueue,
@@ -41,37 +47,68 @@ import {
   cancelUpload,
   startUpload,
 } from './slice';
+import type { JobData, JobPayload } from './types';
 
 /* ----- Progress handling -------------------------------------------------- */
 
-const uploadProgressChannel = channel(buffers.fixed(1));
+type ProgressReportItem = {
+  uavId: string;
+  progress: ProgressStatus['progress'];
+};
+
+const uploadProgressChannel = channel(buffers.fixed<ProgressReportItem>(1));
 
 function* uploadProgressHandlerSaga() {
   while (true) {
-    const { uavId, progress } = yield take(uploadProgressChannel);
-    yield put(_setProgressInfoForUAV(uavId, progress.percentage / 100));
+    const { uavId, progress }: ProgressReportItem = yield take(
+      uploadProgressChannel
+    );
+    const { percentage } = progress;
+    if (typeof percentage === 'number') {
+      yield put(_setProgressInfoForUAV(uavId, percentage / 100));
+    }
   }
 }
 
-const uploadProgressCallback = (uavId, { progress }) =>
-  uploadProgressChannel.put({ uavId, progress });
+const uploadProgressCallback = (
+  uavId: ProgressReportItem['uavId'],
+  { progress }: ProgressStatus
+) => uploadProgressChannel.put({ uavId, progress });
 
 /* ----- Worker management -------------------------------------------------- */
+
+type JobExecutionOutcome =
+  | 'success'
+  | 'failure'
+  | 'cancelled'
+  | 'permanent-failure';
 
 /**
  * Special symbol used to make a worker task quit.
  */
 const STOP = Symbol('STOP');
 
+type JobExecutionRequest<T = unknown> =
+  | {
+      executor: JobSpecification<T>['executor'];
+      payload: JobPayload;
+      selector?: (state: RootState, uavId: string) => T;
+      target: string;
+    }
+  | typeof STOP;
+
 /**
  * Saga that runs a single upload worker.
  */
-function* runUploadWorker(chan, failed) {
-  let outcome;
+function* runUploadWorker(
+  chan: Channel<JobExecutionRequest>,
+  failed: string[]
+) {
+  let outcome: JobExecutionOutcome | undefined;
   let storedError;
 
   while (true) {
-    const job = yield take(chan);
+    const job: JobExecutionRequest = yield take(chan);
 
     if (job === STOP) {
       break;
@@ -81,7 +118,7 @@ function* runUploadWorker(chan, failed) {
     outcome = undefined;
     storedError = undefined;
 
-    let data = undefined;
+    let data: unknown = undefined;
 
     try {
       yield put(_notifyUploadOnUavStarted(uavId));
@@ -95,15 +132,18 @@ function* runUploadWorker(chan, failed) {
       try {
         yield call(
           executor,
-          { uavId, payload, data },
-          { onProgress: uploadProgressCallback }
+          { uavId, payload, data } as JobExecutorParams<unknown>,
+          {
+            onProgress: uploadProgressCallback,
+          }
         );
         outcome = 'success';
       } catch (error) {
         outcome = 'failure';
         storedError = error;
       } finally {
-        if (yield cancelled() && !outcome) {
+        const wasCancelled: boolean = yield cancelled();
+        if (wasCancelled && !outcome) {
           outcome = 'cancelled';
         }
       }
@@ -125,7 +165,7 @@ function* runUploadWorker(chan, failed) {
         yield put(
           _setErrorMessageForUAV(
             uavId,
-            errorToString(storedError?.message || storedError)
+            errorToString((storedError as any)?.message || storedError)
           )
         );
         break;
@@ -135,7 +175,7 @@ function* runUploadWorker(chan, failed) {
         break;
 
       default:
-        console.warn('Unknown outcome: ' + outcome);
+        console.warn(`Unknown outcome: ${outcome}`);
         break;
     }
 
@@ -147,7 +187,10 @@ function* runUploadWorker(chan, failed) {
  * Saga that manages the execution of an upload operation to multiple drones
  * with a set of worker sagas forked off from the main uploader saga.
  */
-function* forkingWorkerManagementSaga(spec, job) {
+function* forkingWorkerManagementSaga(
+  spec: JobSpecification<unknown>,
+  job: JobData
+) {
   const { executor, selector } = spec;
   if (!executor) {
     console.warn(
@@ -156,10 +199,13 @@ function* forkingWorkerManagementSaga(spec, job) {
     return;
   }
 
-  const chan = yield call(channel, buffers.fixed(1));
-  const workerCount = yield select(getMaximumConcurrentUploadTaskCount);
-  const failed = [];
-  const workers = [];
+  const chan: Channel<JobExecutionRequest> = yield call(
+    channel,
+    buffers.fixed(1)
+  );
+  const workerCount: number = yield select(getMaximumConcurrentUploadTaskCount);
+  const failed: string[] = [];
+  const workers: Task[] = [];
 
   let finished = false;
   let success = false;
@@ -167,13 +213,13 @@ function* forkingWorkerManagementSaga(spec, job) {
   // create a given number of worker tasks, depending on the max concurrency
   // that we allow for the uploads
   for (let i = 0; i < workerCount; i++) {
-    const worker = yield fork(runUploadWorker, chan, failed);
+    const worker: Task = yield fork(runUploadWorker, chan, failed);
     workers.push(worker);
   }
 
   // feed the workers with upload jobs
   while (!finished) {
-    const uavId = yield select(getNextDroneFromUploadQueue);
+    const uavId: string = yield select(getNextDroneFromUploadQueue);
     const hasMore = !isNil(uavId);
 
     // First we check whether there is any job in the upload queue that we
@@ -187,15 +233,19 @@ function* forkingWorkerManagementSaga(spec, job) {
         target: uavId,
       });
     } else {
-      const shouldFlashLights = yield select(shouldFlashLightsOfFailedUploads);
+      const shouldFlashLights: boolean = yield select(
+        shouldFlashLightsOfFailedUploads
+      );
       if (shouldFlashLights && failed.length > 0) {
-        flashLightOnUAVsAndHideFailures(failed);
+        void flashLightOnUAVsAndHideFailures(failed, {});
       }
 
       // No job in the upload queue. If there are jobs that failed _in this
       // session_ and the user wants to retry failed jobs automatically, it
       // is time to put them back in the queue.
-      const shouldRetry = yield select(shouldRetryFailedUploadsAutomatically);
+      const shouldRetry: boolean = yield select(
+        shouldRetryFailedUploadsAutomatically
+      );
       if (shouldRetry && failed.length > 0) {
         const toEnqueue = [...failed];
         failed.length = 0;
@@ -209,7 +259,9 @@ function* forkingWorkerManagementSaga(spec, job) {
         // Let's check whether there are any jobs still in progress; we need
         // to wait for them to complete because the user may still check
         // the "Retry failed uploads" checkbox any time.
-        const itemsBeingProcessed = yield select(getUploadItemsBeingProcessed);
+        const itemsBeingProcessed: string[] = yield select(
+          getUploadItemsBeingProcessed
+        );
         if (itemsBeingProcessed.length > 0) {
           // Wait a bit; there's no point in busy waiting.
           yield delay(500);
@@ -237,7 +289,7 @@ function* forkingWorkerManagementSaga(spec, job) {
  * finish, or a cancellation action.
  */
 function* uploaderSagaWithCancellation() {
-  const job = yield select(getCurrentUploadJob);
+  const job: JobData = yield select(getCurrentUploadJob);
   if (!job.type) {
     console.warn('No job type was specified for upload job, skipping');
     return;
@@ -273,7 +325,7 @@ function* uploaderSagaWithCancellation() {
 }
 
 const startUploadActionListenerSaga = createActionListenerSaga({
-  [startUpload]: uploaderSagaWithCancellation,
+  [startUpload.toString()]: uploaderSagaWithCancellation,
 });
 
 /**

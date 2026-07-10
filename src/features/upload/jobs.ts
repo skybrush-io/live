@@ -1,7 +1,7 @@
 import type { ProgressStatus } from '~/flockwave/messages';
 import type { RootState } from '~/store/reducers';
 
-import type { JobPayload } from './types';
+import type { JobData, JobPayload } from './types';
 
 export enum JobScope {
   ALL = 'all',
@@ -10,21 +10,24 @@ export enum JobScope {
   SINGLE = 'single',
 }
 
+export type JobExecutorParams<T> = {
+  uavId: string;
+  payload: JobPayload;
+  data: T;
+};
+
 export type JobSpecification<T> = {
   type: string;
   title?: string;
   scope?: JobScope;
   selector?: (state: RootState, uavId: string) => T;
   executor: (
-    params: {
-      uavId: string;
-      payload: JobPayload;
-      data: T;
-    },
+    params: JobExecutorParams<T>,
     options: {
       onProgress: (id: string, status: ProgressStatus) => void;
     }
   ) => Promise<void>;
+  workerManager?: (spec: JobSpecification<T>, job: JobData) => Promise<void>;
 };
 
 /**
@@ -70,7 +73,7 @@ export type JobSpecification<T> = {
  * You can register new entries in this map from other modules with
  * `registerUploadJobType()`.
  */
-const JOB_TYPE_TO_SPEC_MAP: Record<string, JobSpecification<any>> = {};
+const JOB_TYPE_TO_SPEC_MAP: Record<string, JobSpecification<unknown>> = {};
 
 /**
  * Returns the job specification object corresponding to the given job type,
@@ -78,7 +81,7 @@ const JOB_TYPE_TO_SPEC_MAP: Record<string, JobSpecification<any>> = {};
  */
 export function getSpecificationForJobType(
   type: string
-): JobSpecification<any> | undefined {
+): JobSpecification<unknown> | undefined {
   return JOB_TYPE_TO_SPEC_MAP[type] ?? undefined;
 }
 
@@ -104,7 +107,9 @@ export function getScopeForJobType(type: string): JobScope {
  *
  * @returns a disposer function that can be called to unregister the job type
  */
-export function registerUploadJobType(spec: JobSpecification<any>): () => void {
+export function registerUploadJobType(
+  spec: JobSpecification<unknown>
+): () => void {
   const type = spec?.type;
 
   if (typeof type !== 'string' || type.length === 0) {

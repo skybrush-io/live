@@ -15,6 +15,21 @@ export type JobData = {
   payload?: JobPayload;
 };
 
+/**
+ * Value object describing the progress of a job on a single UAV.
+ */
+export type UAVProgressInfo = {
+  /**
+   * The identiifer of the UAV.
+   */
+  uavId: Identifier;
+
+  /**
+   * The progress of the job, as a fraction between 0 and 1.
+   */
+  progress: number;
+};
+
 export type UAVStatus = 'success' | 'error';
 
 export type MaybeOutdateUAVStatus = UAVStatus | 'outdated';

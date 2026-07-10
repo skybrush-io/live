@@ -30,6 +30,7 @@ import type {
   JobData,
   JobPayload,
   MaybeOutdateUAVStatus,
+  UAVProgressInfo,
 } from './types';
 import {
   clearQueues,
@@ -349,7 +350,7 @@ const { actions, reducer } = createSlice({
     _setProgressInfoForUAV: {
       reducer(
         state,
-        action: PayloadAction<{ uavId: Identifier; progress: number }>
+        action: PayloadAction<UAVProgressInfo>
       ) {
         const { uavId, progress } = action.payload;
         if (progress >= 0 && progress <= 1) {

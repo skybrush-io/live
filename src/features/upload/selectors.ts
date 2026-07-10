@@ -22,6 +22,7 @@ import { getScopeForJobType, JobScope } from './jobs';
 import type { UploadSliceState } from './slice';
 import type {
   HistoryItem,
+  JobData,
   JobPayload,
   UploadJobResult,
   UploadStatus,
@@ -36,7 +37,7 @@ import { aggregateUAVStatusesFromHistory } from './utils';
  */
 export const getCurrentUploadJob = createSelector(
   (state: RootState) => state.upload.currentJob,
-  ({ type, payload }) => ({ type: type ?? null, payload })
+  ({ type, payload }): JobData => ({ type: type ?? null, payload })
 );
 
 /**
