@@ -82,19 +82,21 @@ const uploadProgressCallback = (
  */
 const STOP = Symbol('STOP');
 
-type JobExecutionRequest<T, ResultPiece> = {
-  executor: JobSpecification<T, ResultPiece>['executor'];
+type JobExecutionRequest<Payload, Data, ResultPiece> = {
+  executor: JobSpecification<Payload, Data, ResultPiece>['executor'];
   payload: JobPayload;
-  selector?: (state: RootState, uavId: string) => T;
+  selector?: (state: RootState, uavId: string) => Data;
   target: string;
 };
 
-type JobExecutionRequestOrStop<T = unknown, ResultPiece = unknown> =
-  | JobExecutionRequest<T, ResultPiece>
-  | typeof STOP;
+type JobExecutionRequestOrStop<
+  Payload = unknown,
+  Data = unknown,
+  ResultPiece = unknown,
+> = JobExecutionRequest<Payload, Data, ResultPiece> | typeof STOP;
 
-type JobExecutionRequestCompletionHandler<T, ResultPiece> = (
-  req: JobExecutionRequest<T, ResultPiece>,
+type JobExecutionRequestCompletionHandler<Payload, Data, ResultPiece> = (
+  req: JobExecutionRequest<Payload, Data, ResultPiece>,
   outcome: Outcome<ResultPiece>
 ) => void;
 
@@ -103,14 +105,15 @@ type JobExecutionRequestCompletionHandler<T, ResultPiece> = (
  *
  * @param chan - channel that yields jobs that need to be executed
  */
-function* runWorker<T, ResultPiece>(
-  chan: Channel<JobExecutionRequestOrStop<T, ResultPiece>>,
-  onCompleted: JobExecutionRequestCompletionHandler<T, ResultPiece>
+function* runWorker<Payload, Data, ResultPiece>(
+  chan: Channel<JobExecutionRequestOrStop<Payload, Data, ResultPiece>>,
+  onCompleted: JobExecutionRequestCompletionHandler<Payload, Data, ResultPiece>
 ) {
   let outcome: Outcome<ResultPiece> | undefined;
 
   while (true) {
-    const req: JobExecutionRequestOrStop<T, ResultPiece> = yield take(chan);
+    const req: JobExecutionRequestOrStop<Payload, Data, ResultPiece> =
+      yield take(chan);
 
     if (req === STOP) {
       break;
@@ -119,7 +122,7 @@ function* runWorker<T, ResultPiece>(
     const { executor, payload, selector, target: uavId } = req;
     outcome = undefined;
 
-    let data: T | undefined = undefined;
+    let data: Data | undefined = undefined;
 
     try {
       yield put(_notifyUploadOnUavStarted(uavId));
@@ -132,7 +135,7 @@ function* runWorker<T, ResultPiece>(
       try {
         const result: ResultPiece = yield call(
           executor,
-          { uavId, payload, data } as JobExecutorParams<T>,
+          { uavId, payload, data } as JobExecutorParams<Payload, Data>,
           {
             onProgress: uploadProgressCallback,
           }
@@ -200,10 +203,11 @@ function* runWorker<T, ResultPiece>(
  */
 function* forkingWorkerManagementSaga<
   Result,
-  T = unknown,
+  Payload = unknown,
+  Data = unknown,
   ResultPiece = unknown,
 >(
-  spec: JobSpecification<T, ResultPiece, Result>,
+  spec: JobSpecification<Payload, Data, ResultPiece, Result>,
   job: JobData
 ): Generator<any, Outcome<Result | undefined>> {
   const { executor, selector } = spec;
@@ -220,10 +224,8 @@ function* forkingWorkerManagementSaga<
     };
   }
 
-  const chan: Channel<JobExecutionRequestOrStop<T, ResultPiece>> = yield call(
-    channel,
-    buffers.fixed(1)
-  );
+  const chan: Channel<JobExecutionRequestOrStop<Payload, Data, ResultPiece>> =
+    yield call(channel, buffers.fixed(1));
   const workerCount: number = yield select(getMaximumConcurrentUploadTaskCount);
   const failedAndShouldRetry: string[] = [];
   const permanentlyFailed: string[] = [];
@@ -232,10 +234,11 @@ function* forkingWorkerManagementSaga<
   let aggregatedOutcome: Outcome<Result | undefined> | undefined;
 
   // create the completion handler function for tasks
-  const onCompleted: JobExecutionRequestCompletionHandler<T, ResultPiece> = (
-    req,
-    outcome
-  ) => {
+  const onCompleted: JobExecutionRequestCompletionHandler<
+    Payload,
+    Data,
+    ResultPiece
+  > = (req, outcome) => {
     // If the job failed, put its target in the failed queue so we can retry it later.
     // Note that we do not do it for permanent failures.
     switch (outcome.type) {
@@ -401,6 +404,11 @@ function* uploaderSagaWithCancellation() {
   } catch (error) {
     handleError(error, { operation: 'Upload operation' });
     outcome = { type: 'failure', error };
+  }
+
+  if (outcome.type === 'success') {
+    console.log('Job completed, result object follows');
+    console.log(outcome.result);
   }
 
   yield put(

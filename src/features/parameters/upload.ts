@@ -1,11 +1,24 @@
 import { call, select } from 'redux-saga/effects';
 
 import { getServerVersionValidator } from '~/features/servers/selectors';
+import type {
+  JobExecutorParams,
+  JobSpecification,
+} from '~/features/upload/jobs';
+import type { AsyncOperationOptions } from '~/flockwave/messages';
 import messageHub from '~/message-hub';
 
 import { JOB_TYPE } from './constants';
+import type { ParameterData } from './types';
 
 const supportsBulkUpload = getServerVersionValidator('>=2.34.1');
+
+type Payload = {
+  items: ParameterData[];
+  meta: {
+    shouldReboot: boolean;
+  };
+};
 
 /**
  * Handles a parameter upload session to a single drone. Returns a promise that
@@ -15,7 +28,10 @@ const supportsBulkUpload = getServerVersionValidator('>=2.34.1');
  * @param uavId    the ID of the UAV to upload the parameters to
  * @param payload  the parameters to upload
  */
-function* runSingleParameterUpload({ uavId, payload }, options) {
+function* runSingleParameterUpload(
+  { uavId, payload }: JobExecutorParams<Payload>,
+  options: AsyncOperationOptions
+) {
   const { items, meta } = payload ?? {};
 
   if (!Array.isArray(items)) {
@@ -29,7 +45,7 @@ function* runSingleParameterUpload({ uavId, payload }, options) {
     return;
   }
 
-  const useBulkUpload = yield select(supportsBulkUpload);
+  const useBulkUpload: boolean = yield select(supportsBulkUpload);
 
   if (useBulkUpload) {
     const parameters = Object.fromEntries(
@@ -61,7 +77,7 @@ function* runSingleParameterUpload({ uavId, payload }, options) {
   }
 }
 
-const spec = {
+const spec: JobSpecification<Payload> = {
   executor: runSingleParameterUpload,
   title: 'Upload parameters',
   type: JOB_TYPE,

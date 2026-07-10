@@ -10,10 +10,10 @@ export enum JobScope {
   SINGLE = 'single',
 }
 
-export type JobExecutorParams<T> = {
+export type JobExecutorParams<Payload = JobPayload, Data = void> = {
   uavId: string;
-  payload: JobPayload;
-  data: T;
+  payload: Payload;
+  data: Data;
 };
 
 /**
@@ -25,7 +25,12 @@ export type JobExecutorParams<T> = {
  * but other job types also exist: firmware updates, parameter uploads, parameter
  * consistency checks and so on.
  */
-export type JobSpecification<T, ResultPiece = void, Result = unknown> = {
+export type JobSpecification<
+  Payload = void,
+  Data = void,
+  ResultPiece = void,
+  Result = unknown,
+> = {
   /**
    * The type of the job, i.e. a unique string identifier.
    */
@@ -57,7 +62,7 @@ export type JobSpecification<T, ResultPiece = void, Result = unknown> = {
    * @param state - the Redux state
    * @param uavId - the ID of the UAV that the job will execute on
    */
-  selector?: (state: RootState, uavId: string) => T;
+  selector?: (state: RootState, uavId: string) => Data;
 
   /**
    * An asynchronous function or saga that executes the job for a single UAV (e.g.,
@@ -80,11 +85,11 @@ export type JobSpecification<T, ResultPiece = void, Result = unknown> = {
    *        function of the job
    */
   executor: (
-    params: JobExecutorParams<T>,
+    params: JobExecutorParams<Payload, Data>,
     options: {
       onProgress: (id: string, status: ProgressStatus) => void;
     }
-  ) => Promise<ResultPiece>;
+  ) => Promise<ResultPiece> | Generator<unknown, ResultPiece>;
 
   /**
    * Object describing how the final job result is created from the individual result
@@ -139,7 +144,7 @@ export type JobSpecification<T, ResultPiece = void, Result = unknown> = {
    *      UAV-specific tasks in the job
    */
   workerManager?: (
-    spec: JobSpecification<T>,
+    spec: JobSpecification<Payload, Data, ResultPiece, Result>,
     job: JobData
   ) => Promise<Outcome<Result>>;
 };
