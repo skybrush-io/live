@@ -3,56 +3,75 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import PropTypes from 'prop-types';
-import { useState } from 'react';
+import { type ChangeEvent, type KeyboardEvent, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { connect, useDispatch, useSelector } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 
 import { shouldOptimizeUIForTouch } from '~/features/settings/selectors';
+import { useAppDispatch } from '~/store/hooks';
+import type { RootState } from '~/store/reducers';
 
 import { formatParameters, parseParameters } from './formatting';
 import { shouldRebootAfterParameterUpload } from './selectors';
 import { setRebootAfterUpload, updateParametersInManifest } from './slice';
+import type { ParameterData } from './types';
 
-const ParametersTextFieldPresentation = ({ onChange, optimizeUIForTouch }) => {
+type ParametersTextFieldChange =
+  | { valid: false }
+  | { commit: boolean; valid: true; value: ParameterData[] };
+
+type ParametersTextFieldPresentationProps = {
+  onChange?: (change: ParametersTextFieldChange) => void;
+  optimizeUIForTouch: boolean;
+};
+
+const ParametersTextFieldPresentation = ({
+  onChange,
+  optimizeUIForTouch,
+}: ParametersTextFieldPresentationProps) => {
   const [parameterString, setParameterString] = useState('');
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
   const { t } = useTranslation();
 
-  const handleChange = (event) => {
+  const handleChange = (
+    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     setParameterString(event.target.value);
   };
 
-  const validate = (event) => {
+  const validate = (
+    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     validateValue(event.target.value);
   };
 
-  const validateValue = (value, commit = false) => {
-    let parsedParameters;
+  const validateValue = (value: string, commit = false) => {
+    let parsedParameters: ParameterData[];
 
     try {
       parsedParameters = parseParameters(value);
     } catch (error) {
-      setError(error.message || String(error));
-      if (onChange) {
-        onChange({ valid: false });
-      }
-
+      setError(error instanceof Error ? error.message : String(error));
+      onChange?.({ valid: false });
       return false;
     }
 
     setError('');
-    if (onChange) {
-      onChange({ value: parsedParameters, valid: true, commit });
-      setParameterString(formatParameters(parsedParameters));
-    }
+    onChange?.({ value: parsedParameters, valid: true, commit });
+    setParameterString(formatParameters(parsedParameters));
 
     return true;
   };
 
-  const handleKeyPress = (event) => {
-    if (event.shiftKey && event.key === 'Enter') {
-      if (validateValue(event.target.value, true)) {
+  const handleKeyPress = (event: KeyboardEvent<HTMLDivElement>) => {
+    const target = event.target;
+    if (
+      event.shiftKey &&
+      event.key === 'Enter' &&
+      (target instanceof HTMLInputElement ||
+        target instanceof HTMLTextAreaElement)
+    ) {
+      if (validateValue(target.value, true)) {
         setParameterString('');
       }
 
@@ -78,30 +97,25 @@ const ParametersTextFieldPresentation = ({ onChange, optimizeUIForTouch }) => {
   );
 };
 
-ParametersTextFieldPresentation.propTypes = {
-  onChange: PropTypes.func,
-  optimizeUIForTouch: PropTypes.bool,
-};
-
 const ParametersTextField = connect(
   // mapStateToProps
-  (state) => ({
+  (state: RootState) => ({
     optimizeUIForTouch: shouldOptimizeUIForTouch(state),
   })
 )(ParametersTextFieldPresentation);
 
 const ParameterUploadMainPanel = () => {
   const shouldReboot = useSelector(shouldRebootAfterParameterUpload);
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const { t } = useTranslation();
 
-  const handleManifestChange = ({ value, valid, commit }) => {
-    if (valid && commit && value.length > 0) {
-      dispatch(updateParametersInManifest(value));
+  const handleManifestChange = (change: ParametersTextFieldChange) => {
+    if (change.valid && change.commit && change.value.length > 0) {
+      dispatch(updateParametersInManifest(change.value));
     }
   };
 
-  const handleRebootStateChange = (event) => {
+  const handleRebootStateChange = (event: ChangeEvent<HTMLInputElement>) => {
     dispatch(setRebootAfterUpload(event.target.checked));
   };
 

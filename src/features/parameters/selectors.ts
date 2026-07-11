@@ -1,21 +1,22 @@
 import { createSelector } from '@reduxjs/toolkit';
 
+import type { RootState } from '~/store/reducers';
 import { selectOrdered } from '~/utils/collections';
 
-export const shouldRebootAfterParameterUpload = (state) =>
+export const shouldRebootAfterParameterUpload = (state: RootState) =>
   Boolean(state.parameters.rebootAfterUpload);
 
 /**
  * Returns whether the current parameter manifest is empty.
  */
-export function isManifestEmpty(state) {
+export function isManifestEmpty(state: RootState) {
   return state.parameters.manifest.order.length === 0;
 }
 
 /**
  * Returns whether the parameter upload setup dialog is supposed to be open.
  */
-export function isParameterUploadSetupDialogOpen(state) {
+export function isParameterUploadSetupDialogOpen(state: RootState) {
   return state.parameters.dialog.open;
 }
 
@@ -25,7 +26,7 @@ export function isParameterUploadSetupDialogOpen(state) {
  * as they should appear on the UI.
  */
 export const getParameterManifest = createSelector(
-  (state) => state.parameters.manifest,
+  (state: RootState) => state.parameters.manifest,
   selectOrdered
 );
 

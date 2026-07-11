@@ -7,7 +7,6 @@ import IconButton from '@mui/material/IconButton';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import { animated, useTransition } from '@react-spring/web';
-import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
@@ -15,10 +14,13 @@ import { makeStyles } from '@skybrush/app-theme-mui';
 import { MiniList, Tooltip } from '@skybrush/mui-components';
 
 import FileButton from '~/components/FileButton';
+import type { RootState } from '~/store/reducers';
+import type { Identifier } from '~/utils/collections';
 
 import { importParametersFromFile, proceedToUpload } from './actions';
 import { getParameterManifest, isManifestEmpty } from './selectors';
 import { clearManifest, removeParameterFromManifest } from './slice';
+import type { Parameter } from './types';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -54,6 +56,15 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+type Props = {
+  canUpload: boolean;
+  manifest: Parameter[];
+  onImportItems: (file?: File) => Promise<void>;
+  onRemoveAllItems: () => void;
+  onRemoveItem: (id: Identifier) => void;
+  onStart: () => Promise<void>;
+};
+
 /**
  * Sidebar of the parameter upload setup dialog.
  */
@@ -64,7 +75,7 @@ const ParameterListSidebar = ({
   onRemoveItem,
   onRemoveAllItems,
   onStart,
-}) => {
+}: Props) => {
   const { t } = useTranslation();
   const classes = useStyles();
 
@@ -72,11 +83,11 @@ const ParameterListSidebar = ({
   const transitions = useTransition(
     manifest.map((item, index) => ({ ...item, y: index * ITEM_HEIGHT })),
     {
-      from: { position: 'absolute', opacity: 0 },
+      from: { position: 'absolute' as const, opacity: 0, y: 0 },
       leave: { height: 0, opacity: 0 },
       enter: ({ y }) => ({ y, opacity: 1 }),
       update: ({ y }) => ({ y }),
-      key: (item) => item.id,
+      key: (item: Parameter) => item.id,
     }
   );
 
@@ -86,7 +97,7 @@ const ParameterListSidebar = ({
         <Box className={classes.title}>Manifest</Box>
         <Tooltip content={t('parameterListSidebar.removeAllItems')}>
           <IconButton
-            disabled={!manifest || manifest.length === 0}
+            disabled={manifest.length === 0}
             size='large'
             onClick={onRemoveAllItems}
           >
@@ -119,13 +130,19 @@ const ParameterListSidebar = ({
         ))}
       </MiniList>
       <Box className={classes.footer}>
-        <FileButton startIcon={<FolderOpen />} onSelected={onImportItems}>
+        <FileButton
+          ref={null}
+          startIcon={<FolderOpen />}
+          onSelected={onImportItems}
+        >
           {t('parameterListSidebar.import')}
         </FileButton>
         <Button
           disabled={!canUpload}
           endIcon={<NavigateNext />}
-          onClick={onStart}
+          onClick={() => {
+            void onStart();
+          }}
         >
           {t('parameterListSidebar.nextStep')}
         </Button>
@@ -134,23 +151,9 @@ const ParameterListSidebar = ({
   );
 };
 
-ParameterListSidebar.propTypes = {
-  canUpload: PropTypes.bool,
-  manifest: PropTypes.arrayOf(
-    PropTypes.shape({
-      name: PropTypes.string,
-      value: PropTypes.string,
-    })
-  ),
-  onImportItems: PropTypes.func,
-  onRemoveAllItems: PropTypes.func,
-  onRemoveItem: PropTypes.func,
-  onStart: PropTypes.func,
-};
-
 export default connect(
   // mapStateToProps
-  (state) => ({
+  (state: RootState) => ({
     canUpload: !isManifestEmpty(state),
     manifest: getParameterManifest(state),
   }),

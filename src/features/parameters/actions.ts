@@ -6,6 +6,7 @@ import {
   openUploadDialogForJob,
   openUploadDialogKeepingCurrentJob,
 } from '~/features/upload/slice';
+import type { AppThunk } from '~/store/reducers';
 
 import { CONSISTENCY_CHECK_JOB_TYPE, UPLOAD_JOB_TYPE } from './constants';
 import { parseParameters } from './formatting';
@@ -15,8 +16,9 @@ import {
   showParameterUploadSetupDialog,
   updateParametersInManifest,
 } from './slice';
+import type { ParameterData } from './types';
 
-export function proceedToUpload() {
+export function proceedToUpload(): AppThunk<Promise<void>> {
   return async (dispatch, getState) => {
     const payload = getParameterUploadJobPayloadFromManifest(getState());
     dispatch(closeParameterUploadSetupDialog());
@@ -46,7 +48,7 @@ export function runParameterConsistencyCheck() {
  * Shows the upload dialog if a parameter upload is in progress, otherwise
  * shows the parameter upload setup dialog.
  */
-export function showParameterUploadDialog() {
+export function showParameterUploadDialog(): AppThunk {
   return (dispatch, getState) => {
     const isUploadingParameters =
       getRunningUploadJobType(getState()) === UPLOAD_JOB_TYPE;
@@ -67,7 +69,7 @@ const MAX_FILE_SIZE_KB = 128;
 /**
  * Imports a parameter file into the parameter manifest.
  */
-export function importParametersFromFile(file) {
+export function importParametersFromFile(file?: File): AppThunk<Promise<void>> {
   return async (dispatch) => {
     if (!file) {
       return;
@@ -82,18 +84,21 @@ export function importParametersFromFile(file) {
       return;
     }
 
-    let parsed;
+    let parsed: ParameterData[] | undefined;
 
     try {
       const contents = await file.text();
       parsed = parseParameters(contents);
     } catch (error) {
       dispatch(
-        showErrorMessage('Error while parsing parameters from file', error)
+        showErrorMessage(
+          'Error while parsing parameters from file',
+          error instanceof Error ? error : undefined
+        )
       );
     }
 
-    if (Array.isArray(parsed) && parsed.length > 0) {
+    if (parsed && parsed.length > 0) {
       dispatch(updateParametersInManifest(parsed));
     }
   };
