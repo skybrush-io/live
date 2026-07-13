@@ -40,7 +40,7 @@ const isDivider = (item: GPSFixListEntry): item is GPSFixDivider =>
 type GPSFixStatusMiniListProps = {
   items: GPSFixListEntry[];
   onClick?: (uavIds: string[], event: React.SyntheticEvent) => void;
-};
+} & React.RefAttributes<HTMLUListElement>;
 
 /**
  * Component-specific selector that creates the list of entries to show in the

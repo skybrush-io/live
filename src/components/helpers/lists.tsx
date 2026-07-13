@@ -10,8 +10,7 @@ import includes from 'lodash-es/includes';
 import isFunction from 'lodash-es/isFunction';
 import partial from 'lodash-es/partial';
 import xor from 'lodash-es/xor';
-import PropTypes from 'prop-types';
-import React, { type PropsWithoutRef, type RefAttributes } from 'react';
+import React from 'react';
 
 import { BackgroundHint } from '@skybrush/mui-components';
 
@@ -28,7 +27,7 @@ type ItemRenderer<T extends ItemWithId, P> = (
 type ListFactory<P> = (
   props: P,
   children: React.ReactElement[],
-  ref: React.ForwardedRef<unknown>
+  ref: React.Ref<HTMLUListElement> | undefined
 ) => React.JSX.Element;
 
 type ValidatedListOfOptions<T, P> = {
@@ -78,7 +77,7 @@ type SelectionHandlerReduxFunctions<
 
 const createBackgroundHint = (
   backgroundHint: string | React.ReactElement | undefined,
-  ref: React.ForwardedRef<unknown>
+  ref: React.Ref<unknown> | undefined
 ): React.JSX.Element | null => {
   switch (typeof backgroundHint) {
     case 'string':
@@ -121,12 +120,13 @@ const createBackgroundHint = (
  *         populated with the children
  * @return the constructed React component
  */
-export function listOf<T extends ItemWithId, P>(
-  itemRenderer: ItemRenderer<T, PropsWithoutRef<P>>,
-  options: ListOfOptions<T, PropsWithoutRef<P>> = {}
-): React.ForwardRefExoticComponent<
-  PropsWithoutRef<P> & RefAttributes<unknown>
-> {
+export function listOf<
+  T extends ItemWithId,
+  P extends { ref?: React.Ref<HTMLUListElement> },
+>(
+  itemRenderer: ItemRenderer<T, Omit<P, 'ref'>>,
+  options: ListOfOptions<T, Omit<P, 'ref'>> = {}
+): React.FC<P & { ref?: React.Ref<HTMLUListElement> }> {
   const {
     backgroundHint,
     dataProvider,
@@ -136,7 +136,7 @@ export function listOf<T extends ItemWithId, P>(
   } = validateOptions(options);
 
   // A separate variable is needed here to make ESLint happy
-  const ListView = React.forwardRef<unknown, P>((props, ref) => {
+  const ListView = ({ ref, ...props }: P) => {
     const items = dataProvider(props);
     const children = postprocess(
       items.map((item) => itemRenderer(item, props, false)),
@@ -147,7 +147,7 @@ export function listOf<T extends ItemWithId, P>(
     }
 
     return createBackgroundHint(backgroundHint, ref);
-  });
+  };
 
   if (displayName) {
     ListView.displayName = displayName;
@@ -331,35 +331,31 @@ export function createSelectionHandlerThunk<T = string>({
  * handler of your item renderer in order to make the list item respond to
  * the user's action.
  *
- * @param  {function|React.Component} itemRenderer  function that is called
- *         with a single item to be rendered, the props of the generated
- *         component, and a boolean denoting whether the item is currently
- *         selected, and must return a React component that shows the item
- * @param  {Object}  options  additional options to tweak the behaviour of
- *         the generated list
- * @param  {string?}  options.backgroundHint  optional background hint to show in
- *         place of the list when there are no items
- * @param  {function|string} options.dataProvider  function that gets the React props
- *         of the generated component and returns the items to show, or a
- *         string that contains the name of the React prop that holds the
- *         items to show in the generated component
- * @param  {string} options.displayName  name of the component when used in
- *         React debugging views
- * @param  {function|React.Component} options.listFactory  React component
- *         that will be used as the root component of the generated list,
- *         or a function that will be called with the props of the generated
- *         component and returns the root React component of the list
- * @return {React.Component}  the constructed React component
+ * @param  itemRenderer  function that is called with a single item to be rendered,
+ *         the props of the generated component, and a boolean denoting whether the
+ *         item is currently selected, and must return a React component that shows
+ *         the item
+ * @param  options  additional options to tweak the behaviour of the generated list
+ * @param  options.backgroundHint  optional background hint to show in place of the
+ *         list when there are no items
+ * @param  options.dataProvider  function that gets the React props of the generated
+ *         component and returns the items to show, or a string that contains the name
+ *         of the React prop that holds the items to show in the generated component
+ * @param  options.displayName  name of the component when used in React debugging views
+ * @param  options.listFactory  React component that will be used as the root component
+ *         of the generated list, or a function that will be called with the props of
+ *         the generated component and returns the root React component of the list
+ * @return the constructed React component
  */
 export function selectableListOf<
   T extends ItemWithId,
-  P extends SelectableListProps<T>,
+  P extends SelectableListProps<T> & {
+    ref?: React.Ref<HTMLUListElement>;
+  },
 >(
-  itemRenderer: ItemRenderer<T, PropsWithoutRef<P>>,
-  options: Partial<ListOfOptions<T, PropsWithoutRef<P>>> = {}
-): React.ForwardRefExoticComponent<
-  PropsWithoutRef<P> & React.RefAttributes<unknown>
-> {
+  itemRenderer: ItemRenderer<T, Omit<P, 'ref'>>,
+  options: Partial<ListOfOptions<T, Omit<P, 'ref'>>> = {}
+): React.FC<P> {
   const {
     backgroundHint,
     dataProvider,
@@ -369,7 +365,7 @@ export function selectableListOf<
   } = validateOptions(options);
 
   // A separate variable is needed here to make ESLint happy
-  const SelectableListView = React.forwardRef<unknown, P>((props, ref) => {
+  const SelectableListView = ({ ref, ...props }: P) => {
     const items = dataProvider(props);
     const children = postprocess(
       items.map((item) =>
@@ -394,12 +390,7 @@ export function selectableListOf<
     }
 
     return createBackgroundHint(backgroundHint, ref);
-  });
-
-  SelectableListView.propTypes = {
-    onChange: PropTypes.func,
-    value: PropTypes.string,
-  } as any;
+  };
 
   if (displayName) {
     SelectableListView.displayName = displayName;
@@ -441,35 +432,35 @@ export function selectableListOf<
  *   include the item in the selection if it was not in the selection yet,
  *   or exclude it from the selection if it was in the selection.
  *
- * @param  {function|React.Component} itemRenderer  function that is called
+ * @param  itemRenderer  function that is called
  *         with a single item to be rendered, the props of the generated
  *         component, and a boolean denoting whether the item is currently
  *         selected, and must return a React component that shows the item
- * @param  {Object}  options  additional options to tweak the behaviour of
+ * @param  options  additional options to tweak the behaviour of
  *         the generated list
- * @param  {string?}  options.backgroundHint  optional background hint to show in
+ * @param  options.backgroundHint  optional background hint to show in
  *         place of the list when there are no items
- * @param  {function|string} options.dataProvider  function that gets the React props
+ * @param  options.dataProvider  function that gets the React props
  *         of the generated component and returns the items to show, or a
  *         string that contains the name of the React prop that holds the
  *         items to show in the generated component
- * @param  {string} options.displayName  name of the component when used in
+ * @param  options.displayName  name of the component when used in
  *         React debugging views
- * @param  {function|React.Component} options.listFactory  React component
+ * @param  options.listFactory  React component
  *         that will be used as the root component of the generated list,
  *         or a function that will be called with the props of the generated
  *         component and returns the root React component of the list
- * @return {React.Component}  the constructed React component
+ * @return the constructed React component
  */
 export function multiSelectableListOf<
   T extends ItemWithId,
-  P extends MultiSelectableListProps,
+  P extends MultiSelectableListProps & {
+    ref?: React.Ref<HTMLUListElement>;
+  },
 >(
-  itemRenderer: ItemRenderer<T, P>,
-  options: Partial<ListOfOptions<T, React.PropsWithoutRef<P>>> = {}
-): React.ForwardRefExoticComponent<
-  PropsWithoutRef<P> & React.RefAttributes<unknown>
-> {
+  itemRenderer: ItemRenderer<T, Omit<P, 'ref'>>,
+  options: Partial<ListOfOptions<T, Omit<P, 'ref'>>> = {}
+): React.FC<P> {
   const {
     backgroundHint,
     dataProvider,
@@ -479,7 +470,7 @@ export function multiSelectableListOf<
   } = validateOptions(options);
 
   // A separate variable is needed here to make ESLint happy
-  const MultiSelectableListView = React.forwardRef<unknown, P>((props, ref) => {
+  const MultiSelectableListView = ({ ref, ...props }: P) => {
     const items = dataProvider(props);
     const onItemSelected = createSelectionHandlerFactory({
       activateItem: props.onActivate,
@@ -494,7 +485,7 @@ export function multiSelectableListOf<
             ...props,
             onChange: undefined,
             onItemSelected: onItemSelected(item.id),
-          } as P,
+          },
           includes(props.value, item.id)
         )
       ),
@@ -505,13 +496,7 @@ export function multiSelectableListOf<
     }
 
     return createBackgroundHint(backgroundHint, ref);
-  });
-
-  MultiSelectableListView.propTypes = {
-    onActivate: PropTypes.func,
-    onChange: PropTypes.func,
-    value: PropTypes.arrayOf(PropTypes.string).isRequired,
-  } as any;
+  };
 
   if (displayName) {
     MultiSelectableListView.displayName = displayName;
@@ -587,7 +572,7 @@ function validateListFactory<P>(
     return (
       props: P,
       children: React.ReactElement[],
-      ref: React.ForwardedRef<unknown>
+      ref: React.Ref<HTMLUListElement> | undefined
     ) => {
       const anyProps = props as any;
       return React.createElement(
@@ -595,7 +580,7 @@ function validateListFactory<P>(
         {
           dense: anyProps.dense || anyProps.mini,
           disablePadding: anyProps.disablePadding || anyProps.mini,
-          ref: ref as any,
+          ref: ref,
         },
         children
       );

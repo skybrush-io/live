@@ -34,7 +34,7 @@ type UAVStatusMiniListItem = {
 type UAVStatusMiniListProps = {
   items: UAVStatusMiniListItem[];
   onClick?: (uavIds: string[]) => void;
-};
+} & React.RefAttributes<HTMLUListElement>;
 
 /**
  * Component-specific selector that creates the list of entries to show in the
