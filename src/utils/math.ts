@@ -21,27 +21,27 @@ export type Coordinate2D = Vector2Tuple;
 
 // Legacy alias of Vector2PlusTuple.
 //
-// Coordinate2DPlus was renamed to Vector2Tuple for consistency with
+// Coordinate2DPlus was renamed to Vector2PlusTuple for consistency with
 // Three.js and `@skybrush/show-format`
 export type Coordinate2DPlus = Vector2PlusTuple;
 
 // Legacy alias of Vector3Tuple.
 //
-// Coordinate3D was renamed to Vector2Tuple for consistency with
+// Coordinate3D was renamed to Vector3Tuple for consistency with
 // Three.js and `@skybrush/show-format`
 export type Coordinate3D = Vector3Tuple;
 
 // Legacy alias of Vector2.
 //
-// Coordinate3D was renamed to Vector2 for consistency with
+// Coordinate2DObject was renamed to Vector2 for consistency with
 // Three.js and `@skybrush/show-format`
 export type Coordinate2DObject = Vector2;
 
 /**
  * Type guard for checking whether the input is a valid 2D coordinate pair.
  *
- * Legacy alias of `isVector2Tuple` for consistency with previous versions of the
- * codebase.
+ * Legacy alias of `isVector2Tuple` for consistency with previous versions of
+ * the codebase.
  */
 export const isCoordinate2D = isVector2Tuple;
 
