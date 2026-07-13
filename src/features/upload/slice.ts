@@ -29,7 +29,7 @@ import type {
   HistoryItem,
   JobData,
   JobPayload,
-  MaybeOutdateUAVStatus,
+  MaybeOutdatedUAVStatus,
   UAVProgressInfo,
 } from './types';
 import {
@@ -462,7 +462,7 @@ const { actions, reducer } = createSlice({
             res[id] = 'outdated';
             return res;
           },
-          {} as Record<string, MaybeOutdateUAVStatus>
+          {} as Record<string, MaybeOutdatedUAVStatus>
         ),
       });
     });

@@ -109,12 +109,12 @@ const ToolboxMenuPresentation = ({
         pro
       />
       <JobRelatedMenuItem
-        onClick={createClickListener(showFirmwareUpdateDialog)}
+        onClick={createClickListener(runParameterConsistencyCheck)}
         title='Parameter check'
         jobType={PARAMETER_CONSISTENCY_CHECK_JOB_TYPE}
       />
       <JobRelatedMenuItem
-        onClick={createClickListener(showFirmwareUpdateDialog)}
+        onClick={createClickListener(showParameterUploadDialog)}
         title={t('toolbox.paramUpload')}
         jobType={PARAMETER_UPLOAD_JOB_TYPE}
       />
