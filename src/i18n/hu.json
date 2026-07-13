@@ -916,8 +916,7 @@
     "licenseInfo": "Licenc információ",
     "offlineMaps": "Offline térképek",
     "paramUpload": "Paraméter feltöltése",
-    "tooltip": "Eszköztár",
-    "uploadInProgress": "Feltöltés folyamatban"
+    "tooltip": "Eszköztár"
   },
   "uavErrorCode": {
     "0": "Nincs hiba",

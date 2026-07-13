@@ -1345,8 +1345,7 @@
     "licenseInfo": "License info",
     "offlineMaps": "Offline maps",
     "paramUpload": "Parameter upload",
-    "tooltip": "Toolbox",
-    "uploadInProgress": "Upload in progress"
+    "tooltip": "Toolbox"
   },
   "uavErrorCode": {
     "0": "No error",

@@ -643,8 +643,7 @@
     "licenseInfo": "ライセンス情報",
     "offlineMaps": "オフライン地図",
     "paramUpload": "パラメーターアップロード",
-    "tooltip": "ツールボックス",
-    "uploadInProgress": "アップロード中"
+    "tooltip": "ツールボックス"
   },
   "uploadPanel": {
     "cancelUpload": "アップロードをキャンセル",

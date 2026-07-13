@@ -1236,8 +1236,7 @@
     "licenseInfo": "许可证信息",
     "offlineMaps": "离线地图",
     "paramUpload": "参数上传",
-    "tooltip": "工具箱",
-    "uploadInProgress": "上传进行中"
+    "tooltip": "工具箱"
   },
   "uavErrorCode": {
     "0": "无错误",
