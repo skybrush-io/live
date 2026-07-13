@@ -32,7 +32,7 @@ export type UAVProgressInfo = {
 
 export type UAVStatus = 'success' | 'error';
 
-export type MaybeOutdateUAVStatus = UAVStatus | 'outdated';
+export type MaybeOutdatedUAVStatus = UAVStatus | 'outdated';
 
 export type UploadJobResult = UAVStatus | 'cancelled';
 
@@ -45,7 +45,7 @@ type ErrorMessage = string;
 
 export type HistoryItem = {
   result: UploadJobResult;
-  perUavStatuses: Record<Identifier, MaybeOutdateUAVStatus>;
+  perUavStatuses: Record<Identifier, MaybeOutdatedUAVStatus>;
   perUavErrors: Record<Identifier, ErrorMessage>;
 };
 
