@@ -31,7 +31,7 @@ const UploadStatusRowHeader = ({
   uavIds,
 }: UploadStatusRowHeaderProps) => {
   const classes = useStyles();
-  const clickHandler = uavIds ? () => onClick(uavIds) : undefined;
+  const clickHandler = uavIds.length > 0 ? () => onClick(uavIds) : undefined;
 
   return (
     <Box
