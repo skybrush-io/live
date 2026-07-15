@@ -29,13 +29,12 @@ import type {
   HistoryItem,
   JobData,
   JobPayload,
-  MaybeOutdatedUAVStatus,
+  PerUAVJobResult,
   UAVProgressInfo,
 } from './types';
 import {
   clearQueues,
   clearUploadHistoryForJobTypeHelper,
-  createHistoryItem,
   ensureItemsInQueue,
   moveItemsBetweenQueues,
   pushItemToHistory,
@@ -254,26 +253,14 @@ const { actions, reducer } = createSlice({
       target: 'itemsWaitingToStart',
     }),
 
-    _notifyUploadFinished(
-      state,
-      action: PayloadAction<{ success: boolean; cancelled: boolean }>
-    ) {
-      const { success, cancelled } = action.payload;
+    _notifyUploadFinished(state, action: PayloadAction<HistoryItem>) {
       const jobType = state.currentJob.type;
 
       // Dispatched by the saga; should not be dispatched manually
 
       // Store the data in history
       if (jobType) {
-        pushItemToHistory(
-          state.history,
-          jobType,
-          createHistoryItem(
-            cancelled ? 'cancelled' : success ? 'success' : 'error',
-            state.queues,
-            state.errors
-          )
-        );
+        pushItemToHistory(state.history, jobType, action.payload);
       }
 
       // Clear queues and show the last upload result in the dialog.
@@ -456,13 +443,12 @@ const { actions, reducer } = createSlice({
 
       pushItemToHistory(state.history, SHOW_UPLOAD_JOB.type, {
         result: 'success',
-        perUavErrors: {},
-        perUavStatuses: uavIds.reduce(
+        perUAVResults: uavIds.reduce(
           (res, id) => {
-            res[id] = 'outdated';
+            res[id] = { type: 'outdated' };
             return res;
           },
-          {} as Record<string, MaybeOutdatedUAVStatus>
+          {} as Record<string, PerUAVJobResult>
         ),
       });
     });

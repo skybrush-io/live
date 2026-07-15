@@ -1,7 +1,7 @@
 import type { ProgressStatus } from '~/flockwave/messages';
 import type { AppThunk, RootState } from '~/store/reducers';
 
-import type { JobData, JobPayload, Outcome } from './types';
+import type { HistoryItem, JobData, JobPayload } from './types';
 
 export enum JobScope {
   ALL = 'all',
@@ -19,17 +19,15 @@ export type JobExecutorParams<Payload = JobPayload, Data = void> = {
 /**
  * Object describing a single job type that we can execute.
  *
- * A job is a long-running process that affects multiple UAVs and that may optionally
- * produce a result object aggregated from inidividual commands executed on different
- * UAVs. The archetypical example of a job is the upload of a show to multiple drones,
- * but other job types also exist: firmware updates, parameter uploads, parameter
- * consistency checks and so on.
+ * A job is a long-running process that affects multiple UAVs. The archetypical
+ * example of a job is the upload of a show to multiple drones, but other job
+ * types also exist: firmware updates, parameter uploads, parameter consistency
+ * checks and so on.
  */
 export type JobSpecification<
   Payload = void,
   Data = void,
   ResultPiece = void,
-  Result = unknown,
 > = {
   /**
    * The type of the job, i.e. a unique string identifier.
@@ -81,8 +79,7 @@ export type JobSpecification<
    *        to the job type
    * @param options.onProgress - handler function that is called whenever the progress
    *        of the job was updated (for jobs that support progress reporting)
-   * @returns - a result piece that will be passed on to the result aggregator (updater)
-   *        function of the job
+   * @returns - a result piece for this UAV
    */
   executor: (
     params: JobExecutorParams<Payload, Data>,
@@ -92,54 +89,11 @@ export type JobSpecification<
   ) => Promise<ResultPiece> | Generator<unknown, ResultPiece>;
 
   /**
-   * Object describing how the final job result is created from the individual result
-   * pieces returned by the executed tasks.
-   *
-   * If not specified, it is assumed that the job produces no result.
+   * Optional Redux thunk dispatched at the end of the job, after the upload
+   * history item has been committed. It receives no arguments; implementations
+   * can read the committed job result from Redux via selectors.
    */
-  result?: {
-    /**
-     * Creates a new result object from scratch.
-     */
-    create: () => Result;
-
-    /**
-     * Updates a result object with a result piece returned by a task.
-     *
-     * Defaults to a no-op if not specified.
-     *
-     * @param result - the result to update
-     * @param piece - the result piece to merge into the result
-     * @param uavId - ID of the UAV that produced the piece
-     * @returns - a new (or the same) result object to use in subsequent updates.
-     *     `undefined` means to keep on using the same result object.
-     */
-    update?: (
-      result: Result,
-      piece: ResultPiece,
-      uavId: string
-    ) => Result | undefined;
-
-    /**
-     * Finalizes a result object when all tasks have been executed.
-     *
-     * Defaults to a no-op if not specified.
-     *
-     * Called even if some of the tasks in the job failed or have been cancelled.
-     *
-     * @param result - the result to finalize
-     * @param piece - the result piece to merge into the result
-     * @returns - a new (or the same) result object to use in subsequent updates.
-     *     `undefined` means to keep on using the same result object.
-     */
-    finalize?: (result: Result) => Result | undefined;
-  };
-
-  /**
-   * Function that returns an optional Redux thunk to dispatch at the end of the job,
-   * after having produced the final result object.
-   */
-  postAction?: (result: Result | undefined) => AppThunk;
+  postAction?: () => AppThunk;
 
   /**
    * A saga that is responsible for the top-level scheduling of the tasks in the job,
@@ -150,14 +104,13 @@ export type JobSpecification<
    * alternative worker manager.
    *
    * @param spec - the specification of the job (i.e. this object)
-   * @param job - the current job data (consisting of a type and a payload).
-   * @returns - the aggregated result object from all the pieces yielded by the
-   *      UAV-specific tasks in the job
+   * @param job - the current job data (consisting of a type and a payload)
+   * @returns - the history item with the job's final result
    */
   workerManager?: (
-    spec: JobSpecification<Payload, Data, ResultPiece, Result>,
+    spec: JobSpecification<Payload, Data, ResultPiece>,
     job: JobData
-  ) => Promise<Outcome<Result>>;
+  ) => Promise<HistoryItem<ResultPiece>>;
 };
 
 /**

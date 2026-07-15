@@ -27,7 +27,7 @@ import type {
   UploadJobResult,
   UploadStatus,
 } from './types';
-import { aggregateUAVStatusesFromHistory } from './utils';
+import { aggregatePerUAVResultsFromHistory } from './utils';
 
 /**
  * Returns the current upload job. The returned object is guaranteed to have
@@ -176,10 +176,11 @@ export const makeUploadStatusCodeMappingForJobTypeSelector = (
       );
 
       // Aggregate from history
-      const result: Record<Identifier, Status> =
-        aggregateUAVStatusesFromHistory(historyItems, (status) =>
-          status === 'error' ? Status.ERROR : Status.SUCCESS
-        );
+      const perUAVResults = aggregatePerUAVResultsFromHistory(historyItems);
+      const result: Record<Identifier, Status> = {};
+      for (const [uavId, entry] of Object.entries(perUAVResults)) {
+        result[uavId] = entry.type === 'error' ? Status.ERROR : Status.SUCCESS;
+      }
 
       // Add current queues on top
       Object.assign(result, queuedMapping);
@@ -385,15 +386,12 @@ export const makeUploadStatusSelectorForMissionMappingByJobType = (
         return 'not-available';
       }
 
-      const uploadStatuses = aggregateUAVStatusesFromHistory(
-        historyItems,
-        (status) => status
-      );
+      const uploadStatuses = aggregatePerUAVResultsFromHistory(historyItems);
 
       let hasMissingUav = false;
       for (const item of uavsInMission) {
-        const status = uploadStatuses[item];
-        switch (status) {
+        const entry = uploadStatuses[item];
+        switch (entry?.type) {
           case 'error':
             return 'error';
           case 'success':
@@ -451,9 +449,10 @@ export const getUploadErrorMessageMapping = createSelector(
     const result: Record<Identifier, string> = {};
 
     // Aggregate from history
-    for (const item of historyItems) {
-      for (const [uavId, error] of Object.entries(item.perUavErrors)) {
-        result[uavId] = error;
+    const perUAVResults = aggregatePerUAVResultsFromHistory(historyItems);
+    for (const [uavId, entry] of Object.entries(perUAVResults)) {
+      if (entry.type === 'error') {
+        result[uavId] = entry.error;
       }
     }
 
@@ -487,7 +486,7 @@ export const getUAVsInLatestUploadForSelectedJobType = createSelector(
     if (historyItems.length > 0) {
       Object.assign(
         result,
-        historyItems[historyItems.length - 1].perUavStatuses
+        historyItems[historyItems.length - 1].perUAVResults
       );
     }
 

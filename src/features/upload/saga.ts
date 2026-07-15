@@ -1,5 +1,5 @@
 import isNil from 'lodash-es/isNil';
-import { buffers, type Channel, channel, type Task } from 'redux-saga';
+import { buffers, channel, type Channel, type Task } from 'redux-saga';
 import {
   all,
   call,
@@ -17,6 +17,7 @@ import { errorToString, handleError } from '~/error-handling';
 import { getMaximumConcurrentUploadTaskCount } from '~/features/settings/selectors';
 import type { ProgressStatus } from '~/flockwave/messages';
 import type { RootState } from '~/store/reducers';
+import { type Identifier } from '~/utils/collections';
 import { flashLightOnUAVsAndHideFailures } from '~/utils/messaging';
 import { createActionListenerSaga, putWithRetry } from '~/utils/sagas';
 
@@ -47,7 +48,13 @@ import {
   cancelUpload,
   startUpload,
 } from './slice';
-import type { JobData, JobPayload, Outcome } from './types';
+import type {
+  HistoryItem,
+  JobData,
+  JobPayload,
+  PerUAVJobResult,
+  UploadJobResult,
+} from './types';
 
 /* ----- Progress handling -------------------------------------------------- */
 
@@ -94,6 +101,27 @@ type JobExecutionRequestOrStop<
   Data = unknown,
   ResultPiece = unknown,
 > = JobExecutionRequest<Payload, Data, ResultPiece> | typeof STOP;
+
+/**
+ * Type describing the outcome of a job, with distinction between
+ * temporary and permanent failures.
+ */
+type Outcome<T, E = unknown> =
+  | {
+      type: 'success';
+      result: T;
+    }
+  | {
+      type: 'failure';
+      error: E;
+    }
+  | {
+      type: 'permanent-failure';
+      error: E;
+    }
+  | {
+      type: 'cancelled';
+    };
 
 type JobExecutionRequestCompletionHandler<Payload, Data, ResultPiece> = (
   req: JobExecutionRequest<Payload, Data, ResultPiece>,
@@ -155,12 +183,11 @@ function* runWorker<Payload, Data, ResultPiece>(
       onCompleted(req, outcome);
     } catch (error) {
       console.error(
-        'Error while executing onCompleted callback, assuming permanent failure'
+        'Error while executing onCompleted callback, this should never happen'
       );
-      outcome = {
-        type: 'permanent-failure',
-        error,
-      };
+      // If we ever continue here instead of throwing, we must not overwrite
+      // the outcome, not even to permanent-failure.
+      throw error;
     }
 
     switch (outcome.type) {
@@ -171,14 +198,12 @@ function* runWorker<Payload, Data, ResultPiece>(
       case 'permanent-failure':
       case 'failure':
         {
-          // Only add normal failures to the failed list. Other failures must
-          // not be retried, because they could cause an infinite loop.
           const { error } = outcome;
           yield put(_notifyUploadOnUavFailed(uavId));
           yield put(
             _setErrorMessageForUAV(
               uavId,
-              errorToString((error as any)?.message || error)
+              errorToString((error as any)?.message ?? error)
             )
           );
         }
@@ -202,25 +227,23 @@ function* runWorker<Payload, Data, ResultPiece>(
  * with a set of worker sagas forked off from the main uploader saga.
  */
 function* forkingWorkerManagementSaga<
-  Result,
   Payload = unknown,
   Data = unknown,
   ResultPiece = unknown,
 >(
-  spec: JobSpecification<Payload, Data, ResultPiece, Result>,
+  spec: JobSpecification<Payload, Data, ResultPiece>,
   job: JobData
-): Generator<any, Outcome<Result | undefined>> {
-  const { executor, selector, postAction } = spec;
-  const hasResult = !!spec.result;
-  let result: Result | undefined = spec.result?.create?.();
+): Generator<any, HistoryItem<ResultPiece>> {
+  const { executor, selector } = spec;
+  const perUAVResults: Record<Identifier, PerUAVJobResult<ResultPiece>> = {};
 
   if (!executor) {
     console.warn(
       `Job type ${job.type} has no executor in its job specification, skipping job`
     );
     return {
-      type: 'success',
-      result,
+      result: 'success',
+      perUAVResults,
     };
   }
 
@@ -231,7 +254,7 @@ function* forkingWorkerManagementSaga<
   const permanentlyFailed: string[] = [];
   const workers: Task[] = [];
 
-  let aggregatedOutcome: Outcome<Result | undefined> | undefined;
+  let status: UploadJobResult | undefined = undefined;
 
   // create the completion handler function for tasks
   const onCompleted: JobExecutionRequestCompletionHandler<
@@ -244,18 +267,26 @@ function* forkingWorkerManagementSaga<
     switch (outcome.type) {
       case 'failure':
         failedAndShouldRetry.push(req.target);
+        perUAVResults[req.target] = {
+          type: 'error',
+          error: errorToString(
+            (outcome.error as any)?.message ?? outcome.error
+          ),
+        };
         break;
 
       case 'permanent-failure':
         permanentlyFailed.push(req.target);
+        perUAVResults[req.target] = {
+          type: 'error',
+          error: errorToString(
+            (outcome.error as any)?.message ?? outcome.error
+          ),
+        };
         break;
 
       case 'success':
-        if (hasResult && outcome.type === 'success') {
-          result =
-            spec.result?.update?.(result!, outcome.result, req.target) ??
-            result;
-        }
+        perUAVResults[req.target] = { type: 'success', result: outcome.result };
         break;
 
       case 'cancelled':
@@ -272,7 +303,7 @@ function* forkingWorkerManagementSaga<
   }
 
   // feed the workers with upload jobs
-  while (!aggregatedOutcome) {
+  while (status === undefined) {
     const uavId: string = yield select(getNextDroneFromUploadQueue);
     const hasMore = !isNil(uavId);
 
@@ -320,25 +351,14 @@ function* forkingWorkerManagementSaga<
           // Wait a bit; there's no point in busy waiting.
           yield delay(500);
         } else {
-          if (permanentlyFailed.length > 0) {
-            aggregatedOutcome = {
-              type: 'permanent-failure',
-              error: undefined,
-            };
-          } else if (failedAndShouldRetry.length > 0) {
-            aggregatedOutcome = {
-              type: 'failure',
-              error: undefined,
-            };
+          if (failedAndShouldRetry.length > 0 || permanentlyFailed.length > 0) {
+            status = 'error';
           } else {
-            aggregatedOutcome = {
-              type: 'success',
-              result,
-            };
+            status = 'success';
           }
 
-          // will break out from the main loop now because aggregatedOutcome is not
-          // undefined any mor
+          // will break out from the main loop now because status is no
+          // longer undefined
         }
       }
     }
@@ -352,20 +372,7 @@ function* forkingWorkerManagementSaga<
   // wait for all workers to terminate
   yield join(workers);
 
-  // finalize the result
-  if (hasResult) {
-    result = spec.result?.finalize?.(result!) ?? result;
-    if (aggregatedOutcome.type === 'success') {
-      aggregatedOutcome.result = result;
-    }
-  }
-
-  // call the post-job action
-  if (postAction) {
-    yield put(postAction(result));
-  }
-
-  return aggregatedOutcome;
+  return { result: status, perUAVResults };
 }
 
 /**
@@ -373,7 +380,8 @@ function* forkingWorkerManagementSaga<
  * finish, or a cancellation action.
  */
 function* uploaderSagaWithCancellation() {
-  let outcome: Outcome<unknown>;
+  let status: UploadJobResult;
+  let perUAVResults: Record<Identifier, PerUAVJobResult> = {};
 
   const job: JobData = yield select(getCurrentUploadJob);
   if (!job.type) {
@@ -394,36 +402,40 @@ function* uploaderSagaWithCancellation() {
     const { workerManager = forkingWorkerManagementSaga } = spec;
     const {
       cancelled,
-      jobOutcome,
+      workerResult,
     }: {
       cancelled: boolean;
-      jobOutcome: Outcome<unknown>;
+      workerResult?: HistoryItem;
     } = yield race({
-      jobOutcome: call(workerManager, spec, job),
+      workerResult: call(workerManager, spec, job),
       cancelled: take(cancelUpload),
     });
 
     if (cancelled) {
-      outcome = { type: 'cancelled' };
+      status = 'cancelled';
     } else {
-      outcome = jobOutcome;
+      // `race` resolves exactly one branch; if we were not cancelled, the
+      // worker manager must have produced a result.
+      status = workerResult!.result;
+      perUAVResults = workerResult!.perUAVResults;
     }
   } catch (error) {
     handleError(error, { operation: 'Upload operation' });
-    outcome = { type: 'failure', error };
+    status = 'error';
   }
 
-  if (outcome.type === 'success') {
-    console.log('Job completed, result object follows');
-    console.log(outcome.result);
-  }
+  const historyItem = {
+    result: status,
+    perUAVResults,
+  };
 
-  yield put(
-    _notifyUploadFinished({
-      cancelled: outcome.type === 'cancelled',
-      success: outcome.type === 'success',
-    })
-  );
+  yield put(_notifyUploadFinished(historyItem));
+
+  // Call the post-job action _after_ the history item has been committed so
+  // the thunk can read committed state from Redux.
+  if (spec.postAction) {
+    yield put(spec.postAction());
+  }
 }
 
 const startUploadActionListenerSaga = createActionListenerSaga({

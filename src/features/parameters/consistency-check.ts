@@ -6,9 +6,16 @@ import type {
   JobSpecification,
 } from '~/features/upload/jobs';
 import messageHub from '~/message-hub';
+import type { AppThunk } from '~/store/reducers';
 import { formatIdsAndTruncateTrailingItems as formatUAVIds } from '~/utils/formatting';
 
 import { CONSISTENCY_CHECK_JOB_TYPE } from './constants';
+import { selectLatestConsistencyCheckHistoryItem } from './selectors';
+import {
+  calculateParameterAndErrorMaps,
+  findInconsistencies,
+  findMajority,
+} from './utils';
 
 type Payload = string[];
 
@@ -40,106 +47,64 @@ function* runSingleParameterRetrieval({
 }
 
 /**
- * Record that maps parameter names to a value - UAV ID list mapping.
- *
- * Example:
- * `{ "param1": { "value1": ["uav1", "uav2"], "value2": ["uav3"] }`
+ * Post-job action that shows a notification with a brief summary of the
+ * consistency check results.
  */
-type ParameterMap = Record<string, Record<string, string[]>>;
+const postAction = (): AppThunk => (_dispatch, getState) => {
+  const historyItem = selectLatestConsistencyCheckHistoryItem(getState());
+  if (historyItem === undefined) {
+    return;
+  }
 
-const findMajority = (map: ParameterMap) => {
-  const result: Record<string, string> = {};
-  for (const [name, values] of Object.entries(map)) {
-    const counts: Record<string, number> = {};
-    let maxCount = -1;
-    let mostCommonValue: string | undefined = undefined;
-
-    for (const [value, uavIds] of Object.entries(values)) {
-      counts[value] = uavIds.length;
-      if (uavIds.length > maxCount) {
-        maxCount = uavIds.length;
-        mostCommonValue = value;
-      }
-    }
-
-    if (mostCommonValue !== undefined) {
-      result[name] = mostCommonValue;
+  let errorCount = 0;
+  let successCount = 0;
+  for (const entry of Object.values(historyItem.perUAVResults)) {
+    if (entry.type === 'success') {
+      successCount++;
+    } else if (entry.type === 'error') {
+      errorCount++;
     }
   }
 
-  return result;
+  // No results, no failures, nothing to report.
+  if (successCount === 0 && errorCount === 0) {
+    return;
+  }
+
+  const summary = `Parameter consistency check completed. ${successCount} UAV(s) succeeded, ${errorCount} UAV(s) failed.`;
+  if (successCount === 0) {
+    showError(summary, { permanent: true });
+    return;
+  }
+
+  const { parameterMap } = calculateParameterAndErrorMaps(
+    historyItem.perUAVResults
+  );
+  const consensus = findMajority(parameterMap);
+  const differences = findInconsistencies(parameterMap, consensus);
+
+  if (Object.keys(differences).length === 0) {
+    showSuccess(summary, { permanent: true });
+    return;
+  }
+
+  const lines = [summary, '', 'Inconsistent UAVs by parameter:'];
+  for (const name of Object.keys(differences).sort()) {
+    const inconsistentIds = differences[name];
+    const consistentCount = parameterMap[name]?.[consensus[name]]?.length ?? 0;
+    lines.push(
+      `  ${name}: consistent on ${consistentCount} UAV(s), inconsistent on ${formatUAVIds(inconsistentIds)}`
+    );
+  }
+
+  showError(lines.join('\n'), { permanent: true });
 };
 
-const findInconsistencies = (
-  map: ParameterMap,
-  majority: Record<string, string>
-) => {
-  const result: Record<string, string[]> = {};
-  for (const [name, majorityValue] of Object.entries(majority)) {
-    for (const [value, uavIds] of Object.entries(map[name] ?? {})) {
-      if (value !== majorityValue) {
-        result[name] ??= [];
-        result[name].push(...uavIds);
-      }
-    }
-  }
-
-  for (const name of Object.keys(result)) {
-    result[name].sort();
-  }
-
-  return result;
-};
-
-const spec: JobSpecification<
-  Payload,
-  void,
-  Record<string, unknown>,
-  ParameterMap
-> = {
+const spec: JobSpecification<Payload, void, Record<string, unknown>> = {
   executor: runSingleParameterRetrieval,
   title: 'Parameter consistency check',
   type: CONSISTENCY_CHECK_JOB_TYPE,
-
-  result: {
-    create: () => ({}),
-
-    update(parameterMap, values, uavId) {
-      for (const [name, value] of Object.entries(values)) {
-        const valueAsString = String(value);
-        parameterMap[name] ??= {};
-        parameterMap[name][valueAsString] ??= [];
-        parameterMap[name][valueAsString].push(uavId);
-      }
-    },
-  },
-
-  postAction: (parameterMap) => () => {
-    if (!parameterMap) {
-      return;
-    }
-
-    const consensus = findMajority(parameterMap);
-    const formattedConsensus = Object.entries(consensus)
-      .map(([name, value]) => `${name} = ${value}`)
-      .join('\n');
-    const differences = findInconsistencies(parameterMap, consensus);
-
-    if (Object.keys(differences).length > 0) {
-      const formattedDifferences = Object.entries(differences)
-        .map(([name, ids]) => `${name}: ${formatUAVIds(ids, { maxCount: 10 })}`)
-        .join('\n');
-      showError(
-        `Some parameters are not consistent. Consensus values:\n\n${formattedConsensus}\n\nDifferences:\n\n${formattedDifferences}`,
-        { permanent: true }
-      );
-    } else {
-      showSuccess(
-        `All parameters are consistent. Consensus values:\n\n${formattedConsensus}`,
-        { permanent: true }
-      );
-    }
-  },
+  postAction,
 };
 
 export default spec;
