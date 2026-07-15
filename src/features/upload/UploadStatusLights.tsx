@@ -1,14 +1,15 @@
 import Box from '@mui/material/Box';
 import identity from 'lodash-es/identity';
 import isNil from 'lodash-es/isNil';
-import PropTypes from 'prop-types';
-import React, { useMemo } from 'react';
+import { Fragment, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import { makeStyles } from '@skybrush/app-theme-mui';
 import { BackgroundHint } from '@skybrush/mui-components';
 
+import type { RootState } from '~/store/reducers';
+import type { Identifier } from '~/utils/collections';
 import { formatItemInterval } from '~/utils/formatting';
 
 import { toggleUavsInWaitingQueue } from './actions';
@@ -48,15 +49,27 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+type RowData = {
+  header: string;
+  items: Identifier[];
+  labels: string[];
+};
+
+type CreateRowsOptions = {
+  columnCount: number;
+  itemFormatter: (id: Identifier) => string;
+  idFormatter: (id: Identifier) => string;
+};
+
 /**
  * Given a list of IDs to show in the upload status light grid, returns an
  * arrangement of IDs into rows.
  */
 const createRowsFromIds = (
-  mapping,
-  { columnCount, itemFormatter, idFormatter } = {}
-) => {
-  const rows = [];
+  mapping: Identifier[],
+  { columnCount, itemFormatter, idFormatter }: CreateRowsOptions
+): RowData[] => {
+  const rows: RowData[] = [];
   const numberOfItems = mapping.length;
 
   for (let index = 0; index < numberOfItems; index += columnCount) {
@@ -69,14 +82,31 @@ const createRowsFromIds = (
   return rows;
 };
 
-/* eslint-disable react/no-array-index-key */
+type UploadStatusLightsOwnProps = {
+  columnCount?: number;
+  itemFormatter?: (id: Identifier) => string;
+};
+
+type UploadStatusLightsStateProps = {
+  idFormatter: (id: Identifier) => string;
+  ids: Identifier[];
+};
+
+type UploadStatusLightsDispatchProps = {
+  onHeaderClick: (uavIds: Identifier[]) => void;
+};
+
+type UploadStatusLightsProps = UploadStatusLightsOwnProps &
+  UploadStatusLightsStateProps &
+  UploadStatusLightsDispatchProps;
+
 const UploadStatusLights = ({
   columnCount = NUMBER_OF_ITEMS_PER_ROW,
   idFormatter,
   ids,
   itemFormatter = identity,
   onHeaderClick,
-}) => {
+}: UploadStatusLightsProps) => {
   const { t } = useTranslation();
   const classes = useStyles();
   const rows = useMemo(
@@ -100,7 +130,7 @@ const UploadStatusLights = ({
   return (
     <Box className={classes.root}>
       {rows.map(({ header, items, labels }) => (
-        <React.Fragment key={header}>
+        <Fragment key={header}>
           <UploadStatusRowHeader
             label={header}
             uavIds={items}
@@ -108,6 +138,7 @@ const UploadStatusLights = ({
           />
           {items.map((itemId, index) =>
             isNil(itemId) ? (
+              // eslint-disable-next-line @eslint-react/no-array-index-key
               <UploadStatusPill key={`__cell${index}`}>—</UploadStatusPill>
             ) : (
               <UploadStatusPill key={itemId} uavId={itemId}>
@@ -115,24 +146,15 @@ const UploadStatusLights = ({
               </UploadStatusPill>
             )
           )}
-        </React.Fragment>
+        </Fragment>
       ))}
     </Box>
   );
 };
-/* eslint-enable react/no-array-index-key */
 
-UploadStatusLights.propTypes = {
-  columnCount: PropTypes.number,
-  itemFormatter: PropTypes.func,
-  idFormatter: PropTypes.func,
-  ids: PropTypes.arrayOf(PropTypes.string),
-  onHeaderClick: PropTypes.func,
-};
-
-export default connect(
+const ConnectedUploadStatusLights = connect(
   // mapStateToProps
-  (state) => {
+  (state: RootState) => {
     const scope = getScopeOfSelectedJobInUploadDialog(state);
     const formatMissionId = getMissionIdFormatter(state);
     const scopedToMission = scope === JobScope.MISSION;
@@ -147,3 +169,5 @@ export default connect(
     onHeaderClick: toggleUavsInWaitingQueue,
   }
 )(UploadStatusLights);
+
+export default ConnectedUploadStatusLights;
