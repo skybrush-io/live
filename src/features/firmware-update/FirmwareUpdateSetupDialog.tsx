@@ -10,17 +10,22 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import { Base64 } from 'js-base64';
 import memoizee from 'memoizee';
-import PropTypes from 'prop-types';
+import type React from 'react';
 import { useCallback, useMemo, useState } from 'react';
 import { connect } from 'react-redux';
 
+import type { FirmwareUpdateTarget } from '@skybrush/flockwave-spec';
 import { BackgroundHint, DraggableDialog } from '@skybrush/mui-components';
 
 import AsyncGuard from '~/components/AsyncGuard';
 import FileButton from '~/components/FileButton';
-import { selectableListOf } from '~/components/helpers/lists';
+import {
+  selectableListOf,
+  type SelectableListProps,
+} from '~/components/helpers/lists';
 import { openUploadDialogForJob } from '~/features/upload/slice';
 import { useMessageHub } from '~/hooks';
+import type { AppDispatch, RootState } from '~/store/reducers';
 import { readFileAsArrayBuffer } from '~/utils/files';
 import { formatData } from '~/utils/formatting';
 
@@ -31,8 +36,16 @@ import {
   showFirmwareUpdateSetupDialog,
 } from './slice';
 
-const FirmwareUpdateTargetSelectorPresentation = selectableListOf(
-  ({ name, id }, { onItemSelected }) => (
+type FirmwareUpdateTargetSelectorPresentationProps =
+  SelectableListProps<FirmwareUpdateTarget> & {
+    items: FirmwareUpdateTarget[];
+  };
+
+const FirmwareUpdateTargetSelectorPresentation = selectableListOf<
+  FirmwareUpdateTarget,
+  FirmwareUpdateTargetSelectorPresentationProps
+>(
+  ({ id, name }, { onItemSelected }) => (
     <ListItemButton key={id} onClick={onItemSelected}>
       <ListItemText primary={name} secondary={id} />
     </ListItemButton>
@@ -50,30 +63,49 @@ const FirmwareUpdateTargetSelectorPresentation = selectableListOf(
   }
 );
 
-const FirmwareUpdateTargetSelector = ({ getTargets, ...rest }) => (
+type FirmwareUpdateTargetSelectorProps = {
+  getTargets: () => Promise<FirmwareUpdateTarget[]>;
+  onChange: (event: React.UIEvent, target: FirmwareUpdateTarget) => void;
+};
+
+const FirmwareUpdateTargetSelector = ({
+  getTargets,
+  onChange,
+}: FirmwareUpdateTargetSelectorProps) => (
   <AsyncGuard
     func={getTargets}
     errorMessage='Error while loading firmware update targets from server'
     loadingMessage='Retrieving firmware update targets...'
   >
     {(items) => (
-      <FirmwareUpdateTargetSelectorPresentation items={items} {...rest} />
+      <FirmwareUpdateTargetSelectorPresentation
+        items={items ?? []}
+        // TODO: do we need to pass the real target here?
+        value='no-selected-target'
+        onChange={onChange}
+      />
     )}
   </AsyncGuard>
 );
 
-FirmwareUpdateTargetSelector.propTypes = {
-  getTargets: PropTypes.func,
-  onChange: PropTypes.func,
+type StateProps = {
+  open: boolean;
 };
+
+type DispatchProps = {
+  onClose: () => void;
+  onNext: (target: FirmwareUpdateTarget, file: File) => void;
+};
+
+type Props = StateProps & DispatchProps;
 
 /**
  * Presentation component for the dialog that allows the user to assemble a
  * list of parameters to upload to the drones.
  */
-const FirmwareUpdateSetupDialog = ({ onClose, onNext, open }) => {
-  const [target, setTarget] = useState();
-  const [file, setFile] = useState();
+const FirmwareUpdateSetupDialog = ({ onClose, onNext, open }: Props) => {
+  const [target, setTarget] = useState<FirmwareUpdateTarget | undefined>();
+  const [file, setFile] = useState<File | undefined>();
 
   const messageHub = useMessageHub();
   const getTargets = useMemo(
@@ -86,8 +118,8 @@ const FirmwareUpdateSetupDialog = ({ onClose, onNext, open }) => {
   );
 
   const onBack = useCallback(() => {
-    setTarget();
-    setFile();
+    setTarget(undefined);
+    setFile(undefined);
   }, [setFile, setTarget]);
 
   return (
@@ -128,7 +160,11 @@ const FirmwareUpdateSetupDialog = ({ onClose, onNext, open }) => {
             <Button
               disabled={file === undefined}
               endIcon={<NavigateNext />}
-              onClick={() => onNext(target, file)}
+              onClick={() => {
+                if (target && file) {
+                  onNext(target, file);
+                }
+              }}
             >
               Next
             </Button>
@@ -139,37 +175,36 @@ const FirmwareUpdateSetupDialog = ({ onClose, onNext, open }) => {
   );
 };
 
-FirmwareUpdateSetupDialog.propTypes = {
-  onClose: PropTypes.func,
-  onNext: PropTypes.func,
-  open: PropTypes.bool,
-};
-
-export default connect(
-  // mapStateToProps
-  (state) => ({
+const ConnectedFirmwareUpdateSetupDialog = connect(
+  (state: RootState): StateProps => ({
     open: isFirmwareUpdateSetupDialogOpen(state),
   }),
-
-  // mapDispatchToProps
   {
     onClose: hideFirmwareUpdateSetupDialog,
-    onNext: (target, file) => async (dispatch) => {
-      dispatch(hideFirmwareUpdateSetupDialog());
-      dispatch(
-        openUploadDialogForJob({
-          job: {
-            type: JOB_TYPE,
-            payload: {
-              target: target.id,
-              blob: Base64.fromUint8Array(await readFileAsArrayBuffer(file)),
+    onNext:
+      (target: FirmwareUpdateTarget, file: File) =>
+      async (dispatch: AppDispatch) => {
+        dispatch(hideFirmwareUpdateSetupDialog());
+        dispatch(
+          openUploadDialogForJob({
+            job: {
+              type: JOB_TYPE,
+              payload: {
+                target: target.id,
+                blob: Base64.fromUint8Array(
+                  new Uint8Array(
+                    (await readFileAsArrayBuffer(file)) as ArrayBuffer
+                  )
+                ),
+              },
             },
-          },
-          options: {
-            backAction: showFirmwareUpdateSetupDialog(),
-          },
-        })
-      );
-    },
+            options: {
+              backAction: showFirmwareUpdateSetupDialog(),
+            },
+          })
+        );
+      },
   }
 )(FirmwareUpdateSetupDialog);
+
+export default ConnectedFirmwareUpdateSetupDialog;
