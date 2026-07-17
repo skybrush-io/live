@@ -80,9 +80,8 @@ const FirmwareUpdateTargetSelector = ({
     {(items) => (
       <FirmwareUpdateTargetSelectorPresentation
         items={items ?? []}
-        // TODO: do we need to pass the real target here?
-        value='no-selected-target'
         onChange={onChange}
+        value={undefined}
       />
     )}
   </AsyncGuard>
