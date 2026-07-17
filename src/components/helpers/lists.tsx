@@ -49,7 +49,7 @@ type ListOfOptions<T, P> = Omit<
 export type SelectableListProps<T> = {
   onChange?: (event: React.UIEvent, item: T) => void;
   onItemSelected?: (event: React.UIEvent) => void;
-  value: string;
+  value: string | undefined;
 };
 
 export type MultiSelectableListProps = {
