@@ -988,7 +988,7 @@ export function normalizePolygon([
   }
 }
 
-type ScaledJSONGPSCoordinate = [number, number];
+export type ScaledJSONGPSCoordinate = [number, number];
 
 /**
  * Converts a longitude-latitude pair to a representation that is safe to be

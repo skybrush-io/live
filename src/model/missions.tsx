@@ -18,7 +18,13 @@ import {
   type GeofenceConfiguration,
   type SafetyConfiguration,
 } from '~/features/safety/model';
-import { type Latitude, type Longitude, type LonLat } from '~/utils/geography';
+import type {
+  Latitude,
+  Longitude,
+  LonLat,
+  ScaledJSONGPSCoordinate,
+} from '~/utils/geography';
+import type { Nullable } from '~/utils/types';
 
 import {
   type Altitude,
@@ -597,3 +603,10 @@ export function getAltitudeFromMissionItem(
     return item.parameters.alt;
   }
 }
+
+export type MissionItemBundle = {
+  version: number;
+  name: string | undefined;
+  items: MissionItem[];
+  startPositions: Array<Nullable<ScaledJSONGPSCoordinate>> | undefined;
+};
