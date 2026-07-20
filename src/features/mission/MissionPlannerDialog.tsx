@@ -3,14 +3,14 @@ import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
 import DialogActions from '@mui/material/DialogActions';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import PropTypes from 'prop-types';
-import { useCallback, useState } from 'react';
+import { useCallback, useState, type ChangeEvent } from 'react';
 import { connect } from 'react-redux';
 
 import { DraggableDialog } from '@skybrush/mui-components';
 
 import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
 import { isConnected as isConnectedToServer } from '~/features/servers/selectors';
+import type { RootState } from '~/store/reducers';
 
 import { invokeMissionPlanner } from './actions';
 import {
@@ -30,10 +30,27 @@ import {
 
 import MissionPlannerMainPanel from './MissionPlannerMainPanel';
 
-/**
- * Presentation component for the dialog that allows the user to plan a mission
- * by invoking a mission planning service on the server.
- */
+type SelectedTypeInfo = {
+  id: string;
+  name?: string;
+  description?: string;
+};
+
+type Props = {
+  applyGeofence: boolean;
+  isConnectedToServer: boolean;
+  isGeofenceOwnedByUser: boolean;
+  onApplyGeofenceChanged: (event: ChangeEvent<HTMLInputElement>) => void;
+  onClose: () => void;
+  onInvokePlanner: () => void;
+  onSaveContextParameters: (params: Record<string, unknown>) => void;
+  onSaveUserParameters: (params: Record<string, unknown>) => void;
+  onSelectedTypeChanged: (type: string | undefined) => void;
+  open: boolean;
+  parametersFromUser: Record<string, unknown>;
+  selectedType: string | undefined;
+};
+
 const MissionPlannerDialog = ({
   applyGeofence,
   isConnectedToServer,
@@ -47,12 +64,19 @@ const MissionPlannerDialog = ({
   open,
   parametersFromUser,
   selectedType,
-}) => {
-  const [selectedTypeInfo, setSelectedTypeInfo] = useState(null);
+}: Props) => {
+  const [selectedTypeInfo, setSelectedTypeInfo] =
+    useState<SelectedTypeInfo | null>(null);
   const [canInvokePlanner, setCanInvokePlanner] = useState(false);
 
   const handleParametersChange = useCallback(
-    ({ fromUser, fromContext }) => {
+    ({
+      fromUser,
+      fromContext,
+    }: {
+      fromUser?: Record<string, unknown>;
+      fromContext?: Record<string, unknown>;
+    }) => {
       let userParametersChanged = false;
       let parametersValid = false;
 
@@ -83,7 +107,7 @@ const MissionPlannerDialog = ({
   );
 
   const handleMissionTypeChange = useCallback(
-    (value) => {
+    (value: { id: string }) => {
       onSelectedTypeChanged(value.id);
       setSelectedTypeInfo(value);
       setCanInvokePlanner(Boolean(value));
@@ -92,7 +116,7 @@ const MissionPlannerDialog = ({
   );
 
   const handleMissionTypeCleared = useCallback(() => {
-    onSelectedTypeChanged(null);
+    onSelectedTypeChanged(undefined);
     handleParametersChange({ fromUser: {}, fromContext: {} });
     setCanInvokePlanner(false);
   }, [handleParametersChange, onSelectedTypeChanged, setCanInvokePlanner]);
@@ -157,24 +181,9 @@ const MissionPlannerDialog = ({
   );
 };
 
-MissionPlannerDialog.propTypes = {
-  applyGeofence: PropTypes.bool,
-  isConnectedToServer: PropTypes.bool,
-  isGeofenceOwnedByUser: PropTypes.bool,
-  open: PropTypes.bool,
-  onApplyGeofenceChanged: PropTypes.func,
-  onClose: PropTypes.func,
-  onInvokePlanner: PropTypes.func,
-  onSaveContextParameters: PropTypes.func,
-  onSaveUserParameters: PropTypes.func,
-  onSelectedTypeChanged: PropTypes.func,
-  parametersFromUser: PropTypes.object,
-  selectedType: PropTypes.string,
-};
-
 export default connect(
   // mapStateToProps
-  (state) => ({
+  (state: RootState) => ({
     applyGeofence: shouldMissionPlannerDialogApplyGeofence(state),
     parametersFromUser: getMissionPlannerDialogUserParameters(state),
     open: isMissionPlannerDialogOpen(state),
@@ -185,7 +194,7 @@ export default connect(
 
   // mapDispatchToProps
   {
-    onApplyGeofenceChanged: (event) =>
+    onApplyGeofenceChanged: (event: ChangeEvent<HTMLInputElement>) =>
       setMissionPlannerDialogApplyGeofence(event.target.checked),
     onClose: closeMissionPlannerDialog,
     onInvokePlanner: invokeMissionPlanner,
