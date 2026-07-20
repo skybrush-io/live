@@ -46,7 +46,7 @@ const DialogHeaderListItem = ({ children, onClick, ...rest }: Props) => {
       </ListItemButton>
     </ListItem>
   ) : (
-    <ListItem divider className={classes.root} {...rest} />
+    <ListItem divider className={classes.root} {...{ children, ...rest }} />
   );
 };
 

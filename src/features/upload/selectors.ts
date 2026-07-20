@@ -23,7 +23,6 @@ import type { UploadSliceState } from './slice';
 import type {
   HistoryItem,
   JobData,
-  JobPayload,
   UploadJobResult,
   UploadStatus,
 } from './types';
@@ -37,7 +36,7 @@ import { aggregatePerUAVResultsFromHistory } from './utils';
  */
 export const getCurrentUploadJob = createSelector(
   (state: RootState) => state.upload.currentJob,
-  ({ type, payload }): JobData => ({ type: type ?? null, payload })
+  ({ type, payload }): JobData => ({ type, payload })
 );
 
 /**
@@ -64,9 +63,7 @@ export const getRunningUploadJobType = createSelector(
 /**
  * Returns the selected job in the upload dialog.
  */
-export const getSelectedJobInUploadDialog = (
-  state: RootState
-): { type?: string; payload?: JobPayload } =>
+export const getSelectedJobInUploadDialog = (state: RootState): JobData =>
   getUploadDialogState(state)?.selectedJob ?? {};
 
 /**

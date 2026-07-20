@@ -1,9 +1,19 @@
 import { call } from 'redux-saga/effects';
 
+import type {
+  JobExecutorParams,
+  JobSpecification,
+} from '~/features/upload/jobs';
 import { JobScope } from '~/features/upload/jobs';
+import type { ProgressStatus } from '~/flockwave/messages';
 import messageHub from '~/message-hub';
 
 import { JOB_TYPE } from './constants';
+
+type Payload = {
+  target: string;
+  blob: string;
+};
 
 /**
  * Handles a firmware upload session to a single object. Returns a promise that
@@ -14,13 +24,10 @@ import { JOB_TYPE } from './constants';
  * @param payload  the target and blob to upload
  */
 function* runSingleFirmwareUpdate(
-  {
-    uavId: objectId, // TODO: Generalize upload saga from `uavId` to `objectId`
-    payload,
-  },
-  options
+  { uavId: objectId, payload }: JobExecutorParams<Payload>,
+  options: { onProgress: (id: string, status: ProgressStatus) => void }
 ) {
-  const { target, blob } = payload ?? {};
+  const { target, blob } = payload;
   yield call(
     messageHub.execute.uploadFirmware,
     { objectId, target, blob },
@@ -28,7 +35,7 @@ function* runSingleFirmwareUpdate(
   );
 }
 
-const spec = {
+const spec: JobSpecification<Payload> = {
   executor: runSingleFirmwareUpdate,
   scope: JobScope.COMPATIBLE,
   title: 'Update firmware',
