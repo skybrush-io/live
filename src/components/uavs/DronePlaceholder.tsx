@@ -1,8 +1,7 @@
-import Avatar from '@mui/material/Avatar';
+import Avatar, { type AvatarProps } from '@mui/material/Avatar';
 import { keyframes } from '@mui/styled-engine';
 import clsx from 'clsx';
 import createColor from 'color';
-import PropTypes from 'prop-types';
 
 import { makeStyles } from '@skybrush/app-theme-mui';
 
@@ -26,8 +25,6 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: Colors.off,
     color: theme.palette.getContrastText(Colors.off),
 
-    // Alternatively we could use `variant="rounded"` and
-    // set the amount through `theme.shape.borderRadius`.
     borderRadius: '25%',
   },
 
@@ -54,19 +51,24 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+type Props = {
+  AvatarProps?: AvatarProps;
+  editing?: boolean;
+  label: React.ReactNode;
+  status?: 'off' | 'editing' | 'error' | 'success';
+};
+
 /**
  * Placeholder component that can be used in the UAV list for slots where we
  * don't want to display a drone avatar but want to show a placeholder
  * instead that is of the same size as the avatar.
- *
- * @type {React.FC<{
- *   AvatarProps?: import('@mui/material').AvatarProps,
- *   editing?: boolean,
- *   label: import('react').ReactNode,
- *   status?: 'off' | 'editing' | 'error' | 'success',
- * }>}
  */
-const DronePlaceholder = ({ AvatarProps, editing, label, status = 'off' }) => {
+const DronePlaceholder = ({
+  AvatarProps,
+  editing,
+  label,
+  status = 'off',
+}: Props) => {
   const classes = useStyles();
   return (
     <div className={classes.root}>
@@ -81,13 +83,6 @@ const DronePlaceholder = ({ AvatarProps, editing, label, status = 'off' }) => {
       </Avatar>
     </div>
   );
-};
-
-DronePlaceholder.propTypes = {
-  AvatarProps: PropTypes.object,
-  editing: PropTypes.bool,
-  label: PropTypes.node,
-  status: PropTypes.oneOf(['off', 'editing', 'error', 'success']),
 };
 
 export default DronePlaceholder;
