@@ -1,5 +1,5 @@
 import Avatar, { type AvatarProps } from '@mui/material/Avatar';
-import { keyframes } from '@mui/styled-engine';
+import { keyframes } from '@mui/material/styles';
 import clsx from 'clsx';
 import createColor from 'color';
 
@@ -9,7 +9,7 @@ import Colors from '~/components/colors';
 
 const pulse = keyframes({
   '0%': {
-    boxShadow: `0 0 8px 2px ${createColor(Colors.info).alpha(0)}`,
+    boxShadow: `0 0 8px 2px ${createColor(Colors.info).alpha(0).toString()}`,
   },
   '100%': {
     boxShadow: `0 0 8px 2px ${Colors.info}`,
@@ -23,9 +23,8 @@ const useStyles = makeStyles((theme) => ({
 
   avatar: {
     backgroundColor: Colors.off,
-    color: theme.palette.getContrastText(Colors.off),
-
     borderRadius: '25%',
+    color: theme.palette.getContrastText(Colors.off),
   },
 
   'avatar-off': {
