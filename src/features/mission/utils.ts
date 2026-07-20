@@ -90,6 +90,13 @@ export function getNewEditIndex(
   return newIndex;
 }
 
+/**
+ * Predicate factory that receives a mission index and returns a predicate function that
+ * checks whether a given mission item has that index in its participants list.
+ *
+ * @param missionIndex - The index of the mission to check for participation
+ * @returns A predicate function that takes a mission item and returns a boolean
+ */
 export const doesMissionIndexParticipateInMissionItem =
   (missionIndex: number) =>
   ({ participants }: MissionItem): boolean =>
