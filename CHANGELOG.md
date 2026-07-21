@@ -53,6 +53,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed the automatic launch of the server in the background that was accidentally
   broken somewhere around 2.13.0.
 
+- Fixed copying text from the Messages panel by disabling the `C` hotkey that was
+  conflicting with the copy operation.
+
 ## [2.13.2] - 2026-04-16
 
 ### Fixed
