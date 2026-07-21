@@ -144,7 +144,7 @@ const MissionOverviewPanelStatusBar = ({
             label={
               <span style={{ whiteSpace: 'normal' }}>
                 Add waypoints to the mission to get distance and duration
-                estimates!
+                estimates
               </span>
             }
             size='small'
