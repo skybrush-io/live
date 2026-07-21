@@ -127,25 +127,28 @@ MissionOverviewList.propTypes = {
 
 export default connect(
   // mapStateToProps
-  (state) => ({
-    currentItemId: getCurrentMissionItemIdForMissionIndex(
-      state,
-      getSelectedMissionIdInMissionEditorPanel(state)
-    ),
-    currentItemIndex: getCurrentMissionItemIndexForMissionIndex(
-      state,
-      getSelectedMissionIdInMissionEditorPanel(state)
-    ),
-    currentItemRatio: getCurrentMissionItemRatioForMissionIndex(
-      state,
-      getSelectedMissionIdInMissionEditorPanel(state)
-    ),
-    followScroll: shouldMissionEditorPanelFollowScroll(state),
-    itemIdsWithIndices: getMissionItemIdsWithIndices(state),
-    participantsForItemIds: getParticipantsForMissionItemIds(state),
-    selectedItemIds: getSelectedMissionItemIds(state),
-    selectedMissionId: getSelectedMissionIdInMissionEditorPanel(state),
-  }),
+  (state) => {
+    const selectedMissionId = getSelectedMissionIdInMissionEditorPanel(state);
+    return {
+      currentItemId: getCurrentMissionItemIdForMissionIndex(
+        state,
+        selectedMissionId
+      ),
+      currentItemIndex: getCurrentMissionItemIndexForMissionIndex(
+        state,
+        selectedMissionId
+      ),
+      currentItemRatio: getCurrentMissionItemRatioForMissionIndex(
+        state,
+        selectedMissionId
+      ),
+      followScroll: shouldMissionEditorPanelFollowScroll(state),
+      itemIdsWithIndices: getMissionItemIdsWithIndices(state),
+      participantsForItemIds: getParticipantsForMissionItemIds(state),
+      selectedItemIds: getSelectedMissionItemIds(state),
+      selectedMissionId: getSelectedMissionIdInMissionEditorPanel(state),
+    };
+  },
   // mapDispatchToProps
   {
     onFollowScrollChanged: setEditorPanelFollowScroll,
