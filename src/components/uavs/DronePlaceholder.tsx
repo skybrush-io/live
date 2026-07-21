@@ -1,9 +1,8 @@
 import Avatar, { type AvatarProps } from '@mui/material/Avatar';
 import { keyframes } from '@mui/material/styles';
+import { makeStyles } from '@skybrush/app-theme-mui';
 import clsx from 'clsx';
 import createColor from 'color';
-
-import { makeStyles } from '@skybrush/app-theme-mui';
 
 import Colors from '~/components/colors';
 

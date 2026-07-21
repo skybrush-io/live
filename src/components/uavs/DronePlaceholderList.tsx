@@ -1,11 +1,20 @@
-import Box from '@mui/material/Box';
+import Box, { type BoxProps } from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { orderBy } from 'natural-orderby';
-import PropTypes from 'prop-types';
 
 import { formatMissionId } from '~/utils/formatting';
 
 import DronePlaceholder from './DronePlaceholder';
+
+type Props = BoxProps & {
+  actions?: React.ReactNode | React.ReactNode[];
+  emptyMessage?: React.ReactNode;
+  items?: Array<number | string>;
+  maxCount?: number;
+  preferEmptyMessage?: boolean;
+  successMessage?: React.ReactNode;
+  title?: string;
+};
 
 /**
  * Presentation component that receives a list of drone IDs or mapping slot
@@ -22,7 +31,7 @@ const DronePlaceholderList = ({
   title,
   sx,
   ...rest
-}) => {
+}: Props) => {
   const formattedAndSortedIds = orderBy(
     items
       .slice(0, maxCount)
@@ -87,21 +96,6 @@ const DronePlaceholderList = ({
       </Box>
     </Box>
   );
-};
-
-DronePlaceholderList.propTypes = {
-  actions: PropTypes.oneOfType([
-    PropTypes.node,
-    PropTypes.arrayOf(PropTypes.node),
-  ]),
-  emptyMessage: PropTypes.node,
-  items: PropTypes.arrayOf(
-    PropTypes.oneOfType([PropTypes.number, PropTypes.string])
-  ),
-  maxCount: PropTypes.number,
-  preferEmptyMessage: PropTypes.bool,
-  successMessage: PropTypes.node,
-  title: PropTypes.string,
 };
 
 export default DronePlaceholderList;

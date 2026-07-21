@@ -1,14 +1,16 @@
-import isNil from 'lodash-es/isNil';
 import { createSelector } from '@reduxjs/toolkit';
+import isNil from 'lodash-es/isNil';
 
+import type { RootState } from '~/store/reducers';
 import { selectOrdered } from '~/utils/collections';
+import type { PreflightCheckHeaderOrItem } from './types';
 
 /**
  * Selector that returns the groups currently defined in the preflight
  * checklist, in the order they should appear on the UI.
  */
 export const getPreflightGroupsInOrder = createSelector(
-  (state) => state.preflight.groups,
+  (state: RootState) => state.preflight.groups,
   selectOrdered
 );
 
@@ -17,7 +19,7 @@ export const getPreflightGroupsInOrder = createSelector(
  * checklist, in the order they should appear on the UI.
  */
 export const getPreflightItemsInOrder = createSelector(
-  (state) => state.preflight.items,
+  (state: RootState) => state.preflight.items,
   selectOrdered
 );
 
@@ -33,7 +35,9 @@ export const getHeadersAndItems = createSelector(
   getPreflightGroupsInOrder,
   getPreflightItemsInOrder,
   (groups, items) => {
-    const result = items.filter((item) => isNil(item.groupId));
+    const result = items.filter((item) =>
+      isNil(item.groupId)
+    ) as unknown as PreflightCheckHeaderOrItem[];
 
     for (const group of groups) {
       const itemsInGroup = items.filter((item) => item.groupId === group.id);
@@ -56,7 +60,8 @@ export const getHeadersAndItems = createSelector(
  * Returns an array containing the IDs of all preflight checks that have been
  * ticked by the user.
  */
-export const getTickedPreflightCheckItems = (state) => state.preflight.checked;
+export const getTickedPreflightCheckItems = (state: RootState) =>
+  state.preflight.checked;
 
 /**
  * Returns whether all preflight checks have been ticked by the user.
@@ -91,5 +96,5 @@ export const getFormattedHeadersAndItems = createSelector(
  * Returns whether there is at least one manual preflight check that has to
  * be ticked off by the user.
  */
-export const hasManualPreflightChecks = (state) =>
+export const hasManualPreflightChecks = (state: RootState) =>
   state.preflight.items.order.length > 0;

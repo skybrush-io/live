@@ -720,11 +720,11 @@ export const getMisalignedUAVIds = createSelector(
  * Returns an array containing all the UAV IDs that appear in the mission mapping
  * but are not present in the UAV registry.
  */
-export const getMissingUAVIdsInMapping = createSelector(
+export const getMissingUAVIdsInMapping: AppSelector<string[]> = createSelector(
   getMissionMapping,
   getUAVIdToStateMapping,
   (mapping, uavsById) =>
-    mapping.filter((uavId) => {
+    mapping.filter((uavId): uavId is string => {
       if (isNil(uavId)) {
         return false;
       }
@@ -813,7 +813,7 @@ export const getErrorCodeSummaryForUAVsInMission = createSelector(
   getUAVIdsParticipatingInMission,
   getUAVIdToStateMapping,
   (reverseMapping, uavIds, uavStatesById) => {
-    const result = [];
+    const result: Array<[UAVErrorCode, [string, number | null]]> = [];
 
     for (const uavId of uavIds) {
       const uavState = uavStatesById[uavId];
@@ -830,7 +830,7 @@ export const getErrorCodeSummaryForUAVsInMission = createSelector(
       Object.entries(groupBy(result, (item) => item[0])),
       ([code, _]) => Number.parseInt(code, 10)
     ).map(([key, value]) => ({
-      code: key,
+      code: Number(key),
       uavIdsAndIndices: value.map((x) => x[1]),
     }));
   }
