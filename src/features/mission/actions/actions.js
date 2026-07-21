@@ -509,10 +509,10 @@ export const editMissionItemParameters =
       showPromptDialog({
         initialValues: item.parameters,
         schema: {
-          title: titleForMissionItemType[item.type],
           type: 'object',
           ...schemaForMissionItemType[item.type],
         },
+        title: titleForMissionItemType[item.type],
       })
     );
 
