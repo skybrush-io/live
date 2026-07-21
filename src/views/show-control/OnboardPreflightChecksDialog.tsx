@@ -2,12 +2,11 @@ import CheckCircle from '@mui/icons-material/CheckCircle';
 import Box from '@mui/material/Box';
 import DialogContent from '@mui/material/DialogContent';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import List from '@mui/material/List';
+import List, { type ListProps } from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import Switch from '@mui/material/Switch';
-import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
@@ -29,6 +28,7 @@ import {
 import { getErrorCodeSummaryForUAVsInMission } from '~/features/uavs/selectors';
 import { getSeverityOfErrorCode } from '~/flockwave/errors';
 import { describeUAVErrorCode } from '~/flockwave/UAVErrorCode';
+import type { RootState } from '~/store/reducers';
 import {
   formatMissionId,
   formatIdsAndTruncateTrailingItems as formatUAVIds,
@@ -41,15 +41,29 @@ const severityToStatus = [
   Status.ERROR,
 ];
 
+type PreflightCheckListItem = {
+  code: number;
+  uavIdsAndIndices: Array<[string, number | null]>;
+};
+
+type PreflightCheckListPresentationProps = ListProps & {
+  items: PreflightCheckListItem[];
+  showMissionIds: boolean;
+};
+
 /**
  * Presentation component that shows all the onboard preflight checks that have
  * failed on at least one of the drones, along with the IDs of the drones on
  * which the preflight checks have failed.
  */
-const PreflightCheckListPresentation = ({ items, showMissionIds, ...rest }) => {
+const PreflightCheckListPresentation = ({
+  items,
+  showMissionIds,
+  ...rest
+}: PreflightCheckListPresentationProps) => {
   const { t } = useTranslation();
 
-  const formatEntry = showMissionIds
+  const formatEntry: (entry: [string, number | null]) => string = showMissionIds
     ? (x) => (x[1] == null ? String(x[0]) : formatMissionId(x[1]))
     : (x) => String(x[0]);
 
@@ -82,26 +96,23 @@ const PreflightCheckListPresentation = ({ items, showMissionIds, ...rest }) => {
   );
 };
 
-PreflightCheckListPresentation.propTypes = {
-  items: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.string,
-      type: PropTypes.string,
-    })
-  ),
-  onToggle: PropTypes.func,
-  showMissionIds: PropTypes.bool,
-};
-
 const PreflightCheckList = connect(
   // mapStateToProps
-  (state) => ({
+  (state: RootState) => ({
     items: getErrorCodeSummaryForUAVsInMission(state),
     showMissionIds: isSortingByMissionId(state),
   }),
   // mapDispatchToProps
   {}
 )(PreflightCheckListPresentation);
+
+type OnboardPreflightChecksDialogProps = {
+  open?: boolean;
+  onClear: () => void;
+  onClose: () => void;
+  onSignOff: () => void;
+  signedOff?: boolean;
+};
 
 /**
  * Presentation component for the dialog that allows the user to inspect the
@@ -114,7 +125,7 @@ const OnboardPreflightChecksDialog = ({
   onClose,
   onSignOff,
   signedOff = false,
-}) => {
+}: OnboardPreflightChecksDialogProps) => {
   const { t } = useTranslation();
 
   return (
@@ -162,17 +173,9 @@ const OnboardPreflightChecksDialog = ({
   );
 };
 
-OnboardPreflightChecksDialog.propTypes = {
-  onClear: PropTypes.func,
-  onClose: PropTypes.func,
-  onSignOff: PropTypes.func,
-  open: PropTypes.bool,
-  signedOff: PropTypes.bool,
-};
-
 export default connect(
   // mapStateToProps
-  (state) => ({
+  (state: RootState) => ({
     ...state.show.onboardPreflightChecksDialog,
     signedOff: areOnboardPreflightChecksSignedOff(state),
   }),
