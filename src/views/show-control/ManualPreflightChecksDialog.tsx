@@ -3,7 +3,7 @@ import Checkbox from '@mui/material/Checkbox';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import List from '@mui/material/List';
+import List, { type ListProps } from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -18,12 +18,20 @@ import {
   getTickedPreflightCheckItems,
 } from '~/features/preflight/selectors';
 import { togglePreflightCheckStatus } from '~/features/preflight/slice';
+import { type PreflightCheckHeaderOrItem } from '~/features/preflight/types';
 import { signOffOnManualPreflightChecks } from '~/features/show/actions';
 import { areManualPreflightChecksSignedOff } from '~/features/show/selectors';
 import {
   clearManualPreflightChecks,
   closeManualPreflightChecksDialog,
 } from '~/features/show/slice';
+import type { AppDispatch, RootState } from '~/store/reducers';
+
+type PreflightCheckListPresentationProps = Omit<ListProps, 'onToggle'> & {
+  checkedItemIds: string[];
+  items: PreflightCheckHeaderOrItem[];
+  onToggle: (id: string) => void;
+};
 
 /**
  * Presentation component that shows a list of manual preflight checks and
@@ -34,7 +42,7 @@ const PreflightCheckListPresentation = ({
   items,
   onToggle,
   ...rest
-}) => (
+}: PreflightCheckListPresentationProps) => (
   <List dense disablePadding={items.length > 0} {...rest}>
     {items.map((item) => {
       if (item.type === 'header') {
@@ -73,30 +81,27 @@ const PreflightCheckListPresentation = ({
   </List>
 );
 
-PreflightCheckListPresentation.propTypes = {
-  checkedItemIds: PropTypes.arrayOf(PropTypes.string),
-  items: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.string,
-      type: PropTypes.string,
-    })
-  ),
-  onToggle: PropTypes.func,
-};
-
 const PreflightCheckList = connect(
   // mapStateToProps
-  (state) => ({
+  (state: RootState) => ({
     checkedItemIds: getTickedPreflightCheckItems(state),
     items: getHeadersAndItems(state),
   }),
   // mapDispatchToProps
-  (dispatch) => ({
-    onToggle(id) {
+  (dispatch: AppDispatch) => ({
+    onToggle(id: string) {
       dispatch(togglePreflightCheckStatus(id));
     },
   })
 )(PreflightCheckListPresentation);
+
+type ManualPreflightChecksDialogProps = {
+  open?: boolean;
+  onClear: () => void;
+  onClose: () => void;
+  onSignOff: () => void;
+  signedOff?: boolean;
+};
 
 /**
  * Presentation component for the dialog that allows the user to inspect the
@@ -109,7 +114,7 @@ const ManualPreflightChecksDialog = ({
   onClose,
   onSignOff,
   signedOff = false,
-}) => {
+}: ManualPreflightChecksDialogProps) => {
   return (
     <Dialog fullWidth open={open} maxWidth='xs' onClose={onClose}>
       <DialogContent
@@ -150,7 +155,7 @@ ManualPreflightChecksDialog.propTypes = {
 
 export default connect(
   // mapStateToProps
-  (state) => ({
+  (state: RootState) => ({
     ...state.show.manualPreflightChecksDialog,
     signedOff: areManualPreflightChecksSignedOff(state),
   }),

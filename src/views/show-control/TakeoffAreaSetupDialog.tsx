@@ -34,16 +34,21 @@ import {
   getMisplacedUAVIds,
   getMissingUAVIdsInMapping,
 } from '~/features/uavs/selectors';
+import type { AppDispatch, RootState } from '~/store/reducers';
 import AugmentMappingButton from '~/views/uavs/AugmentMappingButton';
 import RecalculateMappingButton from '~/views/uavs/RecalculateMappingButton';
 
 const _cursorPointerStyle = { cursor: 'pointer' };
 
+type SlotIndicatorProps = {
+  indices: number[];
+};
+
 /**
  * Presentation component that shows how many mapping slots are empty at the
  * moment.
  */
-const EmptySlotsIndicator = ({ indices }) => (
+const EmptySlotsIndicator = ({ indices }: SlotIndicatorProps) => (
   <Translation>
     {(t) => (
       <DronePlaceholderList
@@ -59,6 +64,12 @@ EmptySlotsIndicator.propTypes = {
   indices: PropTypes.arrayOf(PropTypes.number),
 };
 
+type DroneIndicatorProps = {
+  hasNonemptyMappingSlot: boolean;
+  selectDrones: (ids: string[]) => void;
+  uavIds: string[];
+};
+
 /**
  * Presentation component that shows which UAV IDs have been assigned to a mapping
  * slot such that the UAV itself does not seem to exist (i.e. we have received no
@@ -68,7 +79,7 @@ const MissingDronesIndicator = ({
   hasNonemptyMappingSlot,
   selectDrones,
   uavIds,
-}) => (
+}: DroneIndicatorProps) => (
   <Translation>
     {(t) => (
       <DronePlaceholderList
@@ -92,12 +103,6 @@ const MissingDronesIndicator = ({
   </Translation>
 );
 
-MissingDronesIndicator.propTypes = {
-  hasNonemptyMappingSlot: PropTypes.bool,
-  selectDrones: PropTypes.func.isRequired,
-  uavIds: PropTypes.arrayOf(PropTypes.string),
-};
-
 /**
  * Presentation component that shows which UAVs seem to be placed at the wrong
  * place (far from its takeoff position).
@@ -106,7 +111,7 @@ const MisplacedDronesIndicator = ({
   hasNonemptyMappingSlot,
   selectDrones,
   uavIds,
-}) => (
+}: DroneIndicatorProps) => (
   <Translation>
     {(t) => (
       <DronePlaceholderList
@@ -130,12 +135,6 @@ const MisplacedDronesIndicator = ({
   </Translation>
 );
 
-MisplacedDronesIndicator.propTypes = {
-  hasNonemptyMappingSlot: PropTypes.bool,
-  selectDrones: PropTypes.func.isRequired,
-  uavIds: PropTypes.arrayOf(PropTypes.string),
-};
-
 /**
  * Presentation component that shows which UAVs seem to be facing the wrong
  * direction.
@@ -144,7 +143,7 @@ const MisalignedDronesIndicator = ({
   hasNonemptyMappingSlot,
   selectDrones,
   uavIds,
-}) => (
+}: DroneIndicatorProps) => (
   <Translation>
     {(t) => (
       <DronePlaceholderList
@@ -170,10 +169,13 @@ const MisalignedDronesIndicator = ({
   </Translation>
 );
 
-MisalignedDronesIndicator.propTypes = {
-  hasNonemptyMappingSlot: PropTypes.bool,
-  selectDrones: PropTypes.func.isRequired,
-  uavIds: PropTypes.arrayOf(PropTypes.string),
+type TakeoffAreaSetupDialogIndicatorsPresentationProps = {
+  emptySlotIndices: number[];
+  hasNonemptyMappingSlot: boolean;
+  misalignedUAVIds: string[];
+  misplacedUAVIds: string[];
+  missingUAVIds: string[];
+  selectDrones: (ids: string[]) => void;
 };
 
 /**
@@ -186,7 +188,7 @@ const TakeoffAreaSetupDialogIndicatorsPresentation = ({
   misplacedUAVIds,
   missingUAVIds,
   selectDrones,
-}) => (
+}: TakeoffAreaSetupDialogIndicatorsPresentationProps) => (
   <>
     <EmptySlotsIndicator indices={emptySlotIndices} />
     <MissingDronesIndicator
@@ -207,18 +209,9 @@ const TakeoffAreaSetupDialogIndicatorsPresentation = ({
   </>
 );
 
-TakeoffAreaSetupDialogIndicatorsPresentation.propTypes = {
-  emptySlotIndices: PropTypes.arrayOf(PropTypes.number),
-  hasNonemptyMappingSlot: PropTypes.bool,
-  misalignedUAVIds: PropTypes.arrayOf(PropTypes.string),
-  misplacedUAVIds: PropTypes.arrayOf(PropTypes.string),
-  missingUAVIds: PropTypes.arrayOf(PropTypes.string),
-  selectDrones: PropTypes.func.isRequired,
-};
-
 const TakeoffAreaSetupDialogIndicators = connect(
   // mapStateToProps
-  (state) => ({
+  (state: RootState) => ({
     emptySlotIndices: getEmptyMappingSlotIndices(state),
     hasNonemptyMappingSlot: hasNonemptyMappingSlot(state),
     missingUAVIds: getMissingUAVIdsInMapping(state),
@@ -226,10 +219,21 @@ const TakeoffAreaSetupDialogIndicators = connect(
     misalignedUAVIds: getMisalignedUAVIds(state),
   }),
   // mapDispatchToProps
-  (dispatch) => ({
-    selectDrones: (ids) => dispatch(setSelectedUAVIds(ids)),
+  (dispatch: AppDispatch) => ({
+    selectDrones: (ids: string[]) => dispatch(setSelectedUAVIds(ids)),
   })
 )(TakeoffAreaSetupDialogIndicatorsPresentation);
+
+type TakeoffAreaSetupDialogProps = {
+  approved?: boolean;
+  calculating?: boolean;
+  hasVirtualDrones?: boolean;
+  open?: boolean;
+  onAddVirtualDrones?: () => void;
+  onApprove?: () => void;
+  onClose?: () => void;
+  onRevoke?: () => void;
+};
 
 /**
  * Presentation component for the dialog that allows the user to validate whether
@@ -244,7 +248,7 @@ const TakeoffAreaSetupDialog = ({
   onApprove,
   onClose,
   onRevoke,
-}) => {
+}: TakeoffAreaSetupDialogProps) => {
   const { t } = useTranslation();
   const titleComponents = (
     <Box>
@@ -328,7 +332,7 @@ TakeoffAreaSetupDialog.propTypes = {
 
 export default connect(
   // mapStateToProps
-  (state) => ({
+  (state: RootState) => ({
     ...state.show.takeoffAreaSetupDialog,
     approved: isTakeoffAreaApproved(state),
     calculating: isMappingBeingCalculated(state),
@@ -336,9 +340,9 @@ export default connect(
   }),
 
   // mapDispatchToProps
-  (dispatch) => ({
+  (dispatch: AppDispatch) => ({
     onAddVirtualDrones() {
-      dispatch(addVirtualDronesForMission());
+      void dispatch(addVirtualDronesForMission());
     },
 
     onApprove() {
