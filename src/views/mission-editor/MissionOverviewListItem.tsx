@@ -10,7 +10,7 @@ import ListItemText from '@mui/material/ListItemText';
 import { useTheme } from '@mui/material/styles';
 import createColor from 'color';
 import isEmpty from 'lodash-es/isEmpty';
-import PropTypes from 'prop-types';
+import type { MouseEvent } from 'react';
 import { connect } from 'react-redux';
 
 import { makeStyles, Status } from '@skybrush/app-theme-mui';
@@ -26,6 +26,7 @@ import {
 } from '~/features/mission/selectors';
 import { SafetyDialogTab } from '~/features/safety/constants';
 import { openSafetyDialog, setSafetyDialogTab } from '~/features/safety/slice';
+import type { MissionItem } from '~/model/missions';
 import {
   iconForMissionItemType,
   isMissionItemValid,
@@ -34,6 +35,7 @@ import {
   schemaForMissionItemType,
   titleForMissionItemType,
 } from '~/model/missions';
+import type { AppDispatch, RootState } from '~/store/reducers';
 import { formatMissionId } from '~/utils/formatting';
 import {
   formatCoordinate,
@@ -57,7 +59,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 // TODO: Reduce code duplication from `GeofenceButton.jsx`
-const formatGeofenceStatusText = (status) => {
+const formatGeofenceStatusText = (status: Status): string => {
   switch (status) {
     case Status.OFF:
       return 'No geofence defined yet';
@@ -76,21 +78,31 @@ const formatGeofenceStatusText = (status) => {
   }
 };
 
-const formatMarkerStatusText = (marker, ratio) => {
-  const descriptions = {
+const formatMarkerStatusText = (
+  marker: string | undefined,
+  ratio: number | undefined
+): string => {
+  const descriptions: Record<string, string> = {
     start: 'Mission has started',
     end: 'Mission has ended',
   };
 
   const markerText =
-    marker in descriptions ? descriptions[marker] : `Unknown marker: ${marker}`;
+    marker !== undefined && marker in descriptions
+      ? descriptions[marker]
+      : `Unknown marker: ${marker}`;
   const ratioText =
     typeof ratio === 'number' ? ` (ratio=${ratio.toFixed(4)})` : '';
 
   return markerText + ratioText;
 };
 
-const ItemProgress = ({ color, ratio }) => {
+type ItemProgressProps = {
+  color: string;
+  ratio: number;
+};
+
+const ItemProgress = ({ color, ratio }: ItemProgressProps) => {
   const theme = useTheme();
 
   return (
@@ -108,6 +120,35 @@ const ItemProgress = ({ color, ratio }) => {
   );
 };
 
+type CompletionRatios = {
+  avg: number | undefined;
+  max: number | undefined;
+  min: number | undefined;
+};
+
+type OwnProps = {
+  id: string;
+  index: number;
+  ratio?: number;
+  selected: boolean;
+  selectedMissionId: number | undefined;
+  onSelectItem: (id: string, event: MouseEvent) => void;
+};
+
+type StateProps = {
+  editMissionItemParameters?: () => void;
+  item: MissionItem;
+  missionGeofenceStatus: Status;
+  ratios: CompletionRatios;
+};
+
+type DispatchProps = {
+  openGeofenceSettingsTab: () => void;
+  openSafetySettingsTab: () => void;
+};
+
+type Props = OwnProps & StateProps & DispatchProps;
+
 const MissionOverviewListItem = ({
   editMissionItemParameters,
   id,
@@ -121,13 +162,13 @@ const MissionOverviewListItem = ({
   onSelectItem,
   openGeofenceSettingsTab,
   openSafetySettingsTab,
-}) => {
+}: Props) => {
   const classes = useStyles();
 
   let avatar = iconForMissionItemType[item.type];
   let onClick = onSelectItem.bind(null, id);
   let primaryText = titleForMissionItemType[item.type];
-  let secondaryText;
+  let secondaryText: string | undefined;
   const isValid = isMissionItemValid(item);
 
   switch (item.type) {
@@ -187,7 +228,7 @@ const MissionOverviewListItem = ({
 
     case MissionItemType.CHANGE_SPEED: {
       const { velocityXY, velocityZ } = item.parameters;
-      const tags = [];
+      const tags: string[] = [];
       if (typeof velocityXY === 'number') {
         tags.push(`${velocityXY} m/s horizontal`);
       }
@@ -246,14 +287,20 @@ const MissionOverviewListItem = ({
     <Box sx={{ position: 'relative' }}>
       {selectedMissionId === undefined ? (
         <>
-          <ItemProgress color={Colors.missionItem} ratio={ratios.max} />
-          <ItemProgress color={Colors.currentMissionItem} ratio={ratios.avg} />
-          <ItemProgress color={Colors.doneMissionItem} ratio={ratios.min} />
+          <ItemProgress color={Colors.missionItem} ratio={ratios.max ?? 0} />
+          <ItemProgress
+            color={Colors.currentMissionItem}
+            ratio={ratios.avg ?? 0}
+          />
+          <ItemProgress
+            color={Colors.doneMissionItem}
+            ratio={ratios.min ?? 0}
+          />
         </>
       ) : (
         <ItemProgress
           color={ratio === 1 ? Colors.doneMissionItem : Colors.missionItem}
-          ratio={ratio}
+          ratio={ratio ?? 0}
         />
       )}
       <ListItem
@@ -280,7 +327,7 @@ const MissionOverviewListItem = ({
                 color='primary'
                 overlap='circular'
               >
-                <Avatar className={isValid ? null : classes.error}>
+                <Avatar className={isValid ? undefined : classes.error}>
                   {avatar}
                 </Avatar>
               </Badge>
@@ -293,44 +340,21 @@ const MissionOverviewListItem = ({
   );
 };
 
-MissionOverviewListItem.propTypes = {
-  editMissionItemParameters: PropTypes.func,
-  id: PropTypes.string,
-  index: PropTypes.number,
-  item: PropTypes.shape({
-    type: PropTypes.string,
-    parameters: PropTypes.object,
-    participants: PropTypes.arrayOf(PropTypes.number),
-  }),
-  missionGeofenceStatus: PropTypes.oneOf(Object.values(Status)),
-  ratio: PropTypes.number,
-  ratios: PropTypes.shape({
-    avg: PropTypes.number,
-    max: PropTypes.number,
-    min: PropTypes.number,
-  }),
-  selected: PropTypes.bool,
-  selectedMissionId: PropTypes.number,
-  onSelectItem: PropTypes.func,
-  openGeofenceSettingsTab: PropTypes.func,
-  openSafetySettingsTab: PropTypes.func,
-};
-
 // TODO: This should really be cleaned up by making sure that Virtuoso only
 //       renders items that are actually present in the store, or at least by
 //       introducing a wrapper component to check whether a given mission item
 //       exists before trying to render it
 export default connect(
   // mapStateToProps
-  (state, ownProps) => ({
-    item: getMissionItemById(state, ownProps.id) ?? {
+  (state: RootState, ownProps: OwnProps) => ({
+    item: (getMissionItemById(state, ownProps.id) ?? {
       // HACK:Prevent a crash when react-virtuoso tries to render
       //      an item that no longer exists in the redux store...
       type: MissionItemType.UNKNOWN,
-    },
+    }) as MissionItem,
     missionGeofenceStatus: hasActiveGeofencePolygon(state)
       ? isWaypointMissionConvexHullInsideGeofence(state)
-        ? getGeofencePolygon(state).owner === MissionType.WAYPOINT
+        ? getGeofencePolygon(state)?.owner === MissionType.WAYPOINT
           ? Status.SUCCESS
           : Status.WARNING
         : Status.ERROR
@@ -343,23 +367,27 @@ export default connect(
   // mapDispatchToProps
   {
     editMissionItemParameters,
-    openGeofenceSettingsTab: () => (dispatch) => {
+    openGeofenceSettingsTab: () => (dispatch: AppDispatch) => {
       dispatch(setSafetyDialogTab(SafetyDialogTab.GEOFENCE));
       dispatch(openSafetyDialog());
     },
-    openSafetySettingsTab: () => (dispatch) => {
+    openSafetySettingsTab: () => (dispatch: AppDispatch) => {
       dispatch(setSafetyDialogTab(SafetyDialogTab.SETTINGS));
       dispatch(openSafetyDialog());
     },
   },
   // mergeProps
-  (stateProps, { editMissionItemParameters, ...dispatchProps }, ownProps) => ({
+  (
+    stateProps,
+    { editMissionItemParameters: editFn, ...dispatchProps },
+    ownProps
+  ) => ({
     ...ownProps,
     ...stateProps,
     ...dispatchProps,
 
     ...(!isEmpty(schemaForMissionItemType[stateProps.item.type].properties) && {
-      editMissionItemParameters: () => editMissionItemParameters(ownProps.id),
+      editMissionItemParameters: () => editFn?.(ownProps.id),
     }),
   })
 )(MissionOverviewListItem);

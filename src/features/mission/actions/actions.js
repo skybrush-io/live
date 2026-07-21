@@ -46,10 +46,7 @@ import {
 import { ServerPlanError } from '~/flockwave/operations';
 import messageHub from '~/message-hub';
 import { FeatureType } from '~/model/features';
-import {
-  missionItemIdToGlobalId,
-  missionSlotIdToGlobalId,
-} from '~/model/identifiers';
+import { missionSlotIdToGlobalId } from '~/model/identifiers';
 import {
   isMissionItemValid,
   MissionItemType,
@@ -563,18 +560,6 @@ export const removeSelectedMissionItems = () => (dispatch, getState) => {
   const selectedMissionItemIds = getSelectedMissionItemIds(getState());
   dispatch(removeMissionItemsByIds(selectedMissionItemIds));
 };
-
-/**
- * Action factory that creates an action that updates the selection to the
- * given list of mission item IDs.
- *
- * @param {string[]} ids  the IDs of the selected mission items. Any mission
- *        item whose ID is not in this set will be deselected, and so will be
- *        any other item that is not a mission item.
- * @return {Object} an appropriately constructed action
- */
-export const setSelectedMissionItemIds = (ids) =>
-  setSelection(ids.map(missionItemIdToGlobalId));
 
 /**
  * Thunk that updates the parameters of a mission item based on a map feature.

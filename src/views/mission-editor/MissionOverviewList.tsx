@@ -1,7 +1,6 @@
-import PropTypes from 'prop-types';
-import { useCallback, useEffect, useRef } from 'react';
+import { type MouseEvent, useCallback, useEffect, useRef } from 'react';
 import { connect } from 'react-redux';
-import { Virtuoso } from 'react-virtuoso';
+import { Virtuoso, type VirtuosoHandle } from 'react-virtuoso';
 
 import { createSelectionHandlerThunk } from '~/components/helpers/lists';
 
@@ -18,21 +17,33 @@ import {
   shouldMissionEditorPanelFollowScroll,
 } from '~/features/mission/selectors';
 import { setEditorPanelFollowScroll } from '~/features/mission/slice';
+import type { RootState } from '~/store/reducers';
 
 import MissionOverviewListItem from './MissionOverviewListItem';
 
+type ItemData = {
+  id: string;
+  index: number;
+};
+
+type ListContext = {
+  currentItemIndex: number | undefined;
+  currentItemRatio: number | undefined;
+  onSelectItem: (id: string, event: MouseEvent) => void;
+  selectedMissionId: number | undefined;
+  selection: readonly string[];
+};
+
 const renderMissionListItem = (
-  _index,
-  // Item
-  { id, index },
-  // Context
+  _index: number,
+  { id, index }: ItemData,
   {
     currentItemIndex = -1,
     currentItemRatio,
     onSelectItem,
     selectedMissionId,
     selection,
-  }
+  }: ListContext
 ) => (
   <MissionOverviewListItem
     ratio={
@@ -49,6 +60,28 @@ const renderMissionListItem = (
   />
 );
 
+type OwnProps = {
+  followScroll?: boolean;
+};
+
+type StateProps = {
+  currentItemId: string | undefined;
+  currentItemIndex: number | undefined;
+  currentItemRatio: number | undefined;
+  followScroll: boolean;
+  itemIdsWithIndices: Array<{ id: string; index: number }>;
+  participantsForItemIds: Record<string, number[]>;
+  selectedItemIds: string[];
+  selectedMissionId: number | undefined;
+};
+
+type DispatchProps = {
+  onFollowScrollChanged: (payload: boolean) => void;
+  onSelectItem: (id: string, event: MouseEvent) => void;
+};
+
+type Props = OwnProps & StateProps & DispatchProps;
+
 const MissionOverviewList = ({
   currentItemId,
   currentItemIndex,
@@ -59,8 +92,8 @@ const MissionOverviewList = ({
   participantsForItemIds,
   selectedItemIds,
   selectedMissionId,
-}) => {
-  const context = {
+}: Props) => {
+  const context: ListContext = {
     currentItemIndex,
     currentItemRatio,
     onSelectItem,
@@ -78,7 +111,7 @@ const MissionOverviewList = ({
       participantsForItemIds[id].includes(selectedMissionId)
   );
 
-  const virtuosoRef = useRef(null);
+  const virtuosoRef = useRef<VirtuosoHandle>(null);
 
   const scrollToCurrent = useCallback(
     () =>
@@ -104,7 +137,7 @@ const MissionOverviewList = ({
   }, [followScroll, scrollToCurrent, selectedMissionId]);
 
   return (
-    <Virtuoso
+    <Virtuoso<ItemData, ListContext>
       ref={virtuosoRef}
       data={filteredItemIdsWithIndices}
       context={context}
@@ -113,35 +146,23 @@ const MissionOverviewList = ({
   );
 };
 
-MissionOverviewList.propTypes = {
-  currentItemId: PropTypes.string,
-  currentItemIndex: PropTypes.number,
-  currentItemRatio: PropTypes.number,
-  followScroll: PropTypes.bool,
-  itemIdsWithIndices: PropTypes.arrayOf(PropTypes.object),
-  onSelectItem: PropTypes.func,
-  participantsForItemIds: PropTypes.object,
-  selectedItemIds: PropTypes.arrayOf(PropTypes.string),
-  selectedMissionId: PropTypes.number,
-};
-
 export default connect(
   // mapStateToProps
-  (state) => {
+  (state: RootState) => {
     const selectedMissionId = getSelectedMissionIdInMissionEditorPanel(state);
     return {
-      currentItemId: getCurrentMissionItemIdForMissionIndex(
-        state,
-        selectedMissionId
-      ),
-      currentItemIndex: getCurrentMissionItemIndexForMissionIndex(
-        state,
-        selectedMissionId
-      ),
-      currentItemRatio: getCurrentMissionItemRatioForMissionIndex(
-        state,
-        selectedMissionId
-      ),
+      currentItemId:
+        selectedMissionId !== undefined
+          ? getCurrentMissionItemIdForMissionIndex(state, selectedMissionId)
+          : undefined,
+      currentItemIndex:
+        selectedMissionId !== undefined
+          ? getCurrentMissionItemIndexForMissionIndex(state, selectedMissionId)
+          : undefined,
+      currentItemRatio:
+        selectedMissionId !== undefined
+          ? getCurrentMissionItemRatioForMissionIndex(state, selectedMissionId)
+          : undefined,
       followScroll: shouldMissionEditorPanelFollowScroll(state),
       itemIdsWithIndices: getMissionItemIdsWithIndices(state),
       participantsForItemIds: getParticipantsForMissionItemIds(state),
@@ -152,6 +173,8 @@ export default connect(
   // mapDispatchToProps
   {
     onFollowScrollChanged: setEditorPanelFollowScroll,
+    // `createSelectionHandlerThunk` returns a function with an unused event parameter;
+    // cast to the simpler signature expected by MissionOverviewListItem
     onSelectItem: createSelectionHandlerThunk({
       getSelection: getSelectedMissionItemIds,
       setSelection: setSelectedMissionItemIds,
