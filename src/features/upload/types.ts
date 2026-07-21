@@ -54,3 +54,8 @@ export type HistoryItem<ResultPiece = unknown> = {
   result: UploadJobResult;
   perUAVResults: Record<Identifier, PerUAVJobResult<ResultPiece>>;
 };
+
+/**
+ * Tabs supported by the upload dialog.
+ */
+export type UploadDialogTab = 'status' | 'results';

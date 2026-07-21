@@ -23,6 +23,7 @@ import type { UploadSliceState } from './slice';
 import type {
   HistoryItem,
   JobData,
+  UploadDialogTab,
   UploadJobResult,
   UploadStatus,
 } from './types';
@@ -320,6 +321,13 @@ export const getNextDroneFromUploadQueue = (
 export const getUploadDialogState = (
   state: RootState
 ): UploadSliceState['dialog'] => state.upload.dialog;
+
+/**
+ * Returns the selected tab in the upload dialog.
+ */
+export const getSelectedTabInUploadDialog = (
+  state: RootState
+): UploadDialogTab => state.upload.dialog.selectedTab;
 
 /**
  * Returns whether failed uploads should be retried automatically.

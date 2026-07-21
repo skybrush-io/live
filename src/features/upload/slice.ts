@@ -31,6 +31,7 @@ import type {
   JobPayload,
   PerUAVJobResult,
   UAVProgressInfo,
+  UploadDialogTab,
 } from './types';
 import {
   clearQueues,
@@ -93,6 +94,7 @@ export type UploadSliceState = {
   dialog: {
     open: boolean;
     showLastUploadResult: boolean;
+    selectedTab: UploadDialogTab;
     selectedJob: {
       type?: string;
       payload?: JobPayload;
@@ -141,6 +143,7 @@ const initialState: UploadSliceState = {
   dialog: {
     open: false,
     showLastUploadResult: false,
+    selectedTab: 'status',
     selectedJob: {
       type: undefined,
       payload: undefined,
@@ -239,6 +242,13 @@ const { actions, reducer } = createSlice({
 
     setFlashFailed(state, action: PayloadAction<boolean>) {
       state.settings.flashFailed = Boolean(action.payload);
+    },
+
+    setUploadDialogSelectedTab(
+      state,
+      { payload: selectedTab }: PayloadAction<UploadDialogTab>
+    ) {
+      state.dialog.selectedTab = selectedTab;
     },
 
     // Private actions that should be dispatched only from the uploader saga
@@ -504,6 +514,7 @@ export const {
   setUploadAutoRetry,
   setFlashFailed,
   setRestrictToGlobalSelection,
+  setUploadDialogSelectedTab,
   startUpload,
   toggleRestrictToGlobalSelection,
 } = actions;
