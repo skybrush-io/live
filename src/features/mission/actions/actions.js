@@ -457,7 +457,7 @@ export const prepareMappingForMultiUAVMissionFromStartPositions =
     dispatch(recalculateMapping());
   };
 
-export const changeMissionType = (newMissionType) => (dispatch, getState) => {
+export const ensureMissionType = (newMissionType) => (dispatch, getState) => {
   const oldMissionType = getMissionType(getState());
 
   if (oldMissionType === newMissionType) {
@@ -732,7 +732,7 @@ export const invokeMissionPlanner =
     }
 
     if (Array.isArray(items)) {
-      dispatch(changeMissionType(MissionType.WAYPOINT));
+      dispatch(ensureMissionType(MissionType.WAYPOINT));
       dispatch(setMissionName(name));
       dispatch(setMissionItemsFromArray(items.map(processReceivedMissionItem)));
 
@@ -918,7 +918,7 @@ export const restoreMission =
     progressData,
   }) =>
   (dispatch, _getState) => {
-    dispatch(changeMissionType(MissionType.WAYPOINT));
+    dispatch(ensureMissionType(MissionType.WAYPOINT));
     dispatch(setMissionName(name));
     dispatch(setMissionItemsFromArray(items));
     dispatch(setMappingLength(homePositions.length));
