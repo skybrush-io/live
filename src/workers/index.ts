@@ -11,7 +11,7 @@ const workers: WorkerApi = {
     pool.exec('estimateShowCoordinateSystem', args),
   findGreedyAssignment: (...args) => pool.exec('findGreedyAssignment', args),
   loadShow: (
-    file: string | number[] | Uint8Array | File,
+    file: string | number[] | Uint8Array | Blob,
     options: LoadShowOptions = {}
   ) => {
     const params: any[] = [file, options];
