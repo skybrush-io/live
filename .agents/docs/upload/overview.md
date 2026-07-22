@@ -30,7 +30,7 @@ The show job demonstrates per-UAV selection and mission scope; firmware uses com
 
 A single-UAV execution outcome is success, retryable failure, permanent failure, or cancellation (internal to `saga.ts`). Selector failures are permanent, preventing retry loops; executor rejections are retryable. Automatic retry only re-enqueues retryable failures from this run, never historical failures.
 
-The default manager records every worker outcome into a `perUAVResults` map in `HistoryItem` form: successful pieces carry the executor result, failures carry the error message, and cancellations are omitted. This history item is committed to Redux by `_notifyUploadFinished` in `slice.ts` and is the canonical source for job results. Domain code can read it with selectors such as `aggregatePerUAVResultsFromHistory` in `utils.ts`.
+The default manager records every worker outcome into a `perUAVResults` map in `HistoryItem` form: successful pieces carry the executor result, failures carry the error message, and cancellations are omitted. This history item is committed to Redux by `_notifyUploadFinished` in `slice.ts` and is the canonical source for job results. Domain code can read it with selectors such as `aggregatePerUAVResultsFromHistory` in `utils.ts`; the committed item is also the single input for per-job-type result panels and post-actions.
 
 Progress enters a one-item saga channel, deliberately dropping stale intermediate reports. Completion forces progress to 100% for time estimation.
 
@@ -42,4 +42,4 @@ Do not dispatch underscore-prefixed lifecycle actions outside `saga.ts`, mutate 
 
 ## Extending
 
-Add a stable, domain-owned specification to `src/upload-jobs.js`; provide scope, executor, and the selector or post-action the job needs. Prefer the default manager. A custom manager is appropriate for a genuinely different scheduling policy, but must preserve the slice lifecycle and return a `HistoryItem<ResultPiece>`.
+Add a stable, domain-owned specification to `src/upload-jobs.js`; provide scope, executor, and the selector or post-action the job needs. Prefer the default manager. A custom manager is appropriate for a genuinely different scheduling policy, but must preserve the slice lifecycle and return a `HistoryItem<ResultPiece>`. Optionally register a result-panel component via `registerUploadJobResultPanel` in `result-panels.ts` (wired in `src/upload-jobs.js` alongside the spec); if present, the upload dialog shows a `status`/`results` tab bar and renders the panel for the current job type, which reads the committed history item through its own selectors, not from props.
