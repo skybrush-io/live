@@ -73,10 +73,10 @@ export const selectLatestConsistencyCheckHistoryItem: AppSelector<
 );
 
 /**
- * Selector that returns the results of parameter consistency check jobs,
+ * Selector that returns the results of consistency check jobs,
  * aggregated from the job's history.
  */
-export const selectParameterConsistencyCheckResults = createSelector(
+export const selectConsistencyCheckResults = createSelector(
   selectConsistencyCheckHistory,
   (historyItems) => {
     const perUAVResults = aggregatePerUAVResultsFromHistory(historyItems);

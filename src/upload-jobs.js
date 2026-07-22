@@ -1,8 +1,8 @@
-import { CONSISTENCY_CHECK_JOB_TYPE } from '~/features/parameters/constants';
-import ParameterConsistencyCheckResultPanel from '~/features/parameters/ParameterConsistencyCheckResultPanel';
 import firmwareUploadJobSpecification from '~/features/firmware-update/upload';
 import missionItemUploadJobSpecification from '~/features/mission/upload';
 import parameterConsistencyCheckJobSpecification from '~/features/parameters/consistency-check';
+import ConsistencyCheckResultPanel from '~/features/parameters/ConsistencyCheckResultPanel';
+import { CONSISTENCY_CHECK_JOB_TYPE } from '~/features/parameters/constants';
 import parameterUploadJobSpecification from '~/features/parameters/upload';
 import showUploadJobSpecification from '~/features/show/upload';
 import { registerUploadJobType } from '~/features/upload/jobs';
@@ -20,7 +20,7 @@ function registerUploadJobTypes() {
   disposers.push(
     registerUploadJobResultPanel(
       CONSISTENCY_CHECK_JOB_TYPE,
-      ParameterConsistencyCheckResultPanel
+      ConsistencyCheckResultPanel
     )
   );
 

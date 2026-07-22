@@ -22,7 +22,7 @@ import {
 import type { Identifier } from '~/utils/collections';
 import { formatIdsAndTruncateTrailingItems } from '~/utils/formatting';
 
-import { selectParameterConsistencyCheckResults } from './selectors';
+import { selectConsistencyCheckResults } from './selectors';
 import { findMajority } from './utils';
 
 // -- Parameter value grid row
@@ -114,13 +114,13 @@ const ParameterValueGrid = ({
 
 // -- Parameter accordion
 
-type ParameterAccordionItemProps = Readonly<{
-  paramName: string;
+type ParameterAccordionProps = Readonly<{
+  name: string;
   valueMap: Record<string, string[]>;
   majorityValue: string | undefined;
 }>;
 
-const useParameterAccordionItemStyles = makeStyles((theme) => ({
+const useParameterAccordionStyles = makeStyles((theme) => ({
   accordionDetails: {
     ...createSecondaryAreaStyle(theme),
     padding: theme.spacing(1, 0),
@@ -146,12 +146,12 @@ const useParameterAccordionItemStyles = makeStyles((theme) => ({
  * Renders a single parameter as an expandable accordion with a per-value
  * breakdown in its details.
  */
-const ParameterAccordionItem = ({
-  paramName,
+const ParameterAccordion = ({
+  name,
   valueMap,
   majorityValue,
-}: ParameterAccordionItemProps) => {
-  const classes = useParameterAccordionItemStyles();
+}: ParameterAccordionProps) => {
+  const classes = useParameterAccordionStyles();
   const consensusCount = majorityValue
     ? (valueMap[majorityValue]?.length ?? 0)
     : 0;
@@ -165,7 +165,7 @@ const ParameterAccordionItem = ({
     <Accordion disableGutters>
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
         <Stack className={classes.accordionSummaryStack}>
-          <Typography component='span'>{paramName}</Typography>
+          <Typography component='span'>{name}</Typography>
           <Box className={classes.spacer} />
           <Stack className={classes.statusStack}>
             <LabeledStatusLight status={Status.SUCCESS} size='small'>
@@ -240,7 +240,7 @@ const ErrorList = ({ errors }: ErrorListProps) => {
   );
 };
 
-const useParameterConsistencyCheckResultPanelStyles = makeStyles((theme) => ({
+const useConsistencyCheckResultPanelStyles = makeStyles((theme) => ({
   root: {
     overflow: 'auto',
     maxHeight: 'calc(100vh - 320px)',
@@ -248,12 +248,10 @@ const useParameterConsistencyCheckResultPanelStyles = makeStyles((theme) => ({
   },
 }));
 
-const ParameterConsistencyCheckResultPanel = () => {
+const ConsistencyCheckResultPanel = () => {
   const { t } = useTranslation();
-  const classes = useParameterConsistencyCheckResultPanelStyles();
-  const { parameterMap, errors } = useSelector(
-    selectParameterConsistencyCheckResults
-  );
+  const classes = useConsistencyCheckResultPanelStyles();
+  const { parameterMap, errors } = useSelector(selectConsistencyCheckResults);
 
   const hasData = Object.keys(parameterMap).length > 0;
   const hasErrors = Object.keys(errors).length > 0;
@@ -267,12 +265,12 @@ const ParameterConsistencyCheckResultPanel = () => {
 
   return (
     <Box className={classes.root}>
-      {sortedParams.map((paramName) => (
-        <ParameterAccordionItem
-          key={paramName}
-          paramName={paramName}
-          valueMap={parameterMap[paramName]}
-          majorityValue={majority[paramName]}
+      {sortedParams.map((name) => (
+        <ParameterAccordion
+          key={name}
+          name={name}
+          valueMap={parameterMap[name]}
+          majorityValue={majority[name]}
         />
       ))}
       <ErrorList errors={errors} />
@@ -280,4 +278,4 @@ const ParameterConsistencyCheckResultPanel = () => {
   );
 };
 
-export default ParameterConsistencyCheckResultPanel;
+export default ConsistencyCheckResultPanel;
