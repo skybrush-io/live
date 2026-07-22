@@ -186,49 +186,7 @@ const ParameterAccordion = ({
   );
 };
 
-// -- Error summary
-
-type ErrorSummaryProps = Readonly<{
-  errors: Record<Identifier, string>;
-}>;
-
-const useErrorSummaryStyles = makeStyles((theme) => ({
-  root: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: theme.spacing(1),
-    marginTop: theme.spacing(2),
-    marginBottom: theme.spacing(1),
-  },
-  uavIds: {
-    color: theme.palette.text.secondary,
-  },
-}));
-
-/**
- * Renders a short summary of UAVs that produced errors during the
- * consistency check job: the number of errors and the affected UAV IDs.
- */
-const ErrorSummary = ({ errors }: ErrorSummaryProps) => {
-  const { t } = useTranslation();
-  const classes = useErrorSummaryStyles();
-  const uavIds = Object.keys(errors).sort();
-
-  if (uavIds.length === 0) {
-    return null;
-  }
-
-  return (
-    <Stack className={classes.root}>
-      <StatusPill inline status={Status.ERROR}>
-        {t('uploadPanel.consistencyCheck.errorCount', { count: uavIds.length })}
-      </StatusPill>
-      <Typography className={classes.uavIds} variant='body2'>
-        {formatIdsAndTruncateTrailingItems(uavIds, { maxCount: 12 })}
-      </Typography>
-    </Stack>
-  );
-};
+// -- Consistency check result panel
 
 const useConsistencyCheckResultPanelStyles = makeStyles((theme) => ({
   root: {
@@ -263,7 +221,6 @@ const ConsistencyCheckResultPanel = () => {
           majorityValue={majority[name]}
         />
       ))}
-      <ErrorSummary errors={errors} />
     </Box>
   );
 };
