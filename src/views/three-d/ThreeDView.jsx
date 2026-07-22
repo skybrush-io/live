@@ -84,7 +84,7 @@ const ThreeDView = ({ ref, ...props }) => {
       embedded='true'
       keyboard-shortcuts='enterVR: false'
       loading-screen='backgroundColor: #424242; dotsColor: #888'
-      renderer='antialias: false; colorManagement: true; physicallyCorrectLights: true'
+      renderer='antialias: false'
       xr-mode-ui='enabled: false'
       device-orientation-permission-ui='enabled: false'
       tabIndex={-1}

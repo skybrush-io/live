@@ -1,5 +1,4 @@
 import Box, { type BoxProps } from '@mui/material/Box';
-import { createSelector } from '@reduxjs/toolkit';
 import clsx from 'clsx';
 import { use } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -17,7 +16,7 @@ import {
   getUAVIdToStateMapping,
 } from '~/features/uavs/selectors';
 import type { RootState } from '~/store/reducers';
-import { createShallowSelector } from '~/utils/selectors';
+import { createDeepResultSelector } from '~/utils/selectors';
 import { WorkbenchContext } from '~/workbench';
 
 import PinnableTooltipContents from '../header/PinnableTooltipContents';
@@ -32,8 +31,12 @@ import UAVStatusSummaryTotal from './UAVStatusSummaryTotal';
  * numbers: operational, initializing, warning and error. Certain UAV status
  * levels such as "rth" and "critical" are consolidated into "warning" and
  * "error", respectively.
+ *
+ * The result of the output function is compared with the previous result using
+ * deep equality. This is to prevent a re-render when the UAV statuses change but the
+ * summary remains identical.
  */
-const getStatusSummaryInner = createSelector(
+const getStatusSummary = createDeepResultSelector(
   getUAVIdToStateMapping,
   getUAVIdList,
   (byId, order) => {
@@ -82,15 +85,6 @@ const getStatusSummaryInner = createSelector(
 
     return result;
   }
-);
-
-/**
- * Wrapper of `getStatusSummaryInner()` to prevent a re-rendering when the
- * status summary result did not change.
- */
-const getStatusSummary = createShallowSelector(
-  getStatusSummaryInner,
-  (result) => result
 );
 
 /* ************************************************************************ */

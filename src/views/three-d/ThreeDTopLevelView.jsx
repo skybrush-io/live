@@ -69,7 +69,10 @@ const ThreeDTopLevelView = ({
   const classes = useStyles();
 
   const threeDViewRef = useRef(null);
-  const { ref } = useResizeObserver({
+  const ref = useRef(null);
+
+  useResizeObserver({
+    ref,
     onResize() {
       if (threeDViewRef.current) {
         threeDViewRef.current.resize();
