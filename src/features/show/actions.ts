@@ -1,5 +1,5 @@
 import { Base64 } from 'js-base64';
-import get from 'lodash-es/get';
+import ky from 'ky';
 import sum from 'lodash-es/sum';
 import throttle from 'lodash-es/throttle';
 import Point from 'ol/geom/Point';
@@ -7,7 +7,11 @@ import Point from 'ol/geom/Point';
 import { freeze } from '@reduxjs/toolkit';
 
 import { toRadians } from '@skybrush/math';
-import { loadShowSpecificationAndZip as processFile } from '@skybrush/show-format';
+import {
+  EnvironmentType,
+  loadShowSpecificationAndZip as processFile,
+  type ShowSpecification,
+} from '@skybrush/show-format';
 
 import { getFeaturesInOrder } from '~/features/map-features/selectors';
 import { removeFeaturesByIds } from '~/features/map-features/slice';
@@ -20,6 +24,7 @@ import {
   updateTakeoffHeadings,
 } from '~/features/mission/slice';
 import { showConfirmationDialog } from '~/features/prompt/actions';
+import type { PromptResponse } from '~/features/prompt/types';
 import { getUAVOperationConfirmationStyle } from '~/features/settings/selectors';
 import { showError, showSuccess } from '~/features/snackbar/actions';
 import {
@@ -31,15 +36,23 @@ import i18n from '~/i18n';
 import messageHub from '~/message-hub';
 import { MissionType } from '~/model/missions';
 import { UAVOperationConfirmationStyle } from '~/model/settings';
+import type { AppDispatch, AppThunk, RootState } from '~/store/reducers';
 import {
   lonLatFromMapViewCoordinate,
   mapViewCoordinateFromLonLat,
   translateLonLatWithMapViewDelta,
+  type EasNor,
+  type LonLat,
 } from '~/utils/geography';
+import type { Coordinate3D } from '~/utils/math';
 import { createAsyncAction } from '~/utils/redux';
 import workers from '~/workers';
 
-import { JOB_TYPE } from './constants';
+import {
+  JOB_TYPE,
+  type AltitudeReference,
+  type TakeoffHeadingSpecification,
+} from './constants';
 import { StartMethod } from './enums';
 import {
   getAbsolutePathOfShowFile,
@@ -78,7 +91,7 @@ import {
 /**
  * Thunk that approves the takeoff area arrangement with the current timestamp.
  */
-export const approveTakeoffArea = () => (dispatch) => {
+export const approveTakeoffArea = (): AppThunk => (dispatch) => {
   dispatch(approveTakeoffAreaAt(Date.now()));
 };
 
@@ -86,13 +99,14 @@ export const approveTakeoffArea = () => (dispatch) => {
  * Thunk that authorizes the start of the show if it has a scheduled start time
  * and deauthorizes it if it does not have a scheduled start time.
  */
-export const authorizeIfAndOnlyIfHasStartTime = () => (dispatch, getState) => {
-  const shouldAuthorize = hasScheduledStartTime(getState());
-  dispatch(setShowAuthorization(shouldAuthorize));
-  if (shouldAuthorize) {
-    dispatch(setCommandsAreBroadcast(true));
-  }
-};
+export const authorizeIfAndOnlyIfHasStartTime =
+  (): AppThunk => (dispatch, getState) => {
+    const shouldAuthorize = hasScheduledStartTime(getState());
+    dispatch(setShowAuthorization(shouldAuthorize));
+    if (shouldAuthorize) {
+      dispatch(setCommandsAreBroadcast(true));
+    }
+  };
 
 /**
  * Returns an action that clears the upload history of the show upload job.
@@ -103,7 +117,7 @@ const clearShowUploadResult = () => clearUploadHistoryForJobType(JOB_TYPE);
  * Thunk that clears the currently loaded show and sets the type of the
  * currently loaded mission to unknown.
  */
-export const clearLoadedShow = () => (dispatch) => {
+export const clearLoadedShow = (): AppThunk => (dispatch) => {
   dispatch(_clearLoadedShow());
   dispatch(setMissionType(MissionType.UNKNOWN));
 };
@@ -111,7 +125,7 @@ export const clearLoadedShow = () => (dispatch) => {
 /**
  * Think that clears the start time of the show, keeping its start method.
  */
-export const clearStartTime = () => (dispatch, getState) => {
+export const clearStartTime = (): AppThunk => (dispatch, getState) => {
   const clock = getShowClockReference(getState());
   dispatch(setStartTime({ clock, time: undefined }));
   dispatch(synchronizeShowSettings('toServer'));
@@ -121,13 +135,17 @@ export const clearStartTime = () => (dispatch, getState) => {
  * Updates the takeoff and landing positions and the takeoff headings in the
  * current mission from the show settings and trajectories.
  */
-export const setupMissionFromShow = () => (dispatch, getState) => {
+export const setupMissionFromShow = (): AppThunk => (dispatch, getState) => {
   const state = getState();
 
   // TODO(ntamas): map these to GPS coordinates only if the show is outdoor
-  const homePositions = getFirstPointsOfTrajectoriesInWorldCoordinates(state);
-  const landingPositions = getLastPointsOfTrajectoriesInWorldCoordinates(state);
-  const takeoffHeading = getCommonTakeoffHeading(state);
+  const homePositions = getFirstPointsOfTrajectoriesInWorldCoordinates(
+    state
+  ).map((pos) => pos ?? null);
+  const landingPositions = getLastPointsOfTrajectoriesInWorldCoordinates(
+    state
+  ).map((pos) => pos ?? null);
+  const takeoffHeading = getCommonTakeoffHeading(state) ?? null;
 
   dispatch(setMissionType(MissionType.SHOW));
   dispatch(updateHomePositions(homePositions));
@@ -135,7 +153,7 @@ export const setupMissionFromShow = () => (dispatch, getState) => {
   dispatch(updateTakeoffHeadings(takeoffHeading));
 };
 
-export const removeShowFeatures = () => (dispatch, getState) => {
+export const removeShowFeatures = (): AppThunk => (dispatch, getState) => {
   const state = getState();
 
   const showFeatureIds = getFeaturesInOrder(state)
@@ -150,12 +168,17 @@ export const removeShowFeatures = () => (dispatch, getState) => {
  * is expressed in map view coordinates.
  */
 export const moveOutdoorShowOriginByMapCoordinateDelta =
-  (delta) => (dispatch, getState) => {
+  (delta: EasNor): AppThunk =>
+  (dispatch, getState) => {
     const origin = getOutdoorShowOrigin(getState());
-    const newOrigin = translateLonLatWithMapViewDelta(origin, delta);
-    dispatch(
-      updateOutdoorShowSettings({ origin: newOrigin, setupMission: true })
-    );
+    if (origin) {
+      const newOrigin = translateLonLatWithMapViewDelta(origin, delta);
+      dispatch(
+        updateOutdoorShowSettings({ origin: newOrigin, setupMission: true })
+      );
+    } else {
+      console.warn('Cannot move outdoor show origin because it is not set.');
+    }
   };
 
 /**
@@ -163,7 +186,8 @@ export const moveOutdoorShowOriginByMapCoordinateDelta =
  * decimal digit.
  */
 export const rotateOutdoorShowOrientationByAngle =
-  (delta) => (dispatch, getState) => {
+  (delta: number): AppThunk =>
+  (dispatch, getState) => {
     const orientation = getOutdoorShowOrientation(getState());
     const newOrientation = orientation + delta;
 
@@ -182,23 +206,39 @@ export const rotateOutdoorShowOrientationByAngle =
  * snapping the angle to one decimal digit.
  */
 export const rotateOutdoorShowOrientationByAngleAroundPoint =
-  (angle, rotationOriginInMapCoordinates) => (dispatch, getState) => {
-    const showOriginInMapCoordinates = mapViewCoordinateFromLonLat(
-      getOutdoorShowOrigin(getState())
-    );
+  (angle: number, rotationOriginInMapCoordinates: EasNor): AppThunk =>
+  (dispatch, getState) => {
+    const origin = getOutdoorShowOrigin(getState());
+    if (!origin) {
+      console.warn(
+        'Cannot rotate outdoor show orientation around point because ' +
+          'the origin is not set.'
+      );
+      return;
+    }
+
+    const showOriginInMapCoordinates = mapViewCoordinateFromLonLat(origin);
     const showOriginPoint = new Point(showOriginInMapCoordinates);
     showOriginPoint.rotate(toRadians(-angle), rotationOriginInMapCoordinates);
     const newOrigin = lonLatFromMapViewCoordinate(
-      showOriginPoint.flatCoordinates
+      showOriginPoint.getCoordinates() as EasNor
     );
 
     dispatch(setOutdoorShowOrigin(newOrigin));
     dispatch(rotateOutdoorShowOrientationByAngle(angle));
   };
 
+type OutdoorShowSettings = Partial<{
+  origin: LonLat;
+  orientation: number | string;
+  takeoffHeading: TakeoffHeadingSpecification;
+  setupMission: boolean;
+}>;
+
 export const updateOutdoorShowSettings =
-  ({ origin, orientation, takeoffHeading, setupMission }) =>
+  (payload: OutdoorShowSettings): AppThunk =>
   (dispatch) => {
+    const { origin, orientation, takeoffHeading, setupMission } = payload;
     let changed = false;
 
     if (origin) {
@@ -225,9 +265,52 @@ export const updateOutdoorShowSettings =
     }
   };
 
-const createShowLoaderThunkFactory = (
-  dataSourceToShowSpecification,
-  options = {}
+/**
+ * Object encapsulating a show specification, a URL that indicates where it was loaded
+ * from (if known), and an optional base64 blob representation of the show specification
+ * for cases when it needs to be kept around in unchanged form (such as when doing
+ * show adaptation -- we want to pass the original show blob to the server).
+ */
+type ShowLoadResult = {
+  spec: ShowSpecification;
+  url?: string;
+  base64Blob?: string;
+};
+
+/**
+ * Type specification for the first argument of the `createShowLoaderThunkFactory()`
+ * function. See its documentation for more details.
+ */
+type ShowLoaderDataSource<T> = (
+  source: T,
+  context: {
+    dispatch: AppDispatch;
+    getState: () => RootState;
+    onProgress: (progress: number) => void;
+  }
+) => Promise<ShowLoadResult>;
+
+/**
+ * Internal factory function that creates Redux action factories for loading a show from
+ * a given data source.
+ *
+ * @param dataSourceToShowSpecification - function that takes the data source (provided
+ *        by the user as the first argument to the action factory) and asynchronously
+ *        returns a show specification in JSON format, along with an optional URL that
+ *        the show can be retrieved from and an optional base64 string representation of
+ *        the raw binary show file. The second argument of this function provides access
+ *        to the `dispatch()` and `getState()` functions of the Redux store, as well as
+ *        a callback that can be used to report progress of the loading process.
+ * @param options - options that modify certain aspects of the behaviour of the action
+ *        factory. Currently it allows the caller to specify a custom error message that
+ *        will be shown to the user if an error occurs during the loading process.
+ *
+ * @returns a function that takes the data source (of type `TArg`) and returns a Redux
+ *          thunk that performs the show loading process when dispatched.
+ */
+const createShowLoaderThunkFactory = <T>(
+  dataSourceToShowSpecification: ShowLoaderDataSource<T>,
+  options: { errorMessage?: string } = {}
 ) => {
   const { errorMessage } = options;
 
@@ -243,32 +326,30 @@ const createShowLoaderThunkFactory = (
     { minDelay: 500 }
   );
 
-  return (arg) => async (dispatch, getState) => {
-    const onProgress = throttle((progress) => {
-      dispatch({
-        type: loadingProgress.type,
-        payload: progress,
-      });
-    }, 200);
+  return (arg: T): AppThunk =>
+    async (dispatch, getState) => {
+      const onProgress = throttle((progress: number) => {
+        dispatch(loadingProgress(progress));
+      }, 200);
 
-    dispatch(setLastLoadingAttemptFailed(false));
-    dispatch(clearShowUploadResult());
+      dispatch(setLastLoadingAttemptFailed(false));
+      dispatch(clearShowUploadResult());
 
-    try {
-      const promise = dispatch(
-        actionFactory(arg, { dispatch, getState, onProgress })
-      );
-      const {
-        value: { spec },
-      } = await promise;
-      processShowInJSONFormatAndDispatchActions(spec, dispatch);
-    } catch (error) {
-      showError(errorMessage || 'Failed to load show.', { permanent: true });
-      dispatch(setLastLoadingAttemptFailed(true));
-      console.error(error);
-    }
-  };
+      try {
+        const result = await (dispatch(
+          actionFactory(arg, { dispatch, getState, onProgress })
+        ) as unknown as Promise<{ value: ShowLoadResult }>);
+        processShowInJSONFormatAndDispatchActions(result.value.spec, dispatch);
+      } catch (error) {
+        showError(errorMessage || 'Failed to load show.', { permanent: true });
+        dispatch(setLastLoadingAttemptFailed(true));
+        console.error(error);
+      }
+    };
 };
+
+/** Type alias for blobs extended with an optional full path and filename */
+type FileLike = Blob & { path?: string; name?: string };
 
 /**
  * Thunk that creates an async action that loads a drone show from a Skybrush
@@ -278,8 +359,8 @@ const createShowLoaderThunkFactory = (
  * the show from.
  */
 export const loadShowFromFile = createShowLoaderThunkFactory(
-  async (file) => {
-    const url = file && file.path ? `file://${file.path}` : undefined;
+  async (file: FileLike) => {
+    const url = file.path ? `file://${file.path}` : undefined;
     const { spec, blob } = await workers.loadShow(file, {
       returnBlob: true,
     });
@@ -297,8 +378,14 @@ export const loadShowFromFile = createShowLoaderThunkFactory(
   }
 );
 
+/**
+ * Thunk that creates an async action that loads a drone show from a base64-encoded
+ * string representing a Skybrush compiled drone show file.
+ *
+ * The thunk must be invoked with the base64-encoded string that contains the show.
+ */
 export const loadBase64EncodedShow = createShowLoaderThunkFactory(
-  async (base64Blob) => {
+  async (base64Blob: string) => {
     // TODO(ntamas): The input is an Uint8Array; it would be more efficient to
     // use a transferable to send it to the web worker instead of copying it.
     // This will require modifications in workers.loadShow() in the future so
@@ -323,7 +410,7 @@ export const loadBase64EncodedShow = createShowLoaderThunkFactory(
  * the show from.
  */
 export const loadShowFromUrl = createShowLoaderThunkFactory(
-  async (url, { onProgress }) => {
+  async (url: string, { onProgress }) => {
     const response = await ky(url, {
       onDownloadProgress(info) {
         if (info.totalBytes > 0) {
@@ -349,16 +436,23 @@ export const loadShowFromUrl = createShowLoaderThunkFactory(
  * and dispatches the appropriate actions to update the state store with the
  * new show.
  */
-function processShowInJSONFormatAndDispatchActions(spec, dispatch) {
-  const drones = get(spec, 'swarm.drones');
+function processShowInJSONFormatAndDispatchActions(
+  spec: ShowSpecification,
+  dispatch: AppDispatch
+): void {
+  const drones = spec.swarm?.drones;
+  if (!Array.isArray(drones)) {
+    return;
+  }
+
   dispatch(setMappingLength(drones.length));
 
-  const environment = get(spec, 'environment');
-  if (environment.type) {
+  const environment = spec.environment;
+  if (environment?.type) {
     dispatch(setEnvironmentType(environment.type));
   }
 
-  if (environment.type === 'indoor') {
+  if (environment?.type === EnvironmentType.INDOOR) {
     dispatch(setOutdoorShowOrigin(null));
   }
 
@@ -370,7 +464,7 @@ function processShowInJSONFormatAndDispatchActions(spec, dispatch) {
   dispatch(revokeTakeoffAreaApproval());
 
   // For indoor shows we use automatic start by default, not using an RC
-  if (environment.type === 'indoor') {
+  if (environment?.type === EnvironmentType.INDOOR) {
     dispatch(setStartMethod(StartMethod.AUTO));
   }
 }
@@ -378,9 +472,9 @@ function processShowInJSONFormatAndDispatchActions(spec, dispatch) {
 /**
  * Thunk that attempts to reload the currently loaded show file.
  */
-export function reloadCurrentShowFile() {
-  return async (dispatch, getState) => {
-    const { getFileAsBlob } = globalThis.bridge;
+export const reloadCurrentShowFile =
+  (): AppThunk => async (dispatch, getState) => {
+    const { getFileAsBlob } = window.bridge ?? {};
 
     if (!getFileAsBlob) {
       console.warn('reloadCurrentShowFile() works only in Electron');
@@ -390,18 +484,16 @@ export function reloadCurrentShowFile() {
     const filename = getAbsolutePathOfShowFile(getState());
     if (filename) {
       const { buffer, props } = await getFileAsBlob(filename);
-      const blob = new Blob([buffer]);
-      Object.assign(blob, props);
+      const blob: FileLike = Object.assign(new Blob([buffer]), props);
       return dispatch(loadShowFromFile(blob));
     }
   };
-}
 
 /**
  * Thunk that signs off on the manual preflight checks with the current
  * timestamp.
  */
-export const signOffOnManualPreflightChecks = () => (dispatch) => {
+export const signOffOnManualPreflightChecks = (): AppThunk => (dispatch) => {
   dispatch(signOffOnManualPreflightChecksAt(Date.now()));
 };
 
@@ -409,22 +501,27 @@ export const signOffOnManualPreflightChecks = () => (dispatch) => {
  * Thunk that signs off on the onboard preflight checks with the current
  * timestamp.
  */
-export const signOffOnOnboardPreflightChecks = () => (dispatch) => {
+export const signOffOnOnboardPreflightChecks = (): AppThunk => (dispatch) => {
   dispatch(signOffOnOnboardPreflightChecksAt(Date.now()));
 };
 
-export const setFirstCornerOfRoom = (newCorner) => (dispatch, getState) => {
-  const corners = getRoomCorners(getState());
-  dispatch(setRoomCorners([newCorner, corners[1]]));
-};
+export const setFirstCornerOfRoom =
+  (newCorner: Coordinate3D): AppThunk =>
+  (dispatch, getState) => {
+    const corners = getRoomCorners(getState());
+    dispatch(setRoomCorners([newCorner, corners[1]]));
+  };
 
-export const setSecondCornerOfRoom = (newCorner) => (dispatch, getState) => {
-  const corners = getRoomCorners(getState());
-  dispatch(setRoomCorners([corners[0], newCorner]));
-};
+export const setSecondCornerOfRoom =
+  (newCorner: Coordinate3D): AppThunk =>
+  (dispatch, getState) => {
+    const corners = getRoomCorners(getState());
+    dispatch(setRoomCorners([corners[0], newCorner]));
+  };
 
 export const setOutdoorShowAltitudeReferenceType =
-  (type) => (dispatch, getState) => {
+  (type: AltitudeReference): AppThunk =>
+  (dispatch, getState) => {
     dispatch(
       _setOutdoorShowAltitudeReference({
         ...getOutdoorShowAltitudeReference(getState()),
@@ -435,7 +532,8 @@ export const setOutdoorShowAltitudeReferenceType =
   };
 
 export const setOutdoorShowAltitudeReferenceValue =
-  (value) => (dispatch, getState) => {
+  (value: string | number): AppThunk =>
+  (dispatch, getState) => {
     const altitude = Number(value);
     if (Number.isFinite(altitude) && altitude >= -10000 && altitude <= 10000) {
       dispatch(
@@ -449,13 +547,13 @@ export const setOutdoorShowAltitudeReferenceValue =
   };
 
 export const setOutdoorShowAltitudeReferenceToAverageAMSL =
-  () => (dispatch, getState) => {
+  (): AppThunk => (dispatch, getState) => {
     const state = getState();
 
     // This will include drones that are sleeping, but that's okay.
     // See discussion in https://github.com/skybrush-io/live/issues/80
     const activeUAVIds = getActiveUAVIds(state);
-    const altitudes = [];
+    const altitudes: number[] = [];
 
     for (const uavId of activeUAVIds) {
       const pos = getCurrentGPSPositionByUavId(state, uavId);
@@ -470,11 +568,16 @@ export const setOutdoorShowAltitudeReferenceToAverageAMSL =
     }
   };
 
+type ConfirmationOptions = {
+  confirmationMessage: string;
+  confirmationTitle: string;
+};
+
 const confirmedCollectiveOperation = async (
-  dispatch,
-  getState,
-  { confirmationMessage, confirmationTitle }
-) => {
+  dispatch: AppDispatch,
+  getState: () => RootState,
+  { confirmationMessage, confirmationTitle }: ConfirmationOptions
+): Promise<boolean> => {
   const baseState = getState();
   if (selectIsCollectiveRTHTriggered(baseState)) {
     console.error(
@@ -487,7 +590,7 @@ const confirmedCollectiveOperation = async (
     getUAVOperationConfirmationStyle(baseState) !==
     UAVOperationConfirmationStyle.NEVER
   ) {
-    const confirmation = await dispatch(
+    const confirmation: PromptResponse = await dispatch(
       showConfirmationDialog(confirmationMessage, {
         title: confirmationTitle,
       })
@@ -500,39 +603,41 @@ const confirmedCollectiveOperation = async (
   return true;
 };
 
-export const startCollectiveRTH = () => async (dispatch, getState) => {
-  const proceed = await confirmedCollectiveOperation(dispatch, getState, {
-    confirmationMessage: i18n.t('show.collectiveRTH.confirmation.message'),
-    confirmationTitle: i18n.t('show.collectiveRTH.confirmation.title'),
-  });
-  if (!proceed) {
-    return;
-  }
+export const startCollectiveRTH =
+  (): AppThunk => async (dispatch, getState) => {
+    const proceed = await confirmedCollectiveOperation(dispatch, getState, {
+      confirmationMessage: i18n.t('show.collectiveRTH.confirmation.message'),
+      confirmationTitle: i18n.t('show.collectiveRTH.confirmation.title'),
+    });
+    if (!proceed) {
+      return;
+    }
 
-  try {
-    const schedule = await messageHub.execute.startCollectiveRTH();
-    const rthSegment = schedule.schedule.find(
-      (segment) => segment.type === 'rth'
-    );
-    dispatch(setShowControlSchedule(schedule));
-    showSuccess(
-      i18n.t('show.collectiveRTH.notification.success'),
-      rthSegment === undefined
-        ? undefined
-        : {
-            countdown: true,
-            timeout: rthSegment.startMs - Date.now(),
-          }
-    );
-  } catch (error) {
-    showError(
-      error.message ?? i18n.t('show.collectiveRTH.notification.error'),
-      { permanent: true }
-    );
-  }
-};
+    try {
+      const schedule = await messageHub.execute.startCollectiveRTH();
+      const rthSegment = schedule.schedule.find(
+        (segment) => segment.type === 'rth'
+      );
+      dispatch(setShowControlSchedule(schedule));
+      showSuccess(
+        i18n.t('show.collectiveRTH.notification.success'),
+        rthSegment === undefined
+          ? undefined
+          : {
+              countdown: true,
+              timeout: rthSegment.startMs - Date.now(),
+            }
+      );
+    } catch (error) {
+      showError(
+        (error as Error).message ??
+          i18n.t('show.collectiveRTH.notification.error'),
+        { permanent: true }
+      );
+    }
+  };
 
-export const suspendShow = () => async (dispatch, getState) => {
+export const suspendShow = (): AppThunk => async (dispatch, getState) => {
   const proceed = await confirmedCollectiveOperation(dispatch, getState, {
     confirmationMessage: i18n.t('show.suspend.confirmation.message'),
     confirmationTitle: i18n.t('show.suspend.confirmation.title'),
@@ -543,7 +648,8 @@ export const suspendShow = () => async (dispatch, getState) => {
 
   try {
     const schedule = await messageHub.execute.suspendShow();
-    const timeout = schedule.schedule.at(-1)?.endMs - Date.now();
+    const lastSegment = schedule.schedule.at(-1);
+    const timeout = lastSegment ? lastSegment.endMs - Date.now() : Number.NaN;
     const notificationOptions = Number.isNaN(timeout)
       ? undefined
       : { countdown: true, timeout };
@@ -553,13 +659,16 @@ export const suspendShow = () => async (dispatch, getState) => {
       notificationOptions
     );
   } catch (error) {
-    showError(error.message ?? i18n.t('show.suspend.notification.error'), {
-      permanent: true,
-    });
+    showError(
+      (error as Error).message ?? i18n.t('show.suspend.notification.error'),
+      {
+        permanent: true,
+      }
+    );
   }
 };
 
-export const resumeShow = () => async (dispatch, getState) => {
+export const resumeShow = (): AppThunk => async (dispatch, getState) => {
   const proceed = await confirmedCollectiveOperation(dispatch, getState, {
     confirmationMessage: i18n.t('show.resume.confirmation.message'),
     confirmationTitle: i18n.t('show.resume.confirmation.title'),
@@ -570,7 +679,8 @@ export const resumeShow = () => async (dispatch, getState) => {
 
   try {
     const schedule = await messageHub.execute.resumeShow();
-    const timeout = schedule.schedule.at(-1)?.endMs - Date.now();
+    const lastSegment = schedule.schedule.at(-1);
+    const timeout = lastSegment ? lastSegment.endMs - Date.now() : Number.NaN;
     const notificationOptions = Number.isNaN(timeout)
       ? undefined
       : { countdown: true, timeout };
@@ -580,8 +690,11 @@ export const resumeShow = () => async (dispatch, getState) => {
       notificationOptions
     );
   } catch (error) {
-    showError(error.message ?? i18n.t('show.resume.notification.error'), {
-      permanent: true,
-    });
+    showError(
+      (error as Error).message ?? i18n.t('show.resume.notification.error'),
+      {
+        permanent: true,
+      }
+    );
   }
 };
