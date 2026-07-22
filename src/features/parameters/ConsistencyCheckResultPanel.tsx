@@ -186,57 +186,47 @@ const ParameterAccordion = ({
   );
 };
 
-// -- Error list
+// -- Error summary
 
-type ErrorListProps = Readonly<{
+type ErrorSummaryProps = Readonly<{
   errors: Record<Identifier, string>;
 }>;
 
-const useErrorListStyles = makeStyles((theme) => ({
+const useErrorSummaryStyles = makeStyles((theme) => ({
   root: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: theme.spacing(1),
     marginTop: theme.spacing(2),
     marginBottom: theme.spacing(1),
   },
-  entry: {
-    display: 'flex',
-    gap: theme.spacing(1),
-  },
-  uavId: {
-    color: theme.palette.error.main,
-    fontFamily: 'monospace',
-  },
-  errorMessage: {
+  uavIds: {
     color: theme.palette.text.secondary,
   },
 }));
 
 /**
- * Renders the list of UAVs that produced errors during the consistency
- * check job.
+ * Renders a short summary of UAVs that produced errors during the
+ * consistency check job: the number of errors and the affected UAV IDs.
  */
-const ErrorList = ({ errors }: ErrorListProps) => {
+const ErrorSummary = ({ errors }: ErrorSummaryProps) => {
   const { t } = useTranslation();
-  const classes = useErrorListStyles();
-  const entries = Object.entries(errors);
+  const classes = useErrorSummaryStyles();
+  const uavIds = Object.keys(errors).sort();
 
-  if (entries.length === 0) {
+  if (uavIds.length === 0) {
     return null;
   }
 
   return (
-    <Box className={classes.root}>
-      <Typography variant='subtitle2' gutterBottom>
-        {t('uploadPanel.consistencyCheck.errorsHeader')}
+    <Stack className={classes.root}>
+      <StatusPill inline status={Status.ERROR}>
+        {t('uploadPanel.consistencyCheck.errorCount', { count: uavIds.length })}
+      </StatusPill>
+      <Typography className={classes.uavIds} variant='body2'>
+        {formatIdsAndTruncateTrailingItems(uavIds, { maxCount: 12 })}
       </Typography>
-      {entries
-        .sort(([a], [b]) => a.localeCompare(b))
-        .map(([uavId, error]) => (
-          <Box key={uavId} className={classes.entry}>
-            <Typography className={classes.uavId}>{uavId}</Typography>
-            <Typography className={classes.errorMessage}>{error}</Typography>
-          </Box>
-        ))}
-    </Box>
+    </Stack>
   );
 };
 
@@ -273,7 +263,7 @@ const ConsistencyCheckResultPanel = () => {
           majorityValue={majority[name]}
         />
       ))}
-      <ErrorList errors={errors} />
+      <ErrorSummary errors={errors} />
     </Box>
   );
 };

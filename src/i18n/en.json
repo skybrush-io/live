@@ -1451,7 +1451,8 @@
     "cancelUpload": "Cancel upload",
     "clearHistory": "Clear history",
     "consistencyCheck": {
-      "errorsHeader": "Errors"
+      "errorCount_one": "{{count}} error",
+      "errorCount_other": "{{count}} errors"
     },
     "flashLightsWhereFailed": "Flash lights of UAVs where the upload failed",
     "hasHiddenTargets": "Some of the waiting UAVs may be filtered.",
