@@ -416,8 +416,12 @@ const { actions, reducer } = createSlice({
       );
     },
 
-    setOutdoorShowOrigin(state, action: PayloadAction<LonLat>) {
-      state.environment.outdoor.coordinateSystem.origin = action.payload;
+    setOutdoorShowOrigin(
+      state,
+      action: PayloadAction<LonLat | null | undefined>
+    ) {
+      state.environment.outdoor.coordinateSystem.origin =
+        action.payload ?? undefined;
     },
 
     setOutdoorShowTakeoffHeadingSpecification(
