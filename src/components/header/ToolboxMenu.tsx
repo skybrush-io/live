@@ -10,6 +10,7 @@ import type React from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
+import { CONSISTENCY_CHECK_JOB_TYPE as PARAMETER_CONSISTENCY_CHECK_JOB_TYPE } from '~/features/consistency-check/constants';
 import { showFirmwareUpdateDialog } from '~/features/firmware-update/actions';
 import { JOB_TYPE as FIRMWARE_UPLOAD_JOB_TYPE } from '~/features/firmware-update/constants';
 import { showLicenseInfoDialog } from '~/features/license-info/slice';
@@ -20,10 +21,7 @@ import {
   runParameterConsistencyCheck,
   showParameterUploadDialog,
 } from '~/features/parameters/actions';
-import {
-  CONSISTENCY_CHECK_JOB_TYPE as PARAMETER_CONSISTENCY_CHECK_JOB_TYPE,
-  UPLOAD_JOB_TYPE as PARAMETER_UPLOAD_JOB_TYPE,
-} from '~/features/parameters/constants';
+import { UPLOAD_JOB_TYPE as PARAMETER_UPLOAD_JOB_TYPE } from '~/features/parameters/constants';
 import { isConnected } from '~/features/servers/selectors';
 import { isDeveloperModeEnabled } from '~/features/session/selectors';
 import { showVersionCheckDialog } from '~/features/version-check/slice';
