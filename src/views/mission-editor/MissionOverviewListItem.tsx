@@ -1,7 +1,7 @@
 import Settings from '@mui/icons-material/Settings';
 import Avatar from '@mui/material/Avatar';
-import Badge from '@mui/material/Badge';
 import Box from '@mui/material/Box';
+import Chip from '@mui/material/Chip';
 import IconButton from '@mui/material/IconButton';
 import ListItem from '@mui/material/ListItem';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
@@ -317,32 +317,30 @@ const MissionOverviewListItem = ({
             >
               <Settings />
             </IconButton>
-          ) : undefined
+          ) : (
+            // NOTE: Empty button ensures corrent alignment of participant
+            //       chips even if the mission item has no parameters
+            <IconButton edge='end' size='large' />
+          )
         }
       >
         <ListItemButton dense selected={selected} onClick={onClick}>
           {avatar && (
             <ListItemAvatar>
-              <Badge
-                badgeContent={
-                  item.participants === undefined
-                    ? undefined
-                    : formatIdsAndTruncateTrailingItems(
-                        item.participants.map(formatMissionId),
-                        { maxCount: 3, separator: ', ' }
-                      )
-                }
-                color='primary'
-                overlap='circular'
-                sx={{ whiteSpace: 'nowrap' }}
-              >
-                <Avatar className={isValid ? undefined : classes.error}>
-                  {avatar}
-                </Avatar>
-              </Badge>
+              <Avatar className={isValid ? undefined : classes.error}>
+                {avatar}
+              </Avatar>
             </ListItemAvatar>
           )}
           <ListItemText primary={primaryText} secondary={secondaryText} />
+          {item.participants !== undefined && (
+            <Chip
+              label={formatIdsAndTruncateTrailingItems(
+                item.participants.map(formatMissionId),
+                { maxCount: 3, separator: ', ' }
+              )}
+            />
+          )}
         </ListItemButton>
       </ListItem>
     </Box>
