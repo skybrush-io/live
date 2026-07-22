@@ -36,7 +36,10 @@ import {
   titleForMissionItemType,
 } from '~/model/missions';
 import type { AppDispatch, RootState } from '~/store/reducers';
-import { formatMissionId } from '~/utils/formatting';
+import {
+  formatIdsAndTruncateTrailingItems,
+  formatMissionId,
+} from '~/utils/formatting';
 import {
   formatCoordinate,
   safelyFormatAltitudeWithReference,
@@ -321,11 +324,17 @@ const MissionOverviewListItem = ({
           {avatar && (
             <ListItemAvatar>
               <Badge
-                badgeContent={item.participants
-                  ?.map(formatMissionId)
-                  .join(', ')}
+                badgeContent={
+                  item.participants === undefined
+                    ? undefined
+                    : formatIdsAndTruncateTrailingItems(
+                        item.participants.map(formatMissionId),
+                        { maxCount: 3, separator: ', ' }
+                      )
+                }
                 color='primary'
                 overlap='circular'
+                sx={{ whiteSpace: 'nowrap' }}
               >
                 <Avatar className={isValid ? undefined : classes.error}>
                   {avatar}
