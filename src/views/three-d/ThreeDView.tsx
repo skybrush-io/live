@@ -2,7 +2,7 @@
  * @file Component that shows a three-dimensional view of the drone flock.
  */
 
-import PropTypes from 'prop-types';
+import type { RefObject } from 'react';
 import { connect } from 'react-redux';
 
 import CoordinateSystemAxes from './CoordinateSystemAxes';
@@ -12,7 +12,6 @@ import Room from './Room';
 import Scenery from './Scenery';
 import SelectedTrajectories from './SelectedTrajectories';
 
-// eslint-disable-next-line no-unused-vars
 import { objectToString } from '~/aframe/utils';
 import Colors from '~/components/colors';
 import {
@@ -20,13 +19,35 @@ import {
   getSceneryForThreeDView,
 } from '~/features/settings/selectors';
 import { isShowIndoor } from '~/features/show/selectors';
+import {
+  NavigationMode,
+  type NavigationSettings,
+  type Scenery as SceneryType,
+} from '~/features/three-d/types';
 import { isMapCoordinateSystemLeftHanded } from '~/selectors/map';
+import type { RootState } from '~/store/reducers';
+
+type Props = {
+  cameraRef?: RefObject<HTMLElement | null>;
+  grid?: 'none' | '1x1' | '2x2';
+  isCoordinateSystemLeftHanded?: boolean;
+  lighting: 'dark' | 'light';
+  navigation?: NavigationSettings;
+  ref?: RefObject<HTMLElement>;
+  sceneId?: number;
+  scenery: SceneryType;
+  showAxes?: boolean;
+  showHomePositions?: boolean;
+  showLandingPositions?: boolean;
+  showStatistics?: boolean;
+  showTrajectoriesOfSelection?: boolean;
+};
 
 /**
- * Selector that returns the "effective' scenery to use in the 3D view,
+ * Selector that returns the "effective" scenery to use in the 3D view,
  * potentially based on whether the show is indoor or outdoor.
  */
-const getEffectiveScenery = (state) => {
+const getEffectiveScenery = (state: RootState): SceneryType => {
   const scenery = getSceneryForThreeDView(state);
   if (scenery === 'auto') {
     if (isShowIndoor(state)) {
@@ -39,13 +60,17 @@ const getEffectiveScenery = (state) => {
   }
 };
 
-const ThreeDView = ({ ref, ...props }) => {
+/**
+ * Component that shows a three-dimensional view of the drone flock.
+ */
+const ThreeDView = (props: Props) => {
   const {
     cameraRef,
     grid,
     isCoordinateSystemLeftHanded,
     lighting,
     navigation,
+    ref,
     sceneId,
     scenery,
     showAxes,
@@ -59,7 +84,7 @@ const ThreeDView = ({ ref, ...props }) => {
     'advanced-camera-controls': objectToString({
       acceptsKeyboardEvent: 'notEditable',
       embedded: true,
-      fly: navigation && navigation.mode === 'fly',
+      fly: navigation?.mode === NavigationMode.FLY,
       minAltitude: 0.5,
       reverseMouseDrag: true,
     }),
@@ -70,7 +95,8 @@ const ThreeDView = ({ ref, ...props }) => {
       enabled: false,
     }),
   };
-  const extraSceneProps = {};
+
+  const extraSceneProps: Record<string, string> = {};
 
   if (showStatistics) {
     extraSceneProps.stats = 'true';
@@ -120,7 +146,6 @@ const ThreeDView = ({ ref, ...props }) => {
         {showAxes && (
           <CoordinateSystemAxes
             leftHanded={isCoordinateSystemLeftHanded}
-            length={10}
             lineWidth={10}
           />
         )}
@@ -138,27 +163,9 @@ const ThreeDView = ({ ref, ...props }) => {
   );
 };
 
-ThreeDView.propTypes = {
-  cameraRef: PropTypes.any,
-  grid: PropTypes.string,
-  isCoordinateSystemLeftHanded: PropTypes.bool,
-  lighting: PropTypes.oneOf(['dark', 'light']),
-  navigation: PropTypes.shape({
-    mode: PropTypes.oneOf(['walk', 'fly']),
-    parameters: PropTypes.object,
-  }),
-  sceneId: PropTypes.number,
-  scenery: PropTypes.oneOf(['outdoor', 'indoor']),
-  showAxes: PropTypes.bool,
-  showHomePositions: PropTypes.bool,
-  showLandingPositions: PropTypes.bool,
-  showStatistics: PropTypes.bool,
-  showTrajectoriesOfSelection: PropTypes.bool,
-};
-
 export default connect(
   // mapStateToProps
-  (state) => ({
+  (state: RootState) => ({
     isCoordinateSystemLeftHanded: isMapCoordinateSystemLeftHanded(state),
     ...state.settings.threeD,
     ...state.threeD,

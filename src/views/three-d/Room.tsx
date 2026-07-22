@@ -1,9 +1,13 @@
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import { getRoomCorners, isRoomVisible } from '~/features/show/selectors';
+import type { RootState } from '~/store/reducers';
+import type { Coordinate3D } from '~/utils/math';
 
-function processCorners(corners) {
+function processCorners(corners: Coordinate3D[]): {
+  center: Coordinate3D;
+  sizes: number[];
+} {
   if (corners.length === 0) {
     return {
       center: [0, 0, 0],
@@ -28,13 +32,18 @@ function processCorners(corners) {
     mins[2] = -0.05;
   }
 
-  const center = dims.map((dim) => (mins[dim] + maxs[dim]) / 2);
+  const center = dims.map((dim) => (mins[dim] + maxs[dim]) / 2) as Coordinate3D;
   const sizes = dims.map((dim) => maxs[dim] - mins[dim]);
 
   return { center, sizes };
 }
 
-const Room = ({ corners, visible }) => {
+type Props = {
+  corners: Coordinate3D[];
+  visible: boolean;
+};
+
+const Room = ({ corners, visible }: Props) => {
   if (!visible) {
     return null;
   }
@@ -52,14 +61,9 @@ const Room = ({ corners, visible }) => {
   );
 };
 
-Room.propTypes = {
-  corners: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number)),
-  visible: PropTypes.bool,
-};
-
 export default connect(
   // mapStateToProps
-  (state) => ({
+  (state: RootState) => ({
     corners: getRoomCorners(state),
     visible: isRoomVisible(state),
   }),
