@@ -440,7 +440,7 @@ const { actions, reducer } = createSlice({
      * Sets the type of the mission, without affecting any other part of the
      * current mission configuration.
      */
-    setMissionType(state, action: PayloadAction<MissionType>) {
+    _setMissionType(state, action: PayloadAction<MissionType>) {
       state.type =
         typeof action.payload === 'string'
           ? action.payload
@@ -706,7 +706,7 @@ export const {
   setMissionPlannerDialogContextParameters,
   setMissionPlannerDialogSelectedType,
   setMissionPlannerDialogUserParameters,
-  setMissionType,
+  _setMissionType,
   showMissionPlannerDialog,
   startMappingEditorSession,
   startMappingEditorSessionAtSlot,

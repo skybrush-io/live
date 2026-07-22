@@ -102,7 +102,7 @@ import {
   setMissionName,
   setMissionPlannerDialogSelectedType,
   setMissionPlannerDialogUserParameters,
-  setMissionType,
+  _setMissionType,
   updateHomePositions,
   updateMissionItemParameters,
   updateProgressData,
@@ -466,19 +466,19 @@ export const ensureMissionType = (newMissionType) => (dispatch, getState) => {
 
   switch (oldMissionType) {
     case MissionType.SHOW: {
-      dispatch(clearLoadedShow());
+      dispatch(clearLoadedShow(false));
       break;
     }
 
     case MissionType.WAYPOINT: {
-      dispatch(clearMission());
+      dispatch(clearMission(false));
       break;
     }
 
     // No default
   }
 
-  dispatch(setMissionType(newMissionType));
+  dispatch(_setMissionType(newMissionType));
 };
 
 /**
@@ -781,26 +781,31 @@ export const invokeMissionPlanner =
 /**
  * Thunk that clears a mission and shows a toast with an option to restore it.
  */
-export const clearMission = () => (dispatch, _getState) => {
-  dispatch(backupMission());
-  dispatch(setMissionType(MissionType.UNKNOWN));
-  dispatch(setMissionName(null));
-  dispatch(setLastSuccessfulPlannerInvocationParameters(null));
-  dispatch(setMissionItemsFromArray([]));
-  dispatch(setMappingLength(0));
-  showNotification({
-    message: 'Previous mission cleared.',
-    semantics: MessageSemantics.INFO,
-    buttons: [
-      {
-        label: 'Undo',
-        action: restoreLastClearedMission(),
-      },
-    ],
-    permanent: true,
-    topic: 'mission-cleared',
-  });
-};
+export const clearMission =
+  (shouldClearMissionType = true) =>
+  (dispatch, _getState) => {
+    dispatch(backupMission());
+    dispatch(setMissionName(null));
+    dispatch(setLastSuccessfulPlannerInvocationParameters(null));
+    dispatch(setMissionItemsFromArray([]));
+    dispatch(setMappingLength(0));
+    showNotification({
+      message: 'Previous mission cleared.',
+      semantics: MessageSemantics.INFO,
+      buttons: [
+        {
+          label: 'Undo',
+          action: restoreLastClearedMission(),
+        },
+      ],
+      permanent: true,
+      topic: 'mission-cleared',
+    });
+
+    if (shouldClearMissionType) {
+      dispatch(ensureMissionType(MissionType.UNKNOWN));
+    }
+  };
 
 /**
  * Thunk that backs up a mission to the store.

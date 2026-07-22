@@ -21,7 +21,6 @@ import {
 } from '~/features/mission/actions';
 import {
   setCommandsAreBroadcast,
-  setMissionType,
   updateHomePositions,
   updateLandingPositions,
   updateTakeoffHeadings,
@@ -120,10 +119,15 @@ const clearShowUploadResult = () => clearUploadHistoryForJobType(JOB_TYPE);
  * Thunk that clears the currently loaded show and sets the type of the
  * currently loaded mission to unknown.
  */
-export const clearLoadedShow = (): AppThunk => (dispatch) => {
-  dispatch(_clearLoadedShow());
-  dispatch(setMissionType(MissionType.UNKNOWN));
-};
+export const clearLoadedShow =
+  (shouldClearMissionType = true): AppThunk =>
+  (dispatch) => {
+    dispatch(_clearLoadedShow());
+
+    if (shouldClearMissionType) {
+      dispatch(ensureMissionType(MissionType.UNKNOWN));
+    }
+  };
 
 /**
  * Think that clears the start time of the show, keeping its start method.
