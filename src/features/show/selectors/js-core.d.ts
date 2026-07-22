@@ -17,6 +17,14 @@ export const getFirstPointsOfTrajectories: AppSelector<
   Array<Coordinate3D | undefined>
 >;
 
+export const getFirstPointsOfTrajectoriesInWorldCoordinates: AppSelector<
+  Array<GPSPosition | undefined>
+>;
+
+export const getLastPointsOfTrajectoriesInWorldCoordinates: AppSelector<
+  Array<GPSPosition | undefined>
+>;
+
 export const getMaximumHeightInTrajectories: (
   state: RootState
 ) => number | undefined;
