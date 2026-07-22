@@ -26,6 +26,7 @@ import {
   getSpecificationForJobType,
   type JobExecutorParams,
   type JobSpecification,
+  type RecordUAVResultCallback,
 } from './jobs';
 import {
   getCurrentUploadJob,
@@ -53,6 +54,7 @@ import type {
   JobData,
   JobPayload,
   PerUAVJobResult,
+  UAVStatus,
   UploadJobResult,
 } from './types';
 
@@ -232,19 +234,16 @@ function* forkingWorkerManagementSaga<
   ResultPiece = unknown,
 >(
   spec: JobSpecification<Payload, Data, ResultPiece>,
-  job: JobData
-): Generator<any, HistoryItem<ResultPiece>> {
+  job: JobData,
+  recordResult: RecordUAVResultCallback<ResultPiece>
+): Generator<any, UAVStatus> {
   const { executor, selector } = spec;
-  const perUAVResults: Record<Identifier, PerUAVJobResult<ResultPiece>> = {};
 
   if (!executor) {
     console.warn(
       `Job type ${job.type} has no executor in its job specification, skipping job`
     );
-    return {
-      result: 'success',
-      perUAVResults,
-    };
+    return 'success';
   }
 
   const chan: Channel<JobExecutionRequestOrStop<Payload, Data, ResultPiece>> =
@@ -254,7 +253,7 @@ function* forkingWorkerManagementSaga<
   const permanentlyFailed: string[] = [];
   const workers: Task[] = [];
 
-  let status: UploadJobResult | undefined = undefined;
+  let status: UAVStatus | undefined = undefined;
 
   // create the completion handler function for tasks
   const onCompleted: JobExecutionRequestCompletionHandler<
@@ -267,26 +266,26 @@ function* forkingWorkerManagementSaga<
     switch (outcome.type) {
       case 'failure':
         failedAndShouldRetry.push(req.target);
-        perUAVResults[req.target] = {
+        recordResult(req.target, {
           type: 'error',
           error: errorToString(
             (outcome.error as any)?.message ?? outcome.error
           ),
-        };
+        });
         break;
 
       case 'permanent-failure':
         permanentlyFailed.push(req.target);
-        perUAVResults[req.target] = {
+        recordResult(req.target, {
           type: 'error',
           error: errorToString(
             (outcome.error as any)?.message ?? outcome.error
           ),
-        };
+        });
         break;
 
       case 'success':
-        perUAVResults[req.target] = { type: 'success', result: outcome.result };
+        recordResult(req.target, { type: 'success', result: outcome.result });
         break;
 
       case 'cancelled':
@@ -372,7 +371,7 @@ function* forkingWorkerManagementSaga<
   // wait for all workers to terminate
   yield join(workers);
 
-  return { result: status, perUAVResults };
+  return status;
 }
 
 /**
@@ -381,7 +380,7 @@ function* forkingWorkerManagementSaga<
  */
 function* uploaderSagaWithCancellation() {
   let status: UploadJobResult;
-  let perUAVResults: Record<Identifier, PerUAVJobResult> = {};
+  const perUAVResults: Record<Identifier, PerUAVJobResult> = {};
 
   const job: JobData = yield select(getCurrentUploadJob);
   if (!job.type) {
@@ -398,16 +397,20 @@ function* uploaderSagaWithCancellation() {
 
   yield put(_notifyUploadStartedAt(Date.now()));
 
+  const recordResult: RecordUAVResultCallback = (uavId, entry) => {
+    perUAVResults[uavId] = entry;
+  };
+
   try {
     const { workerManager = forkingWorkerManagementSaga } = spec;
     const {
       cancelled,
-      workerResult,
+      managerStatus,
     }: {
       cancelled: boolean;
-      workerResult?: HistoryItem;
+      managerStatus?: UAVStatus;
     } = yield race({
-      workerResult: call(workerManager, spec, job),
+      managerStatus: call(workerManager, spec, job, recordResult),
       cancelled: take(cancelUpload),
     });
 
@@ -416,15 +419,14 @@ function* uploaderSagaWithCancellation() {
     } else {
       // `race` resolves exactly one branch; if we were not cancelled, the
       // worker manager must have produced a result.
-      status = workerResult!.result;
-      perUAVResults = workerResult!.perUAVResults;
+      status = managerStatus!;
     }
   } catch (error) {
     handleError(error, { operation: 'Upload operation' });
     status = 'error';
   }
 
-  const historyItem = {
+  const historyItem: HistoryItem = {
     result: status,
     perUAVResults,
   };

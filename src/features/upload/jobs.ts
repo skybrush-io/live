@@ -1,7 +1,8 @@
 import type { ProgressStatus } from '~/flockwave/messages';
 import type { AppThunk, RootState } from '~/store/reducers';
 
-import type { HistoryItem, JobData, JobPayload } from './types';
+import type { Identifier } from '~/utils/collections';
+import type { JobData, JobPayload, PerUAVJobResult, UAVStatus } from './types';
 
 export enum JobScope {
   ALL = 'all',
@@ -15,6 +16,15 @@ export type JobExecutorParams<Payload = JobPayload, Data = void> = {
   payload: Payload;
   data: Data;
 };
+
+/**
+ * Callback used by a worker manager to record the result for a single UAV as
+ * soon as it is known.
+ */
+export type RecordUAVResultCallback<ResultPiece = unknown> = (
+  uavId: Identifier,
+  result: PerUAVJobResult<ResultPiece>
+) => void;
 
 /**
  * Object describing a single job type that we can execute.
@@ -103,14 +113,19 @@ export type JobSpecification<
    * This is an advanced parameter. Typically you will not need to provide an
    * alternative worker manager.
    *
+   * The manager must record the outcome of each UAV by calling `recordResult`
+   * as soon as the outcome is known.
+   *
    * @param spec - the specification of the job (i.e. this object)
    * @param job - the current job data (consisting of a type and a payload)
-   * @returns - the history item with the job's final result
+   * @param recordResult - callback to record the outcome of a single UAV
+   * @returns - the job result status
    */
   workerManager?: (
     spec: JobSpecification<Payload, Data, ResultPiece>,
-    job: JobData
-  ) => Promise<HistoryItem<ResultPiece>>;
+    job: JobData,
+    recordResult: RecordUAVResultCallback<ResultPiece>
+  ) => Promise<UAVStatus>;
 };
 
 /**
