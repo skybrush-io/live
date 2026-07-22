@@ -73,7 +73,10 @@ export default class ChatArea extends React.Component<
   scrollToBottom() {
     const node = this._endNode.current;
     if (node) {
-      node.scrollIntoView({ behavior: 'smooth' });
+      // Apparently a delay is needed with React 19, otherwise the node still has zero
+      // height when scrollIntoView() is called and thus it is scrolled into view in a
+      // way that only its top edge is visible
+      setTimeout(() => void node.scrollIntoView({ behavior: 'smooth' }), 100);
     }
   }
 }
