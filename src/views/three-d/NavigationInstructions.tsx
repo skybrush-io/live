@@ -1,11 +1,11 @@
 import Mouse from '@mui/icons-material/Mouse';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
+import type { TFunction } from 'i18next';
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { TransitionGroup } from 'react-transition-group';
 
-import { TFunction } from 'i18next';
 import FadeAndSlide from '~/components/transitions/FadeAndSlide';
 import { NavigationMode } from '~/features/three-d/types';
 
