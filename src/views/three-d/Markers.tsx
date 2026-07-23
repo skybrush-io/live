@@ -1,10 +1,15 @@
-import PropTypes from 'prop-types';
+import type { Coordinate3D } from '~/utils/math';
+
+type Props = {
+  coordinates: Array<Coordinate3D | null>;
+  mixin?: string;
+};
 
 /**
  * Presentational component that renders a set of markers in the scene at the
  * given Three.JS coordinates.
  */
-const Markers = ({ coordinates, mixin }) =>
+const Markers = ({ coordinates, mixin }: Props) =>
   coordinates.map((coordinate, index) => {
     const key = `${mixin}-${index}`;
     return (
@@ -13,10 +18,5 @@ const Markers = ({ coordinates, mixin }) =>
       )
     );
   });
-
-Markers.propTypes = {
-  coordinates: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number)),
-  mixin: PropTypes.string,
-};
 
 export default Markers;
