@@ -13,6 +13,7 @@ import type {
 } from '@skybrush/flockwave-spec';
 
 import { errorToString } from '~/error-handling';
+import type { MissionItemBundle } from '~/model/missions';
 import type { Coordinate3D } from '~/utils/math';
 import { isBoolean, isRecord } from '~/utils/types';
 
@@ -540,7 +541,11 @@ export async function uploadFirmware(
  */
 export async function uploadMission(
   hub: MessageHub,
-  { uavId, data, format }: { uavId: string; data: string; format: string },
+  {
+    uavId,
+    data,
+    format,
+  }: { uavId: string; data: MissionItemBundle; format: string },
   options: AsyncResponseHandlerOptions
 ) {
   validateObjectId(uavId);

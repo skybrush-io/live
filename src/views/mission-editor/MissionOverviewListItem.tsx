@@ -1,12 +1,16 @@
 import Settings from '@mui/icons-material/Settings';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
+import Chip from '@mui/material/Chip';
 import IconButton from '@mui/material/IconButton';
+import ListItem from '@mui/material/ListItem';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
+import { useTheme } from '@mui/material/styles';
+import createColor from 'color';
 import isEmpty from 'lodash-es/isEmpty';
-import PropTypes from 'prop-types';
+import type { MouseEvent } from 'react';
 import { connect } from 'react-redux';
 
 import { makeStyles, Status } from '@skybrush/app-theme-mui';
@@ -14,6 +18,7 @@ import { makeStyles, Status } from '@skybrush/app-theme-mui';
 import Colors from '~/components/colors';
 import { editMissionItemParameters } from '~/features/mission/actions';
 import {
+  getCompletionRatiosForMissionItemById,
   getGeofencePolygon,
   getMissionItemById,
   hasActiveGeofencePolygon,
@@ -21,6 +26,7 @@ import {
 } from '~/features/mission/selectors';
 import { SafetyDialogTab } from '~/features/safety/constants';
 import { openSafetyDialog, setSafetyDialogTab } from '~/features/safety/slice';
+import type { MissionItem } from '~/model/missions';
 import {
   iconForMissionItemType,
   isMissionItemValid,
@@ -29,6 +35,11 @@ import {
   schemaForMissionItemType,
   titleForMissionItemType,
 } from '~/model/missions';
+import type { AppDispatch, RootState } from '~/store/reducers';
+import {
+  formatIdsAndTruncateTrailingItems,
+  formatMissionId,
+} from '~/utils/formatting';
 import {
   formatCoordinate,
   safelyFormatAltitudeWithReference,
@@ -51,7 +62,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 // TODO: Reduce code duplication from `GeofenceButton.jsx`
-const formatGeofenceStatusText = (status) => {
+const formatGeofenceStatusText = (status: Status): string => {
   switch (status) {
     case Status.OFF:
       return 'No geofence defined yet';
@@ -70,19 +81,76 @@ const formatGeofenceStatusText = (status) => {
   }
 };
 
-const formatMarkerStatusText = (marker, ratio) => {
-  const descriptions = {
+const formatMarkerStatusText = (
+  marker: string | undefined,
+  ratio: number | undefined
+): string => {
+  const descriptions: Record<string, string> = {
     start: 'Mission has started',
     end: 'Mission has ended',
   };
 
   const markerText =
-    marker in descriptions ? descriptions[marker] : `Unknown marker: ${marker}`;
+    marker !== undefined && marker in descriptions
+      ? descriptions[marker]
+      : `Unknown marker: ${marker}`;
   const ratioText =
     typeof ratio === 'number' ? ` (ratio=${ratio.toFixed(4)})` : '';
 
   return markerText + ratioText;
 };
+
+type ItemProgressProps = {
+  color: string;
+  ratio: number;
+};
+
+const ItemProgress = ({ color, ratio }: ItemProgressProps) => {
+  const theme = useTheme();
+
+  return (
+    <div
+      style={{
+        position: 'absolute',
+        height: '100%',
+        transition: '0.25s',
+        backgroundColor: createColor(theme.palette.background.paper)
+          .mix(createColor(color), 0.25)
+          .string(),
+        width: `${ratio * 100}%`,
+      }}
+    />
+  );
+};
+
+type CompletionRatios = {
+  avg: number | undefined;
+  max: number | undefined;
+  min: number | undefined;
+};
+
+type OwnProps = {
+  id: string;
+  index: number;
+  ratio?: number;
+  selected: boolean;
+  selectedMissionId: number | undefined;
+  onSelectItem: (id: string, event: MouseEvent) => void;
+};
+
+type StateProps = {
+  editMissionItemParameters?: () => void;
+  item: MissionItem;
+  missionGeofenceStatus: Status;
+  ratios: CompletionRatios;
+};
+
+type DispatchProps = {
+  openGeofenceSettingsTab: () => void;
+  openSafetySettingsTab: () => void;
+};
+
+type Props = OwnProps & StateProps & DispatchProps;
 
 const MissionOverviewListItem = ({
   editMissionItemParameters,
@@ -91,22 +159,24 @@ const MissionOverviewListItem = ({
   item,
   missionGeofenceStatus,
   ratio,
+  ratios,
   selected,
+  selectedMissionId,
   onSelectItem,
   openGeofenceSettingsTab,
   openSafetySettingsTab,
-}) => {
+}: Props) => {
   const classes = useStyles();
 
   let avatar = iconForMissionItemType[item.type];
   let onClick = onSelectItem.bind(null, id);
   let primaryText = titleForMissionItemType[item.type];
-  let secondaryText;
+  let secondaryText: string | undefined;
   const isValid = isMissionItemValid(item);
 
   switch (item.type) {
     case MissionItemType.GO_TO:
-      avatar = index;
+      avatar = String(index + 1);
       secondaryText = isValid
         ? formatCoordinate([item.parameters?.lon, item.parameters?.lat])
         : 'Invalid mission item';
@@ -161,7 +231,7 @@ const MissionOverviewListItem = ({
 
     case MissionItemType.CHANGE_SPEED: {
       const { velocityXY, velocityZ } = item.parameters;
-      const tags = [];
+      const tags: string[] = [];
       if (typeof velocityXY === 'number') {
         tags.push(`${velocityXY} m/s horizontal`);
       }
@@ -182,21 +252,22 @@ const MissionOverviewListItem = ({
       );
       break;
 
-    case MissionItemType.SET_PAYLOAD:
+    case MissionItemType.SET_PAYLOAD: {
       const { name, action, value } = item.parameters;
       secondaryText =
-        `${name}: ${action}` + (value !== undefined ? ` ${value}` : '');
+        `${name}: ${action}` + (value === undefined ? '' : ` ${value}`);
 
       break;
+    }
 
     case MissionItemType.SET_PARAMETER:
       secondaryText = `${item.parameters?.name}=${item.parameters?.value}`;
       break;
 
     case MissionItemType.UPDATE_FLIGHT_AREA:
-      // TODO
-      //onClick = openFlightAreaSettingsTab;
-      //secondaryText = formatFlightAreaStatusText(missionFlightAreaStatus);
+      // TODO:
+      // onClick = openFlightAreaSettingsTab;
+      // secondaryText = formatFlightAreaStatusText(missionFlightAreaStatus);
       break;
 
     case MissionItemType.UPDATE_GEOFENCE:
@@ -217,23 +288,26 @@ const MissionOverviewListItem = ({
 
   return (
     <Box sx={{ position: 'relative' }}>
-      <div
-        style={{
-          position: 'absolute',
-          height: '100%',
-
-          backgroundColor: ratio === 1 ? Colors.success : Colors.info,
-          opacity: 0.25,
-
-          transition: '0.25s',
-          width: `${(ratio ?? 0) * 100}%`,
-        }}
-      />
-      <ListItemButton
-        dense
-        selected={selected}
-        onClick={onClick}
-        ContainerComponent='div'
+      {selectedMissionId === undefined ? (
+        <>
+          <ItemProgress color={Colors.missionItem} ratio={ratios.max ?? 0} />
+          <ItemProgress
+            color={Colors.currentMissionItem}
+            ratio={ratios.avg ?? 0}
+          />
+          <ItemProgress
+            color={Colors.doneMissionItem}
+            ratio={ratios.min ?? 0}
+          />
+        </>
+      ) : (
+        <ItemProgress
+          color={ratio === 1 ? Colors.doneMissionItem : Colors.missionItem}
+          ratio={ratio ?? 0}
+        />
+      )}
+      <ListItem
+        disablePadding
         secondaryAction={
           editMissionItemParameters ? (
             <IconButton
@@ -243,72 +317,84 @@ const MissionOverviewListItem = ({
             >
               <Settings />
             </IconButton>
-          ) : undefined
+          ) : (
+            // NOTE: Empty button ensures corrent alignment of participant
+            //       chips even if the mission item has no parameters
+            <IconButton edge='end' size='large' />
+          )
         }
       >
-        {avatar && (
-          <ListItemAvatar>
-            <Avatar className={isValid ? null : classes.error}>{avatar}</Avatar>
-          </ListItemAvatar>
-        )}
-        <ListItemText primary={primaryText} secondary={secondaryText} />
-      </ListItemButton>
+        <ListItemButton dense selected={selected} onClick={onClick}>
+          {avatar && (
+            <ListItemAvatar>
+              <Avatar className={isValid ? undefined : classes.error}>
+                {avatar}
+              </Avatar>
+            </ListItemAvatar>
+          )}
+          <ListItemText primary={primaryText} secondary={secondaryText} />
+          {item.participants !== undefined && (
+            <Chip
+              label={formatIdsAndTruncateTrailingItems(
+                item.participants.map(formatMissionId),
+                { maxCount: 3, separator: ', ' }
+              )}
+            />
+          )}
+        </ListItemButton>
+      </ListItem>
     </Box>
   );
 };
 
-MissionOverviewListItem.propTypes = {
-  editMissionItemParameters: PropTypes.func,
-  id: PropTypes.string,
-  index: PropTypes.number,
-  item: PropTypes.shape({
-    type: PropTypes.string,
-    parameters: PropTypes.object,
-  }),
-  missionGeofenceStatus: PropTypes.oneOf(Object.values(Status)),
-  ratio: PropTypes.number,
-  selected: PropTypes.bool,
-  onSelectItem: PropTypes.func,
-  openGeofenceSettingsTab: PropTypes.func,
-  openSafetySettingsTab: PropTypes.func,
-};
-
+// TODO: This should really be cleaned up by making sure that Virtuoso only
+//       renders items that are actually present in the store, or at least by
+//       introducing a wrapper component to check whether a given mission item
+//       exists before trying to render it
 export default connect(
   // mapStateToProps
-  (state, ownProps) => ({
-    item: getMissionItemById(state, ownProps.id) ?? {
+  (state: RootState, ownProps: OwnProps) => ({
+    item: (getMissionItemById(state, ownProps.id) ?? {
       // HACK:Prevent a crash when react-virtuoso tries to render
       //      an item that no longer exists in the redux store...
       type: MissionItemType.UNKNOWN,
-    },
+    }) as MissionItem,
     missionGeofenceStatus: hasActiveGeofencePolygon(state)
       ? isWaypointMissionConvexHullInsideGeofence(state)
-        ? getGeofencePolygon(state).owner === MissionType.WAYPOINT
+        ? getGeofencePolygon(state)?.owner === MissionType.WAYPOINT
           ? Status.SUCCESS
           : Status.WARNING
         : Status.ERROR
       : Status.OFF,
+    // HACK: The only thing preventing this from crashing on no longer existing
+    //       mission items is the fallback in case of missing participant
+    //       information to belonging to all mission indices
+    ratios: getCompletionRatiosForMissionItemById(state, ownProps.id),
   }),
   // mapDispatchToProps
   {
     editMissionItemParameters,
-    openGeofenceSettingsTab: () => (dispatch) => {
+    openGeofenceSettingsTab: () => (dispatch: AppDispatch) => {
       dispatch(setSafetyDialogTab(SafetyDialogTab.GEOFENCE));
       dispatch(openSafetyDialog());
     },
-    openSafetySettingsTab: () => (dispatch) => {
+    openSafetySettingsTab: () => (dispatch: AppDispatch) => {
       dispatch(setSafetyDialogTab(SafetyDialogTab.SETTINGS));
       dispatch(openSafetyDialog());
     },
   },
   // mergeProps
-  (stateProps, { editMissionItemParameters, ...dispatchProps }, ownProps) => ({
+  (
+    stateProps,
+    { editMissionItemParameters: editFn, ...dispatchProps },
+    ownProps
+  ) => ({
     ...ownProps,
     ...stateProps,
     ...dispatchProps,
 
     ...(!isEmpty(schemaForMissionItemType[stateProps.item.type].properties) && {
-      editMissionItemParameters: () => editMissionItemParameters(ownProps.id),
+      editMissionItemParameters: () => editFn?.(ownProps.id),
     }),
   })
 )(MissionOverviewListItem);

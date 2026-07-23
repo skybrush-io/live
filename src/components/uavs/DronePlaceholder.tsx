@@ -1,4 +1,4 @@
-import Avatar from '@mui/material/Avatar';
+import Avatar, { type AvatarProps } from '@mui/material/Avatar';
 import { keyframes } from '@mui/material/styles';
 import { makeStyles } from '@skybrush/app-theme-mui';
 import clsx from 'clsx';
@@ -22,11 +22,8 @@ const useStyles = makeStyles((theme) => ({
 
   avatar: {
     backgroundColor: Colors.off,
-    color: theme.palette.getContrastText(Colors.off),
-
-    // Alternatively we could use `variant="rounded"` and
-    // set the amount through `theme.shape.borderRadius`.
     borderRadius: '25%',
+    color: theme.palette.getContrastText(Colors.off),
   },
 
   'avatar-off': {
@@ -53,8 +50,9 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 type Props = {
+  AvatarProps?: AvatarProps;
   editing?: boolean;
-  label?: React.ReactNode;
+  label: React.ReactNode;
   status?: 'off' | 'editing' | 'error' | 'success';
 };
 
@@ -63,7 +61,12 @@ type Props = {
  * don't want to display a drone avatar but want to show a placeholder
  * instead that is of the same size as the avatar.
  */
-const DronePlaceholder = ({ editing, label, status = 'off' }: Props) => {
+const DronePlaceholder = ({
+  AvatarProps,
+  editing,
+  label,
+  status = 'off',
+}: Props) => {
   const classes = useStyles();
   return (
     <div className={classes.root}>
@@ -72,6 +75,7 @@ const DronePlaceholder = ({ editing, label, status = 'off' }: Props) => {
           classes.avatar,
           classes[`avatar-${editing ? 'editing' : status}`]
         )}
+        {...AvatarProps}
       >
         {label}
       </Avatar>
