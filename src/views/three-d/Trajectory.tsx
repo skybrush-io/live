@@ -1,13 +1,13 @@
-import PropTypes from 'prop-types';
 import { memo } from 'react';
 
 import Colors from '~/components/colors';
+import type { Coordinate3D } from '~/utils/math';
 
 /**
  * Converts the trajectory points (specified as an array-of-arrays) into a
  * format that is suitable for the meshline component.
  */
-function pointsToString(points) {
+function pointsToString(points: Coordinate3D[]): string {
   return (Array.isArray(points) ? points : [])
     .map((point) => {
       const [x, y, z] = point;
@@ -26,18 +26,18 @@ function pointsToString(points) {
     .join(', ');
 }
 
-const Trajectory = ({ lineWidth = 5, points }) => {
-  const path = pointsToString(points);
+type Props = {
+  lineWidth?: number;
+  points?: Coordinate3D[];
+};
+
+const Trajectory = ({ lineWidth = 5, points }: Props) => {
+  const path = pointsToString(points ?? []);
   return path ? (
     <a-entity
       meshline={`lineWidth: ${lineWidth}; path: ${path}; color: ${Colors.plannedTrajectory}`}
     />
   ) : null;
-};
-
-Trajectory.propTypes = {
-  lineWidth: PropTypes.number,
-  points: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number)),
 };
 
 export default memo(Trajectory);

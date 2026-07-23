@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import { memo } from 'react';
 
 import { objectToString } from '~/aframe/utils';
@@ -21,7 +20,7 @@ const grounds = {
     groundColor2: '#666',
     groundTexture: 'checkerboard',
   },
-};
+} as const;
 
 const environments = {
   'outdoor-light': {
@@ -58,12 +57,17 @@ const environments = {
     horizonColor: '#222',
     ...grounds.indoor,
   },
+} as const;
+
+type SceneryProps = {
+  grid?: boolean | string;
+  type?: keyof typeof environments;
 };
 
 /**
  * Component that renders a basic scenery in which the drones will be placed.
  */
-const Scenery = ({ grid, type = 'outdoor-dark' }) => {
+const Scenery = ({ grid, type = 'outdoor-dark' }: SceneryProps) => {
   const scale = type === 'indoor-light' || type === 'indoor-dark' ? 0.5 : 10;
   return (
     <a-entity position='0 -0.02 0' scale={`${scale} ${scale} ${scale}`}>
@@ -76,11 +80,6 @@ const Scenery = ({ grid, type = 'outdoor-dark' }) => {
       />
     </a-entity>
   );
-};
-
-Scenery.propTypes = {
-  grid: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
-  type: PropTypes.oneOf(Object.keys(environments)),
 };
 
 export default memo(Scenery);

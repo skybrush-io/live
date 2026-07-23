@@ -10,7 +10,6 @@ import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import Toolbar from '@mui/material/Toolbar';
-import PropTypes from 'prop-types';
 import { useRef } from 'react';
 import { IgnoreKeys } from 'react-hotkeys';
 import { connect } from 'react-redux';
@@ -27,10 +26,16 @@ import {
 } from '~/features/settings/actions';
 import { getLightingConditionsForThreeDView } from '~/features/settings/selectors';
 import { toggleLightingConditionsInThreeDView } from '~/features/settings/slice';
+import { AppSettingsDialogTab } from '~/features/settings/types';
 import { resetZoom, rotateViewToDrones } from '~/features/three-d/actions';
 import { cameraRef } from '~/features/three-d/refs';
 import { setNavigationMode } from '~/features/three-d/slice';
+import type {
+  NavigationMode,
+  NavigationSettings,
+} from '~/features/three-d/types';
 import { isMapCoordinateSystemSpecified } from '~/selectors/map';
+import type { AppDispatch, RootState } from '~/store/reducers';
 
 import NavigationButtonGroup from './NavigationButtonGroup';
 import NavigationInstructions from './NavigationInstructions';
@@ -56,6 +61,19 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+type Props = {
+  hasMapCoordinateSystem: boolean;
+  lighting: 'dark' | 'light';
+  navigation: NavigationSettings;
+  onResetZoom: () => void;
+  onRotateCameraTowardsDrones: () => void;
+  onSetNavigationMode: (mode: NavigationMode) => void;
+  onShowSettings: () => void;
+  onToggleLightingConditions: () => void;
+};
+
+type ResizableHTMLElement = HTMLElement & { resize: () => void };
+
 const ThreeDTopLevelView = ({
   hasMapCoordinateSystem,
   lighting,
@@ -65,14 +83,14 @@ const ThreeDTopLevelView = ({
   onSetNavigationMode,
   onShowSettings,
   onToggleLightingConditions,
-}) => {
+}: Props) => {
   const classes = useStyles();
 
-  const threeDViewRef = useRef(null);
-  const ref = useRef(null);
+  const threeDViewRef = useRef<ResizableHTMLElement>(null!);
+  const ref = useRef<HTMLDivElement>(null);
 
-  useResizeObserver({
-    ref,
+  useResizeObserver<HTMLDivElement>({
+    ref: ref as React.RefObject<HTMLDivElement>,
     onResize() {
       if (threeDViewRef.current) {
         threeDViewRef.current.resize();
@@ -87,7 +105,6 @@ const ThreeDTopLevelView = ({
           <Toolbar disableGutters variant='dense' className={classes.toolbar}>
             <NavigationButtonGroup
               mode={navigation.mode}
-              parameters={navigation.parameters}
               onChange={onSetNavigationMode}
               onResetZoom={onResetZoom}
               onRotateCameraTowardsDrones={onRotateCameraTowardsDrones}
@@ -132,23 +149,9 @@ const ThreeDTopLevelView = ({
   );
 };
 
-ThreeDTopLevelView.propTypes = {
-  hasMapCoordinateSystem: PropTypes.bool,
-  lighting: PropTypes.string,
-  navigation: PropTypes.shape({
-    mode: PropTypes.string,
-    parameters: PropTypes.object,
-  }),
-  onResetZoom: PropTypes.func,
-  onRotateCameraTowardsDrones: PropTypes.func,
-  onSetNavigationMode: PropTypes.func,
-  onShowSettings: PropTypes.func,
-  onToggleLightingConditions: PropTypes.func,
-};
-
 export default connect(
   // mapStateToProps
-  (state) => ({
+  (state: RootState) => ({
     hasMapCoordinateSystem: isMapCoordinateSystemSpecified(state),
     ...state.threeD,
     lighting: getLightingConditionsForThreeDView(state),
@@ -159,8 +162,8 @@ export default connect(
     onRotateCameraTowardsDrones: rotateViewToDrones,
     onSetNavigationMode: setNavigationMode,
 
-    onShowSettings: () => (dispatch) => {
-      dispatch(setAppSettingsDialogTab('display'));
+    onShowSettings: () => (dispatch: AppDispatch) => {
+      dispatch(setAppSettingsDialogTab(AppSettingsDialogTab.DISPLAY));
       dispatch(showAppSettingsDialog());
     },
 
