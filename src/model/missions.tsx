@@ -5,7 +5,7 @@ import LandIcon from '@mui/icons-material/FlightLand';
 import TakeoffIcon from '@mui/icons-material/FlightTakeoff';
 import UpdateFlightAreaIcon from '@mui/icons-material/FormatShapes';
 import ChangeAltitudeIcon from '@mui/icons-material/Height';
-import HomeIcon from '@mui/icons-material/Home';
+import ReturnToHomeIcon from '@mui/icons-material/Home';
 import HoverIcon from '@mui/icons-material/HourglassEmpty';
 import ChangeHeadingIcon from '@mui/icons-material/RotateLeft';
 import UpdateSafetyIcon from '@mui/icons-material/Security';
@@ -18,7 +18,13 @@ import {
   type GeofenceConfiguration,
   type SafetyConfiguration,
 } from '~/features/safety/model';
-import { type Latitude, type Longitude, type LonLat } from '~/utils/geography';
+import type {
+  Latitude,
+  Longitude,
+  LonLat,
+  ScaledJSONGPSCoordinate,
+} from '~/utils/geography';
+import type { Nullable } from '~/utils/types';
 
 import {
   type Altitude,
@@ -117,6 +123,8 @@ export type MissionItemLike = {
   id: string;
   type: MissionItemType;
   parameters: Record<string, unknown>;
+  // Items with `undefined` participant lists belong to all mission indices
+  participants?: MissionIndex[];
 };
 
 export const isMissionItemLike = (item: unknown): item is MissionItemLike =>
@@ -215,7 +223,7 @@ export const iconForMissionItemType: Record<MissionItemType, React.ReactNode> =
     [MissionItemType.HOVER]: <HoverIcon />,
     [MissionItemType.LAND]: <LandIcon />,
     [MissionItemType.MARKER]: <MarkerIcon />,
-    [MissionItemType.RETURN_TO_HOME]: <HomeIcon />,
+    [MissionItemType.RETURN_TO_HOME]: <ReturnToHomeIcon />,
     [MissionItemType.SET_PARAMETER]: <SetParameterIcon />,
     [MissionItemType.SET_PAYLOAD]: <SetPayloadIcon />,
     [MissionItemType.TAKEOFF]: <TakeoffIcon />,
@@ -595,3 +603,10 @@ export function getAltitudeFromMissionItem(
     return item.parameters.alt;
   }
 }
+
+export type MissionItemBundle = {
+  version: number;
+  name: string | undefined;
+  items: MissionItem[];
+  startPositions: Array<Nullable<ScaledJSONGPSCoordinate>> | undefined;
+};

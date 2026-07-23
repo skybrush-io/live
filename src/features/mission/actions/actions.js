@@ -18,6 +18,7 @@ import {
 import { showPromptDialog } from '~/features/prompt/actions';
 import { updateGeofencePolygon } from '~/features/safety/actions';
 import { setSelection } from '~/features/selection/slice';
+import { clearLoadedShow } from '~/features/show/actions';
 import {
   getFirstPointsOfTrajectories,
   getOutdoorShowCoordinateSystem,
@@ -42,14 +43,10 @@ import {
   getUAVIdList,
   getUnmappedUAVIds,
 } from '~/features/uavs/selectors';
-import { openUploadDialogForJob } from '~/features/upload/slice';
 import { ServerPlanError } from '~/flockwave/operations';
 import messageHub from '~/message-hub';
 import { FeatureType } from '~/model/features';
-import {
-  missionItemIdToGlobalId,
-  missionSlotIdToGlobalId,
-} from '~/model/identifiers';
+import { missionSlotIdToGlobalId } from '~/model/identifiers';
 import {
   isMissionItemValid,
   MissionItemType,
@@ -59,12 +56,15 @@ import {
 } from '~/model/missions';
 import { readFileAsText } from '~/utils/files';
 import { readTextFromFile, writeTextToFile } from '~/utils/filesystem';
-import { toLonLatFromScaledJSON } from '~/utils/geography';
+import {
+  toLonLatFromScaledJSON,
+  toObjectFromScaledJSON,
+} from '~/utils/geography';
+
 import { chooseUniqueId } from '~/utils/naming';
 import { createAsyncAction } from '~/utils/redux';
 import workers from '~/workers';
 
-import { JOB_TYPE } from '../constants';
 import {
   contextVolatilities,
   ContextVolatility,
@@ -87,6 +87,7 @@ import {
   getMissionPlannerDialogContextParameters,
   getMissionPlannerDialogSelectedType,
   getMissionPlannerDialogUserParameters,
+  getMissionType,
   getSelectedMissionItemIds,
   shouldMissionPlannerDialogApplyGeofence,
 } from '../selectors';
@@ -101,13 +102,12 @@ import {
   setMissionName,
   setMissionPlannerDialogSelectedType,
   setMissionPlannerDialogUserParameters,
-  setMissionType,
-  updateCurrentMissionItemId,
-  updateCurrentMissionItemRatio,
+  _setMissionType,
   updateHomePositions,
   updateMissionItemParameters,
+  updateProgressData,
+  updateProgressDatumForMissionIndex,
 } from '../slice';
-import { getMissionItemUploadJobPayload } from '../upload';
 import {
   clearMapping,
   removeUAVsFromMapping,
@@ -448,6 +448,40 @@ export const prepareMappingForSingleUAVMissionFromSelection =
   };
 
 /**
+ * Thunk that assigns UAVs to the mission slots based on position matching.
+ */
+export const prepareMappingForMultiUAVMissionFromStartPositions =
+  (startPositions) => (dispatch) => {
+    dispatch(setMappingLength(startPositions.length));
+    dispatch(updateHomePositions(startPositions.map(toObjectFromScaledJSON)));
+    dispatch(recalculateMapping());
+  };
+
+export const ensureMissionType = (newMissionType) => (dispatch, getState) => {
+  const oldMissionType = getMissionType(getState());
+
+  if (oldMissionType === newMissionType) {
+    return;
+  }
+
+  switch (oldMissionType) {
+    case MissionType.SHOW: {
+      dispatch(clearLoadedShow(false));
+      break;
+    }
+
+    case MissionType.WAYPOINT: {
+      dispatch(clearMission(false));
+      break;
+    }
+
+    // No default
+  }
+
+  dispatch(_setMissionType(newMissionType));
+};
+
+/**
  * Thunk that adds a new mission item of the given type to the end of the
  * current mission.
  */
@@ -475,10 +509,10 @@ export const editMissionItemParameters =
       showPromptDialog({
         initialValues: item.parameters,
         schema: {
-          title: titleForMissionItemType[item.type],
           type: 'object',
           ...schemaForMissionItemType[item.type],
         },
+        title: titleForMissionItemType[item.type],
       })
     );
 
@@ -528,18 +562,6 @@ export const removeSelectedMissionItems = () => (dispatch, getState) => {
 };
 
 /**
- * Action factory that creates an action that updates the selection to the
- * given list of mission item IDs.
- *
- * @param {string[]} ids  the IDs of the selected mission items. Any mission
- *        item whose ID is not in this set will be deselected, and so will be
- *        any other item that is not a mission item.
- * @return {Object} an appropriately constructed action
- */
-export const setSelectedMissionItemIds = (ids) =>
-  setSelection(ids.map(missionItemIdToGlobalId));
-
-/**
  * Thunk that updates the parameters of a mission item based on a map feature.
  * It is used to store changes made to mission items that have visual
  * representations on the `mission-info` layer of the map.
@@ -547,22 +569,33 @@ export const setSelectedMissionItemIds = (ids) =>
 export const updateMissionItemFromFeature =
   (itemId, feature) => (dispatch, getState) => {
     const item = getMissionItemById(getState(), itemId);
-    dispatch(
-      updateMissionItemParameters(
-        item.id,
-        produce(item.parameters, (draft) => {
-          switch (item.type) {
-            case MissionItemType.GO_TO:
-              [draft.lon, draft.lat] = feature.points[0];
-              break;
+    if (item) {
+      dispatch(
+        updateMissionItemParameters(
+          item.id,
+          produce(item.parameters, (draft) => {
+            switch (item.type) {
+              case MissionItemType.GO_TO:
+                [draft.lon, draft.lat] = feature.points[0];
+                break;
 
-            case MissionItemType.UPDATE_FLIGHT_AREA:
-              draft.flightArea.polygons[0].points = feature.points;
-              break;
-          }
-        })
-      )
-    );
+              case MissionItemType.UPDATE_FLIGHT_AREA:
+                draft.flightArea.polygons[0].points = feature.points;
+                break;
+
+              default:
+                console.warn(
+                  `Cannot perform feature based update for mission item with type: '${item.type}'`
+                );
+            }
+          })
+        )
+      );
+    } else {
+      console.warn(
+        `Cannot perform feature based update for mission item with id: '${itemId}'`
+      );
+    }
   };
 
 /**
@@ -585,18 +618,6 @@ export const setMissionItemsFromArray = (items) => (dispatch) => {
   }
 
   dispatch(_setMissionItemsFromValidatedArray(validItems));
-};
-
-/**
- * Thunk that uploads the current list of mission items to the selected UAV.
- */
-export const uploadMissionItemsToSelectedUAV = () => (dispatch, getState) => {
-  const state = getState();
-  const selectedUAVId = getSingleSelectedUAVId(state);
-  if (selectedUAVId !== undefined) {
-    const payload = getMissionItemUploadJobPayload(state);
-    dispatch(openUploadDialogForJob({ job: { type: JOB_TYPE, payload } }));
-  }
 };
 
 /**
@@ -689,8 +710,9 @@ export const invokeMissionPlanner =
 
     let name = null;
     let items = null;
+    let startPositions = null;
     try {
-      ({ name, items } = await messageHub.execute.planMission({
+      ({ name, items, startPositions } = await messageHub.execute.planMission({
         id: missionType,
         parameters,
       }));
@@ -710,10 +732,18 @@ export const invokeMissionPlanner =
     }
 
     if (Array.isArray(items)) {
-      dispatch(setMissionType(MissionType.WAYPOINT));
+      dispatch(ensureMissionType(MissionType.WAYPOINT));
       dispatch(setMissionName(name));
       dispatch(setMissionItemsFromArray(items.map(processReceivedMissionItem)));
-      dispatch(prepareMappingForSingleUAVMissionFromSelection());
+
+      if (startPositions) {
+        dispatch(
+          prepareMappingForMultiUAVMissionFromStartPositions(startPositions)
+        );
+      } else {
+        dispatch(prepareMappingForSingleUAVMissionFromSelection());
+      }
+
       dispatch(closeMissionPlannerDialog());
 
       if (
@@ -751,26 +781,31 @@ export const invokeMissionPlanner =
 /**
  * Thunk that clears a mission and shows a toast with an option to restore it.
  */
-export const clearMission = () => (dispatch, _getState) => {
-  dispatch(backupMission());
-  dispatch(setMissionType(MissionType.UNKNOWN));
-  dispatch(setMissionName(null));
-  dispatch(setLastSuccessfulPlannerInvocationParameters(null));
-  dispatch(setMissionItemsFromArray([]));
-  dispatch(setMappingLength(0));
-  showNotification({
-    message: 'Previous mission cleared.',
-    semantics: MessageSemantics.INFO,
-    buttons: [
-      {
-        label: 'Undo',
-        action: restoreLastClearedMission(),
-      },
-    ],
-    permanent: true,
-    topic: 'mission-cleared',
-  });
-};
+export const clearMission =
+  (shouldClearMissionType = true) =>
+  (dispatch, _getState) => {
+    dispatch(backupMission());
+    dispatch(setMissionName(null));
+    dispatch(setLastSuccessfulPlannerInvocationParameters(null));
+    dispatch(setMissionItemsFromArray([]));
+    dispatch(setMappingLength(0));
+    showNotification({
+      message: 'Previous mission cleared.',
+      semantics: MessageSemantics.INFO,
+      buttons: [
+        {
+          label: 'Undo',
+          action: restoreLastClearedMission(),
+        },
+      ],
+      permanent: true,
+      topic: 'mission-cleared',
+    });
+
+    if (shouldClearMissionType) {
+      dispatch(ensureMissionType(MissionType.UNKNOWN));
+    }
+  };
 
 /**
  * Thunk that backs up a mission to the store.
@@ -884,16 +919,30 @@ export const restoreMission =
     name,
     items,
     homePositions,
-    progress: { id: currentMissionItemId, ratio: currentMissionItemRatio },
+    progress,
+    progressData,
   }) =>
   (dispatch, _getState) => {
-    dispatch(setMissionType(MissionType.WAYPOINT));
+    dispatch(ensureMissionType(MissionType.WAYPOINT));
     dispatch(setMissionName(name));
     dispatch(setMissionItemsFromArray(items));
     dispatch(setMappingLength(homePositions.length));
     dispatch(updateHomePositions(homePositions));
-    dispatch(updateCurrentMissionItemId(currentMissionItemId));
-    dispatch(updateCurrentMissionItemRatio(currentMissionItemRatio));
+
+    // NOTE: If a mission was exported in an older Live version, where progress
+    //       was only handled in a single-UAV manner, import it at index 0
+    if (progress) {
+      dispatch(
+        updateProgressDatumForMissionIndex(0, {
+          currentItemId: progress.id,
+          currentItemRatio: progress.ratio,
+        })
+      );
+    }
+
+    if (progressData) {
+      dispatch(updateProgressData(progressData));
+    }
 
     // Only restore from parameters if there has been a successful mission
     // planner invocation before the data was stored.

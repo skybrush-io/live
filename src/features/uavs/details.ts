@@ -52,7 +52,7 @@ const { actions, reducer } = createSlice({
 
     setSelectedUAVIdInUAVDetailsDialog(
       state,
-      { payload }: PayloadAction<StoredUAV['id']>
+      { payload }: PayloadAction<StoredUAV['id'] | undefined>
     ) {
       state.selectedUAVId = payload;
     },

@@ -49,7 +49,10 @@ const CoordinateAveragingDialogToolbar = ({
   return (
     <DialogToolbar disableGutters>
       <Box sx={{ position: 'absolute', display: 'flex' }}>
-        <UAVSelectorWrapper filterable onSelect={onUAVIdAdded}>
+        <UAVSelectorWrapper
+          filterable
+          onSelect={({ uavId }) => onUAVIdAdded(uavId)}
+        >
           {(handleClick) => (
             <Tooltip
               content={t('coordinateAveragingDialogToolbar.addNewDrone')}
