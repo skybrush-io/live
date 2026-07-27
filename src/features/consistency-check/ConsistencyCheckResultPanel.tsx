@@ -53,9 +53,11 @@ const ParameterValueRow = ({
 
   return (
     <>
-      <StatusPill status={isConsensus ? Status.SUCCESS : Status.WARNING}>
-        {value}
-      </StatusPill>
+      <Box sx={{ width: 80 }}>
+        <StatusPill status={isConsensus ? Status.SUCCESS : Status.WARNING}>
+          {value}
+        </StatusPill>
+      </Box>
       <StatusPill status={Status.OFF}>{uavIds.length}</StatusPill>
       <Typography className={classes.uavIds} variant='body2'>
         {formatIdsAndTruncateTrailingItems(uavIds.slice().sort())}
@@ -192,7 +194,7 @@ const useConsistencyCheckResultPanelStyles = makeStyles((theme) => ({
   root: {
     overflow: 'auto',
     maxHeight: 'calc(100vh - 320px)',
-    marginTop: theme.spacing(1),
+    margin: theme.spacing(1, 0),
   },
 }));
 
