@@ -8,8 +8,8 @@ import { CONSISTENCY_CHECK_JOB_TYPE } from './constants';
 import { parseParameterNames } from './formatting';
 import { getConsistencyCheckJobPayload } from './selectors';
 import {
+  addConsistencyCheckParameterNames,
   closeConsistencyCheckSetupDialog,
-  setConsistencyCheckParameterNames,
   showConsistencyCheckSetupDialog,
 } from './slice';
 
@@ -40,6 +40,6 @@ export const showConsistencyCheckDialog = createShowSetupDialogThunk(
 export const importConsistencyCheckNamesFromFile =
   createFileImportFromFileThunk(
     parseParameterNames,
-    setConsistencyCheckParameterNames,
+    addConsistencyCheckParameterNames,
     'Error while parsing parameter names from file'
   );

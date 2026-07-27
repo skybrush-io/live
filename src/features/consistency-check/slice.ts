@@ -66,29 +66,20 @@ const { actions, reducer } = createSlice({
       }
     },
 
-    setConsistencyCheckParameterNames(
+    addConsistencyCheckParameterNames(
       state,
       action: PayloadAction<Identifier[]>
     ) {
       const { payload } = action;
       const { parameterNames } = state;
 
-      clearOrderedCollection(parameterNames);
-
-      // Dedup case-sensitively, preserving order (first occurrence wins).
-      const seen = new Set<Identifier>();
-      const unique: Identifier[] = [];
       for (const name of payload) {
-        if (typeof name === 'string' && name.length > 0 && !seen.has(name)) {
-          seen.add(name);
-          unique.push(name);
+        if (typeof name === 'string' && name.length > 0) {
+          if (parameterNames.order.includes(name)) {
+            deleteItemById(parameterNames, name);
+          }
+          addItemToFront(parameterNames, { id: name, name });
         }
-      }
-
-      // Add in reverse so that addItemToFront yields the original order.
-      for (let i = unique.length - 1; i >= 0; i--) {
-        const name = unique[i];
-        addItemToFront(parameterNames, { id: name, name });
       }
     },
 
@@ -99,10 +90,10 @@ const { actions, reducer } = createSlice({
 });
 
 export const {
+  addConsistencyCheckParameterNames,
   clearConsistencyCheckParameterNames,
   closeConsistencyCheckSetupDialog,
   removeParameterNameFromConsistencyCheckList,
-  setConsistencyCheckParameterNames,
   showConsistencyCheckSetupDialog,
 } = actions;
 
