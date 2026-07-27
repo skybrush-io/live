@@ -1,6 +1,5 @@
 import delay from 'delay';
 
-import { CONSISTENCY_CHECK_JOB_TYPE } from '~/features/consistency-check/constants';
 import { showErrorMessage } from '~/features/error-handling/slice';
 import { getRunningUploadJobType } from '~/features/upload/selectors';
 import {
@@ -31,18 +30,6 @@ export function proceedToUpload(): AppThunk<Promise<void>> {
       })
     );
   };
-}
-
-export function runParameterConsistencyCheck() {
-  const payload = [
-    'SHOW_ORIGIN_AMSL',
-    'SHOW_ORIGIN_LAT',
-    'SHOW_ORIGIN_LNG',
-    'SHOW_ORIENTATION',
-  ];
-  return openUploadDialogForJob({
-    job: { type: CONSISTENCY_CHECK_JOB_TYPE, payload },
-  });
 }
 
 /**

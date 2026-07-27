@@ -247,6 +247,19 @@
       }
     }
   },
+  "consistencyCheckMainPanel": {
+    "parameterCheckHint": "Press <kbd>⇧</kbd> + <kbd>Enter</kbd> to add the parameter names to the list. Click on a name in the sidebar to remove it.",
+    "parameterNames": "Parameter names",
+    "specifyEntries": "Specify one parameter name per row."
+  },
+  "consistencyCheckNameSidebar": {
+    "import": "Import…",
+    "nextStep": "Next step",
+    "removeAllItems": "Remove all names from the list"
+  },
+  "consistencyCheckSetupDialog": {
+    "checkParameters": "Parameter consistency check"
+  },
   "coordinateAveragingDialogToolbar": {
     "addNewDrone": "Add new drone",
     "copyCentroid": "Copy centroid",
