@@ -1,5 +1,6 @@
 import delay from 'delay';
 
+import { CONSISTENCY_CHECK_JOB_TYPE } from '~/features/consistency-check/constants';
 import { showErrorMessage } from '~/features/error-handling/slice';
 import { getRunningUploadJobType } from '~/features/upload/selectors';
 import {
@@ -8,7 +9,7 @@ import {
 } from '~/features/upload/slice';
 import type { AppThunk } from '~/store/reducers';
 
-import { CONSISTENCY_CHECK_JOB_TYPE, UPLOAD_JOB_TYPE } from './constants';
+import { UPLOAD_JOB_TYPE } from './constants';
 import { parseParameters } from './formatting';
 import { getParameterUploadJobPayloadFromManifest } from './selectors';
 import {

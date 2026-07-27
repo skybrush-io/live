@@ -11,7 +11,7 @@ import type { Identifier } from '~/utils/collections';
 import { EMPTY_ARRAY } from '~/utils/redux';
 
 import { type UploadSliceState } from './slice';
-import type { HistoryItem, UAVStatus, UploadJobResult } from './types';
+import type { HistoryItem, PerUAVJobResult, UploadJobResult } from './types';
 
 const ALL_QUEUES: Array<keyof UploadSliceState['queues']> = [
   'failedItems',
@@ -180,53 +180,29 @@ export const moveItemsBetweenQueues =
   };
 
 /**
- * Aggregates up to date UAV statuses from the given history items.
+ * Aggregates up to date per-UAV job results from the given history items.
  *
  * Outdated statuses are ignored.
  */
-export function aggregateUAVStatusesFromHistory<TStatus>(
-  historyItems: HistoryItem[] | undefined,
-  mapStatus: (status: UAVStatus) => TStatus
-): Record<Identifier, TStatus> {
-  const result: Record<Identifier, TStatus> = {};
+export function aggregatePerUAVResultsFromHistory<T>(
+  historyItems: Array<HistoryItem<T>> | undefined
+): Record<Identifier, PerUAVJobResult<T>> {
+  const result: Record<Identifier, PerUAVJobResult<T>> = {};
   if (historyItems === undefined) {
     return result;
   }
 
   for (const item of historyItems) {
-    for (const [uavId, status] of Object.entries(item.perUavStatuses)) {
-      if (status === 'outdated') {
+    for (const [uavId, entry] of Object.entries(item.perUAVResults)) {
+      if (entry.type === 'outdated') {
         delete result[uavId];
       } else {
-        result[uavId] = mapStatus(status);
+        result[uavId] = entry;
       }
     }
   }
 
   return result;
-}
-
-/**
- * Creates a history item from the given job result, queues, and errors.
- */
-export function createHistoryItem(
-  result: UploadJobResult,
-  queues: { itemsFinished: Identifier[]; failedItems: Identifier[] },
-  errors: Record<Identifier, string>
-): HistoryItem {
-  const perUavStatuses: Record<Identifier, UAVStatus> = {};
-  for (const uavId of queues.itemsFinished) {
-    perUavStatuses[uavId] = 'success';
-  }
-  for (const uavId of queues.failedItems) {
-    perUavStatuses[uavId] = 'error';
-  }
-
-  return {
-    result,
-    perUavStatuses,
-    perUavErrors: { ...errors },
-  };
 }
 
 /**
@@ -259,14 +235,18 @@ export function compactHistory(
   const keepCount = Math.floor(maxSize / 2);
   const mergeUntil = history.length - keepCount;
 
-  const perUavStatuses: Record<Identifier, UAVStatus> = {};
-  const perUavErrors: Record<Identifier, string> = {};
+  const perUAVResults: Record<Identifier, PerUAVJobResult> = {};
   let worstResult: UploadJobResult = 'success';
 
   for (let i = 0; i < mergeUntil; i++) {
     const item = history[i];
-    Object.assign(perUavStatuses, item.perUavStatuses);
-    Object.assign(perUavErrors, item.perUavErrors);
+    for (const [uavId, entry] of Object.entries(item.perUAVResults)) {
+      if (entry.type === 'outdated') {
+        delete perUAVResults[uavId];
+      } else {
+        perUAVResults[uavId] = entry;
+      }
+    }
 
     if (
       COMPACTION_RESULT_PRIORITY[item.result] >
@@ -278,8 +258,7 @@ export function compactHistory(
 
   const compacted: HistoryItem = {
     result: worstResult,
-    perUavStatuses,
-    perUavErrors,
+    perUAVResults,
   };
 
   return [compacted, ...history.slice(mergeUntil)];

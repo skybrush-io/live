@@ -29,9 +29,19 @@ export type UAVProgressInfo = {
   progress: number;
 };
 
-export type UAVStatus = 'success' | 'error';
+/**
+ * Per-UAV outcome of an upload job.
+ *
+ * `'success'` carries the job-specific result piece; `'error'` carries the
+ * failure message; `'outdated'` marks a UAV whose stored result (if any) is
+ * no longer valid.
+ */
+export type PerUAVJobResult<ResultPiece = unknown> =
+  | { type: 'success'; result: ResultPiece }
+  | { type: 'error'; error: string }
+  | { type: 'outdated' };
 
-export type MaybeOutdatedUAVStatus = UAVStatus | 'outdated';
+export type UAVStatus = Exclude<PerUAVJobResult['type'], 'outdated'>;
 
 export type UploadJobResult = UAVStatus | 'cancelled';
 
@@ -40,31 +50,12 @@ export type UploadJobResult = UAVStatus | 'cancelled';
  */
 export type UploadStatus = UAVStatus | 'partial' | 'not-available';
 
-type ErrorMessage = string;
-
-export type HistoryItem = {
+export type HistoryItem<ResultPiece = unknown> = {
   result: UploadJobResult;
-  perUavStatuses: Record<Identifier, MaybeOutdatedUAVStatus>;
-  perUavErrors: Record<Identifier, ErrorMessage>;
+  perUAVResults: Record<Identifier, PerUAVJobResult<ResultPiece>>;
 };
 
 /**
- * Type describing the outcome of a long-running operation (a job or a task), with
- * distinction between temporary and permanent failures.
+ * Tabs supported by the upload dialog.
  */
-export type Outcome<T, E = unknown> =
-  | {
-      type: 'success';
-      result: T;
-    }
-  | {
-      type: 'failure';
-      error: E;
-    }
-  | {
-      type: 'permanent-failure';
-      error: E;
-    }
-  | {
-      type: 'cancelled';
-    };
+export type UploadDialogTab = 'status' | 'results';

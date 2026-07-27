@@ -1450,9 +1450,16 @@
   "uploadPanel": {
     "cancelUpload": "Cancel upload",
     "clearHistory": "Clear history",
+    "consistencyCheck": {
+      "errorCount_one": "{{count}} error",
+      "errorCount_other": "{{count}} errors"
+    },
     "flashLightsWhereFailed": "Flash lights of UAVs where the upload failed",
     "hasHiddenTargets": "Some of the waiting UAVs may be filtered.",
+    "noJobResultAvailable": "No job result available yet.",
+    "resultsTab": "Results",
     "retryFailedAttempts": "Retry failed attempts automatically",
+    "statusTab": "Status",
     "uploadAttemptFailed": "Upload attempt failed.",
     "uploadCancelled": "Upload cancelled by user.",
     "uploadFinishedSuccessfully": "Upload finished successfully.",

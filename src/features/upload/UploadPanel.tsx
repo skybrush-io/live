@@ -10,7 +10,10 @@ import DialogContent from '@mui/material/DialogContent';
 import Fade from '@mui/material/Fade';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import IconButton from '@mui/material/IconButton';
+import Tab from '@mui/material/Tab';
+import Tabs from '@mui/material/Tabs';
 import type { Theme } from '@mui/material/styles';
+import { createElement } from 'react';
 import type React from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
@@ -22,16 +25,26 @@ import {
 } from '@skybrush/mui-components';
 
 import { Status } from '~/components/semantics';
+import useCurrentTimestamp from '~/hooks/useCurrentTimestamp';
+import type { AppThunk, RootState } from '~/store/reducers';
+import { formatDurationAsText } from '~/utils/formatting';
+
+import StartUploadButton from './StartUploadButton';
+import UploadProgressBar from './UploadProgressBar';
+import UploadStatusLegend from './UploadStatusLegend';
+import UploadStatusLights from './UploadStatusLights';
+import { getUploadJobResultPanel } from './result-panels';
 import {
   getEstimatedCompletionTime,
   getLastUploadResultByJobType,
+  getSelectedTabInUploadDialog,
   getUploadDialogState,
   hasHiddenTargets,
   hasQueuedItems,
   isUploadInProgress,
   shouldFlashLightsOfFailedUploads,
   shouldRetryFailedUploadsAutomatically,
-} from '~/features/upload/selectors';
+} from './selectors';
 import {
   cancelUpload,
   clearUploadHistoryForCurrentJobType,
@@ -39,14 +52,9 @@ import {
   dismissLastUploadResult,
   setFlashFailed,
   setUploadAutoRetry,
-} from '~/features/upload/slice';
-import StartUploadButton from '~/features/upload/StartUploadButton';
-import UploadProgressBar from '~/features/upload/UploadProgressBar';
-import UploadStatusLegend from '~/features/upload/UploadStatusLegend';
-import UploadStatusLights from '~/features/upload/UploadStatusLights';
-import useCurrentTimestamp from '~/hooks/useCurrentTimestamp';
-import type { AppThunk, RootState } from '~/store/reducers';
-import { formatDurationAsText } from '~/utils/formatting';
+  setUploadDialogSelectedTab,
+} from './slice';
+import type { UploadDialogTab } from './types';
 
 type UploadResultIndicatorProps = Omit<LabeledStatusLightProps, 'children'> &
   Readonly<{
@@ -133,6 +141,18 @@ const useStyles = makeStyles((theme: Theme) => ({
   warningText: {
     color: Colors.warning,
   },
+  tabs: {
+    minHeight: 0,
+  },
+  tab: {
+    minHeight: 36,
+  },
+  activeTabPanel: {
+    display: 'block',
+  },
+  inactiveTabPanel: {
+    display: 'none',
+  },
 }));
 
 type UploadPanelProps = Readonly<{
@@ -146,12 +166,14 @@ type UploadPanelProps = Readonly<{
   lastUploadResult?: 'success' | 'error' | 'cancelled';
   onCancelUpload: () => void;
   onDismissLastUploadResult: () => void;
+  onTabSelected: (value: UploadDialogTab) => void;
   onStartUpload?: () => void;
   onStepBack?: () => void;
   onToggleAutoRetry: () => void;
   onToggleFlashFailed: () => void;
   running?: boolean;
   showLastUploadResult?: boolean;
+  selectedTab?: UploadDialogTab;
 }>;
 
 /**
@@ -165,23 +187,73 @@ const UploadPanel = ({
   flashFailed,
   hasHiddenTargets,
   hasQueuedItems,
+  jobType,
   lastUploadResult,
   onCancelUpload,
   onDismissLastUploadResult,
+  onTabSelected,
   onStartUpload,
   onStepBack,
   onToggleAutoRetry,
   onToggleFlashFailed,
   running = false,
   showLastUploadResult = false,
+  selectedTab = 'status',
 }: UploadPanelProps): React.JSX.Element => {
   const classes = useStyles();
   const { t } = useTranslation();
+  const resultPanel = getUploadJobResultPanel(jobType);
+  const supportsResults = resultPanel !== undefined;
 
   return (
     <>
       <DialogContent>
-        <UploadStatusLights />
+        {supportsResults && (
+          <Tabs
+            value={selectedTab}
+            onChange={(_event, value: UploadDialogTab) => {
+              onTabSelected(value);
+            }}
+            className={classes.tabs}
+          >
+            <Tab
+              value='status'
+              label={t('uploadPanel.statusTab')}
+              className={classes.tab}
+            />
+            <Tab
+              value='results'
+              label={t('uploadPanel.resultsTab')}
+              className={classes.tab}
+            />
+          </Tabs>
+        )}
+        {supportsResults ? (
+          <>
+            <Box
+              className={
+                selectedTab === 'status'
+                  ? classes.activeTabPanel
+                  : classes.inactiveTabPanel
+              }
+            >
+              <UploadStatusLights />
+            </Box>
+            {resultPanel && (
+              <Box
+                className={
+                  selectedTab === 'results'
+                    ? classes.activeTabPanel
+                    : classes.inactiveTabPanel
+                }
+              >
+                {createElement(resultPanel)}
+              </Box>
+            )}
+          </>
+        ) : (
+          <UploadStatusLights />
+        )}
         <UploadStatusLegend />
         <Box sx={{ mt: 1 }}>
           <UploadProgressBar />
@@ -264,6 +336,7 @@ export default connect(
     hasQueuedItems: hasQueuedItems(state),
     lastUploadResult: getLastUploadResultByJobType(state, ownProps.jobType),
     running: isUploadInProgress(state),
+    selectedTab: getSelectedTabInUploadDialog(state),
   }),
 
   // mapDispatchToProps
@@ -282,5 +355,6 @@ export default connect(
       const flashFailed = shouldFlashLightsOfFailedUploads(state);
       dispatch(setFlashFailed(!flashFailed));
     },
+    onTabSelected: setUploadDialogSelectedTab,
   }
 )(UploadPanel);
