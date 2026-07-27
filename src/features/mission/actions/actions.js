@@ -29,6 +29,7 @@ import {
   proposeMappingFileName,
 } from '~/features/show/selectors';
 import {
+  dismissNotification,
   showError,
   showNotification,
   showSuccess,
@@ -93,6 +94,7 @@ import {
 } from '../selectors';
 import {
   _setMissionItemsFromValidatedArray,
+  _setMissionType,
   addMissionItem,
   closeMissionPlannerDialog,
   moveMissionItem,
@@ -102,7 +104,6 @@ import {
   setMissionName,
   setMissionPlannerDialogSelectedType,
   setMissionPlannerDialogUserParameters,
-  _setMissionType,
   updateHomePositions,
   updateMissionItemParameters,
   updateProgressData,
@@ -964,7 +965,7 @@ export const restoreMission =
  */
 export const restoreLastClearedMission = () => (dispatch, getState) => {
   dispatch(restoreMission(getLastClearedMissionData(getState())));
-  showNotification({ topic: 'mission-cleared' });
+  dismissNotification('mission-cleared');
   showSuccess('Mission restored successfully');
 };
 
@@ -983,7 +984,7 @@ export const exportMission = () => (_dispatch, getState) => {
     `mission-export-${date}.json`,
     { title: 'Export mission data' }
   );
-  showNotification({ topic: 'export-suggestion' });
+  dismissNotification('export-suggestion');
   showSuccess('Successfully exported mission');
 };
 
