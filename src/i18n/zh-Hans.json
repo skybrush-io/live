@@ -16,6 +16,19 @@
     "drawRectangle": "绘制长方形",
     "editFeature": "编辑特征"
   },
+  "LicenseInfoDialog": {
+    "title": "许可证信息"
+  },
+  "LicenseInfoPanel": {
+    "errorWhileLoading": "加载许可证信息时出错",
+    "expiryDate": "到期日期",
+    "licenseId": "许可ID",
+    "licensee": "许可持有人姓名",
+    "loading": "检索许可证信息…",
+    "neverExpires": "此许可证永不失效",
+    "noLicenseActivated": "未激活许可证",
+    "tryAgain": "再试一次"
+  },
   "OnboardPreflightChecksDialog": {
     "noError": "没有任何无人机显示错误。",
     "passed": "飞机上的飞行前检查已通过。",
