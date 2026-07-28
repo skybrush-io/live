@@ -7,29 +7,13 @@ import IconButton from '@mui/material/IconButton';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import { animated, useTransition } from '@react-spring/web';
-import { useTranslation } from 'react-i18next';
-import { connect } from 'react-redux';
+import type { ReactNode } from 'react';
 
 import { makeStyles } from '@skybrush/app-theme-mui';
 import { MiniList, Tooltip } from '@skybrush/mui-components';
 
 import FileButton from '~/components/FileButton';
-import type { RootState } from '~/store/reducers';
-import type { Identifier } from '~/utils/collections';
-
-import {
-  importConsistencyCheckNamesFromFile,
-  proceedToConsistencyCheck,
-} from './actions';
-import {
-  getConsistencyCheckNameList,
-  isConsistencyCheckNameListEmpty,
-} from './selectors';
-import type { ConsistencyCheckParameterNameItem } from './slice';
-import {
-  clearConsistencyCheckParameterNames,
-  removeParameterNameFromConsistencyCheckList,
-} from './slice';
+import type { Identifier, ItemLike } from '~/utils/collections';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -65,48 +49,55 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-type Props = {
+const ITEM_HEIGHT = 28;
+
+type Props<T extends ItemLike> = {
   canProceed: boolean;
-  names: ConsistencyCheckParameterNameItem[];
+  importLabel: string;
+  items: T[];
+  proceedLabel: string;
+  removeAllLabel: string;
+  renderItem: (item: T) => ReactNode;
+  title: string;
   onImportItems: (file?: File) => Promise<void>;
   onRemoveAllItems: () => void;
   onRemoveItem: (id: Identifier) => void;
   onStart: () => Promise<void>;
 };
 
-/**
- * Sidebar of the parameter consistency-check setup dialog.
- */
-const ConsistencyCheckNameSidebar = ({
+const ItemListSidebar = <T extends ItemLike>({
   canProceed,
-  names,
+  importLabel,
+  items,
+  proceedLabel,
+  removeAllLabel,
+  renderItem,
+  title,
   onImportItems,
   onRemoveItem,
   onRemoveAllItems,
   onStart,
-}: Props) => {
-  const { t } = useTranslation();
+}: Props<T>) => {
   const classes = useStyles();
 
-  const ITEM_HEIGHT = 28;
   const transitions = useTransition(
-    names.map((item, index) => ({ ...item, y: index * ITEM_HEIGHT })),
+    items.map((item, index) => ({ ...item, y: index * ITEM_HEIGHT })),
     {
       from: { position: 'absolute' as const, opacity: 0, y: 0 },
       leave: { height: 0, opacity: 0 },
       enter: ({ y }) => ({ y, opacity: 1 }),
       update: ({ y }) => ({ y }),
-      key: (item: ConsistencyCheckParameterNameItem) => item.id,
+      key: (item: T) => item.id,
     }
   );
 
   return (
     <Box className={classes.root}>
       <Box className={classes.header}>
-        <Box className={classes.title}>Parameter names</Box>
-        <Tooltip content={t('consistencyCheckNameSidebar.removeAllItems')}>
+        <Box className={classes.title}>{title}</Box>
+        <Tooltip content={removeAllLabel}>
           <IconButton
-            disabled={names.length === 0}
+            disabled={items.length === 0}
             size='large'
             onClick={onRemoveAllItems}
           >
@@ -115,7 +106,7 @@ const ConsistencyCheckNameSidebar = ({
         </Tooltip>
       </Box>
       <MiniList className={classes.list}>
-        {transitions(({ y, ...rest }, { id, name }) => (
+        {transitions(({ y, ...rest }, item) => (
           <animated.div
             style={{
               transform: y.to((y) => `translate3d(0,${y}px,0)`),
@@ -124,11 +115,11 @@ const ConsistencyCheckNameSidebar = ({
             }}
           >
             <ListItem disablePadding>
-              <ListItemButton onClick={() => onRemoveItem(id)}>
+              <ListItemButton onClick={() => onRemoveItem(item.id)}>
                 <Box
                   sx={{ display: 'flex', flexDirection: 'row', flexGrow: 1 }}
                 >
-                  <Box sx={{ flexGrow: 1 }}>{name}</Box>
+                  {renderItem(item)}
                 </Box>
               </ListItemButton>
             </ListItem>
@@ -141,7 +132,7 @@ const ConsistencyCheckNameSidebar = ({
           startIcon={<FolderOpen />}
           onSelected={onImportItems}
         >
-          {t('consistencyCheckNameSidebar.import')}
+          {importLabel}
         </FileButton>
         <Button
           disabled={!canProceed}
@@ -150,24 +141,11 @@ const ConsistencyCheckNameSidebar = ({
             void onStart();
           }}
         >
-          {t('consistencyCheckNameSidebar.nextStep')}
+          {proceedLabel}
         </Button>
       </Box>
     </Box>
   );
 };
 
-export default connect(
-  // mapStateToProps
-  (state: RootState) => ({
-    canProceed: !isConsistencyCheckNameListEmpty(state),
-    names: getConsistencyCheckNameList(state),
-  }),
-  // mapDispatchToProps
-  {
-    onImportItems: importConsistencyCheckNamesFromFile,
-    onRemoveAllItems: clearConsistencyCheckParameterNames,
-    onRemoveItem: removeParameterNameFromConsistencyCheckList,
-    onStart: proceedToConsistencyCheck,
-  }
-)(ConsistencyCheckNameSidebar);
+export default ItemListSidebar;

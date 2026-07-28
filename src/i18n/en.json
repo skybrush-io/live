@@ -252,10 +252,11 @@
     "parameterNames": "Parameter names",
     "specifyEntries": "Specify one parameter name per row."
   },
-  "consistencyCheckNameSidebar": {
+  "consistencyCheckSidebar": {
     "import": "Import…",
     "nextStep": "Next step",
-    "removeAllItems": "Remove all names from the list"
+    "removeAllItems": "Remove all names from the list",
+    "title": "Parameter names"
   },
   "consistencyCheckSetupDialog": {
     "checkParameters": "Parameter consistency check"
@@ -588,7 +589,8 @@
   "parameterListSidebar": {
     "import": "Import…",
     "nextStep": "Next step",
-    "removeAllItems": "Remove all items from manifest"
+    "removeAllItems": "Remove all items from manifest",
+    "title": "Manifest"
   },
   "parameterUploadMainPanel": {
     "parameterNamesValues": "Parameter names and values",
