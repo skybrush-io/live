@@ -252,14 +252,14 @@
     "parameterNames": "Parameter names",
     "specifyEntries": "Specify one parameter name per row."
   },
+  "consistencyCheckSetupDialog": {
+    "checkParameters": "Parameter consistency check"
+  },
   "consistencyCheckSidebar": {
     "import": "Import…",
     "nextStep": "Next step",
     "removeAllItems": "Remove all names from the list",
     "title": "Parameter names"
-  },
-  "consistencyCheckSetupDialog": {
-    "checkParameters": "Parameter consistency check"
   },
   "coordinateAveragingDialogToolbar": {
     "addNewDrone": "Add new drone",
