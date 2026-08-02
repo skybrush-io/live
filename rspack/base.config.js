@@ -1,12 +1,12 @@
 // Use strict mode so we can have block-scoped declarations
 'use strict';
 
+const { execSync } = require('child_process');
 const path = require('path');
 const process = require('process');
-const webpack = require('webpack');
+const { rspack } = require('@rspack/core');
 const Dotenv = require('dotenv-webpack');
 
-const { GitRevisionPlugin } = require('git-revision-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const WorkerUrlPlugin = require('worker-url/plugin');
 
@@ -16,7 +16,11 @@ const {
   useHotModuleReloading,
 } = require('./helpers');
 
-const gitRevisionPlugin = new GitRevisionPlugin();
+// Core functionality of `pirelenito/git-revision-webpack-plugin` reimplemented
+const gitRevisionPlugin = {
+  version: () => execSync('git describe --always', { encoding: 'utf8' }).trim(),
+  commithash: () => execSync('git rev-parse HEAD', { encoding: 'utf8' }).trim(),
+};
 
 module.exports = {
   mode: 'development',
@@ -41,9 +45,10 @@ module.exports = {
 
   plugins: [
     // The next module is needed for golden-layout to work nicely
-    new webpack.ProvidePlugin({
+    new rspack.ProvidePlugin({
       ReactDOM: 'react-dom',
       React: 'react',
+      'window.$': 'jquery',
     }),
 
     // Add support for retrieving worker URLs directly from the code.
@@ -52,13 +57,13 @@ module.exports = {
 
     // Resolve process.env in the code; the object below provides the default
     // values
-    new webpack.EnvironmentPlugin({
+    new rspack.EnvironmentPlugin({
       NODE_ENV: 'development',
       DEPLOYMENT: '0',
     }),
 
     // Resolve the git version number and commit hash in the code
-    new webpack.DefinePlugin({
+    new rspack.DefinePlugin({
       VERSION: JSON.stringify(gitRevisionPlugin.version()),
       COMMIT_HASH: JSON.stringify(gitRevisionPlugin.commithash()),
     }),
@@ -69,8 +74,7 @@ module.exports = {
       silent: true, // suppress warnings if there is no .env file
     }),
 
-    // Add VERSION and COMMITHASH file to output
-    gitRevisionPlugin,
+    // TODO: Add VERSION and COMMITHASH file to output
   ].filter(Boolean),
 
   resolve: {

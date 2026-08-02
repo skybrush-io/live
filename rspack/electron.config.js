@@ -1,8 +1,8 @@
 const path = require('path');
 
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
-const webpack = require('webpack');
+const { ReactRefreshRspackPlugin } = require('@rspack/plugin-react-refresh');
+const { rspack } = require('@rspack/core');
 const { merge } = require('webpack-merge');
 const WebpackShellPluginNext = require('webpack-shell-plugin-next');
 
@@ -23,7 +23,7 @@ const optimization = {};
 const plugins = [
   // process and Buffer polyfills are needed for AFrame to work nicely as of
   // 1.1.0
-  new webpack.ProvidePlugin({
+  new rspack.ProvidePlugin({
     Buffer: ['buffer', 'Buffer'],
     process: require.resolve('process/browser'),
   }),
@@ -45,13 +45,19 @@ if (useHotModuleReloading) {
     }),
 
     // Enable hot reload support in dev mode
-    new ReactRefreshWebpackPlugin()
+    new ReactRefreshRspackPlugin(),
+    new rspack.HotModuleReplacementPlugin()
   );
 
   optimization.runtimeChunk = 'single'; // hot module reloading needs this
 }
 
 module.exports = merge(baseConfig, {
+  devServer: {
+    server: {
+      type: 'https',
+    },
+  },
   entry: {
     app: ['process/browser', './src/index'],
   },
