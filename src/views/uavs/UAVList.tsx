@@ -107,8 +107,8 @@ type ItemRendererOptions = {
   ) => (droppedUAVId: string) => void;
   onSelectedItem: (item: string) => void;
   onStartEditing: (missionIndex: number) => void;
-  selection: string[];
   preferMissionIds: boolean;
+  selection: string[];
 };
 
 /**
@@ -141,8 +141,8 @@ const createGridItemRenderer = ({
   onDropped,
   onSelectedItem,
   onStartEditing,
-  selection,
   preferMissionIds,
+  selection,
 }: ItemRendererOptions) =>
   function GridItemRenderer(item: Item): React.JSX.Element {
     const [uavId, missionIndex, proposedLabel] = item;
@@ -226,8 +226,8 @@ const createListItemRenderer = ({
   onDropped,
   onSelectedItem,
   onStartEditing,
-  selection,
   preferMissionIds,
+  selection,
 }: ItemRendererOptions) =>
   function ListItemRenderer(item: Item): React.JSX.Element | null {
     if (item === deletionMarker) {
@@ -289,8 +289,8 @@ type UAVListPresentationProps = Readonly<{
   onEditMappingSlot: (missionIndex: number) => void;
   onMappingAdjusted: (args: { uavId: string; to: Nullable<number> }) => void;
   onSelectItem: (id: string) => void;
-  selection: string[];
   preferMissionIds: boolean;
+  selection: string[];
 }>;
 
 /**
@@ -305,8 +305,8 @@ const UAVListPresentation = ({
   onEditMappingSlot,
   onMappingAdjusted,
   onSelectItem,
-  selection,
   preferMissionIds,
+  selection,
 }: UAVListPresentationProps): React.JSX.Element => {
   // Regular styling stuff
   const classes = useListStyles();
@@ -392,8 +392,8 @@ const UAVListPresentation = ({
     onDropped: editingMapping ? onDropped : undefined,
     onSelectedItem: onSelectItem,
     onStartEditing: onEditMappingSlot,
-    selection,
     preferMissionIds,
+    selection,
   };
   const itemRenderer =
     layout === UAVListLayout.GRID
@@ -458,8 +458,8 @@ const UAVList = connect(
     editingMapping: isMappingEditable(state),
     mappingSlotBeingEdited: getIndexOfMappingSlotBeingEdited(state),
     layout: getUAVListLayout(state),
-    selection: getSelection(state),
     preferMissionIds: isSortingByMissionId(state),
+    selection: getSelection(state),
   }),
   // mapDispatchToProps
   () => {
