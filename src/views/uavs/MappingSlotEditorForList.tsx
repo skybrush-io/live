@@ -1,34 +1,53 @@
 import Box from '@mui/material/Box';
 import InputBase from '@mui/material/InputBase';
 import Color from 'color';
-import PropTypes from 'prop-types';
+import type { FocusEventHandler, KeyboardEventHandler } from 'react';
 import { connect } from 'react-redux';
 
-import { makeStyles } from '@skybrush/app-theme-mui';
+import { makeStyles, monospacedFont } from '@skybrush/app-theme-mui';
 
 import Colors from '~/components/colors';
 import { commitMappingEditorSessionAtCurrentSlot } from '~/features/mission/actions';
 import { getUAVIdForMappingSlotBeingEdited } from '~/features/mission/selectors';
 import { cancelMappingEditorSessionAtCurrentSlot } from '~/features/mission/slice';
+import type { MissionMappingEditorContinuation } from '~/features/mission/utils';
 import { shouldOptimizeUIForTouch } from '~/features/settings/selectors';
+import type { RootState } from '~/store/reducers';
+
+const WIDTH = 80;
 
 const useStyles = makeStyles((theme) => ({
   root: {
     position: 'absolute',
-    width: 48,
-    height: 48,
-    top: theme.spacing(0.5),
+
+    boxSizing: 'border-box',
+    width: WIDTH,
+    left: theme.spacing(1),
+    top: -5,
+    bottom: -6,
     zIndex: 1000,
+
+    backgroundColor: 'rgba(0, 0, 0, 0.16)',
+    border: '1px solid rgba(0, 0, 0, 0.5)',
+    borderRadius: theme.spacing(0.5),
+    boxShadow: `0 0 4px 2px rgba(0, 0, 0, 0.3)`,
+
+    padding: theme.spacing(0, 0.5),
   },
 
   input: {
+    fontFamily: monospacedFont,
+    fontSize: 'small',
+
+    padding: theme.spacing(0, 0.5),
     position: 'absolute',
     top: '50%',
+    left: 0,
+    right: 0,
     transform: 'translateY(-50%)',
-    fontSize: '1.25rem',
 
     '& input': {
-      textAlign: 'center',
+      textAlign: 'right',
     },
 
     '& input::selection': {
@@ -37,31 +56,48 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+type Props = {
+  cancelMappingEditorSessionAtCurrentSlot: () => void;
+  defaultValue?: string | null;
+  commitMappingEditorSessionAtCurrentSlot: (payload: {
+    value: string;
+    continuation: MissionMappingEditorContinuation;
+  }) => void;
+  optimizeUIForTouch: boolean;
+};
+
 /**
  * Simple text field overlaid on top of a drone avatar or drone placeholder
  * when we are editing the mapping slot at a given index.
  */
-const MappingSlotEditorForGrid = ({
+const MappingSlotEditorForList = ({
   cancelMappingEditorSessionAtCurrentSlot,
   defaultValue,
   commitMappingEditorSessionAtCurrentSlot,
   optimizeUIForTouch,
-}) => {
+}: Props) => {
   const classes = useStyles();
 
-  const onBlur = (event) => {
-    commitMappingEditorSessionAtCurrentSlot({
-      value: event.target.value,
-    });
+  const onBlur: FocusEventHandler = (event) => {
+    const value = (event.target as HTMLInputElement)?.value;
+    if (value) {
+      commitMappingEditorSessionAtCurrentSlot({
+        continuation: 'stay',
+        value,
+      });
+    }
   };
 
-  const onFocus = (event) => event.target.select();
+  const onFocus: FocusEventHandler = (event) =>
+    (event.target as HTMLInputElement)?.select();
 
-  const onKeyDown = (event) => {
+  const onKeyDown: KeyboardEventHandler = (event) => {
+    const value = (event.target as HTMLInputElement)?.value;
+
     if (event.key === 'Enter') {
       commitMappingEditorSessionAtCurrentSlot({
         continuation: event.shiftKey ? 'prev' : 'next',
-        value: event.target.value,
+        value,
       });
 
       event.preventDefault();
@@ -71,7 +107,7 @@ const MappingSlotEditorForGrid = ({
     if (event.key === 'Tab') {
       commitMappingEditorSessionAtCurrentSlot({
         continuation: event.shiftKey ? 'prevEmpty' : 'nextEmpty',
-        value: event.target.value,
+        value,
       });
 
       event.preventDefault();
@@ -98,16 +134,9 @@ const MappingSlotEditorForGrid = ({
   );
 };
 
-MappingSlotEditorForGrid.propTypes = {
-  cancelMappingEditorSessionAtCurrentSlot: PropTypes.func,
-  defaultValue: PropTypes.string,
-  commitMappingEditorSessionAtCurrentSlot: PropTypes.func,
-  optimizeUIForTouch: PropTypes.bool,
-};
-
 export default connect(
   // mapStateToProps
-  (state) => ({
+  (state: RootState) => ({
     defaultValue: getUAVIdForMappingSlotBeingEdited(state),
     optimizeUIForTouch: shouldOptimizeUIForTouch(state),
   }),
@@ -116,4 +145,4 @@ export default connect(
     cancelMappingEditorSessionAtCurrentSlot,
     commitMappingEditorSessionAtCurrentSlot,
   }
-)(MappingSlotEditorForGrid);
+)(MappingSlotEditorForList);
