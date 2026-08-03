@@ -178,26 +178,28 @@ const createGridItemRenderer = ({
         ? missionIndex !== undefined && (!isInEditMode || uavId === undefined)
           ? formatMissionId(missionIndex)
           : uavId
-        : uavId);
+        : (uavId ??
+          (missionIndex !== undefined ? formatMissionId(missionIndex) : '')));
+    const key = keyForItem(item);
 
     return uavId === undefined ? (
       <DroneListItem
-        key={keyForItem(item)}
+        key={key}
         className={className}
-        onDrop={onDropped ? onDropped(missionIndex) : undefined}
+        onDrop={onDropped?.(missionIndex)}
         verticalPadding
         {...listItemProps}
       >
         {editingThisItem && <MappingSlotEditorForGrid />}
         <DronePlaceholder
           editing={editingThisItem}
-          label={editingThisItem ? '' : label}
+          label={editingThisItem ? '\u00A0' : label}
           status={missionIndex === undefined ? 'error' : 'off'}
         />
       </DroneListItem>
     ) : (
       <DroneListItem
-        key={keyForItem(item)}
+        key={key}
         className={className}
         draggable={draggable}
         uavId={uavId}
