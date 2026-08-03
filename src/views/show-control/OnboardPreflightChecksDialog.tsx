@@ -48,7 +48,7 @@ type PreflightCheckListItem = {
 
 type PreflightCheckListPresentationProps = ListProps & {
   items: PreflightCheckListItem[];
-  showMissionIds: boolean;
+  preferMissionIds: boolean;
 };
 
 /**
@@ -58,14 +58,15 @@ type PreflightCheckListPresentationProps = ListProps & {
  */
 const PreflightCheckListPresentation = ({
   items,
-  showMissionIds,
+  preferMissionIds,
   ...rest
 }: PreflightCheckListPresentationProps) => {
   const { t } = useTranslation();
 
-  const formatEntry: (entry: [string, number | null]) => string = showMissionIds
-    ? (x) => (x[1] == null ? String(x[0]) : formatMissionId(x[1]))
-    : (x) => String(x[0]);
+  const formatSecondaryLabel: (entry: [string, number | null]) => string =
+    preferMissionIds
+      ? (x) => (x[1] == null ? String(x[0]) : formatMissionId(x[1]))
+      : (x) => String(x[0]);
 
   return items.length > 0 ? (
     <List dense disablePadding {...rest}>
@@ -79,7 +80,9 @@ const PreflightCheckListPresentation = ({
               <ListItemText
                 id={itemId}
                 primary={describeUAVErrorCode(item.code, t)}
-                secondary={formatUAVIds(item.uavIdsAndIndices.map(formatEntry))}
+                secondary={formatUAVIds(
+                  item.uavIdsAndIndices.map(formatSecondaryLabel)
+                )}
               />
             </ListItemButton>
           </ListItem>
@@ -100,7 +103,7 @@ const PreflightCheckList = connect(
   // mapStateToProps
   (state: RootState) => ({
     items: getErrorCodeSummaryForUAVsInMission(state),
-    showMissionIds: isSortingByMissionId(state),
+    preferMissionIds: isSortingByMissionId(state),
   }),
   // mapDispatchToProps
   {}

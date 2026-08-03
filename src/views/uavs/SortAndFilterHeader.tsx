@@ -422,7 +422,7 @@ type SortAndFilterHeaderProps = Readonly<{
   onSetFilter: (filter: Nullable<UAVFilter>) => void;
   onSetSortBy: (sortBy: Partial<UAVSortKeyAndOrder>) => void;
   onToggleSortDirection: () => void;
-  showMissionIds: boolean;
+  preferMissionIds: boolean;
   sortBy: UAVSortKeyAndOrder;
 }>;
 
@@ -433,7 +433,7 @@ const SortAndFilterHeader = ({
   onSetFilter,
   onSetSortBy,
   onToggleSortDirection,
-  showMissionIds,
+  preferMissionIds,
   sortBy,
 }: SortAndFilterHeaderProps): React.JSX.Element => {
   const { t } = useTranslation();
@@ -598,7 +598,7 @@ const SortAndFilterHeader = ({
       <FadeAndSlide in={layout === UAVListLayout.LIST}>
         <div className={classes.headerLine}>
           {formatHeaderParts(
-            showMissionIds
+            preferMissionIds
               ? LIST_HEADER_PARTS_MISSION_FIRST
               : LIST_HEADER_PARTS_UAV_FIRST,
             sortBy,
@@ -616,7 +616,7 @@ export default connect(
   (state: RootState) => ({
     filters: getUAVListFilters(state),
     layout: getUAVListLayout(state),
-    showMissionIds: isSortingByMissionId(state),
+    preferMissionIds: isSortingByMissionId(state),
     sortBy: getUAVListSortPreference(state),
   }),
   // mapDispatchToProps

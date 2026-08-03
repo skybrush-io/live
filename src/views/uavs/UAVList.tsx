@@ -108,7 +108,7 @@ type ItemRendererOptions = {
   onSelectedItem: (item: string) => void;
   onStartEditing: (missionIndex: number) => void;
   selection: string[];
-  showMissionIds: boolean;
+  preferMissionIds: boolean;
 };
 
 /**
@@ -142,7 +142,7 @@ const createGridItemRenderer = ({
   onSelectedItem,
   onStartEditing,
   selection,
-  showMissionIds,
+  preferMissionIds,
 }: ItemRendererOptions) =>
   function GridItemRenderer(item: Item): React.JSX.Element {
     const [uavId, missionIndex, proposedLabel] = item;
@@ -174,7 +174,7 @@ const createGridItemRenderer = ({
 
     const label =
       proposedLabel ??
-      (showMissionIds
+      (preferMissionIds
         ? missionIndex !== undefined && (!isInEditMode || uavId === undefined)
           ? formatMissionId(missionIndex)
           : uavId
@@ -227,7 +227,7 @@ const createListItemRenderer = ({
   onSelectedItem,
   onStartEditing,
   selection,
-  showMissionIds,
+  preferMissionIds,
 }: ItemRendererOptions) =>
   function ListItemRenderer(item: Item): React.JSX.Element | null {
     if (item === deletionMarker) {
@@ -255,10 +255,10 @@ const createListItemRenderer = ({
       ? formatMissionId(missionIndex)
       : '';
     const label =
-      proposedLabel ?? (showMissionIds ? formattedMissionIndex : uavId);
+      proposedLabel ?? (preferMissionIds ? formattedMissionIndex : uavId);
     const secondaryLabel = editingThisItem
       ? ''
-      : showMissionIds
+      : preferMissionIds
         ? (uavId ?? '')
         : formattedMissionIndex;
 
@@ -290,7 +290,7 @@ type UAVListPresentationProps = Readonly<{
   onMappingAdjusted: (args: { uavId: string; to: Nullable<number> }) => void;
   onSelectItem: (id: string) => void;
   selection: string[];
-  showMissionIds: boolean;
+  preferMissionIds: boolean;
 }>;
 
 /**
@@ -306,7 +306,7 @@ const UAVListPresentation = ({
   onMappingAdjusted,
   onSelectItem,
   selection,
-  showMissionIds,
+  preferMissionIds,
 }: UAVListPresentationProps): React.JSX.Element => {
   // Regular styling stuff
   const classes = useListStyles();
@@ -393,7 +393,7 @@ const UAVListPresentation = ({
     onSelectedItem: onSelectItem,
     onStartEditing: onEditMappingSlot,
     selection,
-    showMissionIds,
+    preferMissionIds,
   };
   const itemRenderer =
     layout === UAVListLayout.GRID
@@ -459,7 +459,7 @@ const UAVList = connect(
     mappingSlotBeingEdited: getIndexOfMappingSlotBeingEdited(state),
     layout: getUAVListLayout(state),
     selection: getSelection(state),
-    showMissionIds: isSortingByMissionId(state),
+    preferMissionIds: isSortingByMissionId(state),
   }),
   // mapDispatchToProps
   () => {
