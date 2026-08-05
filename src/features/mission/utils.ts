@@ -35,7 +35,8 @@ export type MissionMappingEditorContinuation =
   | 'next'
   | 'prev'
   | 'nextEmpty'
-  | 'prevEmpty';
+  | 'prevEmpty'
+  | 'stay';
 
 /**
  * Returns the index of the mapping slot to edit next after the termination
@@ -43,6 +44,7 @@ export type MissionMappingEditorContinuation =
  *
  * @param state - The mission-related slice of the state object
  * @param continuation - String describing what to do next:
+ *                       = 'stay' to stay at the current slot
  *                       + 'next' to move to the next slot
  *                       + 'prev' to move to the previous slot
  *                       + 'nextEmpty' to move to the next empty slot

@@ -3,7 +3,6 @@ import ViewList from '@mui/icons-material/ViewList';
 import ViewModule from '@mui/icons-material/ViewModule';
 import IconButton from '@mui/material/IconButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
-import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
@@ -19,6 +18,29 @@ import {
 } from '~/features/settings/selectors';
 import { updateAppSettings } from '~/features/settings/slice';
 import MissingSlot from '~/icons/MissingSlot';
+import type { AppThunk, RootState } from '~/store/reducers';
+
+type MappingButtonGroupOwnProps = Record<string, never>;
+
+type MappingButtonGroupStateProps = {
+  layout: 'grid' | 'list';
+  mappingEditable: boolean;
+  persistedShowEmptyMissionSlots: boolean;
+  showEmptyMissionSlots: boolean;
+};
+
+type MappingButtonGroupDispatchProps = {
+  onToggleShowingEmptyMissionSlots: () => void;
+  startMappingEditorSession: () => void;
+  setUAVListLayout: (
+    _event: React.SyntheticEvent,
+    value: string | null
+  ) => void;
+};
+
+type MappingButtonGroupProps = MappingButtonGroupOwnProps &
+  MappingButtonGroupStateProps &
+  MappingButtonGroupDispatchProps;
 
 /**
  * Button on the UAV toolbar that allows the user to toggle whether the mission
@@ -33,7 +55,7 @@ const MappingButtonGroup = ({
   setUAVListLayout,
   showEmptyMissionSlots,
   startMappingEditorSession,
-}) => {
+}: MappingButtonGroupProps) => {
   const { t } = useTranslation();
 
   return (
@@ -81,19 +103,9 @@ const MappingButtonGroup = ({
   );
 };
 
-MappingButtonGroup.propTypes = {
-  layout: PropTypes.oneOf(['grid', 'list']),
-  mappingEditable: PropTypes.bool,
-  onToggleShowingEmptyMissionSlots: PropTypes.func,
-  persistedShowEmptyMissionSlots: PropTypes.bool,
-  setUAVListLayout: PropTypes.func,
-  showEmptyMissionSlots: PropTypes.bool,
-  startMappingEditorSession: PropTypes.func,
-};
-
 export default connect(
   // mapStateToProps
-  (state) => {
+  (state: RootState) => {
     const persistedShowEmptyMissionSlots = isShowingEmptyMissionSlots(state);
     return {
       layout: getUAVListLayout(state),
@@ -106,7 +118,7 @@ export default connect(
   // mapDispatchToProps
   {
     clearMapping,
-    onToggleShowingEmptyMissionSlots: () => (dispatch, getState) => {
+    onToggleShowingEmptyMissionSlots: (): AppThunk => (dispatch, getState) => {
       const isShowing = isShowingEmptyMissionSlots(getState());
       dispatch(
         updateAppSettings('display', {
@@ -115,14 +127,16 @@ export default connect(
       );
     },
     startMappingEditorSession,
-    setUAVListLayout: (_event, value) => (dispatch) => {
-      if (value) {
-        dispatch(
-          updateAppSettings('display', {
-            uavListLayout: value,
-          })
-        );
-      }
-    },
+    setUAVListLayout:
+      (_event: React.SyntheticEvent, value: string | null): AppThunk =>
+      (dispatch) => {
+        if (value) {
+          dispatch(
+            updateAppSettings('display', {
+              uavListLayout: value,
+            })
+          );
+        }
+      },
   }
 )(MappingButtonGroup);

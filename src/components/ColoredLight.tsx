@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
 type Size = 'small' | 'normal' | 'large';
 
 type Props = Omit<BoxProps, 'children' | 'color'> & {
-  color: string;
+  color?: string;
   inline?: boolean;
   size?: Size;
 };

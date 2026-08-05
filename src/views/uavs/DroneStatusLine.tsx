@@ -2,13 +2,13 @@ import clsx from 'clsx';
 import isNil from 'lodash-es/isNil';
 import padEnd from 'lodash-es/padEnd';
 import padStart from 'lodash-es/padStart';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
-import { makeStyles, monospacedFont } from '@skybrush/app-theme-mui';
+import { makeStyles, monospacedFont, Status } from '@skybrush/app-theme-mui';
+import type { Vector3Tuple } from '@skybrush/math';
 import { StatusPill, StatusText } from '@skybrush/mui-components';
 
-import { BatteryFormatter } from '~/components/battery';
+import type { BatteryFormatter } from '~/components/battery';
 import BatteryIndicator from '~/components/BatteryIndicator';
 import ColoredLight from '~/components/ColoredLight';
 import { getBatteryFormatter } from '~/features/settings/selectors';
@@ -18,30 +18,67 @@ import {
   getLightColorByUavIdInCSSNotation,
   getUAVById,
 } from '~/features/uavs/selectors';
+import { NULL_ISLAND, type GPSFix, type GPSPosition } from '~/model/geography';
 import { UAVAge } from '~/model/uav';
-import { getPreferredCoordinateFormatter } from '~/selectors/formatting';
+import {
+  getPreferredCoordinateFormatter,
+  type CoordinatePairFormatter,
+} from '~/selectors/formatting';
+import type { RootState } from '~/store/reducers';
 import { formatCoordinateArray } from '~/utils/formatting';
 
+import { GPSFixType } from '~/model/enums';
 import FlightModeStatusPill from './FlightModeStatusPill';
 import GPSStatusPill from './GPSStatusPill';
 import RSSIIndicator from './RSSIIndicator';
+
+type DroneStatusLineOwnProps = Partial<{
+  id: string;
+  label: string;
+  secondaryLabel: string;
+  editing: boolean;
+}>;
+
+type DroneStatusLineCalculatedProps = Partial<{
+  age: UAVAge;
+  batteryFormatter: BatteryFormatter;
+  batteryStatus: Record<string, any>;
+  color: string;
+  coordinateFormatter: CoordinatePairFormatter;
+  debugString: string;
+  details: string;
+  gone: boolean;
+  gpsFix: GPSFix;
+  heading: number;
+  headingDeviation: number;
+  localPosition: Vector3Tuple;
+  missing: boolean;
+  mode: string;
+  position: GPSPosition;
+  rssi: number[];
+  text: string;
+  textSemantics: Status;
+}>;
+
+type DroneStatusLineProps = DroneStatusLineOwnProps &
+  DroneStatusLineCalculatedProps;
 
 /**
  * Converts the absolute value of a heading deviation, in degrees, to the
  * corresponding semantic status that should be used to color the heading info
  * in the status line.
  */
-const headingDeviationToStatus = (deviation) => {
+const headingDeviationToStatus = (deviation?: number): Status => {
   const absDeviation = deviation ? Math.abs(deviation) : 0;
   if (absDeviation >= 20) {
-    return 'error';
+    return Status.ERROR;
   }
 
   if (absDeviation >= 10) {
-    return 'warning';
+    return Status.WARNING;
   }
 
-  return undefined;
+  return Status.OFF;
 };
 
 const localCoordinateFormatter = formatCoordinateArray;
@@ -104,20 +141,19 @@ const DroneStatusLine = ({
   heading,
   headingDeviation,
   gone,
-  gpsFixType,
-  id,
-  label,
+  gpsFix,
+  label = '',
   localPosition,
   missing,
   mode,
-  position,
-  rssi,
-  secondaryLabel,
+  position = NULL_ISLAND,
+  rssi = [],
+  secondaryLabel = '',
   text,
-  textSemantics = 'info',
-}) => {
+  textSemantics = Status.INFO,
+}: DroneStatusLineProps) => {
   const classes = useStyles();
-  const { amsl, ahl, agl } = position || {};
+  const { amsl, ahl, agl } = position;
   return (
     <div className={clsx(classes.root, gone && classes.gone)}>
       {padStart(label, 5)}
@@ -147,114 +183,92 @@ const DroneStatusLine = ({
           <RSSIIndicator className={classes.rssiPills} rssi={rssi} />
           <GPSStatusPill
             className={clsx(classes.pill, classes.gpsPill)}
-            fixType={gpsFixType}
+            fixType={gpsFix?.type ?? GPSFixType.UNKNOWN}
           />
           {localPosition ? (
             padEnd(localCoordinateFormatter(localPosition), 25)
           ) : position ? (
-            padEnd(coordinateFormatter([position.lon, position.lat]), 25)
+            padEnd(
+              coordinateFormatter?.([position.lon ?? 0, position.lat ?? 0]) ??
+                '',
+              25
+            )
           ) : (
             <span className={classes.muted}>{padEnd('no position', 25)}</span>
           )}
           {!isNil(amsl) ? (
-            padStart(position.amsl.toFixed(1), 6) + 'm'
+            padStart(amsl.toFixed(1), 6) + 'm'
           ) : (
             <span className={classes.muted}>{'    ———'}</span>
           )}
           {!isNil(ahl) ? (
-            padStart(position.ahl.toFixed(1), 6) + 'm'
+            padStart(ahl.toFixed(1), 6) + 'm'
           ) : (
             <span className={classes.muted}>{'    ———'}</span>
           )}
           {!isNil(agl) ? (
-            padStart(position.agl.toFixed(1), 5) + 'm'
+            padStart(agl.toFixed(1), 5) + 'm'
           ) : (
             <span className={classes.muted}>{'   ———'}</span>
           )}
           <StatusText status={headingDeviationToStatus(headingDeviation)}>
             {padStart(!isNil(heading) ? Math.round(heading) + '°' : '', 5)}
           </StatusText>
-          <span className={classes.debugString}>
-            {debugString ? ' ' + debugString : ''}
-          </span>
+          <span>{debugString ? ' ' + debugString : ''}</span>
         </>
       )}
     </div>
   );
 };
 
-DroneStatusLine.propTypes = {
-  age: PropTypes.oneOf(Object.values(UAVAge)),
-  batteryFormatter: PropTypes.instanceOf(BatteryFormatter),
-  batteryStatus: PropTypes.shape({
-    cellCount: PropTypes.number,
-    charging: PropTypes.bool,
-    voltage: PropTypes.number,
-    percentage: PropTypes.number,
-  }),
-  color: PropTypes.string,
-  coordinateFormatter: PropTypes.func,
-  debugString: PropTypes.string,
-  details: PropTypes.string,
-  editing: PropTypes.bool,
-  gone: PropTypes.bool,
-  gpsFixType: PropTypes.number,
-  heading: PropTypes.number,
-  headingDeviation: PropTypes.number,
-  id: PropTypes.string,
-  label: PropTypes.string,
-  localPosition: PropTypes.arrayOf(PropTypes.number),
-  missing: PropTypes.bool,
-  mode: PropTypes.string,
-  position: PropTypes.shape({
-    lat: PropTypes.number,
-    lon: PropTypes.number,
-    amsl: PropTypes.number,
-    ahl: PropTypes.number,
-    agl: PropTypes.number,
-  }),
-  rssi: PropTypes.arrayOf(PropTypes.number),
-  secondaryLabel: PropTypes.string,
-  text: PropTypes.string,
-  textSemantics: PropTypes.oneOf([
-    'off',
-    'info',
-    'success',
-    'warning',
-    'rth',
-    'error',
-    'critical',
-    'missing',
-  ]),
-};
-
 export default connect(
   // mapStateToProps
   () => {
     const statusSummarySelector = createSingleUAVStatusSummarySelector();
-    return (state, ownProps) => {
-      const uavId = ownProps.id;
+    return (
+      state: RootState,
+      { id: uavId }: DroneStatusLineOwnProps
+    ): DroneStatusLineCalculatedProps => {
+      if (!uavId) {
+        return {
+          missing: true,
+        };
+      }
+
       const uav = getUAVById(state, uavId);
-      const headingDeviation = uav
-        ? getDeviationFromTakeoffHeadingByUavId(state, uavId)
-        : 0;
-      const color = uav
-        ? getLightColorByUavIdInCSSNotation(state, uavId)
-        : 'black';
+      if (!uav) {
+        return {
+          missing: true,
+        };
+      }
+
+      const {
+        debugString,
+        gpsFix,
+        heading,
+        localPosition,
+        mode,
+        position,
+        rssi,
+      } = uav;
+      const headingDeviation = getDeviationFromTakeoffHeadingByUavId(
+        state,
+        uavId
+      );
+      const color = getLightColorByUavIdInCSSNotation(state, uavId);
       return {
         batteryFormatter: getBatteryFormatter(state),
         color,
         coordinateFormatter: getPreferredCoordinateFormatter(state),
-        debugString: uav ? uav.debugString : undefined,
-        gpsFixType: uav ? uav.gpsFix.type : undefined,
-        heading: uav ? uav.heading : undefined,
+        debugString,
+        gpsFix,
+        heading,
         headingDeviation,
-        localPosition: uav ? uav.localPosition : undefined,
-        missing: !uav,
-        mode: uav ? uav.mode : undefined,
-        position: uav ? uav.position : undefined,
-        rssi: uav ? uav.rssi : undefined,
-        ...statusSummarySelector(state, ownProps.id),
+        localPosition,
+        mode,
+        position,
+        rssi,
+        ...statusSummarySelector(state, uavId),
       };
     };
   }

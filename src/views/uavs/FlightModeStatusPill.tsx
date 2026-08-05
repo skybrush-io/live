@@ -5,7 +5,7 @@ import { abbreviateFlightMode, type FlightMode } from '~/model/enums';
 
 export type FlightModeStatusPillProps = Readonly<{
   className?: string;
-  mode?: FlightMode;
+  mode?: FlightMode | string;
 }>;
 
 export const FlightModeStatusPill = ({
