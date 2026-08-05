@@ -123,8 +123,10 @@ export const getUAVIdToStateMapping = (state: RootState) => state.uavs.byId;
 /**
  * Returns the UAV with the given ID, given the current state.
  */
-export const getUAVById = (state: RootState, uavId: string) =>
-  state.uavs.byId[uavId];
+export const getUAVById = (
+  state: RootState,
+  uavId: string
+): StoredUAV | undefined => state.uavs.byId[uavId];
 
 /**
  * Returns the current position of the UAV with the given ID, given the current
@@ -551,19 +553,34 @@ export const getLightColorByUavIdInCSSNotation = createCachedSelector(
  * Selector factory that returns a selector that selects all UAVs whose `age`
  * property is equal to the given value.
  */
-const getUAVIdsByAge =
-  (age: UAVAge): AppSelector<string[]> =>
-  (state) =>
-    getUAVIdList(state).filter((uavId) => {
-      const uav = getUAVById(state, uavId);
-      return uav?.age === age;
-    });
+const createAgeFilteredUAVIdSelector = (age: UAVAge): AppSelector<string[]> =>
+  createSelector(getUAVIdList, getUAVIdToStateMapping, (uavIds, uavsById) =>
+    uavIds.filter((uavId) => uavsById[uavId]?.age === age)
+  );
 
 /**
  * Selector that selects all UAVs that are currently considered as "active"
  * (i.e. we have received status information from them in the last few seconds).
  */
-export const getActiveUAVIds = getUAVIdsByAge(UAVAge.ACTIVE);
+export const getActiveUAVIds = createAgeFilteredUAVIdSelector(UAVAge.ACTIVE);
+
+/**
+ * Selector that selects all UAVs that are currently considered as "inactive"
+ * (i.e. we have not received status information from them in the last few
+ * seconds but we hope that they will re-appear).
+ */
+export const getInactiveUAVIds = createAgeFilteredUAVIdSelector(
+  UAVAge.INACTIVE
+);
+
+/**
+ * Returns the IDs of all UAVs that are currently considered as "gone" (i.e. we
+ * have not received status information from them in the last minute or so,
+ * depending on the interval configured by the user).
+ */
+export const getUAVIdsMarkedAsGone = createAgeFilteredUAVIdSelector(
+  UAVAge.GONE
+);
 
 /**
  * Selector that selects all UAVs that are currently considered as "active"
@@ -692,13 +709,6 @@ export const selectPreTakeoffAltitudeWarningProps = createSelector(
 );
 
 /**
- * Selector that selects all UAVs that are currently considered as "inactive"
- * (i.e. we have not received status information from them in the last few
- * seconds but we hope that they will re-appear).
- */
-export const getInactiveUAVIds = getUAVIdsByAge(UAVAge.INACTIVE);
-
-/**
  * Selector that selects all UAV IDs that are in the mission mapping and whose
  * headings differ from their designated takeoff headings by a threshold
  * specified in the settings of the user.
@@ -720,11 +730,11 @@ export const getMisalignedUAVIds = createSelector(
  * Returns an array containing all the UAV IDs that appear in the mission mapping
  * but are not present in the UAV registry.
  */
-export const getMissingUAVIdsInMapping = createSelector(
+export const getMissingUAVIdsInMapping: AppSelector<string[]> = createSelector(
   getMissionMapping,
   getUAVIdToStateMapping,
   (mapping, uavsById) =>
-    mapping.filter((uavId) => {
+    mapping.filter((uavId): uavId is string => {
       if (isNil(uavId)) {
         return false;
       }
@@ -776,13 +786,6 @@ export const getSelectedUAVIdsForTrajectoryDisplay: AppSelector<string[]> = (
   getNumberOfSelectedUAVs(state) <= 5 ? getSelectedUAVIds(state) : EMPTY_ARRAY;
 
 /**
- * Returns the IDs of all UAVs that are currently considered as "gone" (i.e. we
- * have not received status information from them in the last minute or so,
- * depending on the interval configured by the user).
- */
-export const getUAVIdsMarkedAsGone = getUAVIdsByAge(UAVAge.GONE);
-
-/**
  * Returns the list of UAV IDs that the server knows about but that do not
  * participate in the mapping.
  */
@@ -813,7 +816,7 @@ export const getErrorCodeSummaryForUAVsInMission = createSelector(
   getUAVIdsParticipatingInMission,
   getUAVIdToStateMapping,
   (reverseMapping, uavIds, uavStatesById) => {
-    const result = [];
+    const result: Array<[UAVErrorCode, [string, number | null]]> = [];
 
     for (const uavId of uavIds) {
       const uavState = uavStatesById[uavId];
@@ -830,7 +833,7 @@ export const getErrorCodeSummaryForUAVsInMission = createSelector(
       Object.entries(groupBy(result, (item) => item[0])),
       ([code, _]) => Number.parseInt(code, 10)
     ).map(([key, value]) => ({
-      code: key,
+      code: Number(key),
       uavIdsAndIndices: value.map((x) => x[1]),
     }));
   }

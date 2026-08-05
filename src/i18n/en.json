@@ -109,7 +109,7 @@
     "removeSelectedItems": "Remove selected items"
   },
   "UAVSelector": {
-    "noMatchingUAVs": "No matching UAVs for: \"{{filter}}\""
+    "noMatchingUAVs": "No matches found for: \"{{filter}}\""
   },
   "UAVStatus": {
     "error": {
@@ -246,6 +246,20 @@
         }
       }
     }
+  },
+  "consistencyCheckMainPanel": {
+    "parameterCheckHint": "Press <kbd>⇧</kbd> + <kbd>Enter</kbd> to add the parameter names to the list. Click on a name in the sidebar to remove it.",
+    "parameterNames": "Parameter names",
+    "specifyEntries": "Specify one parameter name per row."
+  },
+  "consistencyCheckSetupDialog": {
+    "checkParameters": "Parameter consistency check"
+  },
+  "consistencyCheckSidebar": {
+    "import": "Import…",
+    "nextStep": "Next step",
+    "removeAllItems": "Remove all names from the list",
+    "title": "Parameter names"
   },
   "coordinateAveragingDialogToolbar": {
     "addNewDrone": "Add new drone",
@@ -575,7 +589,8 @@
   "parameterListSidebar": {
     "import": "Import…",
     "nextStep": "Next step",
-    "removeAllItems": "Remove all items from manifest"
+    "removeAllItems": "Remove all items from manifest",
+    "title": "Manifest"
   },
   "parameterUploadMainPanel": {
     "parameterNamesValues": "Parameter names and values",
@@ -1450,9 +1465,16 @@
   "uploadPanel": {
     "cancelUpload": "Cancel upload",
     "clearHistory": "Clear history",
-    "flashLightsWhereFailed": "Flash lights of UAVs where the upload failed",
+    "consistencyCheck": {
+      "errorCount_one": "{{count}} error",
+      "errorCount_other": "{{count}} errors"
+    },
+    "flashLightsWhereFailed": "Flash lights of UAVs where the operation failed",
     "hasHiddenTargets": "Some of the waiting UAVs may be filtered.",
+    "noJobResultAvailable": "No job result available yet.",
+    "resultsTab": "Results",
     "retryFailedAttempts": "Retry failed attempts automatically",
+    "statusTab": "Status",
     "uploadAttemptFailed": "Upload attempt failed.",
     "uploadCancelled": "Upload cancelled by user.",
     "uploadFinishedSuccessfully": "Upload finished successfully.",

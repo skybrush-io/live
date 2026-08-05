@@ -988,7 +988,7 @@ export function normalizePolygon([
   }
 }
 
-type ScaledJSONGPSCoordinate = [number, number];
+export type ScaledJSONGPSCoordinate = [number, number];
 
 /**
  * Converts a longitude-latitude pair to a representation that is safe to be
@@ -1024,6 +1024,20 @@ export const toScaledJSONFromLonLat = (
   Math.round(coords[1] * 1e7),
   Math.round(coords[0] * 1e7),
 ];
+
+/**
+ * Reverts a "JSON-safe" multiplier offset coordinate representation to a
+ * simple decimal longitude-latitude pair
+ *
+ * @param  coords  the JSON representation, scaled up to 1e7 degrees.
+ *         Note that it contains the <em>latitude</em> first
+ * @return the resulting latitude-longitude pair, represented as an object
+ */
+export const toObjectFromScaledJSON = (
+  coords: ScaledJSONGPSCoordinate
+): LatLonObject =>
+  // TODO: Eliminate or justify these type assertions
+  ({ lat: (coords[0] / 1e7) as Latitude, lon: (coords[1] / 1e7) as Longitude });
 
 /**
  * Reverts a "JSON-safe" multiplier offset coordinate representation to a

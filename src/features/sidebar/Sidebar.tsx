@@ -120,12 +120,6 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
             label={t('view.uav-list')}
             component={moduleComponent('uav-list')}
           />
-          <Module
-            id='collectiveRTH'
-            icon={<HomeCircleOutlined />}
-            label={t('view.collective-rth')}
-            component={moduleComponent('collective-rth')}
-          />
           {hasFeature('beacons') && (
             <Module
               id='beacons'
@@ -157,6 +151,14 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
               icon={<WbSunny />}
               label={t('view.light-control')}
               component={moduleComponent('light-control')}
+            />
+          )}
+          {hasShowControl && (
+            <Module
+              id='collectiveRTH'
+              icon={<HomeCircleOutlined />}
+              label={t('view.collective-rth')}
+              component={moduleComponent('collective-rth')}
             />
           )}
           {hasShowControl && <hr />}

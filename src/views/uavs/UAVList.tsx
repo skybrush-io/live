@@ -107,8 +107,8 @@ type ItemRendererOptions = {
   ) => (droppedUAVId: string) => void;
   onSelectedItem: (item: string) => void;
   onStartEditing: (missionIndex: number) => void;
+  preferMissionIds: boolean;
   selection: string[];
-  showMissionIds: boolean;
 };
 
 /**
@@ -141,8 +141,8 @@ const createGridItemRenderer = ({
   onDropped,
   onSelectedItem,
   onStartEditing,
+  preferMissionIds,
   selection,
-  showMissionIds,
 }: ItemRendererOptions) =>
   function GridItemRenderer(item: Item): React.JSX.Element {
     const [uavId, missionIndex, proposedLabel] = item;
@@ -174,30 +174,32 @@ const createGridItemRenderer = ({
 
     const label =
       proposedLabel ??
-      (showMissionIds
+      (preferMissionIds
         ? missionIndex !== undefined && (!isInEditMode || uavId === undefined)
           ? formatMissionId(missionIndex)
           : uavId
-        : uavId);
+        : (uavId ??
+          (missionIndex !== undefined ? formatMissionId(missionIndex) : '')));
+    const key = keyForItem(item);
 
     return uavId === undefined ? (
       <DroneListItem
-        key={keyForItem(item)}
+        key={key}
         className={className}
-        onDrop={onDropped ? onDropped(missionIndex) : undefined}
+        onDrop={onDropped?.(missionIndex)}
         verticalPadding
         {...listItemProps}
       >
         {editingThisItem && <MappingSlotEditorForGrid />}
         <DronePlaceholder
           editing={editingThisItem}
-          label={editingThisItem ? '' : label}
+          label={editingThisItem ? '\u00A0' : label}
           status={missionIndex === undefined ? 'error' : 'off'}
         />
       </DroneListItem>
     ) : (
       <DroneListItem
-        key={keyForItem(item)}
+        key={key}
         className={className}
         draggable={draggable}
         uavId={uavId}
@@ -226,8 +228,8 @@ const createListItemRenderer = ({
   onDropped,
   onSelectedItem,
   onStartEditing,
+  preferMissionIds,
   selection,
-  showMissionIds,
 }: ItemRendererOptions) =>
   function ListItemRenderer(item: Item): React.JSX.Element | null {
     if (item === deletionMarker) {
@@ -255,10 +257,10 @@ const createListItemRenderer = ({
       ? formatMissionId(missionIndex)
       : '';
     const label =
-      proposedLabel ?? (showMissionIds ? formattedMissionIndex : uavId);
+      proposedLabel ?? (preferMissionIds ? formattedMissionIndex : uavId);
     const secondaryLabel = editingThisItem
       ? ''
-      : showMissionIds
+      : preferMissionIds
         ? (uavId ?? '')
         : formattedMissionIndex;
 
@@ -289,8 +291,8 @@ type UAVListPresentationProps = Readonly<{
   onEditMappingSlot: (missionIndex: number) => void;
   onMappingAdjusted: (args: { uavId: string; to: Nullable<number> }) => void;
   onSelectItem: (id: string) => void;
+  preferMissionIds: boolean;
   selection: string[];
-  showMissionIds: boolean;
 }>;
 
 /**
@@ -305,8 +307,8 @@ const UAVListPresentation = ({
   onEditMappingSlot,
   onMappingAdjusted,
   onSelectItem,
+  preferMissionIds,
   selection,
-  showMissionIds,
 }: UAVListPresentationProps): React.JSX.Element => {
   // Regular styling stuff
   const classes = useListStyles();
@@ -392,8 +394,8 @@ const UAVListPresentation = ({
     onDropped: editingMapping ? onDropped : undefined,
     onSelectedItem: onSelectItem,
     onStartEditing: onEditMappingSlot,
+    preferMissionIds,
     selection,
-    showMissionIds,
   };
   const itemRenderer =
     layout === UAVListLayout.GRID
@@ -458,8 +460,8 @@ const UAVList = connect(
     editingMapping: isMappingEditable(state),
     mappingSlotBeingEdited: getIndexOfMappingSlotBeingEdited(state),
     layout: getUAVListLayout(state),
+    preferMissionIds: isSortingByMissionId(state),
     selection: getSelection(state),
-    showMissionIds: isSortingByMissionId(state),
   }),
   // mapDispatchToProps
   () => {

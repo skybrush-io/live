@@ -12,34 +12,34 @@ The default `forkingWorkerManagementSaga` feeds a configured number of workers f
 
 `waiting → queued → in progress → finished | failed`
 
-`queued` and `in progress` items cannot be edited by the user. On completion, the slice compacts per-job, per-UAV status and error history; selectors layer active queues over that history. Only upload settings persist in `src/store/index.js`: jobs, queues, history, and results are session-only.
+`queued` and `in progress` items cannot be edited by the user. On completion, the slice commits a `HistoryItem` with the job status and per-UAV result pieces, then compacts per-job history; selectors layer active queues over that history. Only upload settings persist in `src/store/index.js`: jobs, queues, history, and per-UAV results are session-only.
 
 ## Job specification
 
-`JobSpecification<T, ResultPiece, Result>` in `jobs.ts` is the boundary between a job type and the generic engine:
+`JobSpecification<Payload, Data, ResultPiece>` in `jobs.ts` is the boundary between a job type and the generic engine:
 
 - **Payload** is job-defined shared input. **Selector** is an optional per-UAV demultiplexer evaluated immediately before execution.
 - **Executor** runs exactly one UAV and resolves to a `ResultPiece`; it can report progress through the supplied callback.
 - **Scope** defines candidate targets (all, compatible, mission, or selected UAV); target selection and global-selection restriction remain the framework’s responsibility.
-- **Result aggregation** optionally creates one result, merges successful pieces, and finalizes it after normal manager completion.
-- **Worker manager** is a supported alternative scheduling policy. It must return an `Outcome`; the default is the normal choice.
+- **Worker manager** is a supported alternative scheduling policy. It resolves to a terminal `UAVStatus` (`'success'` or `'error'`) and records each single-UAV outcome through a `recordResult` callback (`RecordUAVResultCallback` in `jobs.ts`) supplied by the upload saga; the default is the normal choice. It never returns `'cancelled'` — that status is set by the upload saga when it observes `cancelUpload`.
+- **Post-action** is an optional `() => AppThunk` dispatched after the history item is committed, so it can read the per-UAV results from Redux.
 
-The show job demonstrates per-UAV selection and mission scope; firmware uses compatible scope. Parameter and mission-item jobs show that payload shaping remains domain-specific.
+The show job demonstrates per-UAV selection and mission scope; firmware uses compatible scope. Parameter and mission-item jobs show that payload shaping remains domain-specific. The parameter consistency check demonstrates the post-action pattern: it reads per-UAV results from the committed history item instead of receiving an aggregated result.
 
 ## Outcomes, results, and retries
 
-An execution outcome is success, retryable failure, permanent failure, or cancellation (`types.ts`). Selector failures and aggregation-update exceptions are permanent, preventing retry loops; executor rejections are retryable. Automatic retry only re-enqueues retryable failures from this run, never historical failures.
+A single-UAV execution outcome is success, retryable failure, permanent failure, or cancellation (internal to `saga.ts`). Selector failures are permanent, preventing retry loops; executor rejections are retryable. Automatic retry only re-enqueues retryable failures from this run, never historical failures.
 
-The default manager calls `result.create()` once, passes successful pieces to `update()` in worker-completion order, then calls `finalize()` after all workers have stopped. A non-`undefined` result returned by either hook replaces the current aggregate; `undefined` preserves it, allowing in-place mutation. Finalization also runs after a normally completed failed run, but only a successful `Outcome` carries the aggregate. Results are neither Redux state nor persisted; `uploaderSagaWithCancellation` currently only logs a successful one.
+The default manager records every worker outcome through `recordResult` as it arrives into a per-UAV map owned by `uploaderSagaWithCancellation`: successes carry the executor result piece, failures the error message, cancellations are omitted. The outer saga builds the `HistoryItem` from this map plus the manager's terminal `UAVStatus` and commits it via `_notifyUploadFinished` in `slice.ts` — regardless of how the run ended, which is why partial results persist on cancellation. The committed item is the canonical source for job results; domain code reads it with selectors such as `aggregatePerUAVResultsFromHistory` in `utils.ts`, and it is the single input for per-job-type result panels and post-actions.
 
 Progress enters a one-item saga channel, deliberately dropping stale intermediate reports. Completion forces progress to 100% for time estimation.
 
 ## Invariants and gaps
 
-Only one job runs at once; `setupNextUploadJob` cannot replace it. `cancelUpload` races the manager and cancellation is cooperative: executors must be cancellation-aware sagas or return cancellable promises. Top-level cancellation prevents normal finalization. Waiting UAVs remain retryable after cancellation; other code may explicitly remove them.
+Only one job runs at once; `setupNextUploadJob` cannot replace it. `cancelUpload` races the manager and cancellation is cooperative: executors must be cancellation-aware sagas or return cancellable promises. Waiting UAVs remain retryable after cancellation; other code may explicitly remove them.
 
-Do not dispatch underscore-prefixed lifecycle actions outside `saga.ts`, mutate `queued`/`in progress` entries, or register duplicate job types. There is no reload recovery, forced cancellation for non-cooperative executors, or consumer for aggregate results beyond logging.
+Do not dispatch underscore-prefixed lifecycle actions outside `saga.ts`, mutate `queued`/`in progress` entries, or register duplicate job types. `postAction` must read results from the committed history item, not from arguments. There is no reload recovery or forced cancellation for non-cooperative executors.
 
 ## Extending
 
-Add a stable, domain-owned specification to `src/upload-jobs.js`; provide scope, executor, and only the selector or result hooks the job needs. Prefer the default manager. A custom manager is appropriate for a genuinely different scheduling policy, but must preserve the slice lifecycle and return the correct `Outcome`.
+Add a stable, domain-owned specification to `src/upload-jobs.js`; provide scope, executor, and the selector or post-action the job needs. Prefer the default manager. A custom manager is for a genuinely different scheduling policy and must preserve the slice lifecycle, call `recordResult` for each UAV as it finishes, and resolve to a terminal `UAVStatus`. Optionally register a result-panel component via `registerUploadJobResultPanel` in `result-panels.ts` (wired in `src/upload-jobs.js` alongside the spec); when one is registered, the upload dialog shows a `status`/`results` tab bar and renders the panel, which reads the committed history item through its own selectors, not from props.

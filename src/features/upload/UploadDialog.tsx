@@ -17,13 +17,16 @@ import {
 } from './actions';
 import AnotherJobTypeRunningHint from './AnotherJobTypeRunningHint';
 import { getDialogTitleForJobType } from './jobs';
+import { getUploadJobResultPanel } from './result-panels';
 import {
   getRunningUploadJobType,
   getSelectedJobTypeInUploadDialog,
+  getSelectedTabInUploadDialog,
   getUploadDialogState,
   shouldRestrictToGlobalSelection,
 } from './selectors';
 import { closeUploadDialog, toggleRestrictToGlobalSelection } from './slice';
+import type { UploadDialogTab } from './types';
 import UploadPanel from './UploadPanel';
 
 type UploadDialogProps = Readonly<{
@@ -36,6 +39,7 @@ type UploadDialogProps = Readonly<{
   restrictToGlobalSelection: boolean;
   runningJobType?: string;
   selectedJobType?: string;
+  selectedTab?: UploadDialogTab;
   toggleRestrictToGlobalSelection: () => void;
 }>;
 
@@ -49,11 +53,15 @@ const UploadDialog = ({
   open,
   runningJobType,
   selectedJobType,
+  selectedTab,
   toggleRestrictToGlobalSelection,
 }: UploadDialogProps): React.JSX.Element => {
   const { t } = useTranslation();
   const isRunningJobTypeMatching =
     !runningJobType || runningJobType === selectedJobType;
+  const hideRestrictToGlobalSelectionSwitch =
+    getUploadJobResultPanel(selectedJobType ?? '') !== undefined &&
+    selectedTab === 'results';
 
   return (
     <DraggableDialog
@@ -62,16 +70,18 @@ const UploadDialog = ({
       maxWidth='md'
       title={getDialogTitleForJobType(selectedJobType ?? '')}
       titleComponents={
-        <>
-          {t('uploadDialog.restrictToGlobalSelection')}
-          <Switch
-            checked={restrictToGlobalSelection}
-            onChange={(evt) => {
-              toggleRestrictToGlobalSelection();
-              evt.target.blur();
-            }}
-          />
-        </>
+        hideRestrictToGlobalSelectionSwitch ? undefined : (
+          <>
+            {t('uploadDialog.restrictToGlobalSelection')}
+            <Switch
+              checked={restrictToGlobalSelection}
+              onChange={(evt) => {
+                toggleRestrictToGlobalSelection();
+                evt.target.blur();
+              }}
+            />
+          </>
+        )
       }
       onClose={onClose}
     >
@@ -104,6 +114,7 @@ export default connect(
       restrictToGlobalSelection: shouldRestrictToGlobalSelection(state),
       runningJobType: getRunningUploadJobType(state),
       selectedJobType: getSelectedJobTypeInUploadDialog(state),
+      selectedTab: getSelectedTabInUploadDialog(state),
     };
   },
   // mapDispatchToProps

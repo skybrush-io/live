@@ -1,115 +1,34 @@
 import Box from '@mui/material/Box';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
-import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import { type ChangeEvent, type KeyboardEvent, useState } from 'react';
+import { type ChangeEvent } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { connect, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 
-import { shouldOptimizeUIForTouch } from '~/features/settings/selectors';
+import ParseableTextField, {
+  type ParseableTextFieldChange,
+} from '~/features/upload-setup-dialog/ParseableTextField';
 import { useAppDispatch } from '~/store/hooks';
-import type { RootState } from '~/store/reducers';
 
 import { formatParameters, parseParameters } from './formatting';
 import { shouldRebootAfterParameterUpload } from './selectors';
 import { setRebootAfterUpload, updateParametersInManifest } from './slice';
 import type { ParameterData } from './types';
 
-type ParametersTextFieldChange =
-  | { valid: false }
-  | { commit: boolean; valid: true; value: ParameterData[] };
-
-type ParametersTextFieldPresentationProps = {
-  onChange?: (change: ParametersTextFieldChange) => void;
-  optimizeUIForTouch: boolean;
-};
-
-const ParametersTextFieldPresentation = ({
-  onChange,
-  optimizeUIForTouch,
-}: ParametersTextFieldPresentationProps) => {
-  const [parameterString, setParameterString] = useState('');
-  const [error, setError] = useState<string | null>(null);
-  const { t } = useTranslation();
-
-  const handleChange = (
-    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    setParameterString(event.target.value);
-  };
-
-  const validate = (
-    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    validateValue(event.target.value);
-  };
-
-  const validateValue = (value: string, commit = false) => {
-    let parsedParameters: ParameterData[];
-
-    try {
-      parsedParameters = parseParameters(value);
-    } catch (error) {
-      setError(error instanceof Error ? error.message : String(error));
-      onChange?.({ valid: false });
-      return false;
-    }
-
-    setError('');
-    onChange?.({ value: parsedParameters, valid: true, commit });
-    setParameterString(formatParameters(parsedParameters));
-
-    return true;
-  };
-
-  const handleKeyPress = (event: KeyboardEvent<HTMLDivElement>) => {
-    const target = event.target;
-    if (
-      event.shiftKey &&
-      event.key === 'Enter' &&
-      (target instanceof HTMLInputElement ||
-        target instanceof HTMLTextAreaElement)
-    ) {
-      if (validateValue(target.value, true)) {
-        setParameterString('');
-      }
-
-      event.preventDefault();
-    }
-  };
-
-  return (
-    <TextField
-      fullWidth
-      multiline
-      autoFocus={!optimizeUIForTouch}
-      error={Boolean(error)}
-      label={t('parameterUploadMainPanel.parameterNamesValues')}
-      variant='filled'
-      minRows={7}
-      helperText={error || t('parameterUploadMainPanel.specifyEntries')}
-      value={parameterString}
-      onBlur={validate}
-      onChange={handleChange}
-      onKeyPress={handleKeyPress}
-    />
-  );
-};
-
-const ParametersTextField = connect(
-  // mapStateToProps
-  (state: RootState) => ({
-    optimizeUIForTouch: shouldOptimizeUIForTouch(state),
-  })
-)(ParametersTextFieldPresentation);
-
+/**
+ * Main panel of the parameter upload setup dialog: a shared `ParseableTextField`
+ * fed by `parseParameters`/`formatParameters`, plus the feature-specific usage
+ * hint and "reboot after upload" switch.
+ */
 const ParameterUploadMainPanel = () => {
   const shouldReboot = useSelector(shouldRebootAfterParameterUpload);
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
 
-  const handleManifestChange = (change: ParametersTextFieldChange) => {
+  const handleManifestChange = (
+    change: ParseableTextFieldChange<ParameterData>
+  ) => {
     if (change.valid && change.commit && change.value.length > 0) {
       dispatch(updateParametersInManifest(change.value));
     }
@@ -121,7 +40,13 @@ const ParameterUploadMainPanel = () => {
 
   return (
     <Box sx={{ pt: 1 }}>
-      <ParametersTextField onChange={handleManifestChange} />
+      <ParseableTextField
+        labelKey='parameterUploadMainPanel.parameterNamesValues'
+        helperTextFallbackKey='parameterUploadMainPanel.specifyEntries'
+        parse={parseParameters}
+        format={formatParameters}
+        onChange={handleManifestChange}
+      />
       <Box sx={{ pt: 1 }}>
         <Typography variant='body1'>
           <Trans

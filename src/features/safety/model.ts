@@ -1,5 +1,5 @@
-import { type PreparedI18nKey, tt } from '~/i18n';
-import { type LonLat } from '~/utils/geography';
+import { tt, type PreparedI18nKey } from '~/i18n';
+import type { LonLat, ScaledJSONGPSCoordinate } from '~/utils/geography';
 
 /**
  * Enum describing the possible geofence actions.
@@ -49,15 +49,36 @@ export type GeofencePolygon = {
   points: LonLat[];
 };
 
+export type GeofencePolygonWireFormat = {
+  isInclusion: boolean;
+  points: ScaledJSONGPSCoordinate[];
+};
+
 /**
  * Object type describing the possible geofence configuration parameters.
  */
 export type GeofenceConfiguration = {
   enabled?: boolean;
   minAltitude?: number;
+  maxAltitude?: number;
   maxDistance?: number;
   polygons?: GeofencePolygon[];
   rallyPoints?: LonLat[];
+  action?: GeofenceAction;
+};
+
+/**
+ * Object type describing the geofence specification that travels over the wire to
+ * Skybrush Server.
+ */
+export type GeofenceConfigurationWireFormat = {
+  version: 1;
+  enabled: boolean;
+  minAltitude?: number;
+  maxAltitude?: number;
+  maxDistance?: number;
+  polygons?: GeofencePolygonWireFormat[];
+  rallyPoints?: ScaledJSONGPSCoordinate[];
   action?: GeofenceAction;
 };
 

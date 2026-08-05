@@ -20,14 +20,14 @@ const createDockStyle = (label: string, selected?: boolean) => [
       points: 4,
       fill: fill([255, 136, 0, selected ? 1 : 0.5]),
       stroke: selected ? shadowThinOutline : shadowVeryThinOutline,
-      radius: 10,
+      radius: 22,
       rotation: Math.PI / 4,
     }),
   }),
   new Style({
     text: new Text({
       font: '12px sans-serif',
-      offsetY: 18,
+      offsetY: -22,
       placement: 'point',
       text: label,
       textAlign: 'center',

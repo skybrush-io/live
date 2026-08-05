@@ -1,5 +1,6 @@
 import isNil from 'lodash-es/isNil';
 
+import { type MissionItem } from '~/model/missions';
 import { type Nullable } from '~/utils/types';
 
 import { type MissionSliceState } from './slice';
@@ -34,7 +35,8 @@ export type MissionMappingEditorContinuation =
   | 'next'
   | 'prev'
   | 'nextEmpty'
-  | 'prevEmpty';
+  | 'prevEmpty'
+  | 'stay';
 
 /**
  * Returns the index of the mapping slot to edit next after the termination
@@ -42,6 +44,7 @@ export type MissionMappingEditorContinuation =
  *
  * @param state - The mission-related slice of the state object
  * @param continuation - String describing what to do next:
+ *                       = 'stay' to stay at the current slot
  *                       + 'next' to move to the next slot
  *                       + 'prev' to move to the previous slot
  *                       + 'nextEmpty' to move to the next empty slot
@@ -88,3 +91,15 @@ export function getNewEditIndex(
 
   return newIndex;
 }
+
+/**
+ * Predicate factory that receives a mission index and returns a predicate function that
+ * checks whether a given mission item has that index in its participants list.
+ *
+ * @param missionIndex - The index of the mission to check for participation
+ * @returns A predicate function that takes a mission item and returns a boolean
+ */
+export const doesMissionIndexParticipateInMissionItem =
+  (missionIndex: number) =>
+  ({ participants }: MissionItem): boolean =>
+    participants === undefined || participants.includes(missionIndex);
