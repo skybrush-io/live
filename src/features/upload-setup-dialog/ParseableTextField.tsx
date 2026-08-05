@@ -64,7 +64,7 @@ const ParseableTextField = <T,>({
     return true;
   };
 
-  const handleKeyPress = (event: KeyboardEvent<HTMLDivElement>) => {
+  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     const target = event.target;
     if (
       event.shiftKey &&
@@ -93,7 +93,7 @@ const ParseableTextField = <T,>({
       value={parameterString}
       onBlur={validate}
       onChange={handleChange}
-      onKeyPress={handleKeyPress}
+      onKeyDown={handleKeyDown}
     />
   );
 };

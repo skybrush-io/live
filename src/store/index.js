@@ -75,6 +75,10 @@ const persistConfig = {
   throttle: 1000 /* msec */,
 
   transforms: [
+    // The state of the consistency check setup dialog is transient and
+    // should not reopen on reload
+    createBlacklistFilter('consistencyCheck', ['dialog']),
+
     // store the state of only the given dialogs
     createFilter('dialogs', [
       'appSettings',

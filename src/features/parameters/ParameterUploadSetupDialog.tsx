@@ -16,7 +16,7 @@ type Props = {
 
 /**
  * Dialog that allows the user to assemble a list of parameters to upload to
- * the drones. Thin wrapper around the shared `SetupDialog` shell.
+ * the drones. Thin wrapper around the shared `UploadSetupDialog` shell.
  */
 const ParameterUploadSetupDialog = ({ onClose, open }: Props) => {
   const { t } = useTranslation();

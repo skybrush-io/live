@@ -127,11 +127,7 @@ const ItemListSidebar = <T extends ItemLike>({
         ))}
       </MiniList>
       <Box className={classes.footer}>
-        <FileButton
-          ref={null}
-          startIcon={<FolderOpen />}
-          onSelected={onImportItems}
-        >
+        <FileButton startIcon={<FolderOpen />} onSelected={onImportItems}>
           {importLabel}
         </FileButton>
         <Button
