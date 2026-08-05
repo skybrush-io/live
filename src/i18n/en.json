@@ -1469,7 +1469,7 @@
       "errorCount_one": "{{count}} error",
       "errorCount_other": "{{count}} errors"
     },
-    "flashLightsWhereFailed": "Flash lights of UAVs where the upload failed",
+    "flashLightsWhereFailed": "Flash lights of UAVs where the operation failed",
     "hasHiddenTargets": "Some of the waiting UAVs may be filtered.",
     "noJobResultAvailable": "No job result available yet.",
     "resultsTab": "Results",
