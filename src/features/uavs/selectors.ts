@@ -123,8 +123,10 @@ export const getUAVIdToStateMapping = (state: RootState) => state.uavs.byId;
 /**
  * Returns the UAV with the given ID, given the current state.
  */
-export const getUAVById = (state: RootState, uavId: string) =>
-  state.uavs.byId[uavId];
+export const getUAVById = (
+  state: RootState,
+  uavId: string
+): StoredUAV | undefined => state.uavs.byId[uavId];
 
 /**
  * Returns the current position of the UAV with the given ID, given the current
