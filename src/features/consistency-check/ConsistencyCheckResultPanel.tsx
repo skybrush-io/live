@@ -207,7 +207,12 @@ const ConsistencyCheckResultPanel = () => {
   const hasErrors = Object.keys(errors).length > 0;
 
   if (!hasData && !hasErrors) {
-    return <BackgroundHint text={t('uploadPanel.noJobResultAvailable')} />;
+    return (
+      <BackgroundHint
+        sx={{ py: 1 }}
+        text={t('uploadPanel.noJobResultAvailable')}
+      />
+    );
   }
 
   const majority = findMajority(parameterMap);

@@ -7,14 +7,15 @@ import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
+import Divider from '@mui/material/Divider';
 import Fade from '@mui/material/Fade';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import IconButton from '@mui/material/IconButton';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import type { Theme } from '@mui/material/styles';
-import { createElement } from 'react';
 import type React from 'react';
+import { createElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
@@ -254,10 +255,9 @@ const UploadPanel = ({
         ) : (
           <UploadStatusLights />
         )}
+        <Divider />
         <UploadStatusLegend />
-        <Box sx={{ mt: 1 }}>
-          <UploadProgressBar />
-        </Box>
+        <UploadProgressBar />
         <Box sx={{ mt: 1 }}>
           <FormControlLabel
             control={
