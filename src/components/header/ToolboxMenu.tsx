@@ -10,6 +10,7 @@ import type React from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
+import { showConsistencyCheckDialog } from '~/features/consistency-check/actions';
 import { CONSISTENCY_CHECK_JOB_TYPE as PARAMETER_CONSISTENCY_CHECK_JOB_TYPE } from '~/features/consistency-check/constants';
 import { showFirmwareUpdateDialog } from '~/features/firmware-update/actions';
 import { JOB_TYPE as FIRMWARE_UPLOAD_JOB_TYPE } from '~/features/firmware-update/constants';
@@ -17,10 +18,7 @@ import { showLicenseInfoDialog } from '~/features/license-info/slice';
 import { showMapCachingDialog } from '~/features/map-caching/slice';
 import { getActiveUAVIdsBeingAveraged } from '~/features/measurement/selectors';
 import { showAveragingDialog } from '~/features/measurement/slice';
-import {
-  runParameterConsistencyCheck,
-  showParameterUploadDialog,
-} from '~/features/parameters/actions';
+import { showParameterUploadDialog } from '~/features/parameters/actions';
 import { UPLOAD_JOB_TYPE as PARAMETER_UPLOAD_JOB_TYPE } from '~/features/parameters/constants';
 import { isConnected } from '~/features/servers/selectors';
 import { isDeveloperModeEnabled } from '~/features/session/selectors';
@@ -38,7 +36,7 @@ type ToolboxMenuPresentationProps = Readonly<{
   isConnected: boolean;
   numberOfAveragingInProgress: number;
   requestClose: () => void;
-  runParameterConsistencyCheck: () => void;
+  showConsistencyCheckDialog: () => void;
   showAveragingDialog: () => void;
   showFirmwareUpdateDialog: () => void;
   showLicenseInfoDialog: () => void;
@@ -52,7 +50,7 @@ const ToolboxMenuPresentation = ({
   devMode,
   isConnected,
   numberOfAveragingInProgress,
-  runParameterConsistencyCheck,
+  showConsistencyCheckDialog,
   showAveragingDialog,
   showFirmwareUpdateDialog,
   showLicenseInfoDialog,
@@ -107,7 +105,7 @@ const ToolboxMenuPresentation = ({
         pro
       />
       <JobRelatedMenuItem
-        onClick={createClickListener(runParameterConsistencyCheck)}
+        onClick={createClickListener(showConsistencyCheckDialog)}
         title='Parameter check'
         jobType={PARAMETER_CONSISTENCY_CHECK_JOB_TYPE}
       />
@@ -155,7 +153,7 @@ export default connect(
   }),
   // mapDispatchToProps
   {
-    runParameterConsistencyCheck,
+    showConsistencyCheckDialog,
     showAveragingDialog,
     showFirmwareUpdateDialog,
     showLicenseInfoDialog,
