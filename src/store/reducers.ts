@@ -67,6 +67,7 @@ import serversReducer from '~/features/servers/slice';
 import sessionReducer from '~/features/session/slice';
 import settingsReducer from '~/features/settings/slice';
 import showReducer from '~/features/show/slice';
+import swapDronesReducer from '~/features/swap-drones/slice';
 import sidebarReducer from '~/features/sidebar/slice';
 import threeDReducer from '~/features/three-d/slice';
 import uavControlReducer from '~/features/uav-control/slice';
@@ -143,6 +144,7 @@ const reducer = combineReducers({
   session: sessionReducer,
   settings: settingsReducer,
   show: showReducer,
+  swapDrones: swapDronesReducer,
   sidebar: sidebarReducer,
   tasks: tasksReducer,
   threeD: threeDReducer,

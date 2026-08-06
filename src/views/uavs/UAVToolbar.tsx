@@ -1,5 +1,6 @@
 import ImageBlurCircular from '@mui/icons-material/BlurCircular';
 import ImageBlurOn from '@mui/icons-material/BlurOn';
+import SwapHoriz from '@mui/icons-material/SwapHoriz';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import Toolbar, { type ToolbarProps } from '@mui/material/Toolbar';
@@ -9,6 +10,7 @@ import { connect } from 'react-redux';
 
 import UAVOperationsButtonGroup from '~/components/uavs/UAVOperationsButtonGroup';
 import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
+import { showSwapDronesDialog } from '~/features/swap-drones/slice';
 import { isBroadcast } from '~/features/session/selectors';
 import { getSelectedUAVIds } from '~/features/uavs/selectors';
 import type { RootState } from '~/store/reducers';
@@ -19,6 +21,7 @@ type UAVToolbarProps = ToolbarProps &
   Readonly<{
     fitSelectedUAVs?: () => void;
     isBroadcast: boolean;
+    onShowSwapDronesDialog: () => void;
     selectedUAVIds: string[];
   }>;
 
@@ -28,6 +31,7 @@ type UAVToolbarProps = ToolbarProps &
 const UAVToolbar = ({
   fitSelectedUAVs,
   isBroadcast,
+  onShowSwapDronesDialog,
   selectedUAVIds,
   ...rest
 }: UAVToolbarProps) => {
@@ -64,6 +68,12 @@ const UAVToolbar = ({
         </Tooltip>
       )}
 
+      <Tooltip content={t('swapDronesDialog.toolbarButton')}>
+        <IconButton size='large' onClick={onShowSwapDronesDialog}>
+          <SwapHoriz />
+        </IconButton>
+      </Tooltip>
+
       <MappingButtonGroup />
     </Toolbar>
   );
@@ -76,7 +86,9 @@ export default connect(
     selectedUAVIds: getSelectedUAVIds(state),
   }),
   // mapDispatchToProps
-  {},
+  {
+    onShowSwapDronesDialog: showSwapDronesDialog,
+  },
   null,
   {
     forwardRef: true,
