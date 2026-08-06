@@ -68,6 +68,7 @@ const SwapDroneField = ({ onSlotChange, slot }: SwapDroneFieldProps) => {
         variant='filled'
         value={slot.filterText}
         fullWidth
+        slotProps={{ htmlInput: { maxLength: 32 } }}
         onFocus={(event) => {
           setAnchorEl(event.currentTarget);
         }}
