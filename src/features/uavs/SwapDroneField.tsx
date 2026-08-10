@@ -13,16 +13,19 @@ import { getUAVIdList } from '~/features/uavs/selectors';
 
 import {
   resolveSwapDrone,
+  swapFieldAccentSx,
   swapSelectionLabel,
+  type SwapFieldSide,
   type SwapSlotState,
 } from './utils';
 
 type SwapDroneFieldProps = {
   onSlotChange: (slot: SwapSlotState) => void;
+  side: SwapFieldSide;
   slot: SwapSlotState;
 };
 
-const SwapDroneField = ({ onSlotChange, slot }: SwapDroneFieldProps) => {
+const SwapDroneField = ({ onSlotChange, side, slot }: SwapDroneFieldProps) => {
   const { t } = useTranslation();
   const rootRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -76,6 +79,7 @@ const SwapDroneField = ({ onSlotChange, slot }: SwapDroneFieldProps) => {
         variant='filled'
         value={slot.filterText}
         fullWidth
+        sx={swapFieldAccentSx(side)}
         slotProps={{ htmlInput: { maxLength: 32 } }}
         onFocus={(event) => {
           setAnchorEl(event.currentTarget);

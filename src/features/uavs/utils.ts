@@ -16,7 +16,35 @@ export type SwapSlotState = {
   resolved: SwapResolvedDrone | null;
 };
 
-export type SwapPreviewBadgeColor = 'added' | 'removed' | 'slot';
+export type SwapFieldSide = 'left' | 'right';
+
+export type SwapPreviewBadgeColor = SwapFieldSide;
+
+export const swapFieldAccentColor = (side: SwapFieldSide) =>
+  side === 'left' ? 'warning.main' : 'success.main';
+
+export const swapFieldAccentSx = (side: SwapFieldSide) => {
+  const accent = swapFieldAccentColor(side);
+
+  return {
+    '& .MuiFilledInput-root': {
+      '&::before': {
+        borderBottom: '3px solid',
+        borderBottomColor: accent,
+      },
+      '&::after': {
+        borderBottom: '3px solid',
+        borderBottomColor: accent,
+      },
+      '&:hover:not(.Mui-disabled)::before': {
+        borderBottomColor: accent,
+      },
+      '&.Mui-focused::after': {
+        borderBottomColor: accent,
+      },
+    },
+  };
+};
 
 export type SwapPreviewBadge = {
   color?: SwapPreviewBadgeColor;
@@ -43,6 +71,12 @@ export const swapDroneRef = (drone: SwapResolvedDrone): string =>
   drone.missionIndex === null
     ? drone.uavId
     : `${drone.uavId}/${formatMissionId(drone.missionIndex)}`;
+
+const fieldBadgeColor = (
+  drone: SwapResolvedDrone,
+  leftDrone: SwapResolvedDrone
+): SwapPreviewBadgeColor =>
+  drone.uavId === leftDrone.uavId ? 'left' : 'right';
 
 export const isSwapShowIdFilter = (filter: string): boolean =>
   filter.trim().toLowerCase().startsWith('s');
@@ -144,28 +178,22 @@ export const buildSwapPreview = (
         {
           i18nKey: 'swapDronesDialog.preview.movedToShowId',
           badges: {
-            drone: { label: swapDroneRef(drone1) },
-            slot: {
-              label: formatMissionId(drone2.missionIndex!),
-              color: 'slot',
-            },
+            drone: { label: swapDroneRef(drone1), color: 'left' },
+            slot: { label: formatMissionId(drone2.missionIndex!) },
           },
         },
         {
           i18nKey: 'swapDronesDialog.preview.movedToShowId',
           badges: {
-            drone: { label: swapDroneRef(drone2) },
-            slot: {
-              label: formatMissionId(drone1.missionIndex!),
-              color: 'slot',
-            },
+            drone: { label: swapDroneRef(drone2), color: 'right' },
+            slot: { label: formatMissionId(drone1.missionIndex!) },
           },
         },
         {
           i18nKey: 'swapDronesDialog.preview.uploadToDrones',
           badges: {
-            drone1: { label: swapDroneRef(drone1) },
-            drone2: { label: swapDroneRef(drone2) },
+            drone1: { label: swapDroneRef(drone1), color: 'left' },
+            drone2: { label: swapDroneRef(drone2), color: 'right' },
           },
         },
       ],
@@ -181,23 +209,29 @@ export const buildSwapPreview = (
       {
         i18nKey: 'swapDronesDialog.preview.removedFromMapping',
         badges: {
-          drone: { label: swapDroneRef(mapped), color: 'removed' },
+          drone: {
+            label: swapDroneRef(mapped),
+            color: fieldBadgeColor(mapped, drone1),
+          },
         },
       },
       {
         i18nKey: 'swapDronesDialog.preview.addedWithShowId',
         badges: {
-          drone: { label: swapDroneRef(spare), color: 'added' },
-          slot: {
-            label: formatMissionId(mapped.missionIndex!),
-            color: 'slot',
+          drone: {
+            label: swapDroneRef(spare),
+            color: fieldBadgeColor(spare, drone1),
           },
+          slot: { label: formatMissionId(mapped.missionIndex!) },
         },
       },
       {
         i18nKey: 'swapDronesDialog.preview.uploadToDrone',
         badges: {
-          drone: { label: swapDroneRef(spare), color: 'added' },
+          drone: {
+            label: swapDroneRef(spare),
+            color: fieldBadgeColor(spare, drone1),
+          },
         },
       },
     ],

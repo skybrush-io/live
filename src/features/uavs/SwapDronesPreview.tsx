@@ -6,27 +6,24 @@ import Typography from '@mui/material/Typography';
 import type { ReactNode } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
-import type {
-  SwapPreviewBadge,
-  SwapPreviewBadgeColor,
-  SwapPreviewLine,
-  SwapPreviewState,
+import {
+  swapFieldAccentColor,
+  type SwapPreviewBadge,
+  type SwapPreviewBadgeColor,
+  type SwapPreviewLine,
+  type SwapPreviewState,
 } from './utils';
 
 const BADGE_COLORS: Record<
   SwapPreviewBadgeColor,
   { bgcolor: string; color: string }
 > = {
-  removed: {
-    bgcolor: 'warning.main',
+  left: {
+    bgcolor: swapFieldAccentColor('left'),
     color: 'warning.contrastText',
   },
-  added: {
-    bgcolor: 'info.main',
-    color: 'info.contrastText',
-  },
-  slot: {
-    bgcolor: 'success.main',
+  right: {
+    bgcolor: swapFieldAccentColor('right'),
     color: 'success.contrastText',
   },
 };

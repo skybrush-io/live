@@ -73,7 +73,7 @@ const SwapDronesDialog = ({ blocked, onClose, open }: Props) => {
       <DialogContent sx={{ overflow: 'visible' }}>
         <Stack spacing={2} sx={{ pt: 1, overflow: 'visible' }}>
           <Stack direction='row' spacing={1.5} alignItems='stretch'>
-            <SwapDroneField slot={slot1} onSlotChange={setSlot1} />
+            <SwapDroneField side='left' slot={slot1} onSlotChange={setSlot1} />
             <Box
               sx={{
                 display: 'flex',
@@ -84,7 +84,7 @@ const SwapDronesDialog = ({ blocked, onClose, open }: Props) => {
             >
               <SwapHoriz />
             </Box>
-            <SwapDroneField slot={slot2} onSlotChange={setSlot2} />
+            <SwapDroneField side='right' slot={slot2} onSlotChange={setSlot2} />
           </Stack>
 
           {(preview.kind === 'warning' || preview.kind === 'blocked') && (
