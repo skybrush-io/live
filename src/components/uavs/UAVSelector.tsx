@@ -152,7 +152,7 @@ export const UAVSelector = ({
     switch (event.key) {
       case 'Enter': {
         if (filtered.length > 0) {
-          onSelect(filtered[0]!);
+          onSelect(filtered[0]);
           onClose();
           event.stopPropagation();
           event.preventDefault();
