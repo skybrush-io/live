@@ -35,7 +35,7 @@ import RTKSetupDialog from './features/rtk/RTKSetupDialog';
 import SafetyDialog from './features/safety/SafetyDialog';
 import SavedLocationEditorDialog from './features/saved-locations/SavedLocationEditorDialog';
 import ShowConfiguratorDialog from './features/show-configurator/ShowConfiguratorDialog';
-import SwapDronesDialog from './features/swap-drones/SwapDronesDialog';
+import SwapDronesDialog from './features/uavs/SwapDronesDialog';
 import Sidebar from './features/sidebar/Sidebar';
 import Notifications from './features/snackbar/Notifications';
 import UAVDetailsDialog from './features/uavs/UAVDetailsDialog';

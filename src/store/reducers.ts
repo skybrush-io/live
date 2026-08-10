@@ -32,7 +32,9 @@ import showConfiguratorReducer, {
   type ShowData,
 } from '~/features/show-configurator/slice';
 import tasksReducer from '~/features/tasks/slice';
-import uavDetailsDialogReducer from '~/features/uavs/details';
+import uavDetailsDialogReducer, {
+  swapDronesDialogReducer,
+} from '~/features/uavs/details';
 
 /**
  * Reducer functions for handling the top-level keys of the state object.
@@ -67,7 +69,6 @@ import serversReducer from '~/features/servers/slice';
 import sessionReducer from '~/features/session/slice';
 import settingsReducer from '~/features/settings/slice';
 import showReducer from '~/features/show/slice';
-import swapDronesReducer from '~/features/swap-drones/slice';
 import sidebarReducer from '~/features/sidebar/slice';
 import threeDReducer from '~/features/three-d/slice';
 import uavControlReducer from '~/features/uav-control/slice';
@@ -105,6 +106,7 @@ const dialogsReducer = combineReducers({
       undoType: historyUndo.type,
     }
   ),
+  swapDrones: swapDronesDialogReducer,
   uavDetails: uavDetailsDialogReducer,
 });
 
@@ -144,7 +146,6 @@ const reducer = combineReducers({
   session: sessionReducer,
   settings: settingsReducer,
   show: showReducer,
-  swapDrones: swapDronesReducer,
   sidebar: sidebarReducer,
   tasks: tasksReducer,
   threeD: threeDReducer,

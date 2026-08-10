@@ -96,8 +96,6 @@ const persistConfig = {
     // license info dialog is open
     createFilter('licenseInfo', ['dialog']),
 
-    createFilter('swapDrones', ['dialog']),
-
     // We do not wish to store home/landing positions and takeoff heading in
     // the mission because they depend on the loaded show anyway
     createBlacklistFilter('mission', [

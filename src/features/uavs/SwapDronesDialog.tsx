@@ -16,11 +16,17 @@ import { showWarning } from '~/features/snackbar/actions';
 import { isUploadInProgress } from '~/features/upload/selectors';
 import type { RootState } from '~/store/reducers';
 
+import {
+  closeSwapDronesDialog,
+  isSwapDronesDialogOpen,
+} from './details';
 import SwapDroneField from './SwapDroneField';
 import SwapDronesPreview from './SwapDronesPreview';
-import { closeSwapDronesDialog } from './slice';
-import type { SlotState } from './types';
-import { buildPreview, emptySlot } from './utils';
+import {
+  buildSwapPreview,
+  emptySwapSlot,
+  type SwapSlotState,
+} from './utils';
 
 type StateProps = {
   blocked: boolean;
@@ -35,18 +41,18 @@ type Props = DispatchProps & StateProps;
 
 const SwapDronesDialog = ({ blocked, onClose, open }: Props) => {
   const { t } = useTranslation();
-  const [slot1, setSlot1] = useState<SlotState>(emptySlot);
-  const [slot2, setSlot2] = useState<SlotState>(emptySlot);
+  const [slot1, setSlot1] = useState<SwapSlotState>(emptySwapSlot);
+  const [slot2, setSlot2] = useState<SwapSlotState>(emptySwapSlot);
 
   useEffect(() => {
     if (open) {
-      setSlot1(emptySlot());
-      setSlot2(emptySlot());
+      setSlot1(emptySwapSlot());
+      setSlot2(emptySwapSlot());
     }
   }, [open]);
 
   const preview = useMemo(
-    () => buildPreview(slot1.resolved, slot2.resolved, blocked, t),
+    () => buildSwapPreview(slot1.resolved, slot2.resolved, blocked, t),
     [slot1.resolved, slot2.resolved, blocked, t]
   );
 
@@ -106,7 +112,7 @@ const SwapDronesDialog = ({ blocked, onClose, open }: Props) => {
 
 export default connect(
   (state: RootState): StateProps => ({
-    open: state.swapDrones.dialog.open,
+    open: isSwapDronesDialogOpen(state),
     blocked: isShowAuthorizedToStart(state) || isUploadInProgress(state),
   }),
   {

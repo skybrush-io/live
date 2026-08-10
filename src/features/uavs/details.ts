@@ -1,6 +1,5 @@
 /**
- * @file Slice of the state object that handles the state of the UAV details
- * dialog.
+ * @file Redux slices for UAV-related dialogs registered under `state.dialogs`.
  */
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
@@ -105,5 +104,30 @@ export const getUAVDetailsDialogPosition: AppSelector<Coordinate2DObject> = (
 
 export const getUAVDetailsDialogWidth: AppSelector<number> = (state) =>
   state.dialogs.uavDetails.width;
+
+const {
+  actions: swapDronesDialogActions,
+  reducer: swapDronesDialogReducer,
+} = createSlice({
+  name: 'swap-drones-dialog',
+  initialState: { open: false },
+  reducers: {
+    closeSwapDronesDialog: noPayload<{ open: boolean }>((state) => {
+      state.open = false;
+    }),
+
+    showSwapDronesDialog: noPayload<{ open: boolean }>((state) => {
+      state.open = true;
+    }),
+  },
+});
+
+export const { closeSwapDronesDialog, showSwapDronesDialog } =
+  swapDronesDialogActions;
+
+export const isSwapDronesDialogOpen: AppSelector<boolean> = (state) =>
+  state.dialogs.swapDrones.open;
+
+export { swapDronesDialogReducer };
 
 export default reducer;

@@ -11,12 +11,15 @@ import {
 } from '~/features/mission/selectors';
 import { getUAVIdList } from '~/features/uavs/selectors';
 
-import type { SlotState } from './types';
-import { resolveDrone, selectionLabel } from './utils';
+import {
+  resolveSwapDrone,
+  swapSelectionLabel,
+  type SwapSlotState,
+} from './utils';
 
 type SwapDroneFieldProps = {
-  onSlotChange: (slot: SlotState) => void;
-  slot: SlotState;
+  onSlotChange: (slot: SwapSlotState) => void;
+  slot: SwapSlotState;
 };
 
 const SwapDroneField = ({ onSlotChange, slot }: SwapDroneFieldProps) => {
@@ -33,7 +36,12 @@ const SwapDroneField = ({ onSlotChange, slot }: SwapDroneFieldProps) => {
   const reverseMissionMapping = useSelector(getReverseMissionMapping);
 
   const resolve = (query: string) =>
-    resolveDrone(query, onlineUavIds, missionMapping, reverseMissionMapping);
+    resolveSwapDrone(
+      query,
+      onlineUavIds,
+      missionMapping,
+      reverseMissionMapping
+    );
 
   const handleClose = () => {
     setAnchorEl(null);
@@ -92,7 +100,7 @@ const SwapDroneField = ({ onSlotChange, slot }: SwapDroneFieldProps) => {
           }
 
           onSlotChange({
-            filterText: selectionLabel(
+            filterText: swapSelectionLabel(
               { uavId, missionIndex },
               slot.filterText
             ),

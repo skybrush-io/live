@@ -7,14 +7,14 @@ import type { ReactNode } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 import type {
-  PreviewBadge,
-  PreviewBadgeColor,
-  PreviewLine,
-  PreviewState,
-} from './types';
+  SwapPreviewBadge,
+  SwapPreviewBadgeColor,
+  SwapPreviewLine,
+  SwapPreviewState,
+} from './utils';
 
 const BADGE_COLORS: Record<
-  PreviewBadgeColor,
+  SwapPreviewBadgeColor,
   { bgcolor: string; color: string }
 > = {
   removed: {
@@ -31,7 +31,7 @@ const BADGE_COLORS: Record<
   },
 };
 
-const InlineBadge = ({ color, label }: PreviewBadge) => (
+const InlineBadge = ({ color, label }: SwapPreviewBadge) => (
   <Chip
     label={label}
     size='small'
@@ -54,7 +54,7 @@ const Bold = ({ children }: { children?: ReactNode }) => (
   </Box>
 );
 
-const PreviewLineCard = ({ line }: { line: PreviewLine }) => {
+const PreviewLineCard = ({ line }: { line: SwapPreviewLine }) => {
   const badgeComponents = Object.fromEntries(
     Object.entries(line.badges).map(([name, badge]) => [
       name,
@@ -91,7 +91,7 @@ const PreviewLineCard = ({ line }: { line: PreviewLine }) => {
 };
 
 type SwapDronesPreviewProps = {
-  preview: Extract<PreviewState, { kind: 'placeholder' | 'ready' }>;
+  preview: Extract<SwapPreviewState, { kind: 'placeholder' | 'ready' }>;
 };
 
 const SwapDronesPreview = ({ preview }: SwapDronesPreviewProps) => {
