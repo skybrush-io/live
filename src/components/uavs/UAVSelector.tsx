@@ -50,24 +50,40 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-type UAVSelectorProps = {
+export type UAVSelectorProps = {
   anchorEl: Element | null;
+  /**
+   * Controlled filter string (e.g. from an external TextField). When set,
+   * overrides the internal keyboard filter used by `filterable`.
+   */
+  filter?: string;
+  /**
+   * Enables typing digits / `s` inside the popover to filter. Ignored when
+   * `filter` is controlled externally.
+   */
   filterable?: boolean;
   onClose: () => void;
-  onFocus: (event: React.FocusEvent) => void;
+  onFocus?: (event: React.FocusEvent) => void;
   onSelect: (item: { uavId?: Identifier; missionIndex?: MissionIndex }) => void;
   open: boolean;
+  /**
+   * Keep keyboard focus on the anchor (e.g. a TextField). Disables popover
+   * autofocus and prevents mousedown inside the list from stealing focus.
+   */
+  retainFocus?: boolean;
   sortedByError?: boolean;
   useMissionIds?: boolean;
 };
 
-const UAVSelector = ({
+export const UAVSelector = ({
   anchorEl,
+  filter: filterProp,
   filterable,
   onClose,
   onFocus,
   onSelect,
   open,
+  retainFocus,
   sortedByError,
   useMissionIds,
 }: UAVSelectorProps) => {
@@ -108,22 +124,29 @@ const UAVSelector = ({
 
   const classes = useStyles();
 
-  const [filter, setFilter] = useState('');
+  const isFilterControlled = filterProp !== undefined;
+  const [internalFilter, setInternalFilter] = useState('');
 
-  // Clear the filter each time the popover is opened.
+  // Clear the internal filter each time the popover is opened.
   useEffect(() => {
-    if (open) {
+    if (open && !isFilterControlled) {
       // eslint-disable-next-line @eslint-react/set-state-in-effect
-      setFilter('');
+      setInternalFilter('');
     }
-  }, [open]);
+  }, [open, isFilterControlled]);
+
+  const filter = isFilterControlled ? filterProp : internalFilter;
+  const normalizedFilter = filter.toLowerCase();
 
   const filtered = items.filter(
     ({ uavId, missionIndex }) =>
-      uavId?.startsWith(filter) ||
+      uavId?.toLowerCase()?.startsWith(normalizedFilter) ||
       (missionIndex !== undefined &&
-        formatMissionId(missionIndex).startsWith(filter))
+        formatMissionId(missionIndex).startsWith(normalizedFilter))
   );
+
+  const preferMissionIdLabels =
+    useMissionIds || normalizedFilter.startsWith('s');
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
     switch (event.key) {
@@ -139,17 +162,17 @@ const UAVSelector = ({
       }
 
       case 'Backspace': {
-        setFilter(filter.slice(0, -1));
+        setInternalFilter(internalFilter.slice(0, -1));
 
         break;
       }
 
       // TODO: Generalize this, it could be `s` for "show" and `m` for "mission"
       case 's': {
-        if (filter.startsWith('s')) {
-          setFilter(filter.slice(1));
+        if (internalFilter.startsWith('s')) {
+          setInternalFilter(internalFilter.slice(1));
         } else {
-          setFilter('s' + filter);
+          setInternalFilter('s' + internalFilter);
         }
 
         event.stopPropagation();
@@ -159,7 +182,7 @@ const UAVSelector = ({
 
       default: {
         if (/^\d$/.test(event.key)) {
-          setFilter(filter + event.key);
+          setInternalFilter(internalFilter + event.key);
           event.stopPropagation();
         }
       }
@@ -168,6 +191,9 @@ const UAVSelector = ({
 
   return (
     <Popover
+      disableAutoFocus={retainFocus}
+      disableEnforceFocus={retainFocus}
+      disableRestoreFocus={retainFocus}
       open={open}
       anchorEl={anchorEl}
       anchorOrigin={{
@@ -218,13 +244,27 @@ const UAVSelector = ({
               backgroundColor: theme.palette.background.paper,
             },
           }),
-          onKeyDown: filterable ? handleKeyDown : undefined,
+          onKeyDown:
+            filterable && !isFilterControlled ? handleKeyDown : undefined,
         },
       }}
       onClose={onClose}
       onFocus={onFocus}
     >
-      <div className={classes.content} tabIndex={0}>
+      {/*
+        Keep focus in the anchor when `retainFocus` is set (TextField-driven UX).
+      */}
+      <div
+        className={classes.content}
+        tabIndex={retainFocus ? undefined : 0}
+        onMouseDown={
+          retainFocus
+            ? (event) => {
+                event.preventDefault();
+              }
+            : undefined
+        }
+      >
         {filtered.length > 0 ? (
           filtered.map(({ uavId, missionIndex }) => {
             const avatarProps = {
@@ -241,7 +281,9 @@ const UAVSelector = ({
                 {uavId ? (
                   <DroneAvatar
                     label={
-                      useMissionIds ? formatMissionId(missionIndex) : undefined
+                      preferMissionIdLabels && missionIndex !== undefined
+                        ? formatMissionId(missionIndex)
+                        : undefined
                     }
                     variant='minimal'
                     id={uavId}
