@@ -573,7 +573,12 @@ const createNumericField = ({
             ? {
                 endAdornment: (
                   <InputAdornment position='end'>
-                    {i18nKey ? t(i18nKey, unit) : unit}
+                    {i18nKey
+                      ? t(i18nKey, {
+                          count: value,
+                          defaultValue: unit,
+                        })
+                      : unit}
                   </InputAdornment>
                 ),
               }
@@ -611,10 +616,9 @@ export const SimpleAngleField = createNumericField({
     step: 0.1,
   },
   unit: 'degrees',
-  i18nKey: 'unit.degree.longPlural',
+  i18nKey: 'unit.degree.long',
   // t('unit.degree.short')
-  // t('unit.degree.long')
-  // t('unit.degree.longPlural') - to let i18next know that we need to localize it
+  // t('unit.degree.long') - to let i18next know that we need to localize it
 });
 
 export const SimpleDistanceField = createNumericField({
@@ -622,8 +626,7 @@ export const SimpleDistanceField = createNumericField({
   unit: 'm',
   i18nKey: 'unit.meter.short',
   // t('unit.meter.short')
-  // t('unit.meter.long')
-  // t('unit.meter.longPlural') - to let i18next know that we need to localize it
+  // t('unit.meter.long') - to let i18next know that we need to localize it
 });
 
 export const SimpleDurationField = createNumericField({
@@ -633,10 +636,9 @@ export const SimpleDurationField = createNumericField({
     size: 'small',
   },
   unit: 'seconds',
-  i18nKey: 'unit.second.longPlural',
-  // t('unit.seconds.short')
-  // t('unit.seconds.long')
-  // t('unit.seconds.longPlural') - to let i18next know that we need to localize it
+  i18nKey: 'unit.second.long',
+  // t('unit.second.short')
+  // t('unit.second.long') - to let i18next know that we need to localize it
 });
 
 export const SimpleNumericField = createNumericField({
@@ -652,8 +654,7 @@ export const SimpleVelocityField = createNumericField({
   unit: 'm/s',
   i18nKey: 'unit.meterPerSecond.short',
   // t('unit.meterPerSecond.short')
-  // t('unit.meterPerSecond.long')
-  // t('unit.meterPerSecond.longPlural') - to let i18next know that we need to localize it
+  // t('unit.meterPerSecond.long') - to let i18next know that we need to localize it
 });
 
 export const SimpleVoltageField = createNumericField({
@@ -665,6 +666,5 @@ export const SimpleVoltageField = createNumericField({
   unit: 'V',
   i18nKey: 'unit.volt.short',
   // t('unit.volt.short')
-  // t('unit.volt.long')
-  // t('unit.volt.longPlural') - to let i18next know that we need to localize it
+  // t('unit.volt.long') - to let i18next know that we need to localize it
 });

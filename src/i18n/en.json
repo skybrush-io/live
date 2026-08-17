@@ -403,15 +403,6 @@
       "inProgress": "in progress",
       "successful": "successful",
       "waiting": "waiting"
-    },
-    "time": {
-      "hours_one": "{{count}} hour",
-      "hours_other": "{{count}} hours",
-      "minutes_one": "{{count}} minute",
-      "minutes_other": "{{count}} minutes",
-      "seconds_one": "{{count}} second",
-      "seconds_other": "{{count}} seconds",
-      "seconds_short": "{{count}}s"
     }
   },
   "geofence": {
@@ -1453,30 +1444,44 @@
     "never": "Never ask for confirmation",
     "onlyMultiple": "Confirm when the operation may affect multiple UAVs"
   },
+  "uavToolbar": {
+    "fitAllFeaturesIntoView": "Fit all features into view",
+    "fitSelectionIntoView": "Fit selection into view"
+  },
   "unit": {
     "degree": {
-      "long": "degree",
-      "longPlural": "degrees",
+      "long_one": "degree",
+      "long_other": "degrees",
       "short": "deg"
     },
+    "hour": {
+      "long_one": "hour",
+      "long_other": "hours",
+      "short": "h"
+    },
     "meter": {
-      "long": "meter",
-      "longPlural": "meters",
+      "long_one": "meter",
+      "long_other": "meters",
       "short": "m"
     },
     "meterPerSecond": {
-      "long": "meter/sec",
-      "longPlural": "meters/sec",
+      "long_one": "meter/sec",
+      "long_other": "meters/sec",
       "short": "m/s"
     },
+    "minute": {
+      "long_one": "minute",
+      "long_other": "minutes",
+      "short": "m"
+    },
     "second": {
-      "long": "second",
-      "longPlural": "seconds",
+      "long_one": "second",
+      "long_other": "seconds",
       "short": "s"
     },
     "volt": {
-      "long": "volt",
-      "longPlural": "volts",
+      "long_one": "volt",
+      "long_other": "volts",
       "short": "V"
     }
   },
