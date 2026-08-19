@@ -53,6 +53,7 @@
     "@skybrush/flockwave-spec": "^2.8.0",
     "@skybrush/math": "^1.0.1",
     "@skybrush/mui-components": "^6.6.1",
+    "@skybrush/redux-toolkit": "^5.1.0",
     "@skybrush/show-format": "^5.5.1",
     "@tippyjs/react": "^4.2.6",
     "@turf/boolean-contains": "^7.3.5",
