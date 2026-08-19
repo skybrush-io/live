@@ -3,10 +3,7 @@ import clsx from 'clsx';
 import '~/../assets/css/corner-ribbon.less';
 
 type CornerRibbonPosition =
-  | 'topLeft'
-  | 'topRight'
-  | 'bottomLeft'
-  | 'bottomRight';
+  'topLeft' | 'topRight' | 'bottomLeft' | 'bottomRight';
 
 const positionMap: Record<CornerRibbonPosition, string> = {
   topLeft: 'left-top',

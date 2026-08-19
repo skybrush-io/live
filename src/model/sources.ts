@@ -49,13 +49,7 @@ export namespace Source {
   }
 
   export type Source =
-    | BING
-    | GOOGLE
-    | MAPBOX
-    | MAPTILER
-    | typeof NEXTZEN
-    | typeof OSM
-    | STAMEN;
+    BING | GOOGLE | MAPBOX | MAPTILER | typeof NEXTZEN | typeof OSM | STAMEN;
 }
 
 /**

@@ -32,11 +32,7 @@ export function copyAndEnsureLengthEquals<T>(
 }
 
 export type MissionMappingEditorContinuation =
-  | 'next'
-  | 'prev'
-  | 'nextEmpty'
-  | 'prevEmpty'
-  | 'stay';
+  'next' | 'prev' | 'nextEmpty' | 'prevEmpty' | 'stay';
 
 /**
  * Returns the index of the mapping slot to edit next after the termination

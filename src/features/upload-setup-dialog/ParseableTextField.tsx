@@ -6,8 +6,7 @@ import { useSelector } from 'react-redux';
 import { shouldOptimizeUIForTouch } from '~/features/settings/selectors';
 
 export type ParseableTextFieldChange<T> =
-  | { valid: false }
-  | { valid: true; commit: boolean; value: T[] };
+  { valid: false } | { valid: true; commit: boolean; value: T[] };
 
 type Props<T> = {
   helperTextFallbackKey: string;

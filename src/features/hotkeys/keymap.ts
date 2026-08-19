@@ -8,8 +8,7 @@ export type KeyMap = Record<
   string,
   // TODO: Use `import { ExtendedKeyMapOptions } from 'react-hotkeys';`!
   { name: string; group?: HotkeyGroup; scopes: HotkeyScope[] } & (
-    | { sequence: string }
-    | { sequences: string[] }
+    { sequence: string } | { sequences: string[] }
   )
 >;
 

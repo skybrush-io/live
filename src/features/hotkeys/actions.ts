@@ -112,13 +112,11 @@ function handleAndClearPendingUAVId(
   const state = getState();
   let pendingUAVId = getPendingUAVId(state);
 
-  if (
-    !(
-      pendingUAVId &&
-      typeof pendingUAVId === 'string' &&
-      pendingUAVId.length > 0
-    )
-  ) {
+  if (!(
+    pendingUAVId &&
+    typeof pendingUAVId === 'string' &&
+    pendingUAVId.length > 0
+  )) {
     // nothing was selected, caller can proceed with its own default action
     return false;
   }

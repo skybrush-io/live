@@ -29,8 +29,7 @@ import type { AveragingResult } from './types';
 const applyToSelection =
   (
     actionFactory:
-      | ActionCreatorWithPayload<string[]>
-      | ((uavIds: string[]) => AppThunk),
+      ActionCreatorWithPayload<string[]> | ((uavIds: string[]) => AppThunk),
     { whenEmpty = 'nop' }: { whenEmpty?: 'nop' | 'useAll' } = {}
   ) =>
   (): AppThunk =>
