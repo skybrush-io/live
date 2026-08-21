@@ -1,10 +1,9 @@
 import NavigateBack from '@mui/icons-material/NavigateBefore';
 import Box from '@mui/material/Box';
-import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import Divider from '@mui/material/Divider';
 import Fade from '@mui/material/Fade';
 import IconButton from '@mui/material/IconButton';
+import Stack from '@mui/material/Stack';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import type { Theme } from '@mui/material/styles';
@@ -13,10 +12,11 @@ import { createElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import { makeStyles } from '@skybrush/app-theme-mui';
+import { createSecondaryAreaStyle, makeStyles } from '@skybrush/app-theme-mui';
 
 import type { RootState } from '~/store/reducers';
 
+import { DialogActions } from '@mui/material';
 import CancelUploadButton from './CancelUploadButton';
 import ClearUploadHistoryButton from './ClearUploadHistoryButton';
 import HiddenTargetsWarning from './HiddenTargetsWarning';
@@ -40,7 +40,8 @@ import {
 import type { UploadDialogTab } from './types';
 
 const useStyles = makeStyles((theme: Theme) => ({
-  actions: {
+  bottomArea: {
+    ...createSecondaryAreaStyle(theme, { inset: 'top' }),
     padding: theme.spacing(1, 3, 1, 3),
   },
   uploadResultIndicator: {
@@ -138,30 +139,31 @@ const UploadPanel = ({
         ) : (
           <UploadStatusLights />
         )}
-        <Divider />
+      </DialogContent>
+      <Stack className={classes.bottomArea}>
         <UploadStatusLegend />
         <UploadProgressBar />
         <UploadSettings />
         <HiddenTargetsWarning />
-      </DialogContent>
-      <DialogActions className={classes.actions}>
-        {onStepBack && (
-          <IconButton size='small' edge='start' onClick={onStepBack}>
-            <NavigateBack />
-          </IconButton>
-        )}
-        <Fade in={showLastUploadResult || running}>
-          <Box
-            className={classes.uploadResultIndicator}
-            onClick={onDismissLastUploadResult}
-          >
-            <UploadResultIndicator jobType={jobType} />
-          </Box>
-        </Fade>
-        {!running && <ClearUploadHistoryButton />}
-        {selectedTab === 'status' &&
-          (running ? <CancelUploadButton /> : <StartUploadButton />)}
-      </DialogActions>
+        <DialogActions sx={{ p: 0, mt: 1 }}>
+          {onStepBack && (
+            <IconButton size='small' edge='start' onClick={onStepBack}>
+              <NavigateBack />
+            </IconButton>
+          )}
+          <Fade in={showLastUploadResult || running}>
+            <Box
+              className={classes.uploadResultIndicator}
+              onClick={onDismissLastUploadResult}
+            >
+              <UploadResultIndicator jobType={jobType} />
+            </Box>
+          </Fade>
+          {!running && <ClearUploadHistoryButton />}
+          {selectedTab === 'status' &&
+            (running ? <CancelUploadButton /> : <StartUploadButton />)}
+        </DialogActions>
+      </Stack>
     </>
   );
 };

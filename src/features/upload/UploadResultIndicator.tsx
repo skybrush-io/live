@@ -16,11 +16,15 @@ import {
   isUploadInProgress,
 } from './selectors';
 
+type OwnProps = {
+  jobType: string;
+};
+
 type UploadResultIndicatorProps = Omit<LabeledStatusLightProps, 'children'> & {
   completionTime?: number;
   result?: 'success' | 'error' | 'cancelled';
   running?: boolean;
-};
+} & OwnProps;
 
 /**
  * Helper component that shows an alert summarizing the result of the last
@@ -28,6 +32,7 @@ type UploadResultIndicatorProps = Omit<LabeledStatusLightProps, 'children'> & {
  */
 const UploadResultIndicator = ({
   completionTime,
+  jobType,
   result,
   running,
   ...rest
@@ -88,17 +93,13 @@ const UploadResultIndicator = ({
   ) : null;
 };
 
-type OwnProps = {
-  jobType: string;
-};
-
 export default connect(
   // mapStateToProps
   (state: RootState, ownProps: OwnProps) => ({
     completionTime: getEstimatedCompletionTime(state),
-    lastUploadResult: getLastUploadResultByJobType(state, ownProps.jobType),
+    result: getLastUploadResultByJobType(state, ownProps.jobType),
     running: isUploadInProgress(state),
   }),
   // mapDispatchToProps
-  null
+  {}
 )(UploadResultIndicator);
