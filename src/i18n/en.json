@@ -247,19 +247,26 @@
       }
     }
   },
-  "consistencyCheckMainPanel": {
-    "parameterCheckHint": "Press <kbd>⇧</kbd> + <kbd>Enter</kbd> to add the parameter names to the list. Click on a name in the sidebar to remove it.",
-    "parameterNames": "Parameter names",
-    "specifyEntries": "Specify one parameter name per row."
-  },
-  "consistencyCheckSetupDialog": {
-    "checkParameters": "Parameter consistency check"
-  },
-  "consistencyCheckSidebar": {
-    "import": "Import…",
-    "nextStep": "Next step",
-    "removeAllItems": "Remove all names from the list",
-    "title": "Parameter names"
+  "consistencyCheck": {
+    "mainPanel": {
+      "parameterCheckHint": "Press <kbd>⇧</kbd> + <kbd>Enter</kbd> to add the parameter names to the list. Click on a name in the sidebar to remove it.",
+      "parameterNames": "Parameter names",
+      "specifyEntries": "Specify one parameter name per row."
+    },
+    "result": {
+      "consistent": "All parameters consistent.",
+      "errors": "Error while checking parameter consistency. Check the results below.",
+      "inconsistencies": "Some parameter values are inconsistent. Check the results below."
+    },
+    "setupDialog": {
+      "checkParameters": "Parameter consistency check"
+    },
+    "sidebar": {
+      "import": "Import…",
+      "nextStep": "Next step",
+      "removeAllItems": "Remove all names from the list",
+      "title": "Parameter names"
+    }
   },
   "coordinateAveragingDialogToolbar": {
     "addNewDrone": "Add new drone",
@@ -1471,13 +1478,9 @@
   "uploadPanel": {
     "cancelUpload": "Cancel job",
     "clearHistory": "Clear history",
-    "consistencyCheck": {
-      "errorCount_one": "{{count}} error",
-      "errorCount_other": "{{count}} errors"
-    },
     "flashLightsWhereFailed": "Flash lights of UAVs where the job failed",
     "hasHiddenTargets": "Some of the waiting UAVs may be filtered.",
-    "noJobResultAvailable": "No job result available yet.",
+    "noJobResultAvailable": "No result available yet.",
     "resultsTab": "Results",
     "retryFailedAttempts": "Retry failed attempts automatically",
     "statusTab": "Status",

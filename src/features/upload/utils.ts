@@ -276,3 +276,24 @@ export function pushItemToHistory(
   historyItems.push(item);
   history[jobType] = compactHistory(historyItems);
 }
+
+/**
+ * Counts the types of results in a given history item.
+ */
+export function countResultsByTypeInHistoryItem(
+  historyItem: HistoryItem
+): Record<UploadJobResult, number> {
+  const counts: Record<UploadJobResult, number> = {
+    success: 0,
+    cancelled: 0,
+    error: 0,
+  };
+
+  for (const entry of Object.values(historyItem.perUAVResults)) {
+    if (entry.type !== 'outdated') {
+      counts[entry.type]++;
+    }
+  }
+
+  return counts;
+}

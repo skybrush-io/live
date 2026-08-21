@@ -8,7 +8,10 @@ import { EMPTY_ARRAY } from '~/utils/redux';
 
 import { CONSISTENCY_CHECK_JOB_TYPE } from './constants';
 import type { ConsistencyCheckParameterNameItem } from './slice';
-import { calculateParameterAndErrorMaps } from './utils';
+import {
+  calculateMajorityAndInconsistencies,
+  calculateParameterAndErrorMaps,
+} from './utils';
 
 /**
  * Selector that returns the history items for `CONSISTENCY_CHECK_JOB_TYPE`.
@@ -26,9 +29,7 @@ const selectConsistencyCheckHistory: AppSelector<
  */
 export const selectLatestConsistencyCheckHistoryItem: AppSelector<
   HistoryItem<Record<string, unknown>> | undefined
-> = createSelector(selectConsistencyCheckHistory, (historyItems) =>
-  historyItems.length > 0 ? historyItems[historyItems.length - 1] : undefined
-);
+> = (state: RootState) => selectConsistencyCheckHistory(state).at(-1);
 
 /**
  * Selector that returns the results of consistency check jobs,
@@ -38,7 +39,13 @@ export const selectConsistencyCheckResults = createSelector(
   selectConsistencyCheckHistory,
   (historyItems) => {
     const perUAVResults = aggregatePerUAVResultsFromHistory(historyItems);
-    return calculateParameterAndErrorMaps(perUAVResults);
+    const { parameterMap, errors } =
+      calculateParameterAndErrorMaps(perUAVResults);
+    return {
+      parameterMap,
+      errors,
+      ...calculateMajorityAndInconsistencies(parameterMap),
+    };
   }
 );
 
