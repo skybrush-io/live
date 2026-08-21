@@ -1314,7 +1314,7 @@
   },
   "startUploadButton": {
     "startSelected": "Start selected",
-    "tooltip": "Select individual targets by clicking their IDs to prepare a partial upload"
+    "tooltip": "Select individual targets by clicking their IDs to prepare a partial operation"
   },
   "surveyStatusIndicator": {
     "noSurveyInformation": "No survey information",
@@ -1350,6 +1350,7 @@
     "firmwareUpdate": "Firmware update",
     "licenseInfo": "License info",
     "offlineMaps": "Offline maps",
+    "paramCheck": "Parameter check",
     "paramUpload": "Parameter upload",
     "tooltip": "Toolbox"
   },
@@ -1468,33 +1469,33 @@
     "restrictToGlobalSelection": "Show global selection only"
   },
   "uploadPanel": {
-    "cancelUpload": "Cancel upload",
+    "cancelUpload": "Cancel job",
     "clearHistory": "Clear history",
     "consistencyCheck": {
       "errorCount_one": "{{count}} error",
       "errorCount_other": "{{count}} errors"
     },
-    "flashLightsWhereFailed": "Flash lights of UAVs where the operation failed",
+    "flashLightsWhereFailed": "Flash lights of UAVs where the job failed",
     "hasHiddenTargets": "Some of the waiting UAVs may be filtered.",
     "noJobResultAvailable": "No job result available yet.",
     "resultsTab": "Results",
     "retryFailedAttempts": "Retry failed attempts automatically",
     "statusTab": "Status",
-    "uploadAttemptFailed": "Upload attempt failed.",
-    "uploadCancelled": "Upload cancelled by user.",
-    "uploadFinishedSuccessfully": "Upload finished successfully.",
-    "uploadInProgress": "Upload in progress…",
+    "uploadAttemptFailed": "Attempt failed.",
+    "uploadCancelled": "Job cancelled by user.",
+    "uploadFinishedSuccessfully": "Job finished successfully.",
+    "uploadInProgress": "Please wait…",
     "uploadInProgressWithEstimate": "Estimated time remaining: {{time}}",
-    "uploadNotFinishedYet": "Upload not finished yet."
+    "uploadNotFinishedYet": "Job not finished yet."
   },
   "uploadStatusLegend": {
-    "clearUploadQueue": "Clear upload queue",
+    "clearUploadQueue": "Clear queue",
     "enqueueItemsWithNoUploadStatus": "Enqueue unprocessed items",
     "restartSuccessfulItems": "Enqueue successful items",
     "retryFailedItems": "Enqueue failed items"
   },
   "uploadStatusLights": {
-    "noAvailableUAVs": "There are no available UAVs to upload to."
+    "noAvailableUAVs": "There are no available UAVs."
   },
   "view": {
     "beacon-list": "Beacons",
