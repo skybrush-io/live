@@ -239,7 +239,7 @@ const ConsistencyCheckResultPanel = () => {
   if (!hasData) {
     return (
       <BackgroundHint
-        sx={{ py: 1 }}
+        sx={{ py: 1.5 }}
         text={t('uploadPanel.noJobResultAvailable')}
       />
     );

@@ -1,5 +1,4 @@
 import Clear from '@mui/icons-material/Clear';
-import Delete from '@mui/icons-material/Delete';
 import NavigateBack from '@mui/icons-material/NavigateBefore';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
@@ -30,6 +29,7 @@ import useCurrentTimestamp from '~/hooks/useCurrentTimestamp';
 import type { AppThunk, RootState } from '~/store/reducers';
 import { formatDurationAsText } from '~/utils/formatting';
 
+import ClearUploadHistoryButton from './ClearUploadHistoryButton';
 import StartUploadButton from './StartUploadButton';
 import UploadProgressBar from './UploadProgressBar';
 import UploadStatusLegend from './UploadStatusLegend';
@@ -48,7 +48,6 @@ import {
 } from './selectors';
 import {
   cancelUpload,
-  clearUploadHistoryForCurrentJobType,
   closeUploadDialog,
   dismissLastUploadResult,
   setFlashFailed,
@@ -158,7 +157,6 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 type UploadPanelProps = Readonly<{
   autoRetry: boolean;
-  clearUploadHistory: () => void;
   completionTime?: number;
   flashFailed: boolean;
   hasHiddenTargets: boolean;
@@ -183,7 +181,6 @@ type UploadPanelProps = Readonly<{
  */
 const UploadPanel = ({
   autoRetry,
-  clearUploadHistory,
   completionTime,
   flashFailed,
   hasHiddenTargets,
@@ -284,37 +281,44 @@ const UploadPanel = ({
             <NavigateBack />
           </IconButton>
         )}
-        <Fade in={(lastUploadResult && showLastUploadResult) || running}>
-          <Box
-            className={classes.uploadResultIndicator}
-            onClick={onDismissLastUploadResult}
-          >
-            <UploadResultIndicator
-              completionTime={completionTime}
-              result={lastUploadResult}
-              running={running}
-            />
-          </Box>
-        </Fade>
-        {running ? (
-          <Button
-            color='secondary'
-            startIcon={<Clear />}
-            onClick={onCancelUpload}
-          >
-            {t('uploadPanel.cancelUpload')}
-          </Button>
+        {selectedTab === 'status' ? (
+          <>
+            <Fade in={(lastUploadResult && showLastUploadResult) || running}>
+              <Box
+                className={classes.uploadResultIndicator}
+                onClick={onDismissLastUploadResult}
+              >
+                <UploadResultIndicator
+                  completionTime={completionTime}
+                  result={lastUploadResult}
+                  running={running}
+                />
+              </Box>
+            </Fade>
+            {running ? (
+              <Button
+                color='secondary'
+                startIcon={<Clear />}
+                onClick={onCancelUpload}
+              >
+                {t('uploadPanel.cancelUpload')}
+              </Button>
+            ) : (
+              <>
+                <ClearUploadHistoryButton />
+                <StartUploadButton
+                  className={hasHiddenTargets ? classes.warningText : undefined}
+                  disabled={!onStartUpload}
+                  hasQueuedItems={hasQueuedItems}
+                  onClick={onStartUpload}
+                />
+              </>
+            )}
+          </>
         ) : (
           <>
-            <Button startIcon={<Delete />} onClick={() => clearUploadHistory()}>
-              {t('uploadPanel.clearHistory')}
-            </Button>
-            <StartUploadButton
-              className={hasHiddenTargets ? classes.warningText : undefined}
-              disabled={!onStartUpload}
-              hasQueuedItems={hasQueuedItems}
-              onClick={onStartUpload}
-            />
+            <Box flex={1} />
+            {!running && <ClearUploadHistoryButton />}
           </>
         )}
       </DialogActions>
@@ -341,7 +345,6 @@ export default connect(
 
   // mapDispatchToProps
   {
-    clearUploadHistory: clearUploadHistoryForCurrentJobType,
     onCancelUpload: cancelUpload,
     onClose: closeUploadDialog,
     onDismissLastUploadResult: dismissLastUploadResult,
