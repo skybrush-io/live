@@ -10,21 +10,21 @@ import useCurrentTimestamp from '~/hooks/useCurrentTimestamp';
 import type { RootState } from '~/store/reducers';
 import { formatDurationAsText } from '~/utils/formatting';
 
+import Box from '@mui/material/Box';
+import Fade from '@mui/material/Fade';
 import {
   getEstimatedCompletionTime,
   getLastUploadResultByJobType,
+  getUploadDialogState,
   isUploadInProgress,
 } from './selectors';
-
-type OwnProps = {
-  jobType: string;
-};
+import { dismissLastUploadResult } from './slice';
 
 type UploadResultIndicatorProps = Omit<LabeledStatusLightProps, 'children'> & {
   completionTime?: number;
   result?: 'success' | 'error' | 'cancelled';
   running?: boolean;
-} & OwnProps;
+};
 
 /**
  * Helper component that shows an alert summarizing the result of the last
@@ -32,7 +32,6 @@ type UploadResultIndicatorProps = Omit<LabeledStatusLightProps, 'children'> & {
  */
 const UploadResultIndicator = ({
   completionTime,
-  jobType,
   result,
   running,
   ...rest
@@ -93,13 +92,56 @@ const UploadResultIndicator = ({
   ) : null;
 };
 
+type OwnProps = {
+  jobType: string;
+};
+
+type StateProps = {
+  running?: boolean;
+  showLastUploadResult?: boolean;
+};
+
+type ActionProps = {
+  onDismissLastUploadResult?: () => void;
+};
+
+type UploadResultIndicatorBoxProps = UploadResultIndicatorProps &
+  OwnProps &
+  StateProps &
+  ActionProps;
+
+const UploadResultIndicatorBox = ({
+  jobType,
+  onDismissLastUploadResult,
+  running,
+  showLastUploadResult,
+  ...rest
+}: UploadResultIndicatorBoxProps) => {
+  return (
+    <Fade in={showLastUploadResult || running}>
+      <Box
+        onClick={onDismissLastUploadResult}
+        sx={{ flex: 1, cursor: 'pointer' }}
+      >
+        <UploadResultIndicator {...rest} />
+      </Box>
+    </Fade>
+  );
+};
+
 export default connect(
   // mapStateToProps
-  (state: RootState, ownProps: OwnProps) => ({
-    completionTime: getEstimatedCompletionTime(state),
-    result: getLastUploadResultByJobType(state, ownProps.jobType),
-    running: isUploadInProgress(state),
-  }),
+  (state: RootState, ownProps: OwnProps) => {
+    const { showLastUploadResult } = getUploadDialogState(state);
+    return {
+      completionTime: getEstimatedCompletionTime(state),
+      result: getLastUploadResultByJobType(state, ownProps.jobType),
+      running: isUploadInProgress(state),
+      showLastUploadResult,
+    };
+  },
   // mapDispatchToProps
-  {}
-)(UploadResultIndicator);
+  {
+    onDismissLastUploadResult: dismissLastUploadResult,
+  }
+)(UploadResultIndicatorBox);

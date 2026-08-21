@@ -75,6 +75,16 @@ export const getSelectedJobTypeInUploadDialog = (
 ): string | undefined => getSelectedJobInUploadDialog(state).type;
 
 /**
+ * Returns whether the selected job type is in conflict with the currently running job
+ * type.
+ */
+export const isAnotherJobTypeRunning = (state: RootState) => {
+  const runningJobType = getRunningUploadJobType(state);
+  const selectedJobType = getSelectedJobTypeInUploadDialog(state);
+  return runningJobType !== undefined && runningJobType !== selectedJobType;
+};
+
+/**
  * Returns the history items for the given job type, or an empty array if there
  * is no history for it.
  */
@@ -327,7 +337,7 @@ export const getUploadDialogState = (
  */
 export const getSelectedTabInUploadDialog = (
   state: RootState
-): UploadDialogTab => state.upload.dialog.selectedTab;
+): UploadDialogTab => state.upload.dialog.selectedTab ?? 'status';
 
 /**
  * Returns whether failed uploads should be retried automatically.

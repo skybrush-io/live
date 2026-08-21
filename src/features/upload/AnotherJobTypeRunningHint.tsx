@@ -35,7 +35,7 @@ const AnotherJobTypeRunningHint = (
               dispatch(cancelUpload());
             }}
           >
-            Cancel upload
+            Cancel task
           </Button>
           <Box sx={{ display: 'inline-block', mx: 1 }} />
           <Button
