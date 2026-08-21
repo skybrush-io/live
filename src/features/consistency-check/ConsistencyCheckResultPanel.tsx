@@ -16,7 +16,6 @@ import {
 import {
   BackgroundHint,
   LabeledStatusLight,
-  StatusLightProps,
   StatusPill,
 } from '@skybrush/mui-components';
 
@@ -190,7 +189,7 @@ const ParameterAccordion = ({
 
 // -- Consistency check result alert
 
-const ConsistencyCheckResultSummary = (props: StatusLightProps) => {
+const ConsistencyCheckResultSummary = () => {
   const { t } = useTranslation();
   const { errors, inconsistencies } = useSelector(
     selectConsistencyCheckResults
@@ -213,9 +212,7 @@ const ConsistencyCheckResultSummary = (props: StatusLightProps) => {
         : t('consistencyCheck.result.consistent');
   return (
     <Box sx={{ px: 3, py: 2 }}>
-      <LabeledStatusLight status={status} {...props}>
-        {message}
-      </LabeledStatusLight>
+      <LabeledStatusLight status={status}>{message}</LabeledStatusLight>
     </Box>
   );
 };

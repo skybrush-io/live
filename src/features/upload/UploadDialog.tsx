@@ -11,10 +11,7 @@ import { JOB_TYPE as FIRMWARE_UPDATE_JOB_TYPE } from '~/features/firmware-update
 import FirmwareUpdateSupportFetcher from '~/features/firmware-update/FirmwareUpdateSupportFetcher';
 import type { RootState } from '~/store/reducers';
 
-import {
-  closeUploadDialogAndStepBack,
-  startUploadJobFromUploadDialog,
-} from './actions';
+import { closeUploadDialogAndStepBack } from './actions';
 import AnotherJobTypeRunningHint from './AnotherJobTypeRunningHint';
 import { getDialogTitleForJobType } from './jobs';
 import { getUploadJobResultPanel } from './result-panels';
@@ -31,9 +28,7 @@ import UploadPanel from './UploadPanel';
 
 type UploadDialogProps = Readonly<{
   canGoBack: boolean;
-  canStartUpload: boolean;
   onClose: () => void;
-  onStartUpload: () => void;
   onStepBack: () => void;
   open: boolean;
   restrictToGlobalSelection: boolean;
@@ -45,10 +40,8 @@ type UploadDialogProps = Readonly<{
 
 const UploadDialog = ({
   canGoBack,
-  canStartUpload,
   restrictToGlobalSelection,
   onClose,
-  onStartUpload,
   onStepBack,
   open,
   runningJobType,
@@ -92,7 +85,6 @@ const UploadDialog = ({
         <UploadPanel
           jobType={selectedJobType ?? ''}
           onStepBack={canGoBack ? onStepBack : undefined}
-          onStartUpload={canStartUpload ? onStartUpload : undefined}
         />
       ) : (
         <Box sx={{ height: '240px' }}>
@@ -110,7 +102,6 @@ export default connect(
     return {
       open,
       canGoBack: !isNil(backAction),
-      canStartUpload: true,
       restrictToGlobalSelection: shouldRestrictToGlobalSelection(state),
       runningJobType: getRunningUploadJobType(state),
       selectedJobType: getSelectedJobTypeInUploadDialog(state),
@@ -120,7 +111,6 @@ export default connect(
   // mapDispatchToProps
   {
     onClose: closeUploadDialog,
-    onStartUpload: startUploadJobFromUploadDialog,
     onStepBack: closeUploadDialogAndStepBack,
     toggleRestrictToGlobalSelection,
   }
