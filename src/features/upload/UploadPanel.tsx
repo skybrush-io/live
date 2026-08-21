@@ -281,20 +281,20 @@ const UploadPanel = ({
             <NavigateBack />
           </IconButton>
         )}
+        <Fade in={(lastUploadResult && showLastUploadResult) || running}>
+          <Box
+            className={classes.uploadResultIndicator}
+            onClick={onDismissLastUploadResult}
+          >
+            <UploadResultIndicator
+              completionTime={completionTime}
+              result={lastUploadResult}
+              running={running}
+            />
+          </Box>
+        </Fade>
         {selectedTab === 'status' ? (
           <>
-            <Fade in={(lastUploadResult && showLastUploadResult) || running}>
-              <Box
-                className={classes.uploadResultIndicator}
-                onClick={onDismissLastUploadResult}
-              >
-                <UploadResultIndicator
-                  completionTime={completionTime}
-                  result={lastUploadResult}
-                  running={running}
-                />
-              </Box>
-            </Fade>
             {running ? (
               <Button
                 color='secondary'
