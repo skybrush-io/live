@@ -1,6 +1,4 @@
-import Switch from '@mui/material/Switch';
 import type React from 'react';
-import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import { DraggableDialog } from '@skybrush/mui-components';
@@ -8,56 +6,47 @@ import { DraggableDialog } from '@skybrush/mui-components';
 import type { RootState } from '~/store/reducers';
 
 import { getDialogTitleForJobType } from './jobs';
+import RestrictToGlobalSelectionSwitch from './RestrictToGlobalSelectionSwitch';
+import { getUploadJobResultPanel } from './result-panels';
 import {
   getSelectedJobTypeInUploadDialog,
-  getSelectedTabInUploadDialog,
   getUploadDialogState,
-  shouldRestrictToGlobalSelection,
 } from './selectors';
-import { closeUploadDialog, toggleRestrictToGlobalSelection } from './slice';
-import type { UploadDialogTab } from './types';
+import { closeUploadDialog } from './slice';
 import UploadDialogBottomArea from './UploadDialogBottomArea';
 import UploadDialogContent from './UploadDialogContent';
+import UploadDialogTabs from './UploadDialogTabs';
 
 type UploadDialogProps = Readonly<{
   jobType: string;
   onClose: () => void;
   open: boolean;
-  restrictToGlobalSelection: boolean;
-  selectedTab?: UploadDialogTab;
-  toggleRestrictToGlobalSelection: () => void;
 }>;
 
 const UploadDialog = ({
-  restrictToGlobalSelection,
   onClose,
   open,
   jobType,
-  selectedTab,
-  toggleRestrictToGlobalSelection,
 }: UploadDialogProps): React.JSX.Element => {
-  const { t } = useTranslation();
-  const showRestrictToGlobalSelectionSwitch = selectedTab === 'status';
-
+  const hasResults = getUploadJobResultPanel(jobType) !== undefined;
   return (
     <DraggableDialog
       fullWidth
       open={Boolean(open)}
       maxWidth='md'
       title={getDialogTitleForJobType(jobType)}
+      toolbarComponent={
+        // Show tabs instead of the title when we have a results tab for this job type
+        hasResults
+          ? (dragHandleId: string) => (
+              <UploadDialogTabs alignment='left' dragHandle={dragHandleId} />
+            )
+          : undefined
+      }
       titleComponents={
-        showRestrictToGlobalSelectionSwitch && (
-          <>
-            {t('uploadDialog.restrictToGlobalSelection')}
-            <Switch
-              checked={restrictToGlobalSelection}
-              onChange={(evt) => {
-                toggleRestrictToGlobalSelection();
-                evt.target.blur();
-              }}
-            />
-          </>
-        )
+        // When we have a result component, it is the responsibility of the toolbar to
+        // show the "restrict to global selection" switch;
+        !hasResults && <RestrictToGlobalSelectionSwitch />
       }
       onClose={onClose}
     >
@@ -74,13 +63,10 @@ export default connect(
     return {
       jobType: getSelectedJobTypeInUploadDialog(state) ?? '',
       open,
-      restrictToGlobalSelection: shouldRestrictToGlobalSelection(state),
-      selectedTab: getSelectedTabInUploadDialog(state),
     };
   },
   // mapDispatchToProps
   {
     onClose: closeUploadDialog,
-    toggleRestrictToGlobalSelection,
   }
 )(UploadDialog);

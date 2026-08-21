@@ -52,7 +52,7 @@
     "@skybrush/electron-app-framework": "^5.2.1",
     "@skybrush/flockwave-spec": "^2.8.0",
     "@skybrush/math": "^1.0.1",
-    "@skybrush/mui-components": "^6.7.1",
+    "@skybrush/mui-components": "^6.8.0",
     "@skybrush/redux-toolkit": "^5.1.0",
     "@skybrush/show-format": "^5.5.1",
     "@tippyjs/react": "^4.2.6",
