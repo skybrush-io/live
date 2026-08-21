@@ -23,7 +23,6 @@ import type { Identifier } from '~/utils/collections';
 import { formatIdsAndTruncateTrailingItems } from '~/utils/formatting';
 
 import { selectConsistencyCheckResults } from './selectors';
-import { findMajority } from './utils';
 
 // -- Parameter value grid row
 
@@ -188,38 +187,66 @@ const ParameterAccordion = ({
   );
 };
 
+// -- Consistency check result alert
+
+const ConsistencyCheckResultSummary = () => {
+  const { t } = useTranslation();
+  const { errors, inconsistencies } = useSelector(
+    selectConsistencyCheckResults
+  );
+  const errorCount = Object.keys(errors).length;
+  const inconsistencyCount = Object.keys(inconsistencies).length;
+  const status =
+    errorCount > 0
+      ? Status.ERROR
+      : inconsistencyCount > 0
+        ? Status.WARNING
+        : Status.SUCCESS;
+  const message =
+    errorCount > 0
+      ? t('consistencyCheck.result.errors', { count: errorCount })
+      : inconsistencyCount > 0
+        ? t('consistencyCheck.result.inconsistencies', {
+            count: inconsistencyCount,
+          })
+        : t('consistencyCheck.result.consistent');
+  return (
+    <Box sx={{ px: 3, py: 2 }}>
+      <LabeledStatusLight status={status}>{message}</LabeledStatusLight>
+    </Box>
+  );
+};
+
 // -- Consistency check result panel
 
 const useConsistencyCheckResultPanelStyles = makeStyles((theme) => ({
   root: {
     overflow: 'auto',
     maxHeight: 'calc(100vh - 320px)',
-    margin: theme.spacing(1, 0),
+    margin: theme.spacing(0.5, 0, 0, 0),
   },
 }));
 
 const ConsistencyCheckResultPanel = () => {
   const { t } = useTranslation();
   const classes = useConsistencyCheckResultPanelStyles();
-  const { parameterMap, errors } = useSelector(selectConsistencyCheckResults);
+  const { majority, parameterMap } = useSelector(selectConsistencyCheckResults);
 
   const hasData = Object.keys(parameterMap).length > 0;
-  const hasErrors = Object.keys(errors).length > 0;
-
-  if (!hasData && !hasErrors) {
+  if (!hasData) {
     return (
       <BackgroundHint
-        sx={{ py: 1 }}
+        sx={{ py: 1.5 }}
         text={t('uploadPanel.noJobResultAvailable')}
       />
     );
   }
 
-  const majority = findMajority(parameterMap);
   const sortedParams = Object.keys(parameterMap).sort();
 
   return (
     <Box className={classes.root}>
+      <ConsistencyCheckResultSummary />
       {sortedParams.map((name) => (
         <ParameterAccordion
           key={name}

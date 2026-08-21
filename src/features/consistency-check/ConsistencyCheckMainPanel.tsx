@@ -30,8 +30,8 @@ const ConsistencyCheckMainPanel = () => {
   return (
     <Box sx={{ pt: 1 }}>
       <ParseableTextField
-        labelKey='consistencyCheckMainPanel.parameterNames'
-        helperTextFallbackKey='consistencyCheckMainPanel.specifyEntries'
+        labelKey='consistencyCheck.mainPanel.parameterNames'
+        helperTextFallbackKey='consistencyCheck.mainPanel.specifyEntries'
         parse={parseParameterNames}
         format={formatNames}
         onChange={handleNamesChange}
@@ -39,7 +39,7 @@ const ConsistencyCheckMainPanel = () => {
       <Box sx={{ pt: 1 }}>
         <Typography variant='body1'>
           <Trans
-            i18nKey='consistencyCheckMainPanel.parameterCheckHint'
+            i18nKey='consistencyCheck.mainPanel.parameterCheckHint'
             components={{ kbd: <kbd /> }}
           />
         </Typography>

@@ -106,7 +106,7 @@ const ToolboxMenuPresentation = ({
       />
       <JobRelatedMenuItem
         onClick={createClickListener(showConsistencyCheckDialog)}
-        title='Parameter check'
+        title={t('toolbox.paramCheck')}
         jobType={PARAMETER_CONSISTENCY_CHECK_JOB_TYPE}
       />
       <JobRelatedMenuItem

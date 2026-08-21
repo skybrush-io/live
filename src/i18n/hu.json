@@ -1016,22 +1016,22 @@
     }
   },
   "uploadPanel": {
-    "cancelUpload": "Feltöltés megszakítása",
-    "flashLightsWhereFailed": "Azon drónok villogtatása, ahol nem sikerült a feltöltés",
+    "cancelUpload": "Megszakítás",
+    "flashLightsWhereFailed": "Azon drónok villogtatása, ahol nem sikerült a művelet",
     "retryFailedAttempts": "Sikertelen kísérletek automatikus újrapróbálása",
-    "uploadAttemptFailed": "A feltöltés sikertelen.",
-    "uploadCancelled": "A feltöltést a felhasználó megszakította.",
-    "uploadFinishedSuccessfully": "A feltöltés sikeresen befejeződött.",
-    "uploadInProgress": "Feltöltés folyamatban…",
-    "uploadNotFinishedYet": "A feltöltés még nem fejeződött be."
+    "uploadAttemptFailed": "A művelet sikertelen.",
+    "uploadCancelled": "A műveletet a felhasználó megszakította.",
+    "uploadFinishedSuccessfully": "A művelet sikeresen befejeződött.",
+    "uploadInProgress": "Kérem, várjon…",
+    "uploadNotFinishedYet": "A művelet még nem fejeződött be."
   },
   "uploadStatusLegend": {
-    "clearUploadQueue": "Feltöltési sor törlése",
+    "clearUploadQueue": "Műveleti sor törlése",
     "restartSuccessfulItems": "Sikeres elemek újraindítása",
     "retryFailedItems": "Sikertelen elemek újrapróbálása"
   },
   "uploadStatusLights": {
-    "noAvailableUAVs": "Nincs elérhető drón a feltöltéshez."
+    "noAvailableUAVs": "Nincs elérhető drón."
   },
   "view": {
     "beacon-list": "Jeladók",

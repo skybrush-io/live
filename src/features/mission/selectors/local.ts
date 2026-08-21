@@ -518,9 +518,10 @@ export const getConvexHullOfMissionInWorldCoordinates: AppSelector<LonLat[]> =
     getMissionItemsWithAreasInOrder,
     (homePositions, missionItemsWithCoordinates, missionItemsWithAreas) =>
       convexHull2D([
-        ...rejectNullish(homePositions).map(
-          ({ lon, lat }): LonLat => [lon, lat]
-        ),
+        ...rejectNullish(homePositions).map(({ lon, lat }): LonLat => [
+          lon,
+          lat,
+        ]),
         ...missionItemsWithCoordinates.map(
           ({ coordinate: { lon, lat } }): LonLat => [lon, lat]
         ),

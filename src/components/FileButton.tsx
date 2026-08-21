@@ -68,14 +68,11 @@ const FileButton = ({
   // Normalize the union callbacks to a single internal signature. The casts
   // are safe because `multiple` determines which variant the caller supplied.
   const accepts = acceptsProp as
-    | ((fileOrFiles: File | File[]) => boolean)
-    | undefined;
+    ((fileOrFiles: File | File[]) => boolean) | undefined;
   const onSelected = onSelectedProp as
-    | ((fileOrFiles: File | File[]) => void | Promise<void>)
-    | undefined;
+    ((fileOrFiles: File | File[]) => void | Promise<void>) | undefined;
   const onSelectionFailed = onSelectionFailedProp as
-    | ((fileOrFiles: File | File[]) => void | Promise<void>)
-    | undefined;
+    ((fileOrFiles: File | File[]) => void | Promise<void>) | undefined;
 
   const onHandleSelection = useCallback(
     (sel: FileSelectionSource | null) => {

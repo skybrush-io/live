@@ -30,12 +30,10 @@ type ConsistencyCheckSliceState = {
 
 const initialState: ConsistencyCheckSliceState = {
   parameterNames: createCollectionFromArray(
-    DEFAULT_PARAMETER_NAMES.map(
-      (name): ConsistencyCheckParameterNameItem => ({
-        id: name,
-        name,
-      })
-    )
+    DEFAULT_PARAMETER_NAMES.map((name): ConsistencyCheckParameterNameItem => ({
+      id: name,
+      name,
+    }))
   ),
   dialog: {
     open: false,

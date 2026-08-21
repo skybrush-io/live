@@ -405,6 +405,7 @@ const { actions, reducer } = createSlice({
         type: newJobType,
         payload: newJobPayload,
       };
+      state.dialog.selectedTab = 'status';
       state.dialog.showLastUploadResult = false;
       state.dialog.open = true;
       if (restrictToGlobalSelection !== undefined) {

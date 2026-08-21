@@ -25,7 +25,7 @@ const ConsistencyCheckSetupDialog = ({ onClose, open }: Props) => {
     <UploadSetupDialog
       open={open}
       onClose={onClose}
-      title={t('consistencyCheckSetupDialog.checkParameters')}
+      title={t('consistencyCheck.setupDialog.checkParameters')}
       sidebar={<ConsistencyCheckSidebar />}
     >
       <ConsistencyCheckMainPanel />

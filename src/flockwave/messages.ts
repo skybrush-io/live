@@ -1193,8 +1193,7 @@ type SingleAsyncOperationOptions = {
 };
 
 export type AsyncOperationOptions =
-  | MultiAsyncOperationOptions
-  | SingleAsyncOperationOptions;
+  MultiAsyncOperationOptions | SingleAsyncOperationOptions;
 
 /**
  * Message hub class that can be used to send Flockwave messages and get
@@ -1626,8 +1625,7 @@ export default class MessageHub {
       await this.sendMessage(message);
 
     let progressHandler:
-      | ((id: string, status: ProgressStatus) => void)
-      | undefined;
+      ((id: string, status: ProgressStatus) => void) | undefined;
 
     if (options.single === true) {
       // Object takes a single ID and returns a single result, error or

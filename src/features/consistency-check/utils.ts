@@ -84,3 +84,18 @@ export const calculateParameterAndErrorMaps = (
 
   return { parameterMap, errors };
 };
+
+/**
+ * Calculates the majority value and the inconsistencies for the given parameter map.
+ * Returns an object containing the majority values and the inconsistencies.
+ */
+export const calculateMajorityAndInconsistencies = (
+  parameterMap: ParameterMap
+): {
+  majority: Record<string, string>;
+  inconsistencies: Record<string, string[]>;
+} => {
+  const majority = findMajority(parameterMap);
+  const inconsistencies = findInconsistencies(parameterMap, majority);
+  return { majority, inconsistencies };
+};

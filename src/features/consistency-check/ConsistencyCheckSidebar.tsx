@@ -39,12 +39,12 @@ const ConsistencyCheckSidebar = ({
   return (
     <ItemListSidebar
       canProceed={canProceed}
-      importLabel={t('consistencyCheckSidebar.import')}
-      proceedLabel={t('consistencyCheckSidebar.nextStep')}
-      removeAllLabel={t('consistencyCheckSidebar.removeAllItems')}
+      importLabel={t('consistencyCheck.sidebar.import')}
+      proceedLabel={t('consistencyCheck.sidebar.nextStep')}
+      removeAllLabel={t('consistencyCheck.sidebar.removeAllItems')}
       items={names}
       renderItem={renderItem}
-      title={t('consistencyCheckSidebar.title')}
+      title={t('consistencyCheck.sidebar.title')}
       onImportItems={onImportItems}
       onRemoveAllItems={onRemoveAllItems}
       onRemoveItem={onRemoveItem}

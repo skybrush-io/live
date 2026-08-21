@@ -14,11 +14,7 @@ import isObject from 'lodash-es/isObject';
  *   standstill to its normal speed. This is used to resume a suspended show.
  */
 export type TimeSegmentType =
-  | 'preparation'
-  | 'rth'
-  | 'slowdown'
-  | 'speedup'
-  | 'show';
+  'preparation' | 'rth' | 'slowdown' | 'speedup' | 'show';
 
 const VALID_TIME_SEGMENT_TYPES = new Set<TimeSegmentType>([
   'preparation',
