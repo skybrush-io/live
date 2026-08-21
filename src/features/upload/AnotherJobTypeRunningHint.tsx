@@ -1,13 +1,14 @@
 import Clear from '@mui/icons-material/Clear';
 import LocalShipping from '@mui/icons-material/LocalShipping';
 import Visibility from '@mui/icons-material/Visibility';
-import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import Stack from '@mui/material/Stack';
 import type React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { BackgroundHint } from '@skybrush/mui-components';
 
+import { useTranslation } from 'react-i18next';
 import { getCurrentUploadJob, getSelectedJobInUploadDialog } from './selectors';
 import { cancelUpload, openUploadDialogForJob } from './slice';
 
@@ -18,6 +19,7 @@ type AnotherJobTypeRunningHintProps = Readonly<{
 const AnotherJobTypeRunningHint = (
   _props: AnotherJobTypeRunningHintProps
 ): React.JSX.Element => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const currentJob = useSelector(getCurrentUploadJob);
   const selectedJob = useSelector(getSelectedJobInUploadDialog);
@@ -25,19 +27,18 @@ const AnotherJobTypeRunningHint = (
   return (
     <BackgroundHint
       icon={<LocalShipping />}
-      header='Another task is in progress'
-      text='Wait for the other task to finish or cancel it to start a new upload'
+      header={t('uploadDialog.anotherJobTypeRunningHint.header')}
+      text={t('uploadDialog.anotherJobTypeRunningHint.text')}
       button={
-        <>
+        <Stack direction='row' spacing={1} justifyContent='center'>
           <Button
             startIcon={<Clear />}
             onClick={() => {
               dispatch(cancelUpload());
             }}
           >
-            Cancel task
+            {t('uploadDialog.anotherJobTypeRunningHint.cancelButton')}
           </Button>
-          <Box sx={{ display: 'inline-block', mx: 1 }} />
           <Button
             startIcon={<Visibility />}
             onClick={() => {
@@ -51,9 +52,9 @@ const AnotherJobTypeRunningHint = (
               );
             }}
           >
-            View progress
+            {t('uploadDialog.anotherJobTypeRunningHint.viewProgressButton')}
           </Button>
-        </>
+        </Stack>
       }
     />
   );

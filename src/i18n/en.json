@@ -1473,6 +1473,12 @@
     }
   },
   "uploadDialog": {
+    "anotherJobTypeRunningHint": {
+      "cancelButton": "Cancel task",
+      "header": "Another task is in progress",
+      "text": "Wait for the other task to finish or cancel it to start a new task",
+      "viewProgressButton": "View progress"
+    },
     "restrictToGlobalSelection": "Show global selection only"
   },
   "uploadPanel": {
