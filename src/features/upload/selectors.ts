@@ -561,8 +561,10 @@ export const getUploadProgress = createSelector(
     const total = failed + finished + inProgress + waiting;
     if (total > 0) {
       return [
-        Math.round((100 * (finished + inProgress * averageProgress)) / total),
-        Math.round((100 * (finished + inProgress)) / total),
+        Math.round(
+          (100 * (finished + failed + inProgress * averageProgress)) / total
+        ),
+        Math.round((100 * (finished + failed + inProgress)) / total),
       ];
     } else {
       return [0, 0];
