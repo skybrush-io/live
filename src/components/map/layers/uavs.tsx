@@ -1,6 +1,6 @@
+import { layer as olLayer } from '@collmot/ol-react';
 import type React from 'react';
 import { useCallback } from 'react';
-import { layer as olLayer } from '@collmot/ol-react';
 
 import Slider from '@mui/material/Slider';
 import { FormHeader as Header } from '@skybrush/mui-components';
@@ -21,11 +21,15 @@ import type { BaseLayerSettingsProps } from './types';
 
 // === Settings UI for this layer ===
 
-export type UAVsLayerSettingsProps = BaseLayerSettingsProps & {
-  setLayerParameters: (
-    params: Partial<{ labelColor: string; scale: number }>
-  ) => void;
+export type UAVsLayerParameters = {
+  labelColor: string;
+  scale: number;
 };
+
+export type UAVsLayerSettingsProps =
+  BaseLayerSettingsProps<UAVsLayerParameters> & {
+    setLayerParameters: (params: Partial<UAVsLayerParameters>) => void;
+  };
 
 const MARKS = [{ value: 1 }];
 
@@ -85,7 +89,7 @@ type UAVsLayerSourceProps = {
 };
 
 export type UAVsLayerProps = {
-  layer: Layer;
+  layer: Layer<UAVsLayerParameters>;
   LayerSource: React.ComponentType<UAVsLayerSourceProps>;
   selection: Identifier[];
   projection?: CoordinateTransformationFunction;
@@ -104,10 +108,8 @@ export const UAVsLayer = ({
   <olLayer.Vector updateWhileAnimating updateWhileInteracting zIndex={zIndex}>
     <LayerSource
       selection={selection}
-      labelColor={
-        (layer.parameters['labelColor'] as string | undefined | null) ?? ''
-      }
-      scale={(layer.parameters['scale'] as number | undefined | null) ?? 1}
+      labelColor={layer.parameters['labelColor'] ?? ''}
+      scale={layer.parameters['scale'] ?? 1}
       flock={flock}
       projection={projection}
       labelHidden={labelHidden}

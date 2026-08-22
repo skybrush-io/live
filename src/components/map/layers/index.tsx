@@ -29,7 +29,7 @@ export const layerSettingsComponents = {
 export const layerComponents: Partial<
   Record<LayerType, React.ComponentType<LayerProps>>
 > = {
-  [LayerType.BASE]: BaseLayer,
+  [LayerType.BASE]: BaseLayer as React.ComponentType<LayerProps>,
   [LayerType.GRATICULE]: GraticuleLayer,
-  [LayerType.TILE_SERVER]: TileServerLayer as any,
+  [LayerType.TILE_SERVER]: TileServerLayer,
 };

@@ -146,7 +146,7 @@ const layerComponents: Partial<
     <FeaturesLayer {...props} layerRefHandler={noMark} />
   ),
   [LayerType.MISSION_INFO]: ConnectedShowInfoLayer,
-  [LayerType.UAVS]: (
+  [LayerType.UAVS]: ((
     props: Omit<UAVsLayerProps, 'LayerSource' | 'selection'>
   ) => (
     <UAVsLayer
@@ -155,7 +155,7 @@ const layerComponents: Partial<
       LayerSource={ActiveUAVsLayerSource}
       selection={EMPTY_ARRAY}
     />
-  ),
+  )) as React.ComponentType<LayerProps>,
 };
 
 const mapControlSettings: Partial<MapControlDisplaySettings> = {

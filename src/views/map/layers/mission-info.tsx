@@ -3,13 +3,15 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import FormGroup from '@mui/material/FormGroup';
 import dropWhile from 'lodash-es/dropWhile';
 import takeWhile from 'lodash-es/takeWhile';
-import unary from 'lodash-es/unary';
 import memoize from 'memoizee';
+import { type Feature as OLFeature } from 'ol';
 import * as Coordinate from 'ol/coordinate';
+import type { LineString, SimpleGeometry } from 'ol/geom';
 import Point from 'ol/geom/Point';
 import { getPointResolution } from 'ol/proj';
 import { Circle, Icon, Style, Text } from 'ol/style';
 import PropTypes from 'prop-types';
+import type { ChangeEvent, JSX } from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
@@ -31,6 +33,7 @@ import {
 import { markAsSelectableAndEditable } from '~/components/map/layers/utils';
 import { Tool } from '~/components/map/tools';
 import { setLayerParametersById } from '~/features/map/layers';
+import { OriginType } from '~/features/map/types';
 import {
   getCompletionRatiosForMissionItemById,
   getCurrentMissionItemIndexForEveryMissionIndex,
@@ -54,6 +57,7 @@ import {
   getOutdoorShowOrigin,
 } from '~/features/show/selectors';
 import { getSelectedUAVIdsForTrajectoryDisplay } from '~/features/uavs/selectors';
+import type { GPSPosition } from '~/model/geography';
 import {
   MAP_ORIGIN_ID,
   MISSION_ORIGIN_ID,
@@ -61,12 +65,21 @@ import {
   originIdToGlobalId,
   plannedTrajectoryIdToGlobalId,
 } from '~/model/identifiers';
-import { MissionItemType } from '~/model/missions';
+import type { Layer } from '~/model/layers';
+import {
+  type MissionIndex,
+  type MissionItem,
+  MissionItemType,
+} from '~/model/missions';
 import { getMapOriginRotationAngle } from '~/selectors/map';
+import type { RootState } from '~/store/reducers';
 import { hasFeature } from '~/utils/configuration';
 import { formatMissionId } from '~/utils/formatting';
-import { mapViewCoordinateFromLonLat } from '~/utils/geography';
-import CustomPropTypes from '~/utils/prop-types';
+import {
+  type EasNor,
+  type LonLat,
+  mapViewCoordinateFromLonLat,
+} from '~/utils/geography';
 import {
   dashedThinOutline,
   dottedThickOutline,
@@ -83,10 +96,25 @@ import UAVTrajectoryFeature from '~/views/map/features/UAVTrajectoryFeature';
 
 // === Settings for this particular layer type ===
 
+type MissionInfoLayerParameters = {
+  showConvexHull: boolean;
+  showOrigin: boolean;
+  showHomePositions: boolean;
+  showLandingPositions: boolean;
+  showMissionItems: boolean;
+  showMissionOrigin: boolean;
+  showTrajectoriesOfSelection: boolean;
+};
+
+type MissionInfoLayerSettingsPresentationProps = {
+  layer: Layer<MissionInfoLayerParameters>;
+  setLayerParameters: (parameters: Partial<MissionInfoLayerParameters>) => void;
+};
+
 const MissionInfoLayerSettingsPresentation = ({
   layer,
   setLayerParameters,
-}) => {
+}: MissionInfoLayerSettingsPresentationProps) => {
   const { t } = useTranslation(undefined, {
     keyPrefix: 'MissionInfoLayer.settings',
   });
@@ -101,8 +129,10 @@ const MissionInfoLayerSettingsPresentation = ({
     showTrajectoriesOfSelection,
   } = parameters || {};
 
-  const handleChange = (name) => (event) =>
-    setLayerParameters({ [name]: event.target.checked });
+  const handleChange =
+    (name: keyof MissionInfoLayerParameters) =>
+    (event: ChangeEvent<HTMLInputElement>) =>
+      setLayerParameters({ [name]: event.target.checked });
 
   return (
     <FormGroup>
@@ -191,12 +221,16 @@ MissionInfoLayerSettingsPresentation.propTypes = {
   setLayerParameters: PropTypes.func,
 };
 
+type MissionInfoLayerSettingsOwnProps = {
+  layerId: string;
+};
+
 export const MissionInfoLayerSettings = connect(
   // mapStateToProps
   null,
   // mapDispatchToProps
-  (dispatch, ownProps) => ({
-    setLayerParameters(parameters) {
+  (dispatch, ownProps: MissionInfoLayerSettingsOwnProps) => ({
+    setLayerParameters(parameters: Record<string, unknown>) {
       dispatch(setLayerParametersById(ownProps.layerId, parameters));
     },
   })
@@ -223,12 +257,13 @@ const originMarkerFill = fill(Colors.markers.origin);
  * Styling function for the marker representing the origin of the map
  * coordinate system.
  */
-const originStyles = (selected, axis) => [
+const originStyles = (selected: boolean, axis: 'x' | 'y') => [
   // Circle and label
   new Style({
-    /* eslint-disable object-shorthand */
     geometry: (feature) => {
-      const geom = feature.getGeometry();
+      // Cast is valid because we know that the origin is represented by a point on the
+      // map, and Point is a subclass of SimpleGeometry.
+      const geom = feature.getGeometry() as SimpleGeometry;
       const origin = geom.getFirstCoordinate();
       return new Point(origin);
     },
@@ -245,7 +280,6 @@ const originStyles = (selected, axis) => [
       textAlign: 'center',
     }),
     */
-    /* eslint-enable object-shorthand */
   }),
 
   // Arrow
@@ -258,43 +292,42 @@ const originStyles = (selected, axis) => [
  * Style for the marker representing the individual items in a waypoint mission.
  */
 const createMissionItemBaseStyle = memoize(
-  (current, done, selected) => (feature) => {
-    const index = feature.get('index');
-    const style = {
-      image: new Icon({
-        src: mapMarker,
-        anchor: [0.5, 0.95],
-        // prettier-ignore
-        color:
+  (current: boolean, done: boolean, selected: boolean) =>
+    (feature: OLFeature) => {
+      const index = feature.get('index');
+      const style = {
+        image: new Icon({
+          src: mapMarker,
+          anchor: [0.5, 0.95],
+          // prettier-ignore
+          color:
           selected ? Colors.selectedMissionItem :
           done     ? Colors.doneMissionItem     :
           current  ? Colors.currentMissionItem  :
                      Colors.missionItem,
-        rotateWithView: false,
-        snapToPixel: false,
-      }),
-      text: new Text({
-        font: '12px sans-serif',
-        offsetY: -17,
-        text: index !== undefined ? String(index + 1) : '?',
-        textAlign: 'center',
-      }),
-    };
-
-    if (selected) {
-      const selectedStyle = {
-        image: new Icon({
-          src: mapMarkerOutline,
-          anchor: [0.5, 0.95],
           rotateWithView: false,
-          snapToPixel: false,
+        }),
+        text: new Text({
+          font: '12px sans-serif',
+          offsetY: -17,
+          text: index !== undefined ? String(index + 1) : '?',
+          textAlign: 'center',
         }),
       };
-      return [new Style(selectedStyle), new Style(style)];
-    } else {
-      return new Style(style);
+
+      if (selected) {
+        const selectedStyle = {
+          image: new Icon({
+            src: mapMarkerOutline,
+            anchor: [0.5, 0.95],
+            rotateWithView: false,
+          }),
+        };
+        return [new Style(selectedStyle), new Style(style)];
+      } else {
+        return new Style(style);
+      }
     }
-  }
 );
 
 /**
@@ -306,7 +339,7 @@ const missionFlightAreaBaseStyle = new Style({
 const missionFlightAreaSelectionStyle = new Style({
   stroke: whiteThinOutline,
 });
-const missionFlightAreaEditStyle = (selected) =>
+const missionFlightAreaEditStyle = (selected: boolean) =>
   styleForPointsOfPolygon(selected, Colors.flightArea);
 
 /**
@@ -319,7 +352,9 @@ const doneMissionItemLineStringStyle = new Style({
 const todoMissionItemLineStringStyle = new Style({
   stroke: thinOutline(Colors.missionItem),
 });
-const auxiliaryMissionItemLineStringStyle = (feature) => [
+const auxiliaryMissionItemLineStringStyle = (
+  feature: OLFeature<LineString>
+) => [
   new Style({
     stroke: dottedThickOutline(Colors.auxiliaryMissionItem),
   }),
@@ -333,19 +368,23 @@ const auxiliaryMissionItemLineStringStyle = (feature) => [
 const MAP_ORIGIN_GLOBAL_ID = originIdToGlobalId(MAP_ORIGIN_ID);
 const MISSION_ORIGIN_GLOBAL_ID = originIdToGlobalId(MISSION_ORIGIN_ID);
 
-const featureKeyForRoleAndMissionIndex = (role, index) => `${role}.${index}`;
+const featureKeyForRoleAndMissionIndex = (role: string, index: number) =>
+  `${role}.${index}`;
 
 const mapOriginMarker = (
-  coordinateSystemType,
-  mapOrigin,
-  orientation,
-  selection
+  coordinateSystemType: OriginType,
+  mapOrigin: LonLat | undefined,
+  orientation: number,
+  selection: string[]
 ) => {
   if (mapOrigin) {
     const tail = mapViewCoordinateFromLonLat(mapOrigin);
     const armLength =
       50 /* meters */ / getPointResolution('EPSG:3857', 1, tail);
-    const headY = [0, coordinateSystemType === 'nwu' ? armLength : -armLength];
+    const headY = [
+      0,
+      coordinateSystemType === OriginType.NWU ? armLength : -armLength,
+    ];
     const headX = [armLength, 0];
     const selected =
       selection.includes(MAP_ORIGIN_GLOBAL_ID + '$x') ||
@@ -376,14 +415,31 @@ const mapOriginMarker = (
   }
 };
 
+type MissionItemWithArea = {
+  id: string;
+  area: { points: LonLat[] };
+};
+
+type MissionItemWithCoordinates = {
+  id: string;
+  index: MissionIndex;
+  coordinate: GPSPosition;
+  item: MissionItem;
+};
+
+type ReturnToHomeMissionItem = {
+  index: MissionIndex;
+  item: MissionItem;
+};
+
 const missionAreaBoundaries = (
-  missionItemsWithAreas,
-  selection,
-  selectedTool
+  missionItemsWithAreas: MissionItemWithArea[] | undefined,
+  selection: string[],
+  selectedTool: Tool
 ) =>
   missionItemsWithAreas?.map(({ id, area }) => {
-    const areaBoundaryInMapCoordinates = area?.points?.map(
-      unary(mapViewCoordinateFromLonLat)
+    const areaBoundaryInMapCoordinates = area?.points?.map((point) =>
+      mapViewCoordinateFromLonLat(point)
     );
     closePolygon(areaBoundaryInMapCoordinates);
 
@@ -407,6 +463,19 @@ const missionAreaBoundaries = (
     );
   }) ?? [];
 
+type WaypointMarkerPresentationProps = {
+  center: number[];
+  globalId: string;
+  index: number;
+  itemId: string;
+  ratios: {
+    avg: number | undefined;
+    max: number | undefined;
+    min: number | undefined;
+  };
+  selected: boolean;
+};
+
 const WaypointMarkerPresentation = ({
   center,
   globalId,
@@ -414,12 +483,15 @@ const WaypointMarkerPresentation = ({
   ratios,
   selected,
   ...rest
-}) => (
+}: WaypointMarkerPresentationProps) => (
   <Feature
     id={globalId}
     properties={{ index }}
     style={createMissionItemBaseStyle(
-      ratios.max > 0 && ratios.min < 1,
+      ratios.max !== undefined &&
+        ratios.max > 0 &&
+        ratios.min !== undefined &&
+        ratios.min < 1,
       ratios.min === 1,
       selected
     )}
@@ -429,29 +501,17 @@ const WaypointMarkerPresentation = ({
   </Feature>
 );
 
-WaypointMarkerPresentation.propTypes = {
-  center: PropTypes.arrayOf(PropTypes.number),
-  globalId: PropTypes.string,
-  index: PropTypes.number,
-  ratios: PropTypes.shape({
-    avg: PropTypes.number,
-    max: PropTypes.number,
-    min: PropTypes.number,
-  }),
-  selected: PropTypes.bool,
-};
-
 const WaypointMarker = connect(
   // mapStateToProps
-  (state, ownProps) => ({
+  (state: RootState, ownProps: { itemId: string }) => ({
     ratios: getCompletionRatiosForMissionItemById(state, ownProps.itemId),
   })
 )(WaypointMarkerPresentation);
 
 const missionWaypointMarkers = (
-  missionItemsWithCoordinates,
-  selection,
-  selectedMissionIdInMissionEditorPanel
+  missionItemsWithCoordinates: MissionItemWithCoordinates[] | undefined,
+  selection: string[],
+  selectedMissionIdInMissionEditorPanel: MissionIndex | undefined
 ) =>
   missionItemsWithCoordinates
     ? missionItemsWithCoordinates.map(({ coordinate, id, index, item }) => {
@@ -484,11 +544,11 @@ const missionWaypointMarkers = (
     : [];
 
 const missionTrajectoryLine = (
-  currentItemIndices,
-  currentItemRatios,
-  allMissionItemsWithCoordinates,
-  missionMapping,
-  selectedMissionIdInMissionEditorPanel
+  currentItemIndices: Array<number | undefined>,
+  currentItemRatios: Array<number | undefined>,
+  allMissionItemsWithCoordinates: MissionItemWithCoordinates[] | undefined,
+  missionMapping: Array<string | null>,
+  selectedMissionIdInMissionEditorPanel: MissionIndex | undefined
 ) => {
   if (allMissionItemsWithCoordinates) {
     return missionMapping.flatMap((_, missionIndex) => {
@@ -505,10 +565,14 @@ const missionTrajectoryLine = (
       );
       const currentItemIndex = currentItemIndices[missionIndex];
       const currentItemRatio = currentItemRatios[missionIndex];
+      if (currentItemIndex === undefined) {
+        return [];
+      }
 
       // This should be done like below but lodash doesn't have `span`
       // `const [done, todo] = span(missionItemsWithCoordinates, isDone)`,
-      const isDone = (mi) => mi.index < currentItemIndex;
+      const isDone = (mi: MissionItemWithCoordinates) =>
+        mi.index < currentItemIndex;
       const doneMissionItems = takeWhile(missionItemsWithCoordinates, isDone);
       const todoMissionItems = dropWhile(missionItemsWithCoordinates, isDone);
 
@@ -536,13 +600,15 @@ const missionTrajectoryLine = (
                 // coordinates
                 0) ?? 0;
 
-          const lastDone = doneMissionItemsInMapCoordinates.at(-1);
-          const firstTodo = todoMissionItemsInMapCoordinates.at(0);
+          // Non-null assertions because the arrays are confirmed to be non-empty.
+          const lastDone = doneMissionItemsInMapCoordinates.at(-1)!;
+          const firstTodo = todoMissionItemsInMapCoordinates.at(0)!;
 
+          // Casting valid because lastDone and firstTodo are both EasNor
           const splitPoint = [
             lastDone[0] * (1 - ratio) + firstTodo[0] * ratio,
             lastDone[1] * (1 - ratio) + firstTodo[1] * ratio,
-          ];
+          ] as EasNor;
 
           doneMissionItemsInMapCoordinates.push(splitPoint);
           todoMissionItemsInMapCoordinates.unshift(splitPoint);
@@ -574,11 +640,11 @@ const missionTrajectoryLine = (
 };
 
 const auxiliaryMissionLines = (
-  homePositions,
-  allMissionItemsWithCoordinates,
-  missionMapping,
-  returnToHomeItems,
-  selectedMissionIdInMissionEditorPanel
+  homePositions: Array<GPSPosition | null> | undefined,
+  allMissionItemsWithCoordinates: MissionItemWithCoordinates[] | undefined,
+  missionMapping: Array<string | null>,
+  returnToHomeItems: ReturnToHomeMissionItem[],
+  selectedMissionIdInMissionEditorPanel: MissionIndex | undefined
 ) => {
   if (allMissionItemsWithCoordinates) {
     return missionMapping.flatMap((_, missionIndex) => {
@@ -593,18 +659,21 @@ const auxiliaryMissionLines = (
         ({ item }) =>
           doesMissionIndexParticipateInMissionItem(missionIndex)(item)
       );
-      if (
-        homePositions?.[missionIndex] &&
-        missionItemsWithCoordinates?.length > 0
-      ) {
-        const findSurroundingWaypoints = (current) => ({
+      const homePosition = homePositions?.[missionIndex];
+      if (homePosition && missionItemsWithCoordinates?.length > 0) {
+        const findSurroundingWaypoints = (current: number) => ({
           before: missionItemsWithCoordinates.findLast(
             (mi) => mi.index < current
           ),
           after: missionItemsWithCoordinates.find((mi) => mi.index > current),
         });
 
-        const makeFeature = (id, key, from, to) => (
+        const makeFeature = (
+          id: string,
+          key: string,
+          from: GPSPosition,
+          to: GPSPosition
+        ) => (
           <Feature
             key={key}
             id={id}
@@ -619,7 +688,7 @@ const auxiliaryMissionLines = (
           </Feature>
         );
 
-        const makeFeatures = ({ id, index }) => {
+        const makeFeatures = ({ id, index }: { id: string; index: number }) => {
           const { before, after } = findSurroundingWaypoints(index);
           return [
             ...(before
@@ -633,7 +702,7 @@ const auxiliaryMissionLines = (
                       `${id}$before$${missionIndex}`
                     ),
                     before.coordinate,
-                    homePositions[missionIndex]
+                    homePosition
                   ),
                 ]
               : []),
@@ -647,7 +716,7 @@ const auxiliaryMissionLines = (
                     plannedTrajectoryIdToGlobalId(
                       `${id}$after$${missionIndex}`
                     ),
-                    homePositions[missionIndex],
+                    homePosition,
                     after.coordinate
                   ),
                 ]
@@ -674,7 +743,10 @@ const auxiliaryMissionLines = (
   }
 };
 
-const missionOriginMarker = (missionOrientation, missionOrigin) =>
+const missionOriginMarker = (
+  missionOrientation: number,
+  missionOrigin: LonLat | undefined
+) =>
   missionOrigin
     ? [
         orientationMarker(
@@ -687,8 +759,8 @@ const missionOriginMarker = (missionOrientation, missionOrigin) =>
     : [];
 
 const selectionTrajectoryFeatures = (
-  missionIndicesForTrajectories,
-  uavIdsForTrajectories
+  missionIndicesForTrajectories: MissionIndex[] | undefined,
+  uavIdsForTrajectories: string[] | undefined
 ) => {
   const trajectoryFeatures = [];
 
@@ -720,6 +792,30 @@ const selectionTrajectoryFeatures = (
   return trajectoryFeatures;
 };
 
+type MissionInfoVectorSourceProps = {
+  convexHull?: GPSPosition[];
+  coordinateSystemType: OriginType;
+  currentItemIndices: Array<number | undefined>;
+  currentItemRatios: Array<number | undefined>;
+  homePositions?: Array<GPSPosition | null>;
+  landingPositions?: Array<GPSPosition | null>;
+  mapOrigin?: LonLat;
+  minimumDistanceBetweenHomePositions: number;
+  minimumDistanceBetweenLandingPositions: number;
+  missionItemsWithAreas?: MissionItemWithArea[];
+  missionItemsWithCoordinates?: MissionItemWithCoordinates[];
+  missionMapping: Array<string | null>;
+  missionOrientation: number;
+  missionOrigin?: LonLat;
+  missionIndicesForTrajectories?: MissionIndex[];
+  orientation?: number;
+  returnToHomeItems: ReturnToHomeMissionItem[];
+  selectedMissionIdInMissionEditorPanel?: MissionIndex;
+  selectedTool: Tool;
+  selection: string[];
+  uavIdsForTrajectories?: string[];
+};
+
 const MissionInfoVectorSource = ({
   convexHull,
   coordinateSystemType,
@@ -742,9 +838,9 @@ const MissionInfoVectorSource = ({
   selectedTool,
   selection,
   uavIdsForTrajectories,
-}) => (
+}: MissionInfoVectorSourceProps) => (
   <source.Vector>
-    {[].concat(
+    {([] as Array<JSX.Element | null>).concat(
       homePositionPoints(
         // HACK: Add support for filtering in `homePositionPoints` instead of
         //       hiding them by replacing the values with `null`...
@@ -810,33 +906,19 @@ const MissionInfoVectorSource = ({
   </source.Vector>
 );
 
-MissionInfoVectorSource.propTypes = {
-  convexHull: PropTypes.arrayOf(CustomPropTypes.coordinate),
-  coordinateSystemType: PropTypes.oneOf(['neu', 'nwu']),
-  currentItemIndices: PropTypes.arrayOf(PropTypes.number),
-  currentItemRatios: PropTypes.arrayOf(PropTypes.number),
-  homePositions: PropTypes.arrayOf(CustomPropTypes.coordinate),
-  landingPositions: PropTypes.arrayOf(CustomPropTypes.coordinate),
-  mapOrigin: PropTypes.arrayOf(PropTypes.number),
-  minimumDistanceBetweenLandingPositions: PropTypes.number,
-  minimumDistanceBetweenHomePositions: PropTypes.number,
-  missionItemsWithAreas: PropTypes.arrayOf(PropTypes.object),
-  missionItemsWithCoordinates: PropTypes.arrayOf(PropTypes.object),
-  missionMapping: PropTypes.arrayOf(
-    PropTypes.oneOfType([PropTypes.string, PropTypes.oneOf([null])])
-  ),
-  missionOrientation: CustomPropTypes.angle,
-  missionOrigin: PropTypes.arrayOf(PropTypes.number),
-  missionIndicesForTrajectories: PropTypes.arrayOf(PropTypes.number),
-  orientation: CustomPropTypes.angle,
-  returnToHomeItems: PropTypes.arrayOf(PropTypes.object),
-  selectedMissionIdInMissionEditorPanel: PropTypes.number,
-  selectedTool: PropTypes.string,
-  selection: PropTypes.arrayOf(PropTypes.string),
-  uavIdsForTrajectories: PropTypes.arrayOf(PropTypes.string),
+type MissionInfoLayerOwnProps = {
+  layer: Layer<MissionInfoLayerParameters>;
+  zIndex: number;
 };
 
-const MissionInfoLayerPresentation = ({ layer, zIndex, ...rest }) => (
+type MissionInfoLayerPresentationProps = MissionInfoLayerOwnProps &
+  MissionInfoVectorSourceProps;
+
+const MissionInfoLayerPresentation = ({
+  layer,
+  zIndex,
+  ...rest
+}: MissionInfoLayerPresentationProps) => (
   <olLayer.Vector
     ref={markAsSelectableAndEditable}
     updateWhileAnimating
@@ -847,14 +929,9 @@ const MissionInfoLayerPresentation = ({ layer, zIndex, ...rest }) => (
   </olLayer.Vector>
 );
 
-MissionInfoLayerPresentation.propTypes = {
-  layer: PropTypes.object,
-  zIndex: PropTypes.number,
-};
-
 export const MissionInfoLayer = connect(
   // mapStateToProps
-  (state, { layer }) => ({
+  (state: RootState, { layer }: MissionInfoLayerOwnProps) => ({
     convexHull: layer?.parameters?.showConvexHull
       ? getConvexHullOfShowInWorldCoordinates(state)
       : undefined,
@@ -867,7 +944,9 @@ export const MissionInfoLayer = connect(
     landingPositions: layer?.parameters?.showLandingPositions
       ? getGPSBasedLandingPositionsInMission(state)
       : undefined,
-    mapOrigin: layer?.parameters?.showOrigin && state.map.origin.position,
+    mapOrigin: layer?.parameters?.showOrigin
+      ? state.map.origin.position
+      : undefined,
     minimumDistanceBetweenLandingPositions:
       getMinimumDistanceBetweenLandingPositions(state),
     minimumDistanceBetweenHomePositions:

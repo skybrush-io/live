@@ -223,7 +223,9 @@ const { reducer, actions } = createSlice({
       if (layer === undefined) {
         console.warn(`Cannot set source of non-existent layer ${layerId}`);
       } else {
-        layer.parameters['source'] = source;
+        // Assertion: layer has a 'source' parameter
+        (layer as Layer<{ source: Source.Source }>).parameters['source'] =
+          source;
       }
     },
 
@@ -235,24 +237,25 @@ const { reducer, actions } = createSlice({
      * @param value - The new value of the parameter
      */
     setLayerParameterById: {
-      prepare: (layerId: Layer['id'], parameter: string, value: string) => ({
+      prepare: <T>(layerId: Layer['id'], parameter: string, value: T) => ({
         payload: { layerId, parameter, value },
       }),
-      reducer(
+      reducer: (
         state,
         action: PayloadAction<{
           layerId: Layer['id'];
           parameter: string;
-          value: string;
+          value: any;
         }>
-      ) {
+      ) => {
         const { layerId, parameter, value } = action.payload;
         const layer = state.byId[layerId];
 
         if (layer === undefined) {
           console.warn(`Cannot set parameter of non-existent layer ${layerId}`);
         } else {
-          layer.parameters[parameter] = value;
+          // Assertion: parameters match the expected type of the layer
+          (layer as Layer<Record<string, any>>).parameters[parameter] = value;
         }
       },
     },
@@ -282,7 +285,11 @@ const { reducer, actions } = createSlice({
             `Cannot set parameters of non-existent layer ${layerId}`
           );
         } else {
-          Object.assign(layer.parameters, parameters);
+          // Assertion: parameters match the expected type of the layer
+          Object.assign(
+            (layer as Layer<Record<string, unknown>>).parameters,
+            parameters
+          );
         }
       },
     },

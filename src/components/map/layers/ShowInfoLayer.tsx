@@ -246,7 +246,7 @@ const landingPositionLabelStyle = memoize(
 );
 
 export const landingPositionPoints = (
-  landingPositions: Array<GPSPosition | undefined> | undefined,
+  landingPositions: Array<GPSPosition | null | undefined> | undefined,
   context?: StyleFunctionFactoryForPositionWithDynamicallyVisibleLabelContext,
   options?: StyleFunctionFactoryForPositionWithDynamicallyVisibleLabelOptions
 ) =>
@@ -331,7 +331,7 @@ const takeoffPositionLabelStyle = memoize(
 );
 
 export const homePositionPoints = (
-  homePositions: Array<GPSPosition | undefined> | undefined,
+  homePositions: Array<GPSPosition | null | undefined> | undefined,
   context?: StyleFunctionFactoryForPositionWithDynamicallyVisibleLabelContext,
   options?: StyleFunctionFactoryForPositionWithDynamicallyVisibleLabelOptions
 ) =>
