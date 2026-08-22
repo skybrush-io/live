@@ -53,6 +53,11 @@ export const getShowValidationResult: (
 
 export const isShowConvexHullInsideGeofence: (state: RootState) => boolean;
 
+export const getTrajectoryPointsInWorldCoordinatesByMissionIndex: (
+  state: RootState,
+  missionIndex: number
+) => GPSPosition[] | undefined;
+
 export const getShowSegment: AppSelector<ShowSegment | undefined>;
 export const getSwarmSpecificationForShowSegment: AppSelector<
   SwarmSpecification | undefined
