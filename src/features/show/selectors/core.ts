@@ -22,7 +22,7 @@ import type { AppSelector, RootState } from '~/store/reducers';
 import { type Coordinate3D } from '~/utils/math';
 import { EMPTY_ARRAY, EMPTY_OBJECT } from '~/utils/redux';
 
-import { LonLat } from '~/utils/geography';
+import type { LonLat } from '~/utils/geography';
 import {
   AltitudeReference,
   DEFAULT_ALTITUDE_REFERENCE,
