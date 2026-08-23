@@ -3,9 +3,12 @@
  */
 
 import { createSelector } from '@reduxjs/toolkit';
-import { CoordinateSystemType } from '~/features/map/types';
 import type { RootState } from '~/store/reducers';
-import { FlatEarthCoordinateSystem, type LonLat } from '~/utils/geography';
+import {
+  CoordinateSystemType,
+  FlatEarthCoordinateSystem,
+  type LonLat,
+} from '~/utils/geography';
 
 /**
  * Selector that returns a conversion object that can be used to transform

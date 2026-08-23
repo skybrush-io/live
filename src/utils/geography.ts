@@ -44,7 +44,6 @@ import {
   HeadingMode,
 } from '~/model/geography';
 
-import { CoordinateSystemType } from '~/features/map/types';
 import {
   formatArea,
   formatDistance,
@@ -58,6 +57,15 @@ import {
   isCoordinate2D,
 } from './math';
 import { isRunningOnMac } from './platform';
+
+/// Enum for coordinate system types.
+export enum CoordinateSystemType {
+  // This is placed here and not in `math.ts` because the names refer to compass
+  // directions, which is a geographical thing, not a pure mathematical concept.
+
+  NEU = 'neu',
+  NWU = 'nwu',
+}
 
 // TODO: Define better types for coordinates?
 // (Partially solved on 2023-08-12.)

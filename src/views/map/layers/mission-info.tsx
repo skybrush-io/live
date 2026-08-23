@@ -33,7 +33,6 @@ import {
 import { markAsSelectableAndEditable } from '~/components/map/layers/utils';
 import { Tool } from '~/components/map/tools';
 import { setLayerParametersById } from '~/features/map/layers';
-import { CoordinateSystemType } from '~/features/map/types';
 import {
   getCompletionRatiosForMissionItemById,
   getCurrentMissionItemIndexForEveryMissionIndex,
@@ -76,6 +75,7 @@ import type { RootState } from '~/store/reducers';
 import { hasFeature } from '~/utils/configuration';
 import { formatMissionId } from '~/utils/formatting';
 import {
+  CoordinateSystemType,
   type EasNor,
   type LonLat,
   mapViewCoordinateFromLonLat,

@@ -11,10 +11,9 @@ import set from 'lodash-es/set';
 
 import { EnvironmentType } from '@skybrush/show-format';
 
-import { CoordinateSystemType } from '~/features/map/types';
 import type { Schedule } from '~/flockwave/schedule';
 import type UAV from '~/model/uav';
-import { type LonLat } from '~/utils/geography';
+import { CoordinateSystemType, type LonLat } from '~/utils/geography';
 import { type Coordinate3D } from '~/utils/math';
 import { noPayload } from '~/utils/redux';
 

@@ -1,9 +1,4 @@
-import { type LonLat } from '~/utils/geography';
-
-export enum CoordinateSystemType {
-  NEU = 'neu',
-  NWU = 'nwu',
-}
+import type { CoordinateSystemType, LonLat } from '~/utils/geography';
 
 export type Origin = {
   position: LonLat;

@@ -7,7 +7,9 @@ import config from 'config';
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import defaults from 'lodash-es/defaults';
 
-import { CoordinateSystemType, type Origin } from './types';
+import { CoordinateSystemType } from '~/utils/geography';
+
+import type { Origin } from './types';
 
 /**
  * The state of the origin (home position) and the global flat Earth coordinate

@@ -6,8 +6,7 @@ import type {
   ShowSegmentId,
 } from '@skybrush/show-format';
 
-import { type CoordinateSystemType } from '~/features/map/types';
-import { type LonLat } from '~/utils/geography';
+import type { CoordinateSystemType, LonLat } from '~/utils/geography';
 import type { Coordinate3D } from '~/utils/math';
 
 import type {

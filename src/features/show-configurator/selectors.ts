@@ -5,7 +5,6 @@ import { createSelector } from 'reselect';
 import { convexHull2D, getCentroid } from '@skybrush/math';
 import { type DroneSpecification } from '@skybrush/show-format';
 
-import { CoordinateSystemType } from '~/features/map/types';
 import {
   getEnvironmentFromLoadedShowData,
   getOutdoorShowCoordinateSystem as getOutdoorShowCoordinateSystemFromShow,
@@ -22,6 +21,7 @@ import { type Layer, LayerType } from '~/model/layers';
 import { getVisibleLayersInOrder as _getVisibleLayersInOrder } from '~/selectors/ordered';
 import type { AppSelector, RootState } from '~/store/reducers';
 import {
+  CoordinateSystemType,
   type Latitude,
   type Longitude,
   type LonLat,

@@ -20,8 +20,11 @@ import {
   findAssignmentBetweenPoints,
   type Assignment,
 } from '~/algorithms/matching';
-import { CoordinateSystemType } from '~/features/map/types';
-import { FlatEarthCoordinateSystem, type LonLat } from '~/utils/geography';
+import {
+  CoordinateSystemType,
+  FlatEarthCoordinateSystem,
+  type LonLat,
+} from '~/utils/geography';
 import type { Coordinate2D } from '~/utils/math';
 
 import type {
