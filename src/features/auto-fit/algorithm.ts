@@ -20,7 +20,7 @@ import {
   findAssignmentBetweenPoints,
   type Assignment,
 } from '~/algorithms/matching';
-import { OriginType } from '~/features/map/types';
+import { CoordinateSystemType } from '~/features/map/types';
 import { FlatEarthCoordinateSystem, type LonLat } from '~/utils/geography';
 import type { Coordinate2D } from '~/utils/math';
 
@@ -29,7 +29,9 @@ import type {
   CoordinateSystemFittingProblem,
 } from './types';
 
-if ((COORDINATE_SYSTEM_TYPE as OriginType) !== OriginType.NWU) {
+if (
+  (COORDINATE_SYSTEM_TYPE as CoordinateSystemType) !== CoordinateSystemType.NWU
+) {
   throw new Error(
     `The coordinate system type ${COORDINATE_SYSTEM_TYPE} is not supported by the auto-fit algorithm`
   );
@@ -90,7 +92,7 @@ function calculateInitialEstimate(
   const gpsToLocal = new FlatEarthCoordinateSystem({
     origin: uavGPSCentroid,
     orientation: 0,
-    type: OriginType.NWU,
+    type: CoordinateSystemType.NWU,
   });
   const uavCoordinates = convertToFlatEarth(uavGPSCoordinates, gpsToLocal);
   const uavCenter = getCentroid(uavCoordinates);
@@ -99,7 +101,7 @@ function calculateInitialEstimate(
   return {
     origin: gpsToLocal.toLonLat(origin),
     orientation,
-    type: OriginType.NWU,
+    type: CoordinateSystemType.NWU,
   };
 }
 
@@ -252,7 +254,7 @@ function refineEstimate(
     estimate = {
       origin: gpsToLocal.toLonLat([originOffset[0], originOffset[1]]),
       orientation: estimate.orientation + orientationOffset,
-      type: OriginType.NWU,
+      type: CoordinateSystemType.NWU,
     };
   }
 

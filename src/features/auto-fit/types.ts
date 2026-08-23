@@ -1,4 +1,4 @@
-import type { OriginType } from '~/features/map/types';
+import type { CoordinateSystemType } from '~/features/map/types';
 import type { LonLat } from '~/utils/geography';
 import type { Coordinate2D } from '~/utils/math';
 
@@ -12,5 +12,5 @@ export type CoordinateSystemFittingProblem = {
 export type CoordinateSystemEstimate = {
   origin: LonLat;
   orientation: number;
-  type: OriginType;
+  type: CoordinateSystemType;
 };

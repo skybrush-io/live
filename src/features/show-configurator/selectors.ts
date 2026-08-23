@@ -5,6 +5,7 @@ import { createSelector } from 'reselect';
 import { convexHull2D, getCentroid } from '@skybrush/math';
 import { type DroneSpecification } from '@skybrush/show-format';
 
+import { CoordinateSystemType } from '~/features/map/types';
 import {
   getEnvironmentFromLoadedShowData,
   getOutdoorShowCoordinateSystem as getOutdoorShowCoordinateSystemFromShow,
@@ -32,7 +33,7 @@ import { EMPTY_ARRAY } from '~/utils/redux';
 import type { AdaptResult, ShowConfiguratorState, ShowData } from './slice';
 
 const _defaultCoordinateSystem: ShowData['coordinateSystem'] = {
-  type: 'nwu',
+  type: CoordinateSystemType.NWU,
   origin: [0 as Longitude, 0 as Latitude],
   orientation: '0',
 };

@@ -7,7 +7,7 @@ import config from 'config';
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import defaults from 'lodash-es/defaults';
 
-import { type Origin, OriginType } from './types';
+import { CoordinateSystemType, type Origin } from './types';
 
 /**
  * The state of the origin (home position) and the global flat Earth coordinate
@@ -21,7 +21,7 @@ type MapOriginSliceState = Origin;
 const initialState: MapOriginSliceState = defaults(config.map.origin, {
   position: config.map.view.position,
   angle: config.map.view.angle,
-  type: OriginType.NWU,
+  type: CoordinateSystemType.NWU,
 });
 
 /**

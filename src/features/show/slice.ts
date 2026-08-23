@@ -4,16 +4,14 @@
  */
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import {
-  COORDINATE_SYSTEM_TYPE,
-  type ShowSpecification,
-} from '@skybrush/show-format';
+import { type ShowSpecification } from '@skybrush/show-format';
 import getUnixTime from 'date-fns/getUnixTime';
 import isNil from 'lodash-es/isNil';
 import set from 'lodash-es/set';
 
 import { EnvironmentType } from '@skybrush/show-format';
 
+import { CoordinateSystemType } from '~/features/map/types';
 import type { Schedule } from '~/flockwave/schedule';
 import type UAV from '~/model/uav';
 import { type LonLat } from '~/utils/geography';
@@ -131,7 +129,7 @@ const initialState: ShowSliceState = {
       coordinateSystem: {
         orientation: '0',
         origin: undefined,
-        type: COORDINATE_SYSTEM_TYPE,
+        type: CoordinateSystemType.NWU,
       },
       altitudeReference: {
         ...DEFAULT_ALTITUDE_REFERENCE,

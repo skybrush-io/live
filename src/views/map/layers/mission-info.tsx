@@ -33,7 +33,7 @@ import {
 import { markAsSelectableAndEditable } from '~/components/map/layers/utils';
 import { Tool } from '~/components/map/tools';
 import { setLayerParametersById } from '~/features/map/layers';
-import { OriginType } from '~/features/map/types';
+import { CoordinateSystemType } from '~/features/map/types';
 import {
   getCompletionRatiosForMissionItemById,
   getCurrentMissionItemIndexForEveryMissionIndex,
@@ -372,7 +372,7 @@ const featureKeyForRoleAndMissionIndex = (role: string, index: number) =>
   `${role}.${index}`;
 
 const mapOriginMarker = (
-  coordinateSystemType: OriginType,
+  coordinateSystemType: CoordinateSystemType,
   mapOrigin: LonLat | undefined,
   orientation: number,
   selection: string[]
@@ -383,7 +383,9 @@ const mapOriginMarker = (
       50 /* meters */ / getPointResolution('EPSG:3857', 1, tail);
     const headY = [
       0,
-      coordinateSystemType === OriginType.NWU ? armLength : -armLength,
+      coordinateSystemType === CoordinateSystemType.NWU
+        ? armLength
+        : -armLength,
     ];
     const headX = [armLength, 0];
     const selected =
@@ -794,7 +796,7 @@ const selectionTrajectoryFeatures = (
 
 type MissionInfoVectorSourceProps = {
   convexHull?: GPSPosition[];
-  coordinateSystemType: OriginType;
+  coordinateSystemType: CoordinateSystemType;
   currentItemIndices: Array<number | undefined>;
   currentItemRatios: Array<number | undefined>;
   homePositions?: Array<GPSPosition | null>;
