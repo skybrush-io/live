@@ -18,6 +18,7 @@ import { connect } from 'react-redux';
 import { Feature, geom, layer as olLayer, source } from '@collmot/ol-react';
 import { closePolygon, toRadians } from '@skybrush/math';
 
+import { createSelector } from '@reduxjs/toolkit';
 import mapMarkerOutline from '~/../assets/img/map-marker-outline.svg';
 import mapMarker from '~/../assets/img/map-marker.svg';
 import Colors from '~/components/colors';
@@ -25,10 +26,13 @@ import { styleForPointsOfPolygon } from '~/components/map/layers/features';
 import {
   convexHullPolygon,
   ConvexHullVariant,
+  createHomePositionMarkerStyles,
+  createLandingMarkerStyles,
   GENERIC_MARKER_LABEL_CHARACTER_WIDTH,
   homePositionPoints,
   landingPositionPoints,
   orientationMarker,
+  type PositionMarkerStyles,
 } from '~/components/map/layers/ShowInfoLayer';
 import { markAsSelectableAndEditable } from '~/components/map/layers/utils';
 import { Tool } from '~/components/map/tools';
@@ -104,6 +108,11 @@ type MissionInfoLayerParameters = {
   showMissionItems: boolean;
   showMissionOrigin: boolean;
   showTrajectoriesOfSelection: boolean;
+
+  // Colors are optional because they were added in a later version. We fall back to
+  // the default colors if they are undefined.
+  homePositionColor?: string;
+  landingPositionColor?: string;
 };
 
 type MissionInfoLayerSettingsPresentationProps = {
@@ -800,7 +809,9 @@ type MissionInfoVectorSourceProps = {
   currentItemIndices: Array<number | undefined>;
   currentItemRatios: Array<number | undefined>;
   homePositions?: Array<GPSPosition | null>;
+  homePositionMarkerStyles: PositionMarkerStyles;
   landingPositions?: Array<GPSPosition | null>;
+  landingMarkerStyles: PositionMarkerStyles;
   mapOrigin?: LonLat;
   minimumDistanceBetweenHomePositions: number;
   minimumDistanceBetweenLandingPositions: number;
@@ -839,7 +850,9 @@ const MissionInfoVectorSource = ({
   currentItemIndices,
   currentItemRatios,
   homePositions,
+  homePositionMarkerStyles,
   landingPositions,
+  landingMarkerStyles,
   mapOrigin,
   minimumDistanceBetweenHomePositions,
   minimumDistanceBetweenLandingPositions,
@@ -867,6 +880,7 @@ const MissionInfoVectorSource = ({
               GENERIC_MARKER_LABEL_CHARACTER_WIDTH
             : 0,
           selection,
+          styles: homePositionMarkerStyles,
         }
       ),
       landingPositionPoints(
@@ -878,6 +892,7 @@ const MissionInfoVectorSource = ({
             ? formatMissionId(landingPositions.length - 1).length *
               GENERIC_MARKER_LABEL_CHARACTER_WIDTH
             : 0,
+          styles: landingMarkerStyles,
         }
       ),
       mapOriginMarker(coordinateSystemType, mapOrigin, orientation, selection),
@@ -936,54 +951,70 @@ const MissionInfoLayerPresentation = ({
 
 export const MissionInfoLayer = connect(
   // mapStateToProps
-  (state: RootState, { layer }: MissionInfoLayerOwnProps) => ({
-    convexHull: layer?.parameters?.showConvexHull
-      ? getConvexHullOfShowInWorldCoordinates(state)
-      : undefined,
-    coordinateSystemType: state.map.origin.type,
-    currentItemIndices: getCurrentMissionItemIndexForEveryMissionIndex(state),
-    currentItemRatios: getCurrentMissionItemRatioForEveryMissionIndex(state),
-    homePositions: layer?.parameters?.showHomePositions
-      ? getGPSBasedHomePositionsInMission(state)
-      : undefined,
-    landingPositions: layer?.parameters?.showLandingPositions
-      ? getGPSBasedLandingPositionsInMission(state)
-      : undefined,
-    mapOrigin: layer?.parameters?.showOrigin
-      ? state.map.origin.position
-      : undefined,
-    minimumDistanceBetweenLandingPositions:
-      getMinimumDistanceBetweenLandingPositions(state),
-    minimumDistanceBetweenHomePositions:
-      getMinimumDistanceBetweenHomePositions(state),
-    missionItemsWithAreas: layer?.parameters?.showMissionItems
-      ? getMissionItemsWithAreasInOrder(state)
-      : undefined,
-    missionItemsWithCoordinates: layer?.parameters?.showMissionItems
-      ? getMissionItemsWithCoordinatesInOrder(state)
-      : undefined,
-    missionMapping: getMissionMapping(state),
-    missionOrigin: layer?.parameters?.showMissionOrigin
-      ? getOutdoorShowOrigin(state)
-      : undefined,
-    missionOrientation: getOutdoorShowOrientation(state),
-    /* prettier-ignore */
-    missionIndicesForTrajectories:
-      layer?.parameters?.showTrajectoriesOfSelection
-        ? getSelectedMissionIndicesForTrajectoryDisplay(state)
+  () => {
+    const getHomePositionMarkerStyle = createSelector(
+      (parameters: MissionInfoLayerParameters | undefined) =>
+        parameters?.homePositionColor,
+      createHomePositionMarkerStyles
+    );
+
+    const getLandingMarkerStyle = createSelector(
+      (parameters: MissionInfoLayerParameters | undefined) =>
+        parameters?.landingPositionColor,
+      createLandingMarkerStyles
+    );
+
+    return (state: RootState, { layer }: MissionInfoLayerOwnProps) => ({
+      convexHull: layer?.parameters?.showConvexHull
+        ? getConvexHullOfShowInWorldCoordinates(state)
         : undefined,
-    orientation: getMapOriginRotationAngle(state),
-    returnToHomeItems: getMissionItemsOfTypeWithIndices(
-      state,
-      MissionItemType.RETURN_TO_HOME
-    ),
-    selectedMissionIdInMissionEditorPanel:
-      getSelectedMissionIdInMissionEditorPanel(state),
-    selection: getVirtualSelection(state),
-    uavIdsForTrajectories: layer?.parameters?.showTrajectoriesOfSelection
-      ? getSelectedUAVIdsForTrajectoryDisplay(state)
-      : undefined,
-  }),
+      coordinateSystemType: state.map.origin.type,
+      currentItemIndices: getCurrentMissionItemIndexForEveryMissionIndex(state),
+      currentItemRatios: getCurrentMissionItemRatioForEveryMissionIndex(state),
+      homePositionMarkerStyles: getHomePositionMarkerStyle(layer?.parameters),
+      homePositions: layer?.parameters?.showHomePositions
+        ? getGPSBasedHomePositionsInMission(state)
+        : undefined,
+      landingMarkerStyles: getLandingMarkerStyle(layer?.parameters),
+      landingPositions: layer?.parameters?.showLandingPositions
+        ? getGPSBasedLandingPositionsInMission(state)
+        : undefined,
+      mapOrigin: layer?.parameters?.showOrigin
+        ? state.map.origin.position
+        : undefined,
+      minimumDistanceBetweenLandingPositions:
+        getMinimumDistanceBetweenLandingPositions(state),
+      minimumDistanceBetweenHomePositions:
+        getMinimumDistanceBetweenHomePositions(state),
+      missionItemsWithAreas: layer?.parameters?.showMissionItems
+        ? getMissionItemsWithAreasInOrder(state)
+        : undefined,
+      missionItemsWithCoordinates: layer?.parameters?.showMissionItems
+        ? getMissionItemsWithCoordinatesInOrder(state)
+        : undefined,
+      missionMapping: getMissionMapping(state),
+      missionOrigin: layer?.parameters?.showMissionOrigin
+        ? getOutdoorShowOrigin(state)
+        : undefined,
+      missionOrientation: getOutdoorShowOrientation(state),
+      /* prettier-ignore */
+      missionIndicesForTrajectories:
+        layer?.parameters?.showTrajectoriesOfSelection
+          ? getSelectedMissionIndicesForTrajectoryDisplay(state)
+          : undefined,
+      orientation: getMapOriginRotationAngle(state),
+      returnToHomeItems: getMissionItemsOfTypeWithIndices(
+        state,
+        MissionItemType.RETURN_TO_HOME
+      ),
+      selectedMissionIdInMissionEditorPanel:
+        getSelectedMissionIdInMissionEditorPanel(state),
+      selection: getVirtualSelection(state),
+      uavIdsForTrajectories: layer?.parameters?.showTrajectoriesOfSelection
+        ? getSelectedUAVIdsForTrajectoryDisplay(state)
+        : undefined,
+    });
+  },
   // mapDispatchToProps
   {}
 )(MissionInfoLayerPresentation);

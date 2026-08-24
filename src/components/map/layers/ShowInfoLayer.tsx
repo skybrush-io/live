@@ -127,7 +127,7 @@ export const convexHullPolygon = (
 
 // === Markers for positions ===
 
-type PositionMarkerStyles = {
+export type PositionMarkerStyles = {
   label: (id: Identifier) => Style;
   marker: Style;
   selection: Style;
@@ -184,15 +184,19 @@ const createPositionMarkerStyles = ({
   }),
 });
 
-type PositionPointsOptions = {
+type CreatePointFeaturesForPositionsOptions = {
   featureKeyPrefix: string;
   globalIdFromIndex: (index: number) => string;
   styleFunction: StyleFunction;
 };
 
-const positionPoints = (
+const createPointFeaturesForPositions = (
   positions: Array<GPSPosition | null | undefined> | undefined,
-  { featureKeyPrefix, globalIdFromIndex, styleFunction }: PositionPointsOptions
+  {
+    featureKeyPrefix,
+    globalIdFromIndex,
+    styleFunction,
+  }: CreatePointFeaturesForPositionsOptions
 ) =>
   Array.isArray(positions)
     ? positions
@@ -241,19 +245,15 @@ type StyleFunctionFactoryForPositionWithDynamicallyVisibleLabelOptions = {
  * of a position marker based on spacing, estimated width and map resolution.
  */
 const styleFunctionFactoryForPositionWithDynamicallyVisibleLabel = (
-  styles: {
-    label: (id: Identifier) => Style;
-    marker: Style;
-    selection: Style;
-  },
-  context?: StyleFunctionFactoryForPositionWithDynamicallyVisibleLabelContext,
-  options?: StyleFunctionFactoryForPositionWithDynamicallyVisibleLabelOptions
+  styles: PositionMarkerStyles,
+  context: StyleFunctionFactoryForPositionWithDynamicallyVisibleLabelContext = {},
+  options: StyleFunctionFactoryForPositionWithDynamicallyVisibleLabelOptions = {}
 ): StyleFunction => {
-  const { hideLabels = false } = options ?? {};
+  const { hideLabels = false } = options;
   const {
     estimatedLabelWidth = 1,
     minimumDistanceBetweenPositions = Number.POSITIVE_INFINITY,
-  } = context ?? {};
+  } = context;
 
   /**
    * The labels should only be visible if there is enough space between the
@@ -308,24 +308,31 @@ const styleFunctionFactoryForPositionWithDynamicallyVisibleLabel = (
 // === Landing ===
 
 /**
- * Styles to use for landing markers.
+ * Factory function that returns the sstyles to use for landing markers given their
+ * preferred color (if any).
  */
-const landingMarkerStyles = createPositionMarkerStyles({
-  color: Colors.markers.landing,
-  labelFunc: (id) => formatMissionId(Number(globalIdToLandingPositionId(id))),
-  rotation: Math.PI,
-});
+export const createLandingMarkerStyles = (color?: string) =>
+  createPositionMarkerStyles({
+    color: color || Colors.markers.landing,
+    labelFunc: (id) => formatMissionId(Number(globalIdToLandingPositionId(id))),
+    rotation: Math.PI,
+  });
 
 export const landingPositionPoints = (
   landingPositions: Array<GPSPosition | null | undefined> | undefined,
-  context?: StyleFunctionFactoryForPositionWithDynamicallyVisibleLabelContext,
+  {
+    styles,
+    ...context
+  }: StyleFunctionFactoryForPositionWithDynamicallyVisibleLabelContext & {
+    styles: PositionMarkerStyles;
+  },
   options?: StyleFunctionFactoryForPositionWithDynamicallyVisibleLabelOptions
 ) =>
-  positionPoints(landingPositions, {
+  createPointFeaturesForPositions(landingPositions, {
     featureKeyPrefix: 'land',
     globalIdFromIndex: (index) => landingPositionIdToGlobalId(index.toString()),
     styleFunction: styleFunctionFactoryForPositionWithDynamicallyVisibleLabel(
-      landingMarkerStyles,
+      styles,
       context,
       options
     ),
@@ -334,23 +341,30 @@ export const landingPositionPoints = (
 // === Takeoff ===
 
 /**
- * Styles to use for takeoff markers.
+ * Factory function that returns the sstyles to use for home position markers given their
+ * preferred color (if any).
  */
-const takeoffMarkerStyles = createPositionMarkerStyles({
-  color: Colors.markers.takeoff,
-  labelFunc: (id) => formatMissionId(Number(globalIdToHomePositionId(id))),
-});
+export const createHomePositionMarkerStyles = (color?: string) =>
+  createPositionMarkerStyles({
+    color: color || Colors.markers.takeoff,
+    labelFunc: (id) => formatMissionId(Number(globalIdToHomePositionId(id))),
+  });
 
 export const homePositionPoints = (
   homePositions: Array<GPSPosition | null | undefined> | undefined,
-  context?: StyleFunctionFactoryForPositionWithDynamicallyVisibleLabelContext,
+  {
+    styles,
+    ...context
+  }: StyleFunctionFactoryForPositionWithDynamicallyVisibleLabelContext & {
+    styles: PositionMarkerStyles;
+  },
   options?: StyleFunctionFactoryForPositionWithDynamicallyVisibleLabelOptions
 ) =>
-  positionPoints(homePositions, {
+  createPointFeaturesForPositions(homePositions, {
     featureKeyPrefix: 'home',
     globalIdFromIndex: (index) => homePositionIdToGlobalId(index.toString()),
     styleFunction: styleFunctionFactoryForPositionWithDynamicallyVisibleLabel(
-      takeoffMarkerStyles,
+      styles,
       context,
       options
     ),
