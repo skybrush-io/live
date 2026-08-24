@@ -1,10 +1,12 @@
 import isNil from 'lodash-es/isNil';
 
+import { setSelection } from '~/features/selection/slice';
 import type { MissionIndex } from '~/model/missions';
 import type { AppThunk } from '~/store/reducers';
 import type { Identifier } from '~/utils/collections';
 import type { Nullable } from '~/utils/types';
 
+import { missionItemIdToGlobalId } from '~/model/identifiers';
 import {
   getIndexOfMappingSlotBeingEdited,
   getMissionMapping,
@@ -190,3 +192,15 @@ export const setMappingLength =
       dispatch(notifyUAVsInMissionMappingChanged(affectedUavIds));
     }
   };
+
+/**
+ * Action factory that creates an action that updates the selection to the
+ * given list of mission item IDs.
+ *
+ * @param ids  the IDs of the selected mission items. Any mission
+ *        item whose ID is not in this set will be deselected, and so will be
+ *        any other item that is not a mission item.
+ * @return an appropriately constructed action
+ */
+export const setSelectedMissionItemIds = (ids: string[]) =>
+  setSelection(ids.map(missionItemIdToGlobalId));

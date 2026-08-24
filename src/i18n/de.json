@@ -234,8 +234,7 @@
     "licenseInfo": "Lizenz-Informationen",
     "offlineMaps": "Offline-Karten",
     "paramUpload": "Parameter-Upload",
-    "tooltip": "Toolbox",
-    "uploadInProgress": "Upload in Arbeit"
+    "tooltip": "Toolbox"
   },
   "view": {
     "beacon-list": "Beacons",

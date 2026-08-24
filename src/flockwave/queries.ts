@@ -59,6 +59,12 @@ import type {
 } from './types';
 import { validateExtensionName } from './validation';
 
+function validateUAVId(uavId: any): asserts uavId is string {
+  if (!uavId || typeof uavId !== 'string') {
+    throw new Error('Expected non-empty UAV ID');
+  }
+}
+
 /**
  * Adapts the given base64-encoded show using the given transformation
  * definitions and coordinate system.
@@ -217,9 +223,7 @@ export async function getFlightLog(
   logId: string,
   { onProgress }: { onProgress?: (status: ProgressStatus) => void } = {}
 ): Promise<FlightLog> {
-  if (!uavId || typeof uavId !== 'string') {
-    throw new Error('Expected non-empty UAV ID');
-  }
+  validateUAVId(uavId);
 
   if (!logId || typeof logId !== 'string') {
     throw new Error('Expected non-empty log ID');
@@ -254,9 +258,7 @@ export async function getFlightLogList(
   hub: MessageHub,
   uavId: string
 ): Promise<FlightLogMetadata[]> {
-  if (!uavId || typeof uavId !== 'string') {
-    throw new Error('Expected non-empty UAV ID');
-  }
+  validateUAVId(uavId);
 
   try {
     const response = await hub.startAsyncOperationForSingleId<
@@ -360,21 +362,38 @@ export async function getMissionTypes(
 }
 
 /**
+ * Returns the value of a parameter with a given name from a single UAV.
+ */
+export async function getParameter(
+  hub: MessageHub,
+  uavId: string,
+  name: string
+): Promise<unknown> {
+  validateUAVId(uavId);
+  return await hub.startAsyncOperationForSingleId<Record<string, unknown>>(
+    uavId,
+    {
+      type: 'PRM-GET',
+      name,
+    }
+  );
+}
+
+/**
  * Returns the current preflight status of a single UAV.
  */
 export async function getPreflightStatus(
   hub: MessageHub,
   uavId: string
 ): Promise<UAVPreflightCheckInfo> {
-  if (!uavId || typeof uavId !== 'string') {
-    throw new Error('Expected non-empty UAV ID');
-  }
+  validateUAVId(uavId);
 
   const response = await hub.sendMessage<Response_UAVPREFLT>({
     type: 'UAV-PREFLT',
     ids: [uavId],
   });
   // TODO: fix the Response_UAVPREFLT type, it doesn't have a `result` field.
+  // TODO: maybe we could use idProp option in startAsyncOperationForSingleId()?
   const result = (
     (response.body ?? {}) as { result?: Record<string, UAVPreflightCheckInfo> }
   ).result;
@@ -584,6 +603,7 @@ const _queries = {
   getLicenseInformation,
   getMissionTypeSchemas,
   getMissionTypes,
+  getParameter,
   getPreflightStatus,
   getRTKPresets,
   getRTKStatus,

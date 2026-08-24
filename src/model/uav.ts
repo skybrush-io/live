@@ -54,7 +54,7 @@ export default class UAV {
   gpsFix: GPSFix;
   heading?: number;
   lastUpdated?: number;
-  light: number /* RGB565 */;
+  light: number; /* RGB565 */
   localPosition?: Coordinate3D;
   localVelocity?: VelocityXYZ;
   mode?: string;

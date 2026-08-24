@@ -16,6 +16,19 @@
     "drawRectangle": "绘制长方形",
     "editFeature": "编辑特征"
   },
+  "LicenseInfoDialog": {
+    "title": "许可证信息"
+  },
+  "LicenseInfoPanel": {
+    "errorWhileLoading": "加载许可证信息时出错",
+    "expiryDate": "到期日期",
+    "licenseId": "许可ID",
+    "licensee": "许可持有人姓名",
+    "loading": "检索许可证信息…",
+    "neverExpires": "此许可证永不失效",
+    "noLicenseActivated": "未激活许可证",
+    "tryAgain": "再试一次"
+  },
   "OnboardPreflightChecksDialog": {
     "noError": "没有任何无人机显示错误。",
     "passed": "飞机上的飞行前检查已通过。",
@@ -339,12 +352,6 @@
       "inProgress": "进行中",
       "successful": "成功",
       "waiting": "等待中"
-    },
-    "time": {
-      "hours_other": "{{count}} 小时",
-      "minutes_other": "{{count}} 分钟",
-      "seconds_other": "{{count}} 秒",
-      "seconds_short": "{{count}}秒"
     }
   },
   "geofence": {
@@ -1236,8 +1243,7 @@
     "licenseInfo": "许可证信息",
     "offlineMaps": "离线地图",
     "paramUpload": "参数上传",
-    "tooltip": "工具箱",
-    "uploadInProgress": "上传进行中"
+    "tooltip": "工具箱"
   },
   "uavErrorCode": {
     "0": "无错误",
@@ -1311,28 +1317,34 @@
   },
   "unit": {
     "degree": {
-      "long": "度数",
-      "longPlural": "度数",
+      "long_one": "度数",
+      "long_other": "度数",
       "short": "度"
     },
+    "hour": {
+      "long_other": "小时"
+    },
     "meter": {
-      "long": "米",
-      "longPlural": "米",
+      "long_one": "米",
+      "long_other": "米",
       "short": "米"
     },
     "meterPerSecond": {
-      "long": "米/秒",
-      "longPlural": "米/秒",
+      "long_one": "米/秒",
+      "long_other": "米/秒",
       "short": "米/秒"
     },
+    "minute": {
+      "long_other": "分钟"
+    },
     "second": {
-      "long": "秒",
-      "longPlural": "秒",
+      "long_one": "秒",
+      "long_other": "秒",
       "short": "秒"
     },
     "volt": {
-      "long": "伏特",
-      "longPlural": "伏特",
+      "long_one": "伏特",
+      "long_other": "伏特",
       "short": "V"
     }
   },

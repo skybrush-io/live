@@ -11,10 +11,7 @@ import ListItemTextWithProgress from '~/components/progress/ListItemTextWithProg
 import { Status } from '~/components/semantics';
 import { JOB_TYPE, SHOW_UPLOAD_JOB } from '~/features/show/constants';
 import { getSetupStageStatuses } from '~/features/show/stages';
-import {
-  getSelectedJobTypeInUploadDialog,
-  isUploadInProgress,
-} from '~/features/upload/selectors';
+import { getRunningUploadJobType } from '~/features/upload/selectors';
 import { openUploadDialogForJob } from '~/features/upload/slice';
 import UploadProgressBar from '~/features/upload/UploadProgressBar';
 import type { RootState } from '~/store/reducers';
@@ -50,9 +47,7 @@ const ShowUploadDialogButton = ({ loading, status, ...rest }: Props) => {
 
 export default connect(
   (state: RootState) => ({
-    loading:
-      getSelectedJobTypeInUploadDialog(state) === JOB_TYPE &&
-      isUploadInProgress(state),
+    loading: getRunningUploadJobType(state) === JOB_TYPE,
     status: getSetupStageStatuses(state).uploadShow,
   }),
   {

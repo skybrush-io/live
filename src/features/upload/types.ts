@@ -1,5 +1,4 @@
 import type { Identifier } from '~/utils/collections';
-import type { Nullable } from '~/utils/types';
 
 export type JobPayload = unknown;
 
@@ -7,7 +6,7 @@ export type JobData = {
   /**
    * The type of the job.
    */
-  type?: Nullable<string>;
+  type?: string;
 
   /**
    * The payload of the job.
@@ -15,9 +14,34 @@ export type JobData = {
   payload?: JobPayload;
 };
 
-export type UAVStatus = 'success' | 'error';
+/**
+ * Value object describing the progress of a job on a single UAV.
+ */
+export type UAVProgressInfo = {
+  /**
+   * The identiifer of the UAV.
+   */
+  uavId: Identifier;
 
-export type MaybeOutdateUAVStatus = UAVStatus | 'outdated';
+  /**
+   * The progress of the job, as a fraction between 0 and 1.
+   */
+  progress: number;
+};
+
+/**
+ * Per-UAV outcome of an upload job.
+ *
+ * `'success'` carries the job-specific result piece; `'error'` carries the
+ * failure message; `'outdated'` marks a UAV whose stored result (if any) is
+ * no longer valid.
+ */
+export type PerUAVJobResult<ResultPiece = unknown> =
+  | { type: 'success'; result: ResultPiece }
+  | { type: 'error'; error: string }
+  | { type: 'outdated' };
+
+export type UAVStatus = Exclude<PerUAVJobResult['type'], 'outdated'>;
 
 export type UploadJobResult = UAVStatus | 'cancelled';
 
@@ -26,10 +50,12 @@ export type UploadJobResult = UAVStatus | 'cancelled';
  */
 export type UploadStatus = UAVStatus | 'partial' | 'not-available';
 
-type ErrorMessage = string;
-
-export type HistoryItem = {
+export type HistoryItem<ResultPiece = unknown> = {
   result: UploadJobResult;
-  perUavStatuses: Record<Identifier, MaybeOutdateUAVStatus>;
-  perUavErrors: Record<Identifier, ErrorMessage>;
+  perUAVResults: Record<Identifier, PerUAVJobResult<ResultPiece>>;
 };
+
+/**
+ * Tabs supported by the upload dialog.
+ */
+export type UploadDialogTab = 'status' | 'results';

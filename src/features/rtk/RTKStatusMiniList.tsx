@@ -6,12 +6,8 @@ import DetailedRTKSurveyStatusMiniListItem from './DetailedRTKSurveyStatusMiniLi
 import OverallRTKSurveyStatusMiniListItem from './OverallRTKSurveyStatusMiniListItem';
 import RTKSatelliteCountMiniList from './RTKSatelliteCountMiniList';
 
-const listStyle = {
-  minWidth: 150,
-};
-
 const RTKStatusMiniList = () => (
-  <MiniList style={listStyle}>
+  <MiniList sx={{ minWidth: 150 }}>
     <OverallRTKSurveyStatusMiniListItem />
     <DetailedRTKSurveyStatusMiniListItem />
     <RTKSatelliteCountMiniList />

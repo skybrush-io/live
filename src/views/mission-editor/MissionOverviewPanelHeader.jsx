@@ -22,12 +22,16 @@ import {
   exportMission,
   importMission,
   invokeMissionPlanner,
-  uploadMissionItemsToSelectedUAV,
 } from '~/features/mission/actions';
-import { isMissionPartiallyCompleted } from '~/features/mission/selectors';
+import { MISSION_ITEM_UPLOAD_JOB } from '~/features/mission/constants';
+import {
+  getUAVIdsParticipatingInMission,
+  isMissionPartiallyCompleted,
+} from '~/features/mission/selectors';
 import { showMissionPlannerDialog } from '~/features/mission/slice';
 import { isConnected as isConnectedToServer } from '~/features/servers/selectors';
-import { getSingleSelectedUAVId, getUAVById } from '~/features/uavs/selectors';
+import { getUAVById } from '~/features/uavs/selectors';
+import { openUploadDialogForJob } from '~/features/upload/slice';
 import UAVErrorCode from '~/flockwave/UAVErrorCode';
 import usePopover from '~/hooks/usePopover';
 import Export from '~/icons/Download';
@@ -159,12 +163,13 @@ export default connect(
   (state) => ({
     canPlan: isConnectedToServer(state),
     canResume: isMissionPartiallyCompleted(state),
-    canUpload: (({ singleSelectedUAVId }) =>
+    canUpload: (({ uavIdsParticipatingInMission }) =>
       isConnectedToServer(state) &&
-      singleSelectedUAVId !== undefined &&
-      getUAVById(state, singleSelectedUAVId)?.errors?.includes(
-        UAVErrorCode.ON_GROUND
-      ))({ singleSelectedUAVId: getSingleSelectedUAVId(state) }),
+      uavIdsParticipatingInMission.some((uavId) =>
+        getUAVById(state, uavId)?.errors?.includes(UAVErrorCode.ON_GROUND)
+      ))({
+      uavIdsParticipatingInMission: getUAVIdsParticipatingInMission(state),
+    }),
   }),
   // mapDispatchToProps
   {
@@ -173,6 +178,9 @@ export default connect(
     onImportMission: importMission,
     onInvokePlanner: invokeMissionPlanner,
     onShowMissionPlannerDialog: showMissionPlannerDialog,
-    onUploadMissionItems: uploadMissionItemsToSelectedUAV,
+    onUploadMissionItems: () =>
+      openUploadDialogForJob({
+        job: MISSION_ITEM_UPLOAD_JOB,
+      }),
   }
 )(MissionOverviewPanelHeader);

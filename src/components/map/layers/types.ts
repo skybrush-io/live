@@ -9,7 +9,7 @@ export type BaseFeatureProps = Omit<
 /**
  * Common props for every layer settings component.
  */
-export type BaseLayerSettingsProps = {
-  layer: Layer;
+export type BaseLayerSettingsProps<P = unknown> = {
+  layer: Layer<P>;
   layerId: string;
 };

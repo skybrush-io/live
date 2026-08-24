@@ -109,9 +109,12 @@
     "removeSelectedItems": "Remove selected items"
   },
   "UAVSelector": {
-    "noMatchingUAVs": "No matching UAVs for: \"{{filter}}\""
+    "noMatchingUAVs": "No matches found for: \"{{filter}}\""
   },
   "UAVStatus": {
+    "error": {
+      "notInWorkbench": "UAVs panel is not added to the workbench yet"
+    },
     "noConnected": "There are no connected UAVs at the moment"
   },
   "alerts": {
@@ -242,6 +245,27 @@
           "title": "Show segment"
         }
       }
+    }
+  },
+  "consistencyCheck": {
+    "mainPanel": {
+      "parameterCheckHint": "Press <kbd>⇧</kbd> + <kbd>Enter</kbd> to add the parameter names to the list. Click on a name in the sidebar to remove it.",
+      "parameterNames": "Parameter names",
+      "specifyEntries": "Specify one parameter name per row."
+    },
+    "result": {
+      "consistent": "All parameters consistent.",
+      "errors": "Error while checking parameter consistency. Check the results below.",
+      "inconsistencies": "Some parameter values are inconsistent. Check the results below."
+    },
+    "setupDialog": {
+      "checkParameters": "Parameter consistency check"
+    },
+    "sidebar": {
+      "import": "Import…",
+      "nextStep": "Next step",
+      "removeAllItems": "Remove all names from the list",
+      "title": "Parameter names"
     }
   },
   "coordinateAveragingDialogToolbar": {
@@ -386,15 +410,6 @@
       "inProgress": "in progress",
       "successful": "successful",
       "waiting": "waiting"
-    },
-    "time": {
-      "hours_one": "{{count}} hour",
-      "hours_other": "{{count}} hours",
-      "minutes_one": "{{count}} minute",
-      "minutes_other": "{{count}} minutes",
-      "seconds_one": "{{count}} second",
-      "seconds_other": "{{count}} seconds",
-      "seconds_short": "{{count}}s"
     }
   },
   "geofence": {
@@ -572,7 +587,8 @@
   "parameterListSidebar": {
     "import": "Import…",
     "nextStep": "Next step",
-    "removeAllItems": "Remove all items from manifest"
+    "removeAllItems": "Remove all items from manifest",
+    "title": "Manifest"
   },
   "parameterUploadMainPanel": {
     "parameterNamesValues": "Parameter names and values",
@@ -1305,7 +1321,7 @@
   },
   "startUploadButton": {
     "startSelected": "Start selected",
-    "tooltip": "Select individual targets by clicking their IDs to prepare a partial upload"
+    "tooltip": "Select individual targets by clicking their IDs to prepare a partial operation"
   },
   "surveyStatusIndicator": {
     "noSurveyInformation": "No survey information",
@@ -1341,9 +1357,9 @@
     "firmwareUpdate": "Firmware update",
     "licenseInfo": "License info",
     "offlineMaps": "Offline maps",
+    "paramCheck": "Parameter check",
     "paramUpload": "Parameter upload",
-    "tooltip": "Toolbox",
-    "uploadInProgress": "Upload in progress"
+    "tooltip": "Toolbox"
   },
   "uavErrorCode": {
     "0": "No error",
@@ -1415,57 +1431,80 @@
     "never": "Never ask for confirmation",
     "onlyMultiple": "Confirm when the operation may affect multiple UAVs"
   },
+  "uavToolbar": {
+    "fitAllFeaturesIntoView": "Fit all features into view",
+    "fitSelectionIntoView": "Fit selection into view"
+  },
   "unit": {
     "degree": {
-      "long": "degree",
-      "longPlural": "degrees",
+      "long_one": "degree",
+      "long_other": "degrees",
       "short": "deg"
     },
+    "hour": {
+      "long_one": "hour",
+      "long_other": "hours",
+      "short": "h"
+    },
     "meter": {
-      "long": "meter",
-      "longPlural": "meters",
+      "long_one": "meter",
+      "long_other": "meters",
       "short": "m"
     },
     "meterPerSecond": {
-      "long": "meter/sec",
-      "longPlural": "meters/sec",
+      "long_one": "meter/sec",
+      "long_other": "meters/sec",
       "short": "m/s"
     },
+    "minute": {
+      "long_one": "minute",
+      "long_other": "minutes",
+      "short": "m"
+    },
     "second": {
-      "long": "second",
-      "longPlural": "seconds",
+      "long_one": "second",
+      "long_other": "seconds",
       "short": "s"
     },
     "volt": {
-      "long": "volt",
-      "longPlural": "volts",
+      "long_one": "volt",
+      "long_other": "volts",
       "short": "V"
     }
   },
   "uploadDialog": {
+    "anotherJobTypeRunningHint": {
+      "cancelButton": "Cancel task",
+      "header": "Another task is in progress",
+      "text": "Wait for the other task to finish or cancel it to start a new task",
+      "viewProgressButton": "View progress"
+    },
     "restrictToGlobalSelection": "Show global selection only"
   },
   "uploadPanel": {
-    "cancelUpload": "Cancel upload",
+    "cancelUpload": "Cancel job",
     "clearHistory": "Clear history",
-    "flashLightsWhereFailed": "Flash lights of UAVs where the upload failed",
+    "flashLightsWhereFailed": "Flash lights of UAVs where the job failed",
     "hasHiddenTargets": "Some of the waiting UAVs may be filtered.",
+    "noJobResultAvailable": "No result available yet.",
+    "resultsTab": "Results",
     "retryFailedAttempts": "Retry failed attempts automatically",
-    "uploadAttemptFailed": "Upload attempt failed.",
-    "uploadCancelled": "Upload cancelled by user.",
-    "uploadFinishedSuccessfully": "Upload finished successfully.",
-    "uploadInProgress": "Upload in progress…",
+    "statusTab": "Status",
+    "uploadAttemptFailed": "Attempt failed.",
+    "uploadCancelled": "Job cancelled by user.",
+    "uploadFinishedSuccessfully": "Job finished successfully.",
+    "uploadInProgress": "Please wait…",
     "uploadInProgressWithEstimate": "Estimated time remaining: {{time}}",
-    "uploadNotFinishedYet": "Upload not finished yet."
+    "uploadNotFinishedYet": "Job not finished yet."
   },
   "uploadStatusLegend": {
-    "clearUploadQueue": "Clear upload queue",
+    "clearUploadQueue": "Clear queue",
     "enqueueItemsWithNoUploadStatus": "Enqueue unprocessed items",
     "restartSuccessfulItems": "Enqueue successful items",
     "retryFailedItems": "Enqueue failed items"
   },
   "uploadStatusLights": {
-    "noAvailableUAVs": "There are no available UAVs to upload to."
+    "noAvailableUAVs": "There are no available UAVs."
   },
   "view": {
     "beacon-list": "Beacons",
@@ -1479,11 +1518,14 @@
     "log-panel": "Event log",
     "map": "Map",
     "mission-editor": "Mission editor",
+    "rtk-status-mini-list": "RTK status",
     "saved-location-list": "Locations",
+    "selection-group-mini-list": "Selection groups",
     "show-control": "Show control",
     "three-d-view": "3D View",
     "uav-details": "UAV details",
-    "uav-list": "UAVs"
+    "uav-list": "UAVs",
+    "uav-status-mini-list": "UAV status summary"
   },
   "weatherMiniList": {
     "compassDeclination": "Compass declination",

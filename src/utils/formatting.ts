@@ -97,15 +97,15 @@ export function formatDurationAsText(duration: number, t: TFunction): string {
   const parts = [];
 
   if (hours > 0) {
-    parts.push(t('general.time.hours', { count: hours }));
+    parts.push(`${hours} ${t('unit.hour.long', { count: hours })}`);
   }
 
   if (minutes > 0) {
-    parts.push(t('general.time.minutes', { count: minutes }));
+    parts.push(`${minutes} ${t('unit.minute.long', { count: minutes })}`);
   }
 
   if (seconds > 0) {
-    parts.push(t('general.time.seconds', { count: seconds }));
+    parts.push(`${seconds} ${t('unit.second.long', { count: seconds })}`);
   }
 
   return parts.join(' ');

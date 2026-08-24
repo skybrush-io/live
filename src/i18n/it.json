@@ -477,8 +477,7 @@
     "licenseInfo": "Info licenza",
     "offlineMaps": "Mappe offline",
     "paramUpload": "Caricamento dei parametri",
-    "tooltip": "Strumenti",
-    "uploadInProgress": "Upload in corso"
+    "tooltip": "Strumenti"
   },
   "view": {
     "beacon-list": "Fari",

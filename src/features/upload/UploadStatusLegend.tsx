@@ -45,7 +45,7 @@ const UploadStatusLegend = ({
   const { t } = useTranslation();
 
   return (
-    <Box sx={{ display: 'flex', justifyContent: 'space-around' }}>
+    <Box sx={{ display: 'flex', justifyContent: 'space-around', my: 1 }}>
       <UploadStatusLegendButton
         counter={waiting}
         disabled={isUploadInProgress}

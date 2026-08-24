@@ -22,11 +22,12 @@ import { getScopeForJobType, JobScope } from './jobs';
 import type { UploadSliceState } from './slice';
 import type {
   HistoryItem,
-  JobPayload,
+  JobData,
+  UploadDialogTab,
   UploadJobResult,
   UploadStatus,
 } from './types';
-import { aggregateUAVStatusesFromHistory } from './utils';
+import { aggregatePerUAVResultsFromHistory } from './utils';
 
 /**
  * Returns the current upload job. The returned object is guaranteed to have
@@ -36,7 +37,7 @@ import { aggregateUAVStatusesFromHistory } from './utils';
  */
 export const getCurrentUploadJob = createSelector(
   (state: RootState) => state.upload.currentJob,
-  ({ type, payload }) => ({ type: type ?? null, payload })
+  ({ type, payload }): JobData => ({ type, payload })
 );
 
 /**
@@ -63,9 +64,7 @@ export const getRunningUploadJobType = createSelector(
 /**
  * Returns the selected job in the upload dialog.
  */
-export const getSelectedJobInUploadDialog = (
-  state: RootState
-): { type?: string; payload?: JobPayload } =>
+export const getSelectedJobInUploadDialog = (state: RootState): JobData =>
   getUploadDialogState(state)?.selectedJob ?? {};
 
 /**
@@ -74,6 +73,16 @@ export const getSelectedJobInUploadDialog = (
 export const getSelectedJobTypeInUploadDialog = (
   state: RootState
 ): string | undefined => getSelectedJobInUploadDialog(state).type;
+
+/**
+ * Returns whether the selected job type is in conflict with the currently running job
+ * type.
+ */
+export const isAnotherJobTypeRunning = (state: RootState) => {
+  const runningJobType = getRunningUploadJobType(state);
+  const selectedJobType = getSelectedJobTypeInUploadDialog(state);
+  return runningJobType !== undefined && runningJobType !== selectedJobType;
+};
 
 /**
  * Returns the history items for the given job type, or an empty array if there
@@ -175,10 +184,11 @@ export const makeUploadStatusCodeMappingForJobTypeSelector = (
       );
 
       // Aggregate from history
-      const result: Record<Identifier, Status> =
-        aggregateUAVStatusesFromHistory(historyItems, (status) =>
-          status === 'error' ? Status.ERROR : Status.SUCCESS
-        );
+      const perUAVResults = aggregatePerUAVResultsFromHistory(historyItems);
+      const result: Record<Identifier, Status> = {};
+      for (const [uavId, entry] of Object.entries(perUAVResults)) {
+        result[uavId] = entry.type === 'error' ? Status.ERROR : Status.SUCCESS;
+      }
 
       // Add current queues on top
       Object.assign(result, queuedMapping);
@@ -323,6 +333,13 @@ export const getUploadDialogState = (
 ): UploadSliceState['dialog'] => state.upload.dialog;
 
 /**
+ * Returns the selected tab in the upload dialog.
+ */
+export const getSelectedTabInUploadDialog = (
+  state: RootState
+): UploadDialogTab => state.upload.dialog.selectedTab ?? 'status';
+
+/**
  * Returns whether failed uploads should be retried automatically.
  */
 export const shouldRetryFailedUploadsAutomatically = (
@@ -384,15 +401,12 @@ export const makeUploadStatusSelectorForMissionMappingByJobType = (
         return 'not-available';
       }
 
-      const uploadStatuses = aggregateUAVStatusesFromHistory(
-        historyItems,
-        (status) => status
-      );
+      const uploadStatuses = aggregatePerUAVResultsFromHistory(historyItems);
 
       let hasMissingUav = false;
       for (const item of uavsInMission) {
-        const status = uploadStatuses[item];
-        switch (status) {
+        const entry = uploadStatuses[item];
+        switch (entry?.type) {
           case 'error':
             return 'error';
           case 'success':
@@ -450,9 +464,10 @@ export const getUploadErrorMessageMapping = createSelector(
     const result: Record<Identifier, string> = {};
 
     // Aggregate from history
-    for (const item of historyItems) {
-      for (const [uavId, error] of Object.entries(item.perUavErrors)) {
-        result[uavId] = error;
+    const perUAVResults = aggregatePerUAVResultsFromHistory(historyItems);
+    for (const [uavId, entry] of Object.entries(perUAVResults)) {
+      if (entry.type === 'error') {
+        result[uavId] = entry.error;
       }
     }
 
@@ -486,7 +501,7 @@ export const getUAVsInLatestUploadForSelectedJobType = createSelector(
     if (historyItems.length > 0) {
       Object.assign(
         result,
-        historyItems[historyItems.length - 1].perUavStatuses
+        historyItems[historyItems.length - 1].perUAVResults
       );
     }
 
@@ -556,8 +571,10 @@ export const getUploadProgress = createSelector(
     const total = failed + finished + inProgress + waiting;
     if (total > 0) {
       return [
-        Math.round((100 * (finished + inProgress * averageProgress)) / total),
-        Math.round((100 * (finished + inProgress)) / total),
+        Math.round(
+          (100 * (finished + failed + inProgress * averageProgress)) / total
+        ),
+        Math.round((100 * (finished + failed + inProgress)) / total),
       ];
     } else {
       return [0, 0];

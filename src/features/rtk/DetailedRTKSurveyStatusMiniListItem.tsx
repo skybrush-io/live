@@ -29,12 +29,14 @@ const DetailedRTKSurveyStatusMiniListItem = ({
 
   return (
     <MiniListItem
+      inset={1}
       primaryText={
-        valid
+        '\u00A0' +
+        (valid
           ? t('RTKStatusMiniList.surveySuccesful')
           : active
             ? t('RTKStatusMiniList.surveyInProgress')
-            : t('RTKStatusMiniList.surveyNo')
+            : t('RTKStatusMiniList.surveyNo'))
       }
       secondaryText={
         typeof accuracy === 'number' ? formatSurveyAccuracy(accuracy) : null

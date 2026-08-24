@@ -627,8 +627,7 @@
     "licenseInfo": "Informacje o licencji",
     "offlineMaps": "Mapy offline",
     "paramUpload": "Prześlij parametry",
-    "tooltip": "Skrzynka z narzędziami",
-    "uploadInProgress": "Przesyłanie w toku"
+    "tooltip": "Skrzynka z narzędziami"
   },
   "uploadPanel": {
     "cancelUpload": "Anuluj przesyłanie",

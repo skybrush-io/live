@@ -58,6 +58,15 @@ import {
 } from './math';
 import { isRunningOnMac } from './platform';
 
+/// Enum for coordinate system types.
+export enum CoordinateSystemType {
+  // This is placed here and not in `math.ts` because the names refer to compass
+  // directions, which is a geographical thing, not a pure mathematical concept.
+
+  NEU = 'neu',
+  NWU = 'nwu',
+}
+
 // TODO: Define better types for coordinates?
 // (Partially solved on 2023-08-12.)
 // (Further improved on 2025-02-18.)
@@ -715,7 +724,7 @@ export class FlatEarthCoordinateSystem {
   _origin: LonLat;
   _orientation: number;
   _ellipsoid: EllipsoidModel;
-  _type: string;
+  _type: CoordinateSystemType;
 
   // NOTE: Bangs are justified by `this._precalculate()` setting these values.
   // See canonical issue: https://github.com/microsoft/TypeScript/issues/21132
@@ -745,16 +754,19 @@ export class FlatEarthCoordinateSystem {
   constructor({
     origin,
     orientation = 0,
-    type = 'neu',
+    type = CoordinateSystemType.NEU,
     ellipsoid = WGS84,
   }: {
     origin: LonLat;
     orientation?: number | string;
-    type?: string;
+    type?: CoordinateSystemType;
     ellipsoid?: EllipsoidModel;
   }) {
-    if (type !== 'neu' && type !== 'nwu') {
-      throw new Error('unknown coordinate system type: ' + type);
+    if (
+      type !== CoordinateSystemType.NEU &&
+      type !== CoordinateSystemType.NWU
+    ) {
+      throw new Error('unknown coordinate system type: ' + String(type));
     }
 
     if (typeof orientation !== 'number') {
@@ -800,7 +812,7 @@ export class FlatEarthCoordinateSystem {
   /**
    * Returns the type of the coordinate system.
    */
-  get type(): string {
+  get type(): CoordinateSystemType {
     return this._type;
   }
 
@@ -857,7 +869,8 @@ export class FlatEarthCoordinateSystem {
     this._updateArrayFromLonLat(this._vec, lon, lat);
 
     vec.x = this._vec[0];
-    vec.y = this._type === 'nwu' ? this._vec[1] : -this._vec[1];
+    vec.y =
+      this._type === CoordinateSystemType.NWU ? this._vec[1] : -this._vec[1];
     vec.z = ahl;
   }
 
@@ -875,7 +888,7 @@ export class FlatEarthCoordinateSystem {
     this._r1 = (radius * (1 - eccSq)) / x ** 1.5;
     this._r2OverCosOriginLatInRadians =
       (radius / Math.sqrt(x)) * Math.cos(originLatInRadians);
-    this._yMul = this._type === 'neu' ? 1 : -1;
+    this._yMul = this._type === CoordinateSystemType.NEU ? 1 : -1;
   }
 
   /**
@@ -988,7 +1001,7 @@ export function normalizePolygon([
   }
 }
 
-type ScaledJSONGPSCoordinate = [number, number];
+export type ScaledJSONGPSCoordinate = [number, number];
 
 /**
  * Converts a longitude-latitude pair to a representation that is safe to be
@@ -1024,6 +1037,20 @@ export const toScaledJSONFromLonLat = (
   Math.round(coords[1] * 1e7),
   Math.round(coords[0] * 1e7),
 ];
+
+/**
+ * Reverts a "JSON-safe" multiplier offset coordinate representation to a
+ * simple decimal longitude-latitude pair
+ *
+ * @param  coords  the JSON representation, scaled up to 1e7 degrees.
+ *         Note that it contains the <em>latitude</em> first
+ * @return the resulting latitude-longitude pair, represented as an object
+ */
+export const toObjectFromScaledJSON = (
+  coords: ScaledJSONGPSCoordinate
+): LatLonObject =>
+  // TODO: Eliminate or justify these type assertions
+  ({ lat: (coords[0] / 1e7) as Latitude, lon: (coords[1] / 1e7) as Longitude });
 
 /**
  * Reverts a "JSON-safe" multiplier offset coordinate representation to a

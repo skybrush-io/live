@@ -83,8 +83,7 @@ const defaultCreateStartTimeSuggestions = createStartTimeSuggestionsFn({
 export type StartTimeSuggestionsProps = {
   readonly onChange: (suggestion: StartTimeSuggestion) => void;
   readonly startTimes?:
-    | StartTimeSuggestion[]
-    | ((now: number) => StartTimeSuggestion[]);
+    StartTimeSuggestion[] | ((now: number) => StartTimeSuggestion[]);
 };
 
 /**

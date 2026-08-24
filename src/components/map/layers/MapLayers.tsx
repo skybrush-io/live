@@ -6,8 +6,8 @@ import type { Layer, LayerType } from '~/model/layers';
 
 type FeatureModifiedHandler = (event: ModifyEvent) => void;
 
-export type LayerProps = {
-  layer: Layer;
+export type LayerProps<P = unknown> = {
+  layer: Layer<P>;
   selectedTool: Tool;
   zIndex: number;
   onFeaturesModified?: FeatureModifiedHandler;

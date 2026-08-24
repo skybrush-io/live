@@ -18,12 +18,10 @@ type UAVLogListProps = {
   uavId: string;
   items: FlightLogMetadata[];
   dense?: boolean;
-};
+} & React.RefAttributes<HTMLUListElement>;
 
-const UAVLogList = listOf(
-  (item: FlightLogMetadata, props: UAVLogListProps) => (
-    <UAVLogListItem key={item.id} uavId={props.uavId} {...item} />
-  ),
+const UAVLogList = listOf<FlightLogMetadata, UAVLogListProps>(
+  (item, { uavId }) => <UAVLogListItem key={item.id} uavId={uavId} {...item} />,
   {
     dataProvider: 'items',
     backgroundHint: 'No logs found',

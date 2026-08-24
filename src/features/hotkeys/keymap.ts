@@ -8,8 +8,7 @@ export type KeyMap = Record<
   string,
   // TODO: Use `import { ExtendedKeyMapOptions } from 'react-hotkeys';`!
   { name: string; group?: HotkeyGroup; scopes: HotkeyScope[] } & (
-    | { sequence: string }
-    | { sequences: string[] }
+    { sequence: string } | { sequences: string[] }
   )
 >;
 
@@ -111,11 +110,16 @@ const toggleOptionKeyMap: KeyMap = {
     scopes: [HotkeyScope.GLOBAL],
   },
 
+  // disabled because it interferes with Ctrl-C in the Messages tab where the user
+  // can select text and copy it to the clipboard. `react-hotkeys` prevents the copy
+  // event from firing because it catches the C keypress earlier.
+  /*
   TOGGLE_PREFERRED_CHANNEL: {
     name: 'Toggle the preferred channel switch',
     sequence: 'c',
     scopes: [HotkeyScope.GLOBAL],
   },
+  */
 
   TOGGLE_DEVELOPER_MODE: {
     name: 'Toggle the developer mode switch',

@@ -11,7 +11,7 @@ import {
   setGeofenceAction,
   setGeofencePolygonId,
 } from '~/features/mission/slice';
-import { JOB_TYPE as PARAMETER_UPLOAD_JOB_TYPE } from '~/features/parameters/constants';
+import { UPLOAD_JOB_TYPE as PARAMETER_UPLOAD_JOB_TYPE } from '~/features/parameters/constants';
 import {
   removeParameterFromManifest,
   updateParametersInManifest,
@@ -29,12 +29,13 @@ import type {
   HistoryItem,
   JobData,
   JobPayload,
-  MaybeOutdateUAVStatus,
+  PerUAVJobResult,
+  UAVProgressInfo,
+  UploadDialogTab,
 } from './types';
 import {
   clearQueues,
   clearUploadHistoryForJobTypeHelper,
-  createHistoryItem,
   ensureItemsInQueue,
   moveItemsBetweenQueues,
   pushItemToHistory,
@@ -93,6 +94,7 @@ export type UploadSliceState = {
   dialog: {
     open: boolean;
     showLastUploadResult: boolean;
+    selectedTab: UploadDialogTab;
     selectedJob: {
       type?: string;
       payload?: JobPayload;
@@ -141,6 +143,7 @@ const initialState: UploadSliceState = {
   dialog: {
     open: false,
     showLastUploadResult: false,
+    selectedTab: 'status',
     selectedJob: {
       type: undefined,
       payload: undefined,
@@ -241,6 +244,13 @@ const { actions, reducer } = createSlice({
       state.settings.flashFailed = Boolean(action.payload);
     },
 
+    setUploadDialogSelectedTab(
+      state,
+      { payload: selectedTab }: PayloadAction<UploadDialogTab>
+    ) {
+      state.dialog.selectedTab = selectedTab;
+    },
+
     // Private actions that should be dispatched only from the uploader saga
 
     _enqueueFailedUploads: moveItemsBetweenQueues({
@@ -253,26 +263,14 @@ const { actions, reducer } = createSlice({
       target: 'itemsWaitingToStart',
     }),
 
-    _notifyUploadFinished(
-      state,
-      action: PayloadAction<{ success: boolean; cancelled: boolean }>
-    ) {
-      const { success, cancelled } = action.payload;
+    _notifyUploadFinished(state, action: PayloadAction<HistoryItem>) {
       const jobType = state.currentJob.type;
 
       // Dispatched by the saga; should not be dispatched manually
 
       // Store the data in history
       if (jobType) {
-        pushItemToHistory(
-          state.history,
-          jobType,
-          createHistoryItem(
-            cancelled ? 'cancelled' : success ? 'success' : 'error',
-            state.queues,
-            state.errors
-          )
-        );
+        pushItemToHistory(state.history, jobType, action.payload);
       }
 
       // Clear queues and show the last upload result in the dialog.
@@ -347,10 +345,7 @@ const { actions, reducer } = createSlice({
     },
 
     _setProgressInfoForUAV: {
-      reducer(
-        state,
-        action: PayloadAction<{ uavId: Identifier; progress: number }>
-      ) {
+      reducer(state, action: PayloadAction<UAVProgressInfo>) {
         const { uavId, progress } = action.payload;
         if (progress >= 0 && progress <= 1) {
           state.progresses[uavId] = progress;
@@ -410,6 +405,7 @@ const { actions, reducer } = createSlice({
         type: newJobType,
         payload: newJobPayload,
       };
+      state.dialog.selectedTab = 'status';
       state.dialog.showLastUploadResult = false;
       state.dialog.open = true;
       if (restrictToGlobalSelection !== undefined) {
@@ -458,13 +454,12 @@ const { actions, reducer } = createSlice({
 
       pushItemToHistory(state.history, SHOW_UPLOAD_JOB.type, {
         result: 'success',
-        perUavErrors: {},
-        perUavStatuses: uavIds.reduce(
+        perUAVResults: uavIds.reduce(
           (res, id) => {
-            res[id] = 'outdated';
+            res[id] = { type: 'outdated' };
             return res;
           },
-          {} as Record<string, MaybeOutdateUAVStatus>
+          {} as Record<string, PerUAVJobResult>
         ),
       });
     });
@@ -520,6 +515,7 @@ export const {
   setUploadAutoRetry,
   setFlashFailed,
   setRestrictToGlobalSelection,
+  setUploadDialogSelectedTab,
   startUpload,
   toggleRestrictToGlobalSelection,
 } = actions;

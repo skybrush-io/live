@@ -221,8 +221,7 @@ export function useAdaptParametersFormState(
   const onReturnToHomeMethodChanged = useCallback(
     (
       event:
-        | React.ChangeEvent<{ value: string }>
-        | { target: { value: string } }
+        React.ChangeEvent<{ value: string }> | { target: { value: string } }
     ) => {
       const value: ReturnToHomeMethodType = RETURN_TO_HOME_METHODS.includes(
         event.target.value as ReturnToHomeMethodType

@@ -39,6 +39,10 @@ export function showNotification(message: string | Notification): void {
   );
 }
 
+export function dismissNotification(topic: string): void {
+  toast.dismiss(topic);
+}
+
 export function showError(
   message: string,
   config?: Omit<Notification, 'message' | 'semantics'>

@@ -1,6 +1,8 @@
 import createColor from 'color';
 import unary from 'lodash-es/unary';
 import FillPattern from 'ol-ext/style/FillPattern';
+import type { Color } from 'ol/color';
+import type { ColorLike } from 'ol/colorlike';
 import type OLFeature from 'ol/Feature';
 import {
   type Geometry,
@@ -125,7 +127,7 @@ const extractPointsFromPolygon = (feature: OLFeature): Geometry =>
 
 export const styleForPointsOfLineString = (
   selected: boolean,
-  color: number[]
+  color: Color | ColorLike
 ) =>
   new Style({
     image: new Circle({
@@ -135,7 +137,10 @@ export const styleForPointsOfLineString = (
     }),
     geometry: extractPointsFromLineString as GeometryFunction,
   });
-export const styleForPointsOfPolygon = (selected: boolean, color: number[]) =>
+export const styleForPointsOfPolygon = (
+  selected: boolean,
+  color: Color | ColorLike
+) =>
   new Style({
     image: new Circle({
       ...(selected && { stroke: whiteThinOutline }),

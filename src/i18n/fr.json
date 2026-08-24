@@ -472,8 +472,7 @@
     "licenseInfo": "Information de licence",
     "offlineMaps": "Carte hors ligne",
     "paramUpload": "Chargement des paramètres",
-    "tooltip": "Boîte à outils",
-    "uploadInProgress": "Chargement en cours"
+    "tooltip": "Boîte à outils"
   },
   "uploadPanel": {
     "cancelUpload": "Annuler le chargement",

@@ -10,6 +10,7 @@ import { isConnected } from '~/features/servers/selectors';
 import Satellite from '~/icons/Satellite';
 import type { RootState } from '~/store/reducers';
 
+import PinnableTooltipContents from '~/components/header/PinnableTooltipContents';
 import RTKStatusMiniList from './RTKStatusMiniList';
 import RTKStatusUpdater from './RTKStatusUpdater';
 import {
@@ -52,7 +53,14 @@ const RTKStatusHeaderButton = ({
   const badgeColor = getColorOfRTKStatus(overallStatus);
 
   return (
-    <LazyTooltip interactive content={<RTKStatusMiniList />}>
+    <LazyTooltip
+      interactive
+      content={
+        <PinnableTooltipContents component='rtk-status-mini-list'>
+          <RTKStatusMiniList />
+        </PinnableTooltipContents>
+      }
+    >
       <GenericHeaderButton
         disabled={!isConnected}
         label={isConnected && numSatellites > 0 ? String(numSatellites) : '—'}

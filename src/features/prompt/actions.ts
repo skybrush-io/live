@@ -19,8 +19,7 @@ import {
  * promise created earlier in the ``showPromptDialog()`` thunk.
  */
 let resolver:
-  | ((value: PromptResponse | PromiseLike<PromptResponse>) => void)
-  | undefined;
+  ((value: PromptResponse | PromiseLike<PromptResponse>) => void) | undefined;
 
 /**
  * Helper function that calls the resolver function with the given value

@@ -16,7 +16,7 @@ const Countdown = ({ seconds }: CountdownProps) => {
   if (Math.floor(remainingSeconds / 60) > 0) {
     formatted = formatDuration(remainingSeconds);
   } else {
-    formatted = t('general.time.seconds_short', { count: remainingSeconds });
+    formatted = `${remainingSeconds}${t('unit.second.short')}`;
   }
 
   return formatted;

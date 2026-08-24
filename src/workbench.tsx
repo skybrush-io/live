@@ -45,6 +45,9 @@ const MapView = loadable(
 );
 
 import '~/../assets/css/workbench.less';
+import UAVStatusMiniList from './components/uavs/UAVStatusMiniList';
+import RTKStatusMiniList from './features/rtk/RTKStatusMiniList';
+import SelectionGroupMiniList from './features/selection/SelectionGroupMiniList';
 
 /**
  * Dummy component that renders nothing.
@@ -83,6 +86,7 @@ export const componentRegistry: ComponentRegistry = {
     component: views.CollectiveRTHPanel,
     label: 'Collective RTH',
     detachable: true,
+    feature: 'showControl',
   },
   'connection-list': {
     // deprecated, kept there for compatibility
@@ -170,6 +174,23 @@ export const componentRegistry: ComponentRegistry = {
   'uav-list': {
     component: views.UAVList,
     label: 'UAVs',
+    detachable: true,
+  },
+
+  // The following panels are only used when a header widget is pinned to the workbench
+  'rtk-status-mini-list': {
+    component: RTKStatusMiniList,
+    label: 'RTK status',
+    detachable: true,
+  },
+  'selection-group-mini-list': {
+    component: SelectionGroupMiniList,
+    label: 'Selection groups',
+    detachable: true,
+  },
+  'uav-status-mini-list': {
+    component: UAVStatusMiniList,
+    label: 'UAV status summary',
     detachable: true,
   },
 };

@@ -114,6 +114,4 @@ export type ShiftTransformation = {
 };
 
 export type ShowAdaptTransformation =
-  | TakeoffTransformation
-  | ReturnToHomeTransformation
-  | ShiftTransformation;
+  TakeoffTransformation | ReturnToHomeTransformation | ShiftTransformation;

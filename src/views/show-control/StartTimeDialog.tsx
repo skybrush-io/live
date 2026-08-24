@@ -57,9 +57,7 @@ enum LocalClockId {
 /* Not all clock IDs are allowed for the start time; here we explicitly
  * describe which ones are allowed. */
 type AllowedClockIdsForStartTime =
-  | LocalClockId.ABSOLUTE
-  | LocalClockId.RELATIVE
-  | CommonClockId.MTC;
+  LocalClockId.ABSOLUTE | LocalClockId.RELATIVE | CommonClockId.MTC;
 
 /** Type guard for AllowedClockIdsForStartTime */
 const validateClockIdForStartTimeForm = (

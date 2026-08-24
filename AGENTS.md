@@ -3,11 +3,11 @@
 ## TypeScript
 
 - Strict typing
-- Use `type` instead of `interface` for type definitions
-- Never cast types using `const x = y as unknown as SomeType` patterns
-- Allow non-null assertions (`!`), but document why it's justified
-- Do not add return type annotation to React components
-- Import types explicitly with `import type` unless it is also used as a value.
+- Use `type` instead of `interface`
+- Avoid `const x = y as unknown as SomeType` cast patterns
+- Allow non-null assertions (`!`), but document justification
+- No return type annotation for React components
+- Import types explicitly with `import type`
 
 ## Import groups
 
@@ -24,13 +24,12 @@
 ## React
 
 - Use function components declared with `const Comp = () => {}` pattern
-- Prop types defined as TypeScript types
-- Redux-connected components: non-connected version with a standard name, connected component with "Connected" prefix
+- Redux-connected components: non-connected version with standard name, connected component with "Connected" prefix
 - Avoid complex UI sections within a component
 
 ## I18n
 
-- All UI text must be internationalized
+- All new UI text must be internationalized
 - Never concatenate translated strings, use interpolation in the i18n resource
 
 ## Redux
@@ -38,27 +37,27 @@
 - Redux Toolkit patterns
 - Non-trivial selectors with `createSelector`
 
-## Formatting and linting
+## Static analysis
 
-- Prettier for formatting
-- ESLint for linting
-- Use `npm run format:check` to check formatting
-- Use `npm run lint:check` to check linting
-- Use `npm run format:fix` to fix formatting issues
-- Use `npm run lint:fix` to fix linting issues
-- Never commit code with formatting or linting issues.
+`npm run` scripts:
+
+- `type:check`: TS type checking
+- `format:check`, `format:fix`: Formatting check or fix
+- `lint:check`, `lint:fix`: ESLint linting check or fix
 
 # General
 
-**Never** (unless told to):
+**Never**:
 
 - Build or run the project
 - Run or add tests
 - Output explanations or unnecessary code snippets
+- Stage or commit changes without explicit request
 
 **Always**:
 
-- Fully understand the task and the related code before getting to work
-- If something is unclear, ask for input
+- Fully understand the task, intent, and related code first
+- State your assumptions, ff something is unclear, stop and ask for clarification!
 - Follow clean code principles
-- Be succint
+- Do surgical changes: change only what you must, and keep it simple, minimal, easy to understand
+- Be concise!

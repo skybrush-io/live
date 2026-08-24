@@ -3,9 +3,12 @@
  */
 
 import { createSelector } from '@reduxjs/toolkit';
-import { OriginType } from '~/features/map/types';
 import type { RootState } from '~/store/reducers';
-import { FlatEarthCoordinateSystem, type LonLat } from '~/utils/geography';
+import {
+  CoordinateSystemType,
+  FlatEarthCoordinateSystem,
+  type LonLat,
+} from '~/utils/geography';
 
 /**
  * Selector that returns a conversion object that can be used to transform
@@ -66,7 +69,7 @@ export const getMapOriginRotationAngle = createSelector(
  * or right-handed.
  */
 export const isMapCoordinateSystemLeftHanded = (state: RootState): boolean =>
-  state.map.origin.type === OriginType.NEU;
+  state.map.origin.type === CoordinateSystemType.NEU;
 
 /**
  * Selector that returns whether the map coordinate system is specified.

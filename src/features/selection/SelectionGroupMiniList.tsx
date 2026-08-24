@@ -1,8 +1,8 @@
 import {
   MiniList,
   MiniListDivider,
-  MiniListItemButton,
   MiniListItem,
+  MiniListItemButton,
 } from '@skybrush/mui-components';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -17,10 +17,6 @@ import {
   hasSelection,
 } from './selectors';
 
-const listStyle = {
-  minWidth: 200,
-};
-
 const SelectionGroupMiniList = () => {
   const isSelectionNotEmpty = useSelector(hasSelection);
   const numberOfSelectedItems = useSelector(getNumberOfSelectedItems);
@@ -31,22 +27,24 @@ const SelectionGroupMiniList = () => {
   });
 
   return (
-    <MiniList style={listStyle}>
+    <MiniList sx={{ minWidth: 200 }}>
       <MiniListItem
         primaryText={t('selectedObjects')}
         secondaryText={String(numberOfSelectedItems)}
+        inset={1}
       />
-      <MiniListDivider />
+      <MiniListDivider inset={1} />
       {selectionGroups.map((group) => (
         <SelectionGroupMiniListItem key={group.id} group={group} />
       ))}
-      {selectionGroups.length > 0 && <MiniListDivider />}
+      {selectionGroups.length > 0 && <MiniListDivider inset={1} />}
       <MiniListItemButton
         disabled={!isSelectionNotEmpty}
         onClick={() => {
           dispatch(saveCurrentSelectionAsGroupIfNotEmpty());
         }}
         iconPreset='add'
+        inset={1}
         primaryText={t('action.createNew')}
       />
     </MiniList>

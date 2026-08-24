@@ -14,7 +14,6 @@ import type { RootState } from '~/store/reducers';
 
 import {
   type BaseLayerProps,
-  type BaseLayerSettingsProps,
   type LoadImageTileFunction,
   BaseLayer as BaseLayerPresentation,
   BaseLayerSettings as BaseLayerSettingsPresentation,
@@ -27,10 +26,7 @@ export const BaseLayerSettings = connect(
   // mapStateToProps
   null,
   // mapDispatchToProps
-  (
-    dispatch,
-    ownProps: Omit<BaseLayerSettingsProps, 'onLayerSourceChanged'>
-  ) => ({
+  (dispatch, ownProps: { layerId: string }) => ({
     onLayerSourceChanged(_event: ChangeEvent, value: Source.Source) {
       dispatch(selectMapSource({ layerId: ownProps.layerId, source: value }));
     },
@@ -87,13 +83,15 @@ const LayerSource = connect(
   {}
 )(LayerSourcePresentation);
 
-export const BaseLayer = ({
+export function BaseLayer<P extends { source: Source.Source }>({
   layer,
   zIndex,
-}: Omit<BaseLayerProps, 'LayerSource'>) => (
-  <BaseLayerPresentation
-    layer={layer}
-    zIndex={zIndex}
-    LayerSource={LayerSource}
-  />
-);
+}: Omit<BaseLayerProps<P>, 'LayerSource'>) {
+  return (
+    <BaseLayerPresentation
+      layer={layer}
+      zIndex={zIndex}
+      LayerSource={LayerSource}
+    />
+  );
+}

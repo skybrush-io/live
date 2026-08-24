@@ -51,8 +51,7 @@ const LogMessageList = ({ items = [] }: LogMessageListProps) => {
   useEffect(() => {
     let delayedScrollToBottomTimeout: ReturnType<typeof setTimeout> | undefined;
     let delayedUnblockScrollToBottomButtonTimeout:
-      | ReturnType<typeof setTimeout>
-      | undefined;
+      ReturnType<typeof setTimeout> | undefined;
 
     if (items.length > 0) {
       const lastItemId = items[items.length - 1].id;

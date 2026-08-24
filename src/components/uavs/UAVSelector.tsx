@@ -10,14 +10,20 @@ import { makeStyles } from '@skybrush/app-theme-mui';
 import { BackgroundHint } from '@skybrush/mui-components';
 
 import { PopoverWithContainerFromContext as Popover } from '~/containerContext';
-import { getReverseMissionMapping } from '~/features/mission/selectors';
+import {
+  getMissionMapping,
+  getReverseMissionMapping,
+} from '~/features/mission/selectors';
 import {
   getUAVIdList,
   getUAVIdsSortedByErrorCode,
 } from '~/features/uavs/selectors';
+import { type MissionIndex } from '~/model/missions';
+import { type Identifier } from '~/utils/collections';
 import { formatMissionId } from '~/utils/formatting';
 
 import DroneAvatar from './DroneAvatar';
+import DronePlaceholder from './DronePlaceholder';
 
 const SCROLLBAR_WIDTH = 10;
 
@@ -44,24 +50,42 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-type UAVSelectorProps = {
+export type UAVSelectorProps = {
   anchorEl: Element | null;
+  /**
+   * Controlled filter string (e.g. from an external TextField). When set,
+   * overrides the internal keyboard filter used by `filterable`.
+   */
+  filter?: string;
+  /**
+   * Enables typing digits / `s` inside the popover to filter. Ignored when
+   * `filter` is controlled externally.
+   */
   filterable?: boolean;
   onClose: () => void;
-  onFocus: (event: React.FocusEvent) => void;
-  onSelect: (uavId: string) => void;
+  onFocus?: (event: React.FocusEvent) => void;
+  onSelect: (item: { uavId?: Identifier; missionIndex?: MissionIndex }) => void;
   open: boolean;
+  /**
+   * Keep keyboard focus on the anchor (e.g. a TextField). Disables popover
+   * autofocus and prevents mousedown inside the list from stealing focus.
+   */
+  retainFocus?: boolean;
   sortedByError?: boolean;
+  useMissionIds?: boolean;
 };
 
-const UAVSelector = ({
+export const UAVSelector = ({
   anchorEl,
+  filter: filterProp,
   filterable,
   onClose,
   onFocus,
   onSelect,
   open,
+  retainFocus,
   sortedByError,
+  useMissionIds,
 }: UAVSelectorProps) => {
   const { t } = useTranslation();
   const uavIds = useSelector(
@@ -69,34 +93,60 @@ const UAVSelector = ({
     { equalityFn: shallowEqual }
   );
   const reverseMissionMapping = useSelector(getReverseMissionMapping);
+  const missionMapping = useSelector(getMissionMapping);
 
-  const anchorCenter = useMemo(() => {
-    if (!anchorEl) {
-      return 0;
-    }
+  // TODO: `missionIndex` is only guaranteed to be defined if `useMissionIds` is
+  //       `true`, since `reverseMissionMapping` doesn't necessarily contain all
+  //       UAVs. We would need dependent types to express this though...
+  const items = useMissionIds
+    ? missionMapping.map((uavId, index) => ({
+        uavId: uavId ?? undefined,
+        missionIndex: index,
+      }))
+    : uavIds.map((uavId) => ({
+        uavId,
+        missionIndex: reverseMissionMapping[uavId],
+      }));
 
-    const { left, right } = anchorEl.getBoundingClientRect();
-    return (left + right) / 2;
-  }, [anchorEl]);
+  const { anchorCenter = 0, openAbove } =
+    useMemo(() => {
+      if (!anchorEl) {
+        return;
+      }
+      const { bottom, left, right } = anchorEl.getBoundingClientRect();
+      return {
+        // Get the horizontal center of the anchor to adjust the arrow location
+        anchorCenter: (left + right) / 2,
+        // Show the popup updwards if there isn't enough space below the anchor
+        openAbove: window.innerHeight - bottom < 256, // Approximate `maxHeight`
+      };
+    }, [anchorEl]) ?? {};
 
   const classes = useStyles();
 
-  const [filter, setFilter] = useState('');
+  const isFilterControlled = filterProp !== undefined;
+  const [internalFilter, setInternalFilter] = useState('');
 
-  // Clear the filter each time the popover is opened.
+  // Clear the internal filter each time the popover is opened.
   useEffect(() => {
-    if (open) {
+    if (open && !isFilterControlled) {
       // eslint-disable-next-line @eslint-react/set-state-in-effect
-      setFilter('');
+      setInternalFilter('');
     }
-  }, [open]);
+  }, [open, isFilterControlled]);
 
-  const filtered = uavIds.filter(
-    (uavId) =>
-      uavId.startsWith(filter) ||
-      (uavId in reverseMissionMapping &&
-        formatMissionId(reverseMissionMapping[uavId]).startsWith(filter))
+  const filter = isFilterControlled ? filterProp : internalFilter;
+  const normalizedFilter = filter.toLowerCase();
+
+  const filtered = items.filter(
+    ({ uavId, missionIndex }) =>
+      uavId?.toLowerCase()?.startsWith(normalizedFilter) ||
+      (missionIndex !== undefined &&
+        formatMissionId(missionIndex).startsWith(normalizedFilter))
   );
+
+  const preferMissionIdLabels =
+    useMissionIds || normalizedFilter.startsWith('s');
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
     switch (event.key) {
@@ -112,16 +162,17 @@ const UAVSelector = ({
       }
 
       case 'Backspace': {
-        setFilter(filter.slice(0, -1));
+        setInternalFilter(internalFilter.slice(0, -1));
 
         break;
       }
 
+      // TODO: Generalize this, it could be `s` for "show" and `m` for "mission"
       case 's': {
-        if (filter.startsWith('s')) {
-          setFilter(filter.slice(1));
+        if (internalFilter.startsWith('s')) {
+          setInternalFilter(internalFilter.slice(1));
         } else {
-          setFilter('s' + filter);
+          setInternalFilter('s' + internalFilter);
         }
 
         event.stopPropagation();
@@ -131,7 +182,7 @@ const UAVSelector = ({
 
       default: {
         if (/^\d$/.test(event.key)) {
-          setFilter(filter + event.key);
+          setInternalFilter(internalFilter + event.key);
           event.stopPropagation();
         }
       }
@@ -140,10 +191,19 @@ const UAVSelector = ({
 
   return (
     <Popover
+      disableAutoFocus={retainFocus}
+      disableEnforceFocus={retainFocus}
+      disableRestoreFocus={retainFocus}
       open={open}
       anchorEl={anchorEl}
-      anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      transformOrigin={{ vertical: 'top', horizontal: 'center' }}
+      anchorOrigin={{
+        vertical: openAbove ? 'top' : 'bottom',
+        horizontal: 'center',
+      }}
+      transformOrigin={{
+        vertical: openAbove ? 'bottom' : 'top',
+        horizontal: 'center',
+      }}
       slotProps={{
         paper: {
           sx: (theme) => ({
@@ -157,11 +217,10 @@ const UAVSelector = ({
               height: theme.spacing(2),
 
               position: 'absolute',
-              top: `-${theme.spacing(1)}`,
+              [openAbove ? 'bottom' : 'top']: `-${theme.spacing(1)}`,
               left: `calc(50% - ${theme.spacing(1)} + ${
                 // Adjust arrow position when the `Popover` is pushed against the
                 // edge of the viewport, thus isn't centered on the anchor element
-                // eslint-disable-next-line @eslint-react/unsupported-syntax
                 (() => {
                   const margin = Number.parseInt(theme.spacing(2));
                   const width =
@@ -184,32 +243,66 @@ const UAVSelector = ({
               backgroundColor: theme.palette.background.paper,
             },
           }),
-          onKeyDown: filterable ? handleKeyDown : undefined,
+          onKeyDown:
+            filterable && !isFilterControlled ? handleKeyDown : undefined,
         },
       }}
       onClose={onClose}
       onFocus={onFocus}
     >
-      <div className={classes.content} tabIndex={0}>
+      {/*
+        Keep focus in the anchor when `retainFocus` is set (TextField-driven UX).
+      */}
+      <div
+        className={classes.content}
+        tabIndex={retainFocus ? undefined : 0}
+        onMouseDown={
+          retainFocus
+            ? (event) => {
+                event.preventDefault();
+              }
+            : undefined
+        }
+      >
         {filtered.length > 0 ? (
-          filtered.map((uavId) => (
-            // Enclose the Avatar in a `div`, as it renders a fragment
-            <div key={uavId}>
-              <DroneAvatar
-                variant='minimal'
-                id={uavId}
-                AvatarProps={{
-                  style: { cursor: 'pointer' },
-                  onClick() {
-                    onSelect(uavId);
-                    onClose();
-                  },
-                }}
-              />
-            </div>
-          ))
-        ) : (
+          filtered.map(({ uavId, missionIndex }) => {
+            const avatarProps = {
+              style: { cursor: 'pointer' },
+              onClick: () => {
+                onSelect({ uavId, missionIndex });
+                onClose();
+              },
+            };
+
+            return (
+              // Enclose the Avatar in a `div`, as it renders a fragment
+              <div key={`${uavId}:${missionIndex}`}>
+                {uavId ? (
+                  <DroneAvatar
+                    label={
+                      preferMissionIdLabels && missionIndex !== undefined
+                        ? formatMissionId(missionIndex)
+                        : undefined
+                    }
+                    variant='minimal'
+                    id={uavId}
+                    AvatarProps={avatarProps}
+                  />
+                ) : (
+                  <DronePlaceholder
+                    label={formatMissionId(missionIndex)}
+                    AvatarProps={avatarProps}
+                  />
+                )}
+              </div>
+            );
+          })
+        ) : filter ? (
           <BackgroundHint text={t('UAVSelector.noMatchingUAVs', { filter })} />
+        ) : (
+          <BackgroundHint
+            text={`No available ${useMissionIds ? 'mission ids' : 'UAVs'}.`}
+          />
         )}
       </div>
     </Popover>
@@ -218,9 +311,7 @@ const UAVSelector = ({
 
 type UAVSelectorWrapperProps = {
   children: (handleClick: (event: React.MouseEvent) => void) => React.ReactNode;
-  onSelect: (uavId: string) => void;
-  sortedByError?: boolean;
-};
+} & Omit<UAVSelectorProps, 'anchorEl' | 'open' | 'onClose' | 'onFocus'>;
 
 type ElementWithFocusRestorationTarget = Element & {
   focusRestorationTarget?: HTMLElement | null;
