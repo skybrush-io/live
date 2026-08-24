@@ -105,22 +105,20 @@ export const getUAVDetailsDialogPosition: AppSelector<Coordinate2DObject> = (
 export const getUAVDetailsDialogWidth: AppSelector<number> = (state) =>
   state.dialogs.uavDetails.width;
 
-const {
-  actions: swapDronesDialogActions,
-  reducer: swapDronesDialogReducer,
-} = createSlice({
-  name: 'swap-drones-dialog',
-  initialState: { open: false },
-  reducers: {
-    closeSwapDronesDialog: noPayload<{ open: boolean }>((state) => {
-      state.open = false;
-    }),
+const { actions: swapDronesDialogActions, reducer: swapDronesDialogReducer } =
+  createSlice({
+    name: 'swap-drones-dialog',
+    initialState: { open: false },
+    reducers: {
+      closeSwapDronesDialog: noPayload<{ open: boolean }>((state) => {
+        state.open = false;
+      }),
 
-    showSwapDronesDialog: noPayload<{ open: boolean }>((state) => {
-      state.open = true;
-    }),
-  },
-});
+      showSwapDronesDialog: noPayload<{ open: boolean }>((state) => {
+        state.open = true;
+      }),
+    },
+  });
 
 export const { closeSwapDronesDialog, showSwapDronesDialog } =
   swapDronesDialogActions;

@@ -58,10 +58,17 @@ const SwapDronesConfirmDialog = ({
                 <SwapDroneBadge side='left' label={swapDroneRef(pair.drone1)} />
               </Box>
               <SwapHoriz
-                sx={{ fontSize: 16, color: 'text.secondary', justifySelf: 'center' }}
+                sx={{
+                  fontSize: 16,
+                  color: 'text.secondary',
+                  justifySelf: 'center',
+                }}
               />
               <Box sx={{ justifySelf: 'start' }}>
-                <SwapDroneBadge side='right' label={swapDroneRef(pair.drone2)} />
+                <SwapDroneBadge
+                  side='right'
+                  label={swapDroneRef(pair.drone2)}
+                />
               </Box>
             </Fragment>
           ))}

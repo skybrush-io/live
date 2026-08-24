@@ -302,7 +302,12 @@ export const validateSwapBatch = (
     };
   }
 
-  const currentPreview = buildSwapPreview(currentDrone1, currentDrone2, false, t);
+  const currentPreview = buildSwapPreview(
+    currentDrone1,
+    currentDrone2,
+    false,
+    t
+  );
   const applyCurrentPair =
     currentPreview.kind === 'ready' &&
     !currentPairOverlapsQueue(currentDrone1, currentDrone2, queue);
@@ -382,8 +387,14 @@ export const buildSwapPreview = (
         {
           i18nKey: 'swapDronesDialog.preview.uploadToDrones',
           badges: {
-            drone1: { label: swapDronePostSwapRef(drone1, drone2), color: 'left' },
-            drone2: { label: swapDronePostSwapRef(drone2, drone1), color: 'right' },
+            drone1: {
+              label: swapDronePostSwapRef(drone1, drone2),
+              color: 'left',
+            },
+            drone2: {
+              label: swapDronePostSwapRef(drone2, drone1),
+              color: 'right',
+            },
           },
         },
       ],
