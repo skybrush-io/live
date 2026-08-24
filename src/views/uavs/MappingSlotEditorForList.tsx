@@ -14,7 +14,8 @@ import type { MissionMappingEditorContinuation } from '~/features/mission/utils'
 import { shouldOptimizeUIForTouch } from '~/features/settings/selectors';
 import type { RootState } from '~/store/reducers';
 
-const WIDTH = 80;
+const INPUT_WIDTH = 40;
+const WIDTH = INPUT_WIDTH * 2 + 4;
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -43,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
     position: 'absolute',
     top: '50%',
     left: -3,
-    width: WIDTH / 2,
+    width: INPUT_WIDTH,
     transform: 'translateY(-50%)',
 
     '& input': {
