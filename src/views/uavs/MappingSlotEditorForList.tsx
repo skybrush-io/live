@@ -14,7 +14,8 @@ import type { MissionMappingEditorContinuation } from '~/features/mission/utils'
 import { shouldOptimizeUIForTouch } from '~/features/settings/selectors';
 import type { RootState } from '~/store/reducers';
 
-const WIDTH = 80;
+const INPUT_WIDTH = 40;
+const WIDTH = INPUT_WIDTH * 2 + 4;
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -22,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
 
     boxSizing: 'border-box',
     width: WIDTH,
-    left: theme.spacing(1),
+    left: 5,
     top: -5,
     bottom: -6,
     zIndex: 1000,
@@ -39,11 +40,11 @@ const useStyles = makeStyles((theme) => ({
     fontFamily: monospacedFont,
     fontSize: 'small',
 
-    padding: theme.spacing(0, 0.5),
+    padding: 0,
     position: 'absolute',
     top: '50%',
-    left: 0,
-    right: 0,
+    left: -3,
+    width: INPUT_WIDTH,
     transform: 'translateY(-50%)',
 
     '& input': {
@@ -122,7 +123,6 @@ const MappingSlotEditorForList = ({
   return (
     <Box className={classes.root}>
       <InputBase
-        fullWidth
         autoFocus={!optimizeUIForTouch}
         className={classes.input}
         defaultValue={defaultValue}

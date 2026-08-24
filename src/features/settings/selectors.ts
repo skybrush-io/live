@@ -254,9 +254,9 @@ export const getUAVListSortPreference = createSelector(
 );
 
 /**
- * Returns whether the UAV list is currently sorted by mission-specific IDs
- * (sID). The result drives whether UI components that show drone identifiers
- * display the sID form or the physical UAV ID.
+ * Returns whether the UAV list is sorted by mission slot (sID).
+ * Used by grid view and dialogs to emphasize sID vs physical UAV ID.
+ * List view column order is fixed regardless of this value.
  */
 export const isSortingByMissionId = (state: RootState): boolean =>
   getUAVListSortPreference(state).key === UAVSortKey.MISSION_ID;
