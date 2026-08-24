@@ -10,7 +10,13 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { nanoid } from 'nanoid';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import {
+  useCallback,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
@@ -51,13 +57,15 @@ import {
  * stay visible until the exit transition has finished.
  */
 const useLastNonNull = <T,>(value: T | null) => {
-  const lastValueRef = useRef(value);
+  const lastValueRef = useRef<T | null>(value);
 
-  if (value !== null) {
-    lastValueRef.current = value;
-  }
+  useLayoutEffect(() => {
+    if (value !== null) {
+      lastValueRef.current = value;
+    }
+  }, [value]);
 
-  return lastValueRef.current;
+  return value ?? lastValueRef.current;
 };
 
 type StateProps = {
