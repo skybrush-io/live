@@ -90,6 +90,8 @@ type ShowInfoLayerProps = LayerProps &
     selection: Identifier[];
   }>;
 
+const HIDE_LABELS = Object.freeze({ hideLabels: true });
+
 const ShowInfoLayer = (props: ShowInfoLayerProps): React.JSX.Element => {
   const {
     approximateConvexHullOfFullShow,
@@ -115,12 +117,8 @@ const ShowInfoLayer = (props: ShowInfoLayerProps): React.JSX.Element => {
         selection,
         ConvexHullVariant.GROSS
       )}
-      {homePositionPoints(homePositions, { selection }, { hideLabels: true })}
-      {landingPositionPoints(
-        landingPositions,
-        { selection },
-        { hideLabels: true }
-      )}
+      {homePositionPoints(homePositions, { selection }, HIDE_LABELS)}
+      {landingPositionPoints(landingPositions, { selection }, HIDE_LABELS)}
       {convexHullPolygon(convexHull, selection, ConvexHullVariant.NET)}
     </ShowInfoLayerPresentation>
   );

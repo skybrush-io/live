@@ -25,10 +25,10 @@ import { styleForPointsOfPolygon } from '~/components/map/layers/features';
 import {
   convexHullPolygon,
   ConvexHullVariant,
+  GENERIC_MARKER_LABEL_CHARACTER_WIDTH,
   homePositionPoints,
   landingPositionPoints,
   orientationMarker,
-  TAKEOFF_LANDING_POSITION_CHARACTER_WIDTH,
 } from '~/components/map/layers/ShowInfoLayer';
 import { markAsSelectableAndEditable } from '~/components/map/layers/utils';
 import { Tool } from '~/components/map/tools';
@@ -818,6 +818,21 @@ type MissionInfoVectorSourceProps = {
   uavIdsForTrajectories?: string[];
 };
 
+// HACK: Add support for filtering the takeoff or landing markers being displayed
+//       instead of hiding them by replacing the values with `null`...
+function maskByIndex<T>(
+  items?: T[],
+  chosen?: number
+): Array<T | null> | undefined {
+  if (items === undefined) {
+    return items;
+  } else {
+    return chosen !== undefined
+      ? items.map((item, index) => (index === chosen ? item : null))
+      : items;
+  }
+}
+
 const MissionInfoVectorSource = ({
   convexHull,
   coordinateSystemType,
@@ -844,36 +859,24 @@ const MissionInfoVectorSource = ({
   <source.Vector>
     {([] as Array<JSX.Element | null>).concat(
       homePositionPoints(
-        // HACK: Add support for filtering in `homePositionPoints` instead of
-        //       hiding them by replacing the values with `null`...
-        selectedMissionIdInMissionEditorPanel !== undefined
-          ? homePositions?.map?.((hp, missionIndex) =>
-              missionIndex === selectedMissionIdInMissionEditorPanel ? hp : null
-            )
-          : homePositions,
+        maskByIndex(homePositions, selectedMissionIdInMissionEditorPanel),
         {
           minimumDistanceBetweenPositions: minimumDistanceBetweenHomePositions,
           estimatedLabelWidth: homePositions
             ? formatMissionId(homePositions.length - 1).length *
-              TAKEOFF_LANDING_POSITION_CHARACTER_WIDTH
+              GENERIC_MARKER_LABEL_CHARACTER_WIDTH
             : 0,
           selection,
         }
       ),
       landingPositionPoints(
-        // HACK: Add support for filtering in `landingPositionPoints` instead of
-        //       hiding them by replacing the values with `null`...
-        selectedMissionIdInMissionEditorPanel !== undefined
-          ? landingPositions?.map?.((lp, missionIndex) =>
-              missionIndex === selectedMissionIdInMissionEditorPanel ? lp : null
-            )
-          : landingPositions,
+        maskByIndex(landingPositions, selectedMissionIdInMissionEditorPanel),
         {
           minimumDistanceBetweenPositions:
             minimumDistanceBetweenLandingPositions,
           estimatedLabelWidth: landingPositions
             ? formatMissionId(landingPositions.length - 1).length *
-              TAKEOFF_LANDING_POSITION_CHARACTER_WIDTH
+              GENERIC_MARKER_LABEL_CHARACTER_WIDTH
             : 0,
         }
       ),

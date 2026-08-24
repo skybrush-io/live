@@ -1,4 +1,3 @@
-import mapValues from 'lodash-es/mapValues';
 import memoizeOne from 'memoize-one';
 import memoize from 'memoizee';
 import type React from 'react';
@@ -126,12 +125,107 @@ export const convexHullPolygon = (
   ];
 };
 
-// === Takeoff & Landing ===
+// === Markers for positions ===
+
+type PositionMarkerStyles = {
+  label: (id: Identifier) => Style;
+  marker: Style;
+  selection: Style;
+};
+
+const GENERIC_MARKER_LABEL_FONT_SIZE = 12;
+
+const createMemoizedLabelStyleFunction = (
+  labelFunc: (id: Identifier) => string
+) =>
+  memoize(
+    (id: Identifier) =>
+      new Style({
+        text: new Text({
+          font: `${GENERIC_MARKER_LABEL_FONT_SIZE}px sans-serif`,
+          offsetY: GENERIC_MARKER_LABEL_FONT_SIZE,
+          text: labelFunc(id),
+          textAlign: 'center',
+        }),
+      })
+  );
+
+/**
+ * Creates base / selected marker styles for a position marker with the given
+ * fill color and rotation.
+ */
+const createPositionMarkerStyles = ({
+  color,
+  labelFunc,
+  rotation = 0,
+}: {
+  color: string;
+  labelFunc: (id: Identifier) => string;
+  rotation?: number;
+}): PositionMarkerStyles => ({
+  label: createMemoizedLabelStyleFunction(labelFunc),
+  marker: new Style({
+    image: new RegularShape({
+      fill: fill(color),
+      points: 3,
+      radius: 6,
+      rotation,
+      stroke: blackVeryThinOutline,
+    }),
+  }),
+  selection: new Style({
+    image: new RegularShape({
+      fill: fill(color),
+      points: 3,
+      radius: 6,
+      rotation,
+      stroke: whiteVeryThinOutline,
+    }),
+  }),
+});
+
+type PositionPointsOptions = {
+  featureKeyPrefix: string;
+  globalIdFromIndex: (index: number) => string;
+  styleFunction: StyleFunction;
+};
+
+const positionPoints = (
+  positions: Array<GPSPosition | null | undefined> | undefined,
+  { featureKeyPrefix, globalIdFromIndex, styleFunction }: PositionPointsOptions
+) =>
+  Array.isArray(positions)
+    ? positions
+        .map((position, index) => {
+          if (!position) {
+            return null;
+          }
+
+          const featureKey = `${featureKeyPrefix}.${index}`;
+          const globalIdOfFeature = globalIdFromIndex(index);
+          const center = mapViewCoordinateFromLonLat([
+            position.lon,
+            position.lat,
+          ]);
+
+          return (
+            <Feature
+              key={featureKey}
+              id={globalIdOfFeature}
+              style={styleFunction}
+            >
+              <geom.Point coordinates={center} />
+            </Feature>
+          );
+        })
+        .filter(Boolean)
+    : [];
+
+// === Resolution-dependent visibility of markers ===
 
 // Estimate the character width based on the font size.
-export const TAKEOFF_LANDING_POSITION_LABEL_FONT_SIZE = 12;
-export const TAKEOFF_LANDING_POSITION_CHARACTER_WIDTH =
-  TAKEOFF_LANDING_POSITION_LABEL_FONT_SIZE * 0.6;
+export const GENERIC_MARKER_LABEL_CHARACTER_WIDTH =
+  GENERIC_MARKER_LABEL_FONT_SIZE * 0.6;
 
 type StyleFunctionFactoryForPositionWithDynamicallyVisibleLabelContext = {
   estimatedLabelWidth?: number;
@@ -203,107 +297,16 @@ const styleFunctionFactoryForPositionWithDynamicallyVisibleLabel =
     return stylesToApply;
   };
 
-// === Common position points ===
-
-type PositionPointsOptions = {
-  featureKeyPrefix: string;
-  globalIdFromIndex: (index: number) => string;
-  styleFunction: StyleFunction;
-};
-
-const positionPoints = (
-  positions: Array<GPSPosition | null | undefined> | undefined,
-  { featureKeyPrefix, globalIdFromIndex, styleFunction }: PositionPointsOptions
-) =>
-  Array.isArray(positions)
-    ? positions
-        .map((position, index) => {
-          if (!position) {
-            return null;
-          }
-
-          const featureKey = `${featureKeyPrefix}.${index}`;
-          const globalIdOfFeature = globalIdFromIndex(index);
-          const center = mapViewCoordinateFromLonLat([
-            position.lon,
-            position.lat,
-          ]);
-
-          return (
-            <Feature
-              key={featureKey}
-              id={globalIdOfFeature}
-              style={styleFunction}
-            >
-              <geom.Point coordinates={center} />
-            </Feature>
-          );
-        })
-        .filter(Boolean)
-    : [];
-
-// === Common position markers ===
-
-type PositionMarkerStyles = {
-  base: Style;
-  selected: Style;
-};
-
-/**
- * Creates base / selected marker styles for a position marker with the given
- * fill color and rotation.
- */
-const createPositionMarkerStyles = ({
-  color,
-  rotation = 0,
-}: {
-  color: string;
-  rotation?: number;
-}): PositionMarkerStyles => {
-  const marker = {
-    base: new RegularShape({
-      fill: fill(color),
-      points: 3,
-      radius: 6,
-      rotation,
-      stroke: blackVeryThinOutline,
-    }),
-    selected: new RegularShape({
-      fill: fill(color),
-      points: 3,
-      radius: 6,
-      rotation,
-      stroke: whiteVeryThinOutline,
-    }),
-  };
-
-  return mapValues(marker, (image) => new Style({ image }));
-};
-
 // === Landing ===
 
 /**
- * Style to use for landing markers.
+ * Styles to use for landing markers.
  */
-const landingMarkerStyle = createPositionMarkerStyles({
+const landingMarkerStyles = createPositionMarkerStyles({
   color: Colors.markers.landing,
+  labelFunc: (id) => formatMissionId(Number(globalIdToLandingPositionId(id))),
   rotation: Math.PI,
 });
-
-/**
- * Memoized function to generate styles for landing position marker labels.
- */
-const landingPositionLabelStyle = memoize(
-  (id: Identifier) =>
-    new Style({
-      text: new Text({
-        font: `${TAKEOFF_LANDING_POSITION_LABEL_FONT_SIZE}px sans-serif`,
-        offsetY: -TAKEOFF_LANDING_POSITION_LABEL_FONT_SIZE,
-        text: formatMissionId(Number(globalIdToLandingPositionId(id))),
-        textAlign: 'center',
-      }),
-    })
-);
 
 export const landingPositionPoints = (
   landingPositions: Array<GPSPosition | null | undefined> | undefined,
@@ -314,11 +317,7 @@ export const landingPositionPoints = (
     featureKeyPrefix: 'land',
     globalIdFromIndex: (index) => landingPositionIdToGlobalId(index.toString()),
     styleFunction: styleFunctionFactoryForPositionWithDynamicallyVisibleLabel(
-      {
-        label: landingPositionLabelStyle,
-        marker: landingMarkerStyle.base,
-        selection: landingMarkerStyle.selected,
-      },
+      landingMarkerStyles,
       context,
       options
     ),
@@ -327,26 +326,12 @@ export const landingPositionPoints = (
 // === Takeoff ===
 
 /**
- * Style to use for takeoff markers.
+ * Styles to use for takeoff markers.
  */
-const takeoffMarkerStyle = createPositionMarkerStyles({
+const takeoffMarkerStyles = createPositionMarkerStyles({
   color: Colors.markers.takeoff,
+  labelFunc: (id) => formatMissionId(Number(globalIdToHomePositionId(id))),
 });
-
-/**
- * Memoized function to generate styles for takeoff position marker labels.
- */
-const takeoffPositionLabelStyle = memoize(
-  (id: Identifier) =>
-    new Style({
-      text: new Text({
-        font: `${TAKEOFF_LANDING_POSITION_LABEL_FONT_SIZE}px sans-serif`,
-        offsetY: TAKEOFF_LANDING_POSITION_LABEL_FONT_SIZE,
-        text: formatMissionId(Number(globalIdToHomePositionId(id))),
-        textAlign: 'center',
-      }),
-    })
-);
 
 export const homePositionPoints = (
   homePositions: Array<GPSPosition | null | undefined> | undefined,
@@ -357,11 +342,7 @@ export const homePositionPoints = (
     featureKeyPrefix: 'home',
     globalIdFromIndex: (index) => homePositionIdToGlobalId(index.toString()),
     styleFunction: styleFunctionFactoryForPositionWithDynamicallyVisibleLabel(
-      {
-        label: takeoffPositionLabelStyle,
-        marker: takeoffMarkerStyle.base,
-        selection: takeoffMarkerStyle.selected,
-      },
+      takeoffMarkerStyles,
       context,
       options
     ),
