@@ -242,35 +242,53 @@ const positionPoints = (
         .filter(Boolean)
     : [];
 
-// === Landing ===
+// === Common position markers ===
+
+type PositionMarkerStyles = {
+  base: Style;
+  selected: Style;
+};
 
 /**
- * Shape to use for landing markers.
+ * Creates base / selected marker styles for a position marker with the given
+ * fill color and rotation.
  */
-const landingMarker = {
-  base: new RegularShape({
-    fill: fill(Colors.markers.landing),
-    points: 3,
-    radius: 6,
-    rotation: Math.PI,
-    stroke: blackVeryThinOutline,
-  }),
-  selected: new RegularShape({
-    fill: fill(Colors.markers.landing),
-    points: 3,
-    radius: 6,
-    rotation: Math.PI,
-    stroke: whiteVeryThinOutline,
-  }),
+const createPositionMarkerStyles = ({
+  color,
+  rotation = 0,
+}: {
+  color: string;
+  rotation?: number;
+}): PositionMarkerStyles => {
+  const marker = {
+    base: new RegularShape({
+      fill: fill(color),
+      points: 3,
+      radius: 6,
+      rotation,
+      stroke: blackVeryThinOutline,
+    }),
+    selected: new RegularShape({
+      fill: fill(color),
+      points: 3,
+      radius: 6,
+      rotation,
+      stroke: whiteVeryThinOutline,
+    }),
+  };
+
+  return mapValues(marker, (image) => new Style({ image }));
 };
+
+// === Landing ===
 
 /**
  * Style to use for landing markers.
  */
-const landingMarkerStyle = mapValues(
-  landingMarker,
-  (image) => new Style({ image })
-);
+const landingMarkerStyle = createPositionMarkerStyles({
+  color: Colors.markers.landing,
+  rotation: Math.PI,
+});
 
 /**
  * Memoized function to generate styles for landing position marker labels.
@@ -309,30 +327,11 @@ export const landingPositionPoints = (
 // === Takeoff ===
 
 /**
- * Shape to use for takeoff markers.
- */
-const takeoffTriangle = {
-  base: new RegularShape({
-    fill: fill(Colors.markers.takeoff),
-    points: 3,
-    radius: 6,
-    stroke: blackVeryThinOutline,
-  }),
-  selected: new RegularShape({
-    fill: fill(Colors.markers.takeoff),
-    points: 3,
-    radius: 6,
-    stroke: whiteVeryThinOutline,
-  }),
-};
-
-/**
  * Style to use for takeoff markers.
  */
-const takeoffTriangleStyle = mapValues(
-  takeoffTriangle,
-  (image) => new Style({ image })
-);
+const takeoffMarkerStyle = createPositionMarkerStyles({
+  color: Colors.markers.takeoff,
+});
 
 /**
  * Memoized function to generate styles for takeoff position marker labels.
@@ -360,8 +359,8 @@ export const homePositionPoints = (
     styleFunction: styleFunctionFactoryForPositionWithDynamicallyVisibleLabel(
       {
         label: takeoffPositionLabelStyle,
-        marker: takeoffTriangleStyle.base,
-        selection: takeoffTriangleStyle.selected,
+        marker: takeoffMarkerStyle.base,
+        selection: takeoffMarkerStyle.selected,
       },
       context,
       options
