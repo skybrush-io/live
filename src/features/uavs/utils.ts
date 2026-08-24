@@ -92,7 +92,7 @@ export const getSwapAdjustMissionMappingArgs = (
     return { uavId: pair.drone1.uavId, to: missionIndex2 };
   }
 
-  return { uavId: pair.drone1.uavId, to: missionIndex2! };
+  return { uavId: pair.drone1.uavId, to: missionIndex2 };
 };
 
 /**
@@ -166,6 +166,14 @@ export const swapDroneRef = (drone: SwapResolvedDrone): string =>
   drone.missionIndex === null
     ? drone.uavId
     : `${drone.uavId}/${formatMissionId(drone.missionIndex)}`;
+
+export const getSwapApplyPairKey = (pair: SwapApplyPair): string =>
+  `${swapDroneRef(pair.drone1)}->${swapDroneRef(pair.drone2)}`;
+
+export const getSwapPreviewLineKey = (line: SwapPreviewLine): string =>
+  `${line.i18nKey}:${Object.values(line.badges)
+    .map((badge) => badge.label)
+    .join('|')}`;
 
 /** Drone label after swap: same UAV ID, show ID taken from the paired drone. */
 export const swapDronePostSwapRef = (

@@ -10,7 +10,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { nanoid } from 'nanoid';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
@@ -77,7 +77,7 @@ type DispatchProps = {
 
 type Props = DispatchProps & StateProps;
 
-const SwapDronesDialog = ({
+const SwapDronesDialogBody = ({
   blocked,
   onlineUavIds,
   onApplySwap,
@@ -92,17 +92,6 @@ const SwapDronesDialog = ({
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [confirmPairs, setConfirmPairs] = useState<SwapApplyPair[]>([]);
   const [openUploadAfterSwap, setOpenUploadAfterSwap] = useState(true);
-
-  useEffect(() => {
-    if (open) {
-      setSlot1(emptySwapSlot());
-      setSlot2(emptySwapSlot());
-      setQueue([]);
-      setConfirmOpen(false);
-      setConfirmPairs([]);
-      setOpenUploadAfterSwap(true);
-    }
-  }, [open]);
 
   const preview = useMemo(
     () => buildSwapPreview(slot1.resolved, slot2.resolved, blocked, t),
@@ -353,6 +342,19 @@ const SwapDronesDialog = ({
       />
     </DraggableDialog>
   );
+};
+
+const SwapDronesDialog = (props: Props) => {
+  const prevOpenRef = useRef(false);
+  const sessionRef = useRef(0);
+
+  if (props.open && !prevOpenRef.current) {
+    sessionRef.current += 1;
+  }
+
+  prevOpenRef.current = props.open;
+
+  return <SwapDronesDialogBody key={sessionRef.current} {...props} />;
 };
 
 export default connect(

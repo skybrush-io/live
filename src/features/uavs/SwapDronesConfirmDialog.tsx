@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { DraggableDialog } from '@skybrush/mui-components';
 
 import SwapDroneBadge from './SwapDroneBadge';
-import { swapDroneRef, type SwapApplyPair } from './utils';
+import { getSwapApplyPairKey, swapDroneRef, type SwapApplyPair } from './utils';
 
 type SwapDronesConfirmDialogProps = {
   onCancel: () => void;
@@ -52,8 +52,8 @@ const SwapDronesConfirmDialog = ({
             width: 'max-content',
           }}
         >
-          {pairs.map((pair, index) => (
-            <Fragment key={index}>
+          {pairs.map((pair) => (
+            <Fragment key={getSwapApplyPairKey(pair)}>
               <Box sx={{ justifySelf: 'end' }}>
                 <SwapDroneBadge side='left' label={swapDroneRef(pair.drone1)} />
               </Box>

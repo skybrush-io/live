@@ -6,7 +6,7 @@ import type { ReactNode } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 import SwapDroneBadge from './SwapDroneBadge';
-import type { SwapPreviewLine } from './utils';
+import { getSwapPreviewLineKey, type SwapPreviewLine } from './utils';
 
 const Bold = ({ children }: { children?: ReactNode }) => (
   <Box component='span' sx={{ fontWeight: 700, color: 'text.secondary' }}>
@@ -63,8 +63,8 @@ const SwapDronesPreview = ({ lines }: SwapDronesPreviewProps) => {
         {t('swapDronesDialog.preview.heading')}
       </Typography>
       <Stack spacing={1} sx={{ width: '100%' }}>
-        {lines.map((line, index) => (
-          <PreviewLineCard key={index} line={line} />
+        {lines.map((line) => (
+          <PreviewLineCard key={getSwapPreviewLineKey(line)} line={line} />
         ))}
       </Stack>
     </Stack>
