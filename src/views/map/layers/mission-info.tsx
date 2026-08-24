@@ -1,6 +1,8 @@
 import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormGroup from '@mui/material/FormGroup';
+import Stack from '@mui/material/Stack';
+import { createSelector } from '@reduxjs/toolkit';
 import dropWhile from 'lodash-es/dropWhile';
 import takeWhile from 'lodash-es/takeWhile';
 import memoize from 'memoizee';
@@ -18,7 +20,6 @@ import { connect } from 'react-redux';
 import { Feature, geom, layer as olLayer, source } from '@collmot/ol-react';
 import { closePolygon, toRadians } from '@skybrush/math';
 
-import { createSelector } from '@reduxjs/toolkit';
 import mapMarkerOutline from '~/../assets/img/map-marker-outline.svg';
 import mapMarker from '~/../assets/img/map-marker.svg';
 import Colors from '~/components/colors';
@@ -36,6 +37,7 @@ import {
 } from '~/components/map/layers/ShowInfoLayer';
 import { markAsSelectableAndEditable } from '~/components/map/layers/utils';
 import { Tool } from '~/components/map/tools';
+import PopupColorPicker from '~/components/PopupColorPicker';
 import { setLayerParametersById } from '~/features/map/layers';
 import {
   getCompletionRatiosForMissionItemById,
@@ -76,6 +78,7 @@ import {
 } from '~/model/missions';
 import { getMapOriginRotationAngle } from '~/selectors/map';
 import type { RootState } from '~/store/reducers';
+import { parseColor, type RGBAColor } from '~/utils/coloring';
 import { hasFeature } from '~/utils/configuration';
 import { formatMissionId } from '~/utils/formatting';
 import {
@@ -129,6 +132,8 @@ const MissionInfoLayerSettingsPresentation = ({
   });
   const { parameters } = layer;
   const {
+    homePositionColor = Colors.markers.takeoff,
+    landingPositionColor = Colors.markers.landing,
     showConvexHull,
     showOrigin,
     showHomePositions,
@@ -143,8 +148,58 @@ const MissionInfoLayerSettingsPresentation = ({
     (event: ChangeEvent<HTMLInputElement>) =>
       setLayerParameters({ [name]: event.target.checked });
 
+  const handleColorChange =
+    (name: keyof MissionInfoLayerParameters) => (color: RGBAColor) =>
+      setLayerParameters({ [name]: parseColor(color, 'black').rgb().hex() });
+
+  const parsedHomePositionColor = parseColor(
+    homePositionColor,
+    Colors.markers.takeoff
+  )
+    .rgb()
+    .object();
+  const parsedLandingPositionColor = parseColor(
+    landingPositionColor,
+    Colors.markers.landing
+  )
+    .rgb()
+    .object();
+  console.log(parsedHomePositionColor);
+
   return (
     <FormGroup>
+      <Stack direction='row' spacing={1} alignItems='center' sx={{ ml: -1.5 }}>
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={Boolean(showHomePositions)}
+              value='showHomePositions'
+              onChange={handleChange('showHomePositions')}
+            />
+          }
+          label={t('showHomePositions')}
+        />
+        <PopupColorPicker
+          value={parsedHomePositionColor}
+          onChange={handleColorChange('homePositionColor')}
+        />
+      </Stack>
+      <Stack direction='row' spacing={1} alignItems='center' sx={{ ml: -1.5 }}>
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={Boolean(showLandingPositions)}
+              value='showLandingPositions'
+              onChange={handleChange('showLandingPositions')}
+            />
+          }
+          label={t('showLandingPositions')}
+        />
+        <PopupColorPicker
+          value={parsedLandingPositionColor}
+          onChange={handleColorChange('landingPositionColor')}
+        />
+      </Stack>
       <FormControlLabel
         control={
           <Checkbox
@@ -164,26 +219,6 @@ const MissionInfoLayerSettingsPresentation = ({
           />
         }
         label={t('showMissionOrigin')}
-      />
-      <FormControlLabel
-        control={
-          <Checkbox
-            checked={Boolean(showHomePositions)}
-            value='showHomePositions'
-            onChange={handleChange('showHomePositions')}
-          />
-        }
-        label={t('showHomePositions')}
-      />
-      <FormControlLabel
-        control={
-          <Checkbox
-            checked={Boolean(showLandingPositions)}
-            value='showLandingPositions'
-            onChange={handleChange('showLandingPositions')}
-          />
-        }
-        label={t('showLandingPositions')}
       />
       {hasFeature('showControl') && (
         <>

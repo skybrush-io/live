@@ -21,6 +21,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The tooltips of the UAV status, Selection groups and RTK status header widgets can
   now be pinned permanently to the workbench as a separate panel.
 
+- Added options to the "Mission info" layer that allow the user to change the color of
+  the takeoff and the landing markers.
+
 ### Changed
 
 - The header of the UAVs panel was simplified. The "Sort by mission IDs" button was

@@ -4,7 +4,7 @@
 
 import createColor, { type ColorInstance, type ColorLike } from 'color';
 
-type RGBAColor = {
+export type RGBAColor = {
   r: number;
   g: number;
   b: number;
