@@ -229,7 +229,19 @@ const SwapDronesDialogBody = ({
   };
 
   const handleConfirm = () => {
-    applySwapBatch(confirmPairs);
+    if (!batchValidation.valid || warningMessage !== null) {
+      setConfirmOpen(false);
+      return;
+    }
+
+    applySwapBatch(
+      buildSwapApplyPairs(
+        queue,
+        batchValidation.applyCurrentPair,
+        slot1.resolved,
+        slot2.resolved
+      )
+    );
   };
 
   return (
