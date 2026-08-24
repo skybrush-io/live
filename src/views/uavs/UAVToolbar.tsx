@@ -74,7 +74,11 @@ const UAVToolbar = ({
         // from showing when the dialog closes and focus returns to this button.
         trigger='mouseenter'
       >
-        <IconButton size='large' onClick={onShowSwapDronesDialog}>
+        <IconButton
+          aria-label={t('swapDronesDialog.toolbarButton')}
+          size='large'
+          onClick={onShowSwapDronesDialog}
+        >
           <SwapHoriz />
         </IconButton>
       </Tooltip>
