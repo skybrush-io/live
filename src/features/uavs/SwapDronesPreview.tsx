@@ -1,49 +1,12 @@
 import Box from '@mui/material/Box';
-import Chip from '@mui/material/Chip';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import type { ReactNode } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
-import {
-  swapFieldAccentColor,
-  type SwapPreviewBadge,
-  type SwapPreviewBadgeColor,
-  type SwapPreviewLine,
-  type SwapPreviewState,
-} from './utils';
-
-const BADGE_COLORS: Record<
-  SwapPreviewBadgeColor,
-  { bgcolor: string; color: string }
-> = {
-  left: {
-    bgcolor: swapFieldAccentColor('left'),
-    color: 'warning.contrastText',
-  },
-  right: {
-    bgcolor: swapFieldAccentColor('right'),
-    color: 'success.contrastText',
-  },
-};
-
-const InlineBadge = ({ color, label }: SwapPreviewBadge) => (
-  <Chip
-    label={label}
-    size='small'
-    component='span'
-    sx={{
-      height: 20,
-      mx: 0.25,
-      verticalAlign: 'middle',
-      fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
-      fontWeight: 600,
-      ...(color ? BADGE_COLORS[color] : {}),
-      '& .MuiChip-label': { px: 0.75, py: 0 },
-    }}
-  />
-);
+import SwapDroneBadge from './SwapDroneBadge';
+import type { SwapPreviewLine } from './utils';
 
 const Bold = ({ children }: { children?: ReactNode }) => (
   <Box component='span' sx={{ fontWeight: 700, color: 'text.secondary' }}>
@@ -55,7 +18,7 @@ const PreviewLineCard = ({ line }: { line: SwapPreviewLine }) => {
   const badgeComponents = Object.fromEntries(
     Object.entries(line.badges).map(([name, badge]) => [
       name,
-      <InlineBadge key={name} {...badge} />,
+      <SwapDroneBadge key={name} label={badge.label} side={badge.color} />,
     ])
   );
 
@@ -88,19 +51,11 @@ const PreviewLineCard = ({ line }: { line: SwapPreviewLine }) => {
 };
 
 type SwapDronesPreviewProps = {
-  preview: Extract<SwapPreviewState, { kind: 'placeholder' | 'ready' }>;
+  lines: SwapPreviewLine[];
 };
 
-const SwapDronesPreview = ({ preview }: SwapDronesPreviewProps) => {
+const SwapDronesPreview = ({ lines }: SwapDronesPreviewProps) => {
   const { t } = useTranslation();
-
-  if (preview.kind === 'placeholder') {
-    return (
-      <Typography variant='body2' color='text.secondary'>
-        {preview.message}
-      </Typography>
-    );
-  }
 
   return (
     <Stack spacing={1}>
@@ -108,7 +63,7 @@ const SwapDronesPreview = ({ preview }: SwapDronesPreviewProps) => {
         {t('swapDronesDialog.preview.heading')}
       </Typography>
       <Stack spacing={1} sx={{ width: '100%' }}>
-        {preview.lines.map((line, index) => (
+        {lines.map((line, index) => (
           <PreviewLineCard key={index} line={line} />
         ))}
       </Stack>
