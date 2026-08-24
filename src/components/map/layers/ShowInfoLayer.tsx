@@ -189,16 +189,58 @@ const styleFunctionFactoryForPositionWithDynamicallyVisibleLabel =
           context.estimatedLabelWidth * pointResolution
         : true;
 
-    return [
-      styles.marker,
-      ...(context?.selection?.includes?.(String(feature.getId()))
-        ? [styles.selection]
-        : []),
-      ...(labelsWouldFitWithoutOverlap && !options?.hideLabels
-        ? [styles.label(String(feature.getId()))]
-        : []),
-    ];
+    const featureId = String(feature.getId());
+    const selected = context?.selection?.includes?.(featureId);
+    const showLabel = labelsWouldFitWithoutOverlap && !options?.hideLabels;
+
+    const stylesToApply = [styles.marker];
+    if (selected) {
+      stylesToApply.push(styles.selection);
+    }
+    if (showLabel) {
+      stylesToApply.push(styles.label(featureId));
+    }
+    return stylesToApply;
   };
+
+// === Common position points ===
+
+type PositionPointsOptions = {
+  featureKeyPrefix: string;
+  globalIdFromIndex: (index: number) => string;
+  styleFunction: StyleFunction;
+};
+
+const positionPoints = (
+  positions: Array<GPSPosition | null | undefined> | undefined,
+  { featureKeyPrefix, globalIdFromIndex, styleFunction }: PositionPointsOptions
+) =>
+  Array.isArray(positions)
+    ? positions
+        .map((position, index) => {
+          if (!position) {
+            return null;
+          }
+
+          const featureKey = `${featureKeyPrefix}.${index}`;
+          const globalIdOfFeature = globalIdFromIndex(index);
+          const center = mapViewCoordinateFromLonLat([
+            position.lon,
+            position.lat,
+          ]);
+
+          return (
+            <Feature
+              key={featureKey}
+              id={globalIdOfFeature}
+              style={styleFunction}
+            >
+              <geom.Point coordinates={center} />
+            </Feature>
+          );
+        })
+        .filter(Boolean)
+    : [];
 
 // === Landing ===
 
@@ -250,42 +292,19 @@ export const landingPositionPoints = (
   context?: StyleFunctionFactoryForPositionWithDynamicallyVisibleLabelContext,
   options?: StyleFunctionFactoryForPositionWithDynamicallyVisibleLabelOptions
 ) =>
-  Array.isArray(landingPositions)
-    ? landingPositions
-        .map((landingPosition, index) => {
-          if (!landingPosition) {
-            return null;
-          }
-
-          const featureKey = `land.${index}`;
-          const globalIdOfFeature = landingPositionIdToGlobalId(
-            index.toString()
-          );
-          const center = mapViewCoordinateFromLonLat([
-            landingPosition.lon,
-            landingPosition.lat,
-          ]);
-
-          return (
-            <Feature
-              key={featureKey}
-              id={globalIdOfFeature}
-              style={styleFunctionFactoryForPositionWithDynamicallyVisibleLabel(
-                {
-                  label: landingPositionLabelStyle,
-                  marker: landingMarkerStyle.base,
-                  selection: landingMarkerStyle.selected,
-                },
-                context,
-                options
-              )}
-            >
-              <geom.Point coordinates={center} />
-            </Feature>
-          );
-        })
-        .filter(Boolean)
-    : [];
+  positionPoints(landingPositions, {
+    featureKeyPrefix: 'land',
+    globalIdFromIndex: (index) => landingPositionIdToGlobalId(index.toString()),
+    styleFunction: styleFunctionFactoryForPositionWithDynamicallyVisibleLabel(
+      {
+        label: landingPositionLabelStyle,
+        marker: landingMarkerStyle.base,
+        selection: landingMarkerStyle.selected,
+      },
+      context,
+      options
+    ),
+  });
 
 // === Takeoff ===
 
@@ -335,40 +354,19 @@ export const homePositionPoints = (
   context?: StyleFunctionFactoryForPositionWithDynamicallyVisibleLabelContext,
   options?: StyleFunctionFactoryForPositionWithDynamicallyVisibleLabelOptions
 ) =>
-  Array.isArray(homePositions)
-    ? homePositions
-        .map((homePosition, index) => {
-          if (!homePosition) {
-            return null;
-          }
-
-          const featureKey = `home.${index}`;
-          const globalIdOfFeature = homePositionIdToGlobalId(index.toString());
-          const center = mapViewCoordinateFromLonLat([
-            homePosition.lon,
-            homePosition.lat,
-          ]);
-
-          return (
-            <Feature
-              key={featureKey}
-              id={globalIdOfFeature}
-              style={styleFunctionFactoryForPositionWithDynamicallyVisibleLabel(
-                {
-                  label: takeoffPositionLabelStyle,
-                  marker: takeoffTriangleStyle.base,
-                  selection: takeoffTriangleStyle.selected,
-                },
-                context,
-                options
-              )}
-            >
-              <geom.Point coordinates={center} />
-            </Feature>
-          );
-        })
-        .filter(Boolean)
-    : [];
+  positionPoints(homePositions, {
+    featureKeyPrefix: 'home',
+    globalIdFromIndex: (index) => homePositionIdToGlobalId(index.toString()),
+    styleFunction: styleFunctionFactoryForPositionWithDynamicallyVisibleLabel(
+      {
+        label: takeoffPositionLabelStyle,
+        marker: takeoffTriangleStyle.base,
+        selection: takeoffTriangleStyle.selected,
+      },
+      context,
+      options
+    ),
+  });
 
 // === Layer ===
 
