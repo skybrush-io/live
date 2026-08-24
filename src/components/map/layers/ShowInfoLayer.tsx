@@ -240,62 +240,70 @@ type StyleFunctionFactoryForPositionWithDynamicallyVisibleLabelOptions = {
  * Factory for creating style functions that dynamically show / hide the label
  * of a position marker based on spacing, estimated width and map resolution.
  */
-const styleFunctionFactoryForPositionWithDynamicallyVisibleLabel =
-  (
-    styles: {
-      label: (id: Identifier) => Style;
-      marker: Style;
-      selection: Style;
-    },
-    context?: StyleFunctionFactoryForPositionWithDynamicallyVisibleLabelContext,
-    options?: StyleFunctionFactoryForPositionWithDynamicallyVisibleLabelOptions
-  ): StyleFunction =>
-  (feature, resolution) => {
+const styleFunctionFactoryForPositionWithDynamicallyVisibleLabel = (
+  styles: {
+    label: (id: Identifier) => Style;
+    marker: Style;
+    selection: Style;
+  },
+  context?: StyleFunctionFactoryForPositionWithDynamicallyVisibleLabelContext,
+  options?: StyleFunctionFactoryForPositionWithDynamicallyVisibleLabelOptions
+): StyleFunction => {
+  const { hideLabels = false } = options ?? {};
+  const {
+    estimatedLabelWidth = 1,
+    minimumDistanceBetweenPositions = Number.POSITIVE_INFINITY,
+  } = context ?? {};
+
+  /**
+   * The labels should only be visible if there is enough space between the
+   * positions to fit them without overlap given the spacing and resolution.
+   *
+   * Units of the calculation:
+   * - distance: m
+   * - width: px
+   * - resolution: m/px
+   *
+   * So we must show the label if resolution < minimumDistanceBetweenPositions / estimatedLabelWidth.
+   *
+   * NOTE: In case of missing context data we assume the optimistic outcome.
+   */
+  const resolutionThreshold =
+    minimumDistanceBetweenPositions / estimatedLabelWidth;
+  const shouldShowLabelAt = hideLabels
+    ? () => false
+    : !Number.isFinite(resolutionThreshold)
+      ? () => true
+      : (point: Point, resolution: number): boolean => {
+          return (
+            getPointResolution(
+              'EPSG:3857',
+              resolution,
+              point.getCoordinates()
+            ) < resolutionThreshold
+          );
+        };
+
+  return (feature, resolution) => {
     const geometry = feature.getGeometry();
     if (!(geometry instanceof Point)) {
       return;
     }
 
-    // PERF: Move the resolution calculation out of the style function,
+    // PERF: Move the call to shouldShowLabelAt() out of the style function, using a
+    //       generic point that is representative of the entire point array
     //       such that it only gets computed once for all positions...
-    const pointResolution = getPointResolution(
-      'EPSG:3857',
-      resolution,
-      geometry.getCoordinates()
-    );
-
-    /**
-     * The labels should only be visible if there is enough space between the
-     * positions to fit them without overlap given the spacing and resolution.
-     *
-     * Units of the calculation:
-     * - distance: m
-     * - width: px
-     * - resolution: m/px
-     *
-     * NOTE: In case of missing context data we assume the optimistic outcome.
-     */
-    const labelsWouldFitWithoutOverlap =
-      context &&
-      typeof context.minimumDistanceBetweenPositions === 'number' &&
-      typeof context.estimatedLabelWidth === 'number'
-        ? context.minimumDistanceBetweenPositions >
-          context.estimatedLabelWidth * pointResolution
-        : true;
-
     const featureId = String(feature.getId());
-    const selected = context?.selection?.includes?.(featureId);
-    const showLabel = labelsWouldFitWithoutOverlap && !options?.hideLabels;
-
     const stylesToApply = [styles.marker];
-    if (selected) {
+    if (context?.selection?.includes?.(featureId)) {
       stylesToApply.push(styles.selection);
     }
-    if (showLabel) {
+    if (shouldShowLabelAt(geometry, resolution)) {
       stylesToApply.push(styles.label(featureId));
     }
     return stylesToApply;
   };
+};
 
 // === Landing ===
 
