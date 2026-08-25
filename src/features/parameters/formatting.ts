@@ -4,7 +4,7 @@
  * "name=value" or "uavId=name=value", one parameter per line.
  */
 
-import { parsePartialParameters } from '~/features/upload-setup-dialog/parsing';
+import { parsePartialParameters } from '~/features/upload-support/setup-dialog/parsing';
 
 import type { ParameterData } from './types';
 
@@ -19,7 +19,7 @@ export function formatParameters(parameters: ParameterData[]): string {
  * Parses a multi-line parameter string into `ParameterData` objects.
  *
  * The function expects the input to be in a format accepted by
- * `parsePartialParameters()` in `features/upload-setup-dialog/parsing.ts`.
+ * `parsePartialParameters()` in `features/upload-support/setup-dialog/parsing.ts`.
  *
  * Items without a value throw an error.
  */

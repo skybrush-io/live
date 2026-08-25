@@ -312,6 +312,13 @@
       "warningsAndErrors": "Warn/Err"
     }
   },
+  "firmwareCheck": {
+    "result": {
+      "consistent": "All firmware versions consistent.",
+      "errors": "Error while checking firmware versions. Check the results below.",
+      "inconsistencies": "Some firmware versions are inconsistent. Check the results below."
+    }
+  },
   "fitAllFeaturesButton": {
     "fitAllDrones": "Fit all drones",
     "fitAllFeatures": "Fit all features"
@@ -1354,6 +1361,7 @@
   "toolbox": {
     "averagingInProgress": "{{number}} in progress",
     "coordinateAveraging": "Coordinate averaging",
+    "firmwareCheck": "Firmware check",
     "firmwareUpdate": "Firmware update",
     "licenseInfo": "License info",
     "offlineMaps": "Offline maps",

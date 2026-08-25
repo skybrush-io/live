@@ -22,11 +22,13 @@ import type {
   Response_SHOWCFG,
   Response_SYSPORTS,
   Response_UAVPREFLT,
+  Response_UAVVER,
   Response_WTHAT,
   RTKConfigurationPreset,
   RTKSurveySettings,
   ServicePortMap,
   UAVPreflightCheckInfo,
+  VersionMap,
   WeatherInfo,
 } from '@skybrush/flockwave-spec';
 import sortBy from 'lodash-es/sortBy';
@@ -529,6 +531,27 @@ export async function getShowConfiguration(
 }
 
 /**
+ * Returns available firmware version information for the given UAV.
+ */
+export async function getFirmwareVersionInfo(
+  hub: MessageHub,
+  uavId: string
+): Promise<VersionMap> {
+  validateUAVId(uavId);
+
+  const response = await hub.sendMessage<Response_UAVVER>({
+    type: 'UAV-VER',
+    ids: [uavId],
+  });
+
+  if (response.body?.type === 'UAV-VER') {
+    return response.body.result?.[uavId] ?? {};
+  }
+
+  throw new Error('Unexpected response for version query');
+}
+
+/**
  * Returns the weather information at the given location from the server.
  *
  * @param position  the location to query, as a lon-lat pair
@@ -611,6 +634,7 @@ const _queries = {
   getSelectedRTKPresetId,
   getServerPortMapping,
   getShowConfiguration,
+  getFirmwareVersionInfo,
   getWeatherInformation,
   isExtensionLoaded,
   listExtensions,
