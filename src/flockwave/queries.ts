@@ -545,6 +545,11 @@ export async function getFirmwareVersionInfo(
   });
 
   if (response.body?.type === 'UAV-VER') {
+    const error = response.body.error?.[uavId];
+    if (error) {
+      throw new Error(error || `Version query failed for ${uavId}`);
+    }
+
     return response.body.result?.[uavId] ?? {};
   }
 

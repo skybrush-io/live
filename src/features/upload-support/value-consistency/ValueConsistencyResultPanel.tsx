@@ -252,7 +252,7 @@ const ValueConsistencyResultPanel = ({
   const errorCount = Object.keys(errors).length;
   const inconsistencyCount = Object.keys(inconsistencies).length;
 
-  const hasData = Object.keys(distribution).length > 0;
+  const hasData = Object.keys(distribution).length > 0 || errorCount > 0;
   if (!hasData) {
     return (
       <BackgroundHint

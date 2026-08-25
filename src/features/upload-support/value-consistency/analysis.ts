@@ -9,7 +9,8 @@ import type { ValueConsistencyResult, ValueDistribution } from './types';
 const findMajority = (
   distribution: ValueDistribution
 ): Record<string, string> => {
-  const result: Record<string, string> = {};
+  // Null prototype so that names such as "__proto__" act as own keys only
+  const result: Record<string, string> = Object.create(null);
   for (const [name, values] of Object.entries(distribution)) {
     let maxCount = -1;
     let mostCommonValue: string | undefined = undefined;
@@ -37,7 +38,7 @@ const findInconsistencies = (
   distribution: ValueDistribution,
   majority: Record<string, string>
 ): Record<string, Identifier[]> => {
-  const result: Record<string, Identifier[]> = {};
+  const result: Record<string, Identifier[]> = Object.create(null);
   for (const [name, majorityValue] of Object.entries(majority)) {
     for (const [value, uavIds] of Object.entries(distribution[name] ?? {})) {
       if (value !== majorityValue) {
@@ -64,14 +65,14 @@ const collectValueDistribution = (
   distribution: ValueDistribution;
   errors: Record<Identifier, string>;
 } => {
-  const distribution: ValueDistribution = {};
-  const errors: Record<Identifier, string> = {};
+  const distribution: ValueDistribution = Object.create(null);
+  const errors: Record<Identifier, string> = Object.create(null);
 
   for (const [uavId, entry] of Object.entries(perUAVResults)) {
     if (entry.type === 'success') {
       for (const [name, value] of Object.entries(entry.result)) {
         const valueAsString = String(value);
-        distribution[name] ??= {};
+        distribution[name] ??= Object.create(null);
         distribution[name][valueAsString] ??= [];
         distribution[name][valueAsString].push(uavId);
       }
