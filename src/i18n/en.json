@@ -1490,20 +1490,20 @@
     "restrictToGlobalSelection": "Show global selection only"
   },
   "uploadPanel": {
-    "cancelUpload": "Cancel job",
+    "cancelUpload": "Cancel task",
     "clearHistory": "Clear history",
-    "flashLightsWhereFailed": "Flash lights of UAVs where the job failed",
+    "flashLightsWhereFailed": "Flash lights of UAVs where the task failed",
     "hasHiddenTargets": "Some of the waiting UAVs may be filtered.",
     "noJobResultAvailable": "No result available yet.",
     "resultsTab": "Results",
     "retryFailedAttempts": "Retry failed attempts automatically",
     "statusTab": "Status",
     "uploadAttemptFailed": "Attempt failed.",
-    "uploadCancelled": "Job cancelled by user.",
-    "uploadFinishedSuccessfully": "Job finished successfully.",
+    "uploadCancelled": "Task cancelled by user.",
+    "uploadFinishedSuccessfully": "Task finished successfully.",
     "uploadInProgress": "Please wait…",
     "uploadInProgressWithEstimate": "Estimated time remaining: {{time}}",
-    "uploadNotFinishedYet": "Job not finished yet."
+    "uploadNotFinishedYet": "Task not finished yet."
   },
   "uploadStatusLegend": {
     "clearUploadQueue": "Clear queue",
