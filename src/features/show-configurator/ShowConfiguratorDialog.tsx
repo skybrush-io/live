@@ -50,13 +50,6 @@ import {
 import { closeDialog, setAdaptResult, setDronesVisible } from './slice';
 
 const useStyles = makeStyles((theme: Theme) => ({
-  /* Ugly hack to move the sidebar to the right */
-  root: {
-    '& div.MuiDialog-paper > div > div:first-child': {
-      order: 100,
-      boxShadow: '2px 0 6px -2px inset rgba(0, 0, 0, 0.54)',
-    },
-  },
   backdrop: {
     position: 'absolute',
     zIndex: theme.zIndex.modal + 1,
@@ -251,7 +244,6 @@ const ShowConfiguratorDialog = (props: Props): React.JSX.Element => {
     <DraggableDialog
       fullWidth
       disableEscapeKeyDown
-      className={styles.root}
       maxWidth='xl'
       title={t('showConfiguratorDialog.title')}
       open={open}
@@ -288,6 +280,7 @@ const ShowConfiguratorDialog = (props: Props): React.JSX.Element => {
           </Button>
         </Box>
       }
+      sidebarPlacement='right'
       onClose={props.closeDialog}
     >
       <Box className={styles.contentRoot}>
