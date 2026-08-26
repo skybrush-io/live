@@ -1,45 +1,37 @@
-import Chip from '@mui/material/Chip';
+import Chip, { type ChipProps } from '@mui/material/Chip';
+import type { SxProps } from '@mui/material/styles';
 
 import { monospacedFont } from '@skybrush/app-theme-mui';
 
 import { FIELD_COLORS } from './constants';
-import type { SwapFieldSide, SwapPreviewBadgeColor } from './utils';
+import type { SwapFieldSide } from './utils';
 
-const BADGE_COLORS: Record<
-  SwapPreviewBadgeColor,
-  { bgcolor: string; color: string }
-> = {
+const COMMON_STYLES: SxProps = {
+  height: 20,
+  fontFamily: monospacedFont,
+  fontWeight: 600,
+};
+
+const STYLES: Record<SwapFieldSide | 'empty', SxProps> = {
+  empty: COMMON_STYLES,
   left: {
+    ...COMMON_STYLES,
     bgcolor: FIELD_COLORS['left'],
     color: 'warning.contrastText',
   },
   right: {
+    ...COMMON_STYLES,
     bgcolor: FIELD_COLORS['right'],
     color: 'success.contrastText',
   },
 };
 
 type SwapDroneBadgeProps = {
-  label: string;
   side?: SwapFieldSide;
-};
+} & ChipProps;
 
-const SwapDroneBadge = ({ label, side }: SwapDroneBadgeProps) => (
-  <Chip
-    label={label}
-    size='small'
-    component='span'
-    sx={{
-      height: 20,
-      flexShrink: 0,
-      mx: side ? 0 : 0.25,
-      verticalAlign: 'middle',
-      fontFamily: monospacedFont,
-      fontWeight: 600,
-      ...(side ? BADGE_COLORS[side] : {}),
-      '& .MuiChip-label': { px: 0.75, py: 0 },
-    }}
-  />
+const SwapDroneBadge = ({ side, ...rest }: SwapDroneBadgeProps) => (
+  <Chip size='small' sx={STYLES[side ?? 'empty']} {...rest} />
 );
 
 export default SwapDroneBadge;
