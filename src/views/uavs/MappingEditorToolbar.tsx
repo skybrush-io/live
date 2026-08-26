@@ -101,10 +101,10 @@ const MappingEditorToolbar = ({
         <Instructions />
       )}
       <Box sx={{ flex: 1 }} />
-      <IconButton size='large' onClick={finishMappingEditorSession}>
+      <IconButton onClick={finishMappingEditorSession}>
         <Check htmlColor={Colors.success} />
       </IconButton>
-      <IconButton size='large' onClick={openMappingMenu}>
+      <IconButton onClick={openMappingMenu}>
         <MoreVert />
       </IconButton>
       <Menu
