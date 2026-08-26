@@ -8,7 +8,7 @@ import { useSelector } from 'react-redux';
 
 import ParseableTextField, {
   type ParseableTextFieldChange,
-} from '~/features/upload-setup-dialog/ParseableTextField';
+} from '~/features/upload-support/setup-dialog/ParseableTextField';
 import { useAppDispatch } from '~/store/hooks';
 
 import { formatParameters, parseParameters } from './formatting';

@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import UploadSetupDialog from '~/features/upload-setup-dialog/UploadSetupDialog';
+import UploadSetupDialog from '~/features/upload-support/setup-dialog/UploadSetupDialog';
 import type { RootState } from '~/store/reducers';
 
 import ParameterListSidebar from './ParameterListSidebar';

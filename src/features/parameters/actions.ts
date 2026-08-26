@@ -2,7 +2,7 @@ import {
   createFileImportFromFileThunk,
   createProceedToUploadDialogThunk,
   createShowSetupDialogThunk,
-} from '~/features/upload-setup-dialog/actions';
+} from '~/features/upload-support/setup-dialog/actions';
 
 import { UPLOAD_JOB_TYPE } from './constants';
 import { parseParameters } from './formatting';

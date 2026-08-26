@@ -361,7 +361,7 @@ const { actions, reducer } = createSlice({
 
     openUploadDialogKeepingCurrentJob(
       state,
-      action: PayloadAction<{ backAction?: Action }>
+      action: PayloadAction<{ backAction?: Action } | undefined>
     ) {
       const { payload: options } = action;
       const { backAction } = options ?? {};

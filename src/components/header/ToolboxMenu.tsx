@@ -12,6 +12,8 @@ import { connect } from 'react-redux';
 
 import { showConsistencyCheckDialog } from '~/features/consistency-check/actions';
 import { CONSISTENCY_CHECK_JOB_TYPE as PARAMETER_CONSISTENCY_CHECK_JOB_TYPE } from '~/features/consistency-check/constants';
+import { showFirmwareCheckDialog } from '~/features/firmware-check/actions';
+import { FIRMWARE_CHECK_JOB_TYPE } from '~/features/firmware-check/constants';
 import { showFirmwareUpdateDialog } from '~/features/firmware-update/actions';
 import { JOB_TYPE as FIRMWARE_UPLOAD_JOB_TYPE } from '~/features/firmware-update/constants';
 import { showLicenseInfoDialog } from '~/features/license-info/slice';
@@ -37,6 +39,7 @@ type ToolboxMenuPresentationProps = Readonly<{
   numberOfAveragingInProgress: number;
   requestClose: () => void;
   showConsistencyCheckDialog: () => void;
+  showFirmwareCheckDialog: () => void;
   showAveragingDialog: () => void;
   showFirmwareUpdateDialog: () => void;
   showLicenseInfoDialog: () => void;
@@ -51,6 +54,7 @@ const ToolboxMenuPresentation = ({
   isConnected,
   numberOfAveragingInProgress,
   showConsistencyCheckDialog,
+  showFirmwareCheckDialog,
   showAveragingDialog,
   showFirmwareUpdateDialog,
   showLicenseInfoDialog,
@@ -110,6 +114,11 @@ const ToolboxMenuPresentation = ({
         jobType={PARAMETER_CONSISTENCY_CHECK_JOB_TYPE}
       />
       <JobRelatedMenuItem
+        onClick={createClickListener(showFirmwareCheckDialog)}
+        title={t('toolbox.firmwareCheck')}
+        jobType={FIRMWARE_CHECK_JOB_TYPE}
+      />
+      <JobRelatedMenuItem
         onClick={createClickListener(showParameterUploadDialog)}
         title={t('toolbox.paramUpload')}
         jobType={PARAMETER_UPLOAD_JOB_TYPE}
@@ -154,6 +163,7 @@ export default connect(
   // mapDispatchToProps
   {
     showConsistencyCheckDialog,
+    showFirmwareCheckDialog,
     showAveragingDialog,
     showFirmwareUpdateDialog,
     showLicenseInfoDialog,
