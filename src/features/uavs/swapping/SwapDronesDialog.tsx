@@ -37,9 +37,13 @@ import {
   buildSwapApplyPairs,
   buildSwapPreview,
   currentPairOverlapsQueue,
-  emptySwapSlot,
   validateSwapBatch,
 } from './utils';
+
+const EMPTY_SLOT: SwapDroneFieldValue = Object.freeze({
+  filterText: '',
+  resolved: null,
+});
 
 /**
  * Retains the last non-null value so that the contents of a collapsing region
@@ -83,8 +87,8 @@ const SwapDronesDialogBody = ({
   reverseMissionMapping,
 }: Props) => {
   const { t } = useTranslation();
-  const [slot1, setSlot1] = useState<SwapDroneFieldValue>(emptySwapSlot);
-  const [slot2, setSlot2] = useState<SwapDroneFieldValue>(emptySwapSlot);
+  const [slot1, setSlot1] = useState<SwapDroneFieldValue>(EMPTY_SLOT);
+  const [slot2, setSlot2] = useState<SwapDroneFieldValue>(EMPTY_SLOT);
   const [queue, setQueue] = useState<ResolvedDronePairWithId[]>([]);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [confirmPairs, setConfirmPairs] = useState<ResolvedDronePair[]>([]);
@@ -171,8 +175,8 @@ const SwapDronesDialogBody = ({
         drone2,
       },
     ]);
-    setSlot1(emptySwapSlot());
-    setSlot2(emptySwapSlot());
+    setSlot1(EMPTY_SLOT);
+    setSlot2(EMPTY_SLOT);
   };
 
   const handleRemoveFromQueue = useCallback((id: string) => {
@@ -183,8 +187,8 @@ const SwapDronesDialogBody = ({
     onApplySwap(pairs, { openUploadAfterSwap });
     setConfirmOpen(false);
     setConfirmPairs([]);
-    setSlot1(emptySwapSlot());
-    setSlot2(emptySwapSlot());
+    setSlot1(EMPTY_SLOT);
+    setSlot2(EMPTY_SLOT);
     setQueue([]);
     showSuccess(t('swapDronesDialog.success'));
     onClose();

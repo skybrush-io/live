@@ -114,11 +114,6 @@ export const currentPairOverlapsQueue = (
   );
 };
 
-export const emptySwapSlot = () => ({
-  filterText: '',
-  resolved: null,
-});
-
 export const swapDroneRef = (drone: ResolvedDrone): string =>
   drone.missionIndex === null
     ? drone.uavId
