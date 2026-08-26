@@ -22,7 +22,6 @@ import type {
   Response_SHOWCFG,
   Response_SYSPORTS,
   Response_UAVPREFLT,
-  Response_UAVVER,
   Response_WTHAT,
   RTKConfigurationPreset,
   RTKSurveySettings,
@@ -538,22 +537,9 @@ export async function getFirmwareVersionInfo(
   uavId: string
 ): Promise<VersionMap> {
   validateUAVId(uavId);
-
-  const response = await hub.sendMessage<Response_UAVVER>({
+  return await hub.startAsyncOperationForSingleId<VersionMap>(uavId, {
     type: 'UAV-VER',
-    ids: [uavId],
   });
-
-  if (response.body?.type === 'UAV-VER') {
-    const error = response.body.error?.[uavId];
-    if (error) {
-      throw new Error(error || `Version query failed for ${uavId}`);
-    }
-
-    return response.body.result?.[uavId] ?? {};
-  }
-
-  throw new Error('Unexpected response for version query');
 }
 
 /**

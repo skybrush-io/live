@@ -52,6 +52,7 @@ const MESSAGES_WITH_RECEIPTS: Record<string, boolean> = {
   'UAV-SLEEP': true,
   'UAV-TAKEOFF': true,
   'UAV-TEST': true,
+  'UAV-VER': true,
   'UAV-WAKEUP': true,
 };
 
