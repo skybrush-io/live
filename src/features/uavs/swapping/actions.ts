@@ -10,10 +10,10 @@ import {
 } from '~/features/upload/slice';
 import type { AppThunk } from '~/store/reducers';
 
+import type { ResolvedDronePair } from './types';
 import {
   getSwapAdjustMissionMappingArgs,
   getSwapPairAffectedUavIds,
-  type SwapApplyPair,
 } from './utils';
 
 export type ApplySwapDronesBatchOptions = {
@@ -22,7 +22,7 @@ export type ApplySwapDronesBatchOptions = {
 
 export const applySwapDronesBatch =
   (
-    pairs: SwapApplyPair[],
+    pairs: ResolvedDronePair[],
     { openUploadAfterSwap = false }: ApplySwapDronesBatchOptions = {}
   ): AppThunk =>
   (dispatch, getState) => {

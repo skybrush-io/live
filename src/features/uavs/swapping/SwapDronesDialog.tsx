@@ -32,14 +32,13 @@ import SwapDroneField, { type SwapDroneFieldValue } from './SwapDroneField';
 import SwapDronesConfirmDialog from './SwapDronesConfirmDialog';
 import SwapDronesPreview from './SwapDronesPreview';
 import SwapDronesQueuePanel from './SwapDronesQueuePanel';
+import type { ResolvedDronePair, ResolvedDronePairWithId } from './types';
 import {
   buildSwapApplyPairs,
   buildSwapPreview,
   currentPairOverlapsQueue,
   emptySwapSlot,
   validateSwapBatch,
-  type SwapApplyPair,
-  type SwapQueuedPair,
 } from './utils';
 
 /**
@@ -67,7 +66,7 @@ type StateProps = {
 
 type DispatchProps = {
   onApplySwap: (
-    pairs: SwapApplyPair[],
+    pairs: ResolvedDronePair[],
     options?: { openUploadAfterSwap?: boolean }
   ) => void;
   onClose: () => void;
@@ -86,9 +85,9 @@ const SwapDronesDialogBody = ({
   const { t } = useTranslation();
   const [slot1, setSlot1] = useState<SwapDroneFieldValue>(emptySwapSlot);
   const [slot2, setSlot2] = useState<SwapDroneFieldValue>(emptySwapSlot);
-  const [queue, setQueue] = useState<SwapQueuedPair[]>([]);
+  const [queue, setQueue] = useState<ResolvedDronePairWithId[]>([]);
   const [confirmOpen, setConfirmOpen] = useState(false);
-  const [confirmPairs, setConfirmPairs] = useState<SwapApplyPair[]>([]);
+  const [confirmPairs, setConfirmPairs] = useState<ResolvedDronePair[]>([]);
   const [openUploadAfterSwap, setOpenUploadAfterSwap] = useState(true);
 
   const preview = useMemo(
@@ -180,7 +179,7 @@ const SwapDronesDialogBody = ({
     setQueue((current) => current.filter((pair) => pair.id !== id));
   }, []);
 
-  const applySwapBatch = (pairs: SwapApplyPair[]) => {
+  const applySwapBatch = (pairs: ResolvedDronePair[]) => {
     onApplySwap(pairs, { openUploadAfterSwap });
     setConfirmOpen(false);
     setConfirmPairs([]);

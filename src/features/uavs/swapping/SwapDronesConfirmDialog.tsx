@@ -10,13 +10,14 @@ import { useTranslation } from 'react-i18next';
 import { DraggableDialog } from '@skybrush/mui-components';
 
 import SwapDroneBadge from './SwapDroneBadge';
-import { getSwapApplyPairKey, swapDroneRef, type SwapApplyPair } from './utils';
+import type { ResolvedDronePair } from './types';
+import { getSwapApplyPairKey, swapDroneRef } from './utils';
 
 type SwapDronesConfirmDialogProps = {
   onCancel: () => void;
   onConfirm: () => void;
   open: boolean;
-  pairs: SwapApplyPair[];
+  pairs: ResolvedDronePair[];
 };
 
 const SwapDronesConfirmDialog = ({

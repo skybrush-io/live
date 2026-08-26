@@ -10,11 +10,12 @@ import { Tooltip } from '@skybrush/mui-components';
 
 import { SWAP_DRONES_QUEUE_COLUMN_WIDTH } from './constants';
 import SwapDroneBadge from './SwapDroneBadge';
-import { swapDroneRef, type SwapQueuedPair } from './utils';
+import type { ResolvedDronePairWithId } from './types';
+import { swapDroneRef } from './utils';
 
 type SwapDronesQueuePanelProps = {
   onRemove: (id: string) => void;
-  queue: SwapQueuedPair[];
+  queue: ResolvedDronePairWithId[];
 };
 
 const SwapDronesQueuePanel = ({

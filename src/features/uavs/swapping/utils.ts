@@ -6,13 +6,13 @@ import type { Identifier } from '~/utils/collections';
 import { formatMissionId, parseMissionId } from '~/utils/formatting';
 import type { Nullable } from '~/utils/types';
 
-import type { ResolvedDrone } from './types';
+import type { ResolvedDrone, ResolvedDronePair } from './types';
 
 export type SwapFieldSide = 'left' | 'right';
 
 export type SwapPreviewBadgeColor = SwapFieldSide;
 
-export type SwapPreviewBadge = {
+type SwapPreviewBadge = {
   color?: SwapPreviewBadgeColor;
   label: string;
 };
@@ -28,19 +28,8 @@ export type SwapPreviewState =
   | { kind: 'ready'; lines: SwapPreviewLine[] }
   | { kind: 'warning'; message: string };
 
-export type SwapQueuedPair = {
-  drone1: ResolvedDrone;
-  drone2: ResolvedDrone;
-  id: string;
-};
-
-export type SwapApplyPair = {
-  drone1: ResolvedDrone;
-  drone2: ResolvedDrone;
-};
-
 export const getSwapAdjustMissionMappingArgs = (
-  pair: SwapApplyPair,
+  pair: ResolvedDronePair,
   reverseMapping: Readonly<Record<string, MissionIndex>>
 ): { to: MissionIndex; uavId: Identifier } | null => {
   const missionIndex1 = reverseMapping[pair.drone1.uavId] ?? null;
@@ -66,7 +55,7 @@ export const getSwapAdjustMissionMappingArgs = (
  * `adjustMissionMapping` notifies via `notifyUAVsInMissionMappingChanged`.
  */
 export const getSwapPairAffectedUavIds = (
-  pair: SwapApplyPair,
+  pair: ResolvedDronePair,
   mapping: ReadonlyArray<Nullable<Identifier>>,
   reverseMapping: Readonly<Record<string, MissionIndex>>
 ): Identifier[] => {
@@ -87,12 +76,12 @@ export const getSwapPairAffectedUavIds = (
 };
 
 export const buildSwapApplyPairs = (
-  queue: readonly SwapQueuedPair[],
+  queue: readonly ResolvedDronePair[],
   applyCurrentPair: boolean,
   currentDrone1: ResolvedDrone | null,
   currentDrone2: ResolvedDrone | null
-): SwapApplyPair[] => {
-  const pairs: SwapApplyPair[] = queue.map(({ drone1, drone2 }) => ({
+): ResolvedDronePair[] => {
+  const pairs: ResolvedDronePair[] = queue.map(({ drone1, drone2 }) => ({
     drone1,
     drone2,
   }));
@@ -107,7 +96,7 @@ export const buildSwapApplyPairs = (
 export const currentPairOverlapsQueue = (
   drone1: ResolvedDrone | null,
   drone2: ResolvedDrone | null,
-  queue: readonly SwapQueuedPair[]
+  queue: readonly ResolvedDronePair[]
 ): boolean => {
   if (!drone1 || !drone2 || queue.length === 0) {
     return false;
@@ -133,7 +122,7 @@ export const swapDroneRef = (drone: ResolvedDrone): string =>
     ? drone.uavId
     : `${drone.uavId}/${formatMissionId(drone.missionIndex)}`;
 
-export const getSwapApplyPairKey = (pair: SwapApplyPair): string =>
+export const getSwapApplyPairKey = (pair: ResolvedDronePair): string =>
   `${swapDroneRef(pair.drone1)}->${swapDroneRef(pair.drone2)}`;
 
 export const getSwapPreviewLineKey = (line: SwapPreviewLine): string =>
@@ -233,8 +222,8 @@ export const resolveCurrentDroneState = (
   };
 };
 
-export const isStoredSwapPairStale = (
-  pair: SwapQueuedPair,
+export const isStoredPairStale = (
+  pair: ResolvedDronePair,
   onlineUavIds: readonly Identifier[],
   reverseMapping: Readonly<Record<string, MissionIndex>>
 ): boolean => {
@@ -260,7 +249,7 @@ export const isStoredSwapPairStale = (
 };
 
 export const validateSwapBatch = (
-  queue: readonly SwapQueuedPair[],
+  queue: readonly ResolvedDronePair[],
   currentDrone1: ResolvedDrone | null,
   currentDrone2: ResolvedDrone | null,
   blocked: boolean,
@@ -291,7 +280,7 @@ export const validateSwapBatch = (
   }
 
   for (const pair of queue) {
-    if (isStoredSwapPairStale(pair, onlineUavIds, reverseMapping)) {
+    if (isStoredPairStale(pair, onlineUavIds, reverseMapping)) {
       return {
         valid: false,
         reason: 'stale',
