@@ -9,7 +9,7 @@ import showUploadJobSpecification from '~/features/show/upload';
 import { registerUploadJobType } from '~/features/upload/jobs';
 import { registerUploadJobResultPanel } from '~/features/upload/result-panels';
 import ValueConsistencyResultPanel from '~/features/upload-support/value-consistency/ValueConsistencyResultPanel';
-import { tt } from '~/i18n';
+import { tt, ttRecord } from '~/i18n';
 
 function registerUploadJobTypes() {
   const specs = [
@@ -44,6 +44,7 @@ function registerUploadJobTypes() {
           errors: tt('firmwareCheck.result.errors'),
           inconsistencies: tt('firmwareCheck.result.inconsistencies'),
         },
+        names: ttRecord('firmwareCheck.names'),
       }
     )
   );

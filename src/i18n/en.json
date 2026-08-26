@@ -313,6 +313,15 @@
     }
   },
   "firmwareCheck": {
+    "names": {
+      "board": "Board revision",
+      "firmware": "Firmware version",
+      "flight_sw": "Flight software version",
+      "middleware_sw": "Middleware version",
+      "os_sw": "Operating system version",
+      "revision": "Revision",
+      "server": "Server version"
+    },
     "result": {
       "consistent": "All firmware versions consistent.",
       "errors": "Error while checking firmware versions. Check the results below.",

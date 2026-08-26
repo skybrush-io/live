@@ -72,3 +72,25 @@ export const tt =
   (key: string, options?: TOptions): PreparedI18nKey =>
   (t: TFunction) =>
     options ? t(key, options) : t(key);
+
+/**
+ * Prepared lookup of an i18n namespace, resolving to a plain record
+ * with string keys.
+ */
+export type PreparedI18nRecord = (
+  t: TFunction
+) => Readonly<Record<string, string>>;
+
+/**
+ * Same as tt, but for an entire i18n namespace.
+ */
+export const ttRecord =
+  (key: string): PreparedI18nRecord =>
+  (t) => {
+    // Falls back to an empty record when the key does not resolve to an
+    // object; with `returnObjects`, i18next yields the key itself instead.
+    const result: unknown = t(key, { returnObjects: true });
+    return typeof result === 'object' && result !== null
+      ? (result as Record<string, string>)
+      : {};
+  };
