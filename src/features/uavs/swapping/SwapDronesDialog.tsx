@@ -28,7 +28,7 @@ import { getUAVIdList } from '../selectors';
 import { applySwapDronesBatch } from './actions';
 import { isSwapDronesDialogOpen } from './selectors';
 import { closeSwapDronesDialog } from './slice';
-import SwapDroneField from './SwapDroneField';
+import SwapDroneField, { type SwapDroneFieldValue } from './SwapDroneField';
 import SwapDronesConfirmDialog from './SwapDronesConfirmDialog';
 import SwapDronesPreview from './SwapDronesPreview';
 import SwapDronesQueuePanel from './SwapDronesQueuePanel';
@@ -40,7 +40,6 @@ import {
   validateSwapBatch,
   type SwapApplyPair,
   type SwapQueuedPair,
-  type SwapSlotState,
 } from './utils';
 
 /**
@@ -85,8 +84,8 @@ const SwapDronesDialogBody = ({
   reverseMissionMapping,
 }: Props) => {
   const { t } = useTranslation();
-  const [slot1, setSlot1] = useState<SwapSlotState>(emptySwapSlot);
-  const [slot2, setSlot2] = useState<SwapSlotState>(emptySwapSlot);
+  const [slot1, setSlot1] = useState<SwapDroneFieldValue>(emptySwapSlot);
+  const [slot2, setSlot2] = useState<SwapDroneFieldValue>(emptySwapSlot);
   const [queue, setQueue] = useState<SwapQueuedPair[]>([]);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [confirmPairs, setConfirmPairs] = useState<SwapApplyPair[]>([]);
@@ -157,8 +156,6 @@ const SwapDronesDialogBody = ({
   const lastPreviewLines = useLastNonNull(
     preview.kind === 'ready' ? preview.lines : null
   );
-
-  const hasQueue = queue.length > 0;
 
   const handleAdd = () => {
     const drone1 = slot1.resolved;
@@ -237,7 +234,7 @@ const SwapDronesDialogBody = ({
 
   return (
     <DraggableDialog
-      maxWidth={false}
+      maxWidth='md'
       open={open}
       sidebarComponents={
         <SwapDronesQueuePanel queue={queue} onRemove={handleRemoveFromQueue} />

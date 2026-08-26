@@ -13,12 +13,21 @@ import {
 import { getUAVIdList } from '~/features/uavs/selectors';
 
 import { FIELD_COLORS } from './constants';
+import type { ResolvedDrone } from './types';
 import {
   resolveSwapDrone,
   swapSelectionLabel,
   type SwapFieldSide,
-  type SwapSlotState,
 } from './utils';
+
+/**
+ * Object representing the text entered in a `SwapDroneField` and the drone that it
+ * resolves to, if any.
+ */
+export type SwapDroneFieldValue = {
+  filterText: string;
+  resolved: ResolvedDrone | null;
+};
 
 const createFieldStyle = (color: string) => ({
   '& .MuiFilledInput-root': {
@@ -47,9 +56,9 @@ const FIELD_STYLES: Record<SwapFieldSide, SxProps> = {
 };
 
 type SwapDroneFieldProps = {
-  onSlotChange: (slot: SwapSlotState) => void;
+  onSlotChange: (slot: SwapDroneFieldValue) => void;
   side: SwapFieldSide;
-  slot: SwapSlotState;
+  slot: SwapDroneFieldValue;
 };
 
 const SwapDroneField = ({ onSlotChange, side, slot }: SwapDroneFieldProps) => {

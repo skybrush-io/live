@@ -6,22 +6,11 @@ import type { Identifier } from '~/utils/collections';
 import { formatMissionId, parseMissionId } from '~/utils/formatting';
 import type { Nullable } from '~/utils/types';
 
-export type SwapResolvedDrone = {
-  missionIndex: MissionIndex | null;
-  uavId: Identifier;
-};
-
-export type SwapSlotState = {
-  filterText: string;
-  resolved: SwapResolvedDrone | null;
-};
+import type { ResolvedDrone } from './types';
 
 export type SwapFieldSide = 'left' | 'right';
 
 export type SwapPreviewBadgeColor = SwapFieldSide;
-
-export const swapFieldAccentColor = (side: SwapFieldSide) =>
-  side === 'left' ? 'warning.main' : 'success.main';
 
 export type SwapPreviewBadge = {
   color?: SwapPreviewBadgeColor;
@@ -40,14 +29,14 @@ export type SwapPreviewState =
   | { kind: 'warning'; message: string };
 
 export type SwapQueuedPair = {
-  drone1: SwapResolvedDrone;
-  drone2: SwapResolvedDrone;
+  drone1: ResolvedDrone;
+  drone2: ResolvedDrone;
   id: string;
 };
 
 export type SwapApplyPair = {
-  drone1: SwapResolvedDrone;
-  drone2: SwapResolvedDrone;
+  drone1: ResolvedDrone;
+  drone2: ResolvedDrone;
 };
 
 export const getSwapAdjustMissionMappingArgs = (
@@ -100,8 +89,8 @@ export const getSwapPairAffectedUavIds = (
 export const buildSwapApplyPairs = (
   queue: readonly SwapQueuedPair[],
   applyCurrentPair: boolean,
-  currentDrone1: SwapResolvedDrone | null,
-  currentDrone2: SwapResolvedDrone | null
+  currentDrone1: ResolvedDrone | null,
+  currentDrone2: ResolvedDrone | null
 ): SwapApplyPair[] => {
   const pairs: SwapApplyPair[] = queue.map(({ drone1, drone2 }) => ({
     drone1,
@@ -116,8 +105,8 @@ export const buildSwapApplyPairs = (
 };
 
 export const currentPairOverlapsQueue = (
-  drone1: SwapResolvedDrone | null,
-  drone2: SwapResolvedDrone | null,
+  drone1: ResolvedDrone | null,
+  drone2: ResolvedDrone | null,
   queue: readonly SwapQueuedPair[]
 ): boolean => {
   if (!drone1 || !drone2 || queue.length === 0) {
@@ -139,7 +128,7 @@ export const emptySwapSlot = () => ({
   resolved: null,
 });
 
-export const swapDroneRef = (drone: SwapResolvedDrone): string =>
+export const swapDroneRef = (drone: ResolvedDrone): string =>
   drone.missionIndex === null
     ? drone.uavId
     : `${drone.uavId}/${formatMissionId(drone.missionIndex)}`;
@@ -154,16 +143,16 @@ export const getSwapPreviewLineKey = (line: SwapPreviewLine): string =>
 
 /** Drone label after swap: same UAV ID, show ID taken from the paired drone. */
 export const swapDronePostSwapRef = (
-  drone: SwapResolvedDrone,
-  pairedDrone: SwapResolvedDrone
+  drone: ResolvedDrone,
+  pairedDrone: ResolvedDrone
 ): string =>
   pairedDrone.missionIndex === null
     ? drone.uavId
     : `${drone.uavId}/${formatMissionId(pairedDrone.missionIndex)}`;
 
 const fieldBadgeColor = (
-  drone: SwapResolvedDrone,
-  leftDrone: SwapResolvedDrone
+  drone: ResolvedDrone,
+  leftDrone: ResolvedDrone
 ): SwapPreviewBadgeColor =>
   drone.uavId === leftDrone.uavId ? 'left' : 'right';
 
@@ -190,7 +179,7 @@ export const resolveSwapDrone = (
   onlineUavIds: readonly Identifier[],
   mapping: ReadonlyArray<Nullable<Identifier>>,
   reverseMapping: Readonly<Record<string, MissionIndex>>
-): SwapResolvedDrone | null => {
+): ResolvedDrone | null => {
   const trimmed = query.trim();
   if (!trimmed) {
     return null;
@@ -230,10 +219,10 @@ export type SwapBatchValidation =
   | { message: string; reason: SwapBatchValidationReason; valid: false };
 
 export const resolveCurrentDroneState = (
-  drone: SwapResolvedDrone,
+  drone: ResolvedDrone,
   onlineUavIds: readonly Identifier[],
   reverseMapping: Readonly<Record<string, MissionIndex>>
-): SwapResolvedDrone | null => {
+): ResolvedDrone | null => {
   if (!onlineUavIds.includes(drone.uavId)) {
     return null;
   }
@@ -272,8 +261,8 @@ export const isStoredSwapPairStale = (
 
 export const validateSwapBatch = (
   queue: readonly SwapQueuedPair[],
-  currentDrone1: SwapResolvedDrone | null,
-  currentDrone2: SwapResolvedDrone | null,
+  currentDrone1: ResolvedDrone | null,
+  currentDrone2: ResolvedDrone | null,
   blocked: boolean,
   onlineUavIds: readonly Identifier[],
   reverseMapping: Readonly<Record<string, MissionIndex>>,
@@ -315,8 +304,8 @@ export const validateSwapBatch = (
 };
 
 export const buildSwapPreview = (
-  drone1: SwapResolvedDrone | null,
-  drone2: SwapResolvedDrone | null,
+  drone1: ResolvedDrone | null,
+  drone2: ResolvedDrone | null,
   blocked: boolean,
   t: TFunction
 ): SwapPreviewState => {
