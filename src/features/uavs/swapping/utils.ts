@@ -23,29 +23,6 @@ export type SwapPreviewBadgeColor = SwapFieldSide;
 export const swapFieldAccentColor = (side: SwapFieldSide) =>
   side === 'left' ? 'warning.main' : 'success.main';
 
-export const swapFieldAccentSx = (side: SwapFieldSide) => {
-  const accent = swapFieldAccentColor(side);
-
-  return {
-    '& .MuiFilledInput-root': {
-      '&::before': {
-        borderBottom: '3px solid',
-        borderBottomColor: accent,
-      },
-      '&::after': {
-        borderBottom: '3px solid',
-        borderBottomColor: accent,
-      },
-      '&:hover:not(.Mui-disabled)::before': {
-        borderBottomColor: accent,
-      },
-      '&.Mui-focused::after': {
-        borderBottomColor: accent,
-      },
-    },
-  };
-};
-
 export type SwapPreviewBadge = {
   color?: SwapPreviewBadgeColor;
   label: string;

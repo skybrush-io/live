@@ -13,11 +13,36 @@ import { getUAVIdList } from '~/features/uavs/selectors';
 
 import {
   resolveSwapDrone,
-  swapFieldAccentSx,
+  swapFieldAccentColor,
   swapSelectionLabel,
   type SwapFieldSide,
   type SwapSlotState,
 } from './utils';
+
+const swapFieldAccentSx = (side: SwapFieldSide) => {
+  const accent = swapFieldAccentColor(side);
+
+  return {
+    '& .MuiFilledInput-root': {
+      '&::before': {
+        borderBottom: '3px solid',
+        borderBottomColor: accent,
+      },
+      '&::after': {
+        borderBottom: '3px solid',
+        borderBottomColor: accent,
+      },
+      '&:hover:not(.Mui-disabled)::before': {
+        borderBottom: '3px solid',
+        borderBottomColor: accent,
+      },
+      '&.Mui-focused::after': {
+        borderBottom: '3px solid',
+        borderBottomColor: accent,
+      },
+    },
+  };
+};
 
 type SwapDroneFieldProps = {
   onSlotChange: (slot: SwapSlotState) => void;
