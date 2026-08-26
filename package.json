@@ -207,7 +207,6 @@
     "@types/which": "^3.0.4",
     "babel-jest": "^30.2.0",
     "babel-loader": "^10.1.1",
-    "babel-plugin-i18next-extract": "^1.1.0",
     "cross-env": "^10.1.0",
     "css-loader": "^7.1.4",
     "dotenv-webpack": "^9.0.0",

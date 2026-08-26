@@ -15,18 +15,7 @@
     "@babel/preset-react",
     "@babel/preset-typescript"
   ],
-  "plugins": [
-    ["@babel/plugin-proposal-decorators", { "legacy": true }],
-    [
-      "i18next-extract",
-      {
-        "discardOldKeys": false,
-        "locales": ["en"],
-        "tFunctionNames": ["tt"],
-        "outputPath": "src/i18n/{{locale}}.json"
-      }
-    ]
-  ],
+  "plugins": [["@babel/plugin-proposal-decorators", { "legacy": true }]],
   "env": {
     "test": {
       "plugins": ["@babel/plugin-transform-modules-commonjs"]

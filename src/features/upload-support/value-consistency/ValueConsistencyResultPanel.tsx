@@ -19,7 +19,7 @@ import {
   StatusPill,
 } from '@skybrush/mui-components';
 
-import type { PreparedI18nKey } from '~/i18n';
+import type { PreparedI18nKey, PreparedI18nRecord } from '~/i18n';
 import type { RootState } from '~/store/reducers';
 import type { Identifier } from '~/utils/collections';
 import { formatIdsAndTruncateTrailingItems } from '~/utils/formatting';
@@ -36,6 +36,11 @@ type ValueConsistencyMessages = Readonly<{
   errors: PreparedI18nKey;
   inconsistencies: PreparedI18nKey;
 }>;
+
+/**
+ * Maybe partial translation record for names shown in the per-name breakdown.
+ */
+type TranslatedNames = Readonly<Record<string, string>>;
 
 // -- Value grid row
 
@@ -124,7 +129,7 @@ const ValueGrid = ({ valueMap, majorityValue }: ValueGridProps) => {
 // -- Named-value accordion
 
 type ValueAccordionProps = Readonly<{
-  name: string;
+  label: string;
   valueMap: Record<string, Identifier[]>;
   majorityValue: string | undefined;
 }>;
@@ -152,11 +157,11 @@ const useValueAccordionStyles = makeStyles((theme) => ({
 }));
 
 /**
- * Renders a single name as an expandable accordion with a per-value
- * breakdown in its details.
+ * Renders a single (maybe raw, maybe translated) as an expandable accordion
+ * with a per-value breakdown in its details.
  */
 const ValueAccordion = ({
-  name,
+  label,
   valueMap,
   majorityValue,
 }: ValueAccordionProps) => {
@@ -173,7 +178,7 @@ const ValueAccordion = ({
     <Accordion disableGutters>
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
         <Stack className={classes.accordionSummaryStack}>
-          <Typography component='span'>{name}</Typography>
+          <Typography component='span'>{label}</Typography>
           <Box className={classes.spacer} />
           <Stack className={classes.statusStack}>
             <LabeledStatusLight status={Status.SUCCESS} size='small'>
@@ -240,11 +245,13 @@ const useValueConsistencyResultPanelStyles = makeStyles((theme) => ({
 type ValueConsistencyResultPanelProps = Readonly<{
   jobType: string;
   messages: ValueConsistencyMessages;
+  names?: PreparedI18nRecord;
 }>;
 
 const ValueConsistencyResultPanel = ({
   jobType,
   messages,
+  names,
 }: ValueConsistencyResultPanelProps) => {
   const { t } = useTranslation();
   const classes = useValueConsistencyResultPanelStyles();
@@ -264,7 +271,15 @@ const ValueConsistencyResultPanel = ({
     );
   }
 
-  const sortedNames = Object.keys(distribution).sort();
+  const translatedNames: TranslatedNames | undefined = names?.(t);
+  const rows = Object.entries(distribution)
+    .map(([name, valueMap]) => ({
+      name,
+      label: translatedNames?.[name] ?? name,
+      valueMap,
+      majorityValue: majority[name],
+    }))
+    .sort((a, b) => a.label.localeCompare(b.label));
 
   return (
     <Box className={classes.root}>
@@ -273,12 +288,12 @@ const ValueConsistencyResultPanel = ({
         inconsistencyCount={inconsistencyCount}
         messages={messages}
       />
-      {sortedNames.map((name) => (
+      {rows.map(({ name, label, valueMap, majorityValue }) => (
         <ValueAccordion
           key={name}
-          name={name}
-          valueMap={distribution[name]}
-          majorityValue={majority[name]}
+          label={label}
+          valueMap={valueMap}
+          majorityValue={majorityValue}
         />
       ))}
     </Box>
