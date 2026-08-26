@@ -63,7 +63,6 @@ const MappingButtonGroup = ({
       <Tooltip content={t('mappingButtonGroup.editMapping')}>
         <IconButton
           disabled={mappingEditable}
-          size='large'
           onClick={startMappingEditorSession}
         >
           <Edit />
