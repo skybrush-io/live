@@ -267,35 +267,21 @@ const SwapDronesDialogBody = ({
               onRemove={handleRemoveFromQueue}
             />
           </Collapse>
-          <Box sx={{ flex: 1, minWidth: 0 }}>
-            <Stack direction='row' spacing={1.5} alignItems='flex-end'>
+
+          <Box sx={{ flex: 1 }}>
+            <Stack direction='row' spacing={1} alignItems='center'>
               <SwapDroneField
                 side='left'
                 slot={slot1}
                 onSlotChange={setSlot1}
               />
-              <Box
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  color: 'text.secondary',
-                  flexShrink: 0,
-                  pb: 1,
-                }}
-              >
-                <SwapHoriz />
-              </Box>
+              <SwapHoriz />
               <SwapDroneField
                 side='right'
                 slot={slot2}
                 onSlotChange={setSlot2}
               />
-              <Button
-                variant='outlined'
-                disabled={!canAdd}
-                sx={{ flexShrink: 0, mb: 0.25 }}
-                onClick={handleAdd}
-              >
+              <Button variant='outlined' disabled={!canAdd} onClick={handleAdd}>
                 {t('swapDronesDialog.action.add')}
               </Button>
             </Stack>
@@ -339,13 +325,11 @@ const SwapDronesDialogBody = ({
               }}
             />
           }
-          sx={{ ml: 0 }}
+          sx={{ ml: 1 }}
         />
         <Box sx={{ flex: 1 }} />
-        <Button color='inherit' onClick={onClose}>
-          {t('general.action.cancel')}
-        </Button>
-        <Button variant='contained' disabled={!canSwap} onClick={handleSwap}>
+        <Button onClick={onClose}>{t('general.action.cancel')}</Button>
+        <Button disabled={!canSwap} onClick={handleSwap} color='primary'>
           {t('swapDronesDialog.action.swap')}
         </Button>
       </DialogActions>
