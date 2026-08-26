@@ -1,4 +1,5 @@
 import Box from '@mui/material/Box';
+import type { SxProps } from '@mui/material/styles';
 import TextField from '@mui/material/TextField';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -11,37 +12,38 @@ import {
 } from '~/features/mission/selectors';
 import { getUAVIdList } from '~/features/uavs/selectors';
 
+import { FIELD_COLORS } from './constants';
 import {
   resolveSwapDrone,
-  swapFieldAccentColor,
   swapSelectionLabel,
   type SwapFieldSide,
   type SwapSlotState,
 } from './utils';
 
-const swapFieldAccentSx = (side: SwapFieldSide) => {
-  const accent = swapFieldAccentColor(side);
-
-  return {
-    '& .MuiFilledInput-root': {
-      '&::before': {
-        borderBottom: '3px solid',
-        borderBottomColor: accent,
-      },
-      '&::after': {
-        borderBottom: '3px solid',
-        borderBottomColor: accent,
-      },
-      '&:hover:not(.Mui-disabled)::before': {
-        borderBottom: '3px solid',
-        borderBottomColor: accent,
-      },
-      '&.Mui-focused::after': {
-        borderBottom: '3px solid',
-        borderBottomColor: accent,
-      },
+const createFieldStyle = (color: string) => ({
+  '& .MuiFilledInput-root': {
+    '&::before': {
+      borderBottom: '3px solid',
+      borderBottomColor: color,
     },
-  };
+    '&::after': {
+      borderBottom: '3px solid',
+      borderBottomColor: color,
+    },
+    '&:hover:not(.Mui-disabled)::before': {
+      borderBottom: '3px solid',
+      borderBottomColor: color,
+    },
+    '&.Mui-focused::after': {
+      borderBottom: '3px solid',
+      borderBottomColor: color,
+    },
+  },
+});
+
+const FIELD_STYLES: Record<SwapFieldSide, SxProps> = {
+  left: createFieldStyle(FIELD_COLORS['left']),
+  right: createFieldStyle(FIELD_COLORS['right']),
 };
 
 type SwapDroneFieldProps = {
@@ -104,7 +106,7 @@ const SwapDroneField = ({ onSlotChange, side, slot }: SwapDroneFieldProps) => {
         variant='filled'
         value={slot.filterText}
         fullWidth
-        sx={swapFieldAccentSx(side)}
+        sx={FIELD_STYLES[side]}
         slotProps={{ htmlInput: { maxLength: 32 } }}
         onFocus={(event) => {
           setAnchorEl(event.currentTarget);

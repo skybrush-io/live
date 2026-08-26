@@ -2,22 +2,19 @@ import Chip from '@mui/material/Chip';
 
 import { monospacedFont } from '@skybrush/app-theme-mui';
 
-import {
-  swapFieldAccentColor,
-  type SwapFieldSide,
-  type SwapPreviewBadgeColor,
-} from './utils';
+import { FIELD_COLORS } from './constants';
+import type { SwapFieldSide, SwapPreviewBadgeColor } from './utils';
 
 const BADGE_COLORS: Record<
   SwapPreviewBadgeColor,
   { bgcolor: string; color: string }
 > = {
   left: {
-    bgcolor: swapFieldAccentColor('left'),
+    bgcolor: FIELD_COLORS['left'],
     color: 'warning.contrastText',
   },
   right: {
-    bgcolor: swapFieldAccentColor('right'),
+    bgcolor: FIELD_COLORS['right'],
     color: 'success.contrastText',
   },
 };
