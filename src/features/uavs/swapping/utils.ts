@@ -102,14 +102,16 @@ export const currentPairOverlapsQueue = (
     return false;
   }
 
-  const queuedIds = new Set(
-    queue.flatMap(({ drone1: first, drone2: second }) => [
-      first.uavId,
-      second.uavId,
-    ])
-  );
+  const uavId1 = drone1.uavId;
+  const uavId2 = drone2.uavId;
 
-  return queuedIds.has(drone1.uavId) || queuedIds.has(drone2.uavId);
+  return queue.some(
+    ({ drone1: d1, drone2: d2 }) =>
+      d1.uavId === uavId1 ||
+      d1.uavId === uavId2 ||
+      d2.uavId === uavId1 ||
+      d2.uavId === uavId2
+  );
 };
 
 export const emptySwapSlot = () => ({
