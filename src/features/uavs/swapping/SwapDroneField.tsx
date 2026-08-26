@@ -98,16 +98,13 @@ const SwapDroneField = ({ onSlotChange, side, slot }: SwapDroneFieldProps) => {
   };
 
   return (
-    <Box ref={rootRef} sx={{ flex: 1 }} onBlur={handleBlur}>
+    <Box ref={rootRef} onBlur={handleBlur}>
       <TextField
         inputRef={inputRef}
         label={t('swapDronesDialog.fieldLabel')}
-        size='small'
         variant='filled'
         value={slot.filterText}
-        fullWidth
         sx={FIELD_STYLES[side]}
-        slotProps={{ htmlInput: { maxLength: 32 } }}
         onFocus={(event) => {
           setAnchorEl(event.currentTarget);
         }}
