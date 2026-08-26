@@ -17,16 +17,14 @@ import { connect } from 'react-redux';
 import { DraggableDialog } from '@skybrush/mui-components';
 
 import { getReverseMissionMapping } from '~/features/mission/selectors';
-import { isShowAuthorizedToStart } from '~/features/show/selectors';
 import { showSuccess } from '~/features/snackbar/actions';
-import { isUploadInProgress } from '~/features/upload/selectors';
 import type { MissionIndex } from '~/model/missions';
 import type { RootState } from '~/store/reducers';
 import type { Identifier } from '~/utils/collections';
 
 import { getUAVIdList } from '../selectors';
 import { applySwapDronesBatch } from './actions';
-import { isSwapDronesDialogOpen } from './selectors';
+import { isSwapDronesDialogOpen, isSwappingAllowed } from './selectors';
 import { closeSwapDronesDialog } from './slice';
 import SwapDroneField, { type SwapDroneFieldValue } from './SwapDroneField';
 import SwapDronesConfirmDialog from './SwapDronesConfirmDialog';
@@ -325,7 +323,7 @@ const SwapDronesDialog = (props: Props) => {
 export default connect(
   (state: RootState): StateProps => ({
     open: isSwapDronesDialogOpen(state),
-    blocked: isShowAuthorizedToStart(state) || isUploadInProgress(state),
+    blocked: !isSwappingAllowed(state),
     onlineUavIds: getUAVIdList(state),
     reverseMissionMapping: getReverseMissionMapping(state),
   }),
