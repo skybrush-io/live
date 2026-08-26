@@ -334,14 +334,14 @@ export const buildSwapPreview = (
           i18nKey: 'swapDronesDialog.preview.movedToShowId',
           badges: {
             drone: { label: swapDroneRef(drone1), color: 'left' },
-            slot: { label: formatMissionId(drone2.missionIndex!) },
+            slot: { label: formatMissionId(drone2.missionIndex) },
           },
         },
         {
           i18nKey: 'swapDronesDialog.preview.movedToShowId',
           badges: {
             drone: { label: swapDroneRef(drone2), color: 'right' },
-            slot: { label: formatMissionId(drone1.missionIndex!) },
+            slot: { label: formatMissionId(drone1.missionIndex) },
           },
         },
         {
