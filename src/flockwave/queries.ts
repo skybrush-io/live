@@ -27,6 +27,7 @@ import type {
   RTKSurveySettings,
   ServicePortMap,
   UAVPreflightCheckInfo,
+  VersionMap,
   WeatherInfo,
 } from '@skybrush/flockwave-spec';
 import sortBy from 'lodash-es/sortBy';
@@ -529,6 +530,19 @@ export async function getShowConfiguration(
 }
 
 /**
+ * Returns available firmware version information for the given UAV.
+ */
+export async function getFirmwareVersionInfo(
+  hub: MessageHub,
+  uavId: string
+): Promise<VersionMap> {
+  validateUAVId(uavId);
+  return await hub.startAsyncOperationForSingleId<VersionMap>(uavId, {
+    type: 'UAV-VER',
+  });
+}
+
+/**
  * Returns the weather information at the given location from the server.
  *
  * @param position  the location to query, as a lon-lat pair
@@ -611,6 +625,7 @@ const _queries = {
   getSelectedRTKPresetId,
   getServerPortMapping,
   getShowConfiguration,
+  getFirmwareVersionInfo,
   getWeatherInformation,
   isExtensionLoaded,
   listExtensions,

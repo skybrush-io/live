@@ -34,9 +34,12 @@ import {
 import ShowInfoLayerPresentation, {
   convexHullPolygon,
   ConvexHullVariant,
+  createHomePositionMarkerStyles,
+  createLandingMarkerStyles,
   homePositionPoints,
   landingPositionPoints,
   orientationMarker,
+  type PositionMarkerStyles,
 } from '~/components/map/layers/ShowInfoLayer';
 import { FeaturesLayer } from '~/components/map/layers/features';
 import { UAVsLayer, type UAVsLayerProps } from '~/components/map/layers/uavs';
@@ -86,9 +89,13 @@ type ShowInfoLayerProps = LayerProps &
     convexHull?: GPSPosition[];
     convexHullMarker: ConvexHullMarkerData | undefined;
     homePositions?: Array<GPSPosition | undefined>;
+    homePositionMarkerStyles: PositionMarkerStyles;
     landingPositions?: Array<GPSPosition | undefined>;
+    landingMarkerStyles: PositionMarkerStyles;
     selection: Identifier[];
   }>;
+
+const HIDE_LABELS = Object.freeze({ hideLabels: true });
 
 const ShowInfoLayer = (props: ShowInfoLayerProps): React.JSX.Element => {
   const {
@@ -96,7 +103,9 @@ const ShowInfoLayer = (props: ShowInfoLayerProps): React.JSX.Element => {
     convexHull,
     convexHullMarker,
     homePositions,
+    homePositionMarkerStyles,
     landingPositions,
+    landingMarkerStyles,
     selection,
     ...layerProps
   } = props;
@@ -115,16 +124,26 @@ const ShowInfoLayer = (props: ShowInfoLayerProps): React.JSX.Element => {
         selection,
         ConvexHullVariant.GROSS
       )}
-      {homePositionPoints(homePositions, { selection }, { hideLabels: true })}
+      {homePositionPoints(
+        homePositions,
+        { selection, styles: homePositionMarkerStyles },
+        HIDE_LABELS
+      )}
       {landingPositionPoints(
         landingPositions,
-        { selection },
-        { hideLabels: true }
+        { selection, styles: landingMarkerStyles },
+        HIDE_LABELS
       )}
       {convexHullPolygon(convexHull, selection, ConvexHullVariant.NET)}
     </ShowInfoLayerPresentation>
   );
 };
+
+// TODO: the colors of the markers should be inherited from the mission info layer
+// of the main map view
+
+const homePositionMarkerStyles = createHomePositionMarkerStyles();
+const landingMarkerStyles = createLandingMarkerStyles();
 
 const ConnectedShowInfoLayer = connect((state: RootState) => ({
   approximateConvexHullOfFullShow:
@@ -132,6 +151,8 @@ const ConnectedShowInfoLayer = connect((state: RootState) => ({
   convexHull: getConvexHullOfShowInWorldCoordinates(state),
   convexHullMarker: selectConvexHullMarkerData(state),
   homePositions: getHomePositionsInWorldCoordinates(state),
+  homePositionMarkerStyles,
+  landingMarkerStyles,
   // landingPositions: getLandingPositionsInWorldCoordinates(state),
   selection: getSelection(state),
 }))(ShowInfoLayer);
@@ -146,7 +167,7 @@ const layerComponents: Partial<
     <FeaturesLayer {...props} layerRefHandler={noMark} />
   ),
   [LayerType.MISSION_INFO]: ConnectedShowInfoLayer,
-  [LayerType.UAVS]: (
+  [LayerType.UAVS]: ((
     props: Omit<UAVsLayerProps, 'LayerSource' | 'selection'>
   ) => (
     <UAVsLayer
@@ -155,7 +176,7 @@ const layerComponents: Partial<
       LayerSource={ActiveUAVsLayerSource}
       selection={EMPTY_ARRAY}
     />
-  ),
+  )) as React.ComponentType<LayerProps>,
 };
 
 const mapControlSettings: Partial<MapControlDisplaySettings> = {

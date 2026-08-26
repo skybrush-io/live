@@ -60,7 +60,12 @@ import {
 } from '~/utils/validation';
 
 const styles = {
-  dialogContent: { paddingBottom: 0, paddingLeft: 0, paddingRight: 0 },
+  dialogContent: {
+    paddingTop: 1,
+    paddingBottom: 0,
+    paddingLeft: 0,
+    paddingRight: 0,
+  },
   flexColumn: {
     display: 'flex',
     flexDirection: 'column',
@@ -73,6 +78,10 @@ const styles = {
   serverList: {
     height: '160px',
     overflow: 'auto',
+    '& .MuiListItem-gutters': {
+      paddingLeft: 3,
+      paddingRight: 3,
+    },
     '& .MuiListItemButton-gutters': {
       paddingLeft: 3,
       paddingRight: 3,
@@ -226,6 +235,7 @@ const ServerSettingsFormPresentation = ({ onKeyPress, onSubmit }) => {
             name='hostName'
             label={t('serverSettingsDialog.hostname')}
             variant='filled'
+            sx={{ mt: 2 }}
           />
           <TextField
             fullWidth

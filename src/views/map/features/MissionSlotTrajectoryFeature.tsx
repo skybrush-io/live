@@ -1,27 +1,39 @@
-import PropTypes from 'prop-types';
+import type { Source as OLSource } from 'ol/source';
 import { useMemo } from 'react';
 import { connect } from 'react-redux';
 
 import { Feature, geom } from '@collmot/ol-react';
 
 import { getTrajectoryPointsInWorldCoordinatesByMissionIndex } from '~/features/show/selectors';
+import type { GPSPosition } from '~/model/geography';
 import { plannedTrajectoryIdToGlobalId } from '~/model/identifiers';
-import CustomPropTypes from '~/utils/prop-types';
+import type { RootState } from '~/store/reducers';
 
 import {
   createStyleForTrajectoryFeature,
   mapTrajectoryToView,
 } from './UAVTrajectoryFeature';
 
+type StateProps = {
+  trajectory: GPSPosition[] | undefined;
+};
+
+type OwnProps = {
+  missionIndex: number;
+  source?: OLSource;
+};
+
+type Props = StateProps & OwnProps;
+
 export const MissionSlotTrajectoryFeature = ({
+  missionIndex,
   source,
   trajectory,
-  missionIndex,
-}) => {
+}: Props) => {
   const points = useMemo(() => mapTrajectoryToView(trajectory), [trajectory]);
   return points ? (
     <Feature
-      id={plannedTrajectoryIdToGlobalId(missionIndex)}
+      id={plannedTrajectoryIdToGlobalId(String(missionIndex))}
       source={source}
       style={createStyleForTrajectoryFeature}
     >
@@ -30,15 +42,9 @@ export const MissionSlotTrajectoryFeature = ({
   ) : null;
 };
 
-MissionSlotTrajectoryFeature.propTypes = {
-  source: PropTypes.any,
-  trajectory: PropTypes.arrayOf(CustomPropTypes.coordinate),
-  missionIndex: PropTypes.number,
-};
-
 export default connect(
   // mapStateToProps
-  (state, { missionIndex }) => ({
+  (state: RootState, { missionIndex }: OwnProps) => ({
     trajectory: getTrajectoryPointsInWorldCoordinatesByMissionIndex(
       state,
       missionIndex

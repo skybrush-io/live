@@ -21,6 +21,7 @@ import { type Layer, LayerType } from '~/model/layers';
 import { getVisibleLayersInOrder as _getVisibleLayersInOrder } from '~/selectors/ordered';
 import type { AppSelector, RootState } from '~/store/reducers';
 import {
+  CoordinateSystemType,
   type Latitude,
   type Longitude,
   type LonLat,
@@ -32,7 +33,7 @@ import { EMPTY_ARRAY } from '~/utils/redux';
 import type { AdaptResult, ShowConfiguratorState, ShowData } from './slice';
 
 const _defaultCoordinateSystem: ShowData['coordinateSystem'] = {
-  type: 'nwu',
+  type: CoordinateSystemType.NWU,
   origin: [0 as Longitude, 0 as Latitude],
   orientation: '0',
 };

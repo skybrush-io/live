@@ -49,12 +49,12 @@ export enum LayerType {
   UNTYPED = 'untyped',
 }
 
-export type Layer = {
+export type Layer<P = unknown> = {
   id: string;
   type: LayerType;
   label: string;
   visible: boolean;
-  parameters: Record<string, unknown>;
+  parameters: P;
 };
 
 /**
@@ -264,17 +264,17 @@ const propertiesForLayerTypes: Record<
  * @param parameters - The parameters of the layer
  * @returns A new layer object
  */
-export const createNewLayer = (
+export const createNewLayer = <P>(
   id: string,
   type: LayerType = LayerType.UNTYPED,
   label: string,
-  parameters?: Record<string, unknown>
-): Layer => ({
+  parameters?: P
+): Layer<P> => ({
   id,
   type,
   label,
   visible: type !== LayerType.UNTYPED,
-  parameters: parameters ?? defaultParametersForLayerType(type),
+  parameters: parameters ?? (defaultParametersForLayerType(type) as P),
 });
 
 /**

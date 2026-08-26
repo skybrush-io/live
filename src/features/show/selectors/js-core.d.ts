@@ -12,6 +12,7 @@ import type { Coordinate2D, Coordinate3D } from '~/utils/math';
 import type { ShowValidationResult } from './types';
 
 export const getConvexHullOfShow: AppSelector<Coordinate2D[]>;
+export const getConvexHullOfShowInWorldCoordinates: AppSelector<GPSPosition[]>;
 
 export const getFirstPointsOfTrajectories: AppSelector<
   Array<Coordinate3D | undefined>
@@ -52,6 +53,11 @@ export const getShowValidationResult: (
 ) => ShowValidationResult;
 
 export const isShowConvexHullInsideGeofence: (state: RootState) => boolean;
+
+export const getTrajectoryPointsInWorldCoordinatesByMissionIndex: (
+  state: RootState,
+  missionIndex: number
+) => GPSPosition[] | undefined;
 
 export const getShowSegment: AppSelector<ShowSegment | undefined>;
 export const getSwarmSpecificationForShowSegment: AppSelector<

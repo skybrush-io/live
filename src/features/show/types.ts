@@ -6,7 +6,7 @@ import type {
   ShowSegmentId,
 } from '@skybrush/show-format';
 
-import { type LonLat } from '~/utils/geography';
+import type { CoordinateSystemType, LonLat } from '~/utils/geography';
 import type { Coordinate3D } from '~/utils/math';
 
 import type {
@@ -20,7 +20,7 @@ export type CoordinateSystem = {
 
 export type OutdoorCoordinateSystem = CoordinateSystem & {
   origin?: LonLat;
-  type: 'neu' | 'nwu';
+  type: CoordinateSystemType;
 };
 
 export type OutdoorCoordinateSystemWithOrigin = SetRequired<

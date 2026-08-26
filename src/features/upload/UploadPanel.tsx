@@ -1,5 +1,3 @@
-import { createElement } from 'react';
-
 import { useSelector } from 'react-redux';
 import UploadStatusLights from './UploadStatusLights';
 import { getUploadJobResultPanel } from './result-panels';
@@ -27,7 +25,7 @@ const UploadPanel = ({ jobType }: UploadPanelProps) => {
       return <UploadStatusLights />;
 
     case 'results':
-      return resultPanel ? createElement(resultPanel) : null;
+      return resultPanel !== undefined ? resultPanel() : null;
 
     default:
       return null;

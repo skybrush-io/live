@@ -4,7 +4,7 @@ import { Trans } from 'react-i18next';
 
 import ParseableTextField, {
   type ParseableTextFieldChange,
-} from '~/features/upload-setup-dialog/ParseableTextField';
+} from '~/features/upload-support/setup-dialog/ParseableTextField';
 import { useAppDispatch } from '~/store/hooks';
 
 import { parseParameterNames } from './formatting';

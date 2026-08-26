@@ -22,6 +22,7 @@ import type { AppSelector, RootState } from '~/store/reducers';
 import { type Coordinate3D } from '~/utils/math';
 import { EMPTY_ARRAY, EMPTY_OBJECT } from '~/utils/redux';
 
+import type { LonLat } from '~/utils/geography';
 import {
   AltitudeReference,
   DEFAULT_ALTITUDE_REFERENCE,
@@ -354,12 +355,11 @@ export const hasShowOrigin: AppSelector<boolean> = (state) =>
 /**
  * Selector that returns the origin of the outdoor show coordinate system.
  */
-export const getOutdoorShowOrigin: AppSelector<
-  OutdoorCoordinateSystem['origin']
-> = createSelector(
-  getOutdoorShowCoordinateSystem,
-  (coordinateSystem) => coordinateSystem.origin
-);
+export const getOutdoorShowOrigin: AppSelector<LonLat | undefined> =
+  createSelector(
+    getOutdoorShowCoordinateSystem,
+    (coordinateSystem) => coordinateSystem.origin
+  );
 
 export const getShowSegments: AppSelector<ShowSegmentsRecord | undefined> = (
   state

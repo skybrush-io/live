@@ -1,4 +1,3 @@
-import mapValues from 'lodash-es/mapValues';
 import memoizeOne from 'memoize-one';
 import memoize from 'memoizee';
 import type React from 'react';
@@ -126,12 +125,111 @@ export const convexHullPolygon = (
   ];
 };
 
-// === Takeoff & Landing ===
+// === Markers for positions ===
+
+export type PositionMarkerStyles = {
+  label: (id: Identifier) => Style;
+  marker: Style;
+  selection: Style;
+};
+
+const GENERIC_MARKER_LABEL_FONT_SIZE = 12;
+
+const createMemoizedLabelStyleFunction = (
+  labelFunc: (id: Identifier) => string
+) =>
+  memoize(
+    (id: Identifier) =>
+      new Style({
+        text: new Text({
+          font: `${GENERIC_MARKER_LABEL_FONT_SIZE}px sans-serif`,
+          offsetY: GENERIC_MARKER_LABEL_FONT_SIZE,
+          text: labelFunc(id),
+          textAlign: 'center',
+        }),
+      })
+  );
+
+/**
+ * Creates base / selected marker styles for a position marker with the given
+ * fill color and rotation.
+ */
+const createPositionMarkerStyles = ({
+  color,
+  labelFunc,
+  rotation = 0,
+}: {
+  color: string;
+  labelFunc: (id: Identifier) => string;
+  rotation?: number;
+}): PositionMarkerStyles => ({
+  label: createMemoizedLabelStyleFunction(labelFunc),
+  marker: new Style({
+    image: new RegularShape({
+      fill: fill(color),
+      points: 3,
+      radius: 6,
+      rotation,
+      stroke: blackVeryThinOutline,
+    }),
+  }),
+  selection: new Style({
+    image: new RegularShape({
+      fill: fill(color),
+      points: 3,
+      radius: 6,
+      rotation,
+      stroke: whiteVeryThinOutline,
+    }),
+  }),
+});
+
+type CreatePointFeaturesForPositionsOptions = {
+  featureKeyPrefix: string;
+  globalIdFromIndex: (index: number) => string;
+  styleFunction: StyleFunction;
+};
+
+const createPointFeaturesForPositions = (
+  positions: Array<GPSPosition | null | undefined> | undefined,
+  {
+    featureKeyPrefix,
+    globalIdFromIndex,
+    styleFunction,
+  }: CreatePointFeaturesForPositionsOptions
+) =>
+  Array.isArray(positions)
+    ? positions
+        .map((position, index) => {
+          if (!position) {
+            return null;
+          }
+
+          const featureKey = `${featureKeyPrefix}.${index}`;
+          const globalIdOfFeature = globalIdFromIndex(index);
+          const center = mapViewCoordinateFromLonLat([
+            position.lon,
+            position.lat,
+          ]);
+
+          return (
+            <Feature
+              key={featureKey}
+              id={globalIdOfFeature}
+              style={styleFunction}
+            >
+              <geom.Point coordinates={center} />
+            </Feature>
+          );
+        })
+        .filter(Boolean)
+    : [];
+
+// === Resolution-dependent visibility of markers ===
 
 // Estimate the character width based on the font size.
-export const TAKEOFF_LANDING_POSITION_LABEL_FONT_SIZE = 12;
-export const TAKEOFF_LANDING_POSITION_CHARACTER_WIDTH =
-  TAKEOFF_LANDING_POSITION_LABEL_FONT_SIZE * 0.6;
+export const GENERIC_MARKER_LABEL_CHARACTER_WIDTH =
+  GENERIC_MARKER_LABEL_FONT_SIZE * 0.6;
 
 type StyleFunctionFactoryForPositionWithDynamicallyVisibleLabelContext = {
   estimatedLabelWidth?: number;
@@ -146,229 +244,131 @@ type StyleFunctionFactoryForPositionWithDynamicallyVisibleLabelOptions = {
  * Factory for creating style functions that dynamically show / hide the label
  * of a position marker based on spacing, estimated width and map resolution.
  */
-const styleFunctionFactoryForPositionWithDynamicallyVisibleLabel =
-  (
-    styles: {
-      label: (id: Identifier) => Style;
-      marker: Style;
-      selection: Style;
-    },
-    context?: StyleFunctionFactoryForPositionWithDynamicallyVisibleLabelContext,
-    options?: StyleFunctionFactoryForPositionWithDynamicallyVisibleLabelOptions
-  ): StyleFunction =>
-  (feature, resolution) => {
+const styleFunctionFactoryForPositionWithDynamicallyVisibleLabel = (
+  styles: PositionMarkerStyles,
+  context: StyleFunctionFactoryForPositionWithDynamicallyVisibleLabelContext = {},
+  options: StyleFunctionFactoryForPositionWithDynamicallyVisibleLabelOptions = {}
+): StyleFunction => {
+  const { hideLabels = false } = options;
+  const {
+    estimatedLabelWidth = 1,
+    minimumDistanceBetweenPositions = Number.POSITIVE_INFINITY,
+  } = context;
+
+  /**
+   * The labels should only be visible if there is enough space between the
+   * positions to fit them without overlap given the spacing and resolution.
+   *
+   * Units of the calculation:
+   * - distance: m
+   * - width: px
+   * - resolution: m/px
+   *
+   * So we must show the label if resolution < minimumDistanceBetweenPositions / estimatedLabelWidth.
+   *
+   * NOTE: In case of missing context data we assume the optimistic outcome.
+   */
+  const resolutionThreshold =
+    minimumDistanceBetweenPositions / estimatedLabelWidth;
+  const shouldShowLabelAt = hideLabels
+    ? () => false
+    : !Number.isFinite(resolutionThreshold)
+      ? () => true
+      : (point: Point, resolution: number): boolean => {
+          return (
+            getPointResolution(
+              'EPSG:3857',
+              resolution,
+              point.getCoordinates()
+            ) < resolutionThreshold
+          );
+        };
+
+  return (feature, resolution) => {
     const geometry = feature.getGeometry();
     if (!(geometry instanceof Point)) {
       return;
     }
 
-    // PERF: Move the resolution calculation out of the style function,
+    // PERF: Move the call to shouldShowLabelAt() out of the style function, using a
+    //       generic point that is representative of the entire point array
     //       such that it only gets computed once for all positions...
-    const pointResolution = getPointResolution(
-      'EPSG:3857',
-      resolution,
-      geometry.getCoordinates()
-    );
-
-    /**
-     * The labels should only be visible if there is enough space between the
-     * positions to fit them without overlap given the spacing and resolution.
-     *
-     * Units of the calculation:
-     * - distance: m
-     * - width: px
-     * - resolution: m/px
-     *
-     * NOTE: In case of missing context data we assume the optimistic outcome.
-     */
-    const labelsWouldFitWithoutOverlap =
-      context &&
-      typeof context.minimumDistanceBetweenPositions === 'number' &&
-      typeof context.estimatedLabelWidth === 'number'
-        ? context.minimumDistanceBetweenPositions >
-          context.estimatedLabelWidth * pointResolution
-        : true;
-
-    return [
-      styles.marker,
-      ...(context?.selection?.includes?.(String(feature.getId()))
-        ? [styles.selection]
-        : []),
-      ...(labelsWouldFitWithoutOverlap && !options?.hideLabels
-        ? [styles.label(String(feature.getId()))]
-        : []),
-    ];
+    const featureId = String(feature.getId());
+    const stylesToApply = [styles.marker];
+    if (context?.selection?.includes?.(featureId)) {
+      stylesToApply.push(styles.selection);
+    }
+    if (shouldShowLabelAt(geometry, resolution)) {
+      stylesToApply.push(styles.label(featureId));
+    }
+    return stylesToApply;
   };
+};
 
 // === Landing ===
 
 /**
- * Shape to use for landing markers.
+ * Factory function that returns the sstyles to use for landing markers given their
+ * preferred color (if any).
  */
-const landingMarker = {
-  base: new RegularShape({
-    fill: fill(Colors.markers.landing),
-    points: 3,
-    radius: 6,
+export const createLandingMarkerStyles = (color?: string) =>
+  createPositionMarkerStyles({
+    color: color || Colors.markers.landing,
+    labelFunc: (id) => formatMissionId(Number(globalIdToLandingPositionId(id))),
     rotation: Math.PI,
-    stroke: blackVeryThinOutline,
-  }),
-  selected: new RegularShape({
-    fill: fill(Colors.markers.landing),
-    points: 3,
-    radius: 6,
-    rotation: Math.PI,
-    stroke: whiteVeryThinOutline,
-  }),
-};
-
-/**
- * Style to use for landing markers.
- */
-const landingMarkerStyle = mapValues(
-  landingMarker,
-  (image) => new Style({ image })
-);
-
-/**
- * Memoized function to generate styles for landing position marker labels.
- */
-const landingPositionLabelStyle = memoize(
-  (id: Identifier) =>
-    new Style({
-      text: new Text({
-        font: `${TAKEOFF_LANDING_POSITION_LABEL_FONT_SIZE}px sans-serif`,
-        offsetY: -TAKEOFF_LANDING_POSITION_LABEL_FONT_SIZE,
-        text: formatMissionId(Number(globalIdToLandingPositionId(id))),
-        textAlign: 'center',
-      }),
-    })
-);
+  });
 
 export const landingPositionPoints = (
-  landingPositions: Array<GPSPosition | undefined> | undefined,
-  context?: StyleFunctionFactoryForPositionWithDynamicallyVisibleLabelContext,
+  landingPositions: Array<GPSPosition | null | undefined> | undefined,
+  {
+    styles,
+    ...context
+  }: StyleFunctionFactoryForPositionWithDynamicallyVisibleLabelContext & {
+    styles: PositionMarkerStyles;
+  },
   options?: StyleFunctionFactoryForPositionWithDynamicallyVisibleLabelOptions
 ) =>
-  Array.isArray(landingPositions)
-    ? landingPositions
-        .map((landingPosition, index) => {
-          if (!landingPosition) {
-            return null;
-          }
-
-          const featureKey = `land.${index}`;
-          const globalIdOfFeature = landingPositionIdToGlobalId(
-            index.toString()
-          );
-          const center = mapViewCoordinateFromLonLat([
-            landingPosition.lon,
-            landingPosition.lat,
-          ]);
-
-          return (
-            <Feature
-              key={featureKey}
-              id={globalIdOfFeature}
-              style={styleFunctionFactoryForPositionWithDynamicallyVisibleLabel(
-                {
-                  label: landingPositionLabelStyle,
-                  marker: landingMarkerStyle.base,
-                  selection: landingMarkerStyle.selected,
-                },
-                context,
-                options
-              )}
-            >
-              <geom.Point coordinates={center} />
-            </Feature>
-          );
-        })
-        .filter(Boolean)
-    : [];
+  createPointFeaturesForPositions(landingPositions, {
+    featureKeyPrefix: 'land',
+    globalIdFromIndex: (index) => landingPositionIdToGlobalId(index.toString()),
+    styleFunction: styleFunctionFactoryForPositionWithDynamicallyVisibleLabel(
+      styles,
+      context,
+      options
+    ),
+  });
 
 // === Takeoff ===
 
 /**
- * Shape to use for takeoff markers.
+ * Factory function that returns the sstyles to use for home position markers given their
+ * preferred color (if any).
  */
-const takeoffTriangle = {
-  base: new RegularShape({
-    fill: fill(Colors.markers.takeoff),
-    points: 3,
-    radius: 6,
-    stroke: blackVeryThinOutline,
-  }),
-  selected: new RegularShape({
-    fill: fill(Colors.markers.takeoff),
-    points: 3,
-    radius: 6,
-    stroke: whiteVeryThinOutline,
-  }),
-};
-
-/**
- * Style to use for takeoff markers.
- */
-const takeoffTriangleStyle = mapValues(
-  takeoffTriangle,
-  (image) => new Style({ image })
-);
-
-/**
- * Memoized function to generate styles for takeoff position marker labels.
- */
-const takeoffPositionLabelStyle = memoize(
-  (id: Identifier) =>
-    new Style({
-      text: new Text({
-        font: `${TAKEOFF_LANDING_POSITION_LABEL_FONT_SIZE}px sans-serif`,
-        offsetY: TAKEOFF_LANDING_POSITION_LABEL_FONT_SIZE,
-        text: formatMissionId(Number(globalIdToHomePositionId(id))),
-        textAlign: 'center',
-      }),
-    })
-);
+export const createHomePositionMarkerStyles = (color?: string) =>
+  createPositionMarkerStyles({
+    color: color || Colors.markers.takeoff,
+    labelFunc: (id) => formatMissionId(Number(globalIdToHomePositionId(id))),
+  });
 
 export const homePositionPoints = (
-  homePositions: Array<GPSPosition | undefined> | undefined,
-  context?: StyleFunctionFactoryForPositionWithDynamicallyVisibleLabelContext,
+  homePositions: Array<GPSPosition | null | undefined> | undefined,
+  {
+    styles,
+    ...context
+  }: StyleFunctionFactoryForPositionWithDynamicallyVisibleLabelContext & {
+    styles: PositionMarkerStyles;
+  },
   options?: StyleFunctionFactoryForPositionWithDynamicallyVisibleLabelOptions
 ) =>
-  Array.isArray(homePositions)
-    ? homePositions
-        .map((homePosition, index) => {
-          if (!homePosition) {
-            return null;
-          }
-
-          const featureKey = `home.${index}`;
-          const globalIdOfFeature = homePositionIdToGlobalId(index.toString());
-          const center = mapViewCoordinateFromLonLat([
-            homePosition.lon,
-            homePosition.lat,
-          ]);
-
-          return (
-            <Feature
-              key={featureKey}
-              id={globalIdOfFeature}
-              style={styleFunctionFactoryForPositionWithDynamicallyVisibleLabel(
-                {
-                  label: takeoffPositionLabelStyle,
-                  marker: takeoffTriangleStyle.base,
-                  selection: takeoffTriangleStyle.selected,
-                },
-                context,
-                options
-              )}
-            >
-              <geom.Point coordinates={center} />
-            </Feature>
-          );
-        })
-        .filter(Boolean)
-    : [];
+  createPointFeaturesForPositions(homePositions, {
+    featureKeyPrefix: 'home',
+    globalIdFromIndex: (index) => homePositionIdToGlobalId(index.toString()),
+    styleFunction: styleFunctionFactoryForPositionWithDynamicallyVisibleLabel(
+      styles,
+      context,
+      options
+    ),
+  });
 
 // === Layer ===
 

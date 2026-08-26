@@ -19,20 +19,38 @@ import {
   StatusPill,
 } from '@skybrush/mui-components';
 
+import type { PreparedI18nKey, PreparedI18nRecord } from '~/i18n';
+import type { RootState } from '~/store/reducers';
 import type { Identifier } from '~/utils/collections';
 import { formatIdsAndTruncateTrailingItems } from '~/utils/formatting';
 
-import { selectConsistencyCheckResults } from './selectors';
+import { selectValueConsistencyResults } from './selectors';
 
-// -- Parameter value grid row
+// -- Types
 
-type ParameterValueRowProps = Readonly<{
+/**
+ * Prepared i18n keys for the result summary of a value-consistency panel.
+ */
+type ValueConsistencyMessages = Readonly<{
+  consistent: PreparedI18nKey;
+  errors: PreparedI18nKey;
+  inconsistencies: PreparedI18nKey;
+}>;
+
+/**
+ * Maybe partial translation record for names shown in the per-name breakdown.
+ */
+type TranslatedNames = Readonly<Record<string, string>>;
+
+// -- Value grid row
+
+type ValueRowProps = Readonly<{
   value: string;
   uavIds: Identifier[];
   isConsensus: boolean;
 }>;
 
-const useParameterValueRowStyles = makeStyles((theme) => ({
+const useValueRowStyles = makeStyles((theme) => ({
   uavIds: {
     color: theme.palette.text.secondary,
   },
@@ -43,36 +61,34 @@ const useParameterValueRowStyles = makeStyles((theme) => ({
  *
  * Returns a fragment of three components, fitting the wrapper CSS grid.
  */
-const ParameterValueRow = ({
-  value,
-  uavIds,
-  isConsensus,
-}: ParameterValueRowProps) => {
-  const classes = useParameterValueRowStyles();
+const ValueRow = ({ value, uavIds, isConsensus }: ValueRowProps) => {
+  const classes = useValueRowStyles();
 
   return (
-    <>
+    <Stack spacing={1} direction='row' alignItems='center'>
       <Box sx={{ width: 80 }}>
         <StatusPill status={isConsensus ? Status.SUCCESS : Status.WARNING}>
           {value}
         </StatusPill>
       </Box>
-      <StatusPill status={Status.OFF}>{uavIds.length}</StatusPill>
+      <Box sx={{ width: 36 }}>
+        <StatusPill status={Status.OFF}>{uavIds.length}</StatusPill>
+      </Box>
       <Typography className={classes.uavIds} variant='body2'>
         {formatIdsAndTruncateTrailingItems(uavIds.slice().sort())}
       </Typography>
-    </>
+    </Stack>
   );
 };
 
-// -- Parameter value grid
+// -- Value grid
 
-type ParameterValueGridProps = Readonly<{
-  valueMap: Record<string, string[]>;
+type ValueGridProps = Readonly<{
+  valueMap: Record<string, Identifier[]>;
   majorityValue: string | undefined;
 }>;
 
-const useParameterValueGridStyles = makeStyles((theme) => ({
+const useValueGridStyles = makeStyles((theme) => ({
   root: {
     display: 'grid',
     gridTemplateColumns: 'auto auto 1fr',
@@ -82,13 +98,10 @@ const useParameterValueGridStyles = makeStyles((theme) => ({
 }));
 
 /**
- * Renders the per-value breakdown for a single parameter as a grid.
+ * Renders the per-value breakdown for a single name as a grid.
  */
-const ParameterValueGrid = ({
-  valueMap,
-  majorityValue,
-}: ParameterValueGridProps) => {
-  const classes = useParameterValueGridStyles();
+const ValueGrid = ({ valueMap, majorityValue }: ValueGridProps) => {
+  const classes = useValueGridStyles();
   const sortedValues = Object.keys(valueMap).sort((a, b) => {
     if (a === majorityValue) {
       return -1;
@@ -102,7 +115,7 @@ const ParameterValueGrid = ({
   return (
     <Box className={classes.root}>
       {sortedValues.map((value) => (
-        <ParameterValueRow
+        <ValueRow
           key={value}
           value={value}
           uavIds={valueMap[value]}
@@ -113,15 +126,15 @@ const ParameterValueGrid = ({
   );
 };
 
-// -- Parameter accordion
+// -- Named-value accordion
 
-type ParameterAccordionProps = Readonly<{
-  name: string;
-  valueMap: Record<string, string[]>;
+type ValueAccordionProps = Readonly<{
+  label: string;
+  valueMap: Record<string, Identifier[]>;
   majorityValue: string | undefined;
 }>;
 
-const useParameterAccordionStyles = makeStyles((theme) => ({
+const useValueAccordionStyles = makeStyles((theme) => ({
   accordionDetails: {
     ...createSecondaryAreaStyle(theme),
     padding: theme.spacing(1, 0),
@@ -144,18 +157,17 @@ const useParameterAccordionStyles = makeStyles((theme) => ({
 }));
 
 /**
- * Renders a single parameter as an expandable accordion with a per-value
- * breakdown in its details.
+ * Renders a single (maybe raw, maybe translated) as an expandable accordion
+ * with a per-value breakdown in its details.
  */
-const ParameterAccordion = ({
-  name,
+const ValueAccordion = ({
+  label,
   valueMap,
   majorityValue,
-}: ParameterAccordionProps) => {
-  const classes = useParameterAccordionStyles();
-  const consensusCount = majorityValue
-    ? (valueMap[majorityValue]?.length ?? 0)
-    : 0;
+}: ValueAccordionProps) => {
+  const classes = useValueAccordionStyles();
+  const consensusCount =
+    majorityValue !== undefined ? (valueMap[majorityValue]?.length ?? 0) : 0;
   const totalCount = Object.values(valueMap).reduce(
     (sum, ids) => sum + ids.length,
     0
@@ -166,7 +178,7 @@ const ParameterAccordion = ({
     <Accordion disableGutters>
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
         <Stack className={classes.accordionSummaryStack}>
-          <Typography component='span'>{name}</Typography>
+          <Typography component='span'>{label}</Typography>
           <Box className={classes.spacer} />
           <Stack className={classes.statusStack}>
             <LabeledStatusLight status={Status.SUCCESS} size='small'>
@@ -181,21 +193,26 @@ const ParameterAccordion = ({
         </Stack>
       </AccordionSummary>
       <AccordionDetails className={classes.accordionDetails}>
-        <ParameterValueGrid valueMap={valueMap} majorityValue={majorityValue} />
+        <ValueGrid valueMap={valueMap} majorityValue={majorityValue} />
       </AccordionDetails>
     </Accordion>
   );
 };
 
-// -- Consistency check result alert
+// -- Result summary
 
-const ConsistencyCheckResultSummary = () => {
+type ResultSummaryProps = Readonly<{
+  errorCount: number;
+  inconsistencyCount: number;
+  messages: ValueConsistencyMessages;
+}>;
+
+const ResultSummary = ({
+  errorCount,
+  inconsistencyCount,
+  messages,
+}: ResultSummaryProps) => {
   const { t } = useTranslation();
-  const { errors, inconsistencies } = useSelector(
-    selectConsistencyCheckResults
-  );
-  const errorCount = Object.keys(errors).length;
-  const inconsistencyCount = Object.keys(inconsistencies).length;
   const status =
     errorCount > 0
       ? Status.ERROR
@@ -204,12 +221,10 @@ const ConsistencyCheckResultSummary = () => {
         : Status.SUCCESS;
   const message =
     errorCount > 0
-      ? t('consistencyCheck.result.errors', { count: errorCount })
+      ? messages.errors(t)
       : inconsistencyCount > 0
-        ? t('consistencyCheck.result.inconsistencies', {
-            count: inconsistencyCount,
-          })
-        : t('consistencyCheck.result.consistent');
+        ? messages.inconsistencies(t)
+        : messages.consistent(t);
   return (
     <Box sx={{ px: 3, py: 2 }}>
       <LabeledStatusLight status={status}>{message}</LabeledStatusLight>
@@ -217,9 +232,9 @@ const ConsistencyCheckResultSummary = () => {
   );
 };
 
-// -- Consistency check result panel
+// -- Result panel
 
-const useConsistencyCheckResultPanelStyles = makeStyles((theme) => ({
+const useValueConsistencyResultPanelStyles = makeStyles((theme) => ({
   root: {
     overflow: 'auto',
     maxHeight: 'calc(100vh - 320px)',
@@ -227,12 +242,26 @@ const useConsistencyCheckResultPanelStyles = makeStyles((theme) => ({
   },
 }));
 
-const ConsistencyCheckResultPanel = () => {
-  const { t } = useTranslation();
-  const classes = useConsistencyCheckResultPanelStyles();
-  const { majority, parameterMap } = useSelector(selectConsistencyCheckResults);
+type ValueConsistencyResultPanelProps = Readonly<{
+  jobType: string;
+  messages: ValueConsistencyMessages;
+  names?: PreparedI18nRecord;
+}>;
 
-  const hasData = Object.keys(parameterMap).length > 0;
+const ValueConsistencyResultPanel = ({
+  jobType,
+  messages,
+  names,
+}: ValueConsistencyResultPanelProps) => {
+  const { t } = useTranslation();
+  const classes = useValueConsistencyResultPanelStyles();
+  const { distribution, errors, inconsistencies, majority } = useSelector(
+    (state: RootState) => selectValueConsistencyResults(state, jobType)
+  );
+  const errorCount = Object.keys(errors).length;
+  const inconsistencyCount = Object.keys(inconsistencies).length;
+
+  const hasData = Object.keys(distribution).length > 0 || errorCount > 0;
   if (!hasData) {
     return (
       <BackgroundHint
@@ -242,21 +271,33 @@ const ConsistencyCheckResultPanel = () => {
     );
   }
 
-  const sortedParams = Object.keys(parameterMap).sort();
+  const translatedNames: TranslatedNames | undefined = names?.(t);
+  const rows = Object.entries(distribution)
+    .map(([name, valueMap]) => ({
+      name,
+      label: translatedNames?.[name] ?? name,
+      valueMap,
+      majorityValue: majority[name],
+    }))
+    .sort((a, b) => a.label.localeCompare(b.label));
 
   return (
     <Box className={classes.root}>
-      <ConsistencyCheckResultSummary />
-      {sortedParams.map((name) => (
-        <ParameterAccordion
+      <ResultSummary
+        errorCount={errorCount}
+        inconsistencyCount={inconsistencyCount}
+        messages={messages}
+      />
+      {rows.map(({ name, label, valueMap, majorityValue }) => (
+        <ValueAccordion
           key={name}
-          name={name}
-          valueMap={parameterMap[name]}
-          majorityValue={majority[name]}
+          label={label}
+          valueMap={valueMap}
+          majorityValue={majorityValue}
         />
       ))}
     </Box>
   );
 };
 
-export default ConsistencyCheckResultPanel;
+export default ValueConsistencyResultPanel;

@@ -97,7 +97,7 @@ const useListStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-type ItemRendererOptions = {
+type BaseItemRendererOptions = {
   className?: string;
   draggable: boolean;
   isInEditMode: boolean;
@@ -107,8 +107,13 @@ type ItemRendererOptions = {
   ) => (droppedUAVId: string) => void;
   onSelectedItem: (item: string) => void;
   onStartEditing: (missionIndex: number) => void;
-  preferMissionIds: boolean;
   selection: string[];
+};
+
+type ListItemRendererOptions = BaseItemRendererOptions;
+
+type GridItemRendererOptions = BaseItemRendererOptions & {
+  preferMissionIds: boolean;
 };
 
 /**
@@ -143,7 +148,7 @@ const createGridItemRenderer = ({
   onStartEditing,
   preferMissionIds,
   selection,
-}: ItemRendererOptions) =>
+}: GridItemRendererOptions) =>
   function GridItemRenderer(item: Item): React.JSX.Element {
     const [uavId, missionIndex, proposedLabel] = item;
     const itemId = itemToGlobalId(item);
@@ -228,9 +233,8 @@ const createListItemRenderer = ({
   onDropped,
   onSelectedItem,
   onStartEditing,
-  preferMissionIds,
   selection,
-}: ItemRendererOptions) =>
+}: ListItemRendererOptions) =>
   function ListItemRenderer(item: Item): React.JSX.Element | null {
     if (item === deletionMarker) {
       return null;
@@ -256,13 +260,8 @@ const createListItemRenderer = ({
     const formattedMissionIndex = isInMission
       ? formatMissionId(missionIndex)
       : '';
-    const label =
-      proposedLabel ?? (preferMissionIds ? formattedMissionIndex : uavId);
-    const secondaryLabel = editingThisItem
-      ? ''
-      : preferMissionIds
-        ? (uavId ?? '')
-        : formattedMissionIndex;
+    const label = proposedLabel ?? (editingThisItem ? '' : (uavId ?? ''));
+    const secondaryLabel = formattedMissionIndex;
 
     return (
       <DroneListItem
@@ -385,7 +384,7 @@ const UAVListPresentation = ({
   );
 
   // Create the item renderer
-  const itemRendererOptions: ItemRendererOptions = {
+  const baseItemRendererOptions = {
     className:
       layout === UAVListLayout.GRID ? classes.gridItem : classes.listItem,
     draggable: editingMapping,
@@ -399,8 +398,11 @@ const UAVListPresentation = ({
   };
   const itemRenderer =
     layout === UAVListLayout.GRID
-      ? createGridItemRenderer(itemRendererOptions)
-      : createListItemRenderer(itemRendererOptions);
+      ? createGridItemRenderer({
+          ...baseItemRendererOptions,
+          preferMissionIds,
+        })
+      : createListItemRenderer(baseItemRendererOptions);
 
   // Finally, render time!
   return (

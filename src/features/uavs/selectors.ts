@@ -182,8 +182,8 @@ export const getAverageHeadingOfActiveUAVs = (state: RootState) => {
  * Returns the GPS-based home position of the UAV with the given ID, given the
  * current state.
  *
- * @param  {Object}  state  the state of the application
- * @param  {string}  uavId  the ID of the UAV
+ * @param state - the state of the application
+ * @param uavId - the ID of the UAV
  */
 export const getGPSBasedHomePositionByUavId = createCachedSelector(
   getReverseMissionMapping,
@@ -210,8 +210,8 @@ export const getGPSBasedHomePositionByUavId = createCachedSelector(
  * Returns the first point of the trajectory of the UAV with the given ID,
  * given the current state.
  *
- * @param  {Object}  state  the state of the application
- * @param  {string}  uavId  the ID of the UAV
+ * @param state - the state of the application
+ * @param uavId - the ID of the UAV
  */
 export const getFirstPointOfTrajectoryByUavId = createCachedSelector(
   getReverseMissionMapping,
@@ -237,8 +237,8 @@ export const getFirstPointOfTrajectoryByUavId = createCachedSelector(
  * Returns the takeoff heading of the UAV with the given ID, given the current
  * state.
  *
- * @param  {Object}  state  the state of the application
- * @param  {string}  uavId  the ID of the UAV
+ * @param state - the state of the application
+ * @param uavId - the ID of the UAV
  */
 export const getTakeoffHeadingByUavId = createCachedSelector(
   getReverseMissionMapping,
@@ -265,8 +265,8 @@ export const getTakeoffHeadingByUavId = createCachedSelector(
  * Returns the trajectory of the UAV with the given ID, in show coordinates,
  * given the current state.
  *
- * @param  {Object}  state  the state of the application
- * @param  {string}  uavId  the ID of the UAV
+ * @param state - the state of the application
+ * @param uavId - the ID of the UAV
  */
 export const getTrajectoryPointsInShowCoordinatesByUavId = createCachedSelector(
   getReverseMissionMapping,
@@ -299,8 +299,8 @@ export const getTrajectoryPointsInShowCoordinatesByUavId = createCachedSelector(
  * Returns the trajectory of the UAV with the given ID, in flat Earth coordinates,
  * given the current state.
  *
- * @param  {Object}  state  the state of the application
- * @param  {string}  uavId  the ID of the UAV
+ * @param state - the state of the application
+ * @param uavId - the ID of the UAV
  */
 export const getTrajectoryPointsInFlatEarthCoordinatesByUavId =
   createCachedSelector(
@@ -340,8 +340,8 @@ export const getTrajectoryPointsInFlatEarthCoordinatesByUavId =
  * Returns the trajectory of the UAV with the given ID, in world coordinates,
  * given the current state.
  *
- * @param  {Object}  state  the state of the application
- * @param  {string}  uavId  the ID of the UAV
+ * @param state - the state of the application
+ * @param uavId - the ID of the UAV
  */
 export const getTrajectoryPointsInWorldCoordinatesByUavId =
   createCachedSelector(
@@ -537,8 +537,8 @@ export const getDeviationsFromTakeoffHeadings: AppSelector<
 /**
  * Returns the color of the primary LED light of the UAV, in CSS notation.
  *
- * @param  {Object}  state  the state of the application
- * @param  {string}  uavId  the ID of the UAV
+ * @param state - the state of the application
+ * @param uavId - the ID of the UAV
  */
 export const getLightColorByUavIdInCSSNotation = createCachedSelector(
   getUAVById,
