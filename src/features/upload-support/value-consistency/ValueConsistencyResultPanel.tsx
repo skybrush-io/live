@@ -60,17 +60,19 @@ const ValueRow = ({ value, uavIds, isConsensus }: ValueRowProps) => {
   const classes = useValueRowStyles();
 
   return (
-    <>
+    <Stack spacing={1} direction='row' alignItems='center'>
       <Box sx={{ width: 80 }}>
         <StatusPill status={isConsensus ? Status.SUCCESS : Status.WARNING}>
           {value}
         </StatusPill>
       </Box>
-      <StatusPill status={Status.OFF}>{uavIds.length}</StatusPill>
+      <Box sx={{ width: 36 }}>
+        <StatusPill status={Status.OFF}>{uavIds.length}</StatusPill>
+      </Box>
       <Typography className={classes.uavIds} variant='body2'>
         {formatIdsAndTruncateTrailingItems(uavIds.slice().sort())}
       </Typography>
-    </>
+    </Stack>
   );
 };
 
