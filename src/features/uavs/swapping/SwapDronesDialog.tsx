@@ -26,10 +26,6 @@ import type { Identifier } from '~/utils/collections';
 
 import { getUAVIdList } from '../selectors';
 import { applySwapDronesBatch } from './actions';
-import {
-  SWAP_DRONES_FORM_COLUMN_WIDTH,
-  SWAP_DRONES_QUEUE_COLUMN_WIDTH,
-} from './constants';
 import { isSwapDronesDialogOpen } from './selectors';
 import { closeSwapDronesDialog } from './slice';
 import SwapDroneField from './SwapDroneField';
@@ -243,76 +239,46 @@ const SwapDronesDialogBody = ({
     <DraggableDialog
       maxWidth={false}
       open={open}
+      sidebarComponents={
+        <SwapDronesQueuePanel queue={queue} onRemove={handleRemoveFromQueue} />
+      }
+      sidebarPlacement='right'
       title={t('swapDronesDialog.title')}
       onClose={onClose}
     >
       <DialogContent>
-        <Box
-          sx={(theme) => ({
-            display: 'flex',
-            pt: 1,
-            width:
-              SWAP_DRONES_FORM_COLUMN_WIDTH +
-              (hasQueue ? SWAP_DRONES_QUEUE_COLUMN_WIDTH : 0),
-            transition: theme.transitions.create('width'),
-          })}
-        >
-          <Collapse
-            in={hasQueue}
-            orientation='horizontal'
-            sx={{ flexShrink: 0 }}
-          >
-            <SwapDronesQueuePanel
-              queue={queue}
-              onRemove={handleRemoveFromQueue}
-            />
-          </Collapse>
+        <Stack direction='row' spacing={1} alignItems='center'>
+          <SwapDroneField side='left' slot={slot1} onSlotChange={setSlot1} />
+          <SwapHoriz />
+          <SwapDroneField side='right' slot={slot2} onSlotChange={setSlot2} />
+          <Button variant='outlined' disabled={!canAdd} onClick={handleAdd}>
+            {t('swapDronesDialog.action.add')}
+          </Button>
+        </Stack>
 
-          <Box sx={{ flex: 1 }}>
-            <Stack direction='row' spacing={1} alignItems='center'>
-              <SwapDroneField
-                side='left'
-                slot={slot1}
-                onSlotChange={setSlot1}
-              />
-              <SwapHoriz />
-              <SwapDroneField
-                side='right'
-                slot={slot2}
-                onSlotChange={setSlot2}
-              />
-              <Button variant='outlined' disabled={!canAdd} onClick={handleAdd}>
-                {t('swapDronesDialog.action.add')}
-              </Button>
-            </Stack>
-
-            <Collapse in={warningMessage !== null}>
-              <Box sx={{ pt: 2 }}>
-                <Alert severity='warning' variant='outlined'>
-                  {lastWarningMessage}
-                </Alert>
-              </Box>
-            </Collapse>
-
-            <Collapse
-              in={warningMessage === null && preview.kind === 'placeholder'}
-            >
-              <Box sx={{ pt: 2 }}>
-                <Typography variant='body2' color='text.secondary'>
-                  {lastPlaceholderMessage}
-                </Typography>
-              </Box>
-            </Collapse>
-
-            <Collapse in={warningMessage === null && preview.kind === 'ready'}>
-              <Box sx={{ pt: 2 }}>
-                {lastPreviewLines && (
-                  <SwapDronesPreview lines={lastPreviewLines} />
-                )}
-              </Box>
-            </Collapse>
+        <Collapse in={warningMessage !== null}>
+          <Box sx={{ pt: 2 }}>
+            <Alert severity='warning' variant='outlined'>
+              {lastWarningMessage}
+            </Alert>
           </Box>
-        </Box>
+        </Collapse>
+
+        <Collapse
+          in={warningMessage === null && preview.kind === 'placeholder'}
+        >
+          <Box sx={{ pt: 2 }}>
+            <Typography variant='body2' color='text.secondary'>
+              {lastPlaceholderMessage}
+            </Typography>
+          </Box>
+        </Collapse>
+
+        <Collapse in={warningMessage === null && preview.kind === 'ready'}>
+          <Box sx={{ pt: 2 }}>
+            {lastPreviewLines && <SwapDronesPreview lines={lastPreviewLines} />}
+          </Box>
+        </Collapse>
       </DialogContent>
       <DialogActions>
         <FormControlLabel

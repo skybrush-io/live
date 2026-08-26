@@ -25,54 +25,43 @@ const SwapDronesQueuePanel = ({
 
   return (
     <Box sx={{ width: SWAP_DRONES_QUEUE_COLUMN_WIDTH, height: '100%', pr: 2 }}>
-      <Box
-        sx={{
-          height: '100%',
-          borderRight: 1,
-          borderColor: 'divider',
-        }}
-      >
-        <TransitionGroup>
-          {queue.map((pair) => (
-            <Collapse key={pair.id}>
-              <Box
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 0.5,
-                  pb: 0.75,
-                }}
-              >
-                <Box sx={{ flex: 1, textAlign: 'right' }}>
-                  <SwapDroneBadge
-                    side='left'
-                    label={swapDroneRef(pair.drone1)}
-                  />
-                </Box>
-                <SwapHoriz sx={{ fontSize: 16, color: 'text.secondary' }} />
-                <Box sx={{ flex: 1 }}>
-                  <SwapDroneBadge
-                    side='right'
-                    label={swapDroneRef(pair.drone2)}
-                  />
-                </Box>
-                <Tooltip content={t('general.action.remove')}>
-                  <IconButton
-                    size='small'
-                    aria-label={t('general.action.remove')}
-                    sx={{ flexShrink: 0 }}
-                    onClick={() => {
-                      onRemove(pair.id);
-                    }}
-                  >
-                    <Close fontSize='small' />
-                  </IconButton>
-                </Tooltip>
+      <TransitionGroup>
+        {queue.map((pair) => (
+          <Collapse key={pair.id}>
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 0.5,
+                pb: 0.75,
+              }}
+            >
+              <Box sx={{ flex: 1, textAlign: 'right' }}>
+                <SwapDroneBadge side='left' label={swapDroneRef(pair.drone1)} />
               </Box>
-            </Collapse>
-          ))}
-        </TransitionGroup>
-      </Box>
+              <SwapHoriz sx={{ fontSize: 16, color: 'text.secondary' }} />
+              <Box sx={{ flex: 1 }}>
+                <SwapDroneBadge
+                  side='right'
+                  label={swapDroneRef(pair.drone2)}
+                />
+              </Box>
+              <Tooltip content={t('general.action.remove')}>
+                <IconButton
+                  size='small'
+                  aria-label={t('general.action.remove')}
+                  sx={{ flexShrink: 0 }}
+                  onClick={() => {
+                    onRemove(pair.id);
+                  }}
+                >
+                  <Close fontSize='small' />
+                </IconButton>
+              </Tooltip>
+            </Box>
+          </Collapse>
+        ))}
+      </TransitionGroup>
     </Box>
   );
 };
