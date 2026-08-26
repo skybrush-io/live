@@ -1,6 +1,5 @@
 import ImageBlurCircular from '@mui/icons-material/BlurCircular';
 import ImageBlurOn from '@mui/icons-material/BlurOn';
-import SwapHoriz from '@mui/icons-material/SwapHoriz';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import Toolbar, { type ToolbarProps } from '@mui/material/Toolbar';
@@ -12,7 +11,7 @@ import UAVOperationsButtonGroup from '~/components/uavs/UAVOperationsButtonGroup
 import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
 import { isBroadcast } from '~/features/session/selectors';
 import { getSelectedUAVIds } from '~/features/uavs/selectors';
-import { showSwapDronesDialog } from '~/features/uavs/swapping/slice';
+import SwapDronesToolbarButton from '~/features/uavs/swapping/SwapDronesToolbarButton';
 import type { RootState } from '~/store/reducers';
 
 import MappingButtonGroup from './MappingButtonGroup';
@@ -21,7 +20,6 @@ type UAVToolbarProps = ToolbarProps &
   Readonly<{
     fitSelectedUAVs?: () => void;
     isBroadcast: boolean;
-    onShowSwapDronesDialog: () => void;
     selectedUAVIds: string[];
   }>;
 
@@ -31,7 +29,6 @@ type UAVToolbarProps = ToolbarProps &
 const UAVToolbar = ({
   fitSelectedUAVs,
   isBroadcast,
-  onShowSwapDronesDialog,
   selectedUAVIds,
   ...rest
 }: UAVToolbarProps) => {
@@ -68,21 +65,7 @@ const UAVToolbar = ({
         </Tooltip>
       )}
 
-      <Tooltip
-        content={t('swapDronesDialog.toolbarButton')}
-        // Explicitly set trigger to 'mouseenter' only to prevent the tooltip
-        // from showing when the dialog closes and focus returns to this button.
-        trigger='mouseenter'
-      >
-        <IconButton
-          aria-label={t('swapDronesDialog.toolbarButton')}
-          size='large'
-          onClick={onShowSwapDronesDialog}
-        >
-          <SwapHoriz />
-        </IconButton>
-      </Tooltip>
-
+      <SwapDronesToolbarButton />
       <MappingButtonGroup />
     </Toolbar>
   );
@@ -95,9 +78,7 @@ export default connect(
     selectedUAVIds: getSelectedUAVIds(state),
   }),
   // mapDispatchToProps
-  {
-    onShowSwapDronesDialog: showSwapDronesDialog,
-  },
+  {},
   null,
   {
     forwardRef: true,
