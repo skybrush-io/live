@@ -24,13 +24,14 @@ import type { MissionIndex } from '~/model/missions';
 import type { RootState } from '~/store/reducers';
 import type { Identifier } from '~/utils/collections';
 
+import { getUAVIdList } from '../selectors';
 import { applySwapDronesBatch } from './actions';
 import {
   SWAP_DRONES_FORM_COLUMN_WIDTH,
   SWAP_DRONES_QUEUE_COLUMN_WIDTH,
 } from './constants';
-import { closeSwapDronesDialog, isSwapDronesDialogOpen } from './details';
-import { getUAVIdList } from './selectors';
+import { isSwapDronesDialogOpen } from './selectors';
+import { closeSwapDronesDialog } from './slice';
 import SwapDroneField from './SwapDroneField';
 import SwapDronesConfirmDialog from './SwapDronesConfirmDialog';
 import SwapDronesPreview from './SwapDronesPreview';

@@ -10,9 +10,9 @@ import { connect } from 'react-redux';
 
 import UAVOperationsButtonGroup from '~/components/uavs/UAVOperationsButtonGroup';
 import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
-import { showSwapDronesDialog } from '~/features/uavs/details';
 import { isBroadcast } from '~/features/session/selectors';
 import { getSelectedUAVIds } from '~/features/uavs/selectors';
+import { showSwapDronesDialog } from '~/features/uavs/swapping/slice';
 import type { RootState } from '~/store/reducers';
 
 import MappingButtonGroup from './MappingButtonGroup';
