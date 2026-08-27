@@ -27,7 +27,6 @@ import { applySwapDronesBatch } from './actions';
 import { isSwapDronesDialogOpen, isSwappingAllowed } from './selectors';
 import { closeSwapDronesDialog } from './slice';
 import SwapDroneField, { type SwapDroneFieldValue } from './SwapDroneField';
-import SwapDronesConfirmDialog from './SwapDronesConfirmDialog';
 import SwapDronesPreview from './SwapDronesPreview';
 import SwapDronesQueuePanel from './SwapDronesQueuePanel';
 import type { ResolvedDronePair, ResolvedDronePairWithId } from './types';
@@ -88,8 +87,6 @@ const SwapDronesDialogBody = ({
   const [slot1, setSlot1] = useState<SwapDroneFieldValue>(EMPTY_SLOT);
   const [slot2, setSlot2] = useState<SwapDroneFieldValue>(EMPTY_SLOT);
   const [queue, setQueue] = useState<ResolvedDronePairWithId[]>([]);
-  const [confirmOpen, setConfirmOpen] = useState(false);
-  const [confirmPairs, setConfirmPairs] = useState<ResolvedDronePair[]>([]);
   const [openUploadAfterSwap, setOpenUploadAfterSwap] = useState(true);
 
   const preview = useMemo(
@@ -181,17 +178,6 @@ const SwapDronesDialogBody = ({
     setQueue((current) => current.filter((pair) => pair.id !== id));
   }, []);
 
-  const applySwapBatch = (pairs: ResolvedDronePair[]) => {
-    onApplySwap(pairs, { openUploadAfterSwap });
-    setConfirmOpen(false);
-    setConfirmPairs([]);
-    setSlot1(EMPTY_SLOT);
-    setSlot2(EMPTY_SLOT);
-    setQueue([]);
-    showSuccess(t('swapDronesDialog.success'));
-    onClose();
-  };
-
   const handleSwap = () => {
     if (!batchValidation.valid || warningMessage !== null) {
       return;
@@ -204,33 +190,12 @@ const SwapDronesDialogBody = ({
       slot2.resolved
     );
 
-    if (queue.length === 0) {
-      applySwapBatch(pairs);
-      return;
-    }
-
-    setConfirmPairs(pairs);
-    setConfirmOpen(true);
-  };
-
-  const handleConfirmCancel = () => {
-    setConfirmOpen(false);
-  };
-
-  const handleConfirm = () => {
-    if (!batchValidation.valid || warningMessage !== null) {
-      setConfirmOpen(false);
-      return;
-    }
-
-    applySwapBatch(
-      buildSwapApplyPairs(
-        queue,
-        batchValidation.applyCurrentPair,
-        slot1.resolved,
-        slot2.resolved
-      )
-    );
+    onApplySwap(pairs, { openUploadAfterSwap });
+    setSlot1(EMPTY_SLOT);
+    setSlot2(EMPTY_SLOT);
+    setQueue([]);
+    showSuccess(t('swapDronesDialog.success'));
+    onClose();
   };
 
   return (
@@ -302,12 +267,6 @@ const SwapDronesDialogBody = ({
           {t('swapDronesDialog.action.swap')}
         </Button>
       </DialogActions>
-      <SwapDronesConfirmDialog
-        open={confirmOpen}
-        pairs={confirmPairs}
-        onCancel={handleConfirmCancel}
-        onConfirm={handleConfirm}
-      />
     </DraggableDialog>
   );
 };
