@@ -6,6 +6,7 @@ import ItemListSidebar from '~/features/upload-support/setup-dialog/ItemListSide
 import type { RootState } from '~/store/reducers';
 import type { Identifier } from '~/utils/collections';
 
+import Stack from '@mui/material/Stack';
 import { importParametersFromFile, proceedToUpload } from './actions';
 import { getParameterManifest, isManifestEmpty } from './selectors';
 import { clearManifest, removeParameterFromManifest } from './slice';
@@ -34,12 +35,12 @@ const ParameterListSidebar = ({
   const { t } = useTranslation();
 
   const renderItem = (item: Parameter) => (
-    <>
+    <Stack spacing={1} direction='row' sx={{ width: '100%' }}>
       <Box sx={{ flexGrow: 1 }}>
         {item.uavId === undefined ? item.name : `${item.name} (${item.uavId})`}
       </Box>
-      <Box sx={{ color: 'text.secondary', ml: 1 }}>{item.value}</Box>
-    </>
+      <Box sx={{ color: 'text.secondary' }}>{item.value}</Box>
+    </Stack>
   );
 
   return (

@@ -116,11 +116,7 @@ const ItemListSidebar = <T extends ItemLike>({
           >
             <ListItem disablePadding>
               <ListItemButton onClick={() => onRemoveItem(item.id)}>
-                <Box
-                  sx={{ display: 'flex', flexDirection: 'row', flexGrow: 1 }}
-                >
-                  {renderItem(item)}
-                </Box>
+                {renderItem(item)}
               </ListItemButton>
             </ListItem>
           </animated.div>
