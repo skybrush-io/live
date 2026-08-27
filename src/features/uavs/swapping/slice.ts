@@ -2,10 +2,12 @@ import { createSlice } from '@reduxjs/toolkit';
 
 type SwapDronesDialogSliceState = {
   open: boolean;
+  openUploadDialogAfterSwap: boolean;
 };
 
 const initialState: SwapDronesDialogSliceState = {
   open: false,
+  openUploadDialogAfterSwap: false,
 };
 
 const { actions, reducer } = createSlice({
@@ -16,12 +18,20 @@ const { actions, reducer } = createSlice({
       state.open = false;
     },
 
+    setOpenUploadAfterSwap: (state, action) => {
+      state.openUploadDialogAfterSwap = action.payload;
+    },
+
     showSwapDronesDialog: (state) => {
       state.open = true;
     },
   },
 });
 
-export const { closeSwapDronesDialog, showSwapDronesDialog } = actions;
+export const {
+  closeSwapDronesDialog,
+  setOpenUploadAfterSwap,
+  showSwapDronesDialog,
+} = actions;
 
 export default reducer;

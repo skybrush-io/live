@@ -24,8 +24,12 @@ import type { Identifier } from '~/utils/collections';
 
 import { getUAVIdList } from '../selectors';
 import { applySwapDronesBatch } from './actions';
-import { isSwapDronesDialogOpen, isSwappingAllowed } from './selectors';
-import { closeSwapDronesDialog } from './slice';
+import {
+  isSwapDronesDialogOpen,
+  isSwappingAllowed,
+  shouldOpenUploadDialogAfterSwap,
+} from './selectors';
+import { closeSwapDronesDialog, setOpenUploadAfterSwap } from './slice';
 import SwapDroneField, { type SwapDroneFieldValue } from './SwapDroneField';
 import SwapDronesPreview from './SwapDronesPreview';
 import SwapDronesQueuePanel from './SwapDronesQueuePanel';
@@ -62,6 +66,7 @@ type StateProps = {
   blocked: boolean;
   onlineUavIds: Identifier[];
   open: boolean;
+  openUploadDialogAfterSwap: boolean;
   reverseMissionMapping: Readonly<Record<string, MissionIndex>>;
 };
 
@@ -71,6 +76,7 @@ type DispatchProps = {
     options?: { openUploadAfterSwap?: boolean }
   ) => void;
   onClose: () => void;
+  onSetOpenUploadDialogAfterSwap: (open: boolean) => void;
 };
 
 type Props = DispatchProps & StateProps;
@@ -80,14 +86,15 @@ const SwapDronesDialogBody = ({
   onlineUavIds,
   onApplySwap,
   onClose,
+  onSetOpenUploadDialogAfterSwap,
   open,
+  openUploadDialogAfterSwap,
   reverseMissionMapping,
 }: Props) => {
   const { t } = useTranslation();
   const [slot1, setSlot1] = useState<SwapDroneFieldValue>(EMPTY_SLOT);
   const [slot2, setSlot2] = useState<SwapDroneFieldValue>(EMPTY_SLOT);
   const [queue, setQueue] = useState<ResolvedDronePairWithId[]>([]);
-  const [openUploadAfterSwap, setOpenUploadAfterSwap] = useState(true);
 
   const preview = useMemo(
     () => buildSwapPreview(slot1.resolved, slot2.resolved, blocked, t),
@@ -190,7 +197,7 @@ const SwapDronesDialogBody = ({
       slot2.resolved
     );
 
-    onApplySwap(pairs, { openUploadAfterSwap });
+    onApplySwap(pairs, { openUploadAfterSwap: openUploadDialogAfterSwap });
     setSlot1(EMPTY_SLOT);
     setSlot2(EMPTY_SLOT);
     setQueue([]);
@@ -253,9 +260,9 @@ const SwapDronesDialogBody = ({
           label={t('swapDronesDialog.openUploadAfterSwap')}
           control={
             <Checkbox
-              checked={openUploadAfterSwap}
+              checked={openUploadDialogAfterSwap}
               onChange={(event) => {
-                setOpenUploadAfterSwap(event.target.checked);
+                onSetOpenUploadDialogAfterSwap(event.target.checked);
               }}
             />
           }
@@ -289,10 +296,12 @@ export default connect(
     open: isSwapDronesDialogOpen(state),
     blocked: !isSwappingAllowed(state),
     onlineUavIds: getUAVIdList(state),
+    openUploadDialogAfterSwap: shouldOpenUploadDialogAfterSwap(state),
     reverseMissionMapping: getReverseMissionMapping(state),
   }),
   {
     onApplySwap: applySwapDronesBatch,
     onClose: closeSwapDronesDialog,
+    onSetOpenUploadDialogAfterSwap: setOpenUploadAfterSwap,
   }
 )(SwapDronesDialog);

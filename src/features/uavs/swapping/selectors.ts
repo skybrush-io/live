@@ -7,3 +7,6 @@ export const isSwapDronesDialogOpen: AppSelector<boolean> = (state) =>
 
 export const isSwappingAllowed: AppSelector<boolean> = (state) =>
   !isShowAuthorizedToStart(state) && !isUploadInProgress(state);
+
+export const shouldOpenUploadDialogAfterSwap: AppSelector<boolean> = (state) =>
+  state.dialogs.swapDrones.openUploadDialogAfterSwap;
