@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box';
 import type { SxProps } from '@mui/material/styles';
-import TextField from '@mui/material/TextField';
+import TextField, { type TextFieldProps } from '@mui/material/TextField';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { shallowEqual, useSelector } from 'react-redux';
@@ -55,13 +55,18 @@ const FIELD_STYLES: Record<SwapFieldSide, SxProps> = {
   right: createFieldStyle(FIELD_COLORS['right']),
 };
 
-type SwapDroneFieldProps = {
-  onSlotChange: (slot: SwapDroneFieldValue) => void;
+type SwapDroneFieldProps = Omit<TextFieldProps, 'onChange' | 'value'> & {
+  onChange: (slot: SwapDroneFieldValue) => void;
   side: SwapFieldSide;
-  slot: SwapDroneFieldValue;
+  value: SwapDroneFieldValue;
 };
 
-const SwapDroneField = ({ onSlotChange, side, slot }: SwapDroneFieldProps) => {
+const SwapDroneField = ({
+  onChange,
+  side,
+  value,
+  ...rest
+}: SwapDroneFieldProps) => {
   const { t } = useTranslation();
   const rootRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -99,9 +104,9 @@ const SwapDroneField = ({ onSlotChange, side, slot }: SwapDroneFieldProps) => {
       return;
     }
 
-    const resolved = resolve(slot.filterText);
-    onSlotChange({
-      ...slot,
+    const resolved = resolve(value.filterText);
+    onChange({
+      ...value,
       resolved,
     });
   };
@@ -112,23 +117,24 @@ const SwapDroneField = ({ onSlotChange, side, slot }: SwapDroneFieldProps) => {
         inputRef={inputRef}
         label={t('swapDronesDialog.fieldLabel')}
         variant='filled'
-        value={slot.filterText}
+        value={value.filterText}
         sx={FIELD_STYLES[side]}
         onFocus={(event) => {
           setAnchorEl(event.currentTarget);
         }}
         onChange={(event) => {
           const filterText = event.target.value;
-          onSlotChange({
+          onChange({
             filterText,
             resolved: resolve(filterText),
           });
         }}
+        {...rest}
       />
       <UAVSelector
         retainFocus
         anchorEl={anchorEl}
-        filter={slot.filterText}
+        filter={value.filterText}
         open={Boolean(anchorEl)}
         onClose={handleClose}
         onSelect={({ uavId, missionIndex }) => {
@@ -136,10 +142,10 @@ const SwapDroneField = ({ onSlotChange, side, slot }: SwapDroneFieldProps) => {
             return;
           }
 
-          onSlotChange({
+          onChange({
             filterText: swapSelectionLabel(
               { uavId, missionIndex },
-              slot.filterText
+              value.filterText
             ),
             resolved: {
               uavId,

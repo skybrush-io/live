@@ -246,9 +246,14 @@ const SwapDronesDialogBody = ({
     >
       <DialogContent>
         <Stack direction='row' spacing={1} alignItems='center'>
-          <SwapDroneField side='left' slot={slot1} onSlotChange={setSlot1} />
+          <SwapDroneField
+            autoFocus
+            side='left'
+            value={slot1}
+            onChange={setSlot1}
+          />
           <SwapHoriz />
-          <SwapDroneField side='right' slot={slot2} onSlotChange={setSlot2} />
+          <SwapDroneField side='right' value={slot2} onChange={setSlot2} />
           <Button variant='outlined' disabled={!canAdd} onClick={handleAdd}>
             {t('swapDronesDialog.action.add')}
           </Button>
