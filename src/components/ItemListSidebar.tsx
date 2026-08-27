@@ -12,8 +12,9 @@ import type { ReactNode } from 'react';
 import { makeStyles } from '@skybrush/app-theme-mui';
 import { MiniList, Tooltip } from '@skybrush/mui-components';
 
-import FileButton from '~/components/FileButton';
 import type { Identifier, ItemLike } from '~/utils/collections';
+
+import FileButton from './FileButton';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -59,10 +60,10 @@ type Props<T extends ItemLike> = {
   removeAllLabel: string;
   renderItem: (item: T) => ReactNode;
   title: string;
-  onImportItems: (file?: File) => Promise<void>;
-  onRemoveAllItems: () => void;
-  onRemoveItem: (id: Identifier) => void;
-  onStart: () => Promise<void>;
+  onImportItems?: (file?: File) => Promise<void>;
+  onRemoveAllItems?: () => void;
+  onRemoveItem?: (id: Identifier) => void;
+  onStart?: () => Promise<void>;
 };
 
 const ItemListSidebar = <T extends ItemLike>({
@@ -95,15 +96,17 @@ const ItemListSidebar = <T extends ItemLike>({
     <Box className={classes.root}>
       <Box className={classes.header}>
         <Box className={classes.title}>{title}</Box>
-        <Tooltip content={removeAllLabel}>
-          <IconButton
-            disabled={items.length === 0}
-            size='large'
-            onClick={onRemoveAllItems}
-          >
-            <Delete />
-          </IconButton>
-        </Tooltip>
+        {onRemoveAllItems && (
+          <Tooltip content={removeAllLabel}>
+            <IconButton
+              disabled={items.length === 0}
+              size='large'
+              onClick={onRemoveAllItems}
+            >
+              <Delete />
+            </IconButton>
+          </Tooltip>
+        )}
       </Box>
       <MiniList className={classes.list}>
         {transitions(({ y, ...rest }, item) => (
@@ -115,7 +118,11 @@ const ItemListSidebar = <T extends ItemLike>({
             }}
           >
             <ListItem disablePadding>
-              <ListItemButton onClick={() => onRemoveItem(item.id)}>
+              <ListItemButton
+                onClick={() => {
+                  onRemoveItem?.(item.id);
+                }}
+              >
                 {renderItem(item)}
               </ListItemButton>
             </ListItem>
@@ -123,18 +130,22 @@ const ItemListSidebar = <T extends ItemLike>({
         ))}
       </MiniList>
       <Box className={classes.footer}>
-        <FileButton startIcon={<FolderOpen />} onSelected={onImportItems}>
-          {importLabel}
-        </FileButton>
-        <Button
-          disabled={!canProceed}
-          endIcon={<NavigateNext />}
-          onClick={() => {
-            void onStart();
-          }}
-        >
-          {proceedLabel}
-        </Button>
+        {onImportItems && (
+          <FileButton startIcon={<FolderOpen />} onSelected={onImportItems}>
+            {importLabel}
+          </FileButton>
+        )}
+        {onStart && (
+          <Button
+            disabled={!canProceed}
+            endIcon={<NavigateNext />}
+            onClick={() => {
+              void onStart();
+            }}
+          >
+            {proceedLabel}
+          </Button>
+        )}
       </Box>
     </Box>
   );

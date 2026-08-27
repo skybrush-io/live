@@ -2,7 +2,7 @@ import Box from '@mui/material/Box';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import ItemListSidebar from '~/features/upload-support/setup-dialog/ItemListSidebar';
+import ItemListSidebar from '~/components/ItemListSidebar';
 import type { RootState } from '~/store/reducers';
 import type { Identifier } from '~/utils/collections';
 
