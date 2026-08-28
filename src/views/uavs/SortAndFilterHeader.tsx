@@ -188,7 +188,7 @@ const LIST_HEADER_PARTS: readonly HeaderPart[] = Object.freeze([
     sortKey: UAVSortKey.UAV_ID,
     style: {
       textAlign: 'right',
-      width: 40,
+      width: 48,
     },
   },
   {
@@ -196,7 +196,7 @@ const LIST_HEADER_PARTS: readonly HeaderPart[] = Object.freeze([
     sortKey: UAVSortKey.MISSION_ID,
     style: {
       textAlign: 'right',
-      width: 48,
+      width: 40,
     },
   },
   {
