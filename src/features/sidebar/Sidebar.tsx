@@ -153,7 +153,7 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
               component={moduleComponent('light-control')}
             />
           )}
-          {hasShowControl && (
+          {hasShowControl && experimentalFeaturesEnabled && (
             <Module
               id='collectiveRTH'
               icon={<HomeCircleOutlined />}
