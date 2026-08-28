@@ -118,6 +118,34 @@ export const getEffectiveUAVListSortOrder = createSelector(
 );
 
 /**
+ * Returns whether the effective UAV list sort order overrides the user's own
+ * preference at the moment.
+ *
+ * The selector must return true even if the two preferences are _still_ the same
+ * because it is used to control the behaviour of widgets that must be disabled when
+ * the user cannot modify the sort order.
+ */
+export const isUAVListSortPreferenceOverridden = isMappingEditable;
+
+/**
+ * Returns whether the effective UAV list sort order is different from the user's own
+ * preference at the moment.
+ *
+ * Note that this is semantically different from `isUAVListSortPreferenceOverridden`
+ * as it returns _false_ if the two preferences are the same,
+ */
+export const isUAVListSortPreferenceDifferent = createSelector(
+  getUAVListSortPreference,
+  getEffectiveUAVListSortOrder,
+  (sortPreference, effectiveSortOrder): boolean => {
+    return (
+      sortPreference.key !== effectiveSortOrder.key ||
+      sortPreference.reverse !== effectiveSortOrder.reverse
+    );
+  }
+);
+
+/**
  * Selector that provides the list of UAV IDs and mission slots to show in the
  * UAV list, after applying the sorting and filtering criteria that the user
  * requested.

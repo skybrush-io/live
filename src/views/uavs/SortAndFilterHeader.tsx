@@ -56,7 +56,10 @@ import type { RootState } from '~/store/reducers';
 import type { Nullable } from '~/utils/types';
 
 import { HEADER_HEIGHT } from './constants';
-import { getEffectiveUAVListSortOrder } from './selectors';
+import {
+  getEffectiveUAVListSortOrder,
+  isUAVListSortPreferenceOverridden,
+} from './selectors';
 
 const createChipStyle = (
   color: string | null,
@@ -169,6 +172,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
   chip: createChipStyle(null, theme),
   chipActive: createChipStyle(Colors.info, theme),
+  chipDisabled: createChipStyle(Colors.off, theme),
 }));
 
 type HeaderPart = {
@@ -407,6 +411,7 @@ type SortAndFilterHeaderProps = Readonly<{
   onSetSortBy: (sortBy: Partial<UAVSortKeyAndOrder>) => void;
   onToggleSortDirection: () => void;
   sortBy: UAVSortKeyAndOrder;
+  sortOverrideActive?: boolean;
 }>;
 
 const SortAndFilterHeader = ({
@@ -417,6 +422,7 @@ const SortAndFilterHeader = ({
   onSetSortBy,
   onToggleSortDirection,
   sortBy,
+  sortOverrideActive,
 }: SortAndFilterHeaderProps): React.JSX.Element => {
   const { t } = useTranslation();
   const classes = useStyles();
@@ -487,7 +493,11 @@ const SortAndFilterHeader = ({
       <div className={classes.widgets}>
         <Chip
           ref={sortChipRef}
-          className={isSortActive ? classes.chipActive : classes.chip}
+          className={clsx(
+            sortOverrideActive && classes.chipDisabled,
+            isSortActive ? classes.chipActive : classes.chip
+          )}
+          disabled={sortOverrideActive}
           variant='outlined'
           label={shortLabelsForUAVSortKey[sortBy.key](t)}
           size='small'
@@ -597,6 +607,7 @@ export default connect(
     filters: getUAVListFilters(state),
     layout: getUAVListLayout(state),
     sortBy: getEffectiveUAVListSortOrder(state),
+    sortOverrideActive: isUAVListSortPreferenceOverridden(state),
   }),
   // mapDispatchToProps
   {
