@@ -1,7 +1,6 @@
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { TextField } from 'mui-rff';
-import PropTypes from 'prop-types';
 import { Form } from 'react-final-form';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
@@ -9,8 +8,14 @@ import { connect } from 'react-redux';
 import FormSubmissionButtonRow from '~/components/forms/FormSubmissionButtonRow';
 import { updateManualPreflightCheckItemsFromString } from '~/features/preflight/actions';
 import { getFormattedHeadersAndItems } from '~/features/preflight/selectors';
+import type { RootState } from '~/store/reducers';
 
-const PreflightTabPresentation = ({ items, onSubmit }) => {
+type Props = {
+  items?: string;
+  onSubmit: (values: { items?: string }) => void;
+};
+
+const PreflightTabPresentation = ({ items, onSubmit }: Props) => {
   const { t } = useTranslation();
 
   return (
@@ -41,19 +46,14 @@ const PreflightTabPresentation = ({ items, onSubmit }) => {
   );
 };
 
-PreflightTabPresentation.propTypes = {
-  items: PropTypes.string,
-  onSubmit: PropTypes.func,
-};
-
 export default connect(
   // mapStateToProps
-  (state) => ({
+  (state: RootState) => ({
     items: getFormattedHeadersAndItems(state),
   }),
   // mapDispatchToProps
   {
-    onSubmit({ items }) {
+    onSubmit({ items }: { items?: string }) {
       return updateManualPreflightCheckItemsFromString(items);
     },
   }

@@ -1,8 +1,12 @@
 import type { FileOptions } from 'tempy';
 
 export type Bridge = {
+  isElectron: boolean;
+
   createTCPSocket: unknown;
-  localServer?: unknown;
+  localServer?: {
+    selectPath: (currentPath: string | null) => Promise<string | null>;
+  };
   openPath: (path: string) => Promise<void>;
   readBufferFromFile: (options?: {
     maxSize?: number;

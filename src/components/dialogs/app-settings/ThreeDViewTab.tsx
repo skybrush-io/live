@@ -6,7 +6,7 @@ import FormGroup from '@mui/material/FormGroup';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
-import PropTypes from 'prop-types';
+import type { ChangeEvent, ChangeEventHandler } from 'react';
 import { Translation } from 'react-i18next';
 import { connect } from 'react-redux';
 
@@ -17,9 +17,13 @@ import {
   getSceneryForThreeDView,
 } from '~/features/settings/selectors';
 import { updateAppSettings } from '~/features/settings/slice';
-import { tt } from '~/i18n';
+import type { SettingsState } from '~/features/settings/types';
+import { tt, type PreparedI18nKey } from '~/i18n';
+import type { RootState } from '~/store/reducers';
 
-const sceneries = [
+type I18nAwareLabeledOption = { id: string; label: PreparedI18nKey };
+
+const sceneries: I18nAwareLabeledOption[] = [
   {
     id: 'auto',
     label: tt('settings.threeDView.auto'),
@@ -34,7 +38,7 @@ const sceneries = [
   },
 ];
 
-const lightingConditions = [
+const lightingConditions: I18nAwareLabeledOption[] = [
   {
     id: 'light',
     label: tt('settings.threeDView.light'),
@@ -45,7 +49,7 @@ const lightingConditions = [
   },
 ];
 
-const grids = [
+const grids: I18nAwareLabeledOption[] = [
   {
     id: 'none',
     label: tt('settings.threeDView.none'),
@@ -60,7 +64,20 @@ const grids = [
   },
 ];
 
-const ThreeDViewTab = (props) => (
+type Props = {
+  grid: string;
+  lighting: string;
+  scenery: string;
+  showAxes: boolean;
+  showHomePositions: boolean;
+  showLandingPositions: boolean;
+  showTrajectoriesOfSelection: boolean;
+  showStatistics: boolean;
+  onCheckboxToggled: ChangeEventHandler;
+  onFieldChanged: (event: { target: { name: string; value: string } }) => void;
+};
+
+const ThreeDViewTab = (props: Props) => (
   <Translation>
     {(t) => (
       <Box>
@@ -185,41 +202,28 @@ const ThreeDViewTab = (props) => (
   </Translation>
 );
 
-ThreeDViewTab.propTypes = {
-  grid: PropTypes.string,
-  lighting: PropTypes.string,
-  onCheckboxToggled: PropTypes.func,
-  onFieldChanged: PropTypes.func,
-  scenery: PropTypes.string,
-  showAxes: PropTypes.bool,
-  showHomePositions: PropTypes.bool,
-  showLandingPositions: PropTypes.bool,
-  showTrajectoriesOfSelection: PropTypes.bool,
-  showStatistics: PropTypes.bool,
-};
-
 export default connect(
   // mapStateToProps
-  (state) => ({
+  (state: RootState) => ({
     ...state.settings.threeD,
     scenery: getSceneryForThreeDView(state),
     lighting: getLightingConditionsForThreeDView(state),
   }),
   // mapDispatchToProps
   (dispatch) => ({
-    onCheckboxToggled(event) {
+    onCheckboxToggled(event: ChangeEvent<HTMLInputElement>) {
       dispatch(
         updateAppSettings('threeD', {
           [event.target.name]: event.target.checked,
-        })
+        } as Partial<SettingsState['threeD']>)
       );
     },
 
-    onFieldChanged(event) {
+    onFieldChanged(event: { target: { name: string; value: string } }) {
       dispatch(
         updateAppSettings('threeD', {
           [event.target.name]: event.target.value,
-        })
+        } as Partial<SettingsState['threeD']>)
       );
     },
   })

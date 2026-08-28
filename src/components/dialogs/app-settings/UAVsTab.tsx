@@ -5,9 +5,9 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import FormGroup from '@mui/material/FormGroup';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';
+import Select, { type SelectChangeEvent } from '@mui/material/Select';
 import Typography from '@mui/material/Typography';
-import PropTypes from 'prop-types';
+import type { ChangeEvent, ChangeEventHandler } from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
@@ -31,12 +31,14 @@ import {
   getMinimumOutdoorTakeoffSpacing,
 } from '~/features/settings/selectors';
 import { updateAppSettings } from '~/features/settings/slice';
+import type { SettingsState } from '~/features/settings/types';
 import {
   BatteryDisplayStyle,
   describeBatteryDisplayStyle,
   describeUAVOperationConfirmationStyle,
   UAVOperationConfirmationStyle,
 } from '~/model/settings';
+import type { AppDispatch, RootState } from '~/store/reducers';
 
 const batteryDisplayStyleOrder = [
   BatteryDisplayStyle.VOLTAGE,
@@ -65,6 +67,30 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+type Props = {
+  autoRemove: boolean;
+  criticalVoltageThreshold: number;
+  defaultBatteryCellCount: number;
+  forgetThreshold: number;
+  fullChargeVoltage: number;
+  goneThreshold: number;
+  altitudeWarningThreshold: number;
+  lowVoltageThreshold: number;
+  maxUploadConcurrency: number;
+  minIndoorTakeoffSpacing: number;
+  minOutdoorTakeoffSpacing: number;
+  onCheckboxToggled: ChangeEventHandler;
+  onDistanceFieldUpdated: ChangeEventHandler;
+  onEnumFieldUpdated: (event: SelectChangeEvent) => void;
+  onIntegerFieldUpdated: ChangeEventHandler;
+  onVoltageFieldUpdated: ChangeEventHandler;
+  placementAccuracy: number;
+  preferredBatteryDisplayStyle: BatteryDisplayStyle;
+  takeoffHeadingAccuracy: number;
+  uavOperationConfirmationStyle: UAVOperationConfirmationStyle;
+  warnThreshold: number;
+};
+
 const UAVsTabPresentation = ({
   autoRemove,
   criticalVoltageThreshold,
@@ -87,7 +113,7 @@ const UAVsTabPresentation = ({
   takeoffHeadingAccuracy,
   uavOperationConfirmationStyle,
   warnThreshold,
-}) => {
+}: Props) => {
   const styles = useStyles();
   const { t } = useTranslation();
   return (
@@ -331,36 +357,9 @@ const UAVsTabPresentation = ({
   );
 };
 
-UAVsTabPresentation.propTypes = {
-  autoRemove: PropTypes.bool,
-  criticalVoltageThreshold: PropTypes.number,
-  defaultBatteryCellCount: PropTypes.number,
-  forgetThreshold: PropTypes.number,
-  fullChargeVoltage: PropTypes.number,
-  goneThreshold: PropTypes.number,
-  altitudeWarningThreshold: PropTypes.number,
-  lowVoltageThreshold: PropTypes.number,
-  maxUploadConcurrency: PropTypes.number,
-  minIndoorTakeoffSpacing: PropTypes.number,
-  minOutdoorTakeoffSpacing: PropTypes.number,
-  onCheckboxToggled: PropTypes.func,
-  onDistanceFieldUpdated: PropTypes.func,
-  onEnumFieldUpdated: PropTypes.func,
-  onIntegerFieldUpdated: PropTypes.func,
-  onVoltageFieldUpdated: PropTypes.func,
-  placementAccuracy: PropTypes.number,
-  preferredBatteryDisplayStyle: PropTypes.oneOf(batteryDisplayStyleOrder),
-
-  takeoffHeadingAccuracy: PropTypes.number,
-  uavOperationConfirmationStyle: PropTypes.oneOf(
-    uavOperationConfirmationStyleOrder
-  ),
-  warnThreshold: PropTypes.number,
-};
-
 export default connect(
   // mapStateToProps
-  (state) => ({
+  (state: RootState) => ({
     ...state.settings.uavs,
     altitudeWarningThreshold: getAltitudeWarningThresholdInMeters(state),
     placementAccuracy: getDesiredPlacementAccuracyInMeters(state),
@@ -370,16 +369,16 @@ export default connect(
     minOutdoorTakeoffSpacing: getMinimumOutdoorTakeoffSpacing(state),
   }),
   // mapDispatchToProps
-  (dispatch) => ({
-    onCheckboxToggled(event) {
+  (dispatch: AppDispatch) => ({
+    onCheckboxToggled(event: ChangeEvent<HTMLInputElement>) {
       dispatch(
         updateAppSettings('uavs', {
           [event.target.name]: event.target.checked,
-        })
+        } as Partial<SettingsState['uavs']>)
       );
     },
 
-    onDistanceFieldUpdated(event) {
+    onDistanceFieldUpdated(event: ChangeEvent<HTMLInputElement>) {
       // We store millimeters in the Redux store to avoid rounding errors
       const distance = Math.round(Number.parseFloat(event.target.value) * 1000);
 
@@ -387,32 +386,32 @@ export default connect(
         dispatch(
           updateAppSettings('uavs', {
             [event.target.name]: distance,
-          })
+          } as Partial<SettingsState['uavs']>)
         );
       }
     },
 
-    onEnumFieldUpdated(event) {
+    onEnumFieldUpdated(event: SelectChangeEvent) {
       dispatch(
         updateAppSettings('uavs', {
           [event.target.name]: event.target.value,
-        })
+        } as Partial<SettingsState['uavs']>)
       );
     },
 
-    onIntegerFieldUpdated(event) {
+    onIntegerFieldUpdated(event: ChangeEvent<HTMLInputElement>) {
       const value = Number.parseInt(event.target.value, 10);
 
       if (value > 0) {
         dispatch(
           updateAppSettings('uavs', {
             [event.target.name]: value,
-          })
+          } as Partial<SettingsState['uavs']>)
         );
       }
     },
 
-    onVoltageFieldUpdated(event) {
+    onVoltageFieldUpdated(event: ChangeEvent<HTMLInputElement>) {
       const value = Number.parseFloat(event.target.value);
 
       if (value > 0 && Number.isFinite(value)) {

@@ -7,13 +7,18 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import FormGroup from '@mui/material/FormGroup';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';
-import PropTypes from 'prop-types';
+import Select, {
+  type SelectChangeEvent,
+  type SelectProps,
+} from '@mui/material/Select';
+import type { ChangeEvent, ChangeEventHandler } from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
+import type { ThemeType } from '@skybrush/app-theme-mui';
 import { FormHeader as Header, ThemeSelector } from '@skybrush/mui-components';
 
+import Stack from '@mui/material/Stack';
 import CoordinateSystemFields from '~/components/CoordinateSystemFields';
 import {
   setFlatEarthCoordinateSystemOrientation,
@@ -21,9 +26,12 @@ import {
   setFlatEarthCoordinateSystemType,
 } from '~/features/map/origin';
 import { updateAppSettings } from '~/features/settings/slice';
+import type { SettingsState } from '~/features/settings/types';
 import { enabledLanguages } from '~/i18n';
 import { CoordinateFormat, describeCoordinateFormat } from '~/model/settings';
 import { getMapOriginRotationAngle } from '~/selectors/map';
+import type { RootState } from '~/store/reducers';
+import type { CoordinateSystemType, LonLat } from '~/utils/geography';
 
 const coordinateFormatOrder = [
   CoordinateFormat.DEGREES,
@@ -34,13 +42,33 @@ const coordinateFormatOrder = [
   CoordinateFormat.SIGNED_DEGREES_MINUTES_SECONDS,
 ];
 
+type Props = {
+  coordinateFormat: CoordinateFormat;
+  coordinateSystemType: CoordinateSystemType;
+  experimentalFeaturesEnabled: boolean;
+  language: string;
+  origin: LonLat;
+  orientation: number;
+  optimizeForSingleUAV: boolean;
+  optimizeUIForTouch: boolean;
+  hideInactiveSegmentsOnDarkLCD: boolean;
+  showMouseCoordinates: boolean;
+  showScaleLine: boolean;
+  theme: ThemeType;
+  onCheckboxToggled: ChangeEventHandler;
+  onCoordinateSystemTypeChanged: (event: SelectChangeEvent) => void;
+  onFieldChanged: (event: SelectChangeEvent) => void;
+  onOriginChanged: (value: LonLat) => void;
+  onOrientationChanged: (value: number | string) => void;
+};
+
 // default value for 'language' ensures that updating from a non-localized
 // version does not leave the "Language" dropdown empty
 
-const DisplayTabPresentation = ({ language = 'en', ...props }) => {
+const DisplayTabPresentation = ({ language = 'en', ...props }: Props) => {
   const { t } = useTranslation();
   return (
-    <>
+    <Stack spacing={2}>
       <Box>
         <FormControl fullWidth variant='filled'>
           <InputLabel id='language-selector-label'>
@@ -61,10 +89,10 @@ const DisplayTabPresentation = ({ language = 'en', ...props }) => {
         </FormControl>
       </Box>
 
-      <Box sx={{ my: 2 }}>
-        {/* TODO(vp): gap should be used on the parent component instead... */}
-        <ThemeSelector value={props.theme} onChange={props.onFieldChanged} />
-      </Box>
+      <ThemeSelector
+        value={props.theme}
+        onChange={props.onFieldChanged as SelectProps['onChange']}
+      />
 
       <Box>
         <FormControl fullWidth variant='filled'>
@@ -173,33 +201,13 @@ const DisplayTabPresentation = ({ language = 'en', ...props }) => {
           />
         </FormGroup>
       </Box>
-    </>
+    </Stack>
   );
-};
-
-DisplayTabPresentation.propTypes = {
-  coordinateFormat: PropTypes.oneOf(coordinateFormatOrder),
-  coordinateSystemType: PropTypes.oneOf(['neu', 'nwu']),
-  experimentalFeaturesEnabled: PropTypes.bool,
-  language: PropTypes.string,
-  origin: PropTypes.arrayOf(PropTypes.number),
-  onCheckboxToggled: PropTypes.func,
-  onCoordinateSystemTypeChanged: PropTypes.func,
-  onFieldChanged: PropTypes.func,
-  onOriginChanged: PropTypes.func,
-  onOrientationChanged: PropTypes.func,
-  optimizeForSingleUAV: PropTypes.bool,
-  optimizeUIForTouch: PropTypes.bool,
-  orientation: PropTypes.number,
-  hideInactiveSegmentsOnDarkLCD: PropTypes.bool,
-  showMouseCoordinates: PropTypes.bool,
-  showScaleLine: PropTypes.bool,
-  theme: PropTypes.oneOf(['auto', 'dark', 'light']),
 };
 
 export default connect(
   // mapStateToProps
-  (state) => ({
+  (state: RootState) => ({
     coordinateSystemType: state.map.origin.type,
     origin: state.map.origin.position,
     orientation: getMapOriginRotationAngle(state),
@@ -207,32 +215,36 @@ export default connect(
   }),
   // mapDispatchToProps
   (dispatch) => ({
-    onCheckboxToggled(event) {
+    onCheckboxToggled(event: ChangeEvent<HTMLInputElement>) {
       dispatch(
         updateAppSettings('display', {
           [event.target.name]: event.target.checked,
-        })
+        } as Partial<SettingsState['display']>)
       );
     },
 
-    onCoordinateSystemTypeChanged(event) {
-      dispatch(setFlatEarthCoordinateSystemType(event.target.value));
+    onCoordinateSystemTypeChanged(event: SelectChangeEvent) {
+      dispatch(
+        setFlatEarthCoordinateSystemType(
+          event.target.value as CoordinateSystemType
+        )
+      );
     },
 
-    onFieldChanged(event) {
+    onFieldChanged(event: SelectChangeEvent) {
       dispatch(
         updateAppSettings('display', {
           [event.target.name]: event.target.value,
-        })
+        } as Partial<SettingsState['display']>)
       );
     },
 
-    onOriginChanged(value) {
+    onOriginChanged(value: LonLat) {
       dispatch(setFlatEarthCoordinateSystemOrigin(value));
     },
 
-    onOrientationChanged(value) {
-      dispatch(setFlatEarthCoordinateSystemOrientation(value || 0));
+    onOrientationChanged(value: number | string) {
+      dispatch(setFlatEarthCoordinateSystemOrientation(String(value || 0)));
     },
   })
 )(DisplayTabPresentation);
