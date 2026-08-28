@@ -1071,12 +1071,17 @@
         "extension": "The studio extension must be enabled on the server",
         "loaded": "A show file must be loaded",
         "origin": "A show origin must be included or set manually",
+        "segments": "The show must be annotated with segment markers",
         "server": "Connection must be established to the server"
       },
       "tooltip": {
         "adaptShow": "Adapt show to venue",
         "showSegmentsRequired": "The show must be annotated with segment markers"
       }
+    },
+    "showConfiguratorLegacy": {
+      "button": "Adapt show to venue",
+      "description": "Adjust takeoff grid and show layout if needed"
     },
     "startMethod": {
       "AUTO": "Show will start automatically",

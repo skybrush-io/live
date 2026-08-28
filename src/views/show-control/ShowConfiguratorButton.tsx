@@ -16,6 +16,7 @@ import {
   isConnected,
   supportsStudioInterop,
 } from '~/features/servers/selectors';
+import { areExperimentalFeaturesEnabled } from '~/features/settings/selectors';
 import { showDialogAndClearUndoHistory as showAdaptDialogAndClearUndoHistory } from '~/features/show-configurator/actions';
 import { selectShowConfiguratorDataFromShow } from '~/features/show-configurator/selectors';
 import { type ShowData } from '~/features/show-configurator/slice';
@@ -38,6 +39,9 @@ import Pro from '~/icons/Pro';
 import type { RootState } from '~/store/reducers';
 import { type Nullable } from '~/utils/types';
 
+const hasShowSegment = (state: RootState) =>
+  getShowSegments(state)?.show !== undefined;
+
 const PREREQUISITES: readonly Prerequisite[] = Object.freeze([
   {
     id: 'hasLoadedShowFile',
@@ -48,6 +52,12 @@ const PREREQUISITES: readonly Prerequisite[] = Object.freeze([
     id: 'isConnected',
     selector: isConnected,
     message: tt('show.showConfigurator.prerequisites.server'),
+  },
+  {
+    id: 'hasSegments',
+    selector: hasShowSegment,
+    message: tt('show.showConfigurator.prerequisites.segments'),
+    skipIf: areExperimentalFeaturesEnabled,
   },
   {
     id: 'hasOrigin',
@@ -66,6 +76,7 @@ const PREREQUISITES: readonly Prerequisite[] = Object.freeze([
 ]);
 
 type StateProps = {
+  experimentalFeaturesEnabled: boolean;
   rthPlanSummary: CollectiveRTHPlanSummary;
   show: ShowData | undefined;
   showHasSegments: boolean;
@@ -79,16 +90,15 @@ type DispatchProps = {
 
 type Props = StateProps & DispatchProps;
 
-const ShowConfiguratorButton = (props: Props) => {
-  const {
-    rthPlanSummary,
-    show,
-    showAdaptDialogAndClearUndoHistory,
-    showCollectiveRTHDialog,
-    showHasSegments,
-    status,
-  } = props;
-
+const ShowConfiguratorButton = ({
+  experimentalFeaturesEnabled,
+  rthPlanSummary,
+  show,
+  showAdaptDialogAndClearUndoHistory,
+  showCollectiveRTHDialog,
+  showHasSegments,
+  status,
+}: Props) => {
   const { t } = useTranslation();
 
   // NOTE: Using a `ref` here broke when rearranging the GolenLayout panels...
@@ -107,20 +117,26 @@ const ShowConfiguratorButton = (props: Props) => {
     }
   }, [show, showAdaptDialogAndClearUndoHistory, t]);
 
+  const crthEnabled = experimentalFeaturesEnabled;
   const tooltipVisible = status !== Status.OFF && !prerequisitesFulfilled;
   const disabled = status === Status.OFF || !prerequisitesFulfilled;
 
+  const primaryAction = crthEnabled
+    ? () => {
+        showCollectiveRTHDialog();
+      }
+    : () => {
+        openAdaptDialog();
+      };
+
   return (
     <ListItem disablePadding ref={setTooltipTriggerTarget}>
-      <ListItemButton
-        disabled={disabled}
-        onClick={() => showCollectiveRTHDialog()}
-      >
+      <ListItemButton disabled={disabled} onClick={primaryAction}>
         <StatusLight
           status={
             disabled
               ? Status.OFF
-              : rthPlanSummary.isValid
+              : rthPlanSummary.isValid || !crthEnabled
                 ? Status.SUCCESS
                 : Status.WARNING
           }
@@ -135,34 +151,43 @@ const ShowConfiguratorButton = (props: Props) => {
               triggerTarget={tooltipTriggerTarget}
             >
               <span>
-                {t('show.showConfigurator.button')}
+                {crthEnabled
+                  ? t('show.showConfigurator.button')
+                  : t('show.showConfiguratorLegacy.button')}
                 <Pro style={{ verticalAlign: 'middle', marginLeft: 8 }} />
               </span>
             </Tooltip>
           }
-          secondary={t('show.showConfigurator.description')}
+          secondary={
+            crthEnabled
+              ? t('show.showConfigurator.description')
+              : t('show.showConfiguratorLegacy.description')
+          }
         />
-        <Tooltip
-          content={t(
-            showHasSegments
-              ? 'show.showConfigurator.tooltip.adaptShow'
-              : 'show.showConfigurator.tooltip.showSegmentsRequired'
-          )}
-          placement='left'
-        >
-          <span>
-            <IconButton
-              edge='end'
-              size='large'
-              onClick={(evt) => {
-                evt.stopPropagation();
-                openAdaptDialog();
-              }}
-            >
-              <BlurCircular />
-            </IconButton>
-          </span>
-        </Tooltip>
+        {crthEnabled && (
+          <Tooltip
+            content={t(
+              showHasSegments
+                ? 'show.showConfigurator.tooltip.adaptShow'
+                : 'show.showConfigurator.tooltip.showSegmentsRequired'
+            )}
+            placement='left'
+          >
+            <span>
+              <IconButton
+                disabled={!showHasSegments}
+                edge='end'
+                size='large'
+                onClick={(evt) => {
+                  evt.stopPropagation();
+                  openAdaptDialog();
+                }}
+              >
+                <BlurCircular />
+              </IconButton>
+            </span>
+          </Tooltip>
+        )}
       </ListItemButton>
     </ListItem>
   );
@@ -170,9 +195,10 @@ const ShowConfiguratorButton = (props: Props) => {
 
 const ConnectedShowConfiguratorButton = connect(
   (state: RootState) => ({
+    experimentalFeaturesEnabled: areExperimentalFeaturesEnabled(state),
     rthPlanSummary: selectCollectiveRTHPlanSummary(state),
     show: selectShowConfiguratorDataFromShow(state),
-    showHasSegments: getShowSegments(state)?.show !== undefined,
+    showHasSegments: hasShowSegment(state),
     status: getSetupStageStatuses(state).collectiveRTH,
   }),
   {

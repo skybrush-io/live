@@ -8,6 +8,7 @@ export type Prerequisite = Readonly<{
   id: string;
   selector: AppSelector<boolean>;
   message: PreparedI18nKey;
+  skipIf?: AppSelector<boolean>;
 }>;
 
 export type ResolvedPrerequisite = Readonly<{
@@ -28,18 +29,26 @@ export const useConstPrerequisites = (
   constPrerequisites: readonly Prerequisite[]
 ) => {
   const { t } = useTranslation();
-  const prerequisites: readonly ResolvedPrerequisite[] = constPrerequisites.map(
-    ({ id, selector, message }) => ({
-      id,
+  const prerequisites: readonly ResolvedPrerequisite[] = constPrerequisites
+    .map(({ id, selector, skipIf, message }) => {
       // ESLint rule is disabled because the length of `constPrerequisites` must never
       // change, so the number of hook calls is constant. See the comment above the
       // hook for more details.
       //
       // eslint-disable-next-line @eslint-react/rules-of-hooks
-      result: useSelector(selector),
-      message: message(t),
+      const result = useSelector(selector);
+
+      // eslint-disable-next-line @eslint-react/rules-of-hooks
+      const shouldSkip = skipIf ? useSelector(skipIf) : false;
+
+      return {
+        id,
+        result,
+        message: message(t),
+        shouldSkip,
+      };
     })
-  );
+    .filter(({ shouldSkip }) => !shouldSkip);
   const prerequisitesFulfilled = prerequisites.every(({ result }) => result);
   return {
     prerequisites,
