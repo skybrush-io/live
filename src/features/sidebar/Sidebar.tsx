@@ -170,7 +170,7 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
               component={moduleComponent('mission-editor')}
             />
           )}
-          {(hasShowControl || hasMissionEditor) && <hr />}
+          {hasMissionEditor && <hr />}
           <Module
             id='clocks'
             icon={<Alarm />}
