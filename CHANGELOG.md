@@ -29,7 +29,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The header of the UAVs panel was simplified. The "Sort by mission IDs" button was
   removed, and the ID and show ID columns now behave as all other ones in terms of
   ordering. The only exception is that the one that is selected from these two will
-  become the first column on the left.
+  become the first column on the left. Nevertheless, the UI automatically switches to
+  sorting the UAV list by show ID when the mapping is being edited to prevent rows from
+  moving around due to other sorting criteria.
 
 - The rangefinder tab on the UAV details panel is hidden, it is not needed for shows.
 

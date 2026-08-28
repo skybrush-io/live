@@ -35,7 +35,6 @@ import {
 import {
   getUAVListFilters,
   getUAVListLayout,
-  getUAVListSortPreference,
 } from '~/features/settings/selectors';
 import {
   UAVListLayout,
@@ -57,6 +56,7 @@ import type { RootState } from '~/store/reducers';
 import type { Nullable } from '~/utils/types';
 
 import { HEADER_HEIGHT } from './constants';
+import { getEffectiveUAVListSortOrder } from './selectors';
 
 const createChipStyle = (
   color: string | null,
@@ -596,7 +596,7 @@ export default connect(
   (state: RootState) => ({
     filters: getUAVListFilters(state),
     layout: getUAVListLayout(state),
-    sortBy: getUAVListSortPreference(state),
+    sortBy: getEffectiveUAVListSortOrder(state),
   }),
   // mapDispatchToProps
   {

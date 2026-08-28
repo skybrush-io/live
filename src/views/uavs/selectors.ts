@@ -1,4 +1,5 @@
 import { createSelector } from '@reduxjs/toolkit';
+import flatten from 'lodash-es/flatten';
 import isNil from 'lodash-es/isNil';
 
 import {
@@ -10,17 +11,17 @@ import {
   getUAVListSortPreference,
   isShowingEmptyMissionSlots,
 } from '~/features/settings/selectors';
+import type { UAVSortKeyAndOrder } from '~/features/settings/types';
 import {
   getSelectedUAVIds,
   getUAVIdList,
   getUAVIdToStateMapping,
 } from '~/features/uavs/selectors';
-import { UAVSortKey } from '~/model/sorting';
-
-import { flatten } from 'lodash-es';
 import type { StoredUAV } from '~/features/uavs/types';
+import { UAVSortKey } from '~/model/sorting';
 import type { AppSelector, RootState } from '~/store/reducers';
 import type { Nullable } from '~/utils/types';
+
 import {
   applyFiltersAndSortDisplayedUAVGroups,
   applyFiltersAndSortDisplayedUAVIdList,
@@ -46,7 +47,7 @@ import { itemToGlobalId } from './utils';
 const getUAVIdToStateMappingForSortAndFilter: AppSelector<
   Nullable<Record<string, StoredUAV>>
 > = (state: RootState) => {
-  const { key } = getUAVListSortPreference(state);
+  const { key } = getEffectiveUAVListSortOrder(state);
   const filters = getUAVListFilters(state);
   // UAV ID / mission index based sorts don't need the StoredUAV mapping,
   // they can be computed from the item tuple directly.
@@ -105,13 +106,30 @@ const getUnprocessedItems = createSelector(
 );
 
 /**
+ * Returns the _effective_ sort order of the list showing the UAVs, taking into account
+ * any overrides from the UI state.
+ *
+ * We always sort by sID when the user is editing the mapping, regardless of the sort
+ * order preference in the settings. This is because it would be really hard to keep
+ * the item being edited in the view when the list is constantly re-sorted by other
+ * criteria.
+ */
+export const getEffectiveUAVListSortOrder = createSelector(
+  getUAVListSortPreference,
+  isMappingEditable,
+  (sortPreference, isEditingMapping): UAVSortKeyAndOrder => {
+    return isEditingMapping ? SORT_BY_MISSION_ID : sortPreference;
+  }
+);
+
+/**
  * Selector that provides the list of UAV IDs and mission slots to show in the
  * UAV list, after applying the sorting and filtering criteria that the user
  * requested.
  */
 export const getDisplayedItems: AppSelector<Item[]> = createSelector(
   getUAVListFilters,
-  getUAVListSortPreference,
+  getEffectiveUAVListSortOrder,
   getUnprocessedItems,
   getUAVIdToStateMappingForSortAndFilter,
   applyFiltersAndSortDisplayedUAVIdList
@@ -125,6 +143,11 @@ export const getGlobalIdsOfDisplayedItems = createSelector(
   getDisplayedItems,
   (items) => items.map(itemToGlobalId).filter(Boolean) as string[]
 );
+
+const SORT_BY_MISSION_ID: UAVSortKeyAndOrder = Object.freeze({
+  key: UAVSortKey.MISSION_ID,
+  reverse: false,
+});
 
 /* ************************************************************************* */
 /* Selectors for grouped UAV lists (legacy)                                  */
@@ -195,7 +218,7 @@ const getUnprocessedGroups = createSelector(
  */
 export const getDisplayedGroups: AppSelector<UAVGroup[]> = createSelector(
   getUAVListFilters,
-  getUAVListSortPreference,
+  getEffectiveUAVListSortOrder,
   getUnprocessedGroups,
   getUAVIdToStateMappingForSortAndFilter,
   applyFiltersAndSortDisplayedUAVGroups

@@ -18,7 +18,7 @@ import {
 
 import { Colors } from '~/components/colors';
 import { Status } from '~/components/semantics';
-import { isSortingByMissionId } from '~/features/settings/selectors';
+import { isSortingByMissionIdPreferred } from '~/features/settings/selectors';
 import { signOffOnOnboardPreflightChecks } from '~/features/show/actions';
 import { areOnboardPreflightChecksSignedOff } from '~/features/show/selectors';
 import {
@@ -103,7 +103,7 @@ const PreflightCheckList = connect(
   // mapStateToProps
   (state: RootState) => ({
     items: getErrorCodeSummaryForUAVsInMission(state),
-    preferMissionIds: isSortingByMissionId(state),
+    preferMissionIds: isSortingByMissionIdPreferred(state),
   }),
   // mapDispatchToProps
   {}
