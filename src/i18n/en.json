@@ -932,6 +932,7 @@
     "display": {
       "coordinateFormat": "Coordinate format",
       "enableExperimentalFeatures": "Enable experimental features (advanced)",
+      "experimentalFeaturesWarning": "Experimental features are not tested to the same extent as the rest of the system yet. Use them at your own risk.",
       "flatEarthCoordinateSystem": "Flat Earth coordinate system",
       "hideInactiveSegmentsOnDarkLCD": "Enhance contrast on dark mode LCD clocks",
       "language": "Language",

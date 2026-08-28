@@ -5,6 +5,7 @@ import Checkbox from '@mui/material/Checkbox';
 import FormControl from '@mui/material/FormControl';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormGroup from '@mui/material/FormGroup';
+import FormHelperText from '@mui/material/FormHelperText';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select, {
@@ -199,6 +200,9 @@ const DisplayTabPresentation = ({ language = 'en', ...props }: Props) => {
               />
             }
           />
+          <FormHelperText sx={{ pl: 4, mt: -1 }}>
+            {t('settings.display.experimentalFeaturesWarning')}
+          </FormHelperText>
         </FormGroup>
       </Box>
     </Stack>
