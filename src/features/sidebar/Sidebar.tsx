@@ -218,14 +218,8 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
   );
 };
 
-type StateProps = Pick<
-  SidebarProps,
-  'experimentalFeaturesEnabled' | 'isOpen' | 'missionType'
->;
-type OwnProps = Pick<SidebarProps, 'workbench'>;
-
-const ConnectedSidebar = connect<StateProps, unknown, OwnProps, RootState>(
-  (state, { workbench }) => ({
+const ConnectedSidebar = connect(
+  (state: RootState, { workbench }: SidebarProps) => ({
     experimentalFeaturesEnabled: areExperimentalFeaturesEnabled(state),
     isOpen: isSidebarOpen(state),
     missionType: getMissionType(state),
