@@ -24,6 +24,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added options to the "Mission info" layer that allow the user to change the color of
   the takeoff and the landing markers.
 
+- Mission planning, editing, uploading and progress monitoring now support
+  missions with multiple drones. The mission info layer and the mission editor
+  can be filtered by participants.
+
+- Added a parameter consistency check job that verifies that the values of the
+  selected parameters are consistent across the drones. The parameter list is
+  editable by the user.
+
+- Added a firmware version check job that compares the versions of the firmware
+  components reported by the drones.
+
+- The upload dialog can now show job results for theconsistency and firmware
+  check jobs on a new Results tab.
+
+- Added a hotkey to toggle full-screen mode (F11 on Windows and Linux,
+  Cmd+Ctrl+F on macOS).
+
+- The show control panel now shows a status light for the current show schedule,
+  schedule changes are displayed during suspension and after resuming the show,
+  and the start time button gained a Clear button.
+
+- The static image layer now supports GeoTIFF files in developer mode, and the
+  heatmap layer type is hidden from the list of available layer types.
+
+- Notifications about failed log downloads now include a Retry button, and the
+  notification is dismissed when the download succeeds after a retry.
+
 ### Changed
 
 - The header of the UAVs panel was simplified. The "Sort by mission IDs" button was
@@ -35,10 +62,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - The rangefinder tab on the UAV details panel is hidden, it is not needed for shows.
 
-- Collective RTH plan calculation is fully enabled.
-
-- Replaced the Show adaptation stage with the collective RTH plan stage in the control
-  panel.
+- Collective RTH plan calculation is fully enabled, and the Show adaptation
+  stage was replaced with a collective RTH plan stage that is only visible when
+  the show control and experimental features options are enabled.
 
 - The connections widget in the header now shows at most 10 connections in the tooltip,
   grouping connections in similar states together if there are more than 10.
@@ -53,6 +79,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Multi-UAV operation notifications now report the number of skipped UAVs when
   some were already running the same operation.
 
+- Improved the upload dialog user interface.
+
 ### Fixed
 
 - Fixed the automatic launch of the server in the background that was accidentally
@@ -60,6 +88,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fixed copying text from the Messages panel by disabling the `C` hotkey that was
   conflicting with the copy operation.
+
+- All pending operations are now cancelled when the client disconnects from the
+  server.
+
+- Fixed the click handlers of the menu items in the Toolbox menu.
+
+- Drones with error-level codes are no longer considered to be on the ground.
+
+- Fixed an error thrown when connecting to the server due to a malformed clock
+  epoch value.
+
+- The UAV list in grid mode now shows the mission ID instead of an empty avatar
+  placeholder for empty mission slots when sorting by physical ID.
+
+- Notifications about a cleared mission or an exported mission file are now
+  dismissed properly after the mission is restored or exported.
 
 ## [2.13.2] - 2026-04-16
 
