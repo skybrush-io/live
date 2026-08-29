@@ -225,6 +225,18 @@
       "noDrones": "There are no drones in the loaded show.",
       "noShowFile": "No show file loaded"
     },
+    "infoGrid": {
+      "rth": {
+        "numPlans": "Number of plans:",
+        "title": "Collective RTH"
+      },
+      "showSegment": {
+        "duration": "Duration:",
+        "end": "End:",
+        "start": "Start:",
+        "title": "Show segment"
+      }
+    },
     "rthPlanDetails": {
       "column": {
         "duration": "Duration",
@@ -232,18 +244,6 @@
         "endShow": "End (Show)",
         "start": "Start",
         "startShow": "Start (Show)"
-      },
-      "info": {
-        "rth": {
-          "numPlans": "Number of plans:",
-          "title": "Collective RTH"
-        },
-        "showSegment": {
-          "duration": "Duration:",
-          "end": "End:",
-          "start": "Start:",
-          "title": "Show segment"
-        }
       }
     }
   },
