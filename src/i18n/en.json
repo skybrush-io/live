@@ -1349,6 +1349,37 @@
     "noSurveyInformation": "No survey information",
     "notStartedYet": "Survey not started yet"
   },
+  "swapDronesDialog": {
+    "action": {
+      "add": "Add",
+      "swap": "Swap"
+    },
+    "confirm": {
+      "message": "The following drone pairs will be swapped:",
+      "title": "Confirm swap"
+    },
+    "fieldLabel": "ID or sID",
+    "openUploadAfterSwap": "Open upload dialog after swap",
+    "preview": {
+      "addedWithShowId": "Drone <drone/> will be <bold>added</bold> to the mapping with show ID <slot/>",
+      "blocked": "Swap is unavailable while a show upload is in progress or the show is authorized to start.",
+      "bothUnmapped": "Both drones are unmapped — nothing to swap.",
+      "heading": "What will happen",
+      "movedToShowId": "Drone <drone/> will be <bold>moved</bold> to show ID <slot/>",
+      "removedFromMapping": "Drone <drone/> will be <bold>removed</bold> from the mapping",
+      "sameDrone": "Both inputs resolve to the same drone.",
+      "selectTwoDrones": "Select two drones to swap.",
+      "uploadToDrone": "The show will have to be <bold>uploaded</bold> to drone <drone/>",
+      "uploadToDrones": "The show will have to be <bold>uploaded</bold> to drones <drone1/> and <drone2/>"
+    },
+    "queue": {
+      "overlap": "One or both drones in this pair are already in the queue.",
+      "stalePairs": "One or more queued pairs are no longer valid. Remove stale entries or fix your inputs."
+    },
+    "success": "Drone swap completed successfully.",
+    "title": "Swap drones",
+    "toolbarButton": "Swap drones"
+  },
   "takeoffAreaSetupDialog": {
     "allDroneOnline": "All drones in the mission are online.",
     "allDronesAtTakeoffPositions": "All drones are placed at their takeoff positions.",
