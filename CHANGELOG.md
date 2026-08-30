@@ -35,22 +35,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added a firmware version check job that compares the versions of the firmware
   components reported by the drones.
 
-- The upload dialog can now show job results for theconsistency and firmware
-  check jobs on a new Results tab.
-
-- Added a hotkey to toggle full-screen mode (F11 on Windows and Linux,
-  Cmd+Ctrl+F on macOS).
-
-- The show control panel now shows a status light for the current show schedule,
-  schedule changes are displayed during suspension and after resuming the show,
-  and the start time button gained a Clear button.
-
-- The static image layer now supports GeoTIFF files in developer mode, and the
-  heatmap layer type is hidden from the list of available layer types.
-
-- Notifications about failed log downloads now include a Retry button, and the
-  notification is dismissed when the download succeeds after a retry.
-
 ### Changed
 
 - The header of the UAVs panel was simplified. The "Sort by mission IDs" button was
@@ -79,8 +63,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Multi-UAV operation notifications now report the number of skipped UAVs when
   some were already running the same operation.
 
-- Improved the upload dialog user interface.
-
 ### Fixed
 
 - Fixed the automatic launch of the server in the background that was accidentally
@@ -92,18 +74,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - All pending operations are now cancelled when the client disconnects from the
   server.
 
-- Fixed the click handlers of the menu items in the Toolbox menu.
-
 - Drones with error-level codes are no longer considered to be on the ground.
-
-- Fixed an error thrown when connecting to the server due to a malformed clock
-  epoch value.
-
-- The UAV list in grid mode now shows the mission ID instead of an empty avatar
-  placeholder for empty mission slots when sorting by physical ID.
-
-- Notifications about a cleared mission or an exported mission file are now
-  dismissed properly after the mission is restored or exported.
 
 ## [2.13.2] - 2026-04-16
 
