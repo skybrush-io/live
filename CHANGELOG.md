@@ -24,6 +24,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added options to the "Mission info" layer that allow the user to change the color of
   the takeoff and the landing markers.
 
+- Mission planning, editing, uploading and progress monitoring now support
+  missions with multiple drones. The mission info layer and the mission editor
+  can be filtered by participants.
+
+- Added a parameter consistency check job that verifies that the values of the
+  selected parameters are consistent across the drones. The parameter list is
+  editable by the user.
+
+- Added a firmware version check job that compares the versions of the firmware
+  components reported by the drones.
+
 ### Changed
 
 - The header of the UAVs panel was simplified. The "Sort by mission IDs" button was
@@ -35,10 +46,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - The rangefinder tab on the UAV details panel is hidden, it is not needed for shows.
 
-- Collective RTH plan calculation is fully enabled.
-
-- Replaced the Show adaptation stage with the collective RTH plan stage in the control
-  panel.
+- Collective RTH plan calculation is enabled when the experimental features are
+  enabled in the settings dialog. When collective RTH plans are enabled, the Show
+  adaptation stage in the Show control panel is replaced with a collective RTH plan
+  button (and the old show adaptation button is moved aside to a smaller button).
 
 - The connections widget in the header now shows at most 10 connections in the tooltip,
   grouping connections in similar states together if there are more than 10.
@@ -60,6 +71,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fixed copying text from the Messages panel by disabling the `C` hotkey that was
   conflicting with the copy operation.
+
+- All pending operations are now cancelled when the client disconnects from the
+  server.
+
+- Drones with error-level codes are no longer considered to be on the ground.
 
 ## [2.13.2] - 2026-04-16
 
