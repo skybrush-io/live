@@ -46,9 +46,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - The rangefinder tab on the UAV details panel is hidden, it is not needed for shows.
 
-- Collective RTH plan calculation is fully enabled, and the Show adaptation
-  stage was replaced with a collective RTH plan stage that is only visible when
-  the show control and experimental features options are enabled.
+- Collective RTH plan calculation is enabled when the experimental features are
+  enabled in the settings dialog. When collective RTH plans are enabled, the Show
+  adaptation stage in the Show control panel is replaced with a collective RTH plan
+  button (and the old show adaptation button is moved aside to a smaller button).
 
 - The connections widget in the header now shows at most 10 connections in the tooltip,
   grouping connections in similar states together if there are more than 10.
