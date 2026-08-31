@@ -2,6 +2,7 @@ import { defaultFont } from '@skybrush/app-theme-mui';
 import type { ChartData, ChartOptions, ChartTypeRegistry } from 'chart.js';
 import createColor from 'color';
 import merge from 'deepmerge';
+import { memoize } from 'lodash-es';
 
 const BASE_CHART_OPTIONS: ChartOptions = {
   plugins: {
@@ -53,38 +54,46 @@ export const mergeChartOptions = <T extends keyof ChartTypeRegistry>(
  * @param isDark - whether the theme being targeted by the options is a dark theme
  * @returns - a Chart.js options object with theme-specific settings
  */
-export const createChartOptions = <T extends keyof ChartTypeRegistry>(
-  isDark: boolean
-): ChartOptions<T> =>
-  mergeChartOptions<T>(
-    BASE_CHART_OPTIONS as ChartOptions<T>,
-    {
-      scales: {
-        x: {
-          border: {
-            color: isDark ? 'rgba(255, 255, 255, 0.17)' : 'rgba(0, 0, 0, 0.17)',
+export const getDefaultChartOptions = memoize(
+  <T extends keyof ChartTypeRegistry>(isDark: boolean): ChartOptions<T> =>
+    mergeChartOptions<T>(
+      BASE_CHART_OPTIONS as ChartOptions<T>,
+      {
+        scales: {
+          x: {
+            border: {
+              color: isDark
+                ? 'rgba(255, 255, 255, 0.17)'
+                : 'rgba(0, 0, 0, 0.17)',
+            },
+            ticks: {
+              color: isDark
+                ? 'rgba(255, 255, 255, 0.54)'
+                : 'rgba(0, 0, 0, 0.54)',
+            },
           },
-          ticks: {
-            color: isDark ? 'rgba(255, 255, 255, 0.54)' : 'rgba(0, 0, 0, 0.54)',
-          },
-        },
 
-        y: {
-          border: {
-            color: isDark ? 'rgba(255, 255, 255, 0.17)' : 'rgba(0, 0, 0, 0.17)',
-          },
-          grid: {
-            color: isDark
-              ? ({ index }) => `rgba(255, 255, 255, ${index ? 0.17 : 0.34})`
-              : ({ index }) => `rgba(0, 0, 0, ${index ? 0.17 : 0.34})`,
-          },
-          ticks: {
-            color: isDark ? 'rgba(255, 255, 255, 0.54)' : 'rgba(0, 0, 0, 0.54)',
+          y: {
+            border: {
+              color: isDark
+                ? 'rgba(255, 255, 255, 0.17)'
+                : 'rgba(0, 0, 0, 0.17)',
+            },
+            grid: {
+              color: isDark
+                ? ({ index }) => `rgba(255, 255, 255, ${index ? 0.17 : 0.34})`
+                : ({ index }) => `rgba(0, 0, 0, ${index ? 0.17 : 0.34})`,
+            },
+            ticks: {
+              color: isDark
+                ? 'rgba(255, 255, 255, 0.54)'
+                : 'rgba(0, 0, 0, 0.54)',
+            },
           },
         },
-      },
-    } as ChartOptions<T>
-  );
+      } as ChartOptions<T>
+    )
+);
 
 type GradientBackgroundOptions = {
   alpha?: number;

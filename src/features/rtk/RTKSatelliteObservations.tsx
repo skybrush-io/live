@@ -1,5 +1,4 @@
 import Box from '@mui/material/Box';
-import { useTheme } from '@mui/material/styles';
 import { createSelector } from '@reduxjs/toolkit';
 import type { Chart, ChartData, ChartOptions } from 'chart.js';
 import isNil from 'lodash-es/isNil';
@@ -7,17 +6,14 @@ import { useEffect, useRef, useState } from 'react';
 import { connect } from 'react-redux';
 import { useHarmonicIntervalFn, useUpdate } from 'react-use';
 
-import { isThemeDark } from '@skybrush/app-theme-mui';
-
 import {
-  createChartOptions,
   createGradientBackground,
-  mergeChartOptions,
   NO_BAR_CHART_DATA,
 } from '~/components/charts/utils';
 import Colors from '~/components/colors';
 import type { RootState } from '~/store/reducers';
 
+import { useChartOptions } from '~/components/charts/hooks';
 import BarChart from './BarChart';
 import { getDisplayedSatelliteCNRValues } from './selectors';
 import type { SatelliteCNRInfo } from './types';
@@ -116,25 +112,17 @@ const CHART_OPTIONS: ChartOptions<'bar'> = {
   },
 };
 
-const createOptions = (isDark: boolean) =>
-  mergeChartOptions<'bar'>(createChartOptions(isDark), CHART_OPTIONS);
-
-const options = {
-  dark: createOptions(true),
-  light: createOptions(false),
-};
-
 type Props = {
   height?: number;
   items: SatelliteCNRInfo[];
 };
 
 const RTKSatelliteObservations = ({ height = 160, items }: Props) => {
-  const theme = useTheme();
   const update = useUpdate();
   const chartRef = useRef<Chart<'bar'>>(null);
   const [chartData, setChartData] =
     useState<ChartData<'bar'>>(NO_BAR_CHART_DATA);
+  const chartOptions = useChartOptions<'bar'>(CHART_OPTIONS);
 
   // Update the component regularly because the chart depends on the time
   // elapsed since the last update so we need to keep it updated even if
@@ -157,11 +145,7 @@ const RTKSatelliteObservations = ({ height = 160, items }: Props) => {
 
   return (
     <Box sx={{ height }}>
-      <BarChart
-        ref={chartRef}
-        data={chartData}
-        options={isThemeDark(theme) ? options.dark : options.light}
-      />
+      <BarChart ref={chartRef} data={chartData} options={chartOptions} />
     </Box>
   );
 };
