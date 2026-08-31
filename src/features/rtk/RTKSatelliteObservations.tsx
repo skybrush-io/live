@@ -1,40 +1,36 @@
-import loadable from '@loadable/component';
 import Box from '@mui/material/Box';
-import { useTheme } from '@mui/material/styles';
 import { createSelector } from '@reduxjs/toolkit';
+import type { Chart, ChartData, ChartOptions } from 'chart.js';
 import isNil from 'lodash-es/isNil';
-import PropTypes from 'prop-types';
 import { useEffect, useRef, useState } from 'react';
 import { connect } from 'react-redux';
 import { useHarmonicIntervalFn, useUpdate } from 'react-use';
 
-import { defaultFont, isThemeDark } from '@skybrush/app-theme-mui';
-
+import {
+  createGradientBackground,
+  NO_BAR_CHART_DATA,
+} from '~/components/charts/utils';
 import Colors from '~/components/colors';
-import { createGradientBackground, NO_DATA } from '~/utils/charts';
+import type { RootState } from '~/store/reducers';
 
+import { useChartOptions } from '~/components/charts/hooks';
+import BarChart from './BarChart';
 import { getDisplayedSatelliteCNRValues } from './selectors';
+import type { SatelliteCNRInfo } from './types';
 
 /* ************************************************************************ */
-
-const BarChart = loadable(
-  () => import(/* webpackChunkName: "charts" */ './BarChart'),
-  {
-    resolveComponent: ({ default: Bar }) => Bar,
-  }
-);
 
 const cnrBoundaries = [30, 40];
 
 const colors = ['#424242', Colors.error, Colors.warning, Colors.success];
 
 const createGradientFills = createSelector(
-  (ctx) => ctx,
+  (ctx: CanvasRenderingContext2D) => ctx,
   (ctx) => colors.map((color) => createGradientBackground({ ctx, color }))
 );
 
-const styleForCNR = (cnr) => {
-  if (cnr <= 0 || isNil(cnr)) {
+const styleForCNR = (cnr: number | null | undefined) => {
+  if (isNil(cnr) || cnr <= 0) {
     return 0;
   }
 
@@ -51,12 +47,22 @@ const styleForCNR = (cnr) => {
 
 /* ************************************************************************ */
 
-const createDataFromItemsAndDrawingContext = (items, ctx) => {
+type ProcessedCNRItem = {
+  label: string;
+  value: number | null;
+  backgroundColor: CanvasGradient;
+  borderColor: string;
+};
+
+const createDataFromItemsAndDrawingContext = (
+  items: SatelliteCNRInfo[],
+  ctx: CanvasRenderingContext2D
+): ChartData<'bar'> => {
   const gradients = createGradientFills(ctx);
   const now = Date.now();
   const processedItems = items
-    .map((item) => {
-      const ageMsec = now - item.lastUpdatedAt;
+    .map((item): ProcessedCNRItem | null => {
+      const ageMsec = now - (item.lastUpdatedAt ?? 0);
 
       if (ageMsec >= 60000) {
         return null;
@@ -70,7 +76,7 @@ const createDataFromItemsAndDrawingContext = (items, ctx) => {
         borderColor: colors[style],
       };
     })
-    .filter(Boolean);
+    .filter(Boolean) as ProcessedCNRItem[]; // cast valid because nulls are excluded
 
   return {
     labels: processedItems.map((item) => item.label),
@@ -86,17 +92,9 @@ const createDataFromItemsAndDrawingContext = (items, ctx) => {
   };
 };
 
-const createOptions = (isDark) => ({
+const CHART_OPTIONS: ChartOptions<'bar'> = {
   plugins: {
-    legend: {
-      display: false,
-    },
     tooltip: {
-      titleFont: { family: defaultFont },
-      bodyFont: { family: defaultFont },
-      footerFont: { family: defaultFont },
-
-      // specific to this chart
       callbacks: {
         label: (ctx) => ` ${ctx.formattedValue} dB-Hz`,
       },
@@ -104,61 +102,27 @@ const createOptions = (isDark) => ({
   },
 
   scales: {
-    x: {
-      grid: {
-        display: false,
-      },
-      ticks: {
-        font: {
-          // theme-specific
-          color: isDark ? 'rgba(255, 255, 255, 0.54)' : 'rgba(0, 0, 0, 0.54)',
-          // all charts
-          family: defaultFont,
-          size: 14,
-        },
-      },
-    },
-
     y: {
-      // dark theme only
-      grid: {
-        borderColor: isDark
-          ? ({ index }) => `rgba(255, 255, 255, ${index ? 0.17 : 0.34})`
-          : ({ index }) => `rgba(0, 0, 0, ${index ? 0.17 : 0.34})`,
-        color: isDark
-          ? ({ index }) => `rgba(255, 255, 255, ${index ? 0.17 : 0.34})`
-          : ({ index }) => `rgba(0, 0, 0, ${index ? 0.17 : 0.34})`,
-      },
       suggestedMin: 0,
       suggestedMax: 60,
       ticks: {
-        font: {
-          // theme-specific
-          color: isDark ? 'rgba(255, 255, 255, 0.54)' : 'rgba(0, 0, 0, 0.54)',
-          // all charts
-          family: defaultFont,
-          size: 14,
-        },
-        // specific to this chart
         maxTicksLimit: 7,
       },
     },
   },
-
-  // required for all charts
-  maintainAspectRatio: false,
-});
-
-const options = {
-  dark: createOptions(true),
-  light: createOptions(false),
 };
 
-const RTKSatelliteObservations = ({ height = 160, items }) => {
-  const theme = useTheme();
+type Props = {
+  height?: number;
+  items: SatelliteCNRInfo[];
+};
+
+const RTKSatelliteObservations = ({ height = 160, items }: Props) => {
   const update = useUpdate();
-  const chartRef = useRef(null);
-  const [chartData, setChartData] = useState(NO_DATA);
+  const chartRef = useRef<Chart<'bar'>>(null);
+  const [chartData, setChartData] =
+    useState<ChartData<'bar'>>(NO_BAR_CHART_DATA);
+  const chartOptions = useChartOptions<'bar'>(CHART_OPTIONS);
 
   // Update the component regularly because the chart depends on the time
   // elapsed since the last update so we need to keep it updated even if
@@ -172,35 +136,23 @@ const RTKSatelliteObservations = ({ height = 160, items }) => {
 
     if (chart) {
       setChartData(
-        items ? createDataFromItemsAndDrawingContext(items, chart.ctx) : NO_DATA
+        items
+          ? createDataFromItemsAndDrawingContext(items, chart.ctx)
+          : NO_BAR_CHART_DATA
       );
     }
-  }, [chartRef.current, items]);
+  }, [items]);
 
   return (
     <Box sx={{ height }}>
-      <BarChart
-        ref={chartRef}
-        data={chartData}
-        options={isThemeDark(theme) ? options.dark : options.light}
-      />
+      <BarChart ref={chartRef} data={chartData} options={chartOptions} />
     </Box>
   );
 };
 
-RTKSatelliteObservations.propTypes = {
-  height: PropTypes.number,
-  items: PropTypes.arrayOf(
-    PropTypes.shape({
-      cnr: PropTypes.number,
-      lastUpdatedAt: PropTypes.number,
-    })
-  ),
-};
-
 export default connect(
   // mapStateToProps
-  (state) => ({
+  (state: RootState) => ({
     items: getDisplayedSatelliteCNRValues(state),
   }),
   // mapDispatchToProps
