@@ -96,10 +96,11 @@ const ItemListSidebar = <T extends ItemLike>({
 }: Props<T>) => {
   const classes = useStyles();
   const listRef = useRef<HTMLUListElement | null>(null);
+  const lastItemId = items.at(-1)?.id;
 
   useLayoutEffect(() => {
     listRef.current?.lastElementChild?.scrollIntoView({ block: 'nearest' });
-  }, [items]);
+  }, [lastItemId]);
 
   return (
     <Box className={classes.root}>
