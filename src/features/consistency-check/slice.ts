@@ -1,7 +1,7 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
 import {
-  addItemToFront,
+  addItemToBack,
   clearOrderedCollection,
   createCollectionFromArray,
   deleteItemById,
@@ -76,7 +76,7 @@ const { actions, reducer } = createSlice({
           if (parameterNames.order.includes(name)) {
             deleteItemById(parameterNames, name);
           }
-          addItemToFront(parameterNames, { id: name, name });
+          addItemToBack(parameterNames, { id: name, name });
         }
       }
     },
