@@ -9,6 +9,7 @@ import {
   RTKAntennaPositionFormat,
   RTKCorrectionStatus,
   type RTKSavedCoordinate,
+  type SatelliteCNRInfo,
 } from './types';
 
 const formatPositionECEF = (
@@ -107,7 +108,7 @@ export const getDisplayedListOfMessages = createSelector(
  */
 export const getDisplayedSatelliteCNRValues = createSelector(
   getSatelliteInfo,
-  (satelliteInfos) =>
+  (satelliteInfos): SatelliteCNRInfo[] =>
     sortBy(
       Object.entries(satelliteInfos || {}).map(
         ([satelliteId, satelliteInfo]) => ({
