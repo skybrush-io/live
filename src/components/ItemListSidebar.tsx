@@ -6,7 +6,8 @@ import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
-import { animated, useTransition } from '@react-spring/web';
+import { keyframes } from '@mui/material/styles';
+import { useLayoutEffect, useRef } from 'react';
 import type { ReactNode } from 'react';
 
 import { makeStyles } from '@skybrush/app-theme-mui';
@@ -15,6 +16,11 @@ import { MiniList, Tooltip } from '@skybrush/mui-components';
 import type { Identifier, ItemLike } from '~/utils/collections';
 
 import FileButton from './FileButton';
+
+const fadeIn = keyframes({
+  from: { opacity: 0 },
+  to: { opacity: 1 },
+});
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -35,9 +41,17 @@ const useStyles = makeStyles((theme) => ({
     flex: 1,
   },
 
-  list: {
-    position: 'relative',
+  listArea: {
     flex: 1,
+    position: 'relative',
+  },
+
+  list: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
     overflow: 'auto',
   },
 
@@ -48,9 +62,10 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(1),
     textAlign: 'center',
   },
+  row: {
+    animation: `${fadeIn} 250ms ease-out`,
+  },
 }));
-
-const ITEM_HEIGHT = 28;
 
 type Props<T extends ItemLike> = {
   canProceed: boolean;
@@ -80,17 +95,12 @@ const ItemListSidebar = <T extends ItemLike>({
   onStart,
 }: Props<T>) => {
   const classes = useStyles();
+  const listRef = useRef<HTMLUListElement | null>(null);
+  const lastItemId = items.at(-1)?.id;
 
-  const transitions = useTransition(
-    items.map((item, index) => ({ ...item, y: index * ITEM_HEIGHT })),
-    {
-      from: { position: 'absolute' as const, opacity: 0, y: 0 },
-      leave: { height: 0, opacity: 0 },
-      enter: ({ y }) => ({ y, opacity: 1 }),
-      update: ({ y }) => ({ y }),
-      key: (item: T) => item.id,
-    }
-  );
+  useLayoutEffect(() => {
+    listRef.current?.lastElementChild?.scrollIntoView({ block: 'nearest' });
+  }, [lastItemId]);
 
   return (
     <Box className={classes.root}>
@@ -108,16 +118,10 @@ const ItemListSidebar = <T extends ItemLike>({
           </Tooltip>
         )}
       </Box>
-      <MiniList className={classes.list}>
-        {transitions(({ y, ...rest }, item) => (
-          <animated.div
-            style={{
-              transform: y.to((y) => `translate3d(0,${y}px,0)`),
-              width: '100%',
-              ...rest,
-            }}
-          >
-            <ListItem disablePadding>
+      <Box className={classes.listArea}>
+        <MiniList ref={listRef} className={classes.list}>
+          {items.map((item) => (
+            <ListItem className={classes.row} disablePadding key={item.id}>
               <ListItemButton
                 onClick={() => {
                   onRemoveItem?.(item.id);
@@ -126,9 +130,9 @@ const ItemListSidebar = <T extends ItemLike>({
                 {renderItem(item)}
               </ListItemButton>
             </ListItem>
-          </animated.div>
-        ))}
-      </MiniList>
+          ))}
+        </MiniList>
+      </Box>
       <Box className={classes.footer}>
         {onImportItems && (
           <FileButton startIcon={<FolderOpen />} onSelected={onImportItems}>
