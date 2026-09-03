@@ -124,3 +124,23 @@ export function chooseUniqueIdFromName(
 ): string {
   return chooseUniqueId(camelCase(name), existingIds);
 }
+
+/**
+ * Finds the next available index in a collection of items with numeric indices.
+ *
+ * @param collection - a collection of items, each having a unique numeric index
+ * @param getter - a getter that returns the index given an item
+ * @param start - the smallest possible index to start searching from (default is 0)
+ * @returns the first available index that is not used by any item in the collection
+ */
+export function findNextAvailableIndex<T>(
+  collection: T[],
+  getter: (item: T) => number,
+  start = 0
+): number {
+  const usedIndices = new Set(collection.map(getter));
+  while (usedIndices.has(start)) {
+    start++;
+  }
+  return start;
+}
