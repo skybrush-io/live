@@ -166,6 +166,12 @@ export const componentRegistry: ComponentRegistry = {
     label: '3D View',
     feature: 'threeDView',
   },
+  timeline: {
+    component: views.TimelinePanel,
+    label: 'Timeline',
+    detachable: true,
+    feature: 'showControl',
+  },
   'uav-details': {
     component: views.UAVDetailsPanel,
     label: 'UAV',

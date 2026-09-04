@@ -18,6 +18,7 @@ import MessagesPanelView from './messages';
 import MissionOverviewPanel from './mission-editor';
 import ShowControlPanel from './show-control';
 import ThreeDTopLevelView from './three-d';
+import TimelinePanel from './timeline';
 import UAVDetailsPanel from './uav-details';
 import UAVList from './uavs';
 
@@ -41,6 +42,7 @@ const views = {
   UAVDetailsPanel,
   UAVList,
   ThreeDTopLevelView,
+  TimelinePanel,
 };
 
 export default views;

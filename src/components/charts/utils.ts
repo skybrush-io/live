@@ -1,8 +1,8 @@
-import { defaultFont } from '@skybrush/app-theme-mui';
+import { Colors, defaultFont } from '@skybrush/app-theme-mui';
 import type { ChartData, ChartOptions, ChartTypeRegistry } from 'chart.js';
 import createColor from 'color';
 import merge from 'deepmerge';
-import { memoize } from 'lodash-es';
+import memoize from 'memoizee';
 
 const BASE_CHART_OPTIONS: ChartOptions = {
   plugins: {
@@ -13,6 +13,13 @@ const BASE_CHART_OPTIONS: ChartOptions = {
       titleFont: { family: defaultFont },
       bodyFont: { family: defaultFont },
       footerFont: { family: defaultFont },
+    },
+  },
+
+  datasets: {
+    line: {
+      borderColor: Colors.info,
+      backgroundColor: Colors.info,
     },
   },
 
@@ -48,6 +55,34 @@ export const mergeChartOptions = <T extends keyof ChartTypeRegistry>(
 ): ChartOptions<T> => merge(baseOptions, overrideOptions);
 
 /**
+ * Creates default cartesian scale options for Chart.js charts, with theme-specific settings
+ * based on the provided `isDark` parameter.
+ *
+ * @param isDark - whether the theme being targeted by the options is a dark theme
+ * @returns - a Chart.js axis options object with theme-specific settings
+ */
+export const getDefaultCartesianScaleOptions = memoize(
+  (axis: 'x' | 'y', isDark: boolean) => ({
+    border: {
+      color: isDark ? 'rgba(255, 255, 255, 0.17)' : 'rgba(0, 0, 0, 0.17)',
+    },
+    grid:
+      axis === 'y'
+        ? {
+            color: isDark
+              ? ({ index }: { index: number }) =>
+                  `rgba(255, 255, 255, ${index ? 0.17 : 0.34})`
+              : ({ index }: { index: number }) =>
+                  `rgba(0, 0, 0, ${index ? 0.17 : 0.34})`,
+          }
+        : {},
+    ticks: {
+      color: isDark ? 'rgba(255, 255, 255, 0.54)' : 'rgba(0, 0, 0, 0.54)',
+    },
+  })
+);
+
+/**
  * Creates default chart options for Chart.js charts, with theme-specific settings
  * based on the provided `isDark` parameter.
  *
@@ -60,36 +95,9 @@ export const getDefaultChartOptions = memoize(
       BASE_CHART_OPTIONS as ChartOptions<T>,
       {
         scales: {
-          x: {
-            border: {
-              color: isDark
-                ? 'rgba(255, 255, 255, 0.17)'
-                : 'rgba(0, 0, 0, 0.17)',
-            },
-            ticks: {
-              color: isDark
-                ? 'rgba(255, 255, 255, 0.54)'
-                : 'rgba(0, 0, 0, 0.54)',
-            },
-          },
-
-          y: {
-            border: {
-              color: isDark
-                ? 'rgba(255, 255, 255, 0.17)'
-                : 'rgba(0, 0, 0, 0.17)',
-            },
-            grid: {
-              color: isDark
-                ? ({ index }) => `rgba(255, 255, 255, ${index ? 0.17 : 0.34})`
-                : ({ index }) => `rgba(0, 0, 0, ${index ? 0.17 : 0.34})`,
-            },
-            ticks: {
-              color: isDark
-                ? 'rgba(255, 255, 255, 0.54)'
-                : 'rgba(0, 0, 0, 0.54)',
-            },
-          },
+          x: getDefaultCartesianScaleOptions('x', isDark),
+          y: getDefaultCartesianScaleOptions('y', isDark),
+          y2: getDefaultCartesianScaleOptions('y', isDark),
         },
       } as ChartOptions<T>
     )

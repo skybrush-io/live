@@ -10,6 +10,7 @@ import Layers from '@mui/icons-material/Layers';
 import Map from '@mui/icons-material/Map';
 import Place from '@mui/icons-material/Place';
 import ThreeDRotation from '@mui/icons-material/ThreeDRotation';
+import Timeline from '@mui/icons-material/Timeline';
 import WbSunny from '@mui/icons-material/WbSunny';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -159,6 +160,14 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
               icon={<HomeCircleOutlined />}
               label={t('view.collective-rth')}
               component={moduleComponent('collective-rth')}
+            />
+          )}
+          {hasShowControl && experimentalFeaturesEnabled && (
+            <Module
+              id='timeline'
+              icon={<Timeline />}
+              label={t('view.timeline')}
+              component={moduleComponent('timeline')}
             />
           )}
           {hasShowControl && <hr />}
