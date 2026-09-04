@@ -13,7 +13,11 @@ import type {
   Trajectory,
   ValidationSettings,
 } from '@skybrush/show-format';
-import { EnvironmentType } from '@skybrush/show-format';
+import {
+  EnvironmentType,
+  getTrajectoriesFromSpecification,
+  getTrajectoryDuration,
+} from '@skybrush/show-format';
 
 import {
   getMinimumIndoorTakeoffSpacing,
@@ -33,7 +37,6 @@ import {
   type TakeoffHeadingSpecification,
 } from '../constants';
 import { SettingsSynchronizationStatus } from '../enums';
-import { getDurationOfTrajectory, isValidTrajectory } from '../trajectory';
 import type {
   CoordinateSystem,
   EnvironmentState,
@@ -231,18 +234,16 @@ export const getNumberOfDronesInShow: AppSelector<number> = createSelector(
  * undefined for all the drones that have no fixed trajectories in the mission.
  */
 export const getTrajectories: AppSelector<Array<Trajectory | undefined>> =
-  createSelector(getDroneSwarmSpecification, (swarm) =>
-    swarm.map((drone) => {
-      const trajectory = drone.settings.trajectory;
-      return isValidTrajectory(trajectory) ? trajectory : undefined;
-    })
+  createSelector(
+    (state: RootState) => state.show.data,
+    (spec) => getTrajectoriesFromSpecification(spec)
   );
 
 /**
  * Returns the total duration of the show, in seconds.
  */
 export const getShowDuration = createSelector(getTrajectories, (trajectories) =>
-  max(trajectories.map((x) => (x ? (getDurationOfTrajectory(x) ?? 0) : 0)))
+  max(trajectories.map((x) => (x ? getTrajectoryDuration(x) : 0)))
 );
 
 /**

@@ -1,12 +1,12 @@
-import isObject from 'lodash-es/isObject';
 import max from 'lodash-es/max';
 
 import { convexHull2D, euclideanDistance2D } from '@skybrush/math';
 import {
+  getTrajectorySegmentsInTimeWindow,
+  isValidTrajectory,
   type TimeWindow,
   type Trajectory,
   type TrajectorySegment,
-  trajectorySegmentsInTimeWindow,
 } from '@skybrush/show-format';
 
 import type { Coordinate2D, Coordinate3D } from '~/utils/math';
@@ -120,27 +120,6 @@ export const getPointsOfTrajectory = (
 };
 
 /**
- * Returns the duration of a single drone trajectory, in seconds.
- */
-export const getDurationOfTrajectory = (
-  trajectory: Trajectory
-): number | undefined => {
-  if (!isValidTrajectory(trajectory)) {
-    return;
-  }
-
-  const { points, takeoffTime } = trajectory;
-
-  // TODO: `isValidTrajectory` already ensures `points.length > 0`...
-  if (points.length > 0) {
-    const lastPoint = points.at(-1);
-    if (Array.isArray(lastPoint) && lastPoint.length > 1) {
-      return lastPoint[0] + (takeoffTime ?? 0);
-    }
-  }
-};
-
-/**
  * Returns the subtrajectory of the given trajectory that is within the given time window.
  *
  * The function keeps the all the properties of the original trajectory, but replaces
@@ -155,7 +134,7 @@ export function getTrajectoryInTimeWindow(
 ): Trajectory {
   return {
     ...trajectory,
-    points: trajectorySegmentsInTimeWindow(
+    points: getTrajectorySegmentsInTimeWindow(
       trajectory.points,
       timeWindow
       // TODO: Get rid of this type assertion! It only holds if the given
@@ -164,22 +143,3 @@ export function getTrajectoryInTimeWindow(
     ) as Trajectory['points'],
   };
 }
-
-/**
- * Returns whether a trajectory object "looks like" a valid trajectory.
- *
- * TODO: Add validation for the optional `takeoffTime` and `landingTime` fields
- *       Also, maybe this function should be in `@skybrush/show-format` instead
- */
-export const isValidTrajectory = (
-  trajectory: unknown
-): trajectory is Trajectory =>
-  // prettier-ignore
-  isObject(trajectory)
-  // `version` is valid
-  && 'version' in trajectory
-  && trajectory.version === 1
-  // `points` is a valid, non-empty array
-  && 'points' in trajectory
-  && Array.isArray(trajectory.points)
-  && trajectory.points.length > 0;
