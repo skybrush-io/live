@@ -26,6 +26,10 @@ import type { PartialDeep } from 'type-fest';
 import ChartContainer from '~/components/charts/ChartContainer';
 import { useChartOptions } from '~/components/charts/hooks';
 import { getDefaultCartesianScaleOptions } from '~/components/charts/utils';
+import {
+  getShowCues,
+  selectCollectiveRTHPlanTimestamps,
+} from '~/features/show/selectors';
 import type { RootState } from '~/store/reducers';
 import { formatDuration } from '~/utils/formatting';
 
@@ -37,6 +41,10 @@ import {
   describeMarkerLane,
   describeShowSegmentId,
 } from './model';
+import {
+  getRelevantShowSegmentsSortedByStartTime,
+  getShowTimelineTimestamps,
+} from './selectors';
 import {
   isLabeledChartItem,
   isShowSegmentItem,
@@ -532,18 +540,6 @@ const TimelineChart = (props: StateProps) => {
   );
 };
 
-const HARDCODED_CUES: Cue[] = [1, 3, 5, 7].map((time, index) => ({
-  time,
-  name: `Cue ${index + 1}`,
-}));
-
-const HARDCODED_SEGMENTS: Array<[ShowSegmentId, ShowSegment]> = [
-  ['show', [2, 6]],
-];
-
-const HARDCODED_RTH_PLANS: number[] = [1, 3, 6];
-
-const HARDCODED_TIMESTAMPS: number[] = [0, 1, 2, 3, 4, 5, 6, 7, 8];
 const HARDCODED_MIN_ALTITUDES: number[] = [
   0, 0.5, 1, 1.5, 1.25, 1.5, 1.2, 0.75, 0,
 ];
@@ -555,9 +551,12 @@ const HARDCODED_MAX_DISTANCES: number[] = [0, 3, 6, 5, 5.2, 5, 5.2, 6, 3, 0];
 
 export default connect(
   // mapStateToProps
-  (_state: RootState, ownProps: OwnProps): StateProps => {
+  (state: RootState, ownProps: OwnProps): StateProps => {
     const { datasets = [], markerLanes = [] } = ownProps;
-    const timestamps = HARDCODED_TIMESTAMPS;
+    const timestamps = getShowTimelineTimestamps(state);
+    const cues = getShowCues(state);
+    const segments = getRelevantShowSegmentsSortedByStartTime(state);
+    const rthPlanTimestamps = selectCollectiveRTHPlanTimestamps(state);
     const altitudes: [number[], number[]] = [
       HARDCODED_MIN_ALTITUDES,
       HARDCODED_MAX_ALTITUDES,
@@ -588,10 +587,10 @@ export default connect(
         rthDurations: needRthDurations ? rthDurations : undefined,
       },
       markers: {
-        cues: showCues ? HARDCODED_CUES : undefined,
-        segments: showSegments ? HARDCODED_SEGMENTS : undefined,
+        cues: showCues ? cues : undefined,
+        segments: showSegments ? segments : undefined,
         rthPlanTimestamps: showRthPlanTimestamps
-          ? HARDCODED_RTH_PLANS
+          ? rthPlanTimestamps
           : undefined,
       },
     };

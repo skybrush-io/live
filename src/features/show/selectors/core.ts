@@ -4,6 +4,7 @@ import isNil from 'lodash-es/isNil';
 import max from 'lodash-es/max';
 
 import type {
+  Cue,
   DroneSpecification,
   Environment,
   ShowMetadata,
@@ -74,6 +75,14 @@ export const getCommonShowSettings: AppSelector<ShowSettings> = (state) => {
   const result = state.show.data?.settings;
   return typeof result === 'object' ? result : EMPTY_OBJECT;
 };
+
+/**
+ * Returns the list of cues from the currently loaded show.
+ */
+export const getShowCues: AppSelector<Cue[]> = createSelector(
+  (state: RootState) => state.show.data?.settings?.cues?.items,
+  (cues) => (Array.isArray(cues) ? cues : EMPTY_ARRAY)
+);
 
 /**
  * Returns the validation settings of the currently loaded show.

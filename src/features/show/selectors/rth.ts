@@ -36,6 +36,17 @@ export const selectCollectiveRTHPlanSummary: AppSelector<CollectiveRTHPlanSummar
     validateCollectiveRTHPlan(drones)
   );
 
+/**
+ * Returns the timestamps, in ascending order, for which the currently loaded
+ * show has collective RTH plans.
+ */
+export const selectCollectiveRTHPlanTimestamps: AppSelector<number[]> =
+  createSelector(selectCollectiveRTHPlanSummary, ({ plans }) =>
+    Object.keys(plans)
+      .map(Number)
+      .sort((a, b) => a - b)
+  );
+
 export const selectShowControlSchedule: AppSelector<Schedule | undefined> = (
   state
 ) => state.show.showControlSchedule;
