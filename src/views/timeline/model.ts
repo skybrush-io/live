@@ -1,5 +1,7 @@
+import type { TFunction } from 'i18next';
 import type { Cue, ShowSegment, ShowSegmentId } from '@skybrush/show-format';
 import { produce } from 'immer';
+import { tt, type PreparedI18nKey } from '~/i18n';
 import { findNextAvailableIndex } from '~/utils/naming';
 import type {
   CueChartItem,
@@ -24,48 +26,46 @@ export function convertCueToChartItem(cue: Cue): CueChartItem {
   };
 }
 
-export function describeMarkerLane(lane: MarkerLane): string {
-  // TODO(ntamas): allow localization!
+export function describeMarkerLane(lane: MarkerLane): PreparedI18nKey {
   switch (lane) {
     case 'cue':
-      return 'Cues';
+      return tt('timeline.markerLane.cue');
     case 'rthPlan':
-      return 'RTH plans';
+      return tt('timeline.markerLane.rthPlan');
     case 'segment':
-      return 'Segments';
+      return tt('timeline.markerLane.segment');
     default:
-      return `Unknown lane (${JSON.stringify(lane)})`;
+      return tt('timeline.markerLane.unknown', { lane: String(lane) });
   }
 }
 
-export function describeShowSegmentId(type: ShowSegmentId) {
-  // TODO(ntamas): allow localization!
+export function describeShowSegmentId(type: ShowSegmentId): PreparedI18nKey {
   switch (type) {
     case 'takeoff':
-      return 'takeoff';
+      return tt('timeline.showSegment.takeoff');
     case 'landing':
-      return 'landing';
+      return tt('timeline.showSegment.landing');
     case 'show':
-      return 'net show';
+      return tt('timeline.showSegment.show');
     default:
-      return `show segment ${JSON.stringify(type)}`;
+      return tt('timeline.showSegment.unknown', { type: String(type) });
   }
 }
 
 export function convertShowSegmentToChartItems(
   segment: ShowSegment,
-  type: ShowSegmentId
+  type: ShowSegmentId,
+  t: TFunction
 ): ShowSegmentItem[] {
-  // TODO(ntamas): allow localization!
-  const description = describeShowSegmentId(type);
+  const description = describeShowSegmentId(type)(t);
   return segment.map((item, index) => ({
     x: item,
     y: 'segment',
     label:
       index === 0
-        ? `Start of ${description}`
+        ? t('timeline.showSegment.startOf', { description })
         : index === 1
-          ? `End of ${description}`
+          ? t('timeline.showSegment.endOf', { description })
           : description,
     type: index === 0 ? 'start' : 'end',
   }));
@@ -73,13 +73,13 @@ export function convertShowSegmentToChartItems(
 
 export function convertTimestampToRTHPlanItem(
   timestamp: number,
-  index: number
+  index: number,
+  t: TFunction
 ): RTHPlanChartItem {
-  // TODO(ntamas): allow localization!
   return {
     x: timestamp,
     y: 'rthPlan',
-    label: `RTH plan ${index + 1}`,
+    label: t('timeline.rthPlanItem', { index: index + 1 }),
   };
 }
 

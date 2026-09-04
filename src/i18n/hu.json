@@ -910,6 +910,38 @@
     "specifiedRelativeToShowOrientation": "A műsor irányához képest van megadva",
     "unspecified": "Nem meghatározott"
   },
+  "timeline": {
+    "chart": {
+      "tooltip": {
+        "labeledValue": "{{label}}: {{value}}{{unit}}"
+      }
+    },
+    "dataset": {
+      "altitude": "Magasság",
+      "distanceFromHome": "Távolság a felszállási pozíciótól",
+      "maxAltitude": "Maximális magasság",
+      "maxDistance": "Maximális távolság",
+      "minAltitude": "Minimális magasság",
+      "minDistance": "Minimális távolság",
+      "rthDuration": "Kollektív hazatérés időtartama",
+      "rthDurationLine": "Hazatérés időtartama"
+    },
+    "markerLane": {
+      "cue": "Események",
+      "rthPlan": "Hazatérési tervek",
+      "segment": "Műsorszakaszok",
+      "unknown": "Ismeretlen sáv ({{lane}})"
+    },
+    "rthPlanItem": "Hazatérési terv {{index}}",
+    "showSegment": {
+      "endOf": "{{description}} vége",
+      "landing": "leszállás",
+      "show": "nettó műsor",
+      "startOf": "{{description}} kezdete",
+      "takeoff": "felszállás",
+      "unknown": "műsorszakasz: {{type}}"
+    }
+  },
   "toolbox": {
     "averagingInProgress": "{{number}} folyamatban",
     "coordinateAveraging": "Koordináta átlagolás",

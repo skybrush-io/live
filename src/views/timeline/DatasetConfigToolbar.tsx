@@ -4,6 +4,7 @@ import Terrain from '@mui/icons-material/Terrain';
 import Stack, { type StackProps } from '@mui/material/Stack';
 import { Tooltip } from '@skybrush/mui-components';
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import DatasetToggleButton, {
   type DatasetToggleButtonProps,
 } from './DatasetToggleButton';
@@ -17,6 +18,7 @@ type Props = Omit<StackProps, 'onChange'> & {
 };
 
 const DatasetConfigToolbar = ({ axis, value, onChange, ...rest }: Props) => {
+  const { t } = useTranslation();
   const datasets = useMemo(
     () => value.datasets.filter((dataset) => dataset.axis === axis),
     [axis, value]
@@ -31,17 +33,17 @@ const DatasetConfigToolbar = ({ axis, value, onChange, ...rest }: Props) => {
 
   return (
     <Stack spacing={0.5} {...rest}>
-      <Tooltip content='Altitude'>
+      <Tooltip content={t('timeline.dataset.altitude')}>
         <DatasetToggleButton {...buttonProps} value='altitude'>
           <Terrain />
         </DatasetToggleButton>
       </Tooltip>
-      <Tooltip content='Distance from home'>
+      <Tooltip content={t('timeline.dataset.distanceFromHome')}>
         <DatasetToggleButton {...buttonProps} value='distanceFromHome'>
           <Straighten />
         </DatasetToggleButton>
       </Tooltip>
-      <Tooltip content='Collective RTH duration'>
+      <Tooltip content={t('timeline.dataset.rthDuration')}>
         <DatasetToggleButton {...buttonProps} value='rthDuration'>
           <History />
         </DatasetToggleButton>

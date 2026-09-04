@@ -2,6 +2,7 @@ import ToggleButton, {
   type ToggleButtonProps,
 } from '@mui/material/ToggleButton';
 import { Colors } from '@skybrush/app-theme-mui';
+import { useTranslation } from 'react-i18next';
 import { resolveColorIndex } from '~/components/charts/palette';
 import ColoredLight from '~/components/ColoredLight';
 import { describeMarkerLane } from './model';
@@ -19,13 +20,12 @@ export const MarkerLaneToggleButton = ({
   onChange,
   ...rest
 }: Props) => {
+  const { t } = useTranslation();
   const config = markers.find((m) => m.type === value);
-
-  // TODO(ntamas): localize!
 
   return (
     <ToggleButton
-      value='cues'
+      value={value}
       size='small'
       {...rest}
       selected={Boolean(config)}
@@ -35,7 +35,7 @@ export const MarkerLaneToggleButton = ({
         color={resolveColorIndex(config?.colorIndex)?.color ?? Colors.off}
         sx={{ mr: 1 }}
       />
-      {describeMarkerLane(value)}
+      {describeMarkerLane(value)(t)}
     </ToggleButton>
   );
 };

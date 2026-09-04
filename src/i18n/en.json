@@ -1373,6 +1373,38 @@
     "specifiedRelativeToShowOrientation": "Specified relative to show orientation",
     "unspecified": "Unspecified"
   },
+  "timeline": {
+    "chart": {
+      "tooltip": {
+        "labeledValue": "{{label}}: {{value}}{{unit}}"
+      }
+    },
+    "dataset": {
+      "altitude": "Altitude",
+      "distanceFromHome": "Distance from home",
+      "maxAltitude": "Max altitude",
+      "maxDistance": "Max distance",
+      "minAltitude": "Min altitude",
+      "minDistance": "Min distance",
+      "rthDuration": "Collective RTH duration",
+      "rthDurationLine": "RTH duration"
+    },
+    "markerLane": {
+      "cue": "Cues",
+      "rthPlan": "RTH plans",
+      "segment": "Segments",
+      "unknown": "Unknown lane ({{lane}})"
+    },
+    "rthPlanItem": "RTH plan {{index}}",
+    "showSegment": {
+      "endOf": "End of {{description}}",
+      "landing": "landing",
+      "show": "net show",
+      "startOf": "Start of {{description}}",
+      "takeoff": "takeoff",
+      "unknown": "show segment {{type}}"
+    }
+  },
   "toolbox": {
     "averagingInProgress": "{{number}} in progress",
     "coordinateAveraging": "Coordinate averaging",

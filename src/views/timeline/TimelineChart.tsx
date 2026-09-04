@@ -17,7 +17,9 @@ import {
   type TooltipItem,
 } from 'chart.js';
 import merge from 'deepmerge';
+import type { TFunction } from 'i18next';
 import { Line as LineChart } from 'react-chartjs-2';
+import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import type { PartialDeep } from 'type-fest';
 
@@ -147,34 +149,42 @@ const Y_SCALE_OPTIONS = {
   weight: 20,
 } as const;
 
-const PLUGIN_OPTIONS = {
-  tooltip: {
-    callbacks: {
-      title: (items: Array<TooltipItem<'line'>>) =>
-        formatDuration(items.at(0)?.parsed.x ?? undefined),
-      label: (item: TooltipItem<'line'>) => {
-        const { dataset, parsed: parsedItem, raw: rawItem } = item;
-        const datasetLabel = dataset.label ?? '';
-        const value = parsedItem.y;
+const createPluginOptions = (t: TFunction) =>
+  ({
+    tooltip: {
+      callbacks: {
+        title: (items: Array<TooltipItem<'line'>>) =>
+          formatDuration(items.at(0)?.parsed.x ?? undefined),
+        label: (item: TooltipItem<'line'>) => {
+          const { dataset, parsed: parsedItem, raw: rawItem } = item;
+          const datasetLabel = dataset.label ?? '';
+          const value = parsedItem.y;
 
-        if (isLabeledChartItem(rawItem)) {
-          return rawItem.label;
-        }
+          if (isLabeledChartItem(rawItem)) {
+            return rawItem.label;
+          }
 
-        if (typeof value === 'number') {
-          const unit = isUnitHinted(dataset) ? dataset.unitHint : '';
-          const { formattedValue } = item;
-          return datasetLabel
-            ? `${datasetLabel}: ${formattedValue}${unit}`
-            : `${formattedValue}${unit}`;
-        }
+          if (typeof value === 'number') {
+            const unit = isUnitHinted(dataset) ? dataset.unitHint : '';
+            const { formattedValue } = item;
+            return datasetLabel
+              ? t('timeline.chart.tooltip.labeledValue', {
+                  label: datasetLabel,
+                  unit,
+                  value: formattedValue,
+                })
+              : `${formattedValue}${unit}`;
+          }
+        },
       },
+      position: 'nearest',
     },
-    position: 'nearest',
-  },
-} as const;
+  }) as const;
 
-const createChartOptionsProviderFromInput = (input: TimelineChartInputData) => {
+const createChartOptionsProviderFromInput = (
+  input: TimelineChartInputData,
+  t: TFunction
+) => {
   const needsRightAxis = true;
 
   const scaleFunc = (
@@ -211,7 +221,7 @@ const createChartOptionsProviderFromInput = (input: TimelineChartInputData) => {
                 typeof value === 'number' && value >= 0
                   ? markerLanes.at(value)
                   : undefined;
-              return lane ? describeMarkerLane(lane) : '';
+              return lane ? describeMarkerLane(lane)(t) : '';
             }
           )
         ),
@@ -260,16 +270,17 @@ const createChartOptionsProviderFromInput = (input: TimelineChartInputData) => {
       mode: 'nearest',
       axis: 'x',
     },
-    plugins: PLUGIN_OPTIONS,
+    plugins: createPluginOptions(t),
   });
 };
 
 const createDatasetForLane = (
   lane: MarkerLane,
+  t: TFunction,
   options: ChartDataset<'line'>
 ): ChartDataset<'line'> => ({
   type: 'line' as const,
-  label: describeMarkerLane(lane),
+  label: describeMarkerLane(lane)(t),
   pointRadius: 6,
   pointHoverRadius: 6,
   pointBorderWidth: 0,
@@ -325,7 +336,10 @@ const createDatasetsForTimeSeriesPair = (
 class ChartBuilder {
   private datasets: Array<ChartDataset<'line'>> = [];
 
-  constructor(private inputData: TimelineChartInputData) {}
+  constructor(
+    private inputData: TimelineChartInputData,
+    private t: TFunction
+  ) {}
 
   public extendWithDatasets(datasetConfigs: DatasetConfig[]): void {
     const { timestamps, datasets } = this.inputData;
@@ -347,11 +361,11 @@ class ChartBuilder {
               timestamps,
               altitudes,
               {
-                label: 'Min altitude',
+                label: this.t('timeline.dataset.minAltitude'),
                 unitHint: 'm',
               },
               {
-                label: 'Max altitude',
+                label: this.t('timeline.dataset.maxAltitude'),
                 unitHint: 'm',
               }
             );
@@ -365,11 +379,11 @@ class ChartBuilder {
               timestamps,
               distancesFromHome,
               {
-                label: 'Min distance',
+                label: this.t('timeline.dataset.minDistance'),
                 unitHint: 'm',
               },
               {
-                label: 'Max distance',
+                label: this.t('timeline.dataset.maxDistance'),
                 unitHint: 'm',
               }
             );
@@ -380,7 +394,7 @@ class ChartBuilder {
           if (rthDurations) {
             toAdd = [
               createDatasetForTimeSeries(colorIndex, timestamps, rthDurations, {
-                label: 'RTH duration',
+                label: this.t('timeline.dataset.rthDurationLine'),
                 unitHint: 's',
               }),
             ];
@@ -426,7 +440,7 @@ class ChartBuilder {
   extendWithCues(cues: Cue[], colorIndex: number): void {
     const color = resolveColorIndex(colorIndex)?.color ?? 'black';
     this.datasets.push(
-      createDatasetForLane('cue', {
+      createDatasetForLane('cue', this.t, {
         data: cues?.map(convertCueToChartItem) as any,
         borderColor: color,
         backgroundColor: color,
@@ -442,9 +456,13 @@ class ChartBuilder {
     const color = resolveColorIndex(colorIndex)?.color ?? 'black';
     for (const [segmentId, segment] of segments) {
       this.datasets.push(
-        createDatasetForLane('segment', {
-          label: describeShowSegmentId(segmentId),
-          data: convertShowSegmentToChartItems(segment, segmentId) as any,
+        createDatasetForLane('segment', this.t, {
+          label: describeShowSegmentId(segmentId)(this.t),
+          data: convertShowSegmentToChartItems(
+            segment,
+            segmentId,
+            this.t
+          ) as any,
           borderColor: color,
           borderWidth: 2,
           pointBorderWidth: 2,
@@ -468,8 +486,10 @@ class ChartBuilder {
   extendWithRTHPlans(rthPlanTimestamps: number[], colorIndex: number): void {
     const color = resolveColorIndex(colorIndex)?.color ?? 'black';
     this.datasets.push(
-      createDatasetForLane('rthPlan', {
-        data: rthPlanTimestamps?.map(convertTimestampToRTHPlanItem) as any,
+      createDatasetForLane('rthPlan', this.t, {
+        data: rthPlanTimestamps?.map((timestamp, index) =>
+          convertTimestampToRTHPlanItem(timestamp, index, this.t)
+        ) as any,
         borderColor: color,
         backgroundColor: color,
         pointStyle: 'rect',
@@ -483,11 +503,12 @@ class ChartBuilder {
 }
 
 const createChartDataFromInput = (
-  inputData: TimelineChartInputData
+  inputData: TimelineChartInputData,
+  t: TFunction
 ): TimelineChartData => {
   const { configuration } = inputData;
   const { datasets = [], markerLanes = [] } = configuration ?? {};
-  const builder = new ChartBuilder(inputData);
+  const builder = new ChartBuilder(inputData, t);
   builder.extendWithDatasets(datasets);
   builder.extendWithMarkers(markerLanes);
   return { datasets: builder.finalize() };
@@ -497,8 +518,9 @@ type OwnProps = TimelineChartConfig;
 type StateProps = TimelineChartInputData;
 
 const TimelineChart = (props: StateProps) => {
-  const chartData = createChartDataFromInput(props);
-  const chartOptionsProvider = createChartOptionsProviderFromInput(props);
+  const { t } = useTranslation();
+  const chartData = createChartDataFromInput(props, t);
+  const chartOptionsProvider = createChartOptionsProviderFromInput(props, t);
   const chartOptions: TimelineChartOptions =
     useChartOptions(chartOptionsProvider);
 
