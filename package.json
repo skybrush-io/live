@@ -54,6 +54,7 @@
     "@skybrush/mui-components": "^6.9.0",
     "@skybrush/redux-toolkit": "^5.1.0",
     "@skybrush/show-format": "^5.6.1",
+    "@skybrush/show-metrics": "^0.3.0",
     "@tippyjs/react": "^4.2.6",
     "@turf/boolean-contains": "^7.4.0",
     "@turf/buffer": "^7.4.0",

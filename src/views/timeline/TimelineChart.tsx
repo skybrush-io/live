@@ -43,6 +43,9 @@ import {
 } from './model';
 import {
   getRelevantShowSegmentsSortedByStartTime,
+  getShowTimelineAltitudeRange,
+  getShowTimelineDistanceFromHomeRange,
+  getShowTimelineRTHDurations,
   getShowTimelineTimestamps,
 } from './selectors';
 import {
@@ -145,8 +148,8 @@ const createXScaleOptions = (maxValue: number) =>
       callback: (value: number | string) =>
         typeof value === 'number' ? formatDuration(value) : value,
     },
-    suggestedMin: 0,
-    suggestedMax: maxValue,
+    min: 0,
+    max: maxValue,
   }) as const;
 
 const Y_SCALE_OPTIONS = {
@@ -540,15 +543,6 @@ const TimelineChart = (props: StateProps) => {
   );
 };
 
-const HARDCODED_MIN_ALTITUDES: number[] = [
-  0, 0.5, 1, 1.5, 1.25, 1.5, 1.2, 0.75, 0,
-];
-const HARDCODED_MAX_ALTITUDES: number[] = [0, 1, 2, 3, 3, 3, 2, 1, 0];
-const HARDCODED_MIN_DISTANCES: number[] = [
-  0, 1.5, 3, 2.5, 2.6, 2.5, 2.6, 3, 1.5, 0,
-];
-const HARDCODED_MAX_DISTANCES: number[] = [0, 3, 6, 5, 5.2, 5, 5.2, 6, 3, 0];
-
 export default connect(
   // mapStateToProps
   (state: RootState, ownProps: OwnProps): StateProps => {
@@ -557,22 +551,22 @@ export default connect(
     const cues = getShowCues(state);
     const segments = getRelevantShowSegmentsSortedByStartTime(state);
     const rthPlanTimestamps = selectCollectiveRTHPlanTimestamps(state);
-    const altitudes: [number[], number[]] = [
-      HARDCODED_MIN_ALTITUDES,
-      HARDCODED_MAX_ALTITUDES,
-    ];
-    const distancesFromHome: [number[], number[]] = [
-      HARDCODED_MIN_DISTANCES,
-      HARDCODED_MAX_DISTANCES,
-    ];
-    const rthDurations: number[] = timestamps.map((t) => 2 + Math.sin(t));
-
     const allDatasetTypes = datasets.map((d) => d.type);
     const allMarkerLaneTypes = markerLanes.map((m) => m.type);
 
     const needDistances = allDatasetTypes.includes('distanceFromHome');
     const needAltitudes = allDatasetTypes.includes('altitude');
     const needRthDurations = allDatasetTypes.includes('rthDuration');
+
+    const altitudes = needAltitudes
+      ? getShowTimelineAltitudeRange(state)
+      : undefined;
+    const distancesFromHome = needDistances
+      ? getShowTimelineDistanceFromHomeRange(state)
+      : undefined;
+    const rthDurations = needRthDurations
+      ? getShowTimelineRTHDurations(state)
+      : undefined;
 
     const showCues = allMarkerLaneTypes.includes('cue');
     const showSegments = allMarkerLaneTypes.includes('segment');
@@ -582,9 +576,9 @@ export default connect(
       configuration: ownProps,
       timestamps,
       datasets: {
-        altitudes: needAltitudes ? altitudes : undefined,
-        distancesFromHome: needDistances ? distancesFromHome : undefined,
-        rthDurations: needRthDurations ? rthDurations : undefined,
+        altitudes,
+        distancesFromHome,
+        rthDurations,
       },
       markers: {
         cues: showCues ? cues : undefined,
