@@ -64,6 +64,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Multi-UAV operation notifications now report the number of skipped UAVs when
   some were already running the same operation.
 
+- Switched storing the state of the main window to the window state persistence API
+  provided natively by Electron. This means that Skybrush Live will start with its
+  default position and size after updating to this version, but any newly set window
+  size or position will be remembered properly when exiting and re-opening the app.
+
 ### Fixed
 
 - Fixed the automatic launch of the server in the background that was accidentally
