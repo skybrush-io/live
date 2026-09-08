@@ -48,7 +48,7 @@
     "@rjsf/validator-ajv8": "^6.8.0",
     "@skybrush/aframe-components": "^3.0.4",
     "@skybrush/app-theme-mui": "^5.2.1",
-    "@skybrush/electron-app-framework": "^5.2.1",
+    "@skybrush/electron-app-framework": "^6.0.1",
     "@skybrush/flockwave-spec": "^2.8.0",
     "@skybrush/math": "^1.0.1",
     "@skybrush/mui-components": "^6.9.0",
@@ -207,7 +207,7 @@
     "cross-env": "^10.1.0",
     "css-loader": "^7.1.5",
     "dotenv-webpack": "^9.0.0",
-    "electron": "^43.4.1",
+    "electron": "^44",
     "eslint": "^10.9.1",
     "git-revision-webpack-plugin": "^5.0.0",
     "html-webpack-plugin": "^5.6.8",
@@ -249,11 +249,11 @@
   },
   "allowScripts": {
     "core-js-pure@3.47.0": true,
-    "electron@42.4.1": true,
     "es5-ext@0.10.64": true,
     "fsevents@2.3.3": true,
     "less@4.5.1": true,
     "unrs-resolver@1.12.2": true,
-    "core-js@3.49.0": true
+    "core-js@3.50.0": true,
+    "@parcel/watcher@2.6.0": true
   }
 }
