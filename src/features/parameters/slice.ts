@@ -6,7 +6,7 @@ import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
 import type { Identifier } from '~/utils/collections';
 import {
-  addItemToFront,
+  addItemToBack,
   clearOrderedCollection,
   type Collection,
   deleteItemById,
@@ -74,7 +74,7 @@ const { actions, reducer } = createSlice({
             deleteItemById(manifest, id);
           }
 
-          addItemToFront(manifest, {
+          addItemToBack(manifest, {
             id,
             name,
             uavId,

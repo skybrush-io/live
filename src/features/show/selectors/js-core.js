@@ -10,6 +10,7 @@ import max from 'lodash-es/max';
 import { createCachedSelector } from 're-reselect';
 
 import { convexHull2D, getCentroid } from '@skybrush/math';
+import { isValidTrajectory } from '@skybrush/show-format';
 
 import { CommonClockId } from '~/features/clocks/types';
 import {
@@ -32,7 +33,6 @@ import {
   getMaximumHeightOfTrajectory,
   getMaximumHorizontalDistanceFromTakeoffPositionInTrajectory,
   getPointsOfTrajectory,
-  isValidTrajectory,
 } from '../trajectory';
 import { makeSegmentSelectors, transformPoints } from './trajectory';
 

@@ -17,6 +17,7 @@ import {
   BackgroundHint,
   LabeledStatusLight,
   StatusPill,
+  Tooltip,
 } from '@skybrush/mui-components';
 
 import type { PreparedI18nKey, PreparedI18nRecord } from '~/i18n';
@@ -54,6 +55,9 @@ const useValueRowStyles = makeStyles((theme) => ({
   uavIds: {
     color: theme.palette.text.secondary,
   },
+  valuePill: {
+    textOverflow: 'ellipsis',
+  },
 }));
 
 /**
@@ -66,11 +70,16 @@ const ValueRow = ({ value, uavIds, isConsensus }: ValueRowProps) => {
 
   return (
     <Stack spacing={1} direction='row' alignItems='center'>
-      <Box sx={{ width: 80 }}>
-        <StatusPill status={isConsensus ? Status.SUCCESS : Status.WARNING}>
-          {value}
-        </StatusPill>
-      </Box>
+      <Tooltip content={value}>
+        <Box sx={{ width: 80 }}>
+          <StatusPill
+            className={classes.valuePill}
+            status={isConsensus ? Status.SUCCESS : Status.WARNING}
+          >
+            {value}
+          </StatusPill>
+        </Box>
+      </Tooltip>
       <Box sx={{ width: 36 }}>
         <StatusPill status={Status.OFF}>{uavIds.length}</StatusPill>
       </Box>

@@ -2,26 +2,38 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import config from 'config';
 import { TextField } from 'mui-rff';
-import PropTypes from 'prop-types';
 import { Form } from 'react-final-form';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import FormSubmissionButtonRow from '~/components/forms/FormSubmissionButtonRow';
 import { updateAppSettings } from '~/features/settings/slice';
+import type { RootState } from '~/store/reducers';
 
-const enabledTileProviders = config?.map?.tileProviders ?? {};
+const enabledTileProviders = config.map.tileProviders;
 
-const providers = [
+type Provider = {
+  label: string;
+  key: string;
+};
+
+const providers: Provider[] = [
   enabledTileProviders.bingMaps ? { label: 'Bing Maps', key: 'BING' } : false,
   enabledTileProviders.googleMaps
     ? { label: 'Google Maps', key: 'GOOGLE' }
     : false,
   { label: 'Mapbox', key: 'MAPBOX' },
   { label: 'Maptiler', key: 'MAPTILER' },
-].filter(Boolean);
+].filter((value): value is Provider => Boolean(value));
 
-const APIKeysTabPresentation = ({ apiKeys, onSubmit }) => {
+type APIKeys = Record<string, string>;
+
+type Props = {
+  apiKeys?: APIKeys;
+  onSubmit: (apiKeys: APIKeys) => void;
+};
+
+const APIKeysTabPresentation = ({ apiKeys, onSubmit }: Props) => {
   const { t } = useTranslation();
 
   return (
@@ -54,22 +66,17 @@ const APIKeysTabPresentation = ({ apiKeys, onSubmit }) => {
   );
 };
 
-APIKeysTabPresentation.propTypes = {
-  apiKeys: PropTypes.object,
-  onSubmit: PropTypes.func,
-};
-
 export default connect(
   // mapStateToProps
-  (state) => ({
+  (state: RootState) => ({
     apiKeys: state.settings.apiKeys,
   }),
   // mapDispatchToProps
   {
-    onSubmit(apiKeys) {
+    onSubmit(apiKeys: APIKeys) {
       // It seems like apiKeys does not include empty text fields so we
       // explicitly add those
-      const updates = {};
+      const updates: APIKeys = {};
       for (const provider of providers) {
         updates[provider.key] = apiKeys[provider.key]
           ? String(apiKeys[provider.key])

@@ -1,7 +1,7 @@
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import Tab from '@mui/material/Tab';
-import PropTypes from 'prop-types';
+import type { ReactElement, SyntheticEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
@@ -11,6 +11,8 @@ import {
   closeAppSettingsDialog,
   setAppSettingsDialogTab,
 } from '~/features/settings/actions';
+import { AppSettingsDialogTab } from '~/features/settings/types';
+import type { RootState } from '~/store/reducers';
 
 import APIKeysTab from './APIKeysTab';
 import DisplayTab from './DisplayTab';
@@ -21,13 +23,20 @@ import UAVsTab from './UAVsTab';
 
 /* ===================================================================== */
 
-const tabNameToComponent = {
+const tabNameToComponent: Record<AppSettingsDialogTab, ReactElement> = {
   apiKeys: <APIKeysTab />,
   display: <DisplayTab />,
   preflight: <PreflightTab />,
   server: <ServerTab />,
   threeD: <ThreeDViewTab />,
   uavs: <UAVsTab />,
+};
+
+type Props = {
+  onClose: () => void;
+  onTabSelected: (event: SyntheticEvent, value: AppSettingsDialogTab) => void;
+  open?: boolean;
+  selectedTab?: AppSettingsDialogTab;
 };
 
 /**
@@ -38,8 +47,8 @@ const AppSettingsDialogPresentation = ({
   onClose,
   onTabSelected,
   open = false,
-  selectedTab = 'display',
-}) => {
+  selectedTab = AppSettingsDialogTab.DISPLAY,
+}: Props) => {
   const { t } = useTranslation();
 
   return (
@@ -65,26 +74,19 @@ const AppSettingsDialogPresentation = ({
   );
 };
 
-AppSettingsDialogPresentation.propTypes = {
-  onClose: PropTypes.func,
-  onTabSelected: PropTypes.func,
-  open: PropTypes.bool,
-  selectedTab: PropTypes.string,
-};
-
 /**
  * Container of the dialog that shows the form that the user can use to
  * edit the server settings.
  */
 const AppSettingsDialog = connect(
   // mapStateToProps
-  (state) => state.dialogs.appSettings,
+  (state: RootState) => state.dialogs.appSettings,
   // mapDispatchToProps
   (dispatch) => ({
     onClose() {
       dispatch(closeAppSettingsDialog());
     },
-    onTabSelected(event, value) {
+    onTabSelected(_event: SyntheticEvent, value: AppSettingsDialogTab) {
       dispatch(setAppSettingsDialogTab(value));
     },
   })

@@ -39,7 +39,7 @@ import { getSelection } from '~/features/selection/selectors';
 import { setSelection } from '~/features/selection/slice';
 import {
   getUAVListLayout,
-  isSortingByMissionId,
+  isSortingByMissionIdPreferred,
 } from '~/features/settings/selectors';
 import { UAVListLayout } from '~/features/settings/types';
 import type { AppDispatch, RootState } from '~/store/reducers';
@@ -462,7 +462,7 @@ const UAVList = connect(
     editingMapping: isMappingEditable(state),
     mappingSlotBeingEdited: getIndexOfMappingSlotBeingEdited(state),
     layout: getUAVListLayout(state),
-    preferMissionIds: isSortingByMissionId(state),
+    preferMissionIds: isSortingByMissionIdPreferred(state),
     selection: getSelection(state),
   }),
   // mapDispatchToProps

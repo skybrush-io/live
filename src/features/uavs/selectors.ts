@@ -11,6 +11,7 @@ import {
   euclideanDistance2D,
   getMeanAngle,
 } from '@skybrush/math';
+import { isValidTrajectory } from '@skybrush/show-format';
 
 import { Status } from '~/components/semantics';
 import {
@@ -34,10 +35,7 @@ import {
   getTrajectories,
   isShowIndoor,
 } from '~/features/show/selectors';
-import {
-  getPointsOfTrajectory,
-  isValidTrajectory,
-} from '~/features/show/trajectory';
+import { getPointsOfTrajectory } from '~/features/show/trajectory';
 import {
   errorSeverityToSemantics,
   getSeverityOfErrorCode,

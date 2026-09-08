@@ -195,6 +195,18 @@
       "noDrones": "当前加载的演出中没有无人机。",
       "noShowFile": "未加载演出文件"
     },
+    "infoGrid": {
+      "rth": {
+        "numPlans": "方案数量：",
+        "title": "集体返航"
+      },
+      "showSegment": {
+        "duration": "持续时间：",
+        "end": "结束：",
+        "start": "开始：",
+        "title": "演出片段"
+      }
+    },
     "rthPlanDetails": {
       "column": {
         "duration": "持续时间",
@@ -202,18 +214,6 @@
         "endShow": "结束（演出）",
         "start": "开始",
         "startShow": "开始（演出）"
-      },
-      "info": {
-        "rth": {
-          "numPlans": "方案数量：",
-          "title": "集体返航"
-        },
-        "showSegment": {
-          "duration": "持续时间：",
-          "end": "结束：",
-          "start": "开始：",
-          "title": "演出片段"
-        }
       }
     }
   },

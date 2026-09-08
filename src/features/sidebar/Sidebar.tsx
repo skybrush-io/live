@@ -153,7 +153,7 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
               component={moduleComponent('light-control')}
             />
           )}
-          {hasShowControl && (
+          {hasShowControl && experimentalFeaturesEnabled && (
             <Module
               id='collectiveRTH'
               icon={<HomeCircleOutlined />}
@@ -170,7 +170,7 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
               component={moduleComponent('mission-editor')}
             />
           )}
-          {(hasShowControl || hasMissionEditor) && <hr />}
+          {hasMissionEditor && <hr />}
           <Module
             id='clocks'
             icon={<Alarm />}
@@ -218,14 +218,8 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
   );
 };
 
-type StateProps = Pick<
-  SidebarProps,
-  'experimentalFeaturesEnabled' | 'isOpen' | 'missionType'
->;
-type OwnProps = Pick<SidebarProps, 'workbench'>;
-
-const ConnectedSidebar = connect<StateProps, unknown, OwnProps, RootState>(
-  (state, { workbench }) => ({
+const ConnectedSidebar = connect(
+  (state: RootState, { workbench }: SidebarProps) => ({
     experimentalFeaturesEnabled: areExperimentalFeaturesEnabled(state),
     isOpen: isSidebarOpen(state),
     missionType: getMissionType(state),

@@ -27,7 +27,7 @@ import {
   MissionType,
 } from '~/model/missions';
 import type UAV from '~/model/uav';
-import { type AppSelector } from '~/store/reducers';
+import { type AppSelector, type RootState } from '~/store/reducers';
 import { rejectNullish } from '~/utils/arrays';
 import {
   type Collection,
@@ -42,6 +42,7 @@ import {
   turfDistanceInMeters,
 } from '~/utils/geography';
 import { findNearestNeighborsDistance } from '~/utils/nearestNeighbors';
+import { createDeepResultSelector } from '~/utils/selectors';
 import { type Nullable } from '~/utils/types';
 
 import { type MissionSliceState } from '../slice';
@@ -967,10 +968,13 @@ export const getCurrentMissionItemIdForMissionIndex: AppSelector<
 
 export const getCurrentMissionItemIdForEveryMissionIndex: AppSelector<
   Array<MissionItem['id'] | undefined>
-> = (state) =>
-  getMissionMapping(state).map((_uavId, missionIndex) =>
-    getCurrentMissionItemIdForMissionIndex(state, missionIndex)
-  );
+> = createDeepResultSelector(
+  (state: RootState) => state,
+  (state) =>
+    getMissionMapping(state).map((_uavId, missionIndex) =>
+      getCurrentMissionItemIdForMissionIndex(state, missionIndex)
+    )
+);
 
 /**
  * Selector that returns the index of the mission item that's currently being
@@ -989,10 +993,13 @@ export const getCurrentMissionItemIndexForMissionIndex: AppSelector<
 
 export const getCurrentMissionItemIndexForEveryMissionIndex: AppSelector<
   Array<number | undefined>
-> = (state) =>
-  getMissionMapping(state).map((_uavId, missionIndex) =>
-    getCurrentMissionItemIndexForMissionIndex(state, missionIndex)
-  );
+> = createDeepResultSelector(
+  (state: RootState) => state,
+  (state) =>
+    getMissionMapping(state).map((_uavId, missionIndex) =>
+      getCurrentMissionItemIndexForMissionIndex(state, missionIndex)
+    )
+);
 
 /**
  * Selector that returns the progress ratio of the mission item that's
@@ -1009,10 +1016,13 @@ export const getCurrentMissionItemRatioForMissionIndex: AppSelector<
 
 export const getCurrentMissionItemRatioForEveryMissionIndex: AppSelector<
   Array<number | undefined>
-> = (state) =>
-  getMissionMapping(state).map((_uavId, missionIndex) =>
-    getCurrentMissionItemRatioForMissionIndex(state, missionIndex)
-  );
+> = createDeepResultSelector(
+  (state: RootState) => state,
+  (state) =>
+    getMissionMapping(state).map((_uavId, missionIndex) =>
+      getCurrentMissionItemRatioForMissionIndex(state, missionIndex)
+    )
+);
 
 /**
  * Selector that returns whether mission progress information has been received

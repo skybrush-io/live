@@ -8,17 +8,29 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Switch from '@mui/material/Switch';
 import TextField from '@mui/material/TextField';
+import { Tooltip } from '@skybrush/mui-components';
 import remove from 'lodash-es/remove';
 import trim from 'lodash-es/trim';
-import PropTypes from 'prop-types';
+import type { ChangeEvent, ChangeEventHandler } from 'react';
 import { connect } from 'react-redux';
-
-import { Tooltip } from '@skybrush/mui-components';
 
 import { getLocalServerSearchPath } from '~/features/local-server/selectors';
 import { updateAppSettings } from '~/features/settings/slice';
+import type { SettingsState } from '~/features/settings/types';
+import type { AppThunk, RootState } from '~/store/reducers';
 
 import PathScanner from './PathScanner';
+
+type Props = {
+  cliArguments: string;
+  enabled: boolean;
+  onDisable: () => void;
+  onEnable: () => void;
+  onSearchPathChanged: ChangeEventHandler;
+  onSelectSearchPath?: () => void;
+  onTextFieldChanged: ChangeEventHandler;
+  searchPath: string;
+};
 
 const ServerTabPresentation = ({
   cliArguments,
@@ -29,7 +41,7 @@ const ServerTabPresentation = ({
   onSelectSearchPath,
   onTextFieldChanged,
   searchPath,
-}) => (
+}: Props) => (
   <div style={{ position: 'relative', top: -8 }}>
     <List dense disablePadding style={{ margin: '0 -24px' }}>
       <PathScanner />
@@ -91,32 +103,21 @@ const ServerTabPresentation = ({
   </div>
 );
 
-ServerTabPresentation.propTypes = {
-  cliArguments: PropTypes.string,
-  enabled: PropTypes.bool,
-  onDisable: PropTypes.func,
-  onEnable: PropTypes.func,
-  onSearchPathChanged: PropTypes.func,
-  onSelectSearchPath: PropTypes.func,
-  onTextFieldChanged: PropTypes.func,
-  searchPath: PropTypes.string,
-};
-
 export default connect(
   // mapStateToProps
-  (state) => ({
+  (state: RootState) => ({
     ...state.settings.localServer,
     searchPath: getLocalServerSearchPath(state).join('\n'),
   }),
   // mapDispatchToProps
   {
-    onCheckboxToggled: (event) =>
+    onCheckboxToggled: (event: ChangeEvent<HTMLInputElement>) =>
       updateAppSettings('localServer', {
         [event.target.name]: event.target.checked,
       }),
     onDisable: () => updateAppSettings('localServer', { enabled: false }),
     onEnable: () => updateAppSettings('localServer', { enabled: true }),
-    onSearchPathChanged(event) {
+    onSearchPathChanged(event: ChangeEvent<HTMLInputElement>) {
       const paths = event.target.value.split('\n').map((item) => trim(item));
       const emptyItemIndex = paths.indexOf('');
       remove(paths, (item, index) => !item && index > emptyItemIndex);
@@ -124,24 +125,24 @@ export default connect(
     },
     onSelectSearchPath:
       window.bridge?.isElectron && window.bridge?.localServer?.selectPath
-        ? () => async (dispatch, getState) => {
+        ? (): AppThunk => async (dispatch, getState) => {
             const currentPaths = getLocalServerSearchPath(getState());
             const currentPath =
               Array.isArray(currentPaths) && currentPaths.length > 0
                 ? currentPaths[0]
                 : null;
             const path =
-              await window.bridge.localServer.selectPath(currentPath);
+              await window.bridge!.localServer!.selectPath(currentPath);
             if (typeof path === 'string' && path.length > 0) {
               dispatch(
                 updateAppSettings('localServer', { searchPath: [path] })
               );
             }
           }
-        : null,
-    onTextFieldChanged: (event) =>
+        : undefined,
+    onTextFieldChanged: (event: ChangeEvent<HTMLInputElement>) =>
       updateAppSettings('localServer', {
         [event.target.id]: event.target.value,
-      }),
+      } as Partial<SettingsState['localServer']>),
   }
 )(ServerTabPresentation);

@@ -7,7 +7,6 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableRow, { type TableRowProps } from '@mui/material/TableRow';
-import Typography from '@mui/material/Typography';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { type TableProps, TableVirtuoso } from 'react-virtuoso';
@@ -19,10 +18,9 @@ import {
   type CollectiveRTHPlanSummaryItem,
   getShowStartTime,
 } from '~/features/show/selectors';
-import { getShowSegments } from '~/features/show/selectors/core';
-import type { ShowSegmentsRecord } from '~/features/show/types';
 import type { RootState } from '~/store/reducers';
 import { formatDurationMS, formatTimeOfDay } from '~/utils/formatting';
+import InfoGrid from './InfoGrid';
 
 type TableRowContentProps = {
   item: CollectiveRTHPlanSummaryItem;
@@ -95,69 +93,6 @@ const TableHeader = () => {
   );
 };
 
-const useInfoGridStyles = makeStyles((theme: Theme) => ({
-  root: {
-    display: 'grid',
-    gridTemplateColumns: 'max-content 1fr',
-    gap: theme.spacing(1),
-    padding: theme.spacing(1),
-    rowGap: theme.spacing(1),
-  },
-  sectionHeader: {
-    gridColumn: '1 / -1',
-    gridColumnEnd: 'span 2',
-    borderBottom: `1px solid ${theme.palette.divider}`,
-    paddingBottom: theme.spacing(0.5),
-    marginBottom: theme.spacing(0.5),
-    fontWeight: theme.typography.fontWeightBold,
-  },
-}));
-
-type InfoGridProps = {
-  plans: CollectiveRTHPlanSummaryItem[];
-  showSegment: [number, number] | undefined;
-};
-
-const InfoGrid = ({ plans, showSegment }: InfoGridProps) => {
-  const { t } = useTranslation();
-  const classes = useInfoGridStyles();
-
-  return (
-    <Box className={classes.root}>
-      <Typography className={classes.sectionHeader} variant='body2'>
-        {t('collectiveRTHPanel.rthPlanDetails.info.showSegment.title')}
-      </Typography>
-      <Typography variant='body2' color='textSecondary'>
-        {t('collectiveRTHPanel.rthPlanDetails.info.showSegment.start')}
-      </Typography>
-      <Typography variant='body2'>
-        {showSegment !== undefined ? formatDurationMS(showSegment[0]) : ''}
-      </Typography>
-      <Typography variant='body2' color='textSecondary'>
-        {t('collectiveRTHPanel.rthPlanDetails.info.showSegment.end')}
-      </Typography>
-      <Typography variant='body2'>
-        {showSegment !== undefined ? formatDurationMS(showSegment[1]) : ''}
-      </Typography>
-      <Typography variant='body2' color='textSecondary'>
-        {t('collectiveRTHPanel.rthPlanDetails.info.showSegment.duration')}
-      </Typography>
-      <Typography variant='body2'>
-        {showSegment !== undefined
-          ? formatDurationMS(showSegment[1] - showSegment[0])
-          : ''}
-      </Typography>
-      <Typography className={classes.sectionHeader} variant='body2'>
-        {t('collectiveRTHPanel.rthPlanDetails.info.rth.title')}
-      </Typography>
-      <Typography variant='body2' color='textSecondary'>
-        {t('collectiveRTHPanel.rthPlanDetails.info.rth.numPlans')}
-      </Typography>
-      <Typography variant='body2'>{plans.length}</Typography>
-    </Box>
-  );
-};
-
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
     display: 'grid',
@@ -174,17 +109,15 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 type Props = {
   plans: CollectiveRTHPlanSummaryItem[];
-  showSegments: ShowSegmentsRecord | undefined;
   showStartTime: number | null;
 };
 
-const RTHPlanDetails = ({ plans, showSegments, showStartTime }: Props) => {
+const RTHPlanDetails = ({ plans, showStartTime }: Props) => {
   const classes = useStyles();
-  const showSegment = showSegments?.show;
 
   return (
     <Box className={classes.root}>
-      <InfoGrid plans={plans} showSegment={showSegment} />
+      <InfoGrid />
       <Box>
         <TableVirtuoso
           data={plans}
@@ -215,7 +148,6 @@ const RTHPlanDetails = ({ plans, showSegments, showStartTime }: Props) => {
 };
 
 const ConnectedRTHPlanDetails = connect((state: RootState) => ({
-  showSegments: getShowSegments(state),
   showStartTime: getShowStartTime(state),
 }))(RTHPlanDetails);
 

@@ -3,7 +3,7 @@ import clsx from 'clsx';
 
 import { makeStyles } from '@skybrush/app-theme-mui';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles({
   root: {
     border: '1px solid rgba(0, 0, 0, 0.3)',
     borderRadius: '50%',
@@ -11,7 +11,6 @@ const useStyles = makeStyles((theme) => ({
     height: '1em',
     minWidth:
       '1em' /* needed for narrow cases; setting width alone is not enough */,
-    marginRight: theme.spacing(2),
     position: 'relative',
     width: '1em',
   },
@@ -29,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
   'size-large': {
     fontSize: '1.25em',
   },
-}));
+});
 
 type Size = 'small' | 'normal' | 'large';
 

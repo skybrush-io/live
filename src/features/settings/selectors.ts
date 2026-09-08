@@ -258,7 +258,7 @@ export const getUAVListSortPreference = createSelector(
  * Used by grid view and dialogs to emphasize sID vs physical UAV ID.
  * List view column order is fixed regardless of this value.
  */
-export const isSortingByMissionId = (state: RootState): boolean =>
+export const isSortingByMissionIdPreferred = (state: RootState): boolean =>
   getUAVListSortPreference(state).key === UAVSortKey.MISSION_ID;
 
 /**

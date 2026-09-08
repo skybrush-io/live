@@ -30,6 +30,7 @@ const baseline: Config = {
   },
 
   features: {
+    docks: false,
     loadShowFromCloud: false,
     missionEditor: false,
     safetySettings: false,

@@ -7,6 +7,7 @@ import type {
   SwarmSpecification,
   TimeWindow,
 } from '@skybrush/show-format';
+import { isValidTrajectory } from '@skybrush/show-format';
 
 import { type GPSPosition } from '~/model/geography';
 import { type AppSelector } from '~/store/reducers';
@@ -17,7 +18,6 @@ import { EMPTY_ARRAY } from '~/utils/redux';
 import {
   getConvexHullOfTrajectory,
   getTrajectoryInTimeWindow,
-  isValidTrajectory,
 } from '../trajectory';
 import {
   isOutdoorCoordinateSystemWithOrigin,

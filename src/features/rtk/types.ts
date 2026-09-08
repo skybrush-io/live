@@ -124,3 +124,9 @@ export type RTKStatistics = {
 export type RTKStatisticsResponse = Omit<Response_RTKSTAT, 'messages_tx'> & {
   messagesTx: Response_RTKSTAT['messages_tx'];
 };
+
+export type SatelliteCNRInfo = {
+  id: string;
+  cnr: number | null;
+  lastUpdatedAt: number | null;
+};
