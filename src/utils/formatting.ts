@@ -122,6 +122,24 @@ export function formatMissionId(index: number): string {
   return `s${index + 1}`;
 }
 
+/**
+ * Parses a formatted mission ID (`sN`, 1-based) into a zero-based mission index.
+ * Returns `undefined` if the value is not a valid mission ID string.
+ */
+export function parseMissionId(value: string): number | undefined {
+  const match = /^s(\d+)$/i.exec(value.trim());
+  if (!match) {
+    return undefined;
+  }
+
+  const oneBased = Number(match[1]);
+  if (!Number.isInteger(oneBased) || oneBased < 1) {
+    return undefined;
+  }
+
+  return oneBased - 1;
+}
+
 export type UnitDescriptor = {
   multiplier: number;
   unit: string;

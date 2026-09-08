@@ -33,6 +33,7 @@ import showConfiguratorReducer, {
 } from '~/features/show-configurator/slice';
 import tasksReducer from '~/features/tasks/slice';
 import uavDetailsDialogReducer from '~/features/uavs/details';
+import swapDronesDialogReducer from '~/features/uavs/swapping/slice';
 
 /**
  * Reducer functions for handling the top-level keys of the state object.
@@ -104,6 +105,7 @@ const dialogsReducer = combineReducers({
       undoType: historyUndo.type,
     }
   ),
+  swapDrones: swapDronesDialogReducer,
   uavDetails: uavDetailsDialogReducer,
 });
 
