@@ -2,6 +2,7 @@ import { connect } from 'react-redux';
 
 import { DrawingToolbar as DrawingToolbarPresentation } from '~/components/map';
 import { getSelectedTool, setSelectedTool } from '~/features/map/tools';
+import { isMapInSafeMode } from '~/features/safety/selectors';
 import type { RootState } from '~/store/reducers';
 
 /**
@@ -10,6 +11,7 @@ import type { RootState } from '~/store/reducers';
 const DrawingToolbar = connect(
   // mapStateToProps
   (state: RootState) => ({
+    safeMode: isMapInSafeMode(state),
     selectedTool: getSelectedTool(state),
   }),
   // mapDispatchToProps
