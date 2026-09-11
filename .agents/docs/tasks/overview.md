@@ -43,7 +43,7 @@ Both share confirmation and notification via `runMassOperation` in `utils/messag
 | | MessageHub backend | Task backend |
 |---|---|---|
 | Entry | `performMassOperation` (`messaging.ts`) | `makeMultiUAVAction` (`operations.ts`) |
-| Execution | Calls `messageHub.startAsyncOperation` directly | Fans out `startTask` per UAV |
+| Execution | Calls `messageHub.startMultiObjectAsyncOperation` directly | Fans out `startTask` per UAV |
 | Per-UAV Redux state | None | Each UAV gets a slice entry |
 | Broadcast | Yes | No (by design) |
 | UI wiring | `createUAVOperationThunks` | `createTaskOperationThunks` |

@@ -231,7 +231,7 @@ export async function getFlightLog(
   }
 
   try {
-    const log = await hub.startAsyncOperationForSingleId<FlightLog>(
+    const log = await hub.startMultiObjectAsyncOperationForSingleId<FlightLog>(
       uavId,
       {
         type: 'LOG-DATA',
@@ -262,7 +262,7 @@ export async function getFlightLogList(
   validateUAVId(uavId);
 
   try {
-    const response = await hub.startAsyncOperationForSingleId<
+    const response = await hub.startMultiObjectAsyncOperationForSingleId<
       FlightLogMetadata[]
     >(uavId, { type: 'LOG-INF' });
     return response.map(validateFlightLogMetadata);
@@ -371,13 +371,12 @@ export async function getParameter(
   name: string
 ): Promise<unknown> {
   validateUAVId(uavId);
-  return await hub.startAsyncOperationForSingleId<Record<string, unknown>>(
-    uavId,
-    {
-      type: 'PRM-GET',
-      name,
-    }
-  );
+  return await hub.startMultiObjectAsyncOperationForSingleId<
+    Record<string, unknown>
+  >(uavId, {
+    type: 'PRM-GET',
+    name,
+  });
 }
 
 /**
@@ -394,7 +393,7 @@ export async function getPreflightStatus(
     ids: [uavId],
   });
   // TODO: fix the Response_UAVPREFLT type, it doesn't have a `result` field.
-  // TODO: maybe we could use idProp option in startAsyncOperationForSingleId()?
+  // TODO: maybe we could use idProp option in startMultiObjectAsyncOperationForSingleId()?
   const result = (
     (response.body ?? {}) as { result?: Record<string, UAVPreflightCheckInfo> }
   ).result;
@@ -537,9 +536,12 @@ export async function getFirmwareVersionInfo(
   uavId: string
 ): Promise<VersionMap> {
   validateUAVId(uavId);
-  return await hub.startAsyncOperationForSingleId<VersionMap>(uavId, {
-    type: 'UAV-VER',
-  });
+  return await hub.startMultiObjectAsyncOperationForSingleId<VersionMap>(
+    uavId,
+    {
+      type: 'UAV-VER',
+    }
+  );
 }
 
 /**

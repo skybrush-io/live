@@ -1561,7 +1561,7 @@ export default class MessageHub {
    * The promise resolves to a mapping from object IDs to their corresponding
    * results or errors (represented as Error objects).
    */
-  async startAsyncOperation(
+  async startMultiObjectAsyncOperation(
     body: MessageBody,
     responseHandlerOptions: StartAsyncOperationOptions = {}
   ) {
@@ -1571,7 +1571,7 @@ export default class MessageHub {
     }
 
     const response = await this.sendMessage(body);
-    return this._processMultiAsyncOperationResponse(
+    return this._processMultiObjectAsyncOperationResponse(
       response,
       expectedType,
       responseHandlerOptions
@@ -1596,7 +1596,7 @@ export default class MessageHub {
    * Setting `idProp` to `null` means that the ID will not be added by this
    * function and it is already assumed to be part of the `message`.
    */
-  async startAsyncOperationForSingleId<T>(
+  async startMultiObjectAsyncOperationForSingleId<T>(
     id: string,
     message: MessageBody & Record<string, unknown>,
     options: AsyncOperationOptions = {}
@@ -1649,7 +1649,7 @@ export default class MessageHub {
       progressHandler = options.onProgress;
     }
 
-    const parsedResponse = await this._processMultiAsyncOperationResponse(
+    const parsedResponse = await this._processMultiObjectAsyncOperationResponse(
       response,
       expectedType,
       { onProgress: progressHandler }
@@ -1705,9 +1705,9 @@ export default class MessageHub {
 
   /**
    * Helper function to process the response to a multi-object async operation.
-   * See <code>startAsyncOperation()</code> for more details.
+   * See <code>startMultiObjectAsyncOperation()</code> for more details.
    */
-  async _processMultiAsyncOperationResponse<T>(
+  async _processMultiObjectAsyncOperationResponse<T>(
     response: Message<Response_ACKNAK | MultiAsyncOperationResponseBody<T>>,
     expectedType: string,
     { timeout, onProgress }: TimeoutOptions & BoundProgressHandlerOptions = {}

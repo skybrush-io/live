@@ -216,7 +216,7 @@ function performMassOperation<T, U>(
         reportFailure,
         skipConfirmation,
         run: async () => {
-          const responses = await messageHub.startAsyncOperation(
+          const responses = await messageHub.startMultiObjectAsyncOperation(
             {
               type,
               ids: uavs,

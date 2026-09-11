@@ -100,7 +100,9 @@ export async function reloadExtension(
  */
 export async function resetUAV(hub: MessageHub, uavId: string): Promise<void> {
   try {
-    await hub.startAsyncOperationForSingleId(uavId, { type: 'UAV-RST' });
+    await hub.startMultiObjectAsyncOperationForSingleId(uavId, {
+      type: 'UAV-RST',
+    });
   } catch (error) {
     const errorString = errorToString(error);
     throw new Error(`Failed to reset UAV ${uavId}: ${errorString}`, {
@@ -156,7 +158,7 @@ export async function setParameter(
 ) {
   const command = createParameterSettingRequest(uavId, name, value);
   try {
-    await hub.startAsyncOperationForSingleId(uavId, command);
+    await hub.startMultiObjectAsyncOperationForSingleId(uavId, command);
   } catch (error) {
     const errorString = errorToString(error);
     throw new Error(
@@ -180,7 +182,7 @@ export async function setParameters(
   let response;
 
   try {
-    response = await hub.startAsyncOperationForSingleId(
+    response = await hub.startMultiObjectAsyncOperationForSingleId(
       uavId,
       command,
       options
@@ -521,7 +523,7 @@ export async function uploadFirmware(
 ) {
   const command = createFirmwareUploadRequest(objectId, target, blob);
   try {
-    await hub.startAsyncOperationForSingleId(objectId, command, {
+    await hub.startMultiObjectAsyncOperationForSingleId(objectId, command, {
       ...options,
       single: false,
     });
