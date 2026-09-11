@@ -4,6 +4,7 @@
  */
 
 import type {
+  CollectiveRTHPlanResult,
   DroneShowConfiguration,
   FirmwareUpdateTarget,
   License,
@@ -55,7 +56,6 @@ import type {
   Response_XMSNTYPELIST,
   Response_XMSNTYPESCHEMA,
   Response_XSHOWADAPT,
-  Response_XSHOWCRTHPLAN,
   ShowAdaptTransformation,
 } from './types';
 import { validateExtensionName } from './validation';
@@ -107,20 +107,24 @@ export async function addCollectiveRTH(
   hub: MessageHub,
   show: string,
   config: CollectiveRTHConfig
-): Promise<Response_XSHOWCRTHPLAN> {
-  const response = await hub.sendMessage<Response_XSHOWCRTHPLAN>(
-    {
-      type: 'X-SHOW-CRTH-PLAN',
-      show,
-      config,
-    },
-    { timeout: 3600 }
-  );
-
-  if (response?.body?.type === 'X-SHOW-CRTH-PLAN') {
-    return response.body;
-  } else {
-    throw new Error(response?.body?.reason ?? 'Unknown error.');
+): Promise<CollectiveRTHPlanResult> {
+  try {
+    const plan = await hub.startAsyncOperation<CollectiveRTHPlanResult>(
+      {
+        type: 'X-SHOW-CRTH-PLAN',
+        show,
+        config,
+      },
+      // TODO(ntamas): progress wiring here!
+      { timeout: 3600 }
+    );
+    // TODO(ntamas): plan validation!
+    return plan;
+  } catch (error) {
+    const errorString = errorToString(error);
+    throw new Error(`Failed to calculate collective RTH plan: ${errorString}`, {
+      cause: error,
+    });
   }
 }
 
