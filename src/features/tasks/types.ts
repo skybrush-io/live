@@ -10,12 +10,16 @@ import type { ProgressInfo } from '~/flockwave/messages';
  *
  * - type: the type of the task (can be used as a discriminator in the type union)
  * - taskId: a supposedly unique identifier of the task within the scope of all tasks
- *   with the same type affecting the same UAV.
- * - uavId: ID of the UAV that the task applies to
+ *   with the same type affecting the same UAV. Optional for singleton tasks where at
+ *   most one task of a given type may exist at any given time.
+ * - uavId: ID of the UAV that the task applies to. Optional for tasks that are not
+ *   tied to a specific UAV.
  *
  * A globally unique key for each task may thus be derived from the combination of the
- * type, taskId, and uavId fields. This is done by the `getTaskKey()` utility function
- * in `utils.ts`.
+ * type and the optional taskId and uavId fields. This is done by the `getTaskKey()`
+ * utility function in `utils.ts`. The key is the sole identity used by the internal
+ * actions of the slice; the identity fields themselves are only needed when a task is
+ * started.
  */
 
 /**
@@ -43,6 +47,15 @@ export type TaskData = LogDownloadTaskData | UAVTestTaskData;
 
 /** Type of the discriminator field for tasks */
 export type TaskType = TaskData['type'];
+
+const _TaskKey: unique symbol = Symbol('TaskKey');
+
+/**
+ * Named type for task keys, created by `getTaskKey()` in `utils.ts`.
+ * Used as the sole identity in the internal actions of the slice. The unique
+ * symbol prevents accidental confusion with arbitrary strings.
+ */
+export type TaskKey = string & { [_TaskKey]: void };
 
 // ---- Task spec (data + params, what callers pass to start) ----
 
@@ -85,6 +98,9 @@ export type LogDownloadTaskResult = LogDownloadTaskData & {
 export type UAVTestTaskResult = UAVTestTaskData & { result?: undefined };
 
 export type CompleteTaskResult = LogDownloadTaskResult | UAVTestTaskResult;
+
+/** Result payload of a task, without the identity fields. */
+export type TaskResult = CompleteTaskResult['result'];
 
 // -- Task status
 

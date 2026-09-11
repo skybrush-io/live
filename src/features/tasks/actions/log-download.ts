@@ -52,12 +52,12 @@ export const runLogDownloadTask =
     { silent = false }: StartOptions = {}
   ): AppThunk<Promise<void>> =>
   async (dispatch) => {
-    const { uavId, type, taskId, params } = spec;
+    const { uavId, params } = spec;
     const { logId } = params;
-    const topic = getTaskKey(spec);
+    const key = getTaskKey(spec);
 
     const onProgress = ({ progress }: ProgressStatus) => {
-      dispatch(_setTaskProgress({ uavId, type, taskId, progress }));
+      dispatch(_setTaskProgress({ key, progress }));
     };
 
     try {
@@ -65,7 +65,7 @@ export const runLogDownloadTask =
         onProgress,
       });
       const hash = await logContents.write(log);
-      dispatch(_completeTask({ uavId, type, taskId, result: { hash } }));
+      dispatch(_completeTask({ key, result: { hash } }));
       if (!silent) {
         showNotification({
           message: `Log ${logId} of UAV ${uavId} downloaded successfully.`,
@@ -77,19 +77,19 @@ export const runLogDownloadTask =
             },
           ],
           timeout: 20000,
-          topic,
+          topic: key,
         });
       }
     } catch (error: unknown) {
       const errorMessage = errorToString(error);
-      dispatch(_failTask({ uavId, type, taskId, error: errorMessage }));
+      dispatch(_failTask({ key, error: errorMessage }));
       if (!silent) {
         showNotification({
           message: `Couldn't download log ${logId} of UAV ${uavId}: ${errorMessage}`,
           semantics: MessageSemantics.ERROR,
           buttons: [{ label: 'Retry', action: retry }],
           timeout: 20000,
-          topic,
+          topic: key,
         });
       }
     }

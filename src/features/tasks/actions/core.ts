@@ -65,5 +65,5 @@ export const clearTask =
         break;
     }
 
-    dispatch(_clearTask(data));
+    dispatch(_clearTask(getTaskKey(data)));
   };
