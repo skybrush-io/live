@@ -137,6 +137,9 @@ type TimelineChartInputData = {
 
 const DEFAULT_DATASET_OPTIONS = {
   line: {
+    // prevent artificial high spikes when lines in a line chart connect each other in
+    // a small angle
+    borderJoinStyle: 'bevel',
     pointStyle: false,
   },
 } as const;
