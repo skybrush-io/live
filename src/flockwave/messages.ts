@@ -81,7 +81,7 @@ export function parseCommandFromString(string: string): {
  * @param body  the body of the message to send, or the type of
  *        the message to send (in which case an appropriate body with
  *        only the given type is created)
- * @return {Object}  the Flockwave message with the given body
+ * @return the Flockwave message with the given body
  */
 function createMessage(body = {}) {
   if (!isObject(body)) {
@@ -296,7 +296,7 @@ class PendingResponse<T = unknown> {
   /**
    * Constructor.
    *
-   * @param {string} messageId  the identifier of the Skybrush message
+   * @param messageId  the identifier of the Skybrush message
    *        to which this pending response belongs
    */
   constructor(
@@ -412,11 +412,11 @@ class PendingCommandExecution<T = unknown> {
   /**
    * Constructor.
    *
-   * @param {string} receipt  the receipt of the command execution that we
+   * @param receipt  the receipt of the command execution that we
    *         are waiting for
-   * @param {number} timeout  number of seconds to wait for the result of the
+   * @param timeout  number of seconds to wait for the result of the
    *        command
-   * @param {function}  onProgress  an optional function to call when a status
+   * @param onProgress  an optional function to call when a status
    *        update is received for the execution of this command. The
    *        function will be called with an object having the following keys:
    *        `progress` (the progress of the execution), `suspended` (whether
@@ -425,10 +425,10 @@ class PendingCommandExecution<T = unknown> {
    *        when the execution is suspended and that will resume execution on
    *        the server side after posting the object received as an argument to
    *        the server)
-   * @param {function}  onResume  an optional function to call when the client
+   * @param onResume  an optional function to call when the client
    *        wishes to resume the execution of the operation represented by
    *        this receipt after a suspension
-   * @param {function}  onTimeout  an optional function to call when the
+   * @param onTimeout  an optional function to call when the
    *        result of the command did not arrive in time
    */
   constructor(
@@ -680,7 +680,7 @@ class AsyncOperationManager extends MessageHubRelatedComponent {
    * Cancels all pending asynchronous operations on the client side by rejecting
    * the corresponding promises with the given error.
    *
-   * @param {Error} error  the error to reject the promises with
+   * @param error  the error to reject the promises with
    */
   cancelAll(error: Error) {
     for (const pendingOperation of Object.values(this._pendingOperations)) {
@@ -745,7 +745,7 @@ class AsyncOperationManager extends MessageHubRelatedComponent {
    * @param  options.timeout   when specified and positive, the number of
    *         seconds to wait for a response. When omitted or negative, uses the
    *         default timeout from the async operation manager object
-   * @return {Promise} a promise that resolves to the result of the operation
+   * @return a promise that resolves to the result of the operation
    *         or errors out in case of execution errors and timeouts
    */
   async handleMultiAsyncResponseForSingleId<T>(
@@ -811,7 +811,7 @@ class AsyncOperationManager extends MessageHubRelatedComponent {
    * Handler called when the server returns a response for an async operation in
    * the form of an ASYNC-RESP notification.
    *
-   * @param {string} message  the message sent by the server
+   * @param message  the message sent by the server
    */
   _onResponseReceived(message: Message<Notification_ASYNCRESP>) {
     const { id } = message.body;
@@ -835,7 +835,7 @@ class AsyncOperationManager extends MessageHubRelatedComponent {
    * Handler called when the server returns a status update for an async
    * operation in the form of an ASYNC-ST notification.
    *
-   * @param {string} message  the message sent by the server
+   * @param message  the message sent by the server
    */
   _onStatusUpdateReceived(message: Message<Notification_ASYNCST>) {
     const { id } = message.body;
@@ -1239,7 +1239,6 @@ export default class MessageHub {
 
   /**
    * Returns the emitter function that the hub uses.
-   * @type {function}
    */
   get emitter(): Emitter | undefined {
     return this._emitter;
@@ -1792,11 +1791,11 @@ export default class MessageHub {
    * Sends a Flockwave ASYNC-RESUME request to resume the execution of the
    * asynchronous operations with the given receipt IDs.
    *
-   * @param  {string[]}  receipts  the receipt IDs of the asynchronous
+   * @param  receipts  the receipt IDs of the asynchronous
    *         operations to resume
-   * @param  {object}    values    optional values to pass back to the
+   * @param  values    optional values to pass back to the
    *         operations with the resume requests. Keys are receipt IDs.
-   * @return {Promise}  a promise that resolves to an object mapping receipt
+   * @return a promise that resolves to an object mapping receipt
    *         IDs to error messages, for all receipt IDs that were _not_
    *         resumed successfully
    */

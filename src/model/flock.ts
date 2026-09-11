@@ -183,7 +183,6 @@ export default class Flock {
  * The event contains an array of the UAVs that were added.
  *
  * @event  Flock#uavsAdded
- * @type {UAV[]}
  */
 
 /**
@@ -193,7 +192,6 @@ export default class Flock {
  * The event contains an array of the UAVs that were removed.
  *
  * @event  Flock#uavsRemoved
- * @type {UAV[]}
  */
 
 /**
@@ -203,5 +201,4 @@ export default class Flock {
  * The event contains an array of the UAVs that were updated.
  *
  * @event  Flock#uavsUpdated
- * @type {UAV[]}
  */

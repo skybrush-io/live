@@ -123,13 +123,13 @@ type RefineOptions = {
  * is then repeated until there is no change in the matching or until a maximum
  * number of iterations is reached.
  *
- * @param {object} estimate  the estimate to improve on
- * @param {object} problem   the problem description
- * @param {object} options   additional options for the refinement algorithm.
+ * @param estimate  the estimate to improve on
+ * @param problem   the problem description
+ * @param options   additional options for the refinement algorithm.
  *        Currently the following options are supported: `maxIterations`
  *        specifies the maximum number of iterations to perform with the ICP
  *        algorithm
- * @returns {object} an improved estimate
+ * @returns an improved estimate
  */
 function refineEstimate(
   estimate: CoordinateSystemEstimate,

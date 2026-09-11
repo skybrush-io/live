@@ -919,9 +919,9 @@ export const getMissionItemsInOrderAsSegmentsForMissionIndex: AppSelector<
  *
  * TODO: Calculate distances and durations separately and sum them afterwards?
  *
- * @returns {Object} estimates
- * @property {number} distance - the length of the planned trajectory in meters
- * @property {number} duration - the expected duration of the mission in seconds
+ * @returns estimates
+ * @property distance - the length of the planned trajectory in meters
+ * @property duration - the expected duration of the mission in seconds
  */
 export const getMissionEstimatesForMissionIndex: AppSelector<
   {
@@ -1096,7 +1096,7 @@ export const getEndRatioOfPartialMission: AppSelector<number> = createSelector(
 /**
  * Selector that returns the completion ratio of the net mission.
  *
- * @returns {number} the ratio of the done and total lengths of the net mission
+ * @returns the ratio of the done and total lengths of the net mission
  */
 export const getNetMissionCompletionRatio: AppSelector<number, [MissionIndex]> =
   createSelector(

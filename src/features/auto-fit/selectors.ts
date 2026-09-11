@@ -46,8 +46,8 @@ export function canEstimateShowCoordinateSystemFromActiveUAVs(
  * GPS coordinates of the UAVs to the local takeoff coordinates in the most
  * accurate manner.
  *
- * @param {object} state  the global state object
- * @return {object} an object with the following keys and values: `uavGPSCoordinates`
+ * @param state  the global state object
+ * @return an object with the following keys and values: `uavGPSCoordinates`
  *         (the GPS coordinates of the UAVs, in an array of pairs, in lon-lat
  *         format), `uavHeadings` (the current headings of the UAVs, in degrees),
  *         and `takeoffCoordinates` (the takeoff coordinates in a local XY

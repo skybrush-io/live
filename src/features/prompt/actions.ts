@@ -39,7 +39,7 @@ function resolveTo(value: PromptResponse): void {
  * without submitting anything, and resolves the promise of the prompt
  * dialog to undefined.
  *
- * @returns  {function}  a Redux thunk
+ * @returns  a Redux thunk
  */
 export function cancelPromptDialog(): AppThunk {
   return (dispatch: AppDispatch) => {
