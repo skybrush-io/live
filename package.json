@@ -49,7 +49,7 @@
     "@skybrush/aframe-components": "^3.0.4",
     "@skybrush/app-theme-mui": "^5.2.1",
     "@skybrush/electron-app-framework": "^6.0.1",
-    "@skybrush/flockwave-spec": "^2.8.0",
+    "@skybrush/flockwave-spec": "^2.11.0",
     "@skybrush/math": "^1.0.1",
     "@skybrush/mui-components": "^6.9.0",
     "@skybrush/redux-toolkit": "^5.1.0",

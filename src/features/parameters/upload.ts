@@ -5,7 +5,7 @@ import type {
   JobExecutorParams,
   JobSpecification,
 } from '~/features/upload/jobs';
-import type { AsyncOperationOptions } from '~/flockwave/messages';
+import type { MultiObjectAsyncOperationOptions } from '~/flockwave/messages';
 import messageHub from '~/message-hub';
 
 import { UPLOAD_JOB_TYPE } from './constants';
@@ -28,7 +28,7 @@ type Payload = {
  */
 function* runSingleParameterUpload(
   { uavId, payload }: JobExecutorParams<Payload>,
-  options: AsyncOperationOptions
+  options: MultiObjectAsyncOperationOptions
 ) {
   const { items, meta } = payload ?? {};
 

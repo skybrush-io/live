@@ -231,16 +231,13 @@ export async function getFlightLog(
   }
 
   try {
-    const log = await hub.startMultiObjectAsyncOperationForSingleId<FlightLog>(
-      uavId,
+    const log = await hub.startAsyncOperation<FlightLog>(
       {
         type: 'LOG-DATA',
         logId,
         uavId,
       },
-      // @ts-expect-error idProp may be null but AsyncOperationOptions types
-      //                  it as string | undefined only
-      { idProp: null, onProgress, single: true }
+      { onProgress }
     );
     return validateFlockwaveFlightLog(log);
   } catch (error) {

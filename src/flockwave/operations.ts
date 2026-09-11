@@ -24,8 +24,8 @@ import {
 } from './builders';
 import type MessageHub from './messages';
 import type {
-  AsyncOperationOptions,
   AsyncResponseHandlerOptions,
+  MultiObjectAsyncOperationOptions,
   ProgressStatus,
 } from './messages';
 import { extractResponseForId } from './parsing';
@@ -176,7 +176,7 @@ export async function setParameter(
 export async function setParameters(
   hub: MessageHub,
   { uavId, parameters }: { uavId: string; parameters: Record<string, unknown> },
-  options: AsyncOperationOptions
+  options: MultiObjectAsyncOperationOptions
 ) {
   const command = createBulkParameterUploadRequest(uavId, parameters);
   let response;
@@ -523,10 +523,11 @@ export async function uploadFirmware(
 ) {
   const command = createFirmwareUploadRequest(objectId, target, blob);
   try {
-    await hub.startMultiObjectAsyncOperationForSingleId(objectId, command, {
-      ...options,
-      single: false,
-    });
+    await hub.startMultiObjectAsyncOperationForSingleId(
+      objectId,
+      command,
+      options
+    );
   } catch (error) {
     const errorString = errorToString(error);
     // Currently we assume that we can only post a firmware update to a UAV;
