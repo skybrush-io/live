@@ -25,46 +25,50 @@ const RTHPlanTaskResultSummary = ({
   result,
 }: Props) => {
   const { t } = useTranslation();
-
   return (
-    <>
-      <Typography variant='subtitle2' color='textSecondary'>
-        Current show
-      </Typography>
-      {existingRTHPlanSummary.isValid ? (
-        <Alert severity='success' variant='filled'>
-          {t('collectiveRTHDialog.existingValidRTHPlan', {
-            numPlans: Object.keys(existingRTHPlanSummary.plans).length,
-          })}
-        </Alert>
-      ) : (
-        <Alert severity='warning' variant='filled'>
-          {t('collectiveRTHDialog.existingInvalidRTHPlan')}
-        </Alert>
-      )}
+    <Stack gap={1}>
+      <Stack sx={{ px: 3, pb: 1 }} gap={1}>
+        <Typography variant='subtitle2' color='textSecondary'>
+          Current show
+        </Typography>
+        {existingRTHPlanSummary.isValid ? (
+          <Alert severity='success' variant='filled'>
+            {t('collectiveRTHDialog.existingValidRTHPlan', {
+              numPlans: Object.keys(existingRTHPlanSummary.plans).length,
+            })}
+          </Alert>
+        ) : (
+          <Alert severity='warning' variant='filled'>
+            {t('collectiveRTHDialog.existingInvalidRTHPlan')}
+          </Alert>
+        )}
+      </Stack>
       {result ? (
         <>
           <Divider />
-          <Typography variant='subtitle2' color='textSecondary'>
-            Pending changes requiring approval
-          </Typography>
-          <Alert severity='success' variant='filled'>
-            {t('collectiveRTHDialog.summary.numPlans.message', {
-              numPlans: result.stats.length,
-            })}
-          </Alert>
-          <Stack direction='row' gap={1} sx={{ alignItems: 'center' }}>
-            {t('collectiveRTHDialog.summary.firstTime.message', {
-              firstTime: formatDuration(result.firstTime),
-            })}
-            <Divider sx={{ flex: 1 }} />
-            {t('collectiveRTHDialog.summary.lastTime.message', {
-              lastTime: formatDuration(result.lastTime),
-            })}
+          <Stack sx={{ px: 3, pb: 1 }} gap={1}>
+            <Typography variant='subtitle2' color='textSecondary'>
+              Pending changes requiring approval
+            </Typography>
+            <Alert severity='success' variant='filled'>
+              {t('collectiveRTHDialog.summary.numPlans.message', {
+                numPlans: result.stats.length,
+              })}
+            </Alert>
+            <Stack direction='row' gap={1} sx={{ alignItems: 'center' }}>
+              {t('collectiveRTHDialog.summary.firstTime.message', {
+                firstTime: formatDuration(result.firstTime),
+              })}
+              <Divider sx={{ flex: 1 }} />
+              {t('collectiveRTHDialog.summary.lastTime.message', {
+                lastTime: formatDuration(result.lastTime),
+              })}
+            </Stack>
           </Stack>
+          <Divider />
         </>
       ) : null}
-    </>
+    </Stack>
   );
 };
 

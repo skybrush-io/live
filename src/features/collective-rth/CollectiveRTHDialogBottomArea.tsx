@@ -9,7 +9,7 @@ import RTHPlanTaskResultSummary from './RTHPlanTaskResultSummary';
 const useStyles = makeStyles((theme: Theme) => ({
   bottomArea: {
     ...createSecondaryAreaStyle(theme, { inset: 'top' }),
-    padding: theme.spacing(2, 3, 1, 3),
+    padding: theme.spacing(2, 0, 1, 0),
   },
 }));
 
@@ -17,7 +17,7 @@ const CollectiveRTHDialogBottomArea = () => {
   const classes = useStyles();
   return (
     <Stack className={classes.bottomArea} gap={1}>
-      <RTHPlanProgressIndicator />
+      <RTHPlanProgressIndicator sx={{ px: 3 }} />
       <RTHPlanTaskResultSummary />
       <CollectiveRTHDialogActions />
     </Stack>

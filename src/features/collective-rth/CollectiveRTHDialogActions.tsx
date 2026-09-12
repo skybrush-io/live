@@ -34,7 +34,7 @@ const CollectiveRTHDialogActions = ({
   const submitDisabled = phase !== 'success';
 
   return (
-    <DialogActions sx={{ px: 0 }}>
+    <DialogActions sx={{ px: 3 }}>
       <ConnectedRTHPlanStatusLight />
       <Button disabled={phase === 'running'} onClick={() => closeDialog()}>
         {t('general.action.close')}
