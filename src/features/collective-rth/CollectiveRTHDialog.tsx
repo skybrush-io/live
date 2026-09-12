@@ -10,13 +10,19 @@ import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import { Status } from '@skybrush/app-theme-mui';
-import { DraggableDialog, LabeledStatusLight } from '@skybrush/mui-components';
+import {
+  DraggableDialog,
+  LabeledProgressBar,
+  LabeledStatusLight,
+} from '@skybrush/mui-components';
 
 import { loadBase64EncodedShow } from '~/features/show/actions';
 import {
   selectCollectiveRTHPlanSummary,
   type CollectiveRTHPlanSummary,
 } from '~/features/show/selectors';
+import type { RTHPlanTaskResult } from '~/features/tasks';
+import type { ProgressInfo } from '~/flockwave/messages';
 import type { CollectiveRTHParameters } from '~/flockwave/types';
 import type { RootState } from '~/store/reducers';
 import { formatDuration } from '~/utils/formatting';
@@ -27,18 +33,19 @@ import CollectiveRTHParametersForm, {
 } from './CollectiveRTHParametersForm';
 import {
   isDialogOpen,
-  selectResult,
-  selectTransformationError,
-  selectTransformationInProgress,
+  selectCalculatedShowWithRTHPlan,
+  selectRTHPlanTask,
 } from './selectors';
-import { closeDialog, type TransformationResult } from './slice';
+import { closeDialog } from './slice';
 
 type StateProps = {
   error?: string;
   existingRTHPlanSummary: CollectiveRTHPlanSummary;
   inProgress: boolean;
   open: boolean;
-  transformationResult?: TransformationResult;
+  progress?: ProgressInfo;
+  taskResult?: RTHPlanTaskResult['result'];
+  transformedShow?: string;
 };
 
 type DispatchProps = {
@@ -59,14 +66,16 @@ const CollectiveRTHDialog = (props: Props) => {
     existingRTHPlanSummary,
     inProgress,
     open,
+    progress,
     saveTransformedShow,
-    transformationResult,
+    taskResult,
+    transformedShow,
   } = props;
   const parametersFormState = useCollectiveRTHParametersFormState();
   const { t } = useTranslation();
-  const submitDisabled = transformationResult === undefined;
+  const submitDisabled = taskResult === undefined;
   const status: Status =
-    transformationResult !== undefined
+    taskResult !== undefined
       ? Status.SUCCESS
       : inProgress
         ? Status.NEXT
@@ -74,7 +83,7 @@ const CollectiveRTHDialog = (props: Props) => {
           ? Status.ERROR
           : Status.INFO;
   const statusMessage =
-    transformationResult !== undefined
+    taskResult !== undefined
       ? t('collectiveRTHDialog.status.success')
       : inProgress
         ? t('collectiveRTHDialog.status.loading')
@@ -103,7 +112,7 @@ const CollectiveRTHDialog = (props: Props) => {
   return (
     <DraggableDialog
       fullWidth
-      disableEscapeKeyDown={inProgress || transformationResult !== undefined}
+      disableEscapeKeyDown={inProgress || taskResult !== undefined}
       maxWidth='sm'
       onClose={closeDialog}
       open={open}
@@ -118,51 +127,62 @@ const CollectiveRTHDialog = (props: Props) => {
           gap: 1,
         }}
       >
-        {transformationResult !== undefined && (
+        {inProgress && (
+          /* Keyed by the progress message so that the progress bar is remounted
+           * when the server starts another subtask: without the key, MUI would
+           * smoothly animate the transition from the final progress of the
+           * previous subtask back to the (near-zero) progress of the new one,
+           * which looks wrong. */
+          <LabeledProgressBar
+            key={progress?.message}
+            label={progress?.message ?? t('collectiveRTHDialog.status.loading')}
+            variant={
+              progress?.percentage !== undefined
+                ? 'determinate'
+                : 'indeterminate'
+            }
+            value={progress?.percentage}
+          />
+        )}
+        {taskResult !== undefined && (
           <>
             <Alert severity='success' variant='filled' sx={{ mt: 1 }}>
               {t('collectiveRTHDialog.summary.numPlans.message', {
-                numPlans: transformationResult.stats.length,
+                numPlans: taskResult.stats.length,
               })}
             </Alert>
             <Stack direction='row' spacing={2} sx={{ alignItems: 'center' }}>
               {t('collectiveRTHDialog.summary.firstTime.message', {
-                firstTime: formatDuration(transformationResult.firstTime),
+                firstTime: formatDuration(taskResult.firstTime),
               })}
               <Divider sx={{ flex: 1 }} />
               {t('collectiveRTHDialog.summary.lastTime.message', {
-                lastTime: formatDuration(transformationResult.lastTime),
+                lastTime: formatDuration(taskResult.lastTime),
               })}
             </Stack>
           </>
         )}
-        {transformationResult === undefined &&
-          !inProgress &&
-          error === undefined && (
-            <>
-              <Typography>{t('collectiveRTHDialog.description')}</Typography>
-              {existingRTHPlanSummary.isValid ? (
-                <Typography>
-                  {t('collectiveRTHDialog.existingValidRTHPlan', {
-                    numPlans: Object.keys(existingRTHPlanSummary.plans).length,
-                  })}
-                </Typography>
-              ) : (
-                <Alert severity='warning' variant='filled'>
-                  {t('collectiveRTHDialog.existingInvalidRTHPlan')}
-                </Alert>
-              )}
-            </>
-          )}
+        {taskResult === undefined && !inProgress && error === undefined && (
+          <>
+            <Typography>{t('collectiveRTHDialog.description')}</Typography>
+            {existingRTHPlanSummary.isValid ? (
+              <Typography>
+                {t('collectiveRTHDialog.existingValidRTHPlan', {
+                  numPlans: Object.keys(existingRTHPlanSummary.plans).length,
+                })}
+              </Typography>
+            ) : (
+              <Alert severity='warning' variant='filled'>
+                {t('collectiveRTHDialog.existingInvalidRTHPlan')}
+              </Alert>
+            )}
+          </>
+        )}
         {parametersForm}
       </Box>
       <DialogActions>
         <Fade
-          in={
-            inProgress ||
-            transformationResult !== undefined ||
-            error !== undefined
-          }
+          in={inProgress || taskResult !== undefined || error !== undefined}
         >
           <Box sx={{ flex: 1, paddingLeft: 1 }}>
             <LabeledStatusLight
@@ -190,15 +210,14 @@ const CollectiveRTHDialog = (props: Props) => {
           color='primary'
           disabled={submitDisabled}
           onClick={() => {
-            const show = transformationResult?.show;
-            if (show === undefined) {
+            if (transformedShow === undefined) {
               console.warn(
                 "Tried to apply transformed show, but it's undefined."
               );
               return;
             }
 
-            applyTransformedShow(show);
+            applyTransformedShow(transformedShow);
             closeDialog();
           }}
         >
@@ -220,13 +239,21 @@ const CollectiveRTHDialogWrapper = ({ open, ...rest }: Props) =>
 
 const ConnectedCollectiveRTHDialog = connect(
   // mapStateToProps
-  (state: RootState) => ({
-    error: selectTransformationError(state),
-    existingRTHPlanSummary: selectCollectiveRTHPlanSummary(state),
-    inProgress: selectTransformationInProgress(state),
-    open: isDialogOpen(state),
-    transformationResult: selectResult(state),
-  }),
+  (state: RootState) => {
+    const task = selectRTHPlanTask(state);
+    return {
+      error: task?.status === 'error' ? task.error : undefined,
+      existingRTHPlanSummary: selectCollectiveRTHPlanSummary(state),
+      inProgress: task?.status === 'running',
+      open: isDialogOpen(state),
+      progress: task?.status === 'running' ? task.progress : undefined,
+      taskResult: task?.status === 'success' ? task.result : undefined,
+      transformedShow:
+        task?.status === 'success'
+          ? selectCalculatedShowWithRTHPlan(state)
+          : undefined,
+    };
+  },
   // mapDispatchToProps
   {
     addCollectiveRTH,

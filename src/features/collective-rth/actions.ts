@@ -1,55 +1,41 @@
-import { getBase64ShowBlob } from '~/features/show/selectors';
+import { Base64 } from 'js-base64';
+
+import { startTask } from '~/features/tasks';
 import type { CollectiveRTHParameters } from '~/flockwave/types';
-import messageHub from '~/message-hub';
 import type { AppThunk } from '~/store/reducers';
 import { writeBlobToFile } from '~/utils/filesystem';
 
-import { selectTransformedShowBlob } from './selectors';
-import { setResult } from './slice';
+import { COLLECTIVE_RTH_DEFAULTS } from './constants';
+import { selectCalculatedShowWithRTHPlan } from './selectors';
 
+export type { CollectiveRTHParameters } from '~/flockwave/types';
+
+/**
+ * Starts the collective RTH plan calculation task with the given parameters
+ * (or the defaults if no parameters are specified).
+ *
+ * Progress updates, the outcome and the result of the calculation are tracked
+ * in the tasks feature; the dialog reads them from there.
+ */
 export const addCollectiveRTH =
   (params?: CollectiveRTHParameters): AppThunk =>
-  async (dispatch, getState): Promise<void> => {
-    const state = getState();
-    const base64ShowBlob = getBase64ShowBlob(state);
-    if (base64ShowBlob === undefined) {
-      dispatch(setResult({ state: 'error', error: 'Missing show data.' }));
-      return;
-    }
-
-    dispatch(setResult({ state: 'loading' }));
-
-    try {
-      const response = await messageHub.query.addCollectiveRTH(base64ShowBlob, {
-        min_distance: params?.minDistance,
-        time_resolution: params?.timeResolution,
-        velocity_xy: params?.horizontalVelocity,
-        velocity_z: params?.verticalVelocity,
-      });
-
-      const times = response.stats.map(({ time }) => time);
-      const firstTime = Math.min(...times);
-      const lastTime = Math.max(...times);
-
-      dispatch(
-        setResult({ state: 'success', ...response, firstTime, lastTime })
-      );
-    } catch (error) {
-      console.warn('addCollectiveRTH failed with error:', error);
-      const errorMessage =
-        error instanceof Error
-          ? error.message
-          : typeof error === 'string'
-            ? error
-            : 'Unknown error type.';
-      dispatch(setResult({ state: 'error', error: errorMessage }));
-    }
+  (dispatch) => {
+    void dispatch(
+      startTask(
+        {
+          type: 'rth-plan',
+          params: params ?? COLLECTIVE_RTH_DEFAULTS,
+        },
+        { silent: true }
+      )
+    );
   };
 
 export const saveTransformedShow =
   (): AppThunk => async (_dispatch, getState) => {
-    const base64Show = selectTransformedShowBlob(getState());
+    const base64Show = selectCalculatedShowWithRTHPlan(getState());
     if (base64Show) {
-      await writeBlobToFile(base64Show, 'transformed-show.skyc');
+      const bytes = new Uint8Array(Base64.toUint8Array(base64Show));
+      await writeBlobToFile(new Blob([bytes]), 'transformed-show.skyc');
     }
   };

@@ -1,9 +1,7 @@
-import { Base64 } from 'js-base64';
-import { createSelector } from 'reselect';
-
-import type { AppSelector, RootState } from '~/store/reducers';
-
-import type { CollectiveRTHDialogState, TransformationResult } from './slice';
+import type { RTHPlanTaskState } from '~/features/tasks';
+import { getTaskState, readTaskPayload } from '~/features/tasks';
+import type { AppSelector } from '~/store/reducers';
+import type { CollectiveRTHDialogState } from './slice';
 
 const selectState: AppSelector<CollectiveRTHDialogState> = (state) =>
   state.dialogs.collectiveRTH;
@@ -11,30 +9,26 @@ const selectState: AppSelector<CollectiveRTHDialogState> = (state) =>
 export const isDialogOpen: AppSelector<boolean> = (state) =>
   selectState(state).open;
 
-export const selectTransformationInProgress: AppSelector<boolean> =
-  createSelector(selectState, ({ result }) => result?.state === 'loading');
+/**
+ * Returns the state of the singleton collective RTH plan calculation task,
+ * or `undefined` if no such task has been started yet.
+ */
+export const selectRTHPlanTask: AppSelector<RTHPlanTaskState | undefined> = (
+  state
+) => getTaskState(state, { type: 'rth-plan' });
 
-export const selectTransformationError: AppSelector<string | undefined> =
-  createSelector(selectState, ({ result }) =>
-    result?.state === 'error' ? result.error : undefined
-  );
-
-export const selectResult: AppSelector<TransformationResult | undefined> =
-  createSelector(selectState, ({ result }) =>
-    result?.state === 'success' ? result : undefined
-  );
-
-export const selectTransformedShowAsBase64String: AppSelector<
+/**
+ * Returns the base64-encoded show with the collective RTH plans appended from
+ * the most recent successful collective RTH plan calculation, or `undefined`
+ * if there is no such calculation or its result is no longer available.
+ */
+export const selectCalculatedShowWithRTHPlan: AppSelector<
   string | undefined
-> = createSelector(selectResult, (result) => result?.show);
-
-export const selectTransformedShowBlob: AppSelector<Blob | undefined> = (
-  state: RootState
-) => {
-  const result = selectTransformedShowAsBase64String(state);
-  if (result === undefined) {
+> = (state) => {
+  const task = selectRTHPlanTask(state);
+  if (task?.status !== 'success' || task.result === undefined) {
     return undefined;
   }
 
-  return new Blob([Base64.toUint8Array(result) as any]);
+  return readTaskPayload<string>(task.result.hash);
 };
