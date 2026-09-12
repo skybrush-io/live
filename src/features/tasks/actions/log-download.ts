@@ -8,37 +8,10 @@ import { convertFlightLogToBlob } from '~/model/flight-logs';
 import type { AppThunk } from '~/store/reducers';
 import { writeBlobToFile } from '~/utils/filesystem';
 
+import { writeTaskPayload } from '../payload-store';
 import { _completeTask, _failTask, _setTaskProgress } from '../slice';
 import type { LogDownloadTaskSpec, StartOptions } from '../types';
 import { getTaskKey } from '../utils';
-
-const logContents = new (class {
-  #data: Record<string, FlightLog> = {};
-  #encoder = new TextEncoder();
-
-  write = async (item: FlightLog): Promise<string> => {
-    const payload = JSON.stringify(item);
-    // prettier-ignore
-    const hash = (
-      Array.from(
-        new Uint8Array(
-          await window.crypto.subtle.digest(
-            'SHA-1',
-            this.#encoder.encode(payload)
-          )
-        ),
-        (byte) => byte.toString(16).padStart(2, '0')
-      ).join('')
-    );
-    this.#data[hash] = item;
-    return hash;
-  };
-
-  read = (hash: string): FlightLog | undefined => this.#data[hash];
-})();
-
-export const readDownloadedLog = (hash: string): FlightLog | undefined =>
-  logContents.read(hash);
 
 const saveLogToFile = (log: FlightLog) => {
   const { filename, blob } = convertFlightLogToBlob(log);
@@ -64,7 +37,7 @@ export const runLogDownloadTask =
       const log = await messageHub.query.getFlightLog(uavId, logId, {
         onProgress,
       });
-      const hash = await logContents.write(log);
+      const hash = writeTaskPayload(log);
       dispatch(_completeTask({ key, result: { hash } }));
       if (!silent) {
         showNotification({

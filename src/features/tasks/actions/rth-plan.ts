@@ -4,41 +4,27 @@ import type { ProgressStatus } from '~/flockwave/messages';
 import messageHub from '~/message-hub';
 import type { AppThunk } from '~/store/reducers';
 
+import { deleteTaskPayload, writeTaskPayload } from '../payload-store';
 import { _completeTask, _failTask, _setTaskProgress } from '../slice';
 import type { RTHPlanTaskSpec } from '../types';
 import { getTaskKey } from '../utils';
 
-/* The transformed show returned by the server is a large payload that must not
- * enter the Redux store. We keep the most recent one in a module-level slot and
- * store only its hash in the task state. The slot is discarded when a new
- * calculation starts or when the task is cleared; the UI design guarantees that
- * older results are never needed again (the user either approves the new show,
- * which replaces the loaded one, or rejects it). */
+/* The transformed show returned by the server is a large payload, so it is
+ * kept in the payload store and only its hash is stored in the task state.
+ * The payload store keeps entries once written; for this singleton task we
+ * track the hash of the last written payload so that it can be discarded when
+ * a new calculation starts. The UI design guarantees that the previous result
+ * is never needed again (the user either approves the new show, which replaces
+ * the loaded one, or rejects it). */
 
-let calculatedShow: { hash: string; show: string } | undefined;
+let lastPayloadHash: string | undefined;
 
-const hashString = async (value: string): Promise<string> => {
-  const encoder = new TextEncoder();
-  // prettier-ignore
-  const hash = (
-    Array.from(
-      new Uint8Array(
-        await window.crypto.subtle.digest('SHA-1', encoder.encode(value))
-      ),
-      (byte) => byte.toString(16).padStart(2, '0')
-    ).join('')
-  );
-  return hash;
+const discardLastPayload = () => {
+  if (lastPayloadHash !== undefined) {
+    deleteTaskPayload(lastPayloadHash);
+    lastPayloadHash = undefined;
+  }
 };
-
-/**
- * Returns the base64-encoded transformed show from the most recent successful
- * collective RTH plan calculation, or `undefined` if the given hash does not
- * match the calculated show (i.e., a new calculation has started in the
- * meantime).
- */
-export const readCalculatedShow = (hash: string): string | undefined =>
-  calculatedShow?.hash === hash ? calculatedShow.show : undefined;
 
 /**
  * Runner for the singleton collective RTH plan calculation task.
@@ -55,7 +41,7 @@ export const runRTHPlanTask =
     const key = getTaskKey(spec);
 
     // The previous result (if any) is obsolete from this point on.
-    calculatedShow = undefined;
+    discardLastPayload();
 
     const base64ShowBlob = getBase64ShowBlob(getState());
     if (base64ShowBlob === undefined) {
@@ -79,8 +65,8 @@ export const runRTHPlanTask =
         { onProgress }
       );
 
-      const hash = await hashString(response.show);
-      calculatedShow = { hash, show: response.show };
+      const hash = writeTaskPayload(response.show);
+      lastPayloadHash = hash;
 
       const times = response.stats.map(({ time }) => time);
       dispatch(
@@ -101,8 +87,9 @@ export const runRTHPlanTask =
   };
 
 /**
- * Clears the module-level slot holding the transformed show.
+ * Discards the transformed show of the most recent collective RTH plan
+ * calculation from the payload store.
  */
 export const clearRTHPlanTask = (): AppThunk => () => {
-  calculatedShow = undefined;
+  discardLastPayload();
 };

@@ -122,8 +122,8 @@ export type UAVTestTaskResult = UAVTestTaskData & { result?: undefined };
 
 export type RTHPlanTaskResult = RTHPlanTaskData & {
   result: {
-    /** Hash of the transformed show; the show itself lives in the
-     * module-level slot in `actions/rth-plan.ts`. */
+    /** Hash of the transformed show; the show itself lives in the payload
+     * store (`payload-store.ts`). */
     hash: string;
     stats: CollectiveRTHPlanStatisticsEntry[];
     showDuration: number;

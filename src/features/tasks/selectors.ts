@@ -3,8 +3,7 @@ import { createSelector } from '@reduxjs/toolkit';
 import type { FlightLog } from '~/model/flight-logs';
 import type { AppSelector, RootState } from '~/store/reducers';
 
-import { readDownloadedLog } from './actions/log-download';
-import { readCalculatedShow } from './actions/rth-plan';
+import { readTaskPayload } from './payload-store';
 import type {
   AggregatedTaskState,
   LogDownloadTaskData,
@@ -43,23 +42,7 @@ export const getDownloadedLog = (
     return undefined;
   }
 
-  return readDownloadedLog(task.result.hash);
-};
-
-/**
- * Returns the base64-encoded show with the collective RTH plans appended from
- * the most recent successful collective RTH plan calculation, or `undefined`
- * if there is no such calculation or its result is no longer available.
- */
-export const getCalculatedShowWithRTHPlan = (
-  state: RootState
-): string | undefined => {
-  const task = getTaskState(state, { type: 'rth-plan' });
-  if (task?.status !== 'success' || task.result === undefined) {
-    return undefined;
-  }
-
-  return readCalculatedShow(task.result.hash);
+  return readTaskPayload<FlightLog>(task.result.hash);
 };
 
 /**
