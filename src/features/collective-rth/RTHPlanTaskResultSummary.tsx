@@ -1,6 +1,7 @@
 import Alert from '@mui/material/Alert';
 import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
@@ -12,7 +13,6 @@ import type { RTHPlanTaskResult } from '~/features/tasks';
 import type { RootState } from '~/store/reducers';
 import { formatDuration } from '~/utils/formatting';
 
-import { Typography } from '@mui/material';
 import { selectRTHPlanTaskResult } from './selectors';
 
 type Props = {
