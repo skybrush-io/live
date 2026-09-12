@@ -15,11 +15,12 @@ import type {
   Response_DEVUNSUB,
 } from '@skybrush/flockwave-spec';
 import has from 'lodash-es/has';
-import isObject from 'lodash-es/isObject';
 import { nanoid } from 'nanoid';
 import pDefer, { type DeferredPromise } from 'p-defer';
 import pProps from 'p-props';
 import pTimeout from 'p-timeout';
+
+import { isRecord } from '~/utils/types';
 
 import {
   createCancellationRequest,
@@ -87,7 +88,7 @@ export function parseCommandFromString(string: string): {
  * @return the Flockwave message with the given body
  */
 function createMessage(body = {}) {
-  if (!isObject(body)) {
+  if (!isRecord(body)) {
     body = { type: body };
   }
 
