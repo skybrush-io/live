@@ -1,9 +1,9 @@
-import objectHash from 'object-hash';
+import { sha512 } from 'crypto-hash';
 
 /* Large result payloads of tasks (e.g. downloaded flight logs or transformed
  * show files) must not enter the Redux store. Runners store them in this
- * module-level payload store, keyed by the SHA-1 hash of their serialized
- * form, and only the hash goes into the task state. */
+ * module-level payload store, keyed by the hash of their serialized form,
+ * and only the hash goes into the task state. */
 
 const payloads = new Map<string, unknown>();
 
@@ -13,8 +13,12 @@ const payloads = new Map<string, unknown>();
  * Only the hash should be kept in the Redux store; the payload itself can be
  * retrieved later with `readTaskPayload()`.
  */
-export const writeTaskPayload = (payload: string | object): string => {
-  const hash = objectHash(payload);
+export const writeTaskPayload = async (
+  payload: string | object
+): Promise<string> => {
+  const hash = await sha512(
+    typeof payload === 'string' ? payload : JSON.stringify(payload)
+  );
   payloads.set(hash, payload);
   return hash;
 };

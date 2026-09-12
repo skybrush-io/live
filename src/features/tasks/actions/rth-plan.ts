@@ -65,7 +65,7 @@ export const runRTHPlanTask =
         { onProgress }
       );
 
-      const hash = writeTaskPayload(response.show);
+      const hash = await writeTaskPayload(response.show);
       lastPayloadHash = hash;
 
       const times = response.stats.map(({ time }) => time);

@@ -37,7 +37,7 @@ export const runLogDownloadTask =
       const log = await messageHub.query.getFlightLog(uavId, logId, {
         onProgress,
       });
-      const hash = writeTaskPayload(log);
+      const hash = await writeTaskPayload(log);
       dispatch(_completeTask({ key, result: { hash } }));
       if (!silent) {
         showNotification({
