@@ -58,7 +58,10 @@ import type {
   Response_XSHOWADAPT,
   ShowAdaptTransformation,
 } from './types';
-import { validateExtensionName } from './validation';
+import {
+  validateCollectiveRTHPlanResult,
+  validateExtensionName,
+} from './validation';
 
 function validateUAVId(uavId: any): asserts uavId is string {
   if (!uavId || typeof uavId !== 'string') {
@@ -106,7 +109,8 @@ export async function adaptShow(
 export async function addCollectiveRTH(
   hub: MessageHub,
   show: string,
-  config: CollectiveRTHConfig
+  config: CollectiveRTHConfig,
+  { onProgress }: { onProgress?: (status: ProgressStatus) => void } = {}
 ): Promise<CollectiveRTHPlanResult> {
   try {
     const plan = await hub.startAsyncOperation<CollectiveRTHPlanResult>(
@@ -115,10 +119,9 @@ export async function addCollectiveRTH(
         show,
         config,
       },
-      // TODO(ntamas): progress wiring here!
-      { timeout: 3600 }
+      { onProgress, timeout: 3600 }
     );
-    // TODO(ntamas): plan validation!
+    validateCollectiveRTHPlanResult(plan);
     return plan;
   } catch (error) {
     const errorString = errorToString(error);

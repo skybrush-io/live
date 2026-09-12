@@ -17,14 +17,11 @@ import {
   selectCollectiveRTHPlanSummary,
   type CollectiveRTHPlanSummary,
 } from '~/features/show/selectors';
+import type { CollectiveRTHParameters } from '~/flockwave/types';
 import type { RootState } from '~/store/reducers';
 import { formatDuration } from '~/utils/formatting';
 
-import {
-  addCollectiveRTH,
-  saveTransformedShow,
-  type CollectiveRTHParameters,
-} from './actions';
+import { addCollectiveRTH, saveTransformedShow } from './actions';
 import CollectiveRTHParametersForm, {
   useCollectiveRTHParametersFormState,
 } from './CollectiveRTHParametersForm';

@@ -11,11 +11,9 @@ import {
   SimpleDurationField,
   SimpleVelocityField,
 } from '~/components/forms/fields';
+import type { CollectiveRTHParameters } from '~/flockwave/types';
 
-import type {
-  CollectiveRTHParameters,
-  OptionalCollectiveRTHParameters,
-} from './actions';
+import { COLLECTIVE_RTH_DEFAULTS } from './constants';
 
 const useStyles = makeStyles((theme: Theme) => ({
   formGroup: {
@@ -55,20 +53,18 @@ function parseVelocityMpS(value: string): number {
   return Number.parseFloat(value);
 }
 
-export function useCollectiveRTHParametersFormState(
-  defaultParams?: OptionalCollectiveRTHParameters
-) {
+export function useCollectiveRTHParametersFormState() {
   const [minDistance, setMinDistance] = useState(
-    defaultParams?.minDistance ?? 2
+    COLLECTIVE_RTH_DEFAULTS.minDistance
   );
   const [timeResolution, setTimeResolution] = useState(
-    defaultParams?.timeResolution ?? 10
+    COLLECTIVE_RTH_DEFAULTS.timeResolution
   );
   const [horizontalVelocity, setHorizontalVelocity] = useState(
-    defaultParams?.horizontalVelocity ?? 5
+    COLLECTIVE_RTH_DEFAULTS.horizontalVelocity
   );
   const [verticalVelocity, setVerticalVelocity] = useState(
-    defaultParams?.verticalVelocity ?? 1.5
+    COLLECTIVE_RTH_DEFAULTS.verticalVelocity
   );
 
   const parameters = useMemo<CollectiveRTHParameters>(() => {

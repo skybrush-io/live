@@ -1,4 +1,7 @@
+import type { CollectiveRTHPlanStatisticsEntry } from '@skybrush/flockwave-spec';
+
 import type { ProgressInfo } from '~/flockwave/messages';
+import type { CollectiveRTHParameters } from '~/flockwave/types';
 
 // -- Task data
 
@@ -41,9 +44,19 @@ export type UAVTestTaskData = {
 };
 
 /**
+ * Type representing the singleton task of calculating a collective RTH plan
+ * for the entire swarm from the show file that is currently loaded. Not tied
+ * to a specific UAV, and there is at most one such task in the system, hence
+ * the absence of both `uavId` and `taskId`.
+ */
+export type RTHPlanTaskData = {
+  type: 'rth-plan';
+};
+
+/**
  * Union type for all tasks that we support.
  */
-export type TaskData = LogDownloadTaskData | UAVTestTaskData;
+export type TaskData = LogDownloadTaskData | UAVTestTaskData | RTHPlanTaskData;
 
 /** Type of the discriminator field for tasks */
 export type TaskType = TaskData['type'];
@@ -76,7 +89,17 @@ export type UAVTestTaskSpec = UAVTestTaskData & {
   };
 };
 
-export type TaskSpec = LogDownloadTaskSpec | UAVTestTaskSpec;
+export type RTHPlanTaskSpec = RTHPlanTaskData & {
+  params: CollectiveRTHParameters;
+};
+
+export type TaskSpec = LogDownloadTaskSpec | UAVTestTaskSpec | RTHPlanTaskSpec;
+
+/** Union of the task data types that are tied to a specific UAV. */
+export type UAVTaskData = Extract<TaskData, { uavId: string }>;
+
+/** Union of the task spec types that are tied to a specific UAV. */
+export type UAVTaskSpec = Extract<TaskSpec, { uavId: string }>;
 
 // ---- Task start options ----
 
@@ -97,7 +120,20 @@ export type LogDownloadTaskResult = LogDownloadTaskData & {
 
 export type UAVTestTaskResult = UAVTestTaskData & { result?: undefined };
 
-export type CompleteTaskResult = LogDownloadTaskResult | UAVTestTaskResult;
+export type RTHPlanTaskResult = RTHPlanTaskData & {
+  result: {
+    /** Hash of the transformed show; the show itself lives in the
+     * module-level slot in `actions/rth-plan.ts`. */
+    hash: string;
+    stats: CollectiveRTHPlanStatisticsEntry[];
+    showDuration: number;
+    firstTime: number;
+    lastTime: number;
+  };
+};
+
+export type CompleteTaskResult =
+  LogDownloadTaskResult | UAVTestTaskResult | RTHPlanTaskResult;
 
 /** Result payload of a task, without the identity fields. */
 export type TaskResult = CompleteTaskResult['result'];
@@ -135,7 +171,14 @@ export type UAVTestTaskState = TaskStateBase &
     result?: never;
   };
 
-export type TaskState = LogDownloadTaskState | UAVTestTaskState;
+export type RTHPlanTaskState = TaskStateBase &
+  RTHPlanTaskData & {
+    status: TaskStatus;
+    result?: RTHPlanTaskResult['result'];
+  };
+
+export type TaskState =
+  LogDownloadTaskState | UAVTestTaskState | RTHPlanTaskState;
 
 export type AggregatedTaskState = {
   loading: boolean;

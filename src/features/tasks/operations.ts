@@ -5,7 +5,7 @@ import { COMPASS_CALIB_TIMEOUT } from '~/features/uavs/constants';
 
 import { startTask } from './actions';
 import { getTaskState } from './selectors';
-import type { TaskSpec } from './types';
+import type { TaskSpec, UAVTaskSpec } from './types';
 
 /**
  * Factory that creates a multi-UAV task action.
@@ -16,7 +16,11 @@ import type { TaskSpec } from './types';
  * The created action does not support broadcast and transport options.
  */
 const makeMultiUAVAction =
-  (uavIds: string[], spec: Omit<TaskSpec, 'uavId'>, name: string): AppThunk =>
+  (
+    uavIds: string[],
+    spec: Omit<UAVTaskSpec, 'uavId'>,
+    name: string
+  ): AppThunk =>
   (dispatch, getState) =>
     runMassOperation(dispatch, getState, {
       name,
@@ -57,7 +61,7 @@ const makeMultiUAVAction =
 /**
  * Pre-defined task specifications (without `uavId`).
  */
-export const TASK_SPECS: Record<string, Omit<TaskSpec, 'uavId'>> = {
+export const TASK_SPECS: Record<string, Omit<UAVTaskSpec, 'uavId'>> = {
   compassCalibration: {
     type: 'uav-test',
     taskId: 'compass',

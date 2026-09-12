@@ -6,7 +6,11 @@ import type { TaskData, TaskKey, TaskState } from './types';
  */
 export const getTaskKey = (data: TaskData): TaskKey =>
   // Branded type: the cast only attaches the brand to an ordinary string.
-  [data.type, data.uavId ?? '_', data.taskId ?? '_'].join(':') as TaskKey;
+  [
+    data.type,
+    'uavId' in data ? data.uavId : '_',
+    'taskId' in data ? data.taskId : '_',
+  ].join(':') as TaskKey;
 
 /**
  * Returns whether the given task is currently in progress

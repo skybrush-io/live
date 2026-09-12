@@ -23,10 +23,11 @@ Tasks are **not persisted** (blacklisted from redux-persist). State survives UI 
 
 ## Non-Redux mutable state
 
-Two pieces of state are intentionally kept out of the slice:
+Three pieces of state are intentionally kept out of the slice:
 
 - **Log content CAS** (`actions/log-download.ts`) — in-memory `Map<hash, FlightLog>`. Only the hash lives in the slice. Logs are large; on reload both the CAS and slice are empty.
 - **Active operations Map** (`actions/uav-test.ts`) — module-level `Map` holding `resume` callbacks from the server. These are non-serializable function references; they must never enter Redux state or selectors. Cleaned up in the runner's `finally` or via `clearUAVTestTask`.
+- **Transformed show slot** (`actions/rth-plan.ts`) — single module-level slot holding the base64 transformed show from the most recent collective RTH plan calculation; only its hash lives in the slice. Discarded when a new calculation starts or the task is cleared.
 
 ## Suspend and resume
 
