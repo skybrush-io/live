@@ -4,8 +4,6 @@ import { makeStyles } from '@skybrush/app-theme-mui';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { FormHeader } from '@skybrush/mui-components';
-
 import {
   SimpleDistanceField,
   SimpleDurationField,
@@ -18,7 +16,6 @@ import { COLLECTIVE_RTH_DEFAULTS } from './constants';
 const useStyles = makeStyles((theme: Theme) => ({
   formGroup: {
     gap: theme.spacing(1),
-    marginTop: theme.spacing(-1),
   },
 }));
 
@@ -139,7 +136,6 @@ function CollectiveRTHParametersForm(props: Props) {
 
   return (
     <FormGroup className={styles.formGroup}>
-      <FormHeader>{t('section.parameters')}</FormHeader>
       <SimpleDurationField
         label={t('form.timeResolution.label')}
         min={0}

@@ -142,9 +142,6 @@
         "verticalVelocity": {
           "label": "Függőleges sebesség"
         }
-      },
-      "section": {
-        "parameters": "Paraméterek"
       }
     }
   },

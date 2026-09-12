@@ -192,9 +192,6 @@
           "help": "during collective RTH",
           "label": "Vertical velocity"
         }
-      },
-      "section": {
-        "parameters": "Parameters"
       }
     },
     "status": {

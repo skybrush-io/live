@@ -162,9 +162,6 @@
           "help": "在集体返航过程中",
           "label": "垂直速度"
         }
-      },
-      "section": {
-        "parameters": "参数"
       }
     },
     "status": {
@@ -1091,9 +1088,6 @@
         "lights": "灯光",
         "safety": "安全",
         "trajectories": "轨迹"
-      },
-      "section": {
-        "parameters": "参数"
       }
     },
     "adaptReview": {
