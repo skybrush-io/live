@@ -1,6 +1,7 @@
 import { createSelector } from '@reduxjs/toolkit';
 
 import type { ProgressInfo } from '~/flockwave/messages';
+import type { CollectiveRTHParameters } from '~/flockwave/types';
 import type { RTHPlanTaskResult, RTHPlanTaskState } from '~/features/tasks';
 import { getTaskState, readTaskPayload } from '~/features/tasks';
 import type { AppSelector } from '~/store/reducers';
@@ -11,6 +12,13 @@ const selectState: AppSelector<CollectiveRTHDialogState> = (state) =>
 
 export const isDialogOpen: AppSelector<boolean> = (state) =>
   selectState(state).open;
+
+/**
+ * Returns the default parameters of a collective RTH plan calculation, as
+ * persisted between application restarts.
+ */
+export const selectParameters: AppSelector<CollectiveRTHParameters> = (state) =>
+  selectState(state).parameters;
 
 /**
  * Returns the state of the singleton collective RTH plan calculation task,

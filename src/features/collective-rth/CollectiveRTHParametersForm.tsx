@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSelector } from 'react-redux';
 
 import {
   SimpleDistanceField,
@@ -9,17 +10,8 @@ import {
 import type { CollectiveRTHParameters } from '~/flockwave/types';
 
 import Grid from '@mui/material/Grid';
-import { COLLECTIVE_RTH_DEFAULTS } from './constants';
-
-function areParametersValid(params: CollectiveRTHParameters): boolean {
-  return (
-    params.minDistance >= 0 &&
-    params.timeResolution >= 1 &&
-    Number.isInteger(params.timeResolution) &&
-    params.horizontalVelocity > 0 &&
-    params.verticalVelocity > 0
-  );
-}
+import { selectParameters } from './selectors';
+import { areCollectiveRTHParametersValid } from './validation';
 
 /**
  * Parses a distance (string) as meters, rounded to 3 digits.
@@ -42,18 +34,24 @@ function parseVelocityMpS(value: string): number {
   return Number.parseFloat(value);
 }
 
+/**
+ * Hook that manages the local state of the collective RTH parameters form.
+ *
+ * The form is seeded from the default parameters stored in the Redux state
+ * (and persisted between application restarts); the current values are
+ * written back to the state when the user starts a collective RTH plan
+ * calculation.
+ */
 export function useCollectiveRTHParametersFormState() {
-  const [minDistance, setMinDistance] = useState(
-    COLLECTIVE_RTH_DEFAULTS.minDistance
-  );
-  const [timeResolution, setTimeResolution] = useState(
-    COLLECTIVE_RTH_DEFAULTS.timeResolution
-  );
+  const defaults = useSelector(selectParameters);
+
+  const [minDistance, setMinDistance] = useState(defaults.minDistance);
+  const [timeResolution, setTimeResolution] = useState(defaults.timeResolution);
   const [horizontalVelocity, setHorizontalVelocity] = useState(
-    COLLECTIVE_RTH_DEFAULTS.horizontalVelocity
+    defaults.horizontalVelocity
   );
   const [verticalVelocity, setVerticalVelocity] = useState(
-    COLLECTIVE_RTH_DEFAULTS.verticalVelocity
+    defaults.verticalVelocity
   );
 
   const parameters = useMemo<CollectiveRTHParameters>(() => {
@@ -66,7 +64,7 @@ export function useCollectiveRTHParametersFormState() {
   }, [minDistance, timeResolution, horizontalVelocity, verticalVelocity]);
 
   const isValid = useMemo(() => {
-    return areParametersValid(parameters);
+    return areCollectiveRTHParametersValid(parameters);
   }, [parameters]);
 
   const onMinDistanceChanged = useCallback(

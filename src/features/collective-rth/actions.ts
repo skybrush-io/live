@@ -5,26 +5,36 @@ import type { CollectiveRTHParameters } from '~/flockwave/types';
 import type { AppThunk } from '~/store/reducers';
 import { writeBlobToFile } from '~/utils/filesystem';
 
-import { COLLECTIVE_RTH_DEFAULTS } from './constants';
-import { selectCalculatedShowWithRTHPlan } from './selectors';
+import { selectCalculatedShowWithRTHPlan, selectParameters } from './selectors';
+import { setParameters } from './slice';
+import { areCollectiveRTHParametersValid } from './validation';
 
 export type { CollectiveRTHParameters } from '~/flockwave/types';
 
 /**
  * Starts the collective RTH plan calculation task with the given parameters
- * (or the defaults if no parameters are specified).
+ * (or the persisted defaults if no parameters are specified).
+ *
+ * Valid, explicitly given parameters are also stored back into the state so
+ * they become the defaults of the next calculation.
  *
  * Progress updates, the outcome and the result of the calculation are tracked
  * in the tasks feature; the dialog reads them from there.
  */
 export const addCollectiveRTH =
   (params?: CollectiveRTHParameters): AppThunk =>
-  (dispatch) => {
+  (dispatch, getState) => {
+    const effectiveParams = params ?? selectParameters(getState());
+
+    if (params && areCollectiveRTHParametersValid(params)) {
+      dispatch(setParameters(params));
+    }
+
     void dispatch(
       startTask(
         {
           type: 'rth-plan',
-          params: params ?? COLLECTIVE_RTH_DEFAULTS,
+          params: effectiveParams,
         },
         { silent: true }
       )

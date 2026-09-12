@@ -82,6 +82,7 @@ const persistConfig = {
     // store the state of only the given dialogs
     createFilter('dialogs', [
       'appSettings',
+      'collectiveRTH',
       'featureEditor',
       'layerSettings',
       'messages',
