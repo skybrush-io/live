@@ -96,3 +96,17 @@ export const selectCalculatedShowWithRTHPlan: AppSelector<
 
   return readTaskPayload<string>(task.result.hash);
 };
+
+/**
+ * Returns whether the collective RTH dialog can be closed in the given phase.
+ *
+ * We try to discourage users from closing the dialog when the calculation is in
+ * progress or an approval is pending, but we don't want to prevent them from doing so
+ * if they insist, so this function is only used to disable the Escape key and the
+ * Close button.
+ */
+export const canCloseDialogInPhase = (
+  phase: CollectiveRTHPlanningPhase
+): boolean => {
+  return phase !== 'planning' && phase !== 'waitingForApproval';
+};

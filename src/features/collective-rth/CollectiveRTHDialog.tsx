@@ -9,7 +9,11 @@ import type { RootState } from '~/store/reducers';
 import CollectiveRTHDialogBottomArea from './CollectiveRTHDialogBottomArea';
 import CollectiveRTHDialogContent from './CollectiveRTHDialogContent';
 import type { CollectiveRTHPlanningPhase } from './selectors';
-import { isDialogOpen, selectCollectiveRTHPlanningPhase } from './selectors';
+import {
+  canCloseDialogInPhase,
+  isDialogOpen,
+  selectCollectiveRTHPlanningPhase,
+} from './selectors';
 import { closeDialog } from './slice';
 
 type Props = {
@@ -24,7 +28,7 @@ const CollectiveRTHDialog = ({ closeDialog, open, phase }: Props) => {
   return (
     <DraggableDialog
       fullWidth
-      disableEscapeKeyDown={phase === 'waitingForApproval'}
+      disableEscapeKeyDown={!canCloseDialogInPhase(phase)}
       maxWidth='sm'
       onClose={closeDialog}
       open={open}

@@ -13,7 +13,10 @@ import {
   saveTransformedShow,
 } from './actions';
 import type { CollectiveRTHPlanningPhase } from './selectors';
-import { selectCollectiveRTHPlanningPhase } from './selectors';
+import {
+  canCloseDialogInPhase,
+  selectCollectiveRTHPlanningPhase,
+} from './selectors';
 import { closeDialog } from './slice';
 
 type Props = {
@@ -36,7 +39,7 @@ const CollectiveRTHDialogActions = ({
   return (
     <DialogActions sx={{ px: 3 }}>
       <Button
-        disabled={phase === 'waitingForApproval'}
+        disabled={!canCloseDialogInPhase(phase)}
         onClick={() => closeDialog()}
       >
         {t('general.action.close')}

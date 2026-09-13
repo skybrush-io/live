@@ -141,7 +141,7 @@ const RTHPlanTaskResultSummary = ({
               ) : existingPlan?.isValid ? (
                 <TimeIntervalDisplay {...existingPlan} />
               ) : (
-                t('collectiveRTHDialog.action.addCollectiveRTH')
+                t('collectiveRTHDialog.hints.addCollectiveRTH')
               )
             }
           />
