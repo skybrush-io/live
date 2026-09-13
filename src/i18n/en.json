@@ -211,9 +211,6 @@
       },
       "numPlans": {
         "message": "RTH plans calculated at {{numPlans}} timestamps, waiting for approval"
-      },
-      "noPlan": {
-        "message": "No collective RTH plans were calculated yet"
       }
     },
     "title": "Plan collective RTH"
