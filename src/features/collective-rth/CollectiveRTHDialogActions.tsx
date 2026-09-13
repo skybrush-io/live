@@ -1,3 +1,5 @@
+import Check from '@mui/icons-material/Check';
+import Close from '@mui/icons-material/Close';
 import Button from '@mui/material/Button';
 import DialogActions from '@mui/material/DialogActions';
 import { useTranslation } from 'react-i18next';
@@ -6,8 +8,7 @@ import { connect } from 'react-redux';
 import { loadBase64EncodedShow } from '~/features/show/actions';
 import type { RootState } from '~/store/reducers';
 
-import { saveTransformedShow } from './actions';
-import ConnectedRTHPlanStatusLight from './RTHPlanStatusLight';
+import { rejectTransformedShow, saveTransformedShow } from './actions';
 import type { RTHPlanTaskPhase } from './selectors';
 import {
   selectCalculatedShowWithRTHPlan,
@@ -19,6 +20,7 @@ type Props = {
   applyTransformedShow: (show: string) => void;
   closeDialog: () => void;
   phase: RTHPlanTaskPhase;
+  rejectTransformedShow: () => void;
   saveTransformedShow: () => void;
   transformedShow?: string;
 };
@@ -27,44 +29,52 @@ const CollectiveRTHDialogActions = ({
   applyTransformedShow,
   closeDialog,
   phase,
+  rejectTransformedShow,
   saveTransformedShow,
   transformedShow,
 }: Props) => {
   const { t } = useTranslation();
-  const submitDisabled = phase !== 'success';
 
   return (
     <DialogActions sx={{ px: 3 }}>
-      <ConnectedRTHPlanStatusLight />
       <Button disabled={phase === 'running'} onClick={() => closeDialog()}>
         {t('general.action.close')}
       </Button>
-      <Button
-        color='primary'
-        disabled={submitDisabled}
-        onClick={() => {
-          saveTransformedShow();
-        }}
-      >
-        {t('general.action.save')}
-      </Button>
-      <Button
-        color='primary'
-        disabled={submitDisabled}
-        onClick={() => {
-          if (transformedShow === undefined) {
-            console.warn(
-              "Tried to apply transformed show, but it's undefined."
-            );
-            return;
-          }
-
-          applyTransformedShow(transformedShow);
-          closeDialog();
-        }}
-      >
-        {t('general.action.approve')}
-      </Button>
+      {phase === 'success' && (
+        <>
+          <Button
+            color='primary'
+            onClick={() => {
+              saveTransformedShow();
+            }}
+          >
+            {t('general.action.save')}
+          </Button>
+          <Button
+            color='success'
+            disabled={transformedShow === undefined}
+            onClick={() => {
+              if (transformedShow !== undefined) {
+                applyTransformedShow(transformedShow);
+                closeDialog();
+              }
+            }}
+          >
+            <Check />
+            {t('general.action.approve')}
+          </Button>
+          <Button
+            color='error'
+            disabled={transformedShow === undefined}
+            onClick={() => {
+              rejectTransformedShow();
+            }}
+          >
+            <Close />
+            {t('general.action.reject')}
+          </Button>
+        </>
+      )}
     </DialogActions>
   );
 };
@@ -79,6 +89,7 @@ export default connect(
   {
     applyTransformedShow: loadBase64EncodedShow,
     closeDialog,
+    rejectTransformedShow,
     saveTransformedShow,
   }
 )(CollectiveRTHDialogActions);

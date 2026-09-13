@@ -70,28 +70,54 @@ const _TaskKey: unique symbol = Symbol('TaskKey');
  */
 export type TaskKey = string & { [_TaskKey]: void };
 
-// ---- Task spec (data + params, what callers pass to start) ----
+// ---- Task parameters ----
 
-/* Besides the common task fields, each task may have additional data that is required to
- * execute the task on the server. A task data object extended with these parameters is
- * called the _specification_ of the task.
+/* Besides the common task fields, each task may have additional parameters that are
+ * required to execute the task on the server.
  */
 
-export type LogDownloadTaskSpec = LogDownloadTaskData & {
-  params: { logId: string };
+export type LogDownloadTaskParams = { logId: string };
+export type UAVTestTaskParams = {
+  component: string;
+  command: 'test' | 'calib';
+  timeout?: number;
+};
+export type RTHPlanTaskParams = CollectiveRTHParameters;
+
+// ---- Task results ----
+
+/* Besides the common task fields, each task may have additional data that is returned
+ * by the server when the task is finished. The task data object extended with
+ * the result of the task that the server provides is called the _result_ of the task.
+ */
+
+export type LogDownloadTaskResult = { hash: string };
+export type UAVTestTaskResult = undefined;
+export type RTHPlanTaskResult = {
+  /** Hash of the transformed show; the show itself lives in the payload store
+   * (`payload-store.ts`). */
+  hash: string;
+  stats: CollectiveRTHPlanStatisticsEntry[];
+  showDuration: number;
+  firstTime: number;
+  lastTime: number;
 };
 
-export type UAVTestTaskSpec = UAVTestTaskData & {
-  params: {
-    component: string;
-    command: 'test' | 'calib';
-    timeout?: number;
-  };
+// ---- Task spec (data + params, what callers pass to start) ----
+
+/* These types combine the task result with the task parameters such that the parameters
+ * become an additional field of the data object */
+
+type WithParams<TParams, TData> = TData & {
+  params: TParams;
 };
 
-export type RTHPlanTaskSpec = RTHPlanTaskData & {
-  params: CollectiveRTHParameters;
-};
+export type LogDownloadTaskSpec = WithParams<
+  LogDownloadTaskParams,
+  LogDownloadTaskData
+>;
+export type UAVTestTaskSpec = WithParams<UAVTestTaskParams, UAVTestTaskData>;
+export type RTHPlanTaskSpec = WithParams<RTHPlanTaskParams, RTHPlanTaskData>;
 
 export type TaskSpec = LogDownloadTaskSpec | UAVTestTaskSpec | RTHPlanTaskSpec;
 
@@ -101,39 +127,32 @@ export type UAVTaskData = Extract<TaskData, { uavId: string }>;
 /** Union of the task spec types that are tied to a specific UAV. */
 export type UAVTaskSpec = Extract<TaskSpec, { uavId: string }>;
 
-// ---- Task start options ----
+// ---- Task data with result ----
 
-export type StartOptions = {
-  silent?: boolean;
+/* These types combine the task result with the task data such that the result
+ * becomes an additional field of the data object */
+
+type WithResult<TResult, TData> = TData & {
+  result?: TResult;
 };
 
-// -- Task result
+export type LogDownloadTaskDataWithResult = WithResult<
+  LogDownloadTaskResult,
+  LogDownloadTaskData
+>;
+export type UAVTestTaskDataWithResult = WithResult<
+  UAVTestTaskResult,
+  UAVTestTaskData
+>;
+export type RTHPlanTaskDataWithResult = WithResult<
+  RTHPlanTaskResult,
+  RTHPlanTaskData
+>;
 
-/* Besides the common task fields, each task may have additional data that is returned
- * by the server when the task is finished. The task data object extended with
- * the result of the task that the server provides is called the _result_ of the task.
- */
-
-export type LogDownloadTaskResult = LogDownloadTaskData & {
-  result: { hash: string };
-};
-
-export type UAVTestTaskResult = UAVTestTaskData & { result?: undefined };
-
-export type RTHPlanTaskResult = RTHPlanTaskData & {
-  result: {
-    /** Hash of the transformed show; the show itself lives in the payload
-     * store (`payload-store.ts`). */
-    hash: string;
-    stats: CollectiveRTHPlanStatisticsEntry[];
-    showDuration: number;
-    firstTime: number;
-    lastTime: number;
-  };
-};
-
-export type CompleteTaskResult =
-  LogDownloadTaskResult | UAVTestTaskResult | RTHPlanTaskResult;
+type CompleteTaskResult =
+  | LogDownloadTaskDataWithResult
+  | UAVTestTaskDataWithResult
+  | RTHPlanTaskDataWithResult;
 
 /** Result payload of a task, without the identity fields. */
 export type TaskResult = CompleteTaskResult['result'];
@@ -150,27 +169,15 @@ export type TaskStatus = 'running' | 'success' | 'error' | 'suspended';
  * optional error message and a mandatory task status (running, success, error, or
  * suspended). */
 type TaskStateBase = {
+  status: TaskStatus;
   progress?: ProgressInfo;
   error?: string;
 };
 
 export type LogDownloadTaskState = TaskStateBase &
-  LogDownloadTaskData & {
-    status: TaskStatus;
-    result?: { hash: string };
-  };
-
-export type UAVTestTaskState = TaskStateBase &
-  UAVTestTaskData & {
-    status: TaskStatus;
-    result?: never;
-  };
-
-export type RTHPlanTaskState = TaskStateBase &
-  RTHPlanTaskData & {
-    status: TaskStatus;
-    result?: RTHPlanTaskResult['result'];
-  };
+  LogDownloadTaskDataWithResult;
+export type UAVTestTaskState = TaskStateBase & UAVTestTaskDataWithResult;
+export type RTHPlanTaskState = TaskStateBase & RTHPlanTaskDataWithResult;
 
 export type TaskState =
   LogDownloadTaskState | UAVTestTaskState | RTHPlanTaskState;
@@ -180,4 +187,10 @@ export type AggregatedTaskState = {
   numItems: number;
   numSuccess: number;
   numError: number;
+};
+
+// ---- Task start options ----
+
+export type StartOptions = {
+  silent?: boolean;
 };

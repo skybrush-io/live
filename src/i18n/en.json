@@ -208,6 +208,9 @@
       },
       "numPlans": {
         "message": "Collective RTH plans successfully calculated at {{numPlans}} timestamps"
+      },
+      "noPlan": {
+        "message": "No collective RTH plans were calculated yet."
       }
     },
     "title": "Plan collective RTH"
@@ -381,6 +384,7 @@
       "open": "Open",
       "pan": "Pan",
       "redo": "Redo",
+      "reject": "Reject",
       "remove": "Remove",
       "reset": "Reset",
       "retry": "Retry",

@@ -1,5 +1,6 @@
 import { Base64 } from 'js-base64';
 
+import { showError } from '~/features/snackbar/actions';
 import { startTask } from '~/features/tasks';
 import type { CollectiveRTHParameters } from '~/flockwave/types';
 import type { AppThunk } from '~/store/reducers';
@@ -40,6 +41,11 @@ export const addCollectiveRTH =
       )
     );
   };
+
+export const rejectTransformedShow = (): AppThunk => () => {
+  // TODO(ntamas)
+  showError('Not implemented yet.');
+};
 
 export const saveTransformedShow =
   (): AppThunk => async (_dispatch, getState) => {

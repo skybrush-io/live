@@ -1,9 +1,9 @@
 import { createSelector } from '@reduxjs/toolkit';
 
-import type { ProgressInfo } from '~/flockwave/messages';
-import type { CollectiveRTHParameters } from '~/flockwave/types';
 import type { RTHPlanTaskResult, RTHPlanTaskState } from '~/features/tasks';
 import { getTaskState, readTaskPayload } from '~/features/tasks';
+import type { ProgressInfo } from '~/flockwave/messages';
+import type { CollectiveRTHParameters } from '~/flockwave/types';
 import type { AppSelector } from '~/store/reducers';
 import type { CollectiveRTHDialogState } from './slice';
 
@@ -65,7 +65,7 @@ export const selectRTHPlanTaskProgress: AppSelector<ProgressInfo | undefined> =
  * calculation, or `undefined` if there is no such calculation.
  */
 export const selectRTHPlanTaskResult: AppSelector<
-  RTHPlanTaskResult['result'] | undefined
+  RTHPlanTaskResult | undefined
 > = createSelector(selectRTHPlanTask, (task) =>
   task?.status === 'success' ? task.result : undefined
 );
