@@ -140,14 +140,9 @@ export type TaskResult = CompleteTaskResult['result'];
 
 // -- Task status
 
-/* The possible statuses of a task. A task may be running or may have terminated
- * successfully or with an error. */
-export type TaskStatus = 'running' | 'success' | 'error';
-
-/* Some tasks are also suspendable by the server if the server needs action from the
- * user to continue the task. (One example is accelerometer calibration for ArduPilot-based
- * drones. This type extends the regular task status with a 'suspended' option */
-export type SuspendableTaskStatus = TaskStatus | 'suspended';
+/* The possible statuses of a task. A task may be running, suspended, terminated
+ * successfully or terminated with an error. */
+export type TaskStatus = 'running' | 'success' | 'error' | 'suspended';
 
 // -- Task state
 
@@ -167,7 +162,7 @@ export type LogDownloadTaskState = TaskStateBase &
 
 export type UAVTestTaskState = TaskStateBase &
   UAVTestTaskData & {
-    status: SuspendableTaskStatus;
+    status: TaskStatus;
     result?: never;
   };
 
