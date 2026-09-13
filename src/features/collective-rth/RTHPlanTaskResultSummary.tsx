@@ -16,7 +16,7 @@ import type { RootState } from '~/store/reducers';
 import { formatDuration } from '~/utils/formatting';
 
 import {
-  RTHPlanTaskPhase,
+  type RTHPlanTaskPhase,
   selectRTHPlanTaskPhase,
   selectRTHPlanTaskResult,
 } from './selectors';
