@@ -11,23 +11,24 @@ import { addCollectiveRTH } from './actions';
 import CollectiveRTHParametersForm, {
   useCollectiveRTHParametersFormState,
 } from './CollectiveRTHParametersForm';
-import RTHPlanSummary from './RTHPlanSummary';
-import { type RTHPlanTaskPhase, selectRTHPlanTaskPhase } from './selectors';
+import {
+  type CollectiveRTHPlanningPhase,
+  selectCollectiveRTHPlanningPhase,
+} from './selectors';
 
 type Props = {
   addCollectiveRTH: (params?: CollectiveRTHParameters) => void;
-  phase: RTHPlanTaskPhase;
+  phase: CollectiveRTHPlanningPhase;
 };
 
 const CollectiveRTHDialogContent = ({ addCollectiveRTH, phase }: Props) => {
   const parametersFormState = useCollectiveRTHParametersFormState();
   const { t } = useTranslation();
-  const inProgress = phase === 'running';
+  const inProgress = phase === 'planning';
 
   return (
     <DialogContent>
       <Stack gap={1}>
-        <RTHPlanSummary sx={{ mb: 1 }} />
         <CollectiveRTHParametersForm
           disabled={inProgress}
           {...parametersFormState}
@@ -51,7 +52,7 @@ const CollectiveRTHDialogContent = ({ addCollectiveRTH, phase }: Props) => {
 export default connect(
   // mapStateToProps
   (state: RootState) => ({
-    phase: selectRTHPlanTaskPhase(state),
+    phase: selectCollectiveRTHPlanningPhase(state),
   }),
   // mapDispatchToProps
   { addCollectiveRTH }

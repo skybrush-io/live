@@ -12,6 +12,7 @@ const { actions, reducer } = createSlice({
   initialState,
   reducers: {
     clearTasks: () => initialState,
+
     _startTask(state, action: PayloadAction<TaskData>) {
       const key = getTaskKey(action.payload);
       state[key] = { ...action.payload, status: 'running' };

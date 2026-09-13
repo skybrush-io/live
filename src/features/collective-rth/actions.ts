@@ -1,13 +1,13 @@
 import { Base64 } from 'js-base64';
 
-import { showError } from '~/features/snackbar/actions';
+import { loadBase64EncodedShow } from '~/features/show/actions';
 import { startTask } from '~/features/tasks';
 import type { CollectiveRTHParameters } from '~/flockwave/types';
 import type { AppThunk } from '~/store/reducers';
 import { writeBlobToFile } from '~/utils/filesystem';
 
 import { selectCalculatedShowWithRTHPlan, selectParameters } from './selectors';
-import { setParameters } from './slice';
+import { _setParameters, _setWaitingForApproval } from './slice';
 import { areCollectiveRTHParametersValid } from './validation';
 
 export type { CollectiveRTHParameters } from '~/flockwave/types';
@@ -24,14 +24,14 @@ export type { CollectiveRTHParameters } from '~/flockwave/types';
  */
 export const addCollectiveRTH =
   (params?: CollectiveRTHParameters): AppThunk =>
-  (dispatch, getState) => {
+  async (dispatch, getState) => {
     const effectiveParams = params ?? selectParameters(getState());
 
     if (params && areCollectiveRTHParametersValid(params)) {
-      dispatch(setParameters(params));
+      dispatch(_setParameters(params));
     }
 
-    void dispatch(
+    await dispatch(
       startTask(
         {
           type: 'rth-plan',
@@ -40,12 +40,19 @@ export const addCollectiveRTH =
         { silent: true }
       )
     );
+
+    dispatch(_setWaitingForApproval(true));
   };
 
-export const rejectTransformedShow = (): AppThunk => () => {
-  // TODO(ntamas)
-  showError('Not implemented yet.');
+export const approveTransformedShow = (): AppThunk => (dispatch, getState) => {
+  const base64Show = selectCalculatedShowWithRTHPlan(getState());
+  if (base64Show) {
+    dispatch(loadBase64EncodedShow(base64Show));
+  }
+  dispatch(_setWaitingForApproval(false));
 };
+
+export const rejectTransformedShow = () => _setWaitingForApproval(false);
 
 export const saveTransformedShow =
   (): AppThunk => async (_dispatch, getState) => {

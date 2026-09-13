@@ -3,8 +3,7 @@ import type { Theme } from '@mui/material/styles';
 import { createSecondaryAreaStyle, makeStyles } from '@skybrush/app-theme-mui';
 
 import CollectiveRTHDialogActions from './CollectiveRTHDialogActions';
-import RTHPlanProgressIndicator from './RTHPlanProgressIndicator';
-import RTHPlanTaskResultSummary from './RTHPlanTaskResultSummary';
+import RTHPlanSummary from './RTHPlanSummary';
 
 const useStyles = makeStyles((theme: Theme) => ({
   bottomArea: {
@@ -16,9 +15,8 @@ const useStyles = makeStyles((theme: Theme) => ({
 const CollectiveRTHDialogBottomArea = () => {
   const classes = useStyles();
   return (
-    <Stack className={classes.bottomArea} gap={1}>
-      <RTHPlanProgressIndicator sx={{ px: 3 }} />
-      <RTHPlanTaskResultSummary />
+    <Stack className={classes.bottomArea}>
+      <RTHPlanSummary />
       <CollectiveRTHDialogActions />
     </Stack>
   );

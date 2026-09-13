@@ -5,42 +5,43 @@ import DialogActions from '@mui/material/DialogActions';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
-import { loadBase64EncodedShow } from '~/features/show/actions';
 import type { RootState } from '~/store/reducers';
 
-import { rejectTransformedShow, saveTransformedShow } from './actions';
-import type { RTHPlanTaskPhase } from './selectors';
 import {
-  selectCalculatedShowWithRTHPlan,
-  selectRTHPlanTaskPhase,
-} from './selectors';
+  approveTransformedShow,
+  rejectTransformedShow,
+  saveTransformedShow,
+} from './actions';
+import type { CollectiveRTHPlanningPhase } from './selectors';
+import { selectCollectiveRTHPlanningPhase } from './selectors';
 import { closeDialog } from './slice';
 
 type Props = {
-  applyTransformedShow: (show: string) => void;
+  approveTransformedShow: () => void;
   closeDialog: () => void;
-  phase: RTHPlanTaskPhase;
+  phase: CollectiveRTHPlanningPhase;
   rejectTransformedShow: () => void;
   saveTransformedShow: () => void;
-  transformedShow?: string;
 };
 
 const CollectiveRTHDialogActions = ({
-  applyTransformedShow,
+  approveTransformedShow,
   closeDialog,
   phase,
   rejectTransformedShow,
   saveTransformedShow,
-  transformedShow,
 }: Props) => {
   const { t } = useTranslation();
 
   return (
     <DialogActions sx={{ px: 3 }}>
-      <Button disabled={phase === 'running'} onClick={() => closeDialog()}>
+      <Button
+        disabled={phase === 'waitingForApproval'}
+        onClick={() => closeDialog()}
+      >
         {t('general.action.close')}
       </Button>
-      {phase === 'success' && (
+      {phase === 'waitingForApproval' && (
         <>
           <Button
             color='primary'
@@ -52,12 +53,9 @@ const CollectiveRTHDialogActions = ({
           </Button>
           <Button
             color='success'
-            disabled={transformedShow === undefined}
             onClick={() => {
-              if (transformedShow !== undefined) {
-                applyTransformedShow(transformedShow);
-                closeDialog();
-              }
+              approveTransformedShow();
+              closeDialog();
             }}
           >
             <Check />
@@ -65,7 +63,6 @@ const CollectiveRTHDialogActions = ({
           </Button>
           <Button
             color='error'
-            disabled={transformedShow === undefined}
             onClick={() => {
               rejectTransformedShow();
             }}
@@ -82,12 +79,11 @@ const CollectiveRTHDialogActions = ({
 export default connect(
   // mapStateToProps
   (state: RootState) => ({
-    phase: selectRTHPlanTaskPhase(state),
-    transformedShow: selectCalculatedShowWithRTHPlan(state),
+    phase: selectCollectiveRTHPlanningPhase(state),
   }),
   // mapDispatchToProps
   {
-    applyTransformedShow: loadBase64EncodedShow,
+    approveTransformedShow,
     closeDialog,
     rejectTransformedShow,
     saveTransformedShow,

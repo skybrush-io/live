@@ -8,14 +8,14 @@ import type { RootState } from '~/store/reducers';
 
 import CollectiveRTHDialogBottomArea from './CollectiveRTHDialogBottomArea';
 import CollectiveRTHDialogContent from './CollectiveRTHDialogContent';
-import type { RTHPlanTaskPhase } from './selectors';
-import { isDialogOpen, selectRTHPlanTaskPhase } from './selectors';
+import type { CollectiveRTHPlanningPhase } from './selectors';
+import { isDialogOpen, selectCollectiveRTHPlanningPhase } from './selectors';
 import { closeDialog } from './slice';
 
 type Props = {
   closeDialog: () => void;
   open: boolean;
-  phase: RTHPlanTaskPhase;
+  phase: CollectiveRTHPlanningPhase;
 };
 
 const CollectiveRTHDialog = ({ closeDialog, open, phase }: Props) => {
@@ -24,7 +24,7 @@ const CollectiveRTHDialog = ({ closeDialog, open, phase }: Props) => {
   return (
     <DraggableDialog
       fullWidth
-      disableEscapeKeyDown={phase === 'running' || phase === 'success'}
+      disableEscapeKeyDown={phase === 'waitingForApproval'}
       maxWidth='sm'
       onClose={closeDialog}
       open={open}
@@ -54,7 +54,7 @@ export default connect(
   // mapStateToProps
   (state: RootState) => ({
     open: isDialogOpen(state),
-    phase: selectRTHPlanTaskPhase(state),
+    phase: selectCollectiveRTHPlanningPhase(state),
   }),
   // mapDispatchToProps
   { closeDialog }
