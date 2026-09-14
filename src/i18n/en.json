@@ -513,6 +513,10 @@
     "reverseDirection": "Hold <kbd>Shift</kbd> to reverse direction.",
     "selectNextEmptySlot": "Select next empty slot"
   },
+  "mapSafeModeButton": {
+    "disable": "Disable safe mode (allow editing the map)",
+    "enable": "Enable safe mode (prevent accidental edits to the map)"
+  },
   "measurementList": {
     "addDrone": "Add a drone to measure with the + button in the toolbar",
     "copyToClipboard": "Copy to clipboard",
@@ -797,6 +801,9 @@
       "surveyInProgress": "Surveying",
       "unknown": "Unknown status"
     }
+  },
+  "safety": {
+    "mapSafeModeWarning": "The map is in safe mode; disable it to make changes."
   },
   "safetyDialog": {
     "geofence": "Geofence",

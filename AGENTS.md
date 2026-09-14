@@ -24,7 +24,7 @@
 ## React
 
 - Use function components declared with `const Comp = () => {}` pattern
-- Redux-connected components: non-connected version with standard name, connected component with "Connected" prefix
+- Redux-connected components: non-connected version with standard name, connected component as `const ConnectedX = connect(...)(X)` with `export default ConnectedX` at the end of the file (never `export default connect(...)(X)`)
 - Avoid complex UI sections within a component
 
 ## I18n

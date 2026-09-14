@@ -381,6 +381,8 @@ const ShowConfiguratorMap = (props: MapProps): React.JSX.Element => {
         }
       />
       <MapInteractions
+        // Safe mode is not enforced in the show configurator
+        safeMode={false}
         selectedTool={selectedTool}
         getSelectedTransformableFeatures={getSelectedTransformableFeatures}
         updateModifiedFeatures={updateModifiedFeatures}

@@ -23,6 +23,7 @@ import {
   clearGeofencePolygonId,
   setGeofencePolygonId,
 } from '~/features/mission/slice';
+import { guardedMapAction } from '~/features/safety/actions';
 import { updateOutdoorShowSettings } from '~/features/show/actions';
 import { openFlyToTargetDialogWithCoordinate } from '~/features/uav-control/actions';
 import { openUAVDetailsDialog } from '~/features/uavs/details';
@@ -54,19 +55,30 @@ const MapContextMenuContainer = connect(
   // mapDispatchToProps
   {
     addPointToMission: hasMissionEditor ? addNewWaypointMissionItem : null,
-    clearGeofencePolygonId: hasGeofence ? clearGeofencePolygonId : null,
-    cutFeature: hasMapFeatures ? cutFeature : null,
-    editFeature: hasMapFeatures ? showFeatureEditorDialog : null,
+    clearGeofencePolygonId: hasGeofence
+      ? guardedMapAction(clearGeofencePolygonId)
+      : null,
+    cutFeature: hasMapFeatures ? guardedMapAction(cutFeature) : null,
+    editFeature: hasMapFeatures
+      ? guardedMapAction(showFeatureEditorDialog)
+      : null,
     openUAVDetailsDialog,
-    removeFeaturesByIds: hasMapFeatures ? removeFeaturesByIds : null,
-    setGeofencePolygonId: hasGeofence ? setGeofencePolygonId : null,
-    setMapCoordinateSystemOrigin: setFlatEarthCoordinateSystemOrigin,
+    removeFeaturesByIds: hasMapFeatures
+      ? guardedMapAction(removeFeaturesByIds)
+      : null,
+    setGeofencePolygonId: hasGeofence
+      ? guardedMapAction(setGeofencePolygonId)
+      : null,
+    setMapCoordinateSystemOrigin: guardedMapAction(
+      setFlatEarthCoordinateSystemOrigin
+    ),
     setShowCoordinateSystemOrigin: hasShowControl
-      ? (coords) =>
+      ? guardedMapAction((coords) =>
           updateOutdoorShowSettings({ origin: coords, setupMission: true })
+        )
       : null,
     showFlyToTargetDialog: openFlyToTargetDialogWithCoordinate,
-    updateFeatureAttributes,
+    updateFeatureAttributes: guardedMapAction(updateFeatureAttributes),
   },
   null,
   { forwardRef: true }
