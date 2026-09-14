@@ -27,9 +27,9 @@ import {
 } from './builders';
 import type MessageHub from './messages';
 import type {
+  AsyncOperationOptions,
   AsyncResponseHandlerOptions,
   MultiObjectAsyncOperationOptions,
-  ProgressStatus,
 } from './messages';
 import { extractResponseForId } from './parsing';
 import { isSchedule, type Schedule } from './schedule';
@@ -68,7 +68,8 @@ export async function adaptShow(
   hub: MessageHub,
   show: string,
   transformations: ShowAdaptTransformation[],
-  coordinateSystem: OutdoorCoordinateSystemWithOrigin
+  coordinateSystem: OutdoorCoordinateSystemWithOrigin,
+  options: AsyncOperationOptions = {}
 ): Promise<Response_XSHOWADAPT> {
   const response = await hub.sendMessage<Response_XSHOWADAPT>(
     {
@@ -82,9 +83,12 @@ export async function adaptShow(
         },
       },
     },
-    // Use a very long timeout for this message as the transformations
-    // require a lot of computation.
-    { timeout: 600 }
+    {
+      // Use a very long timeout for this message as the transformations
+      // require a lot of computation.
+      timeout: 600,
+      ...options,
+    }
   );
 
   if (response?.body?.type === 'X-SHOW-ADAPT') {
@@ -101,7 +105,7 @@ export async function addCollectiveRTH(
   hub: MessageHub,
   show: string,
   config: CollectiveRTHConfig,
-  { onProgress }: { onProgress?: (status: ProgressStatus) => void } = {}
+  options: AsyncOperationOptions = {}
 ): Promise<CollectiveRTHPlanResult> {
   try {
     const plan = await hub.startAsyncOperation<CollectiveRTHPlanResult>(
@@ -110,7 +114,12 @@ export async function addCollectiveRTH(
         show,
         config,
       },
-      { onProgress, timeout: 3600 }
+      {
+        // Use a very long timeout for this message as the transformations
+        // require a lot of computation.
+        timeout: 600,
+        ...options,
+      }
     );
     validateCollectiveRTHPlanResult(plan);
     return plan;
@@ -594,7 +603,7 @@ export async function uploadFirmware(
     target,
     blob,
   }: { objectId: string; target: string; blob: string },
-  options: { onProgress?: (id: string, status: ProgressStatus) => void }
+  options: MultiObjectAsyncOperationOptions = {}
 ) {
   const command = createFirmwareUploadRequest(objectId, target, blob);
   try {
