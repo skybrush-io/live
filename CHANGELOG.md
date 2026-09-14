@@ -35,6 +35,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added a firmware version check job that compares the versions of the firmware
   components reported by the drones.
 
+- Added a timeline panel that shows the altitude range and the distance range of the
+  swarm as a function of time during the show as well as the expected time to bring
+  the swarm home when the show file contains collective RTH plans.
+
 ### Changed
 
 - The header of the UAVs panel was simplified. The "Sort by mission IDs" button was
