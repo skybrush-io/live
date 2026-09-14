@@ -391,7 +391,7 @@ export const adaptShow =
 
     try {
       const { show, takeoffLengthChange, rthLengthChange } =
-        await messageHub.query.adaptShow(
+        await messageHub.execute.adaptShow(
           base64ShowBlob,
           transformations,
           coordinateSystem

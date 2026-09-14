@@ -4,6 +4,7 @@
  */
 
 import type {
+  CollectiveRTHPlanResult,
   DroneLightsConfiguration,
   DroneShowConfiguration,
   Response_ACKNAK,
@@ -13,7 +14,9 @@ import type {
 } from '@skybrush/flockwave-spec';
 
 import { errorToString } from '~/error-handling';
+import type { OutdoorCoordinateSystemWithOrigin } from '~/features/show/types';
 import type { MissionItemBundle } from '~/model/missions';
+import { toScaledJSONFromLonLat } from '~/utils/geography';
 import type { Coordinate3D } from '~/utils/math';
 import { isBoolean, isRecord } from '~/utils/types';
 
@@ -30,8 +33,18 @@ import type {
 } from './messages';
 import { extractResponseForId } from './parsing';
 import { isSchedule, type Schedule } from './schedule';
-import type { Message, MessageBody } from './types';
-import { validateExtensionName, validateObjectId } from './validation';
+import type {
+  CollectiveRTHConfig,
+  Message,
+  MessageBody,
+  Response_XSHOWADAPT,
+  ShowAdaptTransformation,
+} from './types';
+import {
+  validateCollectiveRTHPlanResult,
+  validateExtensionName,
+  validateObjectId,
+} from './validation';
 
 const getErrorMessageFromBody = (body: unknown, fallback: string): string => {
   if (isRecord(body)) {
@@ -46,6 +59,68 @@ const getErrorMessageFromBody = (body: unknown, fallback: string): string => {
 
   return fallback;
 };
+
+/**
+ * Adapts the given base64-encoded show using the given transformation
+ * definitions and coordinate system.
+ */
+export async function adaptShow(
+  hub: MessageHub,
+  show: string,
+  transformations: ShowAdaptTransformation[],
+  coordinateSystem: OutdoorCoordinateSystemWithOrigin
+): Promise<Response_XSHOWADAPT> {
+  const response = await hub.sendMessage<Response_XSHOWADAPT>(
+    {
+      type: 'X-SHOW-ADAPT',
+      show,
+      transformations,
+      environment: {
+        location: {
+          origin: toScaledJSONFromLonLat(coordinateSystem.origin),
+          orientation: coordinateSystem.orientation,
+        },
+      },
+    },
+    // Use a very long timeout for this message as the transformations
+    // require a lot of computation.
+    { timeout: 600 }
+  );
+
+  if (response?.body?.type === 'X-SHOW-ADAPT') {
+    return response.body;
+  } else {
+    throw new Error(response?.body?.reason ?? 'Unknown error.');
+  }
+}
+
+/**
+ * Adds collective RTH plans to drones using the given configuration.
+ */
+export async function addCollectiveRTH(
+  hub: MessageHub,
+  show: string,
+  config: CollectiveRTHConfig,
+  { onProgress }: { onProgress?: (status: ProgressStatus) => void } = {}
+): Promise<CollectiveRTHPlanResult> {
+  try {
+    const plan = await hub.startAsyncOperation<CollectiveRTHPlanResult>(
+      {
+        type: 'X-SHOW-CRTH-PLAN',
+        show,
+        config,
+      },
+      { onProgress, timeout: 3600 }
+    );
+    validateCollectiveRTHPlanResult(plan);
+    return plan;
+  } catch (error) {
+    const errorString = errorToString(error);
+    throw new Error(`Failed to calculate collective RTH plan: ${errorString}`, {
+      cause: error,
+    });
+  }
+}
 
 /**
  * Asks the server to set a new configuration object for the extension with the
@@ -626,6 +701,8 @@ export async function planMission(
 }
 
 const _operations = {
+  adaptShow,
+  addCollectiveRTH,
   configureExtension,
   createRTKPreset,
   deleteRTKPreset,
