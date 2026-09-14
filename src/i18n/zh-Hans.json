@@ -143,7 +143,7 @@
     },
     "description": "在演出过程中多个时间点预先计算集体返航方案。在紧急情况下，集体返航可在避免碰撞的前提下，以尽可能快的速度将所有无人机带回。",
     "existingInvalidRTHPlan": "未找到有效的集体返航方案。",
-    "existingValidRTHPlan": "已在 {{numPlans}} 个时间点生成有效的集体返航方案。",
+    "existingValidRTHPlan": "已在 {{count}} 个时间点生成有效的集体返航方案。",
     "parameters": {
       "form": {
         "horizontalVelocity": {
@@ -177,42 +177,10 @@
         "message": "最晚返航时间：{{lastTime}}"
       },
       "numPlans": {
-        "message": "已在 {{numPlans}} 个时间点成功计算集体返航方案"
+        "message": "已在 {{count}} 个时间点成功计算集体返航方案"
       }
     },
     "title": "规划集体返航"
-  },
-  "collectiveRTHPanel": {
-    "error": {
-      "invalidPlan": "当前集体返航方案无效。",
-      "missingPlan": "本次飞行表演没有集体返航方案。",
-      "partialPlan": "{{withoutPlans}} 架无人机无返航方案。"
-    },
-    "message": {
-      "noDrones": "当前加载的演出中没有无人机。",
-      "noShowFile": "未加载演出文件"
-    },
-    "infoGrid": {
-      "rth": {
-        "numPlans": "方案数量：",
-        "title": "集体返航"
-      },
-      "showSegment": {
-        "duration": "持续时间：",
-        "end": "结束：",
-        "start": "开始：",
-        "title": "演出片段"
-      }
-    },
-    "rthPlanDetails": {
-      "column": {
-        "duration": "持续时间",
-        "end": "结束",
-        "endShow": "结束（演出）",
-        "start": "开始",
-        "startShow": "开始（演出）"
-      }
-    }
   },
   "coordinateAveragingDialogToolbar": {
     "addNewDrone": "添加新无人机",

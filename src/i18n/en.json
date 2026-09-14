@@ -5,9 +5,11 @@
   "ConnectionStatusMiniList": {
     "noConnections": "This server uses no connections.",
     "summaryItem": {
-      "connected": "+ {{count}} connections not shown",
+      "connected_one": "+ 1 connection not shown",
+      "connected_other": "+ {{count}} connections not shown",
       "connecting": "+ {{count}} connecting and not shown",
-      "disconnected": "+ {{count}} closed connections not shown",
+      "disconnected_one": "+ 1 closed connection not shown",
+      "disconnected_other": "+ {{count}} closed connections not shown",
       "disconnecting": "+ {{count}} disconnecting and not shown"
     },
     "useSecondaryChannel": "Use secondary channel"
@@ -173,7 +175,8 @@
     },
     "description": "Precalculate collective RTH plans at multiple timestamps in the show. In case of emergency, collective RTH brings drones home as quickly as possible without collisions.",
     "existingInvalidRTHPlan": "The show has no valid collective RTH plans",
-    "existingValidRTHPlan": "The show has valid collective RTH plans at {{numPlans}} timestamps",
+    "existingValidRTHPlan_one": "The show has a valid collective RTH plan at one timestamp",
+    "existingValidRTHPlan_other": "The show has valid collective RTH plans at {{count}} timestamps",
     "hints": {
       "addCollectiveRTH": "Calculate RTH plans by clicking on the button above"
     },
@@ -210,42 +213,11 @@
         "message": "Last RTH time: {{lastTime}}"
       },
       "numPlans": {
-        "message": "RTH plans calculated at {{numPlans}} timestamps, waiting for approval"
+        "message_one": "1 RTH plan calculated, waiting for approval",
+        "message_other": "{{count}} RTH plans calculated, waiting for approval"
       }
     },
     "title": "Plan collective RTH"
-  },
-  "collectiveRTHPanel": {
-    "error": {
-      "invalidPlan": "The collective RTH plan is invalid.",
-      "missingPlan": "The show has no collective RTH plans.",
-      "partialPlan": "{{withoutPlans}} drones do not have RTH plans."
-    },
-    "message": {
-      "noDrones": "There are no drones in the loaded show.",
-      "noShowFile": "No show file loaded"
-    },
-    "infoGrid": {
-      "rth": {
-        "numPlans": "Number of plans:",
-        "title": "Collective RTH"
-      },
-      "showSegment": {
-        "duration": "Duration:",
-        "end": "End:",
-        "start": "Start:",
-        "title": "Show segment"
-      }
-    },
-    "rthPlanDetails": {
-      "column": {
-        "duration": "Duration",
-        "end": "End",
-        "endShow": "End (Show)",
-        "start": "Start",
-        "startShow": "Start (Show)"
-      }
-    }
   },
   "consistencyCheck": {
     "mainPanel": {

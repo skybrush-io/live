@@ -123,11 +123,11 @@ const RTHPlanTaskResultSummary = ({
             primary={
               phase === 'waitingForApproval' && pendingPlan
                 ? t('collectiveRTHDialog.summary.numPlans.message', {
-                    numPlans: pendingPlan.stats.length,
+                    count: pendingPlan.stats.length,
                   })
                 : existingPlan?.isValid
                   ? t('collectiveRTHDialog.existingValidRTHPlan', {
-                      numPlans: Object.keys(existingPlan.plans).length,
+                      count: Object.keys(existingPlan.plans).length,
                     })
                   : t('collectiveRTHDialog.existingInvalidRTHPlan')
             }
