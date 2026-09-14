@@ -82,12 +82,6 @@ export const componentRegistry: ComponentRegistry = {
     detachable: true,
     feature: 'beacons',
   },
-  'collective-rth': {
-    component: views.CollectiveRTHPanel,
-    label: 'Collective RTH',
-    detachable: true,
-    feature: 'showControl',
-  },
   'connection-list': {
     // deprecated, kept there for compatibility
     component: views.ConnectionList,

@@ -24,7 +24,6 @@ import { getMissionType } from '~/features/mission/selectors';
 import { areExperimentalFeaturesEnabled } from '~/features/settings/selectors';
 import Antenna from '~/icons/Antenna';
 import ConnectingAirports from '~/icons/ConnectingAirports';
-import HomeCircleOutlined from '~/icons/HomeCircleOutlined';
 import Route from '~/icons/Route';
 import ShapeLine from '~/icons/ShapeLine';
 import type { MissionType } from '~/model/missions';
@@ -152,14 +151,6 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
               icon={<WbSunny />}
               label={t('view.light-control')}
               component={moduleComponent('light-control')}
-            />
-          )}
-          {hasShowControl && experimentalFeaturesEnabled && (
-            <Module
-              id='collectiveRTH'
-              icon={<HomeCircleOutlined />}
-              label={t('view.collective-rth')}
-              component={moduleComponent('collective-rth')}
             />
           )}
           {hasShowControl && experimentalFeaturesEnabled && (

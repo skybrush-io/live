@@ -5,7 +5,6 @@
 
 import BeaconList from './beacons';
 import ClockDisplayList from './clocks';
-import CollectiveRTHPanel from './collective-rth';
 import ConnectionList from './connections';
 import DockList from './docks';
 import FeaturePanel from './features';
@@ -27,7 +26,6 @@ import UAVList from './uavs';
 const views = {
   BeaconList,
   ClockDisplayList,
-  CollectiveRTHPanel,
   ConnectionList,
   DockList,
   FeaturePanel,
