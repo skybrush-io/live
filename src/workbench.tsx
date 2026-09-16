@@ -161,7 +161,7 @@ export const componentRegistry: ComponentRegistry = {
     feature: 'threeDView',
   },
   timeline: {
-    component: views.TimelinePanel,
+    component: views.TimelineView,
     label: 'Timeline',
     detachable: true,
     feature: 'showControl',

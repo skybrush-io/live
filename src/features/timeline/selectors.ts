@@ -21,6 +21,16 @@ import {
 import type { AppSelector } from '~/store/reducers';
 import { EMPTY_ARRAY } from '~/utils/redux';
 
+import type { TimelineChartConfig } from './types';
+
+/**
+ * Returns the current configuration of the timeline chart (the visible
+ * datasets and marker lanes).
+ */
+export const getTimelineChartConfig: AppSelector<TimelineChartConfig> = (
+  state
+) => state.timeline.chart;
+
 /**
  * Returns uniformly sampled timestamps from the range starting from zero up to
  * the end of the show, in seconds, with one timestamp per second.
