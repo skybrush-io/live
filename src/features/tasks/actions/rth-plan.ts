@@ -54,7 +54,7 @@ export const runRTHPlanTask =
     };
 
     try {
-      const response = await messageHub.query.addCollectiveRTH(
+      const response = await messageHub.execute.addCollectiveRTH(
         base64ShowBlob,
         {
           min_distance: params.minDistance,

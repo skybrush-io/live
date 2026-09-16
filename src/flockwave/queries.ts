@@ -4,7 +4,6 @@
  */
 
 import type {
-  CollectiveRTHPlanResult,
   DroneShowConfiguration,
   FirmwareUpdateTarget,
   License,
@@ -36,7 +35,6 @@ import memoize from 'memoizee';
 
 import { errorToString } from '~/error-handling';
 import type { BeaconPropertiesMap } from '~/features/beacons/types';
-import type { OutdoorCoordinateSystemWithOrigin } from '~/features/show/types';
 import {
   type FlightLog,
   type FlightLogMetadata,
@@ -51,83 +49,15 @@ import type MessageHub from './messages';
 import type { ProgressStatus } from './messages';
 import { extractResponseForId } from './parsing';
 import type {
-  CollectiveRTHConfig,
   Response_XMSNTYPEINF,
   Response_XMSNTYPELIST,
   Response_XMSNTYPESCHEMA,
-  Response_XSHOWADAPT,
-  ShowAdaptTransformation,
 } from './types';
-import {
-  validateCollectiveRTHPlanResult,
-  validateExtensionName,
-} from './validation';
+import { validateExtensionName } from './validation';
 
 function validateUAVId(uavId: any): asserts uavId is string {
   if (!uavId || typeof uavId !== 'string') {
     throw new Error('Expected non-empty UAV ID');
-  }
-}
-
-/**
- * Adapts the given base64-encoded show using the given transformation
- * definitions and coordinate system.
- */
-export async function adaptShow(
-  hub: MessageHub,
-  show: string,
-  transformations: ShowAdaptTransformation[],
-  coordinateSystem: OutdoorCoordinateSystemWithOrigin
-): Promise<Response_XSHOWADAPT> {
-  const response = await hub.sendMessage<Response_XSHOWADAPT>(
-    {
-      type: 'X-SHOW-ADAPT',
-      show,
-      transformations,
-      environment: {
-        location: {
-          origin: toScaledJSONFromLonLat(coordinateSystem.origin),
-          orientation: coordinateSystem.orientation,
-        },
-      },
-    },
-    // Use a very long timeout for this message as the transformations
-    // require a lot of computation.
-    { timeout: 600 }
-  );
-
-  if (response?.body?.type === 'X-SHOW-ADAPT') {
-    return response.body;
-  } else {
-    throw new Error(response?.body?.reason ?? 'Unknown error.');
-  }
-}
-
-/**
- * Adds collective RTH plans to drones using the given configuration.
- */
-export async function addCollectiveRTH(
-  hub: MessageHub,
-  show: string,
-  config: CollectiveRTHConfig,
-  { onProgress }: { onProgress?: (status: ProgressStatus) => void } = {}
-): Promise<CollectiveRTHPlanResult> {
-  try {
-    const plan = await hub.startAsyncOperation<CollectiveRTHPlanResult>(
-      {
-        type: 'X-SHOW-CRTH-PLAN',
-        show,
-        config,
-      },
-      { onProgress, timeout: 3600 }
-    );
-    validateCollectiveRTHPlanResult(plan);
-    return plan;
-  } catch (error) {
-    const errorString = errorToString(error);
-    throw new Error(`Failed to calculate collective RTH plan: ${errorString}`, {
-      cause: error,
-    });
   }
 }
 
@@ -612,8 +542,6 @@ export async function isExtensionLoaded(
 }
 
 const _queries = {
-  adaptShow,
-  addCollectiveRTH,
   getBasicBeaconProperties,
   getConfigurationOfExtension,
   getFirmwareUpdateObjects,

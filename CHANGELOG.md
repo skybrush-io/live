@@ -5,7 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## [main]
+
+### Fixed
+
+- Skybrush Live now requires server version 2.53.1 or later to reveal the show
+  suspension and collective RTH buttons due to a protocol change in server version 2.53.
+
+- Fixed the layout of the parameter comparison result panel.
+
+- Fixed a bug where the Timeline panel did not keep its state when it was detached
+  from the main window or hidden in a tabbed section of the workbench.
+
+## [2.14.1] - 2026-09-14
+
+### Fixed
+
+- Fixed CommonJS vs ESM module import issues in certain Electron environments.
+
+## [2.14.0] - 2026-09-14
 
 ### Added
 
