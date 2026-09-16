@@ -17,6 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed a bug where the Timeline panel did not keep its state when it was detached
   from the main window or hidden in a tabbed section of the workbench.
 
+- Fixed a visual glitch in the fade-and-slide UI transitions.
+
 ## [2.14.1] - 2026-09-14
 
 ### Fixed
