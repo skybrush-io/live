@@ -1,4 +1,3 @@
-/* eslint-disable unicorn/no-negated-condition */
 import Clear from '@mui/icons-material/Clear';
 import CloudDownload from '@mui/icons-material/CloudDownload';
 import Refresh from '@mui/icons-material/Refresh';
@@ -7,16 +6,15 @@ import LinearProgress from '@mui/material/LinearProgress';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import isNil from 'lodash-es/isNil';
-import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
+import type { Status } from '@skybrush/app-theme-mui';
 import { StatusLight } from '@skybrush/mui-components';
 
 import Colors from '~/components/colors';
 import FileButton from '~/components/FileButton';
 import ListItemTextWithProgress from '~/components/progress/ListItemTextWithProgress';
-import { Status } from '~/components/semantics';
 import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
 import {
   clearLoadedShow,
@@ -32,8 +30,10 @@ import {
   hasShowChangedExternallySinceLoaded,
   isLoadingShowFile,
 } from '~/features/show/selectors';
+import type { ShowValidationResult } from '~/features/show/selectors/types';
 import { openLoadShowFromCloudDialog } from '~/features/show/slice';
 import { getSetupStageStatuses } from '~/features/show/stages';
+import type { RootState } from '~/store/reducers';
 import { hasFeature } from '~/utils/configuration';
 import { truncate } from '~/utils/formatting';
 
@@ -41,20 +41,20 @@ import { truncate } from '~/utils/formatting';
  * Helper function to test whether a dropped file is a real file and not a
  * directory.
  */
-const isFile = (item) => item?.size > 0;
+const isFile = (file: File | undefined) => (file ? file.size > 0 : false);
 
 /**
  * List of file extensions that we treat as show files.
  */
 const EXTENSIONS = ['.skyc'];
 
-const isValidationResultAcceptable = (result) =>
+const isValidationResultAcceptable = (result: ShowValidationResult) =>
   result === 'ok' || result === 'loading' || result === 'notLoaded';
 
 /**
  * Returns a human-readable explanation of why the show validation failed.
  */
-const getDescriptionForValidationResult = (validationResult, _t) => {
+const getDescriptionForValidationResult = (validationResult: string) => {
   switch (validationResult) {
     case 'ok':
     case 'loading':
@@ -76,6 +76,21 @@ const getDescriptionForValidationResult = (validationResult, _t) => {
   }
 };
 
+type Props = {
+  changedSinceLoaded: boolean;
+  description?: string;
+  hasLoadedShowFile: boolean;
+  loading: boolean;
+  onClearLoadedShow: () => void;
+  onLoadShowFromCloud: () => void;
+  onReloadShowFile: () => void;
+  onShowFileSelected: (file: File) => void;
+  progress?: number | null;
+  status?: Status;
+  title?: string;
+  validationResult: ShowValidationResult;
+};
+
 /**
  * React component for the button that allows the user to open a show file.
  */
@@ -92,7 +107,7 @@ const LoadShowFromFileButton = ({
   status,
   title,
   validationResult,
-}) => {
+}: Props) => {
   const { t } = useTranslation();
 
   return (
@@ -134,13 +149,13 @@ const LoadShowFromFileButton = ({
             loading
               ? t('show.loading')
               : hasLoadedShowFile
-                ? truncate(title, 60)
+                ? truncate(title ?? '', 60)
                 : t('show.noFileLoaded')
           }
           secondary={
             loading ? (
               <LinearProgress
-                value={progress}
+                value={progress ?? undefined}
                 variant={isNil(progress) ? 'indeterminate' : 'determinate'}
               />
             ) : changedSinceLoaded ? (
@@ -149,7 +164,7 @@ const LoadShowFromFileButton = ({
               </span>
             ) : !isValidationResultAcceptable(validationResult) ? (
               <span style={{ color: Colors.warning }}>
-                {getDescriptionForValidationResult(validationResult, t)}
+                {getDescriptionForValidationResult(validationResult)}
               </span>
             ) : hasLoadedShowFile ? (
               description
@@ -163,23 +178,9 @@ const LoadShowFromFileButton = ({
   );
 };
 
-LoadShowFromFileButton.propTypes = {
-  changedSinceLoaded: PropTypes.bool,
-  description: PropTypes.string,
-  hasLoadedShowFile: PropTypes.bool,
-  loading: PropTypes.bool,
-  onClearLoadedShow: PropTypes.func,
-  onLoadShowFromCloud: PropTypes.func,
-  onReloadShowFile: PropTypes.func,
-  onShowFileSelected: PropTypes.func,
-  progress: PropTypes.number,
-  status: PropTypes.oneOf(Object.values(Status)),
-  title: PropTypes.string,
-};
-
 export default connect(
   // mapStateToProps
-  (state) => ({
+  (state: RootState) => ({
     changedSinceLoaded: hasShowChangedExternallySinceLoaded(state),
     description: getShowDescription(state),
     hasLoadedShowFile: hasLoadedShowFile(state),

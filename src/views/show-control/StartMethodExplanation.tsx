@@ -5,7 +5,7 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import PropTypes from 'prop-types';
+import type React from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
@@ -15,14 +15,20 @@ import {
   getShowStartMethod,
   hasScheduledStartTime,
 } from '~/features/show/selectors';
-import { tt } from '~/i18n';
+import { tt, type PreparedI18nKey } from '~/i18n';
+import type { RootState } from '~/store/reducers';
 
-const primaryTextForStartMethod = {
+type Props = {
+  hasScheduledStartTime: boolean;
+  startMethod: StartMethod;
+};
+
+const primaryTextForStartMethod: Record<StartMethod, PreparedI18nKey> = {
   [StartMethod.RC]: tt('show.startMethod.RC'),
   [StartMethod.AUTO]: tt('show.startMethod.AUTO'),
 };
 
-const iconForStartMethod = {
+const iconForStartMethod: Record<StartMethod, React.ReactNode> = {
   [StartMethod.RC]: <SettingsRemote />,
   [StartMethod.AUTO]: <Alarm />,
 };
@@ -31,7 +37,10 @@ const iconForStartMethod = {
  * Component that explains to the user how the drones will start after the
  * authorization has been given.
  */
-const StartMethodExplanation = ({ hasScheduledStartTime, startMethod }) => {
+const StartMethodExplanation = ({
+  hasScheduledStartTime,
+  startMethod,
+}: Props) => {
   const { t } = useTranslation();
 
   return (
@@ -60,14 +69,9 @@ const StartMethodExplanation = ({ hasScheduledStartTime, startMethod }) => {
   );
 };
 
-StartMethodExplanation.propTypes = {
-  hasScheduledStartTime: PropTypes.bool,
-  startMethod: PropTypes.oneOf(Object.values(StartMethod)),
-};
-
 export default connect(
   // mapStateToProps
-  (state) => ({
+  (state: RootState) => ({
     hasScheduledStartTime: hasScheduledStartTime(state),
     startMethod: getShowStartMethod(state),
   }),

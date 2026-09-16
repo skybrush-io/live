@@ -7,7 +7,6 @@ import IconButton from '@mui/material/IconButton';
 import formatDate from 'date-fns/format';
 import 'easymde/dist/easymde.min.css';
 import debounce from 'lodash-es/debounce';
-import PropTypes from 'prop-types';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
@@ -17,6 +16,7 @@ import { makeStyles } from '@skybrush/app-theme-mui';
 
 import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
 import { updateFieldNotes } from '~/features/field-notes/slice';
+import type { RootState } from '~/store/reducers';
 import { writeTextToFile } from '~/utils/filesystem';
 
 const SIMPLE_MDE_OPTIONS = {
@@ -102,13 +102,18 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const FieldNotesPanel = ({ contents, updateFieldNotes }) => {
+type Props = {
+  contents?: string;
+  updateFieldNotes: (value: string) => void;
+};
+
+const FieldNotesPanel = ({ contents, updateFieldNotes }: Props) => {
   const { t } = useTranslation();
   const classes = useStyles();
 
-  const exportNotes = useCallback(async () => {
-    writeTextToFile(
-      contents,
+  const exportNotes = useCallback(() => {
+    void writeTextToFile(
+      contents ?? '',
       `notes_${formatDate(new Date(), 'yyyy-MM-dd_HH-mm-ss')}.md`,
       { title: 'Export notes' }
     );
@@ -138,14 +143,9 @@ const FieldNotesPanel = ({ contents, updateFieldNotes }) => {
   );
 };
 
-FieldNotesPanel.propTypes = {
-  contents: PropTypes.string,
-  updateFieldNotes: PropTypes.func,
-};
-
 export default connect(
   // mapStateToProps
-  (state) => ({
+  (state: RootState) => ({
     contents: state.fieldNotes.contents,
   }),
   // mapDispatchToProps

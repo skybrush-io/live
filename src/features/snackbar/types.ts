@@ -1,4 +1,5 @@
 import { type Action } from '@reduxjs/toolkit';
+import type React from 'react';
 
 /**
  * Enum describing the possible semantics that may be associated to a
@@ -13,6 +14,7 @@ export enum MessageSemantics {
 }
 
 type ToastButton = {
+  endIcon?: React.ReactNode;
   label: string;
   action: Action | (() => void);
 };

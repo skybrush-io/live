@@ -15,12 +15,12 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import { bindActionCreators } from '@reduxjs/toolkit';
-import PropTypes from 'prop-types';
-import { useCallback } from 'react';
+import type React from 'react';
+import { createElement, useCallback } from 'react';
 import { connect } from 'react-redux';
 
 import { makeStyles } from '@skybrush/app-theme-mui';
+import type { UnknownAction } from '@reduxjs/toolkit';
 
 import {
   createSelectionHandlerThunk,
@@ -43,8 +43,10 @@ import {
   suggestedLabelForFeature,
 } from '~/features/map-features/selectors-style-suggestions';
 import { removeFeaturesByIds } from '~/features/map-features/slice';
+import type { FeatureWithProperties } from '~/features/map-features/types';
 import useDropdown from '~/hooks/useDropdown';
 import { FeatureType, getIconOfFeatureType } from '~/model/features';
+import type { AppDispatch, RootState } from '~/store/reducers';
 import { fitCoordinatesIntoMapView } from '~/signals';
 
 const ICON_SIZE = 24;
@@ -72,24 +74,32 @@ const useStyles = makeStyles({
   },
 });
 
+type FeatureListEntryProps = {
+  feature: FeatureWithProperties;
+  onEdit?: () => void;
+  onRemove?: () => void;
+  onSelect?: (event: React.UIEvent) => void;
+  onToggleVisibility?: () => void;
+  selected?: boolean;
+  shouldFill?: boolean;
+  suggestedColor?: string;
+  suggestedLabel?: string;
+};
+
 /**
  * Presentation component for a single entry in the feature list.
- *
- * @param  {Object} props  the properties of the component
- * @return {Object} the React presentation component
  */
-const FeatureListEntryPresentation = (props) => {
-  const {
-    feature,
-    onEdit,
-    onRemove,
-    onSelect,
-    onToggleVisibility,
-    selected,
-    shouldFill,
-    suggestedColor,
-    suggestedLabel,
-  } = props;
+const FeatureListEntryPresentation = ({
+  feature,
+  onEdit,
+  onRemove,
+  onSelect,
+  onToggleVisibility,
+  selected,
+  shouldFill,
+  suggestedColor,
+  suggestedLabel,
+}: FeatureListEntryProps) => {
   const onFocus = useCallback(() => {
     switch (feature.type) {
       case FeatureType.CIRCLE:
@@ -105,7 +115,6 @@ const FeatureListEntryPresentation = (props) => {
   }, [feature.points, feature.type]);
 
   const { label, type, visible } = feature;
-  const IconOfFeatureType = getIconOfFeatureType(type, shouldFill);
 
   const actions = [
     {
@@ -195,7 +204,7 @@ const FeatureListEntryPresentation = (props) => {
         <ListItemIcon
           style={{ color: suggestedColor, minWidth: 0, marginRight: '16px' }}
         >
-          <IconOfFeatureType />
+          {createElement(getIconOfFeatureType(type, Boolean(shouldFill)))}
         </ListItemIcon>
         {label ? (
           <ListItemText
@@ -210,64 +219,54 @@ const FeatureListEntryPresentation = (props) => {
   );
 };
 
-FeatureListEntryPresentation.propTypes = {
-  onEdit: PropTypes.func,
-  onRemove: PropTypes.func,
-  onSelect: PropTypes.func,
-  onToggleVisibility: PropTypes.func,
-  feature: PropTypes.object.isRequired,
-  selected: PropTypes.bool,
-  shouldFill: PropTypes.bool,
-  suggestedColor: PropTypes.string,
-  suggestedLabel: PropTypes.string,
-};
-
 const FeatureListEntry = connect(
   // mapStateToProps
-  (state, { feature }) => ({
+  (state: RootState, { feature }: FeatureListEntryProps) => ({
     selected: getSelectedFeatureIds(state).includes(feature.id),
     shouldFill: shouldFillFeature(state, feature.id),
     suggestedColor: suggestedColorForFeature(state, feature.id),
     suggestedLabel: suggestedLabelForFeature(state, feature.id),
   }),
   // mapDispatchToProps
-  (dispatch, { feature }) => {
+  (dispatch: AppDispatch, { feature }: FeatureListEntryProps) => {
     const selectionHandlerThunk = createSelectionHandlerThunk({
       activateItem: showFeatureEditorDialog,
       getSelection: getSelectedFeatureIds,
-      setSelection: setSelectedFeatureIds,
+      // NOTE: Cast needed as the action factory comes from a JavaScript
+      // module so its return type cannot be inferred precisely enough.
+      setSelection: setSelectedFeatureIds as (value: string[]) => UnknownAction,
       getListItems: getFeatureIds,
     });
 
-    return () => ({
-      ...bindActionCreators(
-        {
-          onEdit: showFeatureEditorDialog.bind(null, feature.id),
-          onSelect: selectionHandlerThunk.bind(null, feature.id),
-          onRemove: removeFeaturesByIds.bind(null, [feature.id]),
-          onToggleVisibility: toggleFeatureVisibility.bind(null, feature.id),
-        },
-        dispatch
-      ),
-    });
+    return {
+      onEdit: () => dispatch(showFeatureEditorDialog(feature.id)),
+      onSelect: (event: React.UIEvent) =>
+        dispatch(selectionHandlerThunk(feature.id, event)),
+      onRemove: () => dispatch(removeFeaturesByIds([feature.id])),
+      onToggleVisibility: () => dispatch(toggleFeatureVisibility(feature.id)),
+    };
   }
 )(FeatureListEntryPresentation);
+
+type FeatureListPresentationProps = {
+  dense?: boolean;
+} & React.RefAttributes<HTMLUListElement>;
 
 /**
  * Presentation component for the entire feature list.
  */
-export const FeatureListPresentation = listOf(
-  (feature) => <FeatureListEntry key={feature.id} feature={feature} />,
-  {
-    backgroundHint: 'No features',
-    dataProvider: 'features',
-    displayName: 'FeatureListPresentation',
-  }
-);
+export const FeatureListPresentation = listOf<
+  FeatureWithProperties,
+  FeatureListPresentationProps
+>((feature) => <FeatureListEntry key={feature.id} feature={feature} />, {
+  backgroundHint: 'No features',
+  dataProvider: 'features',
+  displayName: 'FeatureListPresentation',
+});
 
 export default connect(
   // mapStateToProps
-  (state) => ({
+  (state: RootState) => ({
     features: getFeaturesInOrder(state),
   })
 )(FeatureListPresentation);

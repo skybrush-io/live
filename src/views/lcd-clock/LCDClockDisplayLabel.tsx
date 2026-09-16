@@ -1,11 +1,9 @@
 import isNil from 'lodash-es/isNil';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { useHarmonicIntervalFn, useUpdate } from 'react-use';
 
-import LCDText from './LCDText';
-
 import { getClockById } from '~/features/clocks/selectors';
+import type { Clock } from '~/features/clocks/types';
 import {
   formatTicksOnClock,
   getPreferredUpdateIntervalOfClock,
@@ -14,6 +12,24 @@ import {
   isClockSigned,
 } from '~/features/clocks/utils';
 import { getRoundedClockSkewInMilliseconds } from '~/features/servers/selectors';
+import type { RootState } from '~/store/reducers';
+
+import LCDText, { type LCDTextProps } from './LCDText';
+
+type OwnProps = {
+  clockId?: string;
+  format?: string;
+};
+
+type StateProps = {
+  affectedByClockSkew: boolean;
+  clock?: Clock;
+  clockSkew: number | undefined;
+  signed: boolean;
+  updateInterval: number;
+};
+
+type Props = LCDTextProps & OwnProps & StateProps;
 
 const LCDClockDisplayLabel = ({
   affectedByClockSkew,
@@ -24,16 +40,17 @@ const LCDClockDisplayLabel = ({
   signed,
   updateInterval,
   ...rest
-}) => {
+}: Props) => {
   const { running } = clock || {};
   const timestamp =
     Date.now() + (affectedByClockSkew && !isNil(clockSkew) ? clockSkew : 0);
-  const ticks = clock ? getTickCountOnClockAt(clock, timestamp) : undefined;
-  let formattedTime =
-    ticks === undefined
-      ? '--:--:--'
-      : formatTicksOnClock(ticks, clock, { format });
   const update = useUpdate();
+
+  let formattedTime = '--:--:--';
+  if (clock) {
+    const ticks = getTickCountOnClockAt(clock, timestamp);
+    formattedTime = formatTicksOnClock(ticks, clock, { format });
+  }
 
   if (signed && formattedTime.charAt(0) !== '-') {
     // '!' is the all-off character in the 14-segment display font
@@ -45,20 +62,12 @@ const LCDClockDisplayLabel = ({
   return <LCDText {...rest}>{formattedTime}</LCDText>;
 };
 
-LCDClockDisplayLabel.propTypes = {
-  affectedByClockSkew: PropTypes.bool,
-  clock: PropTypes.object,
-  clockId: PropTypes.string,
-  clockSkew: PropTypes.number,
-  format: PropTypes.string,
-  signed: PropTypes.bool,
-  updateInterval: PropTypes.number,
-};
-
 export default connect(
   // mapStateToProps
-  (state, ownProps) => {
-    const clock = getClockById(state, ownProps.clockId);
+  (state: RootState, ownProps: OwnProps): StateProps => {
+    const clock = ownProps.clockId
+      ? getClockById(state, ownProps.clockId)
+      : undefined;
     const signed = isClockSigned(clock);
     const affectedByClockSkew = isClockAffectedByClockSkew(clock);
     const updateInterval = getPreferredUpdateIntervalOfClock(clock);

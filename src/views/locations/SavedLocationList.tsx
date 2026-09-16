@@ -8,8 +8,7 @@ import IconButton from '@mui/material/IconButton';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
-import PropTypes from 'prop-types';
-import React from 'react';
+import type React from 'react';
 import { Translation } from 'react-i18next';
 import { connect } from 'react-redux';
 
@@ -20,19 +19,26 @@ import {
   editSavedLocation,
 } from '~/features/saved-locations/actions';
 import { getSavedLocationsInOrder } from '~/features/saved-locations/selectors';
+import type { SavedLocation } from '~/features/saved-locations/types';
 import { scrollToMapLocation } from '~/signals';
+import type { AppDispatch, RootState } from '~/store/reducers';
+import type { Identifier } from '~/utils/collections';
+
+type LocationListEntryProps = {
+  location: SavedLocation;
+  onEditItem?: (id: Identifier) => void;
+};
 
 /**
  * Presentation component for a single entry in the location list.
- *
- * @param  {Object} props  the properties of the component
- * @return {Object} the React presentation component
  */
-const LocationListEntry = (props) => {
-  const { location, onEditItem } = props;
+const LocationListEntry = ({
+  location,
+  onEditItem,
+}: LocationListEntryProps) => {
   const { id, name } = location;
 
-  const editLocation = () => onEditItem(id);
+  const editLocation = () => onEditItem?.(id);
   const scrollToLocation = () =>
     scrollToMapLocation(location.center, {
       rotation: location.rotation,
@@ -60,28 +66,24 @@ const LocationListEntry = (props) => {
   );
 };
 
-LocationListEntry.propTypes = {
-  onEditItem: PropTypes.func.isRequired,
-  location: PropTypes.object.isRequired,
+type CreateNewItemEntryProps = {
+  onNewItem?: () => void;
 };
 
 /**
  * Creates the "add new layer" item for the layer list.
- *
- * @param  {Object} props  the props of the list in which this item will be placed
- * @return {React.Node}  the rendered list item
  */
-const createNewItemEntry = (props) => (
+const createNewItemEntry = ({ onNewItem }: CreateNewItemEntryProps) => (
   <ListItem
     key='__addNew__'
     disablePadding
     secondaryAction={
-      <IconButton edge='end' size='large' onClick={props.onNewItem}>
+      <IconButton edge='end' size='large' onClick={onNewItem}>
         <Add />
       </IconButton>
     }
   >
-    <ListItemButton onClick={props.onNewItem}>
+    <ListItemButton onClick={onNewItem}>
       <Translation>
         {(t) => <ListItemText primary={t('savedLocation.addNew')} />}
       </Translation>
@@ -89,10 +91,19 @@ const createNewItemEntry = (props) => (
   </ListItem>
 );
 
+type LocationListPresentationProps = {
+  dense?: boolean;
+  onEditItem?: (id: Identifier) => void;
+  onNewItem?: () => void;
+} & React.RefAttributes<HTMLUListElement>;
+
 /**
  * Presentation component for the entire location list.
  */
-export const LocationListPresentation = listOf(
+export const LocationListPresentation = listOf<
+  SavedLocation,
+  LocationListPresentationProps
+>(
   (location, props) => (
     <LocationListEntry
       key={location.id}
@@ -110,18 +121,23 @@ export const LocationListPresentation = listOf(
 
 const LocationList = connect(
   // mapStateToProps
-  (state) => ({
+  (state: RootState) => ({
     dense: true,
     savedLocations: getSavedLocationsInOrder(state),
   }),
   // mapDispatchToProps
-  (dispatch) => ({
-    onEditItem(id) {
+  (dispatch: AppDispatch) => ({
+    onEditItem(id: Identifier) {
       dispatch(editSavedLocation(id));
     },
 
     onNewItem() {
-      const action = createNewSavedLocation();
+      // NOTE: Cast justified as the reducer attaches the ID of the newly
+      // created item to the action object, but the automatically inferred
+      // type of the action creator does not include it.
+      const action = createNewSavedLocation() as ReturnType<
+        typeof createNewSavedLocation
+      > & { id?: Identifier };
       dispatch(action);
       if (action.id) {
         dispatch(editSavedLocation(action.id));

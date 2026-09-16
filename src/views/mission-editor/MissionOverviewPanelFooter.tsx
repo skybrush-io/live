@@ -5,9 +5,7 @@ import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import Paper from '@mui/material/Paper';
 import Toolbar from '@mui/material/Toolbar';
-import isEmpty from 'lodash-es/isEmpty';
-import PropTypes from 'prop-types';
-import React from 'react';
+import { cloneElement, type ReactElement } from 'react';
 import { connect } from 'react-redux';
 
 import { makeStyles } from '@skybrush/app-theme-mui';
@@ -31,6 +29,7 @@ import {
   schemaForMissionItemType,
   titleForMissionItemType,
 } from '~/model/missions';
+import type { AppThunk, RootState } from '~/store/reducers';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -46,6 +45,29 @@ const availableMissionItemTypes = [
   MissionItemType.CHANGE_ALTITUDE,
 ];
 
+type Props = {
+  addNewMissionItem: (type: MissionItemType) => void;
+  canMoveDown: boolean;
+  canMoveUp: boolean;
+  onMoveDown: () => void;
+  onMoveUp: () => void;
+  onRemoveSelectedMissionItems: () => void;
+  selectedIds?: string[];
+};
+
+/**
+ * Thunk that adds a new mission item of the given type to the mission and
+ * opens the parameter editor dialog for it if it has any parameters.
+ */
+const addNewMissionItemWithParameterEditor =
+  (type: MissionItemType): AppThunk =>
+  (dispatch) => {
+    const item = dispatch(addNewMissionItem(type));
+    if (Object.keys(schemaForMissionItemType[type].properties).length > 0) {
+      void dispatch(editMissionItemParameters(item.id));
+    }
+  };
+
 const MissionOverviewPanelFooter = ({
   addNewMissionItem,
   canMoveDown,
@@ -54,7 +76,7 @@ const MissionOverviewPanelFooter = ({
   onMoveUp,
   onRemoveSelectedMissionItems,
   selectedIds,
-}) => {
+}: Props) => {
   const classes = useStyles();
   const hasSelection = Array.isArray(selectedIds) && selectedIds.length > 0;
   return (
@@ -71,9 +93,14 @@ const MissionOverviewPanelFooter = ({
             placement='top'
           >
             <IconButton size='small' onClick={() => addNewMissionItem(type)}>
-              {React.cloneElement(iconForMissionItemType[type], {
-                fontSize: 'small',
-              })}
+              {cloneElement(
+                iconForMissionItemType[type] as ReactElement<{
+                  fontSize?: string;
+                }>,
+                {
+                  fontSize: 'small',
+                }
+              )}
             </IconButton>
           </Tooltip>
         ))}
@@ -106,31 +133,16 @@ const MissionOverviewPanelFooter = ({
   );
 };
 
-MissionOverviewPanelFooter.propTypes = {
-  addNewMissionItem: PropTypes.func,
-  canMoveDown: PropTypes.bool,
-  canMoveUp: PropTypes.bool,
-  onMoveDown: PropTypes.func,
-  onMoveUp: PropTypes.func,
-  onRemoveSelectedMissionItems: PropTypes.func,
-  selectedIds: PropTypes.arrayOf(PropTypes.string),
-};
-
 export default connect(
   // mapStateToProps
-  (state) => ({
+  (state: RootState) => ({
     canMoveDown: canMoveSelectedMissionItemsDown(state),
     canMoveUp: canMoveSelectedMissionItemsUp(state),
     selectedIds: getSelectedMissionItemIds(state),
   }),
   // mapDispatchToProps
   {
-    addNewMissionItem: (type) => (dispatch) => {
-      const item = dispatch(addNewMissionItem(type));
-      if (!isEmpty(schemaForMissionItemType[type].properties)) {
-        dispatch(editMissionItemParameters(item.id));
-      }
-    },
+    addNewMissionItem: addNewMissionItemWithParameterEditor,
     onMoveDown: () => moveSelectedMissionItemsByDelta(1),
     onMoveUp: () => moveSelectedMissionItemsByDelta(-1),
     onRemoveSelectedMissionItems: removeSelectedMissionItems,

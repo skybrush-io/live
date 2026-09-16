@@ -8,31 +8,43 @@ import IconButton from '@mui/material/IconButton';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
+import { Status } from '@skybrush/app-theme-mui';
 import { StatusLight, Tooltip } from '@skybrush/mui-components';
 
-import { multiSelectableListOf } from '~/components/helpers/lists';
+import {
+  multiSelectableListOf,
+  type MultiSelectableListProps,
+} from '~/components/helpers/lists';
 import { setSelectedBeaconIds } from '~/features/beacons/actions';
 import {
   getBeaconDisplayName,
   getBeaconsInOrder,
   getSelectedBeaconIds,
 } from '~/features/beacons/selectors';
+import type { Beacon } from '~/features/beacons/types';
+import type { RootState } from '~/store/reducers';
 import { scrollToMapLocation } from '~/signals';
+
+type BeaconListPresentationProps = MultiSelectableListProps & {
+  dense?: boolean;
+};
 
 /**
  * Presentation component for the entire dock list.
  */
-const BeaconListPresentation = multiSelectableListOf(
+const BeaconListPresentation = multiSelectableListOf<
+  Beacon,
+  BeaconListPresentationProps
+>(
   (beacon, props, selected) => {
     const rightIconButton = beacon.position ? (
       <Tooltip content='Show on map'>
         <IconButton
           edge='end'
           size='large'
-          onClick={() => scrollToMapLocation(beacon.position)}
+          onClick={() => scrollToMapLocation(beacon.position!)}
         >
           <Search />
         </IconButton>
@@ -46,7 +58,7 @@ const BeaconListPresentation = multiSelectableListOf(
           className={selected ? 'selected-list-item' : undefined}
           onClick={props.onItemSelected}
         >
-          <StatusLight status={beacon.active ? 'success' : 'error'} />
+          <StatusLight status={beacon.active ? Status.SUCCESS : Status.ERROR} />
           <ListItemText primary={getBeaconDisplayName(beacon)} />
         </ListItemButton>
       </ListItem>
@@ -58,6 +70,16 @@ const BeaconListPresentation = multiSelectableListOf(
   }
 );
 
+type Props = Omit<
+  BeaconListPresentationProps,
+  'value' | 'onChange' | 'onActivate'
+> & {
+  beacons?: Beacon[];
+  onItemActivated?: (id: string) => void;
+  onSelectionChanged?: (ids: string[]) => void;
+  selectedIds?: string[];
+};
+
 /**
  * React component that shows the state of the known beacons in a Skybrush
  * server.
@@ -67,7 +89,7 @@ const BeaconList = ({
   onSelectionChanged,
   selectedIds,
   ...rest
-}) => (
+}: Props) => (
   <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
     <Box sx={{ height: '100%', overflow: 'auto' }}>
       <BeaconListPresentation
@@ -81,15 +103,9 @@ const BeaconList = ({
   </Box>
 );
 
-BeaconList.propTypes = {
-  selectedIds: PropTypes.arrayOf(PropTypes.string).isRequired,
-  onItemActivated: PropTypes.func,
-  onSelectionChanged: PropTypes.func,
-};
-
 export default connect(
   // mapStateToProps
-  (state) => ({
+  (state: RootState) => ({
     beacons: getBeaconsInOrder(state),
     selectedIds: getSelectedBeaconIds(state),
   }),

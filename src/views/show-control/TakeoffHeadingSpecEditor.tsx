@@ -1,11 +1,11 @@
+import NearMe from '@mui/icons-material/NearMe';
 import Box from '@mui/material/Box';
 import FormControl from '@mui/material/FormControl';
 import IconButton from '@mui/material/IconButton';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
-import NearMe from '@mui/icons-material/NearMe';
+import type { SelectChangeEvent } from '@mui/material/Select';
 import Select from '@mui/material/Select';
-import PropTypes from 'prop-types';
 import { useCallback } from 'react';
 import { Translation } from 'react-i18next';
 
@@ -15,18 +15,24 @@ import RotationField from '~/components/RotationField';
 import {
   DEFAULT_TAKEOFF_HEADING,
   TakeoffHeadingMode,
+  type TakeoffHeadingSpecification,
 } from '~/features/show/constants';
 
+type Props = {
+  takeoffHeading?: TakeoffHeadingSpecification;
+  onChange?: (value: TakeoffHeadingSpecification) => void;
+  onSetToAverageHeading?: () => void;
+};
+
 export const TakeoffHeadingSpecEditor = ({
-  takeoffHeading,
+  takeoffHeading = DEFAULT_TAKEOFF_HEADING,
   onChange,
   onSetToAverageHeading,
-}) => {
-  const { type = TakeoffHeadingMode.NONE, value = '0' } =
-    takeoffHeading || DEFAULT_TAKEOFF_HEADING;
+}: Props) => {
+  const { type = TakeoffHeadingMode.NONE, value = '0' } = takeoffHeading;
 
   const onTypeChanged = useCallback(
-    (event) => {
+    (event: SelectChangeEvent<TakeoffHeadingMode>) => {
       const type = event.target.value;
       if (onChange) {
         onChange({ ...takeoffHeading, type });
@@ -36,9 +42,12 @@ export const TakeoffHeadingSpecEditor = ({
   );
 
   const onValueChanged = useCallback(
-    (value) => {
+    (value: number) => {
       if (onChange) {
-        onChange({ ...takeoffHeading, value: String(value) });
+        onChange({
+          ...takeoffHeading,
+          value: String(value),
+        });
       }
     },
     [onChange, takeoffHeading]
@@ -104,13 +113,4 @@ export const TakeoffHeadingSpecEditor = ({
       )}
     </Translation>
   );
-};
-
-TakeoffHeadingSpecEditor.propTypes = {
-  takeoffHeading: PropTypes.shape({
-    mode: PropTypes.oneOf(Object.values(TakeoffHeadingMode)),
-    value: PropTypes.string.isRequired,
-  }),
-  onChange: PropTypes.func,
-  onSetToAverageHeading: PropTypes.func,
 };

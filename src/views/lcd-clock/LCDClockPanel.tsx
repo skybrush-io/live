@@ -1,12 +1,12 @@
 import Box from '@mui/material/Box';
 import clsx from 'clsx';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import { makeStyles } from '@skybrush/app-theme-mui';
 
 import { addClockDisplayAutomatically } from '~/features/lcd-clock/actions';
 import { removeClockDisplay } from '~/features/lcd-clock/slice';
+import type { RootState } from '~/store/reducers';
 
 import LCDClockDisplay from './LCDClockDisplay';
 
@@ -19,16 +19,22 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
+type Props = {
+  addClockDisplay: () => void;
+  ids: string[];
+  removeClockDisplay: (id: string) => void;
+};
+
 /**
  * Panel that shows the status of a clock in the style of a classic
  * 7-segment LCD display.
  */
-const LCDClockPanel = ({ addClockDisplay, ids, removeClockDisplay }) => {
+const LCDClockPanel = ({ addClockDisplay, ids, removeClockDisplay }: Props) => {
   const classes = useStyles();
 
   return (
     <Box className={clsx(classes.root)}>
-      {(ids || []).map((id, index) => (
+      {ids.map((id, index) => (
         <LCDClockDisplay
           key={id}
           id={id}
@@ -41,15 +47,9 @@ const LCDClockPanel = ({ addClockDisplay, ids, removeClockDisplay }) => {
   );
 };
 
-LCDClockPanel.propTypes = {
-  ids: PropTypes.arrayOf(PropTypes.string),
-  addClockDisplay: PropTypes.func,
-  removeClockDisplay: PropTypes.func,
-};
-
 export default connect(
   // mapStateToProps
-  (state) => ({
+  (state: RootState) => ({
     ids: state.lcdClock.order,
   }),
   // mapDispatchToProps

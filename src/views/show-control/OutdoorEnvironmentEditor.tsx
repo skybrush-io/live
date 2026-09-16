@@ -8,9 +8,10 @@ import FormControl from '@mui/material/FormControl';
 import IconButton from '@mui/material/IconButton';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
+import type { SelectChangeEvent } from '@mui/material/Select';
 import Select from '@mui/material/Select';
 import Typography from '@mui/material/Typography';
-import PropTypes from 'prop-types';
+import type React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
@@ -19,7 +20,7 @@ import {
   SmallProgressIndicator,
   Tooltip,
 } from '@skybrush/mui-components';
-import { COORDINATE_SYSTEM_TYPE } from '@skybrush/show-format';
+import type { Environment } from '@skybrush/show-format';
 
 import { Colors } from '~/components/colors';
 import CoordinateSystemFields from '~/components/CoordinateSystemFields';
@@ -38,24 +39,56 @@ import {
   AltitudeReference,
   DEFAULT_TAKEOFF_HEADING,
   TakeoffHeadingMode,
+  type AltitudeReferenceSpecification,
+  type TakeoffHeadingSpecification,
 } from '~/features/show/constants';
 import {
   getEnvironmentFromLoadedShowData,
   getOutdoorShowOrientation,
   getOutdoorShowTakeoffHeadingSpecification,
 } from '~/features/show/selectors';
+import type { OutdoorCoordinateSystem } from '~/features/show/types';
 import { showSuccess } from '~/features/snackbar/actions';
 import {
   getAverageHeadingOfActiveUAVs,
   selectPreTakeoffAltitudeWarningProps,
+  type PreTakeoffAltitudeWarningProps,
 } from '~/features/uavs/selectors';
 import i18n from '~/i18n';
 import AutoFix from '~/icons/AutoFix';
 import { scrollToMapLocation } from '~/signals';
+import type { AppDispatch, AppThunk, RootState } from '~/store/reducers';
 import { formatAltitude, formatDistance } from '~/utils/formatting';
-import { normalizeAngle, toLonLatFromScaledJSON } from '~/utils/geography';
+import {
+  normalizeAngle,
+  toLonLatFromScaledJSON,
+  type LonLat,
+} from '~/utils/geography';
 
 import { TakeoffHeadingSpecEditor } from './TakeoffHeadingSpecEditor';
+
+type Props = {
+  altitudeReference?: AltitudeReferenceSpecification;
+  canEstimateShowCoordinateSystem: boolean;
+  environmentFromLoadedShowData?: Environment;
+  estimatingCoordinateSystem: boolean;
+  preTakeoffAltitudeWarning?: PreTakeoffAltitudeWarningProps;
+  onAltitudeReferenceTypeChanged: (event: SelectChangeEvent) => void;
+  onAltitudeReferenceValueChanged: (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => void;
+  onCopyCoordinateSystemToMap: () => void;
+  onEstimateShowCoordinateSystem: () => void;
+  onOriginChanged: (value: LonLat) => void;
+  onOrientationChanged: (value: string) => void;
+  onSetAltitudeReferenceToAverageAMSL: () => void;
+  onSetCoordinateSystemFromFile: () => void;
+  onSetCoordinateSystemFromMap: () => void;
+  onSetTakeoffHeading: (value: TakeoffHeadingSpecification) => void;
+  onSetTakeoffHeadingToAverageActiveUAVHeading: () => void;
+  showCoordinateSystem: OutdoorCoordinateSystem;
+  takeoffHeading: TakeoffHeadingSpecification;
+};
 
 /**
  * Presentation component for the form that allows the user to edit the
@@ -80,7 +113,7 @@ const OutdoorEnvironmentEditor = ({
   onSetTakeoffHeadingToAverageActiveUAVHeading,
   showCoordinateSystem,
   takeoffHeading,
-}) => {
+}: Props) => {
   const { t } = useTranslation();
   const usingAMSLReference =
     altitudeReference && altitudeReference.type === AltitudeReference.AMSL;
@@ -92,12 +125,13 @@ const OutdoorEnvironmentEditor = ({
       <Box sx={{ display: 'flex', flexDirection: 'row' }}>
         <Box>
           <CoordinateSystemFields
-            type={COORDINATE_SYSTEM_TYPE}
             {...showCoordinateSystem}
+            origin={showCoordinateSystem.origin}
             orientationLabel={t('outdoorEnvironmentEditor.showOrientation')}
             originLabel={t('outdoorEnvironmentEditor.showOrigin')}
             onOriginChanged={onOriginChanged}
             onOrientationChanged={onOrientationChanged}
+            onTypeChanged={undefined}
           />
 
           <Box
@@ -112,7 +146,7 @@ const OutdoorEnvironmentEditor = ({
               Copy coordinate system:
             </Typography>
             <Tooltip
-              disabled={environmentFromLoadedShowData?.location}
+              disabled={Boolean(environmentFromLoadedShowData?.location)}
               content={t('outdoorEnvironmentEditor.fileToShowTooltip')}
             >
               {/* NOTE: Wrapper required to show tooltip on disabled button. */}
@@ -248,45 +282,60 @@ const OutdoorEnvironmentEditor = ({
   );
 };
 
-OutdoorEnvironmentEditor.propTypes = {
-  altitudeReference: PropTypes.shape({
-    type: PropTypes.oneOf(Object.values(AltitudeReference)),
-    value: PropTypes.number,
-  }),
-  canEstimateShowCoordinateSystem: PropTypes.bool,
-  environmentFromLoadedShowData: PropTypes.object,
-  estimatingCoordinateSystem: PropTypes.bool,
-  onAltitudeReferenceTypeChanged: PropTypes.func,
-  onAltitudeReferenceValueChanged: PropTypes.func,
-  onCopyCoordinateSystemToMap: PropTypes.func,
-  onEstimateShowCoordinateSystem: PropTypes.func,
-  onOriginChanged: PropTypes.func,
-  onOrientationChanged: PropTypes.func,
-  onSetAltitudeReferenceToAverageAMSL: PropTypes.func,
-  onSetCoordinateSystemFromFile: PropTypes.func,
-  onSetCoordinateSystemFromMap: PropTypes.func,
-  onSetTakeoffHeading: PropTypes.func,
-  onSetTakeoffHeadingToAverageActiveUAVHeading: PropTypes.func,
-  preTakeoffWarning: PropTypes.shape({
-    averageGroundAMSL: PropTypes.number.isRequired,
-    amslReference: PropTypes.number.isRequired,
-    difference: PropTypes.number.isRequired,
-    sampleCount: PropTypes.number.isRequired,
-    threshold: PropTypes.number.isRequired,
-  }),
-  showCoordinateSystem: PropTypes.shape({
-    orientation: PropTypes.string.isRequired,
-    origin: PropTypes.arrayOf(PropTypes.number),
-  }),
-  takeoffHeading: PropTypes.shape({
-    type: PropTypes.oneOf(Object.values(TakeoffHeadingMode)),
-    value: PropTypes.string.isRequired,
-  }),
-};
+/**
+ * Thunk that sets the takeoff heading specification of the show to the
+ * average heading of the active UAVs.
+ */
+const setTakeoffHeadingToAverageActiveUAVHeading =
+  (): AppThunk => (dispatch, getState) => {
+    const state = getState();
+    const absoluteAngle = getAverageHeadingOfActiveUAVs(state);
+    if (!Number.isFinite(absoluteAngle)) {
+      return;
+    }
+
+    const takeoffHeading: TakeoffHeadingSpecification = {
+      ...DEFAULT_TAKEOFF_HEADING,
+      ...getOutdoorShowTakeoffHeadingSpecification(state),
+    };
+    if (takeoffHeading.type === TakeoffHeadingMode.ABSOLUTE) {
+      takeoffHeading.value = normalizeAngle(absoluteAngle);
+    } else {
+      const showOrientation = getOutdoorShowOrientation(state);
+      takeoffHeading.type = TakeoffHeadingMode.RELATIVE;
+      takeoffHeading.value = normalizeAngle(absoluteAngle - showOrientation);
+    }
+
+    dispatch(
+      updateOutdoorShowSettings({
+        takeoffHeading,
+        setupMission: true,
+      })
+    );
+  };
+
+/**
+ * Shows a notification with a button that navigates to the given location on
+ * the map when clicked.
+ */
+const showNotificationWithNavigationOption =
+  (message: string, location: LonLat) => (_dispatch: AppDispatch) => {
+    showSuccess(message, {
+      buttons: [
+        {
+          label: i18n.t('general.action.navigate'),
+          endIcon: <Navigation />,
+          action: () => scrollToMapLocation(location),
+        },
+      ],
+      timeout: 10000,
+      topic: 'coordinate-system-updated',
+    });
+  };
 
 export default connect(
   // mapStateToProps
-  (state) => ({
+  (state: RootState) => ({
     altitudeReference: state.show.environment.outdoor.altitudeReference,
     canEstimateShowCoordinateSystem:
       canEstimateShowCoordinateSystemFromActiveUAVs(state),
@@ -302,19 +351,22 @@ export default connect(
 
   // mapDispatchToProps
   {
-    onAltitudeReferenceTypeChanged: (event) =>
-      setOutdoorShowAltitudeReferenceType(event.target.value),
-    onAltitudeReferenceValueChanged: (event) =>
-      setOutdoorShowAltitudeReferenceValue(event.target.value),
+    onAltitudeReferenceTypeChanged: (event: SelectChangeEvent) =>
+      setOutdoorShowAltitudeReferenceType(
+        event.target.value as AltitudeReference
+      ),
+    onAltitudeReferenceValueChanged: (
+      event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    ) => setOutdoorShowAltitudeReferenceValue(event.target.value),
     onEstimateShowCoordinateSystem: estimateShowCoordinateSystemFromActiveUAVs,
 
-    onOrientationChanged: (value) =>
+    onOrientationChanged: (value: string) =>
       updateOutdoorShowSettings({
         orientation: value,
         setupMission: true,
       }),
 
-    onOriginChanged: (value) =>
+    onOriginChanged: (value: LonLat) =>
       updateOutdoorShowSettings({
         origin: value,
         setupMission: true,
@@ -323,56 +375,16 @@ export default connect(
     onSetAltitudeReferenceToAverageAMSL:
       setOutdoorShowAltitudeReferenceToAverageAMSL,
 
-    onSetTakeoffHeading: (value) =>
+    onSetTakeoffHeading: (value: TakeoffHeadingSpecification) =>
       updateOutdoorShowSettings({
         takeoffHeading: value,
         setupMission: true,
       }),
 
     onSetTakeoffHeadingToAverageActiveUAVHeading:
-      () => (dispatch, getState) => {
-        const state = getState();
-        const absoluteAngle = getAverageHeadingOfActiveUAVs(state);
-        if (!Number.isFinite(absoluteAngle)) {
-          return;
-        }
+      setTakeoffHeadingToAverageActiveUAVHeading,
 
-        const takeoffHeading = {
-          ...DEFAULT_TAKEOFF_HEADING,
-          ...getOutdoorShowTakeoffHeadingSpecification(state),
-        };
-        if (takeoffHeading?.type === TakeoffHeadingMode.ABSOLUTE) {
-          takeoffHeading.value = normalizeAngle(absoluteAngle);
-        } else {
-          const showOrientation = getOutdoorShowOrientation(state);
-          takeoffHeading.type = TakeoffHeadingMode.RELATIVE;
-          takeoffHeading.value = normalizeAngle(
-            absoluteAngle - showOrientation
-          );
-        }
-
-        dispatch(
-          updateOutdoorShowSettings({
-            takeoffHeading,
-            setupMission: true,
-          })
-        );
-      },
-
-    showNotificationWithNavigationOption:
-      (message, location) => (_dispatch) => {
-        showSuccess(message, {
-          buttons: [
-            {
-              label: i18n.t('general.action.navigate'),
-              endIcon: <Navigation />,
-              action: () => scrollToMapLocation(location),
-            },
-          ],
-          timeout: 10000,
-          topic: 'coordinate-system-updated',
-        });
-      },
+    showNotificationWithNavigationOption,
 
     updateFlatEarthCoordinateSystem,
     updateOutdoorShowSettings,
@@ -402,13 +414,15 @@ export default connect(
     showCoordinateSystem,
 
     onCopyCoordinateSystemToMap: () => {
+      // NOTE: Bang justified as the origin is expected to be set for outdoor
+      // shows when this button is reachable.
       updateFlatEarthCoordinateSystem({
-        position: showCoordinateSystem.origin,
+        position: showCoordinateSystem.origin!,
         angle: showCoordinateSystem.orientation,
       });
       showNotificationWithNavigationOption(
         i18n.t('outdoorEnvironmentEditor.showCoordinateSystemAppliedToMap'),
-        showCoordinateSystem.origin
+        showCoordinateSystem.origin!
       );
     },
 
@@ -426,9 +440,11 @@ export default connect(
     },
 
     onSetCoordinateSystemFromFile: () => {
+      // NOTE: Bang justified as this button is only enabled when the show
+      // data contains a location.
       const { origin: scaledOrigin, orientation } =
-        environmentFromLoadedShowData.location;
-      const origin = toLonLatFromScaledJSON(scaledOrigin);
+        environmentFromLoadedShowData!.location!;
+      const origin = toLonLatFromScaledJSON([scaledOrigin[0], scaledOrigin[1]]);
 
       updateOutdoorShowSettings({ origin, orientation, setupMission: true });
 

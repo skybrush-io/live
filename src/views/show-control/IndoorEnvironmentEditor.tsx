@@ -2,10 +2,11 @@ import Box from '@mui/material/Box';
 import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormGroup from '@mui/material/FormGroup';
-import PropTypes from 'prop-types';
+import type React from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
+import type { Vector3Tuple } from '@skybrush/math';
 import { FormHeader } from '@skybrush/mui-components';
 
 import XYZFields from '~/components/XYZFields';
@@ -15,6 +16,16 @@ import {
 } from '~/features/show/actions';
 import { getRoomCorners, isRoomVisible } from '~/features/show/selectors';
 import { setRoomVisibility } from '~/features/show/slice';
+import type { RootState } from '~/store/reducers';
+
+type Props = {
+  roomVisible: boolean;
+  firstCorner: Vector3Tuple;
+  secondCorner: Vector3Tuple;
+  onRoomVisibilityChanged: React.ChangeEventHandler<HTMLInputElement>;
+  onFirstCornerChanged: (value: Vector3Tuple) => void;
+  onSecondCornerChanged: (value: Vector3Tuple) => void;
+};
 
 /**
  * Presentation component for the form that allows the user to edit the
@@ -27,7 +38,7 @@ const IndoorEnvironmentEditor = ({
   onRoomVisibilityChanged,
   onFirstCornerChanged,
   onSecondCornerChanged,
-}) => {
+}: Props) => {
   const { t } = useTranslation();
 
   return (
@@ -52,18 +63,9 @@ const IndoorEnvironmentEditor = ({
   );
 };
 
-IndoorEnvironmentEditor.propTypes = {
-  roomVisible: PropTypes.bool,
-  firstCorner: PropTypes.arrayOf(PropTypes.number),
-  secondCorner: PropTypes.arrayOf(PropTypes.number),
-  onFirstCornerChanged: PropTypes.func,
-  onSecondCornerChanged: PropTypes.func,
-  onRoomVisibilityChanged: PropTypes.func,
-};
-
 export default connect(
   // mapStateToProps
-  (state) => {
+  (state: RootState) => {
     const corners = getRoomCorners(state);
     return {
       firstCorner: corners[0],
@@ -74,7 +76,8 @@ export default connect(
 
   // mapDispatchToProps
   {
-    onRoomVisibilityChanged: (event) => setRoomVisibility(event.target.checked),
+    onRoomVisibilityChanged: (event: React.ChangeEvent<HTMLInputElement>) =>
+      setRoomVisibility(event.target.checked),
     onFirstCornerChanged: setFirstCornerOfRoom,
     onSecondCornerChanged: setSecondCornerOfRoom,
   }

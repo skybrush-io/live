@@ -27,28 +27,33 @@ import { updateOutdoorShowSettings } from '~/features/show/actions';
 import { openFlyToTargetDialogWithCoordinate } from '~/features/uav-control/actions';
 import { openUAVDetailsDialog } from '~/features/uavs/details';
 import { getSelectedUAVIds } from '~/features/uavs/selectors';
+import type { RootState } from '~/store/reducers';
 import { hasFeature } from '~/utils/configuration';
+import type { LonLat } from '~/utils/geography';
 
 const hasMapFeatures = hasFeature('mapFeatures');
 const hasMissionEditor = hasFeature('missionEditor');
 const hasGeofence = hasFeature('geofence');
 const hasShowControl = hasFeature('showControl');
 
+type MapContextMenuContext = Record<string, unknown>;
+
 const getContextProvider = createSelector(
   getSelectedFeatures,
   getSelectedUAVIds,
   getGeofencePolygonId,
-  (selectedFeatures, selectedUAVIds, geofencePolygonId) => (context) => ({
-    selectedFeatures,
-    selectedUAVIds,
-    geofencePolygonId,
-    ...context,
-  })
+  (selectedFeatures, selectedUAVIds, geofencePolygonId) =>
+    (context: MapContextMenuContext) => ({
+      selectedFeatures,
+      selectedUAVIds,
+      geofencePolygonId,
+      ...context,
+    })
 );
 
 const MapContextMenuContainer = connect(
   // mapStateToProps
-  (state) => ({
+  (state: RootState) => ({
     contextProvider: getContextProvider(state),
   }),
   // mapDispatchToProps
@@ -62,7 +67,7 @@ const MapContextMenuContainer = connect(
     setGeofencePolygonId: hasGeofence ? setGeofencePolygonId : null,
     setMapCoordinateSystemOrigin: setFlatEarthCoordinateSystemOrigin,
     setShowCoordinateSystemOrigin: hasShowControl
-      ? (coords) =>
+      ? (coords: LonLat) =>
           updateOutdoorShowSettings({ origin: coords, setupMission: true })
       : null,
     showFlyToTargetDialog: openFlyToTargetDialogWithCoordinate,

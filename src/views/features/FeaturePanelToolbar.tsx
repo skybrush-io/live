@@ -2,7 +2,6 @@ import FolderOpen from '@mui/icons-material/FolderOpen';
 import Paper from '@mui/material/Paper';
 import Toolbar from '@mui/material/Toolbar';
 import GeoJSON from 'ol/format/GeoJSON';
-import PropTypes from 'prop-types';
 import { batch, connect } from 'react-redux';
 import readShapeFile from 'shpjs';
 
@@ -12,6 +11,7 @@ import FileButton from '~/components/FileButton';
 import { addFeatureWithName } from '~/features/map-features/actions';
 import { showError, showSuccess } from '~/features/snackbar/actions';
 import { createFeaturesFromOpenLayers } from '~/model/openlayers';
+import type { AppDispatch } from '~/store/reducers';
 import { readFileAsArrayBuffer } from '~/utils/files';
 
 const useStyles = makeStyles((theme) => ({
@@ -21,7 +21,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const FeaturePanelToolbar = ({ importShapeFile }) => {
+type Props = {
+  importShapeFile: (file: File) => void | Promise<void>;
+};
+
+const FeaturePanelToolbar = ({ importShapeFile }: Props) => {
   const classes = useStyles();
   return (
     <Paper square className={classes.root} elevation={4}>
@@ -43,18 +47,16 @@ const FeaturePanelToolbar = ({ importShapeFile }) => {
   );
 };
 
-FeaturePanelToolbar.propTypes = {
-  importShapeFile: PropTypes.func,
-};
-
 export default connect(
   // mapStateToProps
   null,
   // mapDispatchToProps
-  (dispatch) => ({
-    async importShapeFile(file) {
+  (dispatch: AppDispatch) => ({
+    async importShapeFile(file: File) {
       try {
-        const data = await readFileAsArrayBuffer(file);
+        // NOTE: Cast justified as the file reader is guaranteed to return an
+        // ArrayBuffer for the 'ArrayBuffer' output type.
+        const data = (await readFileAsArrayBuffer(file)) as ArrayBuffer;
         // Force the result to be an array, even if it's just a single element
         const featureCollections = [await readShapeFile(data)].flat();
         const geoJSON = new GeoJSON({ featureProjection: 'EPSG:3857' });

@@ -8,31 +8,42 @@ import IconButton from '@mui/material/IconButton';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import { Tooltip } from '@skybrush/mui-components';
 
-import { multiSelectableListOf } from '~/components/helpers/lists';
+import {
+  multiSelectableListOf,
+  type MultiSelectableListProps,
+} from '~/components/helpers/lists';
 import { setSelectedDockIds } from '~/features/docks/actions';
 import { openDockDetailsDialog } from '~/features/docks/details';
 import {
   getDocksInOrder,
   getSelectedDockIds,
 } from '~/features/docks/selectors';
+import type { DockState } from '~/features/docks/types';
+import type { RootState } from '~/store/reducers';
 import { scrollToMapLocation } from '~/signals';
+
+type DockListPresentationProps = MultiSelectableListProps & {
+  dense?: boolean;
+};
 
 /**
  * Presentation component for the entire dock list.
  */
-const DockListPresentation = multiSelectableListOf(
+const DockListPresentation = multiSelectableListOf<
+  DockState,
+  DockListPresentationProps
+>(
   (dock, props, selected) => {
     const rightIconButton = dock.position ? (
       <Tooltip content='Show on map'>
         <IconButton
           edge='end'
           size='large'
-          onClick={() => scrollToMapLocation(dock.position)}
+          onClick={() => scrollToMapLocation(dock.position!)}
         >
           <Search />
         </IconButton>
@@ -57,6 +68,16 @@ const DockListPresentation = multiSelectableListOf(
   }
 );
 
+type Props = Omit<
+  DockListPresentationProps,
+  'value' | 'onChange' | 'onActivate'
+> & {
+  docks?: DockState[];
+  onItemActivated?: (id: string) => void;
+  onSelectionChanged?: (ids: string[]) => void;
+  selectedIds?: string[];
+};
+
 /**
  * React component that shows the state of the known docks in a Skybrush
  * server.
@@ -66,7 +87,7 @@ const DockList = ({
   onSelectionChanged,
   selectedIds,
   ...rest
-}) => (
+}: Props) => (
   <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
     <Box sx={{ height: '100%', overflow: 'auto' }}>
       <DockListPresentation
@@ -80,15 +101,9 @@ const DockList = ({
   </Box>
 );
 
-DockList.propTypes = {
-  selectedIds: PropTypes.arrayOf(PropTypes.string).isRequired,
-  onItemActivated: PropTypes.func,
-  onSelectionChanged: PropTypes.func,
-};
-
 export default connect(
   // mapStateToProps
-  (state) => ({
+  (state: RootState) => ({
     docks: getDocksInOrder(state),
     selectedIds: getSelectedDockIds(state),
   }),

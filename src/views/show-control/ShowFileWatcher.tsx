@@ -1,25 +1,25 @@
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import FileWatcher from '~/components/FileWatcher';
 import { getAbsolutePathOfShowFile } from '~/features/show/selectors';
 import { notifyShowFileChangedSinceLoaded } from '~/features/show/slice';
+import type { RootState } from '~/store/reducers';
+
+type Props = {
+  filename?: string | null;
+  onShowFileChangedExternally: () => void;
+};
 
 /**
  * React component that reports if the loaded show file has been modified.
  */
-const ShowFileWatcher = ({ filename, onShowFileChangedExternally }) => (
+const ShowFileWatcher = ({ filename, onShowFileChangedExternally }: Props) => (
   <FileWatcher filename={filename} onChanged={onShowFileChangedExternally} />
 );
 
-ShowFileWatcher.propTypes = {
-  filename: PropTypes.string,
-  onShowFileChangedExternally: PropTypes.func,
-};
-
 export default connect(
   // mapStateToProps
-  (state) => ({
+  (state: RootState) => ({
     filename: getAbsolutePathOfShowFile(state),
   }),
   // mapDispatchToProps

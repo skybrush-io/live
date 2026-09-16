@@ -6,7 +6,6 @@ import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import Paper from '@mui/material/Paper';
 import Toolbar from '@mui/material/Toolbar';
-import PropTypes from 'prop-types';
 import { useCallback } from 'react';
 import { connect } from 'react-redux';
 
@@ -36,6 +35,8 @@ import UAVErrorCode from '~/flockwave/UAVErrorCode';
 import usePopover from '~/hooks/usePopover';
 import Export from '~/icons/Download';
 import Import from '~/icons/Upload';
+import type { MissionIndex } from '~/model/missions';
+import type { RootState } from '~/store/reducers';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -43,6 +44,18 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(0, 1),
   },
 }));
+
+type Props = {
+  canPlan: boolean;
+  canResume: boolean;
+  canUpload: boolean;
+  onClearMission: () => void;
+  onExportMission: () => void;
+  onImportMission: (file: File) => void;
+  onInvokePlanner: (options: { resume?: boolean }) => void;
+  onShowMissionPlannerDialog: () => void;
+  onUploadMissionItems: () => void;
+};
 
 const MissionOverviewPanelHeader = ({
   canPlan,
@@ -54,10 +67,11 @@ const MissionOverviewPanelHeader = ({
   onInvokePlanner,
   onShowMissionPlannerDialog,
   onUploadMissionItems,
-}) => {
+}: Props) => {
   const classes = useStyles();
 
-  const [planPopupAnchor, openPlanPopup, closePlanPopup] = usePopover();
+  const [planPopupAnchor, openPlanPopup, closePlanPopup] =
+    usePopover<HTMLButtonElement>();
 
   const showMissionPlannerDialog = useCallback(() => {
     closePlanPopup();
@@ -146,31 +160,26 @@ const MissionOverviewPanelHeader = ({
   );
 };
 
-MissionOverviewPanelHeader.propTypes = {
-  canPlan: PropTypes.bool,
-  canResume: PropTypes.bool,
-  canUpload: PropTypes.bool,
-  onClearMission: PropTypes.func,
-  onExportMission: PropTypes.func,
-  onImportMission: PropTypes.func,
-  onInvokePlanner: PropTypes.func,
-  onShowMissionPlannerDialog: PropTypes.func,
-  onUploadMissionItems: PropTypes.func,
-};
-
 export default connect(
   // mapStateToProps
-  (state) => ({
-    canPlan: isConnectedToServer(state),
-    canResume: isMissionPartiallyCompleted(state),
-    canUpload: (({ uavIdsParticipatingInMission }) =>
-      isConnectedToServer(state) &&
-      uavIdsParticipatingInMission.some((uavId) =>
-        getUAVById(state, uavId)?.errors?.includes(UAVErrorCode.ON_GROUND)
-      ))({
-      uavIdsParticipatingInMission: getUAVIdsParticipatingInMission(state),
-    }),
-  }),
+  (state: RootState) => {
+    // NOTE: The selector is called without a mission index here; the selector
+    // family handles an undefined index (no mission selected), although its
+    // declared parameter type is narrower than that.
+    const missionIndex = undefined as MissionIndex | undefined;
+    return {
+      canPlan: isConnectedToServer(state),
+      canResume: isMissionPartiallyCompleted(
+        state,
+        missionIndex as MissionIndex
+      ),
+      canUpload:
+        isConnectedToServer(state) &&
+        getUAVIdsParticipatingInMission(state).some((uavId) =>
+          getUAVById(state, uavId)?.errors?.includes(UAVErrorCode.ON_GROUND)
+        ),
+    };
+  },
   // mapDispatchToProps
   {
     onClearMission: clearMission,

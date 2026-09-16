@@ -1,14 +1,18 @@
 import { useCallback, useEffect } from 'react';
 
-/* eslint-disable unicorn/no-lonely-if */
+type Props = {
+  filename?: string | null;
+  onChanged?: () => void;
+  onRemoved?: () => void;
+};
 
 /**
  * Component that receives a filename and a callback as a prop, and calls the
  * callback whenever the given file changes.
  */
-const FileWatcher = ({ filename, onChanged, onRemoved }) => {
+const FileWatcher = ({ filename, onChanged, onRemoved }: Props) => {
   const onChangedOrRemoved = useCallback(
-    (event, _) => {
+    (event: 'update' | 'remove') => {
       if (event === 'update') {
         if (onChanged) {
           onChanged();
@@ -30,7 +34,5 @@ const FileWatcher = ({ filename, onChanged, onRemoved }) => {
 
   return null;
 };
-
-/* eslint-enable unicorn/no-lonely-if */
 
 export default FileWatcher;

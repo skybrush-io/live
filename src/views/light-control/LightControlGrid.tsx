@@ -1,5 +1,5 @@
 import Box from '@mui/material/Box';
-import PropTypes from 'prop-types';
+import type React from 'react';
 import { HexColorInput, HexColorPicker } from 'react-colorful';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
@@ -12,8 +12,23 @@ import {
   setColorAndUpdateServerIfActive,
 } from '~/features/light-control/actions';
 import { getCurrentColorInLightControlPanel } from '~/features/light-control/selectors';
+import type { RootState } from '~/store/reducers';
 
-const LightButton = ({ color, label = '\u00A0', onClick, ...rest }) => (
+type LightButtonProps = Omit<
+  React.ComponentProps<typeof ColoredButton>,
+  'color' | 'onClick' | 'children'
+> & {
+  color: string;
+  label?: string;
+  onClick?: (color: string) => void;
+};
+
+const LightButton = ({
+  color,
+  label = '\u00A0',
+  onClick,
+  ...rest
+}: LightButtonProps) => (
   <ColoredButton
     dense
     color={color}
@@ -23,12 +38,6 @@ const LightButton = ({ color, label = '\u00A0', onClick, ...rest }) => (
     {label}
   </ColoredButton>
 );
-
-LightButton.propTypes = {
-  color: PropTypes.string,
-  label: PropTypes.string,
-  onClick: PropTypes.func,
-};
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -78,11 +87,21 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+type Props = {
+  color: string;
+  onSetColor: (color: string) => void;
+  onSetColorAndActivate: (color: string) => void;
+};
+
 /**
  * Panel that shows the widgets that are needed to control the LED lights on
  * the drone swarm from the GCS before or during a drone show.
  */
-const LightControlGrid = ({ color, onSetColor, onSetColorAndActivate }) => {
+const LightControlGrid = ({
+  color,
+  onSetColor,
+  onSetColorAndActivate,
+}: Props) => {
   const { t } = useTranslation();
   const classes = useStyles();
   return (
@@ -132,15 +151,9 @@ const LightControlGrid = ({ color, onSetColor, onSetColorAndActivate }) => {
   );
 };
 
-LightControlGrid.propTypes = {
-  color: PropTypes.string,
-  onSetColor: PropTypes.func,
-  onSetColorAndActivate: PropTypes.func,
-};
-
 export default connect(
   // mapStateToProps
-  (state) => ({
+  (state: RootState) => ({
     color: getCurrentColorInLightControlPanel(state),
   }),
   // mapDispatchToProps

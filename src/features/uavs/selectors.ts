@@ -67,6 +67,7 @@ export type PreTakeoffAltitudeWarningProps = {
   averageGroundAMSL: number;
   amslReference: number;
   difference: number;
+  sampleCount: number;
   threshold: number;
 };
 
@@ -700,6 +701,7 @@ export const selectPreTakeoffAltitudeWarningProps = createSelector(
           averageGroundAMSL,
           amslReference,
           difference,
+          sampleCount: altitudes.length,
           threshold,
         }
       : undefined;

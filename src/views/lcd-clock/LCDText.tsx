@@ -1,11 +1,15 @@
-import Box from '@mui/material/Box';
+import Box, { type BoxProps } from '@mui/material/Box';
 import Color from 'color';
-import PropTypes from 'prop-types';
+import type React from 'react';
 import { useMemo } from 'react';
+import '~/../assets/css/dseg.css';
 
-require('~/../assets/css/dseg.css');
+type LCDTextVariant = 'default' | '7segment' | '14segment';
 
-const variants = {
+const variants: Record<
+  LCDTextVariant,
+  { allSegmentsChar?: string; fontFamily?: string }
+> = {
   default: {},
 
   '7segment': {
@@ -20,10 +24,25 @@ const variants = {
 };
 
 const offSegmentStyleBase = {
-  position: 'absolute',
+  position: 'absolute' as const,
   left: 0,
   top: 0,
   opacity: 0.2,
+};
+
+export type LCDTextProps = Omit<BoxProps, 'color' | 'height' | 'variant'> & {
+  color?: string;
+  decoration?: 'plain' | 'glow' | 'shadow';
+  height?: number;
+  off?: boolean;
+  offSegments?: boolean;
+  variant?: LCDTextVariant;
+
+  /**
+   * Legacy system prop that used to be supported by MUI Box; it is forwarded
+   * to the DOM element as-is to preserve the previous behavior.
+   */
+  p?: number;
 };
 
 /**
@@ -39,11 +58,18 @@ const LCDText = ({
   variant = 'default',
   sx,
   ...rest
-}) => {
+}: LCDTextProps) => {
   const textStyle = useMemo(() => {
     const fontSize =
       height === undefined ? undefined : Math.floor(height * 0.7);
-    const result = { fontSize, height };
+    const result: {
+      fontSize?: number;
+      height?: number;
+      color?: string;
+      opacity?: number;
+      textShadow?: string;
+      transition?: string;
+    } = { fontSize, height };
 
     if (color !== undefined) {
       result.color = color;
@@ -78,8 +104,8 @@ const LCDText = ({
     return result;
   }, [color, decoration, height, off]);
 
-  const offSegmentStyle = useMemo(() => {
-    const fontSize = Math.floor(height * 0.7);
+  const offSegmentStyle = useMemo<React.CSSProperties>(() => {
+    const fontSize = height === undefined ? 0 : Math.floor(height * 0.7);
     return {
       ...offSegmentStyleBase,
       color: color || 'black',
@@ -88,7 +114,7 @@ const LCDText = ({
     };
   }, [color, height]);
 
-  variant = variant || 'default';
+  const variantProps = variants[variant];
 
   return (
     <Box
@@ -96,28 +122,20 @@ const LCDText = ({
       sx={{
         position: 'relative',
         display: 'inline-block',
-        fontFamily: variants[variant].fontFamily,
+        fontFamily: variantProps.fontFamily,
         ...sx,
       }}
     >
-      {offSegments && variant !== 'default' && (
+      {offSegments && variantProps.allSegmentsChar && (
         <div style={offSegmentStyle}>
-          {children.replace(/[^:. ]/g, variants[variant].allSegmentsChar || '')}
+          {typeof children === 'string'
+            ? children.replace(/[^:. ]/g, variantProps.allSegmentsChar)
+            : children}
         </div>
       )}
       <div style={textStyle}>{children}</div>
     </Box>
   );
-};
-
-LCDText.propTypes = {
-  children: PropTypes.node,
-  color: PropTypes.string,
-  decoration: PropTypes.oneOf(['plain', 'glow', 'shadow']),
-  height: PropTypes.number,
-  off: PropTypes.bool,
-  offSegments: PropTypes.bool,
-  variant: PropTypes.oneOf(['default', '7segment', '14segment']),
 };
 
 export default LCDText;
