@@ -37,6 +37,7 @@ import SavedLocationEditorDialog from './features/saved-locations/SavedLocationE
 import ShowConfiguratorDialog from './features/show-configurator/ShowConfiguratorDialog';
 import Sidebar from './features/sidebar/Sidebar';
 import Notifications from './features/snackbar/Notifications';
+import SwapDronesDialog from './features/uavs/swapping/SwapDronesDialog';
 import UAVDetailsDialog from './features/uavs/UAVDetailsDialog';
 import UploadDialog from './features/upload/UploadDialog';
 import VersionCheckDialog from './features/version-check/VersionCheckDialog';
@@ -189,6 +190,7 @@ const App = ({ onFirstRender }) => (
       <SafetyDialog />
       <SavedLocationEditorDialog />
       <ShowConfiguratorDialog />
+      <SwapDronesDialog />
       <UAVDetailsDialog />
       <UploadDialog />
       <VersionCheckDialog />
