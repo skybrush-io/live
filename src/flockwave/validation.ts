@@ -104,5 +104,15 @@ export function validateCollectiveRTHPlanResult(
     );
   }
 
+  if (
+    'minRTHAltitude' in resp &&
+    resp.minRTHAltitude !== null &&
+    typeof resp.minRTHAltitude !== 'number'
+  ) {
+    throw new TypeError(
+      'Invalid minRTHAltitude response from collective RTH transformation.'
+    );
+  }
+
   resp.stats.forEach(validateCollectiveRTHPlanStatisticsEntry);
 }

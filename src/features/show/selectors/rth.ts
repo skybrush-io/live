@@ -37,6 +37,34 @@ export const selectCollectiveRTHPlanSummary: AppSelector<CollectiveRTHPlanSummar
   );
 
 /**
+ * Returns the minimum (and arrival) altitude of the RTH plan entries of the
+ * currently loaded show that involve horizontal motion, or `undefined` if the
+ * show has no such entries or the plan is partial.
+ */
+export const selectMinRTHAltitude: AppSelector<number | undefined> =
+  createSelector(getDroneSwarmSpecification, (drones) => {
+    let result: number | undefined;
+
+    for (const drone of drones) {
+      const entries = drone.settings.rthPlan?.entries ?? [];
+      if (entries.length === 0) {
+        return undefined;
+      }
+
+      for (const entry of entries) {
+        if (entry.action !== 'land') {
+          result =
+            result === undefined
+              ? entry.target[2]
+              : Math.min(result, entry.target[2]);
+        }
+      }
+    }
+
+    return result;
+  });
+
+/**
  * Returns the timestamps, in ascending order, for which the currently loaded
  * show has collective RTH plans.
  */

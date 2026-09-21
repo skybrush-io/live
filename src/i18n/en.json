@@ -212,6 +212,9 @@
       "lastTime": {
         "message": "Last RTH time: {{lastTime}}"
       },
+      "minRTHAltitude": {
+        "message": "Minimum RTH altitude: {{minRTHAltitude}}"
+      },
       "numPlans": {
         "message_one": "1 RTH plan calculated, waiting for approval",
         "message_other": "{{count}} RTH plans calculated, waiting for approval"
