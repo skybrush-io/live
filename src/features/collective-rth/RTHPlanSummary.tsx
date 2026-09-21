@@ -11,7 +11,6 @@ import ListItemTextWithProgress from '~/components/progress/ListItemTextWithProg
 import {
   type CollectiveRTHPlanSummary,
   selectCollectiveRTHPlanSummary,
-  selectMinRTHAltitude,
 } from '~/features/show/selectors';
 import type { RTHPlanTaskResult } from '~/features/tasks';
 import type { ProgressInfo } from '~/flockwave/messages';
@@ -56,7 +55,6 @@ const RTHStats = ({ firstTime, lastTime, minRTHAltitude }: RTHStatsProps) => {
 type Props = {
   phase: CollectiveRTHPlanningPhase;
   existingPlan?: CollectiveRTHPlanSummary;
-  minRTHAltitude?: number;
   pendingPlan?: RTHPlanTaskResult;
   progress?: ProgressInfo;
 };
@@ -95,7 +93,6 @@ const RTHPlanTaskResultSummary = ({
   phase,
   progress,
   existingPlan,
-  minRTHAltitude,
   pendingPlan,
 }: Props) => {
   const { t } = useTranslation();
@@ -146,7 +143,7 @@ const RTHPlanTaskResultSummary = ({
               ) : phase === 'waitingForApproval' && pendingPlan ? (
                 <RTHStats {...pendingPlan} />
               ) : existingPlan?.isValid ? (
-                <RTHStats {...existingPlan} minRTHAltitude={minRTHAltitude} />
+                <RTHStats {...existingPlan} />
               ) : (
                 t('collectiveRTHDialog.hints.addCollectiveRTH')
               )
@@ -163,7 +160,6 @@ export default connect(
   (state: RootState) => ({
     phase: selectCollectiveRTHPlanningPhase(state),
     existingPlan: selectCollectiveRTHPlanSummary(state),
-    minRTHAltitude: selectMinRTHAltitude(state),
     pendingPlan: selectRTHPlanTaskResult(state),
     progress: selectRTHPlanTaskProgress(state),
   })

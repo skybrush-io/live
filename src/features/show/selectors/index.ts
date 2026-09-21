@@ -4,7 +4,6 @@ export {
   selectCollectiveRTHPlanSummary,
   selectCollectiveRTHPlanTimestamps,
   selectIsCollectiveRTHTriggered,
-  selectMinRTHAltitude,
   selectShowControlSchedule,
   type CollectiveRTHPlanSummary,
   type CollectiveRTHPlanSummaryItem,
