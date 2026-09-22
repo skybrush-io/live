@@ -1,6 +1,5 @@
-import { isObject } from 'lodash-es';
-
 import { type Latitude, type Longitude } from '~/utils/geography';
+import { isRecord } from '~/utils/types';
 
 import { type GPSFixType } from './enums';
 
@@ -21,6 +20,13 @@ export type GPSPosition = {
   agl?: number;
 };
 
+export const NULL_ISLAND = Object.freeze({
+  lat: 0 as Latitude,
+  lon: 0 as Longitude,
+  amsl: 0,
+  ahl: 0,
+});
+
 /**
  * Returns whether the given GPS position is the null island.
  */
@@ -32,7 +38,7 @@ const isNullIsland = (pos: GPSPosition): boolean =>
  */
 export const isGPSPosition = (position: unknown): position is GPSPosition =>
   // prettier-ignore
-  isObject(position)
+  isRecord(position)
   && ( ('lat'  in position) && typeof position.lat  === 'number')
   && ( ('lon'  in position) && typeof position.lon  === 'number')
   && (!('amsl' in position) || typeof position.amsl === 'number')
@@ -72,7 +78,7 @@ export type Heading = {
  */
 export const isHeading = (heading: unknown): heading is Heading =>
   // prettier-ignore
-  isObject(heading)
+  isRecord(heading)
   // `mode` is a valid heading mode
   && ('mode' in heading)
   && typeof heading.mode === 'string'
@@ -107,7 +113,7 @@ export type Altitude = {
  */
 export const isAltitude = (altitude: unknown): altitude is Altitude =>
   // prettier-ignore
-  isObject(altitude)
+  isRecord(altitude)
   // `reference` is a valid altitude reference
   && 'reference' in altitude
   && typeof altitude.reference === 'string'

@@ -1,4 +1,5 @@
 import { type Identifier } from '~/utils/collections';
+import type { LatLonObject } from '~/utils/geography';
 
 /**
  * @example
@@ -24,15 +25,11 @@ export type AveragingResult = {
   extraSamplingTime: number;
   numSamples: number;
   sampling: boolean;
-  mean: {
-    lat: number;
-    lon: number;
+  mean: LatLonObject & {
     amsl: number;
     ahl: number;
   };
-  sqDiff: {
-    lat: number;
-    lon: number;
+  sqDiff: LatLonObject & {
     amsl: number;
     ahl: number;
   };

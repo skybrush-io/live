@@ -1,19 +1,68 @@
+import type { PayloadAction } from '@reduxjs/toolkit';
 import isNil from 'lodash-es/isNil';
 import reject from 'lodash-es/reject';
 import xor from 'lodash-es/xor';
 
-import { setSelection } from '~/features/map/selection';
+import { getSelection } from '~/features/selection/selectors';
+import { setSelection } from '~/features/selection/slice';
 import flock from '~/flock';
 import { isUavId, uavIdToGlobalId } from '~/model/identifiers';
-import { getSelection } from '~/selectors/selection';
+import type { AppThunk } from '~/store/reducers';
+import { setColorOnUAVs, turnOffColorOverrideOnUAVs } from '~/utils/messaging';
 
 import {
   getSelectedUAVIds,
   getUAVIdList,
   getUAVIdsMarkedAsGone,
+  getUAVIdsWithColorOverride,
 } from './selectors';
-import type { AppThunk } from '~/store/reducers';
-import type { PayloadAction } from '@reduxjs/toolkit';
+import { _setLEDColorOverride } from './slice';
+
+/**
+ * Clears any color override related to the given UAV.
+ */
+export const clearUAVColorOverride =
+  (ids: string[]): AppThunk =>
+  (dispatch) => {
+    dispatch(overrideUAVColor(ids, null));
+  };
+
+/**
+ * Clears the color override on all UAVs that are currently being overridden to the given color.
+ */
+export const clearUAVColorOverrideForColor =
+  (color: string): AppThunk =>
+  (dispatch, getState) => {
+    const state = getState();
+    const ids = getUAVIdsWithColorOverride(state, color);
+    if (ids.length > 0) {
+      dispatch(clearUAVColorOverride(ids));
+    }
+  };
+
+/**
+ * Clears all color overrides.
+ */
+export const clearAllUAVColorOverrides =
+  (): AppThunk => (dispatch, getState) => {
+    const state = getState();
+    const ids = Object.keys(state.uavs.lights);
+    dispatch(clearUAVColorOverride(ids));
+  };
+
+/**
+ * Overrides the color of the UAV with the given ID to the given color.
+ */
+export const overrideUAVColor =
+  (ids: string[], color: string | null): AppThunk =>
+  (dispatch) => {
+    if (color) {
+      void setColorOnUAVs(ids, { color });
+    } else {
+      void turnOffColorOverrideOnUAVs(ids, {});
+    }
+    dispatch(_setLEDColorOverride({ ids, color }));
+  };
 
 /**
  * Action factory that returns a thunk that requests the global flock object
@@ -55,10 +104,10 @@ export const requestRemovalOfSelectedUAVs =
  * Action factory that creates an action that sets the set of selected
  * UAV IDs in the map.
  *
- * @param {Array.<string>} ids  the IDs of the selected UAVs. Any UAV
+ * @param ids  the IDs of the selected UAVs. Any UAV
  *        whose ID is not in this set will be deselected, and so will be
  *        any feature that is not an UAV.
- * @return {Object} an appropriately constructed action
+ * @return an appropriately constructed action
  */
 export const setSelectedUAVIds = (ids: string[]): PayloadAction<string[]> =>
   setSelection(
@@ -71,7 +120,7 @@ export const setSelectedUAVIds = (ids: string[]): PayloadAction<string[]> =>
  * Action factory that returns a thunk that toggles the selection of one or more
  * UAV IDs when dispatched.
  *
- * @param {Array.<string>} ids  the IDs of the UAVs to toggle.
+ * @param ids  the IDs of the UAVs to toggle.
  */
 export const toggleUAVIdsInSelection =
   (ids: string[]): AppThunk =>
@@ -95,6 +144,6 @@ export const selectSingleUAVUnlessAmbiguous =
 
     if (Array.isArray(uavIds) && uavIds.length === 1) {
       const otherSelection = reject(getSelection(state), isUavId);
-      dispatch(setSelection([...otherSelection, uavIdToGlobalId(uavIds[0]!)]));
+      dispatch(setSelection([...otherSelection, uavIdToGlobalId(uavIds[0])]));
     }
   };

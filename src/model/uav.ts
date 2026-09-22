@@ -3,21 +3,21 @@
  * an UAV.
  */
 
-import { type RSSI, type UAVStatusInfo } from '@skybrush/flockwave-spec';
+import type { UAVStatusInfo } from '@skybrush/flockwave-spec';
 import { Base64 } from 'js-base64';
 import isEqual from 'lodash-es/isEqual';
 import isNil from 'lodash-es/isNil';
 import memoizeOne from 'memoize-one';
 import { shallowEqual } from 'react-redux';
 
-import { type StoredUAV } from '~/features/uavs/types';
-import { type ErrorCode } from '~/flockwave/errors';
-import { type Latitude, type Longitude } from '~/utils/geography';
-import { type Coordinate3D } from '~/utils/math';
+import type { StoredUAV } from '~/features/uavs/types';
+import type UAVErrorCode from '~/flockwave/UAVErrorCode';
+import type { Latitude, Longitude } from '~/utils/geography';
+import type { Coordinate3D } from '~/utils/math';
 
-import { GPSFixType, UAVType } from './enums';
-import { type GPSFix, type GPSPosition } from './geography';
-import { type VelocityNED, type VelocityXYZ } from './velocity';
+import { GPSFixType, type UAVType } from './enums';
+import type { GPSFix, GPSPosition } from './geography';
+import type { VelocityNED, VelocityXYZ } from './velocity';
 
 /**
  * Age constants for a UAV. Used in the Redux store to mark UAVs for which we
@@ -45,22 +45,22 @@ export default class UAV {
   _debug?: string;
   _debugAsByteArray?: Uint8Array;
   _debugString?: string;
-  _errors: ErrorCode[];
+  _errors: UAVErrorCode[];
   _id: string;
-  _mostSevereError: ErrorCode;
+  _mostSevereError: UAVErrorCode;
   _position?: GPSPosition;
   age?: UAVAge;
   battery: UAVBattery;
   gpsFix: GPSFix;
   heading?: number;
   lastUpdated?: number;
-  light: number /* RGB565 */;
+  light: number; /* RGB565 */
   localPosition?: Coordinate3D;
   localVelocity?: VelocityXYZ;
   mode?: string;
   type?: UAVType;
   velocity?: VelocityNED;
-  rssi: RSSI;
+  rssi: number[];
 
   // TODO: This should be unnecessary if we can ensure that no mutation happens
   //       to the output later on, thus the object spread can be avoided.
@@ -169,7 +169,7 @@ export default class UAV {
    * Returns a single error code from the list of error codes sent by the
    * UAV, or undefined if there are no errors.
    */
-  get error(): ErrorCode | undefined {
+  get error(): UAVErrorCode | undefined {
     return this._errors && this._errors.length > 0
       ? this._errors[0]
       : undefined;
@@ -178,7 +178,7 @@ export default class UAV {
   /**
    * Returns the list of error codes sent by the UAV.
    */
-  get errors(): ErrorCode[] {
+  get errors(): UAVErrorCode[] {
     return this._errors;
   }
 
@@ -207,7 +207,7 @@ export default class UAV {
    * Returns the most severe error code from the list of error codes sent by the
    * UAV, or zero if there are no errors.
    */
-  get mostSevereError(): ErrorCode {
+  get mostSevereError(): UAVErrorCode {
     return this._mostSevereError;
   }
 
@@ -245,7 +245,7 @@ export default class UAV {
    * @param status - The status information of this UAV from an UAV-INF message
    * @returns Whether the status information has been updated
    */
-  /* eslint-disable complexity */
+
   handleUAVStatusInfo = (status: UAVStatusInfo): boolean => {
     const {
       timestamp,
@@ -263,7 +263,7 @@ export default class UAV {
       rssi,
     } = status;
 
-    let errorList: ErrorCode[];
+    let errorList: UAVErrorCode[];
     let updated = false;
 
     if (timestamp) {
@@ -378,7 +378,6 @@ export default class UAV {
 
     return updated;
   };
-  /* eslint-enable complexity */
 
   /**
    * Returns a pure JavaScript object representation of the UAV that can be

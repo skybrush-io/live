@@ -4,7 +4,8 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Typography from '@mui/material/Typography';
 import type { Theme } from '@mui/material/styles';
 import clsx from 'clsx';
-import React, { type ReactNode } from 'react';
+import type React from 'react';
+import { type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
@@ -18,7 +19,7 @@ import {
   selectIsShowAdaptInProgress,
   selectShowAdaptError,
 } from './selectors';
-import type { AdaptResult } from './state';
+import type { AdaptResult } from './slice';
 
 const useStyles = makeStyles((theme: Theme) => ({
   centered: {
@@ -37,12 +38,10 @@ const useStyles = makeStyles((theme: Theme) => ({
 
     // TODO: Add a `filter` to the `eslint` rule to ignore these cases globally!
     //       https://typescript-eslint.io/rules/naming-convention/#filter
-    // eslint-disable-next-line @typescript-eslint/naming-convention
     '& > p': {
       fontWeight: theme.typography.fontWeightMedium,
     },
 
-    // eslint-disable-next-line @typescript-eslint/naming-convention
     '& > p:nth-child(odd)': {
       textAlign: 'right',
     },

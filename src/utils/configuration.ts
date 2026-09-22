@@ -2,11 +2,13 @@ import config, { type Config } from 'config';
 import isNil from 'lodash-es/isNil';
 import { type Perspective } from 'perspective';
 
+export type FeatureName = keyof Config['features'];
+
 /**
  * Returns whether the configuration object indicates that the user is allowed
  * to see a particular feature.
  */
-export const hasFeature = (name: keyof Config['features']): boolean =>
+export const hasFeature = (name: FeatureName): boolean =>
   config?.features?.[name] ?? true;
 
 /**

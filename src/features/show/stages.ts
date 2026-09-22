@@ -5,6 +5,26 @@
 
 import isEmpty from 'lodash-es/isEmpty';
 
+import { Status } from '~/components/semantics';
+import {
+  getEmptyMappingSlotIndices,
+  hasActiveGeofencePolygon,
+  hasNonemptyMappingSlot,
+} from '~/features/mission/selectors';
+import { getGeofenceStatus } from '~/features/mission/selectors/geofence';
+import {
+  areAllPreflightChecksTicked,
+  hasManualPreflightChecks,
+} from '~/features/preflight/selectors';
+import { isConnected as isConnectedToServer } from '~/features/servers/selectors';
+import {
+  areAllUAVsInMissionWithoutErrors,
+  getMissingUAVIdsInMapping,
+  selectPreTakeoffAltitudeWarningProps,
+} from '~/features/uavs/selectors';
+import { makeUploadStatusSelectorForMissionMappingByJobType } from '~/features/upload/selectors';
+import type { AppSelector, RootState } from '~/store/reducers';
+
 import { JOB_TYPE } from './constants';
 import {
   areManualPreflightChecksSignedOff,
@@ -26,30 +46,10 @@ import {
   isTakeoffAreaApproved,
 } from './selectors';
 
-import { Status } from '~/components/semantics';
-
-import {
-  getEmptyMappingSlotIndices,
-  hasActiveGeofencePolygon,
-  hasNonemptyMappingSlot,
-} from '~/features/mission/selectors';
-import { getGeofenceStatus } from '~/features/mission/selectors-geofence-extra';
-import {
-  areAllPreflightChecksTicked,
-  hasManualPreflightChecks,
-} from '~/features/preflight/selectors';
-import { isConnected as isConnectedToServer } from '~/features/servers/selectors';
-import {
-  areAllUAVsInMissionWithoutErrors,
-  getMissingUAVIdsInMapping,
-} from '~/features/uavs/selectors';
-import { getLastUploadResultByJobType } from '~/features/upload/selectors';
-import type { AppSelector, RootState } from '~/store/reducers';
-
 type Stage =
   | 'selectShowFile'
   | 'setupEnvironment'
-  | 'showConfigurator'
+  | 'collectiveRTH'
   | 'setupTakeoffArea'
   | 'setupGeofence'
   | 'uploadShow'
@@ -58,11 +58,20 @@ type Stage =
   | 'setupStartTime'
   | 'authorization';
 
+type StageRequirement = Stage | AppSelector<boolean>;
+
 type StageSpecification = {
   evaluate: (state: RootState) => Status | boolean;
-  requires?: Array<Stage | AppSelector<boolean>>;
-  suggests?: Array<Stage | AppSelector<boolean>>;
+  isDone?: (status: Status | undefined) => boolean;
+  requires?: StageRequirement[];
+  suggests?: StageRequirement[];
 };
+
+/**
+ * Selector that returns the status of the show upload job.
+ */
+const getShowUploadStatus =
+  makeUploadStatusSelectorForMissionMappingByJobType(JOB_TYPE);
 
 /**
  * Definitions of the stages that one needs to pass through in order to launch
@@ -94,12 +103,25 @@ const stages: Record<Stage, StageSpecification> = {
   },
 
   setupEnvironment: {
-    evaluate: (state) =>
-      hasLoadedShowFile(state) && (hasShowOrigin(state) || isShowIndoor(state)),
+    evaluate(state) {
+      if (
+        !hasLoadedShowFile(state) ||
+        (!hasShowOrigin(state) && !isShowIndoor(state))
+      ) {
+        return false;
+      }
+
+      return selectPreTakeoffAltitudeWarningProps(state)
+        ? Status.WARNING
+        : Status.SUCCESS;
+    },
     requires: ['selectShowFile'],
+
+    // warning are okey when setupEnvironment is used as a dependency
+    isDone: (status) => isDone(status) || status === Status.WARNING,
   },
 
-  showConfigurator: {
+  collectiveRTH: {
     evaluate: () => Status.OFF, // TODO(ntamas): add logic here!
     requires: ['selectShowFile'],
   },
@@ -127,11 +149,11 @@ const stages: Record<Stage, StageSpecification> = {
 
   uploadShow: {
     evaluate(state) {
-      const result = getLastUploadResultByJobType(state, JOB_TYPE);
+      const result = getShowUploadStatus(state);
       return result === 'error'
         ? Status.ERROR
-        : result === 'cancelled'
-          ? Status.SKIPPED
+        : result === 'partial'
+          ? Status.WARNING
           : result === 'success'
             ? Status.SUCCESS
             : Status.OFF;
@@ -195,7 +217,7 @@ const stages: Record<Stage, StageSpecification> = {
 const stageOrder: Stage[] = [
   'selectShowFile',
   'setupEnvironment',
-  'showConfigurator',
+  'collectiveRTH',
   'setupTakeoffArea',
   'setupGeofence',
   'uploadShow',
@@ -208,8 +230,8 @@ const stageOrder: Stage[] = [
 type SetupStageStatusReport = Record<Stage, Status>;
 
 /**
- * Returns whether the status code is treated as "done" from the point of view
- * of inspecting dependencies between stages.
+ * Returns whether the status code for the given stage is treated as "done" from the
+ * point of view of inspecting dependencies between stages, unless specified otherwise.
  */
 const isDone = (status: Status | undefined): boolean =>
   status === Status.SUCCESS || status === Status.SKIPPED;
@@ -219,11 +241,13 @@ const isDone = (status: Status | undefined): boolean =>
  */
 const allDone = (
   result: Partial<SetupStageStatusReport>,
-  deps: Array<Stage | AppSelector<boolean>> | undefined,
+  deps: StageRequirement[] | undefined,
   state: RootState
 ): boolean =>
   (deps ?? []).every((dep) =>
-    typeof dep === 'function' ? dep(state) : isDone(result[dep])
+    typeof dep === 'function'
+      ? dep(state)
+      : (stages[dep]?.isDone ?? isDone)(result[dep])
   );
 
 /**

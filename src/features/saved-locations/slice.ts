@@ -7,11 +7,7 @@
 
 import config from 'config';
 
-import {
-  type AnyAction,
-  createSlice,
-  type PayloadAction,
-} from '@reduxjs/toolkit';
+import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
 import {
   addItemToFront,
@@ -38,7 +34,10 @@ const { actions, reducer } = createSlice({
       addItemToFront(state, action.payload);
     },
 
-    createNewSavedLocation(state, action: AnyAction) {
+    createNewSavedLocation(
+      state,
+      action: PayloadAction<undefined> & { id?: SavedLocation['id'] }
+    ) {
       // NOTE: The action is used to retrieve the id of the newly created item.
       createNewItemInFrontOf(state, action);
     },
@@ -53,4 +52,4 @@ const { actions, reducer } = createSlice({
   },
 });
 
-export { reducer as default, actions };
+export { actions, reducer as default };

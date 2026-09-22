@@ -1,4 +1,5 @@
 import TextField from '@mui/material/TextField';
+import { FormHeader as Header } from '@skybrush/mui-components';
 import toNumber from 'lodash-es/toNumber';
 import Feature from 'ol/Feature';
 import LineString from 'ol/geom/LineString';
@@ -37,27 +38,28 @@ class UAVTraceLayerSettingsPresentation extends React.Component {
     return (
       <div>
         <TextField
-          style={{ paddingRight: '1em', width: 150 }}
+          sx={{ pr: 2, width: 150 }}
           label='Trail length'
           placeholder='Samples'
           type='number'
           value={trailLength}
+          variant='filled'
           onChange={this._onTrailLengthChanged}
         />
         <TextField
-          style={{ paddingRight: '1em', width: 150 }}
+          sx={{ pr: 2, width: 150 }}
           label='Trail width'
           placeholder='Pixels'
           type='number'
           value={trailWidth}
+          variant='filled'
           onChange={this._onTrailWidthChanged}
         />
-        <div style={{ paddingTop: '0.5em' }}>
-          <SwatchesColorPicker
-            color={trailColor ?? Colors.main}
-            onChangeComplete={this._onColorChanged}
-          />
-        </div>
+        <Header>Trail color</Header>
+        <SwatchesColorPicker
+          color={trailColor ?? Colors.main}
+          onChangeComplete={this._onColorChanged}
+        />
       </div>
     );
   }

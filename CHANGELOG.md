@@ -7,6 +7,209 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [main]
 
+### Fixed
+
+- Skybrush Live now requires server version 2.53.1 or later to reveal the show
+  suspension and collective RTH buttons due to a protocol change in server version 2.53.
+
+- Fixed the layout of the parameter comparison result panel.
+
+- Fixed a bug where the Timeline panel did not keep its state when it was detached
+  from the main window or hidden in a tabbed section of the workbench.
+
+- Fixed a visual glitch in the fade-and-slide UI transitions.
+
+## [2.14.1] - 2026-09-14
+
+### Fixed
+
+- Fixed CommonJS vs ESM module import issues in certain Electron environments.
+
+## [2.14.0] - 2026-09-14
+
+### Added
+
+- Added RTK source preset management to the RTK dialog, allowing users to permanently
+  store their custom RTK presets, without the need for server configuration.
+
+- Added a warning if show ground AMSL differs from average altitudes of drones on ground.
+
+- Added RTH method parameter to the show adaptation dialog box.
+
+- Added selected item count to the Selection groups header widget.
+
+- The tooltips of the UAV status, Selection groups and RTK status header widgets can
+  now be pinned permanently to the workbench as a separate panel.
+
+- Added options to the "Mission info" layer that allow the user to change the color of
+  the takeoff and the landing markers.
+
+- Mission planning, editing, uploading and progress monitoring now support
+  missions with multiple drones. The mission info layer and the mission editor
+  can be filtered by participants.
+
+- Added a parameter consistency check job that verifies that the values of the
+  selected parameters are consistent across the drones. The parameter list is
+  editable by the user.
+
+- Added a firmware version check job that compares the versions of the firmware
+  components reported by the drones.
+
+- Added a timeline panel that shows the altitude range and the distance range of the
+  swarm as a function of time during the show as well as the expected time to bring
+  the swarm home when the show file contains collective RTH plans.
+
+### Changed
+
+- The header of the UAVs panel was simplified. The "Sort by mission IDs" button was
+  removed, and the ID and show ID columns now behave as all other ones in terms of
+  ordering. The only exception is that the one that is selected from these two will
+  become the first column on the left. Nevertheless, the UI automatically switches to
+  sorting the UAV list by show ID when the mapping is being edited to prevent rows from
+  moving around due to other sorting criteria.
+
+- The rangefinder tab on the UAV details panel is hidden, it is not needed for shows.
+
+- Collective RTH plan calculation is enabled when the experimental features are
+  enabled in the settings dialog. When collective RTH plans are enabled, the Show
+  adaptation stage in the Show control panel is replaced with a collective RTH plan
+  button (and the old show adaptation button is moved aside to a smaller button).
+
+- The connections widget in the header now shows at most 10 connections in the tooltip,
+  grouping connections in similar states together if there are more than 10.
+
+- Log download and UAV test progress is now kept and restored even if the dialog box
+  triggering these functions is closed or the user switches between UAVs in the details
+  dialog.
+
+- The compass calibration button in the UAV toolbar now shows progress and aggregate
+  task status with color feedback.
+
+- Multi-UAV operation notifications now report the number of skipped UAVs when
+  some were already running the same operation.
+
+- Switched storing the state of the main window to the window state persistence API
+  provided natively by Electron. This means that Skybrush Live will start with its
+  default position and size after updating to this version, but any newly set window
+  size or position will be remembered properly when exiting and re-opening the app.
+
+### Fixed
+
+- Fixed the automatic launch of the server in the background that was accidentally
+  broken somewhere around 2.13.0.
+
+- Fixed copying text from the Messages panel by disabling the `C` hotkey that was
+  conflicting with the copy operation.
+
+- All pending operations are now cancelled when the client disconnects from the
+  server.
+
+- Drones with error-level codes are no longer considered to be on the ground.
+
+## [2.13.2] - 2026-04-16
+
+### Fixed
+
+- Improved visibility of LED override buttons in the UAV toolbar, especially in
+  light mode.
+
+- LED override buttons now change the icon shape when clicking on them would
+  turn the override _off_.
+
+- Slightly tweaked the logic that decides whether clicking on the LED override
+  button would turn the override on or off to make it more intuitive.
+
+- Fixed a crash in the RTK details dialog when new messages started to appear.
+  This was introduced in 2.13.0 due to the usage of a translation hook in the
+  list item component.
+
+## [2.13.0] - 2026-04-15
+
+### Added
+
+- Support for keeping the original light configuration when adapting the show in
+  the show adaptation dialog.
+
+- Added a new dialog for planning collective RTH trajectories.
+
+- Added a pro control group to the Control panel with show suspend and resume
+  actions.
+
+- It is now possible to set a UAV ID for parameters in the parameter upload
+  dialog. `PARAM=value` or `PARAM,value` can be used to target all UAVs, and
+  `UAV_ID=PARAM=value` or `UAV_ID,PARAM,value` can be used to target a single UAV.
+
+- Added possibility to shift the net show vertically during show adaptation.
+
+- Add takeoff method selection to the show adaptation dialog.
+
+- The sum icon in the UAV status header selects all UAVs when clicked.
+
+- The application remembers per-UAV upload statuses from all previous upload jobs
+  for all upload job types. More details in the
+  [pull request](https://github.com/skybrush-io/live/pull/156).
+
+- The upload dialog has a "Clear history" button that erases the upload history
+  for the current upload job type.
+
+- RTK base station coordinates can now be restored from positions stored during
+  earlier surveys.
+
+- In the upload dialog, if there are no waiting items (the "waiting" counter is
+  zero), clicking the counter will now select all visible UAVs that have no
+  upload status.
+
+- The operator can now define selection groups with the "Selection groups" header
+  widget.
+
+- Added new buttons to the toolbar of the UAVs panel and the UAV details dialog
+  that allow the operator to set the color of the LED on a drone to a specific
+  color.
+
+### Changed
+
+- Smaller headings in the Field Notes panel.
+
+- New notification UI.
+
+- The "successful" and "failed" counters/buttons in the upload dialog simply add
+  the UAVs with the corresponding statuses to the queue. The upload no longer
+  starts automatically.
+
+- Status buttons and counters in the upload dialog show the summary of all previous
+  job executions, using the latest known status for every UAV. Statuses from the
+  earlier uploads use a slightly different style.
+
+- The "Upload show data" button in the control panel displays success status only
+  when the show has been successfully uploaded to all UAVs.
+
+- The "Upload show data" button in the control panel only shows a progress indicator
+  for show upload jobs.
+
+### Fixed
+
+- Fixed UAV changing issues on the Tests panel of the UAV properties dialog.
+
+- Fixed and improved test progress reporting on the Tests panel of the UAV
+  properties dialog.
+
+- Fixed event handling of secondary action buttons on list items.
+
+- Several multi-monitor related issues were resolved. Context menus now appear
+  at the right position, hotkeys are triggered correctly in external windows,
+  and the map resizes properly when shown in a detached panel.
+
+## [2.12.1] - 2025-12-15
+
+### Fixed
+
+- Fixed a bug where drones in the INFO (blue) state were not counted correctly
+  in the status summary widget in the header.
+
+- Fixed the incorrect version number of the application in the sidebar.
+
+## [2.12.0] - 2025-12-11
+
 ### Added
 
 - Added estimated completion time for the upload dialogs.
@@ -17,11 +220,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The show adaptation dialog now allows you to specify the desired duration of
   the transition from takeoff to the first formation of the show.
 
+- The show adaptation dialog now allows you to set light configurations for the
+  recalculated takeoff and landing.
+
 - Upload dialogs can now be restricted to only showing and acting on the global
   drone selection. The feature works in combination with the drone selection
   hotkeys.
 
-- Added a compass calibration operation to the UAVs panel.
+- Added compass calibration operation to the UAVs panel.
 
 - Added a slider to the properties of the UAV layer that can be used to change
   the size of the UAV icons on the layer. Useful when flying larger fleets and
@@ -42,6 +248,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Optimized the calculation of the minimum distance between takeoff and landing
   positions, shaving off several seconds from the time needed to load a show with
   several thousands of drones.
+
+- Drones that are in sleep mode are excluded from the calculation of the
+  minimum and average battery charge, the maximum and minimum altitude, the
+  maximum horizontal and vertical velocity, and the average heading
+  when fitting the orientation of the show to the headings of the drones.
+  See <https://github.com/skybrush-io/live/issues/80> for the reasoning behind
+  these decisions. Thanks to Jacob H on our Discord server for pointing out
+  this issue.
 
 ### Fixed
 

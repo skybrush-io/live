@@ -1,5 +1,5 @@
 import type {
-  ObjectIDs,
+  ObjectID,
   ReceiptID,
   Request_ASYNCCANCEL,
   Request_ASYNCRESUME,
@@ -9,8 +9,6 @@ import type {
   Request_PRMSETMANY,
 } from '@skybrush/flockwave-spec';
 
-import arrify from 'arrify';
-
 /**
  * @file Builder functions for commonly used Flockwave messages.
  *
@@ -19,11 +17,6 @@ import arrify from 'arrify';
  * away behind a function and you will only need to change the function body
  * if the Flockwave protocol changes.
  */
-
-export type MessageBody = {
-  type: string;
-  [k: string]: unknown;
-};
 
 /**
  * Creates an ASYNC-CANCEL (cancellation request) message.
@@ -35,7 +28,7 @@ export function createCancellationRequest(
 ): Request_ASYNCCANCEL {
   return {
     type: 'ASYNC-CANCEL',
-    ids: arrify(receiptIds),
+    ids: Array.isArray(receiptIds) ? receiptIds : [receiptIds],
   };
 }
 
@@ -43,9 +36,9 @@ export function createCancellationRequest(
  * Creates an ASYNC-RESUME (resume request) message.
  *
  *
- * @param  {string|string[]}  receiptIds  ID of the asynchronous operation
+ * @param  receiptIds  ID of the asynchronous operation
  *         receipts that should be resumed
- * @param  {Object}  values  mapping of receipt IDs to the objects that should be
+ * @param  values  mapping of receipt IDs to the objects that should be
  *         posted with the resume request
  */
 export function createResumeRequest(
@@ -54,7 +47,7 @@ export function createResumeRequest(
 ): Request_ASYNCRESUME {
   const result: Request_ASYNCRESUME = {
     type: 'ASYNC-RESUME',
-    ids: arrify(receiptIds),
+    ids: Array.isArray(receiptIds) ? receiptIds : [receiptIds],
   };
 
   if (values !== undefined) {
@@ -81,7 +74,7 @@ export function createResumeRequest(
  * @return the message
  */
 export function createCommandRequest(
-  uavIds: ObjectIDs,
+  uavIds: ObjectID[],
   command: string,
   args?: unknown[],
   kwds?: Record<string, unknown>
@@ -118,7 +111,7 @@ export function createFirmwareUploadRequest(
 ): Request_FWUPLOAD {
   return {
     type: 'FW-UPLOAD',
-    ids: arrify(objectIds),
+    ids: Array.isArray(objectIds) ? objectIds : [objectIds],
     target: String(target),
     blob,
   };
@@ -127,10 +120,10 @@ export function createFirmwareUploadRequest(
 /**
  * Creates a PRM-SET (parameter setting request) message
  *
- * @param  {Object[]}  uavIds  IDs of the UAVs to send the request to
- * @param  {string}    name    the name of the parameter to set
- * @param  {Object}    value   the value of the parameter to set
- * @return {Object}  the message
+ * @param  uavIds  IDs of the UAVs to send the request to
+ * @param  name    the name of the parameter to set
+ * @param  value   the value of the parameter to set
+ * @return the message
  */
 export function createParameterSettingRequest(
   uavIds: string | string[],
@@ -139,7 +132,7 @@ export function createParameterSettingRequest(
 ): Request_PRMSET {
   return {
     type: 'PRM-SET',
-    ids: arrify(uavIds),
+    ids: Array.isArray(uavIds) ? uavIds : [uavIds],
     name: String(name),
     value,
   };
@@ -148,9 +141,9 @@ export function createParameterSettingRequest(
 /**
  * Creates a PRM-SET-MANY (bulk parameter upload request) message
  *
- * @param  {Object[]}  uavIds  IDs of the UAVs to send the request to
- * @param  {Object}    parameters  mapping of parameter names to their values
- * @return {Object}  the message
+ * @param  uavIds  IDs of the UAVs to send the request to
+ * @param  parameters  mapping of parameter names to their values
+ * @return the message
  */
 export function createBulkParameterUploadRequest(
   uavIds: string | string[],
@@ -158,7 +151,7 @@ export function createBulkParameterUploadRequest(
 ): Request_PRMSETMANY {
   return {
     type: 'PRM-SET-MANY',
-    ids: arrify(uavIds),
+    ids: Array.isArray(uavIds) ? uavIds : [uavIds],
     parameters,
   };
 }

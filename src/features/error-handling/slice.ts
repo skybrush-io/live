@@ -52,4 +52,6 @@ const { reducer, actions } = createSlice({
   },
 });
 
-export { reducer as default, actions };
+export const { closeErrorDialog, showErrorMessage } = actions;
+
+export default reducer;

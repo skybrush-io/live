@@ -28,7 +28,7 @@ type Response = {
  *        representing the show file.
  */
 export default async function loadShow(
-  file: string | number[] | Uint8Array | File,
+  file: string | number[] | Uint8Array | Blob,
   options: LoadShowOptions = {}
 ): Promise<Response> {
   const { returnBlob = true } = options;
@@ -36,7 +36,7 @@ export default async function loadShow(
 
   let blob: Uint8Array | undefined;
   if (returnBlob) {
-    if (file instanceof File) {
+    if (file instanceof Blob) {
       blob = new Uint8Array(await file.arrayBuffer());
     } else if (file instanceof Uint8Array) {
       blob = file;

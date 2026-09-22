@@ -1,7 +1,7 @@
 import { createSelector } from '@reduxjs/toolkit';
 
+import { selectionForSubset } from '~/features/selection/selectors';
 import { globalIdToDockId } from '~/model/identifiers';
-import { selectionForSubset } from '~/selectors/selection';
 import type { RootState } from '~/store/reducers';
 import { selectOrdered } from '~/utils/collections';
 

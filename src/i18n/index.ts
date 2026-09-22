@@ -1,6 +1,6 @@
 import config from 'config';
 
-import i18next, { type TOptions, type TFunction } from 'i18next';
+import i18next, { type TFunction, type TOptions } from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
 import { type NestedRecord } from '~/utils/types';
@@ -51,7 +51,7 @@ export const enabledLanguages = availableLanguages.filter(({ code }) =>
 /* Instance */
 
 const i18n = i18next.createInstance();
-i18n.use(initReactI18next).init({
+await i18n.use(initReactI18next).init({
   fallbackLng: config.language.fallback,
   lng: config.language.default,
   resources: Object.fromEntries(
@@ -72,3 +72,25 @@ export const tt =
   (key: string, options?: TOptions): PreparedI18nKey =>
   (t: TFunction) =>
     options ? t(key, options) : t(key);
+
+/**
+ * Prepared lookup of an i18n namespace, resolving to a plain record
+ * with string keys.
+ */
+export type PreparedI18nRecord = (
+  t: TFunction
+) => Readonly<Record<string, string>>;
+
+/**
+ * Same as tt, but for an entire i18n namespace.
+ */
+export const ttRecord =
+  (key: string): PreparedI18nRecord =>
+  (t) => {
+    // Falls back to an empty record when the key does not resolve to an
+    // object; with `returnObjects`, i18next yields the key itself instead.
+    const result: unknown = t(key, { returnObjects: true });
+    return typeof result === 'object' && result !== null
+      ? (result as Record<string, string>)
+      : {};
+  };

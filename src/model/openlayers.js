@@ -8,6 +8,8 @@ import isNil from 'lodash-es/isNil';
 import unary from 'lodash-es/unary';
 import { batch } from 'react-redux';
 
+import { toDegrees } from '@skybrush/math';
+
 import { cloneFeatureById } from '~/features/map-features/actions';
 import { updateFeaturePropertiesByIds } from '~/features/map-features/slice';
 import { updateFlatEarthCoordinateSystem } from '~/features/map/origin';
@@ -20,7 +22,6 @@ import {
   lonLatFromMapViewCoordinate,
   normalizePolygon,
 } from '~/utils/geography';
-import { toDegrees } from '~/utils/math';
 
 import { FeatureType } from './features';
 import {
@@ -31,6 +32,7 @@ import {
   GROSS_CONVEX_HULL_AREA_ID,
   isAreaId,
   isFeatureId,
+  isHomePositionId,
   isMissionItemId,
   isOriginId,
   MAP_ORIGIN_ID,
@@ -66,7 +68,11 @@ export function isFeatureTransformable(object) {
 
   const id = object.getId();
   return (
-    isFeatureId(id) || isAreaId(id) || isOriginId(id) || isMissionItemId(id)
+    isFeatureId(id) ||
+    isAreaId(id) ||
+    isOriginId(id) ||
+    isMissionItemId(id) ||
+    isHomePositionId(id)
   );
 }
 

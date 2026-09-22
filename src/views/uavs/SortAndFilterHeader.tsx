@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import SortAscending from '@mui/icons-material/ArrowDownward';
 import SortDescending from '@mui/icons-material/ArrowUpward';
 import Check from '@mui/icons-material/Check';
@@ -10,7 +9,6 @@ import MenuItem, { type MenuItemProps } from '@mui/material/MenuItem';
 import type { Theme } from '@mui/material/styles';
 import clsx from 'clsx';
 import createColor from 'color';
-import type { TFunction } from 'i18next';
 import {
   bindMenu,
   bindTrigger,
@@ -18,7 +16,7 @@ import {
   type PopupState,
 } from 'material-ui-popup-state/hooks';
 import React, { useCallback, useRef, type SyntheticEvent } from 'react';
-import { withTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import {
@@ -37,8 +35,6 @@ import {
 import {
   getUAVListFilters,
   getUAVListLayout,
-  getUAVListSortPreference,
-  isShowingMissionIds,
 } from '~/features/settings/selectors';
 import {
   UAVListLayout,
@@ -60,6 +56,10 @@ import type { RootState } from '~/store/reducers';
 import type { Nullable } from '~/utils/types';
 
 import { HEADER_HEIGHT } from './constants';
+import {
+  getEffectiveUAVListSortOrder,
+  isUAVListSortPreferenceOverridden,
+} from './selectors';
 
 const createChipStyle = (
   color: string | null,
@@ -172,6 +172,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
   chip: createChipStyle(null, theme),
   chipActive: createChipStyle(Colors.info, theme),
+  chipDisabled: createChipStyle(Colors.off, theme),
 }));
 
 type HeaderPart = {
@@ -180,7 +181,24 @@ type HeaderPart = {
   style: React.CSSProperties;
 };
 
-const COMMON_HEADER_TEXT_PARTS: readonly HeaderPart[] = Object.freeze([
+/** List header: UAV ID column left, mission slot (sID) column right. */
+const LIST_HEADER_PARTS: readonly HeaderPart[] = Object.freeze([
+  {
+    label: 'ID',
+    sortKey: UAVSortKey.UAV_ID,
+    style: {
+      textAlign: 'right',
+      width: 48,
+    },
+  },
+  {
+    label: 'sID',
+    sortKey: UAVSortKey.MISSION_ID,
+    style: {
+      textAlign: 'right',
+      width: 40,
+    },
+  },
   {
     label: 'Status',
     sortKey: UAVSortKey.STATUS,
@@ -275,47 +293,6 @@ const COMMON_HEADER_TEXT_PARTS: readonly HeaderPart[] = Object.freeze([
   },
 ]);
 
-const HEADER_TEXT_PARTS: Record<string, HeaderPart[]> = {
-  missionIds: [
-    {
-      label: 'sID',
-      sortKey: UAVSortKey.DEFAULT,
-      style: {
-        textAlign: 'right',
-        width: 48,
-      },
-    },
-    {
-      label: 'ID',
-      sortKey: UAVSortKey.DEFAULT,
-      style: {
-        textAlign: 'right',
-        width: 40,
-      },
-    },
-    ...COMMON_HEADER_TEXT_PARTS,
-  ],
-  droneIds: [
-    {
-      label: 'ID',
-      sortKey: UAVSortKey.DEFAULT,
-      style: {
-        textAlign: 'right',
-        width: 48,
-      },
-    },
-    {
-      label: 'sID',
-      sortKey: UAVSortKey.DEFAULT,
-      style: {
-        textAlign: 'right',
-        width: 40,
-      },
-    },
-    ...COMMON_HEADER_TEXT_PARTS,
-  ],
-};
-
 const checkStyle = { fontSize: 'inherit', marginLeft: 8 };
 const check = <Check style={checkStyle} />;
 
@@ -344,15 +321,16 @@ const getFilterChipClass = (
 
 type CheckableMenuItemProps = MenuItemProps & Readonly<{ label: string }>;
 
-const CheckableMenuItem = React.forwardRef<
-  HTMLLIElement,
-  CheckableMenuItemProps
->(({ label, selected, ...rest }, ref) => (
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  <MenuItem ref={ref as any} dense {...(rest as any)}>
+const CheckableMenuItem = ({
+  ref,
+  label,
+  selected,
+  ...rest
+}: CheckableMenuItemProps) => (
+  <MenuItem ref={ref} dense {...rest}>
     {label}
   </MenuItem>
-));
+);
 
 function bindChip({
   state,
@@ -361,7 +339,7 @@ function bindChip({
   popupTrigger = 'chip',
 }: {
   state: PopupState;
-  ref?: HTMLElement;
+  ref: HTMLElement | null;
   action?: () => void;
   popupTrigger?: 'chip' | 'icon';
 }): Partial<ChipProps> {
@@ -387,24 +365,26 @@ function bindChip({
 }
 
 function formatHeaderParts(
-  parts: string | HeaderPart[] | undefined,
+  parts: string | readonly HeaderPart[] | undefined,
   sortBy: UAVSortKeyAndOrder,
   classes: ReturnType<typeof useStyles>,
   onClick: (key: UAVSortKey) => void
 ): React.ReactNode {
+  const hasHeaderParts = (
+    value: string | readonly HeaderPart[] | undefined
+  ): value is readonly HeaderPart[] => Array.isArray(value);
+
   if (typeof parts === 'string') {
     // Whole header is a single item
     return parts;
-  } else if (Array.isArray(parts)) {
+  } else if (hasHeaderParts(parts)) {
     return parts.map(({ label, sortKey, style }) => (
       <div
         key={label}
         className={clsx(
           classes.headerLineItem,
           sortKey && classes.sortable,
-          sortBy.key === sortKey &&
-            sortKey !== UAVSortKey.DEFAULT &&
-            classes.sortActive
+          sortKey !== undefined && sortBy.key === sortKey && classes.sortActive
         )}
         style={style}
         onClick={
@@ -430,9 +410,8 @@ type SortAndFilterHeaderProps = Readonly<{
   onSetFilter: (filter: Nullable<UAVFilter>) => void;
   onSetSortBy: (sortBy: Partial<UAVSortKeyAndOrder>) => void;
   onToggleSortDirection: () => void;
-  showMissionIds: boolean;
   sortBy: UAVSortKeyAndOrder;
-  t: TFunction;
+  sortOverrideActive?: boolean;
 }>;
 
 const SortAndFilterHeader = ({
@@ -442,17 +421,17 @@ const SortAndFilterHeader = ({
   onSetFilter,
   onSetSortBy,
   onToggleSortDirection,
-  showMissionIds,
   sortBy,
-  t,
+  sortOverrideActive,
 }: SortAndFilterHeaderProps): React.JSX.Element => {
+  const { t } = useTranslation();
   const classes = useStyles();
-  const sortChipRef = useRef<HTMLDivElement>();
+  const sortChipRef = useRef<HTMLDivElement>(null);
   const sortPopupState = usePopupState({
     variant: 'popover',
     popupId: 'uav-list-sort-options',
   });
-  const filterChipRef = useRef<HTMLDivElement>();
+  const filterChipRef = useRef<HTMLDivElement>(null);
   const filterPopupState = usePopupState({
     variant: 'popover',
     popupId: 'uav-list-filter-options',
@@ -503,16 +482,22 @@ const SortAndFilterHeader = ({
     [onSetSortBy, onToggleSortDirection, sortBy]
   );
 
-  const isSortActive = sortBy.key !== UAVSortKey.DEFAULT;
+  // Sorting by UAV ID or mission ID is considered the "natural" order and
+  // does not highlight the sort chip; other keys (battery, RSSI, etc.) do.
+  const isSortActive =
+    sortBy.key !== UAVSortKey.UAV_ID && sortBy.key !== UAVSortKey.MISSION_ID;
   const isFilterActive = Array.isArray(filters) && filters.length > 0;
 
   return (
     <div className={clsx(classes.root, floating && classes.floating)}>
       <div className={classes.widgets}>
         <Chip
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          ref={sortChipRef as any}
-          className={isSortActive ? classes.chipActive : classes.chip}
+          ref={sortChipRef}
+          className={clsx(
+            sortOverrideActive && classes.chipDisabled,
+            isSortActive ? classes.chipActive : classes.chip
+          )}
+          disabled={sortOverrideActive}
           variant='outlined'
           label={shortLabelsForUAVSortKey[sortBy.key](t)}
           size='small'
@@ -559,15 +544,14 @@ const SortAndFilterHeader = ({
         </Menu>
 
         <Chip
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          ref={filterChipRef as any}
+          ref={filterChipRef}
           className={getFilterChipClass(filters, classes)}
           variant='outlined'
           label={
             isFilterActive
               ? filters.length > 1
                 ? t('filtering.composite')
-                : shortLabelsForUAVFilter[filters[0]!](t)
+                : shortLabelsForUAVFilter[filters[0]](t)
               : t('filtering.filter')
           }
           size='small'
@@ -606,9 +590,7 @@ const SortAndFilterHeader = ({
       <FadeAndSlide in={layout === UAVListLayout.LIST}>
         <div className={classes.headerLine}>
           {formatHeaderParts(
-            showMissionIds
-              ? HEADER_TEXT_PARTS['missionIds']
-              : HEADER_TEXT_PARTS['droneIds'],
+            LIST_HEADER_PARTS,
             sortBy,
             classes,
             onSetSortKeyOrToggleSortDirection
@@ -624,8 +606,8 @@ export default connect(
   (state: RootState) => ({
     filters: getUAVListFilters(state),
     layout: getUAVListLayout(state),
-    showMissionIds: isShowingMissionIds(state),
-    sortBy: getUAVListSortPreference(state),
+    sortBy: getEffectiveUAVListSortOrder(state),
+    sortOverrideActive: isUAVListSortPreferenceOverridden(state),
   }),
   // mapDispatchToProps
   {
@@ -633,4 +615,4 @@ export default connect(
     onSetSortBy: setUAVListSortPreference,
     onToggleSortDirection: toggleUAVListSortDirection,
   }
-)(withTranslation()(SortAndFilterHeader));
+)(SortAndFilterHeader);

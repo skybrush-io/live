@@ -1,9 +1,11 @@
-import { type ErrorCode } from '~/flockwave/errors';
+import type UAVErrorCode from '~/flockwave/UAVErrorCode';
+import type { FlightMode, UAVType } from '~/model/enums';
 import { type GPSFix, type GPSPosition } from '~/model/geography';
 import { type UAVAge, type UAVBattery } from '~/model/uav';
 import { type VelocityNED, type VelocityXYZ } from '~/model/velocity';
 import { type Identifier } from '~/utils/collections';
 import { type Coordinate3D } from '~/utils/math';
+import { isSomeEnum } from '~/utils/types';
 
 /**
  * Serialized information about a UAV.
@@ -37,7 +39,7 @@ export type StoredUAV = {
   age?: UAVAge;
   battery: UAVBattery;
   debugString?: string;
-  errors: ErrorCode[];
+  errors: UAVErrorCode[];
   gpsFix: GPSFix;
   heading?: number;
   id: Identifier;
@@ -45,8 +47,8 @@ export type StoredUAV = {
   light: number /* RGB565 */;
   localPosition?: Coordinate3D;
   localVelocity?: VelocityXYZ;
-  mode?: string;
-  type?: string;
+  mode?: FlightMode | string;
+  type?: UAVType;
   position?: GPSPosition;
   velocity?: VelocityNED;
   rssi: number[];
@@ -65,3 +67,6 @@ export enum UAVDetailsPanelTab {
   PREFLIGHT = 'preflight',
   TESTS = 'tests',
 }
+
+export const isUAVDetailsDialogTab = isSomeEnum(UAVDetailsDialogTab);
+export const isUAVDetailsPanelTab = isSomeEnum(UAVDetailsPanelTab);

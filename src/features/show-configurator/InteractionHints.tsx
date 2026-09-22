@@ -7,7 +7,8 @@ import type { Theme } from '@mui/material/styles';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import Typography from '@mui/material/Typography';
-import React, { useState } from 'react';
+import type React from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { makeStyles } from '@skybrush/app-theme-mui';
@@ -23,15 +24,15 @@ const CATEGORIES = [
     hints: [
       {
         keys: ['Drag'],
-        action: tt('show.showConfigurator.interactionHints.action.pan'),
+        action: tt('general.action.pan'),
       },
       {
         keys: ['Scroll'],
-        action: tt('show.showConfigurator.interactionHints.action.zoom'),
+        action: tt('general.action.zoom'),
       },
       {
         keys: ['Shift', 'Alt', 'Drag'],
-        action: tt('show.showConfigurator.interactionHints.action.rotate'),
+        action: tt('general.action.rotate'),
       },
     ],
   },
@@ -41,7 +42,7 @@ const CATEGORIES = [
     hints: [
       {
         keys: ['Click'],
-        action: tt('show.showConfigurator.interactionHints.action.select'),
+        action: tt('general.action.select'),
       },
       {
         keys: ['Ctrl', 'Click'],
@@ -95,7 +96,6 @@ const useTabsStyles = makeStyles((theme: Theme) => ({
   indicator: {
     height: 0,
     backgroundColor: 'transparent',
-    // eslint-disable-next-line @typescript-eslint/naming-convention
     '&::after': {
       content: '""',
       display: 'block',
@@ -142,7 +142,6 @@ const InteractionHints = (): React.JSX.Element => {
   return (
     <Box sx={{ height: '50px' }}>
       <Tabs value={active} classes={tabsStyles} style={{ marginBottom: 2 }}>
-        {/* eslint-disable-next-line @typescript-eslint/naming-convention */}
         {CATEGORIES.map(({ icon: Icon, title }, i) => (
           <Tab
             key={title(t)}

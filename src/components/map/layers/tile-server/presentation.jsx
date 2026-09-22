@@ -9,6 +9,7 @@ import TextField from '@mui/material/TextField';
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import { showNotification } from '~/features/snackbar/actions';
 import { TileServerType, TileServerTypes } from '~/model/layers';
 
 // === Settings for this particular layer type ===
@@ -19,7 +20,6 @@ export class TileServerLayerSettings extends React.Component {
 
     changeTileServerType: PropTypes.func,
     setLayerParameters: PropTypes.func,
-    showMessage: PropTypes.func,
   };
 
   constructor(props) {
@@ -44,7 +44,7 @@ export class TileServerLayerSettings extends React.Component {
 
     return (
       <div>
-        <FormControl fullWidth>
+        <FormControl fullWidth variant='filled'>
           <InputLabel htmlFor='tile-server-type'>Tile server type</InputLabel>
           <Select
             value={parameters.type}
@@ -58,6 +58,7 @@ export class TileServerLayerSettings extends React.Component {
         <TextField
           fullWidth
           label='Tile server URL'
+          variant='filled'
           margin='normal'
           value={url}
           onChange={this._onUrlChanged}
@@ -81,6 +82,7 @@ export class TileServerLayerSettings extends React.Component {
             margin='normal'
             placeholder='Layers to show (comma-separated)'
             value={layers}
+            variant='filled'
             onChange={this._onLayersChanged}
           />
         )}
@@ -103,7 +105,7 @@ export class TileServerLayerSettings extends React.Component {
   _handleClick = () => {
     const { layers, url } = this.state;
     this.props.setLayerParameters({ layers, url });
-    this.props.showMessage('Layer settings saved successfully.');
+    showNotification('Layer settings saved successfully.');
   };
 }
 

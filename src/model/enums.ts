@@ -1,4 +1,9 @@
+import type { PreflightCheckResult as FlockwavePreflightCheckResult } from '@skybrush/flockwave-spec';
+
 import { Status } from '~/components/semantics';
+import type { TranslateFn } from '~/i18n/types';
+
+export { Status } from '~/components/semantics';
 
 /**
  * Enum containing constants for the various connection states.
@@ -74,11 +79,15 @@ const propertiesForFlightLogKinds: Record<
 /**
  * Returns the description of the given flight log kind / format.
  */
-export function describeFlightLogKind(kind: FlightLogKind): string {
-  const props =
-    propertiesForFlightLogKinds[kind] ||
-    propertiesForFlightLogKinds[FlightLogKind.UNKNOWN];
-  return props.description;
+export function describeFlightLogKind(
+  kind: FlightLogKind,
+  t: TranslateFn | undefined = undefined
+): string {
+  const resolvedKind = propertiesForFlightLogKinds[kind]
+    ? kind
+    : FlightLogKind.UNKNOWN;
+  const description = propertiesForFlightLogKinds[resolvedKind].description;
+  return t ? t(`flightLogKind.${resolvedKind}`, description) : description;
 }
 
 /**
@@ -153,6 +162,10 @@ export function getUAVTypeLabel(type: UAVType): string {
   return props ? props.label : String(type);
 }
 
+/**
+ * Type guard that checks if a string represents a known flight mode enum value,
+ * and asserts it's type accordingly.
+ */
 export const isFlightMode = (mode: unknown): mode is FlightMode =>
   Object.values(FlightMode).includes(mode as FlightMode);
 
@@ -217,7 +230,7 @@ const propertiesForFlightModes: Record<
   [FlightMode.LOITER]: {
     abbreviation: 'Loit',
     label: 'Loiter',
-    description: 'Posiiton hold with manual velocity control',
+    description: 'Position hold with manual velocity control',
   },
   [FlightMode.MISSION]: {
     abbreviation: 'Wp',
@@ -275,35 +288,32 @@ const propertiesForFlightModes: Record<
 };
 
 /**
- * Type guard that checks if a string represents a known flight mode enum value,
- * and asserts it's type accordingly.
- */
-const isKnownFlightMode = (mode: string): mode is FlightMode =>
-  Object.values(FlightMode).includes(mode as FlightMode);
-
-/**
  * Returns the abbreviation of the given flight mode.
  */
 export const abbreviateFlightMode = (mode: FlightMode | string): string =>
-  isKnownFlightMode(mode)
+  isFlightMode(mode)
     ? propertiesForFlightModes[mode].abbreviation
     : mode.slice(0, 4);
 
 /**
  * Returns the description of the given flight mode.
  */
-export function describeFlightMode(mode: FlightMode): string {
-  const props =
-    propertiesForFlightModes[mode] ||
-    propertiesForFlightModes[FlightMode.UNKNOWN];
-  return props.description;
+export function describeFlightMode(
+  mode: FlightMode,
+  t: TranslateFn | undefined = undefined
+): string {
+  const resolvedMode = propertiesForFlightModes[mode]
+    ? mode
+    : FlightMode.UNKNOWN;
+  const description = propertiesForFlightModes[resolvedMode].description;
+  return t ? t(`flightMode.${resolvedMode}`, description) : description;
 }
 
 /**
  * Returns the label of the given flight mode.
  */
-export function getFlightModeLabel(mode: FlightMode): string {
-  const props = propertiesForFlightModes[mode];
+export function getFlightModeLabel(mode: FlightMode | string): string {
+  const props = propertiesForFlightModes[mode as FlightMode];
   return props ? props.label : String(mode).toUpperCase();
 }
 
@@ -311,10 +321,10 @@ export function getFlightModeLabel(mode: FlightMode): string {
  * Returns the semantic status code of the given flight mode.
  */
 export function getSemanticsForFlightMode(
-  mode: FlightMode
+  mode: FlightMode | string
 ): Status | undefined {
   const props =
-    propertiesForFlightModes[mode] ||
+    propertiesForFlightModes[mode as FlightMode] ??
     propertiesForFlightModes[FlightMode.UNKNOWN];
   return props.status;
 }
@@ -405,7 +415,7 @@ const propertiesForGPSFixTypes: Record<
  */
 export function abbreviateGPSFixType(fixType: GPSFixType): string {
   const props =
-    propertiesForGPSFixTypes[fixType] ||
+    propertiesForGPSFixTypes[fixType] ??
     propertiesForGPSFixTypes[GPSFixType.UNKNOWN];
   return props.abbreviation;
 }
@@ -413,11 +423,15 @@ export function abbreviateGPSFixType(fixType: GPSFixType): string {
 /**
  * Returns the description of the given GPS fix type.
  */
-export function describeGPSFixType(fixType: GPSFixType): string {
-  const props =
-    propertiesForGPSFixTypes[fixType] ||
-    propertiesForGPSFixTypes[GPSFixType.UNKNOWN];
-  return props.description;
+export function describeGPSFixType(
+  fixType: GPSFixType,
+  t: TranslateFn | undefined = undefined
+): string {
+  const resolvedFixType = propertiesForGPSFixTypes[fixType]
+    ? fixType
+    : GPSFixType.UNKNOWN;
+  const description = propertiesForGPSFixTypes[resolvedFixType].description;
+  return t ? t(`gpsFixType.${resolvedFixType}`, description) : description;
 }
 
 /**
@@ -425,7 +439,7 @@ export function describeGPSFixType(fixType: GPSFixType): string {
  */
 export function getSemanticsForGPSFixType(fixType: GPSFixType): Status {
   const props =
-    propertiesForGPSFixTypes[fixType] ||
+    propertiesForGPSFixTypes[fixType] ??
     propertiesForGPSFixTypes[GPSFixType.UNKNOWN];
   return props.status;
 }
@@ -450,19 +464,7 @@ export function getSemanticsForRSSI(rssi?: number): Status {
 
 /* ************************************************************************* */
 
-/**
- * Enum representing the possible preflight check results on a UAV.
- */
-export enum PreflightCheckResult {
-  OFF = 'off',
-  PASS = 'pass',
-  WARNING = 'warning',
-  RUNNING = 'running',
-  SOFT_FAILURE = 'softFailure',
-  FAILURE = 'failure',
-  ERROR = 'error',
-  UNKNOWN = 'unknown',
-}
+export type PreflightCheckResult = FlockwavePreflightCheckResult | 'unknown';
 
 /**
  * Object mapping preflight check result constants to their properties (human
@@ -478,42 +480,42 @@ const propertiesForPreflightCheckResults: Record<
     status: Status;
   }
 > = {
-  [PreflightCheckResult.OFF]: {
+  off: {
     description: 'Disabled',
     overallDescription: 'All preflight checks are disabled',
     status: Status.OFF,
   },
-  [PreflightCheckResult.PASS]: {
+  pass: {
     description: 'OK',
     overallDescription: 'Preflight checks passed',
     status: Status.SUCCESS,
   },
-  [PreflightCheckResult.WARNING]: {
+  warning: {
     description: 'Needs attention',
     overallDescription: 'Some preflight check items need attention',
     status: Status.WARNING,
   },
-  [PreflightCheckResult.RUNNING]: {
+  running: {
     description: 'Check in progress...',
     overallDescription: 'Preflight checks are in progress...',
     status: Status.WAITING,
   },
-  [PreflightCheckResult.SOFT_FAILURE]: {
+  softFailure: {
     description: 'Temporary failure',
     overallDescription: 'Some preflight checks failed temporarily',
     status: Status.WARNING,
   },
-  [PreflightCheckResult.FAILURE]: {
+  failure: {
     description: 'Failed',
     overallDescription: 'Preflight checks failed',
     status: Status.ERROR,
   },
-  [PreflightCheckResult.ERROR]: {
+  error: {
     description: 'Error while executing test',
     overallDescription: 'Error while executing preflight checks',
     status: Status.CRITICAL,
   },
-  [PreflightCheckResult.UNKNOWN]: {
+  unknown: {
     description: 'Unknown test result',
     overallDescription: 'Unknown preflight test result',
     status: Status.OFF,
@@ -524,24 +526,34 @@ const propertiesForPreflightCheckResults: Record<
  * Returns the description of the given preflight check result.
  */
 export function describePreflightCheckResult(
-  result: PreflightCheckResult
+  result: PreflightCheckResult,
+  t: TranslateFn | undefined = undefined
 ): string {
-  const props =
-    propertiesForPreflightCheckResults[result] ||
-    propertiesForPreflightCheckResults[PreflightCheckResult.UNKNOWN];
-  return props.description;
+  const resolvedResult = propertiesForPreflightCheckResults[result]
+    ? result
+    : 'unknown';
+  const description =
+    propertiesForPreflightCheckResults[resolvedResult].description;
+  return t
+    ? t(`preflightCheckResult.short.${resolvedResult}`, description)
+    : description;
 }
 
 /**
  * Returns the description of the given preflight check result.
  */
 export function describeOverallPreflightCheckResult(
-  result: PreflightCheckResult
+  result: PreflightCheckResult,
+  t: TranslateFn | undefined = undefined
 ): string {
-  const props =
-    propertiesForPreflightCheckResults[result] ||
-    propertiesForPreflightCheckResults[PreflightCheckResult.UNKNOWN];
-  return props.overallDescription;
+  const resolvedResult = propertiesForPreflightCheckResults[result]
+    ? result
+    : 'unknown';
+  const description =
+    propertiesForPreflightCheckResults[resolvedResult].overallDescription;
+  return t
+    ? t(`preflightCheckResult.overall.${resolvedResult}`, description)
+    : description;
 }
 
 /**
@@ -551,7 +563,7 @@ export function getSemanticsForPreflightCheckResult(
   result: PreflightCheckResult
 ): Status {
   const props =
-    propertiesForPreflightCheckResults[result] ||
-    propertiesForPreflightCheckResults[PreflightCheckResult.UNKNOWN];
+    propertiesForPreflightCheckResults[result] ??
+    propertiesForPreflightCheckResults['unknown'];
   return props.status;
 }

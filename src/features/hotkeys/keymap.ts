@@ -1,14 +1,14 @@
 import { keyMap as showConfiguratorKeyMap } from '~/features/show-configurator/hotkeys';
 import { isRunningOnMac } from '~/utils/platform';
 
+import { FULL_SCREEN_HOTKEY } from '~/utils/full-screen';
 import { HotkeyGroup, HotkeyScope } from './types';
 
 export type KeyMap = Record<
   string,
   // TODO: Use `import { ExtendedKeyMapOptions } from 'react-hotkeys';`!
   { name: string; group?: HotkeyGroup; scopes: HotkeyScope[] } & (
-    | { sequence: string }
-    | { sequences: string[] }
+    { sequence: string } | { sequences: string[] }
   )
 >;
 
@@ -110,22 +110,21 @@ const toggleOptionKeyMap: KeyMap = {
     scopes: [HotkeyScope.GLOBAL],
   },
 
+  // disabled because it interferes with Ctrl-C in the Messages tab where the user
+  // can select text and copy it to the clipboard. `react-hotkeys` prevents the copy
+  // event from firing because it catches the C keypress earlier.
+  /*
   TOGGLE_PREFERRED_CHANNEL: {
     name: 'Toggle the preferred channel switch',
     sequence: 'c',
     scopes: [HotkeyScope.GLOBAL],
   },
+  */
 
   TOGGLE_DEVELOPER_MODE: {
     name: 'Toggle the developer mode switch',
     sequence: 'mod+shift+d',
     group: HotkeyGroup.HIDDEN,
-    scopes: [HotkeyScope.GLOBAL],
-  },
-
-  TOGGLE_SORT_BY_MISSION_ID: {
-    name: 'Toggle sorting UAVs by mission IDs',
-    sequence: 'mod+s',
     scopes: [HotkeyScope.GLOBAL],
   },
 };
@@ -163,6 +162,13 @@ const sendCommandKeyMap: KeyMap = {
 };
 
 const uavIdOverlayKeyMap: KeyMap = {
+  TYPE_G: {
+    name: 'Prepend G to the pending UAV ID for group selection',
+    sequence: 'g',
+    group: HotkeyGroup.HIDDEN,
+    scopes: [HotkeyScope.GLOBAL],
+  },
+
   TYPE_S: {
     name: 'Prepend S to the pending UAV ID',
     sequence: 's',
@@ -214,6 +220,12 @@ const keyMap: KeyMap = {
     name: 'Copy coordinates to clipboard',
     sequence: 'mod+shift+c',
     scopes: [HotkeyScope.GLOBAL],
+  },
+
+  TOGGLE_FULL_SCREEN: {
+    name: 'Toggle full-screen mode',
+    sequence: FULL_SCREEN_HOTKEY,
+    scopes: [HotkeyScope.GLOBAL, HotkeyScope.SHOW_CONFIGURATOR],
   },
 
   SHOW_HOTKEY_DIALOG: {

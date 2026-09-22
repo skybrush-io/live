@@ -49,12 +49,12 @@ export enum LayerType {
   UNTYPED = 'untyped',
 }
 
-export type Layer = {
+export type Layer<P = unknown> = {
   id: string;
   type: LayerType;
   label: string;
   visible: boolean;
-  parameters: Record<string, unknown>;
+  parameters: P;
 };
 
 /**
@@ -110,6 +110,7 @@ const propertiesForLayerTypes: Record<
     icon: React.ComponentType;
     parameters?: Record<string, unknown>;
     multiple?: boolean;
+    hidden?: boolean;
   }
 > = {
   [LayerType.BASE]: {
@@ -170,6 +171,7 @@ const propertiesForLayerTypes: Record<
       minDistance: 5,
       snapToGrid: false,
     },
+    hidden: true, // currently unmaintained
   },
   [LayerType.IMAGE]: {
     label: 'Image',
@@ -262,17 +264,17 @@ const propertiesForLayerTypes: Record<
  * @param parameters - The parameters of the layer
  * @returns A new layer object
  */
-export const createNewLayer = (
+export const createNewLayer = <P>(
   id: string,
   type: LayerType = LayerType.UNTYPED,
   label: string,
-  parameters?: Record<string, unknown>
-): Layer => ({
+  parameters?: P
+): Layer<P> => ({
   id,
   type,
   label,
   visible: type !== LayerType.UNTYPED,
-  parameters: parameters ?? defaultParametersForLayerType(type),
+  parameters: parameters ?? (defaultParametersForLayerType(type) as P),
 });
 
 /**
@@ -301,6 +303,13 @@ export function defaultParametersForLayerType(
   const props = propertiesForLayerTypes[layerType];
   const template = props?.parameters ?? {};
   return structuredClone(template);
+}
+
+/**
+ * Returns whether the given layer type is currently hidden from the user.
+ */
+export function isLayerTypeHidden(layerType: LayerType): boolean {
+  return propertiesForLayerTypes[layerType].hidden ?? false;
 }
 
 /**

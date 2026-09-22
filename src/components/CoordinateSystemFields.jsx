@@ -4,7 +4,6 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import PropTypes from 'prop-types';
-import React from 'react';
 
 import CoordinateField from '~/components/CoordinateField';
 import RotationField from '~/components/RotationField';

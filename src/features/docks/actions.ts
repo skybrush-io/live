@@ -1,4 +1,4 @@
-import { setSelection } from '~/features/map/selection';
+import { setSelection } from '~/features/selection/slice';
 import { dockIdToGlobalId } from '~/model/identifiers';
 import type { Identifier } from '~/utils/collections';
 

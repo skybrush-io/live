@@ -1,8 +1,7 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import ButtonBase, { type ButtonBaseProps } from '@mui/material/ButtonBase';
 import type { Theme } from '@mui/material/styles';
 import clsx from 'clsx';
-import React from 'react';
+import type React from 'react';
 
 import { type Status, makeStyles } from '@skybrush/app-theme-mui';
 import { StatusLight, Tooltip } from '@skybrush/mui-components';
@@ -42,10 +41,11 @@ type UploadStatusLegendButtonProps = Readonly<{
   tooltip?: Nullable<string>;
   onClick?: () => void;
 }> &
-  ButtonBaseProps;
+  Omit<ButtonBaseProps, 'className' | 'onClick'>;
 
 const UploadStatusLegendButton = ({
   counter,
+  disabled,
   label,
   onClick,
   status,
@@ -53,11 +53,10 @@ const UploadStatusLegendButton = ({
   ...rest
 }: UploadStatusLegendButtonProps): React.JSX.Element => {
   const classes = useStyles();
-  const enabled = onClick && counter > 0;
   const button = (
     <ButtonBase
-      className={clsx(classes.root, enabled && classes.selectable)}
-      disabled={!enabled}
+      className={clsx(classes.root, !disabled && classes.selectable)}
+      disabled={disabled}
       onClick={onClick}
       {...rest}
     >

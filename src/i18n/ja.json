@@ -279,9 +279,6 @@
     "reverseDirection": "向きを反転するには<kbd>を押しながらShift</kbd>を押してください。",
     "selectNextEmptySlot": "次のからのスロットを選択してください"
   },
-  "mappingToggleButton": {
-    "sortByMissionID": "mission IDでソート"
-  },
   "measurementList": {
     "addDrone": "ツールバーの＋ボタンで測定するドローンを追加する",
     "copyToClipboard": "クリップボードにコピー",
@@ -635,7 +632,7 @@
     "UAVheadings": "離陸前のUAVの方向は…",
     "compassDirection": "コンパス方位",
     "headingOffset": "ヘディングオフセット",
-    "setToAvergaeHeading": "アクティブなドローンに対し平均方位を設定",
+    "setToAverageHeading": "アクティブなドローンに対し平均方位を設定",
     "specifiedByAbsoluteCompassDirection": "コンパスの絶対方位で指定",
     "specifiedRelativeToShowOrientation": "ショーの相対方位で指定",
     "unspecified": "未指定"
@@ -646,8 +643,7 @@
     "licenseInfo": "ライセンス情報",
     "offlineMaps": "オフライン地図",
     "paramUpload": "パラメーターアップロード",
-    "tooltip": "ツールボックス",
-    "uploadInProgress": "アップロード中"
+    "tooltip": "ツールボックス"
   },
   "uploadPanel": {
     "cancelUpload": "アップロードをキャンセル",

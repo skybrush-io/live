@@ -1,24 +1,20 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
 /**
  * @file List-related component helper functions and higher order components.
  */
 
 import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import type { AnyAction } from '@reduxjs/toolkit';
+import type { Action, UnknownAction } from '@reduxjs/toolkit';
 import get from 'lodash-es/get';
 import identity from 'lodash-es/identity';
 import includes from 'lodash-es/includes';
 import isFunction from 'lodash-es/isFunction';
 import partial from 'lodash-es/partial';
 import xor from 'lodash-es/xor';
-import PropTypes from 'prop-types';
-import React, { type PropsWithoutRef, type RefAttributes } from 'react';
+import React from 'react';
 
 import { BackgroundHint } from '@skybrush/mui-components';
 
-import type { AppDispatch, RootState } from '~/store/reducers';
+import type { AppDispatch, AppThunk, RootState } from '~/store/reducers';
 import { eventHasShiftKey } from '~/utils/events';
 import { eventHasPlatformModifierKey } from '~/utils/platform';
 
@@ -26,12 +22,12 @@ type ItemWithId = { id: string };
 type ItemRenderer<T extends ItemWithId, P> = (
   item: T,
   props: P,
-  selected?: boolean
+  selected: boolean
 ) => React.ReactElement;
 type ListFactory<P> = (
   props: P,
   children: React.ReactElement[],
-  ref: React.ForwardedRef<unknown>
+  ref: React.Ref<HTMLUListElement> | undefined
 ) => React.JSX.Element;
 
 type ValidatedListOfOptions<T, P> = {
@@ -49,14 +45,17 @@ type ListOfOptions<T, P> = Omit<
   listFactory?: undefined | ListFactory<P> | React.ComponentType<P>;
   dataProvider?: string | ((props: P) => T[]);
 };
-type SelectableListProps<T> = {
+
+export type SelectableListProps<T> = {
   onChange?: (event: React.UIEvent, item: T) => void;
-  value: string;
+  onItemSelected?: (event: React.UIEvent) => void;
+  value: string | undefined;
 };
 
-type MultiSelectableListProps = {
+export type MultiSelectableListProps = {
   onActivate?: (item: string) => void;
   onChange?: (items: string[]) => void;
+  onItemSelected?: (event: React.UIEvent) => void;
   value: string[];
 };
 
@@ -66,16 +65,19 @@ type SelectionHandlerFunctions<T = string> = {
   setSelection?: (value: T[]) => void;
 };
 
-type SelectionHandlerReduxFunctions<T = string> = {
-  activateItem?: (item: T) => AnyAction | undefined | void;
+type SelectionHandlerReduxFunctions<
+  T = string,
+  A extends Action = UnknownAction,
+> = {
+  activateItem?: (item: T) => A | undefined | void;
   getSelection: (state: RootState) => T[];
-  setSelection?: (value: T[]) => AnyAction | undefined | void;
+  setSelection?: (value: T[]) => A | undefined | void;
   getListItems?: (state: RootState) => T[];
 };
 
 const createBackgroundHint = (
   backgroundHint: string | React.ReactElement | undefined,
-  ref: React.ForwardedRef<unknown>
+  ref: React.Ref<unknown> | undefined
 ): React.JSX.Element | null => {
   switch (typeof backgroundHint) {
     case 'string':
@@ -92,38 +94,39 @@ const createBackgroundHint = (
  * the given item renderer function, and optionally shows a small textual
  * hint instead if there are no items.
  *
- * @param  {function|React.Component} itemRenderer  function that is called
- *         with a single item to be rendered and the props of the generated
- *         component, and must return a React component that shows the item
- * @param  {Object}  options  additional options to tweak the behaviour of
+ * @param  itemRenderer  function that is called with a single item to be
+ *         rendered, the props of the generated component, and whether the item is
+ *         selected, and must return a React component that shows the item
+ * @param  options  additional options to tweak the behaviour of
  *         the generated list
- * @param  {string?}  options.backgroundHint  optional background hint to show in
+ * @param  options.backgroundHint  optional background hint to show in
  *         place of the list when there are no items
- * @param  {function|string} options.dataProvider  function that gets the React props
+ * @param  options.dataProvider  function that gets the React props
  *         of the generated component and returns the items to show, or a
  *         string that contains the name of the React prop that holds the
  *         items to show in the generated component
- * @param  {string} options.displayName  name of the component when used in
+ * @param  options.displayName  name of the component when used in
  *         React debugging views
- * @param  {function}  options.postprocess  post-processor function that will
+ * @param  options.postprocess  post-processor function that will
  *         be called with the items generated for the list and the props of the
  *         list, and must return the actual list of items to be included in the
  *         list. Can be used to add extra items to the list without modifying
  *         the data provider.
- * @param  {function|React.Component} options.listFactory  React component
+ * @param  options.listFactory  React component
  *         that will be used as the root component of the generated list,
  *         or a function that will be called with the props of the generated
  *         component and the children that are to be put into the root
  *         React component, and returns the root React component of the list
  *         populated with the children
- * @return {React.Component}  the constructed React component
+ * @return the constructed React component
  */
-export function listOf<T extends ItemWithId, P>(
-  itemRenderer: ItemRenderer<T, PropsWithoutRef<P>>,
-  options: ListOfOptions<T, PropsWithoutRef<P>> = {}
-): React.ForwardRefExoticComponent<
-  PropsWithoutRef<P> & RefAttributes<unknown>
-> {
+export function listOf<
+  T extends ItemWithId,
+  P extends { ref?: React.Ref<HTMLUListElement> },
+>(
+  itemRenderer: ItemRenderer<T, Omit<P, 'ref'>>,
+  options: ListOfOptions<T, Omit<P, 'ref'>> = {}
+): React.FC<P & { ref?: React.Ref<HTMLUListElement> }> {
   const {
     backgroundHint,
     dataProvider,
@@ -131,13 +134,12 @@ export function listOf<T extends ItemWithId, P>(
     listFactory,
     postprocess,
   } = validateOptions(options);
-  itemRenderer = validateItemRenderer(itemRenderer);
 
   // A separate variable is needed here to make ESLint happy
-  const ListView = React.forwardRef<unknown, P>((props, ref) => {
+  const ListView = ({ ref, ...props }: P) => {
     const items = dataProvider(props);
     const children = postprocess(
-      items.map((item) => itemRenderer(item, props)),
+      items.map((item) => itemRenderer(item, props, false)),
       props
     );
     if (hasSomeItems(children)) {
@@ -145,7 +147,7 @@ export function listOf<T extends ItemWithId, P>(
     }
 
     return createBackgroundHint(backgroundHint, ref);
-  });
+  };
 
   if (displayName) {
     ListView.displayName = displayName;
@@ -187,6 +189,7 @@ export function createSelectionHandlerFactory<T = string>({
         setSelection
       ) {
         setSelection(xor(selection, [id]));
+        return;
       }
 
       // Cater for the common case when we are re-selecting an item; no need to
@@ -225,13 +228,18 @@ export function createSelectionHandlerThunk<T = string>({
   getSelection,
   setSelection,
   getListItems,
-}: SelectionHandlerReduxFunctions<T>) {
+}: SelectionHandlerReduxFunctions<T>): (
+  id: T,
+  event: React.UIEvent
+) => AppThunk {
   if (!setSelection && !activateItem) {
-    return null;
+    return (_id: T, _event: React.UIEvent) =>
+      (_dispatch: AppDispatch, _getState: () => RootState) => {
+        /* nop */
+      };
   }
 
   return (id: T, event: React.UIEvent) =>
-    // eslint-disable-next-line complexity
     (dispatch: AppDispatch, getState: () => RootState) => {
       const state = getState();
       const selection = getSelection ? getSelection(state) : [];
@@ -323,35 +331,31 @@ export function createSelectionHandlerThunk<T = string>({
  * handler of your item renderer in order to make the list item respond to
  * the user's action.
  *
- * @param  {function|React.Component} itemRenderer  function that is called
- *         with a single item to be rendered, the props of the generated
- *         component, and a boolean denoting whether the item is currently
- *         selected, and must return a React component that shows the item
- * @param  {Object}  options  additional options to tweak the behaviour of
- *         the generated list
- * @param  {string?}  options.backgroundHint  optional background hint to show in
- *         place of the list when there are no items
- * @param  {function|string} options.dataProvider  function that gets the React props
- *         of the generated component and returns the items to show, or a
- *         string that contains the name of the React prop that holds the
- *         items to show in the generated component
- * @param  {string} options.displayName  name of the component when used in
- *         React debugging views
- * @param  {function|React.Component} options.listFactory  React component
- *         that will be used as the root component of the generated list,
- *         or a function that will be called with the props of the generated
- *         component and returns the root React component of the list
- * @return {React.Component}  the constructed React component
+ * @param  itemRenderer  function that is called with a single item to be rendered,
+ *         the props of the generated component, and a boolean denoting whether the
+ *         item is currently selected, and must return a React component that shows
+ *         the item
+ * @param  options  additional options to tweak the behaviour of the generated list
+ * @param  options.backgroundHint  optional background hint to show in place of the
+ *         list when there are no items
+ * @param  options.dataProvider  function that gets the React props of the generated
+ *         component and returns the items to show, or a string that contains the name
+ *         of the React prop that holds the items to show in the generated component
+ * @param  options.displayName  name of the component when used in React debugging views
+ * @param  options.listFactory  React component that will be used as the root component
+ *         of the generated list, or a function that will be called with the props of
+ *         the generated component and returns the root React component of the list
+ * @return the constructed React component
  */
 export function selectableListOf<
   T extends ItemWithId,
-  P extends SelectableListProps<T>,
+  P extends SelectableListProps<T> & {
+    ref?: React.Ref<HTMLUListElement>;
+  },
 >(
-  itemRenderer: ItemRenderer<T, PropsWithoutRef<P>>,
-  options: Partial<ValidatedListOfOptions<T, PropsWithoutRef<P>>> = {}
-): React.ForwardRefExoticComponent<
-  PropsWithoutRef<P> & React.RefAttributes<unknown>
-> {
+  itemRenderer: ItemRenderer<T, Omit<P, 'ref'>>,
+  options: Partial<ListOfOptions<T, Omit<P, 'ref'>>> = {}
+): React.FC<P> {
   const {
     backgroundHint,
     dataProvider,
@@ -359,10 +363,9 @@ export function selectableListOf<
     listFactory,
     postprocess,
   } = validateOptions(options);
-  itemRenderer = validateItemRenderer(itemRenderer);
 
   // A separate variable is needed here to make ESLint happy
-  const SelectableListView = React.forwardRef<unknown, P>((props, ref) => {
+  const SelectableListView = ({ ref, ...props }: P) => {
     const items = dataProvider(props);
     const children = postprocess(
       items.map((item) =>
@@ -387,13 +390,7 @@ export function selectableListOf<
     }
 
     return createBackgroundHint(backgroundHint, ref);
-  });
-
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  SelectableListView.propTypes = {
-    onChange: PropTypes.func,
-    value: PropTypes.string,
-  } as any;
+  };
 
   if (displayName) {
     SelectableListView.displayName = displayName;
@@ -435,35 +432,35 @@ export function selectableListOf<
  *   include the item in the selection if it was not in the selection yet,
  *   or exclude it from the selection if it was in the selection.
  *
- * @param  {function|React.Component} itemRenderer  function that is called
+ * @param  itemRenderer  function that is called
  *         with a single item to be rendered, the props of the generated
  *         component, and a boolean denoting whether the item is currently
  *         selected, and must return a React component that shows the item
- * @param  {Object}  options  additional options to tweak the behaviour of
+ * @param  options  additional options to tweak the behaviour of
  *         the generated list
- * @param  {string?}  options.backgroundHint  optional background hint to show in
+ * @param  options.backgroundHint  optional background hint to show in
  *         place of the list when there are no items
- * @param  {function|string} options.dataProvider  function that gets the React props
+ * @param  options.dataProvider  function that gets the React props
  *         of the generated component and returns the items to show, or a
  *         string that contains the name of the React prop that holds the
  *         items to show in the generated component
- * @param  {string} options.displayName  name of the component when used in
+ * @param  options.displayName  name of the component when used in
  *         React debugging views
- * @param  {function|React.Component} options.listFactory  React component
+ * @param  options.listFactory  React component
  *         that will be used as the root component of the generated list,
  *         or a function that will be called with the props of the generated
  *         component and returns the root React component of the list
- * @return {React.Component}  the constructed React component
+ * @return the constructed React component
  */
 export function multiSelectableListOf<
   T extends ItemWithId,
-  P extends MultiSelectableListProps,
+  P extends MultiSelectableListProps & {
+    ref?: React.Ref<HTMLUListElement>;
+  },
 >(
-  itemRenderer: ItemRenderer<T, P>,
-  options: Partial<ValidatedListOfOptions<T, React.PropsWithoutRef<P>>> = {}
-): React.ForwardRefExoticComponent<
-  PropsWithoutRef<P> & React.RefAttributes<unknown>
-> {
+  itemRenderer: ItemRenderer<T, Omit<P, 'ref'>>,
+  options: Partial<ListOfOptions<T, Omit<P, 'ref'>>> = {}
+): React.FC<P> {
   const {
     backgroundHint,
     dataProvider,
@@ -471,10 +468,9 @@ export function multiSelectableListOf<
     listFactory,
     postprocess,
   } = validateOptions(options);
-  itemRenderer = validateItemRenderer(itemRenderer);
 
   // A separate variable is needed here to make ESLint happy
-  const MultiSelectableListView = React.forwardRef<unknown, P>((props, ref) => {
+  const MultiSelectableListView = ({ ref, ...props }: P) => {
     const items = dataProvider(props);
     const onItemSelected = createSelectionHandlerFactory({
       activateItem: props.onActivate,
@@ -489,7 +485,7 @@ export function multiSelectableListOf<
             ...props,
             onChange: undefined,
             onItemSelected: onItemSelected(item.id),
-          } as P,
+          },
           includes(props.value, item.id)
         )
       ),
@@ -500,14 +496,7 @@ export function multiSelectableListOf<
     }
 
     return createBackgroundHint(backgroundHint, ref);
-  });
-
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  MultiSelectableListView.propTypes = {
-    onActivate: PropTypes.func,
-    onChange: PropTypes.func,
-    value: PropTypes.arrayOf(PropTypes.string).isRequired,
-  } as any;
+  };
 
   if (displayName) {
     MultiSelectableListView.displayName = displayName;
@@ -521,8 +510,8 @@ export function multiSelectableListOf<
  * passed to list generation helper functions to ensure the type-correctness
  * of some of the arguments.
  *
- * @param  {Object} options  the options passed to the list generation helper
- * @return {Object} the transformed options
+ * @param  options  the options passed to the list generation helper
+ * @return the transformed options
  */
 const validateOptions = <T, P>(
   options: ListOfOptions<T, P>
@@ -537,11 +526,11 @@ const validateOptions = <T, P>(
  * Helper function that returns true if the given array or immutable List
  * contains at least one item.
  *
- * @param {Array|Immutable.Collection} array  the collection to test
- * @return {boolean}  whether the given array or immutable list contains
+ * @param array  the collection to test
+ * @return whether the given array or immutable list contains
  *         at least one item
  */
-function hasSomeItems(array: any): array is unknown[] {
+function hasSomeItems(array: unknown): array is unknown[] {
   return Array.isArray(array) && array.length > 0;
 }
 
@@ -549,11 +538,11 @@ function hasSomeItems(array: any): array is unknown[] {
  * Helper function that ensures that the given object is a function that is
  * suitable as a data provider function in the list generation helpers.
  *
- * @param  {function|string} dataProvider  function that gets the React props
+ * @param  dataProvider  function that gets the React props
  *         of the generated component and returns the items to show, or a
  *         string that contains the name of the React prop that holds the
  *         items to show in the generated component
- * @return {function} the input argument converted into a function
+ * @return the input argument converted into a function
  */
 function validateDataProvider<T, P>(
   dataProvider: ListOfOptions<T, P>['dataProvider']
@@ -564,43 +553,6 @@ function validateDataProvider<T, P>(
 }
 
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-
-/**
- * Helper function that validates the incoming itemRenderer argument of the
- * list component generation methods. When the incoming argument is a React
- * component, it returns a function that generates a new instance of that
- * component, filled with the item as its props. Otherwise it returns the
- * incoming argument intact.
- *
- * @param  {function|React.Component} itemRenderer  the item renderer function
- *         or component
- * @return {function}  the incoming item renderer function, intact, or the
- *         incoming React component converted into a suitable item renderer
- *         function
- */
-function validateItemRenderer<T extends ItemWithId, P>(
-  itemRenderer: ItemRenderer<T, P> | React.ComponentType<P>
-): ItemRenderer<T, P> {
-  if (Object.prototype.isPrototypeOf.call(React.Component, itemRenderer)) {
-    /* eslint-disable react/prop-types */
-    const clickHandler =
-      itemRenderer === ListItem || itemRenderer == ListItemButton
-        ? 'onTouchTap'
-        : 'onClick';
-    return (item: T, props: P, selected = false) => {
-      return React.createElement(itemRenderer as any, {
-        ...item,
-        key: item.id,
-        [clickHandler]: (props as any).onItemSelected,
-        selected,
-      });
-    };
-    /* eslint-enable react/prop-types */
-  } else {
-    return itemRenderer as ItemRenderer<T, P>;
-  }
-}
 
 /**
  * Helper function that validates the incoming <code>listFactory</code>
@@ -620,7 +572,7 @@ function validateListFactory<P>(
     return (
       props: P,
       children: React.ReactElement[],
-      ref: React.ForwardedRef<unknown>
+      ref: React.Ref<HTMLUListElement> | undefined
     ) => {
       const anyProps = props as any;
       return React.createElement(
@@ -628,7 +580,7 @@ function validateListFactory<P>(
         {
           dense: anyProps.dense || anyProps.mini,
           disablePadding: anyProps.disablePadding || anyProps.mini,
-          ref: ref as any,
+          ref: ref,
         },
         children
       );
@@ -643,5 +595,4 @@ function validateListFactory<P>(
   return listFactory as ListFactory<P>;
 }
 
-/* eslint-enable @typescript-eslint/no-unsafe-assignment */
 /* eslint-enable @typescript-eslint/no-unsafe-argument */

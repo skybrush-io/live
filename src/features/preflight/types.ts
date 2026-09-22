@@ -10,3 +10,9 @@ export type PreflightCheckItem = {
   label: string;
   groupId: string;
 };
+
+export type PreflightCheckHeaderOrItem = {
+  id: Identifier;
+  label: string;
+  type?: 'header' | 'item';
+};

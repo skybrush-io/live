@@ -13,6 +13,7 @@ import APIKeys from '~/APIKeys';
  * NOTE: Not sure whether this is the right representation for this structure,
  *       but it seems to work for now until we come up with something better.
  */
+// eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace Source {
   export enum BING {
     AERIAL_WITH_LABELS = 'bingMaps.aerialWithLabels',
@@ -48,13 +49,7 @@ export namespace Source {
   }
 
   export type Source =
-    | BING
-    | GOOGLE
-    | MAPBOX
-    | MAPTILER
-    | typeof NEXTZEN
-    | typeof OSM
-    | STAMEN;
+    BING | GOOGLE | MAPBOX | MAPTILER | typeof NEXTZEN | typeof OSM | STAMEN;
 }
 
 /**
@@ -122,8 +117,6 @@ const attributions = {
 /**
  * Object mapping source constants to their visual properties (labels,
  * icons etc) on the user interface.
- *
- * @type {Object}
  */
 const visualRepresentationsForSources: Record<
   Source.Source,
@@ -186,7 +179,7 @@ const visualRepresentationsForSources: Record<
  *
  * @param source - The map source; must be one of the constants
  *                 from the {@link Source} enum
- * @return {string} a human-readable description of the map source
+ * @return a human-readable description of the map source
  */
 export function labelForSource(source: Source.Source): string {
   const visualRep = visualRepresentationsForSources[source];

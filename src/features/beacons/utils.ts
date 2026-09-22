@@ -14,7 +14,7 @@ import { type Beacon } from './types';
 export function updateStateOfBeacon(
   state: Draft<BeaconsSliceState>,
   id: Beacon['id'],
-  properties: Omit<Beacon, 'id'>
+  properties: Partial<Omit<Beacon, 'id'>>
 ): void {
   const beacon = state.byId[id];
 

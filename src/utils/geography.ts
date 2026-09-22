@@ -1,4 +1,3 @@
-/* eslint-disable import/no-duplicates */
 /**
  * @file Geography-related utility functions and variables.
  */
@@ -7,7 +6,8 @@ import turfBuffer from '@turf/buffer';
 import turfDifference from '@turf/difference';
 import turfDistance from '@turf/distance';
 import * as TurfHelpers from '@turf/helpers';
-import * as CoordinateParser from 'coordinate-parser';
+import CoordinateParser from 'coordinate-parser';
+import type { Position } from 'geojson';
 import curry from 'lodash-es/curry';
 import isNil from 'lodash-es/isNil';
 import minBy from 'lodash-es/minBy';
@@ -32,8 +32,9 @@ import * as Projection from 'ol/proj';
 import type RenderFeature from 'ol/render/Feature';
 import VectorSource from 'ol/source/Vector';
 import { getArea, getLength } from 'ol/sphere';
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { type Vector3 } from 'three';
+
+import { euclideanDistance2D, toRadians } from '@skybrush/math';
 
 import { type Feature, FeatureType } from '~/model/features';
 import {
@@ -53,12 +54,18 @@ import {
   type Coordinate2D,
   type Coordinate3D,
   createGeometryFromPoints,
-  euclideanDistance2D,
   isCoordinate2D,
-  toDegrees,
-  toRadians,
 } from './math';
 import { isRunningOnMac } from './platform';
+
+/// Enum for coordinate system types.
+export enum CoordinateSystemType {
+  // This is placed here and not in `math.ts` because the names refer to compass
+  // directions, which is a geographical thing, not a pure mathematical concept.
+
+  NEU = 'neu',
+  NWU = 'nwu',
+}
 
 // TODO: Define better types for coordinates?
 // (Partially solved on 2023-08-12.)
@@ -85,6 +92,7 @@ export type Latitude = number & { [_Latitude]: void };
 
 export type LonLat = [Longitude, Latitude];
 export type LatLon = [Latitude, Longitude];
+export type LatLonObject = { lat: Latitude; lon: Longitude };
 
 const _Easting: unique symbol = Symbol('Easting');
 export type Easting = number & { [_Easting]: void };
@@ -248,8 +256,7 @@ export const findFeaturesById = curry(
         if (!features[i]) {
           const feature = source.getFeatureById(featureId);
           if (feature) {
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-            features[i] = feature as any;
+            features[i] = feature;
           }
         }
       }
@@ -496,7 +503,6 @@ export const formatAltitudeWithReference = (altitude: Altitude): string => {
       return formattedValue + ' above ground';
     }
 
-    // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
     default: {
       return `${formattedValue} above unknown reference: ${String(reference)}`;
     }
@@ -718,7 +724,7 @@ export class FlatEarthCoordinateSystem {
   _origin: LonLat;
   _orientation: number;
   _ellipsoid: EllipsoidModel;
-  _type: string;
+  _type: CoordinateSystemType;
 
   // NOTE: Bangs are justified by `this._precalculate()` setting these values.
   // See canonical issue: https://github.com/microsoft/TypeScript/issues/21132
@@ -748,16 +754,19 @@ export class FlatEarthCoordinateSystem {
   constructor({
     origin,
     orientation = 0,
-    type = 'neu',
+    type = CoordinateSystemType.NEU,
     ellipsoid = WGS84,
   }: {
     origin: LonLat;
     orientation?: number | string;
-    type?: string;
+    type?: CoordinateSystemType;
     ellipsoid?: EllipsoidModel;
   }) {
-    if (type !== 'neu' && type !== 'nwu') {
-      throw new Error('unknown coordinate system type: ' + type);
+    if (
+      type !== CoordinateSystemType.NEU &&
+      type !== CoordinateSystemType.NWU
+    ) {
+      throw new Error('unknown coordinate system type: ' + String(type));
     }
 
     if (typeof orientation !== 'number') {
@@ -803,7 +812,7 @@ export class FlatEarthCoordinateSystem {
   /**
    * Returns the type of the coordinate system.
    */
-  get type(): string {
+  get type(): CoordinateSystemType {
     return this._type;
   }
 
@@ -860,7 +869,8 @@ export class FlatEarthCoordinateSystem {
     this._updateArrayFromLonLat(this._vec, lon, lat);
 
     vec.x = this._vec[0];
-    vec.y = this._type === 'nwu' ? this._vec[1] : -this._vec[1];
+    vec.y =
+      this._type === CoordinateSystemType.NWU ? this._vec[1] : -this._vec[1];
     vec.z = ahl;
   }
 
@@ -878,7 +888,7 @@ export class FlatEarthCoordinateSystem {
     this._r1 = (radius * (1 - eccSq)) / x ** 1.5;
     this._r2OverCosOriginLatInRadians =
       (radius / Math.sqrt(x)) * Math.cos(originLatInRadians);
-    this._yMul = this._type === 'neu' ? 1 : -1;
+    this._yMul = this._type === CoordinateSystemType.NEU ? 1 : -1;
   }
 
   /**
@@ -899,24 +909,6 @@ export class FlatEarthCoordinateSystem {
     Coordinate.rotate(result, -this._orientation);
     result[1] *= this._yMul;
   }
-}
-
-/**
- * Converts a pair of Cartesian coordinates into polar coordinates, assuming
- * that the X axis points towards zero degrees.
- *
- * @param coords - The Cartesian coordinates to convert
- * @returns The polar coordinates, angle being expressed in degrees
- *          between 0 and 360
- */
-export function toPolar(coords: [number, number]): [number, number] {
-  const dist = Math.hypot(coords[0], coords[1]);
-  if (dist > 0) {
-    const angle = toDegrees(Math.atan2(coords[1], coords[0]));
-    return [dist, angle < 0 ? angle + 360 : angle];
-  }
-
-  return [0, 0];
 }
 
 /**
@@ -968,23 +960,22 @@ export const bufferPolygon = (
  * are completely contained in the perimeter. Returns an array of polygons,
  * since this operation might split the input into multiple parts.
  *
- * Note: Turf expects polygons to be closed (the first and last coordinates
+ * NOTE: Turf expects polygons to be closed (the first and last coordinates
  *       should be equal), so this function inherits this requirement.
+ *
+ * TODO: This probably belongs in `src/utils/math` instead of here.
  */
-export function normalizePolygon([points, ...holes]: any): any {
-  // TODO: This should be typed properly!
-
-  // Start with the boundary ring and subtract every hole from it with Turf
-  // TODO: This can be simplified when Turf 7.0.0 gets released, as
-  //       difference will support multiple subtrahend features
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
+export function normalizePolygon([
+  points,
+  ...holes
+]: Position[][]): Position[][][] {
   const basePolygon = TurfHelpers.polygon([points]);
   const difference =
     holes.length > 0
       ? turfDifference(
           TurfHelpers.featureCollection([
             basePolygon,
-            ...holes.map((hole: any) => TurfHelpers.polygon([hole])),
+            ...holes.map((hole) => TurfHelpers.polygon([hole])),
           ])
         )
       : basePolygon;
@@ -1010,7 +1001,7 @@ export function normalizePolygon([points, ...holes]: any): any {
   }
 }
 
-type ScaledJSONGPSCoordinate = [number, number];
+export type ScaledJSONGPSCoordinate = [number, number];
 
 /**
  * Converts a longitude-latitude pair to a representation that is safe to be
@@ -1022,10 +1013,9 @@ type ScaledJSONGPSCoordinate = [number, number];
  * @return the JSON representation, scaled up to 1e7 degrees. Note
  *         that it returns the <em>latitude</em> first
  */
-export const toScaledJSONFromObject = (coords: {
-  lat: Latitude;
-  lon: Longitude;
-}): ScaledJSONGPSCoordinate => [
+export const toScaledJSONFromObject = (
+  coords: LatLonObject
+): ScaledJSONGPSCoordinate => [
   Math.round(coords.lat * 1e7),
   Math.round(coords.lon * 1e7),
 ];
@@ -1047,6 +1037,20 @@ export const toScaledJSONFromLonLat = (
   Math.round(coords[1] * 1e7),
   Math.round(coords[0] * 1e7),
 ];
+
+/**
+ * Reverts a "JSON-safe" multiplier offset coordinate representation to a
+ * simple decimal longitude-latitude pair
+ *
+ * @param  coords  the JSON representation, scaled up to 1e7 degrees.
+ *         Note that it contains the <em>latitude</em> first
+ * @return the resulting latitude-longitude pair, represented as an object
+ */
+export const toObjectFromScaledJSON = (
+  coords: ScaledJSONGPSCoordinate
+): LatLonObject =>
+  // TODO: Eliminate or justify these type assertions
+  ({ lat: (coords[0] / 1e7) as Latitude, lon: (coords[1] / 1e7) as Longitude });
 
 /**
  * Reverts a "JSON-safe" multiplier offset coordinate representation to a

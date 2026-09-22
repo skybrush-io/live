@@ -1,17 +1,17 @@
-import arrify from 'arrify';
-import isNil from 'lodash-es/isNil';
-import pull from 'lodash-es/pull';
-import without from 'lodash-es/without';
 import {
   type CaseReducer,
   type Draft,
   type PayloadAction,
 } from '@reduxjs/toolkit';
+import isNil from 'lodash-es/isNil';
+import pull from 'lodash-es/pull';
+import without from 'lodash-es/without';
 
-import type UAV from '~/model/uav';
-import { deleteItemById } from '~/utils/collections';
+import type { Identifier } from '~/utils/collections';
+import { EMPTY_ARRAY } from '~/utils/redux';
 
 import { type UploadSliceState } from './slice';
+import type { HistoryItem, PerUAVJobResult, UploadJobResult } from './types';
 
 const ALL_QUEUES: Array<keyof UploadSliceState['queues']> = [
   'failedItems',
@@ -21,21 +21,29 @@ const ALL_QUEUES: Array<keyof UploadSliceState['queues']> = [
   'itemsFinished',
 ];
 
-export function clearLastUploadResultForJobTypeHelper(
+export function clearUploadHistoryForJobTypeHelper(
   state: Draft<UploadSliceState>,
   jobType: string
 ): void {
-  deleteItemById(state.history, jobType);
+  delete state.history[jobType];
 }
 
-export function clearQueues(state: Draft<UploadSliceState>): void {
-  state.queues.failedItems = [];
-  state.queues.itemsFinished = [];
-  state.queues.itemsQueued = [];
-  state.queues.itemsWaitingToStart = [];
+export function clearQueues(
+  state: Draft<UploadSliceState>,
+  options: { showLastUploadResult: boolean }
+): void {
+  state.queues = {
+    itemsInProgress: [],
+    itemsWaitingToStart: [],
+    itemsQueued: [],
+    itemsFinished: [],
+    failedItems: [],
+  };
+
   state.errors = {};
   state.progresses = {};
-  state.dialog.showLastUploadResult = false;
+
+  state.dialog.showLastUploadResult = options.showLastUploadResult;
 }
 
 /**
@@ -44,7 +52,7 @@ export function clearQueues(state: Draft<UploadSliceState>): void {
  */
 function removeErrorsForUAVs(
   state: Draft<UploadSliceState>,
-  uavIds: Array<UAV['id']>
+  uavIds: Identifier[]
 ): void {
   for (const uavId of uavIds) {
     delete state.errors[uavId];
@@ -75,7 +83,7 @@ export const ensureItemsInQueue = ({
   doNotMoveWhenIn?: Array<keyof UploadSliceState['queues']>;
 } = {}): CaseReducer<
   UploadSliceState,
-  PayloadAction<UAV['id'] | Array<UAV['id']>>
+  PayloadAction<Identifier | Identifier[]>
 > => {
   const allOtherQueues = without(
     ALL_QUEUES,
@@ -84,7 +92,9 @@ export const ensureItemsInQueue = ({
   );
 
   return (state, action) => {
-    const uavIds = arrify(action.payload);
+    const uavIds = Array.isArray(action.payload)
+      ? action.payload
+      : [action.payload];
     const targetQueue = target ? state.queues[target] : undefined;
 
     for (const queueName of allOtherQueues) {
@@ -129,12 +139,11 @@ export const moveItemsBetweenQueues =
   }: {
     source: keyof UploadSliceState['queues'];
     target?: keyof UploadSliceState['queues'];
-  }): CaseReducer<
-    UploadSliceState,
-    PayloadAction<UAV['id'] | Array<UAV['id']>>
-  > =>
+  }): CaseReducer<UploadSliceState, PayloadAction<Identifier | Identifier[]>> =>
   (state, action) => {
-    const uavIds = arrify(action.payload);
+    const uavIds = Array.isArray(action.payload)
+      ? action.payload
+      : [action.payload];
     const sourceQueue = state.queues[source];
     const targetQueue = target ? state.queues[target] : undefined;
 
@@ -142,9 +151,10 @@ export const moveItemsBetweenQueues =
       const index = sourceQueue.indexOf(uavId);
       if (index >= 0) {
         sourceQueue.splice(index, 1);
-        if (targetQueue) {
-          targetQueue.push(uavId);
-        }
+      }
+      // Add the item to the target queue even if it's not in the source queue
+      if (targetQueue) {
+        targetQueue.push(uavId);
       }
     }
 
@@ -168,3 +178,122 @@ export const moveItemsBetweenQueues =
       }
     }
   };
+
+/**
+ * Aggregates up to date per-UAV job results from the given history items.
+ *
+ * Outdated statuses are ignored.
+ */
+export function aggregatePerUAVResultsFromHistory<T>(
+  historyItems: Array<HistoryItem<T>> | undefined
+): Record<Identifier, PerUAVJobResult<T>> {
+  const result: Record<Identifier, PerUAVJobResult<T>> = {};
+  if (historyItems === undefined) {
+    return result;
+  }
+
+  for (const item of historyItems) {
+    for (const [uavId, entry] of Object.entries(item.perUAVResults)) {
+      if (entry.type === 'outdated') {
+        delete result[uavId];
+      } else {
+        result[uavId] = entry;
+      }
+    }
+  }
+
+  return result;
+}
+
+/**
+ * Record that maps upload job results to their priority/severity level.
+ */
+const COMPACTION_RESULT_PRIORITY: Record<UploadJobResult, number> = {
+  success: 0,
+  cancelled: 1,
+  error: 2,
+};
+
+/**
+ * Compacts a history array if it exceeds `maxSize`. The last
+ * `Math.floor(maxSize / 2)` items are kept as-is; the overflow is
+ * merged into a single item where per-UAV statuses and errors
+ * are layered chronologically (newer overrides older).
+ */
+export function compactHistory(
+  history: HistoryItem[],
+  maxSize = 8
+): HistoryItem[] {
+  if (maxSize < 1) {
+    return EMPTY_ARRAY;
+  }
+
+  if (history.length <= maxSize) {
+    return history;
+  }
+
+  const keepCount = Math.floor(maxSize / 2);
+  const mergeUntil = history.length - keepCount;
+
+  const perUAVResults: Record<Identifier, PerUAVJobResult> = {};
+  let worstResult: UploadJobResult = 'success';
+
+  for (let i = 0; i < mergeUntil; i++) {
+    const item = history[i];
+    for (const [uavId, entry] of Object.entries(item.perUAVResults)) {
+      if (entry.type === 'outdated') {
+        delete perUAVResults[uavId];
+      } else {
+        perUAVResults[uavId] = entry;
+      }
+    }
+
+    if (
+      COMPACTION_RESULT_PRIORITY[item.result] >
+      COMPACTION_RESULT_PRIORITY[worstResult]
+    ) {
+      worstResult = item.result;
+    }
+  }
+
+  const compacted: HistoryItem = {
+    result: worstResult,
+    perUAVResults,
+  };
+
+  return [compacted, ...history.slice(mergeUntil)];
+}
+
+/**
+ * Pushes a new history item into the history of the given job type.
+ */
+export function pushItemToHistory(
+  history: Record<string, HistoryItem[]>,
+  jobType: string,
+  item: HistoryItem
+) {
+  const historyItems = history[jobType] ?? [];
+  historyItems.push(item);
+  history[jobType] = compactHistory(historyItems);
+}
+
+/**
+ * Counts the types of results in a given history item.
+ */
+export function countResultsByTypeInHistoryItem(
+  historyItem: HistoryItem
+): Record<UploadJobResult, number> {
+  const counts: Record<UploadJobResult, number> = {
+    success: 0,
+    cancelled: 0,
+    error: 0,
+  };
+
+  for (const entry of Object.values(historyItem.perUAVResults)) {
+    if (entry.type !== 'outdated') {
+      counts[entry.type]++;
+    }
+  }
+
+  return counts;
+}

@@ -1,22 +1,3 @@
-import { promises } from 'dns';
-import electron from 'electron';
-import fs from 'fs';
-import { ipcRenderer as ipc } from 'electron-better-ipc';
-import ElectronStore from 'electron-store';
-import SSDPClient from 'node-ssdp-lite';
-import watch from 'node-watch';
-import path from 'path';
-import createStorageEngine from 'redux-persist-electron-storage';
-import streamToBlob from 'stream-to-blob';
-
-import * as localServerModule from './local-server.mjs';
-import {
-  receiveActionsFromRenderer,
-  receiveSubscriptionsFromRenderer,
-  setupIpc,
-} from './ipc.mjs';
-import TCPSocket from './tcp-socket.mjs';
-
 /**
  * @file Preload script that gets executed in the renderer processes _before_
  * it is dropping its privileges to access Node.js methods.
@@ -24,8 +5,29 @@ import TCPSocket from './tcp-socket.mjs';
  * This is the place where we can construct a limited "API" object that the
  * renderer processes can use to talk to Node.js.
  */
+
+import SSDPClient from '@skybrush/ssdp-lite';
+import { promises } from 'dns';
+import electron from 'electron';
+import { ipcRenderer as ipc } from 'electron-better-ipc';
+import ElectronStore from 'electron-store';
+import fs from 'fs';
+import watch from 'node-watch';
+import path from 'path';
+import createStorageEngine from 'redux-persist-electron-storage';
+import streamToBlob from 'stream-to-blob';
+
+import {
+  receiveActionsFromRenderer,
+  receiveSubscriptionsFromRenderer,
+  setupIpc,
+} from './ipc.mjs';
+import * as localServerModule from './local-server.mjs';
+import TCPSocket from './tcp-socket.mjs';
+
 const dns = { promises }.promises;
 const { contextBridge } = electron;
+
 /**
  * Creates a new SSDP client object and registers the given function to be
  * called when an SSDP response is received.
@@ -112,8 +114,8 @@ contextBridge.exposeInMainWorld('bridge', {
    * interchangeably.
    *
    * @param  {string}  filename  the name of the file to load
-   * @param  {string}  mimeType  the MIME type of the file, if known
-   * @param  {object}  options   options that can be used to read a slice of a
+   * @param  {string?} mimeType  the MIME type of the file, if known
+   * @param  {object?} options   options that can be used to read a slice of a
    *         file if needed
    * @return a promise that resolves with the blob representing the file
    */
@@ -132,10 +134,12 @@ contextBridge.exposeInMainWorld('bridge', {
       streamOptions.end = end;
     }
 
+    /** @type {Blob} */
     const blob = await streamToBlob(
       fs.createReadStream(filename, streamOptions),
       mimeType
     );
+
     // We cannot send the blob through directly because it does not seem to
     // work in Electron with context isolation, at least not in Electron 14
     return {

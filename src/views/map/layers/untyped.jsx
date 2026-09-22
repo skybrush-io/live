@@ -4,19 +4,23 @@ import CardHeader from '@mui/material/CardHeader';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { connect } from 'react-redux';
 
 import { changeLayerType } from '~/features/map/layers';
 import {
   areMultipleInstancesAllowedForLayerType,
   iconForLayerType,
+  isLayerTypeHidden,
   labelForLayerType,
   LayerTypes,
 } from '~/model/layers';
 import { getLayersInBottomFirstOrder } from '~/selectors/ordered';
 
 // === Selector that finds all the layer types that can be added to the map now ===
+
+const selectLayerTypesThatCanBeShown = (state) => {
+  return LayerTypes.filter((layerType) => !isLayerTypeHidden(layerType));
+};
 
 const selectLayerTypesThatCanBeAdded = (state) => {
   const result = [];
@@ -27,8 +31,9 @@ const selectLayerTypesThatCanBeAdded = (state) => {
 
   for (const layerType of LayerTypes) {
     if (
-      areMultipleInstancesAllowedForLayerType(layerType) ||
-      !existingLayerTypes.has(layerType)
+      !isLayerTypeHidden(layerType) &&
+      (areMultipleInstancesAllowedForLayerType(layerType) ||
+        !existingLayerTypes.has(layerType))
     ) {
       result.push(layerType);
     }
@@ -97,7 +102,7 @@ UntypedLayerSettingsPresentation.propTypes = {
 export const UntypedLayerSettings = connect(
   // mapStateToProps
   (state) => ({
-    layerTypes: LayerTypes,
+    layerTypes: selectLayerTypesThatCanBeShown(state),
     enabledLayerTypes: selectLayerTypesThatCanBeAdded(state),
   }),
   // mapDispatchToProps

@@ -265,9 +265,6 @@
     "reverseDirection": "Przytrzymaj <kbd>Shift</kbd>, aby odwrócić kierunek.",
     "selectNextEmptySlot": "Wybierz następny pusty slot"
   },
-  "mappingToggleButton": {
-    "sortByMissionID": "Sortuj według ID misji"
-  },
   "measurementList": {
     "addDrone": "Dodaj drona do pomiaru za pomocą przycisku + na pasku narzędzi",
     "copyToClipboard": "Kopiuj do schowka",
@@ -619,7 +616,7 @@
     "UAVheadings": "Wskazówki dla UAV's przed startem …",
     "compassDirection": "Kierunek kompasu",
     "headingOffset": "Zmień kierunek",
-    "setToAvergaeHeading": "Ustaw średni kurs dla aktywnych dronów",
+    "setToAverageHeading": "Ustaw średni kurs dla aktywnych dronów",
     "specifiedByAbsoluteCompassDirection": "Określony przez bezwzględny kierunek kompasu",
     "specifiedRelativeToShowOrientation": "Określony w stosunku do orientacji pokazu",
     "unspecified": "Nieokreślony"
@@ -630,8 +627,7 @@
     "licenseInfo": "Informacje o licencji",
     "offlineMaps": "Mapy offline",
     "paramUpload": "Prześlij parametry",
-    "tooltip": "Skrzynka z narzędziami",
-    "uploadInProgress": "Przesyłanie w toku"
+    "tooltip": "Skrzynka z narzędziami"
   },
   "uploadPanel": {
     "cancelUpload": "Anuluj przesyłanie",

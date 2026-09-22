@@ -8,7 +8,6 @@ import FormHelperText from '@mui/material/FormHelperText';
 import Switch from '@mui/material/Switch';
 import TextField from '@mui/material/TextField';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { connect } from 'react-redux';
 
 import SwatchesColorPicker from '~/components/SwatchesColorPicker';

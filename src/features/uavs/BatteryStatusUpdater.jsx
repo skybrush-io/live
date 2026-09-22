@@ -11,7 +11,7 @@ import {
 } from '~/features/settings/selectors';
 import { BatteryDisplayStyle } from '~/model/settings';
 
-import { getActiveUAVIds, getUAVById } from './selectors';
+import { getActiveAndAwakeUAVIds, getUAVById } from './selectors';
 
 const BatteryStatusUpdater = ({ onSetStatus }) => {
   const store = useStore();
@@ -28,7 +28,9 @@ const BatteryStatusUpdater = ({ onSetStatus }) => {
     const voltages = [];
     const percentages = [];
 
-    for (const uavId of getActiveUAVIds(state)) {
+    // We want to exclude sleeping UAVs because they report their latest known
+    // battery status, which may be outdated.
+    for (const uavId of getActiveAndAwakeUAVIds(state)) {
       const battery = getUAVById(state, uavId)?.battery;
 
       if (battery) {

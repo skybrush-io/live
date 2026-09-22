@@ -9,7 +9,8 @@ import type LineString from 'ol/geom/LineString';
 import Point from 'ol/geom/Point';
 import { Fill, RegularShape, Stroke, Style } from 'ol/style';
 
-import { bearing, type Coordinate2D } from './math';
+import { bearing } from '@skybrush/math';
+import type { Coordinate2D } from './math';
 
 export const fill = (color: Color | ColorLike): Fill => new Fill({ color });
 export const stroke = (

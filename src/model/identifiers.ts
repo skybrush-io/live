@@ -40,6 +40,3 @@ export const MAP_ORIGIN_ID = 'map';
 export const MISSION_ORIGIN_ID = 'mission';
 export const NET_CONVEX_HULL_AREA_ID = 'netConvexHull';
 export const GROSS_CONVEX_HULL_AREA_ID = 'grossConvexHull';
-// TODO: Should there be separate constant ids for the
-//       completed, remaining and auxiliary parts?
-export const MISSION_ITEM_LINE_STRING_ID = 'missionItemLineString';

@@ -27,7 +27,7 @@ import { Switches, TextField } from 'mui-rff';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Form } from 'react-final-form';
-import { Translation, useTranslation, withTranslation } from 'react-i18next';
+import { Translation, useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import { DialogTabs, SmallProgressIndicator } from '@skybrush/mui-components';
@@ -60,7 +60,12 @@ import {
 } from '~/utils/validation';
 
 const styles = {
-  dialogContent: { paddingBottom: 0, paddingLeft: 0, paddingRight: 0 },
+  dialogContent: {
+    paddingTop: 1,
+    paddingBottom: 0,
+    paddingLeft: 0,
+    paddingRight: 0,
+  },
   flexColumn: {
     display: 'flex',
     flexDirection: 'column',
@@ -73,6 +78,10 @@ const styles = {
   serverList: {
     height: '160px',
     overflow: 'auto',
+    '& .MuiListItem-gutters': {
+      paddingLeft: 3,
+      paddingRight: 3,
+    },
     '& .MuiListItemButton-gutters': {
       paddingLeft: 3,
       paddingRight: 3,
@@ -129,57 +138,59 @@ const DetectedServersListPresentation = ({
   isScanning,
   items,
   onItemSelected,
-  t,
-}) => (
-  <List disablePadding sx={styles.serverList}>
-    {isScanning && (!items || items.length === 0) ? (
-      <ListItem key='__scanning'>
-        <ListItemIcon>
-          <CircularProgress color='secondary' size={24} />
-        </ListItemIcon>
-        <ListItemText
-          primary={t('serverSettingsDialog.pleaseWait')}
-          secondary={t('serverSettingsDialog.scanningNetwork')}
-        />
-      </ListItem>
-    ) : null}
-    {items.map((item) => (
-      <ListItemButton key={item.id} onClick={partial(onItemSelected, item)}>
-        <ListItemIcon>{iconForServerItem(item)}</ListItemIcon>
-        <ListItemText
-          {...(item.label
-            ? {
-                primary: item.label,
-                secondary: [
-                  addressForServerItem(item),
-                  // securityWarningForServerItem(item)(t),
-                ]
-                  .filter(Boolean)
-                  .join(' '),
-              }
-            : {
-                primary: addressForServerItem(item),
-                secondary: protocolForServerItem(item)(t),
-              })}
-        />
-      </ListItemButton>
-    ))}
-    {manualSetupAllowed && (
-      <ListItemButton key='__manual' onClick={partial(onItemSelected, null)}>
-        <ListItemIcon>
-          <EditIcon />
-        </ListItemIcon>
-        <ListItemText primary={t('serverSettingsDialog.enterManually')} />
-      </ListItemButton>
-    )}
-  </List>
-);
+}) => {
+  const { t } = useTranslation();
+
+  return (
+    <List disablePadding sx={styles.serverList}>
+      {isScanning && (!items || items.length === 0) ? (
+        <ListItem key='__scanning'>
+          <ListItemIcon>
+            <CircularProgress color='secondary' size={24} />
+          </ListItemIcon>
+          <ListItemText
+            primary={t('serverSettingsDialog.pleaseWait')}
+            secondary={t('serverSettingsDialog.scanningNetwork')}
+          />
+        </ListItem>
+      ) : null}
+      {items.map((item) => (
+        <ListItemButton key={item.id} onClick={partial(onItemSelected, item)}>
+          <ListItemIcon>{iconForServerItem(item)}</ListItemIcon>
+          <ListItemText
+            {...(item.label
+              ? {
+                  primary: item.label,
+                  secondary: [
+                    addressForServerItem(item),
+                    // securityWarningForServerItem(item)(t),
+                  ]
+                    .filter(Boolean)
+                    .join(' '),
+                }
+              : {
+                  primary: addressForServerItem(item),
+                  secondary: protocolForServerItem(item)(t),
+                })}
+          />
+        </ListItemButton>
+      ))}
+      {manualSetupAllowed && (
+        <ListItemButton key='__manual' onClick={partial(onItemSelected, null)}>
+          <ListItemIcon>
+            <EditIcon />
+          </ListItemIcon>
+          <ListItemText primary={t('serverSettingsDialog.enterManually')} />
+        </ListItemButton>
+      )}
+    </List>
+  );
+};
 
 DetectedServersListPresentation.propTypes = {
   isScanning: PropTypes.bool,
   items: PropTypes.array,
   onItemSelected: PropTypes.func,
-  t: PropTypes.func,
 };
 
 /**
@@ -192,14 +203,15 @@ const DetectedServersList = connect(
     isScanning: state.servers.isScanning,
     items: getDetectedServersInOrder(state),
   })
-)(withTranslation()(DetectedServersListPresentation));
+)(DetectedServersListPresentation);
 
 const validator = createValidator({
   hostName: required,
   port: [required, integer, between(1, 65535)],
 });
 
-const ServerSettingsFormPresentation = ({ onKeyPress, onSubmit, t }) => {
+const ServerSettingsFormPresentation = ({ onKeyPress, onSubmit }) => {
+  const { t } = useTranslation();
   const initialValues = useSelectorOnce((state) => ({
     ...state.dialogs.serverSettings,
     isWebSocket: getServerProtocolWithDefaultWS(state) === Protocol.WS,
@@ -223,6 +235,7 @@ const ServerSettingsFormPresentation = ({ onKeyPress, onSubmit, t }) => {
             name='hostName'
             label={t('serverSettingsDialog.hostname')}
             variant='filled'
+            sx={{ mt: 2 }}
           />
           <TextField
             fullWidth
@@ -252,14 +265,13 @@ const ServerSettingsFormPresentation = ({ onKeyPress, onSubmit, t }) => {
 ServerSettingsFormPresentation.propTypes = {
   onKeyPress: PropTypes.func,
   onSubmit: PropTypes.func,
-  t: PropTypes.func,
 };
 
 /**
  * Container of the form that shows the fields that the user can use to
  * edit the server settings.
  */
-const ServerSettingsForm = withTranslation()(ServerSettingsFormPresentation);
+const ServerSettingsForm = ServerSettingsFormPresentation;
 
 /**
  * Presentation component for the dialog that shows the form that the user

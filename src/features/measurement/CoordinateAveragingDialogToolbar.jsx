@@ -7,8 +7,7 @@ import Replay from '@mui/icons-material/Replay';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import PropTypes from 'prop-types';
-import React from 'react';
-import { withTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import { DialogToolbar, Tooltip } from '@skybrush/mui-components';
@@ -44,12 +43,16 @@ const CoordinateAveragingDialogToolbar = ({
   onResumeSelected,
   onSetCentroidOfSelectionAsMapOrigin,
   onUAVIdAdded,
-  t,
 }) => {
+  const { t } = useTranslation();
+
   return (
     <DialogToolbar disableGutters>
       <Box sx={{ position: 'absolute', display: 'flex' }}>
-        <UAVSelectorWrapper filterable onSelect={onUAVIdAdded}>
+        <UAVSelectorWrapper
+          filterable
+          onSelect={({ uavId }) => onUAVIdAdded(uavId)}
+        >
           {(handleClick) => (
             <Tooltip
               content={t('coordinateAveragingDialogToolbar.addNewDrone')}
@@ -145,7 +148,6 @@ CoordinateAveragingDialogToolbar.propTypes = {
   onRestartSelected: PropTypes.func,
   onSetCentroidOfSelectionAsMapOrigin: PropTypes.func,
   onUAVIdAdded: PropTypes.func,
-  t: PropTypes.func,
 };
 
 export default connect(
@@ -166,4 +168,4 @@ export default connect(
       setAveragedCentroidOfSelectedUAVsAsMapOrigin,
     onUAVIdAdded: startAveragingUAVCoordinateById,
   }
-)(withTranslation()(CoordinateAveragingDialogToolbar));
+)(CoordinateAveragingDialogToolbar);

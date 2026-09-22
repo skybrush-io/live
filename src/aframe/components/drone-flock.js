@@ -6,15 +6,15 @@
 
 import { createSelector } from '@reduxjs/toolkit';
 import { MiniSignal } from 'mini-signals';
-import watch from 'redux-watch';
 
 import AFrame from '@skybrush/aframe-components';
+import { watch } from '@skybrush/redux-toolkit';
 
 import { createSelectionHandlerThunk } from '~/components/helpers/lists';
-import { setSelectedUAVIds } from '~/features/uavs/actions';
-import { getSelectedUAVIds } from '~/features/uavs/selectors';
 import { setFeatureIdForTooltip } from '~/features/session/slice';
 import { getPreferredDroneRadius } from '~/features/three-d/selectors';
+import { setSelectedUAVIds } from '~/features/uavs/actions';
+import { getSelectedUAVIds } from '~/features/uavs/selectors';
 import flock from '~/flock';
 import { convertRGB565ToHex } from '~/flockwave/parsing';
 import { uavIdToGlobalId } from '~/model/identifiers';

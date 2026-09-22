@@ -1,13 +1,12 @@
 import Box from '@mui/material/Box';
-import React from 'react';
+import React, { type Ref } from 'react';
 import { connect } from 'react-redux';
-import { Virtuoso, VirtuosoGrid } from 'react-virtuoso';
+import { Virtuoso, VirtuosoGrid, type VirtuosoHandle } from 'react-virtuoso';
 
 import { makeStyles } from '@skybrush/app-theme-mui';
 
 import { UAVListLayout } from '~/features/settings/types';
 import type { RootState } from '~/store/reducers';
-import type { VirtualizedScrollFunctions } from '~/utils/navigation';
 
 import type { UAVListSectionProps } from './UAVListSection';
 import { GRID_ITEM_WIDTH, GRID_ROW_HEIGHT, HEADER_HEIGHT } from './constants';
@@ -35,6 +34,7 @@ type VirtualizedUAVListBodyProps = Readonly<{
   items: Item[];
   itemRenderer: UAVListSectionProps['itemRenderer'];
   layout: UAVListLayout;
+  ref?: Ref<VirtuosoHandle>;
 }>;
 
 /**
@@ -49,41 +49,37 @@ const GridHeaderPadding = (): React.JSX.Element => (
 /**
  * Presentation component for showing the drone show configuration view.
  */
-const VirtualizedUAVListBody = React.forwardRef<
-  VirtualizedScrollFunctions | undefined,
-  VirtualizedUAVListBodyProps
->((props, ref): React.JSX.Element => {
-  const { items, itemRenderer, layout, ...rest } = props;
+const VirtualizedUAVListBody = (
+  props: VirtualizedUAVListBodyProps
+): React.JSX.Element => {
+  const { items, itemRenderer, layout, ref, ...rest } = props;
   const classes = useStyles();
 
   return layout === UAVListLayout.GRID ? (
     <VirtuosoGrid
       ref={ref}
       components={{
-        // eslint-disable-next-line @typescript-eslint/naming-convention
         Header: GridHeaderPadding,
       }}
       itemClassName={classes.gridItem}
-      itemContent={(index) => itemRenderer(items[index]!)}
+      itemContent={(index) => itemRenderer(items[index])}
       listClassName={classes.grid}
       totalCount={items.length}
       {...(rest as any)}
     />
   ) : (
     <Virtuoso
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      ref={ref as any}
+      ref={ref}
       className={classes.list}
       components={{
-        // eslint-disable-next-line @typescript-eslint/naming-convention
         Header: GridHeaderPadding,
       }}
-      itemContent={(index) => itemRenderer(items[index]!)}
+      itemContent={(index) => itemRenderer(items[index])}
       totalCount={items.length}
       {...rest}
     />
   );
-});
+};
 
 export default connect(
   // mapStateToProps

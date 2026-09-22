@@ -3,9 +3,9 @@ import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import MVTFormat from 'ol/format/MVT';
 import type ImageTile from 'ol/ImageTile';
-import React, { type ChangeEvent } from 'react';
+import type React from 'react';
+import { type ChangeEvent } from 'react';
 
-// @ts-expect-error: untyped
 import { layer as olLayer, source } from '@collmot/ol-react';
 
 import type { APIKeysRecord } from '~/APIKeys';
@@ -26,14 +26,15 @@ export type LoadImageTileFunction = (tile: ImageTile, url: string) => void;
 
 // === Layer settings ===
 
-export type BaseLayerSettingsProps = CommonLayerSettingsProps & {
-  onLayerSourceChanged: (evt: ChangeEvent, value: Source.Source) => void;
-};
+export type BaseLayerSettingsProps<P extends { source: Source.Source }> =
+  CommonLayerSettingsProps<P> & {
+    onLayerSourceChanged: (evt: ChangeEvent, value: Source.Source) => void;
+  };
 
-export const BaseLayerSettings = ({
+export const BaseLayerSettings = <P extends { source: Source.Source }>({
   layer,
   onLayerSourceChanged,
-}: BaseLayerSettingsProps) => {
+}: BaseLayerSettingsProps<P>) => {
   const sourceRadioButtons = Sources.map((source) => (
     <FormControlLabel
       key={source}
@@ -271,17 +272,21 @@ export const LayerSource = ({
 
 // === Base layer ===
 
-export type BaseLayerProps = {
-  layer: Layer;
+export type BaseLayerProps<P extends { source: Source.Source }> = {
+  layer: Layer<P>;
   zIndex: number;
   LayerSource: React.ComponentType<{ type: Source.Source }>;
 };
 
-export const BaseLayer = ({ layer, zIndex, LayerSource }: BaseLayerProps) => {
-  const layerSource = layer.parameters['source'] as Source.Source;
+export function BaseLayer<P extends { source: Source.Source }>({
+  layer,
+  zIndex,
+  LayerSource,
+}: BaseLayerProps<P>) {
+  const layerSource = layer.parameters['source'];
   return (
     <LayerType type={layerSource} zIndex={zIndex}>
       <LayerSource type={layerSource} />
     </LayerType>
   );
-};
+}

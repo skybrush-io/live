@@ -44,7 +44,6 @@ export function chooseUniqueId(
   let index = 0;
   let candidate: string;
 
-  /* eslint-disable no-constant-condition */
   while (true) {
     index++;
     candidate = `${idProposal}_${index}`;
@@ -57,7 +56,6 @@ export function chooseUniqueId(
       return candidate;
     }
   }
-  /* eslint-enable no-constant-condition */
 }
 
 /**
@@ -95,12 +93,11 @@ export function chooseUniqueName(
 
   const match = nameProposal.match(/^(.*)\s+(\d+)$/);
   // NOTE: Bang justified by the `(.*)` group being present if `match` exists
-  const nameBase = match ? match[1]! : nameProposal.trimEnd();
+  const nameBase = match ? match[1] : nameProposal.trimEnd();
   // NOTE: Bang justified by the `(\d+)` group being present if `match` exists
-  let index = match ? Number.parseInt(match[2]!, 10) : 0;
+  let index = match ? Number.parseInt(match[2], 10) : 0;
   let candidate: string;
 
-  /* eslint-disable no-constant-condition */
   while (true) {
     index++;
     candidate = `${nameBase} ${index}`;
@@ -108,7 +105,6 @@ export function chooseUniqueName(
       return candidate;
     }
   }
-  /* eslint-enable no-constant-condition */
 }
 
 /**
@@ -127,4 +123,24 @@ export function chooseUniqueIdFromName(
   existingIds: string[] | Record<string, unknown>
 ): string {
   return chooseUniqueId(camelCase(name), existingIds);
+}
+
+/**
+ * Finds the next available index in a collection of items with numeric indices.
+ *
+ * @param collection - a collection of items, each having a unique numeric index
+ * @param getter - a getter that returns the index given an item
+ * @param start - the smallest possible index to start searching from (default is 0)
+ * @returns the first available index that is not used by any item in the collection
+ */
+export function findNextAvailableIndex<T>(
+  collection: T[],
+  getter: (item: T) => number,
+  start = 0
+): number {
+  const usedIndices = new Set(collection.map(getter));
+  while (usedIndices.has(start)) {
+    start++;
+  }
+  return start;
 }

@@ -1,8 +1,8 @@
 import type { ModifyEvent } from 'ol/interaction/Modify';
-import React, { useMemo, type CSSProperties } from 'react';
+import type React from 'react';
+import { useMemo, type CSSProperties } from 'react';
 import { connect } from 'react-redux';
 
-// @ts-expect-error
 import { View } from '@collmot/ol-react';
 
 import {
@@ -10,7 +10,7 @@ import {
   getMapViewRotationAngle,
   getMapViewZoom,
 } from '~/selectors/map';
-import { RootState } from '~/store/reducers';
+import type { RootState } from '~/store/reducers';
 import { mapViewCoordinateFromLonLat, type LonLat } from '~/utils/geography';
 
 import BaseMap from './BaseMap';
@@ -73,7 +73,7 @@ type MapProps = Partial<ViewProperties> & {
 
   // -- Ids and refs.
   id?: string;
-  mapRef?: React.Ref<typeof BaseMap>;
+  // mapRef?: React.Ref<typeof BaseMap>;
 };
 
 const Map = (props: MapProps) => {
@@ -89,7 +89,7 @@ const Map = (props: MapProps) => {
     onFeaturesModified,
     onMapMoved,
     id,
-    mapRef,
+    // mapRef,
   } = props;
 
   const view = useMemo(
@@ -109,7 +109,7 @@ const Map = (props: MapProps) => {
     <div style={styles.mapWrapper}>
       <BaseMap
         id={id}
-        ref={mapRef}
+        // ref={mapRef}
         loadTilesWhileInteracting
         view={view}
         useDefaultControls={false}

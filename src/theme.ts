@@ -14,8 +14,6 @@ import {
 
 import type { RootState } from './store/reducers';
 
-// @ts-expect-error TS(2307)
-// eslint-disable-next-line import/no-webpack-loader-syntax
 import darkModeExtraCSS from '!!raw-loader!~/../assets/css/dark-mode.css';
 
 /**
@@ -33,8 +31,7 @@ const DarkModeAwareThemeProvider = createThemeProvider({
  */
 export const DarkModeExtraCSSProvider = () => {
   const isDark = isThemeDark(useTheme());
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-  useConditionalCSS(darkModeExtraCSS, isDark);
+  useConditionalCSS(darkModeExtraCSS as string, isDark);
   return null;
 };
 

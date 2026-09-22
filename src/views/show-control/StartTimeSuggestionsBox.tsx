@@ -1,6 +1,6 @@
-import Box from '@mui/material/Box';
+import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import React from 'react';
+import type React from 'react';
 
 import StartTimeSuggestions, {
   type StartTimeSuggestionsProps,
@@ -15,17 +15,12 @@ const StartTimeSuggestionsBox = ({
   label,
   ...rest
 }: StartTimeSuggestionsBoxProps): React.JSX.Element => (
-  <Box
-    sx={{ mt: 1, flexDirection: 'row', display: 'flex', alignItems: 'center' }}
-  >
-    <Box sx={{ mr: 2 }}>
-      <Typography variant='body2' color='textSecondary'>
-        {label}
-      </Typography>
-    </Box>
-
+  <Stack direction='row' sx={{ mt: 1, alignItems: 'center' }}>
+    <Typography variant='body2' color='textSecondary' sx={{ mr: 2 }}>
+      {label}
+    </Typography>
     <StartTimeSuggestions {...rest} />
-  </Box>
+  </Stack>
 );
 
 export default StartTimeSuggestionsBox;

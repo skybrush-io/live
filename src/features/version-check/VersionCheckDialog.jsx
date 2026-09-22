@@ -1,5 +1,4 @@
 import PropTypes from 'prop-types';
-import React from 'react';
 import { connect } from 'react-redux';
 // import AutoSizer from 'react-virtualized-auto-sizer';
 import Dialog from '@mui/material/Dialog';

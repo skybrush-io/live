@@ -62,7 +62,7 @@ export default class Flock {
     const uavIds = this.getAllUAVIds();
 
     // NOTE: Bang justified by `uavIds` coming from `Object.keys(this._uavsById)`
-    return uavIds.map((uavId) => this._uavsById[uavId]!);
+    return uavIds.map((uavId) => this._uavsById[uavId]);
 
     // Alternative solution without relying on the non-null assertion operator:
     // return uavIds
@@ -183,7 +183,6 @@ export default class Flock {
  * The event contains an array of the UAVs that were added.
  *
  * @event  Flock#uavsAdded
- * @type {UAV[]}
  */
 
 /**
@@ -193,7 +192,6 @@ export default class Flock {
  * The event contains an array of the UAVs that were removed.
  *
  * @event  Flock#uavsRemoved
- * @type {UAV[]}
  */
 
 /**
@@ -203,5 +201,4 @@ export default class Flock {
  * The event contains an array of the UAVs that were updated.
  *
  * @event  Flock#uavsUpdated
- * @type {UAV[]}
  */

@@ -1,13 +1,10 @@
 import Fill from 'ol/style/Fill';
 import Stroke from 'ol/style/Stroke';
 import Text from 'ol/style/Text';
-import React from 'react';
 
-// @ts-expect-error
 import { layer as OLLayer } from '@collmot/ol-react';
 
 import useDarkMode from '~/hooks/useDarkMode';
-import type { Layer } from '~/model/layers';
 import { CoordinateFormat } from '~/model/settings';
 import type { CoordinateFormatter } from '~/selectors/formatting';
 
@@ -126,7 +123,6 @@ function getPreferredGraticuleIntervalsForFormat(
 }
 
 type GraticuleLayerProps = {
-  layer: Layer;
   coordinateformat: CoordinateFormat;
   latFormatter: CoordinateFormatter;
   lonFormatter: CoordinateFormatter;
@@ -136,7 +132,6 @@ type GraticuleLayerProps = {
 export const GraticuleLayer = ({
   coordinateformat,
   latFormatter,
-  layer,
   lonFormatter,
   zIndex,
 }: GraticuleLayerProps) => {

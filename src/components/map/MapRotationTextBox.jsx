@@ -5,6 +5,7 @@
 import RotateLeft from '@mui/icons-material/RotateLeft';
 import IconButton from '@mui/material/IconButton';
 import TextField from '@mui/material/TextField';
+import { toDegrees, toRadians } from '@skybrush/math';
 import throttle from 'lodash-es/throttle';
 import { easeOut } from 'ol/easing';
 import PropTypes from 'prop-types';
@@ -15,7 +16,6 @@ import { withMap } from '@collmot/ol-react';
 
 import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
 import { normalizeAngle } from '~/utils/geography';
-import { toDegrees, toRadians } from '~/utils/math';
 
 /** @import Map from 'ol/Map' */
 

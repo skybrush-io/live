@@ -21,9 +21,9 @@ import React from 'react';
 
 import { OLPropTypes, withMap } from '@collmot/ol-react';
 import { createOLInteractionComponent } from '@collmot/ol-react/lib/interaction';
+import { euclideanDistance2D } from '@skybrush/math';
 
 import * as Condition from '~/components/map/conditions';
-import { euclideanDistance2D } from '~/utils/math';
 
 /**
  * OpenLayers interaction (for right click by default) that overwrites the

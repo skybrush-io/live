@@ -6,29 +6,35 @@
 import isEqual from 'lodash-es/isEqual';
 import { SVD as computeSVD } from 'svd-js';
 
-import { COORDINATE_SYSTEM_TYPE } from '@skybrush/show-format';
-
-import {
-  findAssignmentBetweenPoints,
-  type Assignment,
-} from '~/algorithms/matching';
-import { OriginType } from '~/features/map/types';
-import { FlatEarthCoordinateSystem, type LonLat } from '~/utils/geography';
 import {
   euclideanDistance2D,
   getCentroid,
   getMeanAngle,
   toDegrees,
   toRadians,
-  type Coordinate2D,
-} from '~/utils/math';
+  type Degrees,
+} from '@skybrush/math';
+import { COORDINATE_SYSTEM_TYPE } from '@skybrush/show-format';
+
+import {
+  findAssignmentBetweenPoints,
+  type Assignment,
+} from '~/algorithms/matching';
+import {
+  CoordinateSystemType,
+  FlatEarthCoordinateSystem,
+  type LonLat,
+} from '~/utils/geography';
+import type { Coordinate2D } from '~/utils/math';
 
 import type {
   CoordinateSystemEstimate,
   CoordinateSystemFittingProblem,
 } from './types';
 
-if (COORDINATE_SYSTEM_TYPE !== OriginType.NWU) {
+if (
+  (COORDINATE_SYSTEM_TYPE as CoordinateSystemType) !== CoordinateSystemType.NWU
+) {
   throw new Error(
     `The coordinate system type ${COORDINATE_SYSTEM_TYPE} is not supported by the auto-fit algorithm`
   );
@@ -75,7 +81,7 @@ function calculateInitialEstimate(
 ): CoordinateSystemEstimate {
   const { uavGPSCoordinates, uavHeadings, takeoffCoordinates } = problem;
   const filteredHeadings = uavHeadings.filter(
-    (heading): heading is number => typeof heading === 'number'
+    (heading): heading is Degrees => typeof heading === 'number'
   );
 
   if (uavGPSCoordinates.length === 0) {
@@ -89,7 +95,7 @@ function calculateInitialEstimate(
   const gpsToLocal = new FlatEarthCoordinateSystem({
     origin: uavGPSCentroid,
     orientation: 0,
-    type: OriginType.NWU,
+    type: CoordinateSystemType.NWU,
   });
   const uavCoordinates = convertToFlatEarth(uavGPSCoordinates, gpsToLocal);
   const uavCenter = getCentroid(uavCoordinates);
@@ -98,7 +104,7 @@ function calculateInitialEstimate(
   return {
     origin: gpsToLocal.toLonLat(origin),
     orientation,
-    type: OriginType.NWU,
+    type: CoordinateSystemType.NWU,
   };
 }
 
@@ -117,13 +123,13 @@ type RefineOptions = {
  * is then repeated until there is no change in the matching or until a maximum
  * number of iterations is reached.
  *
- * @param {object} estimate  the estimate to improve on
- * @param {object} problem   the problem description
- * @param {object} options   additional options for the refinement algorithm.
+ * @param estimate  the estimate to improve on
+ * @param problem   the problem description
+ * @param options   additional options for the refinement algorithm.
  *        Currently the following options are supported: `maxIterations`
  *        specifies the maximum number of iterations to perform with the ICP
  *        algorithm
- * @returns {object} an improved estimate
+ * @returns an improved estimate
  */
 function refineEstimate(
   estimate: CoordinateSystemEstimate,
@@ -197,10 +203,10 @@ function refineEstimate(
     /* Filter the coordinates and calculate the centroids */
     const numMatched = matching.length;
     let selectedUAVCoordinates = matching.map(
-      ([index, _]) => uavCoordinates[index]!
+      ([index, _]) => uavCoordinates[index]
     );
     let selectedTakeoffCoordinates = matching.map(
-      ([_, index]) => takeoffCoordinates[index]!
+      ([_, index]) => takeoffCoordinates[index]
     );
     const uavCenter = getCentroid(selectedUAVCoordinates);
     const takeoffCenter = getCentroid(selectedTakeoffCoordinates);
@@ -219,8 +225,8 @@ function refineEstimate(
       [0, 0],
     ];
     for (let i = 0; i < numMatched; i++) {
-      const uavCoordinate = selectedUAVCoordinates[i]!;
-      const takeoffCoordinate = selectedTakeoffCoordinates[i]!;
+      const uavCoordinate = selectedUAVCoordinates[i];
+      const takeoffCoordinate = selectedTakeoffCoordinates[i];
       dotProduct[0][0] += uavCoordinate[0] * takeoffCoordinate[0];
       dotProduct[0][1] += uavCoordinate[0] * takeoffCoordinate[1];
       dotProduct[1][0] += uavCoordinate[1] * takeoffCoordinate[0];
@@ -251,7 +257,7 @@ function refineEstimate(
     estimate = {
       origin: gpsToLocal.toLonLat([originOffset[0], originOffset[1]]),
       orientation: estimate.orientation + orientationOffset,
-      type: OriginType.NWU,
+      type: CoordinateSystemType.NWU,
     };
   }
 

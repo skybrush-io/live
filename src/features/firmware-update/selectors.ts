@@ -1,4 +1,4 @@
-import { AppSelector } from '~/store/reducers';
+import type { AppSelector } from '~/store/reducers';
 import { type Identifier } from '~/utils/collections';
 
 /**

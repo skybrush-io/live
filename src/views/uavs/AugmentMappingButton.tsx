@@ -1,8 +1,8 @@
 import Shuffle from '@mui/icons-material/Shuffle';
 import Button, { type ButtonProps } from '@mui/material/Button';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { connect, useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { callAndHandleErrors } from '~/error-handling';
 
 import { augmentMappingAutomaticallyFromSpareDrones } from '~/features/mission/actions';
 import { canAugmentMappingAutomaticallyFromSpareDrones } from '~/features/mission/selectors';
@@ -25,7 +25,9 @@ const AugmentMappingButton = (props: AugmentMappingButtonProps) => {
       startIcon={<Shuffle />}
       disabled={!canAugmentMapping}
       onClick={() => {
-        dispatch(augmentMappingAutomaticallyFromSpareDrones());
+        void callAndHandleErrors(() =>
+          dispatch(augmentMappingAutomaticallyFromSpareDrones())
+        );
       }}
       {...props}
     >

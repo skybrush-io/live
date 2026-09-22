@@ -1,0 +1,62 @@
+diff --git a/node_modules/@mui/styled-engine/esm/StyledEngineProvider/StyledEngineProvider.d.ts b/node_modules/@mui/styled-engine/esm/StyledEngineProvider/StyledEngineProvider.d.ts
+index 7f49cc5..f47481b 100644
+--- a/node_modules/@mui/styled-engine/esm/StyledEngineProvider/StyledEngineProvider.d.ts
++++ b/node_modules/@mui/styled-engine/esm/StyledEngineProvider/StyledEngineProvider.d.ts
+@@ -3,5 +3,6 @@ export interface StyledEngineProviderProps {
+   children?: React.ReactNode;
+   enableCssLayer?: boolean;
+   injectFirst?: boolean;
++  speedy?: boolean;
+ }
+ export default function StyledEngineProvider(props: StyledEngineProviderProps): React.JSX.Element;
+diff --git a/node_modules/@mui/styled-engine/esm/StyledEngineProvider/StyledEngineProvider.js b/node_modules/@mui/styled-engine/esm/StyledEngineProvider/StyledEngineProvider.js
+index 36d0d63..952e03b 100644
+--- a/node_modules/@mui/styled-engine/esm/StyledEngineProvider/StyledEngineProvider.js
++++ b/node_modules/@mui/styled-engine/esm/StyledEngineProvider/StyledEngineProvider.js
+@@ -58,7 +58,7 @@ if (typeof document === 'object') {
+     }
+   }
+ }
+-function getCache(injectFirst, enableCssLayer) {
++function getCache(injectFirst, speedy, enableCssLayer) {
+   if (injectFirst || enableCssLayer) {
+     /**
+      * This is for client-side apps only.
+@@ -78,7 +78,8 @@ function getCache(injectFirst, enableCssLayer) {
+     }
+     const emotionCache = createEmotionCache({
+       key: 'css',
+-      insertionPoint: injectFirst ? insertionPoint : undefined
++      insertionPoint: injectFirst ? insertionPoint : undefined,
++      speedy
+     }, MyStyleSheet);
+     if (enableCssLayer) {
+       const prevInsert = emotionCache.insert;
+@@ -97,6 +98,7 @@ function getCache(injectFirst, enableCssLayer) {
+ export default function StyledEngineProvider(props) {
+   const {
+     injectFirst,
++    speedy = true,
+     enableCssLayer,
+     children
+   } = props;
+@@ -105,7 +107,7 @@ export default function StyledEngineProvider(props) {
+     if (typeof document === 'object' && cacheMap.has(cacheKey)) {
+       return cacheMap.get(cacheKey);
+     }
+-    const fresh = getCache(injectFirst, enableCssLayer);
++    const fresh = getCache(injectFirst, speedy, enableCssLayer);
+     cacheMap.set(cacheKey, fresh);
+     return fresh;
+   }, [injectFirst, enableCssLayer]);
+@@ -129,5 +131,9 @@ process.env.NODE_ENV !== "production" ? StyledEngineProvider.propTypes = {
+    * As a result, they gain more specificity than any other style sheet.
+    * If you want to override MUI's styles, set this prop.
+    */
+-  injectFirst: PropTypes.bool
++  injectFirst: PropTypes.bool,
++  /**
++   * See: https://github.com/emotion-js/emotion/tree/main/packages/sheet#speedy
++   */
++  speedy: PropTypes.bool
+ } : void 0;

@@ -21,7 +21,8 @@ import {
 import type { FormApi } from 'final-form';
 import type { TFunction } from 'i18next';
 import { Checkboxes, DatePicker, Select, TimePicker } from 'mui-rff';
-import React, { useMemo } from 'react';
+import type React from 'react';
+import { useMemo } from 'react';
 import { Form, type FormProps } from 'react-final-form';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
@@ -29,6 +30,7 @@ import { connect } from 'react-redux';
 import { FormHeader as Header } from '@skybrush/mui-components';
 
 import { HMSDurationField } from '~/components/forms/fields';
+import { callAndHandleErrors } from '~/error-handling';
 import { CommonClockId } from '~/features/clocks/types';
 import { authorizeIfAndOnlyIfHasStartTime } from '~/features/show/actions';
 import { StartMethod } from '~/features/show/enums';
@@ -38,10 +40,11 @@ import {
   setStartTime,
   synchronizeShowSettings,
 } from '~/features/show/slice';
-import type { RootState } from '~/store/reducers';
+import type { AppDispatch, RootState } from '~/store/reducers';
 import { formatDurationHMS } from '~/utils/formatting';
 import { parseDurationHMS } from '~/utils/parsing';
 
+import { useCurrentDate } from '~/hooks';
 import StartTimeDisplay from './StartTimeDisplay';
 import type { StartTimeSuggestion } from './StartTimeSuggestions';
 import StartTimeSuggestionsBox from './StartTimeSuggestionsBox';
@@ -54,13 +57,11 @@ enum LocalClockId {
 /* Not all clock IDs are allowed for the start time; here we explicitly
  * describe which ones are allowed. */
 type AllowedClockIdsForStartTime =
-  | LocalClockId.ABSOLUTE
-  | LocalClockId.RELATIVE
-  | CommonClockId.MTC;
+  LocalClockId.ABSOLUTE | LocalClockId.RELATIVE | CommonClockId.MTC;
 
 /** Type guard for AllowedClockIdsForStartTime */
 const validateClockIdForStartTimeForm = (
-  clock: any
+  clock: unknown
 ): clock is AllowedClockIdsForStartTime => {
   return (
     clock === LocalClockId.ABSOLUTE ||
@@ -160,7 +161,12 @@ const StartTimeForm = ({
       onSubmit={onSubmit}
     >
       {({ dirty, form, handleSubmit, invalid, values }) => (
-        <form id='start-time-form' onSubmit={handleSubmit}>
+        <form
+          id='start-time-form'
+          onSubmit={(event) => {
+            void callAndHandleErrors(() => handleSubmit(event));
+          }}
+        >
           <DialogContent sx={{ paddingBottom: 0, paddingTop: 2 }}>
             <StartTimeDisplay />
 
@@ -173,7 +179,7 @@ const StartTimeForm = ({
                 <Select
                   labelId='reference-clock-label'
                   name='clock'
-                  label={t('startTimeDialog.reference') as string}
+                  label={t('startTimeDialog.reference')}
                   formControlProps={{
                     fullWidth: true,
                     variant: 'filled',
@@ -191,45 +197,63 @@ const StartTimeForm = ({
                 </Select>
               </Box>
 
-              {values?.clock === LocalClockId.ABSOLUTE ? (
-                <>
-                  {/* we use separate pickers for the date and the time; this is
-                   * because in most cases the date should default to the current
-                   * day, but the time needs to be adjusted by the user */}
-
-                  <Box
-                    sx={{ alignContent: 'center', minWidth: '160px', flex: 1 }}
-                  >
-                    <DatePicker
-                      disablePast
-                      format='yyyy-MM-dd'
-                      label={t('startTimeDialog.startDate')}
-                      name='utcDate'
-                      textFieldProps={{ variant: 'filled' }}
-                    />
-                  </Box>
-                  <Box
-                    sx={{ alignContent: 'center', minWidth: '160px', flex: 1 }}
-                  >
-                    <TimePicker
-                      ampm={false}
-                      format='HH:mm:ss'
-                      label={t('startTimeDialog.startTime')}
-                      name='utcTime'
-                      textFieldProps={{ variant: 'filled' }}
-                    />
-                  </Box>
-                </>
-              ) : (
-                <Box sx={{ alignContent: 'center', flex: 1 }}>
-                  <HMSDurationField
-                    label={t('startTimeDialog.startTimeHms')}
-                    size='small'
-                    name='timeOnClock'
-                    variant='filled'
-                  />
-                </Box>
-              )}
+              {/* we use separate pickers for the date and the time; this is
+               * because in most cases the date should default to the current
+               * day, but the time needs to be adjusted by the user. However, we
+               * need to keep _all_ pickers in the DOM all the time, otherwise
+               * 'mui-rff' becomes confused when we change the type programmatically
+               * _and_ then we change the value of the picker (because the picker
+               * that would be added to the DOM is not in the DOM yet)
+               */}
+              <Box
+                sx={{
+                  alignContent: 'center',
+                  minWidth: '160px',
+                  flex: 1,
+                  display:
+                    values.clock === LocalClockId.ABSOLUTE ? 'block' : 'none',
+                }}
+              >
+                <DatePicker
+                  disablePast
+                  format='yyyy-MM-dd'
+                  label={t('startTimeDialog.startDate')}
+                  name='utcDate'
+                  textFieldProps={{ variant: 'filled' }}
+                />
+              </Box>
+              <Box
+                sx={{
+                  alignContent: 'center',
+                  minWidth: '160px',
+                  flex: 1,
+                  display:
+                    values.clock === LocalClockId.ABSOLUTE ? 'block' : 'none',
+                }}
+              >
+                <TimePicker
+                  ampm={false}
+                  format='HH:mm:ss'
+                  label={t('startTimeDialog.startTime')}
+                  name='utcTime'
+                  textFieldProps={{ variant: 'filled' }}
+                />
+              </Box>
+              <Box
+                sx={{
+                  alignContent: 'center',
+                  flex: 1,
+                  display:
+                    values.clock !== LocalClockId.ABSOLUTE ? 'block' : 'none',
+                }}
+              >
+                <HMSDurationField
+                  label={t('startTimeDialog.startTimeHms')}
+                  size='small'
+                  name='timeOnClock'
+                  variant='filled'
+                />
+              </Box>
             </FormGroup>
 
             {(values?.clock === LocalClockId.ABSOLUTE ||
@@ -251,7 +275,7 @@ const StartTimeForm = ({
             <Select
               labelId='start-signal-label'
               name='method'
-              label={t('startTimeDialog.startSignal') as string}
+              label={t('startTimeDialog.startSignal')}
               formControlProps={{
                 fullWidth: true,
                 margin: 'dense',
@@ -269,9 +293,7 @@ const StartTimeForm = ({
             <Checkboxes
               name='authorizeWhenSettingStartTime'
               data={{
-                label: t(
-                  'startTimeDialog.authorizeWhenSettingStartTime'
-                ) as string,
+                label: t('startTimeDialog.authorizeWhenSettingStartTime'),
                 value: true,
               }}
             />
@@ -329,9 +351,10 @@ const StartTimeDialog = ({
 }: StartTimeDialogProps): React.JSX.Element => {
   const hasUtcStartTime = typeof utcTime === 'number';
   const hasStartTimeOnClock = typeof timeOnClock === 'number';
+  const now = useCurrentDate(0); // do not update automatically
   const startDateTimeInUtc = hasUtcStartTime
     ? fromUnixTime(utcTime)
-    : setSeconds(add(new Date(), { minutes: 30 }), 0);
+    : setSeconds(add(now, { minutes: 30 }), 0);
   const initialStartTimeOnClock = hasStartTimeOnClock ? timeOnClock : 0;
   const initialClock = validateClockIdForStartTimeForm(clock)
     ? clock
@@ -368,7 +391,7 @@ export default connect(
   }),
 
   // mapDispatchToProps
-  (dispatch) => ({
+  (dispatch: AppDispatch) => ({
     onClose(): void {
       dispatch(closeStartTimeDialog());
     },
@@ -416,7 +439,7 @@ export default connect(
       }
 
       if (authorizeWhenSettingStartTime) {
-        dispatch(authorizeIfAndOnlyIfHasStartTime() as any);
+        dispatch(authorizeIfAndOnlyIfHasStartTime());
       }
 
       dispatch(synchronizeShowSettings('toServer'));

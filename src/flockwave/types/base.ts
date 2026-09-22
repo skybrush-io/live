@@ -1,0 +1,48 @@
+import type {
+  ErrorMap,
+  MessageID,
+  ReceiptID,
+  ReceiptMap,
+} from '@skybrush/flockwave-spec';
+
+/**
+ * Type specification for a generic Flockwave message body. For these messages,
+ * all that we know is that they have a type field.
+ */
+export type MessageBody<T extends string = string> = {
+  type: T;
+};
+
+/**
+ * Type specification for a Flockwave message where the type of the body is
+ * known.
+ */
+export type Message<T = MessageBody> = {
+  '$fw.version': number;
+  id: MessageID;
+  refs?: MessageID;
+  body: T;
+  [k: string]: unknown;
+};
+
+/**
+ * Type specification for a generic response to an operation that may be
+ * synchronous (returns the results immediately) or asynchronous (returning
+ * receipts instead of the actual responses).
+ */
+export type AsyncOperationResponseBody<T> = MessageBody & {
+  receipt?: ReceiptID;
+  error?: string;
+  result?: T;
+};
+
+/**
+ * Type specification for a generic response to an operation that affects multiple
+ * objects on the server and may be synchronous (returns the results immediately) or
+ * asynchronous (returning receipts instead of the actual responses).
+ */
+export type MultiAsyncOperationResponseBody<T> = MessageBody & {
+  receipt?: ReceiptMap;
+  error?: ErrorMap;
+  result?: Record<string, T>;
+};

@@ -5,21 +5,25 @@ import LandIcon from '@mui/icons-material/FlightLand';
 import TakeoffIcon from '@mui/icons-material/FlightTakeoff';
 import UpdateFlightAreaIcon from '@mui/icons-material/FormatShapes';
 import ChangeAltitudeIcon from '@mui/icons-material/Height';
-import HomeIcon from '@mui/icons-material/Home';
+import ReturnToHomeIcon from '@mui/icons-material/Home';
 import HoverIcon from '@mui/icons-material/HourglassEmpty';
 import ChangeHeadingIcon from '@mui/icons-material/RotateLeft';
 import UpdateSafetyIcon from '@mui/icons-material/Security';
 import SetParameterIcon from '@mui/icons-material/Settings';
 import ChangeSpeedIcon from '@mui/icons-material/Speed';
-import isObject from 'lodash-es/isObject';
-import * as React from 'react';
 import UpdateGeofenceIcon from '~/icons/PlacesFence';
 
 import {
   type GeofenceConfiguration,
   type SafetyConfiguration,
 } from '~/features/safety/model';
-import { type Latitude, type Longitude, type LonLat } from '~/utils/geography';
+import type {
+  Latitude,
+  Longitude,
+  LonLat,
+  ScaledJSONGPSCoordinate,
+} from '~/utils/geography';
+import { isRecord, type Nullable } from '~/utils/types';
 
 import {
   type Altitude,
@@ -118,11 +122,13 @@ export type MissionItemLike = {
   id: string;
   type: MissionItemType;
   parameters: Record<string, unknown>;
+  // Items with `undefined` participant lists belong to all mission indices
+  participants?: MissionIndex[];
 };
 
 export const isMissionItemLike = (item: unknown): item is MissionItemLike =>
   // prettier-ignore
-  isObject(item)
+  isRecord(item)
   // `id` is a valid identifier
   && 'id' in item
   && typeof item.id === 'string'
@@ -131,7 +137,7 @@ export const isMissionItemLike = (item: unknown): item is MissionItemLike =>
   && isMissionItemType(item.type)
   // `parameters` is a valid object
   && 'parameters' in item
-  && isObject(item.parameters);
+  && isRecord(item.parameters);
 
 /**
  * Type specification for items in a waypoint mission.
@@ -216,7 +222,7 @@ export const iconForMissionItemType: Record<MissionItemType, React.ReactNode> =
     [MissionItemType.HOVER]: <HoverIcon />,
     [MissionItemType.LAND]: <LandIcon />,
     [MissionItemType.MARKER]: <MarkerIcon />,
-    [MissionItemType.RETURN_TO_HOME]: <HomeIcon />,
+    [MissionItemType.RETURN_TO_HOME]: <ReturnToHomeIcon />,
     [MissionItemType.SET_PARAMETER]: <SetParameterIcon />,
     [MissionItemType.SET_PAYLOAD]: <SetPayloadIcon />,
     [MissionItemType.TAKEOFF]: <TakeoffIcon />,
@@ -369,7 +375,7 @@ export const schemaForMissionItemType: Record<
 /**
  * Returns whether the given mission item is valid.
  */
-// eslint-disable-next-line complexity
+
 export const isMissionItemValid = (item: unknown): item is MissionItem => {
   if (!isMissionItemLike(item)) {
     return false;
@@ -596,3 +602,10 @@ export function getAltitudeFromMissionItem(
     return item.parameters.alt;
   }
 }
+
+export type MissionItemBundle = {
+  version: number;
+  name: string | undefined;
+  items: MissionItem[];
+  startPositions: Array<Nullable<ScaledJSONGPSCoordinate>> | undefined;
+};

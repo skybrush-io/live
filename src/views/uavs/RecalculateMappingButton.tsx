@@ -1,5 +1,5 @@
 import Button, { type ButtonProps } from '@mui/material/Button';
-import React from 'react';
+import type React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -28,9 +28,7 @@ const RecalculateMappingButton = (
     <Button
       startIcon={<AutoFix />}
       disabled={calculating}
-      onClick={() => {
-        dispatch(recalculateMapping() as any);
-      }}
+      onClick={() => dispatch(recalculateMapping())}
       {...props}
     >
       {hasNonempty

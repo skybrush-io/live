@@ -3,18 +3,19 @@
  * currently known to the server.
  */
 
-// @ts-expect-error: untyped
 import { source, withLayer } from '@collmot/ol-react';
 import difference from 'lodash-es/difference';
 import includes from 'lodash-es/includes';
+import type { MiniSignal } from 'mini-signals';
 import type Point from 'ol/geom/Point';
-import Layer from 'ol/layer/Layer';
+import type Layer from 'ol/layer/Layer';
 import type VectorSource from 'ol/source/Vector';
 import React from 'react';
 
+import { type UAVsLayerProps } from '~/components/map/layers/uavs';
 import { getSingleUAVStatusLevel } from '~/features/uavs/selectors';
-import Flock from '~/model/flock';
 import { UAVType } from '~/model/enums';
+import type Flock from '~/model/flock';
 import { uavIdToGlobalId } from '~/model/identifiers';
 import { setLayerSelectable, setLayerTriggersTooltip } from '~/model/layers';
 import type UAV from '~/model/uav';
@@ -34,8 +35,8 @@ export type ActiveUAVsLayerSourceProps = {
 };
 
 type EventBindings = {
-  uavsUpdated?: any;
-  uavsRemoved?: any;
+  uavsUpdated?: ReturnType<MiniSignal<[UAV[]]>['add']>;
+  uavsRemoved?: ReturnType<MiniSignal<[UAV[]]>['add']>;
 };
 
 type OLReactSource = {
@@ -170,11 +171,15 @@ class ActiveUAVsLayerSource extends React.Component<ActiveUAVsLayerSourceProps> 
     }
 
     if (oldFlock) {
-      oldFlock.uavsUpdated.detach(this.eventBindings.uavsUpdated);
-      delete this.eventBindings.uavsUpdated;
+      if (this.eventBindings.uavsUpdated !== undefined) {
+        oldFlock.uavsUpdated.detach(this.eventBindings.uavsUpdated);
+        delete this.eventBindings.uavsUpdated;
+      }
 
-      oldFlock.uavsRemoved.detach(this.eventBindings.uavsRemoved);
-      delete this.eventBindings.uavsRemoved;
+      if (this.eventBindings.uavsRemoved !== undefined) {
+        oldFlock.uavsRemoved.detach(this.eventBindings.uavsRemoved);
+        delete this.eventBindings.uavsRemoved;
+      }
 
       this._featureManager.removeAllFeatures();
     }
@@ -339,4 +344,7 @@ class ActiveUAVsLayerSource extends React.Component<ActiveUAVsLayerSourceProps> 
   };
 }
 
-export default withLayer(ActiveUAVsLayerSource);
+// TODO: Harmonize `UAVsLayerSourceProps` with `UAVsLayerSourceProps`!
+export default withLayer(
+  ActiveUAVsLayerSource
+) as UAVsLayerProps['LayerSource'];

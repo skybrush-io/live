@@ -2,17 +2,21 @@ import delay from 'delay';
 import type { Feature as OLFeature } from 'ol';
 import { ModifyEvent } from 'ol/interaction/Modify';
 import { getDistance as haversineDistance } from 'ol/sphere';
-import { batch } from 'react-redux';
 
-import {
-  findAssignmentBetweenPoints,
-  findAssignmentInDistanceMatrix,
-} from '~/algorithms/matching';
+import { toDegrees } from '@skybrush/math';
+
+import { findAssignmentBetweenPoints } from '~/algorithms/matching';
 import type { TransformFeaturesInteractionEvent } from '~/components/map/interactions/TransformFeatures';
 import { errorToString } from '~/error-handling';
 import { getBase64ShowBlob } from '~/features/show/selectors';
 import { showError } from '~/features/snackbar/actions';
 import { getAllValidUAVPositions } from '~/features/uavs/selectors';
+import type {
+  LightEffectConfiguration,
+  ReturnToHomeMethodType,
+  ShowAdaptTransformation,
+  TakeoffMethodType,
+} from '~/flockwave/types';
 import messageHub from '~/message-hub';
 import { type GPSPosition } from '~/model/geography';
 import {
@@ -28,7 +32,6 @@ import type { AppThunk } from '~/store/reducers';
 import type { Identifier } from '~/utils/collections';
 import { writeBlobToFile } from '~/utils/filesystem';
 import type { EasNor, Easting, LonLat, Northing } from '~/utils/geography';
-import { calculateDistanceMatrix, toDegrees } from '~/utils/math';
 
 import {
   getHomePositions,
@@ -48,7 +51,7 @@ import {
   showDialog,
   updateSelection,
   type ShowData,
-} from './state';
+} from './slice';
 
 // -- Initializing
 
@@ -122,18 +125,21 @@ const updateConvexHull =
     const { event } = options;
 
     if (event.subType === 'move' && event.delta) {
-      const delta: EasNor = event.delta; // eslint-disable-line @typescript-eslint/no-unsafe-assignment
+      const delta: EasNor = event.delta;
       dispatch(moveOutdoorShowOriginByMapCoordinateDelta(delta));
       dispatch(
         moveHomePositionsByMapCoordinateDelta({
           // NOTE: Type assertions justified by simple unary minus operation
-          delta: [-delta[0] as Easting, -delta[1] as Northing],
+          delta: [
+            -(delta[0] as number) as Easting,
+            -(delta[1] as number) as Northing,
+          ],
         })
       );
     } else if (event.subType === 'rotate' && event.angleDelta && event.origin) {
       dispatch(
         rotateShow({
-          rotationOriginInMapCoordinates: event.origin, // eslint-disable-line @typescript-eslint/no-unsafe-assignment
+          rotationOriginInMapCoordinates: event.origin,
           angle: toDegrees(event.angleDelta),
         })
       );
@@ -141,7 +147,7 @@ const updateConvexHull =
       //       cancel out the transformation and keep them in place.
       dispatch(
         rotateHomePositions({
-          rotationOriginInMapCoordinates: event.origin, // eslint-disable-line @typescript-eslint/no-unsafe-assignment
+          rotationOriginInMapCoordinates: event.origin,
           angle: toDegrees(-event.angleDelta),
         })
       );
@@ -186,18 +192,16 @@ const updateHomePositions =
           }, {});
 
     if (event.subType === 'move') {
-      const delta: EasNor = event.delta; // eslint-disable-line @typescript-eslint/no-unsafe-assignment
-
       dispatch(
         moveHomePositionsByMapCoordinateDelta({
-          delta,
+          delta: event.delta,
           drones: homePositionIndexes,
         })
       );
     } else if (event.subType === 'rotate' && event.angleDelta && event.origin) {
       dispatch(
         rotateHomePositions({
-          rotationOriginInMapCoordinates: event.origin, // eslint-disable-line @typescript-eslint/no-unsafe-assignment
+          rotationOriginInMapCoordinates: event.origin,
           angle: toDegrees(event.angleDelta),
           drones: homePositionIndexes,
         })
@@ -210,51 +214,47 @@ const updateHomePositions =
  */
 export const updateModifiedFeatures =
   (features: OLFeature[], options: FeatureUpdateOptions): AppThunk =>
-  (dispatch) =>
-    // Using batch will not be necessary after upgrading to React 18.
-    // See https://react-redux.js.org/api/batch
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
-    batch((): void => {
-      // -- Reset adapt result
-      dispatch(setAdaptResult(undefined));
+  (dispatch) => {
+    // -- Reset adapt result
+    dispatch(setAdaptResult(undefined));
 
-      const requiresUpdate = {
-        convexHull: false,
-        homePositionIds: [] as Identifier[],
-        allHomePositions: false,
-      };
+    const requiresUpdate = {
+      convexHull: false,
+      homePositionIds: [] as Identifier[],
+      allHomePositions: false,
+    };
 
-      for (const feature of features) {
-        const gid = feature.getId();
-        if (!(typeof gid === 'string')) {
-          console.warn('Non-string global feature ID:', gid);
-          continue;
-        }
-
-        const areaId = globalIdToAreaId(gid);
-        if (areaId === NET_CONVEX_HULL_AREA_ID) {
-          requiresUpdate.convexHull = true;
-        } else if (areaId === GROSS_CONVEX_HULL_AREA_ID) {
-          requiresUpdate.convexHull = true;
-          requiresUpdate.allHomePositions = true;
-        } else if (isHomePositionId(gid)) {
-          requiresUpdate.homePositionIds.push(gid);
-        }
+    for (const feature of features) {
+      const gid = feature.getId();
+      if (!(typeof gid === 'string')) {
+        console.warn('Non-string global feature ID:', gid);
+        continue;
       }
 
-      // -- Update features
-      if (requiresUpdate.convexHull) {
-        dispatch(updateConvexHull(options));
+      const areaId = globalIdToAreaId(gid);
+      if (areaId === NET_CONVEX_HULL_AREA_ID) {
+        requiresUpdate.convexHull = true;
+      } else if (areaId === GROSS_CONVEX_HULL_AREA_ID) {
+        requiresUpdate.convexHull = true;
+        requiresUpdate.allHomePositions = true;
+      } else if (isHomePositionId(gid)) {
+        requiresUpdate.homePositionIds.push(gid);
       }
+    }
 
-      if (requiresUpdate.allHomePositions) {
-        dispatch(updateHomePositions(undefined, options));
-      } else if (requiresUpdate.homePositionIds.length > 0) {
-        dispatch(updateHomePositions(requiresUpdate.homePositionIds, options));
-      }
+    // -- Update features
+    if (requiresUpdate.convexHull) {
+      dispatch(updateConvexHull(options));
+    }
 
-      dispatch(historySnap());
-    });
+    if (requiresUpdate.allHomePositions) {
+      dispatch(updateHomePositions(undefined, options));
+    } else if (requiresUpdate.homePositionIds.length > 0) {
+      dispatch(updateHomePositions(requiresUpdate.homePositionIds, options));
+    }
+
+    dispatch(historySnap());
+  };
 
 /**
  * Action that adjusts home positions to the current drone positions
@@ -263,7 +263,6 @@ export const updateModifiedFeatures =
 export const adjustHomePositionsToDronePositions =
   (): AppThunk => (dispatch, getState) => {
     // Only outdoor shows are supported by the dialog.
-
     const homePositions = getHomePositionsInWorldCoordinates(getState());
     const dronePositions = getAllValidUAVPositions(getState());
     if (homePositions === undefined || dronePositions.length === 0) {
@@ -305,18 +304,27 @@ type Meters = number;
 type MetersPerSecond = number;
 type Seconds = number;
 
+export const TAKEOFF_METHODS: TakeoffMethodType[] = ['layered', 'organic'];
+export const RETURN_TO_HOME_METHODS: ReturnToHomeMethodType[] = [
+  'plain',
+  'smart',
+];
+
 export type OptionalShowAdaptParameters = {
-  altitude?: Meters | undefined;
-  minDistance?: Meters | undefined;
-  horizontalVelocity?: MetersPerSecond | undefined;
-  verticalVelocity?: MetersPerSecond | undefined;
-  takeoffDuration?: Seconds | undefined;
+  altitude?: Meters;
+  altitudeOffset?: Meters;
+  minDistance?: Meters;
+  horizontalVelocity?: MetersPerSecond;
+  verticalVelocity?: MetersPerSecond;
+  takeoffDuration?: Seconds;
+  takeoffMethod?: TakeoffMethodType;
+  returnToHomeMethod?: ReturnToHomeMethodType;
 };
 
 export type ShowAdaptParameters = Required<OptionalShowAdaptParameters>;
 
 export const adaptShow =
-  (params: ShowAdaptParameters): AppThunk =>
+  (params: ShowAdaptParameters, lights: LightEffectConfiguration): AppThunk =>
   async (dispatch, getState) => {
     const state = getState();
 
@@ -325,49 +333,70 @@ export const adaptShow =
     // background so this way we can save some memory. Maybe store and compare a hash
     // if this becomes an issue.
     const base64ShowBlob = getBase64ShowBlob(state);
+    if (base64ShowBlob === undefined) {
+      dispatch(setAdaptResult({ error: 'Missing show data.' }));
+      return;
+    }
+
     const positions = getHomePositions(state);
     const coordinateSystem = selectCoordinateSystem(state);
 
-    /* eslint-disable @typescript-eslint/naming-convention */
     const common = {
       min_distance: params.minDistance,
       velocity_xy: params.horizontalVelocity,
       velocity_z: params.verticalVelocity,
       altitude: params.altitude,
       replace: true,
-    };
-    /* eslint-enable @typescript-eslint/naming-convention */
-    const transformations = [
+    } as const;
+
+    const transformations: ShowAdaptTransformation[] = [
       {
         type: 'takeoff',
         parameters: {
           positions,
           duration: params.takeoffDuration || undefined,
+          method:
+            // TODO: newer servers support both "layered" and "positions",
+            // "positions" being the legacy name of the "layered" method.
+            // We convert to the legacy name here to be on the safe
+            // side. We can remove this in the future.
+            params.takeoffMethod === 'layered'
+              ? 'positions'
+              : params.takeoffMethod,
+          lights,
           ...common,
         },
       },
       {
         type: 'rth',
         parameters: {
+          method: params.returnToHomeMethod,
+          lights,
           ...common,
         },
       },
+      ...(params.altitudeOffset
+        ? [
+            {
+              type: 'shift' as const,
+              parameters: {
+                z: params.altitudeOffset,
+              },
+            },
+          ]
+        : []),
     ];
 
     dispatch(setAdaptResult({ loading: true }));
 
     try {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const { show, takeoffLengthChange, rthLengthChange } =
-        // @ts-expect-error: ts(2339)
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-        await messageHub.query.adaptShow(
+        await messageHub.execute.adaptShow(
           base64ShowBlob,
           transformations,
           coordinateSystem
         );
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       dispatch(setAdaptResult({ show, takeoffLengthChange, rthLengthChange }));
     } catch (error) {
       const errorMessage =
@@ -380,7 +409,7 @@ export const adaptShow =
     }
   };
 
-export const reviewInViewer = (): AppThunk => async (dispatch, getState) => {
+export const reviewInViewer = (): AppThunk => async (_dispatch, getState) => {
   const { bridge } = window;
   if (!bridge) {
     console.warn('This action is available only when running in Electron');
@@ -401,12 +430,10 @@ export const reviewInViewer = (): AppThunk => async (dispatch, getState) => {
         extension: 'skyc',
       });
     } catch (error) {
-      dispatch(
-        showError(
-          errorToString(
-            error,
-            'Error while saving adapted show to a temporary file'
-          )
+      showError(
+        errorToString(
+          error,
+          'Error while saving adapted show to a temporary file'
         )
       );
     }
@@ -415,12 +442,10 @@ export const reviewInViewer = (): AppThunk => async (dispatch, getState) => {
       try {
         await bridge.openPath(filename);
       } catch (error) {
-        dispatch(
-          showError(
-            errorToString(
-              error,
-              'Error while opening adapted show in Skybrush Viewer'
-            )
+        showError(
+          errorToString(
+            error,
+            'Error while opening adapted show in Skybrush Viewer'
           )
         );
       }

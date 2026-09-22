@@ -1,7 +1,7 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import type { Theme } from '@mui/material/styles';
 import clsx from 'clsx';
-import React, { useCallback } from 'react';
+import type React from 'react';
+import { useCallback } from 'react';
 import { useDrag, useDrop, type ConnectableElement } from 'react-dnd';
 
 import { makeStyles } from '@skybrush/app-theme-mui';
@@ -56,6 +56,11 @@ const useStyles = makeStyles((theme: Theme) => ({
 
   stretch: {
     alignItems: 'stretch !important',
+  },
+
+  verticalPadding: {
+    paddingTop: theme.spacing(1),
+    paddingBottom: theme.spacing(1),
   },
 }));
 
@@ -130,6 +135,7 @@ export type DroneListItemProps = React.PropsWithChildren<
     onDrop?: (id: string) => void;
     selected?: boolean;
     stretch?: boolean;
+    verticalPadding?: boolean;
     uavId?: string;
   }>
 >;
@@ -144,6 +150,7 @@ const DroneListItem = ({
   selected,
   stretch,
   uavId,
+  verticalPadding,
 }: DroneListItemProps): React.JSX.Element => {
   const classes = useStyles();
   const mergedClassNames = clsx(
@@ -153,9 +160,9 @@ const DroneListItem = ({
     draggable && classes.draggable,
     selected && classes.selected,
     fill && classes.fill,
-    stretch && classes.stretch
+    stretch && classes.stretch,
+    verticalPadding && classes.verticalPadding
   );
-  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
   return draggable || onDrop ? (
     <DragDropArea
       className={mergedClassNames}

@@ -8,18 +8,17 @@ export default function usePersistentScrollPosition(): [
   RefObject<HTMLDivElement | undefined>,
   (event: React.SyntheticEvent) => void,
 ] {
-  const elementRef = useRef<HTMLDivElement>();
-  const scrollPosition = useRef(0);
+  const elementRef = useRef<HTMLDivElement>(undefined);
+  const scrollPositionRef = useRef(0);
   const onScroll = useCallback(
     (event: React.SyntheticEvent) => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      scrollPosition.current = (event.target as any).scrollTop;
+      scrollPositionRef.current = (event.target as any).scrollTop;
     },
-    [scrollPosition]
+    [scrollPositionRef]
   );
   useLayoutEffect(() => {
     if (elementRef.current) {
-      elementRef.current.scrollTop = scrollPosition.current;
+      elementRef.current.scrollTop = scrollPositionRef.current;
     }
   });
   return [elementRef, onScroll];

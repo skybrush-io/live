@@ -4,21 +4,19 @@
 
 import mapValues from 'lodash-es/mapValues';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { configure as configureHotkeys, GlobalHotKeys } from 'react-hotkeys';
 import { connect } from 'react-redux';
 
 import { removeSelectedFeatures } from '~/features/map-features/actions';
-import { selectAllUAVs } from '~/features/map/selection';
 import { removeSelectedMissionItems } from '~/features/mission/actions';
 import { getPreferredCommunicationChannelIndex } from '~/features/mission/selectors';
 import { togglePreferredChannel } from '~/features/mission/slice';
+import { selectAllUAVs } from '~/features/selection/slice';
 import {
   toggleBroadcast,
   toggleDeveloperMode,
 } from '~/features/session/actions';
 import { isBroadcast } from '~/features/session/selectors';
-import { toggleMissionIds } from '~/features/settings/slice';
 import { handlers as showConfiguratorHandlers } from '~/features/show-configurator/hotkeys';
 import { requestRemovalOfSelectedUAVs } from '~/features/uavs/actions';
 import { openUAVDetailsDialog } from '~/features/uavs/details';
@@ -26,6 +24,7 @@ import { getSelectedUAVIds, getUAVIdList } from '~/features/uavs/selectors';
 import { clearStoreAfterConfirmation } from '~/store';
 import { createUAVOperationThunks } from '~/utils/messaging';
 
+import { toggleFullScreen } from '~/utils/full-screen';
 import {
   appendToPendingUAVId,
   clearSelectionOrPendingUAVId,
@@ -68,14 +67,24 @@ configureHotkeys({
 // Luckily it is not a problem if we use GlobalHotKeys "outside" the workbench
 // and normal <HotKeys> "inside" the workbench.
 
-const AppHotkeys = ({ activeHotkeyScope, handlers }) => {
+const AppHotkeys = ({
+  activeHotkeyScope,
+  Component = GlobalHotKeys,
+  handlers,
+  ...rest
+}) => {
   const filteredKeyMap = Object.fromEntries(
     Object.entries(keyMap).filter(([, { scopes }]) =>
       scopes.includes(activeHotkeyScope)
     )
   );
   return (
-    <GlobalHotKeys allowChanges keyMap={filteredKeyMap} handlers={handlers} />
+    <Component
+      allowChanges
+      keyMap={filteredKeyMap}
+      handlers={handlers}
+      {...rest}
+    />
   );
 };
 
@@ -85,7 +94,7 @@ const bindHotkeyHandlers = (reduxHandlers, nonReduxHandlers, dispatch) => ({
     if (event.defaultPrevented) {
       return;
     }
-    // Prevent the default action of the event (e.g. scrolling the page
+    // Prevent the default action of the event (e.g. scrolling the page)
     event.preventDefault();
     dispatch(handler());
   }),
@@ -166,7 +175,6 @@ export default connect(
         TOGGLE_BROADCAST_MODE_LEGACY: toggleBroadcast,
         TOGGLE_PREFERRED_CHANNEL: togglePreferredChannel,
         TOGGLE_DEVELOPER_MODE: toggleDeveloperMode,
-        TOGGLE_SORT_BY_MISSION_ID: toggleMissionIds,
         TYPE_0: () => appendToPendingUAVId(0),
         TYPE_1: () => appendToPendingUAVId(1),
         TYPE_2: () => appendToPendingUAVId(2),
@@ -177,6 +185,7 @@ export default connect(
         TYPE_7: () => appendToPendingUAVId(7),
         TYPE_8: () => appendToPendingUAVId(8),
         TYPE_9: () => appendToPendingUAVId(9),
+        TYPE_G: () => appendToPendingUAVId('g'),
         TYPE_S: () => appendToPendingUAVId('s'),
         TYPE_MINUS: () => appendToPendingUAVId('-'),
         ...showConfiguratorHandlers,
@@ -192,6 +201,7 @@ export default connect(
         SELECT_UP: sendKeyboardNavigationSignal('SELECT_UP'),
         SELECT_LEFT: sendKeyboardNavigationSignal('SELECT_LEFT'),
         SELECT_RIGHT: sendKeyboardNavigationSignal('SELECT_RIGHT'),
+        TOGGLE_FULL_SCREEN: toggleFullScreen,
       },
       dispatch
     ),

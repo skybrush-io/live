@@ -4,32 +4,27 @@
  */
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import {
-  COORDINATE_SYSTEM_TYPE,
-  type ShowSpecification,
-} from '@skybrush/show-format';
+import { type ShowSpecification } from '@skybrush/show-format';
 import getUnixTime from 'date-fns/getUnixTime';
 import isNil from 'lodash-es/isNil';
 import set from 'lodash-es/set';
 
-import { type Clock } from '~/features/clocks/types';
+import { EnvironmentType } from '@skybrush/show-format';
+
+import type { Schedule } from '~/flockwave/schedule';
 import type UAV from '~/model/uav';
-import { type LonLat } from '~/utils/geography';
+import { CoordinateSystemType, type LonLat } from '~/utils/geography';
 import { type Coordinate3D } from '~/utils/math';
 import { noPayload } from '~/utils/redux';
 
 import {
-  type AltitudeReferenceSpecification,
   DEFAULT_ALTITUDE_REFERENCE,
   DEFAULT_ROOM_SIZE,
   DEFAULT_TAKEOFF_HEADING,
+  type AltitudeReferenceSpecification,
   type TakeoffHeadingSpecification,
 } from './constants';
-import {
-  EnvironmentType,
-  SettingsSynchronizationStatus,
-  StartMethod,
-} from './enums';
+import { SettingsSynchronizationStatus, StartMethod } from './enums';
 import type { EnvironmentState } from './types';
 
 type ShowSliceState = {
@@ -70,7 +65,7 @@ type ShowSliceState = {
      * ID of the reference clock that the start time is based on; `undefined`
      * means UTC time
      */
-    clock?: Clock['id'];
+    clock?: string;
 
     /**
      * The start time of the show, in UTC time, used if and only if clock is
@@ -98,6 +93,12 @@ type ShowSliceState = {
     /** Whether the state variables in this object are synced with the server */
     syncStatusWithServer: SettingsSynchronizationStatus;
   };
+
+  /**
+   * The schedule of the collective RTH being executed or `undefined` if
+   * collective RTH was not triggered.
+   */
+  showControlSchedule?: Schedule;
 
   startTimeDialog: {
     open: boolean;
@@ -127,7 +128,7 @@ const initialState: ShowSliceState = {
       coordinateSystem: {
         orientation: '0',
         origin: undefined,
-        type: COORDINATE_SYSTEM_TYPE,
+        type: CoordinateSystemType.NWU,
       },
       altitudeReference: {
         ...DEFAULT_ALTITUDE_REFERENCE,
@@ -188,6 +189,8 @@ const initialState: ShowSliceState = {
     syncStatusWithServer: SettingsSynchronizationStatus.NOT_SYNCED,
   },
 
+  showControlSchedule: undefined,
+
   startTimeDialog: {
     open: false,
   },
@@ -218,6 +221,9 @@ const { actions, reducer } = createSlice({
 
       // Last upload result cleared in the upload feature as it also handles
       // this action
+
+      // Reset show control schedule
+      state.showControlSchedule = undefined;
     }),
 
     clearManualPreflightChecks: noPayload<ShowSliceState>((state) => {
@@ -308,6 +314,9 @@ const { actions, reducer } = createSlice({
       // Just in case the "show changed" warning was triggered while we tried
       // to load it...
       state.changedSinceLoaded = false;
+
+      // Reset show control schedule
+      state.showControlSchedule = undefined;
     },
 
     loadingPromiseRejected(state) {
@@ -404,8 +413,12 @@ const { actions, reducer } = createSlice({
       );
     },
 
-    setOutdoorShowOrigin(state, action: PayloadAction<LonLat>) {
-      state.environment.outdoor.coordinateSystem.origin = action.payload;
+    setOutdoorShowOrigin(
+      state,
+      action: PayloadAction<LonLat | null | undefined>
+    ) {
+      state.environment.outdoor.coordinateSystem.origin =
+        action.payload ?? undefined;
     },
 
     setOutdoorShowTakeoffHeadingSpecification(
@@ -456,6 +469,10 @@ const { actions, reducer } = createSlice({
       state.start.authorized = (action.payload as unknown) === true;
     },
 
+    setShowControlSchedule(state, action: PayloadAction<Schedule | undefined>) {
+      state.showControlSchedule = action.payload;
+    },
+
     setShowSettingsSynchronizationStatus(
       state,
       action: PayloadAction<SettingsSynchronizationStatus>
@@ -476,8 +493,8 @@ const { actions, reducer } = createSlice({
     setStartTime(
       state,
       action: PayloadAction<
-        | { clock: Clock['id']; time: number | undefined }
-        | { clock: undefined; time: Date | number | undefined }
+        | { clock: string; time: number | undefined | null }
+        | { clock: undefined | null; time: Date | number | undefined | null }
       >
     ) {
       const { payload } = action;
@@ -504,6 +521,9 @@ const { actions, reducer } = createSlice({
           state.start.utcTime = undefined;
         }
       }
+
+      // Reset show control schedule
+      state.showControlSchedule = undefined;
     },
 
     setUAVIdsToStartAutomatically(
@@ -557,6 +577,7 @@ export const {
   openStartTimeDialog,
   openTakeoffAreaSetupDialog,
   revokeTakeoffAreaApproval,
+  setShowControlSchedule,
   setEnvironmentType,
   setIndoorShowOrientation,
   setIndoorShowTakeoffHeadingSpecification,

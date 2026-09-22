@@ -269,9 +269,6 @@
     "reverseDirection": "Tieni premuto <kbd>Shift</kbd> per invertire la direzione.",
     "selectNextEmptySlot": "Seleziona il prossima slot vuoto"
   },
-  "mappingToggleButton": {
-    "sortByMissionID": "Ordina per IDs missione"
-  },
   "measurementList": {
     "addDrone": "Aggiungi un drone per misurare con il pulsante + nella barra degli strumenti",
     "copyToClipboard": "Copia negli appunti",
@@ -480,8 +477,7 @@
     "licenseInfo": "Info licenza",
     "offlineMaps": "Mappe offline",
     "paramUpload": "Caricamento dei parametri",
-    "tooltip": "Strumenti",
-    "uploadInProgress": "Upload in corso"
+    "tooltip": "Strumenti"
   },
   "view": {
     "beacon-list": "Fari",

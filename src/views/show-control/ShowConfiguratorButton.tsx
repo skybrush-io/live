@@ -1,64 +1,66 @@
+import BlurCircular from '@mui/icons-material/BlurCircular';
+import IconButton from '@mui/material/IconButton';
+import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
-import React, { useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { connect, useDispatch, useSelector } from 'react-redux';
+import { connect } from 'react-redux';
 
-import {
-  MiniList,
-  MiniListItem,
-  StatusLight,
-  Tooltip,
-} from '@skybrush/mui-components';
+import { StatusLight, Tooltip } from '@skybrush/mui-components';
 
+import PrerequisiteList from '~/components/PrerequisiteList';
 import { Status } from '~/components/semantics';
+import { showDialog as showCollectiveRTHDialog } from '~/features/collective-rth/slice';
 import {
   isConnected,
   supportsStudioInterop,
 } from '~/features/servers/selectors';
-import { showDialogAndClearUndoHistory } from '~/features/show-configurator/actions';
+import { areExperimentalFeaturesEnabled } from '~/features/settings/selectors';
+import { showDialogAndClearUndoHistory as showAdaptDialogAndClearUndoHistory } from '~/features/show-configurator/actions';
 import { selectShowConfiguratorDataFromShow } from '~/features/show-configurator/selectors';
-import { type ShowData } from '~/features/show-configurator/state';
+import { type ShowData } from '~/features/show-configurator/slice';
 import {
   getEnvironmentFromLoadedShowData,
   getOutdoorShowOrigin,
   getShowSegments,
   hasLoadedShowFile,
+  selectCollectiveRTHPlanSummary,
+  type CollectiveRTHPlanSummary,
 } from '~/features/show/selectors';
 import { getSetupStageStatuses } from '~/features/show/stages';
 import { showError } from '~/features/snackbar/actions';
-import { type PreparedI18nKey, tt } from '~/i18n';
-import Pro from '~/icons/Pro';
 import {
-  type AppDispatch,
-  type AppSelector,
-  type RootState,
-} from '~/store/reducers';
+  useConstPrerequisites,
+  type Prerequisite,
+} from '~/hooks/useConstPrerequisites';
+import { tt } from '~/i18n';
+import Pro from '~/icons/Pro';
+import type { RootState } from '~/store/reducers';
 import { type Nullable } from '~/utils/types';
 
-const PREREQUISITES: ReadonlyArray<
-  Readonly<{
-    selector: AppSelector<boolean>;
-    message: PreparedI18nKey;
-  }>
-> = Object.freeze([
+const hasShowSegment = (state: RootState) =>
+  getShowSegments(state)?.show !== undefined;
+
+const PREREQUISITES: readonly Prerequisite[] = Object.freeze([
   {
+    id: 'hasLoadedShowFile',
     selector: hasLoadedShowFile,
     message: tt('show.showConfigurator.prerequisites.loaded'),
   },
   {
-    selector: (state: RootState) => getShowSegments(state)?.show !== undefined,
-    message: tt('show.showConfigurator.prerequisites.segments'),
-  },
-  {
+    id: 'isConnected',
     selector: isConnected,
     message: tt('show.showConfigurator.prerequisites.server'),
   },
   {
-    selector: supportsStudioInterop,
-    message: tt('show.showConfigurator.prerequisites.extension'),
+    id: 'hasSegments',
+    selector: hasShowSegment,
+    message: tt('show.showConfigurator.prerequisites.segments'),
+    skipIf: areExperimentalFeaturesEnabled,
   },
   {
+    id: 'hasOrigin',
     selector: (state: RootState) =>
       [
         getOutdoorShowOrigin(state),
@@ -66,102 +68,142 @@ const PREREQUISITES: ReadonlyArray<
       ].some((v) => v !== undefined),
     message: tt('show.showConfigurator.prerequisites.origin'),
   },
+  {
+    id: 'supportsStudioInterop',
+    selector: supportsStudioInterop,
+    message: tt('show.showConfigurator.prerequisites.extension'),
+  },
 ]);
 
-type Props = Readonly<{
-  base64Blob?: string;
+type StateProps = {
+  experimentalFeaturesEnabled: boolean;
+  rthPlanSummary: CollectiveRTHPlanSummary;
   show: ShowData | undefined;
-  partialShow: Partial<ShowData>;
-  // TODO: This should probably be a `ThunkActionDispatch`, but that doesn't
-  //       seem to be reexported from `redux-thunk` via `@reduxjs/toolkit`...
-  showDialogAndClearUndoHistory: (data?: ShowData) => void;
+  showHasSegments: boolean;
   status: Status;
-}>;
+};
 
-const ShowConfiguratorButton = (props: Props): React.JSX.Element => {
-  const { show, showDialogAndClearUndoHistory, status } = props;
+type DispatchProps = {
+  showAdaptDialogAndClearUndoHistory: (data?: ShowData) => void;
+  showCollectiveRTHDialog: () => void;
+};
 
-  const dispatch = useDispatch<AppDispatch>();
+type Props = StateProps & DispatchProps;
+
+const ShowConfiguratorButton = ({
+  experimentalFeaturesEnabled,
+  rthPlanSummary,
+  show,
+  showAdaptDialogAndClearUndoHistory,
+  showCollectiveRTHDialog,
+  showHasSegments,
+  status,
+}: Props) => {
   const { t } = useTranslation();
 
   // NOTE: Using a `ref` here broke when rearranging the GolenLayout panels...
   //       (The popup wouldn't show up until something triggered a rerender.)
   const [tooltipTriggerTarget, setTooltipTriggerTarget] =
-    useState<Nullable<HTMLDivElement>>();
+    useState<Nullable<HTMLElement>>();
 
-  const evaluatedPrerequisites = PREREQUISITES.map(({ selector, message }) => ({
-    // NOTE: The `PREREQUISITES` list being readonly and frozen ensures that the
-    //       `useSelector` hook will always be called the same number of times.
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    result: useSelector(selector),
-    message: message(t),
-  }));
+  const { prerequisites, prerequisitesFulfilled } =
+    useConstPrerequisites(PREREQUISITES);
 
-  const prerequisitesFulfilled = evaluatedPrerequisites.every(
-    ({ result }) => result
-  );
-
-  const openWithShow = useCallback(() => {
+  const openAdaptDialog = useCallback(() => {
     if (show) {
-      showDialogAndClearUndoHistory(show);
+      showAdaptDialogAndClearUndoHistory(show);
     } else {
-      dispatch(showError(t('show.showConfigurator.noShowData')));
+      showError(t('show.showConfigurator.noShowData'));
     }
-  }, [dispatch, show, showDialogAndClearUndoHistory, t]);
+  }, [show, showAdaptDialogAndClearUndoHistory, t]);
 
-  const tooltipContent = (
-    <MiniList>
-      {evaluatedPrerequisites.map(({ result, message }, idx) => (
-        <MiniListItem
-          // eslint-disable-next-line react/no-array-index-key
-          key={idx}
-          iconPreset={
-            result
-              ? 'success'
-              : 'disconnected' /* TODO: use 'error' when we migrated to mui */
-          }
-          primaryText={message}
-        />
-      ))}
-    </MiniList>
-  );
-
+  const crthEnabled = experimentalFeaturesEnabled;
   const tooltipVisible = status !== Status.OFF && !prerequisitesFulfilled;
   const disabled = status === Status.OFF || !prerequisitesFulfilled;
 
+  const primaryAction = crthEnabled
+    ? () => {
+        showCollectiveRTHDialog();
+      }
+    : () => {
+        openAdaptDialog();
+      };
+
   return (
-    <div ref={setTooltipTriggerTarget}>
-      <ListItemButton disabled={disabled} onClick={openWithShow}>
-        <StatusLight status={disabled ? Status.OFF : status} />
+    <ListItem disablePadding ref={setTooltipTriggerTarget}>
+      <ListItemButton disabled={disabled} onClick={primaryAction}>
+        <StatusLight
+          status={
+            disabled
+              ? Status.OFF
+              : rthPlanSummary.isValid || !crthEnabled
+                ? Status.SUCCESS
+                : Status.WARNING
+          }
+        />
         <ListItemText
           primary={
             <Tooltip
-              content={tooltipContent}
+              content={<PrerequisiteList prerequisites={prerequisites} />}
               disabled={!tooltipVisible}
               maxWidth={500}
               placement='left'
               triggerTarget={tooltipTriggerTarget}
             >
               <span>
-                {t('show.showConfigurator.button')}
+                {crthEnabled
+                  ? t('show.showConfigurator.button')
+                  : t('show.showConfiguratorLegacy.button')}
                 <Pro style={{ verticalAlign: 'middle', marginLeft: 8 }} />
               </span>
             </Tooltip>
           }
-          secondary={t('show.showConfigurator.description')}
+          secondary={
+            crthEnabled
+              ? t('show.showConfigurator.description')
+              : t('show.showConfiguratorLegacy.description')
+          }
         />
+        {crthEnabled && (
+          <Tooltip
+            content={t(
+              showHasSegments
+                ? 'show.showConfigurator.tooltip.adaptShow'
+                : 'show.showConfigurator.tooltip.showSegmentsRequired'
+            )}
+            placement='left'
+          >
+            <span>
+              <IconButton
+                disabled={!showHasSegments}
+                edge='end'
+                size='large'
+                onClick={(evt) => {
+                  evt.stopPropagation();
+                  openAdaptDialog();
+                }}
+              >
+                <BlurCircular />
+              </IconButton>
+            </span>
+          </Tooltip>
+        )}
       </ListItemButton>
-    </div>
+    </ListItem>
   );
 };
 
 const ConnectedShowConfiguratorButton = connect(
   (state: RootState) => ({
+    experimentalFeaturesEnabled: areExperimentalFeaturesEnabled(state),
+    rthPlanSummary: selectCollectiveRTHPlanSummary(state),
     show: selectShowConfiguratorDataFromShow(state),
-    status: getSetupStageStatuses(state).showConfigurator,
+    showHasSegments: hasShowSegment(state),
+    status: getSetupStageStatuses(state).collectiveRTH,
   }),
   {
-    showDialogAndClearUndoHistory,
+    showCollectiveRTHDialog,
+    showAdaptDialogAndClearUndoHistory,
   }
 )(ShowConfiguratorButton);
 

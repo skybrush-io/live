@@ -1,3 +1,5 @@
 4f3cd9bedcaeea806c4f1475c5be836cdebfd84c # switched to xo code style
 c8e25a17c993738f9a2a45677b5eb87ce0b8f3b8 # formatting changes for Prettier 2.x
 9b34927187440c27331a3559f770e73b1fe17fca # reformatted for Prettier 2.x
+37253dc98cac8a493d285ad5dcdacc0b1bb6457f # chore: apply automatic formatting using prettier
+b7899fb47db860704ed88e7419d5ecf26f60a3b3 # chore: format non-src files using prettier as well

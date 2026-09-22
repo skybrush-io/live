@@ -3,17 +3,17 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import FormGroup from '@mui/material/FormGroup';
 import { Circle, Fill, RegularShape, Stroke, Style } from 'ol/style';
 import PropTypes from 'prop-types';
-import React, { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { connect } from 'react-redux';
 
 import { Feature, Geolocation, geom, layer, source } from '@collmot/ol-react';
+import { toRadians } from '@skybrush/math';
 
 import { setLayerParametersById } from '~/features/map/layers';
 import useDeviceOrientation from '~/hooks/useDeviceOrientation';
-import makeLogger from '~/utils/logging';
-import { toRadians } from '~/utils/math';
+import createLogger from '~/utils/logging';
 
-const logger = makeLogger('OwnLocationLayer');
+const logger = createLogger('OwnLocationLayer');
 
 // === Settings for this particular layer type ===
 

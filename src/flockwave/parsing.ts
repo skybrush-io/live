@@ -4,8 +4,13 @@
 
 import type { ErrorMap, Response_ACKNAK } from '@skybrush/flockwave-spec';
 import color from 'color';
-import get from 'lodash-es/get';
-import type { Message, MultiAsyncOperationResponseBody } from './types';
+
+import type {
+  AsyncOperationResponseBody,
+  Message,
+  MessageBody,
+  MultiAsyncOperationResponseBody,
+} from './types';
 
 /**
  * Converts a color in RGB565 format to a hex value.
@@ -28,9 +33,8 @@ export function convertRGB565ToCSSNotation(value: number): string {
   return color(convertRGB565ToHex(value || 0)).string();
 }
 
-const MESSAGES_WITH_RECEIPTS: Record<string, boolean> = {
+const MULTI_OBJECT_ASYNC_OPERATIONS: Record<string, boolean> = {
   'FW-UPLOAD': true,
-  'LOG-DATA': true,
   'LOG-INF': true,
   'OBJ-CMD': true,
   'PRM-GET': true,
@@ -48,17 +52,25 @@ const MESSAGES_WITH_RECEIPTS: Record<string, boolean> = {
   'UAV-SLEEP': true,
   'UAV-TAKEOFF': true,
   'UAV-TEST': true,
+  'UAV-VER': true,
   'UAV-WAKEUP': true,
+};
+
+const SINGLE_OBJECT_ASYNC_OPERATIONS: Record<string, boolean> = {
+  'LOG-DATA': true,
+  'SHOW-CRTH-PLAN': true,
+  'X-SHOW-CRTH-PLAN': true,
 };
 
 /**
  * Helper function that throws an error if the received message was an
  * ACK-NAK message or a message without a type, and returns the message intact otherwise.
  */
-export function ensureNotNAK<T>(message: Message<T>): Message<T> {
+export function ensureNotNAK<T extends MessageBody>(
+  message: Message<T>
+): Message<T> {
   const { body } = message || {};
 
-  /* @ts-ignore */
   const { type } = body || {};
 
   if (!type) {
@@ -77,37 +89,68 @@ export function ensureNotNAK<T>(message: Message<T>): Message<T> {
  * async response from the server. Throws an error if the message represents a
  * failure and no receipt is available.
  *
- * @param  {Object} message   the Skybrush message to parse
- * @param  {string} objectId  the ID of the object whose receipt we wish to
- *         extract from the message
- * @return {object} the receipt or result corresponding to the UAV
+ * @param  message   the Skybrush message to parse
+ * @param  objectId  the ID of the object whose receipt we wish to
+ *         extract from the message. Must be specified for multi-object async
+ *         operations, and must not be specified for single-object async operations.
+ * @return the receipt or result corresponding to the UAV
  * @throws Error  if the receipt or result cannot be extracted; the message of the
  *         error provides a human-readable reason
  */
 export function extractResultOrReceiptFromMaybeAsyncResponse<T>(
-  message: Message<Response_ACKNAK | MultiAsyncOperationResponseBody<T>>,
-  objectId: string
+  message: Message<
+    | Response_ACKNAK
+    | AsyncOperationResponseBody<T>
+    | MultiAsyncOperationResponseBody<T>
+  >,
+  objectId?: string
 ): { result?: T; receipt?: string } {
   const { body } = ensureNotNAK(message);
-  const checkedBody = body as MultiAsyncOperationResponseBody<T>;
-  const { type } = checkedBody;
+  const { type } = body;
 
-  if (MESSAGES_WITH_RECEIPTS[type]) {
+  if (MULTI_OBJECT_ASYNC_OPERATIONS[type]) {
+    if (!objectId) {
+      throw new Error(
+        'objectId must be specified for multi-object async operations'
+      );
+    }
+
     // We may still have a rejection here
+    const checkedBody = body as MultiAsyncOperationResponseBody<T>;
     const { error, receipt, result } = checkedBody;
-    if (error && error[objectId] !== undefined) {
+    if (error?.[objectId] !== undefined) {
       throw new Error(error[objectId] ?? 'Failed to execute command');
-    } else if (result && result[objectId] !== undefined) {
+    } else if (result?.[objectId] !== undefined) {
       return { result: result[objectId] };
-    } else if (receipt && receipt[objectId] !== undefined) {
+    } else if (receipt?.[objectId] !== undefined) {
       return { receipt: receipt[objectId] };
     } else {
       throw new Error(
         'Server did not provide a response or receipt for the command'
       );
     }
+  } else if (SINGLE_OBJECT_ASYNC_OPERATIONS[type]) {
+    if (objectId) {
+      throw new Error(
+        'objectId must not be specified for single-object async operations'
+      );
+    }
+
+    const checkedBody = body as AsyncOperationResponseBody<T>;
+    const { error, receipt, result } = checkedBody;
+    if (error !== undefined) {
+      throw new Error(error ?? 'Failed to execute command');
+    } else if (result !== undefined) {
+      return { result };
+    } else if (receipt !== undefined) {
+      return { receipt };
+    } else {
+      throw new Error(
+        'Server did not provide a response or receipt for the command'
+      );
+    }
   } else {
-    throw new Error(`${type} messages do not contain receipts`);
+    throw new Error(`${type} messages do not correspond to async operations`);
   }
 }
 
@@ -122,7 +165,11 @@ export function extractResponseForId<T>(
     [k: string]: any;
   }>,
   id: string,
-  options: { error?: string; key?: string } = {}
+  options: {
+    error?: string;
+    key?: string;
+    typeGuard?: (value: unknown) => value is T;
+  } = {}
 ) {
   const errors = message?.body?.error;
 
@@ -146,7 +193,16 @@ export function extractResponseForId<T>(
     results !== null &&
     typeof results[id] !== 'undefined'
   ) {
-    return results[id] as T;
+    const { typeGuard } = options;
+    const result = results[id];
+    if (typeGuard) {
+      if (!typeGuard(result)) {
+        throw new Error(`Invalid type for ID ${id} in response`);
+      }
+      return result;
+    } else {
+      return result as T;
+    }
   }
 
   throw new Error(

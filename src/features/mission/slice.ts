@@ -6,7 +6,6 @@
  * in the mission.
  */
 
-import isNil from 'lodash-es/isNil';
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import { MAX_DRONE_COUNT } from '@skybrush/show-format';
 
@@ -19,12 +18,12 @@ import {
   type MissionItem,
   MissionType,
 } from '~/model/missions';
-import type UAV from '~/model/uav';
 import {
-  type Collection,
   addItemAt,
   addItemToBack,
+  type Collection,
   deleteItemsByIds,
+  type Identifier,
 } from '~/utils/collections';
 import { noPayload } from '~/utils/redux';
 import { type Nullable } from '~/utils/types';
@@ -34,6 +33,11 @@ import {
   getNewEditIndex,
   type MissionMappingEditorContinuation,
 } from './utils';
+
+type ProgressDatum = {
+  currentItemId: Identifier;
+  currentItemRatio?: number;
+};
 
 /**
  * Type definition for the mission slice of the state object.
@@ -59,7 +63,7 @@ export type MissionSliceState = {
    *
    * @see The `NOTE` at `MissionSliceState`
    */
-  mapping: Array<Nullable<UAV['id']>>;
+  mapping: Array<Nullable<Identifier>>;
 
   /**
    * Stores the desired home position (starting point) of each drone
@@ -130,6 +134,7 @@ export type MissionSliceState = {
   /** State of the mission editor panel */
   editorPanel: {
     followScroll: boolean;
+    selectedMissionId?: MissionIndex;
   };
 
   /** State of the mission planner dialog */
@@ -150,11 +155,13 @@ export type MissionSliceState = {
     valuesFromContext: Record<string, unknown>;
   };
 
-  /** The progress of the mission as reported by the UAV */
-  progress: {
-    currentItemId?: string;
-    currentItemRatio?: number;
-  };
+  /**
+   * Stores the progress of the mission as reported by the participating UAVs.
+   * The array is indexed by mission-specific identifiers.
+   *
+   * @see The `NOTE` at `MissionSliceState`
+   */
+  progressData: Array<Nullable<ProgressDatum>>;
 
   /** Backup of the last cleared mission */
   lastClearedMissionData?: Record<string, unknown>;
@@ -182,6 +189,7 @@ const initialState: MissionSliceState = {
   },
   editorPanel: {
     followScroll: false,
+    selectedMissionId: undefined,
   },
   plannerDialog: {
     applyGeofence: false,
@@ -193,10 +201,7 @@ const initialState: MissionSliceState = {
     selectedType: undefined,
   },
   lastSuccessfulPlannerInvocationParameters: undefined,
-  progress: {
-    currentItemId: undefined,
-    currentItemRatio: undefined,
-  },
+  progressData: [],
   lastClearedMissionData: undefined,
 };
 
@@ -228,26 +233,6 @@ const { actions, reducer } = createSlice({
         addItemAt<MissionItem>(state.items, item, index);
       } else {
         addItemToBack<MissionItem>(state.items, item);
-      }
-    },
-
-    adjustMissionMapping(
-      state,
-      action: PayloadAction<{
-        uavId: UAV['id'];
-        to: Nullable<MissionIndex>;
-      }>
-    ) {
-      const { uavId, to } = action.payload;
-      const from = state.mapping.indexOf(uavId);
-      const uavIdToReplace = isNil(to) ? null : state.mapping[to];
-
-      if (from >= 0) {
-        state.mapping[from] = uavIdToReplace ?? null;
-      }
-
-      if (!isNil(to)) {
-        state.mapping[to] = uavId;
       }
     },
 
@@ -293,23 +278,6 @@ const { actions, reducer } = createSlice({
     }),
 
     /**
-     * Clears the entire mission mapping.
-     */
-    clearMapping(state) {
-      state.mapping = Array.from({ length: state.mapping.length }, () => null);
-    },
-
-    /**
-     * Clears a single slot in the mission mapping.
-     */
-    clearMappingSlot(state, action: PayloadAction<MissionIndex>) {
-      const index = action.payload;
-      if (index >= 0 && index < state.mapping.length) {
-        state.mapping[index] = null;
-      }
-    },
-
-    /**
      * Closes the mission planner dialog.
      */
     closeMissionPlannerDialog: noPayload<MissionSliceState>((state) => {
@@ -323,43 +291,6 @@ const { actions, reducer } = createSlice({
       state.mappingEditor.enabled = false;
       state.mappingEditor.indexBeingEdited = -1;
     }),
-
-    /**
-     * Commits the new value in the mapping editor to the current slot being
-     * edited, and optionally continues with the next slot.
-     */
-    commitMappingEditorSessionAtCurrentSlot(
-      state,
-      action: PayloadAction<{
-        continuation: MissionMappingEditorContinuation;
-        value: string;
-      }>
-    ) {
-      const { continuation, value } = action.payload;
-      const validatedValue =
-        typeof value === 'string' && value.trim().length > 0 ? value : null;
-      const index = state.mappingEditor.indexBeingEdited;
-
-      if (index >= 0 && index < state.mapping.length) {
-        const oldValue = state.mapping[index];
-        const existingIndex =
-          validatedValue === null ? -1 : state.mapping.indexOf(validatedValue);
-
-        // Prevent duplicates: if the value being entered already exists
-        // elsewhere in the mapping, swap it with the old value of the
-        // slot being edited.
-        if (existingIndex >= 0) {
-          state.mapping[existingIndex] = oldValue ?? null;
-        }
-
-        state.mapping[index] = validatedValue;
-      }
-
-      state.mappingEditor.indexBeingEdited = getNewEditIndex(
-        state,
-        continuation
-      );
-    },
 
     moveMissionItem: {
       prepare: (oldIndex: number, newIndex: number) => ({
@@ -379,7 +310,7 @@ const { actions, reducer } = createSlice({
           oldIndex !== newIndex
         ) {
           const [itemId] = state.items.order.splice(oldIndex, 1);
-          state.items.order.splice(newIndex, 0, itemId!);
+          state.items.order.splice(newIndex, 0, itemId);
         }
       },
     },
@@ -389,35 +320,6 @@ const { actions, reducer } = createSlice({
       action: PayloadAction<Array<MissionItem['id']>>
     ) {
       deleteItemsByIds(state.items, action.payload);
-    },
-
-    /**
-     * Removes some UAVs from the mission mapping.
-     */
-    removeUAVsFromMapping(state, action: PayloadAction<Array<UAV['id']>>) {
-      for (const uavId of action.payload) {
-        const index = state.mapping.indexOf(uavId);
-        if (index >= 0) {
-          state.mapping[index] = null;
-        }
-      }
-    },
-
-    /**
-     * Replaces the entire mission mapping with a new one.
-     */
-    replaceMapping(state, action: PayloadAction<Array<Nullable<UAV['id']>>>) {
-      const newMapping = action.payload;
-
-      if (!Array.isArray(newMapping)) {
-        throw new TypeError('New mapping must be an array');
-      }
-
-      if (newMapping.length !== state.mapping.length) {
-        throw new Error('Cannot change mapping length with replaceMapping()');
-      }
-
-      state.mapping = newMapping;
     },
 
     /**
@@ -433,6 +335,16 @@ const { actions, reducer } = createSlice({
      */
     setEditorPanelFollowScroll(state, action: PayloadAction<boolean>) {
       state.editorPanel.followScroll = Boolean(action.payload);
+    },
+
+    /**
+     * Sets the selected mission slot's id in the mission editor panel.
+     */
+    setEditorPanelSelectedMissionId(
+      state,
+      action: PayloadAction<MissionIndex | undefined>
+    ) {
+      state.editorPanel.selectedMissionId = action.payload;
     },
 
     /**
@@ -453,12 +365,24 @@ const { actions, reducer } = createSlice({
     },
 
     /**
+     * Updates the mission mapping to the given value.
+     *
+     * The mapping must always be edited through actions that first execute
+     * this reducer, and then `notifyUAVsInMissionMappingChanged()`.
+     */
+    _setMapping(state, action: PayloadAction<Array<Nullable<Identifier>>>) {
+      state.mapping = action.payload;
+    },
+
+    /**
      * Sets the length of the mapping. When the new length is smaller than the
      * old length, the mapping will be truncated from the end. When the new
      * length is larger than the old length, empty slots will be added to the
      * end of the mapping.
+     *
+     * This reducer must always be used through the corresponding action!
      */
-    setMappingLength(state, action: PayloadAction<string | number>) {
+    _setMappingLength(state, action: PayloadAction<string | number>) {
       // TODO: Remove the string case.
       const desiredLength =
         typeof action.payload === 'string'
@@ -480,6 +404,7 @@ const { actions, reducer } = createSlice({
         state.homePositions.splice(desiredLength);
         state.landingPositions.splice(desiredLength);
         state.takeoffHeadings.splice(desiredLength);
+        state.progressData.splice(desiredLength);
       } else if (desiredLength > currentLength) {
         const padding = Array.from(
           { length: desiredLength - currentLength },
@@ -490,6 +415,7 @@ const { actions, reducer } = createSlice({
         state.homePositions.push(...padding);
         state.landingPositions.push(...padding);
         state.takeoffHeadings.push(...padding);
+        state.progressData.push(...padding);
       }
     },
 
@@ -505,17 +431,16 @@ const { actions, reducer } = createSlice({
         order: items.map((i) => i.id),
         byId: Object.fromEntries(items.map((i) => [i.id, i])),
       };
-      state.progress = {
-        currentItemId: undefined,
-        currentItemRatio: undefined,
-      };
+      // TODO: Selectively remove progress information when only some
+      //       specific mission indices are resumed / replanned
+      state.progressData.fill(null);
     },
 
     /**
      * Sets the type of the mission, without affecting any other part of the
      * current mission configuration.
      */
-    setMissionType(state, action: PayloadAction<MissionType>) {
+    _setMissionType(state, action: PayloadAction<MissionType>) {
       state.type =
         typeof action.payload === 'string'
           ? action.payload
@@ -613,21 +538,17 @@ const { actions, reducer } = createSlice({
     },
 
     /**
-     * Updates the ID of the mission item that's currently being executed.
+     * Updates the index being edited in the mapping editor based on
+     * requested continuation type.
      */
-    updateCurrentMissionItemId(state, action: PayloadAction<string>) {
-      state.progress.currentItemId = action.payload;
-
-      // Reset the progress to clear remaining data from the previous item.
-      state.progress.currentItemRatio = undefined;
-    },
-
-    /**
-     * Updates the progress ratio of the mission item that's currently being
-     * executed.
-     */
-    updateCurrentMissionItemRatio(state, action: PayloadAction<number>) {
-      state.progress.currentItemRatio = action.payload;
+    updateEditedMappingIndex(
+      state,
+      action: PayloadAction<MissionMappingEditorContinuation>
+    ) {
+      state.mappingEditor.indexBeingEdited = getNewEditIndex(
+        state,
+        action.payload
+      );
     },
 
     /**
@@ -680,6 +601,58 @@ const { actions, reducer } = createSlice({
     },
 
     /**
+     * Reducer whose only role is to let other slices register extra
+     * reducers to run after the mission mapping has changed.
+     *
+     * This reducer must be called by every action that changes the
+     * mission mapping, after the mission mapping has been updated.
+     *
+     * The payload can be an array of affected UAV IDs, or undefined
+     * if the entire mission mapping became invalid.
+     *
+     * It is NOT guaranteed that the IDs in the array are unique!
+     */
+    notifyUAVsInMissionMappingChanged(
+      _state,
+      _action: PayloadAction<Identifier[] | undefined>
+    ) {
+      // Noop
+    },
+
+    /**
+     * Updates the progress information of all mission indices.
+     */
+    updateProgressData(
+      state,
+      action: PayloadAction<Array<Nullable<ProgressDatum>>>
+    ) {
+      state.progressData = copyAndEnsureLengthEquals(
+        state.mapping.length,
+        action.payload
+      );
+    },
+
+    /**
+     * Updates the progress information of a single mission index.
+     */
+    updateProgressDatumForMissionIndex: {
+      prepare: (
+        missionIndex: number,
+        progressDatum: Nullable<ProgressDatum>
+      ) => ({ payload: { missionIndex, progressDatum } }),
+      reducer: (
+        state,
+        action: PayloadAction<{
+          missionIndex: number;
+          progressDatum: Nullable<ProgressDatum>;
+        }>
+      ) => {
+        const { missionIndex, progressDatum } = action.payload;
+        state.progressData[missionIndex] = progressDatum;
+      },
+    },
+
+    /**
      * Updates the takeoff headings of all the drones in the mission.
      */
     updateTakeoffHeadings(
@@ -711,41 +684,39 @@ const { actions, reducer } = createSlice({
 });
 
 export const {
+  _setMappingLength,
   addMissionItem,
-  adjustMissionMapping,
   cancelMappingEditorSessionAtCurrentSlot,
   clearGeofencePolygonId,
-  clearMapping,
-  clearMappingSlot,
   closeMissionPlannerDialog,
-  commitMappingEditorSessionAtCurrentSlot,
   finishMappingEditorSession,
   moveMissionItem,
+  notifyUAVsInMissionMappingChanged,
   removeMissionItemsByIds,
-  removeUAVsFromMapping,
-  replaceMapping,
   setCommandsAreBroadcast,
+  _setMapping,
   setEditorPanelFollowScroll,
+  setEditorPanelSelectedMissionId,
   setGeofenceAction,
   setGeofencePolygonId,
   setLastClearedMissionData,
   setLastSuccessfulPlannerInvocationParameters,
-  setMappingLength,
   setMissionName,
   setMissionPlannerDialogApplyGeofence,
   setMissionPlannerDialogContextParameters,
   setMissionPlannerDialogSelectedType,
   setMissionPlannerDialogUserParameters,
-  setMissionType,
+  _setMissionType,
   showMissionPlannerDialog,
   startMappingEditorSession,
   startMappingEditorSessionAtSlot,
   togglePreferredChannel,
-  updateCurrentMissionItemId,
-  updateCurrentMissionItemRatio,
+  updateEditedMappingIndex,
   updateHomePositions,
   updateLandingPositions,
   updateMissionItemParameters,
+  updateProgressData,
+  updateProgressDatumForMissionIndex,
   updateTakeoffHeadings,
   _setMissionItemsFromValidatedArray,
 } = actions;

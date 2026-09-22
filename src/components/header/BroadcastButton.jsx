@@ -1,8 +1,8 @@
 import { styled } from '@mui/material/styles';
 import { keyframes } from '@mui/styled-engine';
 import PropTypes from 'prop-types';
-import React, { useEffect, useRef } from 'react';
-import { withTranslation } from 'react-i18next';
+import { useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import {
@@ -47,17 +47,18 @@ const Underlay = styled('div')(({ active, timeoutLength }) => ({
   animationIterationCount: '1',
 }));
 
-const BroadcastButton = ({ isBroadcast, setBroadcast, t, timeoutLength }) => {
-  const timeout = useRef(undefined);
+const BroadcastButton = ({ isBroadcast, setBroadcast, timeoutLength }) => {
+  const { t } = useTranslation();
+  const timeoutRef = useRef(undefined);
 
   useEffect(() => {
     if (isBroadcast && isValidTimeoutLength(timeoutLength)) {
-      timeout.current = setTimeout(() => {
+      timeoutRef.current = setTimeout(() => {
         setBroadcast(false);
       }, timeoutLength * 1000);
-    } else if (!isBroadcast && timeout.current) {
-      clearTimeout(timeout.current);
-      timeout.current = undefined;
+    } else if (!isBroadcast && timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = undefined;
     }
   }, [isBroadcast, setBroadcast, timeoutLength]);
 
@@ -83,7 +84,6 @@ const BroadcastButton = ({ isBroadcast, setBroadcast, t, timeoutLength }) => {
 BroadcastButton.propTypes = {
   isBroadcast: PropTypes.bool,
   setBroadcast: PropTypes.func,
-  t: PropTypes.func,
   timeoutLength: PropTypes.number,
 };
 
@@ -96,4 +96,4 @@ export default connect(
   {
     setBroadcast,
   }
-)(withTranslation()(BroadcastButton));
+)(BroadcastButton);

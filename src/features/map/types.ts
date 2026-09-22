@@ -1,15 +1,10 @@
-import { type LonLat } from '~/utils/geography';
+import type { CoordinateSystemType, LonLat } from '~/utils/geography';
 
 export type Origin = {
   position: LonLat;
   angle: string;
-  type: OriginType;
+  type: CoordinateSystemType;
 };
-
-export enum OriginType {
-  NEU = 'neu',
-  NWU = 'nwu',
-}
 
 export type View = {
   position: LonLat;

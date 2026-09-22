@@ -2,8 +2,7 @@
  * @file Action factories related to the global prompt dialog.
  */
 
-import type { ThunkAction } from '@reduxjs/toolkit';
-
+import { type AppDispatch, type AppThunk } from '~/store/reducers';
 import {
   _cancelPromptDialog,
   _showPromptDialog,
@@ -15,18 +14,12 @@ import {
   type PromptResponse,
 } from './types';
 
-// TODO: replace this with the real AppDispatch once we have it in store.ts
-type AppDispatch = (action: any) => void;
-type AppState = any;
-type AppThunk<T = void> = ThunkAction<T, AppState, any, any>;
-
 /**
  * Function that must be called from the submission thunk to resolve the
  * promise created earlier in the ``showPromptDialog()`` thunk.
  */
 let resolver:
-  | ((value: PromptResponse | PromiseLike<PromptResponse>) => void)
-  | undefined;
+  ((value: PromptResponse | PromiseLike<PromptResponse>) => void) | undefined;
 
 /**
  * Helper function that calls the resolver function with the given value
@@ -46,7 +39,7 @@ function resolveTo(value: PromptResponse): void {
  * without submitting anything, and resolves the promise of the prompt
  * dialog to undefined.
  *
- * @returns  {function}  a Redux thunk
+ * @returns  a Redux thunk
  */
 export function cancelPromptDialog(): AppThunk {
   return (dispatch: AppDispatch) => {

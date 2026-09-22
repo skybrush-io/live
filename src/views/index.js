@@ -6,7 +6,6 @@
 import BeaconList from './beacons';
 import ClockDisplayList from './clocks';
 import ConnectionList from './connections';
-import DatasetList from './datasets';
 import DockList from './docks';
 import FeaturePanel from './features';
 import LayerList from './layers';
@@ -17,9 +16,10 @@ import LogPanel from './log';
 import MessagesPanelView from './messages';
 import MissionOverviewPanel from './mission-editor';
 import ShowControlPanel from './show-control';
+import ThreeDTopLevelView from './three-d';
+import TimelineView from './timeline';
 import UAVDetailsPanel from './uav-details';
 import UAVList from './uavs';
-import ThreeDTopLevelView from './three-d';
 
 /* MapView not included as it is loaded lazily */
 
@@ -27,7 +27,6 @@ const views = {
   BeaconList,
   ClockDisplayList,
   ConnectionList,
-  DatasetList,
   DockList,
   FeaturePanel,
   LayerList,
@@ -41,6 +40,7 @@ const views = {
   UAVDetailsPanel,
   UAVList,
   ThreeDTopLevelView,
+  TimelineView,
 };
 
 export default views;

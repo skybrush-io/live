@@ -43,8 +43,8 @@ export function createAsyncAction<PrepareArguments extends unknown[], Payload>(
   // NOTE: Redux Toolkit doesn't have precise enough typing, so currently
   // the spread arguments to `PrepareAction` always have the type `any[]`.
   // (@reduxjs/toolkit@dd4b36a4/packages/toolkit/src/createAction.ts#L41)
-  return createAction(name, (...args: any[]) => ({
-    payload: func(...(args as PrepareArguments)),
+  return createAction(name, (...args: PrepareArguments) => ({
+    payload: func(...args),
   }));
 }
 

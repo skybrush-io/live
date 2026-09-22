@@ -10,11 +10,11 @@ import {
 } from '~/model/filtering';
 import {
   getKeyFunctionForUAVSortKey,
+  UAVSortKey,
   type Comparable,
-  type UAVSortKey,
 } from '~/model/sorting';
-import type { Item, UAVGroup, UAVIdAndMissionIndexPair } from './types';
 import type { Nullable } from '~/utils/types';
+import type { Item, UAVGroup, UAVIdAndMissionIndexPair } from './types';
 
 // Helper functions related to sorting and filtering the UAVs list
 
@@ -34,8 +34,7 @@ const getFilterFunctionForFilterIdentifier = memoize((filterId: UAVFilter) => {
     ? (uavsByIds: Record<string, StoredUAV>) =>
         (uavIdAndMissionId: UAVIdAndMissionIndexPair | Item): boolean =>
           filter(uavsByIds[uavIdAndMissionId[0]!])
-    : // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-      () => alwaysTrue;
+    : () => alwaysTrue;
 });
 
 /**
@@ -50,8 +49,7 @@ const getSortFunctionForKey = memoize((key: UAVSortKey) => {
     ? (uavsByIds: Record<string, StoredUAV>) =>
         (uavIdAndMissionId: UAVIdAndMissionIndexPair | Item): Comparable =>
           getter(uavsByIds[uavIdAndMissionId[0]!])
-    : // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-      () => identity;
+    : () => identity;
 });
 
 function applyFiltersToItems(
@@ -71,12 +69,40 @@ function applyFiltersToItems(
   return items;
 }
 
+/**
+ * Returns a key function that can be used to sort Items or
+ * UAVIdAndMissionIndexPair tuples by the UAV ID (`item[0]`) or the mission
+ * index (`item[1]`). Undefined values are placed at the end of the list.
+ *
+ * Returns `undefined` if the given sort key is not handled here.
+ */
+function getTupleKeyFunctionForSortKey(
+  key: UAVSortKey
+):
+  | ((item: UAVIdAndMissionIndexPair | Item) => Comparable | undefined)
+  | undefined {
+  switch (key) {
+    case UAVSortKey.UAV_ID:
+      return (item) => item[0];
+    case UAVSortKey.MISSION_ID:
+      // Put items without a mission index (spare UAVs) after assigned ones
+      return (item) => (item[1] === undefined ? Infinity : item[1]);
+    default:
+      return undefined;
+  }
+}
+
 function applySortCriteriaToItems(
   sort: UAVSortKeyAndOrder,
   items: Item[],
   uavsByIds: Nullable<Record<string, StoredUAV>>
 ): Item[] {
   const { key, reverse } = sort || {};
+  const tupleKeyFunc = getTupleKeyFunctionForSortKey(key);
+  if (tupleKeyFunc) {
+    return orderBy(items, [tupleKeyFunc], [reverse ? 'desc' : 'asc']);
+  }
+
   if (uavsByIds) {
     const func = getSortFunctionForKey(key);
     return orderBy(items, [func(uavsByIds)], [reverse ? 'desc' : 'asc']);
@@ -112,6 +138,14 @@ function applySortCriteriaToUAVGroups(
   uavsByIds: Nullable<Record<string, StoredUAV>>
 ): UAVGroup[] {
   const { key, reverse } = sort || {};
+  const tupleKeyFunc = getTupleKeyFunctionForSortKey(key);
+  if (tupleKeyFunc) {
+    return groups.map((group) => ({
+      ...group,
+      items: orderBy(group.items, [tupleKeyFunc], [reverse ? 'desc' : 'asc']),
+    }));
+  }
+
   if (uavsByIds) {
     // Use lodash to sort all items in each group
     const func = getSortFunctionForKey(key);

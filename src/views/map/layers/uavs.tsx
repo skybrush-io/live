@@ -1,5 +1,3 @@
-import React from 'react';
-
 import { connect } from 'react-redux';
 
 import {
@@ -9,8 +7,8 @@ import {
   type UAVsLayerSettingsProps,
 } from '~/components/map/layers/uavs';
 import { setLayerParametersById } from '~/features/map/layers';
+import { getSelection } from '~/features/selection/selectors';
 import { getDefaultUAVType } from '~/features/settings/selectors';
-import { getSelection } from '~/selectors/selection';
 import type { RootState } from '~/store/reducers';
 
 import ActiveUAVsLayerSource from '../sources/ActiveUAVsLayerSource';
@@ -30,7 +28,6 @@ export const UAVsLayerSettings = connect(
 )(UAVsLayerSettingsPresentation);
 
 const UAVsLayerPresentation = (props: Omit<UAVsLayerProps, 'LayerSource'>) => (
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   <BaseUAVsLayerPresentation {...props} LayerSource={ActiveUAVsLayerSource} />
 );
 

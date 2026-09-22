@@ -2,6 +2,7 @@ import formatISO9075 from 'date-fns/formatISO9075';
 import fromUnixTime from 'date-fns/fromUnixTime';
 import type { TFunction } from 'i18next';
 import isNil from 'lodash-es/isNil';
+import type { ReactNode } from 'react';
 
 /**
  * Formats a coordinate array as (X, Y, Z).
@@ -96,15 +97,15 @@ export function formatDurationAsText(duration: number, t: TFunction): string {
   const parts = [];
 
   if (hours > 0) {
-    parts.push(t('general.time.hours', { count: hours }));
+    parts.push(`${hours} ${t('unit.hour.long', { count: hours })}`);
   }
 
   if (minutes > 0) {
-    parts.push(t('general.time.minutes', { count: minutes }));
+    parts.push(`${minutes} ${t('unit.minute.long', { count: minutes })}`);
   }
 
   if (seconds > 0) {
-    parts.push(t('general.time.seconds', { count: seconds }));
+    parts.push(`${seconds} ${t('unit.second.long', { count: seconds })}`);
   }
 
   return parts.join(' ');
@@ -196,6 +197,16 @@ export const formatNumberAndUnit = (
   digits = 0
 ): string => {
   if (Array.isArray(unit) && unit.length > 0) {
+    // If the number is zero, and we have a unit with a multiplier of 1, pick that unit.
+    // This prevents us from displaying "0 cm" instead of "0 m" for zero distances, for
+    // example.
+    if (number === 0) {
+      const exactUnit = unit.find(({ multiplier }) => multiplier === 1);
+      if (exactUnit) {
+        return joinUnit('0', exactUnit.unit);
+      }
+    }
+
     // Choose the largest possible unit that has a breakpoint below the number,
     // or the smallest unit if none of them satisfy this predicate
     const {
@@ -231,6 +242,12 @@ export const formatDistance = (number: number, digits = 2): string =>
   formatNumberAndUnit(number, DISTANCE_UNITS, digits);
 
 /**
+ * Helper function that formats an altitude expressed in meters in a nice
+ * human-readable manner.
+ */
+export const formatAltitude = formatDistance;
+
+/**
  * Helper function that formats an area expressed in square meters in a nice
  * human-readable manner.
  */
@@ -252,15 +269,15 @@ export const formatSpeed = (number: number, digits = 2): string =>
  *        their string representation.
  */
 export const formatItemInterval = <TItem>(
-  items: Array<TItem>,
+  items: TItem[],
   formatter: (item: TItem) => string = String
 ) => {
   if (items.length === 0) {
     return '—';
   } else if (items.length === 1) {
-    return formatter(items[0]!);
+    return formatter(items[0]);
   } else {
-    return `${formatter(items[0]!)}-${formatter(items.at(-1)!)}`;
+    return `${formatter(items[0])}-${formatter(items.at(-1)!)}`;
   }
 };
 
@@ -302,12 +319,11 @@ export function formatIdsAndTruncateTrailingItems(
  * @param naText - Text to return when the input is nil or NaN
  */
 export const formatNumberSafely = (
-  x: number,
+  x: number | undefined,
   digits = 0,
   unit = '',
-  naText = '—'
-): string =>
-  // TODO: `isNil` check will be superfluous once argument types are enforced.
+  naText: ReactNode = '—'
+): ReactNode =>
   isNil(x) || Number.isNaN(x)
     ? naText
     : typeof x === 'number'
@@ -324,6 +340,14 @@ export const formatUnixTimestamp = (timestamp: number, naText = '—'): string =
   isNil(timestamp) || Number.isNaN(timestamp)
     ? naText
     : formatISO9075(fromUnixTime(timestamp));
+
+/**
+ * Formats a UNIX timestamp in seconds as a time of day text.
+ */
+export const formatTimeOfDay = (timestamp: number, naText = '—'): string =>
+  Number.isNaN(timestamp)
+    ? naText
+    : formatISO9075(fromUnixTime(timestamp), { representation: 'time' });
 
 /**
  * Twitter-style short formatter for TimeAgo components

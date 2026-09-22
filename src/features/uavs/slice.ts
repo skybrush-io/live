@@ -7,26 +7,30 @@
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
-import { setSelection } from '~/features/map/selection';
+import { setSelection } from '~/features/selection/slice';
 import { globalIdToUavId, isUavId } from '~/model/identifiers';
 import {
   addItemSorted,
   clearOrderedCollection,
-  type Collection,
   deleteItemsByIds,
   EMPTY_COLLECTION,
   ensureNaturalSortOrder,
   replaceItemOrAddSorted,
+  type Collection,
 } from '~/utils/collections';
 
 import { UAVDetailsPanelTab, type StoredUAV } from './types';
 
 type UAVsSliceState = Collection<StoredUAV> & {
+  // State of the UAV details panel
   panel: {
     followMapSelection: boolean;
     selectedTab: UAVDetailsPanelTab;
     selectedUAVId?: StoredUAV['id'];
   };
+
+  // List of drones whose LEDs were overridden to specific colors
+  lights: Record<StoredUAV['id'], string>;
 };
 
 /**
@@ -40,6 +44,7 @@ const initialState: UAVsSliceState = {
     selectedTab: UAVDetailsPanelTab.PREFLIGHT,
     selectedUAVId: undefined,
   },
+  lights: {},
 };
 
 const { actions, reducer } = createSlice({
@@ -67,6 +72,22 @@ const { actions, reducer } = createSlice({
       deleteItemsByIds(state, action.payload);
     },
 
+    _setLEDColorOverride(
+      state,
+      action: PayloadAction<{ ids: string[]; color: string | null }>
+    ) {
+      const { ids, color } = action.payload;
+      if (color) {
+        for (const id of ids) {
+          state.lights[id] = color;
+        }
+      } else {
+        for (const id of ids) {
+          delete state.lights[id];
+        }
+      }
+    },
+
     setSelectedTabInUAVDetailsPanel(
       state,
       { payload }: PayloadAction<UAVDetailsPanelTab>
@@ -76,7 +97,7 @@ const { actions, reducer } = createSlice({
 
     setSelectedUAVIdInUAVDetailsPanel(
       state,
-      { payload }: PayloadAction<StoredUAV['id']>
+      { payload }: PayloadAction<StoredUAV['id'] | undefined>
     ) {
       state.panel.selectedUAVId = payload;
     },
@@ -115,7 +136,7 @@ const { actions, reducer } = createSlice({
       if (state.panel.followMapSelection) {
         const selectedUAVs = selection.filter(isUavId);
         if (selectedUAVs.length > 0) {
-          state.panel.selectedUAVId = globalIdToUavId(selectedUAVs[0]!);
+          state.panel.selectedUAVId = globalIdToUavId(selectedUAVs[0]);
         }
       }
     });
@@ -131,6 +152,7 @@ export const {
   updateAgesOfUAVs,
   updateUAVs,
   _removeUAVsByIds,
+  _setLEDColorOverride,
 } = actions;
 
 export default reducer;

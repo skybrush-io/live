@@ -6,9 +6,9 @@ import format from 'date-fns/format';
 import getMinutes from 'date-fns/getMinutes';
 import getSeconds from 'date-fns/getSeconds';
 import startOfMinute from 'date-fns/startOfMinute';
-import React from 'react';
+import type React from 'react';
 
-import usePeriodicRefresh from '~/hooks/usePeriodicRefresh';
+import useCurrentTimestamp from '~/hooks/useCurrentTimestamp';
 
 // TODO(mui): migrate to emotion
 const BorderlessButton = styled(Button)({
@@ -16,7 +16,7 @@ const BorderlessButton = styled(Button)({
   textTransform: 'none',
 });
 
-export type StartTimeSuggestion =
+export type StartTimeSuggestion = { id: string } & (
   | {
       time: number;
       relative: true;
@@ -24,7 +24,8 @@ export type StartTimeSuggestion =
   | {
       time: Date;
       relative: false;
-    };
+    }
+);
 
 export const createStartTimeSuggestionsFn = ({
   relativeIntervals = [],
@@ -42,11 +43,16 @@ export const createStartTimeSuggestionsFn = ({
     );
 
     const result: StartTimeSuggestion[] = relativeIntervals.map(
-      (diff): StartTimeSuggestion => ({ time: diff, relative: true })
+      (diff): StartTimeSuggestion => ({
+        id: `rel${diff}`,
+        time: diff,
+        relative: true,
+      })
     );
 
     if (divisors.length > 0) {
       result.push({
+        id: 'abs',
         time: lastProposedAbsoluteDate,
         relative: false,
       });
@@ -56,7 +62,11 @@ export const createStartTimeSuggestionsFn = ({
         const newProposedAbsoluteDate = add(lastProposedAbsoluteDate, {
           minutes: divisor - (lastMinutes % divisor),
         });
-        result.push({ time: newProposedAbsoluteDate, relative: false });
+        result.push({
+          id: `absDiv${divisor}`,
+          time: newProposedAbsoluteDate,
+          relative: false,
+        });
         lastProposedAbsoluteDate = newProposedAbsoluteDate;
       }
     }
@@ -73,8 +83,7 @@ const defaultCreateStartTimeSuggestions = createStartTimeSuggestionsFn({
 export type StartTimeSuggestionsProps = {
   readonly onChange: (suggestion: StartTimeSuggestion) => void;
   readonly startTimes?:
-    | StartTimeSuggestion[]
-    | ((now: number) => StartTimeSuggestion[]);
+    StartTimeSuggestion[] | ((now: number) => StartTimeSuggestion[]);
 };
 
 /**
@@ -86,18 +95,14 @@ const StartTimeSuggestions = ({
   startTimes = defaultCreateStartTimeSuggestions,
   ...rest
 }: StartTimeSuggestionsProps): React.JSX.Element => {
-  const items =
-    typeof startTimes === 'function' ? startTimes(Date.now()) : startTimes;
-
-  /* re-render every 10 seconds */
-  usePeriodicRefresh(10000);
+  const now = useCurrentTimestamp(10_000); // update every 10 seconds
+  const items = typeof startTimes === 'function' ? startTimes(now) : startTimes;
 
   return (
     <ButtonGroup variant='text' {...rest}>
-      {items.map((suggestion, index) => (
-        /* eslint-disable react/no-array-index-key */
+      {items.map((suggestion) => (
         <BorderlessButton
-          key={`button${index}`}
+          key={`button_${suggestion.id}`}
           color='inherit'
           onClick={() => {
             onChange(suggestion);
@@ -109,7 +114,6 @@ const StartTimeSuggestions = ({
               ? format(suggestion.time, 'HH:mm')
               : format(suggestion.time, 'HH:mm:ss')}
         </BorderlessButton>
-        /* eslint-enable react/no-array-index-key */
       ))}
     </ButtonGroup>
   );

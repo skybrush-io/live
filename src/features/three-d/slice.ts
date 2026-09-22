@@ -5,22 +5,19 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import { type Vector3Tuple } from 'three';
 
-import { type EulerTuple, NavigationMode } from './types';
+import {
+  type EulerTuple,
+  NavigationMode,
+  type NavigationSettings,
+} from './types';
 
 type ThreeDSliceState = {
   camera: {
     position?: Vector3Tuple;
     rotation?: EulerTuple;
   };
-
-  navigation: {
-    mode: NavigationMode;
-    // TODO: Probably unused, verify this when it can be typechecked!
-    parameters: Record<string, unknown>;
-  };
-
+  navigation: NavigationSettings;
   tooltip?: string;
-
   sceneId: number;
 };
 
@@ -32,7 +29,6 @@ const initialState: ThreeDSliceState = {
 
   navigation: {
     mode: NavigationMode.WALK,
-    parameters: {},
   },
 
   tooltip: undefined,
@@ -74,26 +70,9 @@ const { actions, reducer } = createSlice({
       state.camera.rotation = rotation;
     },
 
-    setNavigationMode(
-      state,
-      action: PayloadAction<
-        | NavigationMode
-        | { mode: NavigationMode; parameters: Record<string, unknown> }
-      >
-    ) {
+    setNavigationMode(state, action: PayloadAction<NavigationMode>) {
       const { payload } = action;
-
-      if (typeof payload === 'string') {
-        state.navigation.mode = payload;
-        state.navigation.parameters = {};
-      } else {
-        const { mode, parameters } = payload;
-
-        if (typeof mode === 'string' && typeof parameters === 'object') {
-          state.navigation.mode = mode;
-          state.navigation.parameters = parameters;
-        }
-      }
+      state.navigation.mode = payload;
     },
 
     showTooltip(state, action: PayloadAction<string | undefined>) {

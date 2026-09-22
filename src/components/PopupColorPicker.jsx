@@ -47,8 +47,9 @@ export default class PopupColorPicker extends React.Component {
       position: 'absolute',
       overflow: 'hidden',
       zIndex: '2',
-      transition: 'height 0.3s',
+      transition: 'height 0.15s',
       height: this.state.open ? 298 : 0,
+      boxShadow: '0 2px 4px rgba(0,0,0,0.6)',
     };
 
     const { color } = this.state;

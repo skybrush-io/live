@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import IconButton from '@mui/material/IconButton';
@@ -18,12 +17,14 @@ import {
 } from 'mui-rff';
 import numbro from 'numbro';
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import type React from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Field,
   type FieldProps,
   type FieldRenderProps,
 } from 'react-final-form';
+import { useTranslation } from 'react-i18next';
 import { useToggle } from 'react-use';
 
 import { formatDurationHMS } from '~/utils/formatting';
@@ -102,8 +103,8 @@ type SwitchProps = MaterialUISwitchProps & FieldRenderProps<string>;
  * Render function for `react-final-form` that binds a `<Field>` component
  * to a Material UI `<Switch>`.
  *
- * @param  {Object} props  props provided by `react-final-form`
- * @return {Object} the rendered Material UI switch component
+ * @param  props  props provided by `react-final-form`
+ * @return the rendered Material UI switch component
  */
 export const Switch = ({
   input,
@@ -134,8 +135,8 @@ type PasswordFieldFormBindingProps = MaterialUITextFieldProps &
  * to a Material UI `<TextField>`, configured to be suitable for password
  * entry.
  *
- * @param  {Object} props  props provided by `react-final-form`
- * @return {Object} the rendered Material UI text field component
+ * @param  props  props provided by `react-final-form`
+ * @return the rendered Material UI text field component
  */
 const PasswordFieldFormBinding = ({
   input,
@@ -456,6 +457,7 @@ type CreateNumericFieldOptions = {
   defaultProps?: Partial<NumericFieldProps>;
   displayName?: string;
   formatOptions?: numbro.Format;
+  i18nKey?: string;
   unit?: string;
 };
 
@@ -463,16 +465,11 @@ const createNumericField = ({
   defaultProps = {},
   displayName,
   formatOptions,
+  i18nKey,
   unit,
 }: CreateNumericFieldOptions = {}): ((
   props: NumericFieldProps
 ) => React.JSX.Element) => {
-  const inputProps = unit
-    ? {
-        endAdornment: <InputAdornment position='end'>{unit}</InputAdornment>,
-      }
-    : undefined;
-
   formatOptions = {
     mantissa: 3,
     trimMantissa: true,
@@ -530,11 +527,14 @@ const createNumericField = ({
     step ??= defaultProps.step;
     size ??= defaultProps.size;
 
+    const { t } = useTranslation();
+
     const [displayedValue, setDisplayedValue] = useState(() =>
       formatter(value)
     );
 
     useEffect(() => {
+      // eslint-disable-next-line @eslint-react/set-state-in-effect
       setDisplayedValue(formatter(value));
     }, [value]);
 
@@ -569,7 +569,20 @@ const createNumericField = ({
     return (
       <MaterialUITextField
         slotProps={{
-          input: inputProps,
+          input: unit
+            ? {
+                endAdornment: (
+                  <InputAdornment position='end'>
+                    {i18nKey
+                      ? t(i18nKey, {
+                          count: value,
+                          defaultValue: unit,
+                        })
+                      : unit}
+                  </InputAdornment>
+                ),
+              }
+            : undefined,
           htmlInput: {
             size,
             type: 'text',
@@ -603,20 +616,29 @@ export const SimpleAngleField = createNumericField({
     step: 0.1,
   },
   unit: 'degrees',
+  i18nKey: 'unit.degree.long',
+  // t('unit.degree.short')
+  // t('unit.degree.long') - to let i18next know that we need to localize it
 });
 
 export const SimpleDistanceField = createNumericField({
   displayName: 'SimpleDistanceField',
   unit: 'm',
+  i18nKey: 'unit.meter.short',
+  // t('unit.meter.short')
+  // t('unit.meter.long') - to let i18next know that we need to localize it
 });
 
 export const SimpleDurationField = createNumericField({
   displayName: 'SimpleDurationField',
-  unit: 'seconds',
   defaultProps: {
     min: 0,
     size: 'small',
   },
+  unit: 'seconds',
+  i18nKey: 'unit.second.long',
+  // t('unit.second.short')
+  // t('unit.second.long') - to let i18next know that we need to localize it
 });
 
 export const SimpleNumericField = createNumericField({
@@ -625,18 +647,24 @@ export const SimpleNumericField = createNumericField({
 
 export const SimpleVelocityField = createNumericField({
   displayName: 'SimpleVelocityField',
-  unit: 'm/s',
   defaultProps: {
     min: 0,
     size: 'small',
   },
+  unit: 'm/s',
+  i18nKey: 'unit.meterPerSecond.short',
+  // t('unit.meterPerSecond.short')
+  // t('unit.meterPerSecond.long') - to let i18next know that we need to localize it
 });
 
 export const SimpleVoltageField = createNumericField({
   displayName: 'SimpleVoltageField',
-  unit: 'V',
   defaultProps: {
     min: 0,
     size: 'small',
   },
+  unit: 'V',
+  i18nKey: 'unit.volt.short',
+  // t('unit.volt.short')
+  // t('unit.volt.long') - to let i18next know that we need to localize it
 });

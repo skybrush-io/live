@@ -30,6 +30,7 @@ const baseline: Config = {
   },
 
   features: {
+    docks: false,
     loadShowFromCloud: false,
     missionEditor: false,
     safetySettings: false,
@@ -37,6 +38,7 @@ const baseline: Config = {
 
   headerComponents: [
     ['uav-status-summary'],
+    ['groups-button'],
     [
       'battery-status-header-button',
       'distance-summary-header-button',
@@ -55,8 +57,6 @@ const baseline: Config = {
       'toolbox-button',
       'app-settings-button',
       'alert-button',
-      'help-button',
-      'full-screen-button',
       'session-expiry-box',
     ],
   ],
@@ -100,7 +100,7 @@ const baseline: Config = {
       {
         id: 'budapest',
         name: 'Budapest',
-        center: { lon: 19, lat: 47.5 },
+        center: { lon: 19 as Longitude, lat: 47.5 as Latitude },
         rotation: 0,
         zoom: 11,
         notes: 'The capital of Hungary',

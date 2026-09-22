@@ -1,6 +1,6 @@
+import { type Draft } from '@reduxjs/toolkit';
 import dateFnsFormatter from 'date-fns/format';
 import isFunction from 'lodash-es/isFunction';
-import { type Draft } from '@reduxjs/toolkit';
 
 import { formatDurationHMS } from '~/utils/formatting';
 
@@ -99,7 +99,12 @@ export function formatTicksOnClock(
   const { format = clock.format } = options;
   let seconds = ticks / ticksPerSecond;
 
-  if (Number.isNaN(epoch)) {
+  // TODO: remove the `Number(epoch)` conversion when everything is converted
+  // to TypeScript.
+  // Convert to number, apparently it may happen that clock.epoch is null
+  // and we would then get an exception. This happens for example when Live
+  // connects to the server.
+  if (Number.isNaN(Number(epoch))) {
     if (clock.id === String(CommonClockId.MTC)) {
       // No epoch, so we just simply show a HH:MM:SS:FF SMPTE-style
       // timestamp. We (ab)use the millisecond part of the timestamp
@@ -160,7 +165,9 @@ export function getTickCountOnClockAt(clock: Clock, timestamp: number): number {
  * @returns The number of milliseconds that should pass
  *          between consecutive updates of the clock
  */
-export function getPreferredUpdateIntervalOfClock(clock: Clock): number {
+export function getPreferredUpdateIntervalOfClock(
+  clock: Clock | undefined
+): number {
   if (!clock) {
     return 1000;
   }
@@ -176,9 +183,12 @@ export function getPreferredUpdateIntervalOfClock(clock: Clock): number {
  * Returns whether the given clock is affected by the clock skew between the
  * server and the client.
  */
-export function isClockAffectedByClockSkew(clock: Clock): boolean {
+export function isClockAffectedByClockSkew(clock: Clock | undefined): boolean {
+  const id = clock?.id;
   return Boolean(
-    isCommonClockId(clock?.id) && clockIdToProps[clock.id].affectedByClockSkew
+    id !== undefined &&
+    isCommonClockId(id) &&
+    clockIdToProps[id].affectedByClockSkew
   );
 }
 
@@ -186,8 +196,11 @@ export function isClockAffectedByClockSkew(clock: Clock): boolean {
  * Returns whether the given clock is 'signed', i.e. can have a negative
  * tick count.
  */
-export function isClockSigned(clock: Clock): boolean {
-  return Boolean(isCommonClockId(clock?.id) && clockIdToProps[clock.id].signed);
+export function isClockSigned(clock: Clock | undefined): boolean {
+  const id = clock?.id;
+  return Boolean(
+    id !== undefined && isCommonClockId(id) && clockIdToProps[id].signed
+  );
 }
 
 /**
@@ -200,7 +213,7 @@ export function isClockSigned(clock: Clock): boolean {
  */
 export function updateStateOfClock(
   state: Draft<ClocksSliceState>,
-  id: Clock['id'],
+  id: string,
   properties: Omit<Clock, 'id'>
 ): void {
   const clock = state.byId[id];

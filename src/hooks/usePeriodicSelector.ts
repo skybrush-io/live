@@ -11,6 +11,10 @@ export const usePeriodicSelector = <T>(
   const [value, setValue] = useState(() => selector(store.getState()));
 
   const callback = useCallback(() => {
+    // ESLint warning disabled because this is not an effect but a callback that will be
+    // called periodically by useInterval().
+    //
+    // eslint-disable-next-line @eslint-react/set-state-in-effect
     setValue(selector(store.getState()));
   }, [selector, setValue, store]);
 

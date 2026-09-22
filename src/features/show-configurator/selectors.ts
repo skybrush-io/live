@@ -2,6 +2,7 @@ import { Base64 } from 'js-base64';
 import { boundingExtent } from 'ol/extent';
 import { createSelector } from 'reselect';
 
+import { convexHull2D, getCentroid } from '@skybrush/math';
 import { type DroneSpecification } from '@skybrush/show-format';
 
 import {
@@ -12,7 +13,7 @@ import {
 import {
   makeSelectors as makeTrajectorySelectors,
   positionsToWorldCoordinatesCombiner,
-} from '~/features/show/trajectory-selectors';
+} from '~/features/show/selectors/trajectory';
 import { isOutdoorCoordinateSystemWithOrigin } from '~/features/show/types';
 import { getAllValidUAVPositions } from '~/features/uavs/selectors';
 import { type GPSPosition } from '~/model/geography';
@@ -20,18 +21,19 @@ import { type Layer, LayerType } from '~/model/layers';
 import { getVisibleLayersInOrder as _getVisibleLayersInOrder } from '~/selectors/ordered';
 import type { AppSelector, RootState } from '~/store/reducers';
 import {
+  CoordinateSystemType,
   type Latitude,
   type Longitude,
   type LonLat,
   toLonLatFromScaledJSON,
 } from '~/utils/geography';
-import { convexHull2D, type Coordinate2D, getCentroid } from '~/utils/math';
+import type { Coordinate2D } from '~/utils/math';
 import { EMPTY_ARRAY } from '~/utils/redux';
 
-import type { AdaptResult, ShowData, ShowConfiguratorState } from './state';
+import type { AdaptResult, ShowConfiguratorState, ShowData } from './slice';
 
 const _defaultCoordinateSystem: ShowData['coordinateSystem'] = {
-  type: 'nwu',
+  type: CoordinateSystemType.NWU,
   origin: [0 as Longitude, 0 as Latitude],
   orientation: '0',
 };
@@ -220,8 +222,8 @@ export const selectConvexHullMarkerData: AppSelector<
     }
 
     const extent = boundingExtent(convexHull);
-    const x = extent[0]! + (extent[2]! - extent[0]!) / 2;
-    const y = extent[1]! + (extent[3]! - extent[1]!) / 2;
+    const x = extent[0] + (extent[2] - extent[0]) / 2;
+    const y = extent[1] + (extent[3] - extent[1]) / 2;
     if (!Number.isFinite(x) || !Number.isFinite(y)) {
       return undefined;
     }

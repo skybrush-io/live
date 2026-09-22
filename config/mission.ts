@@ -14,8 +14,10 @@ const overrides: ConfigOverrides = {
   },
 
   features: {
+    docks: true,
     missionEditor: true,
     safetySettings: true,
+    showControl: false,
   },
 
   map: {

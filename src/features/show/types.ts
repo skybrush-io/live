@@ -1,13 +1,18 @@
 import { type SetRequired } from 'type-fest';
 
-import { type LonLat } from '~/utils/geography';
+import type {
+  EnvironmentType,
+  ShowSegment,
+  ShowSegmentId,
+} from '@skybrush/show-format';
+
+import type { CoordinateSystemType, LonLat } from '~/utils/geography';
 import type { Coordinate3D } from '~/utils/math';
 
 import type {
   AltitudeReferenceSpecification,
   TakeoffHeadingSpecification,
 } from './constants';
-import { type EnvironmentType } from './enums';
 
 export type CoordinateSystem = {
   orientation: string; // stored as a string to avoid rounding errors
@@ -15,7 +20,7 @@ export type CoordinateSystem = {
 
 export type OutdoorCoordinateSystem = CoordinateSystem & {
   origin?: LonLat;
-  type: 'neu' | 'nwu';
+  type: CoordinateSystemType;
 };
 
 export type OutdoorCoordinateSystemWithOrigin = SetRequired<
@@ -51,3 +56,5 @@ export type EnvironmentState = {
   indoor: IndoorEnvironment;
   type: EnvironmentType;
 };
+
+export type ShowSegmentsRecord = Partial<Record<ShowSegmentId, ShowSegment>>;

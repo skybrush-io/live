@@ -1,4 +1,5 @@
-import { type Identifier } from '~/utils/collections';
+import type { ConnectionState } from '~/model/enums';
+import type { Identifier } from '~/utils/collections';
 
 /**
  * @example
@@ -12,6 +13,6 @@ import { type Identifier } from '~/utils/collections';
 export type ConnectionProperties = {
   id: Identifier;
   name: string;
-  state: string;
+  state: ConnectionState;
   stateChangedAt?: number;
 };

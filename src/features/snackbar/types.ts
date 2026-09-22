@@ -1,4 +1,5 @@
 import { type Action } from '@reduxjs/toolkit';
+import type React from 'react';
 
 /**
  * Enum describing the possible semantics that may be associated to a
@@ -12,17 +13,22 @@ export enum MessageSemantics {
   DEFAULT = 'default',
 }
 
+type ToastButton = {
+  endIcon?: React.ReactNode;
+  label: string;
+  action: Action | (() => void);
+};
+
 /**
  * Object shape for describing the appearance, contents and behavior of a
  * snackbar notification.
  */
 export type Notification = {
-  buttons?: Array<{
-    label: string;
-    action: Action;
-  }>;
-  header?: string;
   message: string;
+  buttons?: ToastButton[];
+  countdown?: boolean;
   permanent?: boolean;
   semantics?: MessageSemantics;
+  timeout?: number;
+  topic?: string;
 };

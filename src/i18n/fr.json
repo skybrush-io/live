@@ -224,9 +224,6 @@
     "reverseDirection": "Appuyer sur <kbd>Shift</kbd> pour inverser la direction.",
     "selectNextEmptySlot": "Sélectionne le prochain créneau vide"
   },
-  "mappingToggleButton": {
-    "sortByMissionID": "trie les missions par ID"
-  },
   "mission": {
     "planner": {
       "schema": {
@@ -464,7 +461,7 @@
     "UAVheadings": "Les caps des UAVs avant le décollage sont…",
     "compassDirection": "Direction du compas",
     "headingOffset": "Décalage de Cap",
-    "setToAvergaeHeading": "Régler le cap moyen des drones actifs",
+    "setToAverageHeading": "Régler le cap moyen des drones actifs",
     "specifiedByAbsoluteCompassDirection": "Spécifiée par la direction absolue du compas",
     "specifiedRelativeToShowOrientation": "Spécifié par rapport à l'orientation du spectacle",
     "unspecified": "Non spécifié"
@@ -475,8 +472,7 @@
     "licenseInfo": "Information de licence",
     "offlineMaps": "Carte hors ligne",
     "paramUpload": "Chargement des paramètres",
-    "tooltip": "Boîte à outils",
-    "uploadInProgress": "Chargement en cours"
+    "tooltip": "Boîte à outils"
   },
   "uploadPanel": {
     "cancelUpload": "Annuler le chargement",
