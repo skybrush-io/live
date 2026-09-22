@@ -15,7 +15,7 @@ import {
 import type { RTHPlanTaskResult } from '~/features/tasks';
 import type { ProgressInfo } from '~/flockwave/messages';
 import type { RootState } from '~/store/reducers';
-import { formatDuration } from '~/utils/formatting';
+import { formatAltitude, formatDuration } from '~/utils/formatting';
 
 import {
   type CollectiveRTHPlanningPhase,
@@ -24,26 +24,34 @@ import {
   selectRTHPlanTaskResult,
 } from './selectors';
 
-type TimeIntervalDisplayProps = {
+type RTHStatsProps = {
   firstTime?: number;
   lastTime?: number;
+  minRTHAltitude?: number;
 };
 
-const TimeIntervalDisplay = ({
-  firstTime,
-  lastTime,
-}: TimeIntervalDisplayProps) => {
+const RTHStats = ({ firstTime, lastTime, minRTHAltitude }: RTHStatsProps) => {
   const { t } = useTranslation();
 
   return (
-    <Stack direction='row' gap={1} sx={{ alignItems: 'center' }}>
-      {t('collectiveRTHDialog.summary.firstTime.message', {
-        firstTime: formatDuration(firstTime),
-      })}
-      <Divider sx={{ flex: 1 }} />
-      {t('collectiveRTHDialog.summary.lastTime.message', {
-        lastTime: formatDuration(lastTime),
-      })}
+    <Stack>
+      <Stack direction='row' sx={{ alignItems: 'center', gap: 1 }}>
+        {t('collectiveRTHDialog.summary.firstTime.message', {
+          firstTime: formatDuration(firstTime),
+        })}
+        <Divider sx={{ flex: 1 }} />
+        {minRTHAltitude !== undefined && (
+          <>
+            {t('collectiveRTHDialog.summary.minRTHAltitude.message', {
+              minRTHAltitude: formatAltitude(minRTHAltitude),
+            })}
+            <Divider sx={{ flex: 1 }} />
+          </>
+        )}
+        {t('collectiveRTHDialog.summary.lastTime.message', {
+          lastTime: formatDuration(lastTime),
+        })}
+      </Stack>
     </Stack>
   );
 };
@@ -137,9 +145,9 @@ const RTHPlanTaskResultSummary = ({
               ) : phase === 'planning' ? (
                 t('collectiveRTHDialog.status.loading')
               ) : phase === 'waitingForApproval' && pendingPlan ? (
-                <TimeIntervalDisplay {...pendingPlan} />
+                <RTHStats {...pendingPlan} />
               ) : existingPlan?.isValid ? (
-                <TimeIntervalDisplay {...existingPlan} />
+                <RTHStats {...existingPlan} />
               ) : (
                 t('collectiveRTHDialog.hints.addCollectiveRTH')
               )
