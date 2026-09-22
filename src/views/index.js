@@ -5,7 +5,6 @@
 
 import BeaconList from './beacons';
 import ClockDisplayList from './clocks';
-import CollectiveRTHPanel from './collective-rth';
 import ConnectionList from './connections';
 import DockList from './docks';
 import FeaturePanel from './features';
@@ -18,6 +17,7 @@ import MessagesPanelView from './messages';
 import MissionOverviewPanel from './mission-editor';
 import ShowControlPanel from './show-control';
 import ThreeDTopLevelView from './three-d';
+import TimelineView from './timeline';
 import UAVDetailsPanel from './uav-details';
 import UAVList from './uavs';
 
@@ -26,7 +26,6 @@ import UAVList from './uavs';
 const views = {
   BeaconList,
   ClockDisplayList,
-  CollectiveRTHPanel,
   ConnectionList,
   DockList,
   FeaturePanel,
@@ -41,6 +40,7 @@ const views = {
   UAVDetailsPanel,
   UAVList,
   ThreeDTopLevelView,
+  TimelineView,
 };
 
 export default views;

@@ -8,37 +8,10 @@ import { convertFlightLogToBlob } from '~/model/flight-logs';
 import type { AppThunk } from '~/store/reducers';
 import { writeBlobToFile } from '~/utils/filesystem';
 
+import { writeTaskPayload } from '../payload-store';
 import { _completeTask, _failTask, _setTaskProgress } from '../slice';
 import type { LogDownloadTaskSpec, StartOptions } from '../types';
 import { getTaskKey } from '../utils';
-
-const logContents = new (class {
-  #data: Record<string, FlightLog> = {};
-  #encoder = new TextEncoder();
-
-  write = async (item: FlightLog): Promise<string> => {
-    const payload = JSON.stringify(item);
-    // prettier-ignore
-    const hash = (
-      Array.from(
-        new Uint8Array(
-          await window.crypto.subtle.digest(
-            'SHA-1',
-            this.#encoder.encode(payload)
-          )
-        ),
-        (byte) => byte.toString(16).padStart(2, '0')
-      ).join('')
-    );
-    this.#data[hash] = item;
-    return hash;
-  };
-
-  read = (hash: string): FlightLog | undefined => this.#data[hash];
-})();
-
-export const readDownloadedLog = (hash: string): FlightLog | undefined =>
-  logContents.read(hash);
 
 const saveLogToFile = (log: FlightLog) => {
   const { filename, blob } = convertFlightLogToBlob(log);
@@ -52,20 +25,20 @@ export const runLogDownloadTask =
     { silent = false }: StartOptions = {}
   ): AppThunk<Promise<void>> =>
   async (dispatch) => {
-    const { uavId, type, taskId, params } = spec;
+    const { uavId, params } = spec;
     const { logId } = params;
-    const topic = getTaskKey(spec);
+    const key = getTaskKey(spec);
 
     const onProgress = ({ progress }: ProgressStatus) => {
-      dispatch(_setTaskProgress({ uavId, type, taskId, progress }));
+      dispatch(_setTaskProgress({ key, progress }));
     };
 
     try {
       const log = await messageHub.query.getFlightLog(uavId, logId, {
         onProgress,
       });
-      const hash = await logContents.write(log);
-      dispatch(_completeTask({ uavId, type, taskId, result: { hash } }));
+      const hash = await writeTaskPayload(log);
+      dispatch(_completeTask({ key, result: { hash } }));
       if (!silent) {
         showNotification({
           message: `Log ${logId} of UAV ${uavId} downloaded successfully.`,
@@ -77,19 +50,19 @@ export const runLogDownloadTask =
             },
           ],
           timeout: 20000,
-          topic,
+          topic: key,
         });
       }
     } catch (error: unknown) {
       const errorMessage = errorToString(error);
-      dispatch(_failTask({ uavId, type, taskId, error: errorMessage }));
+      dispatch(_failTask({ key, error: errorMessage }));
       if (!silent) {
         showNotification({
           message: `Couldn't download log ${logId} of UAV ${uavId}: ${errorMessage}`,
           semantics: MessageSemantics.ERROR,
           buttons: [{ label: 'Retry', action: retry }],
           timeout: 20000,
-          topic,
+          topic: key,
         });
       }
     }

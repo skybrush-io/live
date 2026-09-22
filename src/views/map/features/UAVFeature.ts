@@ -43,10 +43,10 @@ export default class UAVFeature extends Feature<Point> {
    * Constructor.
    *
    * @param  uavId  the identifier of the UAV to which this feature belongs
-   * @param  {Object}  geometryOrProperties  the geometry that the feature represents
+   * @param  geometryOrProperties  the geometry that the feature represents
    *         or a properties object for the feature. This is passed on intact
    *         to the superclass but the style will be overwritten.
-   * @param  {boolean|undefined} hideLabel  whether to hide the label of the UAV
+   * @param  hideLabel  whether to hide the label of the UAV
    */
   constructor(
     uavId: string,
@@ -79,7 +79,7 @@ export default class UAVFeature extends Feature<Point> {
   /**
    * Sets the current heading of the UAV.
    *
-   * @param {number} value  the new heading of the UAV, in degrees
+   * @param value  the new heading of the UAV, in degrees
    */
   set heading(value) {
     if (this._heading === value) {
@@ -107,7 +107,7 @@ export default class UAVFeature extends Feature<Point> {
   /**
    * Sets whether the UAV feature is selected or not.
    *
-   * @param {boolean} value  whether the feature is selected
+   * @param value  whether the feature is selected
    */
   set selected(value) {
     if (this._selected === value) {
@@ -128,7 +128,7 @@ export default class UAVFeature extends Feature<Point> {
   /**
    * Sets the display color of the UAV.
    *
-   * @param {string} value The new color to be used.
+   * @param value The new color to be used.
    */
   set color(value) {
     if (this._color === value) {

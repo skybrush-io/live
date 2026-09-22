@@ -2,12 +2,7 @@ import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
 import type { ProgressInfo } from '~/flockwave/messages';
 
-import type {
-  CompleteTaskResult,
-  TaskData,
-  TaskState,
-  UAVTestTaskData,
-} from './types';
+import type { TaskData, TaskKey, TaskResult, TaskState } from './types';
 import { getTaskKey } from './utils';
 
 const initialState: Record<string, TaskState> = {};
@@ -17,23 +12,17 @@ const { actions, reducer } = createSlice({
   initialState,
   reducers: {
     clearTasks: () => initialState,
+
     _startTask(state, action: PayloadAction<TaskData>) {
-      const { uavId, type, taskId } = action.payload;
       const key = getTaskKey(action.payload);
-      state[key] = {
-        uavId,
-        type,
-        taskId,
-        status: 'running',
-      };
+      state[key] = { ...action.payload, status: 'running' };
     },
 
     _setTaskProgress(
       state,
-      action: PayloadAction<TaskData & { progress: ProgressInfo }>
+      action: PayloadAction<{ key: TaskKey; progress: ProgressInfo }>
     ) {
-      const { progress } = action.payload;
-      const key = getTaskKey(action.payload);
+      const { key, progress } = action.payload;
       const entry = state[key];
       if (entry) {
         if (entry.status === 'suspended') {
@@ -45,10 +34,9 @@ const { actions, reducer } = createSlice({
 
     _suspendTask(
       state,
-      action: PayloadAction<UAVTestTaskData & { progress: ProgressInfo }>
+      action: PayloadAction<{ key: TaskKey; progress: ProgressInfo }>
     ) {
-      const { progress } = action.payload;
-      const key = getTaskKey(action.payload);
+      const { key, progress } = action.payload;
       const entry = state[key];
       if (entry) {
         entry.status = 'suspended';
@@ -56,9 +44,11 @@ const { actions, reducer } = createSlice({
       }
     },
 
-    _completeTask(state, action: PayloadAction<CompleteTaskResult>) {
-      const { result } = action.payload;
-      const key = getTaskKey(action.payload);
+    _completeTask(
+      state,
+      action: PayloadAction<{ key: TaskKey; result?: TaskResult }>
+    ) {
+      const { key, result } = action.payload;
       const entry = state[key];
       if (entry) {
         entry.status = 'success';
@@ -66,9 +56,8 @@ const { actions, reducer } = createSlice({
       }
     },
 
-    _failTask(state, action: PayloadAction<TaskData & { error: string }>) {
-      const { error } = action.payload;
-      const key = getTaskKey(action.payload);
+    _failTask(state, action: PayloadAction<{ key: TaskKey; error: string }>) {
+      const { key, error } = action.payload;
       const entry = state[key];
       if (entry) {
         entry.status = 'error';
@@ -76,9 +65,8 @@ const { actions, reducer } = createSlice({
       }
     },
 
-    _clearTask(state, action: PayloadAction<TaskData>) {
-      const key = getTaskKey(action.payload);
-      delete state[key];
+    _clearTask(state, action: PayloadAction<TaskKey>) {
+      delete state[action.payload];
     },
   },
 });

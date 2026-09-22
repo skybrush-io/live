@@ -165,7 +165,9 @@ export function getTickCountOnClockAt(clock: Clock, timestamp: number): number {
  * @returns The number of milliseconds that should pass
  *          between consecutive updates of the clock
  */
-export function getPreferredUpdateIntervalOfClock(clock: Clock): number {
+export function getPreferredUpdateIntervalOfClock(
+  clock: Clock | undefined
+): number {
   if (!clock) {
     return 1000;
   }
@@ -181,9 +183,12 @@ export function getPreferredUpdateIntervalOfClock(clock: Clock): number {
  * Returns whether the given clock is affected by the clock skew between the
  * server and the client.
  */
-export function isClockAffectedByClockSkew(clock: Clock): boolean {
+export function isClockAffectedByClockSkew(clock: Clock | undefined): boolean {
+  const id = clock?.id;
   return Boolean(
-    isCommonClockId(clock?.id) && clockIdToProps[clock.id].affectedByClockSkew
+    id !== undefined &&
+    isCommonClockId(id) &&
+    clockIdToProps[id].affectedByClockSkew
   );
 }
 
@@ -191,8 +196,11 @@ export function isClockAffectedByClockSkew(clock: Clock): boolean {
  * Returns whether the given clock is 'signed', i.e. can have a negative
  * tick count.
  */
-export function isClockSigned(clock: Clock): boolean {
-  return Boolean(isCommonClockId(clock?.id) && clockIdToProps[clock.id].signed);
+export function isClockSigned(clock: Clock | undefined): boolean {
+  const id = clock?.id;
+  return Boolean(
+    id !== undefined && isCommonClockId(id) && clockIdToProps[id].signed
+  );
 }
 
 /**

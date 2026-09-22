@@ -110,8 +110,8 @@ async function runSingleMissionItemUpload({
  * E.g., this function can be used to fill in the details of the current
  * geofence in the "update geofence" mission item.
  *
- * @param {object} item  the mission item to be transformed
- * @param {object} state the current state of the application
+ * @param item  the mission item to be transformed
+ * @param state the current state of the application
  * @return a new mission item when it is modified, or the item itself if it
  *         does not need to be modified
  */

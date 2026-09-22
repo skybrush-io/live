@@ -1,5 +1,5 @@
-import EventEmitter from 'events';
 import * as betterIpc from 'electron-better-ipc';
+import { EventEmitter } from 'node:events';
 import process from 'process';
 
 const makeEventProxyChannelName = (channel) => `__eventProxy[${channel}]`;

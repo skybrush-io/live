@@ -35,7 +35,6 @@ import memoize from 'memoizee';
 
 import { errorToString } from '~/error-handling';
 import type { BeaconPropertiesMap } from '~/features/beacons/types';
-import type { OutdoorCoordinateSystemWithOrigin } from '~/features/show/types';
 import {
   type FlightLog,
   type FlightLogMetadata,
@@ -50,77 +49,15 @@ import type MessageHub from './messages';
 import type { ProgressStatus } from './messages';
 import { extractResponseForId } from './parsing';
 import type {
-  CollectiveRTHConfig,
   Response_XMSNTYPEINF,
   Response_XMSNTYPELIST,
   Response_XMSNTYPESCHEMA,
-  Response_XSHOWADAPT,
-  Response_XSHOWCRTHPLAN,
-  ShowAdaptTransformation,
 } from './types';
 import { validateExtensionName } from './validation';
 
 function validateUAVId(uavId: any): asserts uavId is string {
   if (!uavId || typeof uavId !== 'string') {
     throw new Error('Expected non-empty UAV ID');
-  }
-}
-
-/**
- * Adapts the given base64-encoded show using the given transformation
- * definitions and coordinate system.
- */
-export async function adaptShow(
-  hub: MessageHub,
-  show: string,
-  transformations: ShowAdaptTransformation[],
-  coordinateSystem: OutdoorCoordinateSystemWithOrigin
-): Promise<Response_XSHOWADAPT> {
-  const response = await hub.sendMessage<Response_XSHOWADAPT>(
-    {
-      type: 'X-SHOW-ADAPT',
-      show,
-      transformations,
-      environment: {
-        location: {
-          origin: toScaledJSONFromLonLat(coordinateSystem.origin),
-          orientation: coordinateSystem.orientation,
-        },
-      },
-    },
-    // Use a very long timeout for this message as the transformations
-    // require a lot of computation.
-    { timeout: 600 }
-  );
-
-  if (response?.body?.type === 'X-SHOW-ADAPT') {
-    return response.body;
-  } else {
-    throw new Error(response?.body?.reason ?? 'Unknown error.');
-  }
-}
-
-/**
- * Adds collective RTH plans to drones using the given configuration.
- */
-export async function addCollectiveRTH(
-  hub: MessageHub,
-  show: string,
-  config: CollectiveRTHConfig
-): Promise<Response_XSHOWCRTHPLAN> {
-  const response = await hub.sendMessage<Response_XSHOWCRTHPLAN>(
-    {
-      type: 'X-SHOW-CRTH-PLAN',
-      show,
-      config,
-    },
-    { timeout: 3600 }
-  );
-
-  if (response?.body?.type === 'X-SHOW-CRTH-PLAN') {
-    return response.body;
-  } else {
-    throw new Error(response?.body?.reason ?? 'Unknown error.');
   }
 }
 
@@ -231,16 +168,13 @@ export async function getFlightLog(
   }
 
   try {
-    const log = await hub.startAsyncOperationForSingleId<FlightLog>(
-      uavId,
+    const log = await hub.startAsyncOperation<FlightLog>(
       {
         type: 'LOG-DATA',
         logId,
         uavId,
       },
-      // @ts-expect-error idProp may be null but AsyncOperationOptions types
-      //                  it as string | undefined only
-      { idProp: null, onProgress, single: true }
+      { onProgress }
     );
     return validateFlockwaveFlightLog(log);
   } catch (error) {
@@ -262,7 +196,7 @@ export async function getFlightLogList(
   validateUAVId(uavId);
 
   try {
-    const response = await hub.startAsyncOperationForSingleId<
+    const response = await hub.startMultiObjectAsyncOperationForSingleId<
       FlightLogMetadata[]
     >(uavId, { type: 'LOG-INF' });
     return response.map(validateFlightLogMetadata);
@@ -371,13 +305,12 @@ export async function getParameter(
   name: string
 ): Promise<unknown> {
   validateUAVId(uavId);
-  return await hub.startAsyncOperationForSingleId<Record<string, unknown>>(
-    uavId,
-    {
-      type: 'PRM-GET',
-      name,
-    }
-  );
+  return await hub.startMultiObjectAsyncOperationForSingleId<
+    Record<string, unknown>
+  >(uavId, {
+    type: 'PRM-GET',
+    name,
+  });
 }
 
 /**
@@ -394,7 +327,7 @@ export async function getPreflightStatus(
     ids: [uavId],
   });
   // TODO: fix the Response_UAVPREFLT type, it doesn't have a `result` field.
-  // TODO: maybe we could use idProp option in startAsyncOperationForSingleId()?
+  // TODO: maybe we could use idProp option in startMultiObjectAsyncOperationForSingleId()?
   const result = (
     (response.body ?? {}) as { result?: Record<string, UAVPreflightCheckInfo> }
   ).result;
@@ -537,9 +470,12 @@ export async function getFirmwareVersionInfo(
   uavId: string
 ): Promise<VersionMap> {
   validateUAVId(uavId);
-  return await hub.startAsyncOperationForSingleId<VersionMap>(uavId, {
-    type: 'UAV-VER',
-  });
+  return await hub.startMultiObjectAsyncOperationForSingleId<VersionMap>(
+    uavId,
+    {
+      type: 'UAV-VER',
+    }
+  );
 }
 
 /**
@@ -606,8 +542,6 @@ export async function isExtensionLoaded(
 }
 
 const _queries = {
-  adaptShow,
-  addCollectiveRTH,
   getBasicBeaconProperties,
   getConfigurationOfExtension,
   getFirmwareUpdateObjects,

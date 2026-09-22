@@ -510,8 +510,8 @@ export function multiSelectableListOf<
  * passed to list generation helper functions to ensure the type-correctness
  * of some of the arguments.
  *
- * @param  {Object} options  the options passed to the list generation helper
- * @return {Object} the transformed options
+ * @param  options  the options passed to the list generation helper
+ * @return the transformed options
  */
 const validateOptions = <T, P>(
   options: ListOfOptions<T, P>
@@ -526,8 +526,8 @@ const validateOptions = <T, P>(
  * Helper function that returns true if the given array or immutable List
  * contains at least one item.
  *
- * @param {Array|Immutable.Collection} array  the collection to test
- * @return {boolean}  whether the given array or immutable list contains
+ * @param array  the collection to test
+ * @return whether the given array or immutable list contains
  *         at least one item
  */
 function hasSomeItems(array: unknown): array is unknown[] {
@@ -538,11 +538,11 @@ function hasSomeItems(array: unknown): array is unknown[] {
  * Helper function that ensures that the given object is a function that is
  * suitable as a data provider function in the list generation helpers.
  *
- * @param  {function|string} dataProvider  function that gets the React props
+ * @param  dataProvider  function that gets the React props
  *         of the generated component and returns the items to show, or a
  *         string that contains the name of the React prop that holds the
  *         items to show in the generated component
- * @return {function} the input argument converted into a function
+ * @return the input argument converted into a function
  */
 function validateDataProvider<T, P>(
   dataProvider: ListOfOptions<T, P>['dataProvider']

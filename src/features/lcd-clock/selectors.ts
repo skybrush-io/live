@@ -11,7 +11,7 @@ import { selectLast, selectOrdered } from '~/utils/collections';
 
 import type { LCDClock } from './types';
 
-type ClockIdWithLabel = {
+export type ClockIdWithLabel = {
   id: string;
   label: string;
 };

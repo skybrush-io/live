@@ -5,9 +5,11 @@
   "ConnectionStatusMiniList": {
     "noConnections": "This server uses no connections.",
     "summaryItem": {
-      "connected": "+ {{count}} connections not shown",
+      "connected_one": "+ 1 connection not shown",
+      "connected_other": "+ {{count}} connections not shown",
       "connecting": "+ {{count}} connecting and not shown",
-      "disconnected": "+ {{count}} closed connections not shown",
+      "disconnected_one": "+ 1 closed connection not shown",
+      "disconnected_other": "+ {{count}} closed connections not shown",
       "disconnecting": "+ {{count}} disconnecting and not shown"
     },
     "useSecondaryChannel": "Use secondary channel"
@@ -172,8 +174,12 @@
       "addCollectiveRTH": "Calculate RTH plans"
     },
     "description": "Precalculate collective RTH plans at multiple timestamps in the show. In case of emergency, collective RTH brings drones home as quickly as possible without collisions.",
-    "existingInvalidRTHPlan": "The show has no valid collective RTH plans.",
-    "existingValidRTHPlan": "The show has valid collective RTH plans at {{numPlans}} timestamps.",
+    "existingInvalidRTHPlan": "The show has no valid collective RTH plans",
+    "existingValidRTHPlan_one": "The show has a valid collective RTH plan at one timestamp",
+    "existingValidRTHPlan_other": "The show has valid collective RTH plans at {{count}} timestamps",
+    "hints": {
+      "addCollectiveRTH": "Calculate RTH plans by clicking on the button above"
+    },
     "parameters": {
       "form": {
         "horizontalVelocity": {
@@ -192,15 +198,12 @@
           "help": "during collective RTH",
           "label": "Vertical velocity"
         }
-      },
-      "section": {
-        "parameters": "Parameters"
       }
     },
     "status": {
       "error": "RTH plan calculation failed. Please try again.",
-      "loading": "Calculating RTH plans. It may take some time.",
-      "success": "RTH plans successfully calculated."
+      "loading": "Calculating RTH plans...",
+      "success": "RTH plans successfully calculated"
     },
     "summary": {
       "firstTime": {
@@ -210,42 +213,11 @@
         "message": "Last RTH time: {{lastTime}}"
       },
       "numPlans": {
-        "message": "Collective RTH plans successfully calculated at {{numPlans}} timestamps"
+        "message_one": "1 RTH plan calculated, waiting for approval",
+        "message_other": "{{count}} RTH plans calculated, waiting for approval"
       }
     },
     "title": "Plan collective RTH"
-  },
-  "collectiveRTHPanel": {
-    "error": {
-      "invalidPlan": "The collective RTH plan is invalid.",
-      "missingPlan": "The show has no collective RTH plans.",
-      "partialPlan": "{{withoutPlans}} drones do not have RTH plans."
-    },
-    "message": {
-      "noDrones": "There are no drones in the loaded show.",
-      "noShowFile": "No show file loaded"
-    },
-    "infoGrid": {
-      "rth": {
-        "numPlans": "Number of plans:",
-        "title": "Collective RTH"
-      },
-      "showSegment": {
-        "duration": "Duration:",
-        "end": "End:",
-        "start": "Start:",
-        "title": "Show segment"
-      }
-    },
-    "rthPlanDetails": {
-      "column": {
-        "duration": "Duration",
-        "end": "End",
-        "endShow": "End (Show)",
-        "start": "Start",
-        "startShow": "Start (Show)"
-      }
-    }
   },
   "consistencyCheck": {
     "mainPanel": {
@@ -384,6 +356,7 @@
       "open": "Open",
       "pan": "Pan",
       "redo": "Redo",
+      "reject": "Reject",
       "remove": "Remove",
       "reset": "Reset",
       "retry": "Retry",
@@ -1380,6 +1353,38 @@
     "specifiedRelativeToShowOrientation": "Specified relative to show orientation",
     "unspecified": "Unspecified"
   },
+  "timeline": {
+    "chart": {
+      "tooltip": {
+        "labeledValue": "{{label}}: {{value}}{{unit}}"
+      }
+    },
+    "dataset": {
+      "altitude": "Altitude",
+      "distanceFromHome": "Distance from home",
+      "maxAltitude": "Max altitude",
+      "maxDistance": "Max distance",
+      "minAltitude": "Min altitude",
+      "minDistance": "Min distance",
+      "rthDuration": "Collective RTH duration",
+      "rthDurationLine": "RTH duration"
+    },
+    "markerLane": {
+      "cue": "Cues",
+      "rthPlan": "RTH plans",
+      "segment": "Segments",
+      "unknown": "Unknown lane ({{lane}})"
+    },
+    "rthPlanItem": "RTH plan {{index}}",
+    "showSegment": {
+      "endOf": "End of {{description}}",
+      "landing": "landing",
+      "show": "net show",
+      "startOf": "Start of {{description}}",
+      "takeoff": "takeoff",
+      "unknown": "show segment {{type}}"
+    }
+  },
   "toolbox": {
     "averagingInProgress": "{{number}} in progress",
     "coordinateAveraging": "Coordinate averaging",
@@ -1516,16 +1521,16 @@
     "clearHistory": "Clear history",
     "flashLightsWhereFailed": "Flash lights of UAVs where the task failed",
     "hasHiddenTargets": "Some of the waiting UAVs may be filtered.",
-    "noJobResultAvailable": "No result available yet.",
+    "noJobResultAvailable": "No result available yet",
     "resultsTab": "Results",
     "retryFailedAttempts": "Retry failed attempts automatically",
     "statusTab": "Status",
-    "uploadAttemptFailed": "Attempt failed.",
-    "uploadCancelled": "Task cancelled by user.",
-    "uploadFinishedSuccessfully": "Task finished successfully.",
+    "uploadAttemptFailed": "Operation failed",
+    "uploadCancelled": "Task cancelled by user",
+    "uploadFinishedSuccessfully": "Task finished successfully",
     "uploadInProgress": "Please wait…",
     "uploadInProgressWithEstimate": "Estimated time remaining: {{time}}",
-    "uploadNotFinishedYet": "Task not finished yet."
+    "uploadNotFinishedYet": "Task not finished yet"
   },
   "uploadStatusLegend": {
     "clearUploadQueue": "Clear queue",
@@ -1553,6 +1558,7 @@
     "selection-group-mini-list": "Selection groups",
     "show-control": "Show control",
     "three-d-view": "3D View",
+    "timeline": "Timeline",
     "uav-details": "UAV details",
     "uav-list": "UAVs",
     "uav-status-mini-list": "UAV status summary"

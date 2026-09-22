@@ -27,7 +27,7 @@ import {
   MissionType,
 } from '~/model/missions';
 import type UAV from '~/model/uav';
-import { type AppSelector, type RootState } from '~/store/reducers';
+import { type AppSelector } from '~/store/reducers';
 import { rejectNullish } from '~/utils/arrays';
 import {
   type Collection,
@@ -42,7 +42,6 @@ import {
   turfDistanceInMeters,
 } from '~/utils/geography';
 import { findNearestNeighborsDistance } from '~/utils/nearestNeighbors';
-import { createDeepResultSelector } from '~/utils/selectors';
 import { type Nullable } from '~/utils/types';
 
 import { type MissionSliceState } from '../slice';
@@ -919,9 +918,9 @@ export const getMissionItemsInOrderAsSegmentsForMissionIndex: AppSelector<
  *
  * TODO: Calculate distances and durations separately and sum them afterwards?
  *
- * @returns {Object} estimates
- * @property {number} distance - the length of the planned trajectory in meters
- * @property {number} duration - the expected duration of the mission in seconds
+ * @returns estimates
+ * @property distance - the length of the planned trajectory in meters
+ * @property duration - the expected duration of the mission in seconds
  */
 export const getMissionEstimatesForMissionIndex: AppSelector<
   {
@@ -968,12 +967,11 @@ export const getCurrentMissionItemIdForMissionIndex: AppSelector<
 
 export const getCurrentMissionItemIdForEveryMissionIndex: AppSelector<
   Array<MissionItem['id'] | undefined>
-> = createDeepResultSelector(
-  (state: RootState) => state,
-  (state) =>
-    getMissionMapping(state).map((_uavId, missionIndex) =>
-      getCurrentMissionItemIdForMissionIndex(state, missionIndex)
-    )
+> = createSelector(
+  getMissionMapping,
+  getMissionProgressData,
+  (mapping, progress) =>
+    mapping.map((_uavId, missionIndex) => progress[missionIndex]?.currentItemId)
 );
 
 /**
@@ -993,11 +991,14 @@ export const getCurrentMissionItemIndexForMissionIndex: AppSelector<
 
 export const getCurrentMissionItemIndexForEveryMissionIndex: AppSelector<
   Array<number | undefined>
-> = createDeepResultSelector(
-  (state: RootState) => state,
-  (state) =>
-    getMissionMapping(state).map((_uavId, missionIndex) =>
-      getCurrentMissionItemIndexForMissionIndex(state, missionIndex)
+> = createSelector(
+  getMissionItemIds,
+  getCurrentMissionItemIdForEveryMissionIndex,
+  (missionItemIds, currentItemIds) =>
+    currentItemIds.map((currentItemId) =>
+      currentItemId === undefined
+        ? undefined
+        : missionItemIds.indexOf(currentItemId)
     )
 );
 
@@ -1016,11 +1017,12 @@ export const getCurrentMissionItemRatioForMissionIndex: AppSelector<
 
 export const getCurrentMissionItemRatioForEveryMissionIndex: AppSelector<
   Array<number | undefined>
-> = createDeepResultSelector(
-  (state: RootState) => state,
-  (state) =>
-    getMissionMapping(state).map((_uavId, missionIndex) =>
-      getCurrentMissionItemRatioForMissionIndex(state, missionIndex)
+> = createSelector(
+  getMissionMapping,
+  getMissionProgressData,
+  (mapping, progress) =>
+    mapping.map(
+      (_uavId, missionIndex) => progress[missionIndex]?.currentItemRatio
     )
 );
 
@@ -1096,7 +1098,7 @@ export const getEndRatioOfPartialMission: AppSelector<number> = createSelector(
 /**
  * Selector that returns the completion ratio of the net mission.
  *
- * @returns {number} the ratio of the done and total lengths of the net mission
+ * @returns the ratio of the done and total lengths of the net mission
  */
 export const getNetMissionCompletionRatio: AppSelector<number, [MissionIndex]> =
   createSelector(

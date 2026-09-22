@@ -69,7 +69,9 @@ const ValueRow = ({ value, uavIds, isConsensus }: ValueRowProps) => {
   const classes = useValueRowStyles();
 
   return (
-    <Stack spacing={1} direction='row' alignItems='center'>
+    /* Do not use a <Stack> below; it messes up the grid layout where the grid
+     * assumes that there are 3 items in each row */
+    <>
       <Tooltip content={value}>
         <Box sx={{ width: 80 }}>
           <StatusPill
@@ -86,7 +88,7 @@ const ValueRow = ({ value, uavIds, isConsensus }: ValueRowProps) => {
       <Typography className={classes.uavIds} variant='body2'>
         {formatIdsAndTruncateTrailingItems(uavIds.slice().sort())}
       </Typography>
-    </Stack>
+    </>
   );
 };
 

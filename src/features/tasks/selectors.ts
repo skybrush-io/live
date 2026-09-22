@@ -3,12 +3,13 @@ import { createSelector } from '@reduxjs/toolkit';
 import type { FlightLog } from '~/model/flight-logs';
 import type { AppSelector, RootState } from '~/store/reducers';
 
-import { readDownloadedLog } from './actions/log-download';
+import { readTaskPayload } from './payload-store';
 import type {
   AggregatedTaskState,
   LogDownloadTaskData,
   TaskData,
   TaskState,
+  UAVTaskData,
 } from './types';
 import { getTaskKey, isTaskInProgress } from './utils';
 
@@ -41,7 +42,7 @@ export const getDownloadedLog = (
     return undefined;
   }
 
-  return readDownloadedLog(task.result.hash);
+  return readTaskPayload<FlightLog>(task.result.hash);
 };
 
 /**
@@ -50,7 +51,7 @@ export const getDownloadedLog = (
  */
 export const createAggregatedTaskStateSelector = (
   getUAVIds: AppSelector<string[]>,
-  taskData: Omit<TaskData, 'uavId'>
+  taskData: Omit<UAVTaskData, 'uavId'>
 ): AppSelector<AggregatedTaskState> =>
   createSelector(
     getUAVIds,

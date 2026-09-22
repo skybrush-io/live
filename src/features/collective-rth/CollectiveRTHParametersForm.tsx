@@ -1,38 +1,17 @@
-import FormGroup from '@mui/material/FormGroup';
-import type { Theme } from '@mui/material/styles';
-import { makeStyles } from '@skybrush/app-theme-mui';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-
-import { FormHeader } from '@skybrush/mui-components';
+import { useSelector } from 'react-redux';
 
 import {
   SimpleDistanceField,
   SimpleDurationField,
   SimpleVelocityField,
 } from '~/components/forms/fields';
+import type { CollectiveRTHParameters } from '~/flockwave/types';
 
-import type {
-  CollectiveRTHParameters,
-  OptionalCollectiveRTHParameters,
-} from './actions';
-
-const useStyles = makeStyles((theme: Theme) => ({
-  formGroup: {
-    gap: theme.spacing(1),
-    marginTop: theme.spacing(-1),
-  },
-}));
-
-function areParametersValid(params: CollectiveRTHParameters): boolean {
-  return (
-    params.minDistance >= 0 &&
-    params.timeResolution >= 1 &&
-    Number.isInteger(params.timeResolution) &&
-    params.horizontalVelocity > 0 &&
-    params.verticalVelocity > 0
-  );
-}
+import Grid from '@mui/material/Grid';
+import { selectParameters } from './selectors';
+import { areCollectiveRTHParametersValid } from './validation';
 
 /**
  * Parses a distance (string) as meters, rounded to 3 digits.
@@ -55,20 +34,24 @@ function parseVelocityMpS(value: string): number {
   return Number.parseFloat(value);
 }
 
-export function useCollectiveRTHParametersFormState(
-  defaultParams?: OptionalCollectiveRTHParameters
-) {
-  const [minDistance, setMinDistance] = useState(
-    defaultParams?.minDistance ?? 2
-  );
-  const [timeResolution, setTimeResolution] = useState(
-    defaultParams?.timeResolution ?? 10
-  );
+/**
+ * Hook that manages the local state of the collective RTH parameters form.
+ *
+ * The form is seeded from the default parameters stored in the Redux state
+ * (and persisted between application restarts); the current values are
+ * written back to the state when the user starts a collective RTH plan
+ * calculation.
+ */
+export function useCollectiveRTHParametersFormState() {
+  const defaults = useSelector(selectParameters);
+
+  const [minDistance, setMinDistance] = useState(defaults.minDistance);
+  const [timeResolution, setTimeResolution] = useState(defaults.timeResolution);
   const [horizontalVelocity, setHorizontalVelocity] = useState(
-    defaultParams?.horizontalVelocity ?? 5
+    defaults.horizontalVelocity
   );
   const [verticalVelocity, setVerticalVelocity] = useState(
-    defaultParams?.verticalVelocity ?? 1.5
+    defaults.verticalVelocity
   );
 
   const parameters = useMemo<CollectiveRTHParameters>(() => {
@@ -81,7 +64,7 @@ export function useCollectiveRTHParametersFormState(
   }, [minDistance, timeResolution, horizontalVelocity, verticalVelocity]);
 
   const isValid = useMemo(() => {
-    return areParametersValid(parameters);
+    return areCollectiveRTHParametersValid(parameters);
   }, [parameters]);
 
   const onMinDistanceChanged = useCallback(
@@ -139,48 +122,59 @@ function CollectiveRTHParametersForm(props: Props) {
   const { t } = useTranslation(undefined, {
     keyPrefix: 'collectiveRTHDialog.parameters',
   });
-  const styles = useStyles();
 
   return (
-    <FormGroup className={styles.formGroup}>
-      <FormHeader>{t('section.parameters')}</FormHeader>
-      <SimpleDurationField
-        label={t('form.timeResolution.label')}
-        min={0}
-        max={600}
-        value={parameters.timeResolution}
-        disabled={disabled}
-        helperText={t('form.timeResolution.help')}
-        onChange={onTimeResolutionChanged}
-      />
-      <SimpleDistanceField
-        label={t('form.minDistance.label')}
-        min={0.001}
-        max={100}
-        value={parameters.minDistance}
-        disabled={disabled}
-        helperText={t('form.minDistance.help')}
-        onChange={onMinDistanceChanged}
-      />
-      <SimpleVelocityField
-        label={t('form.horizontalVelocity.label')}
-        min={0.1}
-        max={100}
-        value={parameters.horizontalVelocity}
-        disabled={disabled}
-        helperText={t('form.horizontalVelocity.help')}
-        onChange={onHorizontalVelocityChanged}
-      />
-      <SimpleVelocityField
-        label={t('form.verticalVelocity.label')}
-        min={0.1}
-        max={100}
-        value={parameters.verticalVelocity}
-        disabled={disabled}
-        helperText={t('form.verticalVelocity.help')}
-        onChange={onVerticalVelocityChanged}
-      />
-    </FormGroup>
+    <Grid container spacing={2}>
+      <Grid size={6}>
+        <SimpleDurationField
+          fullWidth
+          label={t('form.timeResolution.label')}
+          min={0}
+          max={600}
+          value={parameters.timeResolution}
+          disabled={disabled}
+          helperText={t('form.timeResolution.help')}
+          onChange={onTimeResolutionChanged}
+        />
+      </Grid>
+      <Grid size={6}>
+        <SimpleDistanceField
+          fullWidth
+          label={t('form.minDistance.label')}
+          min={0.001}
+          max={100}
+          value={parameters.minDistance}
+          disabled={disabled}
+          helperText={t('form.minDistance.help')}
+          onChange={onMinDistanceChanged}
+          size='small'
+        />
+      </Grid>
+      <Grid size={6}>
+        <SimpleVelocityField
+          fullWidth
+          label={t('form.horizontalVelocity.label')}
+          min={0.1}
+          max={100}
+          value={parameters.horizontalVelocity}
+          disabled={disabled}
+          helperText={t('form.horizontalVelocity.help')}
+          onChange={onHorizontalVelocityChanged}
+        />
+      </Grid>
+      <Grid size={6}>
+        <SimpleVelocityField
+          fullWidth
+          label={t('form.verticalVelocity.label')}
+          min={0.1}
+          max={100}
+          value={parameters.verticalVelocity}
+          disabled={disabled}
+          helperText={t('form.verticalVelocity.help')}
+          onChange={onVerticalVelocityChanged}
+        />
+      </Grid>
+    </Grid>
   );
 }
 

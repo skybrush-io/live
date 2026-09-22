@@ -83,7 +83,7 @@ export function fitCoordinatesIntoMapView(
  * Convenience function to scroll the map to a given latitude and longitude
  * with reasonable defaults.
  *
- * @param  {object}  coordinate  the coordinate to scroll to. It must be either
+ * @param  coordinate  the coordinate to scroll to. It must be either
  *         an object with keys `lon` and `lat` (for longitude and latitde,
  *         respectively), or an array of length 2; in this case, longitude
  *         comes first and latitude comes second, according to OpenLayers

@@ -4,6 +4,7 @@ import { _clearTask, _startTask } from '../slice';
 import type { StartOptions, TaskData, TaskSpec } from '../types';
 import { getTaskKey, isTaskInProgress } from '../utils';
 import { runLogDownloadTask } from './log-download';
+import { clearRTHPlanTask, runRTHPlanTask } from './rth-plan';
 import {
   clearUAVTestTask,
   resumeUAVTestTask,
@@ -39,6 +40,8 @@ export const startTask =
         );
       case 'uav-test':
         return dispatch(runUAVTestTask(spec, { silent }));
+      case 'rth-plan':
+        return dispatch(runRTHPlanTask(spec));
     }
   };
 
@@ -50,6 +53,8 @@ export const resumeTask =
         return;
       case 'uav-test':
         void dispatch(resumeUAVTestTask(data));
+        return;
+      case 'rth-plan':
         return;
     }
   };
@@ -63,7 +68,10 @@ export const clearTask =
       case 'uav-test':
         dispatch(clearUAVTestTask(data));
         break;
+      case 'rth-plan':
+        dispatch(clearRTHPlanTask());
+        break;
     }
 
-    dispatch(_clearTask(data));
+    dispatch(_clearTask(getTaskKey(data)));
   };

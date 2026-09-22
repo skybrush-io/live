@@ -1,9 +1,11 @@
-import { Base64 } from 'js-base64';
-import { createSelector } from 'reselect';
+import { createSelector } from '@reduxjs/toolkit';
 
-import type { AppSelector, RootState } from '~/store/reducers';
-
-import type { CollectiveRTHDialogState, TransformationResult } from './slice';
+import type { RTHPlanTaskResult, RTHPlanTaskState } from '~/features/tasks';
+import { getTaskState, readTaskPayload } from '~/features/tasks';
+import type { ProgressInfo } from '~/flockwave/messages';
+import type { CollectiveRTHParameters } from '~/flockwave/types';
+import type { AppSelector } from '~/store/reducers';
+import type { CollectiveRTHDialogState } from './slice';
 
 const selectState: AppSelector<CollectiveRTHDialogState> = (state) =>
   state.dialogs.collectiveRTH;
@@ -11,30 +13,100 @@ const selectState: AppSelector<CollectiveRTHDialogState> = (state) =>
 export const isDialogOpen: AppSelector<boolean> = (state) =>
   selectState(state).open;
 
-export const selectTransformationInProgress: AppSelector<boolean> =
-  createSelector(selectState, ({ result }) => result?.state === 'loading');
+/**
+ * Returns the default parameters of a collective RTH plan calculation, as
+ * persisted between application restarts.
+ */
+export const selectParameters: AppSelector<CollectiveRTHParameters> = (state) =>
+  selectState(state).parameters;
 
-export const selectTransformationError: AppSelector<string | undefined> =
-  createSelector(selectState, ({ result }) =>
-    result?.state === 'error' ? result.error : undefined
+/**
+ * Returns the state of the singleton collective RTH plan calculation task,
+ * or `undefined` if no such task has been started yet.
+ */
+export const selectRTHPlanTask: AppSelector<RTHPlanTaskState | undefined> = (
+  state
+) => getTaskState(state, { type: 'rth-plan' });
+
+/**
+ * The current phase of the collective RTH plan calculation task, including the
+ * approval / rejection phase if applicable. The task is considered idle if it has not
+ * been started yet or it has no notable status.
+ *
+ * The transitions are as follows:
+ *
+ * - The process starts from the `idle` phase.
+ * - When the calculation task is started, it transitions to the `planning` phase.
+ * - If the task completes successfully, it transitions to the `waitingForApproval` phase.
+ *   Alternatively, if the task encounters an error, it transitions to the `error` phase.
+ * - After the user approves or rejects the plan, it transitions back to the `idle` phase.
+ */
+export type CollectiveRTHPlanningPhase =
+  'idle' | 'planning' | 'error' | 'waitingForApproval';
+
+/**
+ * Returns the current phase of the collective RTH plan calculation and approval
+ * process.
+ */
+export const selectCollectiveRTHPlanningPhase: AppSelector<CollectiveRTHPlanningPhase> =
+  createSelector(selectRTHPlanTask, selectState, (task, state) => {
+    switch (task?.status) {
+      case 'running':
+        return 'planning';
+      case 'success':
+        return state.waitingForApproval ? 'waitingForApproval' : 'idle';
+      case 'error':
+        return state.waitingForApproval ? 'error' : 'idle';
+      default:
+        return 'idle';
+    }
+  });
+
+/**
+ * Returns the progress information of the collective RTH plan calculation
+ * task while it is running, or `undefined` otherwise.
+ */
+export const selectRTHPlanTaskProgress: AppSelector<ProgressInfo | undefined> =
+  createSelector(selectRTHPlanTask, (task) =>
+    task?.status === 'running' ? task.progress : undefined
   );
 
-export const selectResult: AppSelector<TransformationResult | undefined> =
-  createSelector(selectState, ({ result }) =>
-    result?.state === 'success' ? result : undefined
-  );
+/**
+ * Returns the result of the most recent successful collective RTH plan
+ * calculation, or `undefined` if there is no such calculation.
+ */
+export const selectRTHPlanTaskResult: AppSelector<
+  RTHPlanTaskResult | undefined
+> = createSelector(selectRTHPlanTask, (task) =>
+  task?.status === 'success' ? task.result : undefined
+);
 
-export const selectTransformedShowAsBase64String: AppSelector<
+/**
+ * Returns the base64-encoded show with the collective RTH plans appended from
+ * the most recent successful collective RTH plan calculation, or `undefined`
+ * if there is no such calculation or its result is no longer available.
+ */
+export const selectCalculatedShowWithRTHPlan: AppSelector<
   string | undefined
-> = createSelector(selectResult, (result) => result?.show);
-
-export const selectTransformedShowBlob: AppSelector<Blob | undefined> = (
-  state: RootState
-) => {
-  const result = selectTransformedShowAsBase64String(state);
-  if (result === undefined) {
+> = (state) => {
+  const task = selectRTHPlanTask(state);
+  if (task?.status !== 'success' || task.result === undefined) {
     return undefined;
   }
 
-  return new Blob([Base64.toUint8Array(result) as any]);
+  return readTaskPayload<string>(task.result.hash);
+};
+
+/**
+ * Returns whether the collective RTH dialog can be closed in the given phase.
+ *
+ * We try to discourage users from closing the dialog when the calculation is in
+ * progress or an approval is pending, but we don't want to prevent them from doing so
+ * if they insist, so this function is only used to disable the Escape key and the
+ * Close button.
+ */
+export const canCloseDialogInPhase = (
+  phase: CollectiveRTHPlanningPhase
+): boolean => {
+  return phase !== 'planning' && phase !== 'waitingForApproval';
 };

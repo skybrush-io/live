@@ -1,62 +1,20 @@
-import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import type { PayloadAction } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 
-export type StatEntry = {
-  /**
-   * Start time of the collective RTH plan relative to show start, in seconds.
-   */
-  time: number;
+import type { CollectiveRTHParameters } from '~/flockwave/types';
 
-  /**
-   * The duration of the collective RTH operation, without landing, in seconds.
-   */
-  duration: number;
-
-  /**
-   * Total show duration including collective RTH and landing, in seconds.
-   */
-  showDuration: number;
-};
-
-export type TransformationResult = {
-  /**
-   * The transformed show as a base64-encoded string.
-   */
-  show: string;
-
-  /**
-   * The full duration of the show in seconds, stored for convenience.
-   */
-  showDuration: number;
-
-  /**
-   * Statistics about the collective RTH operation.
-   */
-  stats: StatEntry[];
-
-  /**
-   * The first timestamp at which a collective RTH plan was generated, in seconds.
-   */
-  firstTime: number;
-
-  /**
-   * The last timestamp at which a collective RTH plan was generated, in seconds.
-   */
-  lastTime: number;
-};
-
-export type TransformationResultOrStatus =
-  | ({ state: 'success' } & TransformationResult)
-  | { state: 'error'; error: string }
-  | { state: 'loading' };
+import { COLLECTIVE_RTH_DEFAULTS } from './constants';
 
 export type CollectiveRTHDialogState = {
   open: boolean;
-  result?: TransformationResultOrStatus;
+  parameters: CollectiveRTHParameters;
+  waitingForApproval: boolean;
 };
 
 const initialState: CollectiveRTHDialogState = {
   open: false,
-  result: undefined,
+  parameters: COLLECTIVE_RTH_DEFAULTS,
+  waitingForApproval: false,
 };
 
 const { reducer, actions } = createSlice({
@@ -71,26 +29,32 @@ const { reducer, actions } = createSlice({
     },
 
     /**
-     * Closes the dialog and completely resets its state.
+     * Closes the dialog. The default parameters are deliberately kept as
+     * they are persisted between application restarts.
      */
-    closeDialog() {
-      return initialState;
+    closeDialog(state) {
+      state.open = false;
     },
 
     /**
-     * Stores the given result in the state.
-     *
-     * If the action's payload is `undefined`, the result is cleared.
+     * Stores the given parameters as the new defaults for the next
+     * collective RTH plan calculation.
      */
-    setResult(
-      state,
-      action: PayloadAction<TransformationResultOrStatus | undefined>
-    ) {
-      state.result = action.payload;
+    _setParameters(state, action: PayloadAction<CollectiveRTHParameters>) {
+      state.parameters = action.payload;
+    },
+
+    _setWaitingForApproval(state, action: PayloadAction<boolean>) {
+      state.waitingForApproval = action.payload;
     },
   },
 });
 
-export const { closeDialog, setResult, showDialog } = actions;
+export const {
+  closeDialog,
+  showDialog,
+  _setParameters,
+  _setWaitingForApproval,
+} = actions;
 
 export default reducer;

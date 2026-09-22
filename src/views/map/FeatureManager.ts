@@ -24,10 +24,10 @@ type ProjectionFunction = (coord: number[]) => number[];
  * <em>objects</em> that the features represent. The OpenLayers feature ID
  * may or may not be equal to the object ID.
  *
- * @property {?string} namespace  when specified, it will be prepended to
+ * @property namespace  when specified, it will be prepended to
  *           every object ID passed to the feature manager function to
  *           obtain the OpenLayers feature ID
- * @property {?function} projection  a projection function from OpenLayers
+ * @property projection  a projection function from OpenLayers
  *           that is used to map coordinates specified by the user to the
  *           coordinate system of the source layer
  */
@@ -177,8 +177,7 @@ export default class FeatureManager<F extends Feature<Point> = Feature<Point>> {
    * object (typically a point) as its only argument and must
    * return an appropriately constructed {@link ol.Feature} object.
    *
-   * @return {function(id: string, geom: ol.geom.Geometry): ol.Feature}
-   *         the feature factory function
+   * @return the feature factory function
    */
   get featureFactory() {
     return this._featureFactory;
@@ -246,11 +245,9 @@ export default class FeatureManager<F extends Feature<Point> = Feature<Point>> {
    * attempts to associate it to a different layer source will yield an
    * error.
    *
-   * @param {ol.source.Vector} value  the new OpenLayers vector layer source
+   * @param value  the new OpenLayers vector layer source
    * @throws Error  if the feature manager is already attached to a different
    *         layer source
-   *
-   * @return {undefined}
    */
   set vectorSource(value) {
     if (this._vectorSource === value) {
@@ -277,7 +274,6 @@ export default class FeatureManager<F extends Feature<Point> = Feature<Point>> {
  * The event contains the newly added feature.
  *
  * @event  FeatureManager#featureAdded
- * @type {ol.Feature}
  */
 
 /**
@@ -287,5 +283,4 @@ export default class FeatureManager<F extends Feature<Point> = Feature<Point>> {
  * The event contains the feature that was removed.
  *
  * @event  FeatureManager#featureRemoved
- * @type {ol.Feature}
  */
