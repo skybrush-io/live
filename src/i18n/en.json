@@ -207,13 +207,13 @@
     },
     "summary": {
       "firstTime": {
-        "message": "Earliest RTH time: {{firstTime}}"
+        "message": "First plan: {{firstTime}}"
       },
       "lastTime": {
-        "message": "Last RTH time: {{lastTime}}"
+        "message": "Last plan: {{lastTime}}"
       },
       "minRTHAltitude": {
-        "message": "Minimum RTH altitude: {{minRTHAltitude}}"
+        "message": "Min RTH altitude: {{minRTHAltitude}}"
       },
       "numPlans": {
         "message_one": "1 RTH plan calculated, waiting for approval",

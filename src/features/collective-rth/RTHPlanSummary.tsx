@@ -40,14 +40,18 @@ const RTHStats = ({ firstTime, lastTime, minRTHAltitude }: RTHStatsProps) => {
           firstTime: formatDuration(firstTime),
         })}
         <Divider sx={{ flex: 1 }} />
+        {minRTHAltitude !== undefined && (
+          <>
+            {t('collectiveRTHDialog.summary.minRTHAltitude.message', {
+              minRTHAltitude: formatAltitude(minRTHAltitude),
+            })}
+            <Divider sx={{ flex: 1 }} />
+          </>
+        )}
         {t('collectiveRTHDialog.summary.lastTime.message', {
           lastTime: formatDuration(lastTime),
         })}
       </Stack>
-      {minRTHAltitude !== undefined &&
-        t('collectiveRTHDialog.summary.minRTHAltitude.message', {
-          minRTHAltitude: formatAltitude(minRTHAltitude),
-        })}
     </Stack>
   );
 };
