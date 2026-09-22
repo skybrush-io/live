@@ -42,7 +42,7 @@ const MapSafeModeButton = ({ onToggle, safeMode }: MapSafeModeButtonProps) => {
   );
 };
 
-const ConnectedMapSafeModeButton = connect(
+export default connect(
   // mapStateToProps
   (state: RootState) => ({
     safeMode: isMapInSafeMode(state),
@@ -52,5 +52,3 @@ const ConnectedMapSafeModeButton = connect(
     onToggle: toggleMapSafeMode,
   }
 )(MapSafeModeButton);
-
-export default ConnectedMapSafeModeButton;
