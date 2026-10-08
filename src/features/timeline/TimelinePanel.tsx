@@ -17,29 +17,30 @@ type Props = {
 
 const TimelinePanel = ({ chartConfig, onChartConfigChange }: Props) => {
   return (
-    <Stack direction='row' spacing={1} sx={{ flex: 1, height: '100%', p: 1 }}>
-      {/* Left axis contents */}
-      <DatasetConfigToolbar
-        axis='y'
+    <Stack spacing={1} sx={{ flex: 1, height: '100%', p: 1 }}>
+      <MarkerLaneConfigToolbar
         value={chartConfig}
         onChange={onChartConfigChange}
+        sx={{ justifyContent: 'center' }}
       />
+      <Stack direction='row' spacing={1} sx={{ flex: 1 }}>
+        {/* Left axis contents */}
+        <DatasetConfigToolbar
+          axis='y'
+          value={chartConfig}
+          onChange={onChartConfigChange}
+        />
 
-      {/* Chart area */}
-      <Stack spacing={1} sx={{ flex: 1 }}>
+        {/* Chart area */}
         <TimelineChart {...chartConfig} />
-        <MarkerLaneConfigToolbar
+
+        {/* Right axis contents */}
+        <DatasetConfigToolbar
+          axis='y2'
           value={chartConfig}
           onChange={onChartConfigChange}
         />
       </Stack>
-
-      {/* Right axis contents */}
-      <DatasetConfigToolbar
-        axis='y2'
-        value={chartConfig}
-        onChange={onChartConfigChange}
-      />
     </Stack>
   );
 };
