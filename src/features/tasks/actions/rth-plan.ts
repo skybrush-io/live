@@ -78,6 +78,7 @@ export const runRTHPlanTask =
             showDuration: response.showDuration,
             firstTime: Math.min(...times),
             lastTime: Math.max(...times),
+            minRTHAltitude: response.minRTHAltitude ?? undefined,
           },
         })
       );

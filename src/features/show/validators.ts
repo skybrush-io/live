@@ -96,6 +96,7 @@ export function validateCollectiveRTHPlan(
       isValid: false,
       firstTime: undefined,
       lastTime: undefined,
+      minRTHAltitude: undefined,
       numDrones: 0,
       dronesWithRTHPlan: 0,
       dronesWithoutRTHPlan: 0,
@@ -106,6 +107,7 @@ export function validateCollectiveRTHPlan(
   let dronesWithoutRTHPlan = 0;
   let firstTime: number = Number.POSITIVE_INFINITY;
   let lastTime: number = Number.NEGATIVE_INFINITY;
+  let minRTHAltitude: number | undefined;
   const plans: Record<
     number,
     (CollectiveRTHPlanSummaryItem & { count: number }) | undefined
@@ -154,6 +156,13 @@ export function validateCollectiveRTHPlan(
         lastTime = time;
       }
 
+      if (entry.action !== 'land') {
+        minRTHAltitude =
+          minRTHAltitude === undefined
+            ? entry.target[2]
+            : Math.min(minRTHAltitude, entry.target[2]);
+      }
+
       const existing = plans[time];
       if (existing === undefined) {
         plans[time] = {
@@ -181,6 +190,7 @@ export function validateCollectiveRTHPlan(
     isValid,
     firstTime,
     lastTime,
+    minRTHAltitude: isValid ? minRTHAltitude : undefined,
     numDrones,
     dronesWithRTHPlan,
     dronesWithoutRTHPlan,
