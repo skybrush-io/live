@@ -1322,8 +1322,13 @@
     "tooltip": "Select individual targets by clicking their IDs to prepare a partial operation"
   },
   "surveyStatusIndicator": {
+    "accuracy": "Accuracy: {{accuracy}}",
+    "accuracyAbove": "Accuracy {{accuracy}}",
     "noSurveyInformation": "No survey information",
-    "notStartedYet": "Survey not started yet"
+    "notStartedYet": "Survey not started yet",
+    "surveying": "Surveying",
+    "surveyingWithAccuracy": "Surveying, accuracy: {{accuracy}}",
+    "surveyingWithAccuracyAbove": "Surveying, accuracy {{accuracy}}"
   },
   "takeoffAreaSetupDialog": {
     "allDroneOnline": "All drones in the mission are online.",
