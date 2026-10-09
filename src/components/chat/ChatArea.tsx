@@ -76,7 +76,10 @@ export default class ChatArea extends React.Component<
       // Apparently a delay is needed with React 19, otherwise the node still has zero
       // height when scrollIntoView() is called and thus it is scrolled into view in a
       // way that only its top edge is visible
-      setTimeout(() => void node.scrollIntoView({ behavior: 'smooth' }), 100);
+      //
+      // Do not use smooth scrolling here; it causes an unnecessary delay when there are
+      // many messages in the chat area and the user opens it for the first time.
+      setTimeout(() => void node.scrollIntoView({ behavior: 'instant' }), 100);
     }
   }
 }

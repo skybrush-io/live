@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Reverted to instant scrolling in the "Messages" panel instead of smooth scrolling
+  because the latter caused an inconvenient delay when a long list of messages was
+  opened for the first time.
+
+## [2.14.2] - 2026-09-16
+
+### Fixed
+
 - Skybrush Live now requires server version 2.53.1 or later to reveal the show
   suspension and collective RTH buttons due to a protocol change in server version 2.53.
 
