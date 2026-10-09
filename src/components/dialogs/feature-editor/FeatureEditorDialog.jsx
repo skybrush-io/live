@@ -19,6 +19,7 @@ import {
   getSelectedTab,
 } from '~/features/map-features/selectors';
 import { removeFeaturesByIds } from '~/features/map-features/slice';
+import { updateMapSafely } from '~/features/safety/actions';
 
 import {
   FeatureEditorDialogTab,
@@ -122,8 +123,12 @@ const FeatureEditorDialog = connect(
       dispatch(closeFeatureEditorDialog());
     },
     onRemoveFeature(featureId) {
-      dispatch(removeFeaturesByIds([featureId]));
-      dispatch(closeFeatureEditorDialog());
+      dispatch(
+        updateMapSafely(
+          removeFeaturesByIds([featureId]),
+          closeFeatureEditorDialog()
+        )
+      );
     },
     onTabSelected(_event, value) {
       dispatch(setFeatureEditorDialogTab(value));

@@ -40,6 +40,10 @@ export function isDrawingTool(tool: Tool): boolean {
   return tool?.startsWith('draw');
 }
 
+export function isUnsafeTool(tool: Tool): boolean {
+  return tool === Tool.CUT_HOLE || tool === Tool.EDIT_FEATURE;
+}
+
 /**
  * Returns the OpenLayers draw interaction props corresponding to the given
  * drawing tool.

@@ -23,6 +23,11 @@ export type SafetySliceState = {
     simplify: boolean;
     maxVertexCount: number;
   };
+  /**
+   * Whether the main map is in safe mode, guarding it against accidental
+   * edits of existing items. Adding new items is still allowed.
+   */
+  mapSafeMode: boolean;
   settings: {
     criticalBatteryVoltage?: number;
     lowBatteryThreshold?: BatteryThreshold;
@@ -43,6 +48,7 @@ export const initialState: SafetySliceState = {
     simplify: true,
     maxVertexCount: 10,
   },
+  mapSafeMode: false,
   settings: {
     criticalBatteryVoltage: undefined,
     lowBatteryThreshold: undefined,
@@ -80,6 +86,20 @@ const { actions, reducer } = createSlice({
     },
 
     /**
+     * Action that will set whether the main map is in safe mode.
+     */
+    setMapSafeMode(state, action: PayloadAction<boolean>) {
+      state.mapSafeMode = action.payload;
+    },
+
+    /**
+     * Action that will toggle whether the main map is in safe mode.
+     */
+    toggleMapSafeMode(state) {
+      state.mapSafeMode = !state.mapSafeMode;
+    },
+
+    /**
      * Action that will update the geofence preferences of the user.
      */
     updateGeofenceSettings(
@@ -104,7 +124,9 @@ const { actions, reducer } = createSlice({
 export const {
   closeSafetyDialog,
   openSafetyDialog,
+  setMapSafeMode,
   setSafetyDialogTab,
+  toggleMapSafeMode,
   updateGeofenceSettings,
   updateSafetySettings,
 } = actions;

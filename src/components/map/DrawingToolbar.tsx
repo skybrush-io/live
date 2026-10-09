@@ -14,7 +14,7 @@ import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import type { SvgIconProps } from '@mui/material/SvgIcon';
 
-import { Tool } from '~/components/map/tools';
+import { isUnsafeTool, Tool } from '~/components/map/tools';
 import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
 import { type PreparedI18nKey, tt } from '~/i18n';
 import ContentCut from '~/icons/ContentCut';
@@ -95,6 +95,7 @@ type DrawingToolIdGroup = DrawingToolId[];
 
 type DrawingToolbarProps = {
   onToolSelected: (tool: Tool) => void;
+  safeMode: boolean;
   selectedTool: Tool;
   /**
    * Groups of drawing tool IDs.
@@ -105,6 +106,7 @@ type DrawingToolbarProps = {
 const DrawingToolbar = ({
   drawingTools,
   onToolSelected,
+  safeMode,
   selectedTool,
 }: DrawingToolbarProps) => {
   const { t } = useTranslation();
@@ -122,6 +124,7 @@ const DrawingToolbar = ({
               <Tooltip key={toolId} content={label(t)} placement='right'>
                 <IconButton
                   size='large'
+                  disabled={safeMode && isUnsafeTool(tool)}
                   onClick={partial(onToolSelected, tool)}
                 >
                   <Icon color={colorForTool(tool)} />

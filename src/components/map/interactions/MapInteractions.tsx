@@ -11,7 +11,7 @@ import { useCallback } from 'react';
 import { interaction, withMap } from '@collmot/ol-react';
 
 import * as Condition from '~/components/map/conditions';
-import { Tool } from '~/components/map/tools';
+import { isUnsafeTool, Tool } from '~/components/map/tools';
 import type { FeatureUpdateOptions } from '~/features/show-configurator/actions';
 import {
   getVisibleEditableLayers,
@@ -28,6 +28,11 @@ import type { BoxDragMode, FeatureSelectionOrActivationMode } from './types';
 type Props = {
   map: Map;
   selectedTool: Tool;
+  /**
+   * When set (the map is in safe mode), possibly destructive interactions
+   * are not mounted.
+   */
+  safeMode: boolean;
   children?: React.ReactNode;
   getSelectedTransformableFeatures?: (map: Map) => Feature[];
   onBoxDragEnded?: (mode: BoxDragMode, event: DragBoxEvent) => void;
@@ -102,6 +107,7 @@ const MapInteractions = withMap((props: Props) => {
     children,
     getSelectedTransformableFeatures,
     onSingleFeatureSelected,
+    safeMode,
     selectedTool,
   } = props;
   const {
@@ -172,22 +178,26 @@ const MapInteractions = withMap((props: Props) => {
         key='DragBox.removeFromSelection'
         condition={Condition.altKeyOnly}
         onBoxEnd={onRemoveFeaturesFromSelection}
-      />,
+      />
+    );
 
+    if (!safeMode) {
       /* SELECT mode |
            Drag a feature --> Move a feature to a new location
            Alt + Drag --> Rotate a feature.
          This must come last in order to ensure that it will get the
          chance to process events before DragBox so Alt+something will not
          start a drag-box when clicking on a selected feature */
-      <TransformFeatures
-        key='TransformFeatures'
-        featureProvider={getSelectedTransformableFeatures}
-        moveCondition={Condition.noModifierKeys}
-        rotateCondition={Condition.altKeyOnly}
-        onTransformEnd={onFeaturesTransformed}
-      />
-    );
+      interactions.push(
+        <TransformFeatures
+          key='TransformFeatures'
+          featureProvider={getSelectedTransformableFeatures}
+          moveCondition={Condition.noModifierKeys}
+          rotateCondition={Condition.altKeyOnly}
+          onTransformEnd={onFeaturesTransformed}
+        />
+      );
+    }
   }
 
   if (selectedTool === Tool.ZOOM) {
@@ -236,7 +246,10 @@ const MapInteractions = withMap((props: Props) => {
     );
   }
 
-  if (selectedTool === Tool.EDIT_FEATURE) {
+  if (
+    selectedTool === Tool.EDIT_FEATURE &&
+    !(safeMode && isUnsafeTool(selectedTool))
+  ) {
     interactions.push(
       <interaction.Modify
         key='EditFeature'

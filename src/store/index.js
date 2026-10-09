@@ -112,6 +112,10 @@ const persistConfig = {
     // We do not wish to save which preflight checks the user has ticked off
     createBlacklistFilter('preflight', ['checked']),
 
+    // The map safe mode flag guards a single map editing session only; user
+    // features rehydrate after a reload but show-derived state does not
+    createBlacklistFilter('safety', ['mapSafeMode']),
+
     // We want to keep only the stored groups from the selection slice
     createFilter('selection', ['groups']),
 
