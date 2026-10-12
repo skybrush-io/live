@@ -1,6 +1,7 @@
 import isNil from 'lodash-es/isNil';
+import { useCallback, useState } from 'react';
 import { connect } from 'react-redux';
-import { useHarmonicIntervalFn, useUpdate } from 'react-use';
+import { useHarmonicIntervalFn } from 'react-use';
 
 import { getClockById } from '~/features/clocks/selectors';
 import type { Clock } from '~/features/clocks/types';
@@ -42,9 +43,15 @@ const LCDClockDisplayLabel = ({
   ...rest
 }: Props) => {
   const { running } = clock || {};
-  const timestamp =
-    Date.now() + (affectedByClockSkew && !isNil(clockSkew) ? clockSkew : 0);
-  const update = useUpdate();
+  const [timestamp, setTimestamp] = useState(
+    () =>
+      Date.now() + (affectedByClockSkew && !isNil(clockSkew) ? clockSkew : 0)
+  );
+  const update = useCallback(() => {
+    setTimestamp(
+      Date.now() + (affectedByClockSkew && !isNil(clockSkew) ? clockSkew : 0)
+    );
+  }, [affectedByClockSkew, clockSkew]);
 
   let formattedTime = '--:--:--';
   if (clock) {
