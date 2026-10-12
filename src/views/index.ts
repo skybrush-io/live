@@ -4,7 +4,6 @@
  */
 
 import BeaconList from './beacons';
-import ClockDisplayList from './clocks';
 import ConnectionList from './connections';
 import DockList from './docks';
 import FeaturePanel from './features';
@@ -25,7 +24,6 @@ import UAVList from './uavs';
 
 const views = {
   BeaconList,
-  ClockDisplayList,
   ConnectionList,
   DockList,
   FeaturePanel,
