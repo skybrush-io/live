@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [main]
 
+### Added
+
+- Added a button to reset the manual preflight checklist without unloading
+  the show.
+
 ### Fixed
 
 - Skybrush Live now requires server version 2.53.1 or later to reveal the show

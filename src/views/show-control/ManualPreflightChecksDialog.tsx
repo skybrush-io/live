@@ -1,4 +1,5 @@
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
@@ -10,6 +11,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import ListSubheader from '@mui/material/ListSubheader';
 import Switch from '@mui/material/Switch';
+import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
@@ -19,7 +21,10 @@ import {
 } from '~/features/preflight/selectors';
 import { togglePreflightCheckStatus } from '~/features/preflight/slice';
 import { type PreflightCheckHeaderOrItem } from '~/features/preflight/types';
-import { signOffOnManualPreflightChecks } from '~/features/show/actions';
+import {
+  resetManualPreflightChecks,
+  signOffOnManualPreflightChecks,
+} from '~/features/show/actions';
 import { areManualPreflightChecksSignedOff } from '~/features/show/selectors';
 import {
   clearManualPreflightChecks,
@@ -99,6 +104,7 @@ type ManualPreflightChecksDialogProps = {
   open?: boolean;
   onClear: () => void;
   onClose: () => void;
+  onReset: () => void;
   onSignOff: () => void;
   signedOff?: boolean;
 };
@@ -112,9 +118,12 @@ const ManualPreflightChecksDialog = ({
   open = false,
   onClear,
   onClose,
+  onReset,
   onSignOff,
   signedOff = false,
 }: ManualPreflightChecksDialogProps) => {
+  const { t } = useTranslation();
+
   return (
     <Dialog fullWidth open={open} maxWidth='xs' onClose={onClose}>
       <DialogContent
@@ -128,7 +137,18 @@ const ManualPreflightChecksDialog = ({
         <Box sx={{ flex: 1, overflow: 'auto', minHeight: 0 }}>
           <PreflightCheckList />
         </Box>
-        <Box className='bottom-bar' sx={{ textAlign: 'center', pt: 2 }}>
+        <Box
+          className='bottom-bar'
+          sx={{
+            alignItems: 'center',
+            display: 'flex',
+            flexDirection: 'column',
+            pt: 2,
+          }}
+        >
+          <Button onClick={onReset} size='small'>
+            {t('show.resetPreflightChecklist')}
+          </Button>
           <FormControlLabel
             control={
               <Switch
@@ -148,6 +168,7 @@ const ManualPreflightChecksDialog = ({
 ManualPreflightChecksDialog.propTypes = {
   onClear: PropTypes.func,
   onClose: PropTypes.func,
+  onReset: PropTypes.func,
   onSignOff: PropTypes.func,
   open: PropTypes.bool,
   signedOff: PropTypes.bool,
@@ -164,6 +185,7 @@ export default connect(
   {
     onClear: clearManualPreflightChecks,
     onClose: closeManualPreflightChecksDialog,
+    onReset: resetManualPreflightChecks,
     onSignOff: signOffOnManualPreflightChecks,
   }
 )(ManualPreflightChecksDialog);
