@@ -39,8 +39,9 @@ export const selectRTHPlanTask: AppSelector<RTHPlanTaskState | undefined> = (
  * - When the calculation task is started, it transitions to the `planning` phase.
  * - If the task completes successfully, it transitions to the `waitingForApproval` phase.
  *   Alternatively, if the task encounters an error, it transitions to the `error` phase.
- * - After the user approves or rejects the plan, the task is cleared and the
- *   process transitions back to the `idle` phase.
+ * - After the user approves or rejects the plan, or rejects a failed
+ *   calculation, the task is cleared and the process transitions back to the
+ *   `idle` phase.
  */
 export type CollectiveRTHPlanningPhase =
   'idle' | 'planning' | 'error' | 'waitingForApproval';
