@@ -1002,6 +1002,7 @@
     "manualPreflightChecks": "Manual preflight checks",
     "noFileLoaded": "No show file loaded",
     "onboardPreflightChecks": "Onboard preflight checks",
+    "resetPreflightChecklist": "Reset checklist",
     "outdoor": {
       "invalidAltitudeReference": "Outdoor, invalid altitude reference",
       "relativeToAMSL": "Outdoor, relative to {{altitude}}m AMSL",
