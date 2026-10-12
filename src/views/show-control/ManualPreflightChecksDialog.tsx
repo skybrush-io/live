@@ -1,20 +1,25 @@
+import RestartAlt from '@mui/icons-material/RestartAlt';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import FormControlLabel from '@mui/material/FormControlLabel';
+import IconButton from '@mui/material/IconButton';
 import List, { type ListProps } from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import ListSubheader from '@mui/material/ListSubheader';
+import type { Theme } from '@mui/material/styles';
 import Switch from '@mui/material/Switch';
 import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
+import { createSecondaryAreaStyle, makeStyles } from '@skybrush/app-theme-mui';
+
+import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
 import {
   getHeadersAndItems,
   getTickedPreflightCheckItems,
@@ -100,6 +105,15 @@ const PreflightCheckList = connect(
   })
 )(PreflightCheckListPresentation);
 
+const useStyles = makeStyles((theme: Theme) => ({
+  bottomArea: {
+    ...createSecondaryAreaStyle(theme, { inset: 'top' }),
+    alignItems: 'center',
+    display: 'flex',
+    padding: theme.spacing(1, 3),
+  },
+}));
+
 type ManualPreflightChecksDialogProps = {
   open?: boolean;
   onClear: () => void;
@@ -122,6 +136,7 @@ const ManualPreflightChecksDialog = ({
   onSignOff,
   signedOff = false,
 }: ManualPreflightChecksDialogProps) => {
+  const classes = useStyles();
   const { t } = useTranslation();
 
   return (
@@ -137,30 +152,25 @@ const ManualPreflightChecksDialog = ({
         <Box sx={{ flex: 1, overflow: 'auto', minHeight: 0 }}>
           <PreflightCheckList />
         </Box>
-        <Box
-          className='bottom-bar'
-          sx={{
-            alignItems: 'center',
-            display: 'flex',
-            flexDirection: 'column',
-            pt: 2,
-          }}
-        >
-          <Button onClick={onReset} size='small'>
-            {t('show.resetPreflightChecklist')}
-          </Button>
-          <FormControlLabel
-            control={
-              <Switch
-                checked={signedOff}
-                value='signedOff'
-                onChange={signedOff ? onClear : onSignOff}
-              />
-            }
-            label='Sign off on manual preflight checks'
-          />
-        </Box>
       </DialogContent>
+      <Box className={classes.bottomArea}>
+        <FormControlLabel
+          control={
+            <Switch
+              checked={signedOff}
+              value='signedOff'
+              onChange={signedOff ? onClear : onSignOff}
+            />
+          }
+          label='Sign off on manual preflight checks'
+        />
+        <Box sx={{ flex: 1 }} />
+        <Tooltip content={t('show.resetPreflightChecklist')}>
+          <IconButton edge='end' onClick={onReset}>
+            <RestartAlt />
+          </IconButton>
+        </Tooltip>
+      </Box>
     </Dialog>
   );
 };
