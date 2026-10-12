@@ -14,7 +14,6 @@ import ListSubheader from '@mui/material/ListSubheader';
 import type { Theme } from '@mui/material/styles';
 import Switch from '@mui/material/Switch';
 import { useTranslation } from 'react-i18next';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import { createSecondaryAreaStyle, makeStyles } from '@skybrush/app-theme-mui';
@@ -166,22 +165,13 @@ const ManualPreflightChecksDialog = ({
         />
         <Box sx={{ flex: 1 }} />
         <Tooltip content={t('show.resetPreflightChecklist')}>
-          <IconButton edge='end' onClick={onReset}>
+          <IconButton edge='end' onClick={onReset} color='error'>
             <RestartAlt />
           </IconButton>
         </Tooltip>
       </Box>
     </Dialog>
   );
-};
-
-ManualPreflightChecksDialog.propTypes = {
-  onClear: PropTypes.func,
-  onClose: PropTypes.func,
-  onReset: PropTypes.func,
-  onSignOff: PropTypes.func,
-  open: PropTypes.bool,
-  signedOff: PropTypes.bool,
 };
 
 export default connect(
