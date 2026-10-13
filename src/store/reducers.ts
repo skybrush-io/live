@@ -70,6 +70,7 @@ import settingsReducer from '~/features/settings/slice';
 import showReducer from '~/features/show/slice';
 import sidebarReducer from '~/features/sidebar/slice';
 import threeDReducer from '~/features/three-d/slice';
+import timelineReducer from '~/features/timeline/slice';
 import uavControlReducer from '~/features/uav-control/slice';
 import uavReducer from '~/features/uavs/slice';
 import uploadReducer from '~/features/upload/slice';
@@ -148,6 +149,7 @@ const reducer = combineReducers({
   sidebar: sidebarReducer,
   tasks: tasksReducer,
   threeD: threeDReducer,
+  timeline: timelineReducer,
   uavs: uavReducer,
   uavControl: uavControlReducer,
   upload: uploadReducer,

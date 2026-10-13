@@ -67,6 +67,7 @@ export type PreTakeoffAltitudeWarningProps = {
   averageGroundAMSL: number;
   amslReference: number;
   difference: number;
+  sampleCount: number;
   threshold: number;
 };
 
@@ -104,7 +105,7 @@ export const hasUAVColorOverride = (
  * Returns the list of UAV IDs that should be shown on the UI, in the
  * order preferred by the state of the application.
  *
- * @param  {Object}  state  the state of the application
+ * @param  state  the state of the application
  */
 export const getUAVIdList = (state: RootState) => state.uavs.order;
 
@@ -700,6 +701,7 @@ export const selectPreTakeoffAltitudeWarningProps = createSelector(
           averageGroundAMSL,
           amslReference,
           difference,
+          sampleCount: altitudes.length,
           threshold,
         }
       : undefined;

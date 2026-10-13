@@ -1,4 +1,4 @@
-import isObject from 'lodash-es/isObject';
+import { isRecord } from '~/utils/types';
 
 /**
  * Type of a single segment in a drone show schedule.
@@ -60,15 +60,15 @@ export type Schedule = {
 
 const isTimeSegment = (data: unknown): data is TimeSegment =>
   // prettier-ignore
-  isObject(data)
+  isRecord(data)
   && 'type' in data && VALID_TIME_SEGMENT_TYPES.has(data.type as TimeSegmentType)
   && 'startMs' in data && typeof data.startMs === 'number'
   && 'endMs' in data && typeof data.endMs === 'number'
-  && (!('params' in data) || data.params === undefined || isObject(data.params));
+  && (!('params' in data) || data.params === undefined || isRecord(data.params));
 
 export const isSchedule = (data: unknown): data is Schedule =>
   // prettier-ignore
-  isObject(data)
+  isRecord(data)
   && 'schedule' in data
   && Array.isArray(data.schedule)
   && data.schedule.every(isTimeSegment);

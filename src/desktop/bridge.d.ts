@@ -1,5 +1,7 @@
 import type { FileOptions } from 'tempy';
 
+type Disposer = () => void;
+
 export type Bridge = {
   isElectron: boolean;
 
@@ -13,6 +15,10 @@ export type Bridge = {
     dialogOptions?: Electron.OpenDialogOptions;
   }) => Promise<Uint8Array>;
   removeTemporaryFile: (path: string) => Promise<void>;
+  watchFile: (
+    filename: string,
+    handler: (event: 'update' | 'remove') => void
+  ) => Disposer;
   writeBufferToFile: (
     buffer: ArrayBuffer,
     preferredFilename: string,

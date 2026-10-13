@@ -1,4 +1,9 @@
-import type { ErrorMap, MessageID, ReceiptMap } from '@skybrush/flockwave-spec';
+import type {
+  ErrorMap,
+  MessageID,
+  ReceiptID,
+  ReceiptMap,
+} from '@skybrush/flockwave-spec';
 
 /**
  * Type specification for a generic Flockwave message body. For these messages,
@@ -22,8 +27,19 @@ export type Message<T = MessageBody> = {
 
 /**
  * Type specification for a generic response to an operation that may be
- * synchronous (and returns the results immediately) or asynchronous (returning
+ * synchronous (returns the results immediately) or asynchronous (returning
  * receipts instead of the actual responses).
+ */
+export type AsyncOperationResponseBody<T> = MessageBody & {
+  receipt?: ReceiptID;
+  error?: string;
+  result?: T;
+};
+
+/**
+ * Type specification for a generic response to an operation that affects multiple
+ * objects on the server and may be synchronous (returns the results immediately) or
+ * asynchronous (returning receipts instead of the actual responses).
  */
 export type MultiAsyncOperationResponseBody<T> = MessageBody & {
   receipt?: ReceiptMap;

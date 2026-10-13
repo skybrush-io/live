@@ -9,30 +9,35 @@ import {
   _setTaskProgress,
   _suspendTask,
 } from '../slice';
-import type { StartOptions, UAVTestTaskData, UAVTestTaskSpec } from '../types';
+import type {
+  StartOptions,
+  TaskKey,
+  UAVTestTaskData,
+  UAVTestTaskSpec,
+} from '../types';
 import { getTaskKey } from '../utils';
 
 type ActiveOperation = {
   resume?: ProgressStatus['resume'];
 };
 
-const activeOperations = new Map<string, ActiveOperation>();
+const activeOperations = new Map<TaskKey, ActiveOperation>();
 
 export const runUAVTestTask =
   (spec: UAVTestTaskSpec, _opts: StartOptions = {}): AppThunk<Promise<void>> =>
   async (dispatch) => {
-    const { uavId, type, taskId, params } = spec;
+    const { uavId, params } = spec;
     const { component, command, timeout } = params;
     const key = getTaskKey(spec);
 
     const onProgress = ({ progress, suspended, resume }: ProgressStatus) => {
       if (suspended) {
-        dispatch(_suspendTask({ uavId, type, taskId, progress }));
+        dispatch(_suspendTask({ key, progress }));
         if (resume) {
           activeOperations.set(key, { resume });
         }
       } else {
-        dispatch(_setTaskProgress({ uavId, type, taskId, progress }));
+        dispatch(_setTaskProgress({ key, progress }));
       }
     };
 
@@ -45,9 +50,9 @@ export const runUAVTestTask =
         },
         { onProgress, timeout }
       );
-      dispatch(_completeTask({ uavId, type, taskId }));
+      dispatch(_completeTask({ key }));
     } catch (error: unknown) {
-      dispatch(_failTask({ uavId, type, taskId, error: errorToString(error) }));
+      dispatch(_failTask({ key, error: errorToString(error) }));
     } finally {
       activeOperations.delete(key);
     }

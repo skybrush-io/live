@@ -10,6 +10,7 @@ import Layers from '@mui/icons-material/Layers';
 import Map from '@mui/icons-material/Map';
 import Place from '@mui/icons-material/Place';
 import ThreeDRotation from '@mui/icons-material/ThreeDRotation';
+import Timeline from '@mui/icons-material/Timeline';
 import WbSunny from '@mui/icons-material/WbSunny';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -23,7 +24,6 @@ import { getMissionType } from '~/features/mission/selectors';
 import { areExperimentalFeaturesEnabled } from '~/features/settings/selectors';
 import Antenna from '~/icons/Antenna';
 import ConnectingAirports from '~/icons/ConnectingAirports';
-import HomeCircleOutlined from '~/icons/HomeCircleOutlined';
 import Route from '~/icons/Route';
 import ShapeLine from '~/icons/ShapeLine';
 import type { MissionType } from '~/model/missions';
@@ -155,10 +155,10 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
           )}
           {hasShowControl && experimentalFeaturesEnabled && (
             <Module
-              id='collectiveRTH'
-              icon={<HomeCircleOutlined />}
-              label={t('view.collective-rth')}
-              component={moduleComponent('collective-rth')}
+              id='timeline'
+              icon={<Timeline />}
+              label={t('view.timeline')}
+              component={moduleComponent('timeline')}
             />
           )}
           {hasShowControl && <hr />}

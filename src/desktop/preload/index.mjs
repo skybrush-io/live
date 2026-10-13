@@ -1,9 +1,17 @@
+/**
+ * @file Preload script that gets executed in the renderer processes _before_
+ * it is dropping its privileges to access Node.js methods.
+ *
+ * This is the place where we can construct a limited "API" object that the
+ * renderer processes can use to talk to Node.js.
+ */
+
+import SSDPClient from '@skybrush/ssdp-lite';
 import { promises } from 'dns';
 import electron from 'electron';
 import { ipcRenderer as ipc } from 'electron-better-ipc';
 import ElectronStore from 'electron-store';
 import fs from 'fs';
-import SSDPClient from 'node-ssdp-lite';
 import watch from 'node-watch';
 import path from 'path';
 import createStorageEngine from 'redux-persist-electron-storage';
@@ -17,15 +25,9 @@ import {
 import * as localServerModule from './local-server.mjs';
 import TCPSocket from './tcp-socket.mjs';
 
-/**
- * @file Preload script that gets executed in the renderer processes _before_
- * it is dropping its privileges to access Node.js methods.
- *
- * This is the place where we can construct a limited "API" object that the
- * renderer processes can use to talk to Node.js.
- */
 const dns = { promises }.promises;
 const { contextBridge } = electron;
+
 /**
  * Creates a new SSDP client object and registers the given function to be
  * called when an SSDP response is received.

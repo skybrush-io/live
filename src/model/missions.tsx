@@ -11,7 +11,6 @@ import ChangeHeadingIcon from '@mui/icons-material/RotateLeft';
 import UpdateSafetyIcon from '@mui/icons-material/Security';
 import SetParameterIcon from '@mui/icons-material/Settings';
 import ChangeSpeedIcon from '@mui/icons-material/Speed';
-import isObject from 'lodash-es/isObject';
 import UpdateGeofenceIcon from '~/icons/PlacesFence';
 
 import {
@@ -24,7 +23,7 @@ import type {
   LonLat,
   ScaledJSONGPSCoordinate,
 } from '~/utils/geography';
-import type { Nullable } from '~/utils/types';
+import { isRecord, type Nullable } from '~/utils/types';
 
 import {
   type Altitude,
@@ -129,7 +128,7 @@ export type MissionItemLike = {
 
 export const isMissionItemLike = (item: unknown): item is MissionItemLike =>
   // prettier-ignore
-  isObject(item)
+  isRecord(item)
   // `id` is a valid identifier
   && 'id' in item
   && typeof item.id === 'string'
@@ -138,7 +137,7 @@ export const isMissionItemLike = (item: unknown): item is MissionItemLike =>
   && isMissionItemType(item.type)
   // `parameters` is a valid object
   && 'parameters' in item
-  && isObject(item.parameters);
+  && isRecord(item.parameters);
 
 /**
  * Type specification for items in a waypoint mission.

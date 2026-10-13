@@ -14,7 +14,7 @@ import { UAV_SIGNAL_DURATION } from '~/features/settings/constants';
 import { shouldConfirmUAVOperation } from '~/features/settings/selectors';
 import { showNotification } from '~/features/snackbar/actions';
 import { MessageSemantics } from '~/features/snackbar/types';
-import type { StartAsyncOperationOptions } from '~/flockwave/messages';
+import type { MultiObjectAsyncOperationOptions } from '~/flockwave/messages';
 import messageHub from '~/message-hub';
 import { NULL_ISLAND, type GPSPosition } from '~/model/geography';
 import store from '~/store';
@@ -191,7 +191,7 @@ function performMassOperation<T, U>(
     reportSuccess = true,
     skipConfirmation = false,
   }: MassOperationOptions<T, U>,
-  responseHandlerOptions?: StartAsyncOperationOptions
+  responseHandlerOptions?: MultiObjectAsyncOperationOptions
 ) {
   return async (
     uavs: string[],
@@ -216,7 +216,7 @@ function performMassOperation<T, U>(
         reportFailure,
         skipConfirmation,
         run: async () => {
-          const responses = await messageHub.startAsyncOperation(
+          const responses = await messageHub.startMultiObjectAsyncOperation(
             {
               type,
               ids: uavs,

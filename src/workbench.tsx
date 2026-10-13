@@ -82,12 +82,6 @@ export const componentRegistry: ComponentRegistry = {
     detachable: true,
     feature: 'beacons',
   },
-  'collective-rth': {
-    component: views.CollectiveRTHPanel,
-    label: 'Collective RTH',
-    detachable: true,
-    feature: 'showControl',
-  },
   'connection-list': {
     // deprecated, kept there for compatibility
     component: views.ConnectionList,
@@ -165,6 +159,12 @@ export const componentRegistry: ComponentRegistry = {
     component: views.ThreeDTopLevelView,
     label: '3D View',
     feature: 'threeDView',
+  },
+  timeline: {
+    component: views.TimelineView,
+    label: 'Timeline',
+    detachable: true,
+    feature: 'showControl',
   },
   'uav-details': {
     component: views.UAVDetailsPanel,

@@ -38,8 +38,8 @@ const badgeColorForLevel: Record<SeverityLevel, string> = {
  * Returns the severity class of the given connection based on its current
  * status.
  *
- * @param {Object} connection  the connection object
- * @return {string} the severity level of the connection
+ * @param connection  the connection object
+ * @return the severity level of the connection
  */
 function getSeverity(connection: ConnectionProperties): SeverityLevel {
   switch (connection.state) {
@@ -65,7 +65,7 @@ function getSeverity(connection: ConnectionProperties): SeverityLevel {
  * ConnectionState.CONNECTED is totally normal. Any other connection state
  * is also considered as an error.
  *
- * @return {object} a pair consisting of a key named `level` whose value
+ * @return a pair consisting of a key named `level` whose value
  *   is one of `error`, `warning` or `ok`, and a key named `count` whose value
  *   shows how many connections are there with the given level
  */

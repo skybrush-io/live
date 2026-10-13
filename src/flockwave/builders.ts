@@ -36,9 +36,9 @@ export function createCancellationRequest(
  * Creates an ASYNC-RESUME (resume request) message.
  *
  *
- * @param  {string|string[]}  receiptIds  ID of the asynchronous operation
+ * @param  receiptIds  ID of the asynchronous operation
  *         receipts that should be resumed
- * @param  {Object}  values  mapping of receipt IDs to the objects that should be
+ * @param  values  mapping of receipt IDs to the objects that should be
  *         posted with the resume request
  */
 export function createResumeRequest(
@@ -120,10 +120,10 @@ export function createFirmwareUploadRequest(
 /**
  * Creates a PRM-SET (parameter setting request) message
  *
- * @param  {Object[]}  uavIds  IDs of the UAVs to send the request to
- * @param  {string}    name    the name of the parameter to set
- * @param  {Object}    value   the value of the parameter to set
- * @return {Object}  the message
+ * @param  uavIds  IDs of the UAVs to send the request to
+ * @param  name    the name of the parameter to set
+ * @param  value   the value of the parameter to set
+ * @return the message
  */
 export function createParameterSettingRequest(
   uavIds: string | string[],
@@ -141,9 +141,9 @@ export function createParameterSettingRequest(
 /**
  * Creates a PRM-SET-MANY (bulk parameter upload request) message
  *
- * @param  {Object[]}  uavIds  IDs of the UAVs to send the request to
- * @param  {Object}    parameters  mapping of parameter names to their values
- * @return {Object}  the message
+ * @param  uavIds  IDs of the UAVs to send the request to
+ * @param  parameters  mapping of parameter names to their values
+ * @return the message
  */
 export function createBulkParameterUploadRequest(
   uavIds: string | string[],

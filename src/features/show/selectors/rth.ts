@@ -26,6 +26,7 @@ export type CollectiveRTHPlanSummary = {
   isValid: boolean;
   firstTime?: number;
   lastTime?: number;
+  minRTHAltitude?: number;
   numDrones: number;
   dronesWithRTHPlan: number;
   dronesWithoutRTHPlan: number;
@@ -34,6 +35,17 @@ export type CollectiveRTHPlanSummary = {
 export const selectCollectiveRTHPlanSummary: AppSelector<CollectiveRTHPlanSummary> =
   createSelector(getDroneSwarmSpecification, (drones) =>
     validateCollectiveRTHPlan(drones)
+  );
+
+/**
+ * Returns the timestamps, in ascending order, for which the currently loaded
+ * show has collective RTH plans.
+ */
+export const selectCollectiveRTHPlanTimestamps: AppSelector<number[]> =
+  createSelector(selectCollectiveRTHPlanSummary, ({ plans }) =>
+    Object.keys(plans)
+      .map(Number)
+      .sort((a, b) => a - b)
   );
 
 export const selectShowControlSchedule: AppSelector<Schedule | undefined> = (

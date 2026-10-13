@@ -15,11 +15,12 @@ import type {
   Response_DEVUNSUB,
 } from '@skybrush/flockwave-spec';
 import has from 'lodash-es/has';
-import isObject from 'lodash-es/isObject';
 import { nanoid } from 'nanoid';
 import pDefer, { type DeferredPromise } from 'p-defer';
 import pProps from 'p-props';
 import pTimeout from 'p-timeout';
+
+import { isRecord } from '~/utils/types';
 
 import {
   createCancellationRequest,
@@ -33,6 +34,7 @@ import {
 } from './parsing';
 import { createQueryHandler, type QueryHandler } from './queries';
 import type {
+  AsyncOperationResponseBody,
   Message,
   MessageBody,
   MultiAsyncOperationResponseBody,
@@ -41,13 +43,15 @@ import { validateObjectId } from './validation';
 import version from './version';
 
 type TimeoutOptions = { timeout?: number };
+type IdPropOptions = { idProp?: string };
 
-type BoundProgressHandlerOptions = {
-  onProgress?: (id: string, status: ProgressStatus) => void;
+export type AsyncOperationOptions = TimeoutOptions & {
+  onProgress?: (status: ProgressStatus) => void;
 };
 
-export type StartAsyncOperationOptions = TimeoutOptions &
-  BoundProgressHandlerOptions;
+export type MultiObjectAsyncOperationOptions = TimeoutOptions & {
+  onProgress?: (id: string, status: ProgressStatus) => void;
+};
 
 /**
  * Creates a new Flockwave message ID.
@@ -81,10 +85,10 @@ export function parseCommandFromString(string: string): {
  * @param body  the body of the message to send, or the type of
  *        the message to send (in which case an appropriate body with
  *        only the given type is created)
- * @return {Object}  the Flockwave message with the given body
+ * @return the Flockwave message with the given body
  */
 function createMessage(body = {}) {
-  if (!isObject(body)) {
+  if (!isRecord(body)) {
     body = { type: body };
   }
 
@@ -296,7 +300,7 @@ class PendingResponse<T = unknown> {
   /**
    * Constructor.
    *
-   * @param {string} messageId  the identifier of the Skybrush message
+   * @param messageId  the identifier of the Skybrush message
    *        to which this pending response belongs
    */
   constructor(
@@ -412,11 +416,11 @@ class PendingCommandExecution<T = unknown> {
   /**
    * Constructor.
    *
-   * @param {string} receipt  the receipt of the command execution that we
+   * @param receipt  the receipt of the command execution that we
    *         are waiting for
-   * @param {number} timeout  number of seconds to wait for the result of the
+   * @param timeout  number of seconds to wait for the result of the
    *        command
-   * @param {function}  onProgress  an optional function to call when a status
+   * @param onProgress  an optional function to call when a status
    *        update is received for the execution of this command. The
    *        function will be called with an object having the following keys:
    *        `progress` (the progress of the execution), `suspended` (whether
@@ -425,10 +429,10 @@ class PendingCommandExecution<T = unknown> {
    *        when the execution is suspended and that will resume execution on
    *        the server side after posting the object received as an argument to
    *        the server)
-   * @param {function}  onResume  an optional function to call when the client
+   * @param onResume  an optional function to call when the client
    *        wishes to resume the execution of the operation represented by
    *        this receipt after a suspension
-   * @param {function}  onTimeout  an optional function to call when the
+   * @param onTimeout  an optional function to call when the
    *        result of the command did not arrive in time
    */
   constructor(
@@ -680,7 +684,7 @@ class AsyncOperationManager extends MessageHubRelatedComponent {
    * Cancels all pending asynchronous operations on the client side by rejecting
    * the corresponding promises with the given error.
    *
-   * @param {Error} error  the error to reject the promises with
+   * @param error  the error to reject the promises with
    */
   cancelAll(error: Error) {
     for (const pendingOperation of Object.values(this._pendingOperations)) {
@@ -689,6 +693,81 @@ class AsyncOperationManager extends MessageHubRelatedComponent {
 
     this._pendingOperations = {};
     this._earlyResponses = {};
+  }
+
+  /**
+   * Handles a single-object async response coming from the server in
+   * a response.
+   *
+   * The single-object async response contains three sub-objects:
+   * <code>result</code>, <code>error</code> and <code>receipt</code>. Exactly one of
+   * these objects is present in the response. When <code>result</code> is present, its
+   * corresponding value is the result of the operation. When <code>error</code> is
+   * present, its value is an error that happened during the operation. When
+   * <code>receipt</code> is present, it indicates that the operation has started
+   * executing in the background, asynchronously, and the receipt ID will appear in
+   * <code>ASYNC-RESP</code>, <code>ASYNC-ST</code> and <code>ASYNC-TIMEOUT</code>
+   * messages later that deliver the <em>real</em> result or progress information.
+   *
+   * This function will return a promise that resolves when one of the following
+   * events happen:
+   *
+   * <ul>
+   * <li>The server signalled an execution failure in the response. In this
+   * case, the promise errors out with an appropriate human-readable
+   * message.</li>
+   * <li>The server returned the result directly in the response. In this case,
+   * the promise resolves normally with the result.</li>
+   * <li>Any of the above, but in a separate notification delivered asynchronously
+   * with ASYNC-RESP.</li>
+   * <li>The server signalled a timeout for the request in an ASYNC-TIMEOUT
+   * message, delivered later. In this case, the promise errors out with an
+   * appropriate human-readable message.</li>
+   * </ul>
+   *
+   * @param  response  the response received from the server that
+   *         contains the keys mentioned above
+   * @param  options.cancelToken  when specified, and the response contains
+   *         a receipt ID, the cancel token will be activated with this receipt
+   *         ID such that calling its `cancel()` method later on will send
+   *         a request to cancel the asynchronous operation corresponding to the
+   *         given receipt ID.
+   * @param  options.onProgress  when specified, this function will be called
+   *         whenever we receive a status update from the server regarding the
+   *         execution of the command this object belongs to. The function will
+   *         be called with an object having at most three keys: `progress`
+   *         (the progress of the operation, with keys named `percentage`
+   *         (a number between 0 and 100) and `message` (a human-readable
+   *         text message)), `suspended` (whether the execution is suspended)
+   *         and `resume` (a callback function to resume execution).
+   * @param  options.noThrow   when set to true, ensures that the function
+   *         does not throw an exception when the async response indicated an
+   *         error; returns the error object instead as if it was the result
+   * @param  options.timeout   when specified and positive, the number of
+   *         seconds to wait for a response. When omitted or negative, uses the
+   *         default timeout from the async operation manager object
+   * @return a promise that resolves to the result of the operation
+   *         or errors out in case of execution errors and timeouts
+   */
+  async handleAsyncResponse<T>(
+    response: Message<Response_ACKNAK | AsyncOperationResponseBody<T>>,
+    options: AsyncResponseHandlerOptions
+  ): Promise<T>;
+  async handleAsyncResponse<T>(
+    response: Message<Response_ACKNAK | AsyncOperationResponseBody<T>>,
+    options: AsyncResponseHandlerOptions & { noThrow: boolean }
+  ): Promise<T | Error>;
+  async handleAsyncResponse<T>(
+    response: Message<Response_ACKNAK | AsyncOperationResponseBody<T>>,
+    options: AsyncResponseHandlerOptions & { noThrow?: boolean } = {}
+  ): Promise<T | Error> {
+    const { receipt, result } =
+      extractResultOrReceiptFromMaybeAsyncResponse(response);
+    if (receipt) {
+      return this._waitForAsyncResponse<T>(receipt, options);
+    } else {
+      return result!;
+    }
   }
 
   /**
@@ -745,7 +824,7 @@ class AsyncOperationManager extends MessageHubRelatedComponent {
    * @param  options.timeout   when specified and positive, the number of
    *         seconds to wait for a response. When omitted or negative, uses the
    *         default timeout from the async operation manager object
-   * @return {Promise} a promise that resolves to the result of the operation
+   * @return a promise that resolves to the result of the operation
    *         or errors out in case of execution errors and timeouts
    */
   async handleMultiAsyncResponseForSingleId<T>(
@@ -762,48 +841,73 @@ class AsyncOperationManager extends MessageHubRelatedComponent {
     response: Message<Response_ACKNAK | MultiAsyncOperationResponseBody<T>>,
     objectId: string,
     options: AsyncResponseHandlerOptions & { noThrow?: boolean } = {}
-  ) {
-    const { cancelToken, noThrow, onProgress, timeout } = options;
+  ): Promise<T | Error> {
     const { receipt, result } = extractResultOrReceiptFromMaybeAsyncResponse(
       response,
       objectId
     );
-
     if (receipt) {
-      const execution = new PendingCommandExecution<T>(receipt, {
-        timeout:
-          typeof timeout === 'number' && timeout > 0 ? timeout : this.timeout,
-        onProgress,
-        onResume: async (value) => {
-          await this._sendSingleResumeRequest(receipt, value);
-        },
-        onTimeout: (...args) => void this._onResponseTimedOut(...args),
-      });
-
-      if (cancelToken && this._hub) {
-        cancelToken._activate(this._hub, receipt);
-      }
-
-      if (this._earlyResponses[receipt]) {
-        execution.processResponseMessageBody(this._earlyResponses[receipt]);
-        delete this._earlyResponses[receipt];
-      }
-
-      this._pendingOperations[receipt] = execution;
-
-      try {
-        return await execution.wait();
-      } catch (error) {
-        if (noThrow) {
-          return error;
-        }
-
-        throw error;
-      } finally {
-        delete this._pendingOperations[receipt];
-      }
+      return this._waitForAsyncResponse<T>(receipt, options);
     } else {
       return result!;
+    }
+  }
+
+  async _waitForAsyncResponse<T>(
+    receipt: string,
+    options: AsyncResponseHandlerOptions
+  ): Promise<T>;
+  async _waitForAsyncResponse<T>(
+    receipt: string,
+    options: AsyncResponseHandlerOptions & { noThrow: boolean }
+  ): Promise<T | Error>;
+  async _waitForAsyncResponse<T>(
+    receipt: string,
+    options: AsyncResponseHandlerOptions & {
+      noThrow?: boolean;
+    } = {}
+  ): Promise<T | Error> {
+    const { cancelToken, noThrow, onProgress, timeout } = options;
+    const execution = new PendingCommandExecution<T>(receipt, {
+      timeout:
+        typeof timeout === 'number' && timeout > 0 ? timeout : this.timeout,
+      onProgress,
+      onResume: async (value) => {
+        await this._sendSingleResumeRequest(receipt, value);
+      },
+      onTimeout: (...args) => void this._onResponseTimedOut(...args),
+    });
+
+    if (cancelToken && this._hub) {
+      cancelToken._activate(this._hub, receipt);
+    }
+
+    if (this._earlyResponses[receipt]) {
+      execution.processResponseMessageBody(this._earlyResponses[receipt]);
+      delete this._earlyResponses[receipt];
+    }
+
+    this._pendingOperations[receipt] = execution;
+
+    try {
+      return await execution.wait();
+    } catch (error) {
+      if (error instanceof Error) {
+        if (noThrow) {
+          return error;
+        } else {
+          throw error;
+        }
+      } else {
+        if (noThrow) {
+          return new Error(String(error));
+        } else {
+          // eslint-disable-next-line preserve-caught-error
+          throw new Error(String(error));
+        }
+      }
+    } finally {
+      delete this._pendingOperations[receipt];
     }
   }
 
@@ -811,7 +915,7 @@ class AsyncOperationManager extends MessageHubRelatedComponent {
    * Handler called when the server returns a response for an async operation in
    * the form of an ASYNC-RESP notification.
    *
-   * @param {string} message  the message sent by the server
+   * @param message  the message sent by the server
    */
   _onResponseReceived(message: Message<Notification_ASYNCRESP>) {
     const { id } = message.body;
@@ -835,7 +939,7 @@ class AsyncOperationManager extends MessageHubRelatedComponent {
    * Handler called when the server returns a status update for an async
    * operation in the form of an ASYNC-ST notification.
    *
-   * @param {string} message  the message sent by the server
+   * @param message  the message sent by the server
    */
   _onStatusUpdateReceived(message: Message<Notification_ASYNCST>) {
     const { id } = message.body;
@@ -1180,21 +1284,6 @@ class DeviceTreeSubscriptionManager extends MessageHubRelatedComponent {
 type Emitter = (event: string, message: unknown) => void;
 type NotificationHandler<T = any> = (message: T) => void;
 
-type MultiAsyncOperationOptions = {
-  single?: false;
-  idProp?: string;
-  onProgress?: (id: string, progress: ProgressStatus) => void;
-};
-
-type SingleAsyncOperationOptions = {
-  single: true;
-  idProp?: string;
-  onProgress?: (progress: ProgressStatus) => void;
-};
-
-export type AsyncOperationOptions =
-  MultiAsyncOperationOptions | SingleAsyncOperationOptions;
-
 /**
  * Message hub class that can be used to send Flockwave messages and get
  * promises that will resolve when the server responds to them.
@@ -1239,7 +1328,6 @@ export default class MessageHub {
 
   /**
    * Returns the emitter function that the hub uses.
-   * @type {function}
    */
   get emitter(): Emitter | undefined {
     return this._emitter;
@@ -1562,9 +1650,9 @@ export default class MessageHub {
    * The promise resolves to a mapping from object IDs to their corresponding
    * results or errors (represented as Error objects).
    */
-  async startAsyncOperation(
+  async startMultiObjectAsyncOperation(
     body: MessageBody,
-    responseHandlerOptions: StartAsyncOperationOptions = {}
+    responseHandlerOptions: MultiObjectAsyncOperationOptions = {}
   ) {
     const { type: expectedType } = body;
     if (!expectedType) {
@@ -1572,7 +1660,7 @@ export default class MessageHub {
     }
 
     const response = await this.sendMessage(body);
-    return this._processMultiAsyncOperationResponse(
+    return this._processMultiObjectAsyncOperationResponse(
       response,
       expectedType,
       responseHandlerOptions
@@ -1597,13 +1685,13 @@ export default class MessageHub {
    * Setting `idProp` to `null` means that the ID will not be added by this
    * function and it is already assumed to be part of the `message`.
    */
-  async startAsyncOperationForSingleId<T>(
+  async startMultiObjectAsyncOperationForSingleId<T>(
     id: string,
     message: MessageBody & Record<string, unknown>,
-    options: AsyncOperationOptions = {}
+    options: MultiObjectAsyncOperationOptions & IdPropOptions = {}
   ): Promise<T> {
     const { ids, type: expectedType } = message;
-    const { idProp } = options;
+    const { idProp, onProgress } = options;
 
     if (!expectedType) {
       throw new Error('Message must have a type');
@@ -1618,42 +1706,16 @@ export default class MessageHub {
     // TODO: idProp is string | undefined based on its typing. Fix typing and
     // implementation is a consistent way. Validate every call if possible.
     if (idProp !== null) {
-      message[idProp ?? (options.single === true ? 'id' : 'ids')] = [id];
+      message[idProp ?? 'ids'] = [id];
     }
 
-    let response: Message<MessageBody & Record<string, unknown>> =
+    const response: Message<MessageBody & Record<string, unknown>> =
       await this.sendMessage(message);
 
-    let progressHandler:
-      ((id: string, status: ProgressStatus) => void) | undefined;
-
-    if (options.single === true) {
-      // Object takes a single ID and returns a single result, error or
-      // receipt object. Pretend that we received a mapping for them instead so
-      // we could use the same processing routine for both
-      const responseWithMaps = { ...response };
-
-      for (const key of ['error', 'result', 'receipt']) {
-        if (Object.prototype.hasOwnProperty.call(response.body, key)) {
-          responseWithMaps.body[key] = { [id]: response.body[key] };
-        }
-      }
-
-      response = responseWithMaps;
-
-      const { onProgress } = options;
-      if (onProgress) {
-        progressHandler = (_unusedId: string, status: ProgressStatus) =>
-          onProgress(status);
-      }
-    } else {
-      progressHandler = options.onProgress;
-    }
-
-    const parsedResponse = await this._processMultiAsyncOperationResponse(
+    const parsedResponse = await this._processMultiObjectAsyncOperationResponse(
       response,
       expectedType,
-      { onProgress: progressHandler }
+      { onProgress }
     );
 
     if (Object.prototype.hasOwnProperty.call(parsedResponse, id)) {
@@ -1667,6 +1729,33 @@ export default class MessageHub {
     } else {
       throw new Error(`Server did not return a response for ID ${id}`);
     }
+  }
+
+  /**
+   * Sends a message to the server whose expected response is a standard
+   * async response with keys named `result`, `error` and `receipt`. (The response to
+   * many messages in the protocol specification follow this template). Returns a
+   * promise that resolves when the spawned async operation on the server has resolved
+   * to its result or has terminated with an error or a timeout.
+   *
+   * The promise resolves to the result object returned by the operation either
+   * directly in the first response, or in a subsequent `ASYNC-RESP` response.
+   */
+  async startAsyncOperation<T>(
+    body: MessageBody & Record<string, unknown>,
+    responseHandlerOptions: AsyncOperationOptions = {}
+  ): Promise<T> {
+    const { type: expectedType } = body;
+    if (!expectedType) {
+      throw new Error('Message must have a type');
+    }
+
+    const response = await this.sendMessage(body);
+    return this._processAsyncOperationResponse(
+      response,
+      expectedType,
+      responseHandlerOptions
+    );
   }
 
   /**
@@ -1706,12 +1795,15 @@ export default class MessageHub {
 
   /**
    * Helper function to process the response to a multi-object async operation.
-   * See <code>startAsyncOperation()</code> for more details.
+   * See <code>startMultiObjectAsyncOperation()</code> for more details.
    */
-  async _processMultiAsyncOperationResponse<T>(
+  async _processMultiObjectAsyncOperationResponse<T>(
     response: Message<Response_ACKNAK | MultiAsyncOperationResponseBody<T>>,
     expectedType: string,
-    { timeout, onProgress }: TimeoutOptions & BoundProgressHandlerOptions = {}
+    {
+      timeout,
+      onProgress,
+    }: TimeoutOptions & MultiObjectAsyncOperationOptions = {}
   ): Promise<Record<string, T | Error>> {
     if (!response) {
       throw new Error('Response should not be empty');
@@ -1762,6 +1854,52 @@ export default class MessageHub {
   }
 
   /**
+   * Helper function to process the response to a single-object async operation.
+   * See <code>startSingleObjectAsyncOperation()</code> for more details.
+   */
+  async _processAsyncOperationResponse<T>(
+    response: Message<Response_ACKNAK | AsyncOperationResponseBody<T>>,
+    expectedType: string,
+    { timeout, onProgress }: TimeoutOptions & AsyncOperationOptions = {}
+  ): Promise<T> {
+    if (!response) {
+      throw new Error('Response should not be empty');
+    } else if (!response.body) {
+      throw new Error('Response has no body');
+    } else if (response.body.type === 'ACK-NAK') {
+      throw new Error(
+        `Execution rejected by server; reason: ${
+          (response.body as Response_ACKNAK).reason || 'unknown'
+        }`
+      );
+    } else if (response.body.type !== expectedType) {
+      throw new Error(
+        `Response has an unexpected type: ${response.body.type}, expected ${expectedType}`
+      );
+    } else {
+      const { body } = response;
+      const { error, result } = body as AsyncOperationResponseBody<T>; // because of the checks above
+
+      if (error) {
+        throw new Error(String(error));
+      }
+
+      if (result) {
+        return result;
+      }
+
+      try {
+        return this._asyncOperationManager.handleAsyncResponse<T>(response, {
+          onProgress,
+          timeout,
+        });
+      } catch (error) {
+        throw error instanceof Error ? error : new Error(String(error));
+      }
+    }
+  }
+
+  /**
    * Sends a Flockwave ASYNC-CANCEL request to cancel the execution of the
    * asynchronous operations with the given receipt IDs.
    *
@@ -1792,11 +1930,11 @@ export default class MessageHub {
    * Sends a Flockwave ASYNC-RESUME request to resume the execution of the
    * asynchronous operations with the given receipt IDs.
    *
-   * @param  {string[]}  receipts  the receipt IDs of the asynchronous
+   * @param  receipts  the receipt IDs of the asynchronous
    *         operations to resume
-   * @param  {object}    values    optional values to pass back to the
+   * @param  values    optional values to pass back to the
    *         operations with the resume requests. Keys are receipt IDs.
-   * @return {Promise}  a promise that resolves to an object mapping receipt
+   * @return a promise that resolves to an object mapping receipt
    *         IDs to error messages, for all receipt IDs that were _not_
    *         resumed successfully
    */

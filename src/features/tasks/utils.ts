@@ -1,11 +1,16 @@
-import type { TaskData, TaskState } from './types';
+import type { TaskData, TaskKey, TaskState } from './types';
 
 /**
- * Returns a string that uniquely identifies a task based on its type,task ID, and the
- * UAV that it is associated to.
+ * Returns a string that uniquely identifies a task based on its type and the
+ * optional UAV ID and task ID that the task is associated to.
  */
-export const getTaskKey = (data: TaskData): string =>
-  `${data.type}:${data.uavId}:${data.taskId}`;
+export const getTaskKey = (data: TaskData): TaskKey =>
+  // Branded type: the cast only attaches the brand to an ordinary string.
+  [
+    data.type,
+    'uavId' in data ? data.uavId : '_',
+    'taskId' in data ? data.taskId : '_',
+  ].join(':') as TaskKey;
 
 /**
  * Returns whether the given task is currently in progress

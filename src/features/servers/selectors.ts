@@ -371,4 +371,4 @@ export const isTimeSyncWarningDialogVisible: AppSelector<boolean> = (state) =>
  * and collective RTH options.
  */
 export const supportsSuspendResumeCRTH: AppSelector<boolean> =
-  getServerVersionValidator('>=2.42');
+  getServerVersionValidator('>=2.53.1');

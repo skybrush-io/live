@@ -25,8 +25,8 @@ export type ClockSkewEstimate = {
  * and the round-trip time of the connection by sending a SYS-TIME message
  * over the given message hub.
  *
- * @param {object} messageHub  the message hub that will send the SYS-TIME message
- * @param {string} method  the estimation method to use; "single" uses a single
+ * @param messageHub  the message hub that will send the SYS-TIME message
+ * @param method  the estimation method to use; "single" uses a single
  *        measurement only
  * @return promose that resolves to an object with two keys:
  *         `clockSkew` and `roundTripTime`, both of them are represented as

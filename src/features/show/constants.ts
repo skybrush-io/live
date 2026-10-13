@@ -34,7 +34,7 @@ export enum TakeoffHeadingMode {
 
 export type TakeoffHeadingSpecification = {
   type: TakeoffHeadingMode;
-  value: number;
+  value: number | string;
 };
 
 /**

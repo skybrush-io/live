@@ -103,8 +103,8 @@ type SwitchProps = MaterialUISwitchProps & FieldRenderProps<string>;
  * Render function for `react-final-form` that binds a `<Field>` component
  * to a Material UI `<Switch>`.
  *
- * @param  {Object} props  props provided by `react-final-form`
- * @return {Object} the rendered Material UI switch component
+ * @param  props  props provided by `react-final-form`
+ * @return the rendered Material UI switch component
  */
 export const Switch = ({
   input,
@@ -135,8 +135,8 @@ type PasswordFieldFormBindingProps = MaterialUITextFieldProps &
  * to a Material UI `<TextField>`, configured to be suitable for password
  * entry.
  *
- * @param  {Object} props  props provided by `react-final-form`
- * @return {Object} the rendered Material UI text field component
+ * @param  props  props provided by `react-final-form`
+ * @return the rendered Material UI text field component
  */
 const PasswordFieldFormBinding = ({
   input,

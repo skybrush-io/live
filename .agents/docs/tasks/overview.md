@@ -11,11 +11,13 @@ Async UAV operations (log downloads, calibrations, tests) outlive the UI compone
 
 ## Task identity
 
-Tasks are identified by the triple `(type, uavId, taskId)`, combined into a composite key by `getTaskKey()` in `utils.ts`. This key is the Redux state key, the selector lookup key, and the active-operations Map key. There are two task types (`log-download`, `uav-test`) forming a discriminated union (`types.ts`).
+Tasks are identified by their `type` plus whichever of the optional `uavId` and `taskId` fields the task type declares, combined into a composite key by `getTaskKey()` in `utils.ts` (missing parts become `_`, so singleton and non-UAV tasks are supported). The key is the Redux state key, the selector lookup key, the active-operations Map key, and the log-download notification topic. Internal actions use it as the sole task identity (`TaskKey` in `types.ts`).
 
 ## Slice (`slice.ts`)
 
 Reducers are split: **internal actions** (underscore-prefixed, e.g. `_startTask`, `_suspendTask`) are dispatched only by thunks — UI code never calls them. **`clearTasks`** (public) resets everything on server disconnect.
+
+All internal actions except `_startTask` take only the task key; the identity fields are needed only when a task is started. `_startTask` takes the full `TaskData` and seeds a self-describing state entry.
 
 Tasks are **not persisted** (blacklisted from redux-persist). State survives UI teardown within a session, not page reloads.
 
@@ -23,7 +25,7 @@ Tasks are **not persisted** (blacklisted from redux-persist). State survives UI 
 
 Two pieces of state are intentionally kept out of the slice:
 
-- **Log content CAS** (`actions/log-download.ts`) — in-memory `Map<hash, FlightLog>`. Only the hash lives in the slice. Logs are large; on reload both the CAS and slice are empty.
+- **Task payload store** (`payload-store.ts`) — in-memory `Map<hash, unknown>` holding large result payloads (downloaded flight logs, the transformed show from a collective RTH plan calculation) that must not enter Redux. Only the hash lives in the slice; payloads are read back via the public `readTaskPayload()` accessor. The log-download runner lets entries accumulate for the session; the rth-plan runner discards the previous payload when a new calculation starts or the task is cleared.
 - **Active operations Map** (`actions/uav-test.ts`) — module-level `Map` holding `resume` callbacks from the server. These are non-serializable function references; they must never enter Redux state or selectors. Cleaned up in the runner's `finally` or via `clearUAVTestTask`.
 
 ## Suspend and resume
@@ -43,7 +45,7 @@ Both share confirmation and notification via `runMassOperation` in `utils/messag
 | | MessageHub backend | Task backend |
 |---|---|---|
 | Entry | `performMassOperation` (`messaging.ts`) | `makeMultiUAVAction` (`operations.ts`) |
-| Execution | Calls `messageHub.startAsyncOperation` directly | Fans out `startTask` per UAV |
+| Execution | Calls `messageHub.startMultiObjectAsyncOperation` directly | Fans out `startTask` per UAV |
 | Per-UAV Redux state | None | Each UAV gets a slice entry |
 | Broadcast | Yes | No (by design) |
 | UI wiring | `createUAVOperationThunks` | `createTaskOperationThunks` |
@@ -58,7 +60,7 @@ Both share confirmation and notification via `runMassOperation` in `utils/messag
 
 ## Extension points
 
-- **New single-task type**: extend types in `types.ts`, add runner in `actions/`, wire into `startTask`/`resumeTask`/`clearTask` in `actions/core.ts`.
+- **New single-task type**: extend types in `types.ts` (declare only the identity fields the task has), add runner in `actions/` dispatching key-only internal actions, wire into `startTask`/`resumeTask`/`clearTask` in `actions/core.ts`.
 - **New task-based mass operation**: add spec to `TASK_SPECS` in `operations.ts`, add thunk in `createTaskOperationThunks`, wire button with `createAggregatedTaskStateSelector` (`selectors.ts`) for status display.
 - **Migrate messageHub op → tasks**: remove from `OPERATION_MAP` in `messaging.ts`, follow the new mass-op steps above. Button wiring switches to `createTaskOperationThunks`.
 

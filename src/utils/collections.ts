@@ -1,7 +1,6 @@
 import has from 'lodash-es/has';
 import isEmpty from 'lodash-es/isEmpty';
 import isNil from 'lodash-es/isNil';
-import isObject from 'lodash-es/isObject';
 import property, { type PropertyPath } from 'lodash-es/property';
 import pull from 'lodash-es/pull';
 import sortedIndex from 'lodash-es/sortedIndex';
@@ -10,6 +9,7 @@ import { orderBy } from 'natural-orderby';
 
 import { rejectNullish } from './arrays';
 import { chooseUniqueIdFromName } from './naming';
+import { isRecord } from './types';
 import { EMPTY_ARRAY, EMPTY_OBJECT } from './redux';
 
 export type Identifier = string;
@@ -377,7 +377,7 @@ export const createNewItemInFrontOf = <T extends ItemLike>(
 
   if (typeof idStore === 'function') {
     idStore(id);
-  } else if (isObject(idStore)) {
+  } else if (isRecord(idStore)) {
     idStore['id'] = id;
   }
 

@@ -104,10 +104,10 @@ export const requestRemovalOfSelectedUAVs =
  * Action factory that creates an action that sets the set of selected
  * UAV IDs in the map.
  *
- * @param {Array.<string>} ids  the IDs of the selected UAVs. Any UAV
+ * @param ids  the IDs of the selected UAVs. Any UAV
  *        whose ID is not in this set will be deselected, and so will be
  *        any feature that is not an UAV.
- * @return {Object} an appropriately constructed action
+ * @return an appropriately constructed action
  */
 export const setSelectedUAVIds = (ids: string[]): PayloadAction<string[]> =>
   setSelection(
@@ -120,7 +120,7 @@ export const setSelectedUAVIds = (ids: string[]): PayloadAction<string[]> =>
  * Action factory that returns a thunk that toggles the selection of one or more
  * UAV IDs when dispatched.
  *
- * @param {Array.<string>} ids  the IDs of the UAVs to toggle.
+ * @param ids  the IDs of the UAVs to toggle.
  */
 export const toggleUAVIdsInSelection =
   (ids: string[]): AppThunk =>

@@ -117,8 +117,6 @@ const attributions = {
 /**
  * Object mapping source constants to their visual properties (labels,
  * icons etc) on the user interface.
- *
- * @type {Object}
  */
 const visualRepresentationsForSources: Record<
   Source.Source,
@@ -181,7 +179,7 @@ const visualRepresentationsForSources: Record<
  *
  * @param source - The map source; must be one of the constants
  *                 from the {@link Source} enum
- * @return {string} a human-readable description of the map source
+ * @return a human-readable description of the map source
  */
 export function labelForSource(source: Source.Source): string {
   const visualRep = visualRepresentationsForSources[source];

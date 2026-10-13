@@ -168,6 +168,10 @@ const FadeAndSlide = <T extends HTMLElement | undefined>({
       if (callback) {
         const node = nodeRef.current;
 
+        if (!node) {
+          return;
+        }
+
         // onEnterXxx and onExitXxx callbacks have a different arguments.length value.
         if (maybeIsAppearing === undefined) {
           callback(node);
@@ -180,6 +184,10 @@ const FadeAndSlide = <T extends HTMLElement | undefined>({
   const handleEntering = normalizedTransitionCallback(onEntering);
 
   const handleEnter = normalizedTransitionCallback((node, isAppearing) => {
+    if (!node) {
+      return;
+    }
+
     reflow(node); // So the animation always start from the start.
 
     const transitionProps = getTransitionProps(
@@ -208,6 +216,10 @@ const FadeAndSlide = <T extends HTMLElement | undefined>({
   const handleExiting = normalizedTransitionCallback(onExiting);
 
   const handleExit = normalizedTransitionCallback((node) => {
+    if (!node) {
+      return;
+    }
+
     const transitionProps = getTransitionProps(
       { style, timeout, easing },
       {

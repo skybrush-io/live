@@ -205,6 +205,16 @@
  * t("rtkMessageType.rtcm3/1127")
  * t("rtkMessageType.rtcm3/1230")
  *
+ * Timeline marker lanes
+ * t("timeline.markerLane.cue")
+ * t("timeline.markerLane.rthPlan")
+ * t("timeline.markerLane.segment")
+ *
+ * Timeline show segments
+ * t("timeline.showSegment.landing")
+ * t("timeline.showSegment.show")
+ * t("timeline.showSegment.takeoff")
+ *
  * UAV error codes
  * t("uavErrorCode.0")
  * t("uavErrorCode.1")
