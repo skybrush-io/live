@@ -25,7 +25,7 @@ const SwapDronesQueuePanel = ({
   const { t } = useTranslation();
 
   return (
-    <Box sx={{ width: SWAP_DRONES_QUEUE_COLUMN_WIDTH, height: '100%', pr: 2 }}>
+    <Box sx={{ width: SWAP_DRONES_QUEUE_COLUMN_WIDTH, height: '100%', p: 1 }}>
       <TransitionGroup>
         {queue.map((pair) => (
           <Collapse key={pair.id}>

@@ -3,14 +3,13 @@ import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
-import Collapse from '@mui/material/Collapse';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { nanoid } from 'nanoid';
-import { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
@@ -24,6 +23,7 @@ import type { Identifier } from '~/utils/collections';
 
 import { getUAVIdList } from '../selectors';
 import { applySwapDronesBatch } from './actions';
+import { SWAP_DRONES_PREVIEW_AREA_MIN_HEIGHT } from './constants';
 import {
   isSwapDronesDialogOpen,
   isSwappingAllowed,
@@ -45,22 +45,6 @@ const EMPTY_SLOT: SwapDroneFieldValue = Object.freeze({
   filterText: '',
   resolved: null,
 });
-
-/**
- * Retains the last non-null value so that the contents of a collapsing region
- * stay visible until the exit transition has finished.
- */
-const useLastNonNull = <T,>(value: T | null) => {
-  const lastValueRef = useRef<T | null>(value);
-
-  useLayoutEffect(() => {
-    if (value !== null) {
-      lastValueRef.current = value;
-    }
-  }, [value]);
-
-  return value ?? lastValueRef.current;
-};
 
 type StateProps = {
   blocked: boolean;
@@ -151,17 +135,6 @@ const SwapDronesDialogBody = ({
   const canAdd = !blocked && preview.kind === 'ready' && !overlapsQueue;
   const canSwap = batchValidation.valid && warningMessage === null;
 
-  // Warning, placeholder and preview live in three mutually exclusive collapsing
-  // regions so that every height change of the dialog is animated. Their contents
-  // are latched, otherwise they would blank out before the exit transition ends.
-  const lastWarningMessage = useLastNonNull(warningMessage);
-  const lastPlaceholderMessage = useLastNonNull(
-    preview.kind === 'placeholder' ? preview.message : null
-  );
-  const lastPreviewLines = useLastNonNull(
-    preview.kind === 'ready' ? preview.lines : null
-  );
-
   const handleAdd = () => {
     const drone1 = slot1.resolved;
     const drone2 = slot2.resolved;
@@ -231,29 +204,19 @@ const SwapDronesDialogBody = ({
           </Button>
         </Stack>
 
-        <Collapse in={warningMessage !== null}>
-          <Box sx={{ pt: 2 }}>
+        <Box sx={{ pt: 2, minHeight: SWAP_DRONES_PREVIEW_AREA_MIN_HEIGHT }}>
+          {warningMessage !== null ? (
             <Alert severity='warning' variant='outlined'>
-              {lastWarningMessage}
+              {warningMessage}
             </Alert>
-          </Box>
-        </Collapse>
-
-        <Collapse
-          in={warningMessage === null && preview.kind === 'placeholder'}
-        >
-          <Box sx={{ pt: 2 }}>
+          ) : preview.kind === 'placeholder' ? (
             <Typography variant='body2' color='text.secondary'>
-              {lastPlaceholderMessage}
+              {preview.message}
             </Typography>
-          </Box>
-        </Collapse>
-
-        <Collapse in={warningMessage === null && preview.kind === 'ready'}>
-          <Box sx={{ pt: 2 }}>
-            {lastPreviewLines && <SwapDronesPreview lines={lastPreviewLines} />}
-          </Box>
-        </Collapse>
+          ) : preview.kind === 'ready' ? (
+            <SwapDronesPreview lines={preview.lines} />
+          ) : null}
+        </Box>
       </DialogContent>
       <DialogActions>
         <FormControlLabel
