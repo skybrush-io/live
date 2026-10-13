@@ -11,6 +11,9 @@ import { swapSelectionLabel, type SwapFieldSide } from './utils';
 
 const createFieldStyle = (color: string) => ({
   '& .MuiFilledInput-root': {
+    // large enough to ensure that the dialog does not grow when the user swaps two
+    // drones with 5-digit IDs
+    minWidth: 240,
     '&::before': {
       borderBottom: '3px solid',
       borderBottomColor: color,
@@ -77,7 +80,13 @@ const SwapDroneField = ({
           setAnchorEl(event.currentTarget);
         }}
         onChange={(event) => {
+          setAnchorEl(event.currentTarget);
           onChange(event.target.value);
+        }}
+        onKeyDown={(event) => {
+          if (event.key === 'Enter') {
+            handleClose();
+          }
         }}
         {...rest}
       />

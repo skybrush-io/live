@@ -13,17 +13,34 @@ export type ResolvedDrone = Readonly<{
 }>;
 
 /**
- * A pair of resolved drones, to be used in a swapping operation.
+ * A pair of drones in a swapping operation, each of which is resolved if possible.
  */
-export type ResolvedDronePair = Readonly<{
-  drone1: ResolvedDrone;
-  drone2: ResolvedDrone;
+export type PartiallyResolvedDronePair = Readonly<{
+  drone1: ResolvedDrone | null;
+  drone2: ResolvedDrone | null;
 }>;
 
 /**
- * A pair of resolved drones, to be used in a swapping operation, along with an ID
- * that can be used to unambiguously refer to the pair.
+ * Reference to a drone in a swapping operation, either by its ID or by the
+ * mission index (slot) that it occupies. Slot references are resolved against
+ * the mapping at the time of the swap.
  */
-export type ResolvedDronePairWithId = ResolvedDronePair & {
+export type DroneRef =
+  | Readonly<{ kind: 'uav'; uavId: Identifier }>
+  | Readonly<{ kind: 'slot'; missionIndex: MissionIndex }>;
+
+/**
+ * A pair of drone references, to be used in a swapping operation.
+ */
+export type DroneRefPair = Readonly<{
+  drone1: DroneRef;
+  drone2: DroneRef;
+}>;
+
+/**
+ * A pair of drone references, to be used in a swapping operation, along with an
+ * ID that can be used to unambiguously refer to the pair.
+ */
+export type DroneRefPairWithId = DroneRefPair & {
   id: string;
 };

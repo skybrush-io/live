@@ -1,14 +1,8 @@
 /**
- * Width of the drone selector column of the swap drones dialog. Kept constant so
- * that showing or hiding the pending swap queue does not reflow the form.
- */
-export const SWAP_DRONES_FORM_COLUMN_WIDTH = 550;
-
-/**
  * Width of the pending swap queue column of the swap drones dialog, including its
  * separator and the spacing around it.
  */
-export const SWAP_DRONES_QUEUE_COLUMN_WIDTH = 200;
+export const SWAP_DRONES_QUEUE_COLUMN_WIDTH = 240;
 
 /**
  * Minimum height of the area below the drone fields of the swap drones dialog,
@@ -17,6 +11,13 @@ export const SWAP_DRONES_QUEUE_COLUMN_WIDTH = 200;
  * just in case :)
  */
 export const SWAP_DRONES_PREVIEW_AREA_MIN_HEIGHT = 184;
+
+/**
+ * Minimum height of the action bars at the bottom of the main area and the queue
+ * sidebar of the swap drones dialog, so that their buttons line up: the height of
+ * a checkbox (42px) plus the padding of `DialogActions` (2 x 8px).
+ */
+export const SWAP_DRONES_DIALOG_ACTIONS_MIN_HEIGHT = 58;
 
 /**
  * Colors of the drone fields in the swap drones dialog, depending on their side.

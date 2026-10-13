@@ -15,11 +15,13 @@ import { DraggableDialog } from '@skybrush/mui-components';
 
 import type { RootState } from '~/store/reducers';
 
-import { addCurrentPairToSwapQueue, executeSwapBatch } from './actions';
-import { SWAP_DRONES_PREVIEW_AREA_MIN_HEIGHT } from './constants';
+import { swapCurrentPairNow } from './actions';
 import {
-  canAddCurrentSwapPairToQueue,
-  canExecuteSwapBatch,
+  SWAP_DRONES_DIALOG_ACTIONS_MIN_HEIGHT,
+  SWAP_DRONES_PREVIEW_AREA_MIN_HEIGHT,
+} from './constants';
+import {
+  canSwapCurrentPairNow,
   getSwapDroneFieldTexts,
   getSwapPreview,
   getSwapWarningMessageKey,
@@ -37,8 +39,7 @@ import SwapDronesQueuePanel from './SwapDronesQueuePanel';
 import type { SwapFieldSide, SwapPreviewState } from './utils';
 
 type StateProps = {
-  canAdd: boolean;
-  canSwap: boolean;
+  canSwapNow: boolean;
   fieldTexts: Record<SwapFieldSide, string>;
   open: boolean;
   openUploadDialogAfterSwap: boolean;
@@ -47,24 +48,21 @@ type StateProps = {
 };
 
 type DispatchProps = {
-  onAdd: () => void;
   onClose: () => void;
   onSetFieldText: (payload: { side: SwapFieldSide; text: string }) => void;
   onSetOpenUploadDialogAfterSwap: (open: boolean) => void;
-  onSwap: () => void;
+  onSwapNow: () => void;
 };
 
 type Props = DispatchProps & StateProps;
 
 const SwapDronesDialog = ({
-  canAdd,
-  canSwap,
+  canSwapNow,
   fieldTexts,
-  onAdd,
   onClose,
   onSetFieldText,
   onSetOpenUploadDialogAfterSwap,
-  onSwap,
+  onSwapNow,
   open,
   openUploadDialogAfterSwap,
   preview,
@@ -99,9 +97,6 @@ const SwapDronesDialog = ({
               onSetFieldText({ side: 'right', text });
             }}
           />
-          <Button variant='outlined' disabled={!canAdd} onClick={onAdd}>
-            {t('swapDronesDialog.action.add')}
-          </Button>
         </Stack>
 
         <Box sx={{ pt: 2, minHeight: SWAP_DRONES_PREVIEW_AREA_MIN_HEIGHT }}>
@@ -118,7 +113,7 @@ const SwapDronesDialog = ({
           ) : null}
         </Box>
       </DialogContent>
-      <DialogActions>
+      <DialogActions sx={{ minHeight: SWAP_DRONES_DIALOG_ACTIONS_MIN_HEIGHT }}>
         <FormControlLabel
           label={t('swapDronesDialog.openUploadAfterSwap')}
           control={
@@ -129,11 +124,11 @@ const SwapDronesDialog = ({
               }}
             />
           }
-          sx={{ ml: 1 }}
+          sx={{ ml: 0.5 }}
         />
         <Box sx={{ flex: 1 }} />
         <Button onClick={onClose}>{t('general.action.cancel')}</Button>
-        <Button disabled={!canSwap} onClick={onSwap} color='primary'>
+        <Button disabled={!canSwapNow} onClick={onSwapNow} color='primary'>
           {t('swapDronesDialog.action.swap')}
         </Button>
       </DialogActions>
@@ -143,8 +138,7 @@ const SwapDronesDialog = ({
 
 export default connect(
   (state: RootState): StateProps => ({
-    canAdd: canAddCurrentSwapPairToQueue(state),
-    canSwap: canExecuteSwapBatch(state),
+    canSwapNow: canSwapCurrentPairNow(state),
     fieldTexts: getSwapDroneFieldTexts(state),
     open: isSwapDronesDialogOpen(state),
     openUploadDialogAfterSwap: shouldOpenUploadDialogAfterSwap(state),
@@ -152,10 +146,9 @@ export default connect(
     warningMessageKey: getSwapWarningMessageKey(state),
   }),
   {
-    onAdd: addCurrentPairToSwapQueue,
     onClose: closeSwapDronesDialog,
     onSetFieldText: setSwapDroneFieldText,
     onSetOpenUploadDialogAfterSwap: setOpenUploadAfterSwap,
-    onSwap: executeSwapBatch,
+    onSwapNow: swapCurrentPairNow,
   }
 )(SwapDronesDialog);

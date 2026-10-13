@@ -1,11 +1,17 @@
 import isNil from 'lodash-es/isNil';
 
+import { moveUAVInMapping } from '~/features/mission/utils';
 import type { MissionIndex } from '~/model/missions';
 import type { Identifier } from '~/utils/collections';
 import { formatMissionId, parseMissionId } from '~/utils/formatting';
 import type { Nullable } from '~/utils/types';
 
-import type { ResolvedDrone, ResolvedDronePair } from './types';
+import type {
+  DroneRef,
+  DroneRefPair,
+  PartiallyResolvedDronePair,
+  ResolvedDrone,
+} from './types';
 
 export type SwapFieldSide = 'left' | 'right';
 
@@ -27,99 +33,88 @@ export type SwapPreviewState =
   | { kind: 'ready'; lines: SwapPreviewLine[] }
   | { kind: 'warning'; messageKey: string };
 
-export const getSwapAdjustMissionMappingArgs = (
-  pair: ResolvedDronePair,
-  reverseMapping: Readonly<Record<string, MissionIndex>>
-): { to: MissionIndex; uavId: Identifier } | null => {
-  const missionIndex1 = reverseMapping[pair.drone1.uavId] ?? null;
-  const missionIndex2 = reverseMapping[pair.drone2.uavId] ?? null;
-
-  if (missionIndex1 === null && missionIndex2 === null) {
-    return null;
-  }
-
-  if (missionIndex1 !== null && missionIndex2 === null) {
-    return { uavId: pair.drone2.uavId, to: missionIndex1 };
-  }
-
-  if (missionIndex2 !== null && missionIndex1 === null) {
-    return { uavId: pair.drone1.uavId, to: missionIndex2 };
-  }
-
-  return { uavId: pair.drone1.uavId, to: missionIndex2 };
+const getMissionIndexOf = (
+  mapping: ReadonlyArray<Nullable<Identifier>>,
+  uavId: Identifier
+): MissionIndex | null => {
+  const index = mapping.indexOf(uavId);
+  return index >= 0 ? index : null;
 };
 
 /**
- * UAV IDs whose show upload is outdated after applying one pair — same set as
- * `adjustMissionMapping` notifies via `notifyUAVsInMissionMappingChanged`.
+ * Returns the i18n key of the reason why the given pair of drones cannot be
+ * swapped, or `null` if the swap is feasible.
  */
-export const getSwapPairAffectedUavIds = (
-  pair: ResolvedDronePair,
+export const getSwapPairProblem = (
+  drone1: ResolvedDrone,
+  drone2: ResolvedDrone
+): string | null => {
+  if (drone1.uavId === drone2.uavId) {
+    return 'swapDronesDialog.preview.sameDrone';
+  }
+
+  if (drone1.missionIndex === null && drone2.missionIndex === null) {
+    return 'swapDronesDialog.preview.bothUnmapped';
+  }
+
+  return null;
+};
+
+export type SwapBatchResult = (
+  | { ok: true; mapping: Array<Nullable<Identifier>> }
+  | { ok: false; failedIndex: number }
+) & {
+  /**
+   * The drones of each evaluated swap, resolved in the mapping that results from
+   * the swaps preceding it; swaps after a failed one are not evaluated
+   */
+  resolvedPairs: PartiallyResolvedDronePair[];
+};
+
+/**
+ * Simulates the execution of the given swaps, in order, on the given mapping.
+ * The drone references of each swap are resolved and checked against the mapping
+ * that results from the swaps preceding it. Returns the final mapping, or the
+ * index of the first swap that cannot be executed.
+ */
+export const simulateSwapBatch = (
   mapping: ReadonlyArray<Nullable<Identifier>>,
-  reverseMapping: Readonly<Record<string, MissionIndex>>
-): Identifier[] => {
-  const args = getSwapAdjustMissionMappingArgs(pair, reverseMapping);
-  if (!args) {
-    return [];
+  uavIds: readonly Identifier[],
+  pairs: readonly DroneRefPair[]
+): SwapBatchResult => {
+  let current = [...mapping];
+  const resolvedPairs: PartiallyResolvedDronePair[] = [];
+
+  for (const [index, pair] of pairs.entries()) {
+    const drone1 = resolveDroneRef(pair.drone1, uavIds, current);
+    const drone2 = resolveDroneRef(pair.drone2, uavIds, current);
+    resolvedPairs.push({ drone1, drone2 });
+
+    if (!drone1 || !drone2 || getSwapPairProblem(drone1, drone2) !== null) {
+      return { ok: false, failedIndex: index, resolvedPairs };
+    }
+
+    // Move the unmapped drone (if any) to the slot of the other one; the other
+    // one takes its original place or leaves the mapping
+    current =
+      drone2.missionIndex === null
+        ? moveUAVInMapping(current, drone2.uavId, drone1.missionIndex)
+        : moveUAVInMapping(current, drone1.uavId, drone2.missionIndex);
   }
 
-  const { uavId, to } = args;
-  const affectedUavIds: Identifier[] = [uavId];
-  const uavIdToReplace = mapping[to];
-
-  if (!isNil(uavIdToReplace)) {
-    affectedUavIds.push(uavIdToReplace);
-  }
-
-  return affectedUavIds;
+  return { ok: true, mapping: current, resolvedPairs };
 };
 
-export const buildSwapApplyPairs = (
-  queue: readonly ResolvedDronePair[],
-  applyCurrentPair: boolean,
-  currentDrone1: ResolvedDrone | null,
-  currentDrone2: ResolvedDrone | null
-): ResolvedDronePair[] => {
-  const pairs: ResolvedDronePair[] = queue.map(({ drone1, drone2 }) => ({
-    drone1,
-    drone2,
-  }));
-
-  if (applyCurrentPair && currentDrone1 && currentDrone2) {
-    pairs.push({ drone1: currentDrone1, drone2: currentDrone2 });
-  }
-
-  return pairs;
-};
-
-export const currentPairOverlapsQueue = (
-  drone1: ResolvedDrone | null,
-  drone2: ResolvedDrone | null,
-  queue: readonly ResolvedDronePair[]
-): boolean => {
-  if (!drone1 || !drone2 || queue.length === 0) {
-    return false;
-  }
-
-  const uavId1 = drone1.uavId;
-  const uavId2 = drone2.uavId;
-
-  return queue.some(
-    ({ drone1: d1, drone2: d2 }) =>
-      d1.uavId === uavId1 ||
-      d1.uavId === uavId2 ||
-      d2.uavId === uavId1 ||
-      d2.uavId === uavId2
-  );
-};
+/**
+ * Formats a drone reference the way the user would type it.
+ */
+export const formatDroneRef = (ref: DroneRef): string =>
+  ref.kind === 'uav' ? ref.uavId : formatMissionId(ref.missionIndex);
 
 export const swapDroneRef = (drone: ResolvedDrone): string =>
   drone.missionIndex === null
     ? drone.uavId
     : `${drone.uavId}/${formatMissionId(drone.missionIndex)}`;
-
-export const getSwapApplyPairKey = (pair: ResolvedDronePair): string =>
-  `${swapDroneRef(pair.drone1)}->${swapDroneRef(pair.drone2)}`;
 
 export const getSwapPreviewLineKey = (line: SwapPreviewLine): string =>
   `${line.i18nKey}:${Object.values(line.badges)
@@ -156,15 +151,13 @@ export const swapSelectionLabel = (
 };
 
 /**
- * Resolves a typed/selected value to an online physical UAV.
- * Show-ID lookup must hit a filled slot of the current mission mapping.
+ * Parses a typed/selected value into a drone reference: a show ID (`sN`) refers
+ * to a slot, anything else to a known UAV, matched case-insensitively.
  */
-export const resolveSwapDrone = (
+export const parseDroneRef = (
   query: string,
-  onlineUavIds: readonly Identifier[],
-  mapping: ReadonlyArray<Nullable<Identifier>>,
-  reverseMapping: Readonly<Record<string, MissionIndex>>
-): ResolvedDrone | null => {
+  uavIds: readonly Identifier[]
+): DroneRef | null => {
   const trimmed = query.trim();
   if (!trimmed) {
     return null;
@@ -172,114 +165,37 @@ export const resolveSwapDrone = (
 
   const missionIndex = parseMissionId(trimmed);
   if (missionIndex !== undefined) {
-    if (missionIndex >= mapping.length) {
-      return null;
-    }
-
-    const uavId = mapping[missionIndex];
-    if (isNil(uavId) || !onlineUavIds.includes(uavId)) {
-      return null;
-    }
-
-    return { uavId, missionIndex };
+    return { kind: 'slot', missionIndex };
   }
 
-  const matchedUavId = onlineUavIds.find(
+  const matchedUavId = uavIds.find(
     (id) => id.toLowerCase() === trimmed.toLowerCase()
   );
-  if (!matchedUavId) {
-    return null;
-  }
-
-  return {
-    uavId: matchedUavId,
-    missionIndex: reverseMapping[matchedUavId] ?? null,
-  };
+  return matchedUavId ? { kind: 'uav', uavId: matchedUavId } : null;
 };
 
-export type SwapBatchValidationReason = 'blocked' | 'empty' | 'stale';
-
-export type SwapBatchValidation =
-  | { applyCurrentPair: boolean; valid: true }
-  | { messageKey: string; reason: SwapBatchValidationReason; valid: false };
-
-export const resolveCurrentDroneState = (
-  drone: ResolvedDrone,
-  onlineUavIds: readonly Identifier[],
-  reverseMapping: Readonly<Record<string, MissionIndex>>
+/**
+ * Resolves a drone reference to a known UAV in the given mapping. A slot
+ * reference must hit a filled slot of the mapping.
+ */
+export const resolveDroneRef = (
+  ref: DroneRef,
+  uavIds: readonly Identifier[],
+  mapping: ReadonlyArray<Nullable<Identifier>>
 ): ResolvedDrone | null => {
-  if (!onlineUavIds.includes(drone.uavId)) {
-    return null;
+  if (ref.kind === 'uav') {
+    return uavIds.includes(ref.uavId)
+      ? {
+          uavId: ref.uavId,
+          missionIndex: getMissionIndexOf(mapping, ref.uavId),
+        }
+      : null;
   }
 
-  return {
-    uavId: drone.uavId,
-    missionIndex: reverseMapping[drone.uavId] ?? null,
-  };
-};
-
-export const isStoredPairStale = (
-  pair: ResolvedDronePair,
-  onlineUavIds: readonly Identifier[],
-  reverseMapping: Readonly<Record<string, MissionIndex>>
-): boolean => {
-  const currentDrone1 = resolveCurrentDroneState(
-    pair.drone1,
-    onlineUavIds,
-    reverseMapping
-  );
-  const currentDrone2 = resolveCurrentDroneState(
-    pair.drone2,
-    onlineUavIds,
-    reverseMapping
-  );
-
-  if (!currentDrone1 || !currentDrone2) {
-    return true;
-  }
-
-  return (
-    currentDrone1.missionIndex !== pair.drone1.missionIndex ||
-    currentDrone2.missionIndex !== pair.drone2.missionIndex
-  );
-};
-
-export const validateSwapBatch = (
-  queue: readonly ResolvedDronePair[],
-  currentDrone1: ResolvedDrone | null,
-  currentDrone2: ResolvedDrone | null,
-  blocked: boolean,
-  onlineUavIds: readonly Identifier[],
-  reverseMapping: Readonly<Record<string, MissionIndex>>
-): SwapBatchValidation => {
-  if (blocked) {
-    return {
-      valid: false,
-      reason: 'blocked',
-      messageKey: 'swapDronesDialog.preview.blocked',
-    };
-  }
-
-  const currentPreview = buildSwapPreview(currentDrone1, currentDrone2, false);
-  const applyCurrentPair =
-    currentPreview.kind === 'ready' &&
-    !currentPairOverlapsQueue(currentDrone1, currentDrone2, queue);
-
-  if (queue.length === 0 && !applyCurrentPair) {
-    return { valid: false, reason: 'empty', messageKey: '' };
-  }
-
-  for (const pair of queue) {
-    if (isStoredPairStale(pair, onlineUavIds, reverseMapping)) {
-      return {
-        valid: false,
-        reason: 'stale',
-        messageKey: 'swapDronesDialog.queue.stalePairs',
-      };
-    }
-  }
-
-  return { valid: true, applyCurrentPair };
+  const uavId = mapping[ref.missionIndex];
+  return isNil(uavId) || !uavIds.includes(uavId)
+    ? null
+    : { uavId, missionIndex: ref.missionIndex };
 };
 
 export const buildSwapPreview = (
@@ -301,22 +217,13 @@ export const buildSwapPreview = (
     };
   }
 
-  if (drone1.uavId === drone2.uavId) {
-    return {
-      kind: 'warning',
-      messageKey: 'swapDronesDialog.preview.sameDrone',
-    };
+  const problem = getSwapPairProblem(drone1, drone2);
+  if (problem !== null) {
+    return { kind: 'warning', messageKey: problem };
   }
 
   const mapped1 = drone1.missionIndex !== null;
   const mapped2 = drone2.missionIndex !== null;
-
-  if (!mapped1 && !mapped2) {
-    return {
-      kind: 'warning',
-      messageKey: 'swapDronesDialog.preview.bothUnmapped',
-    };
-  }
 
   if (mapped1 && mapped2) {
     return {

@@ -1333,8 +1333,9 @@
   },
   "swapDronesDialog": {
     "action": {
-      "add": "Add",
-      "swap": "Swap"
+      "add": "Add to queue",
+      "swap": "Swap",
+      "swapQueue": "Swap queued"
     },
     "confirm": {
       "message": "The following drone pairs will be swapped:",
@@ -1355,9 +1356,9 @@
       "uploadToDrones": "The show will have to be <bold>uploaded</bold> to drones <drone1/> and <drone2/>"
     },
     "queue": {
-      "overlap": "One or both drones in this pair are already in the queue.",
-      "stalePairs": "One or more queued pairs are no longer valid. Remove stale entries or fix your inputs."
+      "stalePairs": "The highlighted queued pair can no longer be swapped. Remove it to continue."
     },
+    "failure": "The swap cannot be performed in the current mapping; nothing was changed.",
     "success": "Drone swap completed successfully.",
     "title": "Swap drones",
     "toolbarButton": "Swap drones"

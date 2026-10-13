@@ -1,7 +1,7 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import { nanoid } from 'nanoid';
 
-import type { ResolvedDronePair, ResolvedDronePairWithId } from './types';
+import type { DroneRefPair, DroneRefPairWithId } from './types';
 import type { SwapFieldSide } from './utils';
 
 type SwapDronesDialogSliceState = {
@@ -10,7 +10,7 @@ type SwapDronesDialogSliceState = {
   open: boolean;
   openUploadDialogAfterSwap: boolean;
   /** Swaps queued up for execution; kept when the dialog is closed */
-  queue: ResolvedDronePairWithId[];
+  queue: DroneRefPairWithId[];
 };
 
 const createEmptyFields = (): Record<SwapFieldSide, string> => ({
@@ -30,10 +30,10 @@ const { actions, reducer } = createSlice({
   initialState,
   reducers: {
     addPairToSwapQueue: {
-      prepare: (pair: ResolvedDronePair) => ({
+      prepare: (pair: DroneRefPair) => ({
         payload: { ...pair, id: nanoid() },
       }),
-      reducer: (state, action: PayloadAction<ResolvedDronePairWithId>) => {
+      reducer: (state, action: PayloadAction<DroneRefPairWithId>) => {
         state.queue.push(action.payload);
         state.fields = createEmptyFields();
       },
