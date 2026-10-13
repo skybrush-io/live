@@ -8,183 +8,75 @@ import DialogContent from '@mui/material/DialogContent';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { nanoid } from 'nanoid';
-import { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import { DraggableDialog } from '@skybrush/mui-components';
 
-import { getReverseMissionMapping } from '~/features/mission/selectors';
-import { showSuccess } from '~/features/snackbar/actions';
-import type { MissionIndex } from '~/model/missions';
 import type { RootState } from '~/store/reducers';
-import type { Identifier } from '~/utils/collections';
 
-import { getUAVIdList } from '../selectors';
-import { applySwapDronesBatch } from './actions';
+import { addCurrentPairToSwapQueue, executeSwapBatch } from './actions';
 import { SWAP_DRONES_PREVIEW_AREA_MIN_HEIGHT } from './constants';
 import {
+  canAddCurrentSwapPairToQueue,
+  canExecuteSwapBatch,
+  getSwapDroneFieldTexts,
+  getSwapPreview,
+  getSwapWarningMessageKey,
   isSwapDronesDialogOpen,
-  isSwappingAllowed,
   shouldOpenUploadDialogAfterSwap,
 } from './selectors';
-import { closeSwapDronesDialog, setOpenUploadAfterSwap } from './slice';
-import SwapDroneField, { type SwapDroneFieldValue } from './SwapDroneField';
+import {
+  closeSwapDronesDialog,
+  setOpenUploadAfterSwap,
+  setSwapDroneFieldText,
+} from './slice';
+import SwapDroneField from './SwapDroneField';
 import SwapDronesPreview from './SwapDronesPreview';
 import SwapDronesQueuePanel from './SwapDronesQueuePanel';
-import type { ResolvedDronePair, ResolvedDronePairWithId } from './types';
-import {
-  buildSwapApplyPairs,
-  buildSwapPreview,
-  currentPairOverlapsQueue,
-  validateSwapBatch,
-} from './utils';
-
-const EMPTY_SLOT: SwapDroneFieldValue = Object.freeze({
-  filterText: '',
-  resolved: null,
-});
+import type { SwapFieldSide, SwapPreviewState } from './utils';
 
 type StateProps = {
-  blocked: boolean;
-  onlineUavIds: Identifier[];
+  canAdd: boolean;
+  canSwap: boolean;
+  fieldTexts: Record<SwapFieldSide, string>;
   open: boolean;
   openUploadDialogAfterSwap: boolean;
-  reverseMissionMapping: Readonly<Record<string, MissionIndex>>;
+  preview: SwapPreviewState;
+  warningMessageKey: string | null;
 };
 
 type DispatchProps = {
-  onApplySwap: (
-    pairs: ResolvedDronePair[],
-    options?: { openUploadAfterSwap?: boolean }
-  ) => void;
+  onAdd: () => void;
   onClose: () => void;
+  onSetFieldText: (payload: { side: SwapFieldSide; text: string }) => void;
   onSetOpenUploadDialogAfterSwap: (open: boolean) => void;
+  onSwap: () => void;
 };
 
 type Props = DispatchProps & StateProps;
 
-const SwapDronesDialogBody = ({
-  blocked,
-  onlineUavIds,
-  onApplySwap,
+const SwapDronesDialog = ({
+  canAdd,
+  canSwap,
+  fieldTexts,
+  onAdd,
   onClose,
+  onSetFieldText,
   onSetOpenUploadDialogAfterSwap,
+  onSwap,
   open,
   openUploadDialogAfterSwap,
-  reverseMissionMapping,
+  preview,
+  warningMessageKey,
 }: Props) => {
   const { t } = useTranslation();
-  const [slot1, setSlot1] = useState<SwapDroneFieldValue>(EMPTY_SLOT);
-  const [slot2, setSlot2] = useState<SwapDroneFieldValue>(EMPTY_SLOT);
-  const [queue, setQueue] = useState<ResolvedDronePairWithId[]>([]);
-
-  const preview = useMemo(
-    () => buildSwapPreview(slot1.resolved, slot2.resolved, blocked, t),
-    [slot1.resolved, slot2.resolved, blocked, t]
-  );
-
-  const overlapsQueue = useMemo(
-    () => currentPairOverlapsQueue(slot1.resolved, slot2.resolved, queue),
-    [slot1.resolved, slot2.resolved, queue]
-  );
-
-  const batchValidation = useMemo(
-    () =>
-      validateSwapBatch(
-        queue,
-        slot1.resolved,
-        slot2.resolved,
-        blocked,
-        onlineUavIds,
-        reverseMissionMapping,
-        t
-      ),
-    [
-      blocked,
-      onlineUavIds,
-      queue,
-      reverseMissionMapping,
-      slot1.resolved,
-      slot2.resolved,
-      t,
-    ]
-  );
-
-  const showBatchAlert =
-    !batchValidation.valid &&
-    batchValidation.reason !== 'empty' &&
-    batchValidation.reason !== 'blocked';
-
-  const overlapWarning =
-    overlapsQueue && preview.kind === 'ready'
-      ? t('swapDronesDialog.queue.overlap')
-      : null;
-
-  const batchWarning =
-    !overlapWarning && showBatchAlert ? batchValidation.message : null;
-
-  const previewWarning =
-    preview.kind === 'warning' || preview.kind === 'blocked'
-      ? preview.message
-      : null;
-
-  const warningMessage = overlapWarning ?? batchWarning ?? previewWarning;
-
-  const canAdd = !blocked && preview.kind === 'ready' && !overlapsQueue;
-  const canSwap = batchValidation.valid && warningMessage === null;
-
-  const handleAdd = () => {
-    const drone1 = slot1.resolved;
-    const drone2 = slot2.resolved;
-    if (!canAdd || !drone1 || !drone2) {
-      return;
-    }
-
-    setQueue((current) => [
-      ...current,
-      {
-        id: nanoid(),
-        drone1,
-        drone2,
-      },
-    ]);
-    setSlot1(EMPTY_SLOT);
-    setSlot2(EMPTY_SLOT);
-  };
-
-  const handleRemoveFromQueue = useCallback((id: string) => {
-    setQueue((current) => current.filter((pair) => pair.id !== id));
-  }, []);
-
-  const handleSwap = () => {
-    if (!batchValidation.valid || warningMessage !== null) {
-      return;
-    }
-
-    const pairs = buildSwapApplyPairs(
-      queue,
-      batchValidation.applyCurrentPair,
-      slot1.resolved,
-      slot2.resolved
-    );
-
-    onApplySwap(pairs, { openUploadAfterSwap: openUploadDialogAfterSwap });
-    setSlot1(EMPTY_SLOT);
-    setSlot2(EMPTY_SLOT);
-    setQueue([]);
-    showSuccess(t('swapDronesDialog.success'));
-    onClose();
-  };
 
   return (
     <DraggableDialog
       maxWidth='md'
       open={open}
-      sidebarComponents={
-        <SwapDronesQueuePanel queue={queue} onRemove={handleRemoveFromQueue} />
-      }
+      sidebarComponents={<SwapDronesQueuePanel />}
       sidebarPlacement='right'
       title={t('swapDronesDialog.title')}
       onClose={onClose}
@@ -194,24 +86,32 @@ const SwapDronesDialogBody = ({
           <SwapDroneField
             autoFocus
             side='left'
-            value={slot1}
-            onChange={setSlot1}
+            value={fieldTexts.left}
+            onChange={(text) => {
+              onSetFieldText({ side: 'left', text });
+            }}
           />
           <SwapHoriz />
-          <SwapDroneField side='right' value={slot2} onChange={setSlot2} />
-          <Button variant='outlined' disabled={!canAdd} onClick={handleAdd}>
+          <SwapDroneField
+            side='right'
+            value={fieldTexts.right}
+            onChange={(text) => {
+              onSetFieldText({ side: 'right', text });
+            }}
+          />
+          <Button variant='outlined' disabled={!canAdd} onClick={onAdd}>
             {t('swapDronesDialog.action.add')}
           </Button>
         </Stack>
 
         <Box sx={{ pt: 2, minHeight: SWAP_DRONES_PREVIEW_AREA_MIN_HEIGHT }}>
-          {warningMessage !== null ? (
+          {warningMessageKey !== null ? (
             <Alert severity='warning' variant='outlined'>
-              {warningMessage}
+              {t(warningMessageKey)}
             </Alert>
           ) : preview.kind === 'placeholder' ? (
             <Typography variant='body2' color='text.secondary'>
-              {preview.message}
+              {t(preview.messageKey)}
             </Typography>
           ) : preview.kind === 'ready' ? (
             <SwapDronesPreview lines={preview.lines} />
@@ -233,7 +133,7 @@ const SwapDronesDialogBody = ({
         />
         <Box sx={{ flex: 1 }} />
         <Button onClick={onClose}>{t('general.action.cancel')}</Button>
-        <Button disabled={!canSwap} onClick={handleSwap} color='primary'>
+        <Button disabled={!canSwap} onClick={onSwap} color='primary'>
           {t('swapDronesDialog.action.swap')}
         </Button>
       </DialogActions>
@@ -241,30 +141,21 @@ const SwapDronesDialogBody = ({
   );
 };
 
-const SwapDronesDialog = (props: Props) => {
-  const prevOpenRef = useRef(false);
-  const sessionRef = useRef(0);
-
-  if (props.open && !prevOpenRef.current) {
-    sessionRef.current += 1;
-  }
-
-  prevOpenRef.current = props.open;
-
-  return <SwapDronesDialogBody key={sessionRef.current} {...props} />;
-};
-
 export default connect(
   (state: RootState): StateProps => ({
+    canAdd: canAddCurrentSwapPairToQueue(state),
+    canSwap: canExecuteSwapBatch(state),
+    fieldTexts: getSwapDroneFieldTexts(state),
     open: isSwapDronesDialogOpen(state),
-    blocked: !isSwappingAllowed(state),
-    onlineUavIds: getUAVIdList(state),
     openUploadDialogAfterSwap: shouldOpenUploadDialogAfterSwap(state),
-    reverseMissionMapping: getReverseMissionMapping(state),
+    preview: getSwapPreview(state),
+    warningMessageKey: getSwapWarningMessageKey(state),
   }),
   {
-    onApplySwap: applySwapDronesBatch,
+    onAdd: addCurrentPairToSwapQueue,
     onClose: closeSwapDronesDialog,
+    onSetFieldText: setSwapDroneFieldText,
     onSetOpenUploadDialogAfterSwap: setOpenUploadAfterSwap,
+    onSwap: executeSwapBatch,
   }
 )(SwapDronesDialog);

@@ -4,14 +4,30 @@ import {
   getReverseMissionMapping,
 } from '~/features/mission/selectors';
 import { SHOW_UPLOAD_JOB } from '~/features/show/constants';
+import { showSuccess } from '~/features/snackbar/actions';
 import {
   openUploadDialogForJob,
   putUavsInWaitingQueue,
 } from '~/features/upload/slice';
+import i18n from '~/i18n';
 import type { AppThunk } from '~/store/reducers';
 
+import {
+  canAddCurrentSwapPairToQueue,
+  canExecuteSwapBatch,
+  getResolvedSwapDrones,
+  getSwapBatchValidation,
+  getSwapQueue,
+  shouldOpenUploadDialogAfterSwap,
+} from './selectors';
+import {
+  addPairToSwapQueue,
+  clearSwapQueue,
+  closeSwapDronesDialog,
+} from './slice';
 import type { ResolvedDronePair } from './types';
 import {
+  buildSwapApplyPairs,
   getSwapAdjustMissionMappingArgs,
   getSwapPairAffectedUavIds,
 } from './utils';
@@ -61,3 +77,47 @@ export const applySwapDronesBatch =
       }
     }
   };
+
+/**
+ * Adds the pair of drones currently entered into the fields of the swap drones
+ * dialog to the swap queue.
+ */
+export const addCurrentPairToSwapQueue =
+  (): AppThunk => (dispatch, getState) => {
+    const state = getState();
+    const { left: drone1, right: drone2 } = getResolvedSwapDrones(state);
+    if (!canAddCurrentSwapPairToQueue(state) || !drone1 || !drone2) {
+      return;
+    }
+
+    dispatch(addPairToSwapQueue({ drone1, drone2 }));
+  };
+
+/**
+ * Executes the queued swaps, along with the pair of drones currently entered into
+ * the fields of the swap drones dialog, then closes the dialog.
+ */
+export const executeSwapBatch = (): AppThunk => (dispatch, getState) => {
+  const state = getState();
+  const batchValidation = getSwapBatchValidation(state);
+  if (!canExecuteSwapBatch(state) || !batchValidation.valid) {
+    return;
+  }
+
+  const { left: drone1, right: drone2 } = getResolvedSwapDrones(state);
+  const pairs = buildSwapApplyPairs(
+    getSwapQueue(state),
+    batchValidation.applyCurrentPair,
+    drone1,
+    drone2
+  );
+
+  dispatch(
+    applySwapDronesBatch(pairs, {
+      openUploadAfterSwap: shouldOpenUploadDialogAfterSwap(state),
+    })
+  );
+  dispatch(clearSwapQueue());
+  showSuccess(i18n.t('swapDronesDialog.success'));
+  dispatch(closeSwapDronesDialog());
+};

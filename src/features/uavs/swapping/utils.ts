@@ -1,4 +1,3 @@
-import type { TFunction } from 'i18next';
 import isNil from 'lodash-es/isNil';
 
 import type { MissionIndex } from '~/model/missions';
@@ -23,10 +22,10 @@ export type SwapPreviewLine = {
 };
 
 export type SwapPreviewState =
-  | { kind: 'blocked'; message: string }
-  | { kind: 'placeholder'; message: string }
+  | { kind: 'blocked'; messageKey: string }
+  | { kind: 'placeholder'; messageKey: string }
   | { kind: 'ready'; lines: SwapPreviewLine[] }
-  | { kind: 'warning'; message: string };
+  | { kind: 'warning'; messageKey: string };
 
 export const getSwapAdjustMissionMappingArgs = (
   pair: ResolvedDronePair,
@@ -202,7 +201,7 @@ export type SwapBatchValidationReason = 'blocked' | 'empty' | 'stale';
 
 export type SwapBatchValidation =
   | { applyCurrentPair: boolean; valid: true }
-  | { message: string; reason: SwapBatchValidationReason; valid: false };
+  | { messageKey: string; reason: SwapBatchValidationReason; valid: false };
 
 export const resolveCurrentDroneState = (
   drone: ResolvedDrone,
@@ -251,29 +250,23 @@ export const validateSwapBatch = (
   currentDrone2: ResolvedDrone | null,
   blocked: boolean,
   onlineUavIds: readonly Identifier[],
-  reverseMapping: Readonly<Record<string, MissionIndex>>,
-  t: TFunction
+  reverseMapping: Readonly<Record<string, MissionIndex>>
 ): SwapBatchValidation => {
   if (blocked) {
     return {
       valid: false,
       reason: 'blocked',
-      message: t('swapDronesDialog.preview.blocked'),
+      messageKey: 'swapDronesDialog.preview.blocked',
     };
   }
 
-  const currentPreview = buildSwapPreview(
-    currentDrone1,
-    currentDrone2,
-    false,
-    t
-  );
+  const currentPreview = buildSwapPreview(currentDrone1, currentDrone2, false);
   const applyCurrentPair =
     currentPreview.kind === 'ready' &&
     !currentPairOverlapsQueue(currentDrone1, currentDrone2, queue);
 
   if (queue.length === 0 && !applyCurrentPair) {
-    return { valid: false, reason: 'empty', message: '' };
+    return { valid: false, reason: 'empty', messageKey: '' };
   }
 
   for (const pair of queue) {
@@ -281,7 +274,7 @@ export const validateSwapBatch = (
       return {
         valid: false,
         reason: 'stale',
-        message: t('swapDronesDialog.queue.stalePairs'),
+        messageKey: 'swapDronesDialog.queue.stalePairs',
       };
     }
   }
@@ -292,27 +285,26 @@ export const validateSwapBatch = (
 export const buildSwapPreview = (
   drone1: ResolvedDrone | null,
   drone2: ResolvedDrone | null,
-  blocked: boolean,
-  t: TFunction
+  blocked: boolean
 ): SwapPreviewState => {
   if (blocked) {
     return {
       kind: 'blocked',
-      message: t('swapDronesDialog.preview.blocked'),
+      messageKey: 'swapDronesDialog.preview.blocked',
     };
   }
 
   if (!drone1 || !drone2) {
     return {
       kind: 'placeholder',
-      message: t('swapDronesDialog.preview.selectTwoDrones'),
+      messageKey: 'swapDronesDialog.preview.selectTwoDrones',
     };
   }
 
   if (drone1.uavId === drone2.uavId) {
     return {
       kind: 'warning',
-      message: t('swapDronesDialog.preview.sameDrone'),
+      messageKey: 'swapDronesDialog.preview.sameDrone',
     };
   }
 
@@ -322,7 +314,7 @@ export const buildSwapPreview = (
   if (!mapped1 && !mapped2) {
     return {
       kind: 'warning',
-      message: t('swapDronesDialog.preview.bothUnmapped'),
+      messageKey: 'swapDronesDialog.preview.bothUnmapped',
     };
   }
 

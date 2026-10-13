@@ -4,11 +4,16 @@ import Box from '@mui/material/Box';
 import Collapse from '@mui/material/Collapse';
 import IconButton from '@mui/material/IconButton';
 import { useTranslation } from 'react-i18next';
+import { connect } from 'react-redux';
 import { TransitionGroup } from 'react-transition-group';
 
 import { Tooltip } from '@skybrush/mui-components';
 
+import type { RootState } from '~/store/reducers';
+
 import { SWAP_DRONES_QUEUE_COLUMN_WIDTH } from './constants';
+import { getSwapQueue } from './selectors';
+import { removePairFromSwapQueue } from './slice';
 import SwapDroneBadge from './SwapDroneBadge';
 import type { ResolvedDronePairWithId } from './types';
 import { swapDroneRef } from './utils';
@@ -67,4 +72,11 @@ const SwapDronesQueuePanel = ({
   );
 };
 
-export default SwapDronesQueuePanel;
+export default connect(
+  (state: RootState) => ({
+    queue: getSwapQueue(state),
+  }),
+  {
+    onRemove: removePairFromSwapQueue,
+  }
+)(SwapDronesQueuePanel);

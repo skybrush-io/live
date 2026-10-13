@@ -3,31 +3,11 @@ import type { SxProps } from '@mui/material/styles';
 import TextField, { type TextFieldProps } from '@mui/material/TextField';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { shallowEqual, useSelector } from 'react-redux';
 
 import { UAVSelector } from '~/components/uavs/UAVSelector';
-import {
-  getMissionMapping,
-  getReverseMissionMapping,
-} from '~/features/mission/selectors';
-import { getUAVIdList } from '~/features/uavs/selectors';
 
 import { FIELD_COLORS } from './constants';
-import type { ResolvedDrone } from './types';
-import {
-  resolveSwapDrone,
-  swapSelectionLabel,
-  type SwapFieldSide,
-} from './utils';
-
-/**
- * Object representing the text entered in a `SwapDroneField` and the drone that it
- * resolves to, if any.
- */
-export type SwapDroneFieldValue = {
-  filterText: string;
-  resolved: ResolvedDrone | null;
-};
+import { swapSelectionLabel, type SwapFieldSide } from './utils';
 
 const createFieldStyle = (color: string) => ({
   '& .MuiFilledInput-root': {
@@ -56,9 +36,9 @@ const FIELD_STYLES: Record<SwapFieldSide, SxProps> = {
 };
 
 type SwapDroneFieldProps = Omit<TextFieldProps, 'onChange' | 'value'> & {
-  onChange: (slot: SwapDroneFieldValue) => void;
+  onChange: (text: string) => void;
   side: SwapFieldSide;
-  value: SwapDroneFieldValue;
+  value: string;
 };
 
 const SwapDroneField = ({
@@ -70,22 +50,7 @@ const SwapDroneField = ({
   const { t } = useTranslation();
   const rootRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const ignoreBlurCommitRef = useRef(false);
   const [anchorEl, setAnchorEl] = useState<Element | null>(null);
-
-  const onlineUavIds = useSelector(getUAVIdList, { equalityFn: shallowEqual });
-  const missionMapping = useSelector(getMissionMapping, {
-    equalityFn: shallowEqual,
-  });
-  const reverseMissionMapping = useSelector(getReverseMissionMapping);
-
-  const resolve = (query: string) =>
-    resolveSwapDrone(
-      query,
-      onlineUavIds,
-      missionMapping,
-      reverseMissionMapping
-    );
 
   const handleClose = () => {
     setAnchorEl(null);
@@ -98,17 +63,6 @@ const SwapDroneField = ({
     }
 
     handleClose();
-
-    if (ignoreBlurCommitRef.current) {
-      ignoreBlurCommitRef.current = false;
-      return;
-    }
-
-    const resolved = resolve(value.filterText);
-    onChange({
-      ...value,
-      resolved,
-    });
   };
 
   return (
@@ -117,24 +71,20 @@ const SwapDroneField = ({
         inputRef={inputRef}
         label={t('swapDronesDialog.fieldLabel')}
         variant='filled'
-        value={value.filterText}
+        value={value}
         sx={FIELD_STYLES[side]}
         onFocus={(event) => {
           setAnchorEl(event.currentTarget);
         }}
         onChange={(event) => {
-          const filterText = event.target.value;
-          onChange({
-            filterText,
-            resolved: resolve(filterText),
-          });
+          onChange(event.target.value);
         }}
         {...rest}
       />
       <UAVSelector
         retainFocus
         anchorEl={anchorEl}
-        filter={value.filterText}
+        filter={value}
         open={Boolean(anchorEl)}
         onClose={handleClose}
         onSelect={({ uavId, missionIndex }) => {
@@ -142,17 +92,7 @@ const SwapDroneField = ({
             return;
           }
 
-          onChange({
-            filterText: swapSelectionLabel(
-              { uavId, missionIndex },
-              value.filterText
-            ),
-            resolved: {
-              uavId,
-              missionIndex: missionIndex ?? null,
-            },
-          });
-          ignoreBlurCommitRef.current = true;
+          onChange(swapSelectionLabel({ uavId, missionIndex }, value));
           inputRef.current?.blur();
         }}
       />
