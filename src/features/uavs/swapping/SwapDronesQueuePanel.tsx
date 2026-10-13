@@ -31,16 +31,21 @@ import DroneRefLabel from './DroneRefLabel';
 import SwapDroneBadge from './SwapDroneBadge';
 import type { DroneRefPairWithId, PartiallyResolvedDronePair } from './types';
 
-type SwapDronesQueuePanelProps = {
+type StateProps = {
   canAdd: boolean;
   canSwap: boolean;
   failedIndex: number | null;
-  onAdd: () => void;
-  onRemove: (id: string) => void;
-  onSwap: () => void;
   queue: DroneRefPairWithId[];
   resolvedQueue: PartiallyResolvedDronePair[];
 };
+
+type DispatchProps = {
+  onAdd: () => void;
+  onRemove: (id: string) => void;
+  onSwap: () => void;
+};
+
+type SwapDronesQueuePanelProps = StateProps & DispatchProps;
 
 const SwapDronesQueuePanel = ({
   canAdd,
@@ -147,7 +152,7 @@ const SwapDronesQueuePanel = ({
 };
 
 export default connect(
-  (state: RootState) => ({
+  (state: RootState): StateProps => ({
     canAdd: canAddCurrentSwapPairToQueue(state),
     canSwap: canExecuteSwapQueue(state),
     failedIndex: getFailedSwapQueueIndex(state),

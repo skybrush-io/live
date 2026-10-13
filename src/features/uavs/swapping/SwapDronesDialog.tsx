@@ -36,7 +36,8 @@ import {
 import SwapDroneField from './SwapDroneField';
 import SwapDronesPreview from './SwapDronesPreview';
 import SwapDronesQueuePanel from './SwapDronesQueuePanel';
-import type { SwapFieldSide, SwapPreviewState } from './utils';
+import type { SwapFieldSide } from './types';
+import type { SwapPreviewState } from './utils';
 
 type StateProps = {
   canSwapNow: boolean;

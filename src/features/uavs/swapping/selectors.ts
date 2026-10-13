@@ -13,6 +13,7 @@ import type {
   DroneRefPairWithId,
   PartiallyResolvedDronePair,
   ResolvedDrone,
+  SwapFieldSide,
 } from './types';
 import {
   buildSwapPreview,
@@ -21,7 +22,6 @@ import {
   resolveDroneRef,
   simulateSwapBatch,
   type SwapBatchResult,
-  type SwapFieldSide,
   type SwapPreviewState,
 } from './utils';
 

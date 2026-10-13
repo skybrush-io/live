@@ -4,7 +4,7 @@ import type { SxProps } from '@mui/material/styles';
 import { monospacedFont } from '@skybrush/app-theme-mui';
 
 import { FIELD_COLORS } from './constants';
-import type { SwapFieldSide } from './utils';
+import type { SwapFieldSide } from './types';
 
 const COMMON_STYLES: SxProps = {
   height: 20,

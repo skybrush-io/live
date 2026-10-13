@@ -44,3 +44,6 @@ export type DroneRefPair = Readonly<{
 export type DroneRefPairWithId = DroneRefPair & {
   id: string;
 };
+
+/** Side where a swap field appears in the dialog */
+export type SwapFieldSide = 'left' | 'right';

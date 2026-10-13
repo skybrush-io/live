@@ -1337,10 +1337,7 @@
       "swap": "Swap",
       "swapQueue": "Swap queued"
     },
-    "confirm": {
-      "message": "The following drone pairs will be swapped:",
-      "title": "Confirm swap"
-    },
+    "failure": "The swap cannot be performed in the current mapping; nothing was changed.",
     "fieldLabel": "ID or sID",
     "openUploadAfterSwap": "Open upload dialog after swap",
     "preview": {
@@ -1358,7 +1355,6 @@
     "queue": {
       "stalePairs": "The highlighted queued pair can no longer be swapped. Remove it to continue."
     },
-    "failure": "The swap cannot be performed in the current mapping; nothing was changed.",
     "success": "Drone swap completed successfully.",
     "title": "Swap drones",
     "toolbarButton": "Swap drones"

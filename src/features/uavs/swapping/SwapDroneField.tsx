@@ -1,13 +1,14 @@
 import Box from '@mui/material/Box';
 import type { SxProps } from '@mui/material/styles';
 import TextField, { type TextFieldProps } from '@mui/material/TextField';
-import { useRef, useState } from 'react';
+import { type FocusEvent, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { UAVSelector } from '~/components/uavs/UAVSelector';
 
 import { FIELD_COLORS } from './constants';
-import { swapSelectionLabel, type SwapFieldSide } from './utils';
+import type { SwapFieldSide } from './types';
+import { swapSelectionLabel } from './utils';
 
 const createFieldStyle = (color: string) => ({
   '& .MuiFilledInput-root': {
@@ -59,7 +60,7 @@ const SwapDroneField = ({
     setAnchorEl(null);
   };
 
-  const handleBlur = (event: React.FocusEvent) => {
+  const handleBlur = (event: FocusEvent) => {
     const next = event.relatedTarget;
     if (next && rootRef.current?.contains(next)) {
       return;

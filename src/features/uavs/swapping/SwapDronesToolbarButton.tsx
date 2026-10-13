@@ -1,8 +1,8 @@
 import SwapHoriz from '@mui/icons-material/SwapHoriz';
 import IconButton from '@mui/material/IconButton';
-import { Tooltip } from '@skybrush/mui-components';
 import { useTranslation } from 'react-i18next';
 
+import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
 import { useAppDispatch } from '~/store/hooks';
 
 import { showSwapDronesDialog } from './slice';

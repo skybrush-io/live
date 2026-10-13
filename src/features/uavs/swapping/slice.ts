@@ -1,8 +1,7 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import { nanoid } from 'nanoid';
 
-import type { DroneRefPair, DroneRefPairWithId } from './types';
-import type { SwapFieldSide } from './utils';
+import type { DroneRefPair, DroneRefPairWithId, SwapFieldSide } from './types';
 
 type SwapDronesDialogSliceState = {
   /** Text entered into the drone fields of the dialog */
@@ -51,7 +50,7 @@ const { actions, reducer } = createSlice({
       state.queue = state.queue.filter((pair) => pair.id !== action.payload);
     },
 
-    setOpenUploadAfterSwap: (state, action) => {
+    setOpenUploadAfterSwap: (state, action: PayloadAction<boolean>) => {
       state.openUploadDialogAfterSwap = action.payload;
     },
 
