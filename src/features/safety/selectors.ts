@@ -53,6 +53,13 @@ export const getSelectedTabInSafetyDialog: AppSelector<SafetyDialogTab> = (
 ) => state.safety.dialog.selectedTab;
 
 /**
+ * Selector that returns whether the main map is in safe mode, guarding it
+ * against accidental edits of its existing items.
+ */
+export const isMapInSafeMode: AppSelector<boolean> = (state) =>
+  state.safety.mapSafeMode;
+
+/**
  * Selector that returns the currently set geofence preferences of the user.
  */
 export const getGeofenceSettings: AppSelector<SafetySliceState['geofence']> = (

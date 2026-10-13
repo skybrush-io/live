@@ -2,10 +2,15 @@
  * @file Reducer function for handling the selected tool on the map.
  */
 
-import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import {
+  createSelector,
+  createSlice,
+  type PayloadAction,
+} from '@reduxjs/toolkit';
 
-import { Tool } from '~/components/map/tools';
-import { type AppSelector } from '~/store/reducers';
+import { isUnsafeTool, Tool } from '~/components/map/tools';
+import { isMapInSafeMode } from '~/features/safety/selectors';
+import { type RootState, type AppSelector } from '~/store/reducers';
 
 type MapToolsSliceState = {
   selectedTool: Tool;
@@ -33,7 +38,16 @@ const { reducer, actions } = createSlice({
 
 export const { setSelectedTool } = actions;
 
-export const getSelectedTool: AppSelector<Tool> = (state) =>
-  state.map.tools.selectedTool;
+/**
+ * Selector that returns the tool currently in effect on the map. While the
+ * map is in safe mode, unsafe tools are reported as the select tool because
+ * they cannot be used.
+ */
+export const getSelectedTool: AppSelector<Tool> = createSelector(
+  (state: RootState) => state.map.tools.selectedTool,
+  isMapInSafeMode,
+  (selectedTool, safeMode) =>
+    safeMode && isUnsafeTool(selectedTool) ? Tool.SELECT : selectedTool
+);
 
 export default reducer;

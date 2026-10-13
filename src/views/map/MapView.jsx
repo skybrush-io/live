@@ -25,6 +25,7 @@ import { styles as mapStyles, toolClasses } from '~/components/map/Map';
 import MapRotationTextBox from '~/components/map/MapRotationTextBox';
 import {
   isDrawingTool,
+  isUnsafeTool,
   Tool,
   toolToDrawInteractionProps,
 } from '~/components/map/tools';
@@ -39,6 +40,8 @@ import { getSelectedTool } from '~/features/map/tools';
 import { updateMapViewSettings } from '~/features/map/view';
 import { addNewMissionItem } from '~/features/mission/actions';
 import { getGeofencePolygonId } from '~/features/mission/selectors';
+import MapSafeModeButton from '~/features/safety/MapSafeModeButton';
+import { isMapInSafeMode } from '~/features/safety/selectors';
 import { getVirtualSelection } from '~/features/selection/selectors';
 import {
   addToSelection,
@@ -124,6 +127,7 @@ const MapViewInteractions = withMap((props) => {
     onRemoveFeaturesFromSelection,
     onSetSelectedFeatures,
     onSingleFeatureSelected,
+    safeMode,
     selectedFeaturesProvider,
     selectedTool,
   } = props;
@@ -222,22 +226,26 @@ const MapViewInteractions = withMap((props) => {
         key='DragBox.removeFromSelection'
         condition={Condition.altKeyOnly}
         onBoxEnd={onRemoveFeaturesFromSelection}
-      />,
-
-      /* SELECT mode |
-           Drag a feature --> Move a feature to a new location
-           Alt + Drag --> Rotate a feature.
-         This must come last in order to ensure that it will get the
-         chance to process events before DragBox so Alt+something will not
-         start a drag-box when clicking on a selected feature */
-      <TransformFeatures
-        key='TransformFeatures'
-        featureProvider={selectedFeaturesProvider}
-        moveCondition={Condition.noModifierKeys}
-        rotateCondition={Condition.altKeyOnly}
-        onTransformEnd={onFeaturesTransformed}
       />
     );
+
+    /* SELECT mode |
+         Drag a feature --> Move a feature to a new location
+         Alt + Drag --> Rotate a feature.
+       This must come last in order to ensure that it will get the
+       chance to process events before DragBox so Alt+something will not
+       start a drag-box when clicking on a selected feature */
+    if (!safeMode) {
+      interactions.push(
+        <TransformFeatures
+          key='TransformFeatures'
+          featureProvider={selectedFeaturesProvider}
+          moveCondition={Condition.noModifierKeys}
+          rotateCondition={Condition.altKeyOnly}
+          onTransformEnd={onFeaturesTransformed}
+        />
+      );
+    }
   }
 
   if (selectedTool === Tool.ZOOM) {
@@ -294,7 +302,10 @@ const MapViewInteractions = withMap((props) => {
     );
   }
 
-  if (selectedTool === Tool.EDIT_FEATURE) {
+  if (
+    selectedTool === Tool.EDIT_FEATURE &&
+    !(safeMode && isUnsafeTool(selectedTool))
+  ) {
     interactions.push(
       <interaction.Modify
         key='EditFeature'
@@ -316,6 +327,7 @@ const MapViewInteractions = withMap((props) => {
 MapViewInteractions.propTypes = {
   selectedFeaturesProvider: PropTypes.func,
   selectedTool: PropTypes.string.isRequired,
+  safeMode: PropTypes.bool,
 
   onAddFeaturesToSelection: PropTypes.func,
   onAddWaypoint: PropTypes.func,
@@ -338,6 +350,7 @@ class MapViewPresentation extends React.Component {
 
     angle: PropTypes.number,
     geofencePolygonId: PropTypes.string,
+    mapSafeMode: PropTypes.bool,
     position: PropTypes.arrayOf(PropTypes.number),
     selectedTool: PropTypes.string,
     selection: PropTypes.arrayOf(PropTypes.string).isRequired,
@@ -409,6 +422,7 @@ class MapViewPresentation extends React.Component {
                   {/* NOTE: Margin is calibrated such that the vertical      */}
                   {/*       drawing toolbar will not cover any of the drones */}
                   <FitAllFeaturesButton duration={500} margin={80} />
+                  <MapSafeModeButton />
                 </>
               }
             />
@@ -416,6 +430,7 @@ class MapViewPresentation extends React.Component {
             <MapControls />
             <MapViewInteractions
               geofencePolygonId={geofencePolygonId}
+              safeMode={this.props.mapSafeMode}
               selectedTool={selectedTool}
               selectedFeaturesProvider={this._getSelectedTransformableFeatures}
               onAddFeaturesToSelection={this._onAddFeaturesToSelection}
@@ -706,6 +721,8 @@ const MapView = connect(
     zoom: getMapViewZoom(state),
 
     geofencePolygonId: getGeofencePolygonId(state),
+
+    mapSafeMode: isMapInSafeMode(state),
 
     selectedFeatures: getSelectedFeatureIds(state),
     selectedTool: getSelectedTool(state),
