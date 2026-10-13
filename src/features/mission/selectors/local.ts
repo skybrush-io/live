@@ -45,7 +45,10 @@ import { findNearestNeighborsDistance } from '~/utils/nearestNeighbors';
 import { type Nullable } from '~/utils/types';
 
 import { type MissionSliceState } from '../slice';
-import { doesMissionIndexParticipateInMissionItem } from '../utils';
+import {
+  doesMissionIndexParticipateInMissionItem,
+  getReverseMapping,
+} from '../utils';
 
 /**
  * Key selector function for cached selectors that cache things by mission
@@ -281,13 +284,7 @@ export const getIndexOfMappingSlotBeingEdited: AppSelector<MissionIndex> = (
  */
 export const getReverseMissionMapping: AppSelector<
   Record<UAV['id'], MissionIndex>
-> = createSelector(getMissionMapping, (mapping) =>
-  Object.fromEntries(
-    mapping.flatMap((uavId, missionIndex) =>
-      isNil(uavId) ? [] : [[uavId, missionIndex]]
-    )
-  )
-);
+> = createSelector(getMissionMapping, getReverseMapping);
 
 /**
  * Returns the ID of the UAV that is currently at the mapping slot being edited.
