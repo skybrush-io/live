@@ -8,6 +8,7 @@ import readShapeFile from 'shpjs';
 import { makeStyles } from '@skybrush/app-theme-mui';
 
 import FileButton from '~/components/FileButton';
+import { errorToString } from '~/error-handling';
 import { addFeatureWithName } from '~/features/map-features/actions';
 import { showError, showSuccess } from '~/features/snackbar/actions';
 import { createFeaturesFromOpenLayers } from '~/model/openlayers';
@@ -90,7 +91,7 @@ export default connect(
           `Successfully imported ${counter} feature${counter > 1 ? 's' : ''}`
         );
       } catch (error) {
-        showError(`Error while importing shapefile: ${error}`);
+        showError(errorToString(error, 'Error while importing shapefile'));
       }
     },
   })

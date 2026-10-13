@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [main]
 
+### Added
+
+- Added a button to reset the manual preflight checklist without unloading
+  the show.
+
+### Fixed
+
+- Reverted to instant scrolling in the "Messages" panel instead of smooth scrolling
+  because the latter caused an inconvenient delay when a long list of messages was
+  opened for the first time.
+
+## [2.14.2] - 2026-09-16
+
 ### Fixed
 
 - Skybrush Live now requires server version 2.53.1 or later to reveal the show

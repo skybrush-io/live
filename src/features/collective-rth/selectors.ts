@@ -39,24 +39,27 @@ export const selectRTHPlanTask: AppSelector<RTHPlanTaskState | undefined> = (
  * - When the calculation task is started, it transitions to the `planning` phase.
  * - If the task completes successfully, it transitions to the `waitingForApproval` phase.
  *   Alternatively, if the task encounters an error, it transitions to the `error` phase.
- * - After the user approves or rejects the plan, it transitions back to the `idle` phase.
+ * - After the user approves or rejects the plan, or rejects a failed
+ *   calculation, the task is cleared and the process transitions back to the
+ *   `idle` phase.
  */
 export type CollectiveRTHPlanningPhase =
   'idle' | 'planning' | 'error' | 'waitingForApproval';
 
 /**
  * Returns the current phase of the collective RTH plan calculation and approval
- * process.
+ * process, derived from the state of the singleton collective RTH plan
+ * calculation task.
  */
 export const selectCollectiveRTHPlanningPhase: AppSelector<CollectiveRTHPlanningPhase> =
-  createSelector(selectRTHPlanTask, selectState, (task, state) => {
+  createSelector(selectRTHPlanTask, (task) => {
     switch (task?.status) {
       case 'running':
         return 'planning';
       case 'success':
-        return state.waitingForApproval ? 'waitingForApproval' : 'idle';
+        return 'waitingForApproval';
       case 'error':
-        return state.waitingForApproval ? 'error' : 'idle';
+        return 'error';
       default:
         return 'idle';
     }

@@ -207,10 +207,13 @@
     },
     "summary": {
       "firstTime": {
-        "message": "Earliest RTH time: {{firstTime}}"
+        "message": "First plan: {{firstTime}}"
       },
       "lastTime": {
-        "message": "Last RTH time: {{lastTime}}"
+        "message": "Last plan: {{lastTime}}"
+      },
+      "minRTHAltitude": {
+        "message": "Min RTH altitude: {{minRTHAltitude}}"
       },
       "numPlans": {
         "message_one": "1 RTH plan calculated, waiting for approval",
@@ -1006,6 +1009,7 @@
     "manualPreflightChecks": "Manual preflight checks",
     "noFileLoaded": "No show file loaded",
     "onboardPreflightChecks": "Onboard preflight checks",
+    "resetPreflightChecklist": "Reset checklist",
     "outdoor": {
       "invalidAltitudeReference": "Outdoor, invalid altitude reference",
       "relativeToAMSL": "Outdoor, relative to {{altitude}}m AMSL",
@@ -1326,8 +1330,13 @@
     "tooltip": "Select individual targets by clicking their IDs to prepare a partial operation"
   },
   "surveyStatusIndicator": {
+    "accuracy": "Accuracy: {{accuracy}}",
+    "accuracyAbove": "Accuracy {{accuracy}}",
     "noSurveyInformation": "No survey information",
-    "notStartedYet": "Survey not started yet"
+    "notStartedYet": "Survey not started yet",
+    "surveying": "Surveying",
+    "surveyingWithAccuracy": "Surveying, accuracy: {{accuracy}}",
+    "surveyingWithAccuracyAbove": "Surveying, accuracy {{accuracy}}"
   },
   "takeoffAreaSetupDialog": {
     "allDroneOnline": "All drones in the mission are online.",

@@ -26,6 +26,7 @@ export type CollectiveRTHPlanSummary = {
   isValid: boolean;
   firstTime?: number;
   lastTime?: number;
+  minRTHAltitude?: number;
   numDrones: number;
   dronesWithRTHPlan: number;
   dronesWithoutRTHPlan: number;

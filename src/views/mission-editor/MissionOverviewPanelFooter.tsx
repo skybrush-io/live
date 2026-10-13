@@ -5,7 +5,6 @@ import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import Paper from '@mui/material/Paper';
 import Toolbar from '@mui/material/Toolbar';
-import { cloneElement, type ReactElement } from 'react';
 import { connect } from 'react-redux';
 
 import { makeStyles } from '@skybrush/app-theme-mui';
@@ -92,15 +91,12 @@ const MissionOverviewPanelFooter = ({
             content={`Add '${titleForMissionItemType[type]}' command`}
             placement='top'
           >
-            <IconButton size='small' onClick={() => addNewMissionItem(type)}>
-              {cloneElement(
-                iconForMissionItemType[type] as ReactElement<{
-                  fontSize?: string;
-                }>,
-                {
-                  fontSize: 'small',
-                }
-              )}
+            <IconButton
+              size='small'
+              sx={{ '& .MuiSvgIcon-root': { fontSize: 20 } }}
+              onClick={() => addNewMissionItem(type)}
+            >
+              {iconForMissionItemType[type]}
             </IconButton>
           </Tooltip>
         ))}
