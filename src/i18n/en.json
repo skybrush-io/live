@@ -1331,6 +1331,36 @@
     "surveyingWithAccuracy": "Surveying, accuracy: {{accuracy}}",
     "surveyingWithAccuracyAbove": "Surveying, accuracy {{accuracy}}"
   },
+  "swapDronesDialog": {
+    "action": {
+      "add": "Add to queue",
+      "swap": "Swap",
+      "swapQueue": "Swap queued"
+    },
+    "failure": "The swap cannot be performed in the current mapping; nothing was changed.",
+    "fieldLabel": "ID or sID",
+    "openUploadAfterSwap": "Open upload dialog after swap",
+    "preview": {
+      "addedWithShowId": "Drone <drone/> will be <bold>added</bold> to the mapping with show ID <slot/>",
+      "blocked": "Swap is unavailable while a show upload is in progress or the show is authorized to start.",
+      "bothUnmapped": "Both drones are unmapped — nothing to swap.",
+      "heading": "What will happen",
+      "movedToShowId": "Drone <drone/> will be <bold>moved</bold> to show ID <slot/>",
+      "removedFromMapping": "Drone <drone/> will be <bold>removed</bold> from the mapping",
+      "sameDrone": "Both inputs resolve to the same drone.",
+      "selectTwoDrones": "Select two drones to swap.",
+      "uploadToDrone": "The show will have to be <bold>uploaded</bold> to drone <drone/>",
+      "uploadToDrones": "The show will have to be <bold>uploaded</bold> to drones <drone1/> and <drone2/>"
+    },
+    "queue": {
+      "removeAll": "Remove all queued swaps",
+      "stalePairs": "The highlighted queued pair can no longer be swapped. Remove it to continue.",
+      "title": "Queued swaps"
+    },
+    "success": "Drone swap completed successfully.",
+    "title": "Swap drones",
+    "toolbarButton": "Swap drones"
+  },
   "takeoffAreaSetupDialog": {
     "allDroneOnline": "All drones in the mission are online.",
     "allDronesAtTakeoffPositions": "All drones are placed at their takeoff positions.",

@@ -1,0 +1,35 @@
+import SwapHoriz from '@mui/icons-material/SwapHoriz';
+import IconButton from '@mui/material/IconButton';
+import { useTranslation } from 'react-i18next';
+
+import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
+import { useAppDispatch } from '~/store/hooks';
+
+import { showSwapDronesDialog } from './slice';
+
+/**
+ * Toolbar button that opens the swap drones dialog.
+ */
+const SwapDronesToolbarButton = () => {
+  const { t } = useTranslation();
+  const dispatch = useAppDispatch();
+
+  return (
+    <Tooltip
+      content={t('swapDronesDialog.toolbarButton')}
+      // Explicitly set trigger to 'mouseenter' only to prevent the tooltip
+      // from showing when the dialog closes and focus returns to this button.
+      trigger='mouseenter'
+    >
+      <IconButton
+        onClick={() => {
+          dispatch(showSwapDronesDialog());
+        }}
+      >
+        <SwapHoriz />
+      </IconButton>
+    </Tooltip>
+  );
+};
+
+export default SwapDronesToolbarButton;

@@ -1,0 +1,89 @@
+import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import { nanoid } from 'nanoid';
+
+import type { DroneRefPair, DroneRefPairWithId, SwapFieldSide } from './types';
+
+type SwapDronesDialogSliceState = {
+  /** Text entered into the drone fields of the dialog */
+  fields: Record<SwapFieldSide, string>;
+  open: boolean;
+  /** Whether to open the show upload dialog for the affected drones after a swap */
+  openUploadDialogAfterSwap: boolean;
+  /** Swaps queued up for execution; kept when the dialog is closed */
+  queue: DroneRefPairWithId[];
+};
+
+const createEmptyFields = (): Record<SwapFieldSide, string> => ({
+  left: '',
+  right: '',
+});
+
+const initialState: SwapDronesDialogSliceState = {
+  fields: createEmptyFields(),
+  open: false,
+  openUploadDialogAfterSwap: false,
+  queue: [],
+};
+
+const { actions, reducer } = createSlice({
+  name: 'swap-drones',
+  initialState,
+  reducers: {
+    /**
+     * Appends a pair to the swap queue and clears the drone fields. Validation
+     * is the responsibility of the caller.
+     */
+    addPairToSwapQueue: {
+      prepare: (pair: DroneRefPair) => ({
+        payload: { ...pair, id: nanoid() },
+      }),
+      reducer: (state, action: PayloadAction<DroneRefPairWithId>) => {
+        state.queue.push(action.payload);
+        state.fields = createEmptyFields();
+      },
+    },
+
+    clearSwapQueue: (state) => {
+      state.queue = [];
+    },
+
+    closeSwapDronesDialog: (state) => {
+      state.open = false;
+    },
+
+    removePairFromSwapQueue: (state, action: PayloadAction<string>) => {
+      state.queue = state.queue.filter((pair) => pair.id !== action.payload);
+    },
+
+    setOpenUploadAfterSwap: (state, action: PayloadAction<boolean>) => {
+      state.openUploadDialogAfterSwap = action.payload;
+    },
+
+    setSwapDroneFieldText: (
+      state,
+      action: PayloadAction<{ side: SwapFieldSide; text: string }>
+    ) => {
+      state.fields[action.payload.side] = action.payload.text;
+    },
+
+    /**
+     * Opens the dialog with empty drone fields; the queue is kept.
+     */
+    showSwapDronesDialog: (state) => {
+      state.open = true;
+      state.fields = createEmptyFields();
+    },
+  },
+});
+
+export const {
+  addPairToSwapQueue,
+  clearSwapQueue,
+  closeSwapDronesDialog,
+  removePairFromSwapQueue,
+  setOpenUploadAfterSwap,
+  setSwapDroneFieldText,
+  showSwapDronesDialog,
+} = actions;
+
+export default reducer;
