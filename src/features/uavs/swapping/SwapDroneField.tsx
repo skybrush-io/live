@@ -5,10 +5,34 @@ import { type FocusEvent, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { UAVSelector } from '~/components/uavs/UAVSelector';
+import type { MissionIndex } from '~/model/missions';
+import type { Identifier } from '~/utils/collections';
+import { formatMissionId } from '~/utils/formatting';
 
 import { FIELD_COLORS } from './constants';
 import type { SwapFieldSide } from './types';
-import { swapSelectionLabel } from './utils';
+
+/**
+ * Returns whether the user is typing a show ID (`sN`) into a drone field.
+ */
+const isSwapShowIdFilter = (filter: string): boolean =>
+  filter.trim().toLowerCase().startsWith('s');
+
+/**
+ * Returns the text to put into a drone field when an item is selected from the
+ * UAV selector: the show ID (slot reference) if the user was typing a show ID,
+ * the UAV ID (drone reference) otherwise.
+ */
+const getLabelForSelection = (
+  item: { missionIndex?: MissionIndex; uavId?: Identifier },
+  filter: string
+): string => {
+  if (isSwapShowIdFilter(filter) && item.missionIndex !== undefined) {
+    return formatMissionId(item.missionIndex);
+  }
+
+  return item.uavId ?? '';
+};
 
 const createFieldStyle = (color: string) => ({
   '& .MuiFilledInput-root': {
@@ -45,6 +69,11 @@ type SwapDroneFieldProps = Omit<TextFieldProps, 'onChange' | 'value'> & {
   value: string;
 };
 
+/**
+ * Text field for entering a drone reference (UAV ID or show ID), with a UAV
+ * selector popup that filters on the entered text. The popup stays open while
+ * the focus remains within the field or the popup.
+ */
 const SwapDroneField = ({
   onChange,
   side,
@@ -102,7 +131,7 @@ const SwapDroneField = ({
             return;
           }
 
-          onChange(swapSelectionLabel({ uavId, missionIndex }, value));
+          onChange(getLabelForSelection({ uavId, missionIndex }, value));
           inputRef.current?.blur();
         }}
       />

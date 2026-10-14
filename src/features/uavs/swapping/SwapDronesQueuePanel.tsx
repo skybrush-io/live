@@ -47,6 +47,10 @@ type DispatchProps = {
 
 type SwapDronesQueuePanelProps = StateProps & DispatchProps;
 
+/**
+ * Sidebar of the swap drones dialog that lists the queued swaps, with the first
+ * swap that can no longer be executed highlighted.
+ */
 const SwapDronesQueuePanel = ({
   canAdd,
   canSwap,
@@ -71,59 +75,58 @@ const SwapDronesQueuePanel = ({
         flexDirection: 'column',
       }}
     >
-      <TransitionGroup component={Box} sx={{ flex: 1, overflow: 'auto', p: 1 }}>
+      <Box sx={{ flex: 1, overflow: 'auto', p: 1 }}>
         {queue.map((pair, index) => (
-          <Collapse key={pair.id}>
-            <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 0.5,
-                mb: 0.75,
-                borderRadius: 1,
-                outline: index === failedIndex ? '1px solid' : 'none',
-                outlineColor: 'error.main',
-              }}
-            >
-              <Box sx={{ flex: 1, textAlign: 'right' }}>
-                <SwapDroneBadge
-                  side='left'
-                  label={
-                    <DroneRefLabel
-                      droneRef={pair.drone1}
-                      resolved={resolvedQueue[index]?.drone1}
-                    />
-                  }
-                />
-              </Box>
-              <SwapHoriz sx={{ fontSize: 16, color: 'text.secondary' }} />
-              <Box sx={{ flex: 1 }}>
-                <SwapDroneBadge
-                  side='right'
-                  label={
-                    <DroneRefLabel
-                      droneRef={pair.drone2}
-                      resolved={resolvedQueue[index]?.drone2}
-                    />
-                  }
-                />
-              </Box>
-              <Tooltip content={t('general.action.remove')}>
-                <IconButton
-                  size='small'
-                  aria-label={t('general.action.remove')}
-                  sx={{ flexShrink: 0 }}
-                  onClick={() => {
-                    onRemove(pair.id);
-                  }}
-                >
-                  <Close fontSize='small' />
-                </IconButton>
-              </Tooltip>
+          <Box
+            key={pair.id}
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 0.5,
+              mb: 0.75,
+              borderRadius: 1,
+              outline: index === failedIndex ? '1px solid' : 'none',
+              outlineColor: 'error.main',
+            }}
+          >
+            <Box sx={{ flex: 1, textAlign: 'right' }}>
+              <SwapDroneBadge
+                side='left'
+                label={
+                  <DroneRefLabel
+                    droneRef={pair.drone1}
+                    resolved={resolvedQueue[index]?.drone1}
+                  />
+                }
+              />
             </Box>
-          </Collapse>
+            <SwapHoriz sx={{ fontSize: 16, color: 'text.secondary' }} />
+            <Box sx={{ flex: 1 }}>
+              <SwapDroneBadge
+                side='right'
+                label={
+                  <DroneRefLabel
+                    droneRef={pair.drone2}
+                    resolved={resolvedQueue[index]?.drone2}
+                  />
+                }
+              />
+            </Box>
+            <Tooltip content={t('general.action.remove')}>
+              <IconButton
+                size='small'
+                aria-label={t('general.action.remove')}
+                sx={{ flexShrink: 0 }}
+                onClick={() => {
+                  onRemove(pair.id);
+                }}
+              >
+                <Close fontSize='small' />
+              </IconButton>
+            </Tooltip>
+          </Box>
         ))}
-      </TransitionGroup>
+      </Box>
       <DialogActions
         sx={{
           minHeight: SWAP_DRONES_DIALOG_ACTIONS_MIN_HEIGHT,

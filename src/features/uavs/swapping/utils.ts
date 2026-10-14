@@ -14,18 +14,31 @@ import type {
   SwapFieldSide,
 } from './types';
 
-export type SwapPreviewBadgeColor = SwapFieldSide;
+type SwapPreviewBadgeColor = SwapFieldSide;
 
+/**
+ * Badge in a preview line; colored according to the field of the drone it
+ * refers to, uncolored if it refers to a slot.
+ */
 type SwapPreviewBadge = {
   color?: SwapPreviewBadgeColor;
   label: string;
 };
 
+/**
+ * Single line of the swap preview: an i18n key whose `<name/>` placeholders are
+ * replaced by the badges with the same name.
+ */
 export type SwapPreviewLine = {
   badges: Record<string, SwapPreviewBadge>;
   i18nKey: string;
 };
 
+/**
+ * State of the swap preview: `blocked` if swapping is not allowed at all,
+ * `placeholder` if the fields do not resolve to two drones yet, `warning` if
+ * the resolved pair cannot be swapped and `ready` if it can.
+ */
 export type SwapPreviewState =
   | { kind: 'blocked'; messageKey: string }
   | { kind: 'placeholder'; messageKey: string }
@@ -59,6 +72,10 @@ export const getSwapPairProblem = (
   return null;
 };
 
+/**
+ * Return type of `simulateSwapBatch` that simulates the execution of a given sequence
+ * of swaps.
+ */
 export type SwapBatchResult = (
   | { ok: true; mapping: Array<Nullable<Identifier>> }
   | { ok: false; failedIndex: number }
@@ -130,30 +147,23 @@ export const formatResolvedDroneRefPostSwap = (
     ? drone.uavId
     : `${drone.uavId}/${formatMissionId(pairedDrone.missionIndex)}`;
 
+/**
+ * Returns a React key for a preview line; unique among the lines of a preview.
+ */
 export const getSwapPreviewLineKey = (line: SwapPreviewLine): string =>
   `${line.i18nKey}:${Object.values(line.badges)
     .map((badge) => badge.label)
     .join('|')}`;
 
+/**
+ * Returns the badge color of a drone of the pair: the color of the field it was
+ * entered in.
+ */
 const fieldBadgeColor = (
   drone: ResolvedDrone,
   leftDrone: ResolvedDrone
 ): SwapPreviewBadgeColor =>
   drone.uavId === leftDrone.uavId ? 'left' : 'right';
-
-const isSwapShowIdFilter = (filter: string): boolean =>
-  filter.trim().toLowerCase().startsWith('s');
-
-export const swapSelectionLabel = (
-  item: { missionIndex?: MissionIndex; uavId?: Identifier },
-  filter: string
-): string => {
-  if (isSwapShowIdFilter(filter) && item.missionIndex !== undefined) {
-    return formatMissionId(item.missionIndex);
-  }
-
-  return item.uavId ?? '';
-};
 
 /**
  * Parses a typed/selected value into a drone reference: a show ID (`sN`) refers
@@ -182,6 +192,11 @@ export const parseDroneRef = (
 /**
  * Resolves a drone reference to a known UAV in the given mapping. A slot
  * reference must hit a filled slot of the mapping.
+ *
+ * @param ref - the reference to resolve
+ * @param uavIds - array of all the UAV IDs that are accepted
+ * @param mapping - mapping from mapping slot indices to the IDs od the UAVs that
+ *        occupy the slots
  */
 export const resolveDroneRef = (
   ref: DroneRef,
@@ -203,6 +218,11 @@ export const resolveDroneRef = (
     : { uavId, missionIndex: ref.missionIndex };
 };
 
+/**
+ * Builds the preview of swapping the given drones. Both mapped: the drones
+ * exchange their show IDs. One mapped: the unmapped (spare) drone takes the show
+ * ID of the mapped one, which leaves the mapping.
+ */
 export const buildSwapPreview = (
   drone1: ResolvedDrone | null,
   drone2: ResolvedDrone | null,

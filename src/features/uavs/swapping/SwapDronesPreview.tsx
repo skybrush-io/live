@@ -33,6 +33,10 @@ type SwapDronesPreviewProps = {
   lines: SwapPreviewLine[];
 };
 
+/**
+ * Preview of the changes to the mapping that swapping the drones in the fields
+ * would cause.
+ */
 const SwapDronesPreview = ({ lines }: SwapDronesPreviewProps) => {
   const { t } = useTranslation();
 

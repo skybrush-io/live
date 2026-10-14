@@ -7,6 +7,7 @@ type SwapDronesDialogSliceState = {
   /** Text entered into the drone fields of the dialog */
   fields: Record<SwapFieldSide, string>;
   open: boolean;
+  /** Whether to open the show upload dialog for the affected drones after a swap */
   openUploadDialogAfterSwap: boolean;
   /** Swaps queued up for execution; kept when the dialog is closed */
   queue: DroneRefPairWithId[];
@@ -28,6 +29,10 @@ const { actions, reducer } = createSlice({
   name: 'swap-drones',
   initialState,
   reducers: {
+    /**
+     * Appends a pair to the swap queue and clears the drone fields. Validation
+     * is the responsibility of the caller.
+     */
     addPairToSwapQueue: {
       prepare: (pair: DroneRefPair) => ({
         payload: { ...pair, id: nanoid() },
@@ -61,6 +66,9 @@ const { actions, reducer } = createSlice({
       state.fields[action.payload.side] = action.payload.text;
     },
 
+    /**
+     * Opens the dialog with empty drone fields; the queue is kept.
+     */
     showSwapDronesDialog: (state) => {
       state.open = true;
       state.fields = createEmptyFields();

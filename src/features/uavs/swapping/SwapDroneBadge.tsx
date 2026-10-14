@@ -30,6 +30,10 @@ type SwapDroneBadgeProps = {
   side?: SwapFieldSide;
 } & ChipProps;
 
+/**
+ * Small monospaced chip showing a drone or a slot, colored according to the
+ * field of the drone it refers to.
+ */
 const SwapDroneBadge = ({ side, ...rest }: SwapDroneBadgeProps) => (
   <Chip size='small' sx={STYLES[side ?? 'empty']} {...rest} />
 );

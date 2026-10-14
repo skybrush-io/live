@@ -7,6 +7,9 @@ import { useAppDispatch } from '~/store/hooks';
 
 import { showSwapDronesDialog } from './slice';
 
+/**
+ * Toolbar button that opens the swap drones dialog.
+ */
 const SwapDronesToolbarButton = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();

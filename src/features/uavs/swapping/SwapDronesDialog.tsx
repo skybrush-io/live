@@ -57,6 +57,10 @@ type DispatchProps = {
 
 type Props = DispatchProps & StateProps;
 
+/**
+ * Dialog for swapping the mission slots of two drones, either immediately or
+ * by collecting the swaps in a queue shown in the sidebar.
+ */
 const SwapDronesDialog = ({
   canSwapNow,
   fieldTexts,

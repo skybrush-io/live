@@ -45,6 +45,9 @@ const resolveSwapDrones = (
 export const isSwapDronesDialogOpen: AppSelector<boolean> = (state) =>
   state.dialogs.swapDrones.open;
 
+/**
+ * Returns whether the mission mapping may be modified by swapping drones.
+ */
 export const isSwappingAllowed: AppSelector<boolean> = (state) =>
   !isShowAuthorizedToStart(state) && !isUploadInProgress(state);
 
@@ -135,9 +138,19 @@ export const getSwapPreview: AppSelector<SwapPreviewState> = createSelector(
   ({ left, right }, allowed) => buildSwapPreview(left, right, !allowed)
 );
 
+/**
+ * Returns whether the drones in the fields can be swapped immediately, in the
+ * current mapping. The queue is ignored, only the contents of the fields matter.
+ */
 export const canSwapCurrentPairNow: AppSelector<boolean> = (state) =>
   getSwapPreview(state).kind === 'ready';
 
+/**
+ * Returns whether the drones in the fields can be added to the queue, i.e. they
+ * form a valid pair in the mapping that results from the queued swaps. This is
+ * different from `canSwapCurrentPairNow()` because it considers the list of entries
+ * in the queue.
+ */
 export const canAddCurrentSwapPairToQueue: AppSelector<boolean> = (state) => {
   const { left, right } = getResolvedSwapDronesAfterQueue(state);
   return (
@@ -148,6 +161,10 @@ export const canAddCurrentSwapPairToQueue: AppSelector<boolean> = (state) => {
   );
 };
 
+/**
+ * Returns whether the queue is non-empty and all of its swaps can be executed,
+ * in order, on the current mapping.
+ */
 export const canExecuteSwapQueue: AppSelector<boolean> = (state) =>
   isSwappingAllowed(state) &&
   getSwapQueue(state).length > 0 &&
@@ -155,7 +172,8 @@ export const canExecuteSwapQueue: AppSelector<boolean> = (state) =>
 
 /**
  * Returns the i18n key of the warning to show in the swap drones dialog, or
- * `null` if there is nothing to warn about.
+ * `null` if there is nothing to warn about. Problems of the pair in the fields
+ * take precedence over a stale queue.
  */
 export const getSwapWarningMessageKey: AppSelector<string | null> = (state) => {
   const preview = getSwapPreview(state);
