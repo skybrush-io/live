@@ -3,15 +3,14 @@ import PlaylistAdd from '@mui/icons-material/PlaylistAdd';
 import SwapHoriz from '@mui/icons-material/SwapHoriz';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Collapse from '@mui/material/Collapse';
 import DialogActions from '@mui/material/DialogActions';
 import IconButton from '@mui/material/IconButton';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
-import { TransitionGroup } from 'react-transition-group';
 
 import { Tooltip } from '@skybrush/mui-components';
 
+import ItemListSidebarHeader from '~/components/ItemListSidebarHeader';
 import type { RootState } from '~/store/reducers';
 
 import { addCurrentPairToSwapQueue, executeSwapQueue } from './actions';
@@ -26,7 +25,7 @@ import {
   getResolvedSwapQueue,
   getSwapQueue,
 } from './selectors';
-import { removePairFromSwapQueue } from './slice';
+import { clearSwapQueue, removePairFromSwapQueue } from './slice';
 import DroneRefLabel from './DroneRefLabel';
 import SwapDroneBadge from './SwapDroneBadge';
 import type { DroneRefPairWithId, PartiallyResolvedDronePair } from './types';
@@ -42,6 +41,7 @@ type StateProps = {
 type DispatchProps = {
   onAdd: () => void;
   onRemove: (id: string) => void;
+  onRemoveAll: () => void;
   onSwap: () => void;
 };
 
@@ -57,6 +57,7 @@ const SwapDronesQueuePanel = ({
   failedIndex,
   onAdd,
   onRemove,
+  onRemoveAll,
   onSwap,
   queue,
   resolvedQueue,
@@ -75,6 +76,12 @@ const SwapDronesQueuePanel = ({
         flexDirection: 'column',
       }}
     >
+      <ItemListSidebarHeader
+        removeAllDisabled={queue.length === 0}
+        removeAllLabel={t('swapDronesDialog.queue.removeAll')}
+        title={t('swapDronesDialog.queue.title')}
+        onRemoveAllItems={onRemoveAll}
+      />
       <Box sx={{ flex: 1, overflow: 'auto', p: 1 }}>
         {queue.map((pair, index) => (
           <Box
@@ -165,6 +172,7 @@ export default connect(
   {
     onAdd: addCurrentPairToSwapQueue,
     onRemove: removePairFromSwapQueue,
+    onRemoveAll: clearSwapQueue,
     onSwap: executeSwapQueue,
   }
 )(SwapDronesQueuePanel);

@@ -1353,7 +1353,9 @@
       "uploadToDrones": "The show will have to be <bold>uploaded</bold> to drones <drone1/> and <drone2/>"
     },
     "queue": {
-      "stalePairs": "The highlighted queued pair can no longer be swapped. Remove it to continue."
+      "removeAll": "Remove all queued swaps",
+      "stalePairs": "The highlighted queued pair can no longer be swapped. Remove it to continue.",
+      "title": "Queued swaps"
     },
     "success": "Drone swap completed successfully.",
     "title": "Swap drones",
