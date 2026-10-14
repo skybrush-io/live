@@ -23,7 +23,7 @@ Users type references, not drones. `DroneRef` (`types.ts`) is either:
 
 `parseDroneRef` tries the show ID first, so a UAV whose ID looks like `sN` cannot be referenced by ID. A UAV ref must match a known UAV ID (`getUAVIdList`) case-insensitively; the canonical ID is stored. `resolveDroneRef` returns `null` for an unknown UAV, an empty slot, or a slot held by a UAV not in `getUAVIdList`.
 
-The text fields store **raw strings** in the slice (`fields`), not refs; `getSwapDroneFieldRefs` parses them, so a field becomes valid as soon as the matching UAV appears. Selecting from the `UAVSelector` popup writes `sN` if the typed text starts with `s`, the UAV ID otherwise (`swapSelectionLabel`).
+The text fields store **raw strings** in the slice (`fields`), not refs; `getSwapDroneFieldRefs` parses them, so a field becomes valid as soon as the matching UAV appears. Selecting from the `UAVSelector` popup writes `sN` if the typed text starts with `s`, the UAV ID otherwise (`getLabelForSelection` in `SwapDroneField.tsx`).
 
 ## Two execution modes
 
