@@ -18,6 +18,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   because the latter caused an inconvenient delay when a long list of messages was
   opened for the first time.
 
+- Shift-clicking on a row in the UAV status summary list now adds the
+  corresponding UAVs to the current selection, while Cmd-clicking (Ctrl-clicking
+  on Windows and Linux) toggles them in the current selection.
+
 ## [2.14.2] - 2026-09-16
 
 ### Fixed
