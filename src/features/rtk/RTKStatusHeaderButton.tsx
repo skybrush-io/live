@@ -27,7 +27,7 @@ const BADGE_OFFSET = [24, 8];
 const buttonStyle: React.CSSProperties = {
   justifyContent: 'space-between',
   textAlign: 'right',
-  width: 96,  // wide enough to show '88.8 cm'
+  width: 96, // wide enough to show '88.8 cm'
 };
 
 type RTKStatusHeaderButtonProps = {
