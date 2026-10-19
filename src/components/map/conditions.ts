@@ -4,7 +4,7 @@ import {
   shiftKeyOnly,
 } from 'ol/events/condition';
 
-import { eventHasPlatformModifierKey } from '~/utils/platform';
+import { eventHasPlatformModifierKey } from '~/utils/events';
 
 export * from 'ol/events/condition';
 
