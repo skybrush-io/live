@@ -33,7 +33,8 @@ const UploadDialog = ({
     <DraggableDialog
       fullWidth
       open={Boolean(open)}
-      maxWidth='md'
+      maxWidth={false}
+      slotProps={{ paper: { sx: { maxWidth: 1000 } } }}
       title={getDialogTitleForJobType(jobType)}
       toolbarComponent={
         // Show tabs instead of the title when we have a results tab for this job type
