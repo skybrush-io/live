@@ -18,7 +18,7 @@ import {
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    padding: theme.spacing(0.5),
+    padding: theme.spacing(0.5, 0.25),
   },
 
   historicalStatus: {
@@ -98,6 +98,7 @@ const UploadStatusPill = ({
       onClick={clickHandler}
     >
       <StatusPill
+        centerOverflow
         className={inLatestUpload ? undefined : classes.historicalStatus}
         {...rest}
       >
