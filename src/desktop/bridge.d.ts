@@ -15,6 +15,7 @@ export type Bridge = {
     dialogOptions?: Electron.OpenDialogOptions;
   }) => Promise<Uint8Array>;
   removeTemporaryFile: (path: string) => Promise<void>;
+  setUIScale: (scale: number) => void;
   watchFile: (
     filename: string,
     handler: (event: 'update' | 'remove') => void

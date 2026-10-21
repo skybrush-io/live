@@ -275,6 +275,12 @@ export function getUAVOperationConfirmationStyle(
 }
 
 /**
+ * Returns the scale of the user interface, 1 meaning 100%.
+ */
+export const getUIScale = (state: RootState): number =>
+  state.settings.display.uiScale ?? 1;
+
+/**
  * Returns whether we are currently showing empty mission slots in the UAV list.
  */
 export const isShowingEmptyMissionSlots = (state: RootState): boolean =>

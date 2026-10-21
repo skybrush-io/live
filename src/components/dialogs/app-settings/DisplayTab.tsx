@@ -21,6 +21,7 @@ import { FormHeader as Header, ThemeSelector } from '@skybrush/mui-components';
 
 import Stack from '@mui/material/Stack';
 import CoordinateSystemFields from '~/components/CoordinateSystemFields';
+import UIScaleSelect from '~/components/UIScaleSelect';
 import {
   setFlatEarthCoordinateSystemOrientation,
   setFlatEarthCoordinateSystemOrigin,
@@ -94,6 +95,8 @@ const DisplayTabPresentation = ({ language = 'en', ...props }: Props) => {
         value={props.theme}
         onChange={props.onFieldChanged as SelectProps['onChange']}
       />
+
+      <UIScaleSelect />
 
       <Box>
         <FormControl fullWidth variant='filled'>
