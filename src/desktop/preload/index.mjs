@@ -26,7 +26,7 @@ import * as localServerModule from './local-server.mjs';
 import TCPSocket from './tcp-socket.mjs';
 
 const dns = { promises }.promises;
-const { contextBridge, webFrame } = electron;
+const { contextBridge } = electron;
 
 /**
  * Creates a new SSDP client object and registers the given function to be
@@ -189,7 +189,7 @@ contextBridge.exposeInMainWorld('bridge', {
    *
    * @param {number} scale  the zoom factor to use, 1 meaning 100%
    */
-  setUIScale: (scale) => webFrame.setZoomFactor(scale),
+  setUIScale: async (scale) => ipc.callMain('setUIScale', scale),
 
   /**
    * Starts watching the file with the given name for changes and calls a

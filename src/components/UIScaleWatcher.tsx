@@ -12,7 +12,7 @@ const UIScaleWatcher = () => {
   const uiScale = useSelector(getUIScale);
 
   useEffect(() => {
-    window.bridge?.setUIScale(uiScale);
+    void window.bridge?.setUIScale(uiScale);
   }, [uiScale]);
 
   return null;
