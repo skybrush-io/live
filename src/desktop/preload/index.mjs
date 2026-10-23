@@ -185,6 +185,13 @@ contextBridge.exposeInMainWorld('bridge', {
     ipc.callMain('removeTemporaryFile', filename),
 
   /**
+   * Sets the scale of the user interface.
+   *
+   * @param {number} scale  the zoom factor to use, 1 meaning 100%
+   */
+  setUIScale: async (scale) => ipc.callMain('setUIScale', scale),
+
+  /**
    * Starts watching the file with the given name for changes and calls a
    * handler whenever the file changed. The first argument of the handler is
    * <code>update</code> or <code>delete</code>, depending on what happened
