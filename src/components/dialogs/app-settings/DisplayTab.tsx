@@ -96,7 +96,7 @@ const DisplayTabPresentation = ({ language = 'en', ...props }: Props) => {
         onChange={props.onFieldChanged as SelectProps['onChange']}
       />
 
-      <UIScaleSelect />
+      {window.bridge?.isElectron && <UIScaleSelect />}
 
       <Box>
         <FormControl fullWidth variant='filled'>

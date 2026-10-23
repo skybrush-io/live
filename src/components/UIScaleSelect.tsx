@@ -19,10 +19,6 @@ type Props = {
 const UIScaleSelect = ({ uiScale, onChange }: Props) => {
   const { i18n, t } = useTranslation();
 
-  if (!window.bridge?.isElectron) {
-    return null;
-  }
-
   const options = uiScales.includes(uiScale)
     ? uiScales
     : [...uiScales, uiScale].sort((a, b) => a - b);
