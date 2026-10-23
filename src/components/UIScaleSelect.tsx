@@ -7,7 +7,7 @@ import { connect } from 'react-redux';
 
 import { getUIScale } from '~/features/settings/selectors';
 import { updateAppSettings } from '~/features/settings/slice';
-import type { RootState } from '~/store/reducers';
+import type { AppDispatch, RootState } from '~/store/reducers';
 
 const uiScales = [0.8, 0.9, 1, 1.1, 1.25, 1.5];
 
@@ -45,7 +45,7 @@ export default connect(
     uiScale: getUIScale(state),
   }),
   // mapDispatchToProps
-  (dispatch) => ({
+  (dispatch: AppDispatch) => ({
     onChange(event: SelectChangeEvent<number>) {
       dispatch(
         updateAppSettings('display', { uiScale: Number(event.target.value) })
