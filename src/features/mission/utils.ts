@@ -1,6 +1,7 @@
 import isNil from 'lodash-es/isNil';
 
-import { type MissionItem } from '~/model/missions';
+import { type MissionIndex, type MissionItem } from '~/model/missions';
+import { type Identifier } from '~/utils/collections';
 import { type Nullable } from '~/utils/types';
 
 import { type MissionSliceState } from './slice';
@@ -99,3 +100,62 @@ export const doesMissionIndexParticipateInMissionItem =
   (missionIndex: number) =>
   ({ participants }: MissionItem): boolean =>
     participants === undefined || participants.includes(missionIndex);
+
+/**
+ * Returns the reverse of the given mission mapping, i.e. a mapping from UAV IDs
+ * to the mission indices they are assigned to.
+ */
+export const getReverseMapping = (
+  mapping: ReadonlyArray<Nullable<Identifier>>
+): Record<Identifier, MissionIndex> =>
+  Object.fromEntries(
+    mapping.flatMap((uavId, missionIndex) =>
+      isNil(uavId) ? [] : [[uavId, missionIndex]]
+    )
+  );
+
+/**
+ * Returns a copy of the given mission mapping where the given UAV is moved to the
+ * given mission index. The UAV previously at the target index, if any, takes the
+ * original place of the moved UAV, or leaves the mapping if the moved UAV was not
+ * in the mapping. A target index of `null` removes the UAV from the mapping.
+ */
+export const moveUAVInMapping = (
+  mapping: ReadonlyArray<Nullable<Identifier>>,
+  uavId: Identifier,
+  to: Nullable<MissionIndex>
+): Array<Nullable<Identifier>> => {
+  const result = [...mapping];
+  const from = result.indexOf(uavId);
+  const uavIdToReplace = isNil(to) ? null : result[to];
+
+  if (from >= 0) {
+    result[from] = uavIdToReplace ?? null;
+  }
+
+  if (!isNil(to)) {
+    result[to] = uavId;
+  }
+
+  return result;
+};
+
+/**
+ * Returns the IDs of the UAVs whose mission index differs between the two given
+ * mission mappings, including UAVs that were added to or removed from the mapping.
+ */
+export const getUAVsWithChangedMissionIndex = (
+  oldMapping: ReadonlyArray<Nullable<Identifier>>,
+  newMapping: ReadonlyArray<Nullable<Identifier>>
+): Identifier[] => {
+  const oldReverseMapping = getReverseMapping(oldMapping);
+  const newReverseMapping = getReverseMapping(newMapping);
+  const uavIds = new Set([
+    ...Object.keys(oldReverseMapping),
+    ...Object.keys(newReverseMapping),
+  ]);
+
+  return [...uavIds].filter(
+    (uavId) => oldReverseMapping[uavId] !== newReverseMapping[uavId]
+  );
+};

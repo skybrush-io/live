@@ -17,29 +17,24 @@ import {
   notifyUAVsInMissionMappingChanged,
   updateEditedMappingIndex,
 } from '../slice';
-import { type MissionMappingEditorContinuation } from '../utils';
+import {
+  getUAVsWithChangedMissionIndex,
+  moveUAVInMapping,
+  type MissionMappingEditorContinuation,
+} from '../utils';
 
 export const adjustMissionMapping =
   ({ uavId, to }: { uavId: Identifier; to: MissionIndex | null }): AppThunk =>
   (dispatch, getState) => {
     const affectedUavIds: Identifier[] = [uavId];
-    const mapping = [...getMissionMapping(getState())];
-    const from = mapping.indexOf(uavId);
+    const mapping = getMissionMapping(getState());
     const uavIdToReplace = isNil(to) ? null : mapping[to];
 
     if (!isNil(uavIdToReplace)) {
       affectedUavIds.push(uavIdToReplace);
     }
 
-    if (from >= 0) {
-      mapping[from] = uavIdToReplace ?? null;
-    }
-
-    if (!isNil(to)) {
-      mapping[to] = uavId;
-    }
-
-    dispatch(_setMapping(mapping));
+    dispatch(_setMapping(moveUAVInMapping(mapping, uavId, to)));
     dispatch(notifyUAVsInMissionMappingChanged(affectedUavIds));
   };
 
@@ -154,6 +149,29 @@ export const replaceMapping =
       ...currentMapping.filter((id): id is Identifier => !isNil(id)),
       ...newMapping.filter((id): id is Identifier => !isNil(id)),
     ];
+
+    dispatch(_setMapping(newMapping));
+    if (affectedUavIds.length > 0) {
+      dispatch(notifyUAVsInMissionMappingChanged(affectedUavIds));
+    }
+  };
+
+/**
+ * Replaces the entire mission mapping with a new one of the same length. Unlike
+ * `replaceMapping()`, it notifies only the UAVs whose mission index has changed.
+ */
+export const updateMapping =
+  (newMapping: Array<Nullable<Identifier>>): AppThunk =>
+  (dispatch, getState) => {
+    const currentMapping = getMissionMapping(getState());
+    if (newMapping.length !== currentMapping.length) {
+      throw new Error('Cannot change mapping length with updateMapping()');
+    }
+
+    const affectedUavIds = getUAVsWithChangedMissionIndex(
+      currentMapping,
+      newMapping
+    );
 
     dispatch(_setMapping(newMapping));
     if (affectedUavIds.length > 0) {

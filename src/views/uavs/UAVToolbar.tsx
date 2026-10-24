@@ -11,6 +11,7 @@ import UAVOperationsButtonGroup from '~/components/uavs/UAVOperationsButtonGroup
 import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
 import { isBroadcast } from '~/features/session/selectors';
 import { getSelectedUAVIds } from '~/features/uavs/selectors';
+import SwapDronesToolbarButton from '~/features/uavs/swapping/SwapDronesToolbarButton';
 import type { RootState } from '~/store/reducers';
 
 import MappingButtonGroup from './MappingButtonGroup';
@@ -64,6 +65,7 @@ const UAVToolbar = ({
         </Tooltip>
       )}
 
+      <SwapDronesToolbarButton />
       <MappingButtonGroup />
     </Toolbar>
   );
