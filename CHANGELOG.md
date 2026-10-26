@@ -19,6 +19,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   is there for people who are willing to put up with minor UX inconveniences
   at scales other than 100%.
 
+- Skybrush Live now shows a permanent warning when the server reaches the drone
+  limit of its license.
+
 ### Fixed
 
 - Reverted to instant scrolling in the "Messages" panel instead of smooth scrolling
