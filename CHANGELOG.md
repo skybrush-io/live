@@ -31,6 +31,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Upload panels can now conveniently show 5-digit UAV IDs.
 
+- Ensure correct hotkey handling when Caps Lock is active.
+
 ## [2.14.2] - 2026-09-16
 
 ### Fixed
