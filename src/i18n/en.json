@@ -881,6 +881,11 @@
     "unknownState": "Unknown state",
     "version": "Server version"
   },
+  "serverLogMessageCode": {
+    "uavs": {
+      "limit_reached": "Drone limit of the server license reached, new drones cannot be registered"
+    }
+  },
   "serverSettingsDialog": {
     "autodetected": "Autodetected",
     "autodiscoveryIsNotAvailable": "Auto-discovery is not available in this version.",
