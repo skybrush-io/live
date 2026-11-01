@@ -6,7 +6,9 @@
     "noConnections": "该服务器没有使用任何连接。",
     "summaryItem": {
       "connected_other": "还有 {{count}} 个连接未显示",
-      "connecting": "+ {{count}} 个连接正在进行，尚未显示"
+      "connecting": "+ {{count}} 个连接正在进行，尚未显示",
+      "disconnected_other": "还有 {{count}} 个已关闭的连接未显示",
+      "disconnecting": "+ {{count}} 个连接正在断开，未显示"
     },
     "useSecondaryChannel": "使用第二通道"
   },
@@ -20,6 +22,14 @@
     "drawRectangle": "绘制长方形",
     "editFeature": "编辑特征"
   },
+  "GlobalErrorDialog": {
+    "title": "发生错误"
+  },
+  "ImageLayer": {
+    "geoTIFFOnlyInDevMode": "GeoTIFF 渲染目前仅限开发者模式使用。",
+    "navigationFailed": "导航失败，文件可能未能正确加载",
+    "selectImage": "请选择一张图片！"
+  },
   "LicenseInfoDialog": {
     "title": "许可证信息"
   },
@@ -32,6 +42,14 @@
     "neverExpires": "此许可证永不失效",
     "noLicenseActivated": "未激活许可证",
     "tryAgain": "再试一次"
+  },
+  "MissionInfoLayer": {
+    "settings": {
+      "showConvexHull": "显示轨迹的凸包",
+      "showHomePositions": "显示返航点",
+      "showLandingPositions": "显示着陆点",
+      "showMapOrigin": "显示地图原点"
+    }
   },
   "OnboardPreflightChecksDialog": {
     "noError": "没有任何无人机显示错误。",
