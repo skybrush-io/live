@@ -4,6 +4,12 @@
   },
   "ConnectionStatusMiniList": {
     "noConnections": "このサーバーはコネクションを使用しません。",
+    "summaryItem": {
+      "connected_other": "+ {{count}}の接続は表示されていません",
+      "connecting": "+ {{count}}件の接続は表示されていません",
+      "disconnected_other": "+ {{count}}件の切断された接続は表示されていません",
+      "disconnecting": "+ {{count}}件が切断処理中ですが表示されていません"
+    },
     "useSecondaryChannel": "セカンダリチャネルを使用してください"
   },
   "DrawingToolbar": {
@@ -16,19 +22,55 @@
     "drawRectangle": "四角形を描画",
     "editFeature": "編集"
   },
+  "GlobalErrorDialog": {
+    "title": "エラーが発生しました"
+  },
+  "ImageLayer": {
+    "geoTIFFOnlyInDevMode": "GeoTIFFの表示は現在、開発者モードに制限されています。",
+    "navigationFailed": "ナビゲーションに失敗しました。ファイルが正しく読み込まれていない可能性があります"
+  },
+  "LicenseInfoDialog": {
+    "title": "ライセンス情報"
+  },
+  "LicenseInfoPanel": {
+    "licenseId": "ライセンスID",
+    "neverExpires": "このライセンスには有効期限がありません",
+    "tryAgain": "もう一度お試しください"
+  },
+  "MissionInfoLayer": {
+    "settings": {
+      "showHomePositions": "ホームポジションを表示",
+      "showMapOrigin": "地図の原点を表示",
+      "showMissionOrigin": "ミッションの原点を表示"
+    }
+  },
   "OnboardPreflightChecksDialog": {
     "noError": "エラーが発生しているUAVはありません。",
     "passed": "機体のプレフライトチェックが正常にパスしました。",
     "signOffOn": "機体のプレフライトチェックを承認"
   },
+  "PathScanner": {
+    "notFound": "サーバーの実行ファイルが見つかりません。",
+    "scanning": "お待ちください…",
+    "success": "サーバーの実行ファイルが正常に見つかりました。"
+  },
+  "RTKCoordinateRestorationDialog": {
+    "dateLabel": "保存済み",
+    "positionLabel": "位置",
+    "useSaved": "座標を使用"
+  },
   "RTKCorrectionSourceSelector": {
     "RTKCorrections": "RTKコネクション",
+    "editPreset": "プリセットを編集",
     "error": "サーバーからRTKリソースを読み込み中のエラー",
     "noRTKData": "サーバーにRTKリソースがありません",
     "pleaseWait": "RTKリソースを読み込み中。しばらくお待ちください…"
   },
   "RTKMessage": {
     "noRTKMessagesYet": "受信済みのRTKメッセージはありません"
+  },
+  "RTKSetupDialog": {
+    "title": "RTK補正"
   },
   "RTKStatusMiniList": {
     "satelliteCount": "衛星数",
@@ -54,6 +96,9 @@
     "noMatchingUAVs": "\"{{filter}}\"に該当するUAVは存在しません"
   },
   "UAVStatus": {
+    "error": {
+      "notInWorkbench": "UAVパネルはまだワークベンチに追加されていません"
+    },
     "noConnected": "UAVが接続されていません"
   },
   "alerts": {
@@ -65,15 +110,29 @@
     "clickToChange": "クリックして{{altitudeType}}に変更。",
     "showingCurrent": "最大/最小{{altitudeType}}を表示。"
   },
+  "altitudeSummaryType": {
+    "long": {
+      "agl": "対地高度",
+      "amsl": "平均海面からの高度"
+    },
+    "short": {
+      "agl": "AGL",
+      "amsl": "AMSL"
+    }
+  },
   "antennaPositionIndicator": {
     "antennaPositionNotKnown": "アンテナ位置が不明です",
     "clickToToggle": "緯度/経度⇔ECEF形式の切り替え",
-    "copyToClipboard": "クリップボードにコピー"
+    "copyToClipboard": "クリップボードにコピー",
+    "useSavedCoordinate": "保存した座標を使用"
   },
   "augmentMappingButton": {
     "assignSparesToEmptySlots": "予備を空のスロットにアサイン"
   },
   "authentication": "認証",
+  "batteryDisplayStyle": {
+    "percentage": "不明な場合は電圧から推定してパーセンテージを優先表示"
+  },
   "batteryStatusHeaderButton": "平均バッテリー量/最小バッテリー量",
   "bearingCalculator": {
     "addAtLeastTwoItems": "姿勢と距離を計算するためには最低二つのアイテムを追加して下さい",
@@ -86,6 +145,70 @@
     "disable": "ブロードキャストを無効化",
     "enable": "{{time}}秒間ブロードキャストを有効化"
   },
+  "collectiveRTHDialog": {
+    "action": {
+      "addCollectiveRTH": "RTH計画を計算"
+    },
+    "existingInvalidRTHPlan": "ショーには有効な集合RTH計画がありません",
+    "existingValidRTHPlan_other": "ショーには{{count}}個のタイムスタンプに有効な集合RTH計画があります",
+    "parameters": {
+      "form": {
+        "horizontalVelocity": {
+          "help": "集合RTH中"
+        },
+        "minDistance": {
+          "help": "RTH中のドローン間",
+          "label": "最小距離"
+        },
+        "timeResolution": {
+          "help": "連続するRTH計画間",
+          "label": "時間分解能"
+        },
+        "verticalVelocity": {
+          "help": "集合RTH中",
+          "label": "鉛直速度"
+        }
+      }
+    },
+    "status": {
+      "error": "RTH計画の計算に失敗しました。もう一度お試しください。",
+      "loading": "RTH計画を計算中…",
+      "success": "RTH計画の計算が完了しました"
+    },
+    "summary": {
+      "firstTime": {
+        "message": "最も早いRTH時刻：{{firstTime}}"
+      },
+      "lastTime": {
+        "message": "最終RTH時刻：{{lastTime}}"
+      },
+      "numPlans": {
+        "message_other": "{{count}}件のRTH計画を計算しました。承認待ちです"
+      }
+    },
+    "title": "集合RTHを計画"
+  },
+  "consistencyCheck": {
+    "mainPanel": {
+      "parameterCheckHint": "<kbd>⇧</kbd> + <kbd>Enter</kbd> を押して、パラメーター名をリストに追加します。サイドバーの名前をクリックすると削除できます。",
+      "parameterNames": "パラメーター名",
+      "specifyEntries": "1行につき1つのパラメーター名を指定してください。"
+    },
+    "result": {
+      "consistent": "すべてのパラメーターに整合性があります。",
+      "errors": "パラメーターの整合性チェック中にエラーが発生しました。以下の結果を確認してください。",
+      "inconsistencies": "一部のパラメーター値に不整合があります。以下の結果を確認してください。"
+    },
+    "setupDialog": {
+      "checkParameters": "パラメーター整合性チェック"
+    },
+    "sidebar": {
+      "import": "インポート…",
+      "nextStep": "次のステップ",
+      "removeAllItems": "リストからすべての名前を削除",
+      "title": "パラメーター名"
+    }
+  },
   "coordinateAveragingDialogToolbar": {
     "addNewDrone": "新たにドローンを追加",
     "copyCentroid": "重心をコピー",
@@ -94,6 +217,13 @@
     "resetMeasurement": "測定をリセット",
     "resumeMeasurement": "測定を再開",
     "setCentroidAsMapOrigin": "重心をマップ原点にセット"
+  },
+  "coordinateFormat": {
+    "-d": "十進度（符号付き）",
+    "-dm": "度・分（符号付き）",
+    "-dms": "度・分・秒（符号付き）",
+    "d": "十進度",
+    "dm": "度・分"
   },
   "environmentEditorDialog": {
     "environmentSettings": "環境設定",
@@ -139,6 +269,7 @@
       "clear": "クリア",
       "click": "クリック",
       "close": "閉じる",
+      "confirm": "確認",
       "delete": "削除",
       "discard": "破棄",
       "drag": "ドラッグ",
@@ -633,6 +764,7 @@
     "compassDirection": "コンパス方位",
     "headingOffset": "ヘディングオフセット",
     "setToAverageHeading": "アクティブなドローンに対し平均方位を設定",
+    "setToAvergaeHeading": "アクティブなドローンの平均方位に設定",
     "specifiedByAbsoluteCompassDirection": "コンパスの絶対方位で指定",
     "specifiedRelativeToShowOrientation": "ショーの相対方位で指定",
     "unspecified": "未指定"
