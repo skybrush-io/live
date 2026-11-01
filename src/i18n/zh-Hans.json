@@ -231,7 +231,10 @@
       "checkParameters": "参数一致性检查"
     },
     "sidebar": {
-      "import": "导入…"
+      "import": "导入…",
+      "nextStep": "下一步",
+      "removeAllItems": "移除列表中的所有名称",
+      "title": "参数名称"
     }
   },
   "coordinateAveragingDialogToolbar": {
@@ -278,6 +281,22 @@
       "warningsAndErrors": "警告/错误"
     }
   },
+  "firmwareCheck": {
+    "names": {
+      "board": "硬件版本",
+      "firmware": "固件版本",
+      "flight_sw": "飞行软件版本",
+      "middleware_sw": "中间件版本",
+      "os_sw": "操作系统版本",
+      "revision": "修订版本",
+      "server": "服务器版本"
+    },
+    "result": {
+      "consistent": "所有固件版本均一致。",
+      "errors": "检查固件版本时出错。请查看下方结果。",
+      "inconsistencies": "部分固件版本不一致。请查看下方结果。"
+    }
+  },
   "fitAllFeaturesButton": {
     "fitAllDrones": "匹配所有无人机",
     "fitAllFeatures": "匹配所有特征"
@@ -298,7 +317,7 @@
     "follow": "跟随另一设备",
     "guided": "由伴飞计算机控制",
     "land": "自主降落",
-    "loiter": "定点保持，手动速度控制",
+    "loiter": "定点保持，手动控制速度",
     "mission": "执行预编程任务",
     "other": "其他（未指定的飞行模式）",
     "pos": "定点保持（手动姿态控制）",
@@ -332,6 +351,7 @@
       "import": "导入",
       "navigate": "导航",
       "open": "打开",
+      "pan": "平移",
       "redo": "重做",
       "remove": "移除",
       "reset": "重置",
