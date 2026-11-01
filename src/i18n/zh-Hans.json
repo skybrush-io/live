@@ -4,6 +4,9 @@
   },
   "ConnectionStatusMiniList": {
     "noConnections": "该服务器没有使用任何连接。",
+    "summaryItem": {
+      "connected_other": "单数\n还有 1 个连接未显示\n复数\n还有{{count}} 个连接未显示"
+    },
     "useSecondaryChannel": "使用第二通道"
   },
   "DrawingToolbar": {
@@ -142,8 +145,8 @@
       "addCollectiveRTH": "生成返航方案"
     },
     "description": "在演出过程中多个时间点预先计算集体返航方案。在紧急情况下，集体返航可在避免碰撞的前提下，以尽可能快的速度将所有无人机带回。",
-    "existingInvalidRTHPlan": "未找到有效的集体返航方案。",
-    "existingValidRTHPlan": "已在 {{count}} 个时间点生成有效的集体返航方案。",
+    "existingInvalidRTHPlan": "未找到有效的集体返航方案",
+    "existingValidRTHPlan_other": "已在 {{count}} 个时间点生成有效的集体返航方案",
     "parameters": {
       "form": {
         "horizontalVelocity": {
@@ -167,7 +170,7 @@
     "status": {
       "error": "返航方案计算失败，请重新尝试。",
       "loading": "正在计算返航方案，可能需要一些时间。",
-      "success": "已成功计算返航方案。"
+      "success": "已成功计算返航方案"
     },
     "summary": {
       "firstTime": {
@@ -539,10 +542,10 @@
       "collectiveRTHNotTriggered": "集体返航尚未触发",
       "hasCollectiveRTHPlan": "该演出包含集体返航方案",
       "proFeaturesEnabled": "服务器已启用专业功能",
-      "supportsSuspendResumeCRTH": "服务器支持挂起 恢复 和集体返航操作"
+      "supportsSuspendResumeCRTH": "服务器支持暂停表演 恢复表演 和集体返航操作"
     },
     "resume": "恢复",
-    "suspend": "挂起"
+    "suspend": "暂停"
   },
   "recalculateMappingButton": {
     "findOptimalMapping": "寻找最佳映射",
@@ -746,49 +749,6 @@
     "name": "名称",
     "notes": "备注",
     "zoomLevel": "缩放级别"
-  },
-  "showControlSchedule": {
-    "empty": {
-      "description": "没有计划中的操作。",
-      "title": "空日程"
-    },
-    "progress": {
-      "active": "{{elapsedSeconds}}秒/{{durationSeconds}}秒",
-      "completed": "已完成",
-      "waiting": "正在等待... ({{countdownSeconds}}秒后)"
-    },
-    "segment": {
-      "preparation": {
-        "description": "无人机已收到操作请求，正准备执行。",
-        "title": "准备中"
-      },
-      "rth": {
-        "description": "无人机正在以协同且无碰撞的方式返航。",
-        "title": "一键返航"
-      },
-      "slowdown": {
-        "description": "无人机正在减速。它们保持在原始航迹上以避免碰撞。",
-        "title": "减速中"
-      },
-      "speedup": {
-        "description": "无人机正在加速。它们保持在原始航迹上以避免碰撞。",
-        "title": "加速中"
-      }
-    },
-    "stage": {
-      "completed": {
-        "description": "操作已完成。",
-        "title": "已完成"
-      },
-      "progress": {
-        "description": "正在执行中。",
-        "title": "正在执行中 (剩余 {{remainingSeconds}}秒)"
-      },
-      "waiting": {
-        "description": "操作即将开始。",
-        "title": "准备开始 ({{remainingSeconds}}秒后)"
-      }
-    }
   },
   "selectionGroups": {
     "action": {
@@ -1106,6 +1066,49 @@
     },
     "title": "调整演出场地"
   },
+  "showControlSchedule": {
+    "empty": {
+      "description": "没有计划中的操作。",
+      "title": "空日程"
+    },
+    "progress": {
+      "active": "{{elapsedSeconds}}秒/{{durationSeconds}}秒",
+      "completed": "已完成",
+      "waiting": "正在等待... ({{countdownSeconds}}秒后)"
+    },
+    "segment": {
+      "preparation": {
+        "description": "无人机已收到操作请求，正准备执行。",
+        "title": "准备中"
+      },
+      "rth": {
+        "description": "无人机正在以协同且无碰撞的方式返航。",
+        "title": "一键返航"
+      },
+      "slowdown": {
+        "description": "无人机正在减速。它们保持在原始航迹上以避免碰撞。",
+        "title": "减速中"
+      },
+      "speedup": {
+        "description": "无人机正在加速。它们保持在原始航迹上以避免碰撞。",
+        "title": "加速中"
+      }
+    },
+    "stage": {
+      "completed": {
+        "description": "操作已完成。",
+        "title": "已完成"
+      },
+      "progress": {
+        "description": "正在执行中。",
+        "title": "正在执行中 (剩余 {{remainingSeconds}}秒)"
+      },
+      "waiting": {
+        "description": "操作即将开始。",
+        "title": "准备开始 ({{remainingSeconds}}秒后)"
+      }
+    }
+  },
   "sidebar": {
     "missionType": "任务类型：（{{missionType}}）"
   },
@@ -1279,7 +1282,6 @@
   },
   "unit": {
     "degree": {
-      "long_one": "度数",
       "long_other": "度数",
       "short": "度"
     },
@@ -1287,12 +1289,10 @@
       "long_other": "小时"
     },
     "meter": {
-      "long_one": "米",
       "long_other": "米",
       "short": "米"
     },
     "meterPerSecond": {
-      "long_one": "米/秒",
       "long_other": "米/秒",
       "short": "米/秒"
     },
@@ -1300,12 +1300,10 @@
       "long_other": "分钟"
     },
     "second": {
-      "long_one": "秒",
       "long_other": "秒",
       "short": "秒"
     },
     "volt": {
-      "long_one": "伏特",
       "long_other": "伏特",
       "short": "V"
     }
