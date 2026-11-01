@@ -48,7 +48,10 @@
       "showConvexHull": "显示轨迹的凸包",
       "showHomePositions": "显示返航点",
       "showLandingPositions": "显示着陆点",
-      "showMapOrigin": "显示地图原点"
+      "showMapOrigin": "显示地图原点",
+      "showMissionItems": "显示任务项目",
+      "showMissionOrigin": "显示任务起点",
+      "showTrajectoriesOfSelection": "显示所选无人机的飞行轨迹"
     }
   },
   "OnboardPreflightChecksDialog": {
@@ -73,9 +76,12 @@
   },
   "RTKCorrectionSourceSelector": {
     "RTKCorrections": "RTK校正",
+    "createPreset": "新建 RTK 预设",
+    "editPreset": "编辑预设",
     "error": "从服务器加载RTK源时出错",
     "noRTKData": "服务器上没有RTK数据源",
-    "pleaseWait": "请稍候，正在加载RTK源…"
+    "pleaseWait": "请稍候，正在加载RTK源…",
+    "rtkDisabled": "RTK 已禁用"
   },
   "RTKMessage": {
     "noRTKMessagesYet": "尚未收到任何 RTK 信息"
@@ -104,7 +110,7 @@
     "removeSelectedItems": "删除选中的条目"
   },
   "UAVSelector": {
-    "noMatchingUAVs": "“没有匹配的无人机: \"{{filter}}\""
+    "noMatchingUAVs": "没有找到匹配项：\"{{filter}}\"没有找到匹配项：{{filter}}“没有匹配的无人机: \"{{filter}}\""
   },
   "UAVStatus": {
     "noConnected": "当前没有已连接无人机"
