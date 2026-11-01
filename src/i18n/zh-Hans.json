@@ -353,15 +353,20 @@
       "open": "打开",
       "pan": "平移",
       "redo": "重做",
+      "reject": "拒绝",
       "remove": "移除",
       "reset": "重置",
       "retry": "重试",
+      "rotate": "旋转",
       "save": "保存",
+      "saving": "正在保存...",
+      "scale": "缩放",
       "select": "选择",
       "start": "开始",
       "stop": "停止",
       "submit": "提交",
-      "undo": "撤消"
+      "undo": "撤消",
+      "zoom": "缩放视图"
     },
     "commands": {
       "calibrateCompass": "校准指南针",
@@ -381,7 +386,9 @@
       "longitude": "经度"
     },
     "geometry": {
+      "angle": "角度",
       "rotation": "旋转",
+      "scale": "缩放",
       "zoom": "缩放"
     },
     "status": {
@@ -485,6 +492,7 @@
   },
   "mappingButtonGroup": {
     "editMapping": "编辑映射",
+    "emptySlotsShownWhileEditingMapping": "编辑映射时，空任务槽位会保持可见。",
     "hideEmptyMissionSlots": "隐藏空任务槽",
     "showEmptyMissionSlots": "显示空的任务槽位"
   },
@@ -551,6 +559,7 @@
     "fileToShowTooltip": "需要显示嵌入位置数据的文件",
     "fitCoordinateSysToCurrentDrone": "将坐标系统调整到当前无人机的位置",
     "mapToShow": "地图 ➜ 显示",
+    "preTakeoffAltitudeWarning": "配置的海拔高度参考值为 {{amslReference}}，但 {{sampleCount}} 架地面无人机的平均海拔高度为 {{averageGroundAMSL}}。差值：{{difference}} < {{threshold}}。",
     "setToAverageAMSL": "设置为活跃无人机的平均海拔高度",
     "showCoordinateSystemAppliedToMap": "显示应用于地图的坐标系统。",
     "showCoordinateSystemUpdatedFromFile": "显示从文件更新的坐标系。",
@@ -564,7 +573,8 @@
   "parameterListSidebar": {
     "import": "导入…",
     "nextStep": "下一步",
-    "removeAllItems": "从清单中移除所有项"
+    "removeAllItems": "从清单中移除所有项",
+    "title": "清单"
   },
   "parameterUploadMainPanel": {
     "parameterNamesValues": "参数名称和数值",
