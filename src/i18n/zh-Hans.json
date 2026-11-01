@@ -110,9 +110,12 @@
     "removeSelectedItems": "删除选中的条目"
   },
   "UAVSelector": {
-    "noMatchingUAVs": "没有找到匹配项：\"{{filter}}\"没有找到匹配项：{{filter}}“没有匹配的无人机: \"{{filter}}\""
+    "noMatchingUAVs": "未找到与“{{filter}}”匹配的结果"
   },
   "UAVStatus": {
+    "error": {
+      "notInWorkbench": "尚未将无人机面板添加到工作台"
+    },
     "noConnected": "当前没有已连接无人机"
   },
   "alerts": {
