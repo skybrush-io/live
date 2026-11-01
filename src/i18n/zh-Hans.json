@@ -5,7 +5,8 @@
   "ConnectionStatusMiniList": {
     "noConnections": "该服务器没有使用任何连接。",
     "summaryItem": {
-      "connected_other": "单数\n还有 1 个连接未显示\n复数\n还有{{count}} 个连接未显示"
+      "connected_other": "还有 {{count}} 个连接未显示",
+      "connecting": "+ {{count}} 个连接正在进行，尚未显示"
     },
     "useSecondaryChannel": "使用第二通道"
   },
