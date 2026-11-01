@@ -175,6 +175,9 @@
     "description": "在演出过程中多个时间点预先计算集体返航方案。在紧急情况下，集体返航可在避免碰撞的前提下，以尽可能快的速度将所有无人机带回。",
     "existingInvalidRTHPlan": "未找到有效的集体返航方案",
     "existingValidRTHPlan_other": "已在 {{count}} 个时间点生成有效的集体返航方案",
+    "hints": {
+      "addCollectiveRTH": "点击上方按钮计算返航方案"
+    },
     "parameters": {
       "form": {
         "horizontalVelocity": {
@@ -197,7 +200,7 @@
     },
     "status": {
       "error": "返航方案计算失败，请重新尝试。",
-      "loading": "正在计算返航方案，可能需要一些时间。",
+      "loading": "正在计算返航方案...",
       "success": "已成功计算返航方案"
     },
     "summary": {
@@ -212,6 +215,24 @@
       }
     },
     "title": "规划集体返航"
+  },
+  "consistencyCheck": {
+    "mainPanel": {
+      "parameterCheckHint": "按 <kbd>⇧</kbd> + <kbd>Enter</kbd> 将参数名称添加到列表。点击侧边栏中的名称可将其移除。",
+      "parameterNames": "参数名称",
+      "specifyEntries": "每行输入一个参数名称。"
+    },
+    "result": {
+      "consistent": "所有参数均一致。",
+      "errors": "检查参数一致性时出错。请查看下方结果。",
+      "inconsistencies": "部分参数值不一致。请查看下方结果。"
+    },
+    "setupDialog": {
+      "checkParameters": "参数一致性检查"
+    },
+    "sidebar": {
+      "import": "导入…"
+    }
   },
   "coordinateAveragingDialogToolbar": {
     "addNewDrone": "添加新无人机",
