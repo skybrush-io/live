@@ -748,6 +748,29 @@
     "rtcm3/1127": "BeiDou MSM7 (高精度代码、载波、多普勒、信噪比)",
     "rtcm3/1230": "GLONASS L1 和 L2 码相偏差 (Code-phase biases)"
   },
+  "rtkPresetEditor": {
+    "addSource": "添加数据源",
+    "createFailed": "创建预设失败",
+    "createTitle": "创建 RTK 预设",
+    "dataSources": "数据源",
+    "deleteConfirmation": "确定要删除此预设吗？",
+    "deleteFailed": "删除预设失败",
+    "deletePreset": "删除预设",
+    "editTitle": "编辑 RTK 预设",
+    "formatAuto": "自动检测",
+    "messageFormat": "消息格式",
+    "presetName": "预设名称",
+    "presetNamePlaceholder": "我的 RTK 基站",
+    "readOnlyMessage": "无法编辑此预设",
+    "removeSource": "移除数据源",
+    "sourcePlaceholder": "ntrip://username:password@hostname/mountpoint",
+    "sourcesHelp": "串口使用 serial:PORT?baud=BAUDRATE，TCP 连接使用 tcp://HOST:PORT，NTRIP 服务器使用 ntrip://...。",
+    "type": "类型",
+    "updateFailed": "类型"
+  },
+  "rtkSetupDialog": {
+    "startNewSurvey": "更新预设失败"
+  },
   "rtkStatus": {
     "long": {
       "connectedRecently": "正在确定 RTK 改正状态...",
@@ -838,6 +861,7 @@
       "name": "分组名称"
     },
     "newGroupNameTemplate": "分组 {{id}}",
+    "selectedObjects": "所选对象",
     "updated": "已更新"
   },
   "serverConnectionStatus": {
@@ -878,6 +902,7 @@
     "display": {
       "coordinateFormat": "坐标格式",
       "enableExperimentalFeatures": "启用实验性功能（高级）",
+      "experimentalFeaturesWarning": "实验性功能尚未经过与系统其他功能同等程度的测试。使用风险由您自行承担。",
       "flatEarthCoordinateSystem": "地平坐标系",
       "hideInactiveSegmentsOnDarkLCD": "增强暗模式LCD时钟的对比度",
       "language": "语言",
@@ -920,6 +945,7 @@
       "showTrajectoriesOfSelection": "显示选定无人机的轨迹"
     },
     "uavs": {
+      "altitudeWarningThreshold": "起飞前高度警告阈值",
       "batteryDisplayStyle": "电池显示样式",
       "cellCount": "电芯数量",
       "criticalTreshold": "危险电压阈值",
@@ -948,6 +974,7 @@
     "chooseStartTime": "选择开始时间",
     "chooseStartTimeNotSet": "未设定",
     "clear": "清除已加载的表演",
+    "clearStartTime": "清除开始时间",
     "clock": "显示时钟：",
     "collectiveRTH": {
       "confirmation": {
@@ -993,8 +1020,8 @@
     "setupGeofence": "设置地理围栏",
     "setupTakeoffArea": "分配无人机表演舞步",
     "showConfigurator": {
-      "button": "根据场地调整演出",
-      "description": "根据实际需要调整起飞阵列并查看布局效果",
+      "button": "规划集体返航",
+      "description": "创建集体返航方案",
       "interactionHints": {
         "action": {
           "boxSelect": "框选",
@@ -1022,9 +1049,15 @@
         "server": "必须与服务器建立连接"
       },
       "tooltip": {
+        "adaptShow": "根据场地调整表演",
         "invalidRTHPlan": "该表演没有有效的集体返航方案。",
+        "showSegmentsRequired": "表演必须添加片段标记",
         "validRTHPlan": "该表演有 {{numPlans}} 个有效的集体返航方案。"
       }
+    },
+    "showConfiguratorLegacy": {
+      "button": "根据场地调整表演",
+      "description": "根据需要调整起飞阵列和表演布局"
     },
     "startMethod": {
       "AUTO": "表演将自动开始",
@@ -1074,6 +1107,13 @@
         "minDistance": {
           "help": "无人机起飞和返航期间",
           "label": "最小间距"
+        },
+        "returnToHomeMethod": {
+          "label": "返航方式",
+          "type": {
+            "plain": "普通",
+            "smart": "智能"
+          }
         },
         "takeoffDuration": {
           "help": "确保演出阶段在设定时间点准时开始（当设定值非零时）",
@@ -1150,6 +1190,10 @@
       "description": "没有计划中的操作。",
       "title": "空日程"
     },
+    "normalShow": {
+      "description": "表演将按计划时间表执行。",
+      "title": "表演时间表未作修改"
+    },
     "progress": {
       "active": "{{elapsedSeconds}}秒/{{durationSeconds}}秒",
       "completed": "已完成",
@@ -1157,19 +1201,51 @@
     },
     "segment": {
       "preparation": {
+        "completed": {
+          "description": "已将请求的操作通知无人机，无人机正在执行。",
+          "title": "准备完成"
+        },
         "description": "无人机已收到操作请求，正准备执行。",
+        "running": {
+          "description": "正在将请求的操作通知无人机，无人机正在准备执行。",
+          "title": "准备中"
+        },
         "title": "准备中"
       },
       "rth": {
+        "completed": {
+          "description": "无人机已返回各自的返航点。",
+          "title": "已返航"
+        },
         "description": "无人机正在以协同且无碰撞的方式返航。",
+        "running": {
+          "description": "无人机正在协同返回各自的返航点，避免发生碰撞。",
+          "title": "返航"
+        },
         "title": "一键返航"
       },
       "slowdown": {
+        "completed": {
+          "description": "无人机已减速至静止。",
+          "title": "表演已暂停"
+        },
         "description": "无人机正在减速。它们保持在原始航迹上以避免碰撞。",
+        "running": {
+          "description": "无人机正在减速，并保持在原定轨迹上以避免碰撞。",
+          "title": "减速中"
+        },
         "title": "减速中"
       },
       "speedup": {
+        "completed": {
+          "description": "无人机已恢复以正常速度沿原定轨迹飞行。",
+          "title": "表演已恢复"
+        },
         "description": "无人机正在加速。它们保持在原始航迹上以避免碰撞。",
+        "running": {
+          "description": "无人机正在加速，并继续沿原定轨迹飞行以避免碰撞。",
+          "title": "加速中"
+        },
         "title": "加速中"
       }
     },
@@ -1186,7 +1262,8 @@
         "description": "操作即将开始。",
         "title": "准备开始 ({{remainingSeconds}}秒后)"
       }
-    }
+    },
+    "title": "加速中"
   },
   "sidebar": {
     "missionType": "任务类型：（{{missionType}}）"
@@ -1250,7 +1327,7 @@
   },
   "startUploadButton": {
     "startSelected": "启动所选项",
-    "tooltip": "通过点击 ID 选择各个目标，以准备部分上传"
+    "tooltip": "时间表"
   },
   "surveyStatusIndicator": {
     "noSurveyInformation": "没有调查信息",
@@ -1280,12 +1357,46 @@
     "specifiedRelativeToShowOrientation": "相对于展示方向指定",
     "unspecified": "未指定"
   },
+  "timeline": {
+    "chart": {
+      "tooltip": {
+        "labeledValue": "{{label}}：{{value}} {{unit}}"
+      }
+    },
+    "dataset": {
+      "altitude": "高度",
+      "distanceFromHome": "距返航点距离",
+      "maxAltitude": "最大高度",
+      "maxDistance": "最大距离",
+      "minAltitude": "最小高度",
+      "minDistance": "最小距离",
+      "rthDuration": "集体返航时长",
+      "rthDurationLine": "返航时长"
+    },
+    "markerLane": {
+      "cue": "提示点",
+      "rthPlan": "返航方案",
+      "segment": "片段",
+      "unknown": "未知轨道（{{lane}}）"
+    },
+    "rthPlanItem": "返航方案 {{index}}",
+    "showSegment": {
+      "endOf": "{{description}}结束",
+      "landing": "降落",
+      "show": "正式表演",
+      "startOf": "{{description}}开始",
+      "takeoff": "起飞",
+      "unknown": "表演片段 {{type}}"
+    }
+  },
   "toolbox": {
     "averagingInProgress": "{{number}} 进行中",
     "coordinateAveraging": "坐标平均",
+    "firmwareCheck": "固件版本检查",
     "firmwareUpdate": "固件更新",
     "licenseInfo": "许可证信息",
     "offlineMaps": "离线地图",
+    "paramCheck": "参数检查",
     "paramUpload": "参数上传",
     "tooltip": "工具箱"
   },
@@ -1359,13 +1470,18 @@
     "never": "无需请求确认",
     "onlyMultiple": "当操作可能影响多架无人机时，进行二次确认"
   },
+  "uavToolbar": {
+    "fitAllFeaturesIntoView": "参数检查",
+    "fitSelectionIntoView": "调整视图以完整显示所选对象"
+  },
   "unit": {
     "degree": {
-      "long_other": "度数",
+      "long_other": "度",
       "short": "度"
     },
     "hour": {
-      "long_other": "小时"
+      "long_other": "小时",
+      "short": "小时"
     },
     "meter": {
       "long_other": "米",
@@ -1376,7 +1492,8 @@
       "short": "米/秒"
     },
     "minute": {
-      "long_other": "分钟"
+      "long_other": "分钟",
+      "short": "分钟"
     },
     "second": {
       "long_other": "秒",
@@ -1388,29 +1505,38 @@
     }
   },
   "uploadDialog": {
+    "anotherJobTypeRunningHint": {
+      "cancelButton": "取消任务",
+      "header": "另一个任务正在进行中",
+      "text": "请等待另一个任务完成，或取消该任务后再开始新任务",
+      "viewProgressButton": "查看进度"
+    },
     "restrictToGlobalSelection": "仅显示全局选择"
   },
   "uploadPanel": {
-    "cancelUpload": "取消上传",
+    "cancelUpload": "取消任务",
     "clearHistory": "清除历史记录",
-    "flashLightsWhereFailed": "上传失败的无人机闪灯",
+    "flashLightsWhereFailed": "让任务失败的无人机闪灯",
     "hasHiddenTargets": "一些等待的无人机可能会被过滤掉。",
+    "noJobResultAvailable": "暂无结果。",
+    "resultsTab": "结果",
     "retryFailedAttempts": "自动重试失败的尝试",
-    "uploadAttemptFailed": "上传尝试失败。",
-    "uploadCancelled": "上传已被用户取消。",
-    "uploadFinishedSuccessfully": "上传成功完成。",
-    "uploadInProgress": "上传中…",
+    "statusTab": "状态",
+    "uploadAttemptFailed": "尝试失败。",
+    "uploadCancelled": "用户已取消任务。",
+    "uploadFinishedSuccessfully": "任务已成功完成。",
+    "uploadInProgress": "请稍候…",
     "uploadInProgressWithEstimate": "预计剩余时间：{{time}}",
-    "uploadNotFinishedYet": "上传尚未完成。"
+    "uploadNotFinishedYet": "任务尚未完成。"
   },
   "uploadStatusLegend": {
-    "clearUploadQueue": "清除上传队列",
+    "clearUploadQueue": "清空队列",
     "enqueueItemsWithNoUploadStatus": "将未处理的项目加入队列",
     "restartSuccessfulItems": "将成功的项目加入队列",
     "retryFailedItems": "将失败的项目加入队列"
   },
   "uploadStatusLights": {
-    "noAvailableUAVs": "没有可用的无人机进行上传。"
+    "noAvailableUAVs": "没有可用的无人机。"
   },
   "view": {
     "beacon-list": "信标",
@@ -1424,11 +1550,15 @@
     "log-panel": "事件日志",
     "map": "地图",
     "mission-editor": "任务编辑器",
+    "rtk-status-mini-list": "RTK 状态",
     "saved-location-list": "地点",
+    "selection-group-mini-list": "选择组",
     "show-control": "表演控制",
     "three-d-view": "3D 视图",
+    "timeline": "时间轴",
     "uav-details": "无人机详情",
-    "uav-list": "无人机"
+    "uav-list": "无人机",
+    "uav-status-mini-list": "无人机状态摘要"
   },
   "weatherMiniList": {
     "compassDeclination": "罗盘磁偏角",
