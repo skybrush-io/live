@@ -1325,7 +1325,7 @@
     "startTimeIsSetTo": "A kezdés beállítva erre az időpontra: <strong>{{formattedStartTime}}</strong>"
   },
   "startUploadButton": {
-    "startSelected": "Indítás a kiválasztottakra",
+    "startSelected": "Kiválasztottak indítása",
     "tooltip": "Válasszon ki egyedi célpontokat az azonosítójukra kattintva egy részleges művelet előkészítéséhez"
   },
   "surveyStatusIndicator": {
