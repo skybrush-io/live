@@ -14,6 +14,7 @@ import {
 import setupIpc from './ipc.mjs';
 import createAppMenu from './app-menu.mjs';
 import * as localServer from './local-server.mjs';
+import { propagateUIScaleToChildWindows } from './ui-scale.mjs';
 
 const rootDir =
   typeof __dirname === 'undefined'
@@ -68,6 +69,12 @@ function run(argv) {
     // Disable background throttling of the app as we need accurate timers
     // to keep the status of the drones up-to-date
     webContents.setBackgroundThrottling(false);
+
+    // Child windows inherit the UI scale of their parent. Devtools and other
+    // non-window web contents do not create child windows.
+    if (webContents.getType() === 'window') {
+      propagateUIScaleToChildWindows(webContents);
+    }
   });
 
   // Stop any locally spawned server processes when the app quits

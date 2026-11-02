@@ -12,11 +12,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added a button to reset the manual preflight checklist without unloading
   the show.
 
+- Added a setting in the Settings dialog that allows the user to set the
+  scale of the UI in the desktop app edition. Note that we do not officially
+  support running the UI at anything else but 100% scale as we do not have
+  the resources to test the UI manually at all scales, but at least the option
+  is there for people who are willing to put up with minor UX inconveniences
+  at scales other than 100%.
+
+- Skybrush Live now shows a permanent warning when the server reaches the drone
+  limit of its license.
+
 ### Fixed
 
 - Reverted to instant scrolling in the "Messages" panel instead of smooth scrolling
   because the latter caused an inconvenient delay when a long list of messages was
   opened for the first time.
+
+- Shift-clicking on a row in the UAV status summary list now adds the
+  corresponding UAVs to the current selection, while Cmd-clicking (Ctrl-clicking
+  on Windows and Linux) toggles them in the current selection.
+
+- Upload panels can now conveniently show 5-digit UAV IDs.
+
+- Ensure correct hotkey handling when Caps Lock is active.
 
 ## [2.14.2] - 2026-09-16
 

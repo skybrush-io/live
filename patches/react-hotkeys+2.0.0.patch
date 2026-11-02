@@ -1,0 +1,26 @@
+diff --git a/node_modules/react-hotkeys/es/helpers/resolving-handlers/getKeyName.js b/node_modules/react-hotkeys/es/helpers/resolving-handlers/getKeyName.js
+index a8dc1d8..d89af62 100644
+--- a/node_modules/react-hotkeys/es/helpers/resolving-handlers/getKeyName.js
++++ b/node_modules/react-hotkeys/es/helpers/resolving-handlers/getKeyName.js
+@@ -29,6 +29,8 @@ function getKeyName(event) {
+ 
+   if (keyName === '+') {
+     return 'plus';
++  } else if (event?.code?.match?.(/^Key[A-Z]$/)) {
++    return keyName.toLowerCase();
+   } else {
+     return keyName;
+   }
+diff --git a/node_modules/react-hotkeys/es/react-hotkeys.production.min.js b/node_modules/react-hotkeys/es/react-hotkeys.production.min.js
+index e97d910..b44666f 100644
+--- a/node_modules/react-hotkeys/es/react-hotkeys.production.min.js
++++ b/node_modules/react-hotkeys/es/react-hotkeys.production.min.js
+@@ -428,7 +428,7 @@ function getEventCharCode(a){var b,c=a.keyCode;return "charCode"in a?(b=a.charCo
+ 
+ var normalizeKey={Esc:"Escape",Spacebar:" ",Left:"ArrowLeft",Up:"ArrowUp",Right:"ArrowRight",Down:"ArrowDown",Del:"Delete",Win:"OS",Menu:"ContextMenu",Apps:"ContextMenu",Scroll:"ScrollLock",MozPrintableKey:"Unidentified"};function reactsGetEventKey(a){if(a.key){var b=normalizeKey[a.key]||a.key;if("Unidentified"!==b)return b}if("keypress"===a.type){var c=getEventCharCode(a);return 13===c?"Enter":String.fromCharCode(c)}return "keydown"===a.type||"keyup"===a.type?translateToKey[a.keyCode]||"Unidentified":""}
+ 
+-function getKeyName(a){var b=function(){var b=Configuration.option("customKeyCodes"),c=a.keyCode||a.charCode;return hasKey(b,c)?b[c]:a.nativeEvent?a.key:reactsGetEventKey(a)}();return "+"===b?"plus":b}
++function getKeyName(a){var b=function(){var b=Configuration.option("customKeyCodes"),c=a.keyCode||a.charCode;return hasKey(b,c)?b[c]:a.nativeEvent?a.key:reactsGetEventKey(a)}();return "+"===b?"plus":a?.code?.match?.(/^Key[A-Z]$/)?b.toLowerCase():b}
+ 
+ function isCmdKey(a){return "Meta"===a}
+ 

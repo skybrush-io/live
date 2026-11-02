@@ -19,7 +19,11 @@ import type {
 import { handleDebugRequest } from './debugging';
 
 import MessageHub from './flockwave/messages';
-import type { Message } from './flockwave/types';
+import {
+  isLogMessageCode,
+  type LogMessageCode,
+  type Message,
+} from './flockwave/types';
 
 import { handleBeaconInformationMessage } from './model/beacons';
 import { handleClockInformationMessage } from './model/clocks';
@@ -32,14 +36,25 @@ import { handleObjectDeletionMessage } from './model/objects';
 
 import { batchAddInboundMessages } from './features/messages/slice';
 import { showError, showNotification } from './features/snackbar/actions';
+import type { Notification } from './features/snackbar/types';
 import { semanticsFromSeverity } from './features/snackbar/utils';
 import type { Severity } from './model/enums';
 
 import React from 'react';
 import flock from './flock';
+import i18n from './i18n';
 import store from './store';
 
 const { dispatch } = store;
+
+/**
+ * Record that maps log message codes to notification properties.
+ */
+const notificationOverridesByCode: Partial<
+  Record<LogMessageCode, Partial<Notification>>
+> = {
+  'uavs.limit_reached': { permanent: true, topic: 'uavs.limit_reached' },
+};
 
 /**
  * The single application-wide message hub that other objects can use to
@@ -82,9 +97,15 @@ messageHub.registerNotificationHandlers({
       if (!item.sender) {
         // This message came directly from the server so we show it as a
         // notification
+        const code = isLogMessageCode(item.code) ? item.code : undefined;
         showNotification({
-          message: item.message,
+          message: code
+            ? i18n.t(`serverLogMessageCode.${code}`, {
+                defaultValue: item.message,
+              })
+            : item.message,
           semantics: semanticsFromSeverity(item.severity),
+          ...(code ? notificationOverridesByCode[code] : undefined),
         });
       } else {
         // This message probably came from a UAV so let's add it to the

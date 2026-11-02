@@ -15,8 +15,7 @@ import React from 'react';
 import { BackgroundHint } from '@skybrush/mui-components';
 
 import type { AppDispatch, AppThunk, RootState } from '~/store/reducers';
-import { eventHasShiftKey } from '~/utils/events';
-import { eventHasPlatformModifierKey } from '~/utils/platform';
+import { eventHasPlatformModifierKey, eventHasShiftKey } from '~/utils/events';
 
 type ItemWithId = { id: string };
 type ItemRenderer<T extends ItemWithId, P> = (
