@@ -53,7 +53,7 @@ const { dispatch } = store;
 const notificationOverridesByCode: Partial<
   Record<LogMessageCode, Partial<Notification>>
 > = {
-  'uavs.limit_reached': { permanent: true, topic: 'uavs.limit_reached' },
+  'objects.limit_reached': { permanent: true, topic: 'objects.limit_reached' },
 };
 
 /**

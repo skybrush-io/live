@@ -882,8 +882,8 @@
     "version": "Server version"
   },
   "serverLogMessageCode": {
-    "uavs": {
-      "limit_reached": "Drone limit of the server license reached, new drones cannot be registered"
+    "objects": {
+      "limit_reached": "Object limit of the server license reached, new objects cannot be registered"
     }
   },
   "serverSettingsDialog": {

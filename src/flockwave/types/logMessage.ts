@@ -1,6 +1,6 @@
 const logMessageCodes = [
-  // Server reached its limit on the number of UAVs it can manage.
-  'uavs.limit_reached',
+  // Server reached its limit on the number of objects it can manage.
+  'objects.limit_reached',
 ] as const;
 
 /**
