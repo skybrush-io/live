@@ -2,35 +2,51 @@ import delay from 'delay';
 import isNil from 'lodash-es/isNil';
 import mapValues from 'lodash-es/mapValues';
 import { useEffect } from 'react';
-import { connect, useSelector } from 'react-redux';
+import { connect } from 'react-redux';
 
 import handleError from '~/error-handling';
-import { saveCurrentCoordinateForPreset } from '~/features/rtk/actions';
-import { getSavedCoordinates } from '~/features/rtk/selectors';
+import { autosaveCurrentCoordinateForPreset } from '~/features/rtk/actions';
 import { updateRTKStatistics } from '~/features/rtk/slice';
-import { hasValidFix, shouldSaveCoordinate } from '~/features/rtk/utils';
+import { hasValidFix } from '~/features/rtk/utils';
+import { isConnected } from '~/features/servers/selectors';
 import useMessageHub from '~/hooks/useMessageHub';
 import { useAppDispatch } from '~/store/hooks';
+import type { RootState } from '~/store/reducers';
 import type { Latitude, Longitude, LonLat } from '~/utils/geography';
 import type { Coordinate3D } from '~/utils/math';
 
+import { useHasRTKStatusSubscribers } from './subscription';
 import type { RTKStatistics, RTKStatisticsResponse } from './types';
 
 type Props = {
+  isConnected: boolean;
   onStatusChanged: (status: RTKStatisticsResponse) => void;
   period?: number;
 };
 
 /**
- * Component that renders nothing but constantly queries the server for the
- * current RTK status and dispatches actions to update the local store.
+ * Component that renders nothing but periodically queries the server for the
+ * current RTK status and dispatches actions to update the local store, as
+ * long as we are connected and at least one component subscribed to the
+ * updates with `useRTKStatusSubscription()`.
+ *
+ * Must be mounted only once in the application.
  */
-const RTKStatusUpdater = ({ onStatusChanged, period = 1000 }: Props) => {
+const RTKStatusUpdater = ({
+  isConnected,
+  onStatusChanged,
+  period = 1000,
+}: Props) => {
   const messageHub = useMessageHub();
   const dispatch = useAppDispatch();
-  const savedCoordinates = useSelector(getSavedCoordinates);
+  const hasSubscribers = useHasRTKStatusSubscribers();
+  const enabled = isConnected && hasSubscribers;
 
   useEffect(() => {
+    if (!enabled) {
+      return;
+    }
+
     const valueHolder: {
       finished: boolean;
       promise: Promise<void> | null;
@@ -67,15 +83,13 @@ const RTKStatusUpdater = ({ onStatusChanged, period = 1000 }: Props) => {
       const selectedPresetId: string | null =
         await messageHub.query.getSelectedRTKPresetId();
 
-      if (
-        selectedPresetId &&
-        shouldSaveCoordinate(
-          status?.antenna?.positionECEF,
-          savedCoordinates,
-          selectedPresetId
-        )
-      ) {
-        dispatch(saveCurrentCoordinateForPreset(selectedPresetId));
+      if (selectedPresetId) {
+        dispatch(
+          autosaveCurrentCoordinateForPreset(
+            selectedPresetId,
+            status?.antenna?.positionECEF
+          )
+        );
       }
     };
 
@@ -84,6 +98,12 @@ const RTKStatusUpdater = ({ onStatusChanged, period = 1000 }: Props) => {
         try {
           const status: RTKStatisticsResponse =
             await messageHub.query.getRTKStatus();
+
+          // The effect may have been cleaned up while the query was in flight
+          if (valueHolder.finished) {
+            break;
+          }
+
           onStatusChanged(status);
           await checkAndAutosave(status);
         } catch (error) {
@@ -100,14 +120,16 @@ const RTKStatusUpdater = ({ onStatusChanged, period = 1000 }: Props) => {
       valueHolder.finished = true;
       valueHolder.promise = null;
     };
-  }, [dispatch, messageHub, onStatusChanged, period, savedCoordinates]);
+  }, [dispatch, enabled, messageHub, onStatusChanged, period]);
 
   return null;
 };
 
 export default connect(
   // mapStateToProps
-  null,
+  (state: RootState) => ({
+    isConnected: isConnected(state),
+  }),
   // mapDispatchToProps
   (dispatch) => ({
     onStatusChanged(status: RTKStatisticsResponse) {

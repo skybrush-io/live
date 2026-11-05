@@ -21,6 +21,7 @@ import { clearConnectionList } from '~/features/connections/slice';
 import { clearDockList } from '~/features/docks/slice';
 import { shouldManageLocalServer } from '~/features/local-server/selectors';
 import { addLogItem } from '~/features/log/slice';
+import { resetRTKStatistics } from '~/features/rtk/slice';
 import {
   calculateAndStoreClockSkew,
   disconnectFromServer,
@@ -661,6 +662,7 @@ async function executeTasksAfterDisconnection(dispatch) {
   dispatch(clearClockList());
   dispatch(clearConnectionList());
   dispatch(clearDockList());
+  dispatch(resetRTKStatistics());
   dispatch(clearServerFeatures());
   dispatch(clearServerLicense());
   dispatch(clearServerPortMapping());

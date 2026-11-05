@@ -46,7 +46,7 @@ const MapView = loadable(
 
 import '~/../assets/css/workbench.less';
 import UAVStatusMiniList from './components/uavs/UAVStatusMiniList';
-import RTKStatusMiniList from './features/rtk/RTKStatusMiniList';
+import RTKStatusPanel from './features/rtk/RTKStatusPanel';
 import SelectionGroupMiniList from './features/selection/SelectionGroupMiniList';
 
 /**
@@ -179,7 +179,7 @@ export const componentRegistry: ComponentRegistry = {
 
   // The following panels are only used when a header widget is pinned to the workbench
   'rtk-status-mini-list': {
-    component: RTKStatusMiniList,
+    component: RTKStatusPanel,
     label: 'RTK status',
     detachable: true,
   },

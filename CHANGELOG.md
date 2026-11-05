@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- The RTK status panel that appears when the RTK status header widget is
+  pinned to the workbench now also shows the signal strength chart of the
+  satellites tracked by the RTK base station.
+
+### Fixed
+
+- The RTK status widget no longer shows stale satellite counts and signal
+  strengths after the connection to the server is lost.
+
+- The RTK status is now queried from the server only once even if multiple
+  widgets need it at the same time, and stale bars in the satellite signal
+  strength chart are now faded out reliably.
+
 ## [2.15.0] - 2026-11-05
 
 ### Added
