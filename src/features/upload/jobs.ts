@@ -128,7 +128,11 @@ export type JobSpecification<
   ) => Promise<UAVStatus>;
 };
 
-export type UnknownJobSpecification = JobSpecification<unknown, unknown, unknown>;
+export type UnknownJobSpecification = JobSpecification<
+  unknown,
+  unknown,
+  unknown
+>;
 export type AnyJobSpecification = JobSpecification<any, any, any>;
 
 /**

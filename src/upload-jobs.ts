@@ -7,7 +7,10 @@ import firmwareUploadJobSpecification from '~/features/firmware-update/upload';
 import missionItemUploadJobSpecification from '~/features/mission/upload';
 import parameterUploadJobSpecification from '~/features/parameters/upload';
 import showUploadJobSpecification from '~/features/show/upload';
-import { type AnyJobSpecification, registerUploadJobType } from '~/features/upload/jobs';
+import {
+  type AnyJobSpecification,
+  registerUploadJobType,
+} from '~/features/upload/jobs';
 import { registerUploadJobResultPanel } from '~/features/upload/result-panels';
 import ValueConsistencyResultPanel from '~/features/upload-support/value-consistency/ValueConsistencyResultPanel';
 import { tt, ttRecord } from '~/i18n';
