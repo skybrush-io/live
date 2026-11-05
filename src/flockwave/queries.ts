@@ -4,6 +4,7 @@
  */
 
 import type {
+  DroneLightsConfiguration,
   DroneShowConfiguration,
   FirmwareUpdateTarget,
   License,
@@ -20,6 +21,7 @@ import type {
   Response_RTKSTAT,
   Response_RTKSURVEY,
   Response_SHOWCFG,
+  Response_SHOWLIGHTS,
   Response_SYSPORTS,
   Response_UAVPREFLT,
   Response_WTHAT,
@@ -463,6 +465,24 @@ export async function getShowConfiguration(
 }
 
 /**
+ * Returns the configuration of the LED lights of the drones in the current
+ * drone show managed by the server.
+ */
+export async function getShowLightConfiguration(
+  hub: MessageHub
+): Promise<DroneLightsConfiguration> {
+  const response = await hub.sendMessage<Response_SHOWLIGHTS>({
+    type: 'SHOW-LIGHTS',
+  });
+  const configuration = response?.body?.configuration;
+  if (configuration && typeof configuration === 'object') {
+    return configuration;
+  }
+
+  throw new Error('No light configuration returned');
+}
+
+/**
  * Returns available firmware version information for the given UAV.
  */
 export async function getFirmwareVersionInfo(
@@ -559,6 +579,7 @@ const _queries = {
   getSelectedRTKPresetId,
   getServerPortMapping,
   getShowConfiguration,
+  getShowLightConfiguration,
   getFirmwareVersionInfo,
   getWeatherInformation,
   isExtensionLoaded,

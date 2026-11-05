@@ -22,6 +22,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Skybrush Live now shows a permanent warning when the server reaches the
   object limit of its license.
 
+- Changes to the show settings, LED light control and RTK source made in one
+  Skybrush Live instance now appear in all other instances connected to the
+  same server. Requires server version 2.61.0 or later.
+
 ### Fixed
 
 - Reverted to instant scrolling in the "Messages" panel instead of smooth scrolling

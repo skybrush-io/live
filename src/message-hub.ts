@@ -6,6 +6,7 @@
 
 import type {
   Notification_CONNDEL,
+  Notification_EVTINF,
   Notification_OBJDEL,
   Notification_SYSCLOSE,
   Notification_SYSMSG,
@@ -32,6 +33,7 @@ import {
   handleConnectionInformationMessage,
 } from './model/connections';
 import { handleDockInformationMessage } from './model/docks';
+import { handleEventNotificationMessage } from './model/events';
 import { handleObjectDeletionMessage } from './model/objects';
 
 import { batchAddInboundMessages } from './features/messages/slice';
@@ -76,6 +78,8 @@ messageHub.registerNotificationHandlers({
     handleConnectionInformationMessage(message.body, dispatch),
   'DOCK-INF': (message: Message<Response_DOCKINF>) =>
     handleDockInformationMessage(message.body, dispatch),
+  'EVT-INF': (message: Message<Notification_EVTINF>) =>
+    handleEventNotificationMessage(message.body, dispatch),
   'OBJ-DEL': (message: Message<Notification_OBJDEL>) =>
     handleObjectDeletionMessage(message.body, dispatch),
   'SYS-CLOSE': (message: Message<Notification_SYSCLOSE>) => {
