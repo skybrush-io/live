@@ -13,6 +13,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   pinned to the workbench now also shows the signal strength chart of the
   satellites tracked by the RTK base station.
 
+### Changed
+
+- Removed the RTK source selector from the "Setup environment" dialog.
+  Observing users has shown that people set the RTK source from the RTK
+  setup dialog instead and the widget in the "Setup environment" dialog
+  was unused.
+
 ### Fixed
 
 - The RTK status widget no longer shows stale satellite counts and signal
