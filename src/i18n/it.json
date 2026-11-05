@@ -309,7 +309,7 @@
     "AHL": "Altitudine sopra il livello di casa (AHL)",
     "AMSL": "Altitudine sopra il livello del mare (AMSL)",
     "AMSLReference": "Rifermento AMSL",
-    "altitudeControl": "Controllo altitudine e correzioni RTK",
+    "altitudeControl": "Controllo altitudine",
     "coordinateSystem": "Sistema di coordinate",
     "copyMapOriginToShow": "Copia l'origine della mappa all'origine dello show",
     "copyShowOriginToMap": "Copia l'origine dello show all'origine della mappa",

@@ -551,7 +551,7 @@
     "AHL": "相对于初始位置的高度（AHL）",
     "AMSL": "相对于平均海平面的高度（AMSL）",
     "AMSLReference": "海拔高度参考",
-    "altitudeControl": "高度控制和RTK校正",
+    "altitudeControl": "高度控制",
     "coordinateSystem": "坐标系统",
     "copyMapOriginToShow": "将地图原点复制到展示原点",
     "copyShowOriginToMap": "将展示原点复制到地图原点",

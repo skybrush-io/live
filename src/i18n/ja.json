@@ -451,7 +451,7 @@
     "AHL": "ホームレベル上の高度(AHL)",
     "AMSL": "平均海水位上の高度(AMSL)",
     "AMSLReference": "AMSL参照",
-    "altitudeControl": "高度制御とRTKコネクション",
+    "altitudeControl": "高度制御",
     "coordinateSystem": "座標系",
     "copyMapOriginToShow": "マップ原点をショー原点へコピー",
     "copyShowOriginToMap": "ショー原点をマップ原点へコピー",
