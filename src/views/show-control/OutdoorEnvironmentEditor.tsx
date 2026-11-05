@@ -28,7 +28,6 @@ import { SimpleDistanceField } from '~/components/forms/fields';
 import { estimateShowCoordinateSystemFromActiveUAVs } from '~/features/auto-fit/actions';
 import { canEstimateShowCoordinateSystemFromActiveUAVs } from '~/features/auto-fit/selectors';
 import { updateFlatEarthCoordinateSystem } from '~/features/map/origin';
-import RTKCorrectionSourceSelector from '~/features/rtk/RTKCorrectionSourceSelector';
 import {
   setOutdoorShowAltitudeReferenceToAverageAMSL,
   setOutdoorShowAltitudeReferenceType,
