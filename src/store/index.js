@@ -90,6 +90,9 @@ const persistConfig = {
       'serverSettings',
     ]),
 
+    // The open flag of the collective RTH dialog is transient
+    createBlacklistFilter('dialogs', ['collectiveRTH.open']),
+
     // The pending UAV Id overlay should be temporary and reset on reload
     createBlacklistFilter('hotkeys', ['pendingUAVId']),
 

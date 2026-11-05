@@ -20,7 +20,7 @@ type Props = {
   clock: Clock;
   clockId: string;
   clockSkew?: number;
-  emptyText: string;
+  emptyText?: string;
   format?: string;
   signed: boolean;
   updateInterval: number;
@@ -31,7 +31,7 @@ const ClockDisplayLabel = ({
   clock,
   clockId,
   clockSkew,
-  emptyText,
+  emptyText = '',
   format = 'HH:mm:ss',
   signed,
   updateInterval,

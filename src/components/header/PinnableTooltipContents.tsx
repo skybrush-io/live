@@ -4,6 +4,7 @@ import Stack, { type StackProps } from '@mui/material/Stack';
 import { createSecondaryAreaStyle, makeStyles } from '@skybrush/app-theme-mui';
 import { use } from 'react';
 import type { ItemConfigType, Workbench } from 'react-flexible-workbench';
+import { useTranslation } from 'react-i18next';
 
 import Keep from '~/icons/Keep';
 import { WorkbenchContext } from '~/workbench';
@@ -51,6 +52,7 @@ const PinnableTooltipContents = ({
   ...rest
 }: Props) => {
   const classes = useStyles();
+  const { t } = useTranslation();
   const workbench = use(WorkbenchContext);
   const pinned = isPinned(workbench, component);
 
@@ -73,7 +75,12 @@ const PinnableTooltipContents = ({
             size='small'
             edge='end'
             onClick={() => {
-              pinToWorkbenchOrBringToFront(workbench, component, title);
+              pinToWorkbenchOrBringToFront(
+                workbench,
+                component,
+                /* i18next-extract-disable-next-line */
+                title ?? t(`view.${component}`)
+              );
             }}
             disabled={pinned}
           >

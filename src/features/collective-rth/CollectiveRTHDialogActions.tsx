@@ -64,16 +64,18 @@ const CollectiveRTHDialogActions = ({
             <Check />
             {t('general.action.approve')}
           </Button>
-          <Button
-            color='error'
-            onClick={() => {
-              rejectTransformedShow();
-            }}
-          >
-            <Close />
-            {t('general.action.reject')}
-          </Button>
         </>
+      )}
+      {(phase === 'waitingForApproval' || phase === 'error') && (
+        <Button
+          color='error'
+          onClick={() => {
+            rejectTransformedShow();
+          }}
+        >
+          <Close />
+          {t('general.action.reject')}
+        </Button>
       )}
     </DialogActions>
   );

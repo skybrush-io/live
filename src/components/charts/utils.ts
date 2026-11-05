@@ -97,7 +97,7 @@ export const getDefaultChartOptions = memoize(
         scales: {
           x: getDefaultCartesianScaleOptions('x', isDark),
           y: getDefaultCartesianScaleOptions('y', isDark),
-          y2: getDefaultCartesianScaleOptions('y', isDark),
+          // y2: getDefaultCartesianScaleOptions('y', isDark),
         },
       } as ChartOptions<T>
     )

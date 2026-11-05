@@ -143,6 +143,13 @@ const { actions, reducer } = createSlice({
     },
 
     /**
+     * Clears the checked status of all preflight checks without removing them.
+     */
+    resetPreflightCheckStatuses(state) {
+      state.checked = [];
+    },
+
+    /**
      * Sets the list of preflight checks and groups.
      */
     setPreflightCheckListItems(
@@ -213,6 +220,7 @@ const { actions, reducer } = createSlice({
 export const {
   clearPreflightCheckGroups,
   clearPreflightCheckListItems,
+  resetPreflightCheckStatuses,
   setPreflightCheckListItems,
   setPreflightCheckStatus,
   togglePreflightCheckStatus,

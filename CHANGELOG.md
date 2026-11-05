@@ -5,7 +5,62 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## [main]
+
+### Added
+
+- Added a button to reset the manual preflight checklist without unloading
+  the show.
+
+- Added a setting in the Settings dialog that allows the user to set the
+  scale of the UI in the desktop app edition. Note that we do not officially
+  support running the UI at anything else but 100% scale as we do not have
+  the resources to test the UI manually at all scales, but at least the option
+  is there for people who are willing to put up with minor UX inconveniences
+  at scales other than 100%.
+
+- Skybrush Live now shows a permanent warning when the server reaches the
+  object limit of its license.
+
+- Changes to the show settings, LED light control and RTK source made in one
+  Skybrush Live instance now appear in all other instances connected to the
+  same server. Requires server version 2.61.0 or later.
+
+### Fixed
+
+- Reverted to instant scrolling in the "Messages" panel instead of smooth scrolling
+  because the latter caused an inconvenient delay when a long list of messages was
+  opened for the first time.
+
+- Shift-clicking on a row in the UAV status summary list now adds the
+  corresponding UAVs to the current selection, while Cmd-clicking (Ctrl-clicking
+  on Windows and Linux) toggles them in the current selection.
+
+- Upload panels can now conveniently show 5-digit UAV IDs.
+
+- Ensure correct hotkey handling when Caps Lock is active.
+
+## [2.14.2] - 2026-09-16
+
+### Fixed
+
+- Skybrush Live now requires server version 2.53.1 or later to reveal the show
+  suspension and collective RTH buttons due to a protocol change in server version 2.53.
+
+- Fixed the layout of the parameter comparison result panel.
+
+- Fixed a bug where the Timeline panel did not keep its state when it was detached
+  from the main window or hidden in a tabbed section of the workbench.
+
+- Fixed a visual glitch in the fade-and-slide UI transitions.
+
+## [2.14.1] - 2026-09-14
+
+### Fixed
+
+- Fixed CommonJS vs ESM module import issues in certain Electron environments.
+
+## [2.14.0] - 2026-09-14
 
 ### Added
 
@@ -34,6 +89,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added a firmware version check job that compares the versions of the firmware
   components reported by the drones.
+
+- Added a timeline panel that shows the altitude range and the distance range of the
+  swarm as a function of time during the show as well as the expected time to bring
+  the swarm home when the show file contains collective RTH plans.
 
 ### Changed
 

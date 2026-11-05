@@ -1,1 +1,1 @@
-export { default } from './TimelinePanel';
+export { default } from './TimelineView';

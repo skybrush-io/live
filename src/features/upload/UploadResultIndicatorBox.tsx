@@ -123,7 +123,7 @@ const UploadResultIndicatorBox = ({
         onClick={onDismissLastUploadResult}
         sx={{ flex: 1, cursor: 'pointer' }}
       >
-        <UploadResultIndicator {...rest} />
+        <UploadResultIndicator running={running} {...rest} />
       </Box>
     </Fade>
   );

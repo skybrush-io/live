@@ -1,5 +1,6 @@
 import Box, { type BoxProps } from '@mui/material/Box';
 import Fade from '@mui/material/Fade';
+import type { TFunction } from 'i18next';
 import { useTranslation } from 'react-i18next';
 
 import { LabeledStatusLight } from '@skybrush/mui-components';
@@ -7,24 +8,28 @@ import { LabeledStatusLight } from '@skybrush/mui-components';
 import { Status } from '~/components/semantics';
 import { formatSurveyAccuracy } from './utils';
 
-function formatAccuracy(message: string, value: number | undefined) {
+function formatStatus(
+  t: TFunction,
+  surveying: boolean,
+  value: number | undefined
+): string {
   if (typeof value !== 'number' || value <= 0) {
-    return message;
+    return surveying ? t('surveyStatusIndicator.surveying') : '';
   }
 
-  const formattedValue = formatSurveyAccuracy(value);
-  if (!message || message.length === 0) {
-    if (formattedValue && formattedValue.charAt(0) === '>') {
-      return `Accuracy ${formattedValue}`;
-    } else {
-      return `Accuracy: ${formattedValue}`;
-    }
+  const accuracy = formatSurveyAccuracy(value);
+  const isUpperBound = accuracy.startsWith('>');
+  // The result is rendered by React, so HTML escaping is not needed
+  const options = { accuracy, interpolation: { escapeValue: false } };
+
+  if (surveying) {
+    return isUpperBound
+      ? t('surveyStatusIndicator.surveyingWithAccuracyAbove', options)
+      : t('surveyStatusIndicator.surveyingWithAccuracy', options);
   } else {
-    if (formattedValue && formattedValue.charAt(0) === '>') {
-      return `${message}, accuracy ${formattedValue}`;
-    } else {
-      return `${message}, accuracy: ${formattedValue}`;
-    }
+    return isUpperBound
+      ? t('surveyStatusIndicator.accuracyAbove', options)
+      : t('surveyStatusIndicator.accuracy', options);
   }
 }
 
@@ -63,9 +68,9 @@ const SurveyStatusIndicator = ({
           color='textSecondary'
         >
           {active
-            ? formatAccuracy('Surveying', accuracy)
+            ? formatStatus(t, true, accuracy)
             : valid
-              ? formatAccuracy('', accuracy)
+              ? formatStatus(t, false, accuracy)
               : supported
                 ? t('surveyStatusIndicator.notStartedYet')
                 : t('surveyStatusIndicator.noSurveyInformation')}

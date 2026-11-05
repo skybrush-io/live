@@ -1,9 +1,7 @@
-import Delete from '@mui/icons-material/Delete';
 import FolderOpen from '@mui/icons-material/FolderOpen';
 import NavigateNext from '@mui/icons-material/NavigateNext';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import IconButton from '@mui/material/IconButton';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import { keyframes } from '@mui/material/styles';
@@ -11,11 +9,12 @@ import { useLayoutEffect, useRef } from 'react';
 import type { ReactNode } from 'react';
 
 import { makeStyles } from '@skybrush/app-theme-mui';
-import { MiniList, Tooltip } from '@skybrush/mui-components';
+import { MiniList } from '@skybrush/mui-components';
 
 import type { Identifier, ItemLike } from '~/utils/collections';
 
 import FileButton from './FileButton';
+import ItemListSidebarHeader from './ItemListSidebarHeader';
 
 const fadeIn = keyframes({
   from: { opacity: 0 },
@@ -27,18 +26,6 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     flexDirection: 'column',
     minWidth: 320,
-  },
-
-  header: {
-    display: 'flex',
-    minHeight: theme.spacing(6),
-    alignItems: 'center',
-    padding: theme.spacing(0, 0, 0, 2),
-  },
-
-  title: {
-    textTransform: 'uppercase',
-    flex: 1,
   },
 
   listArea: {
@@ -104,20 +91,12 @@ const ItemListSidebar = <T extends ItemLike>({
 
   return (
     <Box className={classes.root}>
-      <Box className={classes.header}>
-        <Box className={classes.title}>{title}</Box>
-        {onRemoveAllItems && (
-          <Tooltip content={removeAllLabel}>
-            <IconButton
-              disabled={items.length === 0}
-              size='large'
-              onClick={onRemoveAllItems}
-            >
-              <Delete />
-            </IconButton>
-          </Tooltip>
-        )}
-      </Box>
+      <ItemListSidebarHeader
+        removeAllDisabled={items.length === 0}
+        removeAllLabel={removeAllLabel}
+        title={title}
+        onRemoveAllItems={onRemoveAllItems}
+      />
       <Box className={classes.listArea}>
         <MiniList ref={listRef} className={classes.list}>
           {items.map((item) => (

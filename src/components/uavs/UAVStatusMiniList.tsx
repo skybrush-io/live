@@ -1,6 +1,5 @@
 import { createSelector } from '@reduxjs/toolkit';
 import sortBy from 'lodash-es/sortBy';
-import unary from 'lodash-es/unary';
 import { orderBy } from 'natural-orderby';
 import React from 'react';
 import { Translation } from 'react-i18next';
@@ -10,7 +9,11 @@ import { BackgroundHint, MiniList } from '@skybrush/mui-components';
 
 import { listOf } from '~/components/helpers/lists';
 import { Status, statusToPriority } from '~/components/semantics';
-import { setSelectedUAVIds } from '~/features/uavs/actions';
+import {
+  addUAVIdsToSelection,
+  setSelectedUAVIds,
+  toggleUAVIdsInSelection,
+} from '~/features/uavs/actions';
 import {
   getInactiveUAVIds,
   getSingleUAVStatusSummary,
@@ -18,7 +21,8 @@ import {
   getUAVIdsMarkedAsGone,
   getUAVIdToStateMapping,
 } from '~/features/uavs/selectors';
-import type { RootState } from '~/store/reducers';
+import type { AppThunk, RootState } from '~/store/reducers';
+import { eventHasPlatformModifierKey, eventHasShiftKey } from '~/utils/events';
 
 import UAVStatusMiniListEntry from './UAVStatusMiniListEntry';
 
@@ -33,7 +37,7 @@ type UAVStatusMiniListItem = {
 
 type UAVStatusMiniListProps = {
   items: UAVStatusMiniListItem[];
-  onClick?: (uavIds: string[]) => void;
+  onClick?: (uavIds: string[], event: React.SyntheticEvent) => void;
 } & React.RefAttributes<HTMLUListElement>;
 
 /**
@@ -117,7 +121,7 @@ const UAVStatusMiniList = listOf<UAVStatusMiniListItem, UAVStatusMiniListProps>(
           ? (event: React.SyntheticEvent) => {
               event.preventDefault();
               event.stopPropagation();
-              onClick(item.uavIds);
+              onClick(item.uavIds, event);
             }
           : undefined
       }
@@ -144,6 +148,17 @@ export default connect(
   }),
   // mapDispatchToProps
   {
-    onClick: unary(setSelectedUAVIds),
+    onClick:
+      (uavIds: string[], event: React.SyntheticEvent): AppThunk =>
+      (dispatch) => {
+        const nativeEvent = event.nativeEvent;
+        if (eventHasPlatformModifierKey(nativeEvent)) {
+          dispatch(toggleUAVIdsInSelection(uavIds));
+        } else if (eventHasShiftKey(nativeEvent)) {
+          dispatch(addUAVIdsToSelection(uavIds));
+        } else {
+          dispatch(setSelectedUAVIds(uavIds));
+        }
+      },
   }
 )(UAVStatusMiniList);

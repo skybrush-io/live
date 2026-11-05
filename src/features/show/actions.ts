@@ -15,6 +15,7 @@ import {
 
 import { getFeaturesInOrder } from '~/features/map-features/selectors';
 import { removeFeaturesByIds } from '~/features/map-features/slice';
+import { resetPreflightCheckStatuses } from '~/features/preflight/slice';
 import {
   ensureMissionType,
   setMappingLength,
@@ -72,6 +73,7 @@ import {
 import {
   _clearLoadedShow,
   _setOutdoorShowAltitudeReference,
+  clearManualPreflightChecks,
   approveTakeoffAreaAt,
   loadingProgress,
   revokeTakeoffAreaApproval,
@@ -502,6 +504,14 @@ export const reloadCurrentShowFile =
  */
 export const signOffOnManualPreflightChecks = (): AppThunk => (dispatch) => {
   dispatch(signOffOnManualPreflightChecksAt(Date.now()));
+};
+
+/**
+ * Thunk that resets the manual preflight checklist and its sign-off status.
+ */
+export const resetManualPreflightChecks = (): AppThunk => (dispatch) => {
+  dispatch(resetPreflightCheckStatuses());
+  dispatch(clearManualPreflightChecks());
 };
 
 /**

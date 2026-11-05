@@ -14,6 +14,7 @@ import CornerRibbon from './components/CornerRibbon';
 import dialogs from './components/dialogs';
 import Header from './components/header';
 import ServerConnectionManager from './components/ServerConnectionManager';
+import UIScaleWatcher from './components/UIScaleWatcher';
 import CollectiveRTHDialog from './features/collective-rth/CollectiveRTHDialog';
 import ConsistencyCheckSetupDialog from './features/consistency-check/ConsistencyCheckSetupDialog';
 import DetachedPanelManager from './features/detachable-panels/DetachedPanelManager';
@@ -158,6 +159,7 @@ const App = ({ onFirstRender }) => (
       <ServerConnectionManager />
 
       <LanguageWatcher />
+      <UIScaleWatcher />
       <MissionProgressObserver />
       <ShowFileWatcher />
 

@@ -25,6 +25,7 @@ import {
   calculateAndStoreClockSkew,
   disconnectFromServer,
 } from '~/features/servers/actions';
+import { subscribeToServerEvents } from '~/features/servers/subscriptions';
 import {
   getClockSkewInMilliseconds,
   getServerPort,
@@ -497,6 +498,10 @@ async function executeTasksAfterConnection(dispatch, getState) {
       body: { version },
     } = await messageHub.sendMessage('SYS-VER');
     dispatch(setServerVersion(version));
+
+    // Subscribe to server-side events before retrieving any state from the
+    // server so we do not miss changes that happen in the meanwhile
+    await dispatch(subscribeToServerEvents());
 
     // Send a CONN-LIST message to the server to get an up-to-date
     // list of connections

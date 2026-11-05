@@ -6,10 +6,12 @@ import List, { type ListProps } from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
+import type { Theme } from '@mui/material/styles';
 import Switch from '@mui/material/Switch';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
+import { createSecondaryAreaStyle, makeStyles } from '@skybrush/app-theme-mui';
 import {
   BackgroundHint,
   DraggableDialog,
@@ -109,6 +111,15 @@ const PreflightCheckList = connect(
   {}
 )(PreflightCheckListPresentation);
 
+const useStyles = makeStyles((theme: Theme) => ({
+  bottomArea: {
+    ...createSecondaryAreaStyle(theme, { inset: 'top' }),
+    alignItems: 'center',
+    display: 'flex',
+    padding: theme.spacing(1, 3),
+  },
+}));
+
 type OnboardPreflightChecksDialogProps = {
   open?: boolean;
   onClear: () => void;
@@ -129,6 +140,7 @@ const OnboardPreflightChecksDialog = ({
   onSignOff,
   signedOff = false,
 }: OnboardPreflightChecksDialogProps) => {
+  const classes = useStyles();
   const { t } = useTranslation();
 
   return (
@@ -159,19 +171,21 @@ const OnboardPreflightChecksDialog = ({
         >
           <PreflightCheckList />
         </Box>
-        <Box className='bottom-bar' sx={{ textAlign: 'center', pt: 2 }}>
-          <FormControlLabel
-            control={
-              <Switch
-                checked={signedOff}
-                value='signedOff'
-                onChange={signedOff ? onClear : onSignOff}
-              />
-            }
-            label={t('OnboardPreflightChecksDialog.signOffOn')}
-          />
-        </Box>
       </DialogContent>
+      <Box className={classes.bottomArea}>
+        <Box flex={1} />
+        <FormControlLabel
+          control={
+            <Switch
+              checked={signedOff}
+              value='signedOff'
+              onChange={signedOff ? onClear : onSignOff}
+            />
+          }
+          label={t('OnboardPreflightChecksDialog.signOffOn')}
+        />
+        <Box flex={1} />
+      </Box>
     </DraggableDialog>
   );
 };

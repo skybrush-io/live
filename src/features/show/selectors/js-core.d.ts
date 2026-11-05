@@ -42,6 +42,8 @@ export const getOutdoorShowToWorldCoordinateSystemTransformationObject: (
   state: RootState
 ) => FlatEarthCoordinateSystem | undefined;
 
+export const getShowDescription: (state: RootState) => string;
+
 export const getShowStartTimeAsString: (state: RootState) => string;
 
 export const getShowToFlatEarthCoordinateSystemTransformation: AppSelector<

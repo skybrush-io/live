@@ -1,0 +1,155 @@
+/**
+ * @file Component for viewing, editing and exporting markdown notes.
+ */
+
+import Save from '@mui/icons-material/Save';
+import IconButton from '@mui/material/IconButton';
+import formatDate from 'date-fns/format';
+import 'easymde/dist/easymde.min.css';
+import debounce from 'lodash-es/debounce';
+import { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
+import { connect } from 'react-redux';
+import SimpleMDE from 'react-simplemde-editor';
+
+import { makeStyles } from '@skybrush/app-theme-mui';
+
+import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
+import { updateFieldNotes } from '~/features/field-notes/slice';
+import type { RootState } from '~/store/reducers';
+import { writeTextToFile } from '~/utils/filesystem';
+
+const SIMPLE_MDE_OPTIONS = {
+  autoDownloadFontAwesome: false,
+  spellChecker: false,
+  toolbar: false,
+  status: false,
+  // Disable all the default hotkeys except for toggling bold and italic styles.
+  shortcuts: {
+    cleanBlock: null,
+    drawImage: null,
+    drawLink: null,
+    toggleBlockquote: null,
+    // toggleBold: null,
+    toggleCodeBlock: null,
+    toggleFullScreen: null,
+    toggleHeading1: null,
+    toggleHeading2: null,
+    toggleHeading3: null,
+    toggleHeading4: null,
+    toggleHeading5: null,
+    toggleHeading6: null,
+    toggleHeadingBigger: null,
+    toggleHeadingSmaller: null,
+    // toggleItalic: null,
+    toggleOrderedList: null,
+    togglePreview: null,
+    toggleSideBySide: null,
+    toggleUnorderedList: null,
+  },
+};
+
+const useStyles = makeStyles((theme) => ({
+  editorWrapper: {
+    height: '100%',
+    overflow: 'overlay',
+
+    '&:hover': {
+      '& + $saveIcon': {
+        opacity: 1,
+      },
+    },
+
+    '& .cm-s-easymde .cm-header-1': {
+      fontSize: 'calc(1.2rem + 0.4vw)',
+    },
+
+    '& .cm-s-easymde .cm-header-2': {
+      fontSize: 'calc(1.2rem + 0.3vw)',
+    },
+
+    '& .cm-s-easymde .cm-header-3': {
+      fontSize: 'calc(1.2rem + 0.2vw)',
+    },
+
+    '& .cm-s-easymde .cm-header-4': {
+      fontSize: 'calc(1.2rem + 0.1vw)',
+    },
+
+    '& .cm-s-easymde .cm-header-5': {
+      fontSize: '1.2rem',
+    },
+
+    '& .cm-s-easymde .cm-header-6': {
+      fontSize: '1.1rem',
+    },
+  },
+
+  saveIcon: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+
+    opacity: 0,
+
+    '&:hover': {
+      opacity: 1,
+    },
+
+    transition: theme.transitions.create(['opacity'], {
+      duration: theme.transitions.duration.short,
+    }),
+  },
+}));
+
+type Props = {
+  contents?: string;
+  updateFieldNotes: (value: string) => void;
+};
+
+const FieldNotesPanel = ({ contents, updateFieldNotes }: Props) => {
+  const { t } = useTranslation();
+  const classes = useStyles();
+
+  const exportNotes = useCallback(() => {
+    void writeTextToFile(
+      contents ?? '',
+      `notes_${formatDate(new Date(), 'yyyy-MM-dd_HH-mm-ss')}.md`,
+      { title: 'Export notes' }
+    );
+  }, [contents]);
+
+  return (
+    <>
+      <SimpleMDE
+        className={classes.editorWrapper}
+        options={SIMPLE_MDE_OPTIONS}
+        value={contents}
+        onChange={debounce(updateFieldNotes, 1000)}
+      />
+      <Tooltip
+        content={t('fieldNotesPanel.exportNotesAsFile')}
+        placement='left'
+      >
+        <IconButton
+          className={classes.saveIcon}
+          size='large'
+          onClick={exportNotes}
+        >
+          <Save />
+        </IconButton>
+      </Tooltip>
+    </>
+  );
+};
+
+export default connect(
+  // mapStateToProps
+  (state: RootState) => ({
+    contents: state.fieldNotes.contents,
+  }),
+  // mapDispatchToProps
+  {
+    updateFieldNotes,
+  }
+)(FieldNotesPanel);

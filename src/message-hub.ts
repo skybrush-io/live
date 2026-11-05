@@ -6,6 +6,7 @@
 
 import type {
   Notification_CONNDEL,
+  Notification_EVTINF,
   Notification_OBJDEL,
   Notification_SYSCLOSE,
   Notification_SYSMSG,
@@ -19,7 +20,11 @@ import type {
 import { handleDebugRequest } from './debugging';
 
 import MessageHub from './flockwave/messages';
-import type { Message } from './flockwave/types';
+import {
+  isLogMessageCode,
+  type LogMessageCode,
+  type Message,
+} from './flockwave/types';
 
 import { handleBeaconInformationMessage } from './model/beacons';
 import { handleClockInformationMessage } from './model/clocks';
@@ -28,18 +33,30 @@ import {
   handleConnectionInformationMessage,
 } from './model/connections';
 import { handleDockInformationMessage } from './model/docks';
+import { handleEventNotificationMessage } from './model/events';
 import { handleObjectDeletionMessage } from './model/objects';
 
 import { batchAddInboundMessages } from './features/messages/slice';
 import { showError, showNotification } from './features/snackbar/actions';
+import type { Notification } from './features/snackbar/types';
 import { semanticsFromSeverity } from './features/snackbar/utils';
 import type { Severity } from './model/enums';
 
 import React from 'react';
 import flock from './flock';
+import i18n from './i18n';
 import store from './store';
 
 const { dispatch } = store;
+
+/**
+ * Record that maps log message codes to notification properties.
+ */
+const notificationOverridesByCode: Partial<
+  Record<LogMessageCode, Partial<Notification>>
+> = {
+  'objects.limit_reached': { permanent: true, topic: 'objects.limit_reached' },
+};
 
 /**
  * The single application-wide message hub that other objects can use to
@@ -61,6 +78,8 @@ messageHub.registerNotificationHandlers({
     handleConnectionInformationMessage(message.body, dispatch),
   'DOCK-INF': (message: Message<Response_DOCKINF>) =>
     handleDockInformationMessage(message.body, dispatch),
+  'EVT-INF': (message: Message<Notification_EVTINF>) =>
+    handleEventNotificationMessage(message.body, dispatch),
   'OBJ-DEL': (message: Message<Notification_OBJDEL>) =>
     handleObjectDeletionMessage(message.body, dispatch),
   'SYS-CLOSE': (message: Message<Notification_SYSCLOSE>) => {
@@ -82,9 +101,15 @@ messageHub.registerNotificationHandlers({
       if (!item.sender) {
         // This message came directly from the server so we show it as a
         // notification
+        const code = isLogMessageCode(item.code) ? item.code : undefined;
         showNotification({
-          message: item.message,
+          message: code
+            ? i18n.t(`serverLogMessageCode.${code}`, {
+                defaultValue: item.message,
+              })
+            : item.message,
           semantics: semanticsFromSeverity(item.severity),
+          ...(code ? notificationOverridesByCode[code] : undefined),
         });
       } else {
         // This message probably came from a UAV so let's add it to the

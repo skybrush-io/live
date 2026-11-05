@@ -5,6 +5,9 @@
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
+import { registerEventHandlers } from '~/model/events';
+import type { AppThunk } from '~/store/reducers';
+
 type LightControlSliceState = {
   active: boolean;
   color: string;
@@ -45,5 +48,18 @@ export const {
   setColor,
   setLightControlActive,
 } = actions;
+
+const unregisterEventHandlers = registerEventHandlers({
+  // The actions are imported lazily because they import the message hub, which
+  // in turn imports the store. The store imports this slice, so importing the
+  // actions here would make the store depend on itself while it is loading.
+  'show:lights': (): AppThunk<Promise<void>> => async (dispatch) => {
+    const { updateLightControlFromServer } = await import('./actions');
+    dispatch(updateLightControlFromServer());
+  },
+});
+if (module.hot) {
+  module.hot.dispose(unregisterEventHandlers);
+}
 
 export default reducer;

@@ -101,6 +101,7 @@ export type RTHPlanTaskResult = {
   showDuration: number;
   firstTime: number;
   lastTime: number;
+  minRTHAltitude?: number;
 };
 
 // ---- Task spec (data + params, what callers pass to start) ----

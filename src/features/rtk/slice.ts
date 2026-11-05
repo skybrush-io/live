@@ -8,6 +8,7 @@ import type { RTKPresetType } from '@skybrush/flockwave-spec';
 import isEqual from 'lodash-es/isEqual';
 import isNil from 'lodash-es/isNil';
 
+import { registerEventHandlers } from '~/model/events';
 import { noPayload } from '~/utils/redux';
 
 import type { RTKPresetEditorDialogMode } from './RTKPresetEditorDialog';
@@ -257,5 +258,13 @@ export const {
   updateRTKStatistics,
   _setCurrentRTKPresetIdAndTimestamp,
 } = actions;
+
+const unregisterEventHandlers = registerEventHandlers({
+  'rtk:presets': refreshRTKPresets,
+  'rtk:source': refreshRTKPresets,
+});
+if (module.hot) {
+  module.hot.dispose(unregisterEventHandlers);
+}
 
 export default reducer;
