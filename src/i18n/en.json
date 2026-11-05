@@ -82,6 +82,7 @@
     "editPreset": "Edit preset",
     "error": "Error while loading RTK sources from server",
     "noRTKData": "No RTK data sources on server",
+    "notConnected": "Not connected to server",
     "pleaseWait": "Please wait, loading RTK sources…",
     "rtkDisabled": "RTK disabled"
   },
@@ -96,6 +97,9 @@
     "surveyInProgress": "Survey in progress…",
     "surveyNo": "No survey in progress",
     "surveySuccesful": "Survey successful"
+  },
+  "RTKStatusPanel": {
+    "signalStrengths": "Satellite signal strengths"
   },
   "UAVList": {
     "allUAVs": "All UAVs",
