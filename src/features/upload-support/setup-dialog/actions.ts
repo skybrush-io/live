@@ -4,40 +4,51 @@
  */
 
 import type { Action } from '@reduxjs/toolkit';
-import delay from 'delay';
 
+import { waitForDialogTransition } from '~/components/transitions/utils';
 import { showErrorMessage } from '~/features/error-handling/slice';
 import { getRunningUploadJobType } from '~/features/upload/selectors';
 import {
   openUploadDialogForJob,
   openUploadDialogKeepingCurrentJob,
+  putUavsInWaitingQueue,
 } from '~/features/upload/slice';
 import type { AppSelector, AppThunk } from '~/store/reducers';
-
-/** Delay between closing the setup dialog and opening the upload dialog. */
-const SETUP_DIALOG_TRANSITION_DELAY = 150;
+import type { Identifier } from '~/utils/collections';
 
 /**
  * Creates a thunk that closes the setup dialog and opens the
  * upload dialog for the given job type, passing the result of `getPayload` as
  * the job payload and `showDialog()` as the upload dialog's back action.
+ *
+ * When `getInitialTargets` is given and returns a non-empty list, the UAVs
+ * in the list are put in the waiting queue of the upload dialog so the job
+ * targets only these UAVs.
  */
 export function createProceedToUploadDialogThunk<TPayload>(
   jobType: string,
   getPayload: AppSelector<TPayload>,
   closeDialog: () => Action,
-  showDialog: () => Action
+  showDialog: () => Action,
+  getInitialTargets?: AppSelector<Identifier[] | undefined>
 ): () => AppThunk<Promise<void>> {
   return () => async (dispatch, getState) => {
     const payload = getPayload(getState());
+    const targets = getInitialTargets?.(getState());
     dispatch(closeDialog());
-    await delay(SETUP_DIALOG_TRANSITION_DELAY);
+    await waitForDialogTransition();
     dispatch(
       openUploadDialogForJob({
         job: { type: jobType, payload },
         options: { backAction: showDialog() },
       })
     );
+
+    // Must come after opening the dialog because opening the dialog for a
+    // different job type clears the queues
+    if (targets && targets.length > 0) {
+      dispatch(putUavsInWaitingQueue(targets));
+    }
   };
 }
 

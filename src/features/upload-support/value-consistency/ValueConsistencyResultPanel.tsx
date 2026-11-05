@@ -1,10 +1,13 @@
+import BuildIcon from '@mui/icons-material/Build';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import type React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 
@@ -21,11 +24,14 @@ import {
 } from '@skybrush/mui-components';
 
 import type { PreparedI18nKey, PreparedI18nRecord } from '~/i18n';
-import type { RootState } from '~/store/reducers';
+import { useAppDispatch } from '~/store/hooks';
+import type { AppThunk, RootState } from '~/store/reducers';
 import type { Identifier } from '~/utils/collections';
 import { formatIdsAndTruncateTrailingItems } from '~/utils/formatting';
 
+import { collectValueFixes } from './analysis';
 import { selectValueConsistencyResults } from './selectors';
+import type { ValueFix } from './types';
 
 // -- Types
 
@@ -42,6 +48,39 @@ type ValueConsistencyMessages = Readonly<{
  * Maybe partial translation record for names shown in the per-name breakdown.
  */
 type TranslatedNames = Readonly<Record<string, string>>;
+
+/**
+ * Function that creates the thunk that applies the given fixes.
+ */
+type FixAction = (fixes: ValueFix[]) => AppThunk<unknown>;
+
+// -- Fix button
+
+type FixButtonProps = Readonly<{
+  disabled?: boolean;
+  label: string;
+  onClick: () => void;
+  tooltip: string;
+}>;
+
+/**
+ * Small button that applies a fix, with the details in its tooltip.
+ */
+const FixButton = ({ disabled, label, onClick, tooltip }: FixButtonProps) => (
+  <Tooltip content={tooltip}>
+    {/* The wrapper keeps the tooltip working when the button is disabled */}
+    <span>
+      <Button
+        disabled={disabled}
+        size='small'
+        startIcon={<BuildIcon />}
+        onClick={onClick}
+      >
+        {label}
+      </Button>
+    </span>
+  </Tooltip>
+);
 
 // -- Value grid row
 
@@ -105,6 +144,7 @@ const useValueGridStyles = makeStyles((theme) => ({
     gridTemplateColumns: 'auto auto 1fr',
     gap: theme.spacing(1),
     paddingInline: theme.spacing(3),
+    flex: 1,
   },
 }));
 
@@ -143,6 +183,8 @@ type ValueAccordionProps = Readonly<{
   label: string;
   valueMap: Record<string, Identifier[]>;
   majorityValue: string | undefined;
+  isTied: boolean;
+  onFix?: () => void;
 }>;
 
 const useValueAccordionStyles = makeStyles((theme) => ({
@@ -151,19 +193,6 @@ const useValueAccordionStyles = makeStyles((theme) => ({
     padding: theme.spacing(1, 0),
     maxHeight: 300,
     overflowY: 'auto',
-  },
-  accordionSummaryStack: {
-    width: '100%',
-    flexDirection: 'row',
-    gap: theme.spacing(1),
-    paddingInline: theme.spacing(1),
-  },
-  statusStack: {
-    flexDirection: 'row',
-    gap: theme.spacing(2),
-  },
-  spacer: {
-    flex: 1,
   },
 }));
 
@@ -175,7 +204,10 @@ const ValueAccordion = ({
   label,
   valueMap,
   majorityValue,
+  isTied,
+  onFix,
 }: ValueAccordionProps) => {
+  const { t } = useTranslation();
   const classes = useValueAccordionStyles();
   const consensusCount =
     majorityValue !== undefined ? (valueMap[majorityValue]?.length ?? 0) : 0;
@@ -188,10 +220,10 @@ const ValueAccordion = ({
   return (
     <Accordion disableGutters>
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-        <Stack className={classes.accordionSummaryStack}>
+        <Stack direction='row' gap={1} sx={{ width: '100%', px: 1 }}>
           <Typography component='span'>{label}</Typography>
-          <Box className={classes.spacer} />
-          <Stack className={classes.statusStack}>
+          <Box sx={{ flex: 1 }} />
+          <Stack gap={2} direction='row'>
             <LabeledStatusLight status={Status.SUCCESS} size='small'>
               {consensusCount}
             </LabeledStatusLight>
@@ -205,6 +237,23 @@ const ValueAccordion = ({
       </AccordionSummary>
       <AccordionDetails className={classes.accordionDetails}>
         <ValueGrid valueMap={valueMap} majorityValue={majorityValue} />
+        {onFix && deviatingCount > 0 && (
+          <Stack direction='column' sx={{ paddingRight: 1 }}>
+            <FixButton
+              disabled={isTied}
+              label={t('uploadPanel.fix')}
+              tooltip={
+                isTied
+                  ? t('uploadPanel.noClearMajority')
+                  : t('uploadPanel.fixDeviatingUAVs', {
+                      count: deviatingCount,
+                      value: majorityValue,
+                    })
+              }
+              onClick={onFix}
+            />
+          </Stack>
+        )}
       </AccordionDetails>
     </Accordion>
   );
@@ -216,12 +265,14 @@ type ResultSummaryProps = Readonly<{
   errorCount: number;
   inconsistencyCount: number;
   messages: ValueConsistencyMessages;
+  fixButton?: React.ReactNode;
 }>;
 
 const ResultSummary = ({
   errorCount,
   inconsistencyCount,
   messages,
+  fixButton,
 }: ResultSummaryProps) => {
   const { t } = useTranslation();
   const status =
@@ -237,9 +288,14 @@ const ResultSummary = ({
         ? messages.inconsistencies(t)
         : messages.consistent(t);
   return (
-    <Box sx={{ px: 3, py: 2 }}>
+    <Stack
+      direction='row'
+      sx={{ alignItems: 'center', gap: 1, pl: 3, pr: 2, py: fixButton ? 1 : 2 }}
+    >
       <LabeledStatusLight status={status}>{message}</LabeledStatusLight>
-    </Box>
+      <Box sx={{ flex: 1 }} />
+      {fixButton}
+    </Stack>
   );
 };
 
@@ -257,18 +313,27 @@ type ValueConsistencyResultPanelProps = Readonly<{
   jobType: string;
   messages: ValueConsistencyMessages;
   names?: PreparedI18nRecord;
+
+  /**
+   * Function that creates the thunk that sets the deviating values to the
+   * majority value. Fix buttons are shown only if this is given.
+   */
+  fixAction?: FixAction;
 }>;
 
 const ValueConsistencyResultPanel = ({
   jobType,
   messages,
   names,
+  fixAction,
 }: ValueConsistencyResultPanelProps) => {
   const { t } = useTranslation();
   const classes = useValueConsistencyResultPanelStyles();
-  const { distribution, errors, inconsistencies, majority } = useSelector(
-    (state: RootState) => selectValueConsistencyResults(state, jobType)
+  const dispatch = useAppDispatch();
+  const result = useSelector((state: RootState) =>
+    selectValueConsistencyResults(state, jobType)
   );
+  const { distribution, errors, inconsistencies, majority, tied } = result;
   const errorCount = Object.keys(errors).length;
   const inconsistencyCount = Object.keys(inconsistencies).length;
 
@@ -278,6 +343,37 @@ const ValueConsistencyResultPanel = ({
       <BackgroundHint
         sx={{ py: 1.5 }}
         text={t('uploadPanel.noJobResultAvailable')}
+      />
+    );
+  }
+
+  // Applies the fixes for the given name, or for all names if omitted
+  const fix = fixAction
+    ? (name?: string) => {
+        const fixes = collectValueFixes(result, name);
+        if (fixes.length > 0) {
+          void dispatch(fixAction(fixes));
+        }
+      }
+    : undefined;
+
+  let fixAllButton: React.ReactNode;
+  if (fix && inconsistencyCount > 0) {
+    const fixedUAVCount = new Set(
+      collectValueFixes(result).flatMap(({ uavIds }) => uavIds)
+    ).size;
+    fixAllButton = (
+      <FixButton
+        disabled={fixedUAVCount === 0}
+        label={t('uploadPanel.fixAll')}
+        tooltip={
+          fixedUAVCount === 0
+            ? t('uploadPanel.noClearMajority')
+            : t('uploadPanel.fixAllInconsistencies', { count: fixedUAVCount })
+        }
+        onClick={() => {
+          fix();
+        }}
       />
     );
   }
@@ -298,6 +394,7 @@ const ValueConsistencyResultPanel = ({
         errorCount={errorCount}
         inconsistencyCount={inconsistencyCount}
         messages={messages}
+        fixButton={fixAllButton}
       />
       {rows.map(({ name, label, valueMap, majorityValue }) => (
         <ValueAccordion
@@ -305,6 +402,14 @@ const ValueConsistencyResultPanel = ({
           label={label}
           valueMap={valueMap}
           majorityValue={majorityValue}
+          isTied={tied.includes(name)}
+          onFix={
+            fix
+              ? () => {
+                  fix(name);
+                }
+              : undefined
+          }
         />
       ))}
     </Box>

@@ -26,6 +26,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Skybrush Live instance now appear in all other instances connected to the
   same server. Requires server version 2.61.0 or later.
 
+- The results of the parameter consistency check can now be used to set the
+  deviating parameters of the affected drones to the majority value.
+
 ### Fixed
 
 - Reverted to instant scrolling in the "Messages" panel instead of smooth scrolling

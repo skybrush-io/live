@@ -1,6 +1,6 @@
-import delay from 'delay';
 import isNil from 'lodash-es/isNil';
 
+import { waitForDialogTransition } from '~/components/transitions/utils';
 import type { AppThunk, RootState } from '~/store/reducers';
 import type { Identifier } from '~/utils/collections';
 
@@ -32,7 +32,7 @@ export function closeUploadDialogAndStepBack(): AppThunk<Promise<void>> {
   return async (dispatch, getState) => {
     const { backAction } = getUploadDialogState(getState());
     dispatch(closeUploadDialog());
-    await delay(150);
+    await waitForDialogTransition();
     if (backAction) {
       dispatch(backAction);
     }

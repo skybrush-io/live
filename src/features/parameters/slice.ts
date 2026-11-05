@@ -19,10 +19,40 @@ import type { Parameter, ParameterData } from './types';
 type ParametersSliceState = {
   manifest: Collection<Parameter>;
   rebootAfterUpload: boolean;
+
+  /**
+   * The UAVs that the parameters in the manifest should be uploaded to, or
+   * `undefined` if the upload is not restricted to specific UAVs.
+   */
+  targets?: Identifier[];
+
   dialog: {
     open: boolean;
   };
 };
+
+/**
+ * Adds the given parameters to the manifest, replacing existing parameters
+ * with the same name and UAV ID.
+ */
+function addParametersToManifest(
+  manifest: Collection<Parameter>,
+  parameters: ParameterData[]
+): void {
+  for (const { name, uavId, value } of parameters) {
+    const id = uavId === undefined ? name : `${uavId}=${name}`;
+    if (manifest.order.includes(id)) {
+      deleteItemById(manifest, id);
+    }
+
+    addItemToBack(manifest, {
+      id,
+      name,
+      uavId,
+      value,
+    });
+  }
+}
 
 const initialState: ParametersSliceState = {
   manifest: EMPTY_COLLECTION,
@@ -38,6 +68,11 @@ const { actions, reducer } = createSlice({
   reducers: {
     clearManifest: noPayload<ParametersSliceState>((state) => {
       clearOrderedCollection(state.manifest);
+      state.targets = undefined;
+    }),
+
+    clearParameterUploadTargets: noPayload<ParametersSliceState>((state) => {
+      state.targets = undefined;
     }),
 
     closeParameterUploadSetupDialog: noPayload<ParametersSliceState>(
@@ -53,6 +88,22 @@ const { actions, reducer } = createSlice({
       if (payload && typeof payload === 'string') {
         deleteItemById(manifest, payload);
       }
+
+      // The UAV restriction belongs to the manifest, so it goes with it
+      if (manifest.order.length === 0) {
+        state.targets = undefined;
+      }
+    },
+
+    replaceManifest(
+      state,
+      action: PayloadAction<{ items: ParameterData[]; targets?: Identifier[] }>
+    ) {
+      const { items, targets } = action.payload;
+      clearOrderedCollection(state.manifest);
+      addParametersToManifest(state.manifest, items);
+      state.targets =
+        targets && targets.length > 0 ? [...targets].sort() : undefined;
     },
 
     setRebootAfterUpload(state, action: PayloadAction<boolean>) {
@@ -65,22 +116,9 @@ const { actions, reducer } = createSlice({
 
     updateParametersInManifest(state, action: PayloadAction<ParameterData[]>) {
       const { payload } = action;
-      const { manifest } = state;
 
       if (Array.isArray(payload)) {
-        for (const { name, uavId, value } of payload) {
-          const id = uavId === undefined ? name : `${uavId}=${name}`;
-          if (manifest.order.includes(id)) {
-            deleteItemById(manifest, id);
-          }
-
-          addItemToBack(manifest, {
-            id,
-            name,
-            uavId,
-            value,
-          });
-        }
+        addParametersToManifest(state.manifest, payload);
       }
     },
   },
@@ -88,8 +126,10 @@ const { actions, reducer } = createSlice({
 
 export const {
   clearManifest,
+  clearParameterUploadTargets,
   closeParameterUploadSetupDialog,
   removeParameterFromManifest,
+  replaceManifest,
   setRebootAfterUpload,
   showParameterUploadSetupDialog,
   updateParametersInManifest,
