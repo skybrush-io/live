@@ -80,6 +80,7 @@
     "editPreset": "编辑预设",
     "error": "从服务器加载RTK源时出错",
     "noRTKData": "服务器上没有RTK数据源",
+    "notConnected": "未连接到服务器",
     "pleaseWait": "请稍候，正在加载RTK源…",
     "rtkDisabled": "RTK 已禁用"
   },
@@ -94,6 +95,9 @@
     "surveyInProgress": "搜寻进行中…",
     "surveyNo": "搜寻未在进行中",
     "surveySuccesful": "搜寻成功"
+  },
+  "RTKStatusPanel": {
+    "signalStrengths": "卫星信号强度"
   },
   "UAVList": {
     "allUAVs": "所有无人机",
@@ -209,6 +213,9 @@
       },
       "lastTime": {
         "message": "最晚返航时间：{{lastTime}}"
+      },
+      "minRTHAltitude": {
+        "message": "最小返航高度：{{minRTHAltitude}}"
       },
       "numPlans": {
         "message": "已在 {{count}} 个时间点成功计算集体返航方案"
@@ -580,6 +587,7 @@
     "parameterNamesValues": "参数名称和数值",
     "parameterUploadHint": "按 <kbd>⇧</kbd> + <kbd>Enter</kbd> 将参数添加到清单中，点击侧边栏中的参数将其从清单中移除。",
     "rebootAfterUpload": "上传后重启",
+    "restrictedToUAVs": "参数仅上传至以下无人机：{{uavIds}}",
     "specifyEntries": "将条目指定为 name=value，每行一个参数。"
   },
   "parameterUploadSetupDialog": {
@@ -875,6 +883,11 @@
     "unknownState": "未知状态",
     "version": "服务器版本"
   },
+  "serverLogMessageCode": {
+    "objects": {
+      "limit_reached": "已达到服务器许可证的对象数量上限，无法新增对象"
+    }
+  },
   "serverSettingsDialog": {
     "autodetected": "自动检测",
     "autodiscoveryIsNotAvailable": "此版本不支持自动发现。",
@@ -914,7 +927,8 @@
       "optimizeUIForTouch": "为触摸屏设备优化界面",
       "orientationXAxis": "朝向 (X+ 轴)",
       "showMouseCoordinates": "显示鼠标坐标",
-      "showScaleLine": "显示刻度线"
+      "showScaleLine": "显示刻度线",
+      "uiScale": "UI 缩放"
     },
     "tabs": {
       "apiKeys": "API 密钥",
@@ -1004,6 +1018,7 @@
     },
     "placementAccuracy": "摆放精度 ≤ {{distance}}",
     "reload": "重新加载表演",
+    "resetPreflightChecklist": "重置检查清单",
     "resume": {
       "confirmation": {
         "message": "你确定要恢复表演吗？",
@@ -1330,8 +1345,13 @@
     "tooltip": "时间表"
   },
   "surveyStatusIndicator": {
+    "accuracy": "精度：{{accuracy}}",
+    "accuracyAbove": "精度 {{accuracy}}",
     "noSurveyInformation": "没有调查信息",
-    "notStartedYet": "测量尚未开始"
+    "notStartedYet": "测量尚未开始",
+    "surveying": "测量中",
+    "surveyingWithAccuracy": "测量中，精度：{{accuracy}}",
+    "surveyingWithAccuracyAbove": "测量中，精度 {{accuracy}}"
   },
   "takeoffAreaSetupDialog": {
     "allDroneOnline": "任务中的所有无人机都在线。",
@@ -1516,18 +1536,23 @@
   "uploadPanel": {
     "cancelUpload": "取消任务",
     "clearHistory": "清除历史记录",
+    "fix": "修复",
+    "fixAll": "全部修复",
+    "fixAllInconsistencies_other": "将{{count}}架无人机上不一致的设置值改为多数无人机使用的值",
+    "fixDeviatingUAVs_other": "将{{count}}架无人机的设置值改为多数无人机使用的值：{{value}}",
     "flashLightsWhereFailed": "让任务失败的无人机闪灯",
     "hasHiddenTargets": "一些等待的无人机可能会被过滤掉。",
-    "noJobResultAvailable": "暂无结果。",
+    "noClearMajority": "无法修复：没有明确的多数值",
+    "noJobResultAvailable": "暂无结果",
     "resultsTab": "结果",
     "retryFailedAttempts": "自动重试失败的尝试",
     "statusTab": "状态",
-    "uploadAttemptFailed": "尝试失败。",
-    "uploadCancelled": "用户已取消任务。",
-    "uploadFinishedSuccessfully": "任务已成功完成。",
+    "uploadAttemptFailed": "尝试失败",
+    "uploadCancelled": "用户已取消任务",
+    "uploadFinishedSuccessfully": "任务已成功完成",
     "uploadInProgress": "请稍候…",
     "uploadInProgressWithEstimate": "预计剩余时间：{{time}}",
-    "uploadNotFinishedYet": "任务尚未完成。"
+    "uploadNotFinishedYet": "任务尚未完成"
   },
   "uploadStatusLegend": {
     "clearUploadQueue": "清空队列",
