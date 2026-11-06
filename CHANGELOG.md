@@ -22,6 +22,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Header widgets now clip properly to their boundaries when the window is
+  too narrow.
+
 - The RTK status widget no longer shows stale satellite counts and signal
   strengths after the connection to the server is lost.
 
