@@ -80,6 +80,7 @@
     "editPreset": "プリセットを編集",
     "error": "サーバーからRTKリソースを読み込み中のエラー",
     "noRTKData": "サーバーにRTKリソースがありません",
+    "notConnected": "サーバーに接続されていません",
     "pleaseWait": "RTKリソースを読み込み中。しばらくお待ちください…",
     "rtkDisabled": "RTK無効"
   },
@@ -94,6 +95,9 @@
     "surveyInProgress": "調査中…",
     "surveyNo": "調査中のものはありません",
     "surveySuccesful": "調査成功"
+  },
+  "RTKStatusPanel": {
+    "signalStrengths": "衛星信号強度"
   },
   "UAVList": {
     "allUAVs": "全UAV",
@@ -110,7 +114,7 @@
     "removeSelectedItems": "選択中のものを削除"
   },
   "UAVSelector": {
-    "noMatchingUAVs": "「{{filter}}」に一致するUAVが見つかりません"
+    "noMatchingUAVs": "\"{{filter}}\" に一致する結果が見つかりません"
   },
   "UAVStatus": {
     "error": {
@@ -205,10 +209,13 @@
     },
     "summary": {
       "firstTime": {
-        "message": "最も早いRTH時刻：{{firstTime}}"
+        "message": "最初のプラン: {{firstTime}}"
       },
       "lastTime": {
-        "message": "最終RTH時刻：{{lastTime}}"
+        "message": "最後のプラン: {{lastTime}}"
+      },
+      "minRTHAltitude": {
+        "message": "最小RTH高度：{{minRTHAltitude}}"
       },
       "numPlans": {
         "message_other": "{{count}}件のRTH計画を計算しました。承認待ちです"
@@ -580,6 +587,7 @@
     "parameterNamesValues": "パラメータ名と値",
     "parameterUploadHint": "<kbd>⇧</kbd> + <kbd>Enter</kbd> でパラメーターをマニフェストに追加。 サイドバーのパラメーターをクリックしてマニフェストから削除。",
     "rebootAfterUpload": "アップロード後に再起動",
+    "restrictedToUAVs": "パラメータは以下のドローンにのみアップロードされます：{{uavIds}}",
     "specifyEntries": "name=value形式で1行ごとにエントリーを指定"
   },
   "parameterUploadSetupDialog": {
@@ -825,7 +833,7 @@
   "safetySettingsTab": {
     "criticalBatteryVoltageHelperText": "バッテリー電圧が[V]単位で低下した場合、バッテリーのフェイルセーフ機能が作動します。",
     "criticalBatteryVoltageLabel": "クリティカルバッテリー電圧",
-    "emptyValues": "フィールドを空欄にすると、既存の設定が保持されます",
+    "emptyValues": "入力欄を空欄のままにすると、アップロード後もドローンの既存の設定が保持されます.",
     "lowBatteryThresholdHelperText": "低バッテリーフェイルセーフアクションがトリガーされる低バッテリーしきい値のタイプと値。",
     "lowBatteryThresholdType": {
       "disabled": "無効",
@@ -875,6 +883,11 @@
     "unknownState": "状態不明",
     "version": "サーバーのバージョン"
   },
+  "serverLogMessageCode": {
+    "objects": {
+      "limit_reached": "サーバーライセンスのオブジェクト制限に達しました。新規オブジェクトは作成できません"
+    }
+  },
   "serverSettingsDialog": {
     "autodetected": "自動検出",
     "autodiscoveryIsNotAvailable": "ご利用のバージョンでは自動検出はご利用できません",
@@ -914,7 +927,8 @@
       "optimizeUIForTouch": "タッチディスプレイ端末用に画面を最適化",
       "orientationXAxis": "オリエンテーション（X+軸）",
       "showMouseCoordinates": "マウス座標を表示",
-      "showScaleLine": "縮尺を表示"
+      "showScaleLine": "縮尺を表示",
+      "uiScale": "UI スケール"
     },
     "tabs": {
       "apiKeys": "APIキー",
@@ -1004,6 +1018,7 @@
     },
     "placementAccuracy": "配置精度≤ {{distance}}",
     "reload": "ドローンショーを再読み込み",
+    "resetPreflightChecklist": "チェックリストをリセット",
     "resume": {
       "confirmation": {
         "message": "ショーを再開してもよろしいですか？",
@@ -1018,7 +1033,7 @@
     "selectFile": "ショーファイル(.skyc)を選択またはドロップしてください",
     "setupEnvironment": "環境を設定",
     "setupGeofence": "ジオフェンスの設定",
-    "setupTakeoffArea": "ドローンをショーに割り当て",
+    "setupTakeoffArea": "ドローンをショーに割り当てる",
     "showConfigurator": {
       "button": "一斉RTHを計画",
       "description": "一斉帰還（RTH）プランを作成",
@@ -1151,7 +1166,7 @@
       "showAdaptInProgress": "ショーを適応しています。お待ちください。時間がかかる場合があります。"
     },
     "help": {
-      "config": "このツールでは離陸位置と純ショーを調整できます…",
+      "config": "このツールでは、離陸位置とショー本編のレイアウトを個別に調整できます.\n離陸位置 (黄色の三角形)、ショー本編 (紫色の凸包)、または両方 (黄色の凸包) を選択し、必要に応じて移動または回転させます.\n調整が済んだら、右側で変換パラメーターを設定し、ADAPT を押して軌道を再計算します。ショー本編の内容を維持したまま、新しい配置に合わせて軌道が更新されます.\n新しいショーレイアウトを十分に検証し、終了時に本番用の .skyc ファイルとして保存してください.",
       "review": "ショーに適用する前に変更を確認してください。"
     },
     "lights": {
@@ -1301,7 +1316,7 @@
     "setTheStartTime": "以下にショーの開始時刻を新しく設定する",
     "startDate": "開始日付",
     "startShowAuto": "自動でショーを開始する",
-    "startShowWithRC": "リモートコントローラーでのみショーを開始",
+    "startShowWithRC": "送信機からのみショーを開始",
     "startSignal": "開始シグナル",
     "startTime": "開始時刻",
     "startTimeHms": "開始時刻(時間:分:秒)",
@@ -1313,11 +1328,16 @@
   },
   "startUploadButton": {
     "startSelected": "選択したものを開始",
-    "tooltip": "IDをクリックして個別のターゲットを選択し、準備します..."
+    "tooltip": "一部の対象に対する操作を準備するには、各対象の ID をクリックして個別に選択します"
   },
   "surveyStatusIndicator": {
+    "accuracy": "精度：{{accuracy}}",
+    "accuracyAbove": "精度 {{accuracy}}",
     "noSurveyInformation": "調査情報はありません",
-    "notStartedYet": "測量はまだ開始されていません"
+    "notStartedYet": "測量はまだ開始されていません",
+    "surveying": "測量中",
+    "surveyingWithAccuracy": "測量中、精度：{{accuracy}}",
+    "surveyingWithAccuracyAbove": "測量中、精度 {{accuracy}}"
   },
   "takeoffAreaSetupDialog": {
     "allDroneOnline": "ミッション中のドローンはすべてオンラインです。",
@@ -1494,7 +1514,7 @@
     "anotherJobTypeRunningHint": {
       "cancelButton": "タスクをキャンセル",
       "header": "別のタスクが進行中です",
-      "text": "他のタスクが終了するのを待つか、キャンセルしてください…",
+      "text": "新しいタスクを開始するには、別のタスクが完了するまで待つか、そのタスクをキャンセルしてください",
       "viewProgressButton": "進行状況を表示"
     },
     "restrictToGlobalSelection": "グローバル選択のみを表示"
@@ -1502,18 +1522,23 @@
   "uploadPanel": {
     "cancelUpload": "アップロードをキャンセル",
     "clearHistory": "履歴をクリア",
-    "flashLightsWhereFailed": "タスクが失敗したUAVのライトを点滅",
+    "fix": "修正",
+    "fixAll": "すべて修正",
+    "fixAllInconsistencies_other": "{{count}}台のドローンで、他の大多数と異なる設定値を、多数派の設定値に揃えます",
+    "fixDeviatingUAVs_other": "{{count}}台のドローンの設定値を多数派の値に揃えます: {{value}}",
+    "flashLightsWhereFailed": "タスクが失敗したドローンのライトを点滅させる",
     "hasHiddenTargets": "待機中のUAVの一部がフィルタリングされている可能性があります。",
-    "noJobResultAvailable": "まだ結果がありません。",
+    "noClearMajority": "修正できません：明確な多数値がありません",
+    "noJobResultAvailable": "まだ結果がありません",
     "resultsTab": "結果",
     "retryFailedAttempts": "自動で再試行",
     "statusTab": "ステータス",
-    "uploadAttemptFailed": "試行に失敗しました。",
-    "uploadCancelled": "ユーザーによりタスクがキャンセルされました。",
-    "uploadFinishedSuccessfully": "タスクが正常に完了しました。",
+    "uploadAttemptFailed": "試行に失敗しました",
+    "uploadCancelled": "ユーザーによりタスクがキャンセルされました",
+    "uploadFinishedSuccessfully": "タスクが正常に完了しました",
     "uploadInProgress": "お待ちください…",
     "uploadInProgressWithEstimate": "残り時間の見積もり：{{time}}",
-    "uploadNotFinishedYet": "タスクはまだ完了していません。"
+    "uploadNotFinishedYet": "タスクはまだ完了していません"
   },
   "uploadStatusLegend": {
     "clearUploadQueue": "アップロードキューをクリア",
