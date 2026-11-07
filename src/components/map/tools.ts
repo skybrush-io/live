@@ -40,6 +40,12 @@ export function isDrawingTool(tool: Tool): boolean {
   return tool?.startsWith('draw');
 }
 
+/**
+ * Returns whether the given tool identifier represents an editing tool.
+ *
+ * @param tool - The tool identifier
+ * @returns Whether the given tool identifier is an editing tool
+ */
 export function isEditingTool(tool: Tool): boolean {
   return tool === Tool.CUT_HOLE || tool === Tool.EDIT_FEATURE;
 }
