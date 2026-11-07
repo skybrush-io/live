@@ -35,6 +35,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   widgets need it at the same time, and stale bars in the satellite signal
   strength chart are now faded out reliably.
 
+- Fixed a bug where drones in the RTH state without any other error code
+  were not counted in the UAV status summary header widget.
+
 ## [2.15.0] - 2026-11-05
 
 ### Added

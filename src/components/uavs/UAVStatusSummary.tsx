@@ -57,6 +57,7 @@ const getStatusSummary = createDeepResultSelector(
             result[1] += 1;
             break;
 
+          case Status.RTH:
           case Status.WARNING:
             result[2] += 1;
             break;
