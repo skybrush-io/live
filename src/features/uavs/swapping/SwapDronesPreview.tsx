@@ -10,7 +10,12 @@ const PreviewLineCard = ({ line }: { line: SwapPreviewLine }) => {
   const badgeComponents = Object.fromEntries(
     Object.entries(line.badges).map(([name, badge]) => [
       name,
-      <SwapDroneBadge key={name} label={badge.label} side={badge.color} />,
+      <SwapDroneBadge
+        key={name}
+        label={badge.label}
+        offline={badge.offline}
+        side={badge.color}
+      />,
     ])
   );
 

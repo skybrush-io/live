@@ -6,11 +6,13 @@ Operators replace drones in the field (low battery, hardware fault, spare on sta
 
 ## Swap semantics
 
-A swap takes two resolved drones (`ResolvedDrone`: UAV ID + mission index or `null` if unmapped). `simulateSwapBatch` in `utils.ts` applies it through `moveUAVInMapping` (`features/mission/utils.ts`):
+A swap takes two endpoints (`SwapEndpoint`): a drone (UAV ID + mission index, `null` if unmapped) or an empty slot (`uavId: null` + mission index). Drones do not have to be online: operators prepare swaps before the ground crew turns the drones on. `simulateSwapBatch` in `utils.ts` puts the content of each endpoint (drone or emptiness) into the slot of the other one:
 
-- **Both mapped**: the drones exchange slots.
-- **One mapped**: the unmapped (spare) drone takes the slot; the mapped drone leaves the mapping.
-- **Both unmapped** or **same drone**: invalid (`getSwapPairProblem` returns the i18n key of the reason).
+- **Both drones mapped**: the drones exchange slots.
+- **Mapped drone + unmapped drone**: the unmapped (spare) drone takes the slot; the mapped drone leaves the mapping.
+- **Mapped drone + empty slot**: the drone moves to the empty slot; its old slot becomes empty.
+- **Unmapped drone + empty slot**: the drone fills the slot.
+- **Same drone**, **same slot**, **both unmapped** or **both empty**: invalid (`getSwapPairProblem` returns the i18n key of the reason).
 
 Field order matters only for coloring, not for the result.
 
@@ -19,11 +21,11 @@ Field order matters only for coloring, not for the result.
 Users type references, not drones. `DroneRef` (`types.ts`) is either:
 
 - `{ kind: 'uav', uavId }` — sticks to the physical drone; its slot is looked up at resolution time.
-- `{ kind: 'slot', missionIndex }` — typed as a show ID (`sN`, 1-based, parsed by `parseMissionId` in `utils/formatting.ts`); resolves to whichever drone occupies that slot at resolution time.
+- `{ kind: 'slot', missionIndex }` — typed as a show ID (`sN`, 1-based, parsed by `parseMissionId` in `utils/formatting.ts`); resolves to whichever drone occupies that slot at resolution time, or to the empty slot.
 
-`parseDroneRef` tries the show ID first, so a UAV whose ID looks like `sN` cannot be referenced by ID. A UAV ref must match a known UAV ID (`getUAVIdList`) case-insensitively; the canonical ID is stored. `resolveDroneRef` returns `null` for an unknown UAV, an empty slot, or a slot held by a UAV not in `getUAVIdList`.
+`parseDroneRef` tries the show ID first, so a UAV whose ID looks like `sN` cannot be referenced by ID; incomplete or invalid show IDs (`s`, `s0`, `looksLikeShowId`) parse into nothing. Any other text is a UAV ref: if it matches the ID of an online or mapped drone case-insensitively, the canonical ID is stored, otherwise the text as typed. `resolveDroneRef` does not look at the online drones; it returns `null` only for a slot beyond the end of the mapping.
 
-The text fields store **raw strings** in the slice (`fields`), not refs; `getSwapDroneFieldRefs` parses them, so a field becomes valid as soon as the matching UAV appears. Selecting from the `UAVSelector` popup writes `sN` if the typed text looks like a partial show ID (`s` followed by digits only), the UAV ID otherwise (`getLabelForSelection` in `SwapDroneField.tsx`).
+The text fields store **raw strings** in the slice (`fields`), not refs; `getSwapDroneFieldRefs` parses them, so the canonical ID follows the drones known at the time. While a show ID is being typed, the `UAVSelector` popup lists the slots of the mapping (`useMissionIds`), including empty ones. Selecting from the `UAVSelector` popup writes `sN` if the typed text looks like a partial show ID (`s` followed by digits only), the UAV ID otherwise (`getLabelForSelection` in `SwapDroneField.tsx`).
 
 ## Two execution modes
 
@@ -44,7 +46,7 @@ The add check (`canAddCurrentSwapPairToQueue`) validates the field pair against 
 
 ## Stale queue
 
-The mapping can change under a queue (manual edits, another swap now, UAVs disappearing). `getSwapQueueSimulation` (memoized on mapping, UAV list, queue) reports `failedIndex` of the first swap that fails; later swaps are not evaluated (`resolvedPairs` is shorter, so `resolvedQueue[index]` may be `undefined`). While stale: the failed row is outlined, adding and executing are disabled, and `swapDronesDialog.queue.stalePairs` is shown. The user must remove the row; there is no automatic repair.
+The mapping can change under a queue (manual edits, another swap now, mapping length changes). Drones going offline do not affect the queue. `getSwapQueueSimulation` (memoized on mapping and queue) reports `failedIndex` of the first swap that fails; later swaps are not evaluated (`resolvedPairs` is shorter, so `resolvedQueue[index]` may be `undefined`). While stale: the failed row is outlined, adding and executing are disabled, and `swapDronesDialog.queue.stalePairs` is shown. The user must remove the row; there is no automatic repair.
 
 ## Gating
 
@@ -52,7 +54,7 @@ The mapping can change under a queue (manual edits, another swap now, UAVs disap
 
 ## Upload after swap
 
-With `openUploadDialogAfterSwap` on, the targets are the UAVs whose index changed **and that are still in the mapping** (removed drones need no show). `openUploadDialogForJob({ job: SHOW_UPLOAD_JOB })` is dispatched **before** `putUavsInWaitingQueue`, since opening for a different job type clears the upload queues. Nothing opens if no target remains.
+With `openUploadDialogAfterSwap` on, the targets are the UAVs whose index changed **and that are still in the mapping** (removed drones need no show), including drones that are not online: the upload fails or retries for them, so the operator notices. `openUploadDialogForJob({ job: SHOW_UPLOAD_JOB })` is dispatched **before** `putUavsInWaitingQueue`, since opening for a different job type clears the upload queues. Nothing opens if no target remains.
 
 ## State (`slice.ts`)
 
@@ -62,7 +64,7 @@ Stored at `state.dialogs.swapDrones`: `open`, `fields`, `openUploadDialogAfterSw
 
 - `buildSwapPreview` turns the resolved field pair into `SwapPreviewState` (`blocked | placeholder | warning | ready`). `ready` lines are i18n keys with `<name/>` placeholders that `SwapDronesPreview` fills with `SwapDroneBadge` chips via `<Trans components>`. A new placeholder needs a matching key in `badges` and in `en.json`.
 - `getSwapWarningMessageKey` shows a single alert: field-pair problems (`blocked`/`warning`) win over a stale queue, and any warning hides the preview.
-- Left field = `warning.main`, right = `success.main` (`FIELD_COLORS`); badges inherit the color of the field their drone came from (`fieldBadgeColor`), slot badges are uncolored.
+- Left field = `warning.main`, right = `success.main` (`FIELD_COLORS`); badges inherit the color of the field their drone came from, slot badges are uncolored. Badges of drones that are not online are dimmed, and a `notOnline` line lists them.
 - `DroneRefLabel` renders queue entries as `uavId/sN` and dims the inferred half (the part the user did not type).
 - Layout constants in `constants.ts` reserve space so that the dialog does not resize while typing or as the queue grows.
 

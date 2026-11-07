@@ -2,28 +2,27 @@ import type { MissionIndex } from '~/model/missions';
 import type { Identifier } from '~/utils/collections';
 
 /**
- * Type representing a drone for which we know its ID and its mission index.
+ * One side of a swapping operation: a drone with its mission index (`null` if
+ * it is not part of the current mission), or an empty mission slot. The drone
+ * does not have to be online.
  */
-export type ResolvedDrone = Readonly<{
-  /** The ID of the drone. */
-  uavId: Identifier;
-
-  /** The mission index of the drone; `null` if it is not part of the current mission. */
-  missionIndex: MissionIndex | null;
-}>;
+export type SwapEndpoint = Readonly<
+  | { uavId: Identifier; missionIndex: MissionIndex | null }
+  | { uavId: null; missionIndex: MissionIndex }
+>;
 
 /**
- * A pair of drones in a swapping operation, each of which is resolved if possible.
+ * A pair of endpoints in a swapping operation, each of which is resolved if possible.
  */
 export type PartiallyResolvedDronePair = Readonly<{
-  drone1: ResolvedDrone | null;
-  drone2: ResolvedDrone | null;
+  drone1: SwapEndpoint | null;
+  drone2: SwapEndpoint | null;
 }>;
 
 /**
  * Reference to a drone in a swapping operation, either by its ID or by the
  * mission index (slot) that it occupies. Slot references are resolved against
- * the mapping at the time of the swap.
+ * the mapping at the time of the swap and may refer to empty slots.
  */
 export type DroneRef =
   | Readonly<{ kind: 'uav'; uavId: Identifier }>

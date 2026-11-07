@@ -5,13 +5,16 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import DialogActions from '@mui/material/DialogActions';
 import IconButton from '@mui/material/IconButton';
+import isNil from 'lodash-es/isNil';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import { Tooltip } from '@skybrush/mui-components';
 
 import ItemListSidebarHeader from '~/components/ItemListSidebarHeader';
+import { getUAVIdList } from '~/features/uavs/selectors';
 import type { RootState } from '~/store/reducers';
+import type { Identifier } from '~/utils/collections';
 
 import { addCurrentPairToSwapQueue, executeSwapQueue } from './actions';
 import {
@@ -28,12 +31,31 @@ import {
 import { clearSwapQueue, removePairFromSwapQueue } from './slice';
 import DroneRefLabel from './DroneRefLabel';
 import SwapDroneBadge from './SwapDroneBadge';
-import type { DroneRefPairWithId, PartiallyResolvedDronePair } from './types';
+import type {
+  DroneRef,
+  DroneRefPairWithId,
+  PartiallyResolvedDronePair,
+  SwapEndpoint,
+} from './types';
+
+/**
+ * Returns whether the drone that a queued reference refers to is not online.
+ * The drone of a slot reference is known only if the reference was resolved.
+ */
+const isOffline = (
+  ref: DroneRef,
+  resolved: SwapEndpoint | null | undefined,
+  onlineUavIds: readonly Identifier[]
+): boolean => {
+  const uavId = ref.kind === 'uav' ? ref.uavId : resolved?.uavId;
+  return !isNil(uavId) && !onlineUavIds.includes(uavId);
+};
 
 type StateProps = {
   canAdd: boolean;
   canSwap: boolean;
   failedIndex: number | null;
+  onlineUavIds: Identifier[];
   queue: DroneRefPairWithId[];
   resolvedQueue: PartiallyResolvedDronePair[];
 };
@@ -59,6 +81,7 @@ const SwapDronesQueuePanel = ({
   onRemove,
   onRemoveAll,
   onSwap,
+  onlineUavIds,
   queue,
   resolvedQueue,
 }: SwapDronesQueuePanelProps) => {
@@ -99,6 +122,11 @@ const SwapDronesQueuePanel = ({
             <Box sx={{ flex: 1, textAlign: 'right' }}>
               <SwapDroneBadge
                 side='left'
+                offline={isOffline(
+                  pair.drone1,
+                  resolvedQueue[index]?.drone1,
+                  onlineUavIds
+                )}
                 label={
                   <DroneRefLabel
                     droneRef={pair.drone1}
@@ -111,6 +139,11 @@ const SwapDronesQueuePanel = ({
             <Box sx={{ flex: 1 }}>
               <SwapDroneBadge
                 side='right'
+                offline={isOffline(
+                  pair.drone2,
+                  resolvedQueue[index]?.drone2,
+                  onlineUavIds
+                )}
                 label={
                   <DroneRefLabel
                     droneRef={pair.drone2}
@@ -166,6 +199,7 @@ export default connect(
     canAdd: canAddCurrentSwapPairToQueue(state),
     canSwap: canExecuteSwapQueue(state),
     failedIndex: getFailedSwapQueueIndex(state),
+    onlineUavIds: getUAVIdList(state),
     queue: getSwapQueue(state),
     resolvedQueue: getResolvedSwapQueue(state),
   }),

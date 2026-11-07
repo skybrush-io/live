@@ -3,7 +3,6 @@ import { getMissionMapping } from '~/features/mission/selectors';
 import { getUAVsWithChangedMissionIndex } from '~/features/mission/utils';
 import { SHOW_UPLOAD_JOB } from '~/features/show/constants';
 import { showError, showSuccess } from '~/features/snackbar/actions';
-import { getUAVIdList } from '~/features/uavs/selectors';
 import {
   openUploadDialogForJob,
   putUavsInWaitingQueue,
@@ -39,7 +38,7 @@ const executeSwaps =
   (dispatch, getState) => {
     const state = getState();
     const mapping = getMissionMapping(state);
-    const result = simulateSwapBatch(mapping, getUAVIdList(state), pairs);
+    const result = simulateSwapBatch(mapping, pairs);
     if (!result.ok) {
       showError(i18n.t('swapDronesDialog.failure'));
       return false;

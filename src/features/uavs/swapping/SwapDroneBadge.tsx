@@ -1,5 +1,6 @@
 import Chip, { type ChipProps } from '@mui/material/Chip';
 import type { SxProps } from '@mui/material/styles';
+import mapValues from 'lodash-es/mapValues';
 
 import { monospacedFont } from '@skybrush/app-theme-mui';
 
@@ -26,16 +27,27 @@ const STYLES: Record<SwapFieldSide | 'empty', SxProps> = {
   },
 };
 
+/** Styles of badges of drones that are not online: same as above, dimmed */
+const OFFLINE_STYLES: Record<SwapFieldSide | 'empty', SxProps> = mapValues(
+  STYLES,
+  (style) => ({ ...style, opacity: 0.5 })
+);
+
 type SwapDroneBadgeProps = {
+  offline?: boolean;
   side?: SwapFieldSide;
 } & ChipProps;
 
 /**
  * Small monospaced chip showing a drone or a slot, colored according to the
- * field of the drone it refers to.
+ * field of the drone it refers to. Drones that are not online are dimmed.
  */
-const SwapDroneBadge = ({ side, ...rest }: SwapDroneBadgeProps) => (
-  <Chip size='small' sx={STYLES[side ?? 'empty']} {...rest} />
+const SwapDroneBadge = ({ offline, side, ...rest }: SwapDroneBadgeProps) => (
+  <Chip
+    size='small'
+    sx={(offline ? OFFLINE_STYLES : STYLES)[side ?? 'empty']}
+    {...rest}
+  />
 );
 
 export default SwapDroneBadge;

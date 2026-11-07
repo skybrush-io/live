@@ -11,23 +11,21 @@ import { formatMissionId } from '~/utils/formatting';
 
 import { FIELD_COLORS } from './constants';
 import type { SwapFieldSide } from './types';
-
-/**
- * Returns whether the user is typing a show ID (`sN`) into a drone field.
- */
-const isSwapShowIdFilter = (filter: string): boolean =>
-  /^s\d*$/i.test(filter.trim());
+import { looksLikeShowId } from './utils';
 
 /**
  * Returns the text to put into a drone field when an item is selected from the
- * UAV selector: the show ID (slot reference) if the user was typing a show ID,
- * the UAV ID (drone reference) otherwise.
+ * UAV selector: the show ID (slot reference) if the user was typing a show ID
+ * or the slot is empty, the UAV ID (drone reference) otherwise.
  */
 const getLabelForSelection = (
   item: { missionIndex?: MissionIndex; uavId?: Identifier },
   filter: string
 ): string => {
-  if (isSwapShowIdFilter(filter) && item.missionIndex !== undefined) {
+  if (
+    (looksLikeShowId(filter) || item.uavId === undefined) &&
+    item.missionIndex !== undefined
+  ) {
     return formatMissionId(item.missionIndex);
   }
 
@@ -125,13 +123,17 @@ const SwapDroneField = ({
         anchorEl={anchorEl}
         filter={value}
         open={Boolean(anchorEl)}
+        // List the slots of the mapping, including empty ones, while typing a
+        // show ID
+        useMissionIds={looksLikeShowId(value)}
         onClose={handleClose}
-        onSelect={({ uavId, missionIndex }) => {
-          if (!uavId) {
+        onSelect={(item) => {
+          const label = getLabelForSelection(item, value);
+          if (!label) {
             return;
           }
 
-          onChange(getLabelForSelection({ uavId, missionIndex }, value));
+          onChange(label);
           inputRef.current?.blur();
         }}
       />

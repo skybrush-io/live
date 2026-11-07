@@ -6,11 +6,11 @@ export const SWAP_DRONES_QUEUE_COLUMN_WIDTH = 240;
 
 /**
  * Minimum height of the area below the drone fields of the swap drones dialog,
- * enough to show the preview heading and three preview lines without resizing
- * the dialog: 16px top padding + 22px heading + 3 x 38px lines + 3 x 8px gaps + 8px
+ * enough to show the preview heading and four preview lines without resizing
+ * the dialog: 16px top padding + 22px heading + 4 x 38px lines + 4 x 8px gaps + 8px
  * just in case :)
  */
-export const SWAP_DRONES_PREVIEW_AREA_MIN_HEIGHT = 184;
+export const SWAP_DRONES_PREVIEW_AREA_MIN_HEIGHT = 230;
 
 /**
  * Minimum height of the action bars at the bottom of the main area and the queue

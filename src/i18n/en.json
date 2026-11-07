@@ -1343,12 +1343,17 @@
     "preview": {
       "addedWithShowId": "Drone <drone/> will be <bold>added</bold> to the mapping with show ID <slot/>",
       "blocked": "Swap is unavailable while a show upload is in progress, the mapping is being calculated or the show is authorized to start.",
+      "bothEmpty": "Both show IDs are empty — nothing to swap.",
       "bothUnmapped": "Both drones are unmapped — nothing to swap.",
       "heading": "What will happen",
       "movedToShowId": "Drone <drone/> will be <bold>moved</bold> to show ID <slot/>",
+      "notOnline": "Drone <drone/> is <bold>not online</bold> yet",
+      "notOnlineMultiple": "Drones <drone1/> and <drone2/> are <bold>not online</bold> yet",
       "removedFromMapping": "Drone <drone/> will be <bold>removed</bold> from the mapping",
       "sameDrone": "Both inputs resolve to the same drone.",
+      "sameSlot": "Both inputs resolve to the same show ID.",
       "selectTwoDrones": "Select two drones to swap.",
+      "slotEmptied": "Show ID <slot/> will become <bold>empty</bold>",
       "uploadToDrone": "The show will have to be <bold>uploaded</bold> to drone <drone/>",
       "uploadToDrones": "The show will have to be <bold>uploaded</bold> to drones <drone1/> and <drone2/>"
     },

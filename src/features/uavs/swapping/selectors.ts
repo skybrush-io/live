@@ -1,4 +1,5 @@
 import { createSelector } from '@reduxjs/toolkit';
+import isNil from 'lodash-es/isNil';
 
 import {
   getMissionMapping,
@@ -15,7 +16,7 @@ import type {
   DroneRef,
   DroneRefPairWithId,
   PartiallyResolvedDronePair,
-  ResolvedDrone,
+  SwapEndpoint,
   SwapFieldSide,
 } from './types';
 import {
@@ -29,7 +30,7 @@ import {
 } from './utils';
 
 type SwapDroneRefs = Record<SwapFieldSide, DroneRef | null>;
-type ResolvedSwapDrones = Record<SwapFieldSide, ResolvedDrone | null>;
+type ResolvedSwapDrones = Record<SwapFieldSide, SwapEndpoint | null>;
 
 const NO_RESOLVED_SWAP_DRONES: ResolvedSwapDrones = Object.freeze({
   left: null,
@@ -38,11 +39,10 @@ const NO_RESOLVED_SWAP_DRONES: ResolvedSwapDrones = Object.freeze({
 
 const resolveSwapDrones = (
   refs: SwapDroneRefs,
-  uavIds: readonly Identifier[],
   mapping: ReadonlyArray<Nullable<Identifier>>
 ): ResolvedSwapDrones => ({
-  left: refs.left && resolveDroneRef(refs.left, uavIds, mapping),
-  right: refs.right && resolveDroneRef(refs.right, uavIds, mapping),
+  left: refs.left && resolveDroneRef(refs.left, mapping),
+  right: refs.right && resolveDroneRef(refs.right, mapping),
 });
 
 export const isSwapDronesDialogOpen: AppSelector<boolean> = (state) =>
@@ -67,11 +67,23 @@ export const getSwapQueue: AppSelector<DroneRefPairWithId[]> = (state) =>
   state.dialogs.swapDrones.queue;
 
 /**
+ * Returns the IDs of the drones that are online or in the mapping, used to
+ * canonicalize the drone IDs typed into the drone fields.
+ */
+const getKnownSwapUAVIds: AppSelector<Identifier[]> = createSelector(
+  getUAVIdList,
+  getMissionMapping,
+  (uavIds, mapping) => [
+    ...new Set([...uavIds, ...mapping.filter((uavId) => !isNil(uavId))]),
+  ]
+);
+
+/**
  * Returns the drone references that the texts in the drone fields parse into.
  */
 export const getSwapDroneFieldRefs: AppSelector<SwapDroneRefs> = createSelector(
   getSwapDroneFieldTexts,
-  getUAVIdList,
+  getKnownSwapUAVIds,
   (fields, uavIds) => ({
     left: parseDroneRef(fields.left, uavIds),
     right: parseDroneRef(fields.right, uavIds),
@@ -82,12 +94,7 @@ export const getSwapDroneFieldRefs: AppSelector<SwapDroneRefs> = createSelector(
  * Returns the result of executing the queued swaps on the current mapping.
  */
 export const getSwapQueueSimulation: AppSelector<SwapBatchResult> =
-  createSelector(
-    getMissionMapping,
-    getUAVIdList,
-    getSwapQueue,
-    simulateSwapBatch
-  );
+  createSelector(getMissionMapping, getSwapQueue, simulateSwapBatch);
 
 /**
  * Returns the drones of the queued swaps, resolved in the mapping that results
@@ -111,12 +118,7 @@ export const getFailedSwapQueueIndex: AppSelector<number | null> = (state) => {
  * mapping, i.e. when swapping them immediately.
  */
 export const getResolvedSwapDronesNow: AppSelector<ResolvedSwapDrones> =
-  createSelector(
-    getSwapDroneFieldRefs,
-    getUAVIdList,
-    getMissionMapping,
-    resolveSwapDrones
-  );
+  createSelector(getSwapDroneFieldRefs, getMissionMapping, resolveSwapDrones);
 
 /**
  * Returns the drones that the texts in the drone fields resolve to in the mapping
@@ -126,11 +128,10 @@ export const getResolvedSwapDronesNow: AppSelector<ResolvedSwapDrones> =
 export const getResolvedSwapDronesAfterQueue: AppSelector<ResolvedSwapDrones> =
   createSelector(
     getSwapDroneFieldRefs,
-    getUAVIdList,
     getSwapQueueSimulation,
-    (refs, uavIds, simulation) =>
+    (refs, simulation) =>
       simulation.ok
-        ? resolveSwapDrones(refs, uavIds, simulation.mapping)
+        ? resolveSwapDrones(refs, simulation.mapping)
         : NO_RESOLVED_SWAP_DRONES
   );
 
@@ -139,8 +140,10 @@ export const getResolvedSwapDronesAfterQueue: AppSelector<ResolvedSwapDrones> =
  */
 export const getSwapPreview: AppSelector<SwapPreviewState> = createSelector(
   getResolvedSwapDronesNow,
+  getUAVIdList,
   isSwappingAllowed,
-  ({ left, right }, allowed) => buildSwapPreview(left, right, !allowed)
+  ({ left, right }, uavIds, allowed) =>
+    buildSwapPreview(left, right, uavIds, !allowed)
 );
 
 /**
