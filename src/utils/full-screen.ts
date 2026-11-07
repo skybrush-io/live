@@ -6,7 +6,7 @@ import { isRunningOnMac, isRunningOnWindows } from './platform';
  * Stores the hotkey that should be used to enter full-screen mode on the current platform.
  */
 export const FULL_SCREEN_HOTKEY = isRunningOnMac
-  ? 'command+ctrl+f'
+  ? 'mod+ctrl+f'
   : isRunningOnWindows
     ? 'f11'
     : 'f11';
