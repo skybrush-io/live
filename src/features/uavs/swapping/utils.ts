@@ -169,7 +169,8 @@ export const looksLikeShowId = (text: string): boolean =>
  * to a slot, anything else to a drone. Drones need not be known; the ID of a
  * known drone is matched case-insensitively and stored in its canonical form,
  * other IDs are kept as typed. Incomplete or invalid show IDs (`s`, `s0`)
- * parse into nothing.
+ * parse into nothing. The `uavId/sN` notation shown in the dialog refers to the
+ * drone; its show ID part is ignored.
  */
 export const parseDroneRef = (
   query: string,
@@ -189,10 +190,15 @@ export const parseDroneRef = (
     return null;
   }
 
+  const uavText = trimmed.replace(/\s*\/\s*(s\d*)?$/i, '');
+  if (!uavText) {
+    return null;
+  }
+
   const matchedUavId = knownUavIds.find(
-    (id) => id.toLowerCase() === trimmed.toLowerCase()
+    (id) => id.toLowerCase() === uavText.toLowerCase()
   );
-  return { kind: 'uav', uavId: matchedUavId ?? trimmed };
+  return { kind: 'uav', uavId: matchedUavId ?? uavText };
 };
 
 /**
