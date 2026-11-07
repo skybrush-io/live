@@ -1,9 +1,13 @@
+import delay from 'delay';
+import type React from 'react';
+
 // @mui/material/transitions/utils is no longer part of the public API,
 // but we need it, so we vendor it. Original source (as of 2025-10-01):
 // https://github.com/mui/material-ui/blob/master/packages/mui-material/src/transitions/utils.ts
-// Do not reexport it from the package. Ideally we should remove this file.
+// Do not reexport it from the package. Ideally we should remove the vendored
+// code in the future.
 
-import type React from 'react';
+// --- Vendored part starts here. ------------------------------------------------------
 
 export const reflow = (node: Element) => node.scrollTop;
 
@@ -38,4 +42,19 @@ export function getTransitionProps(
       (typeof easing === 'object' ? easing[options.mode] : easing),
     delay: style.transitionDelay,
   };
+}
+
+// --- Vendored part ends here. ------------------------------------------------------
+
+/**
+ * Delay between closing a dialog and opening the next one, in milliseconds,
+ * so the closing transition of the first dialog can finish.
+ */
+export const DIALOG_TRANSITION_DELAY = 150;
+
+/**
+ * Waits until the closing transition of a dialog finishes.
+ */
+export async function waitForDialogTransition(): Promise<void> {
+  await delay(DIALOG_TRANSITION_DELAY);
 }

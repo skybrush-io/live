@@ -435,7 +435,7 @@
     "AHL": "Kezdeti pozíció feletti magasság (AHL)",
     "AMSL": "Átlagos tengerszint feletti magasság (AMSL)",
     "AMSLReference": "AMSL referencia",
-    "altitudeControl": "Magasság kontroll és RTK korrekciók",
+    "altitudeControl": "Magasság kontroll",
     "coordinateSystem": "Koordinátarendszer",
     "copyMapOriginToShow": "Térkép origó másolása műsor origóra",
     "copyShowOriginToMap": "Műsor origó másolása térkép origóra",

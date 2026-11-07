@@ -12,6 +12,7 @@ import set from 'lodash-es/set';
 import { EnvironmentType } from '@skybrush/show-format';
 
 import type { Schedule } from '~/flockwave/schedule';
+import { registerEventHandlers } from '~/model/events';
 import type UAV from '~/model/uav';
 import { CoordinateSystemType, type LonLat } from '~/utils/geography';
 import { type Coordinate3D } from '~/utils/math';
@@ -597,5 +598,12 @@ export const {
   signOffOnOnboardPreflightChecksAt,
   synchronizeShowSettings,
 } = actions;
+
+const unregisterEventHandlers = registerEventHandlers({
+  'show:config': () => synchronizeShowSettings('fromServer'),
+});
+if (module.hot) {
+  module.hot.dispose(unregisterEventHandlers);
+}
 
 export default reducer;

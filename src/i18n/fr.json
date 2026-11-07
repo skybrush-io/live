@@ -240,7 +240,7 @@
     "AHL": "Altitude par rapport au point de décollage (AHL)",
     "AMSL": "Altitude par rapport au niveau de la mer (AMSL)",
     "AMSLReference": "Référence AMSL",
-    "altitudeControl": "Contrôle d'altitude et correction RTK",
+    "altitudeControl": "Contrôle d'altitude",
     "coordinateSystem": "Système de coordonnées",
     "copyMapOriginToShow": "Copier l'origine de la carte en point d'origine pour le SHOW",
     "copyShowOriginToMap": "Copier le point d'origine du SHOW en point d'origine de la carte",

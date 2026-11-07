@@ -11,8 +11,8 @@ import OverallRTKStatusLight from './OverallRTKStatusLight';
 import RTKCorrectionSourceSelector from './RTKCorrectionSourceSelector';
 import RTKMessageStatistics from './RTKMessageStatistics';
 import RTKSetupDialogBottomPanel from './RTKSetupDialogBottomPanel';
-import RTKStatusUpdater from './RTKStatusUpdater';
 import { closeRTKSetupDialog } from './slice';
+import { useRTKStatusSubscription } from './subscription';
 
 type Props = {
   open: boolean;
@@ -26,6 +26,9 @@ type Props = {
 const RTKSetupDialog = ({ onClose, open }: Props) => {
   const theme = useTheme();
   const { t } = useTranslation();
+
+  useRTKStatusSubscription(open);
+
   return (
     <DraggableDialog
       fullWidth
@@ -47,7 +50,6 @@ const RTKSetupDialog = ({ onClose, open }: Props) => {
         </Box>
       }
     >
-      <RTKStatusUpdater />
       <Box>
         <Box sx={{ mx: 3, mt: 3 }}>
           <RTKCorrectionSourceSelector />

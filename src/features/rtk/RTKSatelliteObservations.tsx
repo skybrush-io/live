@@ -4,13 +4,13 @@ import type { Chart, ChartData, ChartOptions } from 'chart.js';
 import isNil from 'lodash-es/isNil';
 import { useEffect, useRef, useState } from 'react';
 import { connect } from 'react-redux';
-import { useHarmonicIntervalFn, useUpdate } from 'react-use';
 
 import {
   createGradientBackground,
   NO_BAR_CHART_DATA,
 } from '~/components/charts/utils';
 import Colors from '~/components/colors';
+import useCurrentTimestamp from '~/hooks/useCurrentTimestamp';
 import type { RootState } from '~/store/reducers';
 
 import { useChartOptions } from '~/components/charts/hooks';
@@ -56,10 +56,10 @@ type ProcessedCNRItem = {
 
 const createDataFromItemsAndDrawingContext = (
   items: SatelliteCNRInfo[],
-  ctx: CanvasRenderingContext2D
+  ctx: CanvasRenderingContext2D,
+  now: number
 ): ChartData<'bar'> => {
   const gradients = createGradientFills(ctx);
-  const now = Date.now();
   const processedItems = items
     .map((item): ProcessedCNRItem | null => {
       const ageMsec = now - (item.lastUpdatedAt ?? 0);
@@ -118,30 +118,28 @@ type Props = {
 };
 
 const RTKSatelliteObservations = ({ height = 160, items }: Props) => {
-  const update = useUpdate();
   const chartRef = useRef<Chart<'bar'>>(null);
   const [chartData, setChartData] =
     useState<ChartData<'bar'>>(NO_BAR_CHART_DATA);
   const chartOptions = useChartOptions<'bar'>(CHART_OPTIONS);
 
-  // Update the component regularly because the chart depends on the time
-  // elapsed since the last update so we need to keep it updated even if
-  // we don't receive any new data from the server
-  useHarmonicIntervalFn(update, 1000);
+  // The chart depends on the time elapsed since the last update so we need to
+  // keep it updated even if we don't receive any new data from the server
+  const now = useCurrentTimestamp(1000);
 
-  // Construct the chart data when the component is mounted and every time
-  // the items change
+  // Construct the chart data when the component is mounted, every time the
+  // items change and periodically as time passes
   useEffect(() => {
     const chart = chartRef.current;
 
     if (chart) {
       setChartData(
         items
-          ? createDataFromItemsAndDrawingContext(items, chart.ctx)
+          ? createDataFromItemsAndDrawingContext(items, chart.ctx, now)
           : NO_BAR_CHART_DATA
       );
     }
-  }, [items]);
+  }, [items, now]);
 
   return (
     <Box sx={{ height }}>

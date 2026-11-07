@@ -1,4 +1,6 @@
+import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import Typography from '@mui/material/Typography';
@@ -10,10 +12,18 @@ import ParseableTextField, {
   type ParseableTextFieldChange,
 } from '~/features/upload-support/setup-dialog/ParseableTextField';
 import { useAppDispatch } from '~/store/hooks';
+import { formatIdsAndTruncateTrailingItems } from '~/utils/formatting';
 
 import { formatParameters, parseParameters } from './formatting';
-import { shouldRebootAfterParameterUpload } from './selectors';
-import { setRebootAfterUpload, updateParametersInManifest } from './slice';
+import {
+  getExplicitParameterUploadTargets,
+  shouldRebootAfterParameterUpload,
+} from './selectors';
+import {
+  clearParameterUploadTargets,
+  setRebootAfterUpload,
+  updateParametersInManifest,
+} from './slice';
 import type { ParameterData } from './types';
 
 /**
@@ -23,6 +33,7 @@ import type { ParameterData } from './types';
  */
 const ParameterUploadMainPanel = () => {
   const shouldReboot = useSelector(shouldRebootAfterParameterUpload);
+  const targets = useSelector(getExplicitParameterUploadTargets);
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
 
@@ -38,8 +49,28 @@ const ParameterUploadMainPanel = () => {
     dispatch(setRebootAfterUpload(event.target.checked));
   };
 
+  const handleClearTargets = () => {
+    dispatch(clearParameterUploadTargets());
+  };
+
   return (
     <Box sx={{ pt: 1 }}>
+      {targets && (
+        <Alert
+          severity='warning'
+          variant='filled'
+          sx={{ mb: 2 }}
+          action={
+            <Button color='inherit' size='small' onClick={handleClearTargets}>
+              {t('general.action.clear')}
+            </Button>
+          }
+        >
+          {t('parameterUploadMainPanel.restrictedToUAVs', {
+            uavIds: formatIdsAndTruncateTrailingItems(targets),
+          })}
+        </Alert>
+      )}
       <ParseableTextField
         labelKey='parameterUploadMainPanel.parameterNamesValues'
         helperTextFallbackKey='parameterUploadMainPanel.specifyEntries'

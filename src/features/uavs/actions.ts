@@ -1,10 +1,13 @@
 import type { PayloadAction } from '@reduxjs/toolkit';
 import isNil from 'lodash-es/isNil';
 import reject from 'lodash-es/reject';
-import xor from 'lodash-es/xor';
 
 import { getSelection } from '~/features/selection/selectors';
-import { setSelection } from '~/features/selection/slice';
+import {
+  addToSelection,
+  setSelection,
+  toggleInSelection,
+} from '~/features/selection/slice';
 import flock from '~/flock';
 import { isUavId, uavIdToGlobalId } from '~/model/identifiers';
 import type { AppThunk } from '~/store/reducers';
@@ -117,21 +120,30 @@ export const setSelectedUAVIds = (ids: string[]): PayloadAction<string[]> =>
   );
 
 /**
- * Action factory that returns a thunk that toggles the selection of one or more
- * UAV IDs when dispatched.
+ * Action factory that creates an action that adds the given UAV IDs to the
+ * current selection.
  *
- * @param ids  the IDs of the UAVs to toggle.
+ * @param ids  the IDs of the UAVs to add to the selection
+ * @return an appropriately constructed action
  */
-export const toggleUAVIdsInSelection =
-  (ids: string[]): AppThunk =>
-  (dispatch, getState) => {
-    if (ids.length === 0) {
-      return;
-    }
+export const addUAVIdsToSelection = (ids: string[]): PayloadAction<string[]> =>
+  addToSelection(
+    ids.filter((id) => !isNil(id)).map((id) => uavIdToGlobalId(id))
+  );
 
-    const selection = getSelectedUAVIds(getState());
-    dispatch(setSelectedUAVIds(xor(selection, ids)));
-  };
+/**
+ * Action factory that creates an action that toggles the given UAV IDs in the
+ * current selection.
+ *
+ * @param ids  the IDs of the UAVs to toggle
+ * @return an appropriately constructed action
+ */
+export const toggleUAVIdsInSelection = (
+  ids: string[]
+): PayloadAction<string[]> =>
+  toggleInSelection(
+    ids.filter((id) => !isNil(id)).map((id) => uavIdToGlobalId(id))
+  );
 
 /**
  * Thunk that selects the single UAV in the flock if the user only has a single

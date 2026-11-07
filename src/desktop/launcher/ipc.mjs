@@ -10,6 +10,7 @@ import {
 } from './filesystem.mjs';
 import * as localServer from './local-server.mjs';
 import * as powerSaving from './power-saving.mjs';
+import { setUIScale } from './ui-scale.mjs';
 
 const setupIpc = () => {
   ipc.answerRenderer('getApplicationFolder', getApplicationFolder);
@@ -20,6 +21,7 @@ const setupIpc = () => {
   ipc.answerRenderer('openPath', openPath);
   ipc.answerRenderer('readBufferFromFile', readBufferFromFile);
   ipc.answerRenderer('removeTemporaryFile', removeTemporaryFile);
+  ipc.answerRenderer('setUIScale', setUIScale);
   ipc.answerRenderer('writeBufferToFile', writeBufferToFile);
   ipc.answerRenderer('writeBufferToTemporaryFile', writeBufferToTemporaryFile);
   ipc.answerRenderer(

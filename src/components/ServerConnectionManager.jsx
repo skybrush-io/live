@@ -21,10 +21,12 @@ import { clearConnectionList } from '~/features/connections/slice';
 import { clearDockList } from '~/features/docks/slice';
 import { shouldManageLocalServer } from '~/features/local-server/selectors';
 import { addLogItem } from '~/features/log/slice';
+import { resetRTKStatistics } from '~/features/rtk/slice';
 import {
   calculateAndStoreClockSkew,
   disconnectFromServer,
 } from '~/features/servers/actions';
+import { subscribeToServerEvents } from '~/features/servers/subscriptions';
 import {
   getClockSkewInMilliseconds,
   getServerPort,
@@ -498,6 +500,10 @@ async function executeTasksAfterConnection(dispatch, getState) {
     } = await messageHub.sendMessage('SYS-VER');
     dispatch(setServerVersion(version));
 
+    // Subscribe to server-side events before retrieving any state from the
+    // server so we do not miss changes that happen in the meanwhile
+    await dispatch(subscribeToServerEvents());
+
     // Send a CONN-LIST message to the server to get an up-to-date
     // list of connections
     response = await messageHub.sendMessage('CONN-LIST');
@@ -656,6 +662,7 @@ async function executeTasksAfterDisconnection(dispatch) {
   dispatch(clearClockList());
   dispatch(clearConnectionList());
   dispatch(clearDockList());
+  dispatch(resetRTKStatistics());
   dispatch(clearServerFeatures());
   dispatch(clearServerLicense());
   dispatch(clearServerPortMapping());

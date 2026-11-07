@@ -82,6 +82,7 @@
     "editPreset": "Edit preset",
     "error": "Error while loading RTK sources from server",
     "noRTKData": "No RTK data sources on server",
+    "notConnected": "Not connected to server",
     "pleaseWait": "Please wait, loading RTK sources…",
     "rtkDisabled": "RTK disabled"
   },
@@ -96,6 +97,9 @@
     "surveyInProgress": "Survey in progress…",
     "surveyNo": "No survey in progress",
     "surveySuccesful": "Survey successful"
+  },
+  "RTKStatusPanel": {
+    "signalStrengths": "Satellite signal strengths"
   },
   "UAVList": {
     "allUAVs": "All UAVs",
@@ -557,7 +561,7 @@
     "AHL": "Altitude above home level (AHL)",
     "AMSL": "Altitude above mean sea level (AMSL)",
     "AMSLReference": "AMSL reference",
-    "altitudeControl": "Altitude control and RTK corrections",
+    "altitudeControl": "Altitude control",
     "coordinateSystem": "Coordinate system",
     "copyMapOriginToShow": "Copy map origin to show origin",
     "copyShowOriginToMap": "Copy show origin to map origin",
@@ -586,6 +590,7 @@
     "parameterNamesValues": "Parameter names and values",
     "parameterUploadHint": "Press <kbd>⇧</kbd> + <kbd>Enter</kbd> to add the parameter to the manifest. Click on a parameter in the sidebar to remove it from the manifest.",
     "rebootAfterUpload": "Reboot after upload",
+    "restrictedToUAVs": "Parameters will be uploaded only to these UAVs: {{uavIds}}",
     "specifyEntries": "Specify entries as name=value, one parameter per row."
   },
   "parameterUploadSetupDialog": {
@@ -881,6 +886,11 @@
     "unknownState": "Unknown state",
     "version": "Server version"
   },
+  "serverLogMessageCode": {
+    "objects": {
+      "limit_reached": "Object limit of the server license reached, new objects cannot be registered"
+    }
+  },
   "serverSettingsDialog": {
     "autodetected": "Autodetected",
     "autodiscoveryIsNotAvailable": "Auto-discovery is not available in this version.",
@@ -920,7 +930,8 @@
       "optimizeUIForTouch": "Optimize the interface for touchscreen devices",
       "orientationXAxis": "Orientation (X+ axis)",
       "showMouseCoordinates": "Show mouse coordinates",
-      "showScaleLine": "Show scale line"
+      "showScaleLine": "Show scale line",
+      "uiScale": "UI scale"
     },
     "tabs": {
       "apiKeys": "API keys",
@@ -1558,8 +1569,15 @@
   "uploadPanel": {
     "cancelUpload": "Cancel task",
     "clearHistory": "Clear history",
+    "fix": "Fix",
+    "fixAll": "Fix all",
+    "fixAllInconsistencies_one": "Set the deviating values of 1 UAV to the majority values",
+    "fixAllInconsistencies_other": "Set the deviating values of {{count}} UAVs to the majority values",
+    "fixDeviatingUAVs_one": "Set 1 UAV to the majority value: {{value}}",
+    "fixDeviatingUAVs_other": "Set {{count}} UAVs to the majority value: {{value}}",
     "flashLightsWhereFailed": "Flash lights of UAVs where the task failed",
     "hasHiddenTargets": "Some of the waiting UAVs may be filtered.",
+    "noClearMajority": "Cannot fix: there is no clear majority value",
     "noJobResultAvailable": "No result available yet",
     "resultsTab": "Results",
     "retryFailedAttempts": "Retry failed attempts automatically",

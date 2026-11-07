@@ -1,7 +1,11 @@
 import type { PerUAVJobResult } from '~/features/upload/types';
 import type { Identifier } from '~/utils/collections';
 
-import type { ValueConsistencyResult, ValueDistribution } from './types';
+import type {
+  ValueConsistencyResult,
+  ValueDistribution,
+  ValueFix,
+} from './types';
 
 /**
  * Returns the most common value for each name in the distribution.
@@ -29,6 +33,19 @@ const findMajority = (
 
   return result;
 };
+
+/**
+ * Returns the names for which multiple values are equally common.
+ */
+const findTies = (distribution: ValueDistribution): string[] =>
+  Object.entries(distribution)
+    .filter(([, values]) => {
+      const counts = Object.values(values).map((uavIds) => uavIds.length);
+      const maxCount = Math.max(...counts);
+      return counts.filter((count) => count === maxCount).length > 1;
+    })
+    .map(([name]) => name)
+    .sort();
 
 /**
  * For each name present in `majority`, returns the UAV IDs whose value
@@ -93,5 +110,40 @@ export const analyzeValueConsistency = (
   const { distribution, errors } = collectValueDistribution(perUAVResults);
   const majority = findMajority(distribution);
   const inconsistencies = findInconsistencies(distribution, majority);
-  return { distribution, errors, majority, inconsistencies };
+  const tied = findTies(distribution);
+  return { distribution, errors, majority, inconsistencies, tied };
+};
+
+/**
+ * Returns the fixes that set the deviating values to the majority value.
+ *
+ * Names without a clear majority value are skipped.
+ *
+ * @param result  the value-consistency result
+ * @param name    when given, only the fixes for this name are returned
+ */
+export const collectValueFixes = (
+  result: ValueConsistencyResult,
+  name?: string
+): ValueFix[] => {
+  const { distribution, majority, tied } = result;
+  const names = name === undefined ? Object.keys(distribution) : [name];
+  const fixes: ValueFix[] = [];
+
+  for (const currentName of names) {
+    const majorityValue = majority[currentName];
+    if (majorityValue === undefined || tied.includes(currentName)) {
+      continue;
+    }
+
+    for (const [currentValue, uavIds] of Object.entries(
+      distribution[currentName] ?? {}
+    )) {
+      if (currentValue !== majorityValue) {
+        fixes.push({ name: currentName, value: majorityValue, uavIds });
+      }
+    }
+  }
+
+  return fixes;
 };

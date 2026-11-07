@@ -8,6 +8,7 @@ import type {
   DroneLightsConfiguration,
   DroneShowConfiguration,
   Response_ACKNAK,
+  Response_EVTSUB,
   Response_EXTRELOAD,
   Response_EXTSETCFG,
   RTKSurveySettings,
@@ -529,6 +530,33 @@ export async function setRTKAntennaPosition(
 }
 
 /**
+ * Subscribes to the server-side events with the given types. The server will
+ * notify the client about these events with `EVT-INF` messages.
+ */
+export async function subscribeToEvents(
+  hub: MessageHub,
+  types: string[]
+): Promise<void> {
+  const response: Message<Response_EVTSUB> = await hub.sendMessage({
+    type: 'EVT-SUB',
+    types,
+  });
+
+  for (const type of types) {
+    const error = `Failed to subscribe to server event: ${type}`;
+    if (
+      !extractResponseForId(response, type, {
+        error,
+        key: 'result',
+        typeGuard: isBoolean,
+      })
+    ) {
+      throw new Error(error);
+    }
+  }
+}
+
+/**
  * Asks the server to suspend the currently running show.
  */
 export async function suspendShow(hub: MessageHub): Promise<Schedule> {
@@ -729,6 +757,7 @@ const _operations = {
   setShowLightConfiguration,
   startCollectiveRTH,
   startRTKSurvey,
+  subscribeToEvents,
   suspendShow,
   updateRTKPreset,
   uploadDroneShow,

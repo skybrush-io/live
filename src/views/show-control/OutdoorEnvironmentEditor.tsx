@@ -28,7 +28,6 @@ import { SimpleDistanceField } from '~/components/forms/fields';
 import { estimateShowCoordinateSystemFromActiveUAVs } from '~/features/auto-fit/actions';
 import { canEstimateShowCoordinateSystemFromActiveUAVs } from '~/features/auto-fit/selectors';
 import { updateFlatEarthCoordinateSystem } from '~/features/map/origin';
-import RTKCorrectionSourceSelector from '~/features/rtk/RTKCorrectionSourceSelector';
 import {
   setOutdoorShowAltitudeReferenceToAverageAMSL,
   setOutdoorShowAltitudeReferenceType,
@@ -209,7 +208,7 @@ const OutdoorEnvironmentEditor = ({
 
       <FormHeader>{t('outdoorEnvironmentEditor.altitudeControl')}</FormHeader>
 
-      <Box sx={{ display: 'flex', flexDirection: 'row', pb: 2 }}>
+      <Box sx={{ display: 'flex', flexDirection: 'row', pb: 1 }}>
         <FormControl fullWidth variant='filled'>
           <InputLabel htmlFor='altitude-reference-type'>
             {t('outdoorEnvironmentEditor.showIsControlledBasedOn')}
@@ -255,7 +254,7 @@ const OutdoorEnvironmentEditor = ({
       </Box>
 
       {preTakeoffAltitudeWarning && (
-        <Alert severity='warning' sx={{ mb: 2 }}>
+        <Alert variant='filled' severity='warning'>
           {t('outdoorEnvironmentEditor.preTakeoffAltitudeWarning', {
             averageGroundAMSL: formatAltitude(
               preTakeoffAltitudeWarning.averageGroundAMSL
@@ -270,9 +269,7 @@ const OutdoorEnvironmentEditor = ({
         </Alert>
       )}
 
-      <RTKCorrectionSourceSelector />
-
-      <Box sx={{ pt: 1, mb: -1 }}>
+      <Box sx={{ mb: -1 }}>
         <SmallProgressIndicator
           label='Fitting coordinate system...'
           visible={estimatingCoordinateSystem}

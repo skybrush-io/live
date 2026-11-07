@@ -1,3 +1,4 @@
+import { fixInconsistentParameters } from '~/features/consistency-check/actions';
 import parameterConsistencyCheckJobSpecification from '~/features/consistency-check/consistency-check';
 import { CONSISTENCY_CHECK_JOB_TYPE } from '~/features/consistency-check/constants';
 import firmwareCheckJobSpecification from '~/features/firmware-check/firmware-check';
@@ -6,13 +7,16 @@ import firmwareUploadJobSpecification from '~/features/firmware-update/upload';
 import missionItemUploadJobSpecification from '~/features/mission/upload';
 import parameterUploadJobSpecification from '~/features/parameters/upload';
 import showUploadJobSpecification from '~/features/show/upload';
-import { registerUploadJobType } from '~/features/upload/jobs';
+import {
+  type AnyJobSpecification,
+  registerUploadJobType,
+} from '~/features/upload/jobs';
 import { registerUploadJobResultPanel } from '~/features/upload/result-panels';
 import ValueConsistencyResultPanel from '~/features/upload-support/value-consistency/ValueConsistencyResultPanel';
 import { tt, ttRecord } from '~/i18n';
 
 function registerUploadJobTypes() {
-  const specs = [
+  const specs: AnyJobSpecification[] = [
     firmwareUploadJobSpecification,
     parameterUploadJobSpecification,
     missionItemUploadJobSpecification,
@@ -26,6 +30,7 @@ function registerUploadJobTypes() {
       CONSISTENCY_CHECK_JOB_TYPE,
       ValueConsistencyResultPanel,
       {
+        fixAction: fixInconsistentParameters,
         jobType: CONSISTENCY_CHECK_JOB_TYPE,
         messages: {
           consistent: tt('consistencyCheck.result.consistent'),

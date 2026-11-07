@@ -5,18 +5,70 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [main]
+## [Unreleased]
+
+### Added
+
+- The RTK status panel that appears when the RTK status header widget is
+  pinned to the workbench now also shows the signal strength chart of the
+  satellites tracked by the RTK base station.
+
+### Changed
+
+- Removed the RTK source selector from the "Setup environment" dialog.
+  Observing users has shown that people set the RTK source from the RTK
+  setup dialog instead and the widget in the "Setup environment" dialog
+  was unused.
+
+### Fixed
+
+- Header widgets now clip properly to their boundaries when the window is
+  too narrow.
+
+- The RTK status widget no longer shows stale satellite counts and signal
+  strengths after the connection to the server is lost.
+
+- The RTK status is now queried from the server only once even if multiple
+  widgets need it at the same time, and stale bars in the satellite signal
+  strength chart are now faded out reliably.
+
+## [2.15.0] - 2026-11-05
 
 ### Added
 
 - Added a button to reset the manual preflight checklist without unloading
   the show.
 
+- Added a setting in the Settings dialog that allows the user to set the
+  scale of the UI in the desktop app edition. Note that we do not officially
+  support running the UI at anything else but 100% scale as we do not have
+  the resources to test the UI manually at all scales, but at least the option
+  is there for people who are willing to put up with minor UX inconveniences
+  at scales other than 100%.
+
+- Skybrush Live now shows a permanent warning when the server reaches the
+  object limit of its license.
+
+- Changes to the show settings, LED light control and RTK source made in one
+  Skybrush Live instance now appear in all other instances connected to the
+  same server. Requires server version 2.61.0 or later.
+
+- The results of the parameter consistency check can now be used to set the
+  deviating parameters of the affected drones to the majority value.
+
 ### Fixed
 
 - Reverted to instant scrolling in the "Messages" panel instead of smooth scrolling
   because the latter caused an inconvenient delay when a long list of messages was
   opened for the first time.
+
+- Shift-clicking on a row in the UAV status summary list now adds the
+  corresponding UAVs to the current selection, while Cmd-clicking (Ctrl-clicking
+  on Windows and Linux) toggles them in the current selection.
+
+- Upload panels can now conveniently show 5-digit UAV IDs.
+
+- Ensure correct hotkey handling when Caps Lock is active.
 
 ## [2.14.2] - 2026-09-16
 

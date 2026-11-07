@@ -12,13 +12,13 @@ import type { RootState } from '~/store/reducers';
 
 import PinnableTooltipContents from '~/components/header/PinnableTooltipContents';
 import RTKStatusMiniList from './RTKStatusMiniList';
-import RTKStatusUpdater from './RTKStatusUpdater';
 import {
   getNumberOfSatellites,
   getOverallRTKStatus,
   getSurveyStatus,
 } from './selectors';
 import { showRTKSetupDialog } from './slice';
+import { useRTKStatusSubscription } from './subscription';
 import type { RTKCorrectionStatus } from './types';
 import { formatSurveyAccuracy, getColorOfRTKStatus } from './utils';
 
@@ -27,7 +27,7 @@ const BADGE_OFFSET = [24, 8];
 const buttonStyle: React.CSSProperties = {
   justifyContent: 'space-between',
   textAlign: 'right',
-  width: 80,
+  width: 96, // wide enough to show '88.8 cm'
 };
 
 type RTKStatusHeaderButtonProps = {
@@ -50,6 +50,8 @@ const RTKStatusHeaderButton = ({
   overallStatus,
   surveyStatus,
 }: RTKStatusHeaderButtonProps) => {
+  useRTKStatusSubscription();
+
   const badgeColor = getColorOfRTKStatus(overallStatus);
 
   return (
@@ -79,7 +81,6 @@ const RTKStatusHeaderButton = ({
           offset={BADGE_OFFSET}
           visible={Boolean(badgeColor)}
         />
-        {isConnected && <RTKStatusUpdater />}
       </GenericHeaderButton>
     </LazyTooltip>
   );

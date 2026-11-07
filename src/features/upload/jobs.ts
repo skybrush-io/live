@@ -128,13 +128,20 @@ export type JobSpecification<
   ) => Promise<UAVStatus>;
 };
 
+export type UnknownJobSpecification = JobSpecification<
+  unknown,
+  unknown,
+  unknown
+>;
+export type AnyJobSpecification = JobSpecification<any, any, any>;
+
 /**
  * Mapping from known job types to the async functions that handle them.
  *
  * You can register new entries in this map from other modules with
  * `registerUploadJobType()`.
  */
-const JOB_TYPE_TO_SPEC_MAP: Record<string, JobSpecification<unknown>> = {};
+const JOB_TYPE_TO_SPEC_MAP: Record<string, UnknownJobSpecification> = {};
 
 /**
  * Returns the job specification object corresponding to the given job type,
@@ -142,7 +149,7 @@ const JOB_TYPE_TO_SPEC_MAP: Record<string, JobSpecification<unknown>> = {};
  */
 export function getSpecificationForJobType(
   type: string
-): JobSpecification<unknown> | undefined {
+): UnknownJobSpecification | undefined {
   return JOB_TYPE_TO_SPEC_MAP[type] ?? undefined;
 }
 
@@ -169,7 +176,7 @@ export function getScopeForJobType(type: string): JobScope {
  * @returns a disposer function that can be called to unregister the job type
  */
 export function registerUploadJobType(
-  spec: JobSpecification<unknown>
+  spec: UnknownJobSpecification
 ): () => void {
   const type = spec?.type;
 

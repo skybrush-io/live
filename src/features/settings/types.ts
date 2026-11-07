@@ -79,6 +79,11 @@ export type SettingsState = {
 
     /** Sort preference of the UAV list */
     uavListSortPreference: UAVSortKeyAndOrder;
+
+    /**
+     * Scale of the user interface, 1 meaning 100%.
+     */
+    uiScale?: number;
   };
 
   // TODO: Find / create proper enums from AFrame for some of these.

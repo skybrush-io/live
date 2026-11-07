@@ -15,6 +15,7 @@ const EMPTY_VALUE_CONSISTENCY_RESULT: ValueConsistencyResult = Object.freeze({
   errors: Object.freeze({}),
   majority: Object.freeze({}),
   inconsistencies: Object.freeze({}),
+  tied: Object.freeze([]),
 });
 
 /**

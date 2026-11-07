@@ -1,4 +1,5 @@
 import type {
+  ECEFCoordinate,
   RTKConfigurationPreset,
   RTKSurveySettings,
 } from '@skybrush/flockwave-spec';
@@ -11,6 +12,7 @@ import type { AppThunk } from '~/store/reducers';
 
 import {
   getFormattedAntennaPosition,
+  getSavedCoordinates,
   isShowingAntennaPositionInECEF,
 } from './selectors';
 import {
@@ -20,6 +22,7 @@ import {
   setAntennaPositionFormat,
 } from './slice';
 import { RTKAntennaPositionFormat, type RTKSavedCoordinate } from './types';
+import { shouldSaveCoordinate } from './utils';
 
 export const setCurrentRTKPresetId =
   (presetId: string | undefined): AppThunk =>
@@ -157,4 +160,22 @@ export const saveCurrentCoordinateForPreset =
       message: `Coordinate saved for preset ${presetName}`,
       semantics: MessageSemantics.SUCCESS,
     });
+  };
+
+/**
+ * Saves the current antenna position for the given preset unless it is
+ * already the latest saved coordinate of the preset.
+ */
+export const autosaveCurrentCoordinateForPreset =
+  (presetId: string, positionECEF: ECEFCoordinate | undefined): AppThunk =>
+  (dispatch, getState) => {
+    if (
+      shouldSaveCoordinate(
+        positionECEF,
+        getSavedCoordinates(getState()),
+        presetId
+      )
+    ) {
+      void dispatch(saveCurrentCoordinateForPreset(presetId));
+    }
   };

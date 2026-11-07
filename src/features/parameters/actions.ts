@@ -6,7 +6,10 @@ import {
 
 import { UPLOAD_JOB_TYPE } from './constants';
 import { parseParameters } from './formatting';
-import { getParameterUploadJobPayloadFromManifest } from './selectors';
+import {
+  getParameterUploadJobPayloadFromManifest,
+  getParameterUploadTargets,
+} from './selectors';
 import {
   closeParameterUploadSetupDialog,
   showParameterUploadSetupDialog,
@@ -15,13 +18,15 @@ import {
 
 /**
  * Closes the parameter upload setup dialog and opens the upload dialog with the
- * current parameter manifest as the job payload.
+ * current parameter manifest as the job payload. If the upload is restricted
+ * to specific UAVs, only these UAVs are targeted.
  */
 export const proceedToUpload = createProceedToUploadDialogThunk(
   UPLOAD_JOB_TYPE,
   getParameterUploadJobPayloadFromManifest,
   closeParameterUploadSetupDialog,
-  showParameterUploadSetupDialog
+  showParameterUploadSetupDialog,
+  getParameterUploadTargets
 );
 
 /**

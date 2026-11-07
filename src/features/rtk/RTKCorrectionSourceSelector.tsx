@@ -10,7 +10,7 @@ import Select, { type SelectChangeEvent } from '@mui/material/Select';
 import Typography from '@mui/material/Typography';
 import type { RTKPresetID, RTKPresetType } from '@skybrush/flockwave-spec';
 import { Tooltip } from '@skybrush/mui-components';
-import { useEffect, useState } from 'react';
+import { useEffect, useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { useAsyncRetry } from 'react-use';
@@ -21,6 +21,7 @@ import {
   openRTKPresetEditorDialog,
   resetRTKStatistics,
 } from '~/features/rtk/slice';
+import { isConnected } from '~/features/servers/selectors';
 import messageHub from '~/message-hub';
 import { useAppDispatch } from '~/store/hooks';
 import type { RootState } from '~/store/reducers';
@@ -41,28 +42,45 @@ const isRTKPresetSource = (value: unknown): value is RTKPresetSource =>
   (value.type === undefined || typeof value.type === 'string');
 
 type Props = {
+  isConnected: boolean;
   onCreatePreset: () => void;
   onEditPreset: (presetId: RTKPresetID, presetType: RTKPresetType) => void;
   onSourceChanged?: () => void;
   presetsRefreshTrigger: number;
+  showPresetButtons?: boolean;
+  size?: 'small' | 'medium';
 };
 
 const RTKCorrectionSourceSelector = ({
+  isConnected,
   onCreatePreset,
   onEditPreset,
   onSourceChanged,
   presetsRefreshTrigger,
+  showPresetButtons = true,
+  size,
 }: Props) => {
   const { t } = useTranslation();
+  const inputId = useId();
   const dispatch = useAppDispatch();
   const [selectedByUser, setSelectedByUser] = useState<RTKPresetID>();
+  // Both queries are re-executed when the connection state changes so we
+  // recover from errors caused by the server being unreachable
   const presetsState = useAsyncRetry(async (): Promise<RTKPresetSource[]> => {
+    if (!isConnected) {
+      return [];
+    }
+
     const result = await messageHub.query.getRTKPresets();
     return Array.isArray(result) ? result.filter(isRTKPresetSource) : [];
-  }, [presetsRefreshTrigger]);
+  }, [isConnected, presetsRefreshTrigger]);
   const selectionState = useAsyncRetry(async (): Promise<
     RTKPresetID | null | undefined
   > => {
+    if (!isConnected) {
+      return undefined;
+    }
+
     const result = await messageHub.query.getSelectedRTKPresetId();
     if (typeof result === 'string') {
       return result;
@@ -73,7 +91,7 @@ const RTKCorrectionSourceSelector = ({
     }
 
     return undefined;
-  }, [presetsRefreshTrigger]);
+  }, [isConnected, presetsRefreshTrigger]);
 
   const loading = presetsState.loading || selectionState.loading;
   const hasError = presetsState.error;
@@ -210,21 +228,27 @@ const RTKCorrectionSourceSelector = ({
         <FormControl
           variant='filled'
           error={Boolean(hasError) && !loading}
+          size={size}
           style={{ flex: 1 }}
         >
-          <InputLabel htmlFor='rtk-corrections'>
+          <InputLabel htmlFor={inputId}>
             {t('RTKCorrectionSourceSelector.RTKCorrections')}
           </InputLabel>
           <Select
             displayEmpty
-            disabled={loading}
+            disabled={loading || !isConnected}
+            sx={size === 'small' ? { typography: 'body2' } : undefined}
             value={hasError ? NULL_ID : (currentValue ?? NULL_ID)}
-            inputProps={{ id: 'rtk-corrections' }}
+            inputProps={{ id: inputId }}
             onChange={handleChange}
           >
             {presetsState.loading ? (
               <MenuItem disabled value={NULL_ID}>
                 {t('RTKCorrectionSourceSelector.pleaseWait')}
+              </MenuItem>
+            ) : !isConnected ? (
+              <MenuItem disabled value={NULL_ID}>
+                {t('RTKCorrectionSourceSelector.notConnected')}
               </MenuItem>
             ) : hasError ? (
               <MenuItem disabled value={NULL_ID}>
@@ -245,16 +269,23 @@ const RTKCorrectionSourceSelector = ({
             )}
           </Select>
         </FormControl>
-        <Tooltip content={t('RTKCorrectionSourceSelector.editPreset')}>
-          <IconButton disabled={!canEdit} onClick={handleEditCurrentPreset}>
-            <EditIcon />
-          </IconButton>
-        </Tooltip>
-        <Tooltip content={t('RTKCorrectionSourceSelector.createPreset')}>
-          <IconButton disabled={loading} onClick={handleCreatePreset}>
-            <AddIcon />
-          </IconButton>
-        </Tooltip>
+        {showPresetButtons && (
+          <>
+            <Tooltip content={t('RTKCorrectionSourceSelector.editPreset')}>
+              <IconButton disabled={!canEdit} onClick={handleEditCurrentPreset}>
+                <EditIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip content={t('RTKCorrectionSourceSelector.createPreset')}>
+              <IconButton
+                disabled={loading || !isConnected}
+                onClick={handleCreatePreset}
+              >
+                <AddIcon />
+              </IconButton>
+            </Tooltip>
+          </>
+        )}
       </Box>
     </FormGroup>
   );
@@ -263,6 +294,7 @@ const RTKCorrectionSourceSelector = ({
 export default connect(
   // mapStateToProps
   (state: RootState) => ({
+    isConnected: isConnected(state),
     presetsRefreshTrigger: state.rtk.presetsRefreshTrigger,
   }),
   // mapDispatchToProps

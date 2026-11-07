@@ -4,6 +4,12 @@
   },
   "ConnectionStatusMiniList": {
     "noConnections": "このサーバーはコネクションを使用しません。",
+    "summaryItem": {
+      "connected_other": "+ {{count}}の接続は表示されていません",
+      "connecting": "+ {{count}}件の接続は表示されていません",
+      "disconnected_other": "+ {{count}}件の切断された接続は表示されていません",
+      "disconnecting": "+ {{count}}件が切断処理中ですが表示されていません"
+    },
     "useSecondaryChannel": "セカンダリチャネルを使用してください"
   },
   "DrawingToolbar": {
@@ -16,25 +22,82 @@
     "drawRectangle": "四角形を描画",
     "editFeature": "編集"
   },
+  "GlobalErrorDialog": {
+    "title": "エラーが発生しました"
+  },
+  "ImageLayer": {
+    "geoTIFFOnlyInDevMode": "GeoTIFFの表示は現在、開発者モードに制限されています。",
+    "navigationFailed": "ナビゲーションに失敗しました。ファイルが正しく読み込まれていない可能性があります",
+    "selectImage": "画像を選択してください！"
+  },
+  "LicenseInfoDialog": {
+    "title": "ライセンス情報"
+  },
+  "LicenseInfoPanel": {
+    "errorWhileLoading": "ライセンス情報の読み込み中にエラーが発生しました",
+    "expiryDate": "有効期限",
+    "licenseId": "ライセンスID",
+    "licensee": "ライセンス所有者名",
+    "loading": "ライセンス情報を取得中…",
+    "neverExpires": "このライセンスには有効期限がありません",
+    "noLicenseActivated": "有効なライセンスはありません",
+    "tryAgain": "もう一度お試しください"
+  },
+  "MissionInfoLayer": {
+    "settings": {
+      "showConvexHull": "軌跡の凸包を表示",
+      "showHomePositions": "ホームポジションを表示",
+      "showLandingPositions": "着陸位置を表示",
+      "showMapOrigin": "地図の原点を表示",
+      "showMissionItems": "ミッション項目を表示",
+      "showMissionOrigin": "ミッションの原点を表示",
+      "showTrajectoriesOfSelection": "選択したドローンの軌跡を表示"
+    }
+  },
   "OnboardPreflightChecksDialog": {
     "noError": "エラーが発生しているUAVはありません。",
     "passed": "機体のプレフライトチェックが正常にパスしました。",
     "signOffOn": "機体のプレフライトチェックを承認"
   },
+  "PathScanner": {
+    "notFound": "サーバーの実行ファイルが見つかりません。",
+    "scanAgain": "クリックして再スキャン",
+    "scanning": "お待ちください…",
+    "scanningSecondary": "サーバーを検索中",
+    "success": "サーバーの実行ファイルが正常に見つかりました。"
+  },
+  "RTKCoordinateRestorationDialog": {
+    "accuracyLabel": "精度",
+    "dateLabel": "保存済み",
+    "noSavedCoordinates": "保存された座標が見つかりません。",
+    "positionLabel": "位置",
+    "title": "保存済みの座標を選択",
+    "useSaved": "座標を使用"
+  },
   "RTKCorrectionSourceSelector": {
     "RTKCorrections": "RTKコネクション",
+    "createPreset": "新しいRTKプリセットを作成",
+    "editPreset": "プリセットを編集",
     "error": "サーバーからRTKリソースを読み込み中のエラー",
     "noRTKData": "サーバーにRTKリソースがありません",
-    "pleaseWait": "RTKリソースを読み込み中。しばらくお待ちください…"
+    "notConnected": "サーバーに接続されていません",
+    "pleaseWait": "RTKリソースを読み込み中。しばらくお待ちください…",
+    "rtkDisabled": "RTK無効"
   },
   "RTKMessage": {
     "noRTKMessagesYet": "受信済みのRTKメッセージはありません"
+  },
+  "RTKSetupDialog": {
+    "title": "RTK補正"
   },
   "RTKStatusMiniList": {
     "satelliteCount": "衛星数",
     "surveyInProgress": "調査中…",
     "surveyNo": "調査中のものはありません",
     "surveySuccesful": "調査成功"
+  },
+  "RTKStatusPanel": {
+    "signalStrengths": "衛星信号強度"
   },
   "UAVList": {
     "allUAVs": "全UAV",
@@ -51,9 +114,12 @@
     "removeSelectedItems": "選択中のものを削除"
   },
   "UAVSelector": {
-    "noMatchingUAVs": "\"{{filter}}\"に該当するUAVは存在しません"
+    "noMatchingUAVs": "\"{{filter}}\" に一致する結果が見つかりません"
   },
   "UAVStatus": {
+    "error": {
+      "notInWorkbench": "UAVパネルはまだワークベンチに追加されていません"
+    },
     "noConnected": "UAVが接続されていません"
   },
   "alerts": {
@@ -65,15 +131,35 @@
     "clickToChange": "クリックして{{altitudeType}}に変更。",
     "showingCurrent": "最大/最小{{altitudeType}}を表示。"
   },
+  "altitudeSummaryType": {
+    "long": {
+      "agl": "対地高度",
+      "ahl": "ホーム地点からの高度",
+      "amsl": "平均海面からの高度",
+      "xyz": "ローカル座標系での高度"
+    },
+    "short": {
+      "agl": "AGL",
+      "ahl": "AHL",
+      "amsl": "AMSL",
+      "xyz": "Z座標"
+    }
+  },
   "antennaPositionIndicator": {
     "antennaPositionNotKnown": "アンテナ位置が不明です",
     "clickToToggle": "緯度/経度⇔ECEF形式の切り替え",
-    "copyToClipboard": "クリップボードにコピー"
+    "copyToClipboard": "クリップボードにコピー",
+    "useSavedCoordinate": "保存した座標を使用"
   },
   "augmentMappingButton": {
     "assignSparesToEmptySlots": "予備を空のスロットにアサイン"
   },
   "authentication": "認証",
+  "batteryDisplayStyle": {
+    "forcedPercentage": "必要に応じて電圧から推定し、パーセンテージ表示を優先",
+    "percentage": "不明な場合は電圧から推定してパーセンテージを優先表示",
+    "voltage": "電圧表示を優先"
+  },
   "batteryStatusHeaderButton": "平均バッテリー量/最小バッテリー量",
   "bearingCalculator": {
     "addAtLeastTwoItems": "姿勢と距離を計算するためには最低二つのアイテムを追加して下さい",
@@ -86,6 +172,78 @@
     "disable": "ブロードキャストを無効化",
     "enable": "{{time}}秒間ブロードキャストを有効化"
   },
+  "collectiveRTHDialog": {
+    "action": {
+      "addCollectiveRTH": "RTH計画を計算"
+    },
+    "description": "ショー内の複数のタイムスタンプで集合RTH計画を事前計算します。緊急時には、集合RTHによって衝突を避けながら、できるだけ早くドローンを帰還させます。",
+    "existingInvalidRTHPlan": "ショーには有効な集合RTH計画がありません",
+    "existingValidRTHPlan_other": "ショーには{{count}}個のタイムスタンプに有効な集合RTH計画があります",
+    "hints": {
+      "addCollectiveRTH": "上のボタンをクリックしてRTH計画を計算します"
+    },
+    "parameters": {
+      "form": {
+        "horizontalVelocity": {
+          "help": "集合RTH中",
+          "label": "水平速度"
+        },
+        "minDistance": {
+          "help": "RTH中のドローン間",
+          "label": "最小距離"
+        },
+        "timeResolution": {
+          "help": "連続するRTH計画間",
+          "label": "時間分解能"
+        },
+        "verticalVelocity": {
+          "help": "集合RTH中",
+          "label": "鉛直速度"
+        }
+      }
+    },
+    "status": {
+      "error": "RTH計画の計算に失敗しました。もう一度お試しください。",
+      "loading": "RTH計画を計算中…",
+      "success": "RTH計画の計算が完了しました"
+    },
+    "summary": {
+      "firstTime": {
+        "message": "最初のプラン: {{firstTime}}"
+      },
+      "lastTime": {
+        "message": "最後のプラン: {{lastTime}}"
+      },
+      "minRTHAltitude": {
+        "message": "最小RTH高度：{{minRTHAltitude}}"
+      },
+      "numPlans": {
+        "message_other": "{{count}}件のRTH計画を計算しました。承認待ちです"
+      }
+    },
+    "title": "集合RTHを計画"
+  },
+  "consistencyCheck": {
+    "mainPanel": {
+      "parameterCheckHint": "<kbd>⇧</kbd> + <kbd>Enter</kbd> を押して、パラメーター名をリストに追加します。サイドバーの名前をクリックすると削除できます。",
+      "parameterNames": "パラメーター名",
+      "specifyEntries": "1行につき1つのパラメーター名を指定してください。"
+    },
+    "result": {
+      "consistent": "すべてのパラメーターに整合性があります。",
+      "errors": "パラメーターの整合性チェック中にエラーが発生しました。以下の結果を確認してください。",
+      "inconsistencies": "一部のパラメーター値に不整合があります。以下の結果を確認してください。"
+    },
+    "setupDialog": {
+      "checkParameters": "パラメーター整合性チェック"
+    },
+    "sidebar": {
+      "import": "インポート…",
+      "nextStep": "次のステップ",
+      "removeAllItems": "リストからすべての名前を削除",
+      "title": "パラメーター名"
+    }
+  },
   "coordinateAveragingDialogToolbar": {
     "addNewDrone": "新たにドローンを追加",
     "copyCentroid": "重心をコピー",
@@ -94,6 +252,14 @@
     "resetMeasurement": "測定をリセット",
     "resumeMeasurement": "測定を再開",
     "setCentroidAsMapOrigin": "重心をマップ原点にセット"
+  },
+  "coordinateFormat": {
+    "-d": "十進度（符号付き）",
+    "-dm": "度・分（符号付き）",
+    "-dms": "度・分・秒（符号付き）",
+    "d": "十進度",
+    "dm": "度・分",
+    "dms": "度・分・秒"
   },
   "environmentEditorDialog": {
     "environmentSettings": "環境設定",
@@ -122,9 +288,53 @@
       "warningsAndErrors": "警告/エラー"
     }
   },
+  "firmwareCheck": {
+    "names": {
+      "board": "ボードリビジョン",
+      "firmware": "ファームウェアバージョン",
+      "flight_sw": "飛行ソフトウェアバージョン",
+      "middleware_sw": "ミドルウェアバージョン",
+      "os_sw": "オペレーティングシステムのバージョン",
+      "revision": "リビジョン",
+      "server": "サーバーバージョン"
+    },
+    "result": {
+      "consistent": "すべてのファームウェアバージョンに整合性があります。",
+      "errors": "ファームウェアバージョンの確認中にエラーが発生しました。以下の結果を確認してください。",
+      "inconsistencies": "一部のファームウェアバージョンに不整合があります。以下の結果を確認してください。"
+    }
+  },
   "fitAllFeaturesButton": {
     "fitAllDrones": "全ドローンを画面に収める",
     "fitAllFeatures": "全機能に適合"
+  },
+  "flightLogKind": {
+    "ardupilot": "ArduPilot飛行ログ",
+    "flockctrl": "FlockCtrl高レベル飛行ログ",
+    "text": "プレーンテキスト飛行ログ",
+    "ulog": "PX4 ULog飛行ログ",
+    "unknown": "不明な飛行ログ形式"
+  },
+  "flightMode": {
+    "acro": "アクロバット",
+    "alt": "高度維持",
+    "auto": "自動",
+    "circle": "関心地点の周囲を旋回",
+    "flow": "オプティカルフロー維持",
+    "follow": "別のデバイスを追従",
+    "guided": "コンパニオンコンピューターによる誘導",
+    "land": "自律着陸",
+    "loiter": "手動速度制御による位置保持",
+    "mission": "プログラム済みミッションを実行",
+    "other": "その他の未指定の飛行モード",
+    "pos": "手動姿勢制御による位置保持",
+    "precland": "自律精密着陸",
+    "rth": "自律帰還",
+    "show": "ドローンショーを実行中",
+    "simple": "簡易飛行支援モード",
+    "stab": "ロール・ピッチ安定化",
+    "takeoff": "自律離陸",
+    "unknown": "不明な飛行モード"
   },
   "fullScreen": {
     "exit": "全画面モードを終了",
@@ -139,6 +349,7 @@
       "clear": "クリア",
       "click": "クリック",
       "close": "閉じる",
+      "confirm": "確認",
       "delete": "削除",
       "discard": "破棄",
       "drag": "ドラッグ",
@@ -147,22 +358,33 @@
       "import": "インポート",
       "navigate": "ナビゲート",
       "open": "開く",
+      "pan": "パン",
       "redo": "やり直す",
+      "reject": "拒否",
       "remove": "除く",
       "reset": "リセット",
       "retry": "リトライ",
+      "rotate": "回転",
       "save": "保存",
+      "saving": "保存中…",
+      "scale": "拡大縮小",
       "select": "選択",
       "start": "開始",
-      "stop": "停止"
+      "stop": "停止",
+      "submit": "送信",
+      "undo": "元に戻す",
+      "zoom": "ズーム"
     },
     "commands": {
+      "calibrateCompass": "コンパスをキャリブレーション",
+      "clearLEDColor": "LED色の上書きを解除",
       "land": "着陸",
       "positionHold": "ポジションホールド",
       "powerOff": "電源オフ",
       "powerOn": "電源オン",
       "reboot": "再起動",
       "returnToHome": "ホームへ帰還",
+      "setLEDColor": "LEDの色を設定",
       "sleep": "スリープ",
       "takeoff": "離陸"
     },
@@ -171,7 +393,9 @@
       "longitude": "経度"
     },
     "geometry": {
+      "angle": "角度",
       "rotation": "回転",
+      "scale": "倍率",
       "zoom": "拡大"
     },
     "status": {
@@ -197,6 +421,17 @@
     "smartReturn": "衝突回避ありのRTH",
     "stop": "停止してホバリング",
     "unknown": "不明なアクション: {{action}}"
+  },
+  "gpsFixType": {
+    "0": "GPS未接続",
+    "1": "GPS測位なし",
+    "2": "2D GPS測位",
+    "3": "3D GPS測位",
+    "4": "DGPS/SBASによる3D GPS測位",
+    "5": "RTKフロート",
+    "6": "RTKフィックス",
+    "7": "静止位置",
+    "8": "不明なGPS測位タイプ"
   },
   "header": {
     "distanceSummary": "ホーム地点からの最大最小距離",
@@ -264,15 +499,18 @@
   },
   "mappingButtonGroup": {
     "editMapping": "マッピングを編集",
+    "emptySlotsShownWhileEditingMapping": "マッピングの編集中は、空のミッションスロットも表示されたままになります。",
     "hideEmptyMissionSlots": "空のミッションスロットを非表示",
     "showEmptyMissionSlots": "空のミッションスロットを表示"
   },
   "mappingEditorToolbar": {
     "assignSpares": "予備をアサイン",
+    "calculatingMapping": "マッピングを計算中…",
     "clearMissing": "行方不明をクリア",
     "clickToEdit": "クリックしてシングルスロットを編集。",
     "dragNodes": "マッピングを変形するにはノードをドラッグしてください。",
     "exportMapping": "マッピングをエクスポート中…",
+    "generateRandomMapping": "マッピングをランダム化",
     "importMapping": "マッピングをインポート中…"
   },
   "mappingSlotEditorToolbar": {
@@ -320,43 +558,250 @@
     "AHL": "ホームレベル上の高度(AHL)",
     "AMSL": "平均海水位上の高度(AMSL)",
     "AMSLReference": "AMSL参照",
-    "altitudeControl": "高度制御とRTKコネクション",
+    "altitudeControl": "高度制御",
     "coordinateSystem": "座標系",
     "copyMapOriginToShow": "マップ原点をショー原点へコピー",
     "copyShowOriginToMap": "ショー原点をマップ原点へコピー",
+    "fileToShow": "ファイル ➜ ショー",
+    "fileToShowTooltip": "位置データが埋め込まれたショーファイルが必要です",
     "fitCoordinateSysToCurrentDrone": "現在のドローンの位置に座標系を合わせる",
+    "mapToShow": "マップ ➜ ショー",
+    "preTakeoffAltitudeWarning": "設定されたAMSL基準値は{{amslReference}}ですが、地上にいる{{sampleCount}}機のドローンの平均AMSLは{{averageGroundAMSL}}です。差：{{difference}} < {{threshold}}。",
     "setToAverageAMSL": "アクティブなドローンの平均AMSLを設定",
     "showCoordinateSystemAppliedToMap": "マップに適用された座標系を表示。",
+    "showCoordinateSystemUpdatedFromFile": "ファイルからショー座標系を更新しました。",
     "showCoordinateSystemUpdatedFromMap": "マップから更新された座標系を表示。",
     "showIsControlledBasedOn": "ショーのコントロールは…",
     "showOrientation": "方位を表示",
     "showOrigin": "原点を表示",
+    "showToMap": "ショー ➜ マップ",
     "warningText": "ショーの原点と向きの自動計算では、すべてのドローンがショーの X 軸を向いている<underline>、または</underline>と仮定されます。絶対離陸ヘディングはサポートされていません。"
   },
   "parameterListSidebar": {
     "import": "インポート…",
     "nextStep": "次へ",
-    "removeAllItems": "マニフェストのアイテムをすべて除外"
+    "removeAllItems": "マニフェストのアイテムをすべて除外",
+    "title": "マニフェスト"
   },
   "parameterUploadMainPanel": {
     "parameterNamesValues": "パラメータ名と値",
     "parameterUploadHint": "<kbd>⇧</kbd> + <kbd>Enter</kbd> でパラメーターをマニフェストに追加。 サイドバーのパラメーターをクリックしてマニフェストから削除。",
     "rebootAfterUpload": "アップロード後に再起動",
+    "restrictedToUAVs": "パラメータは以下のドローンにのみアップロードされます：{{uavIds}}",
     "specifyEntries": "name=value形式で1行ごとにエントリーを指定"
   },
   "parameterUploadSetupDialog": {
     "uploadParameters": "パラメーターをアップロード"
   },
   "preferences": "設定",
+  "preflightCheckResult": {
+    "overall": {
+      "error": "飛行前チェックの実行中にエラーが発生しました",
+      "failure": "飛行前チェックに失敗しました",
+      "off": "すべての飛行前チェックが無効です",
+      "pass": "飛行前チェックに合格しました",
+      "running": "飛行前チェックを実行中…",
+      "softFailure": "一部の飛行前チェックが一時的に失敗しました",
+      "unknown": "不明な飛行前テスト結果",
+      "warning": "一部の飛行前チェック項目に注意が必要です"
+    },
+    "short": {
+      "error": "テスト実行中にエラー",
+      "failure": "失敗",
+      "off": "無効",
+      "pass": "OK",
+      "running": "チェック中…",
+      "softFailure": "一時的な失敗",
+      "unknown": "不明なテスト結果",
+      "warning": "注意が必要"
+    }
+  },
   "preflightTab": {
     "enterCheckItems": "希望のマニュアル・プリフライト・チェック項目を1行に1つずつ入力してください。",
     "headingsHint": "コロン(：)で終わる行は見出しになります",
     "manualPreflightCheckItems": "マニュアル・プリフライト・チェック項目",
     "preflightCheckItems": "飛行前チェック項目"
   },
+  "proControlButtonGroup": {
+    "collectiveRTH": "一斉RTH",
+    "collectiveRTHPanelNotFound": "一斉RTHパネルが見つかりません。サイドバーから手動で開いてください。",
+    "prerequisites": {
+      "collectiveRTHNotTriggered": "一斉RTHはまだ開始されていません",
+      "hasCollectiveRTHPlan": "ショーには一斉RTH計画が含まれています",
+      "proFeaturesEnabled": "サーバーでPro機能が有効になっています",
+      "supportsSuspendResumeCRTH": "サーバーは一時停止、再開、および一斉RTH操作をサポートしています"
+    },
+    "resume": "再開",
+    "suspend": "一時停止"
+  },
   "recalculateMappingButton": {
     "findOptimalMapping": "最適マッピングを探す",
     "recalculateMapping": "マッピングを再計算"
+  },
+  "rtkCorrectionStatus": {
+    "long": {
+      "connectedRecently": "RTK補正ステータスを確認中...",
+      "error": "RTK補正で不明なエラーが発生しました",
+      "inactive": "RTK補正ソースが選択されていません",
+      "noAntennaPosition": "RTKアンテナ位置が不明です",
+      "notConnected": "サーバーに接続されていません",
+      "notEnoughSatellites": "有効なRTK補正を持つ衛星が不足しています",
+      "ok": "RTK補正は有効です",
+      "surveyInProgress": "測量中"
+    },
+    "short": {
+      "connectedRecently": "データ待ち",
+      "error": "エラー",
+      "inactive": "ソースなし",
+      "noAntennaPosition": "アンテナ位置なし",
+      "notConnected": "未接続",
+      "notEnoughSatellites": "衛星不足",
+      "ok": "有効",
+      "surveyInProgress": "測量中"
+    }
+  },
+  "rtkMessageType": {
+    "rtcm2/1": "ディファレンシャルGPS補正",
+    "rtcm2/14": "GPS週内時間",
+    "rtcm2/15": "電離層遅延メッセージ",
+    "rtcm2/16": "GPSスペシャルメッセージ",
+    "rtcm2/18": "RTK未補正搬送波位相",
+    "rtcm2/19": "RTK未補正擬似距離",
+    "rtcm2/2": "デルタディファレンシャルGPS補正",
+    "rtcm2/22": "拡張基準局パラメータ",
+    "rtcm2/23": "アンテナタイプ定義レコード",
+    "rtcm2/24": "アンテナ基準点（ARP）",
+    "rtcm2/3": "GNSS基準局パラメータ",
+    "rtcm2/36": "GLONASSスペシャルメッセージ",
+    "rtcm2/4": "基準局データム",
+    "rtcm2/5": "GPS衛星群ヘルスステータス",
+    "rtcm2/6": "GPSヌルフレーム",
+    "rtcm2/7": "DGPS無線ビーコンアルマナック",
+    "rtcm2/8": "擬似衛星アルマナック",
+    "rtcm2/9": "GPS部分補正セット",
+    "rtcm3/1001": "L1帯のみGPS RTK",
+    "rtcm3/1002": "拡張L1帯のみGPS RTK",
+    "rtcm3/1003": "L1 & L2 GPS RTK",
+    "rtcm3/1004": "拡張L1 & L2 GPS RTK",
+    "rtcm3/1005": "RTKアンテナ位置",
+    "rtcm3/1006": "高さ付きRTKアンテナ位置",
+    "rtcm3/1007": "アンテナ記述子",
+    "rtcm3/1008": "アンテナ記述子 & シリアル番号",
+    "rtcm3/1009": "L1帯のみGLONASS RTK",
+    "rtcm3/1010": "拡張L1帯のみGLONASS RTK",
+    "rtcm3/1011": "L1 & L2 GLONASS RTK",
+    "rtcm3/1012": "拡張L1 & L2 GLONASS RTK",
+    "rtcm3/1013": "システムパラメータ",
+    "rtcm3/1014": "ネットワーク補助局データ",
+    "rtcm3/1015": "GPS電離層補正",
+    "rtcm3/1016": "GPS幾何補正",
+    "rtcm3/1017": "GPS電離層 & 幾何補正",
+    "rtcm3/1019": "GPSエフェメリス",
+    "rtcm3/1020": "GLONASSエフェメリス",
+    "rtcm3/1029": "Unicodeテキスト文字列",
+    "rtcm3/1030": "GPSネットワークRTK残差",
+    "rtcm3/1031": "GLONASSネットワークRTK残差",
+    "rtcm3/1032": "物理基準局位置",
+    "rtcm3/1033": "受信機とアンテナの記述子",
+    "rtcm3/1034": "GPS FKP勾配",
+    "rtcm3/1035": "GLONASS FKP勾配",
+    "rtcm3/1037": "GLONASS電離層補正",
+    "rtcm3/1038": "GLONASS幾何補正",
+    "rtcm3/1039": "GLONASS電離層 & 幾何補正",
+    "rtcm3/1042": "BDS（北斗）エフェメリス",
+    "rtcm3/1044": "QZSSエフェメリス",
+    "rtcm3/1045": "GALILEO F/NAVエフェメリス",
+    "rtcm3/1046": "GALILEO I/NAVエフェメリス",
+    "rtcm3/1071": "GPS MSM1（DGNSS擬似距離）",
+    "rtcm3/1072": "GPS MSM2（RTK擬似距離）",
+    "rtcm3/1073": "GPS MSM3（コード、搬送波）",
+    "rtcm3/1074": "GPS MSM4（コード、搬送波、CNR）",
+    "rtcm3/1075": "GPS MSM5（コード、搬送波、ドップラー、CNR）",
+    "rtcm3/1076": "GPS MSM6（高分解能コード、搬送波、ドップラー）",
+    "rtcm3/1077": "GPS MSM7（高分解能コード、搬送波、ドップラー、CNR）",
+    "rtcm3/1081": "GLONASS MSM1（DGNSS擬似距離）",
+    "rtcm3/1082": "GLONASS MSM2（RTK擬似距離）",
+    "rtcm3/1083": "GLONASS MSM3（コード、搬送波）",
+    "rtcm3/1084": "GLONASS MSM4（コード、搬送波、CNR）",
+    "rtcm3/1085": "GLONASS MSM5（コード、搬送波、ドップラー、CNR）",
+    "rtcm3/1086": "GLONASS MSM6（高分解能コード、搬送波、ドップラー）",
+    "rtcm3/1087": "GLONASS MSM7（高分解能コード、搬送波、ドップラー、CNR）",
+    "rtcm3/1091": "GALILEO MSM1（DGNSS擬似距離）",
+    "rtcm3/1092": "GALILEO MSM2（RTK擬似距離）",
+    "rtcm3/1093": "GALILEO MSM3（コード、搬送波）",
+    "rtcm3/1094": "GALILEO MSM4（コード、搬送波、CNR）",
+    "rtcm3/1095": "GALILEO MSM5（コード、搬送波、ドップラー、CNR）",
+    "rtcm3/1096": "GALILEO MSM6（高分解能コード、搬送波、ドップラー）",
+    "rtcm3/1097": "GALILEO MSM7（高分解能コード、搬送波、ドップラー、CNR）",
+    "rtcm3/1101": "SBAS MSM1（DGNSS擬似距離）",
+    "rtcm3/1102": "SBAS MSM2（RTK擬似距離）",
+    "rtcm3/1103": "SBAS MSM3（コード、搬送波）",
+    "rtcm3/1104": "SBAS MSM4（コード、搬送波、CNR）",
+    "rtcm3/1105": "SBAS MSM5（コード、搬送波、ドップラー、CNR）",
+    "rtcm3/1106": "SBAS MSM6（高分解能コード、搬送波、ドップラー）",
+    "rtcm3/1107": "SBAS MSM7（高分解能コード、搬送波、ドップラー、CNR）",
+    "rtcm3/1111": "QZSS MSM1（DGNSS擬似距離）",
+    "rtcm3/1112": "QZSS MSM2（RTK擬似距離）",
+    "rtcm3/1113": "QZSS MSM3（コード、搬送波）",
+    "rtcm3/1114": "QZSS MSM4（コード、搬送波、CNR）",
+    "rtcm3/1115": "QZSS MSM5（コード、搬送波、ドップラー、CNR）",
+    "rtcm3/1116": "QZSS MSM6（高分解能コード、搬送波、ドップラー）",
+    "rtcm3/1117": "QZSS MSM7（高分解能コード、搬送波、ドップラー、CNR）",
+    "rtcm3/1121": "BeiDou MSM1（DGNSS擬似距離）",
+    "rtcm3/1122": "BeiDou MSM2（RTK擬似距離）",
+    "rtcm3/1123": "BeiDou MSM3（コード、搬送波）",
+    "rtcm3/1124": "BeiDou MSM4（コード、搬送波、CNR）",
+    "rtcm3/1125": "BeiDou MSM5（コード、搬送波、ドップラー、CNR）",
+    "rtcm3/1126": "BeiDou MSM6（高分解能コード、搬送波、ドップラー）",
+    "rtcm3/1127": "BeiDou MSM7（高分解能コード、搬送波、ドップラー、CNR）",
+    "rtcm3/1230": "GLONASS L1・L2コード-位相バイアス"
+  },
+  "rtkPresetEditor": {
+    "addSource": "ソースを追加",
+    "createFailed": "プリセットの作成に失敗しました",
+    "createTitle": "RTKプリセットを作成",
+    "dataSources": "データソース",
+    "deleteConfirmation": "このプリセットを削除してもよろしいですか？",
+    "deleteFailed": "プリセットの削除に失敗しました",
+    "deletePreset": "プリセットを削除",
+    "editTitle": "RTKプリセットを編集",
+    "formatAuto": "自動検出",
+    "messageFormat": "メッセージフォーマット",
+    "presetName": "プリセット名",
+    "presetNamePlaceholder": "マイRTK基準局",
+    "readOnlyMessage": "このプリセットは編集できません",
+    "removeSource": "ソースを削除",
+    "sourcePlaceholder": "ntrip://username:password@hostname/mountpoint",
+    "sourcesHelp": "シリアルポートには serial:PORT?baud=BAUDRATE、TCP接続には tcp://HOST:PORT、またはNTRIPストリームには ntrip://username:password@hostname/mountpoint を使用してください。",
+    "type": "タイプ",
+    "updateFailed": "プリセットの更新に失敗しました"
+  },
+  "rtkSetupDialog": {
+    "startNewSurvey": "新しい測量を開始"
+  },
+  "rtkStatus": {
+    "long": {
+      "connectedRecently": "RTK補正の状態を確認中...",
+      "error": "RTK補正で不明なエラーが発生しました",
+      "inactive": "RTK補正ソースが選択されていません",
+      "noAntennaPosition": "RTKアンテナ位置が不明です",
+      "notConnected": "サーバーに接続されていません",
+      "notEnoughSatellites": "有効なRTK補正を持つ衛星が不足しています",
+      "ok": "RTK補正は有効です",
+      "surveyInProgress": "測量を実行中",
+      "unknown": "RTK補正の状態が不明です"
+    },
+    "short": {
+      "connectedRecently": "データを待機中",
+      "error": "エラー",
+      "inactive": "ソースなし",
+      "noAntennaPosition": "アンテナ位置なし",
+      "notConnected": "未接続",
+      "notEnoughSatellites": "衛星が不足",
+      "ok": "有効",
+      "surveyInProgress": "測量中",
+      "unknown": "状態不明"
+    }
   },
   "safetyDialog": {
     "geofence": "ジオフェンス",
@@ -369,12 +814,15 @@
       "fenceAction": "ジオフェンスアクション",
       "fenceActionHelperText": "これらのオプションはドローンによっては利用できない場合があります。",
       "fenceActionLabel": "プライマリジオフェンスアクション",
+      "generateAutomatically": "自動生成",
+      "geofencePolygon": "ジオフェンスポリゴン",
       "horizontal": "水平",
       "maxAltitude": "最高高度",
       "maxDistance": "最長距離",
       "maxVertexCount": "最大頂点数",
       "proposedLimits": "ミッションに対する提案された制限",
       "safetyMargins": "安全域",
+      "simplifyGeometry": "ジオメトリを単純化",
       "simplifyPolygon": "ポリゴンの簡素化",
       "vertexCountReduction": "頂点数削減",
       "vertical": "垂直"
@@ -385,7 +833,7 @@
   "safetySettingsTab": {
     "criticalBatteryVoltageHelperText": "バッテリー電圧が[V]単位で低下した場合、バッテリーのフェイルセーフ機能が作動します。",
     "criticalBatteryVoltageLabel": "クリティカルバッテリー電圧",
-    "emptyValues": "空の値は、それぞれの安全値をオーバーライドしません",
+    "emptyValues": "入力欄を空欄のままにすると、アップロード後もドローンの既存の設定が保持されます.",
     "lowBatteryThresholdHelperText": "低バッテリーフェイルセーフアクションがトリガーされる低バッテリーしきい値のタイプと値。",
     "lowBatteryThresholdType": {
       "disabled": "無効",
@@ -412,6 +860,18 @@
     "notes": "メモ",
     "zoomLevel": "拡大レベル"
   },
+  "selectionGroups": {
+    "action": {
+      "createNew": "新規グループを作成",
+      "rename": "グループ名を変更"
+    },
+    "label": {
+      "name": "グループ名"
+    },
+    "newGroupNameTemplate": "グループ {{id}}",
+    "selectedObjects": "選択されたオブジェクト",
+    "updated": "更新済み"
+  },
   "serverConnectionStatus": {
     "clockSkew": "クロックスキュー",
     "clocksSync": "クロック同期",
@@ -422,6 +882,11 @@
     "roundTripTime": "ラウンドトリップタイム",
     "unknownState": "状態不明",
     "version": "サーバーのバージョン"
+  },
+  "serverLogMessageCode": {
+    "objects": {
+      "limit_reached": "サーバーライセンスのオブジェクト制限に達しました。新規オブジェクトは作成できません"
+    }
   },
   "serverSettingsDialog": {
     "autodetected": "自動検出",
@@ -450,6 +915,7 @@
     "display": {
       "coordinateFormat": "座標形式",
       "enableExperimentalFeatures": "実験的機能を有効にする（advanced）",
+      "experimentalFeaturesWarning": "実験的機能は安定版機能と同程度のテストが行われていません。",
       "flatEarthCoordinateSystem": "Flat Earth座標系",
       "hideInactiveSegmentsOnDarkLCD": "ダークモードLCDクロックのコントラストを強調する",
       "language": "言語",
@@ -459,8 +925,10 @@
       "operationModes": "オペレーションモード",
       "optimizeForSingleUAV": "単一UAVの操作のためにインターフェースを最適化",
       "optimizeUIForTouch": "タッチディスプレイ端末用に画面を最適化",
+      "orientationXAxis": "オリエンテーション（X+軸）",
       "showMouseCoordinates": "マウス座標を表示",
-      "showScaleLine": "縮尺を表示"
+      "showScaleLine": "縮尺を表示",
+      "uiScale": "UI スケール"
     },
     "tabs": {
       "apiKeys": "APIキー",
@@ -491,6 +959,7 @@
       "showTrajectoriesOfSelection": "選択したUAVの軌道を表示"
     },
     "uavs": {
+      "altitudeWarningThreshold": "離陸前高度警告閾値",
       "batteryDisplayStyle": "バッテリーの表示形式",
       "cellCount": "セル数",
       "criticalTreshold": "クリティカルなしきい値",
@@ -501,8 +970,13 @@
       "fullCharge": "フル充電",
       "gone": "ドローンが消えたとマーク",
       "lowTreshold": "低しきい値",
+      "maxUploadConcurrency": "最大並列アップロード数",
+      "minIndoorTakeoffSpacing": "最小離発着間隔（屋内）",
+      "minOutdoorTakeoffSpacing": "最小離発着間隔（屋外）",
       "missionSetup": "ミッションの設定",
       "missionSetupDescription": "マルチドローンミッションの前に使用し、各ドローンが所定の離陸位置にいるか、正しい方向を向いているかを確認する。",
+      "operationSettings": "運用",
+      "uavOperationConfirmations": "UAV操作確認",
       "warn": "少なくとも以下の期間、ドローンが目撃されていないと警告する"
     }
   },
@@ -510,10 +984,22 @@
     "authorizationReq": "離陸の前に認証が必要です",
     "authorizeTheStart": "ドローンショーの開始を承認",
     "authorized": "ドローンショーの開始が許可されました",
+    "changedSinceLoaded": "読み込み以降の変更を表示",
     "chooseStartTime": "開始時間の設定",
     "chooseStartTimeNotSet": "未設定",
     "clear": "読み込み済みのショーをクリア",
+    "clearStartTime": "開始時刻をクリア",
     "clock": "時計を表示:",
+    "collectiveRTH": {
+      "confirmation": {
+        "message": "一斉帰還（RTH）をトリガーしてもよろしいですか？",
+        "title": "確認が必要です"
+      },
+      "notification": {
+        "error": "一斉RTHコマンドに失敗しました",
+        "success": "一斉RTHコマンドを送信しました"
+      }
+    },
     "dronePlacementApproved": "ドローンの配置を承認",
     "dronePlacementCheck": "ドローンの配置を確認中…",
     "dronePlacementError": "ドローンの配置でエラーが発生しました",
@@ -532,17 +1018,72 @@
     },
     "placementAccuracy": "配置精度≤ {{distance}}",
     "reload": "ドローンショーを再読み込み",
+    "resetPreflightChecklist": "チェックリストをリセット",
+    "resume": {
+      "confirmation": {
+        "message": "ショーを再開してもよろしいですか？",
+        "title": "ショーを再開"
+      },
+      "notification": {
+        "error": "ショー再開コマンドに失敗しました",
+        "success": "ショー再開コマンドを送信しました"
+      }
+    },
     "revokeAuthorization": "クリックして許可を取り消す",
     "selectFile": "ショーファイル(.skyc)を選択またはドロップしてください",
     "setupEnvironment": "環境を設定",
     "setupGeofence": "ジオフェンスの設定",
-    "setupTakeoffArea": "離陸エリアの設定",
+    "setupTakeoffArea": "ドローンをショーに割り当てる",
+    "showConfigurator": {
+      "button": "一斉RTHを計画",
+      "description": "一斉帰還（RTH）プランを作成",
+      "interactionHints": {
+        "action": {
+          "boxSelect": "矩形選択",
+          "boxUnselect": "矩形選択解除",
+          "moveSelection": "選択範囲を移動",
+          "rotateSelection": "選択範囲を回転",
+          "toggleSelect": "選択切替"
+        },
+        "category": {
+          "manipulation": "操作",
+          "navigation": "ナビゲーション",
+          "selection": "選択"
+        }
+      },
+      "noShowData": "ショーセグメントデータがありません",
+      "prerequisites": {
+        "extension": "サーバーでスタジオ拡張機能を有効にする必要があります",
+        "loaded": "ショーファイルを読み込む必要があります",
+        "origin": "ショーの原点を含めるか、手動で設定する必要があります",
+        "segments": "ショーにセグメントマーカーを注釈する必要があります",
+        "server": "サーバーへの接続を確立する必要があります"
+      },
+      "tooltip": {
+        "adaptShow": "会場にショーを適応",
+        "showSegmentsRequired": "ショーにセグメントマーカーを注釈する必要があります"
+      }
+    },
+    "showConfiguratorLegacy": {
+      "button": "会場にショーを適応",
+      "description": "必要に応じて離陸グリッドとショーレイアウトを調整"
+    },
     "startMethod": {
       "AUTO": "ドローンショーは自動で開始されます",
       "RC": "RCのスイッチで始動"
     },
     "startTimeNotSet": "開始時刻が設定されていません",
     "startsAt": "{{time}}に開始",
+    "suspend": {
+      "confirmation": {
+        "message": "ショーを一時停止してもよろしいですか？",
+        "title": "ショーを一時停止"
+      },
+      "notification": {
+        "error": "ショー一時停止コマンドに失敗しました",
+        "success": "ショー一時停止コマンドを送信しました"
+      }
+    },
     "takeOffMore": "{{quantity}}機のドローンが自動で離陸します",
     "takeOffNoPosition": "配置されていないドローンがあります",
     "takeOffOne": "一機のドローンが自動で離陸します",
@@ -552,6 +1093,178 @@
     "uploadShowData": "ドローンショーのデータをアップロード",
     "uploadShowDataLoading": "アップロード中です。しばらくお待ちください…",
     "uploadShowDataStart": "クリックしてアップロードを開始"
+  },
+  "showConfiguratorDialog": {
+    "action": {
+      "adapt": "適応",
+      "adjustHomePositionsToDronePositions": "離陸位置をドローンに合わせる"
+    },
+    "adaptParameters": {
+      "form": {
+        "altitude": {
+          "help": "離陸・着陸時の垂直移動",
+          "label": "高度"
+        },
+        "altitudeOffset": {
+          "help": "純ショーの",
+          "label": "高度オフセット"
+        },
+        "horizontalVelocity": {
+          "help": "離陸・RTHフェーズ中",
+          "label": "水平速度"
+        },
+        "minDistance": {
+          "help": "離陸・RTH中のドローン間",
+          "label": "最小距離"
+        },
+        "returnToHomeMethod": {
+          "label": "RTH方式",
+          "type": {
+            "plain": "プレーン",
+            "smart": "スマート"
+          }
+        },
+        "takeoffDuration": {
+          "help": "ショーフェーズの正確な開始を保証（ゼロでない場合）",
+          "label": "離陸時間"
+        },
+        "takeoffMethod": {
+          "label": "離陸方式",
+          "type": {
+            "layered": "レイヤード",
+            "organic": "オーガニック"
+          }
+        },
+        "verticalVelocity": {
+          "help": "離陸・RTHフェーズ中",
+          "label": "垂直速度"
+        }
+      },
+      "panel": {
+        "lights": "ライト",
+        "safety": "安全",
+        "trajectories": "軌道"
+      }
+    },
+    "adaptReview": {
+      "button": {
+        "reviewInViewer": "Skybrushビューアでレビュー"
+      },
+      "error": {
+        "invalidState": "無効な状態です。もう一度お試しください。"
+      },
+      "form": {
+        "rth": {
+          "lengthChange": "RTH長さの変更：",
+          "lengthChangeValue": "{{value}} 秒"
+        },
+        "takeoff": {
+          "lengthChange": "離陸長さの変更：",
+          "lengthChangeValue": "{{value}} 秒"
+        }
+      },
+      "showAdaptInProgress": "ショーを適応しています。お待ちください。時間がかかる場合があります。"
+    },
+    "help": {
+      "config": "このツールでは、離陸位置とショー本編のレイアウトを個別に調整できます.\n離陸位置 (黄色の三角形)、ショー本編 (紫色の凸包)、または両方 (黄色の凸包) を選択し、必要に応じて移動または回転させます.\n調整が済んだら、右側で変換パラメーターを設定し、ADAPT を押して軌道を再計算します。ショー本編の内容を維持したまま、新しい配置に合わせて軌道が更新されます.\n新しいショーレイアウトを十分に検証し、終了時に本番用の .skyc ファイルとして保存してください.",
+      "review": "ショーに適用する前に変更を確認してください。"
+    },
+    "lights": {
+      "default": {
+        "brightness": "明るさ"
+      },
+      "selectLabel": "ライトエフェクト",
+      "solid": {
+        "color": "色"
+      },
+      "sparks": {
+        "offDuration": "消灯時間"
+      },
+      "type": {
+        "default": "デフォルト",
+        "off": "オフ",
+        "original": "オリジナル",
+        "solid": "ソリッド",
+        "sparks": "スパーク"
+      },
+      "unsupportedVersion": "ライト設定にはサーバーバージョン {{minVersion}} 以上が必要です。"
+    },
+    "settings": {
+      "dronesVisible": "ドローンを表示"
+    },
+    "title": "会場にショーを適応"
+  },
+  "showControlSchedule": {
+    "empty": {
+      "description": "操作はスケジュールされていません。",
+      "title": "スケジュールが空です"
+    },
+    "normalShow": {
+      "description": "計画されたスケジュールに従ってショーが実行されます。",
+      "title": "ショースケジュールの変更なし"
+    },
+    "progress": {
+      "active": "{{elapsedSeconds}}秒/{{durationSeconds}}秒",
+      "completed": "完了",
+      "waiting": "{{countdownSeconds}}秒後に開始..."
+    },
+    "segment": {
+      "preparation": {
+        "completed": {
+          "description": "要求された操作についてドローンに通知され、準備中です...",
+          "title": "準備完了"
+        },
+        "running": {
+          "description": "要求された操作についてドローンに通知しています...",
+          "title": "準備中"
+        }
+      },
+      "rth": {
+        "completed": {
+          "description": "ドローンはホーム位置に帰還しました。",
+          "title": "ホームに帰還"
+        },
+        "running": {
+          "description": "ドローンは協調してホーム位置に帰還しています...",
+          "title": "ホームに帰還"
+        }
+      },
+      "slowdown": {
+        "completed": {
+          "description": "ドローンは停止状態まで減速しました。",
+          "title": "ショーが中断されました"
+        },
+        "running": {
+          "description": "ドローンは減速中です。元の軌道上に留まっています...",
+          "title": "減速中"
+        }
+      },
+      "speedup": {
+        "completed": {
+          "description": "ドローンは通常速度で元の軌道の飛行を再開しました...",
+          "title": "ショーが再開されました"
+        },
+        "running": {
+          "description": "ドローンは加速中です。元の軌道を継続して...",
+          "title": "加速中"
+        }
+      }
+    },
+    "stage": {
+      "completed": {
+        "description": "操作が完了しました。",
+        "title": "完了"
+      },
+      "progress": {
+        "description": "操作が進行中です。",
+        "title": "進行中（{{remainingSeconds}}秒）"
+      },
+      "waiting": {
+        "description": "操作はまもなく開始されます。",
+        "title": "開始待ち（{{remainingSeconds}}秒）"
+      }
+    },
+    "title": "スケジュール"
   },
   "sidebar": {
     "missionType": "ミッションタイプ: ({{missionType}})"
@@ -568,6 +1281,7 @@
       "flightMode": "フライトモード",
       "gpsFix": "GPS固定",
       "heading": "見出し",
+      "rssi": "信号強度（RSSI）",
       "status": "ステータス"
     },
     "shortLabel": {
@@ -579,12 +1293,15 @@
       "flightMode": "モード",
       "gpsFix": "GPS固定",
       "heading": "見出し",
+      "rssi": "RSSI",
       "status": "ステータス"
     },
     "sortBy": "ソート"
   },
   "startTimeDialog": {
     "SMPTETimecode": "SMPTEタイムコード",
+    "additionalSettings": "追加設定",
+    "authorizeWhenSettingStartTime": "開始時刻設定時にショー開始を承認",
     "errors": {
       "invalidDate": "不正なデータ",
       "invalidTime": "不正な時刻",
@@ -592,13 +1309,14 @@
       "pastTime": "過去の時刻を設定することはできません"
     },
     "localTime": "ローカルタイム",
+    "localTimeRelative": "固定遅延",
     "reference": "リファレンス",
     "resetForm": "フォームをリセット",
     "setNewStartTime": "新しい開始時刻を設定",
     "setTheStartTime": "以下にショーの開始時刻を新しく設定する",
     "startDate": "開始日付",
     "startShowAuto": "自動でショーを開始する",
-    "startShowWithRC": "リモートコントローラーでのみショーを開始する(より安全)",
+    "startShowWithRC": "送信機からのみショーを開始",
     "startSignal": "開始シグナル",
     "startTime": "開始時刻",
     "startTimeHms": "開始時刻(時間:分:秒)",
@@ -609,10 +1327,17 @@
     "startTimeIsSetTo": "開始時刻を <strong>{{formattedStartTime}}</strong>に設定しました"
   },
   "startUploadButton": {
-    "startSelected": "選択したものを開始"
+    "startSelected": "選択したものを開始",
+    "tooltip": "一部の対象に対する操作を準備するには、各対象の ID をクリックして個別に選択します"
   },
   "surveyStatusIndicator": {
-    "noSurveyInformation": "調査情報はありません"
+    "accuracy": "精度：{{accuracy}}",
+    "accuracyAbove": "精度 {{accuracy}}",
+    "noSurveyInformation": "調査情報はありません",
+    "notStartedYet": "測量はまだ開始されていません",
+    "surveying": "測量中",
+    "surveyingWithAccuracy": "測量中、精度：{{accuracy}}",
+    "surveyingWithAccuracyAbove": "測量中、精度 {{accuracy}}"
   },
   "takeoffAreaSetupDialog": {
     "allDroneOnline": "ミッション中のドローンはすべてオンラインです。",
@@ -633,38 +1358,200 @@
     "compassDirection": "コンパス方位",
     "headingOffset": "ヘディングオフセット",
     "setToAverageHeading": "アクティブなドローンに対し平均方位を設定",
+    "setToAvergaeHeading": "アクティブなドローンの平均方位に設定",
     "specifiedByAbsoluteCompassDirection": "コンパスの絶対方位で指定",
     "specifiedRelativeToShowOrientation": "ショーの相対方位で指定",
     "unspecified": "未指定"
   },
+  "timeline": {
+    "chart": {
+      "tooltip": {
+        "labeledValue": "{{label}}: {{value}}{{unit}}"
+      }
+    },
+    "dataset": {
+      "altitude": "高度",
+      "distanceFromHome": "ホームからの距離",
+      "maxAltitude": "最大高度",
+      "maxDistance": "最大距離",
+      "minAltitude": "最小高度",
+      "minDistance": "最小距離",
+      "rthDuration": "一斉RTH時間",
+      "rthDurationLine": "RTH時間"
+    },
+    "markerLane": {
+      "cue": "キュー",
+      "rthPlan": "RTHプラン",
+      "segment": "セグメント",
+      "unknown": "不明なレーン（{{lane}}）"
+    },
+    "rthPlanItem": "RTHプラン {{index}}",
+    "showSegment": {
+      "endOf": "終了：{{description}}",
+      "landing": "着陸",
+      "show": "本番ショー",
+      "startOf": "開始：{{description}}",
+      "takeoff": "離陸",
+      "unknown": "ショーセグメント {{type}}"
+    }
+  },
   "toolbox": {
     "averagingInProgress": "{{number}}進行中",
     "coordinateAveraging": "座標の平均化",
+    "firmwareCheck": "ファームウェアバージョンチェック",
+    "firmwareUpdate": "ファームウェアアップデート",
     "licenseInfo": "ライセンス情報",
     "offlineMaps": "オフライン地図",
+    "paramCheck": "パラメータチェック",
     "paramUpload": "パラメーターアップロード",
     "tooltip": "ツールボックス"
   },
+  "uavErrorCode": {
+    "0": "エラーなし",
+    "1": "ドローンは地上にあり、モーター停止中",
+    "10": "飛行制御が停止されています",
+    "11": "飛行制御がスローモードです",
+    "128": "オートパイロット通信タイムアウト",
+    "129": "オートパイロット応答タイムアウト",
+    "130": "オートパイロット通信プロトコルエラー",
+    "131": "アーム前チェック失敗",
+    "132": "RC信号ロスト",
+    "133": "GPS信号ロストまたはGPSエラー",
+    "134": "バッテリー残量低下",
+    "135": "ターゲットが見つかりません",
+    "136": "ターゲットが遠すぎます",
+    "137": "設定エラー",
+    "138": "RC未校正",
+    "139": "風速が強すぎます",
+    "140": "ペイロードエラー",
+    "141": "近接センサーエラー",
+    "142": "ESCエラー",
+    "188": "シミュレーションエラー",
+    "189": "制御アルゴリズムエラー",
+    "190": "特定できないセンサー障害",
+    "191": "特定できないエラー",
+    "192": "互換性のないハードウェアまたはソフトウェア",
+    "193": "磁気計エラー",
+    "194": "ジャイロスコープエラー",
+    "195": "加速度計エラー",
+    "196": "圧力センサーまたは高度計エラー",
+    "197": "GPSエラーまたはGPS信号ロスト",
+    "198": "モーター異常",
+    "199": "バッテリー残量危険",
+    "2": "ロギング無効",
+    "200": "GPSホームポジションなし",
+    "201": "ジオフェンス違反",
+    "202": "内部クロックエラー",
+    "203": "外部クロックエラー",
+    "204": "必要なハードウェアコンポーネントが不足しています",
+    "205": "オートパイロットの初期化に失敗しました",
+    "206": "オートパイロット通信に失敗しました",
+    "207": "ドローンが墜落しました",
+    "253": "シミュレーション重大エラー",
+    "254": "特定できない重大なセンサー障害",
+    "255": "特定できない重大エラー",
+    "3": "アーム前チェック中",
+    "4": "オートパイロット初期化中",
+    "5": "ドローンは離陸中です",
+    "6": "ドローンは着陸中です",
+    "63": "ドローンは帰還中です",
+    "64": "ディスク容量不足",
+    "65": "RC信号受信失",
+    "66": "バッテリー残量低下",
+    "67": "時刻同期エラー",
+    "68": "ドローンが指定された離陸位置にいません",
+    "69": "ミッション設定エラー、またはミッションがジオフェンス外です",
+    "7": "ドローンは正常に着陸しました",
+    "70": "無線チャンネルオフライン",
+    "71": "地上でドローンがジオフェンス外にいます",
+    "72": "風速が強いです",
+    "73": "ドローンはまだアームされていません",
+    "74": "ドローンの再起動が必要です",
+    "75": "目標位置からのドリフトが大きいです",
+    "8": "地上でモーターが回転しています",
+    "9": "ドローンはスリープモードです"
+  },
+  "uavOperationConfirmationStyle": {
+    "always": "常に確認を求める",
+    "never": "確認を求めない",
+    "onlyMultiple": "複数のUAVに影響する操作の場合に確認する"
+  },
+  "uavToolbar": {
+    "fitAllFeaturesIntoView": "すべての機能をビューに収める",
+    "fitSelectionIntoView": "選択範囲をビューに収める"
+  },
+  "unit": {
+    "degree": {
+      "long_other": "度",
+      "short": "°"
+    },
+    "hour": {
+      "long_other": "時間",
+      "short": "時"
+    },
+    "meter": {
+      "long_other": "メートル",
+      "short": "m"
+    },
+    "meterPerSecond": {
+      "long_other": "メートル毎秒",
+      "short": "m/s"
+    },
+    "minute": {
+      "long_other": "分",
+      "short": "分"
+    },
+    "second": {
+      "long_other": "秒",
+      "short": "秒"
+    },
+    "volt": {
+      "long_other": "ボルト",
+      "short": "V"
+    }
+  },
+  "uploadDialog": {
+    "anotherJobTypeRunningHint": {
+      "cancelButton": "タスクをキャンセル",
+      "header": "別のタスクが進行中です",
+      "text": "新しいタスクを開始するには、別のタスクが完了するまで待つか、そのタスクをキャンセルしてください",
+      "viewProgressButton": "進行状況を表示"
+    },
+    "restrictToGlobalSelection": "グローバル選択のみを表示"
+  },
   "uploadPanel": {
     "cancelUpload": "アップロードをキャンセル",
-    "flashLightsWhereFailed": "アップロードが失敗したUAVのライトを点灯",
+    "clearHistory": "履歴をクリア",
+    "fix": "修正",
+    "fixAll": "すべて修正",
+    "fixAllInconsistencies_other": "{{count}}台のドローンで、他の大多数と異なる設定値を、多数派の設定値に揃えます",
+    "fixDeviatingUAVs_other": "{{count}}台のドローンの設定値を多数派の値に揃えます: {{value}}",
+    "flashLightsWhereFailed": "タスクが失敗したドローンのライトを点滅させる",
+    "hasHiddenTargets": "待機中のUAVの一部がフィルタリングされている可能性があります。",
+    "noClearMajority": "修正できません：明確な多数値がありません",
+    "noJobResultAvailable": "まだ結果がありません",
+    "resultsTab": "結果",
     "retryFailedAttempts": "自動で再試行",
-    "uploadAttemptFailed": "アップロードに失敗しました。",
-    "uploadCancelled": "ユーザーによってアップロードがキャンセルされました。",
-    "uploadFinishedSuccessfully": "アップロードが正常に完了しました。",
-    "uploadInProgress": "アップロード中…",
-    "uploadNotFinishedYet": "アップロードはまだ完了していません。"
+    "statusTab": "ステータス",
+    "uploadAttemptFailed": "試行に失敗しました",
+    "uploadCancelled": "ユーザーによりタスクがキャンセルされました",
+    "uploadFinishedSuccessfully": "タスクが正常に完了しました",
+    "uploadInProgress": "お待ちください…",
+    "uploadInProgressWithEstimate": "残り時間の見積もり：{{time}}",
+    "uploadNotFinishedYet": "タスクはまだ完了していません"
   },
   "uploadStatusLegend": {
     "clearUploadQueue": "アップロードキューをクリア",
-    "restartSuccessfulItems": "成功したアイテムを再実行",
-    "retryFailedItems": "失敗したアイテムをリトライ"
+    "enqueueItemsWithNoUploadStatus": "未処理のアイテムをキューに追加",
+    "restartSuccessfulItems": "成功したアイテムをキューに追加",
+    "retryFailedItems": "失敗したアイテムをキューに追加"
   },
   "uploadStatusLights": {
-    "noAvailableUAVs": "アップロード可能なUAVは存在しません"
+    "noAvailableUAVs": "アップロード可能なUAVはありません。"
   },
   "view": {
     "beacon-list": "ビーコン",
+    "collective-rth": "一斉RTH",
     "dock-list": "ドック",
     "feature-list": "地物",
     "field-notes": "フィールドノート",
@@ -674,11 +1561,15 @@
     "log-panel": "イベントログ",
     "map": "地図",
     "mission-editor": "ミッションエディター",
+    "rtk-status-mini-list": "RTKステータス",
     "saved-location-list": "ロケーション",
+    "selection-group-mini-list": "選択グループ",
     "show-control": "コントロールの表示",
     "three-d-view": "3D View",
+    "timeline": "タイムライン",
     "uav-details": "UAV詳細",
-    "uav-list": "UAV"
+    "uav-list": "UAV",
+    "uav-status-mini-list": "UAVステータスサマリー"
   },
   "weatherMiniList": {
     "compassDeclination": "コンパスの偏角",

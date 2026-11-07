@@ -1,7 +1,7 @@
 import { createSelector } from '@reduxjs/toolkit';
 
 import type { RootState } from '~/store/reducers';
-import { selectOrdered } from '~/utils/collections';
+import { type Identifier, selectOrdered } from '~/utils/collections';
 
 export const shouldRebootAfterParameterUpload = (state: RootState) =>
   Boolean(state.parameters.rebootAfterUpload);
@@ -28,6 +28,40 @@ export function isParameterUploadSetupDialogOpen(state: RootState) {
 export const getParameterManifest = createSelector(
   (state: RootState) => state.parameters.manifest,
   selectOrdered
+);
+
+/**
+ * Returns the UAVs that the parameter upload was explicitly restricted to, or
+ * `undefined` if there is no such restriction.
+ */
+export const getExplicitParameterUploadTargets = (
+  state: RootState
+): Identifier[] | undefined => state.parameters.targets;
+
+/**
+ * Selector that returns the UAVs that the parameter upload job should target,
+ * or `undefined` if the job should target all UAVs.
+ *
+ * Explicitly specified targets take precedence. Otherwise, if every item in
+ * the manifest is UAV-specific, the job targets the UAVs of the items.
+ */
+export const getParameterUploadTargets = createSelector(
+  getExplicitParameterUploadTargets,
+  getParameterManifest,
+  (explicitTargets, manifest): Identifier[] | undefined => {
+    if (explicitTargets && explicitTargets.length > 0) {
+      return explicitTargets;
+    }
+
+    const uavIds = manifest.flatMap(({ uavId }) =>
+      uavId === undefined ? [] : [uavId]
+    );
+    if (uavIds.length === 0 || uavIds.length < manifest.length) {
+      return undefined;
+    }
+
+    return [...new Set(uavIds)].sort();
+  }
 );
 
 /**

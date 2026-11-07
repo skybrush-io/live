@@ -306,7 +306,7 @@
     "AHL": "Wysokość nad poziomem startowiska (AHL)",
     "AMSL": "Wysokość nad poziomem morza (AMSL)",
     "AMSLReference": "Odniesienie AMSL",
-    "altitudeControl": "Kontrola wysokości i poprawki RTK",
+    "altitudeControl": "Kontrola wysokości",
     "coordinateSystem": "Układ współrzędnych",
     "copyMapOriginToShow": "Skopiuj początek mapy jako początek pokazu dronów",
     "copyShowOriginToMap": "Skopiuj początek pokazu jako początek mapy",

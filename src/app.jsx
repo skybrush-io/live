@@ -14,6 +14,7 @@ import CornerRibbon from './components/CornerRibbon';
 import dialogs from './components/dialogs';
 import Header from './components/header';
 import ServerConnectionManager from './components/ServerConnectionManager';
+import UIScaleWatcher from './components/UIScaleWatcher';
 import CollectiveRTHDialog from './features/collective-rth/CollectiveRTHDialog';
 import ConsistencyCheckSetupDialog from './features/consistency-check/ConsistencyCheckSetupDialog';
 import DetachedPanelManager from './features/detachable-panels/DetachedPanelManager';
@@ -32,6 +33,7 @@ import PromptDialog from './features/prompt/PromptDialog';
 import RTKCoordinateRestorationDialog from './features/rtk/RTKCoordinateRestorationDialog';
 import RTKPresetEditorDialog from './features/rtk/RTKPresetEditorDialog';
 import RTKSetupDialog from './features/rtk/RTKSetupDialog';
+import RTKStatusUpdater from './features/rtk/RTKStatusUpdater';
 import SafetyDialog from './features/safety/SafetyDialog';
 import SavedLocationEditorDialog from './features/saved-locations/SavedLocationEditorDialog';
 import ShowConfiguratorDialog from './features/show-configurator/ShowConfiguratorDialog';
@@ -157,8 +159,10 @@ const App = ({ onFirstRender }) => (
       <DetachedPanelManager />
 
       <ServerConnectionManager />
+      <RTKStatusUpdater />
 
       <LanguageWatcher />
+      <UIScaleWatcher />
       <MissionProgressObserver />
       <ShowFileWatcher />
 
