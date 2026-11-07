@@ -4,6 +4,16 @@
   },
   "ConnectionStatusMiniList": {
     "noConnections": "Ce serveur n'utilise aucune connexion.",
+    "summaryItem": {
+      "connected_many": "+ {{count}} millions de connexions non affichées",
+      "connected_one": "+ 1 connexion non affichée",
+      "connected_other": "+ {{count}} connexions non affichées",
+      "connecting": "+ {{count}} connexions en cours de connexion non affichées",
+      "disconnected_many": "+ {{count}} millions de connexions fermées non affichées",
+      "disconnected_one": "+ 1 connexion fermée non affichée",
+      "disconnected_other": "+ {{count}} connexions fermées non affichées",
+      "disconnecting": "+ {{count}} connexions en cours de déconnexion non affichées"
+    },
     "useSecondaryChannel": "Utiliser le second canal"
   },
   "DrawingToolbar": {
@@ -16,22 +26,82 @@
     "drawRectangle": "dessiner un rectangle",
     "editFeature": "éditer les options"
   },
+  "GlobalErrorDialog": {
+    "title": "Une erreur s'est produite"
+  },
+  "ImageLayer": {
+    "geoTIFFOnlyInDevMode": "Le rendu GeoTIFF est actuellement limité au mode développeur.",
+    "navigationFailed": "La navigation a échoué, le fichier n'est peut-être pas chargé correctement",
+    "selectImage": "Veuillez sélectionner une image !"
+  },
+  "LicenseInfoDialog": {
+    "title": "Informations sur la licence"
+  },
+  "LicenseInfoPanel": {
+    "errorWhileLoading": "Erreur lors du chargement des informations de licence",
+    "expiryDate": "Date d'expiration",
+    "licenseId": "ID de licence",
+    "licensee": "Nom du titulaire de la licence",
+    "loading": "Récupération des informations de licence…",
+    "neverExpires": "Cette licence n'expire jamais",
+    "noLicenseActivated": "Aucune licence activée",
+    "tryAgain": "Réessayer"
+  },
+  "MissionInfoLayer": {
+    "settings": {
+      "showConvexHull": "Afficher l'enveloppe convexe des trajectoires",
+      "showHomePositions": "Afficher les positions d'origine",
+      "showLandingPositions": "Afficher les positions d'atterrissage",
+      "showMapOrigin": "Afficher l'origine de la carte",
+      "showMissionItems": "Afficher les éléments de mission",
+      "showMissionOrigin": "Afficher l'origine de la mission",
+      "showTrajectoriesOfSelection": "Afficher les trajectoires des drones sélectionnés"
+    }
+  },
   "OnboardPreflightChecksDialog": {
     "noError": "Aucun UAV n'indique d'erreur.",
     "passed": "Les Checklist de pré-vol sont passée.",
     "signOffOn": "Signer les checklist pré-vol embarquée"
   },
+  "PathScanner": {
+    "notFound": "Exécutable du serveur introuvable.",
+    "scanAgain": "'Cliquez pour relancer l'analyse",
+    "scanning": "Veuillez patienter…",
+    "scanningSecondary": "Recherche du serveur",
+    "success": "Exécutable du serveur trouvé avec succès."
+  },
+  "RTKCoordinateRestorationDialog": {
+    "accuracyLabel": "Précision",
+    "dateLabel": "Enregistré",
+    "noSavedCoordinates": "Aucune coordonnée enregistrée trouvée.",
+    "positionLabel": "Position",
+    "title": "Choisir une coordonnée enregistrée",
+    "useSaved": "Utiliser la coordonnée"
+  },
   "RTKCorrectionSourceSelector": {
     "RTKCorrections": "Corrections RTK",
+    "createPreset": "Créer un nouveau préréglage RTK",
+    "editPreset": "Modifier le préréglage",
     "error": "Erreur lors du chargement des sources RTK à partir du serveur",
     "noRTKData": "Pas de données RTK sur le serveur",
-    "pleaseWait": "Merci de patienter, chargement des sources RTK…"
+    "notConnected": "Non connecté au serveur",
+    "pleaseWait": "Merci de patienter, chargement des sources RTK…",
+    "rtkDisabled": "RTK désactivé"
+  },
+  "RTKMessage": {
+    "noRTKMessagesYet": "Aucun message RTK n'a encore été reçu"
+  },
+  "RTKSetupDialog": {
+    "title": "Corrections RTK"
   },
   "RTKStatusMiniList": {
     "satelliteCount": "Nombre de satellite",
     "surveyInProgress": "Enquête en cours…",
     "surveyNo": "Pas d'enquête en cours",
     "surveySuccesful": "Enquête réussie"
+  },
+  "RTKStatusPanel": {
+    "signalStrengths": "Force des signaux satellites"
   },
   "UAVList": {
     "allUAVs": "Tous les UAV",
@@ -46,7 +116,13 @@
     "removeItemsMarkedGone": "Supprimer les éléments marqués comme disparus",
     "removeSelectedItems": "Retirer les éléments sélectionnés"
   },
+  "UAVSelector": {
+    "noMatchingUAVs": "Aucun résultat trouvé pour : « {{filter}} »"
+  },
   "UAVStatus": {
+    "error": {
+      "notInWorkbench": "Le panneau UAV n'est pas encore ajouté à l'établi"
+    },
     "noConnected": "Il n'y a pas d'UAV connectés pour le moment"
   },
   "alerts": {
@@ -58,10 +134,35 @@
     "clickToChange": "Cliquer pour changer l'altitude à {{altitudeType}}.",
     "showingCurrent": "Montrer l'altitude maximum et minimum {{altitudeType}}."
   },
+  "altitudeSummaryType": {
+    "long": {
+      "agl": "Altitude au-dessus du niveau du sol",
+      "ahl": "Altitude par rapport au point d'origine",
+      "amsl": "Altitude au-dessus du niveau moyen de la mer",
+      "xyz": "Altitude dans le système de coordonnées local"
+    },
+    "short": {
+      "agl": "AGL",
+      "ahl": "AHL",
+      "amsl": "AMSL",
+      "xyz": "Coordonnée Z"
+    }
+  },
+  "antennaPositionIndicator": {
+    "antennaPositionNotKnown": "Position de l'antenne inconnue",
+    "clickToToggle": "Cliquez pour basculer entre le format lon/lat et ECEF",
+    "copyToClipboard": "Copier dans le presse-papiers",
+    "useSavedCoordinate": "Utiliser la coordonnée enregistrée"
+  },
   "augmentMappingButton": {
     "assignSparesToEmptySlots": "Affecter les UAVs de rechange aux emplacements vides"
   },
   "authentication": "Authentification",
+  "batteryDisplayStyle": {
+    "forcedPercentage": "Préférer le pourcentage et l'estimer à partir de la tension si nécessaire",
+    "percentage": "Préférer le pourcentage et afficher la tension si inconnu",
+    "voltage": "Préférer la tension"
+  },
   "batteryStatusHeaderButton": "Montrer la moyenne et le minimum de l'état de charge.",
   "bearingCalculator": {
     "addAtLeastTwoItems": "Ajouter au moins deux éléments pour calculer le relèvement et la distance qui les séparent",
@@ -74,6 +175,79 @@
     "disable": "Désactiver le broadcast",
     "enable": "Activer le broadcast pour {{time}} secondes"
   },
+  "collectiveRTHDialog": {
+    "action": {
+      "addCollectiveRTH": "Calculer les plans RTH"
+    },
+    "description": "Précalculer les plans RTH collectifs à plusieurs horodatages pendant le spectacle. En cas d'urgence, le RTH collectif ramène les drones chez eux le plus rapidement possible sans collisions.",
+    "existingInvalidRTHPlan": "Le spectacle n'a pas de plans RTH collectifs valides",
+    "existingValidRTHPlan_many": "Le spectacle a des plans RTH collectifs valides à {{count}} horodatages",
+    "existingValidRTHPlan_one": "Le spectacle a des plans RTH collectifs valides à {{count}} horodatages",
+    "existingValidRTHPlan_other": "",
+    "parameters": {
+      "form": {
+        "horizontalVelocity": {
+          "help": "pendant le RTH collectif",
+          "label": "Vitesse horizontale"
+        },
+        "minDistance": {
+          "help": "entre les drones pendant le RTH",
+          "label": "Distance minimale"
+        },
+        "timeResolution": {
+          "help": "entre les plans RTH consécutifs",
+          "label": "Résolution temporelle"
+        },
+        "verticalVelocity": {
+          "help": "pendant le RTH collectif",
+          "label": "Vitesse verticale"
+        }
+      }
+    },
+    "status": {
+      "error": "Le calcul du plan RTH a échoué. Veuillez réessayer.",
+      "loading": "Calcul des plans RTH…",
+      "success": "Plans RTH calculés avec succès"
+    },
+    "summary": {
+      "firstTime": {
+        "message": "Premier plan : {{firstTime}}"
+      },
+      "lastTime": {
+        "message": "Dernier plan : {{lastTime}}"
+      },
+      "minRTHAltitude": {
+        "message": "Altitude RTH minimale : {{minRTHAltitude}}"
+      },
+      "numPlans": {
+        "message_many": "",
+        "message_one": "{{count}} plans RTH calculés, en attente d'approbation",
+        "message_other": ""
+      }
+    },
+    "title": "Planifier le RTH collectif"
+  },
+  "consistencyCheck": {
+    "mainPanel": {
+      "parameterCheckHint": "Appuyez sur <kbd>⇧</kbd> + <kbd>Entrée</kbd> pour ajouter les noms de paramètres à la liste. Cliquez sur un nom dans la barre latérale pour le supprimer.",
+      "parameterNames": "Noms des paramètres",
+      "specifyEntries": "Spécifiez un nom de paramètre par ligne."
+    },
+    "result": {
+      "consistent": "Tous les paramètres sont cohérents.",
+      "errors": "Erreur lors de la vérification de la cohérence des paramètres. Vérifiez les résultats ci-dessous.",
+      "inconsistencies": "Certaines valeurs de paramètres sont incohérentes. Vérifiez les résultats ci-dessous."
+    },
+    "setupDialog": {
+      "checkParameters": "Vérification de la cohérence des paramètres"
+    },
+    "sidebar": {
+      "import": "Importer…",
+      "nextStep": "Étape suivante",
+      "removeAllItems": "Supprimer tous les noms de la liste",
+      "title": "Noms des paramètres"
+    }
+  },
   "coordinateAveragingDialogToolbar": {
     "addNewDrone": "Ajouter un nouveau drone",
     "copyCentroid": "Copier le centroïde",
@@ -82,6 +256,14 @@
     "resetMeasurement": "Réinitialise la mesure",
     "resumeMeasurement": "Reprendre les mesures",
     "setCentroidAsMapOrigin": "Définir le centroïde comme point d'origine de la carte"
+  },
+  "coordinateFormat": {
+    "-d": "Degrés décimaux (signés)",
+    "-dm": "Degrés et minutes (signés)",
+    "-dms": "Degrés, minutes et secondes (signés)",
+    "d": "Degrés décimaux",
+    "dm": "Degrés et minutes",
+    "dms": "Degrés, minutes et secondes"
   },
   "environmentEditorDialog": {
     "environmentSettings": "Paramètres de l'application",
@@ -99,18 +281,64 @@
       "all": "Tous",
       "errors": "Seulement les erreurs",
       "noTelemetry": "Sans télémétrie uniquement",
+      "sleeping": "Mode basse consommation",
       "warningsAndErrors": "Alarmes et erreurs"
     },
     "shortLabel": {
       "all": "Tous",
       "errors": "Erreurs",
       "noTelemetry": "Pas de télémétrie",
+      "sleeping": "Basse consommation",
       "warningsAndErrors": "Alarmes/Erreurs"
+    }
+  },
+  "firmwareCheck": {
+    "names": {
+      "board": "Révision de la carte",
+      "firmware": "Version du micrologiciel",
+      "flight_sw": "Version du logiciel de vol",
+      "middleware_sw": "Version du middleware",
+      "os_sw": "Version du système d'exploitation",
+      "revision": "Révision",
+      "server": "Version du serveur"
+    },
+    "result": {
+      "consistent": "Toutes les versions du micrologiciel sont cohérentes.",
+      "errors": "Erreur lors de la vérification des versions du micrologiciel. Vérifiez les résultats ci-dessous.",
+      "inconsistencies": "Certaines versions du micrologiciel sont incohérentes. Vérifiez les résultats ci-dessous."
     }
   },
   "fitAllFeaturesButton": {
     "fitAllDrones": "Adapter à tous les drones",
     "fitAllFeatures": "Appliquer toutes les fonctions"
+  },
+  "flightLogKind": {
+    "ardupilot": "Journal de vol ArduPilot",
+    "flockctrl": "Journal de vol de haut niveau FlockCtrl",
+    "text": "Journal de vol en texte brut",
+    "ulog": "Journal de vol PX4 ULog",
+    "unknown": "Format de journal de vol inconnu"
+  },
+  "flightMode": {
+    "acro": "Acrobatique",
+    "alt": "Maintien d'altitude",
+    "auto": "Automatique",
+    "circle": "En orbite autour du point d'intérêt",
+    "flow": "Maintien par flux optique",
+    "follow": "Suivi d'un autre appareil",
+    "guided": "on",
+    "land": "me",
+    "loiter": "uel de la vitesse",
+    "mission": "ée",
+    "other": "ol non spécifié",
+    "pos": "tion avec contrôle manuel",
+    "precland": "sion autonome",
+    "rth": "int de départ",
+    "show": "ctacle de drones",
+    "simple": "simplifié",
+    "stab": "lis et tangage",
+    "takeoff": "Décollage autonome",
+    "unknown": "Mode de vol inconnu"
   },
   "fullScreen": {
     "exit": "Quitter le mode plein écran",
@@ -119,29 +347,48 @@
   "general": {
     "action": {
       "apply": "Appliquer",
+      "approve": "Approuver",
+      "back": "Retour",
       "cancel": "Annuler",
       "clear": "Vider",
+      "click": "Cliquez",
       "close": "Fermer",
+      "confirm": "Confirmer",
       "delete": "Supprimer",
       "discard": "Rejeter",
+      "drag": "Glisser",
       "edit": "Editer",
       "export": "Exporter",
       "import": "Importer",
+      "navigate": "Naviguer",
       "open": "Ouvrir",
+      "pan": "Faire défiler",
+      "redo": "Rétablir",
+      "reject": "Rejeter",
       "remove": "Enlever",
+      "reset": "Réinitialiser",
       "retry": "Réessayer",
+      "rotate": "Pivoter",
       "save": "Sauver",
+      "saving": "Enregistrement…",
+      "scale": "Mettre à l'échelle",
       "select": "Sélectionner",
       "start": "Démarrer",
-      "stop": "Stopper"
+      "stop": "Stopper",
+      "submit": "Soumettre",
+      "undo": "Annuler",
+      "zoom": "Zoomer"
     },
     "commands": {
+      "calibrateCompass": "ole",
+      "clearLEDColor": "ED forcée",
       "land": "Terre",
       "positionHold": "Maintenir position",
       "powerOff": "Eteindre",
       "powerOn": "Allumer",
       "reboot": "redémarrer",
       "returnToHome": "Retourner au point de départ",
+      "setLEDColor": "s LED",
       "sleep": "dormir",
       "takeoff": "Décoller"
     },
@@ -150,7 +397,9 @@
       "longitude": "Longitude"
     },
     "geometry": {
+      "angle": "Angle",
       "rotation": "tourner",
+      "scale": "Échelle",
       "zoom": "Zoom"
     },
     "status": {
@@ -167,6 +416,12 @@
       "manual": "Barrière de sécurité manuelle utilisée",
       "no": "Pas de barrière de sécurité définie pour le moment"
     }
+  },
+  "geofenceAction": {
+    "keepCurrent": "lle",
+    "report": "Signaler uniquement",
+    "shutDown": "Éteindre",
+    "smartLand": "collisions"
   },
   "header": {
     "distanceSummary": "Distance minimale et maximale du point de départ",
@@ -257,6 +512,30 @@
   "recalculateMappingButton": {
     "findOptimalMapping": "Trouver la cartographie optimale",
     "recalculateMapping": "Recalcule de la carte"
+  },
+  "rtkMessageType": {
+    "rtcm3/1033": "tenne",
+    "rtcm3/1034": "Gradient GPS FKP",
+    "rtcm3/1035": "KP",
+    "rtcm3/1037": "ique GLONASS",
+    "rtcm3/1038": "LONASS",
+    "rtcm3/1039": "trique GLONASS",
+    "rtcm3/1042": "S (BeiDou)",
+    "rtcm3/1044": "SS",
+    "rtcm3/1045": "LILEO F/NAV",
+    "rtcm3/1046": "LILEO I/NAV",
+    "rtcm3/1071": "DGNSS)",
+    "rtcm3/1072": "nge RTK)",
+    "rtcm3/1073": "use)",
+    "rtcm3/1074": ", CNR)",
+    "rtcm3/1075": ", Doppler, CNR)",
+    "rtcm3/1076": "olution, porteuse, Doppler)",
+    "rtcm3/1077": "ion, porteuse, Doppler, CNR)",
+    "rtcm3/1081": "DGNSS)",
+    "rtcm3/1082": ")",
+    "rtcm3/1083": "teuse)",
+    "rtcm3/1084": ", porteuse, CNR)",
+    "rtcm3/1085": "rteuse, Doppler, CNR)"
   },
   "safetyDialog": {
     "geofenceTab": {
