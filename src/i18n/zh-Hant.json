@@ -517,7 +517,7 @@
     "selectNextEmptySlot": "選取下一個空白槽位"
   },
   "measurementList": {
-    "addDrone": "使用 + 按鈕新增一台無人機以進行測量…",
+    "addDrone": "使用 + 按鈕新增一台無人機以進行測量",
     "copyToClipboard": "複製到剪貼簿",
     "duration": "持續時間",
     "noSamplesYet": "尚無取樣",
@@ -530,7 +530,7 @@
       "schema": {
         "error": "從伺服器載入任務參數結構描述時發生錯誤",
         "loading": "擷取任務參數中…",
-        "notFound": "已連接的伺服器未提供所選任務的結構描述…"
+        "notFound": "已連接的伺服器未提供所選任務的結構描述"
       }
     }
   },
@@ -584,7 +584,7 @@
   },
   "parameterUploadMainPanel": {
     "parameterNamesValues": "參數名稱與數值",
-    "parameterUploadHint": "按下 <kbd>⇧</kbd> + <kbd>Enter</kbd> 以將參數新增至…",
+    "parameterUploadHint": "按下 <kbd>⇧</kbd> + <kbd>Enter</kbd> 以將參數新增至資訊清單。按一下側邊欄中的參數，即可將其從資訊清單中移除。",
     "rebootAfterUpload": "上傳後重新開機",
     "restrictedToUAVs": "參數將僅上傳至以下 UAV：{{uavIds}}",
     "specifyEntries": "以 name=value 格式指定項目，每行一個參數。"
@@ -623,7 +623,7 @@
   },
   "proControlButtonGroup": {
     "collectiveRTH": "集體 RTH",
-    "collectiveRTHPanelNotFound": "找不到集體 RTH 面板。請嘗試…",
+    "collectiveRTHPanelNotFound": "找不到集體 RTH 面板。請嘗試從側邊欄手動開啟。",
     "prerequisites": {
       "collectiveRTHNotTriggered": "尚未觸發集體 RTH",
       "hasCollectiveRTHPlan": "演出包含集體 RTH 計畫",
@@ -771,7 +771,7 @@
     "readOnlyMessage": "此預設無法編輯",
     "removeSource": "移除來源",
     "sourcePlaceholder": "ntrip://username:pas",
-    "sourcesHelp": "序列埠使用 serial:PORT?baud=BAUDRATE，TCP 連線使用 tcp://HOST:PORT，或…",
+    "sourcesHelp": "序列埠使用 serial:PORT?baud=BAUDRATE，TCP 連線使用 tcp://HOST:PORT，或 NTRIP 串流使用 ntrip://username:password@hostname/mountpoint。",
     "type": "類型",
     "updateFailed": "更新預設失敗"
   },
@@ -876,7 +876,7 @@
   },
   "serverLogMessageCode": {
     "objects": {
-      "limit_reached": "已達到伺服器授權的物件限制，無法新增物件。"
+      "limit_reached": "已達到伺服器授權的物件限制，無法新增物件"
     }
   },
   "serverSettingsDialog": {
@@ -1140,7 +1140,7 @@
       "showAdaptInProgress": "正在調整表演，請稍候。可能需要一些時間。"
     },
     "help": {
-      "config": "此工具可讓您調整起飛位置和網路表演。",
+      "config": "這個工具可讓您個別調整起飛位置和淨演出佈局。\n選取起飛位置（黃色三角形）、淨演出（紫色凸包）或兩者（黃色凸包），並視需要移動或旋轉它們。\n完成後，在右側設定轉換參數，然後按 ADAPT 重新計算軌跡，保留原始淨演出內容，但對齊您的新配置。\n新的演出佈局應徹底驗證，並在結束時儲存為生產就緒的 .skyc 檔案。",
       "review": "在將變更套用至表演前檢閱變更。"
     },
     "lights": {
@@ -1291,7 +1291,7 @@
   },
   "startUploadButton": {
     "startSelected": "開始選取",
-    "tooltip": "點擊目標 ID 以選取個別目標來準備..."
+    "tooltip": "點擊目標 ID 以選取個別目標來準備部分操作"
   },
   "surveyStatusIndicator": {
     "accuracy": "精確度：{{accuracy}}",
@@ -1470,7 +1470,7 @@
     "clearHistory": "清除歷史記錄",
     "fix": "修正",
     "fixAll": "全部修正",
-    "fixAllInconsistencies_other": "將 1 台 UAV 的偏差值設定為多數...",
+    "fixAllInconsistencies_other": "將 {{count}} 台 UAV 的偏差值設定為多數值",
     "hasHiddenTargets": "部分等待中的 UAV 可能已被篩選。",
     "noClearMajority": "無法修正：沒有明確的多數值",
     "noJobResultAvailable": "尚無可用結果",
