@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added a dedicated dialog box for swapping drones during show preparations
+  without having to go through a manual editing of the mapping.
+
 - The RTK status panel that appears when the RTK status header widget is
   pinned to the workbench now also shows the signal strength chart of the
   satellites tracked by the RTK base station.
