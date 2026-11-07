@@ -23,7 +23,7 @@ Users type references, not drones. `DroneRef` (`types.ts`) is either:
 
 `parseDroneRef` tries the show ID first, so a UAV whose ID looks like `sN` cannot be referenced by ID. A UAV ref must match a known UAV ID (`getUAVIdList`) case-insensitively; the canonical ID is stored. `resolveDroneRef` returns `null` for an unknown UAV, an empty slot, or a slot held by a UAV not in `getUAVIdList`.
 
-The text fields store **raw strings** in the slice (`fields`), not refs; `getSwapDroneFieldRefs` parses them, so a field becomes valid as soon as the matching UAV appears. Selecting from the `UAVSelector` popup writes `sN` if the typed text starts with `s`, the UAV ID otherwise (`getLabelForSelection` in `SwapDroneField.tsx`).
+The text fields store **raw strings** in the slice (`fields`), not refs; `getSwapDroneFieldRefs` parses them, so a field becomes valid as soon as the matching UAV appears. Selecting from the `UAVSelector` popup writes `sN` if the typed text looks like a partial show ID (`s` followed by digits only), the UAV ID otherwise (`getLabelForSelection` in `SwapDroneField.tsx`).
 
 ## Two execution modes
 
@@ -48,7 +48,7 @@ The mapping can change under a queue (manual edits, another swap now, UAVs disap
 
 ## Gating
 
-`isSwappingAllowed`: false while the show is authorized to start or an upload is in progress. When false the preview is `blocked` and all swap/add/execute actions are disabled. The thunks re-check their `can*` selector before acting, so UI disabling is not the only guard.
+`isSwappingAllowed`: false while the show is authorized to start, an upload is in progress or the mapping is being calculated (`isMappingBeingCalculated`). When false the preview is `blocked` and all swap/add/execute actions are disabled. The thunks re-check their `can*` selector before acting, so UI disabling is not the only guard.
 
 ## Upload after swap
 

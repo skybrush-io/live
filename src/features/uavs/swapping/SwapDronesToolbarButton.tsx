@@ -1,18 +1,23 @@
 import SwapHoriz from '@mui/icons-material/SwapHoriz';
 import IconButton from '@mui/material/IconButton';
 import { useTranslation } from 'react-i18next';
+import { connect } from 'react-redux';
 
 import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
-import { useAppDispatch } from '~/store/hooks';
 
 import { showSwapDronesDialog } from './slice';
+
+type SwapDronesToolbarButtonProps = {
+  onShowSwapDronesDialog: () => void;
+};
 
 /**
  * Toolbar button that opens the swap drones dialog.
  */
-const SwapDronesToolbarButton = () => {
+const SwapDronesToolbarButton = ({
+  onShowSwapDronesDialog,
+}: SwapDronesToolbarButtonProps) => {
   const { t } = useTranslation();
-  const dispatch = useAppDispatch();
 
   return (
     <Tooltip
@@ -22,9 +27,8 @@ const SwapDronesToolbarButton = () => {
       trigger='mouseenter'
     >
       <IconButton
-        onClick={() => {
-          dispatch(showSwapDronesDialog());
-        }}
+        aria-label={t('swapDronesDialog.toolbarButton')}
+        onClick={onShowSwapDronesDialog}
       >
         <SwapHoriz />
       </IconButton>
@@ -32,4 +36,6 @@ const SwapDronesToolbarButton = () => {
   );
 };
 
-export default SwapDronesToolbarButton;
+export default connect(null, {
+  onShowSwapDronesDialog: showSwapDronesDialog,
+})(SwapDronesToolbarButton);

@@ -16,7 +16,7 @@ import type { SwapFieldSide } from './types';
  * Returns whether the user is typing a show ID (`sN`) into a drone field.
  */
 const isSwapShowIdFilter = (filter: string): boolean =>
-  filter.trim().toLowerCase().startsWith('s');
+  /^s\d*$/i.test(filter.trim());
 
 /**
  * Returns the text to put into a drone field when an item is selected from the

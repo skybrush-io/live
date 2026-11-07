@@ -1,6 +1,9 @@
 import { createSelector } from '@reduxjs/toolkit';
 
-import { getMissionMapping } from '~/features/mission/selectors';
+import {
+  getMissionMapping,
+  isMappingBeingCalculated,
+} from '~/features/mission/selectors';
 import { isShowAuthorizedToStart } from '~/features/show/selectors';
 import { getUAVIdList } from '~/features/uavs/selectors';
 import { isUploadInProgress } from '~/features/upload/selectors';
@@ -49,7 +52,9 @@ export const isSwapDronesDialogOpen: AppSelector<boolean> = (state) =>
  * Returns whether the mission mapping may be modified by swapping drones.
  */
 export const isSwappingAllowed: AppSelector<boolean> = (state) =>
-  !isShowAuthorizedToStart(state) && !isUploadInProgress(state);
+  !isShowAuthorizedToStart(state) &&
+  !isUploadInProgress(state) &&
+  !isMappingBeingCalculated(state);
 
 export const shouldOpenUploadDialogAfterSwap: AppSelector<boolean> = (state) =>
   state.dialogs.swapDrones.openUploadDialogAfterSwap;
