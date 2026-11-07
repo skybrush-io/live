@@ -62,6 +62,8 @@ const FIELD_STYLES: Record<SwapFieldSide, SxProps> = {
 };
 
 type SwapDroneFieldProps = Omit<TextFieldProps, 'onChange' | 'value'> & {
+  /** Called when the user presses Escape in the field */
+  onCancel: () => void;
   onChange: (text: string) => void;
   /** Called when the user confirms the field with Enter or selects a drone */
   onSubmit: () => void;
@@ -75,6 +77,7 @@ type SwapDroneFieldProps = Omit<TextFieldProps, 'onChange' | 'value'> & {
  * the focus remains within the field or the popup.
  */
 const SwapDroneField = ({
+  onCancel,
   onChange,
   onSubmit,
   side,
@@ -116,6 +119,12 @@ const SwapDroneField = ({
           if (event.key === 'Enter') {
             handleClose();
             onSubmit();
+          } else if (event.key === 'Escape') {
+            // The UAV selector popup is a modal on top of the dialog, and MUI
+            // dialogs ignore Escape unless they are the topmost modal
+            event.stopPropagation();
+            handleClose();
+            onCancel();
           }
         }}
         {...rest}

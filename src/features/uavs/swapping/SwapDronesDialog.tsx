@@ -93,6 +93,7 @@ const SwapDronesDialog = ({
             autoFocus
             side='left'
             value={fieldTexts.left}
+            onCancel={onClose}
             onChange={(text) => {
               onSetFieldText({ side: 'left', text });
             }}
@@ -105,6 +106,7 @@ const SwapDronesDialog = ({
             inputRef={rightFieldRef}
             side='right'
             value={fieldTexts.right}
+            onCancel={onClose}
             onChange={(text) => {
               onSetFieldText({ side: 'right', text });
             }}

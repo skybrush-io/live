@@ -66,7 +66,7 @@ Stored at `state.dialogs.swapDrones`: `open`, `fields`, `openUploadDialogAfterSw
 - `getSwapWarningMessageKey` shows a single alert: field-pair problems (`blocked`/`warning`) win over a stale queue, and any warning hides the preview.
 - Left field = `warning.main`, right = `success.main` (`FIELD_COLORS`); badges inherit the color of the field their drone came from, slot badges are uncolored. Badges of drones that are not online are dimmed, and a `notOnline` line lists them.
 - `DroneRefLabel` renders queue entries as `uavId/sN` and dims the inferred half (the part the user did not type).
-- Keyboard flow: Enter or a selection in the left field focuses the right field; in the right field it focuses the Swap button (deferred, so the button is enabled by then and the same Enter does not press it). `SwapDroneField` reports both through `onSubmit`.
+- Keyboard flow: Enter or a selection in the left field focuses the right field; in the right field it focuses the Swap button (deferred, so the button is enabled by then and the same Enter does not press it). `SwapDroneField` reports both through `onSubmit`. Escape in a field closes the dialog through `onCancel`: the `UAVSelector` popup is a modal on top of the dialog, and MUI dialogs ignore Escape unless they are the topmost modal.
 - Layout constants in `constants.ts` reserve space so that the dialog does not resize while typing or as the queue grows.
 
 ## Extending
