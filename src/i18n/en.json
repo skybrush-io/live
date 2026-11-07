@@ -1515,10 +1515,6 @@
     "never": "Never ask for confirmation",
     "onlyMultiple": "Confirm when the operation may affect multiple UAVs"
   },
-  "uavToolbar": {
-    "fitAllFeaturesIntoView": "Fit all features into view",
-    "fitSelectionIntoView": "Fit selection into view"
-  },
   "unit": {
     "degree": {
       "long_one": "degree",
