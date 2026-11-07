@@ -14,7 +14,7 @@ import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import type { SvgIconProps } from '@mui/material/SvgIcon';
 
-import { Tool } from '~/components/map/tools';
+import { isEditingTool, Tool } from '~/components/map/tools';
 import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
 import { type PreparedI18nKey, tt } from '~/i18n';
 import ContentCut from '~/icons/ContentCut';
@@ -94,6 +94,7 @@ const drawingToolRegistry: Record<DrawingToolId, ToolConfig> = {
 type DrawingToolIdGroup = DrawingToolId[];
 
 type DrawingToolbarProps = {
+  editingToolsDisabled: boolean;
   onToolSelected: (tool: Tool) => void;
   selectedTool: Tool;
   /**
@@ -104,6 +105,7 @@ type DrawingToolbarProps = {
 
 const DrawingToolbar = ({
   drawingTools,
+  editingToolsDisabled,
   onToolSelected,
   selectedTool,
 }: DrawingToolbarProps) => {
@@ -122,6 +124,7 @@ const DrawingToolbar = ({
               <Tooltip key={toolId} content={label(t)} placement='right'>
                 <IconButton
                   size='large'
+                  disabled={editingToolsDisabled && isEditingTool(tool)}
                   onClick={partial(onToolSelected, tool)}
                 >
                   <Icon color={colorForTool(tool)} />

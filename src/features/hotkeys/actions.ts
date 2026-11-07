@@ -4,15 +4,25 @@ import isNil from 'lodash-es/isNil';
 import { copyDisplayedCoordinatesToClipboard } from '~/components/map/utils';
 import { hasPendingAudibleAlerts } from '~/features/alert/selectors';
 import { dismissAlerts } from '~/features/alert/slice';
+import { removeSelectedFeatures } from '~/features/map-features/actions';
+import { getSelectedFeatureIds } from '~/features/map-features/selectors';
+import { isMapLocked } from '~/features/map/tools';
+import { removeSelectedMissionItems } from '~/features/mission/actions';
 import {
   getMissionMapping,
+  getSelectedMissionItemIds,
   isMappingEditable,
 } from '~/features/mission/selectors';
 import { finishMappingEditorSession } from '~/features/mission/slice';
 import { clearSelection, selectGroup } from '~/features/selection/slice';
-import { showError, showNotification } from '~/features/snackbar/actions';
+import {
+  showError,
+  showNotification,
+  showWarning,
+} from '~/features/snackbar/actions';
 import { setSelectedUAVIds } from '~/features/uavs/actions';
 import { getUAVById } from '~/features/uavs/selectors';
+import i18n from '~/i18n';
 import type { AppDispatch, AppThunk, RootState } from '~/store/reducers';
 import { scrollUAVListItemIntoView } from '~/utils/navigation';
 
@@ -349,6 +359,28 @@ export const copyCoordinates = (): AppThunk<void> => async () => {
     showError('Failed to copy coordinates; are you hovering over the map?');
   }
 };
+
+/**
+ * Removes the selected map features and mission items unless the map is
+ * locked. A locked map keeps them and warns the user instead if any of them
+ * are selected.
+ */
+export function removeSelectedFeaturesAndMissionItemsUnlessLocked(): AppThunk<void> {
+  return (dispatch, getState) => {
+    const state = getState();
+    if (!isMapLocked(state)) {
+      dispatch(removeSelectedFeatures());
+      dispatch(removeSelectedMissionItems());
+    } else if (
+      getSelectedFeatureIds(state).length > 0 ||
+      getSelectedMissionItemIds(state).length > 0
+    ) {
+      showWarning(i18n.t('map.lockedRemovalWarning'), {
+        topic: 'map-locked-removal',
+      });
+    }
+  };
+}
 
 /**
  * Deletes the last character of the pending UAV ID.
