@@ -817,6 +817,7 @@
       "geofencePolygon": "地理圍欄多邊形",
       "horizontal": "水平",
       "maxAltitude": "最大高度",
+      "maxDistance": "最大距離",
       "maxVertexCount": "最大頂點數量",
       "proposedLimits": "目前任務的建議限制",
       "safetyMargins": "安全邊距",
@@ -825,7 +826,8 @@
       "vertexCountReduction": "頂點數量減少",
       "vertical": "垂直"
     },
-    "settings": "設定"
+    "settings": "設定",
+    "title": "安全"
   },
   "safetySettingsTab": {
     "criticalBatteryVoltageHelperText": "電池電壓嚴重過低 [V]，低於此值將觸發嚴重低電池警示。",
@@ -833,12 +835,14 @@
     "emptyValues": "保留欄位空白將保留無人機上的現有設定。",
     "lowBatteryThresholdHelperText": "低電池門檻類型與數值，低於此值將觸發低電池警示。",
     "lowBatteryThresholdType": {
+      "disabled": "已停用",
       "noOverride": "無覆寫",
       "percentageBased": "以百分比為基礎",
       "voltageBased": "以電壓為基礎"
     },
     "lowBatteryThresholdTypeLabel": "低電池門檻類型",
     "lowBatteryThresholdValueLabel": "門檻值",
+    "returnToHomeAltitudeHelperText": "執行返回原點作業所需的最低高度 [mAHL]。",
     "returnToHomeAltitudeLabel": "返家高度",
     "returnToHomeSpeedHelperText": "返家操作的水平速度 [m/s]。",
     "returnToHomeSpeedLabel": "返家速度"
@@ -860,6 +864,9 @@
       "createNew": "建立新群組",
       "rename": "重新命名群組"
     },
+    "label": {
+      "name": "群組名稱"
+    },
     "newGroupNameTemplate": "群組 {{id}}",
     "selectedObjects": "已選取的物件",
     "updated": "已更新"
@@ -872,6 +879,7 @@
     "disconnected": "已與伺服器中斷連線",
     "disconnecting": "中斷連線進行中…",
     "roundTripTime": "往返時間",
+    "unknownState": "未知狀態",
     "version": "伺服器版本"
   },
   "serverLogMessageCode": {
@@ -886,16 +894,20 @@
     "connecting": "連線中…",
     "connectingTo": "連線至 {{hostName}}…",
     "disconnect": "中斷連線",
+    "enterManually": "手動輸入",
     "hostname": "主機名稱",
     "localConnection": "本機連線",
     "manual": "手動",
     "pleaseWait": "請稍候…",
     "port": "埠號",
     "preconfiguredServer": "預先設定的伺服器",
+    "scanningNetwork": "正在掃描網路中的伺服器…",
     "secureConnection": "安全連線",
     "serverSelectionRestricted": "此版本不支援連線至其他伺服器。",
     "unsecured": "(不安全)",
     "unsecuredConnection": "不安全連線",
+    "useSecureConnection": "使用安全連線",
+    "useWebSocketHelperText": "僅為向後相容性而保留。",
     "useWebSocketLabel": "使用 WebSocket 通訊協定而非 TCP"
   },
   "settings": {
@@ -919,6 +931,7 @@
     },
     "tabs": {
       "apiKeys": "API 金鑰",
+      "display": "顯示",
       "preflight": "飛行前檢查",
       "server": "伺服器",
       "threeDView": "3D 檢視",
@@ -926,6 +939,7 @@
     },
     "threeDView": {
       "1x1": "10x10 公尺",
+      "2x2": "20x20 公尺",
       "auto": "自動",
       "dark": "深色",
       "environment": "環境",
@@ -939,6 +953,7 @@
       "scenery": "場景",
       "showAxes": "顯示座標系統軸",
       "showHomePositions": "顯示返航位置",
+      "showLandingPositions": "顯示降落位置",
       "showStatistics": "顯示算繪統計（進階）",
       "showTrajectoriesOfSelection": "顯示已選取 UAV 的軌跡"
     },
@@ -954,7 +969,9 @@
       "fullCharge": "滿電",
       "gone": "標記無人機為遺失的時間",
       "lowTreshold": "低門檻",
+      "maxUploadConcurrency": "最大並行上傳數",
       "minIndoorTakeoffSpacing": "最小起飛間距（室內）",
+      "minOutdoorTakeoffSpacing": "最小起飛間距（室外）",
       "missionSetup": "任務設定",
       "missionSetupDescription": "在多無人機任務前使用，以檢查每台無人機是否已準備就緒。",
       "operationSettings": "操作",
@@ -978,7 +995,8 @@
         "title": "需要確認"
       },
       "notification": {
-        "error": "集體 RTH 指令失敗"
+        "error": "集體 RTH 指令失敗",
+        "success": "集體 RTH 指令已成功傳送"
       }
     },
     "dronePlacementApproved": "無人機位置已批准",
@@ -986,12 +1004,15 @@
     "dronePlacementError": "無人機位置錯誤",
     "dronePlacementPartial": "部分無人機位置已批准",
     "fromCloud": "從雲端載入表演",
+    "indoor": "室內",
     "loading": "請稍候，正在載入表演檔案…",
     "manualPreflightChecks": "手動飛行前檢查",
+    "noFileLoaded": "未載入演出檔案",
     "onboardPreflightChecks": "機載飛行前檢查",
     "outdoor": {
       "invalidAltitudeReference": "戶外，無效的高度參考",
       "relativeToAMSL": "戶外，相對於 {{altitude}}m AMSL",
+      "relativeToHome": "室外，相對於原點",
       "unknownAltitudeReference": "戶外，未知的高度參考"
     },
     "placementAccuracy": "位置精度 ≤ {{distance}}",
@@ -1018,6 +1039,7 @@
       "interactionHints": {
         "action": {
           "boxSelect": "框選",
+          "boxUnselect": "方塊取消選取",
           "moveSelection": "移動選取範圍",
           "rotateSelection": "旋轉選取範圍",
           "toggleSelect": "切換選取"
@@ -1028,6 +1050,7 @@
           "selection": "選取"
         }
       },
+      "noShowData": "演出區段資料遺失",
       "prerequisites": {
         "extension": "伺服器上必須啟用 Studio 擴充功能",
         "loaded": "必須載入表演檔案",
@@ -1045,7 +1068,8 @@
       "description": "視需要調整起飛格線和表演佈局"
     },
     "startMethod": {
-      "AUTO": "表演將自動開始"
+      "AUTO": "表演將自動開始",
+      "RC": "使用 RC 上的開關來啟動"
     },
     "startTimeNotSet": "尚未設定開始時間",
     "startsAt": "於 {{time}} 開始",
@@ -1085,6 +1109,7 @@
           "label": "高度偏移"
         },
         "horizontalVelocity": {
+          "help": "在起飛和 RTH 階段期間",
           "label": "水平速度"
         },
         "minDistance": {
@@ -1144,6 +1169,9 @@
       "review": "在將變更套用至表演前檢閱變更。"
     },
     "lights": {
+      "default": {
+        "brightness": "亮度"
+      },
       "selectLabel": "燈光效果",
       "solid": {
         "color": "顏色"
@@ -1157,7 +1185,8 @@
         "original": "原始",
         "solid": "實心",
         "sparks": "火花"
-      }
+      },
+      "unsupportedVersion": "燈光設定需要伺服器版本 {{minVersion}} 或更高版本。"
     },
     "settings": {
       "dronesVisible": "顯示無人機"
@@ -1181,7 +1210,8 @@
     "segment": {
       "preparation": {
         "completed": {
-          "description": "無人機已收到請求操作的通知，並正在..."
+          "description": "無人機已收到請求操作的通知，並正在...",
+          "title": "準備完成"
         },
         "running": {
           "description": "無人機正在收到請求操作的通知，並且它們...",
@@ -1225,7 +1255,8 @@
         "title": "已完成"
       },
       "progress": {
-        "description": "操作進行中。"
+        "description": "操作進行中。",
+        "title": "進行中（{{remainingSeconds}}秒）"
       },
       "waiting": {
         "description": "操作即將開始。",
@@ -1242,10 +1273,12 @@
     "descending": "遞減",
     "label": {
       "agl": "離地高度",
+      "ahl": "原點以上高度",
       "amsl": "高度（MSL）",
       "battery": "電池",
       "default": "預設",
       "flightMode": "飛行模式",
+      "gpsFix": "GPS 定位",
       "heading": "航向",
       "rssi": "訊號強度（RSSI）",
       "status": "狀態"
@@ -1276,10 +1309,13 @@
     },
     "localTime": "本地時間",
     "localTimeRelative": "固定延遲",
+    "reference": "參考",
     "resetForm": "重設表單",
+    "setNewStartTime": "設定新的開始時間",
     "setTheStartTime": "在下方設定表演的開始時間",
     "startDate": "開始日期",
     "startShowAuto": "自動開始表演",
+    "startShowWithRC": "僅使用遙控器啟動演出",
     "startSignal": "開始訊號",
     "startTime": "開始時間",
     "startTimeHms": "開始時間（小時:分鐘:秒）",
@@ -1311,16 +1347,19 @@
     "emptySlots": "空位置：",
     "misaligned": "未對齊：",
     "misplaced": "位置錯誤：",
+    "missing": "遺失：",
     "noDrones": "任務中沒有無人機。",
     "placeVirtualDrones": "放置虛擬無人機",
     "takeoffAreaSetup": "起飛區域設定"
   },
   "takeoffHeadingSpecEditor": {
+    "UAVheadings": "起飛前的 UAV 航向為…",
     "compassDirection": "羅盤方向",
     "headingOffset": "航向偏移",
     "setToAverageHeading": "設定為作用中無人機的平均航向",
     "setToAvergaeHeading": "設定為作用中無人機的平均航向",
     "specifiedByAbsoluteCompassDirection": "由絕對羅盤方向指定",
+    "specifiedRelativeToShowOrientation": "相對於演出方向指定",
     "unspecified": "未指定"
   },
   "timeline": {
@@ -1341,6 +1380,7 @@
     },
     "markerLane": {
       "cue": "提示",
+      "rthPlan": "RTH 計畫",
       "segment": "區段",
       "unknown": "未知通道（{{lane}}）"
     },
@@ -1350,17 +1390,20 @@
       "landing": "降落",
       "show": "網路表演",
       "startOf": "{{description}} 開始",
+      "takeoff": "起飛",
       "unknown": "表演區段 {{type}}"
     }
   },
   "toolbox": {
+    "averagingInProgress": "{{number}} 進行中",
     "coordinateAveraging": "座標平均",
     "firmwareCheck": "韌體版本檢查",
     "firmwareUpdate": "韌體更新",
     "licenseInfo": "授權資訊",
     "offlineMaps": "離線地圖",
     "paramCheck": "參數檢查",
-    "paramUpload": "參數上傳"
+    "paramUpload": "參數上傳",
+    "tooltip": "工具箱"
   },
   "uavErrorCode": {
     "0": "無錯誤",
@@ -1370,6 +1413,7 @@
     "128": "自動駕駛通訊逾時",
     "129": "自動駕駛確認逾時",
     "130": "自動駕駛通訊協定錯誤",
+    "131": "預武裝檢查失敗",
     "132": "RC 訊號遺失",
     "133": "GPS 訊號遺失或 GPS 錯誤",
     "134": "電池電量低",
@@ -1387,8 +1431,10 @@
     "191": "未指定錯誤",
     "192": "不相容的硬體或軟體",
     "193": "磁力計錯誤",
+    "194": "陀螺儀錯誤",
     "195": "加速度計錯誤",
     "196": "壓力感測器或高度計錯誤",
+    "197": "GPS 錯誤或 GPS 訊號遺失",
     "198": "馬達故障",
     "199": "電池嚴重不足",
     "2": "記錄已停用",
@@ -1403,6 +1449,7 @@
     "253": "模擬嚴重錯誤",
     "254": "未指定嚴重感測器故障",
     "255": "未指定嚴重錯誤",
+    "3": "預武裝檢查進行中",
     "4": "自動駕駛初始化中",
     "5": "無人機起飛中",
     "6": "無人機降落中",
@@ -1414,16 +1461,19 @@
     "68": "無人機不在指定的起飛位置",
     "69": "任務設定錯誤或任務超出地理圍欄",
     "7": "無人機已成功降落",
+    "70": "無線電頻道離線",
     "71": "無人機在地面上超出地理圍欄",
     "72": "風速過高",
     "73": "無人機尚未武裝",
+    "74": "無人機需要重新開機",
     "75": "偏離預期位置過大",
     "8": "在地面上馬達仍在運轉",
     "9": "無人機處於睡眠模式"
   },
   "uavOperationConfirmationStyle": {
     "always": "永遠詢問確認",
-    "never": "永不詢問確認"
+    "never": "永不詢問確認",
+    "onlyMultiple": "當操作可能影響多台 UAV 時確認"
   },
   "uavToolbar": {
     "fitAllFeaturesIntoView": "將所有功能放入檢視範圍",
@@ -1431,7 +1481,8 @@
   },
   "unit": {
     "degree": {
-      "long_other": "度"
+      "long_other": "度",
+      "short": "度"
     },
     "hour": {
       "long_other": "小時",
@@ -1450,7 +1501,8 @@
       "short": "分鐘"
     },
     "second": {
-      "long_other": "秒"
+      "long_other": "秒",
+      "short": "秒"
     },
     "volt": {
       "long_other": "伏特",
@@ -1461,6 +1513,7 @@
     "anotherJobTypeRunningHint": {
       "cancelButton": "取消任務",
       "header": "另一個任務進行中",
+      "text": "等待另一個任務完成或取消它，以開始新任務",
       "viewProgressButton": "檢視進度"
     },
     "restrictToGlobalSelection": "僅顯示全域選取"
@@ -1471,6 +1524,8 @@
     "fix": "修正",
     "fixAll": "全部修正",
     "fixAllInconsistencies_other": "將 {{count}} 台 UAV 的偏差值設定為多數值",
+    "fixDeviatingUAVs_other": "將 {{count}} 台 UAV 設定為多數值：{{value}}",
+    "flashLightsWhereFailed": "讓任務失敗的 UAV 閃燈",
     "hasHiddenTargets": "部分等待中的 UAV 可能已被篩選。",
     "noClearMajority": "無法修正：沒有明確的多數值",
     "noJobResultAvailable": "尚無可用結果",
@@ -1481,12 +1536,17 @@
     "uploadCancelled": "任務已被使用者取消",
     "uploadFinishedSuccessfully": "任務成功完成",
     "uploadInProgress": "請稍候…",
-    "uploadInProgressWithEstimate": "預計剩餘時間：{{time}}"
+    "uploadInProgressWithEstimate": "預計剩餘時間：{{time}}",
+    "uploadNotFinishedYet": "任務尚未完成"
   },
   "uploadStatusLegend": {
     "clearUploadQueue": "清除佇列",
     "enqueueItemsWithNoUploadStatus": "將未處理項目加入佇列",
+    "restartSuccessfulItems": "將成功項目加入佇列",
     "retryFailedItems": "將失敗項目加入佇列"
+  },
+  "uploadStatusLights": {
+    "noAvailableUAVs": "沒有可用的 UAV。"
   },
   "view": {
     "beacon-list": "信標",
@@ -1497,10 +1557,13 @@
     "layer-list": "圖層",
     "lcd-clock-panel": "時鐘",
     "light-control": "燈光控制",
+    "log-panel": "事件記錄",
+    "map": "地圖",
     "mission-editor": "任務編輯器",
     "rtk-status-mini-list": "RTK 狀態",
     "saved-location-list": "位置",
     "selection-group-mini-list": "選取群組",
+    "show-control": "演出控制",
     "three-d-view": "3D 檢視",
     "timeline": "時間軸",
     "uav-details": "UAV 詳細資訊",
@@ -1514,6 +1577,8 @@
     "noWeatherInfo": "當天沒有天氣資訊",
     "refreshing": "重新整理中…",
     "sunrise": "日出",
-    "timezone": "時區"
+    "sunset": "日落",
+    "timezone": "時區",
+    "utcOffset": "UTC 偏移"
   }
 }
