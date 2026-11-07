@@ -131,7 +131,9 @@ const UAVStatusMiniList = listOf<UAVStatusMiniListItem, UAVStatusMiniListProps>(
     dataProvider: 'items',
     backgroundHint: (
       <Translation>
-        {(t) => <BackgroundHint text={t('UAVStatus.noConnected')} />}
+        {(t) => (
+          <BackgroundHint sx={{ p: 1 }} text={t('UAVStatus.noConnected')} />
+        )}
       </Translation>
     ),
     listFactory: (
