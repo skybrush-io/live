@@ -54,7 +54,7 @@ The mapping can change under a queue (manual edits, another swap now, mapping le
 
 ## Upload after swap
 
-With `openUploadDialogAfterSwap` on, the targets are the UAVs whose index changed **and that are still in the mapping** (removed drones need no show), including drones that are not online: the upload fails or retries for them, so the operator notices. `openUploadDialogForJob({ job: SHOW_UPLOAD_JOB })` is dispatched **before** `putUavsInWaitingQueue`, since opening for a different job type clears the upload queues. Nothing opens if no target remains.
+With `openUploadDialogAfterSwap` on, the targets are the UAVs whose index changed **and that are still in the mapping** (removed drones need no show), including drones that are not online: the upload fails or retries for them, so the operator notices. `openUploadDialogForJob({ job: SHOW_UPLOAD_JOB })` is dispatched **before** `putUavsInWaitingQueue`, since opening for a different job type clears the upload queues. Nothing opens if no target remains. With `openUploadDialogAfterSwap` off and targets remaining, the notification is a warning (`successUploadNeeded`) that lists them instead of a success.
 
 ## State (`slice.ts`)
 
@@ -66,6 +66,7 @@ Stored at `state.dialogs.swapDrones`: `open`, `fields`, `openUploadDialogAfterSw
 - `getSwapWarningMessageKey` shows a single alert: field-pair problems (`blocked`/`warning`) win over a stale queue, and any warning hides the preview.
 - Left field = `warning.main`, right = `success.main` (`FIELD_COLORS`); badges inherit the color of the field their drone came from, slot badges are uncolored. Badges of drones that are not online are dimmed, and a `notOnline` line lists them.
 - `DroneRefLabel` renders queue entries as `uavId/sN` and dims the inferred half (the part the user did not type).
+- Keyboard flow: Enter or a selection in the left field focuses the right field; in the right field it focuses the Swap button (deferred, so the button is enabled by then and the same Enter does not press it). `SwapDroneField` reports both through `onSubmit`.
 - Layout constants in `constants.ts` reserve space so that the dialog does not resize while typing or as the queue grows.
 
 ## Extending

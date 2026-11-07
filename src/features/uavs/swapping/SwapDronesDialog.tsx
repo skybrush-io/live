@@ -8,6 +8,7 @@ import DialogContent from '@mui/material/DialogContent';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
@@ -74,6 +75,8 @@ const SwapDronesDialog = ({
   warningMessageKey,
 }: Props) => {
   const { t } = useTranslation();
+  const rightFieldRef = useRef<HTMLInputElement>(null);
+  const swapButtonRef = useRef<HTMLButtonElement>(null);
 
   return (
     <DraggableDialog
@@ -93,13 +96,26 @@ const SwapDronesDialog = ({
             onChange={(text) => {
               onSetFieldText({ side: 'left', text });
             }}
+            onSubmit={() => {
+              rightFieldRef.current?.focus();
+            }}
           />
           <SwapHoriz />
           <SwapDroneField
+            inputRef={rightFieldRef}
             side='right'
             value={fieldTexts.right}
             onChange={(text) => {
               onSetFieldText({ side: 'right', text });
+            }}
+            onSubmit={() => {
+              // Deferred until the new field value has been rendered, as the
+              // button cannot receive focus while it is disabled. This also
+              // ensures that the Enter key that submitted the field does not
+              // press the button.
+              setTimeout(() => {
+                swapButtonRef.current?.focus();
+              }, 0);
             }}
           />
         </Stack>
@@ -133,7 +149,12 @@ const SwapDronesDialog = ({
         />
         <Box sx={{ flex: 1 }} />
         <Button onClick={onClose}>{t('general.action.cancel')}</Button>
-        <Button disabled={!canSwapNow} onClick={onSwapNow} color='primary'>
+        <Button
+          ref={swapButtonRef}
+          disabled={!canSwapNow}
+          onClick={onSwapNow}
+          color='primary'
+        >
           {t('swapDronesDialog.action.swap')}
         </Button>
       </DialogActions>

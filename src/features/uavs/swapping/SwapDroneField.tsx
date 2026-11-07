@@ -63,6 +63,8 @@ const FIELD_STYLES: Record<SwapFieldSide, SxProps> = {
 
 type SwapDroneFieldProps = Omit<TextFieldProps, 'onChange' | 'value'> & {
   onChange: (text: string) => void;
+  /** Called when the user confirms the field with Enter or selects a drone */
+  onSubmit: () => void;
   side: SwapFieldSide;
   value: string;
 };
@@ -74,13 +76,13 @@ type SwapDroneFieldProps = Omit<TextFieldProps, 'onChange' | 'value'> & {
  */
 const SwapDroneField = ({
   onChange,
+  onSubmit,
   side,
   value,
   ...rest
 }: SwapDroneFieldProps) => {
   const { t } = useTranslation();
   const rootRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
   const [anchorEl, setAnchorEl] = useState<Element | null>(null);
 
   const handleClose = () => {
@@ -99,7 +101,6 @@ const SwapDroneField = ({
   return (
     <Box ref={rootRef} onBlur={handleBlur}>
       <TextField
-        inputRef={inputRef}
         label={t('swapDronesDialog.fieldLabel')}
         variant='filled'
         value={value}
@@ -114,6 +115,7 @@ const SwapDroneField = ({
         onKeyDown={(event) => {
           if (event.key === 'Enter') {
             handleClose();
+            onSubmit();
           }
         }}
         {...rest}
@@ -134,7 +136,7 @@ const SwapDroneField = ({
           }
 
           onChange(label);
-          inputRef.current?.blur();
+          onSubmit();
         }}
       />
     </Box>

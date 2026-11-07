@@ -1333,7 +1333,7 @@
   },
   "swapDronesDialog": {
     "action": {
-      "add": "Add to queue",
+      "add": "Add",
       "swap": "Swap",
       "swapQueue": "Swap queued"
     },
@@ -1363,6 +1363,8 @@
       "title": "Queued swaps"
     },
     "success": "Drone swap completed successfully.",
+    "successUploadNeeded_one": "Drone swap completed. The show must be uploaded to drone {{uavIds}}.",
+    "successUploadNeeded_other": "Drone swap completed. The show must be uploaded to drones {{uavIds}}.",
     "title": "Swap drones",
     "toolbarButton": "Swap drones"
   },

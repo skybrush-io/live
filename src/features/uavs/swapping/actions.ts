@@ -2,7 +2,11 @@ import { updateMapping } from '~/features/mission/actions';
 import { getMissionMapping } from '~/features/mission/selectors';
 import { getUAVsWithChangedMissionIndex } from '~/features/mission/utils';
 import { SHOW_UPLOAD_JOB } from '~/features/show/constants';
-import { showError, showSuccess } from '~/features/snackbar/actions';
+import {
+  showError,
+  showSuccess,
+  showWarning,
+} from '~/features/snackbar/actions';
 import {
   openUploadDialogForJob,
   putUavsInWaitingQueue,
@@ -46,19 +50,26 @@ const executeSwaps =
 
     dispatch(updateMapping(result.mapping));
 
-    if (shouldOpenUploadDialogAfterSwap(state)) {
-      const uploadTargets = getUAVsWithChangedMissionIndex(
-        mapping,
-        result.mapping
-      ).filter((uavId) => result.mapping.includes(uavId));
+    const uploadTargets = getUAVsWithChangedMissionIndex(
+      mapping,
+      result.mapping
+    ).filter((uavId) => result.mapping.includes(uavId));
 
-      if (uploadTargets.length > 0) {
-        dispatch(openUploadDialogForJob({ job: SHOW_UPLOAD_JOB }));
-        dispatch(putUavsInWaitingQueue(uploadTargets));
-      }
+    if (uploadTargets.length === 0) {
+      showSuccess(i18n.t('swapDronesDialog.success'));
+    } else if (shouldOpenUploadDialogAfterSwap(state)) {
+      dispatch(openUploadDialogForJob({ job: SHOW_UPLOAD_JOB }));
+      dispatch(putUavsInWaitingQueue(uploadTargets));
+      showSuccess(i18n.t('swapDronesDialog.success'));
+    } else {
+      showWarning(
+        i18n.t('swapDronesDialog.successUploadNeeded', {
+          count: uploadTargets.length,
+          uavIds: uploadTargets.join(', '),
+        })
+      );
     }
 
-    showSuccess(i18n.t('swapDronesDialog.success'));
     return true;
   };
 

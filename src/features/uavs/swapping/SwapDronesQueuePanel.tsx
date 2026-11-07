@@ -1,5 +1,4 @@
 import Close from '@mui/icons-material/Close';
-import PlaylistAdd from '@mui/icons-material/PlaylistAdd';
 import SwapHoriz from '@mui/icons-material/SwapHoriz';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -173,19 +172,9 @@ const SwapDronesQueuePanel = ({
           justifyContent: 'space-between',
         }}
       >
-        <Tooltip content={t('swapDronesDialog.action.add')}>
-          {/* Wrapper needed so that the tooltip works on a disabled button */}
-          <span>
-            <IconButton
-              size='small'
-              disabled={!canAdd}
-              aria-label={t('swapDronesDialog.action.add')}
-              onClick={onAdd}
-            >
-              <PlaylistAdd fontSize='small' />
-            </IconButton>
-          </span>
-        </Tooltip>
+        <Button disabled={!canAdd} color='inherit' onClick={onAdd}>
+          {t('swapDronesDialog.action.add')}
+        </Button>
         <Button disabled={!canSwap} color='inherit' onClick={onSwap}>
           {t('swapDronesDialog.action.swapQueue')}
         </Button>
