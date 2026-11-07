@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Operators replace drones in the field (low battery, hardware fault, spare on standby) without rebuilding the mission mapping by hand. `src/features/uavs/swapping/` edits the mission mapping (`mission.mapping`, slot index → UAV ID) through a dialog opened from `SwapDronesToolbarButton` in the UAV toolbar. The feature only edits the mapping; it never talks to the drones, and the new show still has to be uploaded to the affected drones afterwards.
+Operators replace drones in the field (low battery, hardware fault, spare on standby) without rebuilding the mission mapping by hand. `src/features/uavs/swapping/` edits the mission mapping (`mission.mapping`, slot index → UAV ID) through a dialog opened from the mapping tools dropdown of the UAV toolbar (`MappingButtonGroup`). The feature only edits the mapping; it never talks to the drones, and the new show still has to be uploaded to the affected drones afterwards.
 
 ## Swap semantics
 

@@ -502,9 +502,9 @@
   },
   "mappingButtonGroup": {
     "editMapping": "Edit mapping",
-    "emptySlotsShownWhileEditingMapping": "Empty mission slots stay visible while you edit the mapping.",
-    "hideEmptyMissionSlots": "Hide empty mission slots",
-    "showEmptyMissionSlots": "Show empty mission slots"
+    "moreMappingTools": "More mapping tools",
+    "showEmptyMissionSlots": "Show empty mission slots",
+    "swapDrones": "Swap drones…"
   },
   "mappingEditorToolbar": {
     "assignSpares": "Assign spares",
@@ -1376,8 +1376,7 @@
     "success": "Drone swap completed successfully.",
     "successUploadNeeded_one": "Drone swap completed. The show must be uploaded to drone {{uavIds}}.",
     "successUploadNeeded_other": "Drone swap completed. The show must be uploaded to drones {{uavIds}}.",
-    "title": "Swap drones",
-    "toolbarButton": "Swap drones"
+    "title": "Swap drones"
   },
   "takeoffAreaSetupDialog": {
     "allDroneOnline": "All drones in the mission are online.",
