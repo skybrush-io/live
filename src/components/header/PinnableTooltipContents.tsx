@@ -54,7 +54,6 @@ const PinnableTooltipContents = ({
   const classes = useStyles();
   const { t } = useTranslation();
   const workbench = use(WorkbenchContext);
-  const pinned = isPinned(workbench, component);
 
   return (
     <Stack
@@ -82,7 +81,6 @@ const PinnableTooltipContents = ({
                 title ?? t(`view.${component}`)
               );
             }}
-            disabled={pinned}
           >
             <Keep fontSize='inherit' />
           </IconButton>
