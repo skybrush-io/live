@@ -574,13 +574,20 @@
     "fileToShowTooltip": "Nécessite un fichier de spectacle avec des données de localisation intégrées",
     "fitCoordinateSysToCurrentDrone": "Adapter le système de coordonnées aux positions actuelles des drones",
     "mapToShow": "Carte ➜ Spectacle",
+    "preTakeoffAltitudeWarning": "La référence AMSL configurée est {{amslReference}}, mais l'AMSL moyen de {{sampleCount}} drones au sol est {{averageGroundAMSL}}. Différence : {{difference}} < {{threshold}}.",
     "setToAverageAMSL": "Régler sur la moyenne AMSL des drones actifs",
     "showCoordinateSystemAppliedToMap": "Voir le système de coordonnées appliqué pour la carte.",
+    "showCoordinateSystemUpdatedFromFile": "Système de coordonnées du spectacle mis à jour à partir du fichier.",
     "showCoordinateSystemUpdatedFromMap": "Afficher le système de coordonnées mis à jour à partir de la carte.",
     "showIsControlledBasedOn": "Le spectacle est contrôlé en fonction de…",
     "showOrientation": "Voir l'orientation",
     "showOrigin": "Voir l'origine",
+    "showToMap": "Spectacle ➜ Carte",
     "warningText": "Le calcul automatique de l'origine et de l'orientation du SHOW suppose que tous les drones pointent vers l'axe X du spectacle <underline>ou</underline> que vous avez spécifié leur décalage par rapport à l'axe X avec le paramètre ci-dessus. Les caps de décollage absolus ne sont pas pris en charge."
+  },
+  "parameterListSidebar": {
+    "import": "Importer…",
+    "nextStep": "Étape suivante"
   },
   "preferences": "Préférences",
   "recalculateMappingButton": {
