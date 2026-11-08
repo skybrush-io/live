@@ -546,7 +546,19 @@
       "notConnected": "Non connecté au serveur",
       "notEnoughSatellites": "Pas assez de satellites avec des corrections RTK valides",
       "ok": "Corrections RTK valides",
-      "surveyInProgress": "Mesure en cours"
+      "surveyInProgress": "Mesure en cours",
+      "unknown": "État de correction RTK inconnu"
+    },
+    "short": {
+      "connectedRecently": "En attente de données",
+      "error": "Erreur",
+      "inactive": "Aucune source",
+      "noAntennaPosition": "Pas de position d'antenne",
+      "notConnected": "Non connecté",
+      "notEnoughSatellites": "Satellites insuffisants",
+      "ok": "Valide",
+      "surveyInProgress": "Mesure en cours",
+      "unknown": "État inconnu"
     }
   },
   "safetyDialog": {
