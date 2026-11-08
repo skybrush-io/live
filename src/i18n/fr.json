@@ -588,6 +588,16 @@
     "settings": "Paramètres",
     "title": "Paramètres des barrières de sécurités"
   },
+  "safetySettingsTab": {
+    "criticalBatteryVoltageHelperText": "Tension de batterie critique en [V] en dessous de laquelle une action de sécurité batterie critique est déclenchée.",
+    "criticalBatteryVoltageLabel": "Tension de batterie critique",
+    "emptyValues": "Laisser un champ vide conservera les paramètres existants du drone après le téléchargement.",
+    "lowBatteryThresholdHelperText": "Type et valeur du seuil de batterie faible en dessous duquel une action de sécurité batterie faible est déclenchée.",
+    "lowBatteryThresholdType": {
+      "disabled": "Désactivé",
+      "noOverride": "Pas de substitution"
+    }
+  },
   "savedLocation": {
     "addNew": "Ajoute un nouvel emplacement",
     "edit": "Modifie l'emplacement"
