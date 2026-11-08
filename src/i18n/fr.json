@@ -600,7 +600,11 @@
       "voltageBased": "Basé sur la tension"
     },
     "lowBatteryThresholdTypeLabel": "Type de seuil batterie faible",
-    "lowBatteryThresholdValueLabel": "Valeur de seuil"
+    "lowBatteryThresholdValueLabel": "Valeur de seuil",
+    "returnToHomeAltitudeHelperText": "Altitude minimale en [mAHL] au-dessus de laquelle les opérations de retour à la maison sont effectuées.",
+    "returnToHomeAltitudeLabel": "Altitude de retour à la maison",
+    "returnToHomeSpeedHelperText": "Vitesse horizontale en [m/s] à laquelle les opérations de retour à la maison sont effectuées.",
+    "returnToHomeSpeedLabel": "Vitesse de retour à la maison"
   },
   "savedLocation": {
     "addNew": "Ajoute un nouvel emplacement",
@@ -613,6 +617,15 @@
     "name": "Nom",
     "notes": "Notes",
     "zoomLevel": "Niveau de zoom"
+  },
+  "selectionGroups": {
+    "action": {
+      "createNew": "Créer un nouveau groupe",
+      "rename": "Renommer le groupe"
+    },
+    "label": {
+      "name": "Nom du groupe"
+    }
   },
   "serverConnectionStatus": {
     "clockSkew": "Décalage d'horloge",
