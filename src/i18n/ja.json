@@ -506,6 +506,7 @@
   "mappingEditorToolbar": {
     "assignSpares": "予備をアサイン",
     "calculatingMapping": "マッピングを計算中…",
+    "clearMapping": "マッピングをクリア",
     "clearMissing": "行方不明をクリア",
     "clickToEdit": "クリックしてシングルスロットを編集。",
     "dragNodes": "マッピングを変形するにはノードをドラッグしてください。",

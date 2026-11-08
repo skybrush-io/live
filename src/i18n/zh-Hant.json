@@ -505,6 +505,7 @@
   "mappingEditorToolbar": {
     "assignSpares": "指派備用機",
     "calculatingMapping": "計算對應中…",
+    "clearMapping": "清除對應",
     "clearMissing": "清除缺失",
     "clickToEdit": "點擊以編輯單一槽位。",
     "dragNodes": "拖曳節點以重新排列對應。",

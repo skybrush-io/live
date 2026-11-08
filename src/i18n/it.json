@@ -259,6 +259,7 @@
   },
   "mappingEditorToolbar": {
     "assignSpares": "Assegna ricambi",
+    "clearMapping": "Elimina mappatura",
     "clearMissing": "Elimina mancanti",
     "clickToEdit": "Clicca per editare i singoli slot.",
     "dragNodes": "Trascina i nodi per riordinare la mappatura.",

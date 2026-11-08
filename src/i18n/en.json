@@ -506,9 +506,13 @@
     "showEmptyMissionSlots": "Show empty mission slots",
     "swapDrones": "Swap drones…"
   },
+  "mappingEditorIndicator": {
+    "editingEnabled": "Mapping editing is enabled"
+  },
   "mappingEditorToolbar": {
     "assignSpares": "Assign spares",
     "calculatingMapping": "Calculating mapping…",
+    "clearMapping": "Clear mapping",
     "clearMissing": "Clear missing",
     "clickToEdit": "Click to edit a single slot.",
     "dragNodes": "Drag nodes to rearrange the mapping.",

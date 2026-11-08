@@ -384,6 +384,7 @@
   "mappingEditorToolbar": {
     "assignSpares": "Tartalékok hozzárendelése",
     "calculatingMapping": "Hozzárendelés folyamatban…",
+    "clearMapping": "Hozzárendelés törlése",
     "clearMissing": "Hiányzó törlése",
     "clickToEdit": "Kattintson egy hely szerkesztéséhez.",
     "dragNodes": "Húzza az ikonokat a hozzárendelés átrendezéséhez.",

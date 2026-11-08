@@ -506,6 +506,7 @@
   "mappingEditorToolbar": {
     "assignSpares": "分配备用无人机",
     "calculatingMapping": "正在计算地图…",
+    "clearMapping": "清除映射",
     "clearMissing": "清除缺失项",
     "clickToEdit": "点击以编辑单个槽位。",
     "dragNodes": "拖动节点以重新排列映射。",

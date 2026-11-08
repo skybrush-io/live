@@ -255,6 +255,7 @@
   },
   "mappingEditorToolbar": {
     "assignSpares": "Przypisz urządzenia zapasowe",
+    "clearMapping": "Wyczyść mapowanie",
     "clearMissing": "Wyczyść brakujące",
     "clickToEdit": "Kliknij, aby edytować pojedynczy slot.",
     "dragNodes": "Przeciągnij węzły, aby przearanżować mapowanie.",

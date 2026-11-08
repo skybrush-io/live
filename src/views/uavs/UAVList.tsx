@@ -56,6 +56,7 @@ import type { Nullable } from '~/utils/types';
 
 import DroneListItem, { type DroneListItemProps } from './DroneListItem';
 import DroneStatusLine from './DroneStatusLine';
+import MappingEditorIndicator from './MappingEditorIndicator';
 import MappingEditorToolbar from './MappingEditorToolbar';
 import MappingSlotEditorForGrid from './MappingSlotEditorForGrid';
 import MappingSlotEditorForList from './MappingSlotEditorForList';
@@ -438,6 +439,7 @@ const UAVListPresentation = ({
             itemRenderer={itemRenderer}
             layout={layout}
           />
+          <MappingEditorIndicator />
         </Box>
         {editingMapping && layout === UAVListLayout.GRID ? (
           <Box className='bottom-bar'>

@@ -214,6 +214,7 @@
   },
   "mappingEditorToolbar": {
     "assignSpares": "Assigne les appareils de réserve",
+    "clearMapping": "Vider la carte",
     "clearMissing": "Vide les manquants",
     "clickToEdit": "Cliquer pour éditer le créneau.",
     "dragNodes": "Glisser le point pour réorganiser la cartographie.",
