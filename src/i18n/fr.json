@@ -529,7 +529,10 @@
     "addDrone": "Ajoutez un drone à mesurer avec le bouton + dans la barre d'outils",
     "copyToClipboard": "Copier dans le presse-papiers",
     "duration": "Durée",
-    "noSamplesYet": "Aucun échantillon pour l'instant"
+    "noSamplesYet": "Aucun échantillon pour l'instant",
+    "samples": "échantillons",
+    "stdDevInXY": "Écart-type en XY",
+    "waitingForSamples": "En attente d'échantillons…"
   },
   "mission": {
     "planner": {
@@ -539,6 +542,16 @@
         "notFound": "Le serveur connecté ne fournit pas de schéma pour le type de mission sélectionné"
       }
     }
+  },
+  "navigationButtonGroup": {
+    "fly": "Voler",
+    "resetZoom": "Réinitialiser le zoom",
+    "rotateCamera": "Orienter la caméra vers les drones",
+    "walk": "Marcher"
+  },
+  "navigationInstructions": {
+    "altitude": "Altitude",
+    "arrows": "Flèches"
   },
   "notifications": {
     "connectedToSkybrushServer": "Connexion au serveur Skybrush"
