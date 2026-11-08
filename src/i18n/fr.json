@@ -460,12 +460,22 @@
     "hold": "Maintenir",
     "holdAll": "Maintenir tout",
     "land": "Atterrir",
-    "landAll": "Atterrir tout"
+    "landAll": "Atterrir tout",
+    "selectionOnly": "Sélection uniquement",
+    "shutdown": "Éteindre",
+    "shutdownAll": "Éteindre tout"
   },
   "lightControl": {
+    "connectToAServer": "Connectez-vous à un serveur pour contrôler les lumières",
     "fromGCS": "Lumières contrôlées par GCS",
     "notConnected": "Pas de connexion au serveur",
-    "notFromGCS": "Lumières non contrôlées par GCS"
+    "notFromGCS": "Lumières non contrôlées par GCS",
+    "restoreDefault": "Cliquez pour restaurer le programme de lumières par défaut",
+    "takeControl": "Cliquez pour prendre le contrôle"
+  },
+  "lightControlGrid": {
+    "allOff": "Tout éteindre",
+    "allOn": "Tout allumer"
   },
   "map": {
     "resetRotation": "Réinitialiser la rotation"
@@ -481,6 +491,7 @@
     "useCachedMapTiles": "Utiliser les cartes en cache du serveur"
   },
   "mapContextMenu": {
+    "clearExclusionZone": "Effacer la zone d'exclusion",
     "clearGeofence": "Vider la Barrière géographique",
     "details": "Détails…",
     "flyHere": "Voler ici",
@@ -490,24 +501,35 @@
     "setShowOriginHere": "Configure l'origine ici",
     "subtractPolygon": "Soustraire {{subtrahend}} de {{minuend}}",
     "unnamedPolygon": "Polygone sans nom",
+    "useAsExclusionZone": "Utiliser comme zone d'exclusion",
     "useAsGeofence": "Utiliser la barrière géographique"
   },
   "mappingButtonGroup": {
     "editMapping": "Editer la carte",
     "hideEmptyMissionSlots": "Cache les créneaux de mission vides",
-    "showEmptyMissionSlots": "Montre les créneaux de mission vide"
+    "moreMappingTools": "Plus d'outils de cartographie",
+    "showEmptyMissionSlots": "Montre les créneaux de mission vide",
+    "swapDrones": "Échanger les drones…"
   },
   "mappingEditorToolbar": {
     "assignSpares": "Assigne les appareils de réserve",
+    "calculatingMapping": "Calcul de la cartographie…",
     "clearMissing": "Vide les manquants",
     "clickToEdit": "Cliquer pour éditer le créneau.",
     "dragNodes": "Glisser le point pour réorganiser la cartographie.",
     "exportMapping": "Exporte la carte…",
+    "generateRandomMapping": "Aléatoriser la cartographie",
     "importMapping": "Importe la carte…"
   },
   "mappingSlotEditorToolbar": {
     "reverseDirection": "Appuyer sur <kbd>Shift</kbd> pour inverser la direction.",
     "selectNextEmptySlot": "Sélectionne le prochain créneau vide"
+  },
+  "measurementList": {
+    "addDrone": "Ajoutez un drone à mesurer avec le bouton + dans la barre d'outils",
+    "copyToClipboard": "Copier dans le presse-papiers",
+    "duration": "Durée",
+    "noSamplesYet": "Aucun échantillon pour l'instant"
   },
   "mission": {
     "planner": {
