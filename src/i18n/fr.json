@@ -595,7 +595,9 @@
     "lowBatteryThresholdHelperText": "Type et valeur du seuil de batterie faible en dessous duquel une action de sécurité batterie faible est déclenchée.",
     "lowBatteryThresholdType": {
       "disabled": "Désactivé",
-      "noOverride": "Pas de substitution"
+      "noOverride": "Pas de substitution",
+      "percentageBased": "Basé sur le pourcentage",
+      "voltageBased": "Basé sur la tension"
     }
   },
   "savedLocation": {
