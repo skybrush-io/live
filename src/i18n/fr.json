@@ -655,7 +655,10 @@
     "disconnect": "Déconnecter",
     "enterManually": "Saisir manuellement",
     "hostname": "Nom d'hôte",
-    "localConnection": "Connexion locale"
+    "localConnection": "Connexion locale",
+    "manual": "Manuel",
+    "pleaseWait": "Veuillez patienter…",
+    "port": "Port"
   },
   "settings": {
     "display": {
