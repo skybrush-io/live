@@ -654,10 +654,27 @@
       "noAntennaPosition": "Position de l'antenne RTK inconnue",
       "notConnected": "Non connecté au serveur",
       "notEnoughSatellites": "Pas assez de satellites avec des corrections RTK valides",
-      "ok": "Les corrections RTK sont valides"
+      "ok": "Les corrections RTK sont valides",
+      "surveyInProgress": "Levé en cours"
+    },
+    "short": {
+      "connectedRecently": "En attente de données",
+      "error": "Erreur",
+      "inactive": "Aucune source",
+      "noAntennaPosition": "Pas de position d'antenne",
+      "notConnected": "Non connecté",
+      "notEnoughSatellites": "Pas assez de satellites",
+      "ok": "Valide",
+      "surveyInProgress": "Levé en cours"
     }
   },
   "rtkMessageType": {
+    "rtcm2/1": "Corrections GPS différentielles",
+    "rtcm2/14": "Temps GPS de la semaine",
+    "rtcm2/15": "Message de délai ionosphérique",
+    "rtcm2/16": "Message spécial GPS",
+    "rtcm2/18": "Phases porteuses RTK non corrigées",
+    "rtcm2/19": "Pseudoportées RTK non corrigées",
     "rtcm3/1033": "tenne",
     "rtcm3/1034": "Gradient GPS FKP",
     "rtcm3/1035": "KP",
