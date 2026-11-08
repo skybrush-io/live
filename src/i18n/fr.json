@@ -641,6 +641,22 @@
     "unknownState": "Statuts inconnu",
     "version": "Version du serveur"
   },
+  "serverLogMessageCode": {
+    "objects": {
+      "limit_reached": "Limite d'objets de la licence serveur atteinte, de nouveaux objets ne peuvent pas être enregistrés"
+    }
+  },
+  "serverSettingsDialog": {
+    "autodetected": "Autodétecté",
+    "autodiscoveryIsNotAvailable": "La découverte automatique n'est pas disponible dans cette version.",
+    "connect": "Connecter",
+    "connecting": "Connexion en cours…",
+    "connectingTo": "Connexion à {{hostName}}…",
+    "disconnect": "Déconnecter",
+    "enterManually": "Saisir manuellement",
+    "hostname": "Nom d'hôte",
+    "localConnection": "Connexion locale"
+  },
   "settings": {
     "display": {
       "coordinateFormat": "Format de coordonnées",
