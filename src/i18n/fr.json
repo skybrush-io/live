@@ -598,7 +598,9 @@
       "noOverride": "Pas de substitution",
       "percentageBased": "Basé sur le pourcentage",
       "voltageBased": "Basé sur la tension"
-    }
+    },
+    "lowBatteryThresholdTypeLabel": "Type de seuil batterie faible",
+    "lowBatteryThresholdValueLabel": "Valeur de seuil"
   },
   "savedLocation": {
     "addNew": "Ajoute un nouvel emplacement",
