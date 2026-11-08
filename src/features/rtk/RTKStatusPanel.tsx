@@ -67,7 +67,9 @@ const RTKStatusPanel = () => {
       <Box sx={{ p: 1 }}>
         <RTKCorrectionSourceSelector showPresetButtons={false} size='small' />
       </Box>
-      <Box sx={{ flex: 1, minHeight: 0, overflow: 'auto' }}>
+      {/* Horizontal padding matches the padding of tooltips. Mini list
+          dividers extend into it with negative margins. */}
+      <Box sx={{ flex: 1, minHeight: 0, overflow: 'auto', px: 1 }}>
         <RTKStatusMiniList />
       </Box>
       <SignalStrengthSection />
