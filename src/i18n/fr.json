@@ -551,7 +551,13 @@
   },
   "navigationInstructions": {
     "altitude": "Altitude",
-    "arrows": "Flèches"
+    "arrows": "Flèches",
+    "flyForwardBackward": "Voler en avant / en arrière",
+    "lookAround": "Regarder autour",
+    "moveSideways": "Se déplacer latéralement",
+    "noInstruction": "Aucune instruction pour ce mode de navigation",
+    "run": "Courir",
+    "walkAround": "Se déplacer"
   },
   "notifications": {
     "connectedToSkybrushServer": "Connexion au serveur Skybrush"
