@@ -182,8 +182,11 @@
     "description": "Précalculer les plans RTH collectifs à plusieurs horodatages pendant le spectacle. En cas d'urgence, le RTH collectif ramène les drones chez eux le plus rapidement possible sans collisions.",
     "existingInvalidRTHPlan": "Le spectacle n'a pas de plans RTH collectifs valides",
     "existingValidRTHPlan_many": "Le spectacle a des plans RTH collectifs valides à {{count}} horodatages",
-    "existingValidRTHPlan_one": "Le spectacle a des plans RTH collectifs valides à {{count}} horodatages",
-    "existingValidRTHPlan_other": "",
+    "existingValidRTHPlan_one": "Le spectacle a un plan RTH collectif valide à un horodatage",
+    "existingValidRTHPlan_other": "Le spectacle a des plans RTH collectifs valides à {{count}} horodatages",
+    "hints": {
+      "addCollectiveRTH": "Calculez les plans RTH en cliquant sur le bouton ci-dessus"
+    },
     "parameters": {
       "form": {
         "horizontalVelocity": {
@@ -421,7 +424,21 @@
     "keepCurrent": "lle",
     "report": "Signaler uniquement",
     "shutDown": "Éteindre",
-    "smartLand": "collisions"
+    "smartLand": "collisions",
+    "smartReturn": "Retour à la home avec évitement des collisions",
+    "stop": "S’arrêter et planer",
+    "unknown": "Action inconnue : {{action}}"
+  },
+  "gpsFixType": {
+    "0": "GPS non connecté",
+    "1": "Pas de position GPS obtenue",
+    "2": "Position GPS 2D",
+    "3": "Position GPS 3D",
+    "4": "Position GPS 3D avec DGPS/SBAS",
+    "5": "RTK float",
+    "6": "RTK fixed",
+    "7": "Position statique",
+    "8": "Type de position GPS inconnu"
   },
   "header": {
     "distanceSummary": "Distance minimale et maximale du point de départ",
@@ -431,6 +448,11 @@
   "indoorEnvironmentEditor": {
     "coordinatesOfTheCorners": "Coordonnées de coins de la pièce",
     "roomVisibleIn3D": "Pièce visible dans la vue 3D"
+  },
+  "largeControlButtonGroup": {
+    "RTH": "RTH",
+    "RTHAll": "RTH tout",
+    "arm": "Armer"
   },
   "lightControl": {
     "fromGCS": "Lumières contrôlées par GCS",
@@ -664,12 +686,16 @@
     "secureConnection": "Connexion sécurisée",
     "serverSelectionRestricted": "La connexion à d'autres serveurs n'est pas prise en charge dans cette version.",
     "unsecured": "(non sécurisé)",
-    "unsecuredConnection": "Connexion non sécurisée"
+    "unsecuredConnection": "Connexion non sécurisée",
+    "useSecureConnection": "Utiliser une connexion sécurisée",
+    "useWebSocketHelperText": "Pour la compatibilité ascendante uniquement.",
+    "useWebSocketLabel": "Utiliser le protocole WebSocket au lieu de TCP"
   },
   "settings": {
     "display": {
       "coordinateFormat": "Format de coordonnées",
       "enableExperimentalFeatures": "Activer les options expérimentales (utilisateur avancés)",
+      "experimentalFeaturesWarning": "Les fonctionnalités expérimentales ne sont pas testées dans la même mesure que le reste du système. Utilisez-les à vos propres risques.",
       "flatEarthCoordinateSystem": "Système de coordination de la \"Terre plate\"",
       "hideInactiveSegmentsOnDarkLCD": "Augmentez le contraste durant le mode sombre pour les horloges",
       "language": "Langue",
@@ -679,8 +705,10 @@
       "operationModes": "Mode d'opération",
       "optimizeForSingleUAV": "Optimiser l'interface pour un usage d'un unique UAV",
       "optimizeUIForTouch": "Optimiser l'interface pour les écrans tactiles",
+      "orientationXAxis": "Orientation (axe X+)",
       "showMouseCoordinates": "Voir les coordonnées du pointeur de la souris",
-      "showScaleLine": "Voir la ligne d'échelle"
+      "showScaleLine": "Voir la ligne d'échelle",
+      "uiScale": "Échelle de l'interface"
     },
     "tabs": {
       "apiKeys": "Clefs pour les API",
@@ -711,6 +739,7 @@
       "showTrajectoriesOfSelection": "Voir les trajectoires des UAV sélectionnés"
     },
     "uavs": {
+      "altitudeWarningThreshold": "Seuil d'alerte d'altitude avant décollage",
       "batteryDisplayStyle": "Style d'affichage des batteries",
       "cellCount": "Nombre de cellules",
       "criticalTreshold": "Seuil critique",
@@ -721,8 +750,13 @@
       "fullCharge": "Charge pleine",
       "gone": "Marquer les drones comme disparus après",
       "lowTreshold": "Seuil bas",
+      "maxUploadConcurrency": "Nombre maximal de téléchargements simultanés",
+      "minIndoorTakeoffSpacing": "Espacement minimal de décollage (intérieur)",
+      "minOutdoorTakeoffSpacing": "Espacement minimal de décollage (extérieur)",
       "missionSetup": "Paramètres de mission",
       "missionSetupDescription": "Utilisé avant les missions multi-drones pour vérifier que chaque drone est à sa position de décollage prescrite et qu'il est orienté dans la bonne direction.",
+      "operationSettings": "Opérations",
+      "uavOperationConfirmations": "Confirmations d'opérations UAV",
       "warn": "Avertir de la présence de drones non vus depuis au moins"
     }
   },
@@ -730,10 +764,22 @@
     "authorizationReq": "Autorisation requise avant le décollage",
     "authorizeTheStart": "Autorisé le début du SHOW",
     "authorized": "SHOW autorisé à débuter",
+    "changedSinceLoaded": "Afficher les modifications depuis le chargement",
     "chooseStartTime": "Choisir le temps du début",
     "chooseStartTimeNotSet": "Pas encore défini",
     "clear": "Effacer le SHOW chargé",
+    "clearStartTime": "Effacer l'heure de début",
     "clock": "Voir l'horloge :",
+    "collectiveRTH": {
+      "confirmation": {
+        "message": "Êtes-vous sûr de vouloir déclencher l'opération RTH collective ?",
+        "title": "Confirmation requise"
+      },
+      "notification": {
+        "error": "Échec de la commande RTH collective",
+        "success": "Commande RTH collective envoyée avec succès"
+      }
+    },
     "dronePlacementApproved": "Emplacements des drones approuvés",
     "dronePlacementCheck": "Contrôle de l'emplacement des drones…",
     "dronePlacementError": "Erreur dans le placement des drones",
@@ -752,17 +798,72 @@
     },
     "placementAccuracy": "Précision de placement ≤ {{distance}}",
     "reload": "Recharger le SHOW",
+    "resetPreflightChecklist": "Réinitialiser la checklist",
+    "resume": {
+      "confirmation": {
+        "message": "Êtes-vous sûr de vouloir reprendre le spectacle ?",
+        "title": "Reprendre le spectacle"
+      },
+      "notification": {
+        "error": "Échec de la commande de reprise du spectacle",
+        "success": "Commande de reprise du spectacle envoyée avec succès"
+      }
+    },
     "revokeAuthorization": "Cliquer ici pour supprimer l'autorisation",
     "selectFile": "Charger ou déposer ici un fichier SHOW",
     "setupEnvironment": "Configurer l'environnement",
     "setupGeofence": "Configurer la barrière de sécurité",
-    "setupTakeoffArea": "Configurer la zone de décollage",
+    "setupTakeoffArea": "Assigner les drones au spectacle",
+    "showConfigurator": {
+      "button": "Planifier le RTH collectif",
+      "description": "Créer des plans de retour à la maison collectifs",
+      "interactionHints": {
+        "action": {
+          "boxSelect": "Sélection par rectangle",
+          "boxUnselect": "Désélection par rectangle",
+          "moveSelection": "Déplacer la sélection",
+          "rotateSelection": "Faire pivoter la sélection",
+          "toggleSelect": "Basculer la sélection"
+        },
+        "category": {
+          "manipulation": "Manipulation",
+          "navigation": "Navigation",
+          "selection": "Sélection"
+        }
+      },
+      "noShowData": "Données de segment de spectacle manquantes",
+      "prerequisites": {
+        "extension": "L'extension studio doit être activée sur le serveur",
+        "loaded": "Un fichier de spectacle doit être chargé",
+        "origin": "Une origine de spectacle doit être incluse ou définie manuellement",
+        "segments": "Le spectacle doit être annoté avec des marqueurs de segment",
+        "server": "La connexion au serveur doit être établie"
+      },
+      "tooltip": {
+        "adaptShow": "Adapter le spectacle au lieu",
+        "showSegmentsRequired": "Le spectacle doit être annoté avec des marqueurs de segment"
+      }
+    },
+    "showConfiguratorLegacy": {
+      "button": "Adapter le spectacle au lieu",
+      "description": "Ajuster la grille de décollage et la mise en page du spectacle si nécessaire"
+    },
     "startMethod": {
       "AUTO": "Le SHOW démarre automatiquement",
       "RC": "Utiliser le switch sur la télécommande pour débuter"
     },
     "startTimeNotSet": "Temps de début non configuré",
     "startsAt": "Début à {{time}}",
+    "suspend": {
+      "confirmation": {
+        "message": "Êtes-vous sûr de vouloir suspendre le spectacle ?",
+        "title": "Suspendre le spectacle"
+      },
+      "notification": {
+        "error": "Échec de la commande de suspension du spectacle",
+        "success": "Commande de suspension du spectacle envoyée avec succès"
+      }
+    },
     "takeOffMore": "{{quantity}} drones vont décoller automatiquement",
     "takeOffNoPosition": "Pas encore de position pour au moins un drone",
     "takeOffOne": "Un drone va décoller automatiquement",
@@ -772,6 +873,178 @@
     "uploadShowData": "Chargement des donnée du SHOW",
     "uploadShowDataLoading": "Merci de patienter, Chargement…",
     "uploadShowDataStart": "Cliquer ici pour débuter un processus de chargement"
+  },
+  "showConfiguratorDialog": {
+    "action": {
+      "adapt": "Adapter",
+      "adjustHomePositionsToDronePositions": "Ajuster le décollage aux drones"
+    },
+    "adaptParameters": {
+      "form": {
+        "altitude": {
+          "help": "du mouvement vertical au décollage et à l'atterrissage",
+          "label": "Altitude"
+        },
+        "altitudeOffset": {
+          "help": "du spectacle net",
+          "label": "Décalage d'altitude"
+        },
+        "horizontalVelocity": {
+          "help": "pendant les phases de décollage et de RTH",
+          "label": "Vitesse horizontale"
+        },
+        "minDistance": {
+          "help": "entre drones pendant le décollage et le RTH",
+          "label": "Distance minimale"
+        },
+        "returnToHomeMethod": {
+          "label": "Méthode RTH",
+          "type": {
+            "plain": "Simple",
+            "smart": "Intelligent"
+          }
+        },
+        "takeoffDuration": {
+          "help": "assurant le début exact de la phase de spectacle (si non nulle)",
+          "label": "Durée de décollage"
+        },
+        "takeoffMethod": {
+          "label": "Méthode de décollage",
+          "type": {
+            "layered": "En couches",
+            "organic": "Organique"
+          }
+        },
+        "verticalVelocity": {
+          "help": "pendant les phases de décollage et de RTH",
+          "label": "Vitesse verticale"
+        }
+      },
+      "panel": {
+        "lights": "Lumières",
+        "safety": "Sécurité",
+        "trajectories": "Trajectoires"
+      }
+    },
+    "adaptReview": {
+      "button": {
+        "reviewInViewer": "Vérifier dans Skybrush Viewer"
+      },
+      "error": {
+        "invalidState": "État invalide, veuillez réessayer."
+      },
+      "form": {
+        "rth": {
+          "lengthChange": "Changement de longueur RTH :",
+          "lengthChangeValue": "{{value}} secondes"
+        },
+        "takeoff": {
+          "lengthChange": "Changement de longueur de décollage :",
+          "lengthChangeValue": "{{value}} secondes"
+        }
+      },
+      "showAdaptInProgress": "Adaptation du spectacle, veuillez patienter. Cela peut prendre un certain temps."
+    },
+    "help": {
+      "config": "Cet outil vous permet d\\u0027ajuster ind\\u00e9pendamment les positions de d\\u00e9collage et la disposition du spectacle net.\\nS\\u00e9lectionnez les positions de d\\u00e9collage (triangles jaunes), le spectacle net (coque convexe violette) ou les deux (coque convexe jaune) et d\\u00e9placez-les ou faites-les pivoter selon vos besoins.\\nUne fois termin\\u00e9, configurez les param\\u00e8tres de transformation sur le c\\u00f4t\\u00e9 droit et appuyez sur ADAPT pour recalculer les trajectoires, en conservant le contenu original du spectacle net, mais align\\u00e9 sur votre nouvel arrangement.\\nLa nouvelle disposition du spectacle doit \\u00eatre valid\\u00e9e minutieusement et enregistr\\u00e9e dans un fichier .skyc pr\\u00eat pour la production \\u00e0 la sortie.",
+      "review": "Vérifiez les modifications avant de les appliquer au spectacle."
+    },
+    "lights": {
+      "default": {
+        "brightness": "Luminosité"
+      },
+      "selectLabel": "Effet lumineux",
+      "solid": {
+        "color": "Couleur"
+      },
+      "sparks": {
+        "offDuration": "Durée d'extinction"
+      },
+      "type": {
+        "default": "Défaut",
+        "off": "Éteint",
+        "original": "Original",
+        "solid": "Continu",
+        "sparks": "Étincelles"
+      },
+      "unsupportedVersion": "La configuration des lumières nécessite la version {{minVersion}} ou supérieure du serveur."
+    },
+    "settings": {
+      "dronesVisible": "Afficher les drones"
+    },
+    "title": "Adapter le spectacle au lieu"
+  },
+  "showControlSchedule": {
+    "empty": {
+      "description": "Aucune opération n'est planifiée.",
+      "title": "Programmation vide"
+    },
+    "normalShow": {
+      "description": "Le spectacle sera exécuté selon la programmation planifiée.",
+      "title": "Aucune modification de la programmation du spectacle"
+    },
+    "progress": {
+      "active": "{{elapsedSeconds}}s/{{durationSeconds}}s",
+      "completed": "Terminé",
+      "waiting": "Début dans {{countdownSeconds}}s…"
+    },
+    "segment": {
+      "preparation": {
+        "completed": {
+          "description": "Les drones ont été informés de l'opération demandée et l'exécutent maintenant.",
+          "title": "Préparation terminée"
+        },
+        "running": {
+          "description": "Les drones sont en cours de notification concernant l'opération demandée et se préparent à l'exécuter.",
+          "title": "Préparation"
+        }
+      },
+      "rth": {
+        "completed": {
+          "description": "Les drones sont retournés à leurs positions d'origine.",
+          "title": "Retour à la base"
+        },
+        "running": {
+          "description": "Les drones retournent à leurs positions d'origine de manière coordonnée, sans collisions.",
+          "title": "Retour à la base"
+        }
+      },
+      "slowdown": {
+        "completed": {
+          "description": "Les drones ont ralenti jusqu'à l'arrêt complet.",
+          "title": "Spectacle suspendu"
+        },
+        "running": {
+          "description": "Les drones ralentissent. Ils restent sur leurs trajectoires d'origine pour éviter les collisions.",
+          "title": "Ralentissement"
+        }
+      },
+      "speedup": {
+        "completed": {
+          "description": "Les drones ont repris le vol sur leurs trajectoires d'origine à vitesse normale.",
+          "title": "Spectacle repris"
+        },
+        "running": {
+          "description": "Les drones accélèrent. Ils continuent leurs trajectoires d'origine pour éviter les collisions.",
+          "title": "Accélération"
+        }
+      }
+    },
+    "stage": {
+      "completed": {
+        "description": "L'opération est terminée.",
+        "title": "Terminé"
+      },
+      "progress": {
+        "description": "L'opération est en cours.",
+        "title": "En cours ({{remainingSeconds}}s)"
+      },
+      "waiting": {
+        "description": "L'opération va commencer bientôt.",
+        "title": "En attente de démarrage ({{remainingSeconds}}s)"
+      }
+    },
+    "title": "Programmation"
   },
   "sidebar": {
     "missionType": "Type de mission:({{missionType}})"
@@ -788,6 +1061,7 @@
       "flightMode": "Mode de vol",
       "gpsFix": "GPS Fixe",
       "heading": "Cap",
+      "rssi": "Force du signal (RSSI)",
       "status": "Statuts"
     },
     "shortLabel": {
@@ -799,12 +1073,88 @@
       "flightMode": "Mode",
       "gpsFix": "GPS Fixe",
       "heading": "Cap",
+      "rssi": "RSSI",
       "status": "Statuts"
     },
     "sortBy": "Trier par"
   },
+  "startTimeDialog": {
+    "SMPTETimecode": "Timecode SMPTE",
+    "additionalSettings": "Paramètres supplémentaires",
+    "authorizeWhenSettingStartTime": "Autoriser le démarrage du spectacle lors du réglage de l'heure de début",
+    "errors": {
+      "invalidDate": "Date invalide",
+      "invalidTime": "Heure invalide",
+      "pastDate": "La date ne peut pas être dans le passé",
+      "pastTime": "L'heure ne peut pas être dans le passé"
+    },
+    "localTime": "Heure locale",
+    "localTimeRelative": "Délai fixe",
+    "reference": "Référence",
+    "resetForm": "Réinitialiser le formulaire",
+    "setNewStartTime": "Définir une nouvelle heure de début",
+    "setTheStartTime": "Définissez ci-dessous l'heure de début du spectacle",
+    "startDate": "Date de début",
+    "startShowAuto": "Démarrer le spectacle automatiquement",
+    "startShowWithRC": "Démarrer le spectacle uniquement avec la télécommande",
+    "startSignal": "Signal de démarrage",
+    "startTime": "Heure de début",
+    "startTimeHms": "Heure de début (heures:minutes:secondes)",
+    "suggestions": "Suggestions :"
+  },
+  "startTimeDisplay": {
+    "noStartTimeIsSet": "Aucune heure de début n'est définie pour le moment.",
+    "startTimeIsSetTo": "L'heure de début est définie sur <strong>{{formattedStartTime}}</strong>"
+  },
   "startUploadButton": {
-    "startSelected": "Début choisi"
+    "startSelected": "Début choisi",
+    "tooltip": "Sélectionnez des cibles individuelles en cliquant sur leurs ID pour préparer une opération partielle"
+  },
+  "surveyStatusIndicator": {
+    "accuracy": "Précision : {{accuracy}}",
+    "accuracyAbove": "Précision {{accuracy}}",
+    "noSurveyInformation": "Aucune information d'étude",
+    "notStartedYet": "Étude pas encore commencée",
+    "surveying": "En cours d'étude",
+    "surveyingWithAccuracy": "En cours d'étude, précision : {{accuracy}}",
+    "surveyingWithAccuracyAbove": "En cours d'étude, précision {{accuracy}}"
+  },
+  "swapDronesDialog": {
+    "action": {
+      "add": "Ajouter",
+      "swap": "Échanger",
+      "swapQueue": "File d'attente d'échange"
+    },
+    "failure": "L'échange ne peut pas être effectué dans la correspondance actuelle ; rien n'a été modifié.",
+    "fieldLabel": "ID ou sID",
+    "openUploadAfterSwap": "Ouvrir la boîte de dialogue de téléchargement après l'échange",
+    "preview": {
+      "addedWithShowId": "Le drone <drone/> sera <bold>ajouté</bold> à la correspondance avec l'ID de spectacle <slot/>",
+      "blocked": "L'échange n'est pas disponible pendant le téléchargement d'un spectacle, le calcul de la correspondance ou lorsque le spectacle est autorisé à démarrer.",
+      "bothEmpty": "Les deux ID de spectacle sont vides — rien à échanger.",
+      "bothUnmapped": "Les deux drones ne sont pas mappés — rien à échanger.",
+      "heading": "Ce qui va se passer",
+      "movedToShowId": "Le drone <drone/> sera <bold>déplacé</bold> vers l'ID de spectacle <slot/>",
+      "notOnline": "Le drone <drone/> n'est pas encore <bold>en ligne</bold>",
+      "notOnlineMultiple": "Les drones <drone1/> et <drone2/> ne sont pas encore <bold>en ligne</bold>",
+      "removedFromMapping": "Le drone <drone/> sera <bold>supprimé</bold> de la correspondance",
+      "sameDrone": "Les deux entrées correspondent au même drone.",
+      "sameSlot": "Les deux entrées correspondent au même ID de spectacle.",
+      "selectTwoDrones": "Sélectionnez deux drones à échanger.",
+      "slotEmptied": "L'ID de spectacle <slot/> deviendra <bold>vide</bold>",
+      "uploadToDrone": "Le spectacle devra être <bold>téléchargé</bold> vers le drone <drone/>",
+      "uploadToDrones": "Le spectacle devra être <bold>téléchargé</bold> vers les drones <drone1/> et <drone2/>"
+    },
+    "queue": {
+      "removeAll": "Supprimer tous les échanges en file d'attente",
+      "stalePairs": "La paire en file d'attente surlignée ne peut plus être échangée. Supprimez-la pour continuer.",
+      "title": "Échanges en file d'attente"
+    },
+    "success": "Échange de drones terminé avec succès.",
+    "successUploadNeeded_many": "Échange de drones terminé. Le spectacle doit être téléchargé vers les drones {{uavIds}}.",
+    "successUploadNeeded_one": "Échange de drones terminé. Le spectacle doit être téléchargé vers le drone {{uavIds}}.",
+    "successUploadNeeded_other": "Échange de drones terminé. Le spectacle doit être téléchargé vers les drones {{uavIds}}.",
+    "title": "Échanger des drones"
   },
   "takeoffAreaSetupDialog": {
     "allDroneOnline": "Tous les drones de la mission sont connectés.",
@@ -825,35 +1175,214 @@
     "compassDirection": "Direction du compas",
     "headingOffset": "Décalage de Cap",
     "setToAverageHeading": "Régler le cap moyen des drones actifs",
+    "setToAvergaeHeading": "Régler le cap moyen des drones actifs",
     "specifiedByAbsoluteCompassDirection": "Spécifiée par la direction absolue du compas",
     "specifiedRelativeToShowOrientation": "Spécifié par rapport à l'orientation du spectacle",
     "unspecified": "Non spécifié"
   },
+  "timeline": {
+    "chart": {
+      "tooltip": {
+        "labeledValue": "{{label}} : {{value}}{{unit}}"
+      }
+    },
+    "dataset": {
+      "altitude": "Altitude",
+      "distanceFromHome": "Distance par rapport au home",
+      "maxAltitude": "Altitude maximale",
+      "maxDistance": "Distance maximale",
+      "minAltitude": "Altitude minimale",
+      "minDistance": "Distance minimale",
+      "rthDuration": "Durée collective du RTH",
+      "rthDurationLine": "Durée du RTH"
+    },
+    "markerLane": {
+      "cue": "Repères",
+      "rthPlan": "Plans RTH",
+      "segment": "Segments",
+      "unknown": "Piste inconnue ({{lane}})"
+    },
+    "rthPlanItem": "Plan RTH {{index}}",
+    "showSegment": {
+      "endOf": "Fin de {{description}}",
+      "landing": "atterrissage",
+      "show": "spectacle net",
+      "startOf": "Début de {{description}}",
+      "takeoff": "décollage",
+      "unknown": "segment de spectacle {{type}}"
+    }
+  },
   "toolbox": {
     "averagingInProgress": "{{number}} en chargement",
     "coordinateAveraging": "Calcul de la moyenne des coordonnées",
+    "firmwareCheck": "Vérification de la version du firmware",
+    "firmwareUpdate": "Mise à jour du firmware",
     "licenseInfo": "Information de licence",
     "offlineMaps": "Carte hors ligne",
+    "paramCheck": "Vérification des paramètres",
     "paramUpload": "Chargement des paramètres",
     "tooltip": "Boîte à outils"
   },
+  "uavErrorCode": {
+    "0": "Aucune erreur",
+    "1": "Le drone est au sol, moteurs éteints",
+    "10": "Le contrôle de vol est suspendu",
+    "11": "Le contrôle de vol est en mode lent",
+    "128": "Délai de communication Autopilot dépassé",
+    "129": "Délai d'acquittement Autopilot dépassé",
+    "130": "Erreur de protocole de communication Autopilot",
+    "131": "Échec de la vérification de préarmement",
+    "132": "Signal RC perdu",
+    "133": "Signal GPS perdu ou erreur GPS",
+    "134": "Batterie faible",
+    "135": "Cible introuvable",
+    "136": "La cible est trop éloignée",
+    "137": "Erreur de configuration",
+    "138": "RC non calibré",
+    "139": "La vitesse du vent est trop élevée",
+    "140": "Erreur de charge utile",
+    "141": "Erreur de capteur de proximité",
+    "142": "Erreur ESC",
+    "188": "Erreur simulée",
+    "189": "Erreur dans l'algorithme de contrôle",
+    "190": "Défaillance de capteur non spécifiée",
+    "191": "Erreur non spécifiée",
+    "192": "Matériel ou logiciel incompatible",
+    "193": "Erreur de magnétomètre",
+    "194": "Erreur de gyroscope",
+    "195": "Erreur d'accéléromètre",
+    "196": "Erreur de capteur de pression ou d'altimètre",
+    "197": "Erreur GPS ou signal GPS perdu",
+    "198": "Dysfonctionnement du moteur",
+    "199": "Batterie critique",
+    "2": "Journalisation désactivée",
+    "200": "Pas de position home GPS",
+    "201": "Violation de géofence",
+    "202": "Erreur d'horloge interne",
+    "203": "Erreur d'horloge externe",
+    "204": "Composant matériel requis manquant",
+    "205": "Échec de l'initialisation de l'Autopilot",
+    "206": "Échec de communication avec l'Autopilot",
+    "207": "Drone s'est écrasé",
+    "253": "Erreur critique simulée",
+    "254": "Défaillance critique de capteur non spécifiée",
+    "255": "Erreur critique non spécifiée",
+    "3": "Vérification de préarmement en cours",
+    "4": "Initialisation de l'Autopilot",
+    "5": "Le drone est en train de décoller",
+    "6": "Le drone est en train d'atterrir",
+    "63": "Le drone est en train de retourner à la home",
+    "64": "Espace disque faible",
+    "65": "RC perdu",
+    "66": "Batterie faible",
+    "67": "Erreur de synchronisation horaire",
+    "68": "Le drone n'est pas à sa position de décollage désignée",
+    "69": "Erreur de configuration de mission ou mission hors géofence",
+    "7": "Le drone a atterri avec succès",
+    "70": "Canal radio hors ligne",
+    "71": "Le drone est hors géofence au sol",
+    "72": "La vitesse du vent est élevée",
+    "73": "Drone pas encore armé",
+    "74": "Le drone nécessite un redémarrage",
+    "75": "La dérive par rapport à la position souhaitée est importante",
+    "8": "Les moteurs tournent au sol",
+    "9": "Le drone est en mode veille"
+  },
+  "uavOperationConfirmationStyle": {
+    "always": "Toujours demander confirmation",
+    "never": "Ne jamais demander confirmation",
+    "onlyMultiple": "Confirmer lorsque l'opération peut affecter plusieurs UAV"
+  },
+  "unit": {
+    "degree": {
+      "long_many": "degré",
+      "long_one": "degré",
+      "long_other": "degrés",
+      "short": "°"
+    },
+    "hour": {
+      "long_many": "heure",
+      "long_one": "heure",
+      "long_other": "heures",
+      "short": "h"
+    },
+    "meter": {
+      "long_many": "mètre",
+      "long_one": "mètre",
+      "long_other": "mètres",
+      "short": "m"
+    },
+    "meterPerSecond": {
+      "long_many": "mètre/seconde",
+      "long_one": "mètre/seconde",
+      "long_other": "mètres/seconde",
+      "short": "m/s"
+    },
+    "minute": {
+      "long_many": "minute",
+      "long_one": "minute",
+      "long_other": "minutes",
+      "short": "min"
+    },
+    "second": {
+      "long_many": "seconde",
+      "long_one": "seconde",
+      "long_other": "secondes",
+      "short": "s"
+    },
+    "volt": {
+      "long_many": "volt",
+      "long_one": "volt",
+      "long_other": "volts",
+      "short": "V"
+    }
+  },
+  "uploadDialog": {
+    "anotherJobTypeRunningHint": {
+      "cancelButton": "Annuler la tâche",
+      "header": "Une autre tâche est en cours",
+      "text": "Attendez que l'autre tâche soit terminée ou annulez-la pour commencer une nouvelle tâche",
+      "viewProgressButton": "Voir la progression"
+    },
+    "restrictToGlobalSelection": "Afficher uniquement la sélection globale"
+  },
   "uploadPanel": {
-    "cancelUpload": "Annuler le chargement",
-    "flashLightsWhereFailed": "Faire clignoter les UAVs qui ont une erreur de chargement",
+    "cancelUpload": "Annuler l'envoi",
+    "clearHistory": "Effacer l'historique",
+    "fix": "Corriger",
+    "fixAll": "Tout corriger",
+    "fixAllInconsistencies_many": "Définir les valeurs divergentes de {{count}} UAV sur les valeurs majoritaires",
+    "fixAllInconsistencies_one": "Définir les valeurs divergentes d'1 UAV sur les valeurs majoritaires",
+    "fixAllInconsistencies_other": "Définir les valeurs divergentes de {{count}} UAV sur les valeurs majoritaires",
+    "fixDeviatingUAVs_many": "Définir {{count}} UAV sur la valeur majoritaire : {{value}}",
+    "fixDeviatingUAVs_one": "Définir 1 UAV sur la valeur majoritaire : {{value}}",
+    "fixDeviatingUAVs_other": "Définir {{count}} UAV sur la valeur majoritaire : {{value}}",
+    "flashLightsWhereFailed": "Faire clignoter les UAV dont la tâche a échoué",
+    "hasHiddenTargets": "Certains des UAV en attente peuvent être filtrés.",
+    "noClearMajority": "Impossible de corriger : il n'y a pas de valeur majoritaire claire",
+    "noJobResultAvailable": "Aucun résultat disponible pour l'instant",
+    "resultsTab": "Résultats",
     "retryFailedAttempts": "Réessayer automatiquement les tentatives qui ont échoué",
-    "uploadAttemptFailed": "Échec de la tentative de téléchargement.",
-    "uploadCancelled": "Chargement annulé par l'utilisateur.",
-    "uploadFinishedSuccessfully": "Chargement terminé avec succès.",
-    "uploadInProgress": "Chargement en cours…",
-    "uploadNotFinishedYet": "Chargement pas encore terminé."
+    "statusTab": "État",
+    "uploadAttemptFailed": "Échec de l'opération",
+    "uploadCancelled": "Tâche annulée par l'utilisateur",
+    "uploadFinishedSuccessfully": "Tâche terminée avec succès",
+    "uploadInProgress": "Veuillez patienter…",
+    "uploadInProgressWithEstimate": "Temps restant estimé : {{time}}",
+    "uploadNotFinishedYet": "Tâche pas encore terminée"
   },
   "uploadStatusLegend": {
     "clearUploadQueue": "Vider la file d'attente de chargement",
-    "restartSuccessfulItems": "Redémarrage des objets effectué avec succès",
+    "enqueueItemsWithNoUploadStatus": "Ajouter les éléments non traités à la file",
+    "restartSuccessfulItems": "Ajouter les éléments réussis à la file",
     "retryFailedItems": "Réessayer les éléments ayant échoué"
+  },
+  "uploadStatusLights": {
+    "noAvailableUAVs": "Aucun UAV disponible."
   },
   "view": {
     "beacon-list": "Balises",
+    "collective-rth": "RTH collectif",
     "dock-list": "Docks",
     "feature-list": "Options",
     "field-notes": "Notes de terrain",
@@ -863,11 +1392,15 @@
     "log-panel": "Journal d'évènements",
     "map": "Carte",
     "mission-editor": "Editeur de mission",
+    "rtk-status-mini-list": "État RTK",
     "saved-location-list": "Emplacments",
+    "selection-group-mini-list": "Groupes de sélection",
     "show-control": "SHOW Control",
     "three-d-view": "Vue 3D",
+    "timeline": "Chronologie",
     "uav-details": "Détails de l'UAV",
-    "uav-list": "UAVs"
+    "uav-list": "UAVs",
+    "uav-status-mini-list": "Résumé de l'état des UAV"
   },
   "weatherMiniList": {
     "compassDeclination": "Déclinaison du compas",
