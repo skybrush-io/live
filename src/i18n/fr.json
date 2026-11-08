@@ -658,7 +658,13 @@
     "localConnection": "Connexion locale",
     "manual": "Manuel",
     "pleaseWait": "Veuillez patienter…",
-    "port": "Port"
+    "port": "Port",
+    "preconfiguredServer": "Serveur préconfiguré",
+    "scanningNetwork": "Recherche de serveurs sur le réseau…",
+    "secureConnection": "Connexion sécurisée",
+    "serverSelectionRestricted": "La connexion à d'autres serveurs n'est pas prise en charge dans cette version.",
+    "unsecured": "(non sécurisé)",
+    "unsecuredConnection": "Connexion non sécurisée"
   },
   "settings": {
     "display": {
