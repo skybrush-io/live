@@ -12,6 +12,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Header widgets pinned to the workbench can now be brought to the front
   when clicking on the pin icon again.
 
+- The dropdown menus of the right side of the UAV panel toolbar have now
+  been unified so the same menu appears both during and outside the
+  "Edit mapping" mode.
+
+- When the mapping is being edited, a floating orange pill indicates this
+  to the operator.
+
 ## [2.16.0] - 2026-11-07
 
 ### Added
