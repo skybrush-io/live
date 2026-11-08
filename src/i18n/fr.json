@@ -452,7 +452,13 @@
   "largeControlButtonGroup": {
     "RTH": "RTH",
     "RTHAll": "RTH tout",
-    "arm": "Armer"
+    "arm": "Armer",
+    "armAll": "Armer tout",
+    "broadcast": "Diffuser",
+    "disarm": "Désarmer",
+    "disarmAll": "Désarmer tout",
+    "hold": "Maintenir",
+    "holdAll": "Maintenir tout"
   },
   "lightControl": {
     "fromGCS": "Lumières contrôlées par GCS",
