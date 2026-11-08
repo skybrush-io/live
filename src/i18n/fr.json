@@ -537,6 +537,12 @@
     "rtcm3/1084": ", porteuse, CNR)",
     "rtcm3/1085": "rteuse, Doppler, CNR)"
   },
+  "rtkStatus": {
+    "long": {
+      "connectedRecently": "Détermination de l'état de correction RTK…",
+      "error": "Erreur non spécifiée dans les corrections RTK"
+    }
+  },
   "safetyDialog": {
     "geofenceTab": {
       "clear": "Effacer la barrière de sécurité",
