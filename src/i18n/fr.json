@@ -624,6 +624,20 @@
       "warning": "Nécessite une attention"
     }
   },
+  "preflightTab": {
+    "enterCheckItems": "Saisissez vos éléments de contrôle préliminaire manuel préférés, un par ligne.",
+    "headingsHint": "Les lignes se terminant par deux points (:) deviennent des titres.",
+    "manualPreflightCheckItems": "Éléments de contrôle préliminaire manuel",
+    "preflightCheckItems": "Éléments de contrôle préliminaire"
+  },
+  "proControlButtonGroup": {
+    "collectiveRTH": "RTH collectif",
+    "collectiveRTHPanelNotFound": "Le panneau RTH collectif n'a pas été trouvé. Veuillez essayer de l'ouvrir manuellement depuis la barre latérale.",
+    "prerequisites": {
+      "collectiveRTHNotTriggered": "Le RTH collectif n'a pas encore été déclenché",
+      "hasCollectiveRTHPlan": "Le spectacle contient un plan RTH collectif"
+    }
+  },
   "recalculateMappingButton": {
     "findOptimalMapping": "Trouver la cartographie optimale",
     "recalculateMapping": "Recalcule de la carte"
