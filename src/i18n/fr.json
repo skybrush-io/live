@@ -606,7 +606,22 @@
     "overall": {
       "error": "Erreur lors de l'exécution des contrôles préliminaires",
       "failure": "Échec des contrôles préliminaires",
-      "off": "Tous les contrôles préliminaires sont désactivés"
+      "off": "Tous les contrôles préliminaires sont désactivés",
+      "pass": "Contrôles préliminaires réussis",
+      "running": "Contrôles préliminaires en cours…",
+      "softFailure": "Certains contrôles préliminaires ont échoué temporairement",
+      "unknown": "Résultat de test préliminaire inconnu",
+      "warning": "Certains éléments du contrôle préliminaire nécessitent une attention"
+    },
+    "short": {
+      "error": "Erreur lors de l'exécution du test",
+      "failure": "Échec",
+      "off": "Désactivé",
+      "pass": "OK",
+      "running": "Vérification en cours…",
+      "softFailure": "Échec temporaire",
+      "unknown": "Résultat de test inconnu",
+      "warning": "Nécessite une attention"
     }
   },
   "recalculateMappingButton": {
