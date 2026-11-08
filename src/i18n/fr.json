@@ -540,7 +540,13 @@
   "rtkStatus": {
     "long": {
       "connectedRecently": "Détermination de l'état de correction RTK…",
-      "error": "Erreur non spécifiée dans les corrections RTK"
+      "error": "Erreur non spécifiée dans les corrections RTK",
+      "inactive": "Aucune source de correction RTK sélectionnée",
+      "noAntennaPosition": "Position de l'antenne RTK inconnue",
+      "notConnected": "Non connecté au serveur",
+      "notEnoughSatellites": "Pas assez de satellites avec des corrections RTK valides",
+      "ok": "Corrections RTK valides",
+      "surveyInProgress": "Mesure en cours"
     }
   },
   "safetyDialog": {
