@@ -458,7 +458,9 @@
     "disarm": "Désarmer",
     "disarmAll": "Désarmer tout",
     "hold": "Maintenir",
-    "holdAll": "Maintenir tout"
+    "holdAll": "Maintenir tout",
+    "land": "Atterrir",
+    "landAll": "Atterrir tout"
   },
   "lightControl": {
     "fromGCS": "Lumières contrôlées par GCS",
