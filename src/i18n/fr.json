@@ -223,9 +223,9 @@
         "message": "Altitude RTH minimale : {{minRTHAltitude}}"
       },
       "numPlans": {
-        "message_many": "",
-        "message_one": "{{count}} plans RTH calculés, en attente d'approbation",
-        "message_other": ""
+        "message_many": "{{count}} plans RTH calculés, en attente d'approbation",
+        "message_one": "{{count}} plan RTH calculé, en attente d'approbation",
+        "message_other": "{{count}} plans RTH calculés, en attente d'approbation"
       }
     },
     "title": "Planifier le RTH collectif"
@@ -720,7 +720,7 @@
     "rtcm3/1044": "SS",
     "rtcm3/1045": "LILEO F/NAV",
     "rtcm3/1046": "LILEO I/NAV",
-    "rtcm3/1071": "DGNSS)",
+    "rtcm3/1071": "GPS MSM1 (pseudoportée DGNSS)",
     "rtcm3/1072": "nge RTK)",
     "rtcm3/1073": "use)",
     "rtcm3/1074": ", CNR)",
