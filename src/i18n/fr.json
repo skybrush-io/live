@@ -635,12 +635,27 @@
     "collectiveRTHPanelNotFound": "Le panneau RTH collectif n'a pas été trouvé. Veuillez essayer de l'ouvrir manuellement depuis la barre latérale.",
     "prerequisites": {
       "collectiveRTHNotTriggered": "Le RTH collectif n'a pas encore été déclenché",
-      "hasCollectiveRTHPlan": "Le spectacle contient un plan RTH collectif"
-    }
+      "hasCollectiveRTHPlan": "Le spectacle contient un plan RTH collectif",
+      "proFeaturesEnabled": "Les fonctionnalités Pro sont activées sur le serveur",
+      "supportsSuspendResumeCRTH": "Le serveur prend en charge les opérations de suspension, de reprise et de RTH collectif"
+    },
+    "resume": "Reprendre",
+    "suspend": "Suspendre"
   },
   "recalculateMappingButton": {
     "findOptimalMapping": "Trouver la cartographie optimale",
     "recalculateMapping": "Recalcule de la carte"
+  },
+  "rtkCorrectionStatus": {
+    "long": {
+      "connectedRecently": "Détermination du statut de correction RTK…",
+      "error": "Erreur non spécifiée dans les corrections RTK",
+      "inactive": "Aucune source de correction RTK sélectionnée",
+      "noAntennaPosition": "Position de l'antenne RTK inconnue",
+      "notConnected": "Non connecté au serveur",
+      "notEnoughSatellites": "Pas assez de satellites avec des corrections RTK valides",
+      "ok": "Les corrections RTK sont valides"
+    }
   },
   "rtkMessageType": {
     "rtcm3/1033": "tenne",
