@@ -587,9 +587,28 @@
   },
   "parameterListSidebar": {
     "import": "Importer…",
-    "nextStep": "Étape suivante"
+    "nextStep": "Étape suivante",
+    "removeAllItems": "Supprimer tous les éléments du manifeste",
+    "title": "Manifeste"
+  },
+  "parameterUploadMainPanel": {
+    "parameterNamesValues": "Noms et valeurs des paramètres",
+    "parameterUploadHint": "Appuyez sur <kbd>⇧</kbd> + <kbd>Enter</kbd> pour ajouter le paramètre au manifeste. Cliquez sur un paramètre dans la barre latérale pour le supprimer du manifeste.",
+    "rebootAfterUpload": "Redémarrer après le téléchargement",
+    "restrictedToUAVs": "Les paramètres ne seront téléchargés que sur ces UAV : {{uavIds}}",
+    "specifyEntries": "Spécifiez les entrées sous la forme name=value, un paramètre par ligne."
+  },
+  "parameterUploadSetupDialog": {
+    "uploadParameters": "Téléverser les paramètres"
   },
   "preferences": "Préférences",
+  "preflightCheckResult": {
+    "overall": {
+      "error": "Erreur lors de l'exécution des contrôles préliminaires",
+      "failure": "Échec des contrôles préliminaires",
+      "off": "Tous les contrôles préliminaires sont désactivés"
+    }
+  },
   "recalculateMappingButton": {
     "findOptimalMapping": "Trouver la cartographie optimale",
     "recalculateMapping": "Recalcule de la carte"
