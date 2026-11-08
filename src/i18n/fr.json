@@ -625,7 +625,10 @@
     },
     "label": {
       "name": "Nom du groupe"
-    }
+    },
+    "newGroupNameTemplate": "Groupe {{id}}",
+    "selectedObjects": "Objets sélectionnés",
+    "updated": "Mis à jour"
   },
   "serverConnectionStatus": {
     "clockSkew": "Décalage d'horloge",
