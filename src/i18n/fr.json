@@ -562,6 +562,7 @@
     }
   },
   "safetyDialog": {
+    "geofence": "Géofence",
     "geofenceTab": {
       "clear": "Effacer la barrière de sécurité",
       "errors": {
@@ -571,16 +572,20 @@
       "fenceAction": "Action de la barrière de sécurité",
       "fenceActionHelperText": "La prise en charge de ces options dépend des drones eux-mêmes ; toutes les options ne sont pas prises en charge par tous les drones.",
       "fenceActionLabel": "Première action de la barrière de sécurité",
+      "generateAutomatically": "Générer automatiquement",
+      "geofencePolygon": "Polygone de géofence",
       "horizontal": "Horizontal",
       "maxAltitude": "Altitude maximum",
       "maxDistance": "Distance maximum",
       "maxVertexCount": "Nombre maximal de sommets",
       "proposedLimits": "Limite proposée pour la mission en cours",
       "safetyMargins": "Marges de sécurités",
+      "simplifyGeometry": "Simplifier la géométrie",
       "simplifyPolygon": "Polygone simplifié",
       "vertexCountReduction": "Réduction du nombre de sommets",
       "vertical": "Vertical"
     },
+    "settings": "Paramètres",
     "title": "Paramètres des barrières de sécurités"
   },
   "savedLocation": {
