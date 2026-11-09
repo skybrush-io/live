@@ -501,7 +501,9 @@
     "editMapping": "编辑映射",
     "emptySlotsShownWhileEditingMapping": "编辑映射时，空任务槽位会保持可见。",
     "hideEmptyMissionSlots": "隐藏空任务槽",
-    "showEmptyMissionSlots": "显示空的任务槽位"
+    "moreMappingTools": "更多地图工具",
+    "showEmptyMissionSlots": "显示空的任务槽位",
+    "swapDrones": "交换无人机…"
   },
   "mappingEditorToolbar": {
     "assignSpares": "分配备用无人机",
@@ -1352,6 +1354,16 @@
     "surveying": "测量中",
     "surveyingWithAccuracy": "测量中，精度：{{accuracy}}",
     "surveyingWithAccuracyAbove": "测量中，精度 {{accuracy}}"
+  },
+  "swapDronesDialog": {
+    "action": {
+      "add": "新增",
+      "swap": "交换",
+      "swapQueue": "交换队列项目"
+    },
+    "failure": "无法在当前映射中执行交换，未更改任何内容。",
+    "fieldLabel": "ID或sID",
+    "openUploadAfterSwap": "交换后打开上传对话框"
   },
   "takeoffAreaSetupDialog": {
     "allDroneOnline": "任务中的所有无人机都在线。",
