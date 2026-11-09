@@ -632,10 +632,13 @@
   "proControlButtonGroup": {
     "collectiveRTH": "Collective RTH",
     "collectiveRTHPanelNotFound": "The Collective RTH panel was not found. Please try to open it manually from the sidebar.",
+    "heal": "Heal",
     "prerequisites": {
       "collectiveRTHNotTriggered": "Collective RTH has not been triggered yet",
+      "hasAMSLReference": "The show has an AMSL altitude reference",
       "hasCollectiveRTHPlan": "The show contains a collective RTH plan",
       "proFeaturesEnabled": "Pro features are enabled on the server",
+      "showAuthorized": "The show is authorized to start",
       "supportsSuspendResumeCRTH": "The server supports the suspend, resume, and collective RTH operations"
     },
     "resume": "Resume",
@@ -1272,6 +1275,28 @@
       }
     },
     "title": "Schedule"
+  },
+  "showHealingDialog": {
+    "action": {
+      "confirm": "Confirm",
+      "heal": "Heal"
+    },
+    "autoConfirm": "Confirm and start upload automatically",
+    "calculating": "Calculating trajectory for the replacement drone...",
+    "problem": {
+      "missingData": "Show data, show start time or replacement drone position is not available",
+      "missingDroneInResult": "The healed show does not contain the selected drone",
+      "noAMSLReference": "The show has no AMSL altitude reference",
+      "replacementHasNoPosition": "The replacement drone has no valid position with AMSL altitude",
+      "replacementInShow": "The replacement drone must not be part of the show",
+      "slotNotInShow": "The drone to replace must be part of the show"
+    },
+    "replacementLabel": "Replacement drone",
+    "review": "{{uavId}} replaces {{showId}} and joins the show at {{startTime}} s show time. Confirm to assign it and open the upload dialog.",
+    "selectDrones": "Select the drone of the show to replace and an unassigned replacement drone.",
+    "slotLabel": "Drone to replace",
+    "success": "Replacement drone assigned to the show",
+    "title": "Heal show"
   },
   "sidebar": {
     "missionType": "Mission type: ({{missionType}})"

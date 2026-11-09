@@ -4,7 +4,10 @@
  */
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import { type ShowSpecification } from '@skybrush/show-format';
+import {
+  type DroneSpecification,
+  type ShowSpecification,
+} from '@skybrush/show-format';
 import getUnixTime from 'date-fns/getUnixTime';
 import isNil from 'lodash-es/isNil';
 import set from 'lodash-es/set';
@@ -32,6 +35,12 @@ type ShowSliceState = {
   data?: ShowSpecification;
   base64Blob?: string;
   environment: EnvironmentState;
+
+  /**
+   * Drone specifications calculated by show healing, keyed by mission index.
+   * They override the specifications of the loaded show when uploading.
+   */
+  healedDroneSpecs: Record<number, DroneSpecification>;
 
   loading: boolean;
   progress?: number;
@@ -114,6 +123,7 @@ type ShowSliceState = {
 const initialState: ShowSliceState = {
   data: undefined,
   base64Blob: undefined,
+  healedDroneSpecs: {},
 
   loading: false,
   progress: 0,
@@ -212,6 +222,7 @@ const { actions, reducer } = createSlice({
     _clearLoadedShow: noPayload<ShowSliceState>((state) => {
       state.data = undefined;
       state.base64Blob = undefined;
+      state.healedDroneSpecs = {};
 
       state.sourceUrl = undefined;
       state.changedSinceLoaded = false;
@@ -308,6 +319,7 @@ const { actions, reducer } = createSlice({
 
       state.data = spec;
       state.base64Blob = base64Blob;
+      state.healedDroneSpecs = {};
       state.sourceUrl = url;
       state.loading = false;
       state.progress = undefined;
@@ -464,6 +476,14 @@ const { actions, reducer } = createSlice({
       set(state, 'environment.indoor.room.visible', Boolean(action.payload));
     },
 
+    setHealedDroneSpec(
+      state,
+      action: PayloadAction<{ index: number; spec: DroneSpecification }>
+    ) {
+      const { index, spec } = action.payload;
+      state.healedDroneSpecs[index] = spec;
+    },
+
     setShowAuthorization(state, action: PayloadAction<boolean>) {
       // We only accept 'true' for authorization to be on the safe side, not
       // just any truthy value
@@ -589,6 +609,7 @@ export const {
   setOutdoorShowTakeoffHeadingSpecification,
   setRoomCorners,
   setRoomVisibility,
+  setHealedDroneSpec,
   setShowAuthorization,
   setShowSettingsSynchronizationStatus,
   setStartMethod,
