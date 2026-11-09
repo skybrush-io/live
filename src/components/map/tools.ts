@@ -47,7 +47,11 @@ export function isDrawingTool(tool: Tool): boolean {
  * @returns Whether the given tool identifier is an editing tool
  */
 export function isEditingTool(tool: Tool): boolean {
-  return tool === Tool.CUT_HOLE || tool === Tool.EDIT_FEATURE;
+  return (
+    tool === Tool.CUT_HOLE ||
+    tool === Tool.EDIT_FEATURE ||
+    tool === Tool.ADD_WAYPOINT
+  );
 }
 
 /**
