@@ -1285,14 +1285,14 @@
     "calculating": "Calculating trajectory for the replacement drone...",
     "problem": {
       "missingData": "Show data, show start time or replacement drone position is not available",
-      "missingDroneInResult": "The healed show does not contain the selected drone",
+      "invalidDroneCountInResult": "The healed show must contain exactly one drone",
       "noAMSLReference": "The show has no AMSL altitude reference",
       "replacementHasNoPosition": "The replacement drone has no valid position with AMSL altitude",
       "replacementInShow": "The replacement drone must not be part of the show",
       "slotNotInShow": "The drone to replace must be part of the show"
     },
     "replacementLabel": "Replacement drone",
-    "review": "{{uavId}} replaces {{showId}} and joins the show at {{startTime}} s show time. Confirm to assign it and open the upload dialog.",
+    "review": "{{uavId}} replaces {{showId}} and takes off at {{startTime}} s show time. Confirm to assign it and open the upload dialog.",
     "selectDrones": "Select the drone of the show to replace and an unassigned replacement drone.",
     "slotLabel": "Drone to replace",
     "success": "Replacement drone assigned to the show",

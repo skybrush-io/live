@@ -102,7 +102,7 @@ export const confirmShowHealing = (): AppThunk => (dispatch, getState) => {
 /**
  * Asks the server to calculate a trajectory for the replacement drone in the
  * dialog that takes over the show slot in the dialog, and extracts the
- * specification of the healed drone from the result.
+ * specification of the healing drone from the resulting single-drone show.
  */
 export const requestShowHealing =
   (): AppThunk => async (dispatch, getState) => {
@@ -138,7 +138,9 @@ export const requestShowHealing =
       return;
     }
 
-    const startTime = Math.round(showTime + SHOW_HEALING_START_TIME_OFFSET);
+    const requestedStartTime = Math.round(
+      showTime + SHOW_HEALING_START_TIME_OFFSET
+    );
 
     dispatch(_setShowHealingResult({ status: 'loading' }));
 
@@ -147,7 +149,7 @@ export const requestShowHealing =
         show,
         {
           drone_index: missionIndex,
-          start_time: startTime,
+          start_time: requestedStartTime,
           start_position: [
             ...toScaledJSONFromLonLat([position.lon, position.lat]),
             Math.round(position.amsl * 1000),
@@ -164,16 +166,22 @@ export const requestShowHealing =
         }
       );
 
+      // The result is a show file containing only the healing drone; it is
+      // parsed in a worker to keep the UI responsive
       const { spec }: { spec: ShowSpecification } = await workers.loadShow(
         Base64.toUint8Array(response.show),
         { returnBlob: false }
       );
-      const droneSpec = spec.swarm?.drones?.[missionIndex];
-      if (!droneSpec) {
+      const drones = spec.swarm?.drones ?? [];
+      const droneSpec = drones[0];
+      if (drones.length !== 1 || !droneSpec) {
         throw new Error(
-          i18n.t('showHealingDialog.problem.missingDroneInResult')
+          i18n.t('showHealingDialog.problem.invalidDroneCountInResult')
         );
       }
+
+      const { trajectory } = droneSpec.settings;
+      const startTime = trajectory.takeoffTime ?? trajectory.points[0][0];
 
       // The result is obsolete if the dialog was closed or the drones were
       // changed in the meantime
