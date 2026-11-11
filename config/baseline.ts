@@ -63,7 +63,17 @@ const baseline: Config = {
 
   language: {
     default: 'en',
-    enabled: new Set(['de', 'en', 'fr', 'hu', 'it', 'ja', 'pl', 'zh-Hans', 'zh-Hant']),
+    enabled: new Set([
+      'de',
+      'en',
+      'fr',
+      'hu',
+      'it',
+      'ja',
+      'pl',
+      'zh-Hans',
+      'zh-Hant',
+    ]),
     fallback: 'en',
   },
 
