@@ -18,6 +18,7 @@ import * as pl from './pl.json';
 import * as ro from './ro.json';
 import * as ru from './ru.json';
 import * as zhHans from './zh-Hans.json';
+import * as zhHant from './zh-Hant.json';
 
 /* Languages */
 
@@ -39,7 +40,8 @@ const availableLanguages: Language[] = [
   { label: 'Polski', code: 'pl', translation: pl },
   { label: 'Română', code: 'ro', translation: ro },
   { label: 'Русский', code: 'ru', translation: ru },
-  { label: '中文', code: 'zh-Hans', translation: zhHans },
+  { label: '中文（简体）', code: 'zh-Hans', translation: zhHans },
+  { label: '中文（繁體）', code: 'zh-Hant', translation: zhHant },
   { label: '日本語', code: 'ja', translation: ja },
   { label: '한국어', code: 'ko', translation: ko },
 ];
