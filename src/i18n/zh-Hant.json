@@ -500,7 +500,9 @@
     "editMapping": "編輯對應",
     "emptySlotsShownWhileEditingMapping": "編輯對應時，空白任務槽位會保持可見。",
     "hideEmptyMissionSlots": "隱藏空白任務槽位",
-    "showEmptyMissionSlots": "顯示空白任務槽位"
+    "moreMappingTools": "更多地圖工具",
+    "showEmptyMissionSlots": "顯示空白任務槽位",
+    "swapDrones": "交換無人機…"
   },
   "mappingEditorToolbar": {
     "assignSpares": "指派備用機",
@@ -1338,6 +1340,41 @@
     "surveying": "測量中",
     "surveyingWithAccuracy": "測量中，精確度：{{accuracy}}",
     "surveyingWithAccuracyAbove": "測量中，精確度 {{accuracy}}"
+  },
+  "swapDronesDialog": {
+    "action": {
+      "add": "新增",
+      "swap": "交換",
+      "swapQueue": "交換佇列項目"
+    },
+    "failure": "無法在目前的對應關係中執行交換，未變更任何內容。",
+    "fieldLabel": "ID或sID",
+    "openUploadAfterSwap": "交換後開啟上傳對話視窗",
+    "preview": {
+      "addedWithShowId": "無人機 <drone/> 將會<bold>新增</bold>到對應關係中，顯示ID為 <slot/>",
+      "blocked": "在演出上傳進行中、對應關係正在計算，或演出已授權開始時，無法執行交換。",
+      "bothEmpty": "兩個演出ID皆為空，無須交換。",
+      "bothUnmapped": "兩台無人機皆未對應，無須交換。",
+      "heading": "將會發生什麼",
+      "movedToShowId": "無人機 <drone/> 將會<bold>移動</bold>到演出ID <slot/>",
+      "notOnline": "無人機 <drone/> 目前<bold>尚未連線</bold>",
+      "notOnlineMultiple": "無人機 <drone1/> 和 <drone2/> 目前<bold>尚未連線</bold>",
+      "removedFromMapping": "無人機 <drone/> 將會從對應關係中<bold>移除</bold>",
+      "sameDrone": "兩個輸入都指向同一台無人機。",
+      "sameSlot": "兩個輸入都指向同一個演出ID。",
+      "selectTwoDrones": "選擇兩台無人機進行交換。",
+      "slotEmptied": "演出ID <slot/> 將會<bold>清空</bold>",
+      "uploadToDrone": "演出將必須<bold>上傳</bold>至無人機 <drone/>",
+      "uploadToDrones": "演出將必須<bold>上傳</bold>至無人機 <drone1/> 和 <drone2/>"
+    },
+    "queue": {
+      "removeAll": "移除所有佇列中的交換項目",
+      "stalePairs": "反白標示的佇列配對已無法再進行交換。請移除它以繼續。",
+      "title": "佇列中的交換項目"
+    },
+    "success": "無人機交換成功完成。",
+    "successUploadNeeded_other": "無人機交換完成。演出必須上傳至無人機 {{uavIds}}。",
+    "title": "交換無人機"
   },
   "takeoffAreaSetupDialog": {
     "allDroneOnline": "任務中的所有無人機都已上線。",

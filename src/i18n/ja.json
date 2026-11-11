@@ -501,7 +501,9 @@
     "editMapping": "マッピングを編集",
     "emptySlotsShownWhileEditingMapping": "マッピングの編集中は、空のミッションスロットも表示されたままになります。",
     "hideEmptyMissionSlots": "空のミッションスロットを非表示",
-    "showEmptyMissionSlots": "空のミッションスロットを表示"
+    "moreMappingTools": "その他のマッピングツール",
+    "showEmptyMissionSlots": "空のミッションスロットを表示",
+    "swapDrones": "ドローンを交換…"
   },
   "mappingEditorToolbar": {
     "assignSpares": "予備をアサイン",
@@ -1339,6 +1341,41 @@
     "surveying": "測量中",
     "surveyingWithAccuracy": "測量中、精度：{{accuracy}}",
     "surveyingWithAccuracyAbove": "測量中、精度 {{accuracy}}"
+  },
+  "swapDronesDialog": {
+    "action": {
+      "add": "追加",
+      "swap": "交換",
+      "swapQueue": "キュー内の項目を交換"
+    },
+    "failure": "現在のマッピングでは交換を実行できません。変更はありません。",
+    "fieldLabel": "IDまたはsID",
+    "openUploadAfterSwap": "交換後にアップロードダイアログを開く",
+    "preview": {
+      "addedWithShowId": "ドローン <drone/> は<bold>追加</bold>され、ショーID <slot/> のマッピングに登録されます",
+      "blocked": "ショーのアップロード中、マッピングの計算中、またはショーの開始が許可されている間は、交換できません。",
+      "bothEmpty": "両方のショーIDが空です。交換するものがありません。",
+      "bothUnmapped": "両方のドローンがマッピングされていません。交換するものがありません。",
+      "heading": "何が起こるか",
+      "movedToShowId": "ドローン <drone/> はショーID <slot/> に<bold>移動</bold>されます",
+      "notOnline": "ドローン <drone/> はまだ<bold>オンラインではありません</bold>",
+      "notOnlineMultiple": "ドローン <drone1/> と <drone2/> はまだ<bold>オンラインではありません</bold>",
+      "removedFromMapping": "ドローン <drone/> はマッピングから<bold>削除</bold>されます",
+      "sameDrone": "両方の入力が同じドローンを指しています。",
+      "sameSlot": "両方の入力が同じショーIDを指しています。",
+      "selectTwoDrones": "交換する2台のドローンを選択してください。",
+      "slotEmptied": "ショーID <slot/> は<bold>空</bold>になります",
+      "uploadToDrone": "ショーをドローン <drone/> に<bold>アップロード</bold>する必要があります",
+      "uploadToDrones": "ショーをドローン <drone1/> と <drone2/> に<bold>アップロード</bold>する必要があります"
+    },
+    "queue": {
+      "removeAll": "キュー内のすべての交換を削除",
+      "stalePairs": "ハイライト表示されたキュー内のペアは交換できなくなりました。続行するには削除してください。",
+      "title": "キュー内の交換"
+    },
+    "success": "ドローンの交換が正常に完了しました。",
+    "successUploadNeeded_other": "ドローンの交換が完了しました。ショーをドローン {{uavIds}} にアップロードする必要があります。",
+    "title": "ドローンを交換"
   },
   "takeoffAreaSetupDialog": {
     "allDroneOnline": "ミッション中のドローンはすべてオンラインです。",

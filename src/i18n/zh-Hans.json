@@ -501,7 +501,9 @@
     "editMapping": "编辑映射",
     "emptySlotsShownWhileEditingMapping": "编辑映射时，空任务槽位会保持可见。",
     "hideEmptyMissionSlots": "隐藏空任务槽",
-    "showEmptyMissionSlots": "显示空的任务槽位"
+    "moreMappingTools": "更多地图工具",
+    "showEmptyMissionSlots": "显示空的任务槽位",
+    "swapDrones": "交换无人机…"
   },
   "mappingEditorToolbar": {
     "assignSpares": "分配备用无人机",
@@ -1353,6 +1355,41 @@
     "surveying": "测量中",
     "surveyingWithAccuracy": "测量中，精度：{{accuracy}}",
     "surveyingWithAccuracyAbove": "测量中，精度 {{accuracy}}"
+  },
+  "swapDronesDialog": {
+    "action": {
+      "add": "新增",
+      "swap": "交换",
+      "swapQueue": "交换队列项目"
+    },
+    "failure": "无法在当前映射中执行交换，未更改任何内容。",
+    "fieldLabel": "ID或sID",
+    "openUploadAfterSwap": "交换后打开上传对话框",
+    "preview": {
+      "addedWithShowId": "无人机 <drone/> 将被<bold>添加</bold>到映射中，演出ID为 <slot/>",
+      "blocked": "在演出上传进行中、映射正在计算，或演出已授权开始时，无法执行交换。",
+      "bothEmpty": "两个演出ID均为空，无需交换。",
+      "bothUnmapped": "两台无人机均未映射，无需交换。",
+      "heading": "将会发生什么",
+      "movedToShowId": "无人机 <drone/> 将被<bold>移动</bold>到演出ID <slot/>",
+      "notOnline": "无人机 <drone/> 目前<bold>尚未在线</bold>",
+      "notOnlineMultiple": "无人机 <drone1/> 和 <drone2/> 目前<bold>尚未在线</bold>",
+      "removedFromMapping": "无人机 <drone/> 将从映射中被<bold>移除</bold>",
+      "sameDrone": "两个输入都指向同一台无人机。",
+      "sameSlot": "两个输入都指向同一个演出ID。",
+      "selectTwoDrones": "选择两台无人机进行交换。",
+      "slotEmptied": "演出ID <slot/> 将被<bold>清空</bold>",
+      "uploadToDrone": "演出必须<bold>上传</bold>至无人机 <drone/>",
+      "uploadToDrones": "演出必须<bold>上传</bold>至无人机 <drone1/> 和 <drone2/>"
+    },
+    "queue": {
+      "removeAll": "移除所有队列中的交换项目",
+      "stalePairs": "高亮显示的队列配对已无法再进行交换，请将其移除以继续。",
+      "title": "队列中的交换项目"
+    },
+    "success": "无人机交换成功完成。",
+    "successUploadNeeded_other": "无人机交换完成，演出必须上传至无人机 {{uavIds}}。",
+    "title": "交换无人机"
   },
   "takeoffAreaSetupDialog": {
     "allDroneOnline": "任务中的所有无人机都在线。",
