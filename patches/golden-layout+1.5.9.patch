@@ -66,3 +66,11 @@ index 736f9ec..4fa1228 100644
  		contentItem = this.layoutManager._$normalizeContentItem( contentItem, this );
  
  		if( index === undefined ) {
+@@ -4621,6 +4654,7 @@
+ 		} else {
+ 			type = isVertical ? 'column' : 'row';
+ 			rowOrColumn = this.layoutManager.createContentItem( { type: type }, this );
++			this.parent._$restoreMaximisedItemIfNeeded();
+ 			this.parent.replaceChild( this, rowOrColumn );
+ 
+ 			rowOrColumn.addChild( contentItem, insertBefore ? 0 : undefined, true );
