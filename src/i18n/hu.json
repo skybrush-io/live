@@ -4,6 +4,14 @@
   },
   "ConnectionStatusMiniList": {
     "noConnections": "Ez a szerver nem használ kapcsolatokat.",
+    "summaryItem": {
+      "connected_one": "+ 1 nem megjelenített kapcsolat",
+      "connected_other": "+ {{count}} nem megjelenített kapcsolat",
+      "connecting": "+ {{count}} csatlakozó, nem megjelenített kapcsolat",
+      "disconnected_one": "+ 1 lezárt, nem megjelenített kapcsolat",
+      "disconnected_other": "+ {{count}} lezárt, nem megjelenített kapcsolat",
+      "disconnecting": "+ {{count}} bontás alatt álló, nem megjelenített kapcsolat"
+    },
     "useSecondaryChannel": "Másodlagos csatorna használata"
   },
   "DrawingToolbar": {
@@ -15,6 +23,27 @@
     "drawPolygon": "Sokszög rajzolás",
     "drawRectangle": "Négyszög rajzolás",
     "editFeature": "Objektumok szerkesztése"
+  },
+  "GlobalErrorDialog": {
+    "title": "Hiba történt"
+  },
+  "ImageLayer": {
+    "geoTIFFOnlyInDevMode": "A GeoTIFF megjelenítés jelenleg csak fejlesztői módban érhető el.",
+    "navigationFailed": "A navigáció sikertelen, lehetséges, hogy a fájl betöltése nem megfelelő",
+    "selectImage": "Kérjük, válasszon egy képet!"
+  },
+  "LicenseInfoDialog": {
+    "title": "Licencinformáció"
+  },
+  "LicenseInfoPanel": {
+    "errorWhileLoading": "Hiba történt a licencinformációk betöltése közben",
+    "expiryDate": "Lejárati dátum",
+    "licenseId": "Licencazonosító",
+    "licensee": "Licenctulajdonos neve",
+    "loading": "Licencinformációk lekérése…",
+    "neverExpires": "Ez a licenc soha nem jár le",
+    "noLicenseActivated": "Nincs aktivált licenc",
+    "tryAgain": "Próbálja újra"
   },
   "MissionInfoLayer": {
     "settings": {
@@ -32,6 +61,13 @@
     "passed": "Automata fedélzeti ellenőrzés rendben.",
     "signOffOn": "Automata fedélzeti ellenőrzés nyugtázása"
   },
+  "PathScanner": {
+    "notFound": "A szerver futtatható fájlja nem található.",
+    "scanAgain": "Kattintson az újrakereséshez",
+    "scanning": "Kérjük, várjon…",
+    "scanningSecondary": "Szerver keresése",
+    "success": "A szerver futtatható fájlja sikeresen megtalálva."
+  },
   "RTKCoordinateRestorationDialog": {
     "accuracyLabel": "Pontosság",
     "dateLabel": "Mentve",
@@ -42,9 +78,12 @@
   },
   "RTKCorrectionSourceSelector": {
     "RTKCorrections": "RTK korrekciók",
+    "createPreset": "Új RTK profil létrehozása",
+    "editPreset": "Profil szerkesztése",
     "error": "Hiba az RTK források szerverről történő betöltése közben",
     "noRTKData": "Nincsenek RTK adatforrások a szerveren",
-    "pleaseWait": "Kérem várjon, RTK források betöltése…"
+    "pleaseWait": "Kérem várjon, RTK források betöltése…",
+    "rtkDisabled": "RTK letiltva"
   },
   "RTKMessage": {
     "noRTKMessagesYet": "Még nem érkezett RTK üzenet"
@@ -75,6 +114,9 @@
     "noMatchingUAVs": "Nincsenek találatok erre: \"{{filter}}\""
   },
   "UAVStatus": {
+    "error": {
+      "notInWorkbench": "A drónok panel még nincs hozzáadva a munkafelülethez"
+    },
     "noConnected": "Jelenleg nincs kapcsolódott drón"
   },
   "alerts": {
@@ -128,31 +170,77 @@
     "enable": "Broadcast engedélyezése {{time}} másodpercig"
   },
   "collectiveRTHDialog": {
+    "action": {
+      "addCollectiveRTH": "RTH tervek számítása"
+    },
+    "description": "Kollektív RTH tervek előzetes számítása a műsor több időpontjában. Vészhelyzet esetén a kollektív RTH a lehető leggyorsabban, ütközések nélkül juttatja haza a drónokat.",
+    "existingInvalidRTHPlan": "A műsorhoz nincsenek érvényes kollektív RTH tervek",
+    "existingValidRTHPlan_one": "A műsorhoz 1 időpontban van érvényes kollektív RTH terv",
+    "existingValidRTHPlan_other": "A műsorhoz {{count}} időpontban vannak érvényes kollektív RTH tervek",
+    "hints": {
+      "addCollectiveRTH": "Kattintson a fenti gombra az RTH tervek számításához"
+    },
     "parameters": {
       "form": {
         "horizontalVelocity": {
+          "help": "kollektív RTH során",
           "label": "Vízszintes sebesség"
         },
         "minDistance": {
+          "help": "a drónok között RTH során",
           "label": "Minimális távolság"
         },
         "timeResolution": {
+          "help": "egymást követő RTH tervek között",
           "label": "Időfelbontás"
         },
         "verticalVelocity": {
+          "help": "kollektív RTH során",
           "label": "Függőleges sebesség"
         }
       }
-    }
-  },
-  "collectiveRTHPanel": {
-    "message": {
-      "noShowFile": "Nincs betöltött show fájl"
     },
-    "rthPlanDetails": {
-      "column": {
-        "duration": "Időtartam"
+    "status": {
+      "error": "Az RTH tervek számítása sikertelen. Kérjük, próbálja újra.",
+      "loading": "RTH tervek számítása...",
+      "success": "Az RTH tervek sikeresen kiszámítva"
+    },
+    "summary": {
+      "firstTime": {
+        "message": "Első terv: {{firstTime}}"
+      },
+      "lastTime": {
+        "message": "Utolsó terv: {{lastTime}}"
+      },
+      "minRTHAltitude": {
+        "message": "Min. RTH magasság: {{minRTHAltitude}}"
+      },
+      "numPlans": {
+        "message_one": "1 RTH terv kiszámítva, jóváhagyásra vár",
+        "message_other": "{{count}} RTH terv kiszámítva, jóváhagyásra vár"
       }
+    },
+    "title": "Kollektív RTH tervezése"
+  },
+  "consistencyCheck": {
+    "mainPanel": {
+      "parameterCheckHint": "Nyomjon <kbd>⇧</kbd> + <kbd>Enter</kbd> billentyűt a paraméternevek listához adásához. Kattintson egy névre az oldalsávban az eltávolításához.",
+      "parameterNames": "Paraméternevek",
+      "specifyEntries": "Soronként egy paraméternevet adjon meg."
+    },
+    "result": {
+      "consistent": "Minden paraméter konzisztens.",
+      "errors": "Hiba történt a paraméterek konzisztenciájának ellenőrzése során. Tekintse meg az alábbi eredményeket.",
+      "inconsistencies": "Néhány paraméterérték inkonzisztens. Tekintse meg az alábbi eredményeket."
+    },
+    "setupDialog": {
+      "checkParameters": "Paraméterkonzisztencia-ellenőrzés"
+    },
+    "sidebar": {
+      "import": "Importálás…",
+      "nextStep": "Következő lépés",
+      "removeAllItems": "Összes név eltávolítása a listából",
+      "title": "Paraméternevek"
     }
   },
   "coordinateAveragingDialogToolbar": {
@@ -199,6 +287,22 @@
       "warningsAndErrors": "Figyelm/Hiba"
     }
   },
+  "firmwareCheck": {
+    "names": {
+      "board": "Alaplap revízió",
+      "firmware": "Firmware verzió",
+      "flight_sw": "Repülésvezérlő szoftver verziója",
+      "middleware_sw": "Middleware verzió",
+      "os_sw": "Operációs rendszer verziója",
+      "revision": "Revízió",
+      "server": "Szerver verzió"
+    },
+    "result": {
+      "consistent": "Minden firmware verzió konzisztens.",
+      "errors": "Hiba történt a firmware verziók ellenőrzése során. Tekintse meg az alábbi eredményeket.",
+      "inconsistencies": "Néhány firmware verzió inkonzisztens. Tekintse meg az alábbi eredményeket."
+    }
+  },
   "fitAllFeaturesButton": {
     "fitAllDrones": "Minden drón illesztése",
     "fitAllFeatures": "Minden objektum illesztése"
@@ -238,23 +342,37 @@
   "general": {
     "action": {
       "apply": "Alkalmaz",
+      "approve": "Jóváhagyás",
       "back": "Vissza",
       "cancel": "Mégsem",
       "clear": "Tisztítás",
+      "click": "Kattintás",
       "close": "Bezárás",
+      "confirm": "Megerősítés",
       "delete": "Törlés",
       "discard": "Elvetés",
+      "drag": "Húzás",
       "edit": "Szerkesztés",
       "export": "Exportálás",
       "import": "Importálás",
+      "navigate": "Navigálás",
       "open": "Megnyitás",
+      "pan": "Mozgatás",
+      "redo": "Újra",
+      "reject": "Elutasítás",
       "remove": "Eltávolítás",
       "reset": "Alaphelyzet",
       "retry": "Újrapróbálás",
+      "rotate": "Forgatás",
       "save": "Mentés",
+      "saving": "Mentés...",
+      "scale": "Átméretezés",
       "select": "Kijelölés",
       "start": "Indítás",
-      "stop": "Megállítás"
+      "stop": "Megállítás",
+      "submit": "Elküldés",
+      "undo": "Visszavonás",
+      "zoom": "Nagyítás"
     },
     "commands": {
       "calibrateCompass": "Iránytű kalibrálása",
@@ -274,7 +392,9 @@
       "longitude": "Hosszúsági fok"
     },
     "geometry": {
+      "angle": "Szög",
       "rotation": "Elforgatás",
+      "scale": "Méretarány",
       "zoom": "Nagyítás"
     },
     "status": {
@@ -378,6 +498,7 @@
   },
   "mappingButtonGroup": {
     "editMapping": "Hozzárendelés szerkesztése",
+    "emptySlotsShownWhileEditingMapping": "Az üres küldetéshelyek láthatóak maradnak a hozzárendelés szerkesztése közben.",
     "hideEmptyMissionSlots": "Üres küldetéshelyek elrejtése",
     "showEmptyMissionSlots": "Üres küldetéshelyek megjelenítése"
   },
@@ -389,6 +510,7 @@
     "clickToEdit": "Kattintson egy hely szerkesztéséhez.",
     "dragNodes": "Húzza az ikonokat a hozzárendelés átrendezéséhez.",
     "exportMapping": "Hozzárendelés exportálása…",
+    "generateRandomMapping": "Véletlenszerű hozzárendelés",
     "importMapping": "Hozzárendelés importálása…"
   },
   "mappingSlotEditorToolbar": {
@@ -440,19 +562,26 @@
     "coordinateSystem": "Koordinátarendszer",
     "copyMapOriginToShow": "Térkép origó másolása műsor origóra",
     "copyShowOriginToMap": "Műsor origó másolása térkép origóra",
+    "fileToShow": "Fájl ➜ Műsor",
+    "fileToShowTooltip": "Beágyazott helyadatokat tartalmazó műsorfájlt igényel",
     "fitCoordinateSysToCurrentDrone": "Koordinátarendszer illesztése az aktuális drón pozíciókra",
+    "mapToShow": "Térkép ➜ Műsor",
+    "preTakeoffAltitudeWarning": "A beállított AMSL referencia {{amslReference}}, de {{sampleCount}} földön lévő drón átlagos AMSL értéke {{averageGroundAMSL}}. Különbség: {{difference}} < {{threshold}}.",
     "setToAverageAMSL": "Beállítás az aktív drónok átlagos AMSL-ére",
     "showCoordinateSystemAppliedToMap": "A műsor koordinátarendszere alkalmazva a térképre.",
+    "showCoordinateSystemUpdatedFromFile": "A műsor koordinátarendszere frissítve a fájlból.",
     "showCoordinateSystemUpdatedFromMap": "A műsor koordinátarendszere frissítve a térképről.",
     "showIsControlledBasedOn": "A műsor ezalapján irányítva…",
     "showOrientation": "Műsor iránya",
     "showOrigin": "Műsor origója",
+    "showToMap": "Műsor ➜ Térkép",
     "warningText": "Az automatikus műsor origó és irány számítás feltételezi, hogy az összes drón a műsor X tengelye felé mutat <underline>vagy</underline>, hogy a fenti beállítással meghatározta az eltolásukat az X tengelyhez képest. Az abszolút felszállási irányok nem támogatottak."
   },
   "parameterListSidebar": {
     "import": "Importálás…",
     "nextStep": "Tovább",
-    "removeAllItems": "Minden elem eltávolítása a jegyzékből"
+    "removeAllItems": "Minden elem eltávolítása a jegyzékből",
+    "title": "Manifeszt"
   },
   "parameterUploadMainPanel": {
     "parameterNamesValues": "Paraméter nevek és értékek",
@@ -491,6 +620,18 @@
     "headingsHint": "A kettősponttal (:) végződő sorok címsorokká válnak.",
     "manualPreflightCheckItems": "Manuális ellenőrzőlista elemek",
     "preflightCheckItems": "Ellenőrzőlista elemek"
+  },
+  "proControlButtonGroup": {
+    "collectiveRTH": "Kollektív RTH",
+    "collectiveRTHPanelNotFound": "A Kollektív RTH panel nem található. Kérjük, próbálja megnyitni kézzel az oldalsávból.",
+    "prerequisites": {
+      "collectiveRTHNotTriggered": "A kollektív RTH még nem lett aktiválva",
+      "hasCollectiveRTHPlan": "A műsor tartalmaz kollektív RTH tervet",
+      "proFeaturesEnabled": "A Pro funkciók engedélyezve vannak a szerveren",
+      "supportsSuspendResumeCRTH": "A szerver támogatja a felfüggesztés, folytatás és kollektív RTH műveleteket"
+    },
+    "resume": "Folytatás",
+    "suspend": "Felfüggesztés"
   },
   "recalculateMappingButton": {
     "findOptimalMapping": "Optimális hozzárendelés keresése",
@@ -614,6 +755,53 @@
     "rtcm3/1127": "BeiDou MSM7 (nagyfelbontású kód, vivő, doppler, CNR)",
     "rtcm3/1230": "GLONASS L1 és L2 kód-fázis torzítások"
   },
+  "rtkPresetEditor": {
+    "addSource": "Forrás hozzáadása",
+    "createFailed": "Nem sikerült létrehozni a profilt",
+    "createTitle": "Új RTK profil létrehozása",
+    "dataSources": "Adatforrások",
+    "deleteConfirmation": "Biztosan törölni szeretné ezt a profilt?",
+    "deleteFailed": "Nem sikerült törölni a profilt",
+    "deletePreset": "Profil törlése",
+    "editTitle": "RTK profil szerkesztése",
+    "formatAuto": "Automatikus észlelés",
+    "messageFormat": "Üzenetformátum",
+    "presetName": "Profil neve",
+    "presetNamePlaceholder": "RTK bázisállomásom",
+    "readOnlyMessage": "Ez a profil nem szerkeszthető",
+    "removeSource": "Forrás eltávolítása",
+    "sourcePlaceholder": "ntrip://username:password@hostname/mountpoint",
+    "sourcesHelp": "Használja a serial:PORT?baud=BAUDRATE formátumot soros porthoz, tcp://HOST:PORT címet TCP kapcsolathoz, vagy ntrip://... címet NTRIP szerverekhez.",
+    "type": "Típus",
+    "updateFailed": "Nem sikerült frissíteni a profilt"
+  },
+  "rtkSetupDialog": {
+    "startNewSurvey": "Új felmérés indítása"
+  },
+  "rtkStatus": {
+    "long": {
+      "connectedRecently": "RTK korrekciós állapot meghatározása...",
+      "error": "Meghatározatlan hiba az RTK korrekciókban",
+      "inactive": "Nincs kiválasztva RTK korrekciós forrás",
+      "noAntennaPosition": "Az RTK antenna pozíciója ismeretlen",
+      "notConnected": "Nincs kapcsolat a szerverrel",
+      "notEnoughSatellites": "Nincs elegendő műhold érvényes RTK korrekcióval",
+      "ok": "Az RTK korrekciók érvényesek",
+      "surveyInProgress": "Felmérés folyamatban",
+      "unknown": "Ismeretlen RTK korrekciós állapot"
+    },
+    "short": {
+      "connectedRecently": "Várakozás adatokra",
+      "error": "Hiba",
+      "inactive": "Nincs forrás",
+      "noAntennaPosition": "Nincs antennapozíció",
+      "notConnected": "Nincs kapcsolat",
+      "notEnoughSatellites": "Kevés műhold",
+      "ok": "Érvényes",
+      "surveyInProgress": "Felmérés",
+      "unknown": "Ismeretlen állapot"
+    }
+  },
   "safetyDialog": {
     "geofence": "Geokerítés",
     "geofenceTab": {
@@ -625,12 +813,15 @@
       "fenceAction": "Geokerítés művelet",
       "fenceActionHelperText": "Ezen opciók támogatása a drónokon múlik; nem minden opció támogatott minden drón által.",
       "fenceActionLabel": "Elsődleges geokerítés művelet",
+      "generateAutomatically": "Automatikus generálás",
+      "geofencePolygon": "Geokerítés sokszög",
       "horizontal": "Vízszintes",
       "maxAltitude": "Max magasság",
       "maxDistance": "Max távolság",
       "maxVertexCount": "Maximális csúcsszám",
       "proposedLimits": "A jelenlegi küldetés javasolt korlátai",
       "safetyMargins": "Biztonsági távolságok",
+      "simplifyGeometry": "Geometria egyszerűsítése",
       "simplifyPolygon": "Sokszög egyszerűsítése",
       "vertexCountReduction": "Csúcsszám csökkentése",
       "vertical": "Függőleges"
@@ -670,9 +861,12 @@
   },
   "selectionGroups": {
     "action": {
-      "createNew": "Új csoport létrehozása"
+      "createNew": "Új csoport létrehozása",
+      "rename": "Csoport átnevezése"
     },
-    "label": "Csoportok",
+    "label": {
+      "name": "Csoport neve"
+    },
     "newGroupNameTemplate": "{{id}}. csoport",
     "selectedObjects": "Kijelölt objektumok",
     "updated": "Frissítve"
@@ -687,6 +881,11 @@
     "roundTripTime": "Válaszadási idő",
     "unknownState": "Ismeretlen állapot",
     "version": "Szerver verzió"
+  },
+  "serverLogMessageCode": {
+    "uavs": {
+      "limit_reached": "A szerverlicenc drónkorlátja elérve, új drónok nem regisztrálhatók"
+    }
   },
   "serverSettingsDialog": {
     "autodetected": "Automatikusan észlelt",
@@ -715,6 +914,7 @@
     "display": {
       "coordinateFormat": "Koordináta formátum",
       "enableExperimentalFeatures": "Kísérleti funkciók engedélyezése (haladó)",
+      "experimentalFeaturesWarning": "A kísérleti funkciók nincsenek olyan mértékben tesztelve, mint a rendszer többi része. Saját felelősségre használja őket.",
       "flatEarthCoordinateSystem": "Lapos föld koordináta rendszer",
       "hideInactiveSegmentsOnDarkLCD": "LCD órák kontrasztarányának javítása sötét módban",
       "language": "Nyelv",
@@ -726,7 +926,8 @@
       "optimizeUIForTouch": "A felület optimalizálása érintőképernyős eszközökre",
       "orientationXAxis": "Tájolás (X+ tengely)",
       "showMouseCoordinates": "Egérkoordináták megjelenítése",
-      "showScaleLine": "Léptékvonal megjelenítése"
+      "showScaleLine": "Léptékvonal megjelenítése",
+      "uiScale": "Kezelőfelület méretezése"
     },
     "tabs": {
       "apiKeys": "API kulcsok",
@@ -757,6 +958,7 @@
       "showTrajectoriesOfSelection": "A kiválaszott drónok röppályájának megjelenítése"
     },
     "uavs": {
+      "altitudeWarningThreshold": "Felszállás előtti magasság figyelmeztetési küszöbértéke",
       "batteryDisplayStyle": "Töltöttség megjelenítési stílusa",
       "cellCount": "Cellaszám",
       "criticalTreshold": "Kritikus határérték",
@@ -781,10 +983,22 @@
     "authorizationReq": "Jóváhagyás szükséges a felszállás előtt",
     "authorizeTheStart": "A kezdés jóváhagyása",
     "authorized": "A műsor kezdése engedélyezett",
+    "changedSinceLoaded": "A műsor módosult a betöltése óta",
     "chooseStartTime": "Indítási időpont kiválasztása",
     "chooseStartTimeNotSet": "Még nincs beállítva",
     "clear": "A betöltött műsor törlése",
+    "clearStartTime": "Kezdési idő törlése",
     "clock": "Műsor óra:",
+    "collectiveRTH": {
+      "confirmation": {
+        "message": "Biztosan aktiválni szeretné a kollektív RTH műveletet?",
+        "title": "Megerősítés szükséges"
+      },
+      "notification": {
+        "error": "A kollektív RTH parancs sikertelen",
+        "success": "A kollektív RTH parancs sikeresen elküldve"
+      }
+    },
     "dronePlacementApproved": "A drón elrendezés jóváhagyva",
     "dronePlacementCheck": "A drón elrendezés ellenőrzése…",
     "dronePlacementError": "Hiba az elrendezésben",
@@ -795,6 +1009,7 @@
     "manualPreflightChecks": "Felszállás előtti manuális ellenőrzés",
     "noFileLoaded": "Nincs betöltve műsor fájl",
     "onboardPreflightChecks": "Automata fedélzeti ellenőrzés",
+    "resetPreflightChecklist": "Ellenőrzőlista visszaállítása",
     "outdoor": {
       "invalidAltitudeReference": "Kültér, érvénytelen magassági referencia",
       "relativeToAMSL": "Kültér, az AMSL-hez képest {{altitude}}m",
@@ -803,17 +1018,71 @@
     },
     "placementAccuracy": "Az elhelyezés pontossága ≤ {{distance}}",
     "reload": "A műsor újratöltése",
+    "resume": {
+      "confirmation": {
+        "message": "Biztosan folytatni szeretné a műsort?",
+        "title": "Műsor folytatása"
+      },
+      "notification": {
+        "error": "A műsor folytatása parancs sikertelen",
+        "success": "A műsor folytatása parancs sikeresen elküldve"
+      }
+    },
     "revokeAuthorization": "Kattintson ide a jóváhagyás visszavonásához",
     "selectFile": "Válassza ki, vagy húzza ide a műsor fájlt",
     "setupEnvironment": "Környezet beállítása",
     "setupGeofence": "Geokerítés beállítása",
     "setupTakeoffArea": "Felszállási terület beállítása",
+    "showConfigurator": {
+      "button": "Kollektív RTH tervezése",
+      "description": "Kollektív visszatérési tervek készítése",
+      "interactionHints": {
+        "action": {
+          "boxSelect": "Téglalapos kijelölés",
+          "boxUnselect": "Téglalapos kijelölés törlése",
+          "moveSelection": "Kijelölés mozgatása",
+          "rotateSelection": "Kijelölés elforgatása",
+          "toggleSelect": "Kijelölés megfordítása"
+        },
+        "category": {
+          "manipulation": "Módosítás",
+          "navigation": "Navigáció",
+          "selection": "Kijelölés"
+        }
+      },
+      "noShowData": "A műsor szakaszadatai hiányoznak",
+      "prerequisites": {
+        "extension": "A stúdió kiegészítőnek engedélyezve kell lennie a szerveren",
+        "loaded": "Be kell tölteni egy műsorfájlt",
+        "origin": "A műsor origójának szerepelnie kell vagy manuálisan be kell állítani",
+        "segments": "A műsornak szakaszjelölőkkel kell rendelkeznie",
+        "server": "Kapcsolatot kell létesíteni a szerverrel"
+      },
+      "tooltip": {
+        "adaptShow": "Műsor illesztése a helyszínhez",
+        "showSegmentsRequired": "A műsornak szakaszjelölőkkel kell rendelkeznie"
+      }
+    },
+    "showConfiguratorLegacy": {
+      "button": "Műsor illesztése a helyszínhez",
+      "description": "Felszállási rács és műsor elrendezésének beállítása, ha szükséges"
+    },
     "startMethod": {
       "AUTO": "A műsor automatikusan el fog indulni",
       "RC": "Az indításhoz használja a kapcsolót a távirányítón"
     },
     "startTimeNotSet": "A kezdés időpontja még nincs beállítva",
     "startsAt": "{{time}}-kor kezdődik",
+    "suspend": {
+      "confirmation": {
+        "message": "Biztosan fel szeretné függeszteni a műsort?",
+        "title": "Műsor felfüggesztése"
+      },
+      "notification": {
+        "error": "A műsor felfüggesztése parancs sikertelen",
+        "success": "A műsor felfüggesztése parancs sikeresen elküldve"
+      }
+    },
     "takeOffMore": "{{quantity}} drón automatikusan fel fog szállni",
     "takeOffNoPosition": "Legalább egy drón számára még nincs pozíció",
     "takeOffOne": "Egy drón automatikusan fel fog szállni",
@@ -823,6 +1092,178 @@
     "uploadShowData": "Műsor adatok feltöltése",
     "uploadShowDataLoading": "Kérem várjon, feltöltés…",
     "uploadShowDataStart": "Kattintson ide a feltötés megkezdéséhez"
+  },
+  "showConfiguratorDialog": {
+    "action": {
+      "adapt": "Illesztés",
+      "adjustHomePositionsToDronePositions": "Felszállás illesztése a drónokhoz"
+    },
+    "adaptParameters": {
+      "form": {
+        "altitude": {
+          "help": "függőleges mozgás felszálláskor és leszálláskor",
+          "label": "Magasság"
+        },
+        "altitudeOffset": {
+          "help": "a nettó műsorra vonatkozóan",
+          "label": "Magassági eltolás"
+        },
+        "horizontalVelocity": {
+          "help": "felszállási és RTH fázisok során",
+          "label": "Vízszintes sebesség"
+        },
+        "minDistance": {
+          "help": "drónok között felszállás és RTH során",
+          "label": "Minimális távolság"
+        },
+        "returnToHomeMethod": {
+          "label": "RTH módszer",
+          "type": {
+            "plain": "Egyszerű",
+            "smart": "Okos"
+          }
+        },
+        "takeoffDuration": {
+          "help": "biztosítja a műsorfázis pontos kezdését (ha nem nulla)",
+          "label": "Felszállási időtartam"
+        },
+        "takeoffMethod": {
+          "label": "Felszállási módszer",
+          "type": {
+            "layered": "Rétegezett",
+            "organic": "Organikus"
+          }
+        },
+        "verticalVelocity": {
+          "help": "felszállási és RTH fázisok során",
+          "label": "Függőleges sebesség"
+        }
+      },
+      "panel": {
+        "lights": "Fények",
+        "safety": "Biztonság",
+        "trajectories": "Röppályák"
+      }
+    },
+    "adaptReview": {
+      "button": {
+        "reviewInViewer": "Megtekintés a Skybrush Viewerben"
+      },
+      "error": {
+        "invalidState": "Érvénytelen állapot, kérjük, próbálja újra."
+      },
+      "form": {
+        "rth": {
+          "lengthChange": "RTH időtartam változása:",
+          "lengthChangeValue": "{{value}} másodperc"
+        },
+        "takeoff": {
+          "lengthChange": "Felszállási időtartam változása:",
+          "lengthChangeValue": "{{value}} másodperc"
+        }
+      },
+      "showAdaptInProgress": "A műsor illesztése folyamatban, kérjük, várjon. Ez eltarthat egy ideig."
+    },
+    "help": {
+      "config": "Ez az eszköz lehetővé teszi a felszállási pozíciók és a nettó műsor elrendezésének független módosítását.\nVálassza ki a felszállási pozíciókat (sárga háromszögek), a nettó műsort (lila konvex burok) vagy mindkettőt (sárga konvex burok), és mozgassa vagy forgassa el őket szükség szerint.\nHa kész, állítsa be a transzformációs paramétereket a jobb oldalon, és nyomja meg az ILLESZTÉS gombot a pályák újraszámításához, megtartva az eredeti nettó műsor tartalmát az új elrendezéshez igazítva.\nAz új műsorelrendezést alaposan ellenőrizni kell, és kilépéskor egy bevetésre kész .skyc fájlba kell menteni.",
+      "review": "Tekintse át a változtatásokat, mielőtt alkalmazná őket a műsorra."
+    },
+    "lights": {
+      "default": {
+        "brightness": "Fényerő"
+      },
+      "selectLabel": "Fényeffekt",
+      "solid": {
+        "color": "Szín"
+      },
+      "sparks": {
+        "offDuration": "Kikapcsolt időtartam"
+      },
+      "type": {
+        "default": "Alapértelmezett",
+        "off": "Kikapcsolva",
+        "original": "Eredeti",
+        "solid": "Folyamatos",
+        "sparks": "Szikrák"
+      },
+      "unsupportedVersion": "A fények konfigurálásához legalább {{minVersion}} verziójú szerver szükséges."
+    },
+    "settings": {
+      "dronesVisible": "Drónok megjelenítése"
+    },
+    "title": "Műsor illesztése a helyszínhez"
+  },
+  "showControlSchedule": {
+    "empty": {
+      "description": "Nincsenek ütemezett műveletek.",
+      "title": "Üres ütemezés"
+    },
+    "normalShow": {
+      "description": "A műsor a tervezett ütemezés szerint lesz végrehajtva.",
+      "title": "Nincs módosítás a műsor ütemezésében"
+    },
+    "progress": {
+      "active": "{{elapsedSeconds}}mp / {{durationSeconds}}mp",
+      "completed": "Befejezve",
+      "waiting": "Indulás {{countdownSeconds}} mp múlva..."
+    },
+    "segment": {
+      "preparation": {
+        "completed": {
+          "description": "A drónok értesítést kaptak a kért műveletről, és megkezdték a végrehajtást.",
+          "title": "Előkészítés befejezve"
+        },
+        "running": {
+          "description": "A drónok értesítése zajlik a kért műveletről, és felkészülnek a végrehajtásra.",
+          "title": "Előkészítés"
+        }
+      },
+      "rth": {
+        "completed": {
+          "description": "A drónok visszatértek a kiindulási helyükre.",
+          "title": "Hazatérés befejezve"
+        },
+        "running": {
+          "description": "A drónok összehangoltan, ütközések nélkül térnek vissza a kiindulási helyükre.",
+          "title": "Hazatérés"
+        }
+      },
+      "slowdown": {
+        "completed": {
+          "description": "A drónok lelassultak és megálltak.",
+          "title": "Műsor felfüggesztve"
+        },
+        "running": {
+          "description": "A drónok lassítanak. Az ütközések elkerülése érdekében az eredeti pályájukon maradnak.",
+          "title": "Lassítás"
+        }
+      },
+      "speedup": {
+        "completed": {
+          "description": "A drónok újra normál sebességgel repülnek az eredeti pályájukon.",
+          "title": "Műsor folytatva"
+        },
+        "running": {
+          "description": "A drónok gyorsítanak. Az ütközések elkerülése érdekében folytatják az eredeti pályájukat.",
+          "title": "Gyorsítás"
+        }
+      }
+    },
+    "stage": {
+      "completed": {
+        "description": "A művelet befejeződött.",
+        "title": "Befejezve"
+      },
+      "progress": {
+        "description": "A művelet folyamatban van.",
+        "title": "Folyamatban ({{remainingSeconds}}mp)"
+      },
+      "waiting": {
+        "description": "A művelet hamarosan elkezdődik.",
+        "title": "Indulásra vár ({{remainingSeconds}}mp)"
+      }
+    },
+    "title": "Ütemezés"
   },
   "sidebar": {
     "missionType": "Küldetés típus: {{missionType}}"
@@ -839,6 +1280,7 @@
       "flightMode": "Repülési mód",
       "gpsFix": "GPS pontosság",
       "heading": "Irány",
+      "rssi": "Jelerősség (RSSI)",
       "status": "Státusz"
     },
     "shortLabel": {
@@ -850,12 +1292,15 @@
       "flightMode": "Mód",
       "gpsFix": "GPS fix",
       "heading": "Irány",
+      "rssi": "RSSI",
       "status": "Státusz"
     },
     "sortBy": "Rendezés"
   },
   "startTimeDialog": {
     "SMPTETimecode": "SMPTE időkód",
+    "additionalSettings": "További beállítások",
+    "authorizeWhenSettingStartTime": "Műsorkezdés engedélyezése a kezdési idő beállításakor",
     "errors": {
       "invalidDate": "Érvénytelen dátum",
       "invalidTime": "Érvénytelen idő",
@@ -863,6 +1308,7 @@
       "pastTime": "Nem lehet múltbéli az idő"
     },
     "localTime": "Helyi idő",
+    "localTimeRelative": "Fix késleltetés",
     "reference": "Referencia",
     "resetForm": "Űrlap visszaállítása",
     "setNewStartTime": "Új kezdési időpont beállítása",
@@ -880,10 +1326,17 @@
     "startTimeIsSetTo": "A kezdés beállítva erre az időpontra: <strong>{{formattedStartTime}}</strong>"
   },
   "startUploadButton": {
-    "startSelected": "Indítás a kiválasztottakra"
+    "startSelected": "Kiválasztottak indítása",
+    "tooltip": "Válasszon ki egyedi célpontokat az azonosítójukra kattintva egy részleges művelet előkészítéséhez"
   },
   "surveyStatusIndicator": {
-    "noSurveyInformation": "Nincsenek felmérési adatok"
+    "accuracy": "Pontosság: {{accuracy}}",
+    "accuracyAbove": "Pontosság: {{accuracy}}",
+    "noSurveyInformation": "Nincsenek felmérési adatok",
+    "notStartedYet": "A felmérés még nem indult el",
+    "surveying": "Felmérés folyamatban",
+    "surveyingWithAccuracy": "Felmérés folyamatban, pontosság: {{accuracy}}",
+    "surveyingWithAccuracyAbove": "Felmérés folyamatban, pontosság {{accuracy}}"
   },
   "takeoffAreaSetupDialog": {
     "allDroneOnline": "Minden misszióban résztvevő drón online állapotban.",
@@ -904,6 +1357,7 @@
     "compassDirection": "Iránytű iránya",
     "headingOffset": "Irány eltolás",
     "setToAverageHeading": "Átlagos irány beállítása az aktív drónokra",
+    "setToAvergaeHeading": "Beállítás az aktív drónok átlagos irányára",
     "specifiedByAbsoluteCompassDirection": "Az abszolút iránytű irány határozza meg",
     "specifiedRelativeToShowOrientation": "A műsor irányához képest van megadva",
     "unspecified": "Nem meghatározott"
@@ -943,8 +1397,11 @@
   "toolbox": {
     "averagingInProgress": "{{number}} folyamatban",
     "coordinateAveraging": "Koordináta átlagolás",
+    "firmwareCheck": "Firmware verzió ellenőrzése",
+    "firmwareUpdate": "Firmware frissítése",
     "licenseInfo": "Licenc információ",
     "offlineMaps": "Offline térképek",
+    "paramCheck": "Paraméterek ellenőrzése",
     "paramUpload": "Paraméter feltöltése",
     "tooltip": "Eszköztár"
   },
@@ -1018,45 +1475,75 @@
     "never": "Soha ne kérjen megerősítést",
     "onlyMultiple": "Megerősítés, ha a művelet több drónt is érinthet"
   },
+  "uavToolbar": {
+    "fitAllFeaturesIntoView": "Minden elem nézetbe illesztése",
+    "fitSelectionIntoView": "Kijelölés nézetbe illesztése"
+  },
   "unit": {
     "degree": {
-      "long": "fok",
-      "longPlural": "fok",
+      "long_one": "fok",
+      "long_other": "fok",
       "short": "fok"
     },
+    "hour": {
+      "long_one": "óra",
+      "long_other": "óra",
+      "short": "ó"
+    },
     "meter": {
-      "long": "méter",
-      "longPlural": "méter",
+      "long_one": "méter",
+      "long_other": "méter",
       "short": "m"
     },
     "meterPerSecond": {
-      "long": "méter/sec",
-      "longPlural": "méter/sec",
+      "long_one": "méter/sec",
+      "long_other": "méter/sec",
       "short": "m/s"
     },
+    "minute": {
+      "long_one": "perc",
+      "long_other": "perc",
+      "short": "p"
+    },
     "second": {
-      "long": "másodperc",
-      "longPlural": "másodperc",
+      "long_one": "másodperc",
+      "long_other": "másodperc",
       "short": "mp"
     },
     "volt": {
-      "long": "volt",
-      "longPlural": "volt",
+      "long_one": "volt",
+      "long_other": "volt",
       "short": "V"
     }
   },
+  "uploadDialog": {
+    "anotherJobTypeRunningHint": {
+      "cancelButton": "Feladat megszakítása",
+      "header": "Egy másik feladat van folyamatban",
+      "text": "Várja meg a másik feladat befejezését, vagy szakítsa meg új feladat indításához",
+      "viewProgressButton": "Folyamat megtekintése"
+    },
+    "restrictToGlobalSelection": "Csak a globális kijelölés megjelenítése"
+  },
   "uploadPanel": {
     "cancelUpload": "Megszakítás",
+    "clearHistory": "Előzmények törlése",
     "flashLightsWhereFailed": "Azon drónok villogtatása, ahol nem sikerült a művelet",
+    "hasHiddenTargets": "A várakozó drónok közül néhány szűrve lehet.",
+    "noJobResultAvailable": "Még nem áll rendelkezésre eredmény",
+    "resultsTab": "Eredmények",
     "retryFailedAttempts": "Sikertelen kísérletek automatikus újrapróbálása",
+    "statusTab": "Állapot",
     "uploadAttemptFailed": "A művelet sikertelen.",
     "uploadCancelled": "A műveletet a felhasználó megszakította.",
     "uploadFinishedSuccessfully": "A művelet sikeresen befejeződött.",
     "uploadInProgress": "Kérem, várjon…",
+    "uploadInProgressWithEstimate": "Becsült hátralévő idő: {{time}}",
     "uploadNotFinishedYet": "A művelet még nem fejeződött be."
   },
   "uploadStatusLegend": {
     "clearUploadQueue": "Műveleti sor törlése",
+    "enqueueItemsWithNoUploadStatus": "Feldolgozatlan elemek sorba állítása",
     "restartSuccessfulItems": "Sikeres elemek újraindítása",
     "retryFailedItems": "Sikertelen elemek újrapróbálása"
   },
@@ -1065,6 +1552,7 @@
   },
   "view": {
     "beacon-list": "Jeladók",
+    "collective-rth": "Kollektív RTH",
     "dock-list": "Dokkolók",
     "feature-list": "Objektumok",
     "field-notes": "Terepi jegyzetek",
@@ -1074,11 +1562,15 @@
     "log-panel": "Eseménynapló",
     "map": "Térkép",
     "mission-editor": "Küldetésszerkesztő",
+    "rtk-status-mini-list": "RTK állapot",
     "saved-location-list": "Helyszínek",
+    "selection-group-mini-list": "Kijelölési csoportok",
     "show-control": "Műsorvezérlés",
     "three-d-view": "3D nézet",
+    "timeline": "Idővonal",
     "uav-details": "Drón részletek",
-    "uav-list": "Drónok"
+    "uav-list": "Drónok",
+    "uav-status-mini-list": "Drónállapot-összegzés"
   },
   "weatherMiniList": {
     "compassDeclination": "Iránytű deklináció",
