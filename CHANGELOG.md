@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added support for Traditional Chinese (zh-Hant) language, thanks to our translator
   community!
 
+### Fixed
+
+- Prevent a crash that happened in developer mode when the 3D view was maximized.
+
 ## [2.16.1] - 2026-11-09
 
 ### Fixed
