@@ -7,8 +7,6 @@ import PropTypes from 'prop-types';
 import { configure as configureHotkeys, GlobalHotKeys } from 'react-hotkeys';
 import { connect } from 'react-redux';
 
-import { removeSelectedFeatures } from '~/features/map-features/actions';
-import { removeSelectedMissionItems } from '~/features/mission/actions';
 import { getPreferredCommunicationChannelIndex } from '~/features/mission/selectors';
 import { togglePreferredChannel } from '~/features/mission/slice';
 import { selectAllUAVs } from '~/features/selection/slice';
@@ -31,6 +29,7 @@ import {
   copyCoordinates,
   deleteLastCharacterOfPendingUAVId,
   handlePendingUAVIdThenDispatch,
+  removeSelectedFeaturesAndMissionItemsUnlessLocked,
 } from './actions';
 import keyMap from './keymap';
 import { getActiveHotkeyScope } from './selectors';
@@ -159,8 +158,7 @@ export default connect(
         DELETE_LAST_CHARACTER: deleteLastCharacterOfPendingUAVId,
         REMOVE_SELECTION: handlePendingUAVIdThenDispatch(() => (dispatch) => {
           dispatch(requestRemovalOfSelectedUAVs());
-          dispatch(removeSelectedFeatures());
-          dispatch(removeSelectedMissionItems());
+          dispatch(removeSelectedFeaturesAndMissionItemsUnlessLocked());
         }),
         SELECT_ALL_DRONES: selectAllUAVs,
         SEND_FLASH_LIGHTS_COMMAND: handlePendingUAVIdThenDispatch(

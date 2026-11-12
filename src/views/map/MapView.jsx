@@ -35,7 +35,7 @@ import {
   showDetailsForFeatureInTooltipOrGivenFeature,
 } from '~/features/map-features/actions';
 import { getSelectedFeatureIds } from '~/features/map-features/selectors';
-import { getSelectedTool } from '~/features/map/tools';
+import { getSelectedTool, isMapLocked } from '~/features/map/tools';
 import { updateMapViewSettings } from '~/features/map/view';
 import { addNewMissionItem } from '~/features/mission/actions';
 import { getGeofencePolygonId } from '~/features/mission/selectors';
@@ -85,6 +85,7 @@ import { forwardCollectionChanges } from '~/utils/openlayers';
 import DrawingToolbar from './DrawingToolbar';
 import { Layers } from './layers';
 import MapContextMenu from './MapContextMenu';
+import MapLockButton from './MapLockButton';
 import MapReferenceRequestHandler from './MapReferenceRequestHandler';
 
 import 'ol/ol.css';
@@ -114,6 +115,7 @@ const MapViewLayers = connect(
 const MapViewInteractions = withMap((props) => {
   const {
     geofencePolygonId,
+    mapLocked,
     onAddFeaturesToSelection,
     onAddWaypoint,
     onDrawEnded,
@@ -222,22 +224,26 @@ const MapViewInteractions = withMap((props) => {
         key='DragBox.removeFromSelection'
         condition={Condition.altKeyOnly}
         onBoxEnd={onRemoveFeaturesFromSelection}
-      />,
-
-      /* SELECT mode |
-           Drag a feature --> Move a feature to a new location
-           Alt + Drag --> Rotate a feature.
-         This must come last in order to ensure that it will get the
-         chance to process events before DragBox so Alt+something will not
-         start a drag-box when clicking on a selected feature */
-      <TransformFeatures
-        key='TransformFeatures'
-        featureProvider={selectedFeaturesProvider}
-        moveCondition={Condition.noModifierKeys}
-        rotateCondition={Condition.altKeyOnly}
-        onTransformEnd={onFeaturesTransformed}
       />
     );
+
+    if (!mapLocked) {
+      interactions.push(
+        /* SELECT mode |
+             Drag a feature --> Move a feature to a new location
+             Alt + Drag --> Rotate a feature.
+           This must come last in order to ensure that it will get the
+           chance to process events before DragBox so Alt+something will not
+           start a drag-box when clicking on a selected feature */
+        <TransformFeatures
+          key='TransformFeatures'
+          featureProvider={selectedFeaturesProvider}
+          moveCondition={Condition.noModifierKeys}
+          rotateCondition={Condition.altKeyOnly}
+          onTransformEnd={onFeaturesTransformed}
+        />
+      );
+    }
   }
 
   if (selectedTool === Tool.ZOOM) {
@@ -314,6 +320,7 @@ const MapViewInteractions = withMap((props) => {
 });
 
 MapViewInteractions.propTypes = {
+  mapLocked: PropTypes.bool,
   selectedFeaturesProvider: PropTypes.func,
   selectedTool: PropTypes.string.isRequired,
 
@@ -338,6 +345,7 @@ class MapViewPresentation extends React.Component {
 
     angle: PropTypes.number,
     geofencePolygonId: PropTypes.string,
+    mapLocked: PropTypes.bool,
     position: PropTypes.arrayOf(PropTypes.number),
     selectedTool: PropTypes.string,
     selection: PropTypes.arrayOf(PropTypes.string).isRequired,
@@ -370,8 +378,14 @@ class MapViewPresentation extends React.Component {
   }
 
   render() {
-    const { angle, geofencePolygonId, position, selectedTool, zoom } =
-      this.props;
+    const {
+      angle,
+      geofencePolygonId,
+      mapLocked,
+      position,
+      selectedTool,
+      zoom,
+    } = this.props;
     const view = (
       <View
         center={mapViewCoordinateFromLonLat(position)}
@@ -409,6 +423,7 @@ class MapViewPresentation extends React.Component {
                   {/* NOTE: Margin is calibrated such that the vertical      */}
                   {/*       drawing toolbar will not cover any of the drones */}
                   <FitAllFeaturesButton duration={500} margin={80} />
+                  <MapLockButton />
                 </>
               }
             />
@@ -416,6 +431,7 @@ class MapViewPresentation extends React.Component {
             <MapControls />
             <MapViewInteractions
               geofencePolygonId={geofencePolygonId}
+              mapLocked={mapLocked}
               selectedTool={selectedTool}
               selectedFeaturesProvider={this._getSelectedTransformableFeatures}
               onAddFeaturesToSelection={this._onAddFeaturesToSelection}
@@ -706,6 +722,8 @@ const MapView = connect(
     zoom: getMapViewZoom(state),
 
     geofencePolygonId: getGeofencePolygonId(state),
+
+    mapLocked: isMapLocked(state),
 
     selectedFeatures: getSelectedFeatureIds(state),
     selectedTool: getSelectedTool(state),

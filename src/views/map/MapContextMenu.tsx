@@ -17,6 +17,7 @@ import {
   updateFeatureAttributes,
 } from '~/features/map-features/slice';
 import { setFlatEarthCoordinateSystemOrigin } from '~/features/map/origin';
+import { isMapLocked } from '~/features/map/tools';
 import { addNewWaypointMissionItem } from '~/features/mission/actions';
 import { getGeofencePolygonId } from '~/features/mission/selectors';
 import {
@@ -55,6 +56,7 @@ const MapContextMenuContainer = connect(
   // mapStateToProps
   (state: RootState) => ({
     contextProvider: getContextProvider(state),
+    mapLocked: isMapLocked(state),
   }),
   // mapDispatchToProps
   {

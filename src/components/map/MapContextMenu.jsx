@@ -42,6 +42,7 @@ class MapContextMenu extends React.Component {
     contextProvider: PropTypes.func,
     cutFeature: PropTypes.func,
     editFeature: PropTypes.func,
+    mapLocked: PropTypes.bool,
     openUAVDetailsDialog: PropTypes.func,
     removeFeaturesByIds: PropTypes.func,
     setGeofencePolygonId: PropTypes.func,
@@ -73,6 +74,8 @@ class MapContextMenu extends React.Component {
   };
 
   render() {
+    const { mapLocked } = this.props;
+
     return (
       <Translation>
         {(t) => (
@@ -196,6 +199,7 @@ class MapContextMenu extends React.Component {
                   <MenuItem
                     key='addPointToMission'
                     dense
+                    disabled={mapLocked}
                     onClick={this._addPointToMission}
                   >
                     <ListItemIcon>
@@ -248,7 +252,7 @@ class MapContextMenu extends React.Component {
                   <MenuItem
                     key='geofence'
                     dense
-                    disabled={!featureSuitableForGeofence}
+                    disabled={mapLocked || !featureSuitableForGeofence}
                     onClick={
                       isCurrentGeofence
                         ? this._unsetSelectedFeatureAsGeofence
@@ -275,7 +279,7 @@ class MapContextMenu extends React.Component {
                   <MenuItem
                     key='exclusionZone'
                     dense
-                    disabled={!featureSuitableForExclusionZone}
+                    disabled={mapLocked || !featureSuitableForExclusionZone}
                     onClick={
                       isExclusionZone
                         ? this._unsetSelectedFeatureAsExclusionZone
@@ -298,7 +302,12 @@ class MapContextMenu extends React.Component {
                 selectedFeatures.every((t) => t.type === FeatureType.POLYGON)
               ) {
                 result.push(
-                  <MenuItem key='cut' dense onClick={this._cutSelectedFeatures}>
+                  <MenuItem
+                    key='cut'
+                    dense
+                    disabled={mapLocked}
+                    onClick={this._cutSelectedFeatures}
+                  >
                     <ListItemIcon>
                       <ContentCut />
                     </ListItemIcon>
@@ -331,7 +340,7 @@ class MapContextMenu extends React.Component {
                   <MenuItem
                     key='remove'
                     dense
-                    disabled={!hasSelectedFeatures}
+                    disabled={mapLocked || !hasSelectedFeatures}
                     onClick={this._removeSelectedFeatures}
                   >
                     <ListItemIcon>
