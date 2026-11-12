@@ -12,5 +12,7 @@ import './components/sync-pose-with-store';
 
 import './primitives/drone-flock';
 
+import './patches/environment';
+
 // eslint-disable-next-line unicorn/prefer-export-from
 export default AFrame;
