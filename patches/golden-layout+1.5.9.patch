@@ -10,3 +10,67 @@ index 736f9ec..4fa1228 100644
  	},
 
  	/**
+--- a/node_modules/golden-layout/dist/goldenlayout.js
++++ b/node_modules/golden-layout/dist/goldenlayout.js
+@@ -3194,6 +3194,35 @@
+ 	},
+ 
+ 	/**
++	 * Restores the maximised item, if there is one and this
++	 * container is not the maximised item itself or inside it.
++	 * This must run before the concrete item performs any DOM
++	 * manipulations for the new child, otherwise the new element
++	 * is inserted relative to the maximised element's temporary
++	 * position under the layout root instead of its owning
++	 * container.
++	 *
++	 * @returns {void}
++	 */
++	_$restoreMaximisedItemIfNeeded: function() {
++		var maximisedItem = this.layoutManager && this.layoutManager._maximisedItem;
++		if( maximisedItem && maximisedItem.isMaximised === true ) {
++			var item = this;
++			var isInsideMaximised = false;
++			while( item ) {
++				if( item === maximisedItem ) {
++					isInsideMaximised = true;
++					break;
++				}
++				item = item.parent;
++			}
++			if( !isInsideMaximised ) {
++				maximisedItem.toggleMaximise();
++			}
++		}
++	},
++
++	/**
+ 	 * Sets up the tree structure for the newly added child
+ 	 * The responsibility for the actual DOM manipulations lies
+ 	 * with the concrete item
+@@ -3206,6 +3235,8 @@
+ 			index = this.contentItems.length;
+ 		}
+ 
++		this._$restoreMaximisedItemIfNeeded();
++
+ 		this.contentItems.splice( index, 0, contentItem );
+ 
+ 		if( this.config.content === undefined ) {
+@@ -3882,6 +3913,8 @@
+ 
+ 		var newItemSize, itemSize, i, splitterElement;
+ 
++		this._$restoreMaximisedItemIfNeeded();
++
+ 		contentItem = this.layoutManager._$normalizeContentItem( contentItem, this );
+ 
+ 		if( index === undefined ) {
+@@ -4621,6 +4654,7 @@
+ 		} else {
+ 			type = isVertical ? 'column' : 'row';
+ 			rowOrColumn = this.layoutManager.createContentItem( { type: type }, this );
++			this.parent._$restoreMaximisedItemIfNeeded();
+ 			this.parent.replaceChild( this, rowOrColumn );
+ 
+ 			rowOrColumn.addChild( contentItem, insertBefore ? 0 : undefined, true );
