@@ -609,11 +609,10 @@ const missionTrajectoryLine = (
         ({ item }) =>
           doesMissionIndexParticipateInMissionItem(missionIndex)(item)
       );
-      const currentItemIndex = currentItemIndices[missionIndex];
+      // TODO: Maybe just pass `-1` through from the selector, as that would be
+      //       returned by `indexOf` anyway when `currentItemId` is `undefined`
+      const currentItemIndex = currentItemIndices[missionIndex] ?? -1;
       const currentItemRatio = currentItemRatios[missionIndex];
-      if (currentItemIndex === undefined) {
-        return [];
-      }
 
       // This should be done like below but lodash doesn't have `span`
       // `const [done, todo] = span(missionItemsWithCoordinates, isDone)`,
