@@ -68,6 +68,13 @@ type SwapDroneFieldProps = Omit<TextFieldProps, 'onChange' | 'value'> & {
   /** Called when the user confirms the field with Enter or selects a drone */
   onSubmit: () => void;
   side: SwapFieldSide;
+  /** Restricts the drones listed in the UAV selector to the given IDs */
+  uavIds?: readonly Identifier[];
+  /**
+   * Whether the UAV selector lists the slots of the mapping; decided by the
+   * entered text if not given
+   */
+  useMissionIds?: boolean;
   value: string;
 };
 
@@ -81,6 +88,8 @@ const SwapDroneField = ({
   onChange,
   onSubmit,
   side,
+  uavIds,
+  useMissionIds,
   value,
   ...rest
 }: SwapDroneFieldProps) => {
@@ -134,9 +143,10 @@ const SwapDroneField = ({
         anchorEl={anchorEl}
         filter={value}
         open={Boolean(anchorEl)}
-        // List the slots of the mapping, including empty ones, while typing a
-        // show ID
-        useMissionIds={looksLikeShowId(value)}
+        uavIds={uavIds}
+        // By default, list the slots of the mapping, including empty ones,
+        // while typing a show ID
+        useMissionIds={useMissionIds ?? looksLikeShowId(value)}
         onClose={handleClose}
         onSelect={(item) => {
           const label = getLabelForSelection(item, value);

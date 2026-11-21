@@ -39,7 +39,10 @@ import type {
   Message,
   MessageBody,
   Response_XSHOWADAPT,
+  Response_XSHOWHEAL,
   ShowAdaptTransformation,
+  ShowHealConfig,
+  ShowHealEnvironment,
 } from './types';
 import {
   validateCollectiveRTHPlanResult,
@@ -178,6 +181,34 @@ export async function reloadExtension(
   });
 
   return Boolean(status);
+}
+
+/**
+ * Asks the server to calculate a healing trajectory for a replacement drone
+ * that takes over the given drone of the given base64-encoded show.
+ */
+export async function healShow(
+  hub: MessageHub,
+  show: string,
+  config: ShowHealConfig,
+  environment: ShowHealEnvironment,
+  options: AsyncOperationOptions = {}
+): Promise<Response_XSHOWHEAL> {
+  const response = await hub.sendMessage<Response_XSHOWHEAL>(
+    { type: 'X-SHOW-HEAL', show, config, environment },
+    {
+      // Use a long timeout for this message as the calculation might require
+      // a lot of computation.
+      timeout: 600,
+      ...options,
+    }
+  );
+
+  if (response?.body?.type === 'X-SHOW-HEAL') {
+    return response.body;
+  } else {
+    throw new Error(response?.body?.reason ?? 'Unknown error.');
+  }
 }
 
 /**
@@ -743,6 +774,7 @@ const _operations = {
   configureExtension,
   createRTKPreset,
   deleteRTKPreset,
+  healShow,
   planMission,
   reloadExtension,
   resetUAV,

@@ -31,6 +31,7 @@ import showConfiguratorReducer, {
   type ShowConfiguratorState,
   type ShowData,
 } from '~/features/show-configurator/slice';
+import showHealingDialogReducer from '~/features/show-healing/slice';
 import tasksReducer from '~/features/tasks/slice';
 import uavDetailsDialogReducer from '~/features/uavs/details';
 import swapDronesDialogReducer from '~/features/uavs/swapping/slice';
@@ -106,6 +107,7 @@ const dialogsReducer = combineReducers({
       undoType: historyUndo.type,
     }
   ),
+  showHealing: showHealingDialogReducer,
   swapDrones: swapDronesDialogReducer,
   uavDetails: uavDetailsDialogReducer,
 });

@@ -72,6 +72,11 @@ export type UAVSelectorProps = {
    */
   retainFocus?: boolean;
   sortedByError?: boolean;
+  /**
+   * Restricts the listed UAVs to the given IDs. Ignored when `useMissionIds`
+   * is set.
+   */
+  uavIds?: readonly Identifier[];
   useMissionIds?: boolean;
 };
 
@@ -85,10 +90,11 @@ export const UAVSelector = ({
   open,
   retainFocus,
   sortedByError,
+  uavIds: uavIdsProp,
   useMissionIds,
 }: UAVSelectorProps) => {
   const { t } = useTranslation();
-  const uavIds = useSelector(
+  const allUAVIds = useSelector(
     sortedByError ? getUAVIdsSortedByErrorCode : getUAVIdList,
     { equalityFn: shallowEqual }
   );
@@ -103,7 +109,7 @@ export const UAVSelector = ({
         uavId: uavId ?? undefined,
         missionIndex: index,
       }))
-    : uavIds.map((uavId) => ({
+    : (uavIdsProp ?? allUAVIds).map((uavId) => ({
         uavId,
         missionIndex: reverseMissionMapping[uavId],
       }));

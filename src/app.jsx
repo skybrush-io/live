@@ -37,6 +37,7 @@ import RTKStatusUpdater from './features/rtk/RTKStatusUpdater';
 import SafetyDialog from './features/safety/SafetyDialog';
 import SavedLocationEditorDialog from './features/saved-locations/SavedLocationEditorDialog';
 import ShowConfiguratorDialog from './features/show-configurator/ShowConfiguratorDialog';
+import ShowHealingDialog from './features/show-healing/ShowHealingDialog';
 import Sidebar from './features/sidebar/Sidebar';
 import Notifications from './features/snackbar/Notifications';
 import SwapDronesDialog from './features/uavs/swapping/SwapDronesDialog';
@@ -194,6 +195,7 @@ const App = ({ onFirstRender }) => (
       <SafetyDialog />
       <SavedLocationEditorDialog />
       <ShowConfiguratorDialog />
+      <ShowHealingDialog />
       <SwapDronesDialog />
       <UAVDetailsDialog />
       <UploadDialog />

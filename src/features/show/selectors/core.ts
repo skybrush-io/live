@@ -214,6 +214,14 @@ export const getSwarmSpecification: AppSelector<
 > = (state) => state.show.data?.swarm;
 
 /**
+ * Returns the drone specifications calculated by show healing, keyed by
+ * mission index. These override the specifications of the loaded show.
+ */
+export const getHealedDroneSpecifications: AppSelector<
+  Record<number, DroneSpecification>
+> = (state) => state.show.healedDroneSpecs;
+
+/**
  * Returns the specification of the drone swarm in the currently loaded show.
  */
 export const getDroneSwarmSpecification: AppSelector<DroneSpecification[]> =

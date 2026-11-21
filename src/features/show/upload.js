@@ -18,6 +18,7 @@ import {
   getCommonShowSettings,
   getDroneSwarmSpecification,
   getGeofencePolygonInShowCoordinates,
+  getHealedDroneSpecifications,
   getMeanSeaLevelReferenceOfShowCoordinatesOrNull,
   getOutdoorShowCoordinateSystem,
   getShowMetadata,
@@ -83,7 +84,8 @@ export function createShowConfigurationForUav(state, uavId) {
     throw new Error('Invalid show configuration in state store');
   }
 
-  const droneSpec = drones[missionIndex];
+  const droneSpec =
+    getHealedDroneSpecifications(state)[missionIndex] ?? drones[missionIndex];
   if (!droneSpec || typeof droneSpec !== 'object') {
     throw new Error(
       `No specification for UAV ${uavId} (index ${missionIndex})`
