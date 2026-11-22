@@ -3,6 +3,7 @@ import type { FlightMode } from '~/model/enums';
 import { type GPSFix, type GPSPosition } from '~/model/geography';
 import { type UAVAge, type UAVBattery } from '~/model/uav';
 import { type VelocityNED, type VelocityXYZ } from '~/model/velocity';
+import { type WindEstimate } from '~/model/wind';
 import { type Identifier } from '~/utils/collections';
 import { type Coordinate3D } from '~/utils/math';
 import { isSomeEnum } from '~/utils/types';
@@ -51,6 +52,7 @@ export type StoredUAV = {
   position?: GPSPosition;
   velocity?: VelocityNED;
   rssi: number[];
+  wind?: WindEstimate;
 };
 
 export enum UAVDetailsDialogTab {

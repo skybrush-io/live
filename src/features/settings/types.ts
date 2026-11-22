@@ -225,6 +225,18 @@ export type SettingsState = {
      * Minimum distance allowed between two UAVs for outdoor shows, in meters.
      */
     minOutdoorTakeoffSpacing?: number;
+
+    /**
+     * Wind speed above which the wind summary in the header is shown with a
+     * warning, in m/s.
+     */
+    windSpeedWarningThreshold?: number;
+
+    /**
+     * Wind speed above which the wind summary in the header is shown with an
+     * error, in m/s.
+     */
+    windSpeedErrorThreshold?: number;
   };
 
   apiKeys: Record<string, string>;

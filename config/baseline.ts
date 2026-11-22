@@ -44,6 +44,7 @@ const baseline: Config = {
       'distance-summary-header-button',
       'altitude-summary-header-button',
       'velocity-summary-header-button',
+      'wind-summary-header-button',
     ],
     ['rtk-status-header-button', 'weather-header-button'],
     ['connection-status-button'],

@@ -88,6 +88,8 @@ const initialState: SettingsSliceState = {
     maxUploadConcurrency: 8,
     minIndoorTakeoffSpacing: 200,
     minOutdoorTakeoffSpacing: 400,
+    windSpeedWarningThreshold: 8,
+    windSpeedErrorThreshold: 12,
   },
 
   apiKeys: {},

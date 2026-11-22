@@ -18,6 +18,7 @@ import type { Coordinate3D } from '~/utils/math';
 import { GPSFixType } from './enums';
 import type { GPSFix, GPSPosition } from './geography';
 import type { VelocityNED, VelocityXYZ } from './velocity';
+import type { WindEstimate } from './wind';
 
 /**
  * Age constants for a UAV. Used in the Redux store to mark UAVs for which we
@@ -60,6 +61,7 @@ export default class UAV {
   mode?: string;
   velocity?: VelocityNED;
   rssi: number[];
+  wind?: WindEstimate;
 
   // TODO: This should be unnecessary if we can ensure that no mutation happens
   //       to the output later on, thus the object spread can be avoided.
@@ -259,6 +261,7 @@ export default class UAV {
       velocity,
       velocityXYZ,
       rssi,
+      wind,
     } = status;
 
     let errorList: UAVErrorCode[];
@@ -374,6 +377,20 @@ export default class UAV {
       this.rssi = rssi;
     }
 
+    // The server sends null if the UAV has no wind estimate (the spec does not
+    // list null as a valid value, hence the explicit comparison).
+    if (Array.isArray(wind)) {
+      const speed = wind[0] / 1e3; /* mm/s to m/s */
+      const direction = wind[1] / 10; /* decidegrees to degrees */
+      if (this.wind?.speed !== speed || this.wind?.direction !== direction) {
+        this.wind = { speed, direction };
+        updated = true;
+      }
+    } else if (wind === null && this.wind !== undefined) {
+      this.wind = undefined;
+      updated = true;
+    }
+
     return updated;
   };
 
@@ -402,6 +419,7 @@ export default class UAV {
       position: this.position,
       velocity: structuredClone(this.velocity),
       rssi: structuredClone(this.rssi),
+      wind: this.wind ? { ...this.wind } : undefined,
     };
   }
 }

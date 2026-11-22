@@ -15,6 +15,7 @@ import AltitudeSummaryHeaderButton from '~/features/uavs/AltitudeSummaryHeaderBu
 import BatteryStatusHeaderButton from '~/features/uavs/BatteryStatusHeaderButton';
 import DistanceSummaryHeaderButton from '~/features/uavs/DistanceSummaryHeaderButton';
 import VelocitySummaryHeaderButton from '~/features/uavs/VelocitySummaryHeaderButton';
+import WindSummaryHeaderButton from '~/features/uavs/WindSummaryHeaderButton';
 import WeatherHeaderButton from '~/features/weather/WeatherHeaderButton';
 import { shouldSidebarBeShown } from '~/features/workbench/selectors';
 import type { RootState } from '~/store/reducers';
@@ -70,6 +71,7 @@ const componentRegistry: Record<string, React.ComponentType> = {
   'uav-status-summary': UAVStatusSummary,
   'velocity-summary-header-button': VelocitySummaryHeaderButton,
   'weather-header-button': WeatherHeaderButton,
+  'wind-summary-header-button': WindSummaryHeaderButton,
 };
 
 type Props = {

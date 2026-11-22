@@ -13,6 +13,7 @@ export {
   SimpleDistanceField,
   SimpleDurationField,
   SimpleNumericField,
+  SimpleVelocityField,
   SimpleVoltageField,
   Switch,
   TextField,

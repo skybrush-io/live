@@ -147,6 +147,16 @@ export const getMinimumOutdoorTakeoffSpacing = (state: RootState): number =>
   (state.settings.uavs.minOutdoorTakeoffSpacing ?? 400) / 1000;
 
 /**
+ * Returns the wind speed thresholds, in m/s, above which the wind summary
+ * should show a warning or an error.
+ */
+export const getWindSpeedThresholds = createSelector(
+  (state: RootState) => state.settings.uavs.windSpeedWarningThreshold,
+  (state: RootState) => state.settings.uavs.windSpeedErrorThreshold,
+  (warning = 8, error = 12) => ({ warning, error })
+);
+
+/**
  * Returns the currently selected preferred battery display style.
  */
 export const getPreferredBatteryDisplayStyle = (

@@ -438,7 +438,15 @@
   },
   "header": {
     "distanceSummary": "Maximum and minimum distance from home position",
-    "velocitySummary": "Maximum horizontal and vertical velocity"
+    "velocitySummary": "Maximum horizontal and vertical velocity",
+    "windSummary": {
+      "average": "Average wind speed",
+      "direction": "Wind from {{direction}}° ({{compass}})",
+      "estimatedBy_one": "Estimated by {{count}} drone",
+      "estimatedBy_other": "Estimated by {{count}} drones",
+      "max": "Maximum wind speed",
+      "noEstimate": "No drone reports a wind estimate"
+    }
   },
   "help": "Help",
   "indoorEnvironmentEditor": {
@@ -987,7 +995,10 @@
       "missionSetupDescription": "Used before multi-drone missions to check whether each drone is at its prescribed takeoff position and is facing the right direction.",
       "operationSettings": "Operations",
       "uavOperationConfirmations": "UAV operation confirmations",
-      "warn": "Warn about drones not seen for at least"
+      "warn": "Warn about drones not seen for at least",
+      "windSpeedErrorThreshold": "Wind speed error threshold",
+      "windSpeedWarningThreshold": "Wind speed warning threshold",
+      "windSummary": "Wind summary"
     }
   },
   "show": {

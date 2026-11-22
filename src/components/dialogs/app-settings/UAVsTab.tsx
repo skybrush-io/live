@@ -19,6 +19,7 @@ import {
   SimpleDistanceField,
   SimpleDurationField,
   SimpleNumericField,
+  SimpleVelocityField,
   SimpleVoltageField,
 } from '~/components/forms';
 import { updateUAVVoltageThreshold } from '~/features/settings/actions';
@@ -29,6 +30,7 @@ import {
   getMaximumConcurrentUploadTaskCount,
   getMinimumIndoorTakeoffSpacing,
   getMinimumOutdoorTakeoffSpacing,
+  getWindSpeedThresholds,
 } from '~/features/settings/selectors';
 import { updateAppSettings } from '~/features/settings/slice';
 import type { SettingsState } from '~/features/settings/types';
@@ -83,12 +85,15 @@ type Props = {
   onDistanceFieldUpdated: ChangeEventHandler;
   onEnumFieldUpdated: (event: SelectChangeEvent) => void;
   onIntegerFieldUpdated: ChangeEventHandler;
+  onVelocityFieldUpdated: ChangeEventHandler;
   onVoltageFieldUpdated: ChangeEventHandler;
   placementAccuracy: number;
   preferredBatteryDisplayStyle: BatteryDisplayStyle;
   takeoffHeadingAccuracy: number;
   uavOperationConfirmationStyle: UAVOperationConfirmationStyle;
   warnThreshold: number;
+  windSpeedErrorThreshold: number;
+  windSpeedWarningThreshold: number;
 };
 
 const UAVsTabPresentation = ({
@@ -107,12 +112,15 @@ const UAVsTabPresentation = ({
   onDistanceFieldUpdated,
   onEnumFieldUpdated,
   onIntegerFieldUpdated,
+  onVelocityFieldUpdated,
   onVoltageFieldUpdated,
   placementAccuracy,
   preferredBatteryDisplayStyle = BatteryDisplayStyle.VOLTAGE,
   takeoffHeadingAccuracy,
   uavOperationConfirmationStyle,
   warnThreshold,
+  windSpeedErrorThreshold,
+  windSpeedWarningThreshold,
 }: Props) => {
   const styles = useStyles();
   const { t } = useTranslation();
@@ -353,6 +361,35 @@ const UAVsTabPresentation = ({
           {t('settings.uavs.missionSetupDescription')}
         </Typography>
       </Box>
+
+      <Box sx={{ mt: 2 }}>
+        <Typography variant='subtitle2' sx={{ mb: 1 }}>
+          {t('settings.uavs.windSummary')}
+        </Typography>
+        <Box sx={{ display: 'flex', flexDirection: 'row', mb: 1 }}>
+          <SimpleVelocityField
+            fullWidth
+            name='windSpeedWarningThreshold'
+            label={t('settings.uavs.windSpeedWarningThreshold')}
+            min={0.1}
+            max={50}
+            step={0.5}
+            value={windSpeedWarningThreshold}
+            onChange={onVelocityFieldUpdated}
+          />
+          <Box className={styles.horizontalSpacer} />
+          <SimpleVelocityField
+            fullWidth
+            name='windSpeedErrorThreshold'
+            label={t('settings.uavs.windSpeedErrorThreshold')}
+            min={0.1}
+            max={50}
+            step={0.5}
+            value={windSpeedErrorThreshold}
+            onChange={onVelocityFieldUpdated}
+          />
+        </Box>
+      </Box>
     </>
   );
 };
@@ -367,6 +404,8 @@ export default connect(
     maxUploadConcurrency: getMaximumConcurrentUploadTaskCount(state),
     minIndoorTakeoffSpacing: getMinimumIndoorTakeoffSpacing(state),
     minOutdoorTakeoffSpacing: getMinimumOutdoorTakeoffSpacing(state),
+    windSpeedWarningThreshold: getWindSpeedThresholds(state).warning,
+    windSpeedErrorThreshold: getWindSpeedThresholds(state).error,
   }),
   // mapDispatchToProps
   (dispatch: AppDispatch) => ({
@@ -403,6 +442,18 @@ export default connect(
       const value = Number.parseInt(event.target.value, 10);
 
       if (value > 0) {
+        dispatch(
+          updateAppSettings('uavs', {
+            [event.target.name]: value,
+          } as Partial<SettingsState['uavs']>)
+        );
+      }
+    },
+
+    onVelocityFieldUpdated(event: ChangeEvent<HTMLInputElement>) {
+      const value = Number.parseFloat(event.target.value);
+
+      if (value > 0 && Number.isFinite(value)) {
         dispatch(
           updateAppSettings('uavs', {
             [event.target.name]: value,
