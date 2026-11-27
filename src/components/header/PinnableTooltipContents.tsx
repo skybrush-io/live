@@ -77,7 +77,6 @@ const PinnableTooltipContents = ({
               pinToWorkbenchOrBringToFront(
                 workbench,
                 component,
-                /* i18next-extract-disable-next-line */
                 title ?? t(`view.${component}`)
               );
             }}

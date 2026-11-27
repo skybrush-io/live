@@ -241,7 +241,6 @@ const workbench = constructDefaultWorkbench(store);
 i18n.on('languageChanged', () => {
   workbench.forEach((view) => {
     if (view.isComponent) {
-      /* i18next-extract-disable-next-line */
       view.setTitle(
         i18n.t(`view.${(view.config as ReactComponentConfig).component}`)
       );
