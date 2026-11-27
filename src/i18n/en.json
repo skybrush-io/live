@@ -636,10 +636,22 @@
     "collectiveRTH": "Collective RTH",
     "collectiveRTHPanelNotFound": "The Collective RTH panel was not found. Please try to open it manually from the sidebar.",
     "prerequisites": {
-      "collectiveRTHNotTriggered": "Collective RTH has not been triggered yet",
-      "hasCollectiveRTHPlan": "The show contains a collective RTH plan",
-      "proFeaturesEnabled": "Pro features are enabled on the server",
-      "supportsSuspendResumeCRTH": "The server supports the suspend, resume, and collective RTH operations"
+      "collectiveRTHNotTriggered": {
+        "negative": "Collective RTH has already been triggered",
+        "positive": "Collective RTH has not been triggered yet"
+      },
+      "hasCollectiveRTHPlan": {
+        "negative": "The show does not contain a collective RTH plan",
+        "positive": "The show contains a collective RTH plan"
+      },
+      "proFeaturesEnabled": {
+        "negative": "Pro features are not enabled on the server",
+        "positive": "Pro features are enabled on the server"
+      },
+      "supportsSuspendResumeCRTH": {
+        "negative": "The server does not support the suspend, resume, and collective RTH operations",
+        "positive": "The server supports the suspend, resume, and collective RTH operations"
+      }
     },
     "resume": "Resume",
     "suspend": "Suspend"
@@ -1063,11 +1075,26 @@
       },
       "noShowData": "Show segment data is missing",
       "prerequisites": {
-        "extension": "The studio extension must be enabled on the server",
-        "loaded": "A show file must be loaded",
-        "origin": "A show origin must be included or set manually",
-        "segments": "The show must be annotated with segment markers",
-        "server": "Connection must be established to the server"
+        "extension": {
+          "negative": "The studio extension is not enabled on the server",
+          "positive": "The studio extension must be enabled on the server"
+        },
+        "loaded": {
+          "negative": "No show file is loaded",
+          "positive": "A show file must be loaded"
+        },
+        "origin": {
+          "negative": "No show origin is included or set manually",
+          "positive": "A show origin must be included or set manually"
+        },
+        "segments": {
+          "negative": "The show is not annotated with segment markers",
+          "positive": "The show must be annotated with segment markers"
+        },
+        "server": {
+          "negative": "There is no connection to the server",
+          "positive": "Connection must be established to the server"
+        }
       },
       "tooltip": {
         "adaptShow": "Adapt show to venue",

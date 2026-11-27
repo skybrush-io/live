@@ -30,10 +30,10 @@ import {
 import { getSetupStageStatuses } from '~/features/show/stages';
 import { showError } from '~/features/snackbar/actions';
 import {
+  createPrerequisiteMessageGetter,
   useConstPrerequisites,
   type Prerequisite,
 } from '~/hooks/useConstPrerequisites';
-import { tt } from '~/i18n';
 import Pro from '~/icons/Pro';
 import type { RootState } from '~/store/reducers';
 import { type Nullable } from '~/utils/types';
@@ -41,16 +41,20 @@ import { type Nullable } from '~/utils/types';
 const hasShowSegment = (state: RootState) =>
   getShowSegments(state)?.show !== undefined;
 
+const messages = createPrerequisiteMessageGetter(
+  'show.showConfigurator.prerequisites'
+);
+
 const PREREQUISITES: readonly Prerequisite[] = Object.freeze([
   {
     id: 'hasLoadedShowFile',
     selector: hasLoadedShowFile,
-    message: tt('show.showConfigurator.prerequisites.loaded'),
+    ...messages('loaded'),
   },
   {
     id: 'isConnected',
     selector: isConnected,
-    message: tt('show.showConfigurator.prerequisites.server'),
+    ...messages('server'),
   },
   {
     id: 'hasOrigin',
@@ -59,12 +63,12 @@ const PREREQUISITES: readonly Prerequisite[] = Object.freeze([
         getOutdoorShowOrigin(state),
         getEnvironmentFromLoadedShowData(state)?.location?.origin,
       ].some((v) => v !== undefined),
-    message: tt('show.showConfigurator.prerequisites.origin'),
+    ...messages('origin'),
   },
   {
     id: 'supportsStudioInterop',
     selector: supportsStudioInterop,
-    message: tt('show.showConfigurator.prerequisites.extension'),
+    ...messages('extension'),
   },
 ]);
 

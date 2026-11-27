@@ -24,32 +24,32 @@ import {
   selectIsCollectiveRTHTriggered,
 } from '~/features/show/selectors';
 import {
+  createPrerequisiteMessageGetter,
   useConstPrerequisites,
   type Prerequisite,
 } from '~/hooks/useConstPrerequisites';
-import { tt } from '~/i18n';
 import HomeCircleOutlined from '~/icons/HomeCircleOutlined';
 import { type RootState } from '~/store/reducers';
+
+const messages = createPrerequisiteMessageGetter(
+  'proControlButtonGroup.prerequisites'
+);
 
 const GENERAL_PREREQUISITES: readonly Prerequisite[] = Object.freeze([
   {
     id: 'proFeaturesEnabled',
     selector: (state: RootState) => hasLicenseWithProFeatures(state) ?? false,
-    message: tt('proControlButtonGroup.prerequisites.proFeaturesEnabled'),
+    ...messages('proFeaturesEnabled'),
   },
   {
     id: 'supportsSuspendResumeCRTH',
     selector: supportsSuspendResumeCRTH,
-    message: tt(
-      'proControlButtonGroup.prerequisites.supportsSuspendResumeCRTH'
-    ),
+    ...messages('supportsSuspendResumeCRTH'),
   },
   {
     id: 'collectiveRTHNotTriggered',
     selector: (state: RootState) => !selectIsCollectiveRTHTriggered(state),
-    message: tt(
-      'proControlButtonGroup.prerequisites.collectiveRTHNotTriggered'
-    ),
+    ...messages('collectiveRTHNotTriggered'),
   },
 ]);
 
@@ -58,7 +58,7 @@ const CRTH_PREREQUISITES: readonly Prerequisite[] = Object.freeze([
     id: 'hasCollectiveRTHPlan',
     selector: (state: RootState) =>
       selectCollectiveRTHPlanSummary(state).isValid,
-    message: tt('proControlButtonGroup.prerequisites.hasCollectiveRTHPlan'),
+    ...messages('hasCollectiveRTHPlan'),
   },
   ...GENERAL_PREREQUISITES,
 ]);

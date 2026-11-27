@@ -629,10 +629,22 @@
     "collectiveRTH": "一斉RTH",
     "collectiveRTHPanelNotFound": "一斉RTHパネルが見つかりません。サイドバーから手動で開いてください。",
     "prerequisites": {
-      "collectiveRTHNotTriggered": "一斉RTHはまだ開始されていません",
-      "hasCollectiveRTHPlan": "ショーには一斉RTH計画が含まれています",
-      "proFeaturesEnabled": "サーバーでPro機能が有効になっています",
-      "supportsSuspendResumeCRTH": "サーバーは一時停止、再開、および一斉RTH操作をサポートしています"
+      "collectiveRTHNotTriggered": {
+        "negative": "一斉RTHはすでに開始されています",
+        "positive": "一斉RTHはまだ開始されていません"
+      },
+      "hasCollectiveRTHPlan": {
+        "negative": "ショーには一斉RTH計画が含まれていません",
+        "positive": "ショーには一斉RTH計画が含まれています"
+      },
+      "proFeaturesEnabled": {
+        "negative": "サーバーでPro機能が有効になっていません",
+        "positive": "サーバーでPro機能が有効になっています"
+      },
+      "supportsSuspendResumeCRTH": {
+        "negative": "サーバーは一時停止、再開、および一斉RTH操作をサポートしていません",
+        "positive": "サーバーは一時停止、再開、および一斉RTH操作をサポートしています"
+      }
     },
     "resume": "再開",
     "suspend": "一時停止"
@@ -1056,11 +1068,26 @@
       },
       "noShowData": "ショーセグメントデータがありません",
       "prerequisites": {
-        "extension": "サーバーでスタジオ拡張機能を有効にする必要があります",
-        "loaded": "ショーファイルを読み込む必要があります",
-        "origin": "ショーの原点を含めるか、手動で設定する必要があります",
-        "segments": "ショーにセグメントマーカーを注釈する必要があります",
-        "server": "サーバーへの接続を確立する必要があります"
+        "extension": {
+          "negative": "サーバーでスタジオ拡張機能が有効になっていません",
+          "positive": "サーバーでスタジオ拡張機能を有効にする必要があります"
+        },
+        "loaded": {
+          "negative": "ショーファイルが読み込まれていません",
+          "positive": "ショーファイルを読み込む必要があります"
+        },
+        "origin": {
+          "negative": "ショーの原点が含まれておらず、手動でも設定されていません",
+          "positive": "ショーの原点を含めるか、手動で設定する必要があります"
+        },
+        "segments": {
+          "negative": "ショーにセグメントマーカーが注釈されていません",
+          "positive": "ショーにセグメントマーカーを注釈する必要があります"
+        },
+        "server": {
+          "negative": "サーバーに接続されていません",
+          "positive": "サーバーへの接続を確立する必要があります"
+        }
       },
       "tooltip": {
         "adaptShow": "会場にショーを適応",

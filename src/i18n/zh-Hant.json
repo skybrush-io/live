@@ -628,10 +628,22 @@
     "collectiveRTH": "集體 RTH",
     "collectiveRTHPanelNotFound": "找不到集體 RTH 面板。請嘗試從側邊欄手動開啟。",
     "prerequisites": {
-      "collectiveRTHNotTriggered": "尚未觸發集體 RTH",
-      "hasCollectiveRTHPlan": "演出包含集體 RTH 計畫",
-      "proFeaturesEnabled": "伺服器已啟用進階功能",
-      "supportsSuspendResumeCRTH": "伺服器支援暫停、繼續與集體 RTH 操作"
+      "collectiveRTHNotTriggered": {
+        "negative": "已觸發集體 RTH",
+        "positive": "尚未觸發集體 RTH"
+      },
+      "hasCollectiveRTHPlan": {
+        "negative": "演出不包含集體 RTH 計畫",
+        "positive": "演出包含集體 RTH 計畫"
+      },
+      "proFeaturesEnabled": {
+        "negative": "伺服器未啟用進階功能",
+        "positive": "伺服器已啟用進階功能"
+      },
+      "supportsSuspendResumeCRTH": {
+        "negative": "伺服器不支援暫停、繼續與集體 RTH 操作",
+        "positive": "伺服器支援暫停、繼續與集體 RTH 操作"
+      }
     },
     "resume": "繼續",
     "suspend": "暫停"
@@ -1055,11 +1067,26 @@
       },
       "noShowData": "演出區段資料遺失",
       "prerequisites": {
-        "extension": "伺服器上必須啟用 Studio 擴充功能",
-        "loaded": "必須載入表演檔案",
-        "origin": "必須包含表演原點或手動設定",
-        "segments": "表演必須標註區段標記",
-        "server": "必須與伺服器建立連線"
+        "extension": {
+          "negative": "伺服器上未啟用 Studio 擴充功能",
+          "positive": "伺服器上必須啟用 Studio 擴充功能"
+        },
+        "loaded": {
+          "negative": "未載入表演檔案",
+          "positive": "必須載入表演檔案"
+        },
+        "origin": {
+          "negative": "未包含表演原點，也未手動設定",
+          "positive": "必須包含表演原點或手動設定"
+        },
+        "segments": {
+          "negative": "表演未標註區段標記",
+          "positive": "表演必須標註區段標記"
+        },
+        "server": {
+          "negative": "未與伺服器建立連線",
+          "positive": "必須與伺服器建立連線"
+        }
       },
       "tooltip": {
         "adaptShow": "調整表演以適應場地",

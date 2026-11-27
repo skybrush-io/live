@@ -635,10 +635,22 @@
     "collectiveRTH": "RTH collectif",
     "collectiveRTHPanelNotFound": "Le panneau RTH collectif n'a pas été trouvé. Veuillez essayer de l'ouvrir manuellement depuis la barre latérale.",
     "prerequisites": {
-      "collectiveRTHNotTriggered": "Le RTH collectif n'a pas encore été déclenché",
-      "hasCollectiveRTHPlan": "Le spectacle contient un plan RTH collectif",
-      "proFeaturesEnabled": "Les fonctionnalités Pro sont activées sur le serveur",
-      "supportsSuspendResumeCRTH": "Le serveur prend en charge les opérations de suspension, de reprise et de RTH collectif"
+      "collectiveRTHNotTriggered": {
+        "negative": "Le RTH collectif a déjà été déclenché",
+        "positive": "Le RTH collectif n'a pas encore été déclenché"
+      },
+      "hasCollectiveRTHPlan": {
+        "negative": "Le spectacle ne contient pas de plan RTH collectif",
+        "positive": "Le spectacle contient un plan RTH collectif"
+      },
+      "proFeaturesEnabled": {
+        "negative": "Les fonctionnalités Pro ne sont pas activées sur le serveur",
+        "positive": "Les fonctionnalités Pro sont activées sur le serveur"
+      },
+      "supportsSuspendResumeCRTH": {
+        "negative": "Le serveur ne prend pas en charge les opérations de suspension, de reprise et de RTH collectif",
+        "positive": "Le serveur prend en charge les opérations de suspension, de reprise et de RTH collectif"
+      }
     },
     "resume": "Reprendre",
     "suspend": "Suspendre"
@@ -1062,11 +1074,26 @@
       },
       "noShowData": "Données de segment de spectacle manquantes",
       "prerequisites": {
-        "extension": "L'extension studio doit être activée sur le serveur",
-        "loaded": "Un fichier de spectacle doit être chargé",
-        "origin": "Une origine de spectacle doit être incluse ou définie manuellement",
-        "segments": "Le spectacle doit être annoté avec des marqueurs de segment",
-        "server": "La connexion au serveur doit être établie"
+        "extension": {
+          "negative": "L'extension studio n'est pas activée sur le serveur",
+          "positive": "L'extension studio doit être activée sur le serveur"
+        },
+        "loaded": {
+          "negative": "Aucun fichier de spectacle n'est chargé",
+          "positive": "Un fichier de spectacle doit être chargé"
+        },
+        "origin": {
+          "negative": "Aucune origine de spectacle n'est incluse ni définie manuellement",
+          "positive": "Une origine de spectacle doit être incluse ou définie manuellement"
+        },
+        "segments": {
+          "negative": "Le spectacle n'est pas annoté avec des marqueurs de segment",
+          "positive": "Le spectacle doit être annoté avec des marqueurs de segment"
+        },
+        "server": {
+          "negative": "La connexion au serveur n'est pas établie",
+          "positive": "La connexion au serveur doit être établie"
+        }
       },
       "tooltip": {
         "adaptShow": "Adapter le spectacle au lieu",

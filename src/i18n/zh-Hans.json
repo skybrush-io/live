@@ -629,10 +629,22 @@
     "collectiveRTH": "集体返航",
     "collectiveRTHPanelNotFound": "未找到集体返航面板，请尝试从侧边栏手动打开。",
     "prerequisites": {
-      "collectiveRTHNotTriggered": "集体返航尚未触发",
-      "hasCollectiveRTHPlan": "该演出包含集体返航方案",
-      "proFeaturesEnabled": "服务器已启用专业功能",
-      "supportsSuspendResumeCRTH": "服务器支持暂停表演 恢复表演 和集体返航操作"
+      "collectiveRTHNotTriggered": {
+        "negative": "集体返航已触发",
+        "positive": "集体返航尚未触发"
+      },
+      "hasCollectiveRTHPlan": {
+        "negative": "该演出不包含集体返航方案",
+        "positive": "该演出包含集体返航方案"
+      },
+      "proFeaturesEnabled": {
+        "negative": "服务器未启用专业功能",
+        "positive": "服务器已启用专业功能"
+      },
+      "supportsSuspendResumeCRTH": {
+        "negative": "服务器不支持暂停表演 恢复表演 和集体返航操作",
+        "positive": "服务器支持暂停表演 恢复表演 和集体返航操作"
+      }
     },
     "resume": "恢复",
     "suspend": "暂停"
@@ -1060,11 +1072,26 @@
       },
       "noShowData": "显示片段数据缺失",
       "prerequisites": {
-        "extension": "必须在服务器上启用 Studio 扩展",
-        "loaded": "必须加载演出文件",
-        "origin": "必须包含或手动设置演出原点",
-        "segments": "节目必须用片段标记进行注释",
-        "server": "必须与服务器建立连接"
+        "extension": {
+          "negative": "服务器上未启用 Studio 扩展",
+          "positive": "必须在服务器上启用 Studio 扩展"
+        },
+        "loaded": {
+          "negative": "未加载演出文件",
+          "positive": "必须加载演出文件"
+        },
+        "origin": {
+          "negative": "未包含或手动设置演出原点",
+          "positive": "必须包含或手动设置演出原点"
+        },
+        "segments": {
+          "negative": "节目未用片段标记进行注释",
+          "positive": "节目必须用片段标记进行注释"
+        },
+        "server": {
+          "negative": "未与服务器建立连接",
+          "positive": "必须与服务器建立连接"
+        }
       },
       "tooltip": {
         "adaptShow": "根据场地调整表演",

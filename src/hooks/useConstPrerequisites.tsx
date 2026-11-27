@@ -1,15 +1,27 @@
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 
-import type { PreparedI18nKey } from '~/i18n';
+import { type PreparedI18nKey, tt } from '~/i18n';
 import type { AppSelector } from '~/store/reducers';
 
 export type Prerequisite = Readonly<{
   id: string;
   selector: AppSelector<boolean>;
-  message: PreparedI18nKey;
+  positiveMessage: PreparedI18nKey;
+  negativeMessage: PreparedI18nKey;
   skipIf?: AppSelector<boolean>;
 }>;
+
+/**
+ * Creates a helper that builds the positive and negative messages of a
+ * prerequisite from its key under the given i18n namespace.
+ */
+export const createPrerequisiteMessageGetter =
+  (namespace: string) =>
+  (key: string): Pick<Prerequisite, 'positiveMessage' | 'negativeMessage'> => ({
+    positiveMessage: tt(`${namespace}.${key}.positive`),
+    negativeMessage: tt(`${namespace}.${key}.negative`),
+  });
 
 export type ResolvedPrerequisite = Readonly<{
   id: string;
@@ -30,7 +42,7 @@ export const useConstPrerequisites = (
 ) => {
   const { t } = useTranslation();
   const prerequisites: readonly ResolvedPrerequisite[] = constPrerequisites
-    .map(({ id, selector, skipIf, message }) => {
+    .map(({ id, selector, skipIf, positiveMessage, negativeMessage }) => {
       // ESLint rule is disabled because the length of `constPrerequisites` must never
       // change, so the number of hook calls is constant. See the comment above the
       // hook for more details.
@@ -44,7 +56,7 @@ export const useConstPrerequisites = (
       return {
         id,
         result,
-        message: message(t),
+        message: result ? positiveMessage(t) : negativeMessage(t),
         shouldSkip,
       };
     })
