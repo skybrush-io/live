@@ -153,7 +153,7 @@ const Sidebar: FunctionComponent<SidebarProps> = ({
               component={moduleComponent('light-control')}
             />
           )}
-          {hasShowControl && experimentalFeaturesEnabled && (
+          {hasShowControl && (
             <Module
               id='timeline'
               icon={<Timeline />}

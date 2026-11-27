@@ -28,7 +28,6 @@ import { getSelectedUAVIds } from '~/features/uavs/selectors';
 import type { AppDispatch, RootState } from '~/store/reducers';
 import { createUAVOperationThunks } from '~/utils/messaging';
 
-import { areExperimentalFeaturesEnabled } from '~/features/settings/selectors';
 import ProControlButtonGroup from './ProControlButtonGroup';
 import ShowControlScheduleStatusLight from './ShowControlScheduleStatusLight';
 import StartMethodExplanation from './StartMethodExplanation';
@@ -77,7 +76,6 @@ const useStyles = makeStyles((theme) => ({
 
 type Props = {
   broadcast: boolean;
-  experimentalFeaturesEnabled: boolean;
   onChangeBroadcastMode: (
     event: ChangeEvent<HTMLInputElement>,
     checked: boolean
@@ -87,7 +85,6 @@ type Props = {
 
 const LargeControlButtonGroup = ({
   broadcast,
-  experimentalFeaturesEnabled,
   onChangeBroadcastMode,
   uavActions,
 }: Props) => {
@@ -99,15 +96,11 @@ const LargeControlButtonGroup = ({
       <StartMethodExplanation />
       <Divider className={classes.divider} />
       <Stack direction='column' sx={{ flex: 1 }}>
-        {experimentalFeaturesEnabled && (
-          <>
-            <Box className={classes.secondaryBox}>
-              <ProControlButtonGroup />
-              <ShowControlScheduleStatusLight />
-            </Box>
-            <Divider className={classes.divider} />
-          </>
-        )}
+        <Box className={classes.secondaryBox}>
+          <ProControlButtonGroup />
+          <ShowControlScheduleStatusLight />
+        </Box>
+        <Divider className={classes.divider} />
 
         <Stack direction='row' sx={{ alignItems: 'center' }}>
           <Box flex='1' textAlign='right'>
@@ -206,7 +199,6 @@ export default connect(
     allUAVIdsInMission: getUAVIdsParticipatingInMission(state),
     broadcast: areFlightCommandsBroadcast(state),
     channel: getPreferredCommunicationChannelIndex(state),
-    experimentalFeaturesEnabled: areExperimentalFeaturesEnabled(state),
     selectedUAVIds: getSelectedUAVIds(state),
   }),
   // mapDispatchToProps

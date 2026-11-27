@@ -12,6 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added support for Traditional Chinese (zh-Hant) language, thanks to our translator
   community!
 
+### Changed
+
+- Collective RTH is not an experimental feature any more so it appears on the UI
+  even when the experimental features are turned off.
+
 ### Fixed
 
 - Prevent a crash that happened in developer mode when the 3D view was maximized.

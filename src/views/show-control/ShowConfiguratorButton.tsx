@@ -16,7 +16,6 @@ import {
   isConnected,
   supportsStudioInterop,
 } from '~/features/servers/selectors';
-import { areExperimentalFeaturesEnabled } from '~/features/settings/selectors';
 import { showDialogAndClearUndoHistory as showAdaptDialogAndClearUndoHistory } from '~/features/show-configurator/actions';
 import { selectShowConfiguratorDataFromShow } from '~/features/show-configurator/selectors';
 import { type ShowData } from '~/features/show-configurator/slice';
@@ -54,12 +53,6 @@ const PREREQUISITES: readonly Prerequisite[] = Object.freeze([
     message: tt('show.showConfigurator.prerequisites.server'),
   },
   {
-    id: 'hasSegments',
-    selector: hasShowSegment,
-    message: tt('show.showConfigurator.prerequisites.segments'),
-    skipIf: areExperimentalFeaturesEnabled,
-  },
-  {
     id: 'hasOrigin',
     selector: (state: RootState) =>
       [
@@ -76,7 +69,6 @@ const PREREQUISITES: readonly Prerequisite[] = Object.freeze([
 ]);
 
 type StateProps = {
-  experimentalFeaturesEnabled: boolean;
   rthPlanSummary: CollectiveRTHPlanSummary;
   show: ShowData | undefined;
   showHasSegments: boolean;
@@ -91,7 +83,6 @@ type DispatchProps = {
 type Props = StateProps & DispatchProps;
 
 const ShowConfiguratorButton = ({
-  experimentalFeaturesEnabled,
   rthPlanSummary,
   show,
   showAdaptDialogAndClearUndoHistory,
@@ -117,17 +108,12 @@ const ShowConfiguratorButton = ({
     }
   }, [show, showAdaptDialogAndClearUndoHistory, t]);
 
-  const crthEnabled = experimentalFeaturesEnabled;
   const tooltipVisible = status !== Status.OFF && !prerequisitesFulfilled;
   const disabled = status === Status.OFF || !prerequisitesFulfilled;
 
-  const primaryAction = crthEnabled
-    ? () => {
-        showCollectiveRTHDialog();
-      }
-    : () => {
-        openAdaptDialog();
-      };
+  const primaryAction = () => {
+    showCollectiveRTHDialog();
+  };
 
   return (
     <ListItem disablePadding ref={setTooltipTriggerTarget}>
@@ -136,7 +122,7 @@ const ShowConfiguratorButton = ({
           status={
             disabled
               ? Status.OFF
-              : rthPlanSummary.isValid || !crthEnabled
+              : rthPlanSummary.isValid
                 ? Status.SUCCESS
                 : Status.WARNING
           }
@@ -151,43 +137,35 @@ const ShowConfiguratorButton = ({
               triggerTarget={tooltipTriggerTarget}
             >
               <span>
-                {crthEnabled
-                  ? t('show.showConfigurator.button')
-                  : t('show.showConfiguratorLegacy.button')}
+                {t('show.showConfigurator.button')}
                 <Pro style={{ verticalAlign: 'middle', marginLeft: 8 }} />
               </span>
             </Tooltip>
           }
-          secondary={
-            crthEnabled
-              ? t('show.showConfigurator.description')
-              : t('show.showConfiguratorLegacy.description')
-          }
+          secondary={t('show.showConfigurator.description')}
         />
-        {crthEnabled && (
-          <Tooltip
-            content={t(
-              showHasSegments
-                ? 'show.showConfigurator.tooltip.adaptShow'
-                : 'show.showConfigurator.tooltip.showSegmentsRequired'
-            )}
-            placement='left'
-          >
-            <span>
-              <IconButton
-                disabled={!showHasSegments}
-                edge='end'
-                size='large'
-                onClick={(evt) => {
-                  evt.stopPropagation();
-                  openAdaptDialog();
-                }}
-              >
-                <BlurCircular />
-              </IconButton>
-            </span>
-          </Tooltip>
-        )}
+        <Tooltip
+          content={t(
+            showHasSegments
+              ? 'show.showConfigurator.tooltip.adaptShow'
+              : 'show.showConfigurator.tooltip.showSegmentsRequired'
+          )}
+          placement='left'
+        >
+          <span>
+            <IconButton
+              disabled={!showHasSegments}
+              edge='end'
+              size='large'
+              onClick={(evt) => {
+                evt.stopPropagation();
+                openAdaptDialog();
+              }}
+            >
+              <BlurCircular />
+            </IconButton>
+          </span>
+        </Tooltip>
       </ListItemButton>
     </ListItem>
   );
@@ -195,7 +173,6 @@ const ShowConfiguratorButton = ({
 
 const ConnectedShowConfiguratorButton = connect(
   (state: RootState) => ({
-    experimentalFeaturesEnabled: areExperimentalFeaturesEnabled(state),
     rthPlanSummary: selectCollectiveRTHPlanSummary(state),
     show: selectShowConfiguratorDataFromShow(state),
     showHasSegments: hasShowSegment(state),
